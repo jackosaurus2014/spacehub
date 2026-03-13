@@ -922,7 +922,7 @@ function InsuranceContent() {
               <div className="space-y-6">
                 {/* Latest Year Summary Banner */}
                 {latestYear && (
-                  <div className="card-elevated p-6 border border-white/15/20">
+                  <div className="card-elevated p-6 border border-white/15">
                     <div className="flex items-center justify-between mb-4">
                       <div className="flex items-center gap-3">
                         <span className="text-2xl">📊</span>
@@ -1181,7 +1181,7 @@ function InsuranceContent() {
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   {/* Input Form */}
                   <ScrollReveal>
-                    <div className="card-elevated p-6 border border-white/15/20">
+                    <div className="card-elevated p-6 border border-white/15">
                       <div className="flex items-center gap-3 mb-5">
                         <span className="text-2xl">🧮</span>
                         <div>
@@ -1201,7 +1201,7 @@ function InsuranceContent() {
                                 onClick={() => setCalcInputs((prev) => ({ ...prev, orbitType: key as CalculatorInputs['orbitType'] }))}
                                 className={`p-3 rounded-lg text-left text-sm transition-all ${
                                   calcInputs.orbitType === key
-                                    ? 'bg-white/10 border border-white/15/40 text-white'
+                                    ? 'bg-white/10 border border-white/15 text-slate-900'
                                     : 'bg-slate-700/30 border border-slate-700/50 text-slate-400 hover:border-slate-500'
                                 }`}
                               >
@@ -1478,7 +1478,7 @@ function InsuranceContent() {
             {activeTab === 'types' && (
               <div className="space-y-6">
                 <ScrollReveal>
-                  <div className="card-elevated p-6 border border-white/15/20">
+                  <div className="card-elevated p-6 border border-white/15">
                     <div className="flex items-center gap-3 mb-2">
                       <span className="text-2xl">📋</span>
                       <div>
@@ -1567,7 +1567,7 @@ function InsuranceContent() {
 
                 {/* Treaty & Regulatory Links */}
                 <ScrollReveal>
-                  <div className="card p-5 border border-white/15/20">
+                  <div className="card p-5 border border-white/15">
                     <h3 className="text-white font-semibold mb-3">Related Regulatory Framework</h3>
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                       <Link href="/compliance?tab=treaties" className="p-3 rounded-lg bg-slate-700/30 hover:bg-slate-700/50 transition-colors group">
@@ -1593,7 +1593,7 @@ function InsuranceContent() {
               <div className="space-y-6">
                 {/* Key Market Stats Grid */}
                 <ScrollReveal>
-                  <div className="card-elevated p-6 border border-white/15/20 mb-2">
+                  <div className="card-elevated p-6 border border-white/15 mb-2">
                     <div className="flex items-center gap-3 mb-5">
                       <span className="text-2xl">📊</span>
                       <div>
@@ -1970,7 +1970,7 @@ function DynamicInsuranceContent() {
             <p className="text-slate-300 text-sm mb-4">{commentary.summary}</p>
 
             {commentary.keyTakeaways.length > 0 && (
-              <div className="mb-4 p-4 bg-white/5 rounded-lg border border-white/15/20">
+              <div className="mb-4 p-4 bg-white/5 rounded-lg border border-white/15">
                 <h4 className="text-sm font-semibold text-slate-200 mb-2">Key Takeaways</h4>
                 <ul className="space-y-1">
                   {commentary.keyTakeaways.map((t, i) => (

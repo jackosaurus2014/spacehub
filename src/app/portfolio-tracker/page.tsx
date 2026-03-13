@@ -114,7 +114,7 @@ const INVESTMENT_THESES: InvestmentThesis[] = [
   {
     title: 'LEO Constellation Boom',
     icon: '\u{1F310}',
-    color: 'border-white/15/40',
+    color: 'border-white/15',
     summary: 'Starlink, Kuiper, and OneWeb are driving unprecedented demand for launch services, ground equipment, and inter-satellite link technology. This rising tide lifts the entire LEO supply chain.',
     keyDrivers: ['SpaceX Starlink 12,000+ sats deployed', 'Amazon Kuiper $10B+ investment', 'Growing direct-to-device connectivity market', 'Satellite refresh cycles create recurring demand'],
     timeHorizon: '2-5 years',
@@ -713,19 +713,19 @@ export default function PortfolioTrackerPage() {
         {/* ───── Related Links ───── */}
         <ScrollReveal>
           <div className="mt-8 flex flex-wrap gap-3">
-            <Link href="/market-intel" className="text-sm px-4 py-2 rounded-lg bg-slate-800/50 border border-slate-700/50 text-slate-300 hover:text-white hover:border-white/15/40 transition-colors">
+            <Link href="/market-intel" className="text-sm px-4 py-2 rounded-lg bg-slate-800/50 border border-slate-700/50 text-slate-300 hover:text-white hover:border-white/15 transition-colors">
               Market Intelligence
             </Link>
-            <Link href="/funding-tracker" className="text-sm px-4 py-2 rounded-lg bg-slate-800/50 border border-slate-700/50 text-slate-300 hover:text-white hover:border-white/15/40 transition-colors">
+            <Link href="/funding-tracker" className="text-sm px-4 py-2 rounded-lg bg-slate-800/50 border border-slate-700/50 text-slate-300 hover:text-white hover:border-white/15 transition-colors">
               Funding Tracker
             </Link>
-            <Link href="/company-profiles" className="text-sm px-4 py-2 rounded-lg bg-slate-800/50 border border-slate-700/50 text-slate-300 hover:text-white hover:border-white/15/40 transition-colors">
+            <Link href="/company-profiles" className="text-sm px-4 py-2 rounded-lg bg-slate-800/50 border border-slate-700/50 text-slate-300 hover:text-white hover:border-white/15 transition-colors">
               Company Profiles
             </Link>
-            <Link href="/investors" className="text-sm px-4 py-2 rounded-lg bg-slate-800/50 border border-slate-700/50 text-slate-300 hover:text-white hover:border-white/15/40 transition-colors">
+            <Link href="/investors" className="text-sm px-4 py-2 rounded-lg bg-slate-800/50 border border-slate-700/50 text-slate-300 hover:text-white hover:border-white/15 transition-colors">
               Investor Hub
             </Link>
-            <Link href="/space-economy" className="text-sm px-4 py-2 rounded-lg bg-slate-800/50 border border-slate-700/50 text-slate-300 hover:text-white hover:border-white/15/40 transition-colors">
+            <Link href="/space-economy" className="text-sm px-4 py-2 rounded-lg bg-slate-800/50 border border-slate-700/50 text-slate-300 hover:text-white hover:border-white/15 transition-colors">
               Space Economy
             </Link>
           </div>

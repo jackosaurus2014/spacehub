@@ -220,7 +220,7 @@ function BlueprintCard({ blueprint, onClick }: { blueprint: Blueprint; onClick: 
   return (
     <div
       onClick={onClick}
-      className="card p-5 border border-slate-700/50 hover:border-white/15/50 transition-all cursor-pointer group"
+      className="card p-5 border border-slate-700/50 hover:border-white/15 transition-all cursor-pointer group"
     >
       {/* Header */}
       <div className="flex items-start justify-between mb-3">

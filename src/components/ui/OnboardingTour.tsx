@@ -290,7 +290,7 @@ export default function OnboardingTour() {
                 ? 'bg-slate-700 text-slate-500 cursor-not-allowed'
                 : step === TOUR_STEPS.length
                   ? 'bg-gradient-to-r from-white to-purple-500 hover:from-slate-300 hover:to-purple-400 text-white shadow-lg'
-                  : 'bg-white hover:bg-slate-100 text-white'
+                  : 'bg-white hover:bg-slate-100 text-slate-900'
             }`}
           >
             {step === TOUR_STEPS.length ? 'Get Started' : 'Next'}

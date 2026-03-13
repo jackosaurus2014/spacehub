@@ -517,7 +517,7 @@ export default function DataFreshnessPage() {
                     disabled={refreshing !== null}
                     className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${
                       refreshing === mod.key
-                        ? 'bg-white/10 border-white/15/40 text-slate-200 animate-pulse'
+                        ? 'bg-white/10 border-white/15 text-slate-200 animate-pulse'
                         : 'bg-slate-800/50 border-slate-700/30 text-slate-300 hover:bg-slate-700/50 hover:text-white'
                     } disabled:opacity-50`}
                   >

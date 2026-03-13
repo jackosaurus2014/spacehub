@@ -191,7 +191,7 @@ export default function NewsletterSignup({
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Your name (optional)"
                 aria-label="Your name"
-                className="flex-1 px-4 py-3 bg-slate-800/80 border border-slate-600 rounded-xl text-slate-100 placeholder:text-slate-400 focus:outline-none focus:border-white/15/50 transition-colors"
+                className="flex-1 px-4 py-3 bg-slate-800/80 border border-slate-600 rounded-xl text-slate-100 placeholder:text-slate-400 focus:outline-none focus:border-white/15 transition-colors"
                 disabled={status === 'loading'}
               />
               <input
@@ -203,7 +203,7 @@ export default function NewsletterSignup({
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Your email address"
                 aria-label="Email address"
-                className="flex-1 px-4 py-3 bg-slate-800/80 border border-slate-600 rounded-xl text-slate-100 placeholder:text-slate-400 focus:outline-none focus:border-white/15/50 transition-colors"
+                className="flex-1 px-4 py-3 bg-slate-800/80 border border-slate-600 rounded-xl text-slate-100 placeholder:text-slate-400 focus:outline-none focus:border-white/15 transition-colors"
                 required
                 disabled={status === 'loading'}
               />

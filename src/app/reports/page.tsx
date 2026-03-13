@@ -1226,7 +1226,7 @@ function ReportsPageInner() {
                         className="bg-slate-800/40 border border-slate-700/30 rounded-xl p-6 md:p-8 print:border-none print:bg-white print:shadow-none"
                       >
                         <div className="flex items-center gap-3 mb-4">
-                          <span className="text-xs font-mono text-slate-300/50 bg-white/5 border border-white/15/10 px-2 py-0.5 rounded print:hidden">
+                          <span className="text-xs font-mono text-slate-300/50 bg-white/5 border border-white/15 px-2 py-0.5 rounded print:hidden">
                             {String(idx + 1).padStart(2, '0')}
                           </span>
                           <h2 className="text-xl font-semibold text-slate-100 print:text-black">

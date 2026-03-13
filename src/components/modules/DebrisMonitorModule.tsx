@@ -122,7 +122,7 @@ export default function DebrisMonitorModule() {
           <button
             onClick={handleInitialize}
             disabled={initializing}
-            className="px-6 py-3 bg-white hover:bg-slate-100 text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-6 py-3 bg-white hover:bg-slate-100 text-slate-900 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {initializing ? 'Loading Data...' : 'Load Data'}
           </button>

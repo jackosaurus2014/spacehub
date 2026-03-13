@@ -591,7 +591,7 @@ function EntryCard({ entry }: { entry: SpaceLawEntry }) {
   const typeStyle = TYPE_CONFIG[entry.type];
 
   return (
-    <div className="card p-5 hover:border-white/15/50 transition-all">
+    <div className="card p-5 hover:border-white/15 transition-all">
       {/* Header */}
       <div className="flex items-start justify-between mb-3 gap-3">
         <div className="flex items-center gap-2 flex-wrap">
@@ -939,7 +939,7 @@ function SpaceLawContent() {
 
       {/* Timeline Overview */}
       <ScrollReveal delay={0.1}>
-        <div className="card p-5 mb-8 border border-white/15/20 bg-white/5">
+        <div className="card p-5 mb-8 border border-white/15 bg-white/5">
           <h3 className="text-white font-semibold mb-3">Evolution of Space Law</h3>
           <div className="relative">
             <div className="absolute left-4 top-0 bottom-0 w-px bg-slate-700" />

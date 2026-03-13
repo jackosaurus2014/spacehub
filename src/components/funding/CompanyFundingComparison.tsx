@@ -49,7 +49,7 @@ interface CompanyFundingComparisonProps {
 // ────────────────────────────────────────
 
 const COMPANY_COLORS = [
-  { bg: 'bg-white/10', text: 'text-slate-300', border: 'border-white/15/40', bar: 'bg-white' },
+  { bg: 'bg-white/10', text: 'text-slate-300', border: 'border-white/15', bar: 'bg-white' },
   { bg: 'bg-emerald-500/20', text: 'text-emerald-400', border: 'border-emerald-500/40', bar: 'bg-emerald-500' },
   { bg: 'bg-purple-500/20', text: 'text-purple-400', border: 'border-purple-500/40', bar: 'bg-purple-500' },
   { bg: 'bg-amber-500/20', text: 'text-amber-400', border: 'border-amber-500/40', bar: 'bg-amber-500' },

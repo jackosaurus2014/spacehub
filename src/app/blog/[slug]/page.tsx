@@ -224,7 +224,7 @@ export default async function BlogPostPage({ params }: Props) {
           </p>
           <Link
             href="/register"
-            className="inline-block bg-white hover:bg-slate-100 text-white font-medium px-6 py-2.5 rounded-lg transition-colors"
+            className="inline-block bg-white hover:bg-slate-100 text-slate-900 font-medium px-6 py-2.5 rounded-lg transition-colors"
           >
             Get Started Free
           </Link>
@@ -243,10 +243,10 @@ export default async function BlogPostPage({ params }: Props) {
                 <Link
                   key={rp.slug}
                   href={`/blog/${rp.slug}`}
-                  className="group flex flex-col bg-slate-800/50 border border-slate-700/50 rounded-xl p-5 hover:border-white/15/40 hover:bg-slate-800/70 transition-all"
+                  className="group flex flex-col bg-slate-800/50 border border-slate-700/50 rounded-xl p-5 hover:border-white/15 hover:bg-slate-800/70 transition-all"
                 >
                   <div className="flex items-center gap-2 mb-3">
-                    <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-white/15 text-slate-200 border border-white/15/20">
+                    <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-white/15 text-slate-200 border border-white/15">
                       {BLOG_CATEGORIES.find((c) => c.value === rp.category)?.label || rp.category}
                     </span>
                     <span className="text-xs text-slate-500">{rp.readingTime} min</span>

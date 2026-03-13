@@ -40,7 +40,7 @@ interface Constellation {
 
 const STATUS_CONFIG: Record<ConstellationStatus, { label: string; bg: string; text: string; border: string }> = {
   operational: { label: 'Operational', bg: 'bg-green-900/30', text: 'text-green-400', border: 'border-green-500/40' },
-  deploying: { label: 'Deploying', bg: 'bg-slate-800/40', text: 'text-slate-300', border: 'border-white/15/40' },
+  deploying: { label: 'Deploying', bg: 'bg-slate-800/40', text: 'text-slate-300', border: 'border-white/15' },
   'pre-launch': { label: 'Pre-Launch', bg: 'bg-amber-900/30', text: 'text-amber-400', border: 'border-amber-500/40' },
   development: { label: 'Development', bg: 'bg-purple-900/30', text: 'text-purple-400', border: 'border-purple-500/40' },
 };

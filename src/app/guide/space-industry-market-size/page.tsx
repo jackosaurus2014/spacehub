@@ -320,27 +320,27 @@ export default function SpaceIndustryMarketSizePage() {
                         </tr>
                       </thead>
                       <tbody className="text-star-200">
-                        <tr className="border-b border-white/10/10">
+                        <tr className="border-b border-white/10">
                           <td className="py-2 pr-4">Satellite Services</td>
                           <td className="py-2 pr-4 text-right text-slate-300 font-semibold">$113B</td>
                           <td className="py-2 text-right">~8%</td>
                         </tr>
-                        <tr className="border-b border-white/10/10">
+                        <tr className="border-b border-white/10">
                           <td className="py-2 pr-4">Ground Equipment</td>
                           <td className="py-2 pr-4 text-right text-slate-300 font-semibold">$145B</td>
                           <td className="py-2 text-right">~5%</td>
                         </tr>
-                        <tr className="border-b border-white/10/10">
+                        <tr className="border-b border-white/10">
                           <td className="py-2 pr-4">Satellite Manufacturing</td>
                           <td className="py-2 pr-4 text-right text-slate-300 font-semibold">$19B</td>
                           <td className="py-2 text-right">~12%</td>
                         </tr>
-                        <tr className="border-b border-white/10/10">
+                        <tr className="border-b border-white/10">
                           <td className="py-2 pr-4">Launch Services</td>
                           <td className="py-2 pr-4 text-right text-slate-300 font-semibold">$9B</td>
                           <td className="py-2 text-right">~15%</td>
                         </tr>
-                        <tr className="border-b border-white/10/10">
+                        <tr className="border-b border-white/10">
                           <td className="py-2 pr-4">Government Budgets (Global)</td>
                           <td className="py-2 pr-4 text-right text-slate-300 font-semibold">$117B</td>
                           <td className="py-2 text-right">~6%</td>
@@ -580,27 +580,27 @@ export default function SpaceIndustryMarketSizePage() {
                       Top Government Space Budgets (2025 Estimates)
                     </h3>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
-                      <div className="flex justify-between items-center border-b border-white/10/10 pb-2">
+                      <div className="flex justify-between items-center border-b border-white/10 pb-2">
                         <span className="text-star-300">United States (Total)</span>
                         <span className="text-slate-300 font-semibold">~$73B</span>
                       </div>
-                      <div className="flex justify-between items-center border-b border-white/10/10 pb-2">
+                      <div className="flex justify-between items-center border-b border-white/10 pb-2">
                         <span className="text-star-300">China (est.)</span>
                         <span className="text-slate-300 font-semibold">~$14B</span>
                       </div>
-                      <div className="flex justify-between items-center border-b border-white/10/10 pb-2">
+                      <div className="flex justify-between items-center border-b border-white/10 pb-2">
                         <span className="text-star-300">Europe (ESA + national)</span>
                         <span className="text-slate-300 font-semibold">~$12B</span>
                       </div>
-                      <div className="flex justify-between items-center border-b border-white/10/10 pb-2">
+                      <div className="flex justify-between items-center border-b border-white/10 pb-2">
                         <span className="text-star-300">Japan</span>
                         <span className="text-slate-300 font-semibold">~$4.5B</span>
                       </div>
-                      <div className="flex justify-between items-center border-b border-white/10/10 pb-2">
+                      <div className="flex justify-between items-center border-b border-white/10 pb-2">
                         <span className="text-star-300">India</span>
                         <span className="text-slate-300 font-semibold">~$2B</span>
                       </div>
-                      <div className="flex justify-between items-center border-b border-white/10/10 pb-2">
+                      <div className="flex justify-between items-center border-b border-white/10 pb-2">
                         <span className="text-star-300">Rest of World</span>
                         <span className="text-slate-300 font-semibold">~$11.5B</span>
                       </div>
@@ -796,19 +796,19 @@ export default function SpaceIndustryMarketSizePage() {
                       Major Space Economy Forecasts
                     </h3>
                     <div className="space-y-4 text-sm">
-                      <div className="flex justify-between items-center border-b border-white/10/10 pb-2">
+                      <div className="flex justify-between items-center border-b border-white/10 pb-2">
                         <span className="text-star-300">Morgan Stanley (2023)</span>
                         <span className="text-rocket-400 font-semibold">$1.8T by 2035</span>
                       </div>
-                      <div className="flex justify-between items-center border-b border-white/10/10 pb-2">
+                      <div className="flex justify-between items-center border-b border-white/10 pb-2">
                         <span className="text-star-300">Bank of America (2023)</span>
                         <span className="text-rocket-400 font-semibold">$1.4T by 2030</span>
                       </div>
-                      <div className="flex justify-between items-center border-b border-white/10/10 pb-2">
+                      <div className="flex justify-between items-center border-b border-white/10 pb-2">
                         <span className="text-star-300">Euroconsult (2024)</span>
                         <span className="text-rocket-400 font-semibold">$737B core by 2033</span>
                       </div>
-                      <div className="flex justify-between items-center border-b border-white/10/10 pb-2">
+                      <div className="flex justify-between items-center border-b border-white/10 pb-2">
                         <span className="text-star-300">McKinsey &amp; Company (2024)</span>
                         <span className="text-rocket-400 font-semibold">$1.8T by 2035</span>
                       </div>

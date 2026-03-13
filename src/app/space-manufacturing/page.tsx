@@ -318,7 +318,7 @@ function OverviewTab() {
             <div className="text-star-400 text-xs uppercase tracking-widest mt-1">By 2030 (Conservative)</div>
             <p className="text-star-300 text-xs mt-2">Focused on near-term products: ZBLAN fiber optics, pharmaceutical crystallization, and bioprinting research services.</p>
           </div>
-          <div className="bg-slate-700/30 rounded-lg p-4 border border-white/15/20">
+          <div className="bg-slate-700/30 rounded-lg p-4 border border-white/15">
             <div className="text-slate-300 font-bold text-2xl">~$18B</div>
             <div className="text-star-400 text-xs uppercase tracking-widest mt-1">By 2030 (Mid-range)</div>
             <p className="text-star-300 text-xs mt-2">Includes commercial station manufacturing, semiconductor production, and early ISRU operations on the Moon.</p>
@@ -393,7 +393,7 @@ function CompaniesTab() {
           return (
             <div
               key={company.id}
-              className="card p-5 hover:border-white/15/40"
+              className="card p-5 hover:border-white/15"
             >
               {/* Header */}
               <div className="flex items-start justify-between mb-3">
@@ -560,7 +560,7 @@ function ProcessesTab() {
           onClick={() => setCategoryFilter('')}
           className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
             categoryFilter === ''
-              ? 'bg-white/10 text-slate-200 border border-white/15/50'
+              ? 'bg-white/10 text-slate-200 border border-white/15'
               : 'bg-slate-800 text-star-400 border border-slate-700 hover:border-slate-600 hover:text-white'
           }`}
         >
@@ -574,7 +574,7 @@ function ProcessesTab() {
               onClick={() => setCategoryFilter(cat)}
               className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
                 categoryFilter === cat
-                  ? 'bg-white/10 text-slate-200 border border-white/15/50'
+                  ? 'bg-white/10 text-slate-200 border border-white/15'
                   : 'bg-slate-800 text-star-400 border border-slate-700 hover:border-slate-600 hover:text-white'
               }`}
             >
@@ -632,7 +632,7 @@ function ProcessesTab() {
                   </div>
 
                   {/* Microgravity Advantage */}
-                  <div className="bg-gradient-to-r from-white/10 to-purple-500/10 rounded-lg p-4 border border-white/15/20">
+                  <div className="bg-gradient-to-r from-white/10 to-purple-500/10 rounded-lg p-4 border border-white/15">
                     <h4 className="text-slate-200 font-semibold text-sm mb-2 flex items-center gap-2">
                       <span>🪶</span> Microgravity / Space Advantage
                     </h4>

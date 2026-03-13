@@ -681,7 +681,7 @@ export default function SearchCommandPalette() {
 
       {/* Modal */}
       <div
-        className="relative w-full max-w-2xl mx-4 overflow-hidden rounded-2xl border border-white/10/40 animate-scale-in"
+        className="relative w-full max-w-2xl mx-4 overflow-hidden rounded-2xl border border-white/10 animate-scale-in"
         style={{
           background:
             'linear-gradient(145deg, rgba(15, 23, 42, 0.98) 0%, rgba(30, 41, 59, 0.96) 25%, rgba(51, 65, 85, 0.95) 50%, rgba(30, 41, 59, 0.96) 75%, rgba(15, 23, 42, 0.98) 100%)',

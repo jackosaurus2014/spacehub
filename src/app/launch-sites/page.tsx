@@ -749,7 +749,7 @@ export default function LaunchSiteDatabasePage() {
                   onClick={() => handleSort(field)}
                   className={`px-3 py-1 rounded-md text-xs font-medium transition-colors ${
                     sortField === field
-                      ? 'bg-white/30 text-slate-200 border border-white/15/40'
+                      ? 'bg-white/30 text-slate-200 border border-white/15'
                       : 'bg-slate-700/40 text-slate-400 border border-slate-600/30 hover:bg-slate-700/60 hover:text-slate-300'
                   }`}
                 >
@@ -762,7 +762,7 @@ export default function LaunchSiteDatabasePage() {
                   onClick={() => setViewMode('grid')}
                   className={`px-3 py-1 rounded-md text-xs font-medium transition-colors ${
                     viewMode === 'grid'
-                      ? 'bg-white/30 text-slate-200 border border-white/15/40'
+                      ? 'bg-white/30 text-slate-200 border border-white/15'
                       : 'bg-slate-700/40 text-slate-400 border border-slate-600/30 hover:bg-slate-700/60'
                   }`}
                   aria-label="Grid view"
@@ -773,7 +773,7 @@ export default function LaunchSiteDatabasePage() {
                   onClick={() => setViewMode('table')}
                   className={`px-3 py-1 rounded-md text-xs font-medium transition-colors ${
                     viewMode === 'table'
-                      ? 'bg-white/30 text-slate-200 border border-white/15/40'
+                      ? 'bg-white/30 text-slate-200 border border-white/15'
                       : 'bg-slate-700/40 text-slate-400 border border-slate-600/30 hover:bg-slate-700/60'
                   }`}
                   aria-label="Table view"
@@ -854,14 +854,14 @@ export default function LaunchSiteDatabasePage() {
                   <div
                     className={`bg-slate-800/50 border rounded-xl overflow-hidden transition-all duration-300 ${
                       isExpanded
-                        ? 'border-white/15/40 shadow-lg shadow-black/5'
+                        ? 'border-white/15 shadow-lg shadow-black/5'
                         : 'border-slate-700/50 hover:border-slate-600/60'
                     }`}
                   >
                     {/* Card Header */}
                     <button
                       onClick={() => setExpandedSite(isExpanded ? null : site.id)}
-                      className="w-full text-left p-4 focus:outline-none focus:ring-2 focus:ring-white/30/40 rounded-t-xl"
+                      className="w-full text-left p-4 focus:outline-none focus:ring-2 focus:ring-white/30 rounded-t-xl"
                       aria-expanded={isExpanded}
                     >
                       <div className="flex items-start justify-between gap-3">

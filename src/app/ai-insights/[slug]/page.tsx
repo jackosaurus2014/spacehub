@@ -341,7 +341,7 @@ export default function AIInsightDetailPage() {
                     ul: ({children}) => <ul className="list-disc list-inside space-y-2 text-slate-300 mb-4">{children}</ul>,
                     ol: ({children}) => <ol className="list-decimal list-inside space-y-2 text-slate-300 mb-4">{children}</ol>,
                     li: ({children}) => <li className="text-slate-300">{children}</li>,
-                    blockquote: ({children}) => <blockquote className="border-l-4 border-white/15/40 pl-4 my-4 text-slate-400 italic">{children}</blockquote>,
+                    blockquote: ({children}) => <blockquote className="border-l-4 border-white/15 pl-4 my-4 text-slate-400 italic">{children}</blockquote>,
                     code: ({children, className}) => {
                       const isBlock = className?.includes('language-');
                       return isBlock

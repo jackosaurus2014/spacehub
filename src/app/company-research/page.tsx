@@ -229,7 +229,7 @@ export default function CompanyResearchPage() {
                 <button
                   key={i}
                   onClick={() => sendQuestion(suggestion)}
-                  className="text-left text-sm px-4 py-3 rounded-xl bg-space-800/50 border border-space-600/30 text-slate-300 hover:border-white/15/40 hover:text-white hover:bg-space-800/70 transition-all duration-200"
+                  className="text-left text-sm px-4 py-3 rounded-xl bg-space-800/50 border border-space-600/30 text-slate-300 hover:border-white/15 hover:text-white hover:bg-space-800/70 transition-all duration-200"
                 >
                   <span className="text-slate-300/60 mr-2">&#8594;</span>
                   {suggestion}

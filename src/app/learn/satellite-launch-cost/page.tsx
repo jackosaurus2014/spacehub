@@ -261,7 +261,7 @@ export default function SatelliteLaunchCostPage() {
         {/* Hero */}
         <header className="mb-10">
           <div className="flex items-center gap-3 mb-4">
-            <span className="text-xs px-2 py-0.5 rounded-full bg-white/10 text-slate-300 border border-white/15/20">
+            <span className="text-xs px-2 py-0.5 rounded-full bg-white/10 text-slate-300 border border-white/15">
               Cost Analysis
             </span>
             <span className="text-xs text-slate-500">Updated February 2026</span>
@@ -576,7 +576,7 @@ export default function SatelliteLaunchCostPage() {
           <div className="flex flex-wrap justify-center gap-4">
             <Link
               href="/mission-cost"
-              className="inline-block bg-white hover:bg-slate-100 text-white font-medium px-6 py-2.5 rounded-lg transition-colors"
+              className="inline-block bg-white hover:bg-slate-100 text-slate-900 font-medium px-6 py-2.5 rounded-lg transition-colors"
             >
               Open Mission Cost Calculator
             </Link>
@@ -608,28 +608,28 @@ export default function SatelliteLaunchCostPage() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             <Link
               href="/mission-cost"
-              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 text-center hover:border-white/15/50 transition-colors"
+              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 text-center hover:border-white/15 transition-colors"
             >
               <div className="text-white text-sm font-medium">Mission Cost</div>
               <div className="text-slate-500 text-xs">Calculator</div>
             </Link>
             <Link
               href="/orbital-costs"
-              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 text-center hover:border-white/15/50 transition-colors"
+              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 text-center hover:border-white/15 transition-colors"
             >
               <div className="text-white text-sm font-medium">Orbital Costs</div>
               <div className="text-slate-500 text-xs">Pricing data</div>
             </Link>
             <Link
               href="/space-insurance"
-              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 text-center hover:border-white/15/50 transition-colors"
+              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 text-center hover:border-white/15 transition-colors"
             >
               <div className="text-white text-sm font-medium">Space Insurance</div>
               <div className="text-slate-500 text-xs">Coverage & rates</div>
             </Link>
             <Link
               href="/launch-vehicles"
-              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 text-center hover:border-white/15/50 transition-colors"
+              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 text-center hover:border-white/15 transition-colors"
             >
               <div className="text-white text-sm font-medium">Launch Vehicles</div>
               <div className="text-slate-500 text-xs">Full catalog</div>
@@ -643,21 +643,21 @@ export default function SatelliteLaunchCostPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
             <Link
               href="/learn/space-industry-market-size"
-              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 hover:border-white/15/50 transition-colors"
+              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 hover:border-white/15 transition-colors"
             >
               <div className="text-white text-sm font-medium">Space Industry Market Size</div>
               <div className="text-slate-500 text-xs">$1.8 trillion and growing</div>
             </Link>
             <Link
               href="/learn/how-to-track-satellites"
-              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 hover:border-white/15/50 transition-colors"
+              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 hover:border-white/15 transition-colors"
             >
               <div className="text-white text-sm font-medium">How to Track Satellites</div>
               <div className="text-slate-500 text-xs">Real-time tracking guide</div>
             </Link>
             <Link
               href="/learn/space-companies-to-watch"
-              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 hover:border-white/15/50 transition-colors"
+              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 hover:border-white/15 transition-colors"
             >
               <div className="text-white text-sm font-medium">Top Space Companies 2026</div>
               <div className="text-slate-500 text-xs">25 companies to watch</div>

@@ -405,7 +405,7 @@ function MarketOverview() {
       <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         {MARKET_STATS.map((stat) => {
           const borderColors: Record<string, string> = {
-            cyan: 'border-white/15/40 hover:border-white/10/60',
+            cyan: 'border-white/15 hover:border-white/10',
             emerald: 'border-emerald-500/40 hover:border-emerald-400/60',
             purple: 'border-purple-500/40 hover:border-purple-400/60',
           };

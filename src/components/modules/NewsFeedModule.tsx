@@ -82,7 +82,7 @@ export default function NewsFeedModule() {
             <Link
               key={category.slug}
               href={`/news?category=${category.slug}`}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-space-700/50 hover:bg-space-600/50 border border-space-600 hover:border-white/15/50 rounded-full text-sm transition-all"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-space-700/50 hover:bg-space-600/50 border border-space-600 hover:border-white/15 rounded-full text-sm transition-all"
             >
               <span className="text-base">{categoryIcons[category.slug] || '📁'}</span>
               <span className="text-star-200">{category.name}</span>

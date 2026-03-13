@@ -46,7 +46,7 @@ function ResourceCard({
   const launchMultiplier = spacePriceKg / earthPriceKg;
 
   return (
-    <div className="card p-4 hover:border-white/15/50 transition-all">
+    <div className="card p-4 hover:border-white/15 transition-all">
       <div className="flex items-start justify-between mb-2">
         <div className="flex items-center gap-2">
           <span className="text-lg">{categoryInfo?.icon || '📦'}</span>

@@ -37,7 +37,7 @@ const SOURCE_COLORS: Record<Source, { bg: string; text: string; border: string }
   'Ars Technica': { bg: 'bg-orange-500/20', text: 'text-orange-400', border: 'border-orange-500/40' },
   'The Verge': { bg: 'bg-purple-500/20', text: 'text-purple-400', border: 'border-purple-500/40' },
   NASA: { bg: 'bg-red-500/20', text: 'text-red-400', border: 'border-red-500/40' },
-  ESA: { bg: 'bg-white/10', text: 'text-slate-300', border: 'border-white/15/40' },
+  ESA: { bg: 'bg-white/10', text: 'text-slate-300', border: 'border-white/15' },
   SpaceX: { bg: 'bg-slate-400/20', text: 'text-slate-300', border: 'border-slate-400/40' },
 };
 
@@ -631,7 +631,7 @@ export default function NewsAggregatorPage() {
                   setVisibleCount(12);
                 }}
                 placeholder="Search articles by title or summary..."
-                className="w-full pl-10 pr-4 py-2.5 bg-slate-800/60 border border-slate-700/50 rounded-lg text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-white/15 focus:ring-1 focus:ring-white/30/30 transition-colors"
+                className="w-full pl-10 pr-4 py-2.5 bg-slate-800/60 border border-slate-700/50 rounded-lg text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-white/15 focus:ring-1 focus:ring-white/30 transition-colors"
               />
               {searchQuery && (
                 <button
@@ -653,7 +653,7 @@ export default function NewsAggregatorPage() {
             <select
               value={sortOption}
               onChange={(e) => setSortOption(e.target.value as SortOption)}
-              className="px-4 py-2.5 bg-slate-800/60 border border-slate-700/50 rounded-lg text-sm text-slate-200 focus:outline-none focus:border-white/15 focus:ring-1 focus:ring-white/30/30 transition-colors appearance-none cursor-pointer"
+              className="px-4 py-2.5 bg-slate-800/60 border border-slate-700/50 rounded-lg text-sm text-slate-200 focus:outline-none focus:border-white/15 focus:ring-1 focus:ring-white/30 transition-colors appearance-none cursor-pointer"
               style={{
                 backgroundImage:
                   'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' fill=\'none\' viewBox=\'0 0 24 24\' stroke=\'%2394a3b8\' stroke-width=\'2\'%3E%3Cpath stroke-linecap=\'round\' stroke-linejoin=\'round\' d=\'M19.5 8.25l-7.5 7.5-7.5-7.5\'/%3E%3C/svg%3E")',
@@ -673,7 +673,7 @@ export default function NewsAggregatorPage() {
               onClick={() => setShowSourceFilters(!showSourceFilters)}
               className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
                 showSourceFilters
-                  ? 'bg-white/20 text-slate-300 border border-white/15/40'
+                  ? 'bg-white/20 text-slate-300 border border-white/15'
                   : 'bg-slate-800/60 text-slate-400 border border-slate-700/50 hover:bg-slate-700/60 hover:text-slate-200'
               }`}
             >
@@ -715,7 +715,7 @@ export default function NewsAggregatorPage() {
                     return (
                       <label
                         key={source}
-                        className={`flex items-center gap-2 px-3 py-1.5 rounded-lg cursor-pointer transition-all duration-200 border text-sm focus-within:ring-2 focus-within:ring-white/10/50 ${
+                        className={`flex items-center gap-2 px-3 py-1.5 rounded-lg cursor-pointer transition-all duration-200 border text-sm focus-within:ring-2 focus-within:ring-white/10 ${
                           isSelected
                             ? `${colors.bg} ${colors.text} ${colors.border}`
                             : 'bg-slate-800/40 text-slate-500 border-slate-700/30 hover:border-slate-600/50'

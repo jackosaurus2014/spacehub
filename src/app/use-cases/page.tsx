@@ -183,7 +183,7 @@ export default function UseCasesPage() {
                     </div>
 
                     {/* Result */}
-                    <div className="rounded-xl bg-gradient-to-r from-white/5 to-blue-500/5 border border-white/15/10 p-4">
+                    <div className="rounded-xl bg-gradient-to-r from-white/5 to-blue-500/5 border border-white/15 p-4">
                       <h3 className="text-sm font-semibold uppercase tracking-wider text-slate-300 mb-2">The Result</h3>
                       <p className="text-slate-200 text-sm leading-relaxed">{uc.result}</p>
                     </div>

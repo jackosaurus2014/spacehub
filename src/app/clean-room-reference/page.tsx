@@ -862,7 +862,7 @@ export default function CleanRoomReferencePage() {
               onClick={() => setActiveSection(section.id)}
               className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${
                 activeSection === section.id
-                  ? 'bg-white/10 text-slate-200 border border-white/10/40 shadow-lg shadow-black/5'
+                  ? 'bg-white/10 text-slate-200 border border-white/10 shadow-lg shadow-black/5'
                   : 'bg-slate-800/50 text-slate-400 border border-slate-700/50 hover:bg-slate-700/50 hover:text-slate-300'
               }`}
             >
@@ -917,7 +917,7 @@ export default function CleanRoomReferencePage() {
                           onClick={() => setExpandedISO(expandedISO === idx ? null : idx)}
                           className={`border-b border-slate-700/30 cursor-pointer transition-colors ${
                             expandedISO === idx ? 'bg-slate-800/60' : 'hover:bg-slate-800/40'
-                          } ${iso.isoClass === 5 || iso.isoClass === 7 || iso.isoClass === 8 ? 'ring-1 ring-inset ring-white/10/20' : ''}`}
+                          } ${iso.isoClass === 5 || iso.isoClass === 7 || iso.isoClass === 8 ? 'ring-1 ring-inset ring-white/10' : ''}`}
                         >
                           <td className="px-4 py-3">
                             <div className="flex items-center gap-2">
@@ -1010,7 +1010,7 @@ export default function CleanRoomReferencePage() {
                     onClick={() => setContaminationFilter(cat)}
                     className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                       contaminationFilter === cat
-                        ? 'bg-white/10 text-slate-200 border border-white/10/40'
+                        ? 'bg-white/10 text-slate-200 border border-white/10'
                         : 'bg-slate-800/50 text-slate-400 border border-slate-700/50 hover:bg-slate-700/50'
                     }`}
                   >

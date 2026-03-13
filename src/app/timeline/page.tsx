@@ -448,7 +448,7 @@ function TimelineCard({
     >
       <div
         className={`group relative bg-slate-800/50 border border-slate-700/50 rounded-xl p-6 backdrop-blur-sm
-          hover:border-white/15/40 hover:bg-slate-800/70 hover:shadow-lg hover:shadow-black/20/5 transition-all duration-300`}
+          hover:border-white/15 hover:bg-slate-800/70 hover:shadow-lg hover:shadow-black/20/5 transition-all duration-300`}
       >
         {/* Year badge */}
         <div className="flex items-center gap-3 mb-3">
@@ -541,7 +541,7 @@ export default function SpaceTimelinePage() {
             onClick={() => setSelectedEra(era)}
             className={`px-5 py-2 rounded-lg text-sm font-semibold border transition-all duration-200 ${
               selectedEra === era
-                ? 'bg-white/8 border-white/15/40 text-slate-200 shadow-sm shadow-black/5'
+                ? 'bg-white/8 border-white/15 text-slate-200 shadow-sm shadow-black/5'
                 : 'bg-slate-800/40 border-slate-700/40 text-slate-400 hover:border-slate-600 hover:text-slate-200'
             }`}
           >

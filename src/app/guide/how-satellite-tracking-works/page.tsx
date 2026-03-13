@@ -259,35 +259,35 @@ export default function HowSatelliteTrackingWorksPage() {
                       The Six Classical Orbital Elements
                     </h3>
                     <div className="space-y-3 text-sm">
-                      <div className="flex gap-3 border-b border-white/10/10 pb-2">
+                      <div className="flex gap-3 border-b border-white/10 pb-2">
                         <span className="text-slate-300 font-mono font-semibold w-8 shrink-0">a</span>
                         <div>
                           <span className="text-white font-medium">Semi-major axis</span>
                           <span className="text-star-300"> -- size of the orbit (determines period)</span>
                         </div>
                       </div>
-                      <div className="flex gap-3 border-b border-white/10/10 pb-2">
+                      <div className="flex gap-3 border-b border-white/10 pb-2">
                         <span className="text-slate-300 font-mono font-semibold w-8 shrink-0">e</span>
                         <div>
                           <span className="text-white font-medium">Eccentricity</span>
                           <span className="text-star-300"> -- shape of the orbit (0 = circular, 0-1 = elliptical)</span>
                         </div>
                       </div>
-                      <div className="flex gap-3 border-b border-white/10/10 pb-2">
+                      <div className="flex gap-3 border-b border-white/10 pb-2">
                         <span className="text-slate-300 font-mono font-semibold w-8 shrink-0">i</span>
                         <div>
                           <span className="text-white font-medium">Inclination</span>
                           <span className="text-star-300"> -- tilt of the orbit relative to the equator</span>
                         </div>
                       </div>
-                      <div className="flex gap-3 border-b border-white/10/10 pb-2">
+                      <div className="flex gap-3 border-b border-white/10 pb-2">
                         <span className="text-slate-300 font-mono font-semibold w-8 shrink-0">&Omega;</span>
                         <div>
                           <span className="text-white font-medium">Right ascension of ascending node (RAAN)</span>
                           <span className="text-star-300"> -- orientation of the orbital plane</span>
                         </div>
                       </div>
-                      <div className="flex gap-3 border-b border-white/10/10 pb-2">
+                      <div className="flex gap-3 border-b border-white/10 pb-2">
                         <span className="text-slate-300 font-mono font-semibold w-8 shrink-0">&omega;</span>
                         <div>
                           <span className="text-white font-medium">Argument of perigee</span>
@@ -857,23 +857,23 @@ export default function HowSatelliteTrackingWorksPage() {
                       Key Satellite Tracking Resources
                     </h3>
                     <div className="space-y-3 text-sm">
-                      <div className="border-b border-white/10/10 pb-2">
+                      <div className="border-b border-white/10 pb-2">
                         <span className="text-white font-medium">Space-Track.org</span>
                         <span className="text-star-300"> -- Official U.S. Space Force catalog data (TLEs, CDMs). Free registration required.</span>
                       </div>
-                      <div className="border-b border-white/10/10 pb-2">
+                      <div className="border-b border-white/10 pb-2">
                         <span className="text-white font-medium">CelesTrak</span>
                         <span className="text-star-300"> -- Curated TLE data and supplemental orbital data, maintained by Dr. T.S. Kelso. Free.</span>
                       </div>
-                      <div className="border-b border-white/10/10 pb-2">
+                      <div className="border-b border-white/10 pb-2">
                         <span className="text-white font-medium">N2YO.com</span>
                         <span className="text-star-300"> -- Free web-based satellite tracking with 3D visualization.</span>
                       </div>
-                      <div className="border-b border-white/10/10 pb-2">
+                      <div className="border-b border-white/10 pb-2">
                         <span className="text-white font-medium">Heavens-Above</span>
                         <span className="text-star-300"> -- Visual observation predictions (ISS passes, satellite flybys).</span>
                       </div>
-                      <div className="border-b border-white/10/10 pb-2">
+                      <div className="border-b border-white/10 pb-2">
                         <span className="text-white font-medium">AGI STK (Systems Tool Kit)</span>
                         <span className="text-star-300"> -- Professional-grade astrodynamics and mission analysis software.</span>
                       </div>

@@ -46,13 +46,13 @@ function TemplateCard({
     <div
       className={`relative group bg-slate-800/50 backdrop-blur-sm border rounded-2xl p-6 transition-all duration-300 hover:shadow-lg hover:shadow-black/20/5 ${
         isActive
-          ? 'border-white/10/60 ring-2 ring-white/10/20 shadow-lg shadow-black/5'
+          ? 'border-white/10 ring-2 ring-white/10 shadow-lg shadow-black/5'
           : 'border-slate-700/50 hover:border-white/10'
       }`}
     >
       {/* Active indicator */}
       {isActive && (
-        <div className="absolute top-3 right-3 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/10 border border-white/10/40">
+        <div className="absolute top-3 right-3 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/10 border border-white/10">
           <div className="w-2 h-2 rounded-full bg-white animate-pulse" />
           <span className="text-xs font-medium text-slate-200">Active</span>
         </div>
@@ -97,7 +97,7 @@ function TemplateCard({
         onClick={() => onSelect(template.id)}
         className={`w-full py-3 px-4 rounded-xl font-semibold text-sm transition-all duration-200 ${
           isActive
-            ? 'bg-white/10 text-slate-200 border border-white/10/40 cursor-default'
+            ? 'bg-white/10 text-slate-200 border border-white/10 cursor-default'
             : 'bg-gradient-to-r from-white to-blue-600 text-white hover:from-slate-300 hover:to-blue-500 shadow-md hover:shadow-lg hover:shadow-black/10'
         }`}
         disabled={isActive}
@@ -196,7 +196,7 @@ export default function DashboardTemplatesPage() {
               {/* Activation success overlay */}
               {justActivated === template.id && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm pointer-events-none animate-fade-in">
-                  <div className="bg-slate-800 border border-white/10/40 rounded-2xl p-8 text-center shadow-2xl shadow-black/10">
+                  <div className="bg-slate-800 border border-white/10 rounded-2xl p-8 text-center shadow-2xl shadow-black/10">
                     <div className="text-5xl mb-3">{template.icon}</div>
                     <p className="text-lg font-bold text-white mb-1">{template.name} Activated</p>
                     <p className="text-sm text-slate-400">Redirecting to your dashboard...</p>

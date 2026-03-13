@@ -189,7 +189,7 @@ export default function BookDemoPage() {
   }
 
   const inputClass =
-    'w-full bg-slate-800/80 border border-slate-600 rounded-xl text-slate-100 placeholder:text-slate-500 focus:border-white/15 focus:outline-none focus:ring-1 focus:ring-white/30/30 px-4 py-3 text-sm transition-colors';
+    'w-full bg-slate-800/80 border border-slate-600 rounded-xl text-slate-100 placeholder:text-slate-500 focus:border-white/15 focus:outline-none focus:ring-1 focus:ring-white/30 px-4 py-3 text-sm transition-colors';
   const labelClass = 'block text-sm font-medium text-slate-300 mb-1.5';
 
   return (

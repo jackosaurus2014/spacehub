@@ -60,7 +60,7 @@ function getGradeBg(grade: Grade): string {
   const letter = grade.charAt(0);
   switch (letter) {
     case 'A': return 'bg-emerald-500/20 border-emerald-500/40';
-    case 'B': return 'bg-white/10 border-white/15/40';
+    case 'B': return 'bg-white/10 border-white/15';
     case 'C': return 'bg-amber-500/20 border-amber-500/40';
     case 'D': return 'bg-orange-500/20 border-orange-500/40';
     case 'F': return 'bg-red-500/20 border-red-500/40';
@@ -923,7 +923,7 @@ export default function ReportCardsPage() {
                       {/* Analyst Summary */}
                       <div>
                         <h4 className="text-xs text-slate-400 uppercase tracking-wider mb-2">Analyst Summary</h4>
-                        <p className="text-sm text-slate-300 leading-relaxed bg-slate-800/30 rounded-lg p-4 border-l-4 border-white/15/40">
+                        <p className="text-sm text-slate-300 leading-relaxed bg-slate-800/30 rounded-lg p-4 border-l-4 border-white/15">
                           {card.summary}
                         </p>
                       </div>
@@ -989,7 +989,7 @@ export default function ReportCardsPage() {
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               <Link
                 href="/company-profiles"
-                className="card p-4 hover:border-white/10/60 transition-colors group text-center"
+                className="card p-4 hover:border-white/10 transition-colors group text-center"
               >
                 <div className="text-2xl mb-1">🏢</div>
                 <div className="text-sm font-semibold text-slate-200 group-hover:text-white transition-colors">Company Profiles</div>
@@ -998,7 +998,7 @@ export default function ReportCardsPage() {
 
               <Link
                 href="/space-score"
-                className="card p-4 hover:border-white/10/60 transition-colors group text-center"
+                className="card p-4 hover:border-white/10 transition-colors group text-center"
               >
                 <div className="text-2xl mb-1">🏆</div>
                 <div className="text-sm font-semibold text-slate-200 group-hover:text-white transition-colors">Space Score</div>
@@ -1007,7 +1007,7 @@ export default function ReportCardsPage() {
 
               <Link
                 href="/market-intel"
-                className="card p-4 hover:border-white/10/60 transition-colors group text-center"
+                className="card p-4 hover:border-white/10 transition-colors group text-center"
               >
                 <div className="text-2xl mb-1">📈</div>
                 <div className="text-sm font-semibold text-slate-200 group-hover:text-white transition-colors">Market Intel</div>
@@ -1016,7 +1016,7 @@ export default function ReportCardsPage() {
 
               <Link
                 href="/investment-tracker"
-                className="card p-4 hover:border-white/10/60 transition-colors group text-center"
+                className="card p-4 hover:border-white/10 transition-colors group text-center"
               >
                 <div className="text-2xl mb-1">💰</div>
                 <div className="text-sm font-semibold text-slate-200 group-hover:text-white transition-colors">Investment Tracker</div>

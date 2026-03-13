@@ -728,35 +728,35 @@ export default function SpaceIndustryGuidePage() {
                       Estimated Salary Ranges (U.S., 2026)
                     </h4>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
-                      <div className="flex justify-between items-center border-b border-white/10/10 pb-2">
+                      <div className="flex justify-between items-center border-b border-white/10 pb-2">
                         <span className="text-star-300">Aerospace Engineer (Entry)</span>
                         <span className="text-slate-300 font-semibold">$75K - $95K</span>
                       </div>
-                      <div className="flex justify-between items-center border-b border-white/10/10 pb-2">
+                      <div className="flex justify-between items-center border-b border-white/10 pb-2">
                         <span className="text-star-300">Aerospace Engineer (Senior)</span>
                         <span className="text-slate-300 font-semibold">$120K - $160K</span>
                       </div>
-                      <div className="flex justify-between items-center border-b border-white/10/10 pb-2">
+                      <div className="flex justify-between items-center border-b border-white/10 pb-2">
                         <span className="text-star-300">Systems Engineer</span>
                         <span className="text-slate-300 font-semibold">$110K - $155K</span>
                       </div>
-                      <div className="flex justify-between items-center border-b border-white/10/10 pb-2">
+                      <div className="flex justify-between items-center border-b border-white/10 pb-2">
                         <span className="text-star-300">Software Engineer (Space)</span>
                         <span className="text-slate-300 font-semibold">$100K - $180K</span>
                       </div>
-                      <div className="flex justify-between items-center border-b border-white/10/10 pb-2">
+                      <div className="flex justify-between items-center border-b border-white/10 pb-2">
                         <span className="text-star-300">Data Scientist / ML Engineer</span>
                         <span className="text-slate-300 font-semibold">$110K - $175K</span>
                       </div>
-                      <div className="flex justify-between items-center border-b border-white/10/10 pb-2">
+                      <div className="flex justify-between items-center border-b border-white/10 pb-2">
                         <span className="text-star-300">Program / Project Manager</span>
                         <span className="text-slate-300 font-semibold">$120K - $200K</span>
                       </div>
-                      <div className="flex justify-between items-center border-b border-white/10/10 pb-2">
+                      <div className="flex justify-between items-center border-b border-white/10 pb-2">
                         <span className="text-star-300">Space Policy / Regulatory</span>
                         <span className="text-slate-300 font-semibold">$80K - $140K</span>
                       </div>
-                      <div className="flex justify-between items-center border-b border-white/10/10 pb-2">
+                      <div className="flex justify-between items-center border-b border-white/10 pb-2">
                         <span className="text-star-300">GNC / Flight Dynamics</span>
                         <span className="text-slate-300 font-semibold">$100K - $160K</span>
                       </div>

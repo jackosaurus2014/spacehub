@@ -118,7 +118,7 @@ export default function LaunchPollCard({ eventId }: LaunchPollCardProps) {
                     className={`w-full relative overflow-hidden rounded-lg border transition-all text-left ${
                       hasVoted
                         ? 'border-slate-700/30 cursor-default'
-                        : 'border-slate-600/50 hover:border-white/15/40 cursor-pointer'
+                        : 'border-slate-600/50 hover:border-white/15 cursor-pointer'
                     }`}
                   >
                     {/* Progress background */}

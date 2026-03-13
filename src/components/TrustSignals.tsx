@@ -40,7 +40,7 @@ export default function TrustSignals() {
             {DATA_SOURCES.map((source) => (
               <div
                 key={source.name}
-                className="group relative px-4 py-2 rounded-full border border-white/10 bg-white/5 hover:border-white/10/40 hover:bg-slate-100/10 transition-all duration-200"
+                className="group relative px-4 py-2 rounded-full border border-white/10 bg-white/5 hover:border-white/10 hover:bg-slate-100/10 transition-all duration-200"
               >
                 <span className="text-slate-200 font-semibold text-sm">{source.name}</span>
                 <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 bg-slate-800 text-slate-200 text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none shadow-lg">

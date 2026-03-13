@@ -38,7 +38,7 @@ export default function GuideNavigation({ currentSlug }: GuideNavigationProps) {
         {prev ? (
           <Link
             href={`/guide/${prev.slug}`}
-            className="group flex flex-col bg-slate-800/50 border border-slate-700/50 rounded-xl p-5 hover:border-white/15/40 hover:bg-slate-800/70 transition-all"
+            className="group flex flex-col bg-slate-800/50 border border-slate-700/50 rounded-xl p-5 hover:border-white/15 hover:bg-slate-800/70 transition-all"
           >
             <span className="text-[11px] font-medium text-slate-500 uppercase tracking-wider mb-2">
               &larr; Previous Guide
@@ -54,7 +54,7 @@ export default function GuideNavigation({ currentSlug }: GuideNavigationProps) {
         {next ? (
           <Link
             href={`/guide/${next.slug}`}
-            className="group flex flex-col items-end text-right bg-slate-800/50 border border-slate-700/50 rounded-xl p-5 hover:border-white/15/40 hover:bg-slate-800/70 transition-all"
+            className="group flex flex-col items-end text-right bg-slate-800/50 border border-slate-700/50 rounded-xl p-5 hover:border-white/15 hover:bg-slate-800/70 transition-all"
           >
             <span className="text-[11px] font-medium text-slate-500 uppercase tracking-wider mb-2">
               Next Guide &rarr;

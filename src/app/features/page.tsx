@@ -212,7 +212,7 @@ export default function FeaturesPage() {
               <a
                 key={cat.id}
                 href={`#${cat.id}`}
-                className="group flex items-center gap-2 px-5 py-2.5 rounded-full bg-slate-800/60 border border-slate-700/40 hover:border-white/15/40 hover:bg-slate-100/10 transition-all text-sm text-slate-300 hover:text-white"
+                className="group flex items-center gap-2 px-5 py-2.5 rounded-full bg-slate-800/60 border border-slate-700/40 hover:border-white/15 hover:bg-slate-100/10 transition-all text-sm text-slate-300 hover:text-white"
               >
                 <span className="font-medium">{cat.title}</span>
                 <span className="text-xs text-slate-500 bg-slate-800 px-1.5 py-0.5 rounded-full group-hover:text-white group-hover:bg-slate-100/20 transition-colors">{cat.modules.length}</span>
@@ -238,7 +238,7 @@ export default function FeaturesPage() {
                 <StaggerItem key={mod.href}>
                   <Link
                     href={mod.href}
-                    className="group relative flex flex-col p-5 rounded-xl border border-slate-700/50 bg-slate-800/30 hover:border-white/15/40 hover:bg-slate-800/60 transition-all h-full"
+                    className="group relative flex flex-col p-5 rounded-xl border border-slate-700/50 bg-slate-800/30 hover:border-white/15 hover:bg-slate-800/60 transition-all h-full"
                   >
                     {mod.tier && (
                       <span

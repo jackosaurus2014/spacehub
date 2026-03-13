@@ -143,7 +143,7 @@ function SectorStageHeatmap({ investors }: { investors: Investor[] }) {
                           getCellColor(count)
                         } ${
                           isHovered
-                            ? 'border-white/10/60 ring-1 ring-white/10'
+                            ? 'border-white/10 ring-1 ring-white/10'
                             : 'border-slate-700/30'
                         }`}
                         onMouseEnter={() => setHoveredCell({ sector, stage })}

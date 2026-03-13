@@ -36,7 +36,7 @@ export default function CompanyIntelCard({ item }: { item: CompanyIntelResult })
   return (
     <Link
       href={`/company-profiles/${item.slug}`}
-      className="card p-5 block hover:border-white/10/60 transition-all group"
+      className="card p-5 block hover:border-white/10 transition-all group"
     >
       <div className="flex items-start gap-4">
         {/* Company icon / logo */}

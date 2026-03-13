@@ -88,7 +88,7 @@ export default function RecentUpdates() {
             >
               <Link
                 href={update.href}
-                className="group card p-5 rounded-2xl border border-slate-700/50 hover:border-white/15/40 transition-all duration-300 hover:shadow-lg hover:shadow-black/5 flex items-start gap-4"
+                className="group card p-5 rounded-2xl border border-slate-700/50 hover:border-white/15 transition-all duration-300 hover:shadow-lg hover:shadow-black/5 flex items-start gap-4"
               >
                 {/* Icon */}
                 <span className="text-3xl flex-shrink-0 mt-0.5" role="img" aria-hidden="true">

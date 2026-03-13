@@ -166,7 +166,7 @@ const CATEGORY_COLORS: Record<Category, { bg: string; text: string; border: stri
     bg: 'bg-white/5',
     text: 'text-slate-300',
     border: 'border-white/10',
-    chip: 'bg-white/10 text-slate-200 border-white/15/40',
+    chip: 'bg-white/10 text-slate-200 border-white/15',
   },
   Orbits: {
     bg: 'bg-indigo-500/10',
@@ -327,7 +327,7 @@ export default function AcronymsPage() {
                 onClick={() => setSelectedCategory(null)}
                 className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-all ${
                   selectedCategory === null
-                    ? 'bg-white/10 text-slate-200 border-white/15/40 shadow-lg shadow-black/5'
+                    ? 'bg-white/10 text-slate-200 border-white/15 shadow-lg shadow-black/5'
                     : 'bg-slate-800/50 text-slate-400 border-slate-700/50 hover:border-slate-600 hover:text-slate-300'
                 }`}
               >
@@ -472,7 +472,7 @@ export default function AcronymsPage() {
                 setSearchQuery('');
                 setSelectedCategory(null);
               }}
-              className="mt-4 px-4 py-2 rounded-lg bg-white/10 text-slate-200 border border-white/15/40 hover:bg-slate-100/30 transition-all text-sm font-medium"
+              className="mt-4 px-4 py-2 rounded-lg bg-white/10 text-slate-200 border border-white/15 hover:bg-slate-100/30 transition-all text-sm font-medium"
             >
               Reset filters
             </button>

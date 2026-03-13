@@ -45,7 +45,7 @@ function PublicCompanyCard({
   const is30DPositive = stockData ? stockData.change30D >= 0 : true;
 
   return (
-    <div className="card p-4 hover:border-white/15/50 transition-all">
+    <div className="card p-4 hover:border-white/15 transition-all">
       {stockData && (
         <span className="sr-only">
           {`${company.name} (${company.exchange}:${company.ticker}): Price ${formatPrice(stockData.price)}, ${isPositive ? 'up' : 'down'} ${formatChange(stockData.changePercent, true)} today, 30-day change ${formatChange(stockData.change30D, true)}`}
@@ -353,7 +353,7 @@ export default function MarketIntelModule() {
                   onClick={() => company.ticker && toggleTicker(company.ticker)}
                   className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-mono font-medium transition-all ${
                     isSelected
-                      ? 'bg-white/15 text-slate-200 border border-white/15/50'
+                      ? 'bg-white/15 text-slate-200 border border-white/15'
                       : 'bg-slate-800 text-slate-400 border border-slate-700 hover:border-slate-500'
                   }`}
                 >

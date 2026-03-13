@@ -182,7 +182,7 @@ function eventTypeLabel(type: RecentSolarEvent['type']): { label: string; color:
     case 'flare':     return { label: 'Solar Flare',     color: 'bg-orange-500/20 text-orange-300 border-orange-500/40', icon: '\u2600\uFE0F' };
     case 'cme':       return { label: 'CME',             color: 'bg-purple-500/20 text-purple-300 border-purple-500/40', icon: '\uD83C\uDF0A' };
     case 'radiation': return { label: 'Radiation Storm',  color: 'bg-red-500/20 text-red-300 border-red-500/40',         icon: '\u2622\uFE0F' };
-    case 'filament':  return { label: 'Filament Eruption', color: 'bg-white/10 text-slate-200 border-white/15/40',    icon: '\uD83C\uDF0B' };
+    case 'filament':  return { label: 'Filament Eruption', color: 'bg-white/10 text-slate-200 border-white/15',    icon: '\uD83C\uDF0B' };
     case 'proton':    return { label: 'Proton Event',     color: 'bg-pink-500/20 text-pink-300 border-pink-500/40',      icon: '\u26A1' };
   }
 }

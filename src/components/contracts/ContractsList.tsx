@@ -291,7 +291,7 @@ export default function ContractsList({ initialAgency = '' }: ContractsListProps
               <button
                 key={contract.id}
                 onClick={() => setSelectedContract(contract)}
-                className="w-full bg-slate-800/50 border border-slate-700 rounded-lg p-4 hover:border-white/15/50 hover:bg-slate-800 transition-all text-left"
+                className="w-full bg-slate-800/50 border border-slate-700 rounded-lg p-4 hover:border-white/15 hover:bg-slate-800 transition-all text-left"
               >
                 <div className="flex flex-wrap items-start gap-3">
                   {/* Agency Badge */}

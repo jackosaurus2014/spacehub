@@ -203,7 +203,7 @@ function ModuleSection({ title, icon, modules, sizeClasses, delay }: {
             <StaggerItem key={mod.href}>
               <Link
                 href={mod.href}
-                className={`group relative card ${sizeClasses.padding} hover:border-white/10/40 hover:bg-slate-800/80 block`}
+                className={`group relative card ${sizeClasses.padding} hover:border-white/10 hover:bg-slate-800/80 block`}
               >
                 <div className="flex items-start gap-3">
                   <span className="text-2xl flex-shrink-0 mt-0.5">{mod.icon}</span>
@@ -386,7 +386,7 @@ export default function DashboardPage() {
               <StaggerItem key={stat.key}>
                 <Link
                   href={stat.href}
-                  className="group card p-4 hover:border-white/10/40 hover:bg-slate-800/80 block"
+                  className="group card p-4 hover:border-white/10 hover:bg-slate-800/80 block"
                 >
                   <div className="flex items-center gap-2 mb-2">
                     <span className="text-lg">{stat.icon}</span>

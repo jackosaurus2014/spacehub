@@ -345,7 +345,7 @@ export default function NewsDigestPage() {
                     onClick={() => setSelectedCategory('All')}
                     className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${
                       selectedCategory === 'All'
-                        ? 'bg-white/10 text-slate-300 border-white/15/40'
+                        ? 'bg-white/10 text-slate-300 border-white/15'
                         : 'bg-slate-800/50 text-slate-400 border-slate-700 hover:border-slate-600'
                     }`}
                   >
@@ -377,7 +377,7 @@ export default function NewsDigestPage() {
                     onClick={() => setSelectedSignificance('All')}
                     className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${
                       selectedSignificance === 'All'
-                        ? 'bg-white/10 text-slate-300 border-white/15/40'
+                        ? 'bg-white/10 text-slate-300 border-white/15'
                         : 'bg-slate-800/50 text-slate-400 border-slate-700 hover:border-slate-600'
                     }`}
                   >

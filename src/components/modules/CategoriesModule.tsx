@@ -24,7 +24,7 @@ export default function CategoriesModule() {
           <Link
             key={category.slug}
             href={`/news?category=${category.slug}`}
-            className="card px-3 py-5 text-center group hover:border-white/15/50 transition-all flex flex-col items-center justify-center gap-2"
+            className="card px-3 py-5 text-center group hover:border-white/15 transition-all flex flex-col items-center justify-center gap-2"
           >
             <span className="text-4xl">
               {categoryIcons[category.slug]}

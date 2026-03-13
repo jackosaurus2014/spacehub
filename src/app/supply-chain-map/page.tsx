@@ -995,7 +995,7 @@ function SupplyChainMapContent() {
             onClick={() => setShowFilters(!showFilters)}
             className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
               showFilters || sectorFilters.size > 0 || typeFilters.size > 0
-                ? 'bg-white/10 text-slate-200 border border-white/15/50'
+                ? 'bg-white/10 text-slate-200 border border-white/15'
                 : 'bg-space-800 text-slate-400 border border-space-700 hover:border-space-600'
             }`}
           >

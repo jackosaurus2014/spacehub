@@ -257,7 +257,7 @@ export default function SpaceIndustryMarketSizePage() {
         {/* Hero */}
         <header className="mb-10">
           <div className="flex items-center gap-3 mb-4">
-            <span className="text-xs px-2 py-0.5 rounded-full bg-white/10 text-slate-300 border border-white/15/20">
+            <span className="text-xs px-2 py-0.5 rounded-full bg-white/10 text-slate-300 border border-white/15">
               Market Intelligence
             </span>
             <span className="text-xs text-slate-500">Updated February 2026</span>
@@ -310,7 +310,7 @@ export default function SpaceIndustryMarketSizePage() {
                 <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
                   <h3 className="text-white font-semibold text-lg">{seg.segment}</h3>
                   <div className="flex items-center gap-3">
-                    <span className="text-xs px-2 py-0.5 rounded-full bg-white/10 text-slate-300 border border-white/15/20">
+                    <span className="text-xs px-2 py-0.5 rounded-full bg-white/10 text-slate-300 border border-white/15">
                       {seg.share} of total
                     </span>
                     <span className="text-xs px-2 py-0.5 rounded-full bg-green-500/10 text-green-400 border border-green-500/20">
@@ -553,7 +553,7 @@ export default function SpaceIndustryMarketSizePage() {
           <div className="flex flex-wrap justify-center gap-4">
             <Link
               href="/market-intel"
-              className="inline-block bg-white hover:bg-slate-100 text-white font-medium px-6 py-2.5 rounded-lg transition-colors"
+              className="inline-block bg-white hover:bg-slate-100 text-slate-900 font-medium px-6 py-2.5 rounded-lg transition-colors"
             >
               Open Market Intelligence
             </Link>
@@ -585,28 +585,28 @@ export default function SpaceIndustryMarketSizePage() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             <Link
               href="/market-intel"
-              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 text-center hover:border-white/15/50 transition-colors"
+              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 text-center hover:border-white/15 transition-colors"
             >
               <div className="text-white text-sm font-medium">Market Intel</div>
               <div className="text-slate-500 text-xs">Live data</div>
             </Link>
             <Link
               href="/company-profiles"
-              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 text-center hover:border-white/15/50 transition-colors"
+              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 text-center hover:border-white/15 transition-colors"
             >
               <div className="text-white text-sm font-medium">Company Profiles</div>
               <div className="text-slate-500 text-xs">200+ companies</div>
             </Link>
             <Link
               href="/space-economy"
-              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 text-center hover:border-white/15/50 transition-colors"
+              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 text-center hover:border-white/15 transition-colors"
             >
               <div className="text-white text-sm font-medium">Space Economy</div>
               <div className="text-slate-500 text-xs">Trends & data</div>
             </Link>
             <Link
               href="/space-capital"
-              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 text-center hover:border-white/15/50 transition-colors"
+              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 text-center hover:border-white/15 transition-colors"
             >
               <div className="text-white text-sm font-medium">Space Capital</div>
               <div className="text-slate-500 text-xs">Investment tracking</div>
@@ -620,21 +620,21 @@ export default function SpaceIndustryMarketSizePage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
             <Link
               href="/learn/satellite-launch-cost"
-              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 hover:border-white/15/50 transition-colors"
+              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 hover:border-white/15 transition-colors"
             >
               <div className="text-white text-sm font-medium">Satellite Launch Costs</div>
               <div className="text-slate-500 text-xs">Complete cost breakdown</div>
             </Link>
             <Link
               href="/learn/how-to-track-satellites"
-              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 hover:border-white/15/50 transition-colors"
+              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 hover:border-white/15 transition-colors"
             >
               <div className="text-white text-sm font-medium">How to Track Satellites</div>
               <div className="text-slate-500 text-xs">Real-time tracking guide</div>
             </Link>
             <Link
               href="/learn/space-companies-to-watch"
-              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 hover:border-white/15/50 transition-colors"
+              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 hover:border-white/15 transition-colors"
             >
               <div className="text-white text-sm font-medium">Top Space Companies 2026</div>
               <div className="text-slate-500 text-xs">25 companies to watch</div>

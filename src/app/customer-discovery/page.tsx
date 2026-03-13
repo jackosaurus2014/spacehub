@@ -500,7 +500,7 @@ export default function CustomerDiscoveryPage() {
                                       {segment.matchingTechNeeds.map(need => (
                                         <span
                                           key={need}
-                                          className="text-xs px-2 py-0.5 rounded bg-white/8 text-slate-200 border border-white/15/25"
+                                          className="text-xs px-2 py-0.5 rounded bg-white/8 text-slate-200 border border-white/15"
                                         >
                                           {need}
                                         </span>

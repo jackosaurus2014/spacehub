@@ -761,7 +761,7 @@ function VehicleSelector({
                 selected.forEach((v) => onRemove(v.id));
                 vehicles.forEach((v) => onAdd(v));
               }}
-              className="px-3 py-1.5 bg-slate-800/50 border border-slate-700 rounded-lg text-xs text-star-300 hover:border-white/15/40 hover:text-white transition-all"
+              className="px-3 py-1.5 bg-slate-800/50 border border-slate-700 rounded-lg text-xs text-star-300 hover:border-white/15 hover:text-white transition-all"
             >
               {preset.label}
             </button>
@@ -1161,25 +1161,25 @@ export default function LaunchVehicleComparePage() {
         <div className="flex flex-wrap gap-3">
           <Link
             href="/launch-vehicles"
-            className="px-4 py-2 bg-slate-800/50 border border-slate-700 rounded-lg text-xs text-star-300 hover:border-white/15/40 hover:text-white transition-all"
+            className="px-4 py-2 bg-slate-800/50 border border-slate-700 rounded-lg text-xs text-star-300 hover:border-white/15 hover:text-white transition-all"
           >
             Launch Vehicle Database
           </Link>
           <Link
             href="/launch-cost-calculator"
-            className="px-4 py-2 bg-slate-800/50 border border-slate-700 rounded-lg text-xs text-star-300 hover:border-white/15/40 hover:text-white transition-all"
+            className="px-4 py-2 bg-slate-800/50 border border-slate-700 rounded-lg text-xs text-star-300 hover:border-white/15 hover:text-white transition-all"
           >
             Launch Cost Calculator
           </Link>
           <Link
             href="/compare/companies"
-            className="px-4 py-2 bg-slate-800/50 border border-slate-700 rounded-lg text-xs text-star-300 hover:border-white/15/40 hover:text-white transition-all"
+            className="px-4 py-2 bg-slate-800/50 border border-slate-700 rounded-lg text-xs text-star-300 hover:border-white/15 hover:text-white transition-all"
           >
             Compare Companies
           </Link>
           <Link
             href="/mission-cost"
-            className="px-4 py-2 bg-slate-800/50 border border-slate-700 rounded-lg text-xs text-star-300 hover:border-white/15/40 hover:text-white transition-all"
+            className="px-4 py-2 bg-slate-800/50 border border-slate-700 rounded-lg text-xs text-star-300 hover:border-white/15 hover:text-white transition-all"
           >
             Mission Planning
           </Link>

@@ -163,7 +163,7 @@ function JobCard({ job }: { job: SpaceJobPosting }) {
   const senLabel = SENIORITY_LABELS[job.seniorityLevel as SeniorityLevel] || job.seniorityLevel;
 
   const inner = (
-    <div className="card p-5 hover:border-white/15/50 transition-all group">
+    <div className="card p-5 hover:border-white/15 transition-all group">
       <div className="flex items-start justify-between mb-3">
         <div className="flex-1 min-w-0">
           <h3 className="font-semibold text-white text-base group-hover:text-white transition-colors">
@@ -933,7 +933,7 @@ function TopEmployersSection() {
           placeholder="Search companies..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="bg-slate-800/50 border border-slate-700/50 rounded-lg px-3 py-2 text-sm text-white placeholder-star-400 focus:outline-none focus:border-white/15/50 transition-colors w-48"
+          className="bg-slate-800/50 border border-slate-700/50 rounded-lg px-3 py-2 text-sm text-white placeholder-star-400 focus:outline-none focus:border-white/15 transition-colors w-48"
           aria-label="Search top employers"
         />
         <div className="flex gap-1 bg-slate-800/50 rounded-lg p-0.5">
@@ -947,7 +947,7 @@ function TopEmployersSection() {
               key={t.id}
               onClick={() => setFilterTier(t.id)}
               className={`px-3 py-1 rounded text-xs font-medium transition-all ${
-                filterTier === t.id ? 'bg-white text-slate-900' : 'text-slate-400 hover:text-white'
+                filterTier === t.id ? 'bg-white text-slate-900' : 'text-slate-400 hover:text-slate-900'
               }`}
             >
               {t.label}
@@ -964,7 +964,7 @@ function TopEmployersSection() {
               key={s.id}
               onClick={() => setSortKey(s.id)}
               className={`px-3 py-1 rounded text-xs font-medium transition-all ${
-                sortKey === s.id ? 'bg-white text-slate-900' : 'text-slate-400 hover:text-white'
+                sortKey === s.id ? 'bg-white text-slate-900' : 'text-slate-400 hover:text-slate-900'
               }`}
             >
               {s.label}
@@ -2261,7 +2261,7 @@ function SpaceTalentHubContent() {
                       placeholder="Search jobs by title, company, location, or specialization..."
                       value={searchInput}
                       onChange={(e) => setSearchInput(e.target.value)}
-                      className="flex-1 bg-slate-800/50 border border-slate-700/50 rounded-lg px-4 py-2.5 text-sm text-white placeholder-star-400 focus:outline-none focus:border-white/15/50 transition-colors"
+                      className="flex-1 bg-slate-800/50 border border-slate-700/50 rounded-lg px-4 py-2.5 text-sm text-white placeholder-star-400 focus:outline-none focus:border-white/15 transition-colors"
                     />
                     <button type="submit" className="btn-primary px-6">
                       Search

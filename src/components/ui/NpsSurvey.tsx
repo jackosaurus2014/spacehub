@@ -138,7 +138,7 @@ export default function NpsSurvey() {
                         ? 'What would make it a 10?'
                         : 'What do you like most?'
                     }
-                    className="w-full bg-slate-800/60 border border-slate-700/50 rounded-lg px-3 py-2 text-sm text-white placeholder-slate-500 resize-none focus:outline-none focus:border-white/15/50"
+                    className="w-full bg-slate-800/60 border border-slate-700/50 rounded-lg px-3 py-2 text-sm text-white placeholder-slate-500 resize-none focus:outline-none focus:border-white/15"
                     rows={2}
                   />
                 </div>
@@ -148,7 +148,7 @@ export default function NpsSurvey() {
               {score !== null && (
                 <button
                   onClick={handleSubmit}
-                  className="w-full bg-white hover:bg-slate-100 text-white text-sm font-medium py-2 rounded-lg transition-colors"
+                  className="w-full bg-white hover:bg-slate-100 text-slate-900 text-sm font-medium py-2 rounded-lg transition-colors"
                 >
                   Submit
                 </button>

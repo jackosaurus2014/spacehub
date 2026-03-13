@@ -691,7 +691,7 @@ export default function RegulatoryCalendarPage() {
               onClick={() => setViewMode('month')}
               className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
                 viewMode === 'month'
-                  ? 'bg-white text-white shadow-sm'
+                  ? 'bg-white text-slate-900 shadow-sm'
                   : 'text-slate-400 hover:text-slate-200'
               }`}
             >
@@ -701,7 +701,7 @@ export default function RegulatoryCalendarPage() {
               onClick={() => setViewMode('agenda')}
               className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
                 viewMode === 'agenda'
-                  ? 'bg-white text-white shadow-sm'
+                  ? 'bg-white text-slate-900 shadow-sm'
                   : 'text-slate-400 hover:text-slate-200'
               }`}
             >

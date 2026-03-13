@@ -196,7 +196,7 @@ export default function CopilotPage() {
                 <StaggerItem key={i}>
                   <button
                     onClick={() => { setInput(s); inputRef.current?.focus(); }}
-                    className="text-xs px-3 py-2 rounded-lg bg-space-800/50 border border-space-600/30 text-slate-300 hover:border-white/15/40 hover:text-white transition-colors text-left"
+                    className="text-xs px-3 py-2 rounded-lg bg-space-800/50 border border-space-600/30 text-slate-300 hover:border-white/15 hover:text-white transition-colors text-left"
                   >
                     {s}
                   </button>

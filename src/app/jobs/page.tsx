@@ -1636,7 +1636,7 @@ export default function JobsBoardPage() {
               setSearchQuery(e.target.value);
               setVisibleCount(15);
             }}
-            className="w-full pl-10 pr-3 py-2.5 bg-slate-800/60 border border-slate-700 rounded-lg text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-white/15 focus:ring-1 focus:ring-white/30/30 transition-colors"
+            className="w-full pl-10 pr-3 py-2.5 bg-slate-800/60 border border-slate-700 rounded-lg text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-white/15 focus:ring-1 focus:ring-white/30 transition-colors"
           />
         </div>
       </div>
@@ -1652,7 +1652,7 @@ export default function JobsBoardPage() {
             setSelectedCategory(e.target.value as JobCategory | '');
             setVisibleCount(15);
           }}
-          className="w-full px-3 py-2.5 bg-slate-800/60 border border-slate-700 rounded-lg text-sm text-slate-200 focus:outline-none focus:border-white/15 focus:ring-1 focus:ring-white/30/30 transition-colors appearance-none"
+          className="w-full px-3 py-2.5 bg-slate-800/60 border border-slate-700 rounded-lg text-sm text-slate-200 focus:outline-none focus:border-white/15 focus:ring-1 focus:ring-white/30 transition-colors appearance-none"
         >
           <option value="">All Categories</option>
           {CATEGORIES.map((cat) => (
@@ -1758,7 +1758,7 @@ export default function JobsBoardPage() {
                 placeholder="$0"
                 step={10000}
                 min={0}
-                className="w-full px-2.5 py-2 bg-slate-800/60 border border-slate-700 rounded-lg text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-white/15 focus:ring-1 focus:ring-white/30/30 transition-colors"
+                className="w-full px-2.5 py-2 bg-slate-800/60 border border-slate-700 rounded-lg text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-white/15 focus:ring-1 focus:ring-white/30 transition-colors"
               />
             </div>
             <span className="text-slate-600 mt-4">-</span>
@@ -1775,7 +1775,7 @@ export default function JobsBoardPage() {
                 placeholder="No max"
                 step={10000}
                 min={0}
-                className="w-full px-2.5 py-2 bg-slate-800/60 border border-slate-700 rounded-lg text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-white/15 focus:ring-1 focus:ring-white/30/30 transition-colors"
+                className="w-full px-2.5 py-2 bg-slate-800/60 border border-slate-700 rounded-lg text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-white/15 focus:ring-1 focus:ring-white/30 transition-colors"
               />
             </div>
           </div>
@@ -1802,7 +1802,7 @@ export default function JobsBoardPage() {
       {activeFilterCount > 0 && (
         <button
           onClick={handleClearFilters}
-          className="w-full py-2 text-sm text-slate-400 hover:text-white border border-slate-700 hover:border-white/15/40 rounded-lg transition-colors"
+          className="w-full py-2 text-sm text-slate-400 hover:text-white border border-slate-700 hover:border-white/15 rounded-lg transition-colors"
         >
           Clear all filters ({activeFilterCount})
         </button>

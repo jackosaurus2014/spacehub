@@ -692,7 +692,7 @@ const FALLBACK_ISS_POSITION: ISSPosition = {
 
 const STATUS_STYLES: Record<StationStatus, { label: string; color: string; bg: string; border: string }> = {
   operational: { label: 'Operational', color: 'text-green-400', bg: 'bg-green-900/30', border: 'border-green-500/40' },
-  assembly: { label: 'Under Assembly', color: 'text-slate-300', bg: 'bg-slate-800/40', border: 'border-white/15/40' },
+  assembly: { label: 'Under Assembly', color: 'text-slate-300', bg: 'bg-slate-800/40', border: 'border-white/15' },
   development: { label: 'In Development', color: 'text-yellow-400', bg: 'bg-yellow-900/30', border: 'border-yellow-500/40' },
   concept: { label: 'Concept Phase', color: 'text-purple-400', bg: 'bg-purple-900/30', border: 'border-purple-500/40' },
   planned: { label: 'Planned', color: 'text-blue-400', bg: 'bg-blue-900/30', border: 'border-blue-500/40' },
@@ -747,7 +747,7 @@ function ActiveStationCard({ station }: { station: SpaceStation }) {
   const statusStyle = STATUS_STYLES[station.status] || DEFAULT_STATUS_STYLE;
 
   return (
-    <div className="card p-6 hover:border-white/15/40">
+    <div className="card p-6 hover:border-white/15">
       {/* Header */}
       <div className="flex items-start justify-between mb-4">
         <div>
@@ -888,7 +888,7 @@ function CommercialStationCard({ station }: { station: CommercialStation }) {
   const statusStyle = STATUS_STYLES[station.status] || DEFAULT_STATUS_STYLE;
 
   return (
-    <div className="card p-6 hover:border-white/15/40">
+    <div className="card p-6 hover:border-white/15">
       {/* Header */}
       <div className="flex items-start justify-between mb-3">
         <div>
@@ -1603,7 +1603,7 @@ export default function SpaceStationTrackerPage() {
 
         {/* ISS Live Position */}
         {issPosition && (
-          <div className="card p-5 border-2 border-white/15/40 bg-gradient-to-r from-slate-800/20 to-slate-800/50 mb-6 mt-4">
+          <div className="card p-5 border-2 border-white/15 bg-gradient-to-r from-slate-800/20 to-slate-800/50 mb-6 mt-4">
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-white font-bold text-lg flex items-center gap-2">
                 <span className="w-3 h-3 rounded-full bg-green-500 animate-pulse" />

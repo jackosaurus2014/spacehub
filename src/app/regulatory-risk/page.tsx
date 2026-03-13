@@ -404,7 +404,7 @@ export default function RegulatoryRiskPage() {
                       onClick={() => setSelectedSector(s.id)}
                       className={`px-4 py-3 rounded-xl text-left text-sm font-medium transition-all border ${
                         selectedSector === s.id
-                          ? 'bg-white/10 text-slate-200 border-white/15/40 shadow-lg shadow-black/5'
+                          ? 'bg-white/10 text-slate-200 border-white/15 shadow-lg shadow-black/5'
                           : 'bg-slate-800/50 text-slate-300 border-slate-700/50 hover:bg-slate-700/50 hover:text-slate-100'
                       }`}
                     >

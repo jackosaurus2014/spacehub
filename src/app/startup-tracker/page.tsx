@@ -239,7 +239,7 @@ function SectorDistributionChart({ startups }: { startups: SpaceStartup[] }) {
 
 function StartupCard({ startup }: { startup: SpaceStartup }) {
   return (
-    <div className="card p-5 transition-all hover:border-white/15/40 h-full flex flex-col">
+    <div className="card p-5 transition-all hover:border-white/15 h-full flex flex-col">
       {/* Header */}
       <div className="flex items-start justify-between gap-3 mb-3">
         <div className="min-w-0 flex-1">

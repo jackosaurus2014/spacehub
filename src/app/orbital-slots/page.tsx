@@ -946,7 +946,7 @@ function OrbitalManagementContent() {
             {/* ──────────────── Provider CTA (services tabs) ──────────────── */}
             {isServicesTab && (
               <div className="mb-6">
-                <div className="card p-4 flex flex-col sm:flex-row items-center justify-between gap-4 bg-gradient-to-r from-slate-200/10 to-rocket-600/10 border border-white/15/20">
+                <div className="card p-4 flex flex-col sm:flex-row items-center justify-between gap-4 bg-gradient-to-r from-slate-200/10 to-rocket-600/10 border border-white/15">
                   <div className="flex items-center gap-3">
                     <span className="text-2xl">{'\u{1F680}'}</span>
                     <p className="text-slate-500">
@@ -1177,7 +1177,7 @@ function OrbitalManagementContent() {
                               <h4 className="text-white font-medium text-sm mb-2 uppercase tracking-widest">Key Uses</h4>
                               <div className="flex flex-wrap gap-2">
                                 {regime.keyUses.map((use) => (
-                                  <span key={use} className="text-xs px-2.5 py-1 rounded-full bg-white/10 text-slate-200 border border-white/15/20">
+                                  <span key={use} className="text-xs px-2.5 py-1 rounded-full bg-white/10 text-slate-200 border border-white/15">
                                     {use}
                                   </span>
                                 ))}

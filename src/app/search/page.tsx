@@ -231,7 +231,7 @@ function NewsResultCard({ item }: { item: NewsResult }) {
       href={item.url}
       target="_blank"
       rel="noopener noreferrer"
-      className="card p-5 block hover:border-white/10/60 transition-all group"
+      className="card p-5 block hover:border-white/10 transition-all group"
     >
       <div className="flex items-start gap-4">
         <div className="flex-shrink-0 p-2.5 rounded-lg bg-blue-500/10 text-blue-400 border border-blue-500/20">
@@ -274,7 +274,7 @@ function EventResultCard({ item }: { item: EventResult }) {
   return (
     <a
       href="/mission-control"
-      className="card p-5 block hover:border-white/10/60 transition-all group"
+      className="card p-5 block hover:border-white/10 transition-all group"
     >
       <div className="flex items-start gap-4">
         <div className="flex-shrink-0 p-2.5 rounded-lg bg-orange-500/10 text-orange-400 border border-orange-500/20">
@@ -325,7 +325,7 @@ function OpportunityResultCard({ item }: { item: OpportunityResult }) {
   return (
     <a
       href={`/business-opportunities/${item.slug}`}
-      className="card p-5 block hover:border-white/10/60 transition-all group"
+      className="card p-5 block hover:border-white/10 transition-all group"
     >
       <div className="flex items-start gap-4">
         <div className="flex-shrink-0 p-2.5 rounded-lg bg-purple-500/10 text-purple-400 border border-purple-500/20">
@@ -367,7 +367,7 @@ function BlogResultCard({ item }: { item: BlogResult }) {
       href={item.url}
       target="_blank"
       rel="noopener noreferrer"
-      className="card p-5 block hover:border-white/10/60 transition-all group"
+      className="card p-5 block hover:border-white/10 transition-all group"
     >
       <div className="flex items-start gap-4">
         <div className="flex-shrink-0 p-2.5 rounded-lg bg-pink-500/10 text-pink-400 border border-pink-500/20">
@@ -633,7 +633,7 @@ function SearchContent() {
           onChange={(e) => setQuery(e.target.value)}
           aria-label="Search across news, companies, events, opportunities, and blogs"
           placeholder="Search across news, companies, events, opportunities, and blogs..."
-          className="w-full pl-14 pr-12 py-4 text-lg bg-slate-800/60 border border-white/10 rounded-2xl text-slate-100 placeholder-star-400 focus:outline-none focus:border-white/10/60 focus:ring-2 focus:ring-white/20/20 transition-all"
+          className="w-full pl-14 pr-12 py-4 text-lg bg-slate-800/60 border border-white/10 rounded-2xl text-slate-100 placeholder-star-400 focus:outline-none focus:border-white/10 focus:ring-2 focus:ring-white/20 transition-all"
         />
         {loading && (
           <div className="absolute inset-y-0 right-0 flex items-center pr-5">
@@ -731,7 +731,7 @@ function SearchContent() {
             onClick={() => setFilterOpen(!filterOpen)}
             className={`lg:hidden flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all ${
               filterOpen
-                ? 'bg-white/5 text-slate-200 border border-white/10/40'
+                ? 'bg-white/5 text-slate-200 border border-white/10'
                 : 'bg-slate-800/60 text-star-300 border border-slate-600/40 hover:border-white/10'
             }`}
           >
@@ -841,7 +841,7 @@ function SearchContent() {
                     type="date"
                     value={dateFrom}
                     onChange={(e) => setDateFrom(e.target.value)}
-                    className="w-full bg-slate-800/60 border border-slate-600/40 rounded-xl px-3 py-2 text-sm text-star-200 focus:outline-none focus:border-white/10/40 focus:ring-1 focus:ring-white/20/20 transition-all"
+                    className="w-full bg-slate-800/60 border border-slate-600/40 rounded-xl px-3 py-2 text-sm text-star-200 focus:outline-none focus:border-white/10 focus:ring-1 focus:ring-white/20 transition-all"
                   />
                 </div>
                 <div>
@@ -851,7 +851,7 @@ function SearchContent() {
                     type="date"
                     value={dateTo}
                     onChange={(e) => setDateTo(e.target.value)}
-                    className="w-full bg-slate-800/60 border border-slate-600/40 rounded-xl px-3 py-2 text-sm text-star-200 focus:outline-none focus:border-white/10/40 focus:ring-1 focus:ring-white/20/20 transition-all"
+                    className="w-full bg-slate-800/60 border border-slate-600/40 rounded-xl px-3 py-2 text-sm text-star-200 focus:outline-none focus:border-white/10 focus:ring-1 focus:ring-white/20 transition-all"
                   />
                 </div>
               </div>

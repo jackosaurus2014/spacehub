@@ -18,7 +18,7 @@ export default function HeroActions() {
           </Link>
           <Link
             href="/news"
-            className="text-base py-4 px-10 font-semibold rounded-xl transition-all duration-300 hover:-translate-y-0.5 active:scale-95 tracking-wide uppercase text-sm border-2 border-white/10/60 text-white bg-slate-900/60 backdrop-blur-sm hover:bg-slate-800/60 hover:border-white/10 shadow-lg shadow-black/10"
+            className="text-base py-4 px-10 font-semibold rounded-xl transition-all duration-300 hover:-translate-y-0.5 active:scale-95 tracking-wide uppercase text-sm border-2 border-white/10 text-white bg-slate-900/60 backdrop-blur-sm hover:bg-slate-800/60 hover:border-white/10 shadow-lg shadow-black/10"
           >
             Explore News
           </Link>

@@ -261,7 +261,7 @@ export default function CityPage({ params }: Props) {
           </p>
           <Link
             href="/register"
-            className="inline-block bg-white hover:bg-slate-100 text-white font-medium px-6 py-2.5 rounded-lg transition-colors"
+            className="inline-block bg-white hover:bg-slate-100 text-slate-900 font-medium px-6 py-2.5 rounded-lg transition-colors"
           >
             Get Started Free
           </Link>
@@ -275,7 +275,7 @@ export default function CityPage({ params }: Props) {
               <Link
                 key={c.slug}
                 href={`/space-industry/${c.slug}`}
-                className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 text-center hover:border-white/15/50 transition-colors"
+                className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 text-center hover:border-white/15 transition-colors"
               >
                 <div className="text-white text-sm font-medium">{c.name}</div>
                 <div className="text-slate-500 text-xs">{c.state}</div>

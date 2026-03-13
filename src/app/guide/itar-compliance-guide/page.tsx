@@ -262,14 +262,14 @@ export default function ItarComplianceGuidePage() {
 
                   <div className="card p-6 my-8">
                     <div className="space-y-4 text-sm">
-                      <div className="border-b border-white/10/10 pb-3">
+                      <div className="border-b border-white/10 pb-3">
                         <span className="text-slate-300 font-semibold">Defense Articles</span>
                         <p className="text-star-300 mt-1">
                           Physical items listed on the USML, including spacecraft, launch vehicles,
                           satellites, and associated components, parts, and accessories.
                         </p>
                       </div>
-                      <div className="border-b border-white/10/10 pb-3">
+                      <div className="border-b border-white/10 pb-3">
                         <span className="text-slate-300 font-semibold">Defense Services</span>
                         <p className="text-star-300 mt-1">
                           The furnishing of assistance (including training) to foreign persons in the
@@ -400,23 +400,23 @@ export default function ItarComplianceGuidePage() {
                       Entities Subject to ITAR
                     </h3>
                     <div className="space-y-3 text-sm text-star-200">
-                      <div className="border-b border-white/10/10 pb-2">
+                      <div className="border-b border-white/10 pb-2">
                         <strong className="text-white">Launch vehicle manufacturers</strong> -- Virtually all launch vehicle
                         technology remains USML-controlled.
                       </div>
-                      <div className="border-b border-white/10/10 pb-2">
+                      <div className="border-b border-white/10 pb-2">
                         <strong className="text-white">Satellite manufacturers</strong> -- Military/intelligence spacecraft
                         on USML; commercial satellites may be CCL (EAR) or USML depending on capabilities.
                       </div>
-                      <div className="border-b border-white/10/10 pb-2">
+                      <div className="border-b border-white/10 pb-2">
                         <strong className="text-white">Component suppliers</strong> -- Companies manufacturing space-qualified
                         components including propulsion, guidance, radiation-hardened electronics.
                       </div>
-                      <div className="border-b border-white/10/10 pb-2">
+                      <div className="border-b border-white/10 pb-2">
                         <strong className="text-white">Ground systems providers</strong> -- Providers of ground control
                         systems for USML-listed spacecraft.
                       </div>
-                      <div className="border-b border-white/10/10 pb-2">
+                      <div className="border-b border-white/10 pb-2">
                         <strong className="text-white">Engineering service providers</strong> -- Companies providing design,
                         testing, or integration services for USML articles.
                       </div>
@@ -642,22 +642,22 @@ export default function ItarComplianceGuidePage() {
                         </tr>
                       </thead>
                       <tbody className="text-star-200">
-                        <tr className="border-b border-white/10/10">
+                        <tr className="border-b border-white/10">
                           <td className="py-2 pr-4 text-white font-medium">Agency</td>
                           <td className="py-2 pr-4">State Department (DDTC)</td>
                           <td className="py-2">Commerce Department (BIS)</td>
                         </tr>
-                        <tr className="border-b border-white/10/10">
+                        <tr className="border-b border-white/10">
                           <td className="py-2 pr-4 text-white font-medium">Control List</td>
                           <td className="py-2 pr-4">USML (21 categories)</td>
                           <td className="py-2">CCL (10 categories, ECCNs)</td>
                         </tr>
-                        <tr className="border-b border-white/10/10">
+                        <tr className="border-b border-white/10">
                           <td className="py-2 pr-4 text-white font-medium">Scope</td>
                           <td className="py-2 pr-4">Defense articles &amp; services</td>
                           <td className="py-2">Dual-use &amp; commercial items</td>
                         </tr>
-                        <tr className="border-b border-white/10/10">
+                        <tr className="border-b border-white/10">
                           <td className="py-2 pr-4 text-white font-medium">License Exceptions</td>
                           <td className="py-2 pr-4">Limited exemptions</td>
                           <td className="py-2">More license exceptions available</td>

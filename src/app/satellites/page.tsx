@@ -55,7 +55,7 @@ const STATUS_OPTIONS: { value: SatelliteStatus; label: string; color: string }[]
 // ISS Position Card
 function ISSHighlight({ iss }: { iss: Satellite }) {
   return (
-    <div className="card p-6 border border-white/15/50 bg-gradient-to-br from-slate-800/20 to-transparent">
+    <div className="card p-6 border border-white/15 bg-gradient-to-br from-slate-800/20 to-transparent">
       <div className="flex items-start justify-between flex-wrap gap-4">
         <div className="flex items-center gap-4">
           <div className="w-16 h-16 rounded-xl bg-white/10 flex items-center justify-center text-4xl border border-white/10">

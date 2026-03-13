@@ -132,7 +132,7 @@ function BandAllocationRow({ allocation }: { allocation: SpectrumAllocation }) {
   const congestion = getCongestionLevel(allocation.filingStatus, allocation.numberOfFilings);
 
   return (
-    <div className="card p-5 hover:border-white/15/50 transition-all">
+    <div className="card p-5 hover:border-white/15 transition-all">
       <div className="flex items-start justify-between mb-4">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-lg bg-slate-700/50 flex items-center justify-center text-lg shrink-0">
@@ -240,7 +240,7 @@ function FilingCard({ filing }: { filing: SpectrumFiling }) {
   const statusLabel = statusEntry?.label || filing.status;
 
   return (
-    <div className="card p-5 hover:border-white/15/50 transition-all">
+    <div className="card p-5 hover:border-white/15 transition-all">
       <div className="flex items-start justify-between mb-3">
         <div className="flex-1 min-w-0">
           <h4 className="font-semibold text-white text-base">{filing.operator}</h4>
@@ -322,7 +322,7 @@ function AuctionCard({ auction }: { auction: Auction }) {
   const style = AUCTION_STATUS_STYLES[auction.status];
 
   return (
-    <div className="card p-5 hover:border-white/15/50 transition-all">
+    <div className="card p-5 hover:border-white/15 transition-all">
       <div className="flex items-start justify-between mb-3 gap-3">
         <div className="flex-1 min-w-0">
           <h4 className="font-semibold text-white text-base">{auction.name}</h4>
@@ -1095,7 +1095,7 @@ function SpectrumContent() {
             </div>
 
             {/* Cross-module links for coordination resources */}
-            <div className="card p-5 border border-white/15/20">
+            <div className="card p-5 border border-white/15">
               <h3 className="text-white font-semibold mb-3">Related Resources</h3>
               <div className="flex flex-wrap gap-3">
                 <Link
@@ -1254,7 +1254,7 @@ function SpectrumContent() {
             {FREQUENCY_BANDS.map((band) => {
               const cong = CONGESTION_STYLES[band.congestion];
               return (
-                <div key={band.band} className="card p-5 hover:border-white/15/50 transition-all">
+                <div key={band.band} className="card p-5 hover:border-white/15 transition-all">
                   <div className="flex items-start justify-between mb-3 gap-3">
                     <div className="flex items-center gap-3">
                       <div
@@ -1416,7 +1416,7 @@ function SpectrumContent() {
                           return (
                             <td key={bandKey} className="py-3 px-2 text-center">
                               {hasBand ? (
-                                <div className="w-4 h-4 rounded-full bg-white/60 border border-white/10/40 mx-auto" />
+                                <div className="w-4 h-4 rounded-full bg-white/60 border border-white/10 mx-auto" />
                               ) : (
                                 <div className="w-4 h-4 rounded-full bg-white/5 mx-auto" />
                               )}
@@ -1434,7 +1434,7 @@ function SpectrumContent() {
             <StaggerContainer className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               {SATELLITE_OPERATORS.map((op) => (
                 <StaggerItem key={op.name}>
-                  <div className="card p-5 hover:border-white/15/50 transition-all h-full">
+                  <div className="card p-5 hover:border-white/15 transition-all h-full">
                     <div className="flex items-start justify-between mb-3 gap-3">
                       <div>
                         <h4 className="font-semibold text-white text-base">{op.name}</h4>
@@ -1475,7 +1475,7 @@ function SpectrumContent() {
                         {op.spectrumBands.map((band) => (
                           <span
                             key={band}
-                            className="text-[11px] px-2 py-0.5 rounded bg-white/10 text-slate-200 border border-white/15/20"
+                            className="text-[11px] px-2 py-0.5 rounded bg-white/10 text-slate-200 border border-white/15"
                           >
                             {band}
                           </span>
@@ -1543,7 +1543,7 @@ function SpectrumContent() {
               };
               const style = sevStyles[challenge.severity];
               return (
-                <div key={challenge.id} className={`card p-5 hover:border-white/15/50 transition-all border-l-2 ${style.borderColor}`}>
+                <div key={challenge.id} className={`card p-5 hover:border-white/15 transition-all border-l-2 ${style.borderColor}`}>
                   <div className="flex items-start justify-between mb-3 gap-3">
                     <h4 className="font-semibold text-white text-base">{challenge.title}</h4>
                     <span className={`text-xs font-medium px-2.5 py-1 rounded whitespace-nowrap ${style.bg} ${style.text}`}>
@@ -1578,7 +1578,7 @@ function SpectrumContent() {
             })}
 
             {/* Cross-module links */}
-            <div className="card p-5 border border-white/15/20">
+            <div className="card p-5 border border-white/15">
               <h3 className="text-white font-semibold mb-3">Related Analysis</h3>
               <div className="flex flex-wrap gap-3">
                 <Link
@@ -1837,7 +1837,7 @@ function SpectrumContent() {
             </div>
 
             {/* Cross-module links */}
-            <div className="card p-5 border border-white/15/20">
+            <div className="card p-5 border border-white/15">
               <h3 className="text-white font-semibold mb-3">Related Resources</h3>
               <div className="flex flex-wrap gap-3">
                 <Link
@@ -1877,7 +1877,7 @@ function SpectrumContent() {
             {REGULATORY_PROCEEDINGS.map((proc) => {
               const impact = IMPACT_STYLES[proc.impact];
               return (
-                <div key={proc.id} className="card p-5 hover:border-white/15/50 transition-all">
+                <div key={proc.id} className="card p-5 hover:border-white/15 transition-all">
                   <div className="flex items-start justify-between mb-3 gap-3">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center text-xs font-bold text-slate-200 shrink-0">
@@ -1907,7 +1907,7 @@ function SpectrumContent() {
             })}
 
             {/* Cross-module links */}
-            <div className="card p-5 border border-white/15/20">
+            <div className="card p-5 border border-white/15">
               <h3 className="text-white font-semibold mb-3">Related Resources</h3>
               <div className="flex flex-wrap gap-3">
                 <Link
@@ -2142,7 +2142,7 @@ function SpectrumContent() {
         {/* ═══════════════════ FOR LAWYERS TAB ═══════════════════ */}
         {activeTab === 'lawyers' && (
           <div className="space-y-6">
-            <div className="card p-6 border border-white/15/20">
+            <div className="card p-6 border border-white/15">
               <h3 className="text-lg font-semibold text-white mb-2">Impact Analysis: Spectrum Auctions & Satellite Operator Rights</h3>
               <p className="text-star-300 text-sm leading-relaxed">
                 This section analyzes how spectrum auction outcomes and regulatory proceedings affect the rights,
@@ -2296,7 +2296,7 @@ function SpectrumContent() {
             </div>
 
             {/* Related Resources */}
-            <div className="card p-5 border border-white/15/20">
+            <div className="card p-5 border border-white/15">
               <h3 className="text-white font-semibold mb-3">Legal Research Resources</h3>
               <div className="flex flex-wrap gap-3">
                 <Link

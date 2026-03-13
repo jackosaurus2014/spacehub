@@ -249,7 +249,7 @@ function CostSummaryCard({ data }: { data: CostEstimateResponse }) {
   const viableProviders = data.providers.filter(p => p.supportsOrbit && p.supportsPayload);
 
   return (
-    <div className="card-elevated p-6 border border-white/15/20">
+    <div className="card-elevated p-6 border border-white/15">
       <div className="flex items-center gap-3 mb-6">
         <span className="text-3xl">💰</span>
         <div>
@@ -372,7 +372,7 @@ function InsuranceDetails({ insurance, payloadValue }: { insurance: InsuranceEst
 
   return (
     <div className="space-y-4">
-      <div className="card-elevated p-5 border border-white/15/20">
+      <div className="card-elevated p-5 border border-white/15">
         <div className="flex items-center gap-3 mb-4">
           <span className="text-2xl">🛡️</span>
           <div>
@@ -454,7 +454,7 @@ function RegulatoryDetails({ fees }: { fees: RegulatoryFeesEstimate }) {
 
   return (
     <div className="space-y-4">
-      <div className="card-elevated p-5 border border-white/15/20">
+      <div className="card-elevated p-5 border border-white/15">
         <div className="flex items-center gap-3 mb-4">
           <span className="text-2xl">📋</span>
           <div>
@@ -945,7 +945,7 @@ function MissionCostContent() {
         </Link></ScrollReveal>
 
         {/* Related Links */}
-        <ScrollReveal><div className="card p-5 mt-4 border border-white/15/20">
+        <ScrollReveal><div className="card p-5 mt-4 border border-white/15">
           <h3 className="text-lg font-semibold text-white mb-4">Related Resources</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
             <Link

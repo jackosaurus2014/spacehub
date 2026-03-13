@@ -61,7 +61,7 @@ function BlogPostCard({ post }: { post: BlogPost }) {
   };
 
   return (
-    <div className="card p-5 hover:border-white/15/50 transition-all group block">
+    <div className="card p-5 hover:border-white/15 transition-all group block">
       <a
         href={post.url}
         target="_blank"

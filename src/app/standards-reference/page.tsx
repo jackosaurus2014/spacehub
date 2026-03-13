@@ -558,7 +558,7 @@ const COMPLIANCE_CHECKLISTS: Record<MissionType, string[]> = {
 // ---------------------------------------------------------------------------
 
 const ORG_COLORS: Record<string, string> = {
-  cyan: 'border-white/10/40 text-slate-300',
+  cyan: 'border-white/10 text-slate-300',
   blue: 'border-blue-400/40 text-blue-400',
   red: 'border-red-400/40 text-red-400',
   green: 'border-green-400/40 text-green-400',
@@ -856,7 +856,7 @@ export default function StandardsReferencePage() {
                   placeholder="Search by ID, title, or description..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2.5 bg-slate-800/60 border border-slate-700/50 rounded-lg text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-white/15 focus:ring-1 focus:ring-white/20/20 min-h-[44px]"
+                  className="w-full pl-10 pr-4 py-2.5 bg-slate-800/60 border border-slate-700/50 rounded-lg text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-white/15 focus:ring-1 focus:ring-white/20 min-h-[44px]"
                 />
               </div>
 

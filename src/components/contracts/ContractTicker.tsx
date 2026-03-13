@@ -167,7 +167,7 @@ export default function ContractTicker({ onFilterChange }: ContractTickerProps) 
               <button
                 key={`${contract.id}-${index}`}
                 onClick={() => setSelectedContract(contract)}
-                className="flex items-center gap-3 bg-slate-900/50 border border-slate-700 rounded-lg px-4 py-2 hover:border-white/15/50 hover:bg-slate-800/50 transition-all cursor-pointer min-w-max"
+                className="flex items-center gap-3 bg-slate-900/50 border border-slate-700 rounded-lg px-4 py-2 hover:border-white/15 hover:bg-slate-800/50 transition-all cursor-pointer min-w-max"
               >
                 {/* Agency Badge */}
                 <span className={`px-2 py-0.5 rounded text-xs font-medium ${getAgencyStyle(contract.agency)}`}>

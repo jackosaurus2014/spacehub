@@ -486,7 +486,7 @@ export default function MissionPlanner() {
                       onClick={() => handleSelectOption(category.id, option.id)}
                       className={`text-left p-3 rounded-lg border transition-all ${
                         isSelected
-                          ? 'border-white/15/60 bg-slate-800/30 ring-1 ring-white/10'
+                          ? 'border-white/15 bg-slate-800/30 ring-1 ring-white/10'
                           : 'border-slate-700/30 bg-slate-800/30 hover:border-slate-600/50 hover:bg-slate-800/50'
                       }`}
                     >

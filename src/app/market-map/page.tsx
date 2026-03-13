@@ -480,7 +480,7 @@ export default function MarketMapPage() {
                   onClick={() => setSelectedSector(null)}
                   className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all border ${
                     selectedSector === null
-                      ? 'bg-white/10 border-white/15/40 text-slate-200'
+                      ? 'bg-white/10 border-white/15 text-slate-200'
                       : 'bg-slate-800/60 border-slate-700/50 text-slate-400 hover:text-slate-200 hover:border-slate-600'
                   }`}
                 >
@@ -510,7 +510,7 @@ export default function MarketMapPage() {
                   onClick={() => setSelectedStage(null)}
                   className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all border ${
                     selectedStage === null
-                      ? 'bg-white/10 border-white/15/40 text-slate-200'
+                      ? 'bg-white/10 border-white/15 text-slate-200'
                       : 'bg-slate-800/60 border-slate-700/50 text-slate-400 hover:text-slate-200 hover:border-slate-600'
                   }`}
                 >

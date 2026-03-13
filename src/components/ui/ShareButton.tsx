@@ -108,7 +108,7 @@ export default function ShareButton({ title, url, description, className = '' }:
           }
           setIsOpen((prev) => !prev);
         }}
-        className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-800 border border-slate-700 rounded-lg text-xs font-medium text-slate-300 hover:text-white hover:border-white/15/40 transition-all"
+        className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-800 border border-slate-700 rounded-lg text-xs font-medium text-slate-300 hover:text-white hover:border-white/15 transition-all"
         aria-label="Share"
         aria-expanded={isOpen}
         aria-haspopup="true"

@@ -420,7 +420,7 @@ function VehicleCard({
       onClick={onSelect}
       className={`w-full text-left rounded-xl p-5 transition-all duration-200 border ${
         isSelected
-          ? 'bg-slate-800/80 border-white/15 ring-1 ring-white/15/20'
+          ? 'bg-slate-800/80 border-white/15 ring-1 ring-white/15'
           : 'bg-slate-800/40 border-slate-700/50 hover:border-slate-600/50 hover:bg-slate-800/60'
       }`}
     >
@@ -430,7 +430,7 @@ function VehicleCard({
           <div
             className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${
               vehicle.isBestValue
-                ? 'bg-white/10 text-slate-300 ring-1 ring-white/15/40'
+                ? 'bg-white/10 text-slate-300 ring-1 ring-white/15'
                 : 'bg-slate-700/50 text-slate-400'
             }`}
           >
@@ -831,7 +831,7 @@ export default function LaunchCostCalculatorPage() {
                       onClick={() => setMissionType(type)}
                       className={`py-2.5 px-3 rounded-lg text-sm font-medium transition-all border ${
                         missionType === type
-                          ? 'bg-white/8 border-white/15/40 text-slate-300'
+                          ? 'bg-white/8 border-white/15 text-slate-300'
                           : 'bg-slate-900/50 border-slate-700/50 text-slate-400 hover:border-slate-600/50'
                       }`}
                     >

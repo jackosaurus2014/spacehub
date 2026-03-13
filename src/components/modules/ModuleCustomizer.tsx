@@ -73,7 +73,7 @@ export default function ModuleCustomizer({
   }));
 
   return (
-    <div className="card p-6 border-white/15/50">
+    <div className="card p-6 border-white/15">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-display font-bold text-white flex items-center gap-2">
           <span>⚙️</span> Customize Dashboard

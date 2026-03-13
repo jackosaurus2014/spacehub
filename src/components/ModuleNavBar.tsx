@@ -79,7 +79,7 @@ export default function ModuleNavBar() {
             {prevModule && (
               <button
                 onClick={() => navigateTo(prevModule.moduleId)}
-                className="group flex items-center gap-1 sm:gap-2 px-2 py-2 sm:px-4 sm:py-3 rounded-xl bg-gradient-to-r from-slate-800/60 to-slate-700/60 hover:from-slate-700/70 hover:to-slate-600/70 border border-white/10 hover:border-white/10/60 text-slate-200 hover:text-white transition-all duration-300 shadow-lg shadow-black/10 hover:shadow-black/15 hover:scale-[1.03] active:scale-95 touch-target"
+                className="group flex items-center gap-1 sm:gap-2 px-2 py-2 sm:px-4 sm:py-3 rounded-xl bg-gradient-to-r from-slate-800/60 to-slate-700/60 hover:from-slate-700/70 hover:to-slate-600/70 border border-white/10 hover:border-white/10 text-slate-200 hover:text-white transition-all duration-300 shadow-lg shadow-black/10 hover:shadow-black/15 hover:scale-[1.03] active:scale-95 touch-target"
                 title={`Previous: ${prevModule.name}`}
               >
                 <svg className="w-5 h-5 sm:w-6 sm:h-6 group-hover:-translate-x-1 transition-transform duration-300 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -98,7 +98,7 @@ export default function ModuleNavBar() {
             <div className="relative flex-1 min-w-0">
               <button
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                className="w-full flex items-center gap-2 sm:gap-4 px-3 py-2 sm:px-5 sm:py-3 rounded-xl bg-slate-700/40 hover:bg-slate-600/50 border border-white/10 hover:border-white/10/40 transition-all duration-200"
+                className="w-full flex items-center gap-2 sm:gap-4 px-3 py-2 sm:px-5 sm:py-3 rounded-xl bg-slate-700/40 hover:bg-slate-600/50 border border-white/10 hover:border-white/10 transition-all duration-200"
               >
                 <div className="flex items-center gap-2 sm:gap-4 flex-1 min-w-0">
                   <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-slate-800/50 to-slate-700/50 border border-white/10 flex items-center justify-center text-xl sm:text-2xl flex-shrink-0">
@@ -169,7 +169,7 @@ export default function ModuleNavBar() {
             {nextModule && (
               <button
                 onClick={() => navigateTo(nextModule.moduleId)}
-                className="group flex items-center gap-1 sm:gap-2 px-2 py-2 sm:px-4 sm:py-3 rounded-xl bg-gradient-to-r from-slate-700/60 to-slate-800/60 hover:from-slate-600/70 hover:to-slate-700/70 border border-white/10 hover:border-white/10/60 text-slate-200 hover:text-white transition-all duration-300 shadow-lg shadow-black/10 hover:shadow-black/15 hover:scale-[1.03] active:scale-95 touch-target"
+                className="group flex items-center gap-1 sm:gap-2 px-2 py-2 sm:px-4 sm:py-3 rounded-xl bg-gradient-to-r from-slate-700/60 to-slate-800/60 hover:from-slate-600/70 hover:to-slate-700/70 border border-white/10 hover:border-white/10 text-slate-200 hover:text-white transition-all duration-300 shadow-lg shadow-black/10 hover:shadow-black/15 hover:scale-[1.03] active:scale-95 touch-target"
                 title={`Next: ${nextModule.name}`}
               >
                 <div className="hidden sm:flex flex-col items-end leading-tight">

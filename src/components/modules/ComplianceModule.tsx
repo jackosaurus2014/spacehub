@@ -47,7 +47,7 @@ function ClassificationCard({ item }: { item: ExportClassification }) {
   const categoryInfo = CLASSIFICATION_CATEGORIES.find((c) => c.value === item.category);
 
   return (
-    <div className="card p-4 hover:border-white/15/50 transition-all">
+    <div className="card p-4 hover:border-white/15 transition-all">
       <div className="flex items-start justify-between mb-2">
         <div className="flex items-center gap-2">
           <span
@@ -78,7 +78,7 @@ function RegulationCard({ item }: { item: ProposedRegulation }) {
   const isUrgent = deadline && deadline > new Date() && deadline < new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
 
   return (
-    <div className="card p-4 hover:border-white/15/50 transition-all">
+    <div className="card p-4 hover:border-white/15 transition-all">
       <div className="flex items-start justify-between mb-2">
         <span className="text-xs font-semibold text-slate-200 bg-slate-800 px-2 py-0.5 rounded">
           {item.agency}
@@ -132,7 +132,7 @@ function LegalSourceCard({ source }: { source: LegalSource }) {
       href={source.url}
       target="_blank"
       rel="noopener noreferrer"
-      className="card p-3 hover:border-white/15/50 transition-all flex items-center gap-3"
+      className="card p-3 hover:border-white/15 transition-all flex items-center gap-3"
     >
       <span className="text-xl">{typeInfo.icon}</span>
       <div className="flex-1 min-w-0">

@@ -303,7 +303,7 @@ export default function MissionControlModule() {
 
   return (
     <Link href="/mission-control" className="block">
-      <div className="card p-6 glow-border hover:border-white/10/50 transition-all cursor-pointer group">
+      <div className="card p-6 glow-border hover:border-white/10 transition-all cursor-pointer group">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-display font-bold text-slate-200 flex items-center gap-2">
             <span>🎯</span> Mission Control

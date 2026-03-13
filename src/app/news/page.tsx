@@ -255,7 +255,7 @@ export default function NewsPage() {
                 <StaggerItem key={post.slug}>
                   <Link
                     href={`/blog/${post.slug}`}
-                    className="group block card p-5 hover:border-white/15/50"
+                    className="group block card p-5 hover:border-white/15"
                   >
                     <div className="flex items-center gap-2 mb-3">
                       <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-white/10 text-slate-200 border border-white/10">

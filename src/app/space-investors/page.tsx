@@ -705,7 +705,7 @@ export default function SpaceInvestorsPage() {
                     placeholder="Search investors, portfolio companies, key people..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2.5 bg-slate-800/60 border border-slate-700/50 rounded-lg text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-white/30/40 focus:border-white/15 transition-colors"
+                    className="w-full pl-10 pr-4 py-2.5 bg-slate-800/60 border border-slate-700/50 rounded-lg text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-white/30 focus:border-white/15 transition-colors"
                   />
                 </div>
               </div>
@@ -714,7 +714,7 @@ export default function SpaceInvestorsPage() {
               <select
                 value={stageFilter}
                 onChange={(e) => setStageFilter(e.target.value as StageTag | '')}
-                className="px-4 py-2.5 bg-slate-800/60 border border-slate-700/50 rounded-lg text-slate-200 focus:outline-none focus:ring-2 focus:ring-white/30/40 min-w-[150px]"
+                className="px-4 py-2.5 bg-slate-800/60 border border-slate-700/50 rounded-lg text-slate-200 focus:outline-none focus:ring-2 focus:ring-white/30 min-w-[150px]"
               >
                 {STAGE_OPTIONS.map((opt) => (
                   <option key={opt.value} value={opt.value}>
@@ -727,7 +727,7 @@ export default function SpaceInvestorsPage() {
               <select
                 value={typeFilter}
                 onChange={(e) => setTypeFilter(e.target.value as InvestorType | '')}
-                className="px-4 py-2.5 bg-slate-800/60 border border-slate-700/50 rounded-lg text-slate-200 focus:outline-none focus:ring-2 focus:ring-white/30/40 min-w-[150px]"
+                className="px-4 py-2.5 bg-slate-800/60 border border-slate-700/50 rounded-lg text-slate-200 focus:outline-none focus:ring-2 focus:ring-white/30 min-w-[150px]"
               >
                 {TYPE_OPTIONS.map((opt) => (
                   <option key={opt.value} value={opt.value}>
@@ -740,7 +740,7 @@ export default function SpaceInvestorsPage() {
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as SortKey)}
-                className="px-4 py-2.5 bg-slate-800/60 border border-slate-700/50 rounded-lg text-slate-200 focus:outline-none focus:ring-2 focus:ring-white/30/40 min-w-[160px]"
+                className="px-4 py-2.5 bg-slate-800/60 border border-slate-700/50 rounded-lg text-slate-200 focus:outline-none focus:ring-2 focus:ring-white/30 min-w-[160px]"
               >
                 {SORT_OPTIONS.map((opt) => (
                   <option key={opt.value} value={opt.value}>

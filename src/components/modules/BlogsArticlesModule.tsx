@@ -70,7 +70,7 @@ function BlogPostCard({ post }: { post: BlogPost }) {
       href={post.url}
       target="_blank"
       rel="noopener noreferrer"
-      className="card p-4 hover:border-white/15/50 transition-all group block"
+      className="card p-4 hover:border-white/15 transition-all group block"
     >
       <div className="flex items-start gap-3">
         {topicLogo ? (
@@ -142,7 +142,7 @@ export default function BlogsArticlesModule() {
 
   return (
     <Link href="/blogs" className="block">
-      <div className="card p-6 glow-border hover:border-white/10/50 transition-all cursor-pointer group">
+      <div className="card p-6 glow-border hover:border-white/10 transition-all cursor-pointer group">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-display font-bold text-slate-200 flex items-center gap-2">
             <span>✍️</span> Blogs & Articles

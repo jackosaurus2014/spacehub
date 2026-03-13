@@ -95,7 +95,7 @@ function BlogListingContent() {
                 <Link
                   key={post.slug}
                   href={`/blog/${post.slug}`}
-                  className="group block bg-slate-800/60 border border-slate-700/50 rounded-xl overflow-hidden hover:border-white/15/50 transition-all duration-300"
+                  className="group block bg-slate-800/60 border border-slate-700/50 rounded-xl overflow-hidden hover:border-white/15 transition-all duration-300"
                 >
                   <div className="p-6">
                     <div className="flex items-center gap-3 mb-3">
@@ -165,7 +165,7 @@ function BlogListingContent() {
             <StaggerItem key={post.slug}>
               <Link
                 href={`/blog/${post.slug}`}
-                className="group block bg-slate-800/40 border border-slate-700/50 rounded-xl p-6 hover:border-white/15/50 transition-all duration-300 h-full"
+                className="group block bg-slate-800/40 border border-slate-700/50 rounded-xl p-6 hover:border-white/15 transition-all duration-300 h-full"
               >
                 <div className="flex items-center gap-3 mb-3">
                   <span
@@ -214,7 +214,7 @@ function BlogListingContent() {
               <Link
                 key={tool.href}
                 href={tool.href}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-slate-800/60 border border-slate-700/50 rounded-lg text-sm text-slate-300 hover:text-white hover:border-white/15/50 transition-all"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-slate-800/60 border border-slate-700/50 rounded-lg text-sm text-slate-300 hover:text-white hover:border-white/15 transition-all"
               >
                 {tool.label}
               </Link>

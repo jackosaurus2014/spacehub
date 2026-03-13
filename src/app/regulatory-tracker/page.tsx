@@ -649,7 +649,7 @@ export default function RegulatoryTrackerPage() {
                   value={searchQuery}
                   onChange={e => setSearchQuery(e.target.value)}
                   placeholder="Search proceedings, docket numbers..."
-                  className="w-full pl-10 pr-4 py-2.5 bg-slate-800/60 border border-slate-700/50 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-white/15 focus:ring-1 focus:ring-white/30/30 transition-colors"
+                  className="w-full pl-10 pr-4 py-2.5 bg-slate-800/60 border border-slate-700/50 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-white/15 focus:ring-1 focus:ring-white/30 transition-colors"
                 />
               </div>
 
@@ -797,7 +797,7 @@ export default function RegulatoryTrackerPage() {
                               onClick={() => setExpandedId(expandedId === p.id ? null : p.id)}
                               className={`w-full text-left p-2.5 rounded-lg border transition-all ${
                                 expandedId === p.id
-                                  ? 'bg-slate-800/80 border-white/15/40'
+                                  ? 'bg-slate-800/80 border-white/15'
                                   : 'bg-slate-800/40 border-slate-700/30 hover:border-slate-600/50'
                               }`}
                             >

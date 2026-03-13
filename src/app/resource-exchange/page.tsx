@@ -628,7 +628,7 @@ function DynamicResourceContent() {
             <p className="text-slate-400 text-sm mb-4">{commentary.summary}</p>
 
             {commentary.keyTakeaways.length > 0 && (
-              <div className="mb-4 p-4 bg-white/5 rounded-lg border border-white/15/20">
+              <div className="mb-4 p-4 bg-white/5 rounded-lg border border-white/15">
                 <h4 className="text-sm font-semibold text-slate-200 mb-2">Key Takeaways</h4>
                 <ul className="space-y-1">
                   {commentary.keyTakeaways.map((t, i) => (

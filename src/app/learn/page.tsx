@@ -150,13 +150,13 @@ export default function LearnPage() {
             <StaggerItem key={guide.slug}>
             <Link
               href={`/learn/${guide.slug}`}
-              className="group bg-slate-800/50 border border-slate-700/50 rounded-xl p-6 hover:border-white/15/50 transition-all duration-300 hover:bg-slate-800/70"
+              className="group bg-slate-800/50 border border-slate-700/50 rounded-xl p-6 hover:border-white/15 transition-all duration-300 hover:bg-slate-800/70"
             >
               <div className="flex items-start gap-4 mb-4">
                 <div className="shrink-0 mt-1">{guide.icon}</div>
                 <div>
                   <div className="flex items-center gap-3 mb-1">
-                    <span className="text-xs px-2 py-0.5 rounded-full bg-white/10 text-slate-300 border border-white/15/20">
+                    <span className="text-xs px-2 py-0.5 rounded-full bg-white/10 text-slate-300 border border-white/15">
                       {guide.category}
                     </span>
                     <span className="text-xs text-slate-500">{guide.readTime}</span>
@@ -186,7 +186,7 @@ export default function LearnPage() {
           <div className="flex flex-wrap justify-center gap-4">
             <Link
               href="/register"
-              className="inline-block bg-white hover:bg-slate-100 text-white font-medium px-6 py-2.5 rounded-lg transition-colors"
+              className="inline-block bg-white hover:bg-slate-100 text-slate-900 font-medium px-6 py-2.5 rounded-lg transition-colors"
             >
               Get Started Free
             </Link>
@@ -207,28 +207,28 @@ export default function LearnPage() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             <Link
               href="/guide/space-industry"
-              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 text-center hover:border-white/15/50 transition-colors"
+              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 text-center hover:border-white/15 transition-colors"
             >
               <div className="text-white text-sm font-medium">Industry Overview</div>
               <div className="text-slate-500 text-xs">Pillar guide</div>
             </Link>
             <Link
               href="/space-industry/houston"
-              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 text-center hover:border-white/15/50 transition-colors"
+              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 text-center hover:border-white/15 transition-colors"
             >
               <div className="text-white text-sm font-medium">Space Hubs</div>
               <div className="text-slate-500 text-xs">City guides</div>
             </Link>
             <Link
               href="/compare"
-              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 text-center hover:border-white/15/50 transition-colors"
+              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 text-center hover:border-white/15 transition-colors"
             >
               <div className="text-white text-sm font-medium">Comparisons</div>
               <div className="text-slate-500 text-xs">vs. competitors</div>
             </Link>
             <Link
               href="/blog"
-              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 text-center hover:border-white/15/50 transition-colors"
+              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 text-center hover:border-white/15 transition-colors"
             >
               <div className="text-white text-sm font-medium">Blog</div>
               <div className="text-slate-500 text-xs">News & analysis</div>

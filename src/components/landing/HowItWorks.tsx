@@ -70,7 +70,7 @@ export default function HowItWorks() {
               whileHover={{ y: -4, transition: { duration: 0.2 } }}
               className="group flex flex-col items-center text-center cursor-default"
             >
-              <div className="relative z-10 w-20 h-20 rounded-full bg-gradient-to-br from-white to-blue-600 flex items-center justify-center shadow-lg shadow-black/10 mb-5 group-hover:shadow-xl group-hover:shadow-black/15 transition-all duration-300 ring-4 ring-white/15/10 group-hover:ring-white/15/20">
+              <div className="relative z-10 w-20 h-20 rounded-full bg-gradient-to-br from-white to-blue-600 flex items-center justify-center shadow-lg shadow-black/10 mb-5 group-hover:shadow-xl group-hover:shadow-black/15 transition-all duration-300 ring-4 ring-white/15 group-hover:ring-white/15">
                 <span className="absolute -top-1.5 -right-1.5 w-7 h-7 rounded-full bg-gradient-to-br from-slate-800 to-slate-900 border-2 border-white/10 text-xs font-bold text-slate-200 flex items-center justify-center shadow-md">
                   {s.step}
                 </span>

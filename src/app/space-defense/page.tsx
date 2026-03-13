@@ -1171,7 +1171,7 @@ function SpaceForceCard({ force }: { force: SpaceForce }) {
   const [expanded, setExpanded] = useState(false);
 
   return (
-    <div className="card p-5 hover:border-white/15/40">
+    <div className="card p-5 hover:border-white/15">
       <div className="flex items-start justify-between mb-3">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-full bg-slate-700/50 flex items-center justify-center text-xs font-bold text-white">
@@ -1265,7 +1265,7 @@ function ProgramCard({ program }: { program: DefenseProgram }) {
   const catStyle = CATEGORY_STYLES[program.category] || DEFAULT_CATEGORY_STYLE;
 
   return (
-    <div className="card p-5 hover:border-white/15/40">
+    <div className="card p-5 hover:border-white/15">
       <div className="flex items-start justify-between mb-2">
         <div>
           <div className="flex items-center gap-2 flex-wrap mb-1">
@@ -1340,7 +1340,7 @@ function ProgramCard({ program }: { program: DefenseProgram }) {
 
 function ContractCard({ contract }: { contract: ContractAward }) {
   return (
-    <div className="card p-5 hover:border-white/15/40">
+    <div className="card p-5 hover:border-white/15">
       <div className="flex items-start justify-between mb-2">
         <h3 className="text-white font-semibold">{contract.title}</h3>
         <span className="text-green-400 font-bold text-sm whitespace-nowrap ml-3">{contract.value}</span>
@@ -1433,7 +1433,7 @@ function AllianceCard({ alliance }: { alliance: Alliance }) {
   const [expanded, setExpanded] = useState(false);
 
   return (
-    <div className="card p-5 hover:border-white/15/40">
+    <div className="card p-5 hover:border-white/15">
       <div className="flex items-start justify-between mb-3">
         <div>
           <div className="flex items-center gap-2 mb-1">
@@ -2024,7 +2024,7 @@ export default function SpaceDefensePage() {
                         onClick={() => setProgramCategoryFilter(cat)}
                         className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
                           programCategoryFilter === cat
-                            ? `bg-white/10 ${style.color} border border-white/15/40`
+                            ? `bg-white/10 ${style.color} border border-white/15`
                             : 'bg-slate-700 text-star-400 hover:bg-slate-600'
                         }`}
                       >
@@ -2173,7 +2173,7 @@ export default function SpaceDefensePage() {
                     focus: ['LEO PNT constellations', 'Terrestrial eLoran modernization', 'Quantum-inertial navigation'],
                   },
                 ].map((opp) => (
-                  <div key={opp.title} className="card p-5 hover:border-white/15/40">
+                  <div key={opp.title} className="card p-5 hover:border-white/15">
                     <div className="flex items-start justify-between gap-2 mb-2">
                       <h3 className="text-white font-semibold text-sm">{opp.title}</h3>
                       <span className={`text-xs font-medium px-2 py-0.5 rounded whitespace-nowrap ${opp.statusBg} ${opp.statusColor}`}>
@@ -2235,7 +2235,7 @@ export default function SpaceDefensePage() {
                     const typeStyle = typeStyles[opp.type || 'solicitation'] || typeStyles.solicitation;
 
                     return (
-                      <div key={opp.id} className="card p-4 hover:border-white/15/40">
+                      <div key={opp.id} className="card p-4 hover:border-white/15">
                         <div className="flex items-start justify-between gap-2 mb-2">
                           <h3 className="text-white font-semibold text-sm line-clamp-2">{opp.title}</h3>
                           <span className={`text-xs font-medium px-2 py-0.5 rounded whitespace-nowrap ${typeStyle.bg} ${typeStyle.color}`}>
@@ -2288,7 +2288,7 @@ export default function SpaceDefensePage() {
             )}
 
             {/* Related News Cross-Link (replaces embedded news articles) */}
-            <div className="card p-5 border border-white/15/20 bg-white/5 backdrop-blur">
+            <div className="card p-5 border border-white/15 bg-white/5 backdrop-blur">
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="text-white font-semibold mb-1">Defense & National Security News</h3>

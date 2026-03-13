@@ -330,7 +330,7 @@ function FilterPanel({
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder="e.g. Starlink, GPS, Dragon..."
-          className="w-full bg-slate-800/60 border border-slate-700/50 rounded-lg px-3 py-2 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-white/15/60 transition-colors"
+          className="w-full bg-slate-800/60 border border-slate-700/50 rounded-lg px-3 py-2 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-white/15 transition-colors"
         />
       </div>
 
@@ -341,7 +341,7 @@ function FilterPanel({
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="w-full bg-slate-800/60 border border-slate-700/50 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-white/15/60 transition-colors"
+            className="w-full bg-slate-800/60 border border-slate-700/50 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-white/15 transition-colors"
           >
             {STATUS_OPTIONS.map((opt) => (
               <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -353,7 +353,7 @@ function FilterPanel({
           <select
             value={siteFilter}
             onChange={(e) => setSiteFilter(e.target.value)}
-            className="w-full bg-slate-800/60 border border-slate-700/50 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-white/15/60 transition-colors"
+            className="w-full bg-slate-800/60 border border-slate-700/50 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-white/15 transition-colors"
           >
             <option value="all">All Sites</option>
             {LAUNCH_SITES.map((site) => (
@@ -569,11 +569,11 @@ function CalendarView({
               disabled={!hasLaunches}
               className={`h-20 rounded-lg border text-left p-1.5 transition-all relative ${
                 isSelected
-                  ? 'border-white/10/80 bg-white/8 ring-1 ring-white/10/40'
+                  ? 'border-white/10 bg-white/8 ring-1 ring-white/10'
                   : hasLaunches
                     ? `${getDayColor(dayLaunches)} hover:scale-[1.03] cursor-pointer`
                     : 'border-slate-800/30 bg-slate-800/10'
-              } ${isTodayCell ? 'ring-2 ring-white/15/60' : ''}`}
+              } ${isTodayCell ? 'ring-2 ring-white/15' : ''}`}
             >
               <span className={`text-xs font-medium ${
                 isTodayCell ? 'text-slate-300 font-bold' : hasLaunches ? 'text-slate-200' : 'text-slate-600'

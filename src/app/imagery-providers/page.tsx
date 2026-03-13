@@ -58,7 +58,7 @@ function getTypeBorderColor(type: ProviderType): string {
     SAR: 'border-orange-500/40',
     Hyperspectral: 'border-purple-500/40',
     'RF/Signals': 'border-red-500/40',
-    Analytics: 'border-white/15/40',
+    Analytics: 'border-white/15',
   };
   return colors[type] || 'border-slate-500/40';
 }

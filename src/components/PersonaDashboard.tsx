@@ -142,7 +142,7 @@ export default function PersonaDashboard() {
             <Link
               key={link.href}
               href={link.href}
-              className="group flex items-start gap-4 p-5 rounded-xl border border-slate-700/50 bg-slate-800/30 hover:border-white/15/40 hover:bg-slate-800/60 transition-all duration-300 hover:shadow-lg hover:shadow-black/20/5"
+              className="group flex items-start gap-4 p-5 rounded-xl border border-slate-700/50 bg-slate-800/30 hover:border-white/15 hover:bg-slate-800/60 transition-all duration-300 hover:shadow-lg hover:shadow-black/20/5"
             >
               <span className="text-2xl flex-shrink-0 mt-0.5">{link.icon}</span>
               <div className="min-w-0">

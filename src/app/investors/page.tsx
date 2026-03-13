@@ -336,7 +336,7 @@ function InvestorsPageInner() {
                   <div
                     className={`bg-slate-800/50 rounded-xl border transition-colors p-5 ${
                       isExpanded
-                        ? 'border-white/15/40'
+                        ? 'border-white/15'
                         : 'border-slate-700/50 hover:border-white/10'
                     }`}
                   >

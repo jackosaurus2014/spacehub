@@ -941,7 +941,7 @@ export default function LaunchEconomicsPage() {
               <a
                 key={link.href}
                 href={link.href}
-                className="block p-4 bg-slate-800/40 border border-slate-700/40 rounded-xl hover:border-white/15/40 hover:bg-slate-800/60 transition-all group"
+                className="block p-4 bg-slate-800/40 border border-slate-700/40 rounded-xl hover:border-white/15 hover:bg-slate-800/60 transition-all group"
               >
                 <p className="text-sm font-medium text-slate-200 group-hover:text-white transition-colors">{link.label}</p>
                 <p className="text-xs text-slate-500 mt-1">{link.desc}</p>

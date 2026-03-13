@@ -1037,7 +1037,7 @@ function TechnologiesTab() {
             <StaggerItem key={tech.id}>
               <div
                 className={`bg-slate-800/50 border rounded-xl overflow-hidden transition-all ${
-                  isExpanded ? 'border-white/15/40' : 'border-slate-700/50 hover:border-slate-600/50'
+                  isExpanded ? 'border-white/15' : 'border-slate-700/50 hover:border-slate-600/50'
                 }`}
               >
                 {/* Header */}
@@ -1218,7 +1218,7 @@ function LocationsTab() {
             <StaggerItem key={loc.id}>
               <div
                 className={`bg-slate-800/50 border rounded-xl overflow-hidden transition-all ${
-                  isSelected ? 'border-white/15/40' : 'border-slate-700/50'
+                  isSelected ? 'border-white/15' : 'border-slate-700/50'
                 }`}
               >
                 <button

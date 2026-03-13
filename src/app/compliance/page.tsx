@@ -154,7 +154,7 @@ function PolicyCard({ policy }: { policy: PolicyChange }) {
   const deadline = policy.commentDeadline ? new Date(policy.commentDeadline) : null;
   const isUrgent = deadline && deadline > new Date() && deadline < new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
   return (
-    <div className="card p-5 hover:border-white/15/50 transition-all">
+    <div className="card p-5 hover:border-white/15 transition-all">
       <div className="flex items-start justify-between mb-3">
         <div className="flex items-center gap-2">
           <span className="text-xl">{agencyIcons[policy.agency] || '\uD83D\uDCCB'}</span>
@@ -228,7 +228,7 @@ function LicenseCard({ license }: { license: LicenseRequirement }) {
   const [expanded, setExpanded] = useState(false);
   const agencyColors: Record<string, string> = { FAA: 'bg-orange-500/20 text-orange-400 border-orange-500/30', FCC: 'bg-blue-500/20 text-blue-400 border-blue-500/30', NOAA: 'bg-white/10 text-slate-300 border-white/10' };
   return (
-    <div className="card p-5 hover:border-white/15/50 transition-all">
+    <div className="card p-5 hover:border-white/15 transition-all">
       <div className="flex items-start justify-between mb-3">
         <span className={`text-xs font-bold px-2 py-1 rounded border ${agencyColors[license.agency] || 'bg-slate-700/60 text-slate-300'}`}>{license.agency}</span>
         <span className="text-xs text-slate-400">{license.processingTimeMin}-{license.processingTimeMax} days</span>
@@ -296,7 +296,7 @@ function CaseCard({ lawCase }: { lawCase: SpaceLawCase }) {
   const outcomeColors = { plaintiff_victory: 'bg-green-500/20 text-green-400', defendant_victory: 'bg-red-500/20 text-red-400', settlement: 'bg-yellow-500/20 text-yellow-400', dismissed: 'bg-slate-800/500/20 text-slate-400', pending: 'bg-blue-500/20 text-blue-400', vacated: 'bg-purple-500/20 text-purple-400' };
   const jurisdictionIcons = { federal: '\uD83C\uDFDB\uFE0F', international: '\uD83C\uDF0D', arbitration: '\u2696\uFE0F', state: '\uD83C\uDFE2', gao: '\uD83D\uDCCA' };
   return (
-    <div className="card p-5 hover:border-white/15/50 transition-all">
+    <div className="card p-5 hover:border-white/15 transition-all">
       <div className="flex items-start justify-between mb-3">
         <div className="flex items-center gap-2"><span className="text-xl">{jurisdictionIcons[lawCase.jurisdiction]}</span><span className="text-xs text-slate-400">{lawCase.year}</span></div>
         <span className={`text-xs px-2 py-1 rounded ${outcomeColors[lawCase.outcome]}`}>{lawCase.outcome.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</span>
@@ -412,7 +412,7 @@ function ExpertCommentaryTab() {
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
         {filteredSources.map((source) => { const typeInfo = typeLabels[source.type]; return (
-          <a key={source.id} href={source.url} target="_blank" rel="noopener noreferrer" className="card p-5 hover:border-white/15/50 transition-all group">
+          <a key={source.id} href={source.url} target="_blank" rel="noopener noreferrer" className="card p-5 hover:border-white/15 transition-all group">
             <div className="flex items-start justify-between mb-3"><span className="text-3xl">{typeInfo?.icon || '\uD83D\uDCCB'}</span><span className={`text-xs px-2 py-1 rounded ${typeInfo?.color || 'bg-slate-700'}`}>{typeInfo?.label || source.type}</span></div>
             <h4 className="font-semibold text-white mb-1 group-hover:text-slate-200 transition-colors">{source.name}</h4>
             {source.organization && (<p className="text-sm text-slate-400 mb-2">{source.organization}</p>)}
@@ -635,7 +635,7 @@ function FilingsFCCTab() {
         <span className="text-xs text-star-300 ml-auto">{filtered.length} filings</span>
       </div></div>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">{filtered.map((filing) => { const statusStyle = FILING_STATUS_STYLES[filing.status] || DEFAULT_FILING_STATUS_STYLE; const orbitStyle = FILING_ORBIT_STYLES[filing.orbitType] || DEFAULT_FILING_ORBIT_STYLE; return (
-        <div key={filing.id} className="card p-5 hover:border-white/15/50 transition-all">
+        <div key={filing.id} className="card p-5 hover:border-white/15 transition-all">
           <div className="flex items-start justify-between mb-3 gap-3"><div className="flex-1 min-w-0"><h4 className="font-semibold text-white text-base">{filing.applicant}</h4><span className="text-star-300 text-xs font-mono">{filing.fileNumber}</span></div><div className="flex items-center gap-2 shrink-0"><span className={`text-xs font-medium px-2 py-1 rounded ${orbitStyle.bg} ${orbitStyle.text}`}>{filing.orbitType}</span><span className={`text-xs font-medium px-2 py-1 rounded ${statusStyle.bg} ${statusStyle.text}`}>{statusStyle.label}</span></div></div>
           <div className="flex items-center gap-4 mb-3 text-sm"><div><span className="text-star-300 text-xs block">Type</span><span className="text-white text-sm">{filing.filingType}</span></div><div><span className="text-star-300 text-xs block">Band</span><span className="text-slate-200 text-sm font-mono">{filing.band}</span></div>{filing.satelliteCount && (<div><span className="text-star-300 text-xs block">Satellites</span><span className="text-white text-sm font-bold">{filing.satelliteCount.toLocaleString()}</span></div>)}</div>
           <p className="text-star-300 text-sm leading-relaxed mb-3">{filing.summary}</p>
@@ -665,7 +665,7 @@ function FilingsFAATab() {
         <span className="text-xs text-star-300 ml-auto">{filtered.length} licenses</span>
       </div></div>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">{filtered.map((license) => { const statusStyle = FILING_STATUS_STYLES[license.status] || DEFAULT_FILING_STATUS_STYLE; return (
-        <div key={license.id} className="card p-5 hover:border-white/15/50 transition-all">
+        <div key={license.id} className="card p-5 hover:border-white/15 transition-all">
           <div className="flex items-start justify-between mb-3 gap-3"><div className="flex-1 min-w-0"><h4 className="font-semibold text-white text-base">{license.licensee}</h4><span className="text-star-300 text-xs font-mono">{license.licenseNumber}</span></div><div className="flex items-center gap-2 shrink-0"><span className="text-xs font-medium px-2 py-1 rounded bg-blue-500/20 text-blue-400">{license.licenseType}</span><span className={`text-xs font-medium px-2 py-1 rounded ${statusStyle.bg} ${statusStyle.text}`}>{statusStyle.label}</span></div></div>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-3"><div><span className="text-star-300 text-xs block">Vehicle</span><span className="text-white text-sm font-medium">{license.vehicle}</span></div><div><span className="text-star-300 text-xs block">Launch Site</span><span className="text-slate-200 text-sm">{license.launchSite}</span></div>{license.missionsAuthorized > 0 && (<div><span className="text-star-300 text-xs block">Missions</span><span className="text-white text-sm font-bold">{license.missionsAuthorized}</span></div>)}</div>
           <p className="text-star-300 text-sm leading-relaxed mb-3">{license.summary}</p>
@@ -696,7 +696,7 @@ function FilingsITUTab() {
         <span className="text-xs text-star-300 ml-auto">{filtered.length} filings</span>
       </div></div>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">{filtered.map((filing) => { const statusStyle = FILING_STATUS_STYLES[filing.status] || DEFAULT_FILING_STATUS_STYLE; const orbitStyle = FILING_ORBIT_STYLES[filing.orbitType] || DEFAULT_FILING_ORBIT_STYLE; return (
-        <div key={filing.id} className="card p-5 hover:border-white/15/50 transition-all">
+        <div key={filing.id} className="card p-5 hover:border-white/15 transition-all">
           <div className="flex items-start justify-between mb-3 gap-3"><div className="flex-1 min-w-0"><h4 className="font-semibold text-white text-base font-mono">{filing.networkName}</h4><span className="text-star-300 text-sm">{filing.administration}</span></div><div className="flex items-center gap-2 shrink-0"><span className={`text-xs font-medium px-2 py-1 rounded ${orbitStyle.bg} ${orbitStyle.text}`}>{filing.orbitType}</span><span className={`text-xs font-medium px-2 py-1 rounded ${statusStyle.bg} ${statusStyle.text}`}>{statusStyle.label}</span></div></div>
           <div className="flex items-center gap-4 mb-3 text-sm"><div><span className="text-star-300 text-xs block">Filing Type</span><span className="text-white text-sm">{filing.filingType}</span></div><div><span className="text-star-300 text-xs block">Service Band</span><span className="text-slate-200 text-sm font-mono">{filing.serviceBand}</span></div>{filing.satellites && (<div><span className="text-star-300 text-xs block">Satellites</span><span className="text-white text-sm font-bold">{filing.satellites.toLocaleString()}</span></div>)}</div>
           <p className="text-star-300 text-sm leading-relaxed mb-3">{filing.summary}</p>
@@ -727,7 +727,7 @@ function FilingsSECTab() {
         <span className="text-xs text-star-300 ml-auto">{filtered.length} filings</span>
       </div></div>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">{filtered.map((filing) => { const typeColor = filingTypeColors[filing.filingType] || { bg: 'bg-slate-800/500/20', text: 'text-slate-400' }; return (
-        <div key={filing.id} className="card p-5 hover:border-white/15/50 transition-all">
+        <div key={filing.id} className="card p-5 hover:border-white/15 transition-all">
           <div className="flex items-start justify-between mb-3 gap-3"><div className="flex-1 min-w-0"><h4 className="font-semibold text-white text-base">{filing.company}</h4><div className="flex items-center gap-2 mt-1"><span className="text-slate-200 text-sm font-bold font-mono">${filing.ticker}</span>{filing.period && (<span className="text-star-300 text-xs">({filing.period})</span>)}</div></div><span className={`text-xs font-medium px-2.5 py-1 rounded ${typeColor.bg} ${typeColor.text}`}>{filing.filingType}</span></div>
           {filing.keyMetric && (<div className="flex items-center gap-4 mb-3"><div className="card-elevated px-4 py-2 rounded-lg"><span className="text-star-300 text-xs block">{filing.keyMetricLabel}</span><span className="text-white text-lg font-bold font-display">{filing.keyMetric}</span></div></div>)}
           <p className="text-star-300 text-sm leading-relaxed mb-3">{filing.summary}</p>
@@ -761,7 +761,7 @@ function FilingsFederalRegisterTab() {
         <span className="text-xs text-star-300 ml-auto">{filtered.length} entries</span>
       </div></div>
       <div className="space-y-4">{filtered.map((entry) => { const typeColor = docTypeColors[entry.documentType] || { bg: 'bg-slate-800/500/20', text: 'text-slate-400' }; const impactStyle = FILING_IMPACT_STYLES[entry.impact] || DEFAULT_FILING_IMPACT_STYLE; return (
-        <div key={entry.id} className="card p-5 hover:border-white/15/50 transition-all">
+        <div key={entry.id} className="card p-5 hover:border-white/15 transition-all">
           <div className="flex items-start justify-between mb-3 gap-3"><div className="flex items-center gap-3"><div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center text-xs font-bold text-slate-200 shrink-0">{entry.agency}</div><div><h4 className="font-semibold text-slate-900 text-base">{entry.title}</h4><span className="text-star-300 text-xs font-mono">FR {entry.federalRegisterNumber}</span></div></div><div className="flex items-center gap-2 shrink-0"><span className={`text-xs font-medium px-2 py-1 rounded ${typeColor.bg} ${typeColor.text}`}>{entry.documentType}</span><span className={`text-xs font-medium px-2 py-1 rounded ${impactStyle.bg} ${impactStyle.text}`}>{entry.impact.charAt(0).toUpperCase() + entry.impact.slice(1)} Impact</span></div></div>
           <p className="text-star-300 text-sm leading-relaxed mb-3">{entry.summary}</p>
           <div className="flex items-center flex-wrap gap-4 text-xs text-star-300 pt-3 border-t border-white/10"><span>Published: <span className="text-white font-medium">{entry.publishedDate}</span></span>{entry.effectiveDate && (<><span className="text-slate-600">|</span><span>Effective: <span className="text-white font-medium">{entry.effectiveDate}</span></span></>)}{entry.commentDeadline && (<><span className="text-slate-600">|</span><span className={new Date(entry.commentDeadline) > new Date() ? 'text-yellow-400 font-semibold' : 'text-star-300'}>Comments Due: {entry.commentDeadline}</span></>)}{entry.docket && (<><span className="text-slate-600">|</span><span className="text-slate-200 font-mono">{entry.docket}</span></>)}</div>
@@ -892,7 +892,7 @@ function ProtestsOverviewTab() {
         const forumStyle = PROTEST_FORUM_STYLES[protest.forum] || DEFAULT_PROTEST_STYLE;
         const isExpanded = expandedId === protest.id;
         return (
-          <div key={protest.id} className="card p-5 hover:border-white/15/50 transition-all">
+          <div key={protest.id} className="card p-5 hover:border-white/15 transition-all">
             <div className="flex items-start justify-between mb-3 gap-3">
               <div className="flex-1 min-w-0">
                 <h4 className="font-semibold text-white text-base">{protest.shortTitle}</h4>
@@ -984,7 +984,7 @@ function ProtestsTimelineTab() {
         {years.map((year) => (
           <div key={year} className="mb-8">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-white text-xs font-bold relative z-10">{protestsByYear[year].length}</div>
+              <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-slate-900 text-xs font-bold relative z-10">{protestsByYear[year].length}</div>
               <h3 className="text-xl font-bold font-display text-white">{year}</h3>
               <div className="h-px flex-1 bg-white/10" />
             </div>
@@ -997,7 +997,7 @@ function ProtestsTimelineTab() {
                 const outcomeStyle = PROTEST_OUTCOME_STYLES[protest.outcome] || DEFAULT_PROTEST_STYLE;
                 const forumStyle = PROTEST_FORUM_STYLES[protest.forum] || DEFAULT_PROTEST_STYLE;
                 return (
-                  <div key={protest.id} className="card p-4 hover:border-white/15/50 transition-all relative">
+                  <div key={protest.id} className="card p-4 hover:border-white/15 transition-all relative">
                     <div className={`absolute left-[-28px] top-4 w-3 h-3 rounded-full ${outcomeColors[protest.outcome]} border-2 border-slate-900`} />
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex-1 min-w-0">
@@ -2218,7 +2218,7 @@ function ComplianceChecklistsTab() {
                 onClick={() => { setSelectedChecklist(cl.id); setCompletedSteps(new Set()); setSearchQuery(''); }}
                 className={`flex flex-col items-start px-4 py-3 rounded-lg transition-all whitespace-nowrap min-w-[180px] ${
                   selectedChecklist === cl.id
-                    ? 'bg-white/10 text-white border border-white/15/50'
+                    ? 'bg-white/10 text-slate-900 border border-white/15'
                     : 'bg-slate-800/60 text-slate-300 hover:bg-slate-700/60 border border-slate-600/50'
                 }`}
               >
@@ -2285,7 +2285,7 @@ function ComplianceChecklistsTab() {
                   className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 transition-all ${
                     isCompleted
                       ? 'bg-green-500/20 text-green-400 border border-green-500/30'
-                      : 'bg-slate-800/50 text-slate-400 border border-slate-600/40 hover:border-white/15/50'
+                      : 'bg-slate-800/50 text-slate-400 border border-slate-600/40 hover:border-white/15'
                   }`}
                   aria-label={`${isCompleted ? 'Uncheck' : 'Check'} step ${step.step}`}
                 >

@@ -715,7 +715,7 @@ function StartupsTab({ startups }: { startups: StartupCompany[] }) {
             onClick={() => setCategoryFilter(cat)}
             className={`px-3 py-1.5 text-sm rounded-lg transition-colors ${
               categoryFilter === cat
-                ? 'bg-white/10 text-slate-300 border border-white/15/40'
+                ? 'bg-white/10 text-slate-300 border border-white/15'
                 : 'bg-slate-800/50 text-slate-400 border border-slate-700/50 hover:text-white'
             }`}
           >
@@ -860,7 +860,7 @@ function MatchmakerTab({ investors, startups }: { investors: Investor[]; startup
           onClick={() => { setMode('startup'); setSelectedInvestor(''); }}
           className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
             mode === 'startup'
-              ? 'bg-white/10 text-slate-300 border border-white/15/40'
+              ? 'bg-white/10 text-slate-300 border border-white/15'
               : 'bg-slate-800/50 text-slate-400 border border-slate-700/50 hover:text-white'
           }`}
         >
@@ -870,7 +870,7 @@ function MatchmakerTab({ investors, startups }: { investors: Investor[]; startup
           onClick={() => { setMode('investor'); setSelectedCategory(''); setSelectedStage(''); }}
           className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
             mode === 'investor'
-              ? 'bg-white/10 text-slate-300 border border-white/15/40'
+              ? 'bg-white/10 text-slate-300 border border-white/15'
               : 'bg-slate-800/50 text-slate-400 border border-slate-700/50 hover:text-white'
           }`}
         >

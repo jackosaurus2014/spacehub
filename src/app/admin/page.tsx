@@ -446,7 +446,7 @@ function DataStatusPanel() {
                       disabled={seedingModule !== null}
                       className={`text-xs px-2 py-0.5 rounded border transition-colors flex-shrink-0 ${
                         seedingModule === endpoint.key
-                          ? 'bg-white/10 border-white/15/40 text-slate-200 animate-pulse'
+                          ? 'bg-white/10 border-white/15 text-slate-200 animate-pulse'
                           : 'bg-space-700/50 border-space-600/30 text-star-300 hover:bg-space-600/50 hover:text-white'
                       } disabled:opacity-50`}
                     >

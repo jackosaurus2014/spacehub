@@ -22,7 +22,7 @@ export default function TourismCard({
     <div
       className={`relative backdrop-blur-xl rounded-xl border transition-all duration-300 overflow-hidden ${
         isSelected
-          ? 'border-white/10/60 shadow-lg shadow-black/10'
+          ? 'border-white/10 shadow-lg shadow-black/10'
           : 'border-slate-700/50 hover:border-slate-600/50'
       }`}
       style={{

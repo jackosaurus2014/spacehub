@@ -93,7 +93,7 @@ export default function FeatureRequestModal({ isOpen, onClose }: FeatureRequestM
                 onClick={() => setType('existing_module')}
                 className={`flex-1 py-2 px-4 text-sm font-medium transition-colors ${
                   type === 'existing_module'
-                    ? 'bg-white/15 text-white'
+                    ? 'bg-white/15 text-slate-900'
                     : 'bg-space-800 text-star-300 hover:text-white'
                 }`}
               >
@@ -104,7 +104,7 @@ export default function FeatureRequestModal({ isOpen, onClose }: FeatureRequestM
                 onClick={() => setType('new_module')}
                 className={`flex-1 py-2 px-4 text-sm font-medium transition-colors ${
                   type === 'new_module'
-                    ? 'bg-white/15 text-white'
+                    ? 'bg-white/15 text-slate-900'
                     : 'bg-space-800 text-star-300 hover:text-white'
                 }`}
               >

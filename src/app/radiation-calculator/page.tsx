@@ -323,7 +323,7 @@ function OrbitSelectionPanel({
             onClick={() => onOrbitChange(key)}
             className={`py-2.5 px-3 rounded-lg text-sm font-medium transition-all border text-left ${
               selectedOrbit === key
-                ? 'bg-white/8 border-white/15/40 text-slate-300'
+                ? 'bg-white/8 border-white/15 text-slate-300'
                 : 'bg-slate-900/50 border-slate-700/50 text-slate-400 hover:border-slate-600/50 hover:text-slate-300'
             }`}
           >
@@ -780,7 +780,7 @@ function RadiationEffectsTable({ currentDose }: { currentDose: number }) {
                 <tr
                   key={effect.range}
                   className={`border-b border-slate-800/50 ${
-                    isCurrent ? 'bg-white/5 ring-1 ring-inset ring-white/15/20' : ''
+                    isCurrent ? 'bg-white/5 ring-1 ring-inset ring-white/15' : ''
                   }`}
                 >
                   <td className="py-3 px-3">

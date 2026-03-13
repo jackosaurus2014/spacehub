@@ -347,7 +347,7 @@ export default function LinkBudgetCalculatorPage() {
               <StaggerItem key={p.label}>
               <button
                 onClick={() => applyPreset(p)}
-                className="w-full text-left p-3 rounded-lg bg-slate-800/50 border border-slate-700/50 hover:border-white/15/40 hover:bg-slate-100/5 transition-all"
+                className="w-full text-left p-3 rounded-lg bg-slate-800/50 border border-slate-700/50 hover:border-white/15 hover:bg-slate-100/5 transition-all"
               >
                 <div className="text-sm font-medium text-slate-200">{p.label}</div>
                 <div className="text-xs text-slate-500 mt-0.5">{p.description}</div>
@@ -424,7 +424,7 @@ export default function LinkBudgetCalculatorPage() {
                     onClick={() => setBand(key)}
                     className={`py-2 px-2 rounded-lg text-xs font-medium transition-all border ${
                       band === key
-                        ? 'bg-white/8 border-white/15/40 text-slate-300'
+                        ? 'bg-white/8 border-white/15 text-slate-300'
                         : 'bg-slate-900/50 border-slate-700/50 text-slate-400 hover:border-slate-600/50'
                     }`}
                   >

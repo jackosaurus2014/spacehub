@@ -977,7 +977,7 @@ export default function DealFlowPage() {
               ].map((link) => {
                 const accentMap: Record<string, string> = {
                   emerald: 'group-hover:border-emerald-500/40 group-hover:text-emerald-400',
-                  cyan: 'group-hover:border-white/15/40 group-hover:text-white',
+                  cyan: 'group-hover:border-white/15 group-hover:text-white',
                   amber: 'group-hover:border-amber-500/40 group-hover:text-amber-400',
                   purple: 'group-hover:border-purple-500/40 group-hover:text-purple-400',
                 };

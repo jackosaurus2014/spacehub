@@ -104,7 +104,7 @@ export default function WidgetContent({ moduleId, widgetType }: WidgetContentPro
               <Link
                 key={item.id}
                 href={item.url || moduleRoute}
-                className="block p-2.5 rounded-lg bg-slate-800/50 border border-slate-700/50 hover:border-white/10/40 transition-colors"
+                className="block p-2.5 rounded-lg bg-slate-800/50 border border-slate-700/50 hover:border-white/10 transition-colors"
               >
                 <p className="text-sm font-medium text-slate-100 line-clamp-2">{item.title}</p>
                 {item.subtitle && (
@@ -190,7 +190,7 @@ export default function WidgetContent({ moduleId, widgetType }: WidgetContentPro
             <Link
               key={item.id}
               href={item.url || moduleRoute}
-              className="block p-3 rounded-lg bg-slate-800/50 border border-slate-700/50 hover:border-white/10/40 transition-colors"
+              className="block p-3 rounded-lg bg-slate-800/50 border border-slate-700/50 hover:border-white/10 transition-colors"
             >
               <p className="text-sm font-medium text-slate-100 line-clamp-2">{item.title}</p>
               {item.subtitle && (

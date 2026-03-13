@@ -953,7 +953,7 @@ export default function InvestmentTrackerPage() {
                   onClick={() => setYearFilter(yearFilter === String(y.year) ? '' : String(y.year) as YearFilter)}
                   className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all border ${
                     yearFilter === String(y.year)
-                      ? 'bg-white/10 text-slate-300 border-white/15/40'
+                      ? 'bg-white/10 text-slate-300 border-white/15'
                       : 'bg-slate-800 text-slate-400 border-slate-700 hover:border-slate-600'
                   }`}
                 >
@@ -1250,7 +1250,7 @@ export default function InvestmentTrackerPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <Link
                 href="/space-capital"
-                className="group p-4 rounded-lg bg-slate-900/50 border border-slate-700/30 hover:border-white/15/40 transition-all"
+                className="group p-4 rounded-lg bg-slate-900/50 border border-slate-700/30 hover:border-white/15 transition-all"
               >
                 <div className="text-slate-300 text-xl mb-2">
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -1127,7 +1127,7 @@ function StatisticsTab() {
                 key={band.name}
                 onClick={() => setExpandedBand(isExpanded ? null : band.name)}
                 className={`w-full text-left bg-slate-800/60 border rounded-xl p-4 transition-all ${
-                  isExpanded ? 'border-white/15/40' : 'border-slate-700/50 hover:border-slate-600/50'
+                  isExpanded ? 'border-white/15' : 'border-slate-700/50 hover:border-slate-600/50'
                 }`}
               >
                 <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">

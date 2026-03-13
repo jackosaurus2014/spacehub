@@ -618,7 +618,7 @@ function ConstellationCard({
   return (
     <div
       className={`card p-4 transition-all duration-200 ${
-        isSelected ? 'ring-2 ring-white/15/60' : ''
+        isSelected ? 'ring-2 ring-white/15' : ''
       }`}
     >
       <div className="flex items-start justify-between mb-3">
@@ -980,7 +980,7 @@ export default function SatelliteConstellationComparePage() {
       {/* ── Selection Bar ── */}
       {selectedIds.size > 0 && (
         <ScrollReveal>
-          <div className="card p-4 mb-6 border-white/15/40">
+          <div className="card p-4 mb-6 border-white/15">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div className="flex items-center gap-3 flex-wrap">
                 <span className="text-sm text-white font-medium">
@@ -1255,31 +1255,31 @@ export default function SatelliteConstellationComparePage() {
           <div className="flex flex-wrap gap-3">
             <Link
               href="/compare"
-              className="px-4 py-2 bg-slate-800/50 border border-slate-700 rounded-lg text-xs text-slate-400 hover:border-white/15/40 hover:text-white transition-all"
+              className="px-4 py-2 bg-slate-800/50 border border-slate-700 rounded-lg text-xs text-slate-400 hover:border-white/15 hover:text-white transition-all"
             >
               All Comparisons
             </Link>
             <Link
               href="/satellites"
-              className="px-4 py-2 bg-slate-800/50 border border-slate-700 rounded-lg text-xs text-slate-400 hover:border-white/15/40 hover:text-white transition-all"
+              className="px-4 py-2 bg-slate-800/50 border border-slate-700 rounded-lg text-xs text-slate-400 hover:border-white/15 hover:text-white transition-all"
             >
               Satellite Tracker
             </Link>
             <Link
               href="/compare/launch-vehicles"
-              className="px-4 py-2 bg-slate-800/50 border border-slate-700 rounded-lg text-xs text-slate-400 hover:border-white/15/40 hover:text-white transition-all"
+              className="px-4 py-2 bg-slate-800/50 border border-slate-700 rounded-lg text-xs text-slate-400 hover:border-white/15 hover:text-white transition-all"
             >
               Compare Launch Vehicles
             </Link>
             <Link
               href="/compare/companies"
-              className="px-4 py-2 bg-slate-800/50 border border-slate-700 rounded-lg text-xs text-slate-400 hover:border-white/15/40 hover:text-white transition-all"
+              className="px-4 py-2 bg-slate-800/50 border border-slate-700 rounded-lg text-xs text-slate-400 hover:border-white/15 hover:text-white transition-all"
             >
               Compare Companies
             </Link>
             <Link
               href="/constellations"
-              className="px-4 py-2 bg-slate-800/50 border border-slate-700 rounded-lg text-xs text-slate-400 hover:border-white/15/40 hover:text-white transition-all"
+              className="px-4 py-2 bg-slate-800/50 border border-slate-700 rounded-lg text-xs text-slate-400 hover:border-white/15 hover:text-white transition-all"
             >
               Constellation Tracker
             </Link>

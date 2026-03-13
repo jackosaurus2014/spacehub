@@ -413,7 +413,7 @@ function BusinessOpportunitiesContent() {
             onClick={() => setActiveTab('opportunities')}
             className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
               activeTab === 'opportunities'
-                ? 'bg-white text-white'
+                ? 'bg-white text-slate-900'
                 : 'text-slate-400 hover:text-white hover:bg-slate-700'
             }`}
           >
@@ -423,7 +423,7 @@ function BusinessOpportunitiesContent() {
             onClick={() => setActiveTab('contracts')}
             className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
               activeTab === 'contracts'
-                ? 'bg-white text-white'
+                ? 'bg-white text-slate-900'
                 : 'text-slate-400 hover:text-white hover:bg-slate-700'
             }`}
           >

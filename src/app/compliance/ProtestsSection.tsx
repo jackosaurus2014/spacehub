@@ -126,7 +126,7 @@ function ProtestsOverviewTab({ protests }: { protests: BidProtest[] }) {
         const forumStyle = PROTEST_FORUM_STYLES[protest.forum] || DEFAULT_PROTEST_STYLE;
         const isExpanded = expandedId === protest.id;
         return (
-          <div key={protest.id} className="card p-5 hover:border-white/15/50 transition-all">
+          <div key={protest.id} className="card p-5 hover:border-white/15 transition-all">
             <div className="flex items-start justify-between mb-3 gap-3">
               <div className="flex-1 min-w-0">
                 <h4 className="font-semibold text-white text-base">{protest.shortTitle}</h4>
@@ -218,7 +218,7 @@ function ProtestsTimelineTab({ protests }: { protests: BidProtest[] }) {
         {years.map((year) => (
           <div key={year} className="mb-8">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-white text-xs font-bold relative z-10">{protestsByYear[year].length}</div>
+              <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-slate-900 text-xs font-bold relative z-10">{protestsByYear[year].length}</div>
               <h3 className="text-xl font-bold font-display text-white">{year}</h3>
               <div className="h-px flex-1 bg-white/10" />
             </div>
@@ -231,7 +231,7 @@ function ProtestsTimelineTab({ protests }: { protests: BidProtest[] }) {
                 const outcomeStyle = PROTEST_OUTCOME_STYLES[protest.outcome] || DEFAULT_PROTEST_STYLE;
                 const forumStyle = PROTEST_FORUM_STYLES[protest.forum] || DEFAULT_PROTEST_STYLE;
                 return (
-                  <div key={protest.id} className="card p-4 hover:border-white/15/50 transition-all relative">
+                  <div key={protest.id} className="card p-4 hover:border-white/15 transition-all relative">
                     <div className={`absolute left-[-28px] top-4 w-3 h-3 rounded-full ${outcomeColors[protest.outcome]} border-2 border-slate-900`} />
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex-1 min-w-0">

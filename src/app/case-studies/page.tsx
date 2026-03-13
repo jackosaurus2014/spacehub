@@ -193,7 +193,7 @@ export default function CaseStudiesPage() {
                     </div>
 
                     {/* Quote */}
-                    <blockquote className="rounded-xl bg-gradient-to-r from-white/5 to-blue-500/5 border border-white/15/10 p-4">
+                    <blockquote className="rounded-xl bg-gradient-to-r from-white/5 to-blue-500/5 border border-white/15 p-4">
                       <p className="text-slate-200 text-sm italic leading-relaxed">
                         &ldquo;{cs.quote}&rdquo;
                       </p>

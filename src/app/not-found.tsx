@@ -45,7 +45,7 @@ const popularPages = [
 
 const colorClasses: Record<string, { border: string; bg: string; text: string; glow: string }> = {
   cyan: {
-    border: 'border-white/10 hover:border-white/10/60',
+    border: 'border-white/10 hover:border-white/10',
     bg: 'bg-white/5',
     text: 'text-slate-300',
     glow: 'group-hover:shadow-[0_0_20px_rgba(6,182,212,0.15)]',
@@ -190,7 +190,7 @@ export default function NotFound() {
           className="relative w-52 h-52 mx-auto mb-4"
         >
           {/* Orbit rings */}
-          <div className="absolute inset-2 rounded-full border border-dashed border-white/15/15" style={{ animation: 'pulse-ring 4s ease-in-out infinite' }} />
+          <div className="absolute inset-2 rounded-full border border-dashed border-white/15" style={{ animation: 'pulse-ring 4s ease-in-out infinite' }} />
           <div className="absolute inset-6 rounded-full border border-dashed border-purple-500/10" style={{ animation: 'pulse-ring 5s ease-in-out 1s infinite' }} />
           <div className="absolute inset-10 rounded-full border border-dashed border-blue-500/8" style={{ animation: 'pulse-ring 6s ease-in-out 2s infinite' }} />
 

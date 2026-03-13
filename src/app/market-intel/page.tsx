@@ -521,7 +521,7 @@ function MarketIntelContent() {
                       return (
                         <StaggerItem key={company.id}>
                         <div
-                          className="card p-4 hover:border-white/15/50 transition-all"
+                          className="card p-4 hover:border-white/15 transition-all"
                         >
                           <div className="flex items-center justify-between mb-2">
                             <div>
@@ -643,7 +643,7 @@ function MarketIntelContent() {
 
                       return (
                         <StaggerItem key={etf.ticker}>
-                          <div className="card p-4 hover:border-white/15/50 transition-all relative">
+                          <div className="card p-4 hover:border-white/15 transition-all relative">
                             {/* Category & leveraged badges */}
                             <div className="flex items-center gap-1.5 mb-2">
                               <span className={`text-xs font-medium px-1.5 py-0.5 rounded ${

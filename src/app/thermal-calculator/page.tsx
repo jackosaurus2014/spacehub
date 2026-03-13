@@ -803,7 +803,7 @@ export default function ThermalCalculatorPage() {
                         onClick={() => handleMaterialSelect(material)}
                         className={`text-left py-2 px-3 rounded-lg text-xs transition-all border ${
                           selectedMaterial === material.name
-                            ? 'bg-white/8 border-white/15/40 text-slate-300'
+                            ? 'bg-white/8 border-white/15 text-slate-300'
                             : 'bg-slate-900/50 border-slate-700/50 text-slate-400 hover:border-slate-600/50 hover:text-slate-300'
                         }`}
                       >
@@ -982,7 +982,7 @@ export default function ThermalCalculatorPage() {
                       onClick={() => setTechFilter(filter)}
                       className={`py-1.5 px-3 rounded-lg text-xs font-medium transition-all border ${
                         techFilter === filter
-                          ? 'bg-white/8 border-white/15/40 text-slate-300'
+                          ? 'bg-white/8 border-white/15 text-slate-300'
                           : 'bg-slate-900/50 border-slate-700/50 text-slate-400 hover:border-slate-600/50'
                       }`}
                     >

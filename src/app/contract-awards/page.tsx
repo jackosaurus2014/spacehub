@@ -423,7 +423,7 @@ const AGENCY_COLORS: Record<string, string> = {
   NRO: 'bg-slate-500/20 text-slate-300 border-slate-500/40',
   ESA: 'bg-teal-500/20 text-teal-300 border-teal-500/40',
   Commercial: 'bg-green-500/20 text-green-300 border-green-500/40',
-  NOAA: 'bg-white/10 text-slate-200 border-white/15/40',
+  NOAA: 'bg-white/10 text-slate-200 border-white/15',
   JAXA: 'bg-orange-500/20 text-orange-300 border-orange-500/40',
   ISRO: 'bg-amber-500/20 text-amber-300 border-amber-500/40',
   KARI: 'bg-indigo-500/20 text-indigo-300 border-indigo-500/40',

@@ -385,7 +385,7 @@ export default function MissionPipelinePage() {
                     onClick={() => setSelectedYear(year)}
                     className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
                       selectedYear === year
-                        ? 'bg-white/10 text-slate-300 border border-white/15/40 shadow-lg shadow-black/5'
+                        ? 'bg-white/10 text-slate-300 border border-white/15 shadow-lg shadow-black/5'
                         : 'bg-slate-800/50 text-slate-400 border border-slate-700/50 hover:bg-slate-700/50 hover:text-slate-300'
                     }`}
                   >
@@ -405,7 +405,7 @@ export default function MissionPipelinePage() {
                   onClick={() => setSelectedCategory('All')}
                   className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
                     selectedCategory === 'All'
-                      ? 'bg-white/10 text-slate-300 border border-white/15/40 shadow-lg shadow-black/5'
+                      ? 'bg-white/10 text-slate-300 border border-white/15 shadow-lg shadow-black/5'
                       : 'bg-slate-800/50 text-slate-400 border border-slate-700/50 hover:bg-slate-700/50 hover:text-slate-300'
                   }`}
                 >
@@ -417,7 +417,7 @@ export default function MissionPipelinePage() {
                     onClick={() => setSelectedCategory(cat)}
                     className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
                       selectedCategory === cat
-                        ? 'bg-white/10 text-slate-300 border border-white/15/40 shadow-lg shadow-black/5'
+                        ? 'bg-white/10 text-slate-300 border border-white/15 shadow-lg shadow-black/5'
                         : 'bg-slate-800/50 text-slate-400 border border-slate-700/50 hover:bg-slate-700/50 hover:text-slate-300'
                     }`}
                   >

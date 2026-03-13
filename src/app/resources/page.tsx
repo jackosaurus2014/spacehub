@@ -147,7 +147,7 @@ export default function ResourcesPage() {
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {filtered.map((item) => (
-                  <Link key={item.href} href={item.href} className="group block bg-slate-900/60 border border-slate-800 rounded-xl p-5 hover:border-white/15/40 hover:bg-slate-900/80 transition-all hover:shadow-lg hover:shadow-black/20/5">
+                  <Link key={item.href} href={item.href} className="group block bg-slate-900/60 border border-slate-800 rounded-xl p-5 hover:border-white/15 hover:bg-slate-900/80 transition-all hover:shadow-lg hover:shadow-black/20/5">
                     <h3 className="text-base font-semibold text-slate-100 group-hover:text-white transition-colors">{item.name}</h3>
                     <p className="text-xs text-slate-300/70 mt-0.5">{item.category}</p>
                     <p className="text-sm text-slate-400 mt-2 line-clamp-2">{item.description}</p>
@@ -173,7 +173,7 @@ export default function ResourcesPage() {
                   <p className="text-sm text-slate-400 mb-5 ml-10">{category.description}</p>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {category.items.map((item) => (
-                      <Link key={item.href} href={item.href} className="group block bg-slate-900/60 border border-slate-800 rounded-xl p-5 hover:border-white/15/40 hover:bg-slate-900/80 transition-all hover:shadow-lg hover:shadow-black/20/5">
+                      <Link key={item.href} href={item.href} className="group block bg-slate-900/60 border border-slate-800 rounded-xl p-5 hover:border-white/15 hover:bg-slate-900/80 transition-all hover:shadow-lg hover:shadow-black/20/5">
                         <div className="flex items-center justify-between mb-2">
                           <h3 className="text-base font-semibold text-slate-100 group-hover:text-white transition-colors">{item.name}</h3>
                           <svg className="w-4 h-4 text-slate-600 group-hover:text-white transition-all group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -503,7 +503,7 @@ export default function FundingOpportunitiesPage() {
                 placeholder="Search opportunities..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 rounded-lg bg-slate-800/80 border border-slate-700/50 text-white text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-white/30/40 focus:border-white/15/40"
+                className="w-full pl-10 pr-4 py-2 rounded-lg bg-slate-800/80 border border-slate-700/50 text-white text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-white/30 focus:border-white/15"
               />
             </div>
 
@@ -612,7 +612,7 @@ export default function FundingOpportunitiesPage() {
                 <button
                   onClick={() => setOffset(Math.max(0, offset - limit))}
                   disabled={offset === 0}
-                  className="px-4 py-2 rounded-lg bg-slate-800 text-slate-300 text-sm border border-slate-700/50 hover:border-white/15/40 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                  className="px-4 py-2 rounded-lg bg-slate-800 text-slate-300 text-sm border border-slate-700/50 hover:border-white/15 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                 >
                   Previous
                 </button>
@@ -633,8 +633,8 @@ export default function FundingOpportunitiesPage() {
                       onClick={() => setOffset((pageNum - 1) * limit)}
                       className={`w-9 h-9 rounded-lg text-sm font-medium transition-colors ${
                         currentPage === pageNum
-                          ? 'bg-white/10 text-slate-300 border border-white/15/40'
-                          : 'bg-slate-800 text-slate-400 border border-slate-700/50 hover:border-white/15/40'
+                          ? 'bg-white/10 text-slate-300 border border-white/15'
+                          : 'bg-slate-800 text-slate-400 border border-slate-700/50 hover:border-white/15'
                       }`}
                     >
                       {pageNum}
@@ -644,7 +644,7 @@ export default function FundingOpportunitiesPage() {
                 <button
                   onClick={() => setOffset(Math.min((totalPages - 1) * limit, offset + limit))}
                   disabled={currentPage >= totalPages}
-                  className="px-4 py-2 rounded-lg bg-slate-800 text-slate-300 text-sm border border-slate-700/50 hover:border-white/15/40 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                  className="px-4 py-2 rounded-lg bg-slate-800 text-slate-300 text-sm border border-slate-700/50 hover:border-white/15 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                 >
                   Next
                 </button>

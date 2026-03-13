@@ -853,7 +853,7 @@ function SupplyChainContent() {
             }}
             className={`flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium transition-all text-sm ${
               activeTab === tab.id
-                ? 'bg-white/10 text-slate-200 border border-white/15/50'
+                ? 'bg-white/10 text-slate-200 border border-white/15'
                 : 'bg-space-800 text-slate-400 border border-space-700 hover:border-space-600 hover:text-white'
             }`}
           >

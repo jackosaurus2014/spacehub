@@ -479,7 +479,7 @@ export default function SpaceCompaniesPage() {
       <div className="flex items-start justify-between gap-4 mb-3">
         <div>
           <div className="flex items-center gap-3 mb-1">
-            <span className="text-xs font-bold text-slate-300 bg-white/10 border border-white/15/20 rounded-full w-7 h-7 flex items-center justify-center">
+            <span className="text-xs font-bold text-slate-300 bg-white/10 border border-white/15 rounded-full w-7 h-7 flex items-center justify-center">
               {company.rank}
             </span>
             <h3 className="text-white font-semibold text-lg">{company.name}</h3>
@@ -531,7 +531,7 @@ export default function SpaceCompaniesPage() {
         {/* Hero */}
         <header className="mb-10">
           <div className="flex items-center gap-3 mb-4">
-            <span className="text-xs px-2 py-0.5 rounded-full bg-white/10 text-slate-300 border border-white/15/20">
+            <span className="text-xs px-2 py-0.5 rounded-full bg-white/10 text-slate-300 border border-white/15">
               Industry Analysis
             </span>
             <span className="text-xs text-slate-500">Updated February 2026</span>
@@ -674,7 +674,7 @@ export default function SpaceCompaniesPage() {
                   </Link>
                 </div>
                 <div className="flex items-center gap-3 mb-2">
-                  <span className="text-xs px-2 py-0.5 rounded-full bg-white/10 text-slate-300 border border-white/15/20">
+                  <span className="text-xs px-2 py-0.5 rounded-full bg-white/10 text-slate-300 border border-white/15">
                     {startup.focus}
                   </span>
                   <span className="text-xs text-slate-500">{startup.valuation}</span>
@@ -725,7 +725,7 @@ export default function SpaceCompaniesPage() {
           <div className="flex flex-wrap justify-center gap-4">
             <Link
               href="/company-profiles"
-              className="inline-block bg-white hover:bg-slate-100 text-white font-medium px-6 py-2.5 rounded-lg transition-colors"
+              className="inline-block bg-white hover:bg-slate-100 text-slate-900 font-medium px-6 py-2.5 rounded-lg transition-colors"
             >
               Browse Company Profiles
             </Link>
@@ -757,28 +757,28 @@ export default function SpaceCompaniesPage() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             <Link
               href="/company-profiles"
-              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 text-center hover:border-white/15/50 transition-colors"
+              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 text-center hover:border-white/15 transition-colors"
             >
               <div className="text-white text-sm font-medium">Company Profiles</div>
               <div className="text-slate-500 text-xs">200+ companies</div>
             </Link>
             <Link
               href="/market-intel"
-              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 text-center hover:border-white/15/50 transition-colors"
+              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 text-center hover:border-white/15 transition-colors"
             >
               <div className="text-white text-sm font-medium">Market Intel</div>
               <div className="text-slate-500 text-xs">Live data</div>
             </Link>
             <Link
               href="/space-economy"
-              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 text-center hover:border-white/15/50 transition-colors"
+              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 text-center hover:border-white/15 transition-colors"
             >
               <div className="text-white text-sm font-medium">Space Economy</div>
               <div className="text-slate-500 text-xs">Investment trends</div>
             </Link>
             <Link
               href="/space-talent"
-              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 text-center hover:border-white/15/50 transition-colors"
+              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 text-center hover:border-white/15 transition-colors"
             >
               <div className="text-white text-sm font-medium">Space Talent</div>
               <div className="text-slate-500 text-xs">Jobs & careers</div>
@@ -792,21 +792,21 @@ export default function SpaceCompaniesPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
             <Link
               href="/learn/satellite-launch-cost"
-              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 hover:border-white/15/50 transition-colors"
+              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 hover:border-white/15 transition-colors"
             >
               <div className="text-white text-sm font-medium">Satellite Launch Costs</div>
               <div className="text-slate-500 text-xs">Complete cost breakdown</div>
             </Link>
             <Link
               href="/learn/space-industry-market-size"
-              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 hover:border-white/15/50 transition-colors"
+              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 hover:border-white/15 transition-colors"
             >
               <div className="text-white text-sm font-medium">Space Industry Market Size</div>
               <div className="text-slate-500 text-xs">$1.8 trillion and growing</div>
             </Link>
             <Link
               href="/learn/how-to-track-satellites"
-              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 hover:border-white/15/50 transition-colors"
+              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 hover:border-white/15 transition-colors"
             >
               <div className="text-white text-sm font-medium">How to Track Satellites</div>
               <div className="text-slate-500 text-xs">Real-time tracking guide</div>

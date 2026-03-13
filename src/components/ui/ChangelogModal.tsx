@@ -104,7 +104,7 @@ export default function ChangelogModal() {
         <div className="px-6 py-4 border-t border-slate-700/50">
           <button
             onClick={handleClose}
-            className="w-full bg-white hover:bg-slate-100 text-white font-medium py-2.5 rounded-lg transition-colors"
+            className="w-full bg-white hover:bg-slate-100 text-slate-900 font-medium py-2.5 rounded-lg transition-colors"
           >
             Got it
           </button>

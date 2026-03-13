@@ -480,15 +480,15 @@ export default function CommercialSpaceEconomyPage() {
                       Launch Market Segments
                     </h3>
                     <div className="space-y-3 text-sm">
-                      <div className="border-b border-white/10/10 pb-2">
+                      <div className="border-b border-white/10 pb-2">
                         <span className="text-white font-medium">Super Heavy-Lift</span>
                         <span className="text-star-300"> (Starship, SLS) -- &gt;50,000 kg to LEO. For mega-constellations, deep space, and heavy government payloads.</span>
                       </div>
-                      <div className="border-b border-white/10/10 pb-2">
+                      <div className="border-b border-white/10 pb-2">
                         <span className="text-white font-medium">Heavy-Lift</span>
                         <span className="text-star-300"> (Falcon Heavy, New Glenn) -- 20,000-65,000 kg to LEO. For large GEO satellites, national security missions.</span>
                       </div>
-                      <div className="border-b border-white/10/10 pb-2">
+                      <div className="border-b border-white/10 pb-2">
                         <span className="text-white font-medium">Medium-Lift</span>
                         <span className="text-star-300"> (Falcon 9, Ariane 6, Vulcan, Neutron) -- 10,000-25,000 kg to LEO. The workhorse segment for most commercial missions.</span>
                       </div>

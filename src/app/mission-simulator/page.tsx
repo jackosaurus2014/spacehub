@@ -414,7 +414,7 @@ export default function MissionSimulatorPage() {
               <button
                 key={t.label}
                 onClick={() => applyTemplate(t)}
-                className="group flex items-center gap-2 px-4 py-2.5 rounded-lg border border-slate-700 hover:border-white/15/60 bg-slate-800/60 hover:bg-slate-800 transition-all text-sm"
+                className="group flex items-center gap-2 px-4 py-2.5 rounded-lg border border-slate-700 hover:border-white/15 bg-slate-800/60 hover:bg-slate-800 transition-all text-sm"
                 title={t.description}
               >
                 <span className="text-lg">{t.icon}</span>
@@ -639,7 +639,7 @@ export default function MissionSimulatorPage() {
                         {results.phases.map((phase, idx) => (
                           <div key={idx} className="relative flex gap-4 pl-2">
                             {/* Timeline dot */}
-                            <div className="relative z-10 flex-shrink-0 w-9 h-9 rounded-full bg-slate-800 border-2 border-white/15/60 flex items-center justify-center text-lg">
+                            <div className="relative z-10 flex-shrink-0 w-9 h-9 rounded-full bg-slate-800 border-2 border-white/15 flex items-center justify-center text-lg">
                               {phase.icon}
                             </div>
                             {/* Phase card */}

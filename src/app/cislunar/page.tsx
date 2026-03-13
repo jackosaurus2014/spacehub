@@ -557,7 +557,7 @@ function CommercialLunarTab() {
           return (
             <div
               key={mission.id}
-              className="card p-5 hover:border-white/15/40"
+              className="card p-5 hover:border-white/15"
             >
               <div className="flex flex-wrap items-start justify-between gap-3 mb-3">
                 <div>
@@ -714,7 +714,7 @@ function ISRUTab() {
           return (
             <div
               key={program.id}
-              className="card p-5 hover:border-white/15/40"
+              className="card p-5 hover:border-white/15"
             >
               <div className="flex items-start justify-between mb-3">
                 <div className="flex items-center gap-2">
@@ -805,7 +805,7 @@ function InfrastructureTab() {
           return (
             <div
               key={item.id}
-              className="card p-5 hover:border-white/15/40"
+              className="card p-5 hover:border-white/15"
             >
               <div className="flex items-start justify-between mb-3">
                 <div className="flex items-center gap-2">
@@ -944,7 +944,7 @@ function InvestmentTab() {
           return (
             <div
               key={investment.id}
-              className={`card p-5 border-l-4 ${typeBg} hover:border-white/15/40`}
+              className={`card p-5 border-l-4 ${typeBg} hover:border-white/15`}
             >
               <div className="flex flex-wrap items-start justify-between gap-3 mb-2">
                 <div>
@@ -977,7 +977,7 @@ function GatewayModuleCard({ module }: { module: GatewayModule }) {
   const statusStyle = GATEWAY_MODULE_STATUS_STYLES[module.status] || DEFAULT_GATEWAY_MODULE_STATUS_STYLE;
 
   return (
-    <div className="card p-5 hover:border-white/15/40">
+    <div className="card p-5 hover:border-white/15">
       {/* Header */}
       <div className="flex items-start justify-between mb-3">
         <div>

@@ -724,7 +724,7 @@ export default function NewslettersDirectoryPage() {
                   onClick={() => setActiveCategory(cat)}
                   className={`flex-shrink-0 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                     isActive
-                      ? 'bg-white/10 text-slate-200 border border-white/15/40 shadow-lg shadow-black/5'
+                      ? 'bg-white/10 text-slate-200 border border-white/15 shadow-lg shadow-black/5'
                       : 'bg-slate-800/40 text-slate-400 border border-slate-700/50 hover:text-slate-200 hover:border-slate-600'
                   }`}
                 >

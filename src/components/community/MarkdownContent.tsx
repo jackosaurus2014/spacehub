@@ -93,7 +93,7 @@ export default function MarkdownContent({ content, className = '' }: MarkdownCon
             </pre>
           ),
           blockquote: ({ children }) => (
-            <blockquote className="border-l-2 border-white/15/40 pl-3 my-3 text-slate-400 italic">
+            <blockquote className="border-l-2 border-white/15 pl-3 my-3 text-slate-400 italic">
               {processChildren(children)}
             </blockquote>
           ),
