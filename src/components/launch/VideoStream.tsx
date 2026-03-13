@@ -35,7 +35,7 @@ export default function VideoStream({ streamUrl, eventName }: VideoStreamProps) 
           <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-8">
             {/* Animated background */}
             <div className="absolute inset-0 overflow-hidden">
-              <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-cyan-500/5 rounded-full blur-3xl animate-pulse" />
+              <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-white/5 rounded-full blur-3xl animate-pulse" />
               <div className="absolute bottom-1/4 right-1/4 w-48 h-48 bg-purple-500/5 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
               {/* Star field */}
               {Array.from({ length: 15 }, (_, i) => (
@@ -60,7 +60,7 @@ export default function VideoStream({ streamUrl, eventName }: VideoStreamProps) 
               </div>
               <h3 className="text-white font-semibold text-lg mb-2">Waiting for Stream...</h3>
               <p className="text-slate-400 text-sm max-w-sm">
-                The live stream for <span className="text-cyan-400">{eventName}</span> will appear here when available.
+                The live stream for <span className="text-slate-300">{eventName}</span> will appear here when available.
               </p>
             </div>
           </div>

@@ -49,8 +49,8 @@ const CATEGORY_COLORS: Record<string, { badge: string; text: string }> = {
     text: 'text-emerald-400',
   },
   technology: {
-    badge: 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30',
-    text: 'text-cyan-400',
+    badge: 'bg-white/10 text-slate-200 border border-white/10',
+    text: 'text-slate-300',
   },
   geopolitical: {
     badge: 'bg-purple-500/20 text-purple-300 border border-purple-500/30',
@@ -63,10 +63,10 @@ const CATEGORY_COLORS: Record<string, { badge: string; text: string }> = {
 };
 
 const CATEGORY_TAB_ACTIVE: Record<string, string> = {
-  all: 'bg-cyan-500/20 text-cyan-300 border-cyan-400/50',
+  all: 'bg-white/10 text-slate-200 border-white/15',
   regulatory: 'bg-amber-500/20 text-amber-300 border-amber-400/50',
   market: 'bg-emerald-500/20 text-emerald-300 border-emerald-400/50',
-  technology: 'bg-cyan-500/20 text-cyan-300 border-cyan-400/50',
+  technology: 'bg-white/10 text-slate-200 border-white/15',
   geopolitical: 'bg-purple-500/20 text-purple-300 border-purple-400/50',
   forecast: 'bg-rose-500/20 text-rose-300 border-rose-400/50',
 };
@@ -259,7 +259,7 @@ export default function AIInsightsPage() {
                         </span>
                         <Link
                           href={`/ai-insights/${insight.slug}`}
-                          className="text-sm font-medium text-cyan-400 hover:text-cyan-300 transition-colors"
+                          className="text-sm font-medium text-slate-300 hover:text-white transition-colors"
                         >
                           Read Analysis &rarr;
                         </Link>
@@ -291,7 +291,7 @@ export default function AIInsightsPage() {
                         onClick={() => setPage(pageNum)}
                         className={`w-9 h-9 rounded-lg text-sm font-medium transition-all ${
                           isCurrentPage
-                            ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-400/50'
+                            ? 'bg-white/10 text-slate-200 border border-white/15'
                             : 'text-slate-400 hover:text-slate-300 hover:bg-slate-700/30'
                         }`}
                       >

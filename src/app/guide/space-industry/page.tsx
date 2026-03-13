@@ -208,9 +208,9 @@ export default function SpaceIndustryGuidePage() {
                     <li key={item.id}>
                       <a
                         href={`#${item.id}`}
-                        className="flex items-start gap-2 text-star-300 hover:text-cyan-400 transition-colors"
+                        className="flex items-start gap-2 text-star-300 hover:text-white transition-colors"
                       >
-                        <span className="text-cyan-500/60 font-mono text-xs mt-0.5">
+                        <span className="text-slate-300/60 font-mono text-xs mt-0.5">
                           {String(i + 1).padStart(2, '0')}
                         </span>
                         {item.label}
@@ -273,18 +273,18 @@ export default function SpaceIndustryGuidePage() {
                   </p>
 
                   {/* Data callout */}
-                  <div className="card p-6 my-8 border-l-4 border-l-cyan-400">
+                  <div className="card p-6 my-8 border-l-4 border-l-white/30">
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-center">
                       <div>
-                        <div className="text-3xl font-display font-bold text-cyan-400">$630B+</div>
+                        <div className="text-3xl font-display font-bold text-slate-300">$630B+</div>
                         <div className="text-star-300 text-sm mt-1">Global Space Economy (2025 est.)</div>
                       </div>
                       <div>
-                        <div className="text-3xl font-display font-bold text-cyan-400">7-9%</div>
+                        <div className="text-3xl font-display font-bold text-slate-300">7-9%</div>
                         <div className="text-star-300 text-sm mt-1">Annual Growth Rate</div>
                       </div>
                       <div>
-                        <div className="text-3xl font-display font-bold text-cyan-400">$1.8T</div>
+                        <div className="text-3xl font-display font-bold text-slate-300">$1.8T</div>
                         <div className="text-star-300 text-sm mt-1">Projected by 2035</div>
                       </div>
                     </div>
@@ -316,7 +316,7 @@ export default function SpaceIndustryGuidePage() {
                     infrastructure.
                   </p>
                   <p>
-                    <Link href="/market-intel" className="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+                    <Link href="/market-intel" className="text-slate-300 hover:text-white underline underline-offset-2">
                       Explore real-time space market data on SpaceNexus Market Intelligence
                     </Link>
                   </p>
@@ -417,11 +417,11 @@ export default function SpaceIndustryGuidePage() {
                   </div>
                 </div>
                 <p className="mt-6 text-star-200 text-lg">
-                  <Link href="/satellites" className="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+                  <Link href="/satellites" className="text-slate-300 hover:text-white underline underline-offset-2">
                     Track satellites and orbital operations
                   </Link>
                   {' '}&middot;{' '}
-                  <Link href="/mission-cost" className="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+                  <Link href="/mission-cost" className="text-slate-300 hover:text-white underline underline-offset-2">
                     Plan missions with cost estimation tools
                   </Link>
                 </p>
@@ -504,7 +504,7 @@ export default function SpaceIndustryGuidePage() {
                   </p>
 
                   <p className="mt-4">
-                    <Link href="/market-intel" className="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+                    <Link href="/market-intel" className="text-slate-300 hover:text-white underline underline-offset-2">
                       Track space companies and market data on SpaceNexus
                     </Link>
                   </p>
@@ -585,11 +585,11 @@ export default function SpaceIndustryGuidePage() {
                   </p>
 
                   <p className="mt-4">
-                    <Link href="/compliance" className="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+                    <Link href="/compliance" className="text-slate-300 hover:text-white underline underline-offset-2">
                       Regulatory &amp; compliance tracking on SpaceNexus
                     </Link>
                     {' '}&middot;{' '}
-                    <Link href="/business-opportunities" className="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+                    <Link href="/business-opportunities" className="text-slate-300 hover:text-white underline underline-offset-2">
                       Government procurement opportunities
                     </Link>
                   </p>
@@ -697,11 +697,11 @@ export default function SpaceIndustryGuidePage() {
                 </div>
 
                 <p className="mt-6 text-star-200 text-lg">
-                  <Link href="/solar-exploration" className="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+                  <Link href="/solar-exploration" className="text-slate-300 hover:text-white underline underline-offset-2">
                     Explore solar system expansion on SpaceNexus
                   </Link>
                   {' '}&middot;{' '}
-                  <Link href="/space-environment" className="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+                  <Link href="/space-environment" className="text-slate-300 hover:text-white underline underline-offset-2">
                     Monitor space environment and debris
                   </Link>
                 </p>
@@ -728,37 +728,37 @@ export default function SpaceIndustryGuidePage() {
                       Estimated Salary Ranges (U.S., 2026)
                     </h4>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
-                      <div className="flex justify-between items-center border-b border-cyan-400/10 pb-2">
+                      <div className="flex justify-between items-center border-b border-white/10/10 pb-2">
                         <span className="text-star-300">Aerospace Engineer (Entry)</span>
-                        <span className="text-cyan-400 font-semibold">$75K - $95K</span>
+                        <span className="text-slate-300 font-semibold">$75K - $95K</span>
                       </div>
-                      <div className="flex justify-between items-center border-b border-cyan-400/10 pb-2">
+                      <div className="flex justify-between items-center border-b border-white/10/10 pb-2">
                         <span className="text-star-300">Aerospace Engineer (Senior)</span>
-                        <span className="text-cyan-400 font-semibold">$120K - $160K</span>
+                        <span className="text-slate-300 font-semibold">$120K - $160K</span>
                       </div>
-                      <div className="flex justify-between items-center border-b border-cyan-400/10 pb-2">
+                      <div className="flex justify-between items-center border-b border-white/10/10 pb-2">
                         <span className="text-star-300">Systems Engineer</span>
-                        <span className="text-cyan-400 font-semibold">$110K - $155K</span>
+                        <span className="text-slate-300 font-semibold">$110K - $155K</span>
                       </div>
-                      <div className="flex justify-between items-center border-b border-cyan-400/10 pb-2">
+                      <div className="flex justify-between items-center border-b border-white/10/10 pb-2">
                         <span className="text-star-300">Software Engineer (Space)</span>
-                        <span className="text-cyan-400 font-semibold">$100K - $180K</span>
+                        <span className="text-slate-300 font-semibold">$100K - $180K</span>
                       </div>
-                      <div className="flex justify-between items-center border-b border-cyan-400/10 pb-2">
+                      <div className="flex justify-between items-center border-b border-white/10/10 pb-2">
                         <span className="text-star-300">Data Scientist / ML Engineer</span>
-                        <span className="text-cyan-400 font-semibold">$110K - $175K</span>
+                        <span className="text-slate-300 font-semibold">$110K - $175K</span>
                       </div>
-                      <div className="flex justify-between items-center border-b border-cyan-400/10 pb-2">
+                      <div className="flex justify-between items-center border-b border-white/10/10 pb-2">
                         <span className="text-star-300">Program / Project Manager</span>
-                        <span className="text-cyan-400 font-semibold">$120K - $200K</span>
+                        <span className="text-slate-300 font-semibold">$120K - $200K</span>
                       </div>
-                      <div className="flex justify-between items-center border-b border-cyan-400/10 pb-2">
+                      <div className="flex justify-between items-center border-b border-white/10/10 pb-2">
                         <span className="text-star-300">Space Policy / Regulatory</span>
-                        <span className="text-cyan-400 font-semibold">$80K - $140K</span>
+                        <span className="text-slate-300 font-semibold">$80K - $140K</span>
                       </div>
-                      <div className="flex justify-between items-center border-b border-cyan-400/10 pb-2">
+                      <div className="flex justify-between items-center border-b border-white/10/10 pb-2">
                         <span className="text-star-300">GNC / Flight Dynamics</span>
-                        <span className="text-cyan-400 font-semibold">$100K - $160K</span>
+                        <span className="text-slate-300 font-semibold">$100K - $160K</span>
                       </div>
                     </div>
                     <p className="text-star-300/60 text-xs mt-4">
@@ -783,7 +783,7 @@ export default function SpaceIndustryGuidePage() {
                   </p>
 
                   <p className="mt-4">
-                    <Link href="/space-talent" className="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+                    <Link href="/space-talent" className="text-slate-300 hover:text-white underline underline-offset-2">
                       Find space jobs and workforce data on the Space Talent Hub
                     </Link>
                   </p>
@@ -843,7 +843,7 @@ export default function SpaceIndustryGuidePage() {
                   </p>
 
                   <p className="mt-4">
-                    <Link href="/market-intel" className="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+                    <Link href="/market-intel" className="text-slate-300 hover:text-white underline underline-offset-2">
                       Track startup funding and market data on SpaceNexus
                     </Link>
                   </p>
@@ -922,7 +922,7 @@ export default function SpaceIndustryGuidePage() {
                         <span>{item.q}</span>
                         <span
                           aria-hidden="true"
-                          className="ml-4 shrink-0 text-cyan-400 transition-transform group-open:rotate-45 text-xl leading-none"
+                          className="ml-4 shrink-0 text-slate-300 transition-transform group-open:rotate-45 text-xl leading-none"
                         >
                           +
                         </span>

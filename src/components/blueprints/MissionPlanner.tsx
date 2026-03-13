@@ -141,9 +141,9 @@ function BudgetDisplay({ budget }: { budget: BudgetSummary }) {
   };
 
   return (
-    <div className="card p-5 border border-cyan-500/30 bg-slate-800/50">
+    <div className="card p-5 border border-white/10 bg-slate-800/50">
       <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-        <svg className="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className="w-5 h-5 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
         </svg>
         Mass / Power / Cost Budget
@@ -168,7 +168,7 @@ function BudgetDisplay({ budget }: { budget: BudgetSummary }) {
         </div>
         <div className="bg-slate-900/50 rounded-lg p-3">
           <span className="text-xs text-slate-300 block">Best-Fit Bus</span>
-          <span className="text-sm font-bold text-cyan-400">{budget.busClass}</span>
+          <span className="text-sm font-bold text-slate-300">{budget.busClass}</span>
         </div>
       </div>
 
@@ -270,11 +270,11 @@ function MissionTemplateCard({
       onClick={onSelect}
       className={`w-full text-left p-4 rounded-lg border transition-all ${
         isActive
-          ? 'border-cyan-500/50 bg-cyan-900/20 shadow-lg shadow-cyan-900/10'
+          ? 'border-white/15 bg-slate-800/30 shadow-lg shadow-black/10'
           : 'border-slate-700/50 bg-slate-800/30 hover:border-slate-600/50 hover:bg-slate-800/50'
       }`}
     >
-      <h4 className={`font-semibold text-sm ${isActive ? 'text-cyan-300' : 'text-white'}`}>
+      <h4 className={`font-semibold text-sm ${isActive ? 'text-slate-200' : 'text-white'}`}>
         {template.name}
       </h4>
       <div className="flex gap-3 mt-1.5 text-xs text-slate-400">
@@ -359,7 +359,7 @@ export default function MissionPlanner() {
           <div className="mt-4">
             <button
               onClick={() => setShowTemplateDetails(!showTemplateDetails)}
-              className="text-sm text-cyan-400 hover:text-cyan-300 transition-colors flex items-center gap-1"
+              className="text-sm text-slate-300 hover:text-white transition-colors flex items-center gap-1"
             >
               <svg className={`w-4 h-4 transition-transform ${showTemplateDetails ? 'rotate-90' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -367,7 +367,7 @@ export default function MissionPlanner() {
               {showTemplateDetails ? 'Hide' : 'Show'} Mission Details
             </button>
             {showTemplateDetails && (
-              <div className="mt-3 card p-4 border border-cyan-500/20 bg-slate-800/40">
+              <div className="mt-3 card p-4 border border-white/10 bg-slate-800/40">
                 <h4 className="font-semibold text-white mb-2">{selectedTemplate.name}</h4>
                 <p className="text-sm text-slate-400 mb-3">{selectedTemplate.description}</p>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-3">
@@ -393,7 +393,7 @@ export default function MissionPlanner() {
                   <ul className="space-y-1">
                     {selectedTemplate.keyRequirements.map((req, i) => (
                       <li key={i} className="text-xs text-slate-400 flex items-start gap-2">
-                        <span className="text-cyan-400 flex-shrink-0">--</span>
+                        <span className="text-slate-300 flex-shrink-0">--</span>
                         {req}
                       </li>
                     ))}
@@ -408,7 +408,7 @@ export default function MissionPlanner() {
                         href={ref.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center gap-1.5 text-xs text-cyan-400 hover:text-cyan-300"
+                        className="flex items-center gap-1.5 text-xs text-slate-300 hover:text-white"
                       >
                         <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
@@ -448,7 +448,7 @@ export default function MissionPlanner() {
                   onChange={(e) => setPayloadMass(Math.max(0, parseFloat(e.target.value) || 0))}
                   step={0.1}
                   min={0}
-                  className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+                  className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                 />
               </div>
               <div>
@@ -460,7 +460,7 @@ export default function MissionPlanner() {
                   onChange={(e) => setPayloadPower(Math.max(0, parseFloat(e.target.value) || 0))}
                   step={0.5}
                   min={0}
-                  className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+                  className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                 />
               </div>
             </div>
@@ -486,12 +486,12 @@ export default function MissionPlanner() {
                       onClick={() => handleSelectOption(category.id, option.id)}
                       className={`text-left p-3 rounded-lg border transition-all ${
                         isSelected
-                          ? 'border-cyan-500/60 bg-cyan-900/20 ring-1 ring-cyan-500/30'
+                          ? 'border-white/15/60 bg-slate-800/30 ring-1 ring-white/10'
                           : 'border-slate-700/30 bg-slate-800/30 hover:border-slate-600/50 hover:bg-slate-800/50'
                       }`}
                     >
                       <div className="flex items-start justify-between">
-                        <span className={`text-sm font-medium ${isSelected ? 'text-cyan-300' : 'text-white'}`}>
+                        <span className={`text-sm font-medium ${isSelected ? 'text-slate-200' : 'text-white'}`}>
                           {option.name}
                         </span>
                         <span className={`text-xs px-1.5 py-0.5 rounded ${

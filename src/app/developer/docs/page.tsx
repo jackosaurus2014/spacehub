@@ -107,7 +107,7 @@ function ParameterTable({ parameters }: { parameters: EndpointParameter[] }) {
           {parameters.map((param) => (
             <tr key={param.name} className="border-b border-slate-700/50">
               <td className="py-2.5 pr-4">
-                <code className="text-cyan-400 font-mono text-xs">{param.name}</code>
+                <code className="text-slate-300 font-mono text-xs">{param.name}</code>
               </td>
               <td className="py-2.5 pr-4">
                 <span className="text-slate-300">{param.type}</span>
@@ -156,7 +156,7 @@ function CodeExamples({ endpoint }: { endpoint: OpenAPIEndpoint }) {
             onClick={() => setActiveLang(lang)}
             className={`px-3 py-1.5 text-xs rounded-t font-medium transition-colors ${
               activeLang === lang
-                ? 'bg-slate-800 text-cyan-400 border border-b-0 border-slate-600'
+                ? 'bg-slate-800 text-slate-300 border border-b-0 border-slate-600'
                 : 'bg-slate-800/50 text-slate-400 hover:text-slate-300 border border-b-0 border-transparent'
             }`}
           >
@@ -217,8 +217,8 @@ function EndpointSection({ endpoint }: { endpoint: OpenAPIEndpoint }) {
           <div>
             <h4 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-2">Authentication</h4>
             <p className="text-slate-300 text-sm">
-              Requires API key via <code className="text-cyan-400">X-API-Key</code> header or{' '}
-              <code className="text-cyan-400">Authorization: Bearer snx_...</code> header.
+              Requires API key via <code className="text-slate-300">X-API-Key</code> header or{' '}
+              <code className="text-slate-300">Authorization: Bearer snx_...</code> header.
               {endpoint.tier === 'Enterprise' && (
                 <span className="text-purple-400 ml-1 font-medium">Enterprise API tier required.</span>
               )}
@@ -286,7 +286,7 @@ function Sidebar({
             placeholder="Search endpoints..."
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
-            className="w-full pl-10 pr-3 bg-slate-800 border border-slate-700 text-white rounded-lg py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+            className="w-full pl-10 pr-3 bg-slate-800 border border-slate-700 text-white rounded-lg py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
           />
         </div>
       </div>
@@ -297,7 +297,7 @@ function Sidebar({
         onClick={onNavigate}
         className={`block px-3 py-2 text-sm rounded-lg transition-colors ${
           activeSection === 'overview'
-            ? 'bg-cyan-500/10 text-cyan-400'
+            ? 'bg-white/5 text-slate-300'
             : 'text-slate-400 hover:text-white hover:bg-slate-800'
         }`}
       >
@@ -308,7 +308,7 @@ function Sidebar({
         onClick={onNavigate}
         className={`block px-3 py-2 text-sm rounded-lg transition-colors ${
           activeSection === 'authentication'
-            ? 'bg-cyan-500/10 text-cyan-400'
+            ? 'bg-white/5 text-slate-300'
             : 'text-slate-400 hover:text-white hover:bg-slate-800'
         }`}
       >
@@ -319,7 +319,7 @@ function Sidebar({
         onClick={onNavigate}
         className={`block px-3 py-2 text-sm rounded-lg transition-colors ${
           activeSection === 'rate-limits'
-            ? 'bg-cyan-500/10 text-cyan-400'
+            ? 'bg-white/5 text-slate-300'
             : 'text-slate-400 hover:text-white hover:bg-slate-800'
         }`}
       >
@@ -330,7 +330,7 @@ function Sidebar({
         onClick={onNavigate}
         className={`block px-3 py-2 text-sm rounded-lg transition-colors ${
           activeSection === 'errors'
-            ? 'bg-cyan-500/10 text-cyan-400'
+            ? 'bg-white/5 text-slate-300'
             : 'text-slate-400 hover:text-white hover:bg-slate-800'
         }`}
       >
@@ -349,7 +349,7 @@ function Sidebar({
           onClick={onNavigate}
           className={`block px-3 py-2 text-sm rounded-lg transition-colors ${
             activeSection === `category-${cat.slug}`
-              ? 'bg-cyan-500/10 text-cyan-400'
+              ? 'bg-white/5 text-slate-300'
               : 'text-slate-400 hover:text-white hover:bg-slate-800'
           }`}
         >
@@ -445,7 +445,7 @@ function ApiDocsPageInner() {
           <div className="flex items-center gap-3">
             <Link
               href="/developer/explorer"
-              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 text-sm border border-slate-700 hover:border-cyan-500 text-slate-300 hover:text-cyan-400 rounded-lg transition-colors"
+              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 text-sm border border-slate-700 hover:border-white/15 text-slate-300 hover:text-white rounded-lg transition-colors"
             >
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
@@ -456,7 +456,7 @@ function ApiDocsPageInner() {
               href="/api/v1/openapi.json"
               target="_blank"
               rel="noopener noreferrer"
-              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 text-sm border border-slate-700 hover:border-cyan-500 text-slate-300 hover:text-cyan-400 rounded-lg transition-colors"
+              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 text-sm border border-slate-700 hover:border-white/15 text-slate-300 hover:text-white rounded-lg transition-colors"
             >
               OpenAPI Spec
             </a>
@@ -499,7 +499,7 @@ function ApiDocsPageInner() {
             <div className="card p-4 mb-6">
               <p className="text-sm text-slate-300">
                 <span className="font-semibold text-white">Base URL:</span>{' '}
-                <code className="text-cyan-400 font-mono">https://spacenexus.us/api/v1</code>
+                <code className="text-slate-300 font-mono">https://spacenexus.us/api/v1</code>
               </p>
             </div>
 
@@ -509,9 +509,9 @@ function ApiDocsPageInner() {
                 <a
                   key={cat.slug}
                   href={`#category-${cat.slug}`}
-                  className="block bg-slate-800/30 border border-slate-700/50 rounded-lg p-4 hover:border-cyan-500/50 transition-colors group"
+                  className="block bg-slate-800/30 border border-slate-700/50 rounded-lg p-4 hover:border-white/15 transition-colors group"
                 >
-                  <h3 className="font-semibold text-white group-hover:text-cyan-400 transition-colors mb-1">
+                  <h3 className="font-semibold text-white group-hover:text-white transition-colors mb-1">
                     {cat.name}
                   </h3>
                   <p className="text-xs text-slate-400 line-clamp-2">{cat.description}</p>
@@ -564,9 +564,9 @@ function ApiDocsPageInner() {
               </div>
 
               <p className="text-sm text-slate-400">
-                API keys use the prefix <code className="text-cyan-400">snx_</code> and can be generated from
+                API keys use the prefix <code className="text-slate-300">snx_</code> and can be generated from
                 the{' '}
-                <Link href="/developer" className="text-cyan-400 hover:text-cyan-300">
+                <Link href="/developer" className="text-slate-300 hover:text-white">
                   Developer Portal
                 </Link>
                 . Keys are hashed before storage and shown only once at creation time.
@@ -663,7 +663,7 @@ function ApiDocsPageInner() {
                         <td className="py-2 pr-4">{tier.monthlyLimit}</td>
                         <td className="py-2 pr-4">{tier.perMinuteLimit}</td>
                         <td className="py-2 pr-4">{tier.maxKeys}</td>
-                        <td className="py-2 text-cyan-400">{tier.price}</td>
+                        <td className="py-2 text-slate-300">{tier.price}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -735,7 +735,7 @@ function ApiDocsPageInner() {
               <p className="text-slate-400 text-lg">No endpoints match &quot;{searchQuery}&quot;</p>
               <button
                 onClick={() => setSearchQuery('')}
-                className="mt-3 text-cyan-400 hover:text-cyan-300 text-sm"
+                className="mt-3 text-slate-300 hover:text-white text-sm"
               >
                 Clear search
               </button>
@@ -746,15 +746,15 @@ function ApiDocsPageInner() {
           <div className="border-t border-slate-700 pt-8 pb-4 text-center">
             <p className="text-sm text-slate-500">
               Need help?{' '}
-              <Link href="/contact" className="text-cyan-400 hover:text-cyan-300">
+              <Link href="/contact" className="text-slate-300 hover:text-white">
                 Contact Support
               </Link>
               {' | '}
-              <Link href="/developer" className="text-cyan-400 hover:text-cyan-300">
+              <Link href="/developer" className="text-slate-300 hover:text-white">
                 Developer Portal
               </Link>
               {' | '}
-              <Link href="/developer/explorer" className="text-cyan-400 hover:text-cyan-300">
+              <Link href="/developer/explorer" className="text-slate-300 hover:text-white">
                 API Explorer
               </Link>
             </p>

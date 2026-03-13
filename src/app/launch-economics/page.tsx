@@ -180,7 +180,7 @@ const VEHICLES: LaunchVehicleEcon[] = [
     payloadLeoKg: 22800,
     reusable: false,
     firstFlight: '2010',
-    barColor: 'bg-cyan-500',
+    barColor: 'bg-white',
     manufacturingCostM: 50,
     launchesPerVehicle: 1,
     revenuePerLaunchM: 67,
@@ -315,7 +315,7 @@ const REVENUE_MODELS: RevenueModel[] = [
     name: 'Rideshare / Small Sat',
     description: 'Dedicated and shared rides for small satellites (1-500 kg). Transporter missions launching 50+ satellites per flight.',
     percentage: 10,
-    color: 'bg-cyan-500',
+    color: 'bg-white',
     examples: ['SpaceX Transporter ($1M per 200kg)', 'Rocket Lab Electron ($7.5M)', 'ISRO PSLV rideshare', 'Exolaunch brokerage'],
   },
   {
@@ -363,7 +363,7 @@ const COST_ERAS: CostEra[] = [
     years: '2013 - 2023',
     costPerKg: '$2,720/kg',
     description: 'Falcon 9 slashed prices by 80%. First orbital booster landing (2015), routine reuse by 2018. Forced industry-wide price cuts.',
-    color: 'border-cyan-500 bg-cyan-500/10',
+    color: 'border-white/15 bg-white/5',
     widthPct: 5,
   },
   {
@@ -497,7 +497,7 @@ export default function LaunchEconomicsPage() {
                 onClick={() => setFilter(f)}
                 className={`px-3 py-1.5 text-sm rounded-lg font-medium transition-all duration-200 ${
                   filter === f
-                    ? 'bg-cyan-600 text-white'
+                    ? 'bg-white text-white'
                     : 'bg-slate-800/60 text-slate-400 hover:bg-slate-700 hover:text-slate-200'
                 }`}
               >
@@ -520,7 +520,7 @@ export default function LaunchEconomicsPage() {
                 onClick={() => setSortKey(s.key)}
                 className={`px-3 py-1.5 text-sm rounded-lg font-medium transition-all duration-200 ${
                   sortKey === s.key
-                    ? 'bg-cyan-600 text-white'
+                    ? 'bg-white text-white'
                     : 'bg-slate-800/60 text-slate-400 hover:bg-slate-700 hover:text-slate-200'
                 }`}
               >
@@ -556,7 +556,7 @@ export default function LaunchEconomicsPage() {
                   <div className="flex items-center gap-3 md:gap-4">
                     {/* Vehicle name */}
                     <div className="w-40 md:w-52 flex-shrink-0 text-right">
-                      <span className="text-sm font-medium text-slate-200 group-hover:text-cyan-400 transition-colors">
+                      <span className="text-sm font-medium text-slate-200 group-hover:text-white transition-colors">
                         {vehicle.name}
                       </span>
                       {vehicle.status === 'historical' && (
@@ -602,7 +602,7 @@ export default function LaunchEconomicsPage() {
           {/* Legend */}
           <div className="mt-6 pt-4 border-t border-slate-700/50 flex flex-wrap gap-4 text-xs text-slate-500">
             <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-slate-500 inline-block" /> Historical (Retired)</span>
-            <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-cyan-500 inline-block" /> Currently Active</span>
+            <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-white inline-block" /> Currently Active</span>
             <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" /> In Development</span>
           </div>
         </section>
@@ -627,14 +627,14 @@ export default function LaunchEconomicsPage() {
                     <span className="text-xs text-slate-400">{era.years}</span>
                   </div>
                   <div className="text-right">
-                    <span className="text-lg font-bold text-cyan-400">{era.costPerKg}</span>
+                    <span className="text-lg font-bold text-slate-300">{era.costPerKg}</span>
                   </div>
                 </div>
                 <p className="text-sm text-slate-300 mb-3">{era.description}</p>
                 {/* Visual relative cost bar */}
                 <div className="relative h-3 bg-slate-800/60 rounded-full overflow-hidden">
                   <div
-                    className="h-full rounded-full bg-gradient-to-r from-cyan-500/80 to-blue-500/60 transition-all duration-1000"
+                    className="h-full rounded-full bg-gradient-to-r from-white/80 to-blue-500/60 transition-all duration-1000"
                     style={{ width: `${Math.max(1, era.widthPct)}%` }}
                   />
                 </div>
@@ -722,7 +722,7 @@ export default function LaunchEconomicsPage() {
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
             {MARKET_STATS.map(stat => (
               <div key={stat.label} className="card p-5 text-center">
-                <p className="text-2xl md:text-3xl font-bold text-cyan-400 mb-1">{stat.value}</p>
+                <p className="text-2xl md:text-3xl font-bold text-slate-300 mb-1">{stat.value}</p>
                 <p className="text-sm font-medium text-slate-200 mb-1">{stat.label}</p>
                 <p className="text-xs text-slate-500">{stat.subtext}</p>
               </div>
@@ -738,7 +738,7 @@ export default function LaunchEconomicsPage() {
                   key={item.driver}
                   className="flex items-start gap-3 p-3 bg-slate-800/30 rounded-lg"
                 >
-                  <span className="text-cyan-400 font-bold text-sm mt-0.5">{String(i + 1).padStart(2, '0')}</span>
+                  <span className="text-slate-300 font-bold text-sm mt-0.5">{String(i + 1).padStart(2, '0')}</span>
                   <div>
                     <p className="text-sm font-medium text-slate-200">{item.driver}</p>
                     <p className="text-xs text-slate-400 mt-0.5">{item.detail}</p>
@@ -756,10 +756,10 @@ export default function LaunchEconomicsPage() {
                   { year: '2021', value: 5.8, color: 'bg-slate-600' },
                   { year: '2022', value: 6.5, color: 'bg-slate-500' },
                   { year: '2023', value: 7.7, color: 'bg-slate-500' },
-                  { year: '2024', value: 9.1, color: 'bg-cyan-600' },
-                  { year: '2025', value: 11.2, color: 'bg-cyan-500/80' },
-                  { year: '2026', value: 14.0, color: 'bg-cyan-500/70' },
-                  { year: '2027', value: 17.5, color: 'bg-cyan-500/60' },
+                  { year: '2024', value: 9.1, color: 'bg-white' },
+                  { year: '2025', value: 11.2, color: 'bg-white/80' },
+                  { year: '2026', value: 14.0, color: 'bg-white/70' },
+                  { year: '2027', value: 17.5, color: 'bg-white/60' },
                   { year: '2028', value: 21.5, color: 'bg-blue-500/60' },
                   { year: '2029', value: 26.0, color: 'bg-blue-500/50' },
                   { year: '2030', value: 32.0, color: 'bg-blue-500/40' },
@@ -807,7 +807,7 @@ export default function LaunchEconomicsPage() {
                     </div>
                     <div className="flex items-center gap-4 md:gap-6">
                       <div className="text-right hidden sm:block">
-                        <p className="text-sm font-bold text-cyan-400">
+                        <p className="text-sm font-bold text-slate-300">
                           {vehicle.costPerKgLeoHigh
                             ? `$${formatNumber(vehicle.costPerKgLeo)}-$${formatNumber(vehicle.costPerKgLeoHigh)}/kg`
                             : `$${formatNumber(vehicle.costPerKgLeo)}/kg`
@@ -941,9 +941,9 @@ export default function LaunchEconomicsPage() {
               <a
                 key={link.href}
                 href={link.href}
-                className="block p-4 bg-slate-800/40 border border-slate-700/40 rounded-xl hover:border-cyan-500/40 hover:bg-slate-800/60 transition-all group"
+                className="block p-4 bg-slate-800/40 border border-slate-700/40 rounded-xl hover:border-white/15/40 hover:bg-slate-800/60 transition-all group"
               >
-                <p className="text-sm font-medium text-slate-200 group-hover:text-cyan-400 transition-colors">{link.label}</p>
+                <p className="text-sm font-medium text-slate-200 group-hover:text-white transition-colors">{link.label}</p>
                 <p className="text-xs text-slate-500 mt-1">{link.desc}</p>
               </a>
             ))}
@@ -954,20 +954,20 @@ export default function LaunchEconomicsPage() {
         <section className="mt-16 border-t border-slate-800 pt-8">
           <h2 className="text-xl font-bold text-white mb-6">Explore More</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <a href="/launch-vehicles" className="card p-4 hover:border-cyan-500/50 transition-colors group">
-              <h3 className="text-white font-medium group-hover:text-cyan-400 transition-colors">Launch Vehicle Database</h3>
+            <a href="/launch-vehicles" className="card p-4 hover:border-white/15 transition-colors group">
+              <h3 className="text-white font-medium group-hover:text-white transition-colors">Launch Vehicle Database</h3>
               <p className="text-slate-400 text-sm mt-1">Detailed specs, success rates, and comparisons for active and historical rockets.</p>
             </a>
-            <a href="/funding-rounds" className="card p-4 hover:border-cyan-500/50 transition-colors group">
-              <h3 className="text-white font-medium group-hover:text-cyan-400 transition-colors">Funding Rounds</h3>
+            <a href="/funding-rounds" className="card p-4 hover:border-white/15 transition-colors group">
+              <h3 className="text-white font-medium group-hover:text-white transition-colors">Funding Rounds</h3>
               <p className="text-slate-400 text-sm mt-1">Track venture capital and investment activity across the space industry.</p>
             </a>
-            <a href="/mission-simulator" className="card p-4 hover:border-cyan-500/50 transition-colors group">
-              <h3 className="text-white font-medium group-hover:text-cyan-400 transition-colors">Mission Simulator</h3>
+            <a href="/mission-simulator" className="card p-4 hover:border-white/15 transition-colors group">
+              <h3 className="text-white font-medium group-hover:text-white transition-colors">Mission Simulator</h3>
               <p className="text-slate-400 text-sm mt-1">Configure missions, calculate delta-V, and estimate costs with real vehicle data.</p>
             </a>
-            <a href="/market-segments" className="card p-4 hover:border-cyan-500/50 transition-colors group">
-              <h3 className="text-white font-medium group-hover:text-cyan-400 transition-colors">Market Segments</h3>
+            <a href="/market-segments" className="card p-4 hover:border-white/15 transition-colors group">
+              <h3 className="text-white font-medium group-hover:text-white transition-colors">Market Segments</h3>
               <p className="text-slate-400 text-sm mt-1">Analysis of space market segments including communications, EO, and defense.</p>
             </a>
           </div>

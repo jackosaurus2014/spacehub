@@ -120,7 +120,7 @@ export default function ComparisonModal({
         }}
       >
         {/* Top gradient accent */}
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-400/50 to-transparent" />
+        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-slate-300/50 to-transparent" />
 
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-slate-700/50">
@@ -163,10 +163,10 @@ export default function ComparisonModal({
                           <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                         </svg>
                       </button>
-                      <div className="w-14 h-14 mx-auto rounded-lg bg-gradient-to-br from-slate-700 to-slate-800 flex items-center justify-center text-xl font-bold text-cyan-400 border border-slate-600/50 mb-2">
+                      <div className="w-14 h-14 mx-auto rounded-lg bg-gradient-to-br from-slate-700 to-slate-800 flex items-center justify-center text-xl font-bold text-slate-300 border border-slate-600/50 mb-2">
                         {offering.logoIcon}
                       </div>
-                      <p className="text-cyan-400 text-sm font-medium">{offering.provider}</p>
+                      <p className="text-slate-300 text-sm font-medium">{offering.provider}</p>
                       <h3 className="text-white font-display font-bold">{offering.name}</h3>
                     </div>
                   </th>
@@ -186,7 +186,7 @@ export default function ComparisonModal({
                     <td
                       key={offering.id}
                       className={`p-4 text-center ${
-                        row.highlight ? 'text-cyan-400 font-bold text-lg' : 'text-white'
+                        row.highlight ? 'text-slate-300 font-bold text-lg' : 'text-white'
                       }`}
                     >
                       {row.getValue(offering)}

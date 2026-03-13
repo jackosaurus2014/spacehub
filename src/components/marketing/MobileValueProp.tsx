@@ -60,9 +60,9 @@ export default function MobileValueProp({
   if (!visible) return null;
 
   return (
-    <div className="relative bg-gradient-to-br from-slate-800/80 to-slate-900/80 border border-cyan-500/15 rounded-2xl p-5 overflow-hidden my-6">
+    <div className="relative bg-gradient-to-br from-slate-800/80 to-slate-900/80 border border-white/10 rounded-2xl p-5 overflow-hidden my-6">
       {/* Decorative glow */}
-      <div className="absolute -top-10 -right-10 w-28 h-28 bg-cyan-500/8 rounded-full blur-[50px] pointer-events-none" />
+      <div className="absolute -top-10 -right-10 w-28 h-28 bg-white/8 rounded-full blur-[50px] pointer-events-none" />
 
       {/* Dismiss button */}
       <button
@@ -84,9 +84,9 @@ export default function MobileValueProp({
 
       <div className="relative pr-6">
         {/* Sparkle icon */}
-        <div className="w-9 h-9 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center mb-3">
+        <div className="w-9 h-9 rounded-xl bg-white/10 border border-white/10 flex items-center justify-center mb-3">
           <svg
-            className="w-5 h-5 text-cyan-400"
+            className="w-5 h-5 text-slate-300"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -103,13 +103,13 @@ export default function MobileValueProp({
 
         {/* Copy */}
         <p className="text-sm text-slate-200 font-medium leading-snug mb-4">
-          Unlock <span className="text-cyan-400">{feature}</span> and 30+ more modules
+          Unlock <span className="text-slate-300">{feature}</span> and 30+ more modules
         </p>
 
         {/* CTA button */}
         <Link
           href="/register"
-          className="block w-full text-center py-3 px-4 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 text-white text-sm font-semibold transition-all duration-200 shadow-lg shadow-cyan-500/20 active:scale-[0.98]"
+          className="block w-full text-center py-3 px-4 rounded-xl bg-gradient-to-r bg-white hover:bg-slate-100 text-slate-900 text-sm font-semibold transition-all duration-200 shadow-lg shadow-black/20 active:scale-[0.98]"
           style={{ minHeight: '44px' }}
         >
           {ctaText}

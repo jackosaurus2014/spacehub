@@ -563,7 +563,7 @@ const COST_BRACKETS: CostBracket[] = ['Free', '<$500', '$500-$2000', '$2000+'];
 
 const CATEGORY_COLORS: Record<EventCategory, string> = {
   'Military/Defense': 'bg-red-500/20 text-red-300 border-red-500/30',
-  Commercial: 'bg-cyan-500/20 text-cyan-300 border-cyan-500/30',
+  Commercial: 'bg-white/10 text-slate-200 border-white/10',
   Academic: 'bg-purple-500/20 text-purple-300 border-purple-500/30',
   Startup: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30',
   Investment: 'bg-amber-500/20 text-amber-300 border-amber-500/30',
@@ -571,7 +571,7 @@ const CATEGORY_COLORS: Record<EventCategory, string> = {
 
 const CATEGORY_DOT_COLORS: Record<EventCategory, string> = {
   'Military/Defense': 'bg-red-400',
-  Commercial: 'bg-cyan-400',
+  Commercial: 'bg-white',
   Academic: 'bg-purple-400',
   Startup: 'bg-emerald-400',
   Investment: 'bg-amber-400',
@@ -820,7 +820,7 @@ export default function ConferencesPage() {
             <div className="text-sm text-slate-400 mt-1">Events Listed</div>
           </div></StaggerItem>
           <StaggerItem><div className="card p-5 text-center">
-            <div className="text-3xl font-bold text-cyan-400">
+            <div className="text-3xl font-bold text-slate-300">
               {formatAttendance(stats.totalAttendance)}
             </div>
             <div className="text-sm text-slate-400 mt-1">Combined Attendance</div>
@@ -866,7 +866,7 @@ export default function ConferencesPage() {
                 placeholder="Search events, topics, locations..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 bg-slate-800/70 border border-slate-700/50 rounded-lg text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/30"
+                className="w-full pl-10 pr-4 py-2.5 bg-slate-800/70 border border-slate-700/50 rounded-lg text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-white/15 focus:ring-1 focus:ring-white/30/30"
               />
             </div>
 
@@ -901,7 +901,7 @@ export default function ConferencesPage() {
             <select
               value={categoryFilter}
               onChange={(e) => setCategoryFilter(e.target.value as EventCategory | 'All')}
-              className="bg-slate-800/70 border border-slate-700/50 rounded-lg px-3 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-cyan-500/50"
+              className="bg-slate-800/70 border border-slate-700/50 rounded-lg px-3 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-white/15"
             >
               <option value="All">All Categories</option>
               {ALL_CATEGORIES.map((c) => (
@@ -915,7 +915,7 @@ export default function ConferencesPage() {
             <select
               value={monthFilter}
               onChange={(e) => setMonthFilter(Number(e.target.value))}
-              className="bg-slate-800/70 border border-slate-700/50 rounded-lg px-3 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-cyan-500/50"
+              className="bg-slate-800/70 border border-slate-700/50 rounded-lg px-3 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-white/15"
             >
               <option value={0}>All Months</option>
               {MONTH_FULL.map((m, i) => (
@@ -929,7 +929,7 @@ export default function ConferencesPage() {
             <select
               value={regionFilter}
               onChange={(e) => setRegionFilter(e.target.value as EventRegion | 'All')}
-              className="bg-slate-800/70 border border-slate-700/50 rounded-lg px-3 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-cyan-500/50"
+              className="bg-slate-800/70 border border-slate-700/50 rounded-lg px-3 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-white/15"
             >
               <option value="All">All Regions</option>
               {ALL_REGIONS.map((r) => (
@@ -943,7 +943,7 @@ export default function ConferencesPage() {
             <select
               value={costFilter}
               onChange={(e) => setCostFilter(e.target.value as CostBracket | 'All')}
-              className="bg-slate-800/70 border border-slate-700/50 rounded-lg px-3 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-cyan-500/50"
+              className="bg-slate-800/70 border border-slate-700/50 rounded-lg px-3 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-white/15"
             >
               <option value="All">All Costs</option>
               {COST_BRACKETS.map((b) => (
@@ -957,7 +957,7 @@ export default function ConferencesPage() {
             <select
               value={sortField}
               onChange={(e) => setSortField(e.target.value as SortField)}
-              className="bg-slate-800/70 border border-slate-700/50 rounded-lg px-3 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-cyan-500/50"
+              className="bg-slate-800/70 border border-slate-700/50 rounded-lg px-3 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-white/15"
             >
               <option value="date">Sort by Date</option>
               <option value="attendance">Sort by Attendance</option>

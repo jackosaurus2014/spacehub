@@ -221,7 +221,7 @@ function ResultCard({ label, value, unit, accent = 'cyan' }: {
   accent?: 'cyan' | 'purple' | 'emerald' | 'amber' | 'red';
 }) {
   const colors = {
-    cyan: 'text-cyan-400',
+    cyan: 'text-slate-300',
     purple: 'text-purple-400',
     emerald: 'text-emerald-400',
     amber: 'text-amber-400',
@@ -245,17 +245,17 @@ function DoseBar({ label, dose, maxDose, color, isCalculated = false }: {
 }) {
   const width = Math.max(Math.min((dose / maxDose) * 100, 100), 0.5);
   return (
-    <div className={`mb-3 ${isCalculated ? 'ring-1 ring-cyan-500/30 rounded-lg p-2 bg-cyan-500/5' : ''}`}>
+    <div className={`mb-3 ${isCalculated ? 'ring-1 ring-white/10 rounded-lg p-2 bg-white/5' : ''}`}>
       <div className="flex justify-between text-xs mb-1">
-        <span className={`${isCalculated ? 'text-cyan-300 font-semibold' : 'text-slate-300'}`}>
+        <span className={`${isCalculated ? 'text-slate-200 font-semibold' : 'text-slate-300'}`}>
           {label}
-          {isCalculated && <span className="ml-2 text-[10px] uppercase tracking-wider text-cyan-400/70">(Your Mission)</span>}
+          {isCalculated && <span className="ml-2 text-[10px] uppercase tracking-wider text-slate-300/70">(Your Mission)</span>}
         </span>
         <span className="text-slate-400">{dose < 1 ? dose.toFixed(2) : dose.toFixed(1)} mSv</span>
       </div>
       <div className="h-3 bg-slate-800/80 rounded-full overflow-hidden">
         <div
-          className={`h-full rounded-full transition-all duration-700 ease-out ${isCalculated ? 'bg-gradient-to-r from-cyan-500 to-cyan-400' : color}`}
+          className={`h-full rounded-full transition-all duration-700 ease-out ${isCalculated ? 'bg-gradient-to-r from-white to-slate-400' : color}`}
           style={{ width: `${width}%` }}
         />
 
@@ -309,7 +309,7 @@ function OrbitSelectionPanel({
   return (
     <div className="card p-5">
       <h3 className="text-lg font-semibold text-slate-100 mb-4 flex items-center gap-2">
-        <svg className="w-5 h-5 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+        <svg className="w-5 h-5 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418" />
         </svg>
         Orbit Selection
@@ -323,7 +323,7 @@ function OrbitSelectionPanel({
             onClick={() => onOrbitChange(key)}
             className={`py-2.5 px-3 rounded-lg text-sm font-medium transition-all border text-left ${
               selectedOrbit === key
-                ? 'bg-cyan-500/15 border-cyan-500/40 text-cyan-400'
+                ? 'bg-white/8 border-white/15/40 text-slate-300'
                 : 'bg-slate-900/50 border-slate-700/50 text-slate-400 hover:border-slate-600/50 hover:text-slate-300'
             }`}
           >
@@ -337,7 +337,7 @@ function OrbitSelectionPanel({
       <div className="card p-3 bg-slate-800/30 mb-5">
         <p className="text-xs text-slate-400 leading-relaxed">{orbitConfig.description}</p>
         <div className="mt-2 text-xs text-slate-500">
-          Base dose rate: <span className="text-cyan-400 font-medium">{orbitConfig.baseDoseRate} mSv/day</span> (behind 10mm Al)
+          Base dose rate: <span className="text-slate-300 font-medium">{orbitConfig.baseDoseRate} mSv/day</span> (behind 10mm Al)
         </div>
       </div>
 
@@ -360,7 +360,7 @@ function OrbitSelectionPanel({
               const val = parseFloat(e.target.value);
               if (!isNaN(val) && val >= 0 && val <= 90) onInclinationChange(val);
             }}
-            className="w-24 bg-slate-900/70 border border-slate-700/50 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/20 disabled:opacity-40 disabled:cursor-not-allowed"
+            className="w-24 bg-slate-900/70 border border-slate-700/50 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-white/15 focus:ring-1 focus:ring-white/10 disabled:opacity-40 disabled:cursor-not-allowed"
           />
           <span className="text-sm text-slate-400">degrees</span>
         </div>
@@ -372,7 +372,7 @@ function OrbitSelectionPanel({
           value={inclination}
           disabled={!isEarthOrbit}
           onChange={(e) => onInclinationChange(parseFloat(e.target.value))}
-          className="w-full h-2 bg-slate-700/50 rounded-full appearance-none cursor-pointer accent-cyan-500 [&::-webkit-slider-thumb]:bg-cyan-400 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:cursor-pointer disabled:opacity-40"
+          className="w-full h-2 bg-slate-700/50 rounded-full appearance-none cursor-pointer accent-slate-400 [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:cursor-pointer disabled:opacity-40"
         />
         <p className="text-xs text-slate-500 mt-1">
           ISS: 51.6 deg | Sun-sync: ~98 deg | Higher inclination increases SAA exposure in LEO
@@ -394,7 +394,7 @@ function OrbitSelectionPanel({
               const val = parseInt(e.target.value);
               if (!isNaN(val) && val >= 1 && val <= 1095) onDurationChange(val);
             }}
-            className="w-24 bg-slate-900/70 border border-slate-700/50 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/20"
+            className="w-24 bg-slate-900/70 border border-slate-700/50 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-white/15 focus:ring-1 focus:ring-white/10"
           />
           <span className="text-sm text-slate-400">days</span>
           <span className="text-xs text-slate-500">({(duration / 30.44).toFixed(1)} months)</span>
@@ -406,7 +406,7 @@ function OrbitSelectionPanel({
           step={1}
           value={duration}
           onChange={(e) => onDurationChange(parseInt(e.target.value))}
-          className="w-full h-2 bg-slate-700/50 rounded-full appearance-none cursor-pointer accent-cyan-500 [&::-webkit-slider-thumb]:bg-cyan-400 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:cursor-pointer"
+          className="w-full h-2 bg-slate-700/50 rounded-full appearance-none cursor-pointer accent-slate-400 [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:cursor-pointer"
         />
         <div className="flex justify-between text-[10px] text-slate-600 mt-1">
           <span>1 day</span>
@@ -431,7 +431,7 @@ function OrbitSelectionPanel({
               const val = parseFloat(e.target.value);
               if (!isNaN(val) && val >= 0 && val <= 50) onShieldingChange(val);
             }}
-            className="w-24 bg-slate-900/70 border border-slate-700/50 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/20"
+            className="w-24 bg-slate-900/70 border border-slate-700/50 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-white/15 focus:ring-1 focus:ring-white/10"
           />
           <span className="text-sm text-slate-400">mm Al</span>
         </div>
@@ -442,7 +442,7 @@ function OrbitSelectionPanel({
           step={0.5}
           value={shielding}
           onChange={(e) => onShieldingChange(parseFloat(e.target.value))}
-          className="w-full h-2 bg-slate-700/50 rounded-full appearance-none cursor-pointer accent-cyan-500 [&::-webkit-slider-thumb]:bg-cyan-400 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:cursor-pointer"
+          className="w-full h-2 bg-slate-700/50 rounded-full appearance-none cursor-pointer accent-slate-400 [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:cursor-pointer"
         />
         <div className="flex justify-between text-[10px] text-slate-600 mt-1">
           <span>0 mm (EVA suit)</span>
@@ -481,8 +481,8 @@ function RadiationSourcesPanel({ orbit, results }: {
       name: 'Galactic Cosmic Rays (GCR)',
       fraction: orbit.gcrFraction,
       dose: results.gcrDose,
-      color: 'text-cyan-400',
-      barColor: 'bg-cyan-500',
+      color: 'text-slate-300',
+      barColor: 'bg-white',
       icon: (
         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 00-2.455 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z" />
@@ -681,7 +681,7 @@ function CalculatedResultsPanel({ results, duration }: {
             </div>
             <div className="h-3 bg-slate-800/80 rounded-full overflow-hidden">
               <div
-                className="h-full rounded-full transition-all duration-700 bg-cyan-500"
+                className="h-full rounded-full transition-all duration-700 bg-white"
                 style={{ width: `${Math.min((results.annualRate / earthBackground) * 5, 100)}%` }}
               />
             </div>
@@ -710,7 +710,7 @@ function DoseComparisonChart({ calculatedDose }: { calculatedDose: number }) {
   const allDoses = [...DOSE_COMPARISONS, {
     label: 'Your calculated mission',
     dose: calculatedDose,
-    color: 'bg-cyan-500',
+    color: 'bg-white',
   }].sort((a, b) => a.dose - b.dose);
 
   const maxDose = Math.max(...allDoses.map(d => d.dose), 1);
@@ -780,15 +780,15 @@ function RadiationEffectsTable({ currentDose }: { currentDose: number }) {
                 <tr
                   key={effect.range}
                   className={`border-b border-slate-800/50 ${
-                    isCurrent ? 'bg-cyan-500/5 ring-1 ring-inset ring-cyan-500/20' : ''
+                    isCurrent ? 'bg-white/5 ring-1 ring-inset ring-white/15/20' : ''
                   }`}
                 >
                   <td className="py-3 px-3">
-                    <span className={`text-sm font-medium ${isCurrent ? 'text-cyan-300' : 'text-slate-200'}`}>
+                    <span className={`text-sm font-medium ${isCurrent ? 'text-slate-200' : 'text-slate-200'}`}>
                       {effect.dose}
                     </span>
                     {isCurrent && (
-                      <div className="text-[10px] text-cyan-400 mt-0.5 uppercase tracking-wider font-semibold">
+                      <div className="text-[10px] text-slate-300 mt-0.5 uppercase tracking-wider font-semibold">
                         Your mission
                       </div>
                     )}
@@ -997,14 +997,14 @@ export default function RadiationCalculatorPage() {
 
         {/* Related Tools */}
         <ScrollReveal delay={0.1}>
-        <div className="card p-5 border border-cyan-500/20">
+        <div className="card p-5 border border-white/10">
           <h3 className="text-lg font-semibold text-white mb-4">Related Tools</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
             <Link
               href="/orbital-calculator"
               className="p-3 rounded-lg bg-slate-700/30 hover:bg-slate-700/50 transition-colors group"
             >
-              <div className="text-sm font-medium text-white group-hover:text-cyan-200">
+              <div className="text-sm font-medium text-white group-hover:text-slate-200">
                 Orbital Mechanics Calculator
               </div>
               <p className="text-xs text-slate-400 mt-1">Delta-V, periods, decay analysis</p>
@@ -1013,7 +1013,7 @@ export default function RadiationCalculatorPage() {
               href="/space-environment"
               className="p-3 rounded-lg bg-slate-700/30 hover:bg-slate-700/50 transition-colors group"
             >
-              <div className="text-sm font-medium text-white group-hover:text-cyan-200">
+              <div className="text-sm font-medium text-white group-hover:text-slate-200">
                 Space Environment
               </div>
               <p className="text-xs text-slate-400 mt-1">Solar weather, debris tracking</p>
@@ -1022,7 +1022,7 @@ export default function RadiationCalculatorPage() {
               href="/mars-planner"
               className="p-3 rounded-lg bg-slate-700/30 hover:bg-slate-700/50 transition-colors group"
             >
-              <div className="text-sm font-medium text-white group-hover:text-cyan-200">
+              <div className="text-sm font-medium text-white group-hover:text-slate-200">
                 Mars Mission Planner
               </div>
               <p className="text-xs text-slate-400 mt-1">Plan interplanetary missions</p>
@@ -1031,7 +1031,7 @@ export default function RadiationCalculatorPage() {
               href="/materials-database"
               className="p-3 rounded-lg bg-slate-700/30 hover:bg-slate-700/50 transition-colors group"
             >
-              <div className="text-sm font-medium text-white group-hover:text-cyan-200">
+              <div className="text-sm font-medium text-white group-hover:text-slate-200">
                 Materials Database
               </div>
               <p className="text-xs text-slate-400 mt-1">Spacecraft materials & properties</p>

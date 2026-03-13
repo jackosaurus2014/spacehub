@@ -142,15 +142,15 @@ export default function SpaceEconomyPage() {
             placeholder="Filter segments, countries..."
             value={search}
             onChange={e => setSearch(e.target.value)}
-            className="w-full max-w-md bg-slate-800/60 border border-slate-700/50 rounded-lg px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500/50"
+            className="w-full max-w-md bg-slate-800/60 border border-slate-700/50 rounded-lg px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-white/15"
           />
         </div>
 
         {/* ── Global Overview Stats ──────────────────────── */}
         <StaggerContainer className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
-          <StaggerItem><StatCounter target={546} prefix="$" suffix="B" label="2024 Market Size" sub="Space Foundation" color="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent" /></StaggerItem>
+          <StaggerItem><StatCounter target={546} prefix="$" suffix="B" label="2024 Market Size" sub="Space Foundation" color="bg-gradient-to-r from-slate-300 to-blue-400 bg-clip-text text-transparent" /></StaggerItem>
           <StaggerItem><StatCounter target={78} suffix="%" label="Commercial Share" sub="~$426B of total" color="bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent" /></StaggerItem>
-          <StaggerItem><StatCounter target={8.2} suffix="%" label="YoY Growth" sub="2023 to 2024" color="text-cyan-400" /></StaggerItem>
+          <StaggerItem><StatCounter target={8.2} suffix="%" label="YoY Growth" sub="2023 to 2024" color="text-slate-300" /></StaggerItem>
           <StaggerItem><StatCounter target={1.1} prefix="$" suffix="T" label="2040 Forecast" sub="Morgan Stanley" color="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent" /></StaggerItem>
         </StaggerContainer>
 
@@ -160,8 +160,8 @@ export default function SpaceEconomyPage() {
           <h3 className="text-lg font-semibold text-white mb-4">Commercial vs Government Split (2024)</h3>
           <div className="flex items-center gap-3 mb-2">
             <span className="text-sm text-slate-300 w-28 shrink-0">Commercial 78%</span>
-            <HBar width={78} color="bg-gradient-to-r from-cyan-500 to-blue-500" />
-            <span className="text-cyan-400 font-mono text-sm w-16 text-right">$426B</span>
+            <HBar width={78} color="bg-gradient-to-r from-white to-blue-500" />
+            <span className="text-slate-300 font-mono text-sm w-16 text-right">$426B</span>
           </div>
           <div className="flex items-center gap-3">
             <span className="text-sm text-slate-300 w-28 shrink-0">Government 22%</span>
@@ -185,8 +185,8 @@ export default function SpaceEconomyPage() {
               <div key={s.name} className="group">
                 <div className="flex items-center gap-3">
                   <span className="text-sm text-slate-300 w-44 shrink-0 truncate" title={s.name}>{s.name}</span>
-                  <HBar width={(s.size / MAX_SEGMENT) * 100} color={s.growth > 10 ? 'bg-gradient-to-r from-green-500 to-emerald-400' : 'bg-gradient-to-r from-cyan-500 to-blue-500'} delay={i * 60} />
-                  <span className="text-cyan-400 font-mono text-sm w-16 text-right shrink-0">
+                  <HBar width={(s.size / MAX_SEGMENT) * 100} color={s.growth > 10 ? 'bg-gradient-to-r from-green-500 to-emerald-400' : 'bg-gradient-to-r from-white to-blue-500'} delay={i * 60} />
+                  <span className="text-slate-300 font-mono text-sm w-16 text-right shrink-0">
                     {s.size >= 1 ? `$${s.size}B` : `$${(s.size * 1000).toFixed(0)}M`}
                   </span>
                   <span className="w-20 shrink-0 text-right"><Trend value={s.growth} /></span>
@@ -237,7 +237,7 @@ export default function SpaceEconomyPage() {
               const pct = (p.size / MAX_PROJ) * 100;
               return (
                 <div key={p.year} className="flex-1 flex flex-col items-center justify-end h-full">
-                  <span className="text-xs text-cyan-400 font-mono mb-1">
+                  <span className="text-xs text-slate-300 font-mono mb-1">
                     {p.size >= 1000 ? `$${(p.size / 1000).toFixed(1)}T` : `$${p.size}B`}
                   </span>
                   <AnimatedBar pct={pct} delay={i * 120} />
@@ -328,7 +328,7 @@ function AnimatedBar({ pct, delay = 0 }: { pct: number; delay?: number }) {
   return (
     <div className="w-full flex-1 flex items-end">
       <div
-        className="w-full rounded-t-md bg-gradient-to-t from-cyan-600 to-cyan-400 transition-all duration-700 ease-out"
+        className="w-full rounded-t-md bg-gradient-to-t from-slate-200 to-slate-400 transition-all duration-700 ease-out"
         style={{ height: `${h}%` }}
       />
     </div>

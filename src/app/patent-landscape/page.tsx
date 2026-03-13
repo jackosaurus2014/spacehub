@@ -50,7 +50,7 @@ const PATENT_HOLDERS: PatentHolder[] = [
 ];
 
 const PATENT_CATEGORIES: PatentCategory[] = [
-  { name: 'Satellite Communications', count: 3500, color: 'bg-cyan-500', description: 'LEO/GEO constellations, inter-satellite links, ground terminals, direct-to-device' },
+  { name: 'Satellite Communications', count: 3500, color: 'bg-white', description: 'LEO/GEO constellations, inter-satellite links, ground terminals, direct-to-device' },
   { name: 'Propulsion Systems', count: 2200, color: 'bg-orange-500', description: 'Electric propulsion, reusable engines, green propellants, nuclear thermal' },
   { name: 'Earth Observation/Remote Sensing', count: 1800, color: 'bg-emerald-500', description: 'SAR imaging, hyperspectral sensors, on-board AI processing, calibration' },
   { name: 'Spacecraft Manufacturing', count: 1500, color: 'bg-purple-500', description: 'Additive manufacturing, composite structures, modular bus designs' },
@@ -233,7 +233,7 @@ export default function PatentLandscapePage() {
               <div className="text-xs uppercase tracking-widest text-slate-400 font-medium mb-1">
                 Most Active Category
               </div>
-              <div className="text-base md:text-lg font-bold font-display tracking-tight text-cyan-400">
+              <div className="text-base md:text-lg font-bold font-display tracking-tight text-slate-300">
                 {MOST_ACTIVE_CATEGORY}
               </div>
               <div className="text-xs text-slate-500 mt-1">{MAX_CATEGORY_COUNT.toLocaleString()} patents</div>

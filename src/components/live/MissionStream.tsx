@@ -160,7 +160,7 @@ export default function MissionStream({ mission, isLive: propIsLive, onClose }: 
             <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-8">
               {/* Animated background */}
               <div className="absolute inset-0 overflow-hidden">
-                <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-cyan-500/5 rounded-full blur-3xl animate-pulse" />
+                <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-white/5 rounded-full blur-3xl animate-pulse" />
                 <div className="absolute bottom-1/4 right-1/4 w-48 h-48 bg-purple-500/5 rounded-full blur-3xl animate-pulse delay-1000" />
                 {/* Star field effect */}
                 {[...Array(20)].map((_, i) => (
@@ -191,7 +191,7 @@ export default function MissionStream({ mission, isLive: propIsLive, onClose }: 
                     />
                   </div>
                 ) : (
-                  <div className="w-24 h-24 rounded-full bg-gradient-to-br from-cyan-500/20 to-purple-500/20 flex items-center justify-center border border-cyan-500/30 mb-4 mx-auto" aria-hidden="true">
+                  <div className="w-24 h-24 rounded-full bg-gradient-to-br from-white/5 to-purple-500/20 flex items-center justify-center border border-white/10 mb-4 mx-auto" aria-hidden="true">
                     <span className="text-5xl">{typeInfo.icon}</span>
                   </div>
                 )}
@@ -230,7 +230,7 @@ export default function MissionStream({ mission, isLive: propIsLive, onClose }: 
               </div>
               <h3 className="text-white font-bold text-lg line-clamp-2">{mission.name}</h3>
               {mission.agency && (
-                <p className="text-cyan-400 text-sm font-medium">{mission.agency}</p>
+                <p className="text-slate-300 text-sm font-medium">{mission.agency}</p>
               )}
             </div>
 

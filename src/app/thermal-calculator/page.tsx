@@ -275,7 +275,7 @@ function SliderInput({
     <div>
       <div className="flex items-center justify-between mb-1.5">
         <label className="text-sm font-medium text-slate-300">{label}</label>
-        <span className="text-sm font-mono text-cyan-400">
+        <span className="text-sm font-mono text-slate-300">
           {value.toFixed(step < 1 ? 2 : 0)} {unit}
         </span>
       </div>
@@ -286,7 +286,7 @@ function SliderInput({
         step={step}
         value={value}
         onChange={(e) => onChange(parseFloat(e.target.value))}
-        className="w-full h-2 bg-slate-700/50 rounded-full appearance-none cursor-pointer accent-cyan-500 [&::-webkit-slider-thumb]:bg-cyan-400 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:cursor-pointer"
+        className="w-full h-2 bg-slate-700/50 rounded-full appearance-none cursor-pointer accent-slate-400 [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:cursor-pointer"
       />
       <div className="flex justify-between text-xs text-slate-600 mt-0.5">
         <span>{min}{unit}</span>
@@ -335,7 +335,7 @@ function NumberInput({
               onChange(val);
             }
           }}
-          className="w-full bg-slate-900/70 border border-slate-700/50 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/20"
+          className="w-full bg-slate-900/70 border border-slate-700/50 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-white/15 focus:ring-1 focus:ring-white/10"
         />
         <span className="text-sm text-slate-400 whitespace-nowrap">{unit}</span>
       </div>
@@ -360,13 +360,13 @@ function TemperatureCard({
   const accentColors = {
     red: 'text-red-400 border-red-400/30',
     blue: 'text-blue-400 border-blue-400/30',
-    cyan: 'text-cyan-400 border-cyan-400/30',
+    cyan: 'text-slate-300 border-white/10',
   };
 
   const bgGradients = {
     red: 'from-red-500/10 to-transparent',
     blue: 'from-blue-500/10 to-transparent',
-    cyan: 'from-cyan-500/10 to-transparent',
+    cyan: 'from-white/5 to-transparent',
   };
 
   return (
@@ -651,7 +651,7 @@ export default function ThermalCalculatorPage() {
             {/* Orbit Configuration */}
             <div className="card p-6">
               <h2 className="text-lg font-semibold text-slate-100 flex items-center gap-2 mb-5">
-                <svg className="w-5 h-5 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <svg className="w-5 h-5 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M20.893 13.393l-1.135-1.135a2.252 2.252 0 01-.421-.585l-1.08-2.16a.414.414 0 00-.663-.107.827.827 0 01-.812.21l-1.273-.363a.89.89 0 00-.738 1.595l.587.39c.59.395.674 1.23.172 1.732l-.2.2c-.212.212-.33.498-.33.796v.41c0 .409-.11.809-.32 1.158l-1.315 2.191a2.11 2.11 0 01-1.81 1.025 1.055 1.055 0 01-1.055-1.055v-1.172c0-.92-.56-1.747-1.414-2.089l-.655-.261a2.25 2.25 0 01-1.383-2.46l.007-.042a2.25 2.25 0 01.29-.787l.09-.15a2.25 2.25 0 012.37-1.048l1.178.236a1.125 1.125 0 001.302-.795l.208-.73a1.125 1.125 0 00-.578-1.315l-.665-.332-.091.091a2.25 2.25 0 01-1.591.659h-.18c-.249 0-.487.1-.662.274a.931.931 0 01-1.458-1.137l1.411-2.353a2.25 2.25 0 00.286-.76M11.25 2.25L12 2.25" />
                 </svg>
                 Orbit Configuration
@@ -715,7 +715,7 @@ export default function ThermalCalculatorPage() {
                 <div className="bg-slate-900/50 rounded-lg p-3 border border-slate-700/30">
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-slate-400">Earth View Factor</span>
-                    <span className="text-sm font-mono text-cyan-400">
+                    <span className="text-sm font-mono text-slate-300">
                       {results.viewFactor.toFixed(4)}
                     </span>
                   </div>
@@ -803,7 +803,7 @@ export default function ThermalCalculatorPage() {
                         onClick={() => handleMaterialSelect(material)}
                         className={`text-left py-2 px-3 rounded-lg text-xs transition-all border ${
                           selectedMaterial === material.name
-                            ? 'bg-cyan-500/15 border-cyan-500/40 text-cyan-400'
+                            ? 'bg-white/8 border-white/15/40 text-slate-300'
                             : 'bg-slate-900/50 border-slate-700/50 text-slate-400 hover:border-slate-600/50 hover:text-slate-300'
                         }`}
                       >
@@ -900,7 +900,7 @@ export default function ThermalCalculatorPage() {
                       label="Earth Albedo"
                       value={results.albedoInput}
                       maxValue={maxPower}
-                      color="bg-gradient-to-r from-sky-500 to-cyan-400"
+                      color="bg-gradient-to-r from-sky-500 to-slate-400"
                     />
                     <PowerBalanceBar
                       label="Earth IR"
@@ -929,7 +929,7 @@ export default function ThermalCalculatorPage() {
 
                 <div className="border-t border-slate-700/30 pt-3 flex justify-between items-baseline">
                   <span className="text-sm font-semibold text-slate-200">Total Input (avg)</span>
-                  <span className="text-lg font-bold font-mono text-cyan-400">
+                  <span className="text-lg font-bold font-mono text-slate-300">
                     {results.totalInput.toFixed(1)} W
                   </span>
                 </div>
@@ -982,7 +982,7 @@ export default function ThermalCalculatorPage() {
                       onClick={() => setTechFilter(filter)}
                       className={`py-1.5 px-3 rounded-lg text-xs font-medium transition-all border ${
                         techFilter === filter
-                          ? 'bg-cyan-500/15 border-cyan-500/40 text-cyan-400'
+                          ? 'bg-white/8 border-white/15/40 text-slate-300'
                           : 'bg-slate-900/50 border-slate-700/50 text-slate-400 hover:border-slate-600/50'
                       }`}
                     >

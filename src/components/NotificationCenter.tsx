@@ -93,7 +93,7 @@ function getNotificationColor(type: NotificationType): string {
     case 'watchlist':
       return 'text-indigo-400 bg-indigo-400/10';
     default:
-      return 'text-cyan-400 bg-cyan-400/10';
+      return 'text-slate-300 bg-white/5';
   }
 }
 
@@ -238,14 +238,14 @@ export default function NotificationCenter() {
       {/* Bell Icon Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="relative p-2 min-h-[44px] min-w-[44px] flex items-center justify-center text-slate-300 hover:text-cyan-300 transition-colors rounded-lg hover:bg-slate-700/50"
+        className="relative p-2 min-h-[44px] min-w-[44px] flex items-center justify-center text-slate-300 hover:text-white transition-colors rounded-lg hover:bg-slate-700/50"
         aria-label="Notifications"
       >
         <BellIcon className="w-5 h-5" />
 
         {/* Unread Badge */}
         {unreadCount > 0 && (
-          <span className="absolute -top-0.5 -right-0.5 flex items-center justify-center min-w-[18px] h-[18px] px-1 text-xs font-bold text-white bg-cyan-500 rounded-full shadow-lg shadow-cyan-500/30">
+          <span className="absolute -top-0.5 -right-0.5 flex items-center justify-center min-w-[18px] h-[18px] px-1 text-xs font-bold text-white bg-white rounded-full shadow-lg shadow-black/15">
             {unreadCount > 9 ? '9+' : unreadCount}
           </span>
         )}
@@ -254,7 +254,7 @@ export default function NotificationCenter() {
       {/* Dropdown Panel */}
       {isOpen && (
         <div
-          className="absolute top-full right-0 mt-3 w-[calc(100vw-2rem)] sm:w-96 max-h-[480px] backdrop-blur-xl border border-cyan-400/30 rounded-xl overflow-hidden animate-fade-in-down z-50"
+          className="absolute top-full right-0 mt-3 w-[calc(100vw-2rem)] sm:w-96 max-h-[480px] backdrop-blur-xl border border-white/10 rounded-xl overflow-hidden animate-fade-in-down z-50"
           style={{
             background: 'linear-gradient(145deg, rgba(15, 23, 42, 0.98) 0%, rgba(30, 41, 59, 0.96) 25%, rgba(51, 65, 85, 0.95) 50%, rgba(30, 41, 59, 0.96) 75%, rgba(15, 23, 42, 0.98) 100%)',
             boxShadow: '0 8px 16px -4px rgba(0, 0, 0, 0.4), 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(6, 182, 212, 0.15)',
@@ -266,7 +266,7 @@ export default function NotificationCenter() {
             {unreadCount > 0 && (
               <button
                 onClick={handleMarkAllAsRead}
-                className="text-xs text-cyan-400 hover:text-cyan-300 transition-colors font-medium py-1 px-2 -mr-2 touch-target"
+                className="text-xs text-slate-300 hover:text-white transition-colors font-medium py-1 px-2 -mr-2 touch-target"
               >
                 Mark all as read
               </button>
@@ -291,7 +291,7 @@ export default function NotificationCenter() {
                 {notifications.map((notification) => (
                   <div
                     key={notification.id}
-                    className={`relative ${!notification.read ? 'bg-cyan-400/5' : ''}`}
+                    className={`relative ${!notification.read ? 'bg-white/5' : ''}`}
                   >
                     {notification.link ? (
                       <Link
@@ -312,7 +312,7 @@ export default function NotificationCenter() {
 
                     {/* Unread Indicator */}
                     {!notification.read && (
-                      <div className="absolute left-1.5 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-cyan-400 shadow-lg shadow-cyan-400/50" />
+                      <div className="absolute left-1.5 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-white shadow-lg shadow-black/20/50" />
                     )}
                   </div>
                 ))}
@@ -328,7 +328,7 @@ export default function NotificationCenter() {
                 handleMarkAllAsRead();
                 setIsOpen(false);
               }}
-              className="block text-center text-xs text-cyan-400 hover:text-cyan-300 transition-colors font-medium py-1"
+              className="block text-center text-xs text-slate-300 hover:text-white transition-colors font-medium py-1"
             >
               View All Notifications
             </Link>

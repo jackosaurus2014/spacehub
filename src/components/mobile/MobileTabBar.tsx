@@ -252,7 +252,7 @@ export default function MobileTabBar() {
               <div className="px-4 pb-6 pt-2 space-y-5">
                 {MORE_MENU_CATEGORIES.map((category) => (
                   <div key={category.title}>
-                    <h3 className="text-xs font-semibold text-cyan-400/80 uppercase tracking-wider mb-2 px-1">
+                    <h3 className="text-xs font-semibold text-slate-300/80 uppercase tracking-wider mb-2 px-1">
                       {category.title}
                     </h3>
                     <div className="grid grid-cols-2 min-[400px]:grid-cols-3 gap-2">
@@ -266,7 +266,7 @@ export default function MobileTabBar() {
                             aria-current={active ? 'page' : undefined}
                             className={`flex flex-col items-center justify-center min-h-[72px] min-w-[44px] px-2 py-3 rounded-xl transition-all duration-200 ${
                               active
-                                ? 'bg-cyan-500/15 text-cyan-400 ring-1 ring-cyan-500/30'
+                                ? 'bg-white/8 text-slate-300 ring-1 ring-white/10'
                                 : 'text-slate-400 hover:bg-slate-800/80 hover:text-slate-200 active:bg-slate-800'
                             }`}
                           >
@@ -296,7 +296,7 @@ export default function MobileTabBar() {
         }}
       >
         {/* Top gradient border */}
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-400/40 to-transparent" />
+        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
 
         {/* Contextual label */}
         <AnimatePresence>
@@ -308,7 +308,7 @@ export default function MobileTabBar() {
               transition={{ duration: 0.2 }}
               className="overflow-hidden"
             >
-              <div className="flex items-center justify-center gap-2 py-1 text-xs text-cyan-400/70 border-b border-slate-800/50">
+              <div className="flex items-center justify-center gap-2 py-1 text-xs text-slate-300/70 border-b border-slate-800/50">
                 <span>{parentName}</span>
               </div>
             </motion.div>
@@ -349,7 +349,7 @@ export default function MobileTabBar() {
                   onClick={() => handleTabPress(tab.href)}
                   whileTap={{ scale: 0.85 }}
                   className={`relative flex flex-col items-center justify-center flex-1 h-full min-w-[44px] min-h-[44px] px-1 transition-colors duration-200 ${
-                    active ? 'text-cyan-400' : 'text-slate-400 hover:text-slate-200'
+                    active ? 'text-slate-300' : 'text-slate-400 hover:text-slate-200'
                   }`}
                   aria-label={tab.name}
                   aria-current={active ? 'page' : undefined}
@@ -358,7 +358,7 @@ export default function MobileTabBar() {
                   {active && (
                     <motion.div
                       layoutId="mobile-tab-indicator"
-                      className="absolute top-0 w-12 h-0.5 rounded-b-full bg-cyan-400"
+                      className="absolute top-0 w-12 h-0.5 rounded-b-full bg-white"
                       style={{ boxShadow: '0 2px 8px rgba(6, 182, 212, 0.5)' }}
                       transition={{ type: 'spring', stiffness: 500, damping: 35 }}
                     />
@@ -412,13 +412,13 @@ export default function MobileTabBar() {
               aria-expanded={moreOpen}
               aria-haspopup="dialog"
               className={`relative flex flex-col items-center justify-center flex-1 h-full min-w-[44px] min-h-[44px] px-1 transition-colors duration-200 ${
-                moreOpen || moreRouteActive ? 'text-cyan-400' : 'text-slate-400 hover:text-slate-200'
+                moreOpen || moreRouteActive ? 'text-slate-300' : 'text-slate-400 hover:text-slate-200'
               }`}
             >
               {moreRouteActive && !moreOpen && (
                 <motion.div
                   layoutId="mobile-tab-indicator"
-                  className="absolute top-0 w-12 h-0.5 rounded-b-full bg-cyan-400"
+                  className="absolute top-0 w-12 h-0.5 rounded-b-full bg-white"
                   style={{ boxShadow: '0 2px 8px rgba(6, 182, 212, 0.5)' }}
                   transition={{ type: 'spring', stiffness: 500, damping: 35 }}
                 />

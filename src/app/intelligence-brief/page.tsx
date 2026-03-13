@@ -81,7 +81,7 @@ const BRIEFS: WeeklyBrief[] = [
 
 const CATEGORY_COLORS: Record<string, string> = {
   Funding: 'border-emerald-500/30 bg-emerald-500/5',
-  Launches: 'border-cyan-500/30 bg-cyan-500/5',
+  Launches: 'border-white/10 bg-white/5',
   Regulatory: 'border-amber-500/30 bg-amber-500/5',
   Personnel: 'border-purple-500/30 bg-purple-500/5',
   Market: 'border-blue-500/30 bg-blue-500/5',
@@ -123,12 +123,12 @@ export default function IntelligenceBriefPage() {
 
         {/* Subscribe CTA */}
         <ScrollReveal delay={0.1}>
-          <div className="bg-gradient-to-r from-cyan-500/10 to-purple-500/10 border border-cyan-400/30 rounded-xl p-5 mb-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="bg-gradient-to-r from-white/5 to-purple-500/10 border border-white/10 rounded-xl p-5 mb-8 flex flex-col sm:flex-row items-center justify-between gap-4">
             <div>
               <h3 className="text-sm font-bold text-white">Get the brief in your inbox every Monday</h3>
               <p className="text-xs text-slate-400 mt-0.5">Join 2,000+ space professionals. Free weekly delivery.</p>
             </div>
-            <Link href="/news" className="px-5 py-2.5 bg-cyan-600 hover:bg-cyan-500 text-white rounded-lg text-sm font-medium transition-colors whitespace-nowrap">
+            <Link href="/news" className="px-5 py-2.5 bg-white hover:bg-slate-100 text-white rounded-lg text-sm font-medium transition-colors whitespace-nowrap">
               Subscribe Free
             </Link>
           </div>
@@ -139,7 +139,7 @@ export default function IntelligenceBriefPage() {
           <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
             {BRIEFS.map(brief => (
               <button key={brief.id} onClick={() => setExpandedBrief(brief.id)}
-                className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${expandedBrief === brief.id ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-400/40' : 'bg-slate-800/50 text-slate-400 border border-slate-700/50 hover:text-white'}`}>
+                className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${expandedBrief === brief.id ? 'bg-white/10 text-slate-200 border border-white/10/40' : 'bg-slate-800/50 text-slate-400 border border-slate-700/50 hover:text-white'}`}>
                 Week of {brief.weekOf.replace(', 2026', '')}
               </button>
             ))}
@@ -159,10 +159,10 @@ export default function IntelligenceBriefPage() {
 
             {/* Top Story */}
             <ScrollReveal delay={0.25}>
-              <div className="bg-gradient-to-br from-slate-800/80 to-slate-800/40 border border-cyan-400/30 rounded-xl p-6 mb-6">
+              <div className="bg-gradient-to-br from-slate-800/80 to-slate-800/40 border border-white/10 rounded-xl p-6 mb-6">
                 <div className="flex items-center gap-2 mb-3">
-                  <span className="text-xs font-bold text-cyan-400 uppercase tracking-wider">Top Story</span>
-                  <div className="h-px flex-1 bg-cyan-400/20" />
+                  <span className="text-xs font-bold text-slate-300 uppercase tracking-wider">Top Story</span>
+                  <div className="h-px flex-1 bg-white/10" />
                 </div>
                 <h3 className="text-lg font-bold text-white mb-2">{brief.topStory.headline}</h3>
                 <p className="text-sm text-slate-300 leading-relaxed">{brief.topStory.summary}</p>
@@ -229,7 +229,7 @@ export default function IntelligenceBriefPage() {
               { label: 'Executive Moves', href: '/executive-moves', icon: '👤' },
             ].map(link => (
               <Link key={link.href} href={link.href}
-                className="flex items-center gap-2 p-3 card hover:border-cyan-400/30 transition-colors text-sm text-slate-300 hover:text-cyan-300">
+                className="flex items-center gap-2 p-3 card hover:border-white/10 transition-colors text-sm text-slate-300 hover:text-white">
                 <span>{link.icon}</span>
                 {link.label}
               </Link>

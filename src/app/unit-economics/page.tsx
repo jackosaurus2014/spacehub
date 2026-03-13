@@ -770,7 +770,7 @@ export default function UnitEconomicsPage() {
                 {/* CAPEX */}
                 <div className="mb-6">
                   <h3 className="text-sm font-semibold text-slate-300 uppercase tracking-wider mb-3 flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-cyan-400" />
+                    <span className="w-2 h-2 rounded-full bg-white" />
                     CAPEX (One-Time)
                   </h3>
                   <DollarInput
@@ -794,9 +794,9 @@ export default function UnitEconomicsPage() {
                     value={regulatory}
                     onChange={setRegulatory}
                   />
-                  <div className="flex items-center justify-between bg-cyan-500/10 border border-cyan-500/30 rounded-lg px-4 py-2.5 mt-2">
-                    <span className="text-sm text-cyan-300 font-medium">Total CAPEX</span>
-                    <span className="text-lg font-bold font-mono text-cyan-400">
+                  <div className="flex items-center justify-between bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 mt-2">
+                    <span className="text-sm text-slate-200 font-medium">Total CAPEX</span>
+                    <span className="text-lg font-bold font-mono text-slate-300">
                       {formatCurrency(calculations.totalCapex)}
                     </span>
                   </div>
@@ -979,7 +979,7 @@ export default function UnitEconomicsPage() {
                   label="CAC"
                   value={formatCurrency(calculations.cac)}
                   subtitle={`~${calculations.newCustomersPerMonth} new customers/mo`}
-                  colorClass="text-cyan-400"
+                  colorClass="text-slate-300"
                 />
                 <MetricCard
                   label="Customer LTV"
@@ -1037,7 +1037,7 @@ export default function UnitEconomicsPage() {
                       </tr>
                       <tr>
                         <td className="py-2 text-slate-400">Total CAPEX</td>
-                        <td className="py-2 text-right font-mono text-cyan-400">{formatCurrencyFull(calculations.totalCapex)}</td>
+                        <td className="py-2 text-right font-mono text-slate-300">{formatCurrencyFull(calculations.totalCapex)}</td>
                       </tr>
                     </tbody>
                   </table>
@@ -1072,9 +1072,9 @@ export default function UnitEconomicsPage() {
                       ~{(calculations.breakEvenMonth / 12).toFixed(1)} years from launch
                     </p>
                   </div>
-                  <div className="flex-1 bg-cyan-500/10 border border-cyan-500/30 rounded-lg p-4">
-                    <p className="text-xs text-cyan-300 uppercase tracking-wider mb-1">Total investment needed</p>
-                    <p className="text-2xl font-bold font-mono text-cyan-400">
+                  <div className="flex-1 bg-white/5 border border-white/10 rounded-lg p-4">
+                    <p className="text-xs text-slate-200 uppercase tracking-wider mb-1">Total investment needed</p>
+                    <p className="text-2xl font-bold font-mono text-slate-300">
                       {formatCurrency(calculations.totalInvestmentBeforeBreakEven)}
                     </p>
                     <p className="text-xs text-slate-400 mt-1">Cumulative costs at break-even</p>

@@ -102,7 +102,7 @@ const TECHNOLOGIES: PropulsionTechnology[] = [
     advantages: ['High Isp', 'Good thrust for electric', 'Mature technology', 'Long operational life'],
     disadvantages: ['Low thrust', 'Requires high power', 'Electrode erosion', 'Long maneuver times'],
     trlRange: [8, 9],
-    color: 'from-blue-500 to-cyan-500',
+    color: 'from-blue-500 to-slate-200',
   },
   {
     id: 'electric-ion',
@@ -675,7 +675,7 @@ function formatThrust(n: number): string {
 
 function trlColor(trl: number): string {
   if (trl >= 9) return 'text-emerald-400 bg-emerald-400/10 border-emerald-400/30';
-  if (trl >= 7) return 'text-cyan-400 bg-cyan-400/10 border-cyan-400/30';
+  if (trl >= 7) return 'text-slate-300 bg-white/5 border-white/10';
   if (trl >= 5) return 'text-amber-400 bg-amber-400/10 border-amber-400/30';
   return 'text-red-400 bg-red-400/10 border-red-400/30';
 }
@@ -860,7 +860,7 @@ export default function PropulsionComparisonPage() {
         {/* Stats row */}
         <StaggerContainer className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           {[
-            { label: 'Engine Models', value: stats.totalEngines, color: 'text-cyan-400' },
+            { label: 'Engine Models', value: stats.totalEngines, color: 'text-slate-300' },
             { label: 'Technology Types', value: stats.categories, color: 'text-amber-400' },
             { label: 'Manufacturers', value: stats.manufacturers, color: 'text-purple-400' },
             { label: 'Operational', value: stats.operational, color: 'text-emerald-400' },
@@ -881,7 +881,7 @@ export default function PropulsionComparisonPage() {
               onClick={() => setActiveTab(tab.id)}
               className={`px-4 py-2.5 rounded-lg text-sm font-medium transition-all ${
                 activeTab === tab.id
-                  ? 'bg-cyan-600 text-white shadow-lg shadow-cyan-500/20'
+                  ? 'bg-white text-white shadow-lg shadow-black/10'
                   : 'bg-slate-800/60 text-slate-300 hover:bg-slate-700/60 hover:text-white'
               }`}
             >
@@ -905,8 +905,8 @@ export default function PropulsionComparisonPage() {
                 return (
                   <div
                     key={tech.id}
-                    className={`card p-5 cursor-pointer transition-all duration-300 hover:ring-1 hover:ring-cyan-500/30 ${
-                      isExpanded ? 'ring-1 ring-cyan-500/50 md:col-span-2 xl:col-span-2' : ''
+                    className={`card p-5 cursor-pointer transition-all duration-300 hover:ring-1 hover:ring-white/10 ${
+                      isExpanded ? 'ring-1 ring-white/15 md:col-span-2 xl:col-span-2' : ''
                     }`}
                     onClick={() => setExpandedTech(isExpanded ? null : tech.id)}
                   >
@@ -931,7 +931,7 @@ export default function PropulsionComparisonPage() {
                     <div className="grid grid-cols-2 gap-2 mb-3">
                       <div className="bg-slate-800/50 rounded-lg px-2.5 py-1.5">
                         <p className="text-[10px] text-slate-500 uppercase tracking-wider">Isp Range</p>
-                        <p className="text-sm font-semibold text-cyan-400">
+                        <p className="text-sm font-semibold text-slate-300">
                           {tech.ispRange[0].toLocaleString()}-{tech.ispRange[1].toLocaleString()}s
                         </p>
                       </div>
@@ -982,11 +982,11 @@ export default function PropulsionComparisonPage() {
                             </ul>
                           </div>
                           <div>
-                            <h4 className="text-xs font-semibold text-cyan-400 uppercase tracking-wider mb-2">Advantages</h4>
+                            <h4 className="text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Advantages</h4>
                             <ul className="space-y-1">
                               {tech.advantages.map((adv, i) => (
                                 <li key={i} className="text-xs text-slate-400 flex items-start gap-1.5">
-                                  <span className="text-cyan-500 mt-0.5">+</span>
+                                  <span className="text-slate-300 mt-0.5">+</span>
                                   {adv}
                                 </li>
                               ))}
@@ -1112,7 +1112,7 @@ export default function PropulsionComparisonPage() {
                     value={searchQuery}
                     onChange={e => setSearchQuery(e.target.value)}
                     placeholder="Engine name, manufacturer, vehicle..."
-                    className="w-full bg-slate-800/80 border border-slate-700/50 rounded-lg px-3 py-2 text-sm text-slate-200 placeholder-slate-500 focus:ring-1 focus:ring-cyan-500/50 focus:border-cyan-500/50 outline-none"
+                    className="w-full bg-slate-800/80 border border-slate-700/50 rounded-lg px-3 py-2 text-sm text-slate-200 placeholder-slate-500 focus:ring-1 focus:ring-white/20 focus:border-white/15 outline-none"
                   />
                 </div>
 
@@ -1122,7 +1122,7 @@ export default function PropulsionComparisonPage() {
                   <select
                     value={filterCategory}
                     onChange={e => setFilterCategory(e.target.value as PropulsionCategory | 'all')}
-                    className="w-full bg-slate-800/80 border border-slate-700/50 rounded-lg px-3 py-2 text-sm text-slate-200 focus:ring-1 focus:ring-cyan-500/50 outline-none"
+                    className="w-full bg-slate-800/80 border border-slate-700/50 rounded-lg px-3 py-2 text-sm text-slate-200 focus:ring-1 focus:ring-white/20 outline-none"
                   >
                     <option value="all">All Types</option>
                     {Object.entries(CATEGORY_LABELS).map(([key, label]) => (
@@ -1137,7 +1137,7 @@ export default function PropulsionComparisonPage() {
                   <select
                     value={filterManufacturer}
                     onChange={e => setFilterManufacturer(e.target.value)}
-                    className="w-full bg-slate-800/80 border border-slate-700/50 rounded-lg px-3 py-2 text-sm text-slate-200 focus:ring-1 focus:ring-cyan-500/50 outline-none"
+                    className="w-full bg-slate-800/80 border border-slate-700/50 rounded-lg px-3 py-2 text-sm text-slate-200 focus:ring-1 focus:ring-white/20 outline-none"
                   >
                     <option value="all">All Manufacturers</option>
                     {ALL_MANUFACTURERS.map(m => (
@@ -1152,7 +1152,7 @@ export default function PropulsionComparisonPage() {
                   <select
                     value={filterPropellant}
                     onChange={e => setFilterPropellant(e.target.value)}
-                    className="w-full bg-slate-800/80 border border-slate-700/50 rounded-lg px-3 py-2 text-sm text-slate-200 focus:ring-1 focus:ring-cyan-500/50 outline-none"
+                    className="w-full bg-slate-800/80 border border-slate-700/50 rounded-lg px-3 py-2 text-sm text-slate-200 focus:ring-1 focus:ring-white/20 outline-none"
                   >
                     <option value="all">All Propellants</option>
                     {ALL_PROPELLANTS.map(p => (
@@ -1170,7 +1170,7 @@ export default function PropulsionComparisonPage() {
                     value={filterThrustMin}
                     onChange={e => setFilterThrustMin(e.target.value)}
                     placeholder="0"
-                    className="w-full bg-slate-800/80 border border-slate-700/50 rounded-lg px-3 py-2 text-sm text-slate-200 placeholder-slate-500 focus:ring-1 focus:ring-cyan-500/50 outline-none"
+                    className="w-full bg-slate-800/80 border border-slate-700/50 rounded-lg px-3 py-2 text-sm text-slate-200 placeholder-slate-500 focus:ring-1 focus:ring-white/20 outline-none"
                   />
                 </div>
                 <div className="min-w-[120px]">
@@ -1181,7 +1181,7 @@ export default function PropulsionComparisonPage() {
                     value={filterThrustMax}
                     onChange={e => setFilterThrustMax(e.target.value)}
                     placeholder="Any"
-                    className="w-full bg-slate-800/80 border border-slate-700/50 rounded-lg px-3 py-2 text-sm text-slate-200 placeholder-slate-500 focus:ring-1 focus:ring-cyan-500/50 outline-none"
+                    className="w-full bg-slate-800/80 border border-slate-700/50 rounded-lg px-3 py-2 text-sm text-slate-200 placeholder-slate-500 focus:ring-1 focus:ring-white/20 outline-none"
                   />
                 </div>
 
@@ -1222,7 +1222,7 @@ export default function PropulsionComparisonPage() {
                         <th
                           key={i}
                           className={`px-3 py-3 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider ${col.width} ${
-                            col.field ? 'cursor-pointer hover:text-cyan-400 transition-colors select-none' : ''
+                            col.field ? 'cursor-pointer hover:text-white transition-colors select-none' : ''
                           }`}
                           onClick={col.field ? () => handleSort(col.field as SortField) : undefined}
                         >
@@ -1252,7 +1252,7 @@ export default function PropulsionComparisonPage() {
                         </td>
                         <td className="px-3 py-3 text-slate-300 text-xs">{engine.propellant}</td>
                         <td className="px-3 py-3 font-mono text-xs text-amber-400">{engine.thrustDisplay}</td>
-                        <td className="px-3 py-3 font-mono text-xs text-cyan-400">{engine.ispS.toLocaleString()}</td>
+                        <td className="px-3 py-3 font-mono text-xs text-slate-300">{engine.ispS.toLocaleString()}</td>
                         <td className="px-3 py-3 font-mono text-xs text-slate-300">
                           {engine.twr !== null ? engine.twr.toFixed(1) : '--'}
                         </td>
@@ -1329,12 +1329,12 @@ export default function PropulsionComparisonPage() {
                         </div>
                         <div className="flex-1 h-5 bg-slate-800/60 rounded-full overflow-hidden relative">
                           <div
-                            className={`h-full rounded-full bg-gradient-to-r ${tech?.color || 'from-cyan-500 to-blue-500'} transition-all duration-700`}
+                            className={`h-full rounded-full bg-gradient-to-r ${tech?.color || 'from-white to-blue-500'} transition-all duration-700`}
                             style={{ width: `${Math.max(pct, 3)}%` }}
                           />
                         </div>
                         <div className="w-20 text-right shrink-0">
-                          <span className="text-xs font-mono text-cyan-400">{engine.ispS.toLocaleString()}s</span>
+                          <span className="text-xs font-mono text-slate-300">{engine.ispS.toLocaleString()}s</span>
                         </div>
                       </div>
                     );
@@ -1474,7 +1474,7 @@ export default function PropulsionComparisonPage() {
                       <div className="grid grid-cols-3 gap-2 text-center">
                         <div>
                           <p className="text-[10px] text-slate-500">Isp Range</p>
-                          <p className="text-xs font-mono text-cyan-400">{tech.ispRange[0]}-{tech.ispRange[1]}s</p>
+                          <p className="text-xs font-mono text-slate-300">{tech.ispRange[0]}-{tech.ispRange[1]}s</p>
                         </div>
                         <div>
                           <p className="text-[10px] text-slate-500">Thrust</p>

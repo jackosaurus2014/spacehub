@@ -23,9 +23,9 @@ const CASE_STUDIES = [
       'SpaceNexus replaced four different tools and gave us a unified view of the space market.',
     author: 'Sarah Chen',
     authorTitle: 'Managing Partner',
-    gradient: 'from-cyan-500 to-blue-500',
-    accentClass: 'text-cyan-400',
-    badgeClass: 'bg-cyan-500/10 text-cyan-300 border-cyan-500/20',
+    gradient: 'from-white to-blue-500',
+    accentClass: 'text-slate-300',
+    badgeClass: 'bg-white/5 text-slate-200 border-white/10',
   },
   {
     slug: 'astral-defense-compliance',
@@ -85,16 +85,16 @@ export default function CaseStudiesPage() {
 
       {/* Hero */}
       <section className="relative py-20 md:py-28 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-transparent to-emerald-600/10 pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-br from-white/5 via-transparent to-emerald-600/10 pointer-events-none" />
         <div className="container mx-auto px-4 relative z-10">
           <ScrollReveal>
             <div className="max-w-3xl mx-auto text-center">
-              <span className="inline-block px-4 py-1.5 rounded-full text-xs font-semibold tracking-wide uppercase bg-cyan-500/10 text-cyan-300 border border-cyan-500/20 mb-6">
+              <span className="inline-block px-4 py-1.5 rounded-full text-xs font-semibold tracking-wide uppercase bg-white/5 text-slate-200 border border-white/10 mb-6">
                 Case Studies
               </span>
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
                 Success Stories from the{' '}
-                <span className="bg-gradient-to-r from-cyan-400 to-emerald-400 bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-slate-300 to-emerald-400 bg-clip-text text-transparent">
                   Space Industry
                 </span>
               </h1>
@@ -116,7 +116,7 @@ export default function CaseStudiesPage() {
                   key={stat.label}
                   className="rounded-xl border border-slate-700/50 bg-slate-900/50 backdrop-blur-sm p-6 text-center"
                 >
-                  <p className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-cyan-400 to-emerald-400 bg-clip-text text-transparent">
+                  <p className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-slate-300 to-emerald-400 bg-clip-text text-transparent">
                     {stat.value}
                   </p>
                   <p className="text-slate-400 text-sm mt-1">{stat.label}</p>
@@ -193,7 +193,7 @@ export default function CaseStudiesPage() {
                     </div>
 
                     {/* Quote */}
-                    <blockquote className="rounded-xl bg-gradient-to-r from-cyan-500/5 to-blue-500/5 border border-cyan-500/10 p-4">
+                    <blockquote className="rounded-xl bg-gradient-to-r from-white/5 to-blue-500/5 border border-white/15/10 p-4">
                       <p className="text-slate-200 text-sm italic leading-relaxed">
                         &ldquo;{cs.quote}&rdquo;
                       </p>
@@ -206,7 +206,7 @@ export default function CaseStudiesPage() {
                     <div className="pt-2">
                       <Link
                         href="/contact"
-                        className="inline-flex items-center gap-2 text-cyan-400 hover:text-cyan-300 text-sm font-medium transition-colors"
+                        className="inline-flex items-center gap-2 text-slate-300 hover:text-white text-sm font-medium transition-colors"
                       >
                         Read Full Case Study
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -241,7 +241,7 @@ export default function CaseStudiesPage() {
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link
                   href="/pricing"
-                  className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-semibold hover:from-cyan-400 hover:to-blue-500 transition-all shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40"
+                  className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl bg-gradient-to-r from-white to-blue-600 text-white font-semibold hover:from-slate-300 hover:to-blue-500 transition-all shadow-lg shadow-black/20/25 hover:shadow-black/20/40"
                 >
                   View Pricing
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

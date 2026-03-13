@@ -105,7 +105,7 @@ function AddToCalendarDropdown({ event }: { event: SpaceEvent }) {
     <div className="relative">
       <button
         onClick={() => setOpen(!open)}
-        className="flex items-center gap-1.5 text-xs px-2 py-1 rounded bg-slate-800 text-cyan-400 border border-slate-700 hover:border-cyan-500/30 transition-all whitespace-nowrap"
+        className="flex items-center gap-1.5 text-xs px-2 py-1 rounded bg-slate-800 text-slate-300 border border-slate-700 hover:border-white/10 transition-all whitespace-nowrap"
       >
         <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -126,7 +126,7 @@ function AddToCalendarDropdown({ event }: { event: SpaceEvent }) {
               }}
               className="w-full text-left px-3 py-1.5 text-xs text-slate-300 hover:bg-slate-700/50 transition-colors flex items-center gap-2"
             >
-              <svg className="w-3.5 h-3.5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-3.5 h-3.5 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
               </svg>
               Download .ics
@@ -138,7 +138,7 @@ function AddToCalendarDropdown({ event }: { event: SpaceEvent }) {
               onClick={() => setOpen(false)}
               className="w-full text-left px-3 py-1.5 text-xs text-slate-300 hover:bg-slate-700/50 transition-colors flex items-center gap-2"
             >
-              <svg className="w-3.5 h-3.5 text-cyan-400" viewBox="0 0 24 24" fill="currentColor">
+              <svg className="w-3.5 h-3.5 text-slate-300" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M18.316 5.684H24v12.632h-5.684V5.684zM5.684 24h12.632v-5.684H5.684V24zM0 5.684v12.632h5.684V5.684H0zM5.684 0v5.684h12.632V0H5.684z" />
               </svg>
               Google Calendar
@@ -173,13 +173,13 @@ function HighlightedEvents({ events }: { events: SpaceEvent[] }) {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 * i }}
-              className="card p-5 border-l-4 border-l-cyan-500 relative overflow-hidden"
+              className="card p-5 border-l-4 border-l-white/40 relative overflow-hidden"
             >
-              <div className="absolute top-0 right-0 w-20 h-20 bg-cyan-500/5 rounded-bl-full" />
+              <div className="absolute top-0 right-0 w-20 h-20 bg-white/5 rounded-bl-full" />
               <div className="flex items-start justify-between mb-2">
                 <EventTypeBadge type={event.type} />
                 {daysUntil > 0 && (
-                  <span className="text-xs text-cyan-400 font-medium">
+                  <span className="text-xs text-slate-300 font-medium">
                     in {daysUntil} days
                   </span>
                 )}
@@ -220,7 +220,7 @@ function HighlightedEvents({ events }: { events: SpaceEvent[] }) {
                     href={event.registrationUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-xs px-2 py-1 rounded bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 hover:bg-cyan-500/20 transition-all"
+                    className="text-xs px-2 py-1 rounded bg-white/5 text-slate-300 border border-white/10 hover:bg-slate-100/20 transition-all"
                   >
                     Register
                   </a>
@@ -329,7 +329,7 @@ function EventListCard({ event, onSelect }: { event: SpaceEvent; onSelect: (e: S
             </a>
           )}
           {!isPast && daysUntil >= 0 && (
-            <span className="text-xs text-cyan-400 font-medium whitespace-nowrap">
+            <span className="text-xs text-slate-300 font-medium whitespace-nowrap">
               {daysUntil === 0 ? 'Today' : `${daysUntil}d`}
             </span>
           )}
@@ -409,14 +409,14 @@ function CalendarMonth({
               key={day}
               className={`aspect-square flex flex-col items-center justify-start p-0.5 rounded-md text-xs relative cursor-default transition-all ${
                 isToday(day)
-                  ? 'bg-cyan-500/20 ring-1 ring-cyan-500/50'
+                  ? 'bg-white/10 ring-1 ring-white/15'
                   : hasEvents
                     ? 'bg-slate-800/50 hover:bg-slate-700/50'
                     : ''
               }`}
               title={dayEvents.map((e) => e.name).join(', ')}
             >
-              <span className={`${isToday(day) ? 'text-cyan-400 font-bold' : 'text-slate-400'}`}>
+              <span className={`${isToday(day) ? 'text-slate-300 font-bold' : 'text-slate-400'}`}>
                 {day}
               </span>
               {hasEvents && (
@@ -522,13 +522,13 @@ function EventDetailModal({
 
         <div className="space-y-3 mb-4">
           <div className="flex items-center gap-2 text-sm">
-            <svg className="w-4 h-4 text-cyan-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-4 h-4 text-slate-300 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
             <span className="text-slate-300">{formatDateRange(event.startDate, event.endDate)}</span>
           </div>
           <div className="flex items-center gap-2 text-sm">
-            <svg className="w-4 h-4 text-cyan-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-4 h-4 text-slate-300 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
             </svg>
@@ -539,7 +539,7 @@ function EventDetailModal({
           </div>
           {event.country !== 'Virtual' && event.country !== 'Worldwide' && (
             <div className="flex items-center gap-2 text-sm">
-              <svg className="w-4 h-4 text-cyan-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4 text-slate-300 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
               <span className="text-slate-300">{event.country}</span>
@@ -547,7 +547,7 @@ function EventDetailModal({
           )}
           {event.attendeeCount && (
             <div className="flex items-center gap-2 text-sm">
-              <svg className="w-4 h-4 text-cyan-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4 text-slate-300 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
               </svg>
               <span className="text-slate-300">{event.attendeeCount.toLocaleString()} expected attendees</span>
@@ -555,21 +555,21 @@ function EventDetailModal({
           )}
           {event.exhibitors && (
             <div className="flex items-center gap-2 text-sm">
-              <svg className="w-4 h-4 text-cyan-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4 text-slate-300 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
               </svg>
               <span className="text-slate-300">{event.exhibitors}+ exhibitors</span>
             </div>
           )}
           <div className="flex items-center gap-2 text-sm">
-            <svg className="w-4 h-4 text-cyan-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-4 h-4 text-slate-300 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
             </svg>
             <span className="text-slate-300">{event.organizer}</span>
           </div>
           {event.speakers && event.speakers.length > 0 && (
             <div className="flex items-start gap-2 text-sm">
-              <svg className="w-4 h-4 text-cyan-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4 text-slate-300 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
               </svg>
               <span className="text-slate-300">Speakers: {event.speakers.join(', ')}</span>
@@ -590,7 +590,7 @@ function EventDetailModal({
         <div className="flex items-center gap-3 pt-3 border-t border-slate-700/50 flex-wrap">
           <button
             onClick={() => downloadICS(generateICS(event), `${event.id}.ics`)}
-            className="flex items-center gap-1.5 text-xs px-3 py-2 rounded-lg bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 hover:bg-cyan-500/30 transition-all"
+            className="flex items-center gap-1.5 text-xs px-3 py-2 rounded-lg bg-white/10 text-slate-300 border border-white/10 hover:bg-slate-100/30 transition-all"
           >
             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
@@ -626,7 +626,7 @@ function EventDetailModal({
               href={event.registrationUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-1.5 text-xs px-3 py-2 rounded-lg bg-cyan-600/30 text-cyan-300 border border-cyan-500/40 hover:bg-cyan-600/40 transition-all"
+              className="flex items-center gap-1.5 text-xs px-3 py-2 rounded-lg bg-white/30 text-slate-200 border border-white/15/40 hover:bg-slate-700/40 transition-all"
             >
               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" />
@@ -813,7 +813,7 @@ function SpaceEventsPageInner() {
       <StaggerContainer className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
         <StaggerItem>
           <div className="card p-4 text-center">
-            <div className="text-2xl font-bold text-cyan-400">{SPACE_EVENTS.length}</div>
+            <div className="text-2xl font-bold text-slate-300">{SPACE_EVENTS.length}</div>
             <div className="text-xs text-slate-400 mt-1">Total Events</div>
           </div>
         </StaggerItem>
@@ -860,7 +860,7 @@ function SpaceEventsPageInner() {
           onClick={() => handleTabChange('upcoming')}
           className={`text-xs px-4 py-2 rounded-md transition-all font-medium ${
             activeTab === 'upcoming'
-              ? 'bg-cyan-500/20 text-cyan-400 shadow-sm'
+              ? 'bg-white/10 text-slate-300 shadow-sm'
               : 'text-slate-400 hover:text-white hover:bg-slate-700/50'
           }`}
         >
@@ -870,7 +870,7 @@ function SpaceEventsPageInner() {
           onClick={() => handleTabChange('calendar')}
           className={`text-xs px-4 py-2 rounded-md transition-all font-medium ${
             activeTab === 'calendar'
-              ? 'bg-cyan-500/20 text-cyan-400 shadow-sm'
+              ? 'bg-white/10 text-slate-300 shadow-sm'
               : 'text-slate-400 hover:text-white hover:bg-slate-700/50'
           }`}
         >
@@ -880,7 +880,7 @@ function SpaceEventsPageInner() {
           onClick={() => handleTabChange('past')}
           className={`text-xs px-4 py-2 rounded-md transition-all font-medium ${
             activeTab === 'past'
-              ? 'bg-cyan-500/20 text-cyan-400 shadow-sm'
+              ? 'bg-white/10 text-slate-300 shadow-sm'
               : 'text-slate-400 hover:text-white hover:bg-slate-700/50'
           }`}
         >
@@ -909,7 +909,7 @@ function SpaceEventsPageInner() {
               placeholder="Search events by name, location, organizer, or tag..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 text-xs rounded-lg bg-slate-800 text-slate-300 border border-slate-700 focus:border-cyan-500/50 outline-none placeholder:text-slate-600"
+              className="w-full pl-10 pr-4 py-2 text-xs rounded-lg bg-slate-800 text-slate-300 border border-slate-700 focus:border-white/15 outline-none placeholder:text-slate-600"
             />
             {searchQuery && (
               <button
@@ -930,7 +930,7 @@ function SpaceEventsPageInner() {
               <select
                 value={typeFilter}
                 onChange={(e) => setTypeFilter(e.target.value)}
-                className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+                className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
               >
                 <option value="all">All Types</option>
                 {EVENT_TYPES.map((t) => (
@@ -942,7 +942,7 @@ function SpaceEventsPageInner() {
               <select
                 value={countryFilter}
                 onChange={(e) => setCountryFilter(e.target.value)}
-                className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+                className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
               >
                 <option value="all">All Countries</option>
                 {countries.map((c) => (
@@ -954,7 +954,7 @@ function SpaceEventsPageInner() {
               <select
                 value={monthFilter}
                 onChange={(e) => setMonthFilter(e.target.value)}
-                className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+                className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
               >
                 <option value="all">All Months</option>
                 {MONTHS.map((m, i) => (
@@ -966,7 +966,7 @@ function SpaceEventsPageInner() {
               <select
                 value={formatFilter}
                 onChange={(e) => setFormatFilter(e.target.value)}
-                className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+                className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
               >
                 <option value="all">All Formats</option>
                 <option value="in-person">In-Person</option>
@@ -977,7 +977,7 @@ function SpaceEventsPageInner() {
               <select
                 value={costFilter}
                 onChange={(e) => setCostFilter(e.target.value)}
-                className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+                className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
               >
                 <option value="all">Any Cost</option>
                 <option value="free">Free</option>
@@ -999,7 +999,7 @@ function SpaceEventsPageInner() {
             <button
               onClick={handleExportFiltered}
               disabled={filteredEvents.length === 0}
-              className="flex items-center gap-2 text-xs px-4 py-2 rounded-lg bg-slate-800 text-cyan-400 border border-slate-700 hover:border-cyan-500/30 transition-all flex-shrink-0 disabled:opacity-40 disabled:cursor-not-allowed"
+              className="flex items-center gap-2 text-xs px-4 py-2 rounded-lg bg-slate-800 text-slate-300 border border-slate-700 hover:border-white/10 transition-all flex-shrink-0 disabled:opacity-40 disabled:cursor-not-allowed"
             >
               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
@@ -1093,7 +1093,7 @@ function SpaceEventsPageInner() {
                 action={hasActiveFilters ? (
                   <button
                     onClick={handleResetFilters}
-                    className="text-xs text-cyan-400 hover:text-cyan-300 transition-colors"
+                    className="text-xs text-slate-300 hover:text-white transition-colors"
                   >
                     Clear all filters
                   </button>
@@ -1117,7 +1117,7 @@ function SpaceEventsPageInner() {
               <button
                 key={tag}
                 onClick={() => setSearchQuery(tag)}
-                className="text-xs px-2 py-0.5 rounded-full bg-slate-800/50 text-slate-400 border border-slate-700/30 hover:border-cyan-500/30 hover:text-cyan-400 transition-all cursor-pointer"
+                className="text-xs px-2 py-0.5 rounded-full bg-slate-800/50 text-slate-400 border border-slate-700/30 hover:border-white/10 hover:text-white transition-all cursor-pointer"
               >
                 {tag}
               </button>

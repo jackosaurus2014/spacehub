@@ -30,7 +30,7 @@ const MARKET_SEGMENTS: MarketSegment[] = [
     cagrLabel: '8% CAGR',
     keyPlayers: ['Starlink', 'SES', 'Intelsat', 'Viasat'],
     description: 'Direct-to-home TV, broadband internet, mobile backhaul, and enterprise connectivity via GEO, MEO, and LEO satellite constellations.',
-    color: 'from-blue-500 to-cyan-400',
+    color: 'from-blue-500 to-slate-400',
     icon: '\uD83D\uDCE1',
     maturity: 'mature',
   },
@@ -114,7 +114,7 @@ const MARKET_SEGMENTS: MarketSegment[] = [
     cagrLabel: '20% CAGR',
     keyPlayers: ['Astroscale', 'Northrop (MEV)', 'Orbit Fab', 'ClearSpace'],
     description: 'On-orbit servicing, life extension, refueling, inspection, and active debris removal for LEO and GEO assets.',
-    color: 'from-teal-500 to-cyan-400',
+    color: 'from-teal-500 to-slate-400',
     icon: '\uD83D\uDD27',
     maturity: 'emerging',
   },
@@ -257,7 +257,7 @@ function TotalMarketBanner() {
         <div className="flex flex-col md:flex-row items-start md:items-center gap-6 md:gap-10">
           <div>
             <p className="text-sm text-slate-400 uppercase tracking-wider mb-1">Global Space Economy (2024)</p>
-            <p className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
+            <p className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-slate-300 to-blue-500 bg-clip-text text-transparent">
               ${TOTAL_MARKET_2024}B
             </p>
           </div>
@@ -296,7 +296,7 @@ function TotalMarketBanner() {
               initial={{ width: 0 }}
               animate={{ width: `${(TOTAL_MARKET_2024 / TOTAL_MARKET_2030) * 100}%` }}
               transition={{ duration: 1.5, ease: 'easeOut', delay: 0.3 }}
-              className="h-full bg-gradient-to-r from-cyan-500 to-emerald-500 rounded-full"
+              className="h-full bg-gradient-to-r from-white to-emerald-500 rounded-full"
             />
           </div>
         </div>
@@ -321,7 +321,7 @@ function SegmentCard({ segment }: { segment: MarketSegment }) {
       <div className="flex items-start justify-between mb-3">
         <div className="flex items-center gap-3">
           <span className="text-2xl">{segment.icon}</span>
-          <h3 className="text-base font-semibold text-slate-100 group-hover:text-cyan-400 transition-colors">
+          <h3 className="text-base font-semibold text-slate-100 group-hover:text-white transition-colors">
             {segment.name}
           </h3>
         </div>
@@ -613,7 +613,7 @@ function InvestmentInsights() {
                     <span className="text-slate-600 font-mono">{i + 1}.</span>
                     <span>{s.icon}</span>
                     <span className="text-slate-300">{s.name}</span>
-                    <span className="ml-auto text-cyan-400 font-semibold">{formatMarketSize(s.marketSize)}</span>
+                    <span className="ml-auto text-slate-300 font-semibold">{formatMarketSize(s.marketSize)}</span>
                   </li>
                 ))}
             </ol>
@@ -712,7 +712,7 @@ export default function MarketSegmentsPage() {
                 id="sort-select"
                 value={sortKey}
                 onChange={(e) => setSortKey(e.target.value as SortKey)}
-                className="bg-slate-800 border border-slate-700 text-slate-200 text-sm rounded-lg px-3 py-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+                className="bg-slate-800 border border-slate-700 text-slate-200 text-sm rounded-lg px-3 py-2 focus:ring-white/30 focus:border-white/15 outline-none"
               >
                 {SORT_OPTIONS.map(opt => (
                   <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -726,7 +726,7 @@ export default function MarketSegmentsPage() {
                 id="maturity-select"
                 value={maturityFilter}
                 onChange={(e) => setMaturityFilter(e.target.value as MaturityFilter)}
-                className="bg-slate-800 border border-slate-700 text-slate-200 text-sm rounded-lg px-3 py-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+                className="bg-slate-800 border border-slate-700 text-slate-200 text-sm rounded-lg px-3 py-2 focus:ring-white/30 focus:border-white/15 outline-none"
               >
                 {MATURITY_OPTIONS.map(opt => (
                   <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -754,7 +754,7 @@ export default function MarketSegmentsPage() {
             <p className="text-slate-500 text-lg">No segments match the current filter.</p>
             <button
               onClick={() => setMaturityFilter('all')}
-              className="mt-3 text-cyan-400 hover:text-cyan-300 text-sm transition-colors"
+              className="mt-3 text-slate-300 hover:text-white text-sm transition-colors"
             >
               Clear filter
             </button>

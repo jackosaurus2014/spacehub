@@ -144,13 +144,13 @@ export default function IOSInstallPrompt() {
         {/* Header with icon and title */}
         <div className="flex items-center gap-3 mb-4">
           <div
-            className="flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center border border-cyan-500/20"
+            className="flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center border border-white/10"
             style={{
               background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
             }}
           >
             <svg
-              className="w-7 h-7 text-cyan-400"
+              className="w-7 h-7 text-slate-300"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -179,14 +179,14 @@ export default function IOSInstallPrompt() {
         <div className="space-y-3 mb-5">
           {/* Step 1 */}
           <div className="flex items-start gap-3">
-            <span className="flex-shrink-0 w-6 h-6 rounded-full bg-cyan-500/15 text-cyan-400 text-xs font-bold flex items-center justify-center mt-0.5">
+            <span className="flex-shrink-0 w-6 h-6 rounded-full bg-white/8 text-slate-300 text-xs font-bold flex items-center justify-center mt-0.5">
               1
             </span>
             <div className="flex items-center gap-2 text-sm text-slate-300">
               <span>Tap the</span>
               <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-slate-800 border border-slate-700">
-                <ShareIcon className="w-4 h-4 text-cyan-400" />
-                <span className="text-cyan-400 font-medium text-xs">Share</span>
+                <ShareIcon className="w-4 h-4 text-slate-300" />
+                <span className="text-slate-300 font-medium text-xs">Share</span>
               </span>
               <span>button</span>
             </div>
@@ -194,14 +194,14 @@ export default function IOSInstallPrompt() {
 
           {/* Step 2 */}
           <div className="flex items-start gap-3">
-            <span className="flex-shrink-0 w-6 h-6 rounded-full bg-cyan-500/15 text-cyan-400 text-xs font-bold flex items-center justify-center mt-0.5">
+            <span className="flex-shrink-0 w-6 h-6 rounded-full bg-white/8 text-slate-300 text-xs font-bold flex items-center justify-center mt-0.5">
               2
             </span>
             <div className="flex items-center gap-2 text-sm text-slate-300">
               <span>Scroll down and tap</span>
               <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-slate-800 border border-slate-700">
                 <svg
-                  className="w-4 h-4 text-cyan-400"
+                  className="w-4 h-4 text-slate-300"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -210,7 +210,7 @@ export default function IOSInstallPrompt() {
                 >
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m-8-8h16" />
                 </svg>
-                <span className="text-cyan-400 font-medium text-xs">Add to Home Screen</span>
+                <span className="text-slate-300 font-medium text-xs">Add to Home Screen</span>
               </span>
             </div>
           </div>

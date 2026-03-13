@@ -185,12 +185,12 @@ export default function FeaturesPage() {
     <div className="min-h-screen bg-[#050a15]">
       {/* ── Hero ── */}
       <section className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-cyan-500/5 via-transparent to-transparent pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-b from-white/5 via-transparent to-transparent pointer-events-none" />
         <div className="container mx-auto px-4 pt-16 pb-12 text-center relative z-10">
           <ScrollReveal>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 leading-tight">
               Everything You Need for{' '}
-              <span className="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-slate-300 to-blue-500 bg-clip-text text-transparent">
                 Space Industry Intelligence
               </span>
             </h1>
@@ -212,10 +212,10 @@ export default function FeaturesPage() {
               <a
                 key={cat.id}
                 href={`#${cat.id}`}
-                className="group flex items-center gap-2 px-5 py-2.5 rounded-full bg-slate-800/60 border border-slate-700/40 hover:border-cyan-500/40 hover:bg-cyan-500/10 transition-all text-sm text-slate-300 hover:text-cyan-300"
+                className="group flex items-center gap-2 px-5 py-2.5 rounded-full bg-slate-800/60 border border-slate-700/40 hover:border-white/15/40 hover:bg-slate-100/10 transition-all text-sm text-slate-300 hover:text-white"
               >
                 <span className="font-medium">{cat.title}</span>
-                <span className="text-xs text-slate-500 bg-slate-800 px-1.5 py-0.5 rounded-full group-hover:text-cyan-400 group-hover:bg-cyan-500/20 transition-colors">{cat.modules.length}</span>
+                <span className="text-xs text-slate-500 bg-slate-800 px-1.5 py-0.5 rounded-full group-hover:text-white group-hover:bg-slate-100/20 transition-colors">{cat.modules.length}</span>
               </a>
             ))}
           </div>
@@ -238,23 +238,23 @@ export default function FeaturesPage() {
                 <StaggerItem key={mod.href}>
                   <Link
                     href={mod.href}
-                    className="group relative flex flex-col p-5 rounded-xl border border-slate-700/50 bg-slate-800/30 hover:border-cyan-500/40 hover:bg-slate-800/60 transition-all h-full"
+                    className="group relative flex flex-col p-5 rounded-xl border border-slate-700/50 bg-slate-800/30 hover:border-white/15/40 hover:bg-slate-800/60 transition-all h-full"
                   >
                     {mod.tier && (
                       <span
                         className={`absolute top-3 right-3 text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full ${
                           mod.tier === 'Enterprise'
                             ? 'bg-amber-500/15 text-amber-400 border border-amber-500/30'
-                            : 'bg-cyan-500/15 text-cyan-400 border border-cyan-500/30'
+                            : 'bg-white/8 text-slate-300 border border-white/10'
                         }`}
                       >
                         {mod.tier}
                       </span>
                     )}
                     <span className="text-2xl mb-3 group-hover:scale-110 transition-transform duration-200">{mod.icon}</span>
-                    <h3 className="text-base font-semibold text-white group-hover:text-cyan-400 transition-colors mb-1 flex items-center gap-1.5">
+                    <h3 className="text-base font-semibold text-white group-hover:text-white transition-colors mb-1 flex items-center gap-1.5">
                       {mod.name}
-                      <svg className="w-3.5 h-3.5 opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-200 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-3.5 h-3.5 opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-200 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                       </svg>
                     </h3>
@@ -288,10 +288,10 @@ export default function FeaturesPage() {
                     <div className="text-white">Explorer</div>
                     <div className="text-xs text-slate-500 mt-0.5">Free</div>
                   </th>
-                  <th className="p-4 text-center font-medium border-b border-cyan-500/30 min-w-[160px] bg-cyan-500/5">
-                    <div className="text-cyan-400 font-bold">Professional</div>
-                    <div className="text-xs text-cyan-500/70 mt-0.5">$19.99 / mo</div>
-                    <span className="inline-block mt-1 text-[10px] uppercase tracking-wider bg-cyan-500/15 text-cyan-400 border border-cyan-500/30 rounded-full px-2 py-0.5 font-semibold">
+                  <th className="p-4 text-center font-medium border-b border-white/10 min-w-[160px] bg-white/5">
+                    <div className="text-slate-300 font-bold">Professional</div>
+                    <div className="text-xs text-slate-300/70 mt-0.5">$19.99 / mo</div>
+                    <span className="inline-block mt-1 text-[10px] uppercase tracking-wider bg-white/8 text-slate-300 border border-white/10 rounded-full px-2 py-0.5 font-semibold">
                       Most Popular
                     </span>
                   </th>
@@ -313,7 +313,7 @@ export default function FeaturesPage() {
                     <td className="p-4 text-center text-slate-400 border-b border-slate-700/30">
                       <CellValue value={row.explorer} />
                     </td>
-                    <td className="p-4 text-center border-b border-slate-700/30 bg-cyan-500/[0.02]">
+                    <td className="p-4 text-center border-b border-slate-700/30 bg-white/[0.02]">
                       <CellValue value={row.professional} highlight />
                     </td>
                     <td className="p-4 text-center text-slate-400 border-b border-slate-700/30">
@@ -344,7 +344,7 @@ export default function FeaturesPage() {
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link
                 href="/register"
-                className="inline-flex items-center justify-center px-8 py-3 rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-semibold transition-all shadow-lg shadow-cyan-500/25"
+                className="inline-flex items-center justify-center px-8 py-3 rounded-lg bg-gradient-to-r from-white to-blue-600 hover:from-slate-300 hover:to-blue-500 text-white font-semibold transition-all shadow-lg shadow-black/20/25"
               >
                 Get Started Free
                 <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -375,7 +375,7 @@ export default function FeaturesPage() {
 function CellValue({ value, highlight }: { value: string; highlight?: boolean }) {
   if (value === '\u2713') {
     return (
-      <span className={highlight ? 'text-cyan-400 font-semibold' : 'text-emerald-400'}>
+      <span className={highlight ? 'text-slate-300 font-semibold' : 'text-emerald-400'}>
         &#10003;
       </span>
     );
@@ -385,13 +385,13 @@ function CellValue({ value, highlight }: { value: string; highlight?: boolean })
   }
   if (value.startsWith('\u2713 ')) {
     return (
-      <span className={highlight ? 'text-cyan-300' : 'text-slate-300'}>
-        <span className={highlight ? 'text-cyan-400' : 'text-emerald-400'}>&#10003;</span>{' '}
+      <span className={highlight ? 'text-slate-200' : 'text-slate-300'}>
+        <span className={highlight ? 'text-slate-300' : 'text-emerald-400'}>&#10003;</span>{' '}
         {value.slice(2)}
       </span>
     );
   }
   return (
-    <span className={highlight ? 'text-cyan-300 font-medium' : 'text-slate-300'}>{value}</span>
+    <span className={highlight ? 'text-slate-200 font-medium' : 'text-slate-300'}>{value}</span>
   );
 }

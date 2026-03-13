@@ -681,7 +681,7 @@ export default function SearchCommandPalette() {
 
       {/* Modal */}
       <div
-        className="relative w-full max-w-2xl mx-4 overflow-hidden rounded-2xl border border-cyan-400/40 animate-scale-in"
+        className="relative w-full max-w-2xl mx-4 overflow-hidden rounded-2xl border border-white/10/40 animate-scale-in"
         style={{
           background:
             'linear-gradient(145deg, rgba(15, 23, 42, 0.98) 0%, rgba(30, 41, 59, 0.96) 25%, rgba(51, 65, 85, 0.95) 50%, rgba(30, 41, 59, 0.96) 75%, rgba(15, 23, 42, 0.98) 100%)',
@@ -691,12 +691,12 @@ export default function SearchCommandPalette() {
         onKeyDown={handleKeyDown}
       >
         {/* Top gradient accent */}
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-400/60 to-transparent" />
+        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-slate-300/60 to-transparent" />
 
         {/* Search Input */}
-        <div className="flex items-center px-4 border-b border-cyan-400/20">
+        <div className="flex items-center px-4 border-b border-white/10">
           <svg
-            className="w-5 h-5 text-cyan-400 mr-3"
+            className="w-5 h-5 text-slate-300 mr-3"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -718,7 +718,7 @@ export default function SearchCommandPalette() {
             className="flex-1 py-4 bg-transparent text-slate-100 placeholder-slate-400 text-lg focus:outline-none"
           />
           {isSearching && (
-            <div className="w-4 h-4 border-2 border-cyan-400/30 border-t-cyan-400 rounded-full animate-spin mr-3" />
+            <div className="w-4 h-4 border-2 border-white/10 border-t-white rounded-full animate-spin mr-3" />
           )}
           <div className="flex items-center gap-1 text-slate-400 text-sm">
             <kbd className="px-2 py-1 rounded bg-slate-700/50 border border-slate-600/50 text-xs font-mono">
@@ -755,7 +755,7 @@ export default function SearchCommandPalette() {
             Object.entries(groupedItems).map(([category, items]) => (
               <div key={category}>
                 <div className="px-4 py-2">
-                  <span className="text-xs font-semibold uppercase tracking-wider text-cyan-400/80">
+                  <span className="text-xs font-semibold uppercase tracking-wider text-slate-300/80">
                     {category}
                   </span>
                 </div>
@@ -772,14 +772,14 @@ export default function SearchCommandPalette() {
                       onMouseEnter={() => setSelectedIndex(globalIndex)}
                       className={`w-full flex items-center gap-4 px-4 py-3 text-left transition-colors ${
                         isSelected
-                          ? 'bg-cyan-400/10 border-l-2 border-cyan-400'
+                          ? 'bg-white/5 border-l-2 border-white/10'
                           : 'border-l-2 border-transparent hover:bg-slate-700/30'
                       }`}
                     >
                       <div
                         className={`flex-shrink-0 p-2 rounded-lg transition-colors ${
                           isSelected
-                            ? 'bg-cyan-400/20 text-cyan-300'
+                            ? 'bg-white/10 text-slate-200'
                             : 'bg-slate-700/50 text-slate-400'
                         }`}
                       >
@@ -789,13 +789,13 @@ export default function SearchCommandPalette() {
                         <div className="flex items-center gap-2">
                           <span
                             className={`font-medium ${
-                              isSelected ? 'text-cyan-300' : 'text-slate-200'
+                              isSelected ? 'text-slate-200' : 'text-slate-200'
                             }`}
                           >
                             {item.label}
                           </span>
                           {item.type === 'recent' && (
-                            <span className="text-xs px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">
+                            <span className="text-xs px-1.5 py-0.5 rounded bg-white/10 text-slate-300 border border-white/10">
                               Recent
                             </span>
                           )}
@@ -825,7 +825,7 @@ export default function SearchCommandPalette() {
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between px-4 py-3 border-t border-cyan-400/20 text-xs text-slate-400">
+        <div className="flex items-center justify-between px-4 py-3 border-t border-white/10 text-xs text-slate-400">
           <div className="flex items-center gap-4">
             <span className="flex items-center gap-1">
               <kbd className="px-1.5 py-0.5 rounded bg-slate-700/50 border border-slate-600/50 font-mono">
@@ -849,7 +849,7 @@ export default function SearchCommandPalette() {
               <span className="ml-1">Close</span>
             </span>
           </div>
-          <span className="text-cyan-400/60">SpaceNexus</span>
+          <span className="text-slate-300/60">SpaceNexus</span>
         </div>
       </div>
     </div>

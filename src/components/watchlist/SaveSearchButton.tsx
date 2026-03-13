@@ -74,7 +74,7 @@ export default function SaveSearchButton({ searchType, filters, query }: SaveSea
         placeholder="Search name..."
         maxLength={200}
         autoFocus
-        className="bg-slate-800 border border-slate-700 text-white rounded-lg px-2.5 py-1.5 text-xs placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none w-40"
+        className="bg-slate-800 border border-slate-700 text-white rounded-lg px-2.5 py-1.5 text-xs placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none w-40"
         onKeyDown={(e) => {
           if (e.key === 'Enter') handleSave();
           if (e.key === 'Escape') setShowForm(false);
@@ -92,7 +92,7 @@ export default function SaveSearchButton({ searchType, filters, query }: SaveSea
       <button
         onClick={handleSave}
         disabled={saving}
-        className="px-2.5 py-1.5 bg-cyan-600 hover:bg-cyan-500 text-white rounded-lg text-xs font-medium transition-colors disabled:opacity-50"
+        className="px-2.5 py-1.5 bg-white hover:bg-slate-100 text-white rounded-lg text-xs font-medium transition-colors disabled:opacity-50"
       >
         {saving ? '...' : 'Save'}
       </button>

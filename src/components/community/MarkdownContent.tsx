@@ -28,7 +28,7 @@ function renderWithMentions(text: string): React.ReactNode {
     parts.push(
       <span
         key={`mention-${match.index}`}
-        className="text-cyan-400 font-medium cursor-pointer hover:underline"
+        className="text-slate-300 font-medium cursor-pointer hover:underline"
       >
         @{match[1]}
       </span>
@@ -67,7 +67,7 @@ export default function MarkdownContent({ content, className = '' }: MarkdownCon
               href={href}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-cyan-400 hover:text-cyan-300 underline transition-colors"
+              className="text-slate-300 hover:text-white underline transition-colors"
             >
               {children}
             </a>
@@ -76,7 +76,7 @@ export default function MarkdownContent({ content, className = '' }: MarkdownCon
             const isInline = !codeClassName;
             if (isInline) {
               return (
-                <code className="px-1.5 py-0.5 bg-slate-800 text-cyan-300 rounded text-xs" {...props}>
+                <code className="px-1.5 py-0.5 bg-slate-800 text-slate-200 rounded text-xs" {...props}>
                   {children}
                 </code>
               );
@@ -93,7 +93,7 @@ export default function MarkdownContent({ content, className = '' }: MarkdownCon
             </pre>
           ),
           blockquote: ({ children }) => (
-            <blockquote className="border-l-2 border-cyan-500/40 pl-3 my-3 text-slate-400 italic">
+            <blockquote className="border-l-2 border-white/15/40 pl-3 my-3 text-slate-400 italic">
               {processChildren(children)}
             </blockquote>
           ),

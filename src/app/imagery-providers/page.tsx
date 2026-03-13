@@ -38,7 +38,7 @@ const PROVIDER_TYPES: { id: ProviderType; icon: string; color: string; descripti
   { id: 'SAR', icon: '📡', color: 'text-orange-400', description: 'Synthetic aperture radar — all-weather, day/night' },
   { id: 'Hyperspectral', icon: '🌈', color: 'text-purple-400', description: 'Hundreds of narrow spectral bands for material ID' },
   { id: 'RF/Signals', icon: '📻', color: 'text-red-400', description: 'Radio-frequency signal detection & geolocation' },
-  { id: 'Analytics', icon: '🧠', color: 'text-cyan-400', description: 'AI-powered geospatial analytics platforms' },
+  { id: 'Analytics', icon: '🧠', color: 'text-slate-300', description: 'AI-powered geospatial analytics platforms' },
 ];
 
 function getTypeColor(type: ProviderType): string {
@@ -47,7 +47,7 @@ function getTypeColor(type: ProviderType): string {
     SAR: 'bg-orange-600',
     Hyperspectral: 'bg-purple-600',
     'RF/Signals': 'bg-red-600',
-    Analytics: 'bg-cyan-600',
+    Analytics: 'bg-white',
   };
   return colors[type] || 'bg-slate-600';
 }
@@ -58,7 +58,7 @@ function getTypeBorderColor(type: ProviderType): string {
     SAR: 'border-orange-500/40',
     Hyperspectral: 'border-purple-500/40',
     'RF/Signals': 'border-red-500/40',
-    Analytics: 'border-cyan-500/40',
+    Analytics: 'border-white/15/40',
   };
   return colors[type] || 'border-slate-500/40';
 }
@@ -69,7 +69,7 @@ function getTypeTextColor(type: ProviderType): string {
     SAR: 'text-orange-400',
     Hyperspectral: 'text-purple-400',
     'RF/Signals': 'text-red-400',
-    Analytics: 'text-cyan-400',
+    Analytics: 'text-slate-300',
   };
   return colors[type] || 'text-slate-400';
 }

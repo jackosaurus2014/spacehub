@@ -61,7 +61,7 @@ export const AGENCY_COLORS: Record<CalendarAgency, { bg: string; text: string; d
   FCC: { bg: 'bg-blue-500/20', text: 'text-blue-400', dot: 'bg-blue-500', border: 'border-blue-500/40' },
   FAA: { bg: 'bg-orange-500/20', text: 'text-orange-400', dot: 'bg-orange-500', border: 'border-orange-500/40' },
   NASA: { bg: 'bg-red-500/20', text: 'text-red-400', dot: 'bg-red-500', border: 'border-red-500/40' },
-  NOAA: { bg: 'bg-cyan-500/20', text: 'text-cyan-400', dot: 'bg-cyan-500', border: 'border-cyan-500/40' },
+  NOAA: { bg: 'bg-white/10', text: 'text-slate-300', dot: 'bg-slate-400', border: 'border-white/10' },
   DoD: { bg: 'bg-purple-500/20', text: 'text-purple-400', dot: 'bg-purple-500', border: 'border-purple-500/40' },
   BIS: { bg: 'bg-amber-500/20', text: 'text-amber-400', dot: 'bg-amber-500', border: 'border-amber-500/40' },
   ITU: { bg: 'bg-green-500/20', text: 'text-green-400', dot: 'bg-green-500', border: 'border-green-500/40' },

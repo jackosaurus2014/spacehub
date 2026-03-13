@@ -64,7 +64,7 @@ export default function ChangelogPage() {
       <ScrollReveal delay={0.1}>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
           <div className="card p-4 text-center">
-            <div className="text-2xl font-bold text-cyan-400">{stats.totalVersions}</div>
+            <div className="text-2xl font-bold text-slate-300">{stats.totalVersions}</div>
             <div className="text-xs text-slate-400 mt-1">Releases</div>
           </div>
           <div className="card p-4 text-center">
@@ -149,13 +149,13 @@ export default function ChangelogPage() {
             <ScrollReveal key={entry.version} delay={index * 0.05}>
               <article
                 className={`card p-6 relative overflow-hidden transition-all ${
-                  isLatest ? 'ring-1 ring-cyan-500/30 bg-slate-800/80' : ''
+                  isLatest ? 'ring-1 ring-white/10 bg-slate-800/80' : ''
                 }`}
               >
                 {/* Latest badge */}
                 {isLatest && (
                   <div className="absolute top-0 right-0">
-                    <div className="bg-cyan-500 text-slate-900 text-xs font-bold px-3 py-1 rounded-bl-lg">
+                    <div className="bg-white text-slate-900 text-xs font-bold px-3 py-1 rounded-bl-lg">
                       LATEST
                     </div>
                   </div>
@@ -164,7 +164,7 @@ export default function ChangelogPage() {
                 {/* Version header */}
                 <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mb-3">
                   <div className="flex items-center gap-3">
-                    <span className="text-sm font-mono font-bold text-cyan-400 bg-cyan-500/10 px-3 py-1 rounded-md border border-cyan-500/20">
+                    <span className="text-sm font-mono font-bold text-slate-300 bg-white/5 px-3 py-1 rounded-md border border-white/10">
                       v{entry.version}
                     </span>
                     <time
@@ -233,7 +233,7 @@ export default function ChangelogPage() {
                     onClick={() =>
                       setExpandedVersion(isExpanded ? null : entry.version)
                     }
-                    className="mt-4 text-sm text-cyan-400 hover:text-cyan-300 transition-colors flex items-center gap-1"
+                    className="mt-4 text-sm text-slate-300 hover:text-white transition-colors flex items-center gap-1"
                   >
                     <svg
                       className={`w-4 h-4 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
@@ -266,7 +266,7 @@ export default function ChangelogPage() {
           </div>
           <p className="text-xs text-slate-600 mt-2">
             Have a feature request?{' '}
-            <a href="/contact" className="text-cyan-500 hover:text-cyan-400 transition-colors underline underline-offset-2">
+            <a href="/contact" className="text-slate-300 hover:text-white transition-colors underline underline-offset-2">
               Let us know
             </a>
           </p>

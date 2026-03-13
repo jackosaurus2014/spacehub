@@ -71,7 +71,7 @@ export default function ModuleNavBar() {
 
   return (
     <div className="sticky top-2 z-40 container mx-auto px-2 sm:px-4 mb-4">
-      <div className="rounded-2xl border border-cyan-400/30 backdrop-blur-xl" style={{ background: 'linear-gradient(145deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.92) 25%, rgba(51, 65, 85, 0.9) 50%, rgba(30, 41, 59, 0.92) 75%, rgba(15, 23, 42, 0.95) 100%)', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 10px 25px -5px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(6, 182, 212, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.05)' }}>
+      <div className="rounded-2xl border border-white/10 backdrop-blur-xl" style={{ background: 'linear-gradient(145deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.92) 25%, rgba(51, 65, 85, 0.9) 50%, rgba(30, 41, 59, 0.92) 75%, rgba(15, 23, 42, 0.95) 100%)', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 10px 25px -5px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(6, 182, 212, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.05)' }}>
         {/* Main Navigation Bar */}
         <div className="p-2 sm:p-4">
           <div className="flex items-center gap-1.5 sm:gap-3">
@@ -79,7 +79,7 @@ export default function ModuleNavBar() {
             {prevModule && (
               <button
                 onClick={() => navigateTo(prevModule.moduleId)}
-                className="group flex items-center gap-1 sm:gap-2 px-2 py-2 sm:px-4 sm:py-3 rounded-xl bg-gradient-to-r from-cyan-900/60 to-slate-700/60 hover:from-cyan-800/70 hover:to-slate-600/70 border border-cyan-400/30 hover:border-cyan-400/60 text-slate-200 hover:text-cyan-200 transition-all duration-300 shadow-lg shadow-cyan-900/20 hover:shadow-cyan-700/30 hover:scale-[1.03] active:scale-95 touch-target"
+                className="group flex items-center gap-1 sm:gap-2 px-2 py-2 sm:px-4 sm:py-3 rounded-xl bg-gradient-to-r from-slate-800/60 to-slate-700/60 hover:from-slate-700/70 hover:to-slate-600/70 border border-white/10 hover:border-white/10/60 text-slate-200 hover:text-white transition-all duration-300 shadow-lg shadow-black/10 hover:shadow-black/15 hover:scale-[1.03] active:scale-95 touch-target"
                 title={`Previous: ${prevModule.name}`}
               >
                 <svg className="w-5 h-5 sm:w-6 sm:h-6 group-hover:-translate-x-1 transition-transform duration-300 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -87,7 +87,7 @@ export default function ModuleNavBar() {
                 </svg>
                 <div className="hidden sm:flex flex-col items-start leading-tight">
                   <span className="text-sm font-bold tracking-wide">Previous</span>
-                  <span className="text-xs text-cyan-400/80 truncate max-w-[140px]">
+                  <span className="text-xs text-slate-300/80 truncate max-w-[140px]">
                     {prevModule.name}
                   </span>
                 </div>
@@ -98,10 +98,10 @@ export default function ModuleNavBar() {
             <div className="relative flex-1 min-w-0">
               <button
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                className="w-full flex items-center gap-2 sm:gap-4 px-3 py-2 sm:px-5 sm:py-3 rounded-xl bg-slate-700/40 hover:bg-slate-600/50 border border-cyan-400/20 hover:border-cyan-400/40 transition-all duration-200"
+                className="w-full flex items-center gap-2 sm:gap-4 px-3 py-2 sm:px-5 sm:py-3 rounded-xl bg-slate-700/40 hover:bg-slate-600/50 border border-white/10 hover:border-white/10/40 transition-all duration-200"
               >
                 <div className="flex items-center gap-2 sm:gap-4 flex-1 min-w-0">
-                  <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-cyan-900/50 to-purple-900/50 border border-cyan-400/30 flex items-center justify-center text-xl sm:text-2xl flex-shrink-0">
+                  <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-slate-800/50 to-slate-700/50 border border-white/10 flex items-center justify-center text-xl sm:text-2xl flex-shrink-0">
                     {currentModule.icon}
                   </div>
                   <div className="text-left min-w-0">
@@ -125,11 +125,11 @@ export default function ModuleNavBar() {
               {isDropdownOpen && (
                 <>
                   <div className="fixed inset-0 z-40" onClick={() => setIsDropdownOpen(false)} />
-                  <div className="absolute top-full left-0 right-0 mt-2 z-50 rounded-xl border border-cyan-400/30 backdrop-blur-xl max-h-[70vh] overflow-hidden" style={{ background: 'linear-gradient(145deg, rgba(15, 23, 42, 0.98) 0%, rgba(30, 41, 59, 0.96) 25%, rgba(51, 65, 85, 0.95) 50%, rgba(30, 41, 59, 0.96) 75%, rgba(15, 23, 42, 0.98) 100%)', boxShadow: '0 8px 16px -4px rgba(0, 0, 0, 0.4), 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(6, 182, 212, 0.15)' }}>
+                  <div className="absolute top-full left-0 right-0 mt-2 z-50 rounded-xl border border-white/10 backdrop-blur-xl max-h-[70vh] overflow-hidden" style={{ background: 'linear-gradient(145deg, rgba(15, 23, 42, 0.98) 0%, rgba(30, 41, 59, 0.96) 25%, rgba(51, 65, 85, 0.95) 50%, rgba(30, 41, 59, 0.96) 75%, rgba(15, 23, 42, 0.98) 100%)', boxShadow: '0 8px 16px -4px rgba(0, 0, 0, 0.4), 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(6, 182, 212, 0.15)' }}>
                     <div className="overflow-y-auto max-h-[70vh]">
                       {groupedModules.map((section, sectionIdx) => (
                         <div key={section.value}>
-                          <div className={`px-4 sm:px-5 py-3 text-xs font-semibold uppercase tracking-wider text-cyan-400 bg-slate-800/50 ${sectionIdx > 0 ? 'border-t border-slate-700/50' : ''}`}>
+                          <div className={`px-4 sm:px-5 py-3 text-xs font-semibold uppercase tracking-wider text-slate-300 bg-slate-800/50 ${sectionIdx > 0 ? 'border-t border-slate-700/50' : ''}`}>
                             {section.label}
                           </div>
                           <div className="py-1">
@@ -142,12 +142,12 @@ export default function ModuleNavBar() {
                                   onClick={() => navigateTo(module.moduleId)}
                                   className={`w-full flex items-center gap-3 sm:gap-4 px-4 sm:px-5 py-3 text-left transition-all duration-150 touch-target ${
                                     isActive
-                                      ? 'bg-cyan-900/30 border-l-2 border-l-cyan-400'
+                                      ? 'bg-slate-800/40 border-l-2 border-l-white/50'
                                       : 'hover:bg-slate-700/50 border-l-2 border-l-transparent'
                                   }`}
                                 >
                                   <span className="text-xl w-8 text-center">{module.icon}</span>
-                                  <span className={`flex-1 truncate text-sm sm:text-base ${isActive ? 'text-cyan-300 font-medium' : 'text-slate-300'}`}>
+                                  <span className={`flex-1 truncate text-sm sm:text-base ${isActive ? 'text-slate-200 font-medium' : 'text-slate-300'}`}>
                                     {module.name}
                                   </span>
                                   <span className={`text-xs font-medium px-2 py-1 rounded border ${moduleTier.bgColor} ${moduleTier.color}`}>
@@ -169,12 +169,12 @@ export default function ModuleNavBar() {
             {nextModule && (
               <button
                 onClick={() => navigateTo(nextModule.moduleId)}
-                className="group flex items-center gap-1 sm:gap-2 px-2 py-2 sm:px-4 sm:py-3 rounded-xl bg-gradient-to-r from-slate-700/60 to-cyan-900/60 hover:from-slate-600/70 hover:to-cyan-800/70 border border-cyan-400/30 hover:border-cyan-400/60 text-slate-200 hover:text-cyan-200 transition-all duration-300 shadow-lg shadow-cyan-900/20 hover:shadow-cyan-700/30 hover:scale-[1.03] active:scale-95 touch-target"
+                className="group flex items-center gap-1 sm:gap-2 px-2 py-2 sm:px-4 sm:py-3 rounded-xl bg-gradient-to-r from-slate-700/60 to-slate-800/60 hover:from-slate-600/70 hover:to-slate-700/70 border border-white/10 hover:border-white/10/60 text-slate-200 hover:text-white transition-all duration-300 shadow-lg shadow-black/10 hover:shadow-black/15 hover:scale-[1.03] active:scale-95 touch-target"
                 title={`Next: ${nextModule.name}`}
               >
                 <div className="hidden sm:flex flex-col items-end leading-tight">
                   <span className="text-sm font-bold tracking-wide">Next</span>
-                  <span className="text-xs text-cyan-400/80 truncate max-w-[140px]">
+                  <span className="text-xs text-slate-300/80 truncate max-w-[140px]">
                     {nextModule.name}
                   </span>
                 </div>
@@ -249,8 +249,8 @@ export default function ModuleNavBar() {
       {/* Keyboard Hint — desktop only */}
       <div className="hidden sm:block text-center mt-2">
         <span className="text-xs text-slate-400">
-          Use <kbd className="px-1.5 py-0.5 rounded bg-slate-800 text-cyan-400 border border-slate-700 font-mono text-xs">←</kbd>{' '}
-          <kbd className="px-1.5 py-0.5 rounded bg-slate-800 text-cyan-400 border border-slate-700 font-mono text-xs">→</kbd> arrow keys to navigate modules
+          Use <kbd className="px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700 font-mono text-xs">←</kbd>{' '}
+          <kbd className="px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700 font-mono text-xs">→</kbd> arrow keys to navigate modules
         </span>
       </div>
     </div>

@@ -236,14 +236,14 @@ export default function HeroStats() {
         }.`}
       </span>
       {/* Next Launch */}
-      <Link href="/mission-control" className="card p-4 hover:border-cyan-400/50 transition-all group !bg-slate-900/95">
+      <Link href="/mission-control" className="card p-4 hover:border-white/15 transition-all group !bg-slate-900/95">
         <div className="flex items-center gap-2 mb-2">
           <span className="text-xl">🚀</span>
           <span className="text-xs uppercase tracking-wider text-slate-300 font-medium">Next Launch</span>
         </div>
         {launch ? (
           <>
-            <div className="text-2xl font-bold text-cyan-400 font-mono mb-1">
+            <div className="text-2xl font-bold text-slate-300 font-mono mb-1">
               {launch.timeUntil}
             </div>
             <p className="text-sm text-white truncate">
@@ -257,7 +257,7 @@ export default function HeroStats() {
       </Link>
 
       {/* Market Highlight */}
-      <Link href="/market-intel" className="card p-4 hover:border-cyan-400/50 transition-all group !bg-slate-900/95">
+      <Link href="/market-intel" className="card p-4 hover:border-white/15 transition-all group !bg-slate-900/95">
         <div className="flex items-center gap-2 mb-2">
           <span className="text-xl">{market?.type === 'ipo' ? '🔔' : '📈'}</span>
           <span className="text-xs uppercase tracking-wider text-slate-300 font-medium">
@@ -296,7 +296,7 @@ export default function HeroStats() {
       </Link>
 
       {/* Breaking News */}
-      <Link href="/news" className="card p-4 hover:border-cyan-400/50 transition-all group col-span-1 lg:col-span-1 !bg-slate-900/95">
+      <Link href="/news" className="card p-4 hover:border-white/15 transition-all group col-span-1 lg:col-span-1 !bg-slate-900/95">
         <div className="flex items-center gap-2 mb-2">
           <span className="text-xl">📰</span>
           <span className="text-xs uppercase tracking-wider text-slate-300 font-medium">Latest News</span>
@@ -314,7 +314,7 @@ export default function HeroStats() {
       </Link>
 
       {/* Solar Activity */}
-      <Link href="/space-environment" className="card p-4 hover:border-cyan-400/50 transition-all group !bg-slate-900/95">
+      <Link href="/space-environment" className="card p-4 hover:border-white/15 transition-all group !bg-slate-900/95">
         <div className="flex items-center gap-2 mb-2">
           <span className="text-xl">☀️</span>
           <span className="text-xs uppercase tracking-wider text-slate-300 font-medium">Space Weather</span>

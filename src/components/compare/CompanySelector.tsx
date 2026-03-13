@@ -23,7 +23,7 @@ interface CompanySelectorProps {
 function getTierBadge(tier: number) {
   const styles: Record<number, { bg: string; text: string; label: string }> = {
     1: { bg: 'bg-amber-500/20', text: 'text-amber-400', label: 'T1' },
-    2: { bg: 'bg-cyan-500/20', text: 'text-cyan-400', label: 'T2' },
+    2: { bg: 'bg-white/10', text: 'text-slate-300', label: 'T2' },
     3: { bg: 'bg-purple-500/20', text: 'text-purple-400', label: 'T3' },
   };
   const style = styles[tier] || styles[3];
@@ -134,7 +134,7 @@ export default function CompanySelector({
           }
           disabled={isFull}
           aria-label="Search companies to compare"
-          className="w-full pl-10 pr-4 bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full pl-10 pr-4 bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none disabled:opacity-50 disabled:cursor-not-allowed"
         />
         <svg
           className="absolute left-3 top-3.5 w-4 h-4 text-slate-500"
@@ -151,7 +151,7 @@ export default function CompanySelector({
         </svg>
         {searching && (
           <div className="absolute right-3 top-3.5">
-            <div className="w-4 h-4 border-2 border-slate-500 border-t-cyan-400 rounded-full animate-spin" />
+            <div className="w-4 h-4 border-2 border-slate-500 border-t-white rounded-full animate-spin" />
           </div>
         )}
 
@@ -210,7 +210,7 @@ export default function CompanySelector({
           {selectedSlugs.map((slug) => (
             <span
               key={slug}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 rounded-lg text-sm font-medium"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white/5 border border-white/10 text-slate-300 rounded-lg text-sm font-medium"
             >
               {slug}
               <button

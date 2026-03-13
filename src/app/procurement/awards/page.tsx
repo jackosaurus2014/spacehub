@@ -92,8 +92,8 @@ function getAwardTypeBadge(awardType: string) {
       label: 'Definitive Contract',
     },
     Contract: {
-      bg: 'bg-cyan-500/20',
-      text: 'text-cyan-400',
+      bg: 'bg-white/10',
+      text: 'text-slate-300',
       label: 'Contract',
     },
   };
@@ -240,7 +240,7 @@ export default function ContractAwardsPage() {
             className="card p-4"
           >
             <div className="text-xs text-slate-400 mb-1">Date Range</div>
-            <div className="text-xl font-bold text-cyan-400">
+            <div className="text-xl font-bold text-slate-300">
               {dateRange} days
             </div>
           </motion.div>
@@ -258,7 +258,7 @@ export default function ContractAwardsPage() {
               placeholder="Search by recipient, description, or agency..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-10 pr-4 bg-slate-800 border border-slate-700 text-white rounded-lg py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+              className="w-full pl-10 pr-4 bg-slate-800 border border-slate-700 text-white rounded-lg py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
             />
             <svg
               className="absolute left-3 top-3 w-4 h-4 text-slate-500"
@@ -280,7 +280,7 @@ export default function ContractAwardsPage() {
             aria-label="Filter by agency"
             value={agency}
             onChange={(e) => setAgency(e.target.value)}
-            className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+            className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
           >
             {AGENCY_OPTIONS.map((opt) => (
               <option key={opt.value} value={opt.value}>
@@ -294,7 +294,7 @@ export default function ContractAwardsPage() {
             aria-label="Filter by date range"
             value={dateRange}
             onChange={(e) => setDateRange(Number(e.target.value))}
-            className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+            className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
           >
             {DATE_RANGE_OPTIONS.map((opt) => (
               <option key={opt.value} value={opt.value}>
@@ -316,7 +316,7 @@ export default function ContractAwardsPage() {
               value={minAmount}
               onChange={(e) => setMinAmount(e.target.value)}
               min="0"
-              className="w-full lg:w-40 pl-7 pr-3 bg-slate-800 border border-slate-700 text-white rounded-lg py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+              className="w-full lg:w-40 pl-7 pr-3 bg-slate-800 border border-slate-700 text-white rounded-lg py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
             />
           </div>
         </div>
@@ -416,7 +416,7 @@ export default function ContractAwardsPage() {
                         <Link
                           href={`/company-profiles/${award.companySlug}`}
                           onClick={(e) => e.stopPropagation()}
-                          className="text-sm text-cyan-400 hover:text-cyan-300 truncate block transition-colors"
+                          className="text-sm text-slate-300 hover:text-white truncate block transition-colors"
                         >
                           {award.recipientName}
                         </Link>
@@ -595,7 +595,7 @@ export default function ContractAwardsPage() {
                       {award.companySlug ? (
                         <Link
                           href={`/company-profiles/${award.companySlug}`}
-                          className="text-sm text-cyan-400 hover:text-cyan-300 truncate max-w-[200px] transition-colors"
+                          className="text-sm text-slate-300 hover:text-white truncate max-w-[200px] transition-colors"
                         >
                           {award.recipientName}
                         </Link>
@@ -661,7 +661,7 @@ export default function ContractAwardsPage() {
                             : award.awardId
                         )
                       }
-                      className="mt-3 text-xs text-cyan-400 hover:text-cyan-300 transition-colors"
+                      className="mt-3 text-xs text-slate-300 hover:text-white transition-colors"
                     >
                       {expandedAward === award.awardId
                         ? 'Hide details'

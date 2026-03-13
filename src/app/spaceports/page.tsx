@@ -199,7 +199,7 @@ const STATUS_CONFIG: Record<SpaceportStatus, { label: string; bg: string; text: 
 const DEFAULT_CAPABILITY_STYLE = { label: 'Unknown', color: 'text-slate-400' };
 
 const CAPABILITY_CONFIG: Record<LaunchCapability, { label: string; color: string }> = {
-  orbital: { label: 'Orbital', color: 'text-cyan-400' },
+  orbital: { label: 'Orbital', color: 'text-slate-300' },
   suborbital: { label: 'Suborbital', color: 'text-blue-400' },
   both: { label: 'Orbital + Suborbital', color: 'text-emerald-400' },
   horizontal: { label: 'Horizontal Launch', color: 'text-purple-400' },
@@ -1298,7 +1298,7 @@ const CCSDS_PROTOCOLS: CCSDSProtocol[] = [
 
 const FREQUENCY_ALLOCATIONS: FrequencyAllocation[] = [
   { band: 'UHF', range: '390-450 MHz', allocation: 'Space Operations (Earth-to-space, space-to-Earth)', typicalUse: 'Proximity links (Mars relay), CubeSat TT&C, IoT', maxDataRate: '~256 kbps - 2 Mbps', color: 'text-green-400' },
-  { band: 'S-band', range: '2.0-2.3 GHz', allocation: 'Space Research, Space Operations, Earth Exploration', typicalUse: 'Spacecraft TT&C, deep space uplink/downlink, TDRS MA', maxDataRate: '~2-10 Mbps', color: 'text-cyan-400' },
+  { band: 'S-band', range: '2.0-2.3 GHz', allocation: 'Space Research, Space Operations, Earth Exploration', typicalUse: 'Spacecraft TT&C, deep space uplink/downlink, TDRS MA', maxDataRate: '~2-10 Mbps', color: 'text-slate-300' },
   { band: 'X-band', range: '8.0-8.5 GHz (downlink), 7.1-7.2 GHz (uplink)', allocation: 'Space Research (deep space), Earth Exploration', typicalUse: 'Deep space downlink, EO payload data, planetary science', maxDataRate: '~10-800 Mbps', color: 'text-blue-400' },
   { band: 'Ku-band', range: '12-18 GHz', allocation: 'Fixed Satellite Service, Broadcast Satellite Service', typicalUse: 'TDRS Ku SA, DTH broadcasting, VSAT, Starlink user links', maxDataRate: '~50 Mbps - 1 Gbps', color: 'text-purple-400' },
   { band: 'Ka-band', range: '26.5-40 GHz', allocation: 'Space Research, Fixed Satellite Service', typicalUse: 'High-rate deep space downlink, HTS broadband, LCRD', maxDataRate: '~100 Mbps - 10 Gbps', color: 'text-amber-400' },
@@ -1307,7 +1307,7 @@ const FREQUENCY_ALLOCATIONS: FrequencyAllocation[] = [
 
 const LATENCY_BY_ORBIT = [
   { orbit: 'LEO (550 km)', oneWayLatency: '~3.6 ms', roundTrip: '~7.2 ms', example: 'Starlink, ISS', color: 'text-green-400' },
-  { orbit: 'MEO (8,000 km)', oneWayLatency: '~27 ms', roundTrip: '~54 ms', example: 'O3b mPOWER, GPS', color: 'text-cyan-400' },
+  { orbit: 'MEO (8,000 km)', oneWayLatency: '~27 ms', roundTrip: '~54 ms', example: 'O3b mPOWER, GPS', color: 'text-slate-300' },
   { orbit: 'GEO (35,786 km)', oneWayLatency: '~120 ms', roundTrip: '~240 ms', example: 'TDRS, EDRS, Intelsat', color: 'text-blue-400' },
   { orbit: 'Lunar (384,400 km)', oneWayLatency: '~1.28 s', roundTrip: '~2.56 s', example: 'Artemis, Gateway', color: 'text-purple-400' },
   { orbit: 'Earth-Sun L2 (1.5M km)', oneWayLatency: '~5 s', roundTrip: '~10 s', example: 'JWST, Euclid', color: 'text-amber-400' },
@@ -1317,7 +1317,7 @@ const LATENCY_BY_ORBIT = [
 ];
 
 const COMMS_HERO_STATS = [
-  { label: 'DSN Antennas', value: '13', color: 'text-cyan-400' },
+  { label: 'DSN Antennas', value: '13', color: 'text-slate-300' },
   { label: 'Relay Satellites', value: '40+', color: 'text-blue-400' },
   { label: 'Optical Terminals On-Orbit', value: '9,000+', color: 'text-green-400' },
   { label: 'Max Optical Data Rate', value: '100 Gbps', color: 'text-amber-400' },
@@ -1373,7 +1373,7 @@ function HeroStats({ activeSpaceports, emergingSpaceports, trafficData }: {
   const countries = Array.from(new Set(activeSpaceports.map(s => s.country)));
 
   const stats = [
-    { label: 'Active Launch Sites', value: totalActive.toString(), color: 'text-cyan-400' },
+    { label: 'Active Launch Sites', value: totalActive.toString(), color: 'text-slate-300' },
     { label: 'Emerging Sites', value: totalEmerging.toString(), color: 'text-amber-400' },
     { label: 'Orbital Launches (2025)', value: totalLaunches2025.toString(), color: 'text-green-400' },
     { label: 'Countries', value: countries.length.toString(), color: 'text-purple-400' },
@@ -1403,11 +1403,11 @@ function SpaceportCard({ spaceport, maxLaunches }: { spaceport: Spaceport; maxLa
   const launchBar2024Width = maxLaunches > 0 ? (spaceport.recentLaunches2024 / maxLaunches) * 100 : 0;
 
   return (
-    <div className="card-elevated p-6 border border-space-700 hover:border-cyan-500/30 transition-all group">
+    <div className="card-elevated p-6 border border-space-700 hover:border-white/10 transition-all group">
       {/* Header */}
       <div className="flex items-start justify-between mb-3">
         <div className="flex-1 min-w-0">
-          <h3 className="text-white font-semibold text-lg group-hover:text-cyan-300 transition-colors truncate">
+          <h3 className="text-white font-semibold text-lg group-hover:text-white transition-colors truncate">
             {spaceport.name}
           </h3>
           <div className="flex items-center gap-2 mt-1 flex-wrap">
@@ -1427,7 +1427,7 @@ function SpaceportCard({ spaceport, maxLaunches }: { spaceport: Spaceport; maxLa
       {/* Quick Stats Row */}
       <div className="grid grid-cols-3 gap-3 mb-4">
         <div className="bg-space-800/50 rounded-lg p-2.5 text-center">
-          <div className="text-cyan-400 text-xl font-bold font-display">{spaceport.recentLaunches2025}</div>
+          <div className="text-slate-300 text-xl font-bold font-display">{spaceport.recentLaunches2025}</div>
           <div className="text-star-300/60 text-xs uppercase tracking-widest">2025 Launches</div>
         </div>
         <div className="bg-space-800/50 rounded-lg p-2.5 text-center">
@@ -1445,11 +1445,11 @@ function SpaceportCard({ spaceport, maxLaunches }: { spaceport: Spaceport; maxLa
         <div>
           <div className="flex items-center justify-between mb-0.5">
             <span className="text-star-300/60 text-xs">2025</span>
-            <span className="text-cyan-400 text-xs font-mono font-bold">{spaceport.recentLaunches2025}</span>
+            <span className="text-slate-300 text-xs font-mono font-bold">{spaceport.recentLaunches2025}</span>
           </div>
           <div className="h-2 bg-white/5 rounded-full overflow-hidden">
             <div
-              className="h-full rounded-full bg-gradient-to-r from-cyan-500 to-cyan-400 transition-all duration-500"
+              className="h-full rounded-full bg-gradient-to-r from-white to-slate-400 transition-all duration-500"
               style={{ width: `${launchBarWidth}%` }}
             />
           </div>
@@ -1476,7 +1476,7 @@ function SpaceportCard({ spaceport, maxLaunches }: { spaceport: Spaceport; maxLa
       {/* Vehicles */}
       <div className="flex flex-wrap gap-1.5 mb-3">
         {spaceport.primaryVehicles.map((v) => (
-          <span key={v} className="px-2 py-0.5 bg-space-700 text-cyan-300 border border-space-600 rounded text-xs font-medium">
+          <span key={v} className="px-2 py-0.5 bg-space-700 text-slate-200 border border-space-600 rounded text-xs font-medium">
             {v}
           </span>
         ))}
@@ -1564,7 +1564,7 @@ function SpaceportCard({ spaceport, maxLaunches }: { spaceport: Spaceport; maxLa
             <ul className="space-y-1">
               {spaceport.highlights.map((h, i) => (
                 <li key={i} className="text-star-300 text-xs flex items-start gap-2">
-                  <span className="text-cyan-400 mt-0.5 flex-shrink-0">-</span>
+                  <span className="text-slate-300 mt-0.5 flex-shrink-0">-</span>
                   {h}
                 </li>
               ))}
@@ -1576,7 +1576,7 @@ function SpaceportCard({ spaceport, maxLaunches }: { spaceport: Spaceport; maxLa
       {/* Toggle */}
       <button
         onClick={() => setExpanded(!expanded)}
-        className="text-sm text-cyan-400 hover:text-cyan-300 transition-colors"
+        className="text-sm text-slate-300 hover:text-white transition-colors"
       >
         {expanded ? 'Show less' : 'Show details'} {expanded ? String.fromCharCode(8593) : String.fromCharCode(8595)}
       </button>
@@ -1694,14 +1694,14 @@ function SiteComparisonTable({ activeSpaceports }: { activeSpaceports: Spaceport
                   <h4 className="text-white font-semibold text-sm truncate">{s.name}</h4>
                   <p className="text-slate-400 text-xs">{s.country}</p>
                 </div>
-                <span className={`text-xs px-2 py-0.5 rounded bg-cyan-500/10 font-medium flex-shrink-0 ${capStyle.color}`}>{capStyle.label}</span>
+                <span className={`text-xs px-2 py-0.5 rounded bg-white/5 font-medium flex-shrink-0 ${capStyle.color}`}>{capStyle.label}</span>
               </div>
               <div className="grid grid-cols-2 gap-2 text-xs">
                 <div><span className="text-slate-500">Pads:</span> <span className="text-slate-300">{s.launchPads}</span></div>
                 <div><span className="text-slate-500">Payload:</span> <span className="text-slate-300 truncate">{s.maxPayloadClass}</span></div>
                 <div><span className="text-slate-500">Inclination:</span> <span className="text-slate-300">{s.inclinationRange}</span></div>
                 <div><span className="text-slate-500">Reuse:</span> <span className="text-slate-300">{s.reuseLanding.startsWith('None') ? 'None' : s.reuseLanding.length > 25 ? s.reuseLanding.substring(0, 25) + '...' : s.reuseLanding}</span></div>
-                <div><span className="text-slate-500">2025:</span> <span className="text-cyan-400 font-mono font-bold">{s.recentLaunches2025}</span></div>
+                <div><span className="text-slate-500">2025:</span> <span className="text-slate-300 font-mono font-bold">{s.recentLaunches2025}</span></div>
                 <div><span className="text-slate-500">2024:</span> <span className="text-slate-300 font-mono">{s.recentLaunches2024}</span></div>
               </div>
               {s.fuelingTypes.length > 0 && (
@@ -1762,7 +1762,7 @@ function SiteComparisonTable({ activeSpaceports }: { activeSpaceports: Spaceport
                       ? <span className="text-star-300/40">None</span>
                       : s.reuseLanding.length > 40 ? s.reuseLanding.substring(0, 40) + '...' : s.reuseLanding}
                   </td>
-                  <td className="px-4 py-3 text-right text-cyan-400 font-mono font-bold">{s.recentLaunches2025}</td>
+                  <td className="px-4 py-3 text-right text-slate-300 font-mono font-bold">{s.recentLaunches2025}</td>
                   <td className="px-4 py-3 text-right text-star-300 font-mono">{s.recentLaunches2024}</td>
                 </tr>
               );
@@ -1775,7 +1775,7 @@ function SiteComparisonTable({ activeSpaceports }: { activeSpaceports: Spaceport
       <div className="p-4 bg-white/[0.02] border-t border-white/5 flex flex-wrap items-center gap-6 text-xs text-star-300/60">
         <span>Total sites: <span className="text-white font-bold">{allSites.length}</span></span>
         <span>Total pads: <span className="text-white font-bold">{allSites.reduce((s, sp) => s + sp.launchPads, 0)}</span></span>
-        <span>2025 launches (active sites): <span className="text-cyan-400 font-bold">{allSites.reduce((s, sp) => s + sp.recentLaunches2025, 0)}</span></span>
+        <span>2025 launches (active sites): <span className="text-slate-300 font-bold">{allSites.reduce((s, sp) => s + sp.recentLaunches2025, 0)}</span></span>
         <span>With reuse capability: <span className="text-green-400 font-bold">{allSites.filter(s => !s.reuseLanding.startsWith('None')).length}</span></span>
       </div>
     </div>
@@ -1831,7 +1831,7 @@ function TrafficDataTab({ trafficData }: { trafficData: TrafficRecord[] }) {
               {/* Mini bar */}
               <div className="mt-2 mx-auto w-full max-w-[60px] h-2 bg-white/5 rounded-full overflow-hidden">
                 <div
-                  className="h-full rounded-full bg-gradient-to-r from-cyan-500 to-cyan-400"
+                  className="h-full rounded-full bg-gradient-to-r from-white to-slate-400"
                   style={{ width: `${(d.count / totalByYear.y2025) * 100}%` }}
                 />
               </div>
@@ -1870,7 +1870,7 @@ function TrafficDataTab({ trafficData }: { trafficData: TrafficRecord[] }) {
                 </div>
                 <div className="h-2.5 bg-white/5 rounded-full overflow-hidden">
                   <div
-                    className="h-full rounded-full bg-gradient-to-r from-cyan-500 to-blue-400 transition-all"
+                    className="h-full rounded-full bg-gradient-to-r from-white to-blue-400 transition-all"
                     style={{ width: `${pct}%` }}
                   />
                 </div>
@@ -1893,7 +1893,7 @@ function TrafficDataTab({ trafficData }: { trafficData: TrafficRecord[] }) {
             onClick={() => setSortBy(opt.key)}
             className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
               sortBy === opt.key
-                ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/50'
+                ? 'bg-white/10 text-slate-200 border border-white/15'
                 : 'bg-white/5 text-star-300 border border-white/10 hover:border-white/20'
             }`}
           >
@@ -1946,7 +1946,7 @@ function TrafficDataTab({ trafficData }: { trafficData: TrafficRecord[] }) {
                     <td className="px-4 py-3">
                       <div className="w-24 h-2 bg-white/5 rounded-full overflow-hidden">
                         <div
-                          className="h-full rounded-full bg-gradient-to-r from-cyan-500 to-blue-400"
+                          className="h-full rounded-full bg-gradient-to-r from-white to-blue-400"
                           style={{ width: `${barWidth}%` }}
                         />
                       </div>
@@ -1961,7 +1961,7 @@ function TrafficDataTab({ trafficData }: { trafficData: TrafficRecord[] }) {
         {/* Table Summary */}
         <div className="p-4 bg-white/[0.02] border-t border-white/5 flex flex-wrap items-center gap-6 text-xs text-star-300/60">
           <span>Tracked sites: <span className="text-white font-bold">{trafficData.length}</span></span>
-          <span>Total 2025 launches: <span className="text-cyan-400 font-bold">{totalByYear.y2025}</span></span>
+          <span>Total 2025 launches: <span className="text-slate-300 font-bold">{totalByYear.y2025}</span></span>
           <span>Growing sites: <span className="text-green-400 font-bold">{trafficData.filter(t => t.trend === 'up').length}</span></span>
           <span>Declining sites: <span className="text-red-400 font-bold">{trafficData.filter(t => t.trend === 'down').length}</span></span>
         </div>
@@ -1974,7 +1974,7 @@ function TrafficDataTab({ trafficData }: { trafficData: TrafficRecord[] }) {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="bg-white/[0.03] rounded-lg p-4 border border-white/5">
-            <div className="text-cyan-400 text-2xl font-bold font-display mb-1">280+</div>
+            <div className="text-slate-300 text-2xl font-bold font-display mb-1">280+</div>
             <div className="text-white text-sm font-medium mb-2">Projected 2026 Global Launches</div>
             <p className="text-star-300/70 text-xs leading-relaxed">
               Continued growth driven by Starlink deployment cadence, increasing Starship flights, Chinese commercial launchers, and new vehicles ramping up (New Glenn, Ariane 6, Neutron).
@@ -2008,12 +2008,12 @@ function DSNComplexCard({ complex }: { complex: DSNComplex }) {
   const [expanded, setExpanded] = useState(false);
 
   return (
-    <div className="card-elevated p-6 border border-space-700 hover:border-cyan-500/30 transition-all">
+    <div className="card-elevated p-6 border border-space-700 hover:border-white/10 transition-all">
       <div className="flex items-start justify-between mb-4">
         <div>
           <h3 className="text-white font-semibold text-lg">{complex.name}</h3>
           <div className="flex items-center gap-3 mt-1">
-            <span className="text-cyan-400 text-sm font-medium">{complex.location}</span>
+            <span className="text-slate-300 text-sm font-medium">{complex.location}</span>
             <span className="text-slate-500">|</span>
             <span className="text-slate-400 text-sm">Est. {complex.established}</span>
           </div>
@@ -2035,11 +2035,11 @@ function DSNComplexCard({ complex }: { complex: DSNComplex }) {
             <div key={antenna.designation} className="bg-space-800/50 rounded-lg p-3">
               <div className="flex items-center justify-between mb-1">
                 <span className="text-white text-sm font-medium">{antenna.designation}</span>
-                <span className="text-cyan-400 text-xs font-bold">{antenna.diameter}</span>
+                <span className="text-slate-300 text-xs font-bold">{antenna.diameter}</span>
               </div>
               <div className="flex flex-wrap gap-1 mb-1">
                 {antenna.bands.map((band) => (
-                  <span key={band} className="px-1.5 py-0.5 bg-space-700 text-cyan-300 border border-space-600 rounded text-xs">
+                  <span key={band} className="px-1.5 py-0.5 bg-space-700 text-slate-200 border border-space-600 rounded text-xs">
                     {band}
                   </span>
                 ))}
@@ -2070,7 +2070,7 @@ function DSNComplexCard({ complex }: { complex: DSNComplex }) {
 
       <button
         onClick={() => setExpanded(!expanded)}
-        className="text-sm text-cyan-400 hover:text-cyan-300 transition-colors"
+        className="text-sm text-slate-300 hover:text-white transition-colors"
       >
         {expanded ? 'Show less' : 'Show details'} {expanded ? String.fromCharCode(8593) : String.fromCharCode(8595)}
       </button>
@@ -2083,18 +2083,18 @@ function RelayNetworkCard({ network }: { network: RelayNetwork }) {
 
   const statusColors: Record<string, string> = {
     operational: 'text-green-400 bg-green-500/10 border-green-500/30',
-    deploying: 'text-cyan-400 bg-cyan-500/10 border-cyan-500/30',
+    deploying: 'text-slate-300 bg-white/5 border-white/10',
     development: 'text-amber-400 bg-amber-500/10 border-amber-500/30',
     decommissioning: 'text-red-400 bg-red-500/10 border-red-500/30',
   };
 
   return (
-    <div className="card-elevated p-6 border border-space-700 hover:border-cyan-500/30 transition-all">
+    <div className="card-elevated p-6 border border-space-700 hover:border-white/10 transition-all">
       <div className="flex items-start justify-between mb-4">
         <div className="flex-1 min-w-0">
           <h3 className="text-white font-semibold text-lg">{network.name}</h3>
           <div className="flex items-center gap-3 mt-1">
-            <span className="text-cyan-400 text-sm font-medium">{network.operator}</span>
+            <span className="text-slate-300 text-sm font-medium">{network.operator}</span>
           </div>
         </div>
         <span className={`text-xs font-bold px-2.5 py-1 rounded border flex-shrink-0 ml-2 ${statusColors[network.status] || ''}`}>
@@ -2132,7 +2132,7 @@ function RelayNetworkCard({ network }: { network: RelayNetwork }) {
             <ul className="space-y-1">
               {network.capabilities.map((cap, i) => (
                 <li key={i} className="text-slate-300 text-sm flex items-start gap-2">
-                  <span className="text-cyan-400 mt-0.5 flex-shrink-0">-</span>
+                  <span className="text-slate-300 mt-0.5 flex-shrink-0">-</span>
                   {cap}
                 </li>
               ))}
@@ -2153,7 +2153,7 @@ function RelayNetworkCard({ network }: { network: RelayNetwork }) {
 
       <button
         onClick={() => setExpanded(!expanded)}
-        className="text-sm text-cyan-400 hover:text-cyan-300 transition-colors"
+        className="text-sm text-slate-300 hover:text-white transition-colors"
       >
         {expanded ? 'Show less' : 'Show details'} {expanded ? String.fromCharCode(8593) : String.fromCharCode(8595)}
       </button>
@@ -2166,7 +2166,7 @@ function OpticalSystemCard({ system }: { system: OpticalSystem }) {
 
   const statusColors: Record<string, string> = {
     operational: 'text-green-400 bg-green-500/10 border-green-500/30',
-    demonstrated: 'text-cyan-400 bg-cyan-500/10 border-cyan-500/30',
+    demonstrated: 'text-slate-300 bg-white/5 border-white/10',
     development: 'text-amber-400 bg-amber-500/10 border-amber-500/30',
     commercial: 'text-blue-400 bg-blue-500/10 border-blue-500/30',
   };
@@ -2179,12 +2179,12 @@ function OpticalSystemCard({ system }: { system: OpticalSystem }) {
   };
 
   return (
-    <div className="card-elevated p-6 border border-space-700 hover:border-cyan-500/30 transition-all">
+    <div className="card-elevated p-6 border border-space-700 hover:border-white/10 transition-all">
       <div className="flex items-start justify-between mb-4">
         <div className="flex-1 min-w-0">
           <h3 className="text-white font-semibold text-lg">{system.name}</h3>
           <div className="flex items-center gap-3 mt-1">
-            <span className="text-cyan-400 text-sm font-medium">{system.operator}</span>
+            <span className="text-slate-300 text-sm font-medium">{system.operator}</span>
             <span className="text-slate-500">|</span>
             <span className="text-slate-400 text-sm">{system.launchDate}</span>
           </div>
@@ -2224,7 +2224,7 @@ function OpticalSystemCard({ system }: { system: OpticalSystem }) {
           <div className="space-y-1.5">
             {system.milestones.map((milestone, i) => (
               <div key={i} className="text-slate-300 text-sm flex items-start gap-2 bg-space-800/30 rounded-lg p-2">
-                <span className="text-cyan-400 font-bold text-xs mt-0.5 flex-shrink-0">
+                <span className="text-slate-300 font-bold text-xs mt-0.5 flex-shrink-0">
                   {String(i + 1).padStart(2, '0')}
                 </span>
                 <span>{milestone}</span>
@@ -2236,7 +2236,7 @@ function OpticalSystemCard({ system }: { system: OpticalSystem }) {
 
       <button
         onClick={() => setExpanded(!expanded)}
-        className="text-sm text-cyan-400 hover:text-cyan-300 transition-colors"
+        className="text-sm text-slate-300 hover:text-white transition-colors"
       >
         {expanded ? 'Show less' : 'Show milestones'} {expanded ? String.fromCharCode(8593) : String.fromCharCode(8595)}
       </button>
@@ -2393,7 +2393,7 @@ function SpaceportDirectoryPage() {
 
         {/* Industry Overview Banner */}
         <ScrollReveal delay={0.1}>
-        <div className="bg-gradient-to-r from-cyan-500/10 via-blue-500/10 to-purple-500/10 border border-cyan-500/30 rounded-xl p-5 mb-8">
+        <div className="bg-gradient-to-r from-white/5 via-blue-500/10 to-purple-500/10 border border-white/10 rounded-xl p-5 mb-8">
           <div className="flex items-start gap-4">
             <div>
               <h3 className="font-semibold text-white mb-1">Global Launch Infrastructure</h3>
@@ -2454,7 +2454,7 @@ function SpaceportDirectoryPage() {
                         onClick={() => setCountryFilter(country)}
                         className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
                           countryFilter === country
-                            ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/50'
+                            ? 'bg-white/10 text-slate-200 border border-white/15'
                             : 'bg-transparent text-star-300 border border-white/10 hover:border-white/20'
                         }`}
                       >
@@ -2575,7 +2575,7 @@ function SpaceportDirectoryPage() {
                   <p className="text-star-300">No spaceports match the selected filters.</p>
                   <button
                     onClick={() => { setCountryFilter(''); setCapabilityFilter(''); setOperatorFilter(''); }}
-                    className="mt-3 text-sm text-cyan-400 hover:text-cyan-300 transition-colors"
+                    className="mt-3 text-sm text-slate-300 hover:text-white transition-colors"
                   >
                     Clear all filters
                   </button>

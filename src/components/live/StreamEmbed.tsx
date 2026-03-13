@@ -55,7 +55,7 @@ export default function StreamEmbed({
   // If live and has video ID, show the embed
   if (isLive && youtubeVideoId) {
     return (
-      <div className="relative w-full aspect-video bg-space-900 rounded-xl overflow-hidden border border-cyan-500/30 shadow-lg shadow-cyan-500/10">
+      <div className="relative w-full aspect-video bg-space-900 rounded-xl overflow-hidden border border-white/10 shadow-lg shadow-black/5">
         <div className="absolute top-4 left-4 z-10 flex items-center gap-2">
           <span className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-red-500/90 text-white text-sm font-bold animate-pulse">
             <span className="w-2 h-2 bg-white rounded-full" />
@@ -81,7 +81,7 @@ export default function StreamEmbed({
     <div className="relative w-full aspect-video bg-gradient-to-br from-space-900 via-space-800 to-space-900 rounded-xl overflow-hidden border border-slate-700/50">
       {/* Animated background */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-cyan-500/5 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-white/5 rounded-full blur-3xl animate-pulse" />
         <div className="absolute bottom-1/4 right-1/4 w-48 h-48 bg-purple-500/5 rounded-full blur-3xl animate-pulse delay-1000" />
         {/* Star field effect */}
         {[...Array(30)].map((_, i) => (
@@ -101,9 +101,9 @@ export default function StreamEmbed({
       <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-8">
         {/* Rocket icon */}
         <div className="relative mb-6">
-          <div className="w-24 h-24 rounded-full bg-gradient-to-br from-cyan-500/20 to-purple-500/20 flex items-center justify-center border border-cyan-500/30">
+          <div className="w-24 h-24 rounded-full bg-gradient-to-br from-white/5 to-purple-500/20 flex items-center justify-center border border-white/10">
             <svg
-              className="w-12 h-12 text-cyan-400"
+              className="w-12 h-12 text-slate-300"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -125,12 +125,12 @@ export default function StreamEmbed({
         </div>
 
         <h3 className="text-xl md:text-2xl font-bold text-white mb-2">{title}</h3>
-        <p className="text-cyan-400 font-medium mb-4">{provider}</p>
+        <p className="text-slate-300 font-medium mb-4">{provider}</p>
 
         {/* Countdown */}
         <div className="flex flex-col items-center">
           <p className="text-slate-400 text-sm mb-2">Stream starts in</p>
-          <div className="text-3xl md:text-4xl font-display font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400">
+          <div className="text-3xl md:text-4xl font-display font-bold text-transparent bg-clip-text bg-gradient-to-r from-slate-300 via-purple-400 to-pink-400">
             {countdown}
           </div>
         </div>

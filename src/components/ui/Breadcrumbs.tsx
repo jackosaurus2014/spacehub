@@ -10,13 +10,13 @@ export default function Breadcrumbs({ items }: { items: BreadcrumbItem[] }) {
     <nav aria-label="Breadcrumb" className="text-sm text-slate-400 mb-4">
       <ol className="flex items-center gap-2 overflow-x-auto scrollbar-hide">
         <li className="flex-shrink-0">
-          <Link href="/" className="hover:text-cyan-400 transition-colors whitespace-nowrap">Home</Link>
+          <Link href="/" className="hover:text-white transition-colors whitespace-nowrap">Home</Link>
         </li>
         {items.map((item, i) => (
           <li key={i} className="flex items-center gap-2 flex-shrink-0">
             <span className="text-slate-600">/</span>
             {item.href ? (
-              <Link href={item.href} className="hover:text-cyan-400 transition-colors">{item.label}</Link>
+              <Link href={item.href} className="hover:text-white transition-colors">{item.label}</Link>
             ) : (
               <span className="text-slate-300">{item.label}</span>
             )}

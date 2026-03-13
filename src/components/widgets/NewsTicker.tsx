@@ -26,7 +26,7 @@ const CATEGORY_COLORS: Record<string, string> = {
   'Launch Vehicles': 'bg-blue-500/20 text-blue-300',
   Policy: 'bg-rose-500/20 text-rose-300',
   Stations: 'bg-purple-500/20 text-purple-300',
-  Missions: 'bg-cyan-500/20 text-cyan-300',
+  Missions: 'bg-white/10 text-slate-200',
   Technology: 'bg-amber-500/20 text-amber-300',
 };
 
@@ -76,7 +76,7 @@ export default function NewsTicker() {
             <span className={`text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded ${CATEGORY_COLORS[h.category] || 'bg-slate-700/50 text-slate-400'}`}>
               {h.category}
             </span>
-            <span className="text-sm text-slate-300 group-hover:text-cyan-300 transition-colors">{h.title}</span>
+            <span className="text-sm text-slate-300 group-hover:text-white transition-colors">{h.title}</span>
             <span className="text-slate-600 mx-2">|</span>
           </Link>
         ))}

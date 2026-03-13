@@ -58,7 +58,7 @@ function formatAnswer(text: string): React.ReactNode[] {
               <Link
                 key={k}
                 href={linkMatch[2]}
-                className="text-cyan-400 hover:text-cyan-300 underline underline-offset-2 transition-colors"
+                className="text-slate-300 hover:text-white underline underline-offset-2 transition-colors"
               >
                 {linkMatch[1]}
               </Link>
@@ -73,7 +73,7 @@ function formatAnswer(text: string): React.ReactNode[] {
     if (line.startsWith('- ') || line.startsWith('* ')) {
       elements.push(
         <div key={i} className="flex items-start gap-2 ml-2">
-          <span className="text-cyan-500 mt-1 flex-shrink-0">&#8226;</span>
+          <span className="text-slate-300 mt-1 flex-shrink-0">&#8226;</span>
           <span>{formattedParts.slice(0).map((p, idx) => <span key={idx}>{typeof p === 'string' ? p.replace(/^[-*]\s/, '') : p}</span>)}</span>
         </div>
       );
@@ -192,7 +192,7 @@ export default function CompanyResearchPage() {
           className="mb-4 flex items-center gap-2 text-sm"
         >
           <span className="text-slate-400">Researching:</span>
-          <span className="px-2 py-1 rounded-lg bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 font-medium">
+          <span className="px-2 py-1 rounded-lg bg-white/5 border border-white/10 text-slate-200 font-medium">
             {selectedCompanySlug}
           </span>
           <button
@@ -213,8 +213,8 @@ export default function CompanyResearchPage() {
             animate={{ opacity: 1, y: 0 }}
             className="text-center py-12"
           >
-            <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center">
-              <svg className="w-8 h-8 text-cyan-400" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+            <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center">
+              <svg className="w-8 h-8 text-slate-300" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
               </svg>
             </div>
@@ -229,9 +229,9 @@ export default function CompanyResearchPage() {
                 <button
                   key={i}
                   onClick={() => sendQuestion(suggestion)}
-                  className="text-left text-sm px-4 py-3 rounded-xl bg-space-800/50 border border-space-600/30 text-slate-300 hover:border-cyan-500/40 hover:text-cyan-300 hover:bg-space-800/70 transition-all duration-200"
+                  className="text-left text-sm px-4 py-3 rounded-xl bg-space-800/50 border border-space-600/30 text-slate-300 hover:border-white/15/40 hover:text-white hover:bg-space-800/70 transition-all duration-200"
                 >
-                  <span className="text-cyan-500/60 mr-2">&#8594;</span>
+                  <span className="text-slate-300/60 mr-2">&#8594;</span>
                   {suggestion}
                 </button>
               ))}
@@ -253,7 +253,7 @@ export default function CompanyResearchPage() {
                 <div
                   className={`rounded-2xl px-4 py-3 ${
                     msg.role === 'user'
-                      ? 'bg-cyan-500/20 border border-cyan-500/30 text-slate-200'
+                      ? 'bg-white/10 border border-white/10 text-slate-200'
                       : 'bg-space-800/60 border border-space-600/30 text-slate-300'
                   }`}
                 >
@@ -307,13 +307,13 @@ export default function CompanyResearchPage() {
                             href={`/company-profiles/${company.slug}`}
                             className="flex-1 flex items-center gap-2 p-2 rounded-lg bg-space-700/30 hover:bg-space-700/50 transition-colors group"
                           >
-                            <div className="w-8 h-8 rounded-lg bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center flex-shrink-0">
-                              <span className="text-cyan-400 text-xs font-bold">
+                            <div className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center flex-shrink-0">
+                              <span className="text-slate-300 text-xs font-bold">
                                 {company.name.charAt(0)}
                               </span>
                             </div>
                             <div className="min-w-0">
-                              <div className="text-sm font-medium text-white group-hover:text-cyan-300 transition-colors truncate">
+                              <div className="text-sm font-medium text-white group-hover:text-white transition-colors truncate">
                                 {company.name}
                               </div>
                               <div className="text-xs text-slate-500 truncate">
@@ -326,7 +326,7 @@ export default function CompanyResearchPage() {
                               setSelectedCompanySlug(company.slug);
                               toast.success(`Now researching ${company.name}`);
                             }}
-                            className="flex-shrink-0 text-xs px-2 py-1 rounded-lg bg-space-700/50 text-slate-400 hover:text-cyan-300 hover:bg-space-700/80 border border-space-600/20 transition-colors"
+                            className="flex-shrink-0 text-xs px-2 py-1 rounded-lg bg-space-700/50 text-slate-400 hover:text-white hover:bg-space-700/80 border border-space-600/20 transition-colors"
                             title={`Set ${company.name} as research context`}
                           >
                             Research
@@ -355,9 +355,9 @@ export default function CompanyResearchPage() {
             <div className="bg-space-800/60 border border-space-600/30 rounded-2xl px-4 py-3">
               <div className="flex items-center gap-2">
                 <div className="flex gap-1">
-                  <span className="w-2 h-2 bg-cyan-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                  <span className="w-2 h-2 bg-cyan-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                  <span className="w-2 h-2 bg-cyan-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                  <span className="w-2 h-2 bg-white rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                  <span className="w-2 h-2 bg-white rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                  <span className="w-2 h-2 bg-white rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
                 </div>
                 <span className="text-xs text-slate-500">Researching...</span>
               </div>
@@ -382,7 +382,7 @@ export default function CompanyResearchPage() {
               aria-label="Ask a question about space companies"
               placeholder="Ask about any space company... (e.g., 'Tell me about SpaceX' or 'Who are the top launch providers?')"
               rows={1}
-              className="w-full resize-none rounded-xl bg-space-800/60 border border-space-600/30 text-slate-200 placeholder-slate-500 px-4 py-3 pr-12 text-sm focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50 outline-none transition-colors"
+              className="w-full resize-none rounded-xl bg-space-800/60 border border-space-600/30 text-slate-200 placeholder-slate-500 px-4 py-3 pr-12 text-sm focus:ring-2 focus:ring-white/20 focus:border-white/15 outline-none transition-colors"
               style={{ minHeight: '48px', maxHeight: '120px' }}
               onInput={e => {
                 const t = e.currentTarget;
@@ -395,7 +395,7 @@ export default function CompanyResearchPage() {
             onClick={() => sendQuestion()}
             disabled={!input.trim() || loading}
             aria-label="Send question"
-            className="flex-shrink-0 w-12 h-12 rounded-xl bg-cyan-500/20 border border-cyan-500/30 text-cyan-300 hover:bg-cyan-500/30 transition-colors disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center"
+            className="flex-shrink-0 w-12 h-12 rounded-xl bg-white/10 border border-white/10 text-slate-200 hover:bg-slate-100/30 transition-colors disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center"
           >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
               <path d="M3.478 2.404a.75.75 0 0 0-.926.941l2.432 7.905H13.5a.75.75 0 0 1 0 1.5H4.984l-2.432 7.905a.75.75 0 0 0 .926.94 60.519 60.519 0 0 0 18.445-8.986.75.75 0 0 0 0-1.218A60.517 60.517 0 0 0 3.478 2.404Z" />

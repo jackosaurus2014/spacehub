@@ -40,7 +40,7 @@ function CompanyBadges({ companies }: { companies: NewsArticleCompanyTag[] }) {
               window.location.href = `/company-profiles/${company.slug}`;
             }
           }}
-          className={`inline-flex items-center gap-1 text-xs font-medium px-2 py-1 min-h-[32px] rounded border transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-cyan-400/50 focus:ring-offset-1 focus:ring-offset-slate-900 ${tierColors[company.tier] || tierColors[3]}`}
+          className={`inline-flex items-center gap-1 text-xs font-medium px-2 py-1 min-h-[32px] rounded border transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-white/20 focus:ring-offset-1 focus:ring-offset-slate-900 ${tierColors[company.tier] || tierColors[3]}`}
         >
           {company.logoUrl && (
             <Image src={company.logoUrl} alt={`${company.name} logo`} width={12} height={12} className="rounded-sm" />
@@ -59,7 +59,7 @@ const categoryColors: Record<string, string> = {
   launches: 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30',
   missions: 'bg-violet-500/20 text-violet-300 border border-violet-500/30',
   companies: 'bg-blue-500/20 text-blue-300 border border-blue-500/30',
-  satellites: 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30',
+  satellites: 'bg-white/10 text-slate-200 border border-white/10',
   defense: 'bg-slate-500/20 text-slate-300 border border-slate-500/30',
   earnings: 'bg-green-500/20 text-green-300 border border-green-500/30',
   mergers: 'bg-purple-500/20 text-purple-300 border border-purple-500/30',
@@ -161,7 +161,7 @@ export default function NewsCard({ article, featured = false, priority = false }
                         window.location.href = `/company-profiles/${company.slug}`;
                       }
                     }}
-                    className="inline-flex items-center gap-1 text-xs font-medium px-2 py-1 rounded bg-white/20 text-white border border-white/30 hover:bg-white/30 transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-cyan-400/50"
+                    className="inline-flex items-center gap-1 text-xs font-medium px-2 py-1 rounded bg-white/20 text-white border border-white/30 hover:bg-white/30 transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-white/20"
                   >
                     {company.name}
                   </span>
@@ -181,7 +181,7 @@ export default function NewsCard({ article, featured = false, priority = false }
   }
 
   return (
-    <div className="card-interactive group flex flex-col overflow-hidden rounded-2xl relative hover:shadow-lg hover:shadow-cyan-500/[0.07] transition-shadow duration-300">
+    <div className="card-interactive group flex flex-col overflow-hidden rounded-2xl relative hover:shadow-lg hover:shadow-black/20/[0.07] transition-shadow duration-300">
       <BookmarkButton
         itemId={article.id}
         itemTitle={article.title}
@@ -235,7 +235,7 @@ export default function NewsCard({ article, featured = false, priority = false }
             </span>
             <span className="text-slate-500 text-xs">{formatDate(article.publishedAt)}</span>
           </div>
-          <h3 className="font-bold text-white text-[15px] leading-snug line-clamp-2 group-hover:text-cyan-300 transition-colors">
+          <h3 className="font-bold text-white text-[15px] leading-snug line-clamp-2 group-hover:text-white transition-colors">
             {article.title}
           </h3>
           {article.summary && (

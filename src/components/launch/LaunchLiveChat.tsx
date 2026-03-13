@@ -124,7 +124,7 @@ export default function LaunchLiveChat({ eventId }: LaunchLiveChatProps) {
       {/* Header */}
       <div className="px-4 py-3 border-b border-slate-700/50 bg-slate-800/50 flex items-center justify-between flex-shrink-0">
         <h3 className="text-white font-semibold flex items-center gap-2 text-sm">
-          <svg className="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-4 h-4 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
           </svg>
           Live Chat
@@ -148,8 +148,8 @@ export default function LaunchLiveChat({ eventId }: LaunchLiveChatProps) {
         {messages.map((msg) => (
           <div key={msg.id} className={msg.type === 'system' || msg.type === 'milestone' ? 'text-center' : ''}>
             {msg.type === 'milestone' ? (
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-cyan-500/10 text-cyan-400 text-xs font-medium border border-cyan-500/20">
-                <span className="w-1.5 h-1.5 bg-cyan-400 rounded-full" />
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 text-slate-300 text-xs font-medium border border-white/10">
+                <span className="w-1.5 h-1.5 bg-white rounded-full" />
                 {msg.message}
               </div>
             ) : msg.type === 'system' ? (
@@ -161,7 +161,7 @@ export default function LaunchLiveChat({ eventId }: LaunchLiveChatProps) {
                 <div className={`inline-block max-w-[85%] ${msg.userId === session?.user?.id ? 'text-right' : 'text-left'}`}>
                   <div className="flex items-center gap-2 mb-0.5">
                     <span className={`text-xs font-medium ${
-                      msg.userId === session?.user?.id ? 'text-cyan-400' : 'text-purple-400'
+                      msg.userId === session?.user?.id ? 'text-slate-300' : 'text-purple-400'
                     }`}>
                       {msg.userName}
                     </span>
@@ -169,7 +169,7 @@ export default function LaunchLiveChat({ eventId }: LaunchLiveChatProps) {
                   </div>
                   <div className={`px-3 py-1.5 rounded-lg text-sm ${
                     msg.userId === session?.user?.id
-                      ? 'bg-cyan-500/15 text-cyan-100 border border-cyan-500/20'
+                      ? 'bg-white/8 text-slate-200 border border-white/10'
                       : 'bg-slate-800/50 text-slate-200 border border-slate-700/30'
                   }`}>
                     {msg.message}
@@ -188,7 +188,7 @@ export default function LaunchLiveChat({ eventId }: LaunchLiveChatProps) {
           <div className="text-center py-2">
             <a
               href="/login"
-              className="text-cyan-400 hover:text-cyan-300 transition-colors text-sm font-medium"
+              className="text-slate-300 hover:text-white transition-colors text-sm font-medium"
             >
               Sign in to join the chat
             </a>
@@ -211,12 +211,12 @@ export default function LaunchLiveChat({ eventId }: LaunchLiveChatProps) {
                 placeholder="Type a message..."
                 maxLength={500}
                 disabled={sending || rateLimited}
-                className="flex-1 bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none disabled:opacity-50"
+                className="flex-1 bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none disabled:opacity-50"
               />
               <button
                 type="submit"
                 disabled={!newMessage.trim() || sending || rateLimited}
-                className="px-3 py-2 rounded-lg bg-cyan-500 text-white font-medium hover:bg-cyan-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-3 py-2 rounded-lg bg-white text-white font-medium hover:bg-slate-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />

@@ -91,7 +91,7 @@ export default function NotificationBell() {
       {/* Bell button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="relative p-2 text-slate-400 hover:text-cyan-300 transition-colors rounded-lg hover:bg-slate-800/50"
+        className="relative p-2 text-slate-400 hover:text-white transition-colors rounded-lg hover:bg-slate-800/50"
         aria-label={`Notifications${unreadCount > 0 ? ` (${unreadCount} unread)` : ''}`}
       >
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -113,7 +113,7 @@ export default function NotificationBell() {
             {unreadCount > 0 && (
               <button
                 onClick={markAllRead}
-                className="text-xs text-cyan-400 hover:text-cyan-300 transition-colors"
+                className="text-xs text-slate-300 hover:text-white transition-colors"
               >
                 Mark all read
               </button>
@@ -135,7 +135,7 @@ export default function NotificationBell() {
                 <div
                   key={notification.id}
                   className={`px-4 py-3 border-b border-slate-700/30 hover:bg-slate-700/30 transition-colors cursor-pointer ${
-                    !notification.read ? 'bg-cyan-500/5' : ''
+                    !notification.read ? 'bg-white/5' : ''
                   }`}
                   onClick={() => {
                     if (!notification.read) markAsRead(notification.id);
@@ -147,7 +147,7 @@ export default function NotificationBell() {
                 >
                   <div className="flex items-start gap-3">
                     {!notification.read && (
-                      <div className="w-2 h-2 rounded-full bg-cyan-400 mt-1.5 flex-shrink-0" />
+                      <div className="w-2 h-2 rounded-full bg-white mt-1.5 flex-shrink-0" />
                     )}
                     <div className={`flex-1 min-w-0 ${notification.read ? 'ml-5' : ''}`}>
                       <p className="text-sm text-white font-medium truncate">{notification.title}</p>
@@ -164,7 +164,7 @@ export default function NotificationBell() {
           <div className="px-4 py-2.5 border-t border-slate-700/50">
             <Link
               href="/notifications"
-              className="text-xs text-cyan-400 hover:text-cyan-300 transition-colors font-medium"
+              className="text-xs text-slate-300 hover:text-white transition-colors font-medium"
               onClick={() => setIsOpen(false)}
             >
               View all notifications &rarr;

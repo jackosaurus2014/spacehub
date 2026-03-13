@@ -598,7 +598,7 @@ function categoryColor(cat: MissionCategory): string {
     case 'Earth Observation': return 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30';
     case 'Human Spaceflight': return 'bg-blue-500/20 text-blue-300 border-blue-500/30';
     case 'Astronomy': return 'bg-purple-500/20 text-purple-300 border-purple-500/30';
-    case 'Communications & Navigation': return 'bg-cyan-500/20 text-cyan-300 border-cyan-500/30';
+    case 'Communications & Navigation': return 'bg-white/10 text-slate-200 border-white/10';
     default: return 'bg-slate-500/20 text-slate-300 border-slate-500/30';
   }
 }
@@ -609,7 +609,7 @@ function categoryAccent(cat: MissionCategory): string {
     case 'Earth Observation': return 'text-emerald-400';
     case 'Human Spaceflight': return 'text-blue-400';
     case 'Astronomy': return 'text-purple-400';
-    case 'Communications & Navigation': return 'text-cyan-400';
+    case 'Communications & Navigation': return 'text-slate-300';
     default: return 'text-slate-400';
   }
 }
@@ -620,7 +620,7 @@ function categoryDot(cat: MissionCategory): string {
     case 'Earth Observation': return 'bg-emerald-400';
     case 'Human Spaceflight': return 'bg-blue-400';
     case 'Astronomy': return 'bg-purple-400';
-    case 'Communications & Navigation': return 'bg-cyan-400';
+    case 'Communications & Navigation': return 'bg-white';
     default: return 'bg-slate-400';
   }
 }
@@ -796,7 +796,7 @@ export default function MissionHeritagePage() {
               <div className="text-xs text-slate-400 mt-1">Longest Running ({formatDuration(longestRunning.durationDays)})</div>
             </div>
             <div className="card p-4 text-center">
-              <div className="text-lg font-bold text-cyan-400 truncate" title={mostRecent.name}>{mostRecent.name}</div>
+              <div className="text-lg font-bold text-slate-300 truncate" title={mostRecent.name}>{mostRecent.name}</div>
               <div className="text-xs text-slate-400 mt-1">Most Recent Launch ({mostRecent.launchYear})</div>
             </div>
           </div>
@@ -1135,9 +1135,9 @@ export default function MissionHeritagePage() {
                 </div>
               </div>
               <div className="flex gap-3">
-                <span className="shrink-0 mt-0.5 w-3 h-3 rounded-full bg-cyan-500/60" />
+                <span className="shrink-0 mt-0.5 w-3 h-3 rounded-full bg-white/60" />
                 <div>
-                  <div className="font-medium text-cyan-300">Communications &amp; Navigation</div>
+                  <div className="font-medium text-slate-200">Communications &amp; Navigation</div>
                   <div className="text-slate-400">Satellite constellations providing global navigation, broadband internet, voice communications, and data relay services.</div>
                 </div>
               </div>

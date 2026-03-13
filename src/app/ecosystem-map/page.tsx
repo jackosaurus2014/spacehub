@@ -69,9 +69,9 @@ const ECOSYSTEM_SEGMENTS: EcosystemSegment[] = [
     label: 'Midstream',
     description: 'Launch providers, satellite manufacturers, and ground equipment companies that build and deliver space infrastructure.',
     color: '#22d3ee',
-    bgColor: 'bg-cyan-500/10',
-    borderColor: 'border-cyan-500/30',
-    textColor: 'text-cyan-400',
+    bgColor: 'bg-white/5',
+    borderColor: 'border-white/10',
+    textColor: 'text-slate-300',
     iconPath: 'M12 19l9 2-9-18-9 18 9-2zm0 0v-8',
     subsegments: ['Launch Providers', 'Satellite Manufacturers', 'Ground Equipment', 'Space Station Builders'],
     companies: [
@@ -173,7 +173,7 @@ function EcoCompanyCard({
     >
       <Link
         href={`/company-profiles/${company.slug}`}
-        className="font-medium text-white text-sm hover:underline decoration-cyan-400/50 underline-offset-2"
+        className="font-medium text-white text-sm hover:underline decoration-slate-400/40 underline-offset-2"
         onClick={(e) => e.stopPropagation()}
       >
         {company.name}
@@ -203,7 +203,7 @@ function EcoCompanyCard({
           )}
           <Link
             href={`/company-profiles/${company.slug}`}
-            className="text-xs text-cyan-400 hover:text-cyan-300 mt-1 inline-block"
+            className="text-xs text-slate-300 hover:text-white mt-1 inline-block"
           >
             View full profile
           </Link>
@@ -393,11 +393,11 @@ export default function EcosystemMapPage() {
 
         {/* Overview */}
         <ScrollReveal>
-          <div className="bg-gradient-to-r from-purple-500/10 to-cyan-500/10 border border-purple-500/20 rounded-xl p-5 mb-8">
+          <div className="bg-gradient-to-r from-purple-500/10 to-white/5 border border-purple-500/20 rounded-xl p-5 mb-8">
             <p className="text-slate-300 text-sm leading-relaxed">
               The space industry operates as a <strong className="text-purple-400">multi-layered value chain</strong>.{' '}
               <strong className="text-amber-400">Upstream</strong> companies provide raw materials and components that flow to{' '}
-              <strong className="text-cyan-400">midstream</strong> manufacturers and launch providers. These enable{' '}
+              <strong className="text-slate-300">midstream</strong> manufacturers and launch providers. These enable{' '}
               <strong className="text-purple-400">downstream</strong> operators and data companies to deliver services to
               end users. <strong className="text-emerald-400">Cross-cutting</strong> services like insurance, regulatory,
               and finance support the entire chain. Click any company to view their full profile.
@@ -428,7 +428,7 @@ export default function EcosystemMapPage() {
             placeholder="Search companies by name, segment, or capability..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+            className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
           />
         </div>
 
@@ -441,7 +441,7 @@ export default function EcosystemMapPage() {
               </h3>
               <button
                 onClick={() => setSearchQuery('')}
-                className="text-xs text-cyan-400 hover:text-cyan-300"
+                className="text-xs text-slate-300 hover:text-white"
               >
                 Clear search
               </button>
@@ -512,7 +512,7 @@ export default function EcosystemMapPage() {
               </p>
             </div>
             <div className="card p-5">
-              <h3 className="text-cyan-400 font-semibold mb-2">Midstream to Downstream</h3>
+              <h3 className="text-slate-300 font-semibold mb-2">Midstream to Downstream</h3>
               <p className="text-slate-400 text-sm leading-relaxed">
                 Launch providers deliver satellites to orbit for operators like SES and Planet Labs. Ground
                 equipment manufacturers (L3Harris, KSAT) provide the infrastructure to communicate with and
@@ -544,7 +544,7 @@ export default function EcosystemMapPage() {
             <h3 className="text-white font-semibold mb-3">Space Economy by the Numbers (2025)</h3>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div className="text-center">
-                <div className="text-2xl font-bold text-cyan-400">$546B</div>
+                <div className="text-2xl font-bold text-slate-300">$546B</div>
                 <div className="text-slate-400 text-xs mt-1">Global Space Economy</div>
               </div>
               <div className="text-center">

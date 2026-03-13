@@ -52,7 +52,7 @@ function getSectorIcon(s: string | null): string {
 
 function getReasonColor(reason: string): string {
   if (reason === 'Competitor') return 'bg-red-500/20 text-red-400';
-  if (reason === 'Same sector') return 'bg-cyan-500/20 text-cyan-400';
+  if (reason === 'Same sector') return 'bg-white/10 text-slate-300';
   if (reason === 'Same subsector') return 'bg-blue-500/20 text-blue-400';
   if (reason.includes('Shared investors')) return 'bg-green-500/20 text-green-400';
   if (reason.includes('shared tags') || reason === 'Shared focus area')
@@ -130,7 +130,7 @@ export default function SimilarCompanies({ companySlug, companyName }: SimilarCo
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.06 }}
               whileHover={{ scale: 1.02 }}
-              className="bg-slate-800/30 border border-slate-700/30 rounded-xl p-4 cursor-pointer hover:border-cyan-500/30 transition-colors h-full"
+              className="bg-slate-800/30 border border-slate-700/30 rounded-xl p-4 cursor-pointer hover:border-white/10 transition-colors h-full"
             >
               <div className="flex items-start gap-3">
                 {/* Logo / Icon */}
@@ -157,7 +157,7 @@ export default function SimilarCompanies({ companySlug, companyName }: SimilarCo
 
                   {/* Sector badge */}
                   {company.sector && (
-                    <span className="text-xs text-cyan-400 capitalize">
+                    <span className="text-xs text-slate-300 capitalize">
                       {company.sector}
                     </span>
                   )}
@@ -177,7 +177,7 @@ export default function SimilarCompanies({ companySlug, companyName }: SimilarCo
                       company.similarityScore >= 60
                         ? 'bg-emerald-500/20 text-emerald-400'
                         : company.similarityScore >= 30
-                        ? 'bg-cyan-500/20 text-cyan-400'
+                        ? 'bg-white/10 text-slate-300'
                         : 'bg-slate-700/50 text-slate-400'
                     }`}
                     title={`Similarity score: ${company.similarityScore}`}

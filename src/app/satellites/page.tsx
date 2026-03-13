@@ -379,7 +379,7 @@ function SatelliteTrackerContent() {
                           const purposeColors: Record<string, string> = {
                             'Communications': 'from-blue-500 to-blue-400',
                             'Navigation': 'from-purple-500 to-purple-400',
-                            'Weather': 'from-cyan-500 to-cyan-400',
+                            'Weather': 'from-white to-slate-400',
                             'Earth Observation': 'from-green-500 to-green-400',
                             'Research': 'from-pink-500 to-pink-400',
                             'Space Station': 'from-amber-500 to-amber-400',
@@ -509,7 +509,7 @@ function SatelliteTrackerContent() {
                         id="satellite-orbit-filter"
                         value={orbitFilter}
                         onChange={(e) => handleOrbitFilterChange(e.target.value as OrbitType | '')}
-                        className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+                        className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                       >
                         <option value="">All Orbits</option>
                         {ORBIT_TYPES.map((orbit) => (
@@ -527,7 +527,7 @@ function SatelliteTrackerContent() {
                         id="satellite-status-filter"
                         value={statusFilter}
                         onChange={(e) => handleStatusFilterChange(e.target.value as SatelliteStatus | '')}
-                        className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+                        className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                       >
                         <option value="">All Status</option>
                         {STATUS_OPTIONS.map((status) => (

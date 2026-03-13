@@ -75,7 +75,7 @@ const TYPE_STYLES: Record<DealType, { bg: string; text: string; label: string }>
   funding_round: { bg: 'bg-emerald-500/15', text: 'text-emerald-400', label: 'FUNDING' },
   acquisition: { bg: 'bg-pink-500/15', text: 'text-pink-400', label: 'M&A' },
   ipo: { bg: 'bg-yellow-500/15', text: 'text-yellow-400', label: 'IPO' },
-  spac: { bg: 'bg-cyan-500/15', text: 'text-cyan-400', label: 'SPAC' },
+  spac: { bg: 'bg-white/8', text: 'text-slate-300', label: 'SPAC' },
   contract_win: { bg: 'bg-blue-500/15', text: 'text-blue-400', label: 'CONTRACT' },
 };
 
@@ -83,7 +83,7 @@ const TYPE_COLORS: Record<string, string> = {
   FUNDING: 'bg-emerald-500',
   'M&A': 'bg-pink-500',
   CONTRACT: 'bg-blue-500',
-  SPAC: 'bg-cyan-500',
+  SPAC: 'bg-white',
   IPO: 'bg-yellow-500',
 };
 
@@ -200,7 +200,7 @@ function DealCard({ deal, index }: { deal: Deal; index: number }) {
             {/* Title and parties */}
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
-                <h3 className="text-sm font-semibold text-white group-hover:text-cyan-400 transition-colors truncate">
+                <h3 className="text-sm font-semibold text-white group-hover:text-white transition-colors truncate">
                   {deal.title}
                 </h3>
                 {deal.verified && (
@@ -215,7 +215,7 @@ function DealCard({ deal, index }: { deal: Deal; index: number }) {
                     {p.companySlug ? (
                       <Link
                         href={`/company-profiles/${p.companySlug}`}
-                        className="text-cyan-400/80 hover:text-cyan-300 transition-colors"
+                        className="text-slate-300/80 hover:text-white transition-colors"
                         onClick={(e) => e.stopPropagation()}
                       >
                         {p.company}
@@ -237,7 +237,7 @@ function DealCard({ deal, index }: { deal: Deal; index: number }) {
                     from {a.companySlug ? (
                       <Link
                         href={`/company-profiles/${a.companySlug}`}
-                        className="text-cyan-400/80 hover:text-cyan-300 transition-colors"
+                        className="text-slate-300/80 hover:text-white transition-colors"
                         onClick={(e) => e.stopPropagation()}
                       >
                         {a.company}
@@ -302,7 +302,7 @@ function DealCard({ deal, index }: { deal: Deal; index: number }) {
                           {inv.companySlug ? (
                             <Link
                               href={`/company-profiles/${inv.companySlug}`}
-                              className="text-cyan-400/80 hover:text-cyan-300 transition-colors"
+                              className="text-slate-300/80 hover:text-white transition-colors"
                               onClick={(e) => e.stopPropagation()}
                             >
                               {inv.company}
@@ -324,7 +324,7 @@ function DealCard({ deal, index }: { deal: Deal; index: number }) {
                       href={deal.sourceUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-cyan-400/70 hover:text-cyan-300 transition-colors"
+                      className="text-slate-300/70 hover:text-white transition-colors"
                       onClick={(e) => e.stopPropagation()}
                     >
                       View Source
@@ -474,7 +474,7 @@ function DealsPageContent() {
                 <StatCard
                   label="Total Volume"
                   value={formatAmount(stats.totalVolume)}
-                  color="bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent"
+                  color="bg-gradient-to-r from-emerald-400 to-slate-400 bg-clip-text text-transparent"
                 />
               </StaggerItem>
               <StaggerItem>
@@ -508,13 +508,13 @@ function DealsPageContent() {
                   onClick={() => setActiveTab(tab.value as DealType | '')}
                   className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
                     isActive
-                      ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30'
+                      ? 'bg-white/10 text-slate-300 border border-white/10'
                       : 'bg-slate-800/50 text-slate-400 border border-slate-700/50 hover:bg-slate-700/50 hover:text-white'
                   }`}
                 >
                   {tab.label}
                   {tab.value && typeCount !== undefined && (
-                    <span className={`ml-1.5 text-xs ${isActive ? 'text-cyan-400/70' : 'text-slate-500'}`}>
+                    <span className={`ml-1.5 text-xs ${isActive ? 'text-slate-300/70' : 'text-slate-500'}`}>
                       ({typeCount})
                     </span>
                   )}
@@ -536,7 +536,7 @@ function DealsPageContent() {
                   placeholder="Search deals by company, title, or description..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  className="w-full pl-10 pr-4 bg-slate-800 border border-slate-700 text-white rounded-lg py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+                  className="w-full pl-10 pr-4 bg-slate-800 border border-slate-700 text-white rounded-lg py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                 />
                 <svg className="absolute left-3 top-3 w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -548,7 +548,7 @@ function DealsPageContent() {
                 aria-label="Filter by deal amount"
                 value={amountRange}
                 onChange={(e) => setAmountRange(e.target.value)}
-                className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+                className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
               >
                 {AMOUNT_RANGES.map((opt) => (
                   <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -561,7 +561,7 @@ function DealsPageContent() {
                 aria-label="Date from"
                 value={dateFrom}
                 onChange={(e) => setDateFrom(e.target.value)}
-                className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+                className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
               />
 
               {/* Date to */}
@@ -570,7 +570,7 @@ function DealsPageContent() {
                 aria-label="Date to"
                 value={dateTo}
                 onChange={(e) => setDateTo(e.target.value)}
-                className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+                className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
               />
 
               {hasFilters && (
@@ -594,7 +594,7 @@ function DealsPageContent() {
               <span>{total} deal{total !== 1 ? 's' : ''} found</span>
               <button
                 onClick={() => setChartsVisible(!chartsVisible)}
-                className="text-cyan-400/70 hover:text-cyan-300 transition-colors flex items-center gap-1"
+                className="text-slate-300/70 hover:text-white transition-colors flex items-center gap-1"
               >
                 <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
@@ -740,7 +740,7 @@ function DealsPageContent() {
                     setDateTo('');
                     setCompany('');
                   }}
-                  className="text-sm text-cyan-400 hover:text-cyan-300 transition-colors"
+                  className="text-sm text-slate-300 hover:text-white transition-colors"
                 >
                   Clear all filters
                 </button>
@@ -793,7 +793,7 @@ function DealsPageContent() {
                       onClick={() => setPage(pageNum)}
                       className={`w-10 h-10 rounded-lg text-sm font-medium transition-colors ${
                         page === pageNum
-                          ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30'
+                          ? 'bg-white/10 text-slate-300 border border-white/10'
                           : 'bg-slate-800/50 text-slate-400 border border-slate-700/50 hover:bg-slate-700/50'
                       }`}
                     >

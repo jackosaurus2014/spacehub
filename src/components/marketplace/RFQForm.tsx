@@ -134,11 +134,11 @@ export default function RFQForm({ onSuccess }: RFQFormProps) {
         {[1, 2, 3, 4].map((s) => (
           <div key={s} className="flex items-center gap-2 flex-1">
             <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${
-              s <= step ? 'bg-cyan-500 text-white' : 'bg-slate-700 text-slate-500'
+              s <= step ? 'bg-white text-white' : 'bg-slate-700 text-slate-500'
             }`}>
               {s < step ? '✓' : s}
             </div>
-            {s < 4 && <div className={`flex-1 h-0.5 ${s < step ? 'bg-cyan-500' : 'bg-slate-700'}`} />}
+            {s < 4 && <div className={`flex-1 h-0.5 ${s < step ? 'bg-white' : 'bg-slate-700'}`} />}
           </div>
         ))}
       </div>
@@ -156,7 +156,7 @@ export default function RFQForm({ onSuccess }: RFQFormProps) {
                   onClick={() => updateField('category', cat.value)}
                   className={`p-3 rounded-lg text-left transition-all ${
                     form.category === cat.value
-                      ? 'bg-cyan-500/20 ring-2 ring-cyan-500 text-white'
+                      ? 'bg-white/10 ring-2 ring-white/15 text-white'
                       : 'bg-slate-800 hover:bg-slate-700 text-slate-300'
                   }`}
                 >
@@ -173,7 +173,7 @@ export default function RFQForm({ onSuccess }: RFQFormProps) {
                 id="rfq-subcategory"
                 value={form.subcategory}
                 onChange={(e) => updateField('subcategory', e.target.value)}
-                className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+                className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
               >
                 <option value="">All subcategories</option>
                 {selectedCategory.subcategories.map((sub) => (
@@ -190,13 +190,13 @@ export default function RFQForm({ onSuccess }: RFQFormProps) {
               value={form.title}
               onChange={(e) => updateField('title', e.target.value)}
               placeholder="e.g., Dedicated launch to SSO for 500kg payload"
-              className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+              className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
             />
           </div>
           <button
             onClick={() => setStep(2)}
             disabled={!form.category || !form.title}
-            className="w-full py-2.5 bg-cyan-600 hover:bg-cyan-500 disabled:bg-slate-700 disabled:text-slate-500 text-white rounded-lg font-medium transition-colors"
+            className="w-full py-2.5 bg-white hover:bg-slate-100 disabled:bg-slate-700 disabled:text-slate-500 text-white rounded-lg font-medium transition-colors"
           >
             Continue
           </button>
@@ -215,7 +215,7 @@ export default function RFQForm({ onSuccess }: RFQFormProps) {
               onChange={(e) => updateField('description', e.target.value)}
               rows={4}
               placeholder="Describe what you need, including technical requirements, volume, timeline expectations..."
-              className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+              className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
             />
           </div>
           <div>
@@ -226,7 +226,7 @@ export default function RFQForm({ onSuccess }: RFQFormProps) {
               onChange={(e) => updateField('requirements', e.target.value)}
               rows={3}
               placeholder="Additional technical specs, constraints, or requirements..."
-              className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+              className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
             />
           </div>
           <div className="flex gap-2">
@@ -236,7 +236,7 @@ export default function RFQForm({ onSuccess }: RFQFormProps) {
             <button
               onClick={() => setStep(3)}
               disabled={!form.description}
-              className="flex-1 py-2.5 bg-cyan-600 hover:bg-cyan-500 disabled:bg-slate-700 disabled:text-slate-500 text-white rounded-lg font-medium transition-colors"
+              className="flex-1 py-2.5 bg-white hover:bg-slate-100 disabled:bg-slate-700 disabled:text-slate-500 text-white rounded-lg font-medium transition-colors"
             >
               Continue
             </button>
@@ -259,7 +259,7 @@ export default function RFQForm({ onSuccess }: RFQFormProps) {
                 value={form.budgetMin}
                 onChange={(e) => updateField('budgetMin', e.target.value)}
                 placeholder="0"
-                className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+                className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
               />
             </div>
             <div>
@@ -272,7 +272,7 @@ export default function RFQForm({ onSuccess }: RFQFormProps) {
                 value={form.budgetMax}
                 onChange={(e) => updateField('budgetMax', e.target.value)}
                 placeholder="100,000"
-                className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+                className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
               />
             </div>
           </div>
@@ -288,7 +288,7 @@ export default function RFQForm({ onSuccess }: RFQFormProps) {
                 min={today}
                 value={form.deadline}
                 onChange={(e) => updateField('deadline', e.target.value)}
-                className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+                className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
               />
               {validationErrors.deadline && (
                 <p className="text-xs text-red-400 mt-1">{validationErrors.deadline}</p>
@@ -302,7 +302,7 @@ export default function RFQForm({ onSuccess }: RFQFormProps) {
                 min={today}
                 value={form.deliveryDate}
                 onChange={(e) => updateField('deliveryDate', e.target.value)}
-                className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+                className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
               />
               {validationErrors.deliveryDate && (
                 <p className="text-xs text-red-400 mt-1">{validationErrors.deliveryDate}</p>
@@ -318,7 +318,7 @@ export default function RFQForm({ onSuccess }: RFQFormProps) {
                   onClick={() => toggleCert(cert.value)}
                   className={`text-xs px-2.5 py-1 rounded-full transition-all ${
                     form.complianceReqs.includes(cert.value)
-                      ? 'bg-cyan-500/20 text-cyan-400 ring-1 ring-cyan-500'
+                      ? 'bg-white/10 text-slate-300 ring-1 ring-white/15'
                       : 'bg-slate-700 text-slate-400 hover:bg-slate-600'
                   }`}
                 >
@@ -345,7 +345,7 @@ export default function RFQForm({ onSuccess }: RFQFormProps) {
             </button>
             <button
               onClick={() => { if (validateBudgetAndDates()) setStep(4); }}
-              className="flex-1 py-2.5 bg-cyan-600 hover:bg-cyan-500 text-white rounded-lg font-medium transition-colors"
+              className="flex-1 py-2.5 bg-white hover:bg-slate-100 text-white rounded-lg font-medium transition-colors"
             >
               Review
             </button>
@@ -385,7 +385,7 @@ export default function RFQForm({ onSuccess }: RFQFormProps) {
                 <div className="text-xs text-slate-500 uppercase">Required Certifications</div>
                 <div className="flex flex-wrap gap-1 mt-1">
                   {form.complianceReqs.map((c) => (
-                    <span key={c} className="text-xs px-1.5 py-0.5 bg-cyan-500/10 text-cyan-400 rounded">{c}</span>
+                    <span key={c} className="text-xs px-1.5 py-0.5 bg-white/5 text-slate-300 rounded">{c}</span>
                   ))}
                 </div>
               </div>
@@ -406,7 +406,7 @@ export default function RFQForm({ onSuccess }: RFQFormProps) {
             <button
               onClick={handleSubmit}
               disabled={submitting}
-              className="flex-1 py-2.5 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 disabled:from-slate-700 disabled:to-slate-700 text-white rounded-lg font-semibold transition-all"
+              className="flex-1 py-2.5 bg-gradient-to-r from-slate-200 to-blue-600 hover:from-white hover:to-blue-500 disabled:from-slate-700 disabled:to-slate-700 text-white rounded-lg font-semibold transition-all"
             >
               {submitting ? 'Submitting...' : 'Submit RFQ & Match Providers'}
             </button>

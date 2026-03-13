@@ -35,7 +35,7 @@ function getTypeColor(type: NotificationType): string {
     case 'news': return 'text-blue-400 bg-blue-400/10';
     case 'system': return 'text-purple-400 bg-purple-400/10';
     case 'watchlist': return 'text-indigo-400 bg-indigo-400/10';
-    default: return 'text-cyan-400 bg-cyan-400/10';
+    default: return 'text-slate-300 bg-white/5';
   }
 }
 
@@ -168,7 +168,7 @@ export default function NotificationsPage() {
           title="Notifications"
           subtitle={unreadCount > 0 ? `${unreadCount} unread notification${unreadCount !== 1 ? 's' : ''}` : 'You\'re all caught up'}
           icon={
-            <svg className="w-8 h-8 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+            <svg className="w-8 h-8 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
             </svg>
           }
@@ -191,7 +191,7 @@ export default function NotificationsPage() {
                   onClick={() => setFilter(tab.key)}
                   className={`text-xs font-medium px-3 py-1.5 rounded-full whitespace-nowrap transition-colors ${
                     filter === tab.key
-                      ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30'
+                      ? 'bg-white/10 text-slate-200 border border-white/10'
                       : 'text-slate-400 hover:text-slate-200 border border-slate-700/50 hover:border-slate-600'
                   }`}
                 >
@@ -206,7 +206,7 @@ export default function NotificationsPage() {
               {unreadCount > 0 && (
                 <button
                   onClick={handleMarkAllAsRead}
-                  className="text-xs text-cyan-400 hover:text-cyan-300 font-medium whitespace-nowrap"
+                  className="text-xs text-slate-300 hover:text-white font-medium whitespace-nowrap"
                 >
                   Mark all read
                 </button>
@@ -239,7 +239,7 @@ export default function NotificationsPage() {
             action={filter !== 'all' ? (
               <button
                 onClick={() => setFilter('all')}
-                className="text-xs text-cyan-400 hover:text-cyan-300 font-medium"
+                className="text-xs text-slate-300 hover:text-white font-medium"
               >
                 View all notifications
               </button>
@@ -247,7 +247,7 @@ export default function NotificationsPage() {
               <div className="flex justify-center gap-3">
                 <Link
                   href="/alerts"
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-cyan-600 hover:bg-cyan-500 text-white rounded-lg text-sm font-medium transition-colors"
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-white hover:bg-slate-100 text-white rounded-lg text-sm font-medium transition-colors"
                 >
                   Set Up Alerts
                 </Link>
@@ -266,13 +266,13 @@ export default function NotificationsPage() {
               <div
                 key={notif.id}
                 className={`card group relative transition-colors ${
-                  !notif.read ? 'bg-cyan-400/5 border-cyan-500/20' : ''
+                  !notif.read ? 'bg-white/5 border-white/10' : ''
                 }`}
               >
                 <div className="flex items-start gap-3 p-4">
                   {/* Unread dot */}
                   {!notif.read && (
-                    <div className="absolute left-2 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-cyan-400 shadow-lg shadow-cyan-400/50" />
+                    <div className="absolute left-2 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-white shadow-lg shadow-black/20/50" />
                   )}
 
                   {/* Icon */}
@@ -288,7 +288,7 @@ export default function NotificationsPage() {
                           <Link
                             href={notif.link}
                             onClick={() => handleMarkAsRead(notif)}
-                            className={`text-sm font-medium hover:text-cyan-300 transition-colors block ${
+                            className={`text-sm font-medium hover:text-white transition-colors block ${
                               notif.read ? 'text-slate-300' : 'text-white'
                             }`}
                           >
@@ -313,7 +313,7 @@ export default function NotificationsPage() {
                         {!notif.read && (
                           <button
                             onClick={() => handleMarkAsRead(notif)}
-                            className="p-1 text-slate-500 hover:text-cyan-400 transition-colors"
+                            className="p-1 text-slate-500 hover:text-white transition-colors"
                             title="Mark as read"
                           >
                             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -345,7 +345,7 @@ export default function NotificationsPage() {
         <div className="mt-8 text-center">
           <Link
             href="/account"
-            className="text-xs text-slate-500 hover:text-cyan-400 transition-colors"
+            className="text-xs text-slate-500 hover:text-white transition-colors"
           >
             Manage notification preferences in Account Settings
           </Link>

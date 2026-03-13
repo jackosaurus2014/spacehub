@@ -122,7 +122,7 @@ export default function PersonaDashboard() {
     <section className="section-spacer-sm relative z-10">
       <div className="container mx-auto px-4">
         <div className="mb-8 text-center">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-medium mb-3">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-slate-300 text-xs font-medium mb-3">
             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
             </svg>
@@ -142,18 +142,18 @@ export default function PersonaDashboard() {
             <Link
               key={link.href}
               href={link.href}
-              className="group flex items-start gap-4 p-5 rounded-xl border border-slate-700/50 bg-slate-800/30 hover:border-cyan-500/40 hover:bg-slate-800/60 transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/5"
+              className="group flex items-start gap-4 p-5 rounded-xl border border-slate-700/50 bg-slate-800/30 hover:border-white/15/40 hover:bg-slate-800/60 transition-all duration-300 hover:shadow-lg hover:shadow-black/20/5"
             >
               <span className="text-2xl flex-shrink-0 mt-0.5">{link.icon}</span>
               <div className="min-w-0">
-                <h3 className="font-semibold text-white group-hover:text-cyan-300 transition-colors text-sm">
+                <h3 className="font-semibold text-white group-hover:text-white transition-colors text-sm">
                   {link.title}
                 </h3>
                 <p className="text-xs text-slate-400 mt-0.5 line-clamp-2">
                   {link.description}
                 </p>
               </div>
-              <svg className="w-4 h-4 text-slate-600 group-hover:text-cyan-400 transition-colors flex-shrink-0 mt-1 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4 text-slate-600 group-hover:text-white transition-colors flex-shrink-0 mt-1 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
             </Link>
@@ -169,7 +169,7 @@ export default function PersonaDashboard() {
               setPersona(null);
               window.dispatchEvent(new Event('persona-changed'));
             }}
-            className="text-xs text-slate-500 hover:text-cyan-400 transition-colors"
+            className="text-xs text-slate-500 hover:text-white transition-colors"
           >
             Not a {config.label.toLowerCase()}? Change your role
           </button>

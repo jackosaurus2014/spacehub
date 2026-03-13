@@ -10,6 +10,6 @@ export function parseMentions(content: string): string[] {
 export function renderMentionsHtml(content: string): string {
   return content.replace(
     /@([a-zA-Z0-9_-]+)/g,
-    '<span class="text-cyan-400 font-medium cursor-pointer hover:underline">@$1</span>'
+    '<span class="text-slate-300 font-medium cursor-pointer hover:text-white hover:underline">@$1</span>'
   );
 }

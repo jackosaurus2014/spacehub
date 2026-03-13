@@ -905,7 +905,7 @@ const BODY_COLORS: Record<string, { bg: string; text: string; border: string }> 
 
 const CONFIDENCE_COLORS: Record<string, string> = {
   confirmed: 'text-emerald-400',
-  high: 'text-cyan-400',
+  high: 'text-slate-300',
   moderate: 'text-yellow-400',
   speculative: 'text-orange-400',
 };
@@ -918,7 +918,7 @@ const COMPANY_TYPE_COLORS: Record<string, string> = {
 
 const STATUS_COLORS: Record<string, string> = {
   active: 'bg-emerald-500/20 text-emerald-400',
-  funded: 'bg-cyan-500/20 text-cyan-400',
+  funded: 'bg-white/10 text-slate-300',
   concept: 'bg-yellow-500/20 text-yellow-400',
   completed: 'bg-slate-500/20 text-slate-400',
 };
@@ -940,7 +940,7 @@ function TRLGauge({ trl }: { trl: number }) {
     9: 'Flight Proven',
   };
 
-  const trlColor = trl <= 3 ? 'bg-red-500' : trl <= 5 ? 'bg-yellow-500' : trl <= 7 ? 'bg-cyan-500' : 'bg-emerald-500';
+  const trlColor = trl <= 3 ? 'bg-red-500' : trl <= 5 ? 'bg-yellow-500' : trl <= 7 ? 'bg-white' : 'bg-emerald-500';
 
   return (
     <div className="mt-3">
@@ -991,7 +991,7 @@ function TechnologiesTab() {
             <div className="text-xs text-slate-400 mt-1">TRL 6+ (Demonstrated)</div>
           </div>
           <div className="card p-4 text-center">
-            <div className="text-2xl font-bold text-cyan-400">
+            <div className="text-2xl font-bold text-slate-300">
               {ISRU_TECHNOLOGIES.filter((t) => t.trl >= 4 && t.trl < 6).length}
             </div>
             <div className="text-xs text-slate-400 mt-1">TRL 4-5 (Lab Validated)</div>
@@ -1037,7 +1037,7 @@ function TechnologiesTab() {
             <StaggerItem key={tech.id}>
               <div
                 className={`bg-slate-800/50 border rounded-xl overflow-hidden transition-all ${
-                  isExpanded ? 'border-cyan-500/40' : 'border-slate-700/50 hover:border-slate-600/50'
+                  isExpanded ? 'border-white/15/40' : 'border-slate-700/50 hover:border-slate-600/50'
                 }`}
               >
                 {/* Header */}
@@ -1085,11 +1085,11 @@ function TechnologiesTab() {
                         </ul>
                       </div>
                       <div>
-                        <h4 className="text-sm font-semibold text-cyan-400 mb-1">Outputs</h4>
+                        <h4 className="text-sm font-semibold text-slate-300 mb-1">Outputs</h4>
                         <ul className="space-y-1">
                           {tech.outputs.map((output, i) => (
                             <li key={i} className="text-sm text-slate-400 flex items-start gap-2">
-                              <span className="text-cyan-500 mt-1 shrink-0">&#9654;</span>
+                              <span className="text-slate-300 mt-1 shrink-0">&#9654;</span>
                               {output}
                             </li>
                           ))}
@@ -1118,8 +1118,8 @@ function TechnologiesTab() {
                       <p className="text-sm text-slate-400">{tech.keyChallenge}</p>
                     </div>
 
-                    <div className="bg-cyan-500/5 border border-cyan-500/20 rounded-lg p-3">
-                      <h4 className="text-sm font-semibold text-cyan-400 mb-1">Current Status</h4>
+                    <div className="bg-white/5 border border-white/10 rounded-lg p-3">
+                      <h4 className="text-sm font-semibold text-slate-300 mb-1">Current Status</h4>
                       <p className="text-sm text-slate-400">{tech.statusNote}</p>
                     </div>
                   </div>
@@ -1165,7 +1165,7 @@ function LocationsTab() {
               <div className="text-3xl mb-1">&#127761;</div>
               <div className="text-sm font-semibold text-slate-300">Moon</div>
               <div className="text-xs text-slate-400 mt-0.5">Water ice, O2, metals</div>
-              <div className="text-xs text-cyan-400 font-mono mt-1">~600M tons H2O (poles)</div>
+              <div className="text-xs text-slate-300 font-mono mt-1">~600M tons H2O (poles)</div>
             </div>
             <div className="text-center">
               <div className="text-3xl mb-1">&#127752;</div>
@@ -1218,7 +1218,7 @@ function LocationsTab() {
             <StaggerItem key={loc.id}>
               <div
                 className={`bg-slate-800/50 border rounded-xl overflow-hidden transition-all ${
-                  isSelected ? 'border-cyan-500/40' : 'border-slate-700/50'
+                  isSelected ? 'border-white/15/40' : 'border-slate-700/50'
                 }`}
               >
                 <button
@@ -1296,11 +1296,11 @@ function LocationsTab() {
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       {loc.activeMissions.length > 0 && (
                         <div>
-                          <h4 className="text-sm font-semibold text-cyan-400 mb-2">Active Missions</h4>
+                          <h4 className="text-sm font-semibold text-slate-300 mb-2">Active Missions</h4>
                           <ul className="space-y-1">
                             {loc.activeMissions.map((m, i) => (
                               <li key={i} className="text-sm text-slate-400 flex items-start gap-2">
-                                <span className="text-cyan-500 mt-0.5 shrink-0">&#9679;</span>
+                                <span className="text-slate-300 mt-0.5 shrink-0">&#9679;</span>
                                 {m}
                               </li>
                             ))}
@@ -1423,7 +1423,7 @@ function CompaniesTab() {
                 <ul className="space-y-1">
                   {company.programs.slice(0, 3).map((prog, i) => (
                     <li key={i} className="text-xs text-slate-400 flex items-start gap-1.5">
-                      <span className="text-cyan-500 mt-0.5 shrink-0">&#8226;</span>
+                      <span className="text-slate-300 mt-0.5 shrink-0">&#8226;</span>
                       {prog}
                     </li>
                   ))}
@@ -1443,7 +1443,7 @@ function CompaniesTab() {
                     href={company.website}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-xs text-cyan-400 hover:text-cyan-300 transition-colors"
+                    className="text-xs text-slate-300 hover:text-white transition-colors"
                   >
                     Website &#8599;
                   </a>
@@ -1568,7 +1568,7 @@ function EconomicsTab() {
                   </div>
                 </div>
                 {scenario.costPerKgFromEarth > 0 && (
-                  <p className="text-sm text-cyan-400 font-semibold">
+                  <p className="text-sm text-slate-300 font-semibold">
                     {Math.round(scenario.costPerKgFromEarth / scenario.isruTargetCostPerKg)}x cost reduction with ISRU
                   </p>
                 )}
@@ -1751,7 +1751,7 @@ function EconomicsTab() {
                       item.status === 'completed'
                         ? 'bg-emerald-400'
                         : item.status === 'active'
-                          ? 'bg-cyan-400 animate-pulse'
+                          ? 'bg-white animate-pulse'
                           : 'bg-slate-600'
                     }`}
                   />

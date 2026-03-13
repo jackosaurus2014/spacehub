@@ -558,7 +558,7 @@ const COMPLIANCE_CHECKLISTS: Record<MissionType, string[]> = {
 // ---------------------------------------------------------------------------
 
 const ORG_COLORS: Record<string, string> = {
-  cyan: 'border-cyan-400/40 text-cyan-400',
+  cyan: 'border-white/10/40 text-slate-300',
   blue: 'border-blue-400/40 text-blue-400',
   red: 'border-red-400/40 text-red-400',
   green: 'border-green-400/40 text-green-400',
@@ -569,7 +569,7 @@ const ORG_COLORS: Record<string, string> = {
 };
 
 const ORG_BG: Record<string, string> = {
-  cyan: 'bg-cyan-400/10',
+  cyan: 'bg-white/5',
   blue: 'bg-blue-400/10',
   red: 'bg-red-400/10',
   green: 'bg-green-400/10',
@@ -619,7 +619,7 @@ function OrganizationCard({ org }: { org: StandardsOrg }) {
       <p className="text-sm text-slate-300 leading-relaxed">
         {org.description}
       </p>
-      <span className="text-xs text-cyan-400/70 group-hover:text-cyan-400 transition-colors mt-auto">
+      <span className="text-xs text-slate-300/70 group-hover:text-white transition-colors mt-auto">
         Visit website &rarr;
       </span>
     </a>
@@ -636,12 +636,12 @@ function StandardRow({ standard, isChecked, onToggle }: { standard: Standard; is
             type="checkbox"
             checked={isChecked}
             onChange={onToggle}
-            className="w-4 h-4 rounded border-slate-600 bg-slate-800 text-cyan-500 focus:ring-cyan-500 focus:ring-offset-0 cursor-pointer"
+            className="w-4 h-4 rounded border-slate-600 bg-slate-800 text-slate-300 focus:ring-white/30 focus:ring-offset-0 cursor-pointer"
           />
         </td>
       )}
       <td className="p-3">
-        <span className={`text-sm font-mono font-semibold ${ORG_COLORS[color]?.split(' ')[1] || 'text-cyan-400'}`}>
+        <span className={`text-sm font-mono font-semibold ${ORG_COLORS[color]?.split(' ')[1] || 'text-slate-300'}`}>
           {standard.id}
         </span>
       </td>
@@ -683,7 +683,7 @@ function StandardDetail({ standard }: { standard: Standard }) {
         </span>
         <span className="text-xs text-slate-500">{standard.category}</span>
       </div>
-      <h3 className={`font-mono font-bold text-sm mb-1 ${ORG_COLORS[color]?.split(' ')[1] || 'text-cyan-400'}`}>
+      <h3 className={`font-mono font-bold text-sm mb-1 ${ORG_COLORS[color]?.split(' ')[1] || 'text-slate-300'}`}>
         {standard.id}
       </h3>
       <h4 className="text-slate-200 text-sm font-medium mb-2">{standard.title}</h4>
@@ -816,7 +816,7 @@ export default function StandardsReferencePage() {
               onClick={() => setActiveTab(tab.key)}
               className={`px-4 py-2.5 text-sm font-medium rounded-t-lg transition-colors whitespace-nowrap min-h-[44px] ${
                 activeTab === tab.key
-                  ? 'bg-slate-800/80 text-cyan-400 border-b-2 border-cyan-400'
+                  ? 'bg-slate-800/80 text-slate-300 border-b-2 border-white/10'
                   : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/40'
               }`}
             >
@@ -856,14 +856,14 @@ export default function StandardsReferencePage() {
                   placeholder="Search by ID, title, or description..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2.5 bg-slate-800/60 border border-slate-700/50 rounded-lg text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-400/50 focus:ring-1 focus:ring-cyan-400/20 min-h-[44px]"
+                  className="w-full pl-10 pr-4 py-2.5 bg-slate-800/60 border border-slate-700/50 rounded-lg text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-white/15 focus:ring-1 focus:ring-white/20/20 min-h-[44px]"
                 />
               </div>
 
               <select
                 value={selectedOrg}
                 onChange={(e) => setSelectedOrg(e.target.value)}
-                className="px-3 py-2.5 bg-slate-800/60 border border-slate-700/50 rounded-lg text-sm text-slate-200 focus:outline-none focus:border-cyan-400/50 min-h-[44px] cursor-pointer"
+                className="px-3 py-2.5 bg-slate-800/60 border border-slate-700/50 rounded-lg text-sm text-slate-200 focus:outline-none focus:border-white/15 min-h-[44px] cursor-pointer"
               >
                 <option value="all">All Organizations</option>
                 {ORGANIZATIONS.map((org) => (
@@ -876,7 +876,7 @@ export default function StandardsReferencePage() {
               <select
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
-                className="px-3 py-2.5 bg-slate-800/60 border border-slate-700/50 rounded-lg text-sm text-slate-200 focus:outline-none focus:border-cyan-400/50 min-h-[44px] cursor-pointer"
+                className="px-3 py-2.5 bg-slate-800/60 border border-slate-700/50 rounded-lg text-sm text-slate-200 focus:outline-none focus:border-white/15 min-h-[44px] cursor-pointer"
               >
                 <option value="all">All Categories</option>
                 {allCategories.map((c) => (
@@ -889,7 +889,7 @@ export default function StandardsReferencePage() {
               <select
                 value={selectedStatus}
                 onChange={(e) => setSelectedStatus(e.target.value)}
-                className="px-3 py-2.5 bg-slate-800/60 border border-slate-700/50 rounded-lg text-sm text-slate-200 focus:outline-none focus:border-cyan-400/50 min-h-[44px] cursor-pointer"
+                className="px-3 py-2.5 bg-slate-800/60 border border-slate-700/50 rounded-lg text-sm text-slate-200 focus:outline-none focus:border-white/15 min-h-[44px] cursor-pointer"
               >
                 <option value="all">All Statuses</option>
                 <option value="Active">Active</option>
@@ -902,7 +902,7 @@ export default function StandardsReferencePage() {
                 <button
                   onClick={() => setViewMode('table')}
                   className={`px-3 py-2.5 text-sm min-h-[44px] transition-colors ${
-                    viewMode === 'table' ? 'bg-cyan-600/30 text-cyan-400' : 'bg-slate-800/60 text-slate-400 hover:text-slate-200'
+                    viewMode === 'table' ? 'bg-white/30 text-slate-300' : 'bg-slate-800/60 text-slate-400 hover:text-slate-200'
                   }`}
                   title="Table view"
                 >
@@ -913,7 +913,7 @@ export default function StandardsReferencePage() {
                 <button
                   onClick={() => setViewMode('cards')}
                   className={`px-3 py-2.5 text-sm min-h-[44px] transition-colors ${
-                    viewMode === 'cards' ? 'bg-cyan-600/30 text-cyan-400' : 'bg-slate-800/60 text-slate-400 hover:text-slate-200'
+                    viewMode === 'cards' ? 'bg-white/30 text-slate-300' : 'bg-slate-800/60 text-slate-400 hover:text-slate-200'
                   }`}
                   title="Card view"
                 >
@@ -932,7 +932,7 @@ export default function StandardsReferencePage() {
                 </span>
                 <button
                   onClick={resetFilters}
-                  className="text-cyan-400 hover:text-cyan-300 transition-colors underline underline-offset-2"
+                  className="text-slate-300 hover:text-white transition-colors underline underline-offset-2"
                 >
                   Clear filters
                 </button>
@@ -975,7 +975,7 @@ export default function StandardsReferencePage() {
                     <p className="text-slate-400 text-sm">No standards match your filters.</p>
                     <button
                       onClick={resetFilters}
-                      className="mt-2 text-cyan-400 hover:text-cyan-300 text-sm underline underline-offset-2"
+                      className="mt-2 text-slate-300 hover:text-white text-sm underline underline-offset-2"
                     >
                       Clear all filters
                     </button>
@@ -997,7 +997,7 @@ export default function StandardsReferencePage() {
                     <p className="text-slate-400 text-sm">No standards match your filters.</p>
                     <button
                       onClick={resetFilters}
-                      className="mt-2 text-cyan-400 hover:text-cyan-300 text-sm underline underline-offset-2"
+                      className="mt-2 text-slate-300 hover:text-white text-sm underline underline-offset-2"
                     >
                       Clear all filters
                     </button>
@@ -1032,7 +1032,7 @@ export default function StandardsReferencePage() {
                     }}
                     className={`px-4 py-2 text-sm rounded-lg font-medium transition-colors min-h-[44px] ${
                       selectedMission === mission
-                        ? 'bg-cyan-600/30 text-cyan-400 border border-cyan-400/50'
+                        ? 'bg-white/30 text-slate-300 border border-white/15'
                         : 'bg-slate-800/60 text-slate-400 border border-slate-700/50 hover:text-slate-200 hover:border-slate-600'
                     }`}
                   >
@@ -1047,7 +1047,7 @@ export default function StandardsReferencePage() {
                   <span className="text-sm font-medium text-slate-200">
                     Compliance Progress: {selectedMission}
                   </span>
-                  <span className="text-sm font-mono text-cyan-400">
+                  <span className="text-sm font-mono text-slate-300">
                     {checklistProgress.done}/{checklistProgress.total} ({checklistProgress.percent}%)
                   </span>
                 </div>

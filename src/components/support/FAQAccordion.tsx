@@ -28,7 +28,7 @@ function highlightText(text: string, query: string): React.ReactNode {
   const parts = text.split(new RegExp(`(${query})`, 'gi'));
   return parts.map((part, index) =>
     part.toLowerCase() === query.toLowerCase() ? (
-      <mark key={index} className="bg-cyan-500/30 text-cyan-300 rounded px-0.5">
+      <mark key={index} className="bg-white/30 text-slate-200 rounded px-0.5">
         {part}
       </mark>
     ) : (
@@ -173,7 +173,7 @@ export default function FAQAccordion({ items, categories, searchQuery = '' }: FA
           onClick={() => setActiveCategory(null)}
           className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
             activeCategory === null
-              ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30'
+              ? 'bg-white/10 text-slate-300 border border-white/10'
               : 'bg-slate-800 text-slate-400 border border-slate-700 hover:border-slate-600'
           }`}
         >
@@ -185,7 +185,7 @@ export default function FAQAccordion({ items, categories, searchQuery = '' }: FA
             onClick={() => setActiveCategory(category.id)}
             className={`px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 ${
               activeCategory === category.id
-                ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30'
+                ? 'bg-white/10 text-slate-300 border border-white/10'
                 : 'bg-slate-800 text-slate-400 border border-slate-700 hover:border-slate-600'
             }`}
           >
@@ -203,14 +203,14 @@ export default function FAQAccordion({ items, categories, searchQuery = '' }: FA
         <div className="flex items-center gap-2">
           <button
             onClick={expandAll}
-            className="text-sm text-cyan-400 hover:text-cyan-300 transition-colors"
+            className="text-sm text-slate-300 hover:text-white transition-colors"
           >
             Expand All
           </button>
           <span className="text-slate-400">|</span>
           <button
             onClick={collapseAll}
-            className="text-sm text-cyan-400 hover:text-cyan-300 transition-colors"
+            className="text-sm text-slate-300 hover:text-white transition-colors"
           >
             Collapse All
           </button>

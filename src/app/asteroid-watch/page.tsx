@@ -1405,7 +1405,7 @@ function AsteroidWatchContent() {
                   { name: 'Apollo', count: 18_940, description: 'Earth-crossing, semi-major axis > 1 AU. Largest class of NEOs.', color: 'text-red-400', percentage: 53 },
                   { name: 'Amor', count: 11_280, description: 'Earth-approaching, orbits exterior to Earth. Do not cross Earth orbit.', color: 'text-orange-400', percentage: 32 },
                   { name: 'Aten', count: 4_840, description: 'Earth-crossing, semi-major axis < 1 AU. Spend most time inside Earth orbit.', color: 'text-yellow-400', percentage: 14 },
-                  { name: 'Atira', count: 412, description: 'Orbit entirely interior to Earth orbit. Hardest to detect from ground.', color: 'text-cyan-400', percentage: 1 },
+                  { name: 'Atira', count: 412, description: 'Orbit entirely interior to Earth orbit. Hardest to detect from ground.', color: 'text-slate-300', percentage: 1 },
                 ].map((cls) => (
                   <div key={cls.name} className="card p-4">
                     <div className="flex items-center justify-between mb-2">

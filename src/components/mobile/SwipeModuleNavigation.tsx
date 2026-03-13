@@ -137,13 +137,13 @@ export default function SwipeModuleNavigation() {
           <svg
             width="16" height="16" viewBox="0 0 24 24"
             fill="none" stroke="currentColor"
-            className="text-cyan-400/70"
+            className="text-slate-300/70"
             strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round"
           >
             <path d="M15 18l-6-6 6-6" />
           </svg>
           {isModulePage && prevModule && (
-            <span className="text-[9px] text-cyan-400/70 font-medium whitespace-nowrap max-w-[60px] truncate writing-mode-vertical">
+            <span className="text-[9px] text-slate-300/70 font-medium whitespace-nowrap max-w-[60px] truncate writing-mode-vertical">
               {prevModule.icon}
             </span>
           )}
@@ -166,13 +166,13 @@ export default function SwipeModuleNavigation() {
           <svg
             width="16" height="16" viewBox="0 0 24 24"
             fill="none" stroke="currentColor"
-            className="text-cyan-400/70"
+            className="text-slate-300/70"
             strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round"
           >
             <path d="M9 18l6-6-6-6" />
           </svg>
           {nextModule && (
-            <span className="text-[9px] text-cyan-400/70 font-medium">
+            <span className="text-[9px] text-slate-300/70 font-medium">
               {nextModule.icon}
             </span>
           )}

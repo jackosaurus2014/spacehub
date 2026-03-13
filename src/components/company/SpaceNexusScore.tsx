@@ -295,7 +295,7 @@ export default function SpaceNexusScore({ company, compact = false }: SpaceNexus
           <ul className="space-y-1.5">
             {result.insights.map((insight, i) => (
               <li key={i} className="flex items-start gap-2 text-sm text-slate-400">
-                <span className="text-cyan-500 mt-0.5 shrink-0">-</span>
+                <span className="text-slate-300 mt-0.5 shrink-0">-</span>
                 <span>{insight}</span>
               </li>
             ))}

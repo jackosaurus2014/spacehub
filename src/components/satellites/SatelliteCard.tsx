@@ -40,7 +40,7 @@ const ORBIT_INFO: Record<OrbitType, { icon: string; color: string; label: string
   GEO: { icon: '🌐', color: 'text-amber-400', label: 'Geostationary' },
   HEO: { icon: '🔭', color: 'text-pink-400', label: 'Highly Elliptical' },
   SSO: { icon: '☀️', color: 'text-orange-400', label: 'Sun-Synchronous' },
-  Polar: { icon: '🧭', color: 'text-cyan-400', label: 'Polar' },
+  Polar: { icon: '🧭', color: 'text-slate-300', label: 'Polar' },
 };
 
 // Purpose icons

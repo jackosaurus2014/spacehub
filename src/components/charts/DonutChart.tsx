@@ -257,7 +257,7 @@ export default function DonutChart({
                 <div className="text-xl font-bold text-white">
                   {valueFormatter(segments[hoveredIndex].data.value)}
                 </div>
-                <div className="text-sm text-cyan-400">
+                <div className="text-sm text-slate-300">
                   {segments[hoveredIndex].percentage.toFixed(1)}%
                 </div>
               </>

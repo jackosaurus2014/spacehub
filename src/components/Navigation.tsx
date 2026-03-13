@@ -290,7 +290,7 @@ function DropdownMenu({
         onKeyDown={handleTriggerKeyDown}
         aria-expanded={isOpen}
         aria-haspopup="menu"
-        className="text-slate-200 hover:text-cyan-300 transition-colors text-sm font-medium flex items-center gap-1"
+        className="text-slate-200 hover:text-white transition-colors text-sm font-medium flex items-center gap-1"
       >
         {label}
         <svg
@@ -535,7 +535,7 @@ export default function Navigation() {
             />
             <Link
               href="/pricing"
-              className="text-slate-200 hover:text-cyan-300 transition-colors text-sm font-medium"
+              className="text-slate-200 hover:text-white transition-colors text-sm font-medium"
             >
               Pricing
             </Link>
@@ -613,7 +613,7 @@ export default function Navigation() {
               onClick={toggleHighContrast}
               className={`relative p-2 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg transition-colors group ${
                 isHighContrast
-                  ? 'text-cyan-300 bg-slate-700/60'
+                  ? 'text-slate-200 bg-slate-700/60'
                   : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/40'
               }`}
               aria-label="Toggle high contrast mode"
@@ -635,7 +635,7 @@ export default function Navigation() {
             {/* Reading List */}
             <Link
               href="/reading-list"
-              className="relative p-2 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg text-slate-400 hover:text-cyan-300 hover:bg-slate-700/40 transition-colors"
+              className="relative p-2 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg text-slate-400 hover:text-white hover:bg-slate-700/40 transition-colors"
               aria-label="Reading List"
               title="Reading List"
             >
@@ -673,14 +673,14 @@ export default function Navigation() {
                 </span>
                 <button
                   onClick={() => signOut()}
-                  className="text-slate-300 hover:text-cyan-300 text-sm font-medium px-3 py-1.5 rounded-lg hover:bg-slate-700/50 transition-colors"
+                  className="text-slate-300 hover:text-white text-sm font-medium px-3 py-1.5 rounded-lg hover:bg-slate-700/50 transition-colors"
                 >
                   Sign Out
                 </button>
               </div>
             ) : (
               <>
-                <Link href="/login" className="text-slate-300 hover:text-cyan-300 text-sm font-medium px-3 py-1.5 rounded-lg hover:bg-slate-700/50 transition-colors">
+                <Link href="/login" className="text-slate-300 hover:text-white text-sm font-medium px-3 py-1.5 rounded-lg hover:bg-slate-700/50 transition-colors">
                   Sign In
                 </Link>
                 <Link href="/register" className="btn-primary text-xs py-2 px-5">
@@ -699,7 +699,7 @@ export default function Navigation() {
                 const opener = (window as unknown as Record<string, unknown>).__openSearchPalette;
                 if (typeof opener === 'function') opener();
               }}
-              className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center text-slate-300 hover:text-cyan-300 transition-colors"
+              className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center text-slate-300 hover:text-white transition-colors"
               aria-label="Search"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -709,7 +709,7 @@ export default function Navigation() {
             <NotificationBell />
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center text-slate-300 hover:text-cyan-300"
+              className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center text-slate-300 hover:text-white"
               aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
               aria-expanded={isMenuOpen}
             >
@@ -794,7 +794,7 @@ export default function Navigation() {
                         <Link
                           key={mod.href}
                           href={mod.href}
-                          className="block px-3 py-2 rounded-lg text-slate-300 hover:bg-slate-700/50 hover:text-cyan-300 active:bg-slate-700/70 transition-colors text-sm font-medium"
+                          className="block px-3 py-2 rounded-lg text-slate-300 hover:bg-slate-700/50 hover:text-white active:bg-slate-700/70 transition-colors text-sm font-medium"
                           onClick={() => setIsMenuOpen(false)}
                         >
                           {mod.label}
@@ -857,7 +857,7 @@ export default function Navigation() {
                               <Link
                                 key={item.href}
                                 href={item.href}
-                                className="block px-3 py-3 rounded-lg text-slate-200 hover:bg-slate-700/50 hover:text-cyan-300 active:bg-slate-700/70 transition-colors touch-target"
+                                className="block px-3 py-3 rounded-lg text-slate-200 hover:bg-slate-700/50 hover:text-white active:bg-slate-700/70 transition-colors touch-target"
                                 onClick={() => setIsMenuOpen(false)}
                               >
                                 <div className="flex items-center justify-between">
@@ -925,7 +925,7 @@ export default function Navigation() {
                 {/* Global Search link (mobile) */}
                 <div className="pt-4 border-t border-slate-700/50">
                   <button
-                    className="w-full flex items-center gap-3 px-3 py-3 rounded-lg text-slate-200 hover:bg-slate-700/50 hover:text-cyan-300 active:bg-slate-700/70 transition-colors text-sm font-medium touch-target"
+                    className="w-full flex items-center gap-3 px-3 py-3 rounded-lg text-slate-200 hover:bg-slate-700/50 hover:text-white active:bg-slate-700/70 transition-colors text-sm font-medium touch-target"
                     onClick={() => {
                       setIsMenuOpen(false);
                       setTimeout(() => {
@@ -957,7 +957,7 @@ export default function Navigation() {
                 <div className="pt-4 border-t border-slate-700/50">
                   <Link
                     href="/reading-list"
-                    className="flex items-center gap-3 px-3 py-3 rounded-lg text-slate-200 hover:bg-slate-700/50 hover:text-cyan-300 active:bg-slate-700/70 transition-colors text-sm font-medium touch-target"
+                    className="flex items-center gap-3 px-3 py-3 rounded-lg text-slate-200 hover:bg-slate-700/50 hover:text-white active:bg-slate-700/70 transition-colors text-sm font-medium touch-target"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     <svg
@@ -984,8 +984,8 @@ export default function Navigation() {
                     onClick={toggleHighContrast}
                     className={`w-full flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium transition-colors touch-target ${
                       isHighContrast
-                        ? 'text-cyan-300 bg-slate-700/50'
-                        : 'text-slate-200 hover:bg-slate-700/50 hover:text-cyan-300'
+                        ? 'text-slate-200 bg-slate-700/50'
+                        : 'text-slate-200 hover:bg-slate-700/50 hover:text-white'
                     }`}
                     aria-pressed={isHighContrast}
                   >
@@ -1009,7 +1009,7 @@ export default function Navigation() {
                   {!isPro && (
                     <Link
                       href="/pricing"
-                      className="block text-slate-300 hover:text-white active:text-cyan-200 font-medium text-center py-3 text-sm touch-target"
+                      className="block text-slate-300 hover:text-white active:text-white font-medium text-center py-3 text-sm touch-target"
                       onClick={() => setIsMenuOpen(false)}
                     >
                       Upgrade to Pro
@@ -1021,7 +1021,7 @@ export default function Navigation() {
                         signOut();
                         setIsMenuOpen(false);
                       }}
-                      className="w-full text-sm py-3 px-4 rounded-lg border border-white/[0.08] text-slate-200 hover:bg-slate-700/50 hover:text-cyan-300 active:bg-slate-700/70 transition-colors touch-target"
+                      className="w-full text-sm py-3 px-4 rounded-lg border border-white/[0.08] text-slate-200 hover:bg-slate-700/50 hover:text-white active:bg-slate-700/70 transition-colors touch-target"
                     >
                       Sign Out
                     </button>
@@ -1029,7 +1029,7 @@ export default function Navigation() {
                     <>
                       <Link
                         href="/login"
-                        className="block text-sm py-3 px-4 text-center rounded-lg text-slate-200 hover:bg-slate-700/50 hover:text-cyan-300 active:bg-slate-700/70 transition-colors touch-target"
+                        className="block text-sm py-3 px-4 text-center rounded-lg text-slate-200 hover:bg-slate-700/50 hover:text-white active:bg-slate-700/70 transition-colors touch-target"
                         onClick={() => setIsMenuOpen(false)}
                       >
                         Sign In

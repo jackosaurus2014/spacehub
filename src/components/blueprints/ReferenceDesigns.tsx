@@ -10,11 +10,11 @@ function CubeSatCard({ standard }: { standard: CubeSatStandard }) {
   const [expanded, setExpanded] = useState(false);
 
   return (
-    <div className="card p-5 border border-slate-700/50 hover:border-cyan-500/30 transition-all">
+    <div className="card p-5 border border-slate-700/50 hover:border-white/10 transition-all">
       <div className="flex items-start justify-between mb-3">
         <div className="flex items-center gap-3">
-          <div className="w-14 h-14 rounded-lg bg-gradient-to-br from-cyan-500/20 to-blue-500/20 flex items-center justify-center">
-            <span className="text-cyan-300 font-bold text-lg">{standard.formFactor}</span>
+          <div className="w-14 h-14 rounded-lg bg-gradient-to-br from-white/5 to-blue-500/20 flex items-center justify-center">
+            <span className="text-slate-200 font-bold text-lg">{standard.formFactor}</span>
           </div>
           <div>
             <h3 className="text-white font-semibold text-lg">{standard.name}</h3>
@@ -68,7 +68,7 @@ function CubeSatCard({ standard }: { standard: CubeSatStandard }) {
       {/* Expandable Details */}
       <button
         onClick={() => setExpanded(!expanded)}
-        className="text-sm text-cyan-400 hover:text-cyan-300 transition-colors flex items-center gap-1 mt-2"
+        className="text-sm text-slate-300 hover:text-white transition-colors flex items-center gap-1 mt-2"
       >
         <svg className={`w-4 h-4 transition-transform ${expanded ? 'rotate-90' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -97,7 +97,7 @@ function CubeSatCard({ standard }: { standard: CubeSatStandard }) {
                   href={ref.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-1.5 text-xs text-cyan-400 hover:text-cyan-300 transition-colors"
+                  className="flex items-center gap-1.5 text-xs text-slate-300 hover:text-white transition-colors"
                 >
                   <svg className="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
@@ -225,7 +225,7 @@ function SubsystemBrowser() {
             onClick={() => setActiveCategory(cat.id)}
             className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
               activeCategory === cat.id
-                ? 'bg-cyan-600 text-white shadow-lg shadow-cyan-900/30'
+                ? 'bg-white text-white shadow-lg shadow-black/15'
                 : 'bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white'
             }`}
           >
@@ -261,7 +261,7 @@ function SubsystemBrowser() {
                           href={opt.referenceUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-xs text-cyan-400 hover:text-cyan-300 mt-1 inline-flex items-center gap-1"
+                          className="text-xs text-slate-300 hover:text-white mt-1 inline-flex items-center gap-1"
                         >
                           <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />

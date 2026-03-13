@@ -471,7 +471,7 @@ export default function SatelliteTrackerPage() {
                 </div>
               </div>
               <div className="card-elevated p-3 text-center">
-                <div className="text-xl font-bold font-display text-cyan-400">
+                <div className="text-xl font-bold font-display text-slate-300">
                   {stats.leo}
                 </div>
                 <div className="text-slate-400 text-xs uppercase tracking-widest">LEO</div>
@@ -495,8 +495,8 @@ export default function SatelliteTrackerPage() {
                 <div className="text-slate-400 text-xs uppercase tracking-widest">HEO</div>
               </div>
               {iss && (
-                <div className="card-elevated p-3 text-center border border-cyan-500/30">
-                  <div className="text-xs font-bold text-cyan-300 truncate">
+                <div className="card-elevated p-3 text-center border border-white/10">
+                  <div className="text-xs font-bold text-slate-200 truncate">
                     ISS: {iss.position.lat.toFixed(1)}, {iss.position.lng.toFixed(1)}
                   </div>
                   <div className="text-slate-400 text-xs uppercase tracking-widest">
@@ -640,7 +640,7 @@ export default function SatelliteTrackerPage() {
                       onChange={(e) => setSearchQuery(e.target.value)}
                       placeholder="Search by name or NORAD ID..."
                       aria-label="Search satellites"
-                      className="w-full pl-10 pr-4 py-2.5 h-11 rounded-lg bg-slate-800 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 text-sm"
+                      className="w-full pl-10 pr-4 py-2.5 h-11 rounded-lg bg-slate-800 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-white/15 focus:ring-1 focus:ring-white/30 text-sm"
                     />
                   </div>
 
@@ -650,7 +650,7 @@ export default function SatelliteTrackerPage() {
                       value={orbitFilter}
                       onChange={(e) => setOrbitFilter(e.target.value as OrbitClass | '')}
                       aria-label="Filter by orbit type"
-                      className="flex-1 bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-10 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+                      className="flex-1 bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-10 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                     >
                       <option value="">All Orbits</option>
                       <option value="LEO">LEO</option>
@@ -662,7 +662,7 @@ export default function SatelliteTrackerPage() {
                       value={categoryFilter}
                       onChange={(e) => setCategoryFilter(e.target.value as SatCategory)}
                       aria-label="Filter by category"
-                      className="flex-1 bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-10 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+                      className="flex-1 bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-10 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                     >
                       {CATEGORY_OPTIONS.map((opt) => (
                         <option key={opt.value} value={opt.value}>
@@ -682,7 +682,7 @@ export default function SatelliteTrackerPage() {
                           setCategoryFilter('all');
                           setSearchQuery('');
                         }}
-                        className="ml-2 text-cyan-400 hover:text-cyan-300"
+                        className="ml-2 text-slate-300 hover:text-white"
                       >
                         Clear filters
                       </button>
@@ -702,13 +702,13 @@ export default function SatelliteTrackerPage() {
                           onClick={() => setSelectedSat(sat.noradId === selectedSat ? null : sat.noradId)}
                           className={`w-full text-left px-3 py-2.5 rounded-lg transition-all text-sm group ${
                             sat.noradId === selectedSat
-                              ? 'bg-cyan-500/10 border border-cyan-500/30'
+                              ? 'bg-white/5 border border-white/10'
                               : 'bg-slate-800/50 border border-transparent hover:bg-slate-800 hover:border-slate-700/50'
                           }`}
                         >
                           <div className="flex items-center justify-between gap-2">
                             <div className="min-w-0">
-                              <div className="text-white font-medium truncate text-sm group-hover:text-cyan-300 transition-colors">
+                              <div className="text-white font-medium truncate text-sm group-hover:text-white transition-colors">
                                 {sat.name}
                               </div>
                               <div className="text-slate-500 text-xs mt-0.5">
@@ -744,9 +744,9 @@ export default function SatelliteTrackerPage() {
                       <button
                         key={sat.noradId}
                         onClick={() => setSelectedSat(sat.noradId)}
-                        className={`card p-4 text-left transition-all hover:border-cyan-500/30 ${
+                        className={`card p-4 text-left transition-all hover:border-white/10 ${
                           sat.noradId === selectedSat
-                            ? 'border-cyan-500/50 bg-cyan-500/5'
+                            ? 'border-white/15 bg-white/5'
                             : ''
                         }`}
                       >

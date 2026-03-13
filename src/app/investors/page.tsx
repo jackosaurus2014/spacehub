@@ -52,7 +52,7 @@ const TYPE_OPTIONS = [
 ];
 
 const TYPE_BADGE_COLORS: Record<string, string> = {
-  vc: 'bg-cyan-500/20 text-cyan-400 border-cyan-500/30',
+  vc: 'bg-white/10 text-slate-300 border-white/10',
   pe: 'bg-purple-500/20 text-purple-400 border-purple-500/30',
   corporate: 'bg-amber-500/20 text-amber-400 border-amber-500/30',
   government: 'bg-red-500/20 text-red-400 border-red-500/30',
@@ -209,7 +209,7 @@ function InvestorsPageInner() {
             <div className="text-red-400 text-sm font-medium mb-3">{error}</div>
             <button
               onClick={fetchInvestors}
-              className="px-4 py-2 bg-cyan-600 hover:bg-cyan-500 text-white rounded-lg text-sm font-medium transition-colors"
+              className="px-4 py-2 bg-white hover:bg-slate-100 text-white rounded-lg text-sm font-medium transition-colors"
             >
               Try Again
             </button>
@@ -220,7 +220,7 @@ function InvestorsPageInner() {
         <StaggerContainer className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           <StaggerItem>
             <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-5 text-center">
-              <div className="text-2xl md:text-3xl font-bold text-cyan-400">
+              <div className="text-2xl md:text-3xl font-bold text-slate-300">
                 {investors.length}
               </div>
               <div className="text-slate-400 text-xs uppercase tracking-widest mt-1">
@@ -270,7 +270,7 @@ function InvestorsPageInner() {
               <select
                 value={typeFilter}
                 onChange={(e) => setTypeFilter(e.target.value)}
-                className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+                className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
               >
                 {TYPE_OPTIONS.map((t) => (
                   <option key={t.value} value={t.value}>
@@ -286,7 +286,7 @@ function InvestorsPageInner() {
               <select
                 value={sectorFilter}
                 onChange={(e) => setSectorFilter(e.target.value)}
-                className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+                className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
               >
                 <option value="">All Sectors</option>
                 <option value="launch">Launch</option>
@@ -306,7 +306,7 @@ function InvestorsPageInner() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search by name, location, portfolio..."
-                className="bg-slate-900 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500 w-64"
+                className="bg-slate-900 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-white/15 w-64"
               />
             </div>
             <span className="text-slate-500 text-sm pb-2">
@@ -336,8 +336,8 @@ function InvestorsPageInner() {
                   <div
                     className={`bg-slate-800/50 rounded-xl border transition-colors p-5 ${
                       isExpanded
-                        ? 'border-cyan-500/40'
-                        : 'border-slate-700/50 hover:border-cyan-500/20'
+                        ? 'border-white/15/40'
+                        : 'border-slate-700/50 hover:border-white/10'
                     }`}
                   >
                     {/* Header */}
@@ -368,14 +368,14 @@ function InvestorsPageInner() {
                       <div className="text-right ml-3">
                         {inv.aum ? (
                           <>
-                            <div className="text-cyan-400 font-mono font-bold text-sm">
+                            <div className="text-slate-300 font-mono font-bold text-sm">
                               {formatAUM(inv.aum)}
                             </div>
                             <div className="text-slate-500 text-xs">AUM</div>
                           </>
                         ) : inv.fundSize ? (
                           <>
-                            <div className="text-cyan-400 font-mono font-bold text-sm">
+                            <div className="text-slate-300 font-mono font-bold text-sm">
                               {formatAUM(inv.fundSize)}
                             </div>
                             <div className="text-slate-500 text-xs">
@@ -413,7 +413,7 @@ function InvestorsPageInner() {
                       {inv.sectorFocus.map((s) => (
                         <span
                           key={s}
-                          className="text-xs bg-cyan-900/30 text-cyan-400 px-2 py-0.5 rounded"
+                          className="text-xs bg-slate-800/40 text-slate-300 px-2 py-0.5 rounded"
                         >
                           {SECTOR_LABELS[s] || s}
                         </span>
@@ -450,7 +450,7 @@ function InvestorsPageInner() {
                       onClick={() =>
                         setExpandedId(isExpanded ? null : inv.id)
                       }
-                      className="text-xs text-cyan-400 hover:text-cyan-300 transition-colors"
+                      className="text-xs text-slate-300 hover:text-white transition-colors"
                     >
                       {isExpanded
                         ? 'Show less'
@@ -488,7 +488,7 @@ function InvestorsPageInner() {
                               href={inv.website}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-cyan-400 hover:text-cyan-300 transition-colors"
+                              className="text-slate-300 hover:text-white transition-colors"
                             >
                               Website
                             </a>
@@ -497,7 +497,7 @@ function InvestorsPageInner() {
                             href={`/funding-tracker?investor=${encodeURIComponent(
                               inv.name
                             )}`}
-                            className="text-cyan-400 hover:text-cyan-300 transition-colors"
+                            className="text-slate-300 hover:text-white transition-colors"
                           >
                             View Deals
                           </Link>

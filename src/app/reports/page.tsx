@@ -291,7 +291,7 @@ function renderMarkdown(md: string): string {
     .replace(/\*\*(.+?)\*\*/g, '<strong class="text-slate-100">$1</strong>')
     .replace(/\*(.+?)\*/g, '<em>$1</em>')
     // Blockquotes
-    .replace(/^&gt; (.+)$/gm, '<blockquote class="border-l-4 border-cyan-500/30 pl-4 my-3 text-slate-400 italic">$1</blockquote>')
+    .replace(/^&gt; (.+)$/gm, '<blockquote class="border-l-4 border-white/10 pl-4 my-3 text-slate-400 italic">$1</blockquote>')
     // Horizontal rules
     .replace(/^---$/gm, '<hr class="border-slate-700 my-6" />')
     // Unordered lists
@@ -617,7 +617,7 @@ function ReportsPageInner() {
                 title="Intelligence Reports"
                 subtitle="AI-powered research reports on space industry sectors, companies, and market opportunities. Generated from the SpaceNexus intelligence database."
                 icon={
-                  <svg className="w-9 h-9 text-cyan-400" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                  <svg className="w-9 h-9 text-slate-300" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
                   </svg>
                 }
@@ -636,7 +636,7 @@ function ReportsPageInner() {
             className="flex flex-wrap gap-6 mb-10 text-sm text-slate-400"
           >
             <div className="flex items-center gap-2">
-              <span className="w-2 h-2 bg-cyan-400 rounded-full" />
+              <span className="w-2 h-2 bg-white rounded-full" />
               Powered by Claude AI
             </div>
             <div className="flex items-center gap-2">
@@ -664,7 +664,7 @@ function ReportsPageInner() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 * idx + 0.2 }}
-                className="group relative bg-slate-800/50 border border-slate-700/50 rounded-xl p-6 hover:border-cyan-500/30 hover:bg-slate-800/70 transition-all duration-300"
+                className="group relative bg-slate-800/50 border border-slate-700/50 rounded-xl p-6 hover:border-white/10 hover:bg-slate-800/70 transition-all duration-300"
               >
                 {rt.isSample && (
                   <div className="absolute top-4 right-4 bg-emerald-500/20 text-emerald-400 text-xs font-semibold px-2.5 py-1 rounded-full border border-emerald-500/30">
@@ -673,8 +673,8 @@ function ReportsPageInner() {
                 )}
 
                 <div className="flex items-start gap-4 mb-4">
-                  <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-cyan-500/20 to-blue-500/20 border border-cyan-500/20 flex items-center justify-center flex-shrink-0 group-hover:from-cyan-500/30 group-hover:to-blue-500/30 transition-all">
-                    <ReportIcon icon={rt.icon} className="w-6 h-6 text-cyan-400" />
+                  <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-white/5 to-blue-500/20 border border-white/10 flex items-center justify-center flex-shrink-0 group-hover:from-white/30 group-hover:to-blue-500/30 transition-all">
+                    <ReportIcon icon={rt.icon} className="w-6 h-6 text-slate-300" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <h3 className="text-lg font-semibold text-slate-100 mb-1">{rt.name}</h3>
@@ -712,7 +712,7 @@ function ReportsPageInner() {
                   </div>
                   <button
                     onClick={() => setSelectedType(rt)}
-                    className="px-4 py-2 bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 rounded-lg text-sm font-medium hover:bg-cyan-500/20 hover:border-cyan-500/50 transition-all"
+                    className="px-4 py-2 bg-white/5 border border-white/10 text-slate-300 rounded-lg text-sm font-medium hover:bg-slate-100/20 hover:border-white/15 transition-all"
                   >
                     {rt.price === 0 ? 'Generate Free Report' : `Generate Report`}
                   </button>
@@ -764,7 +764,7 @@ function ReportsPageInner() {
                 },
               ].map((item) => (
                 <div key={item.step} className="text-center">
-                  <div className="w-10 h-10 rounded-full bg-cyan-500/20 border border-cyan-500/30 text-cyan-400 font-bold text-lg flex items-center justify-center mx-auto mb-3">
+                  <div className="w-10 h-10 rounded-full bg-white/10 border border-white/10 text-slate-300 font-bold text-lg flex items-center justify-center mx-auto mb-3">
                     {item.step}
                   </div>
                   <h3 className="text-sm font-semibold text-slate-200 mb-1">{item.title}</h3>
@@ -799,8 +799,8 @@ function ReportsPageInner() {
           </button>
 
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-cyan-500/20 to-blue-500/20 border border-cyan-500/20 flex items-center justify-center">
-              <ReportIcon icon={selectedType.icon} className="w-6 h-6 text-cyan-400" />
+            <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-white/5 to-blue-500/20 border border-white/10 flex items-center justify-center">
+              <ReportIcon icon={selectedType.icon} className="w-6 h-6 text-slate-300" />
             </div>
             <div>
               <h1 className="text-2xl md:text-3xl font-bold text-slate-100">{selectedType.name}</h1>
@@ -832,7 +832,7 @@ function ReportsPageInner() {
                       id="sector"
                       value={sector}
                       onChange={(e) => setSector(e.target.value)}
-                      className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+                      className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                     >
                       <option value="">Choose a sector to analyze...</option>
                       {SPACE_SECTORS.map((s) => (
@@ -851,7 +851,7 @@ function ReportsPageInner() {
                       Select Company
                     </label>
                     {selectedCompany ? (
-                      <div className="flex items-center gap-3 px-4 py-3 bg-slate-900/50 border border-cyan-500/30 rounded-lg">
+                      <div className="flex items-center gap-3 px-4 py-3 bg-slate-900/50 border border-white/10 rounded-lg">
                         <span className="text-slate-200 font-medium">{selectedCompany.name}</span>
                         {selectedCompany.sector && (
                           <span className="text-xs bg-slate-700/50 text-slate-400 px-2 py-0.5 rounded">
@@ -875,11 +875,11 @@ function ReportsPageInner() {
                           value={companySearch.query}
                           onChange={(e) => companySearch.search(e.target.value)}
                           placeholder="Search for a company..."
-                          className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+                          className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                         />
                         {companySearch.loading && (
                           <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                            <div className="w-5 h-5 border-2 border-cyan-500/30 border-t-cyan-400 rounded-full animate-spin" />
+                            <div className="w-5 h-5 border-2 border-white/10 border-t-white rounded-full animate-spin" />
                           </div>
                         )}
                         {companySearch.results.length > 0 && (
@@ -922,7 +922,7 @@ function ReportsPageInner() {
                         {selectedCompanies.map((c) => (
                           <span
                             key={c.slug}
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 rounded-lg text-sm"
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white/5 border border-white/10 text-slate-200 rounded-lg text-sm"
                           >
                             {c.name}
                             <button
@@ -950,11 +950,11 @@ function ReportsPageInner() {
                               ? 'Search and select 2-5 companies...'
                               : `Add another company (${selectedCompanies.length}/5)...`
                           }
-                          className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+                          className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                         />
                         {multiSearch.loading && (
                           <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                            <div className="w-5 h-5 border-2 border-cyan-500/30 border-t-cyan-400 rounded-full animate-spin" />
+                            <div className="w-5 h-5 border-2 border-white/10 border-t-white rounded-full animate-spin" />
                           </div>
                         )}
                         {multiSearch.results.length > 0 && (
@@ -996,7 +996,7 @@ function ReportsPageInner() {
                       placeholder='Describe the market or opportunity you want to enter (e.g., "LEO broadband constellation for maritime customers" or "On-orbit servicing for GEO satellites")'
                       rows={4}
                       maxLength={2000}
-                      className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none resize-y"
+                      className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none resize-y"
                     />
                     <p className="text-xs text-slate-500 text-right">
                       {topic.length}/2000 characters
@@ -1016,7 +1016,7 @@ function ReportsPageInner() {
                 <div className="mt-6">
                   <button
                     onClick={handleGenerate}
-                    className="w-full py-3 px-6 bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-semibold rounded-lg hover:from-cyan-400 hover:to-blue-500 transition-all shadow-lg shadow-cyan-500/20 hover:shadow-cyan-500/30"
+                    className="w-full py-3 px-6 bg-gradient-to-r from-white to-blue-600 text-white font-semibold rounded-lg hover:from-slate-300 hover:to-blue-500 transition-all shadow-lg shadow-black/10 hover:shadow-black/15"
                   >
                     Generate {selectedType.name}
                   </button>
@@ -1031,7 +1031,7 @@ function ReportsPageInner() {
                 <div className="space-y-2">
                   {selectedType.sections.map((s, idx) => (
                     <div key={s.id} className="flex items-start gap-3 py-2">
-                      <span className="text-xs font-mono text-cyan-400/60 w-5 text-right flex-shrink-0 mt-0.5">
+                      <span className="text-xs font-mono text-slate-300/60 w-5 text-right flex-shrink-0 mt-0.5">
                         {idx + 1}.
                       </span>
                       <div>
@@ -1058,7 +1058,7 @@ function ReportsPageInner() {
               <div className="relative w-24 h-24 mx-auto mb-8">
                 <div className="absolute inset-0 rounded-full border-4 border-slate-700/30" />
                 <div
-                  className="absolute inset-0 rounded-full border-4 border-transparent border-t-cyan-400 animate-spin"
+                  className="absolute inset-0 rounded-full border-4 border-transparent border-t-white animate-spin"
                   style={{ animationDuration: '1.5s' }}
                 />
                 <div
@@ -1066,7 +1066,7 @@ function ReportsPageInner() {
                   style={{ animationDuration: '2s', animationDirection: 'reverse' }}
                 />
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <ReportIcon icon={selectedType.icon} className="w-8 h-8 text-cyan-400" />
+                  <ReportIcon icon={selectedType.icon} className="w-8 h-8 text-slate-300" />
                 </div>
               </div>
 
@@ -1091,7 +1091,7 @@ function ReportsPageInner() {
               <div className="w-full max-w-sm mx-auto">
                 <div className="h-1.5 bg-slate-700/50 rounded-full overflow-hidden">
                   <motion.div
-                    className="h-full bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full"
+                    className="h-full bg-gradient-to-r from-slate-300 to-blue-500 rounded-full"
                     initial={{ width: '5%' }}
                     animate={{
                       width: `${Math.min(((generationPhase + 1) / GENERATION_PHASES.length) * 100, 95)}%`,
@@ -1157,7 +1157,7 @@ function ReportsPageInner() {
                           onClick={() => scrollToSection(section.id)}
                           className={`w-full text-left text-sm px-3 py-1.5 rounded transition-colors ${
                             activeTocSection === section.id
-                              ? 'bg-cyan-500/10 text-cyan-400 border-l-2 border-cyan-400'
+                              ? 'bg-white/5 text-slate-300 border-l-2 border-white/10'
                               : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
                           }`}
                         >
@@ -1173,8 +1173,8 @@ function ReportsPageInner() {
                   {/* Report header */}
                   <div className="bg-gradient-to-br from-slate-800/80 to-slate-900/80 border border-slate-700/50 rounded-xl p-8 mb-8 print:border-none print:bg-white print:text-black">
                     <div className="flex items-start gap-4 mb-4">
-                      <div className="w-14 h-14 rounded-lg bg-gradient-to-br from-cyan-500/20 to-blue-500/20 border border-cyan-500/20 flex items-center justify-center flex-shrink-0 print:hidden">
-                        <ReportIcon icon={selectedType.icon} className="w-7 h-7 text-cyan-400" />
+                      <div className="w-14 h-14 rounded-lg bg-gradient-to-br from-white/5 to-blue-500/20 border border-white/10 flex items-center justify-center flex-shrink-0 print:hidden">
+                        <ReportIcon icon={selectedType.icon} className="w-7 h-7 text-slate-300" />
                       </div>
                       <div>
                         <h1 className="text-2xl md:text-3xl font-bold text-slate-100 print:text-black">
@@ -1188,8 +1188,8 @@ function ReportsPageInner() {
 
                     {/* Executive summary */}
                     {generatedReport.executive_summary && (
-                      <div className="mt-4 p-4 bg-cyan-500/5 border border-cyan-500/20 rounded-lg">
-                        <p className="text-sm font-medium text-cyan-400 mb-1">Executive Summary</p>
+                      <div className="mt-4 p-4 bg-white/5 border border-white/10 rounded-lg">
+                        <p className="text-sm font-medium text-slate-300 mb-1">Executive Summary</p>
                         <p className="text-slate-300 text-sm leading-relaxed print:text-gray-700">
                           {generatedReport.executive_summary}
                         </p>
@@ -1226,7 +1226,7 @@ function ReportsPageInner() {
                         className="bg-slate-800/40 border border-slate-700/30 rounded-xl p-6 md:p-8 print:border-none print:bg-white print:shadow-none"
                       >
                         <div className="flex items-center gap-3 mb-4">
-                          <span className="text-xs font-mono text-cyan-400/50 bg-cyan-500/5 border border-cyan-500/10 px-2 py-0.5 rounded print:hidden">
+                          <span className="text-xs font-mono text-slate-300/50 bg-white/5 border border-white/15/10 px-2 py-0.5 rounded print:hidden">
                             {String(idx + 1).padStart(2, '0')}
                           </span>
                           <h2 className="text-xl font-semibold text-slate-100 print:text-black">
@@ -1314,7 +1314,7 @@ export default function ReportsPage() {
       <Suspense
         fallback={
           <div className="min-h-screen flex items-center justify-center">
-            <div className="w-10 h-10 border-3 border-cyan-500/30 border-t-cyan-400 rounded-full animate-spin" />
+            <div className="w-10 h-10 border-3 border-white/10 border-t-white rounded-full animate-spin" />
           </div>
         }
       >

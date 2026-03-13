@@ -166,7 +166,7 @@ const DEBRIS_EVENTS: DebrisEvent[] = [
 // ════════════════════════════════════════
 
 const ORBIT_BREAKDOWN: OrbitBreakdown[] = [
-  { orbit: 'LEO', fullName: 'Low Earth Orbit', altitudeRange: '200\u20132,000 km', tracked: 27000, maxTracked: 27000, color: 'bg-cyan-500' },
+  { orbit: 'LEO', fullName: 'Low Earth Orbit', altitudeRange: '200\u20132,000 km', tracked: 27000, maxTracked: 27000, color: 'bg-white' },
   { orbit: 'MEO', fullName: 'Medium Earth Orbit', altitudeRange: '2,000\u201335,786 km', tracked: 1800, maxTracked: 27000, color: 'bg-blue-500' },
   { orbit: 'GEO', fullName: 'Geostationary Orbit', altitudeRange: '~35,786 km', tracked: 4200, maxTracked: 27000, color: 'bg-purple-500' },
   { orbit: 'HEO', fullName: 'Highly Elliptical Orbit', altitudeRange: 'Variable', tracked: 1500, maxTracked: 27000, color: 'bg-amber-500' },
@@ -197,7 +197,7 @@ const REMEDIATION_PROGRAMS: RemediationProgram[] = [
     name: 'ClearSpace-1',
     organization: 'ESA / ClearSpace SA',
     status: 'In Development',
-    statusColor: 'text-cyan-400 bg-cyan-400/10 border-cyan-400/30',
+    statusColor: 'text-slate-300 bg-white/5 border-white/10',
     description: 'Mission to capture and deorbit a Vega Secondary Payload Adapter (VESPA) upper stage using a four-armed robotic capture mechanism.',
     year: '2026 Launch',
     technique: 'Robotic arms capture',
@@ -233,7 +233,7 @@ const REMEDIATION_PROGRAMS: RemediationProgram[] = [
     name: 'CRD2',
     organization: 'JAXA',
     status: 'In Development',
-    statusColor: 'text-cyan-400 bg-cyan-400/10 border-cyan-400/30',
+    statusColor: 'text-slate-300 bg-white/5 border-white/10',
     description: 'Commercial Removal of Debris Demonstration Phase 2. Developing technologies for large-scale debris removal targeting spent rocket upper stages in critical orbital regions.',
     year: 'TBD',
     technique: 'Robotic capture & deorbit',
@@ -360,7 +360,7 @@ export default function DebrisCatalogPage() {
                 placeholder="Search events, objects..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 bg-slate-800/60 border border-slate-700/50 rounded-lg text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/30 transition-colors"
+                className="w-full pl-10 pr-4 py-2.5 bg-slate-800/60 border border-slate-700/50 rounded-lg text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-white/15 focus:ring-1 focus:ring-white/30/30 transition-colors"
               />
             </div>
 
@@ -368,7 +368,7 @@ export default function DebrisCatalogPage() {
             <select
               value={orbitFilter}
               onChange={(e) => setOrbitFilter(e.target.value as OrbitFilter)}
-              className="px-3 py-2.5 bg-slate-800/60 border border-slate-700/50 rounded-lg text-sm text-slate-200 focus:outline-none focus:border-cyan-500/50 transition-colors cursor-pointer"
+              className="px-3 py-2.5 bg-slate-800/60 border border-slate-700/50 rounded-lg text-sm text-slate-200 focus:outline-none focus:border-white/15 transition-colors cursor-pointer"
             >
               <option value="all">All Orbits</option>
               <option value="LEO">LEO (200-2,000 km)</option>
@@ -381,7 +381,7 @@ export default function DebrisCatalogPage() {
             <select
               value={originFilter}
               onChange={(e) => setOriginFilter(e.target.value as OriginFilter)}
-              className="px-3 py-2.5 bg-slate-800/60 border border-slate-700/50 rounded-lg text-sm text-slate-200 focus:outline-none focus:border-cyan-500/50 transition-colors cursor-pointer"
+              className="px-3 py-2.5 bg-slate-800/60 border border-slate-700/50 rounded-lg text-sm text-slate-200 focus:outline-none focus:border-white/15 transition-colors cursor-pointer"
             >
               <option value="all">All Origins</option>
               <option value="Russia/CIS">Russia/CIS</option>
@@ -397,7 +397,7 @@ export default function DebrisCatalogPage() {
             <select
               value={objectTypeFilter}
               onChange={(e) => setObjectTypeFilter(e.target.value as ObjectTypeFilter)}
-              className="px-3 py-2.5 bg-slate-800/60 border border-slate-700/50 rounded-lg text-sm text-slate-200 focus:outline-none focus:border-cyan-500/50 transition-colors cursor-pointer"
+              className="px-3 py-2.5 bg-slate-800/60 border border-slate-700/50 rounded-lg text-sm text-slate-200 focus:outline-none focus:border-white/15 transition-colors cursor-pointer"
             >
               <option value="all">All Object Types</option>
               <option value="satellite">Satellites</option>
@@ -413,14 +413,14 @@ export default function DebrisCatalogPage() {
         <section className="mb-10">
           <ScrollReveal>
           <h2 className="text-xl font-bold text-slate-100 mb-4 flex items-center gap-2">
-            <span className="text-cyan-400">{'// '}</span>Orbital Debris Overview
+            <span className="text-slate-300">{'// '}</span>Orbital Debris Overview
           </h2>
           </ScrollReveal>
           <StaggerContainer className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {OVERVIEW_STATS.map((stat) => (
               <StaggerItem key={stat.label}><div className="card p-5 text-center group">
                 <div className="text-2xl mb-2">{stat.icon}</div>
-                <div className="text-2xl md:text-3xl font-bold text-slate-100 mb-1 group-hover:text-cyan-400 transition-colors">
+                <div className="text-2xl md:text-3xl font-bold text-slate-100 mb-1 group-hover:text-white transition-colors">
                   {stat.value}
                 </div>
                 <div className="text-sm font-medium text-slate-300 mb-0.5">{stat.label}</div>
@@ -434,7 +434,7 @@ export default function DebrisCatalogPage() {
         <ScrollReveal delay={0.1}>
         <section className="mb-10">
           <h2 className="text-xl font-bold text-slate-100 mb-4 flex items-center gap-2">
-            <span className="text-cyan-400">{'// '}</span>Major Debris Events
+            <span className="text-slate-300">{'// '}</span>Major Debris Events
           </h2>
 
           {filteredEvents.length === 0 ? (
@@ -539,7 +539,7 @@ export default function DebrisCatalogPage() {
           {/* Section 3: Debris by Orbit */}
           <section>
             <h2 className="text-xl font-bold text-slate-100 mb-4 flex items-center gap-2">
-              <span className="text-cyan-400">{'// '}</span>Debris by Orbit
+              <span className="text-slate-300">{'// '}</span>Debris by Orbit
             </h2>
             <div className="card p-6">
               <div className="space-y-5">
@@ -570,7 +570,7 @@ export default function DebrisCatalogPage() {
               <div className="mt-6 pt-4 border-t border-slate-700/30">
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-slate-400">Total Tracked</span>
-                  <span className="font-mono font-bold text-cyan-400">
+                  <span className="font-mono font-bold text-slate-300">
                     {ORBIT_BREAKDOWN.reduce((sum, o) => sum + o.tracked, 0).toLocaleString()}
                   </span>
                 </div>
@@ -581,7 +581,7 @@ export default function DebrisCatalogPage() {
           {/* Section 4: Top Contributors */}
           <section>
             <h2 className="text-xl font-bold text-slate-100 mb-4 flex items-center gap-2">
-              <span className="text-cyan-400">{'// '}</span>Top Contributors
+              <span className="text-slate-300">{'// '}</span>Top Contributors
             </h2>
             <div className="card p-6">
               <div className="space-y-4">
@@ -622,7 +622,7 @@ export default function DebrisCatalogPage() {
         {/* ══════════ Section 5: Active Remediation Programs ══════════ */}
         <section className="mb-10">
           <h2 className="text-xl font-bold text-slate-100 mb-4 flex items-center gap-2">
-            <span className="text-cyan-400">{'// '}</span>Active Remediation Programs
+            <span className="text-slate-300">{'// '}</span>Active Remediation Programs
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
             {REMEDIATION_PROGRAMS.map((program) => (
@@ -662,7 +662,7 @@ export default function DebrisCatalogPage() {
         {/* ══════════ Section 6: Kessler Syndrome Risk Assessment ══════════ */}
         <section className="mb-10">
           <h2 className="text-xl font-bold text-slate-100 mb-4 flex items-center gap-2">
-            <span className="text-cyan-400">{'// '}</span>Kessler Syndrome Risk Assessment
+            <span className="text-slate-300">{'// '}</span>Kessler Syndrome Risk Assessment
           </h2>
           <div className="card p-6 border-orange-500/30">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -746,27 +746,27 @@ export default function DebrisCatalogPage() {
             <h3 className="text-sm font-semibold text-slate-300 mb-3">Data Sources &amp; References</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-1.5 text-xs text-slate-500">
               <div className="flex items-center gap-2">
-                <span className="w-1 h-1 rounded-full bg-cyan-500 flex-shrink-0" />
+                <span className="w-1 h-1 rounded-full bg-white flex-shrink-0" />
                 18th Space Defense Squadron (US Space Force) &mdash; SSN Catalog
               </div>
               <div className="flex items-center gap-2">
-                <span className="w-1 h-1 rounded-full bg-cyan-500 flex-shrink-0" />
+                <span className="w-1 h-1 rounded-full bg-white flex-shrink-0" />
                 ESA Space Debris Office &mdash; Annual Environment Report
               </div>
               <div className="flex items-center gap-2">
-                <span className="w-1 h-1 rounded-full bg-cyan-500 flex-shrink-0" />
+                <span className="w-1 h-1 rounded-full bg-white flex-shrink-0" />
                 NASA Orbital Debris Program Office (ODPO)
               </div>
               <div className="flex items-center gap-2">
-                <span className="w-1 h-1 rounded-full bg-cyan-500 flex-shrink-0" />
+                <span className="w-1 h-1 rounded-full bg-white flex-shrink-0" />
                 Inter-Agency Space Debris Coordination Committee (IADC)
               </div>
               <div className="flex items-center gap-2">
-                <span className="w-1 h-1 rounded-full bg-cyan-500 flex-shrink-0" />
+                <span className="w-1 h-1 rounded-full bg-white flex-shrink-0" />
                 Space-Track.org &mdash; Public catalog data
               </div>
               <div className="flex items-center gap-2">
-                <span className="w-1 h-1 rounded-full bg-cyan-500 flex-shrink-0" />
+                <span className="w-1 h-1 rounded-full bg-white flex-shrink-0" />
                 CelesTrak &mdash; SOCRATES conjunction assessments
               </div>
             </div>

@@ -75,14 +75,14 @@ const ALL_YEAR_DATA: YearData[] = [
       { name: 'Sriharikota', launches: 5 },
     ],
     orbitDistribution: [
-      { label: 'LEO', pct: 68, color: 'bg-cyan-500' },
+      { label: 'LEO', pct: 68, color: 'bg-white' },
       { label: 'SSO', pct: 15, color: 'bg-blue-500' },
       { label: 'GTO', pct: 10, color: 'bg-purple-500' },
       { label: 'MEO', pct: 4, color: 'bg-amber-500' },
       { label: 'Other', pct: 3, color: 'bg-slate-500' },
     ],
     payloadTypes: [
-      { label: 'Commercial Comms', pct: 40, color: 'bg-cyan-500' },
+      { label: 'Commercial Comms', pct: 40, color: 'bg-white' },
       { label: 'Earth Observation', pct: 22, color: 'bg-emerald-500' },
       { label: 'Navigation', pct: 12, color: 'bg-blue-500' },
       { label: 'Military', pct: 10, color: 'bg-red-500' },
@@ -119,14 +119,14 @@ const ALL_YEAR_DATA: YearData[] = [
       { name: 'Sriharikota', launches: 7 },
     ],
     orbitDistribution: [
-      { label: 'LEO', pct: 65, color: 'bg-cyan-500' },
+      { label: 'LEO', pct: 65, color: 'bg-white' },
       { label: 'SSO', pct: 16, color: 'bg-blue-500' },
       { label: 'GTO', pct: 11, color: 'bg-purple-500' },
       { label: 'MEO', pct: 5, color: 'bg-amber-500' },
       { label: 'Other', pct: 3, color: 'bg-slate-500' },
     ],
     payloadTypes: [
-      { label: 'Commercial Comms', pct: 38, color: 'bg-cyan-500' },
+      { label: 'Commercial Comms', pct: 38, color: 'bg-white' },
       { label: 'Earth Observation', pct: 23, color: 'bg-emerald-500' },
       { label: 'Navigation', pct: 13, color: 'bg-blue-500' },
       { label: 'Military', pct: 9, color: 'bg-red-500' },
@@ -163,14 +163,14 @@ const ALL_YEAR_DATA: YearData[] = [
       { name: 'Sriharikota', launches: 5 },
     ],
     orbitDistribution: [
-      { label: 'LEO', pct: 62, color: 'bg-cyan-500' },
+      { label: 'LEO', pct: 62, color: 'bg-white' },
       { label: 'SSO', pct: 17, color: 'bg-blue-500' },
       { label: 'GTO', pct: 12, color: 'bg-purple-500' },
       { label: 'MEO', pct: 5, color: 'bg-amber-500' },
       { label: 'Other', pct: 4, color: 'bg-slate-500' },
     ],
     payloadTypes: [
-      { label: 'Commercial Comms', pct: 35, color: 'bg-cyan-500' },
+      { label: 'Commercial Comms', pct: 35, color: 'bg-white' },
       { label: 'Earth Observation', pct: 25, color: 'bg-emerald-500' },
       { label: 'Navigation', pct: 14, color: 'bg-blue-500' },
       { label: 'Military', pct: 8, color: 'bg-red-500' },
@@ -207,14 +207,14 @@ const ALL_YEAR_DATA: YearData[] = [
       { name: 'Sriharikota', launches: 3 },
     ],
     orbitDistribution: [
-      { label: 'LEO', pct: 58, color: 'bg-cyan-500' },
+      { label: 'LEO', pct: 58, color: 'bg-white' },
       { label: 'SSO', pct: 18, color: 'bg-blue-500' },
       { label: 'GTO', pct: 14, color: 'bg-purple-500' },
       { label: 'MEO', pct: 6, color: 'bg-amber-500' },
       { label: 'Other', pct: 4, color: 'bg-slate-500' },
     ],
     payloadTypes: [
-      { label: 'Commercial Comms', pct: 32, color: 'bg-cyan-500' },
+      { label: 'Commercial Comms', pct: 32, color: 'bg-white' },
       { label: 'Earth Observation', pct: 24, color: 'bg-emerald-500' },
       { label: 'Navigation', pct: 15, color: 'bg-blue-500' },
       { label: 'Military', pct: 10, color: 'bg-red-500' },
@@ -251,14 +251,14 @@ const ALL_YEAR_DATA: YearData[] = [
       { name: 'Sriharikota', launches: 2 },
     ],
     orbitDistribution: [
-      { label: 'LEO', pct: 55, color: 'bg-cyan-500' },
+      { label: 'LEO', pct: 55, color: 'bg-white' },
       { label: 'SSO', pct: 18, color: 'bg-blue-500' },
       { label: 'GTO', pct: 16, color: 'bg-purple-500' },
       { label: 'MEO', pct: 6, color: 'bg-amber-500' },
       { label: 'Other', pct: 5, color: 'bg-slate-500' },
     ],
     payloadTypes: [
-      { label: 'Commercial Comms', pct: 30, color: 'bg-cyan-500' },
+      { label: 'Commercial Comms', pct: 30, color: 'bg-white' },
       { label: 'Earth Observation', pct: 22, color: 'bg-emerald-500' },
       { label: 'Navigation', pct: 18, color: 'bg-blue-500' },
       { label: 'Military', pct: 12, color: 'bg-red-500' },
@@ -295,14 +295,14 @@ const ALL_YEAR_DATA: YearData[] = [
       { name: 'Sriharikota', launches: 6 },
     ],
     orbitDistribution: [
-      { label: 'LEO', pct: 50, color: 'bg-cyan-500' },
+      { label: 'LEO', pct: 50, color: 'bg-white' },
       { label: 'SSO', pct: 20, color: 'bg-blue-500' },
       { label: 'GTO', pct: 18, color: 'bg-purple-500' },
       { label: 'MEO', pct: 7, color: 'bg-amber-500' },
       { label: 'Other', pct: 5, color: 'bg-slate-500' },
     ],
     payloadTypes: [
-      { label: 'Commercial Comms', pct: 28, color: 'bg-cyan-500' },
+      { label: 'Commercial Comms', pct: 28, color: 'bg-white' },
       { label: 'Earth Observation', pct: 20, color: 'bg-emerald-500' },
       { label: 'Navigation', pct: 20, color: 'bg-blue-500' },
       { label: 'Military', pct: 14, color: 'bg-red-500' },
@@ -339,14 +339,14 @@ const ALL_YEAR_DATA: YearData[] = [
       { name: 'Sriharikota', launches: 7 },
     ],
     orbitDistribution: [
-      { label: 'LEO', pct: 48, color: 'bg-cyan-500' },
+      { label: 'LEO', pct: 48, color: 'bg-white' },
       { label: 'SSO', pct: 20, color: 'bg-blue-500' },
       { label: 'GTO', pct: 20, color: 'bg-purple-500' },
       { label: 'MEO', pct: 7, color: 'bg-amber-500' },
       { label: 'Other', pct: 5, color: 'bg-slate-500' },
     ],
     payloadTypes: [
-      { label: 'Commercial Comms', pct: 30, color: 'bg-cyan-500' },
+      { label: 'Commercial Comms', pct: 30, color: 'bg-white' },
       { label: 'Earth Observation', pct: 18, color: 'bg-emerald-500' },
       { label: 'Navigation', pct: 22, color: 'bg-blue-500' },
       { label: 'Military', pct: 12, color: 'bg-red-500' },
@@ -440,7 +440,7 @@ export default function MissionStatsPage() {
                 onClick={() => setSelectedYear(d.year)}
                 className={`rounded-full px-4 py-1.5 text-sm font-semibold transition-colors ${
                   selectedYear === d.year
-                    ? 'bg-cyan-600 text-white shadow-lg shadow-cyan-500/25'
+                    ? 'bg-white text-white shadow-lg shadow-black/20/25'
                     : 'bg-slate-800/60 text-slate-300 hover:bg-slate-700/80'
                 }`}
               >
@@ -480,7 +480,7 @@ export default function MissionStatsPage() {
                       <div
                         className={`w-full rounded-t-md transition-all duration-500 ${
                           isSelected
-                            ? 'bg-gradient-to-t from-cyan-600 to-cyan-400 shadow-lg shadow-cyan-500/30'
+                            ? 'bg-gradient-to-t from-slate-200 to-slate-400 shadow-lg shadow-black/15'
                             : 'bg-gradient-to-t from-slate-600 to-slate-500 group-hover:from-slate-500 group-hover:to-slate-400'
                         }`}
                         style={{ height: `${heightPct}%` }}
@@ -488,7 +488,7 @@ export default function MissionStatsPage() {
                     </div>
                     <span
                       className={`mt-2 text-xs font-semibold ${
-                        isSelected ? 'text-cyan-400' : 'text-slate-400'
+                        isSelected ? 'text-slate-300' : 'text-slate-400'
                       }`}
                     >
                       {d.year}
@@ -546,7 +546,7 @@ export default function MissionStatsPage() {
                               p.successRate >= 99
                                 ? 'text-emerald-400'
                                 : p.successRate >= 95
-                                  ? 'text-cyan-400'
+                                  ? 'text-slate-300'
                                   : p.successRate >= 90
                                     ? 'text-amber-400'
                                     : 'text-red-400'
@@ -578,7 +578,7 @@ export default function MissionStatsPage() {
                       </div>
                       <div className="h-3 w-full overflow-hidden rounded-full bg-slate-700/50">
                         <div
-                          className="h-full rounded-full bg-gradient-to-r from-cyan-600 to-blue-500 transition-all duration-700"
+                          className="h-full rounded-full bg-gradient-to-r from-slate-200 to-blue-500 transition-all duration-700"
                           style={{ width: `${widthPct}%` }}
                         />
 
@@ -685,13 +685,13 @@ function KpiCard({
   accent: string;
 }) {
   const borderColors: Record<string, string> = {
-    cyan: 'border-cyan-500/30',
+    cyan: 'border-white/10',
     emerald: 'border-emerald-500/30',
     purple: 'border-purple-500/30',
     amber: 'border-amber-500/30',
   };
   const textColors: Record<string, string> = {
-    cyan: 'text-cyan-400',
+    cyan: 'text-slate-300',
     emerald: 'text-emerald-400',
     purple: 'text-purple-400',
     amber: 'text-amber-400',

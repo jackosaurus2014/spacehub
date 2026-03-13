@@ -141,7 +141,7 @@ function ResultCard({ label, value, unit, accent = 'purple' }: {
 }) {
   const colors = {
     purple: 'text-purple-400',
-    cyan: 'text-cyan-400',
+    cyan: 'text-slate-300',
     emerald: 'text-emerald-400',
     amber: 'text-amber-400',
   };

@@ -111,14 +111,14 @@ export default function NewsletterSignup({
             onChange={(e) => setEmail(e.target.value)}
             placeholder="Your email"
             aria-label="Email address"
-            className="w-full px-3 py-2 text-sm bg-slate-800/80 border border-slate-700 rounded-lg text-slate-200 placeholder:text-slate-500 focus:outline-none focus:border-cyan-500/50 transition-colors"
+            className="w-full px-3 py-2 text-sm bg-slate-800/80 border border-slate-700 rounded-lg text-slate-200 placeholder:text-slate-500 focus:outline-none focus:border-white/20 transition-colors"
             required
             disabled={status === 'loading'}
           />
           <button
             type="submit"
             disabled={status === 'loading' || !email}
-            className="w-full px-3 py-2.5 min-h-[44px] text-sm font-medium bg-cyan-600 hover:bg-cyan-500 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg transition-colors"
+            className="w-full px-3 py-2.5 min-h-[44px] text-sm font-medium bg-white hover:bg-slate-100 text-slate-900 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg transition-colors"
           >
             {status === 'loading' ? 'Subscribing...' : 'Subscribe'}
           </button>
@@ -175,7 +175,7 @@ export default function NewsletterSignup({
                     setMessage('Failed to resend. Please try again later.');
                   }
                 }}
-                className="mt-3 text-sm text-cyan-400 hover:text-cyan-300 underline transition-colors"
+                className="mt-3 text-sm text-slate-300 hover:text-white underline transition-colors"
               >
                 Resend verification email
               </button>
@@ -232,7 +232,7 @@ export default function NewsletterSignup({
         )}
 
         <p className="mt-6 text-slate-400 text-sm">
-          Join 10,000+ space enthusiasts. Unsubscribe anytime.
+          Stay ahead with weekly space industry insights. Unsubscribe anytime.
         </p>
       </div>
     </div>

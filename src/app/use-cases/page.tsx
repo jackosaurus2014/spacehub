@@ -32,8 +32,8 @@ const USE_CASES = [
     role: 'Partner',
     company: 'Orbital Ventures',
     companyType: 'Venture Capital',
-    avatarColor: 'from-cyan-500 to-blue-500',
-    badgeClass: 'bg-cyan-500/10 text-cyan-300 border-cyan-500/20',
+    avatarColor: 'from-white to-blue-500',
+    badgeClass: 'bg-white/5 text-slate-200 border-white/10',
     problem:
       'Sarah evaluates 50+ space startups per quarter. Her team was drowning in fragmented data across pitch decks, SEC filings, and industry reports. Initial screening took two analysts a full week per deal.',
     modules: [
@@ -116,16 +116,16 @@ export default function UseCasesPage() {
 
       {/* Hero */}
       <section className="relative py-20 md:py-28 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-transparent to-purple-600/10 pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-br from-white/5 via-transparent to-purple-600/10 pointer-events-none" />
         <div className="container mx-auto px-4 relative z-10">
           <ScrollReveal>
             <div className="max-w-3xl mx-auto text-center">
-              <span className="inline-block px-4 py-1.5 rounded-full text-xs font-semibold tracking-wide uppercase bg-cyan-500/10 text-cyan-300 border border-cyan-500/20 mb-6">
+              <span className="inline-block px-4 py-1.5 rounded-full text-xs font-semibold tracking-wide uppercase bg-white/5 text-slate-200 border border-white/10 mb-6">
                 Use Cases
               </span>
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
                 How Space Professionals Use{' '}
-                <span className="bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-slate-300 to-purple-400 bg-clip-text text-transparent">
                   SpaceNexus
                 </span>
               </h1>
@@ -173,9 +173,9 @@ export default function UseCasesPage() {
                           <Link
                             key={mod.name}
                             href={mod.href}
-                            className="block rounded-xl border border-slate-700/50 bg-slate-800/50 p-3 hover:border-cyan-500/30 transition-colors group"
+                            className="block rounded-xl border border-slate-700/50 bg-slate-800/50 p-3 hover:border-white/10 transition-colors group"
                           >
-                            <p className="text-white text-sm font-medium group-hover:text-cyan-300 transition-colors">{mod.name}</p>
+                            <p className="text-white text-sm font-medium group-hover:text-white transition-colors">{mod.name}</p>
                             <p className="text-slate-400 text-xs mt-0.5 leading-relaxed">{mod.desc}</p>
                           </Link>
                         ))}
@@ -183,8 +183,8 @@ export default function UseCasesPage() {
                     </div>
 
                     {/* Result */}
-                    <div className="rounded-xl bg-gradient-to-r from-cyan-500/5 to-blue-500/5 border border-cyan-500/10 p-4">
-                      <h3 className="text-sm font-semibold uppercase tracking-wider text-cyan-400 mb-2">The Result</h3>
+                    <div className="rounded-xl bg-gradient-to-r from-white/5 to-blue-500/5 border border-white/15/10 p-4">
+                      <h3 className="text-sm font-semibold uppercase tracking-wider text-slate-300 mb-2">The Result</h3>
                       <p className="text-slate-200 text-sm leading-relaxed">{uc.result}</p>
                     </div>
 
@@ -213,7 +213,7 @@ export default function UseCasesPage() {
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link
                   href="/pricing"
-                  className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-semibold hover:from-cyan-400 hover:to-blue-500 transition-all shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40"
+                  className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl bg-gradient-to-r from-white to-blue-600 text-white font-semibold hover:from-slate-300 hover:to-blue-500 transition-all shadow-lg shadow-black/20/25 hover:shadow-black/20/40"
                 >
                   Start Free Today
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

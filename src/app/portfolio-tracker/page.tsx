@@ -94,7 +94,7 @@ for (const c of SPACE_COMPANIES) {
 
 const SECTOR_GROUPS: SectorGroup[] = [
   { name: 'Launch', icon: '\u{1F680}', color: 'from-orange-500/20 to-orange-600/5 border-orange-500/30', companies: ['RKLB', 'ASTR', 'AJRD', 'BA'] },
-  { name: 'Satellite Comms', icon: '\u{1F4E1}', color: 'from-cyan-500/20 to-cyan-600/5 border-cyan-500/30', companies: ['ASTS', 'VSAT', 'GSAT', 'IRDM', 'SPCE'] },
+  { name: 'Satellite Comms', icon: '\u{1F4E1}', color: 'from-white/5 to-slate-300/5 border-white/10', companies: ['ASTS', 'VSAT', 'GSAT', 'IRDM', 'SPCE'] },
   { name: 'Earth Observation', icon: '\u{1F30D}', color: 'from-emerald-500/20 to-emerald-600/5 border-emerald-500/30', companies: ['PL', 'BKSY', 'MAXR', 'SATL'] },
   { name: 'In-Space Services', icon: '\u{1F6F8}', color: 'from-purple-500/20 to-purple-600/5 border-purple-500/30', companies: ['MNTS', 'RDW', 'LLAP'] },
   { name: 'Defense/Primes', icon: '\u{1F6E1}\uFE0F', color: 'from-amber-500/20 to-amber-600/5 border-amber-500/30', companies: ['LMT', 'NOC', 'LHX', 'RTX', 'BA'] },
@@ -114,7 +114,7 @@ const INVESTMENT_THESES: InvestmentThesis[] = [
   {
     title: 'LEO Constellation Boom',
     icon: '\u{1F310}',
-    color: 'border-cyan-500/40',
+    color: 'border-white/15/40',
     summary: 'Starlink, Kuiper, and OneWeb are driving unprecedented demand for launch services, ground equipment, and inter-satellite link technology. This rising tide lifts the entire LEO supply chain.',
     keyDrivers: ['SpaceX Starlink 12,000+ sats deployed', 'Amazon Kuiper $10B+ investment', 'Growing direct-to-device connectivity market', 'Satellite refresh cycles create recurring demand'],
     timeHorizon: '2-5 years',
@@ -292,7 +292,7 @@ export default function PortfolioTrackerPage() {
   // Sort arrow indicator
   const sortArrow = (key: SortKey) => {
     if (sortKey !== key) return <span className="text-slate-600 ml-1">{'\u2195'}</span>;
-    return <span className="text-cyan-400 ml-1">{sortDir === 'asc' ? '\u2191' : '\u2193'}</span>;
+    return <span className="text-slate-300 ml-1">{sortDir === 'asc' ? '\u2191' : '\u2193'}</span>;
   };
 
   // Market index mock data
@@ -360,7 +360,7 @@ export default function PortfolioTrackerPage() {
                   <div key={company.ticker} className="bg-slate-800/50 rounded-lg p-3 border border-slate-700/50 flex items-center justify-between">
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className="text-sm font-bold text-cyan-400">{company.ticker}</span>
+                        <span className="text-sm font-bold text-slate-300">{company.ticker}</span>
                         <span className="text-xs text-slate-400">{company.name}</span>
                       </div>
                       <div className="flex items-center gap-3 mt-1">
@@ -411,7 +411,7 @@ export default function PortfolioTrackerPage() {
                     placeholder="Search ticker or name..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full sm:w-64 px-4 py-2 bg-slate-800/70 border border-slate-700/50 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500/50 transition-colors"
+                    className="w-full sm:w-64 px-4 py-2 bg-slate-800/70 border border-slate-700/50 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-white/15 transition-colors"
                   />
                   {searchQuery && (
                     <button
@@ -426,7 +426,7 @@ export default function PortfolioTrackerPage() {
                 <select
                   value={sectorFilter}
                   onChange={(e) => setSectorFilter(e.target.value)}
-                  className="px-4 py-2 bg-slate-800/70 border border-slate-700/50 rounded-lg text-sm text-white focus:outline-none focus:border-cyan-500/50 transition-colors"
+                  className="px-4 py-2 bg-slate-800/70 border border-slate-700/50 rounded-lg text-sm text-white focus:outline-none focus:border-white/15 transition-colors"
                 >
                   <option value="">All Sectors</option>
                   {sectors.map(s => (
@@ -516,11 +516,11 @@ export default function PortfolioTrackerPage() {
                           </button>
                         </td>
                         <td className="py-3 px-2">
-                          <span className="font-bold text-cyan-400">{company.ticker}</span>
+                          <span className="font-bold text-slate-300">{company.ticker}</span>
                         </td>
                         <td className="py-3 px-2">
                           <div>
-                            <span className="text-white group-hover:text-cyan-300 transition-colors">{company.name}</span>
+                            <span className="text-white group-hover:text-white transition-colors">{company.name}</span>
                             {company.note && (
                               <p className="text-xs text-slate-500 mt-0.5">{company.note}</p>
                             )}
@@ -593,7 +593,7 @@ export default function PortfolioTrackerPage() {
                     <div className="mt-3 pt-3 border-t border-slate-700/50">
                       <div className="flex flex-wrap gap-1">
                         {group.companies.map(t => (
-                          <span key={t} className="text-xs px-1.5 py-0.5 bg-slate-800/60 rounded text-cyan-400 font-mono">{t}</span>
+                          <span key={t} className="text-xs px-1.5 py-0.5 bg-slate-800/60 rounded text-slate-300 font-mono">{t}</span>
                         ))}
                       </div>
                     </div>
@@ -624,7 +624,7 @@ export default function PortfolioTrackerPage() {
                   {RECENT_IPOS.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).map((ipo) => (
                     <tr key={ipo.ticker} className="border-b border-slate-800/50 hover:bg-slate-800/30 transition-colors">
                       <td className="py-3 px-2 text-white">{ipo.name}</td>
-                      <td className="py-3 px-2 font-bold text-cyan-400 font-mono">{ipo.ticker}</td>
+                      <td className="py-3 px-2 font-bold text-slate-300 font-mono">{ipo.ticker}</td>
                       <td className="py-3 px-2 text-slate-300 hidden sm:table-cell">
                         {new Date(ipo.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                       </td>
@@ -681,7 +681,7 @@ export default function PortfolioTrackerPage() {
                     <ul className="space-y-1.5">
                       {thesis.keyDrivers.map((driver, idx) => (
                         <li key={idx} className="flex items-start gap-2 text-xs text-slate-300">
-                          <span className="text-cyan-400 mt-0.5 shrink-0">{'\u2192'}</span>
+                          <span className="text-slate-300 mt-0.5 shrink-0">{'\u2192'}</span>
                           {driver}
                         </li>
                       ))}
@@ -713,19 +713,19 @@ export default function PortfolioTrackerPage() {
         {/* ───── Related Links ───── */}
         <ScrollReveal>
           <div className="mt-8 flex flex-wrap gap-3">
-            <Link href="/market-intel" className="text-sm px-4 py-2 rounded-lg bg-slate-800/50 border border-slate-700/50 text-slate-300 hover:text-white hover:border-cyan-500/40 transition-colors">
+            <Link href="/market-intel" className="text-sm px-4 py-2 rounded-lg bg-slate-800/50 border border-slate-700/50 text-slate-300 hover:text-white hover:border-white/15/40 transition-colors">
               Market Intelligence
             </Link>
-            <Link href="/funding-tracker" className="text-sm px-4 py-2 rounded-lg bg-slate-800/50 border border-slate-700/50 text-slate-300 hover:text-white hover:border-cyan-500/40 transition-colors">
+            <Link href="/funding-tracker" className="text-sm px-4 py-2 rounded-lg bg-slate-800/50 border border-slate-700/50 text-slate-300 hover:text-white hover:border-white/15/40 transition-colors">
               Funding Tracker
             </Link>
-            <Link href="/company-profiles" className="text-sm px-4 py-2 rounded-lg bg-slate-800/50 border border-slate-700/50 text-slate-300 hover:text-white hover:border-cyan-500/40 transition-colors">
+            <Link href="/company-profiles" className="text-sm px-4 py-2 rounded-lg bg-slate-800/50 border border-slate-700/50 text-slate-300 hover:text-white hover:border-white/15/40 transition-colors">
               Company Profiles
             </Link>
-            <Link href="/investors" className="text-sm px-4 py-2 rounded-lg bg-slate-800/50 border border-slate-700/50 text-slate-300 hover:text-white hover:border-cyan-500/40 transition-colors">
+            <Link href="/investors" className="text-sm px-4 py-2 rounded-lg bg-slate-800/50 border border-slate-700/50 text-slate-300 hover:text-white hover:border-white/15/40 transition-colors">
               Investor Hub
             </Link>
-            <Link href="/space-economy" className="text-sm px-4 py-2 rounded-lg bg-slate-800/50 border border-slate-700/50 text-slate-300 hover:text-white hover:border-cyan-500/40 transition-colors">
+            <Link href="/space-economy" className="text-sm px-4 py-2 rounded-lg bg-slate-800/50 border border-slate-700/50 text-slate-300 hover:text-white hover:border-white/15/40 transition-colors">
               Space Economy
             </Link>
           </div>

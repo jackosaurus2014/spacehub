@@ -45,7 +45,7 @@ export default function SourceCitation({ sources }: SourceCitationProps) {
             {source.url ? (
               <a
                 href={source.url}
-                className="hover:text-cyan-400 transition-colors"
+                className="hover:text-white transition-colors"
                 target="_blank"
                 rel="noopener noreferrer"
               >

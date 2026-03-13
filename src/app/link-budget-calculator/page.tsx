@@ -155,7 +155,7 @@ function SliderInput({
           inputMode="decimal"
           min={min} max={max} step={step} value={value}
           onChange={handleInput}
-          className="w-28 bg-slate-900/70 border border-slate-700/50 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/20"
+          className="w-28 bg-slate-900/70 border border-slate-700/50 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-white/15 focus:ring-1 focus:ring-white/10"
         />
         <span className="text-sm text-slate-400">{unit}</span>
       </div>
@@ -163,7 +163,7 @@ function SliderInput({
         type="range"
         min={sliderMin} max={sliderMax} step={sliderStep} value={sliderVal}
         onChange={handleSlider}
-        className="w-full h-2 bg-slate-700/50 rounded-full appearance-none cursor-pointer accent-cyan-500 [&::-webkit-slider-thumb]:bg-cyan-400 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:cursor-pointer"
+        className="w-full h-2 bg-slate-700/50 rounded-full appearance-none cursor-pointer accent-slate-400 [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:cursor-pointer"
       />
       {description && <p className="text-xs text-slate-500 mt-1">{description}</p>}
     </div>
@@ -179,7 +179,7 @@ function ResultCard({ label, value, unit, accent = 'cyan' }: {
   accent?: 'cyan' | 'emerald' | 'amber' | 'purple' | 'red' | 'yellow' | 'green';
 }) {
   const colors: Record<string, string> = {
-    cyan: 'text-cyan-400', emerald: 'text-emerald-400', amber: 'text-amber-400',
+    cyan: 'text-slate-300', emerald: 'text-emerald-400', amber: 'text-amber-400',
     purple: 'text-purple-400', red: 'text-red-400', yellow: 'text-yellow-400', green: 'text-green-400',
   };
   return (
@@ -347,7 +347,7 @@ export default function LinkBudgetCalculatorPage() {
               <StaggerItem key={p.label}>
               <button
                 onClick={() => applyPreset(p)}
-                className="w-full text-left p-3 rounded-lg bg-slate-800/50 border border-slate-700/50 hover:border-cyan-500/40 hover:bg-cyan-500/5 transition-all"
+                className="w-full text-left p-3 rounded-lg bg-slate-800/50 border border-slate-700/50 hover:border-white/15/40 hover:bg-slate-100/5 transition-all"
               >
                 <div className="text-sm font-medium text-slate-200">{p.label}</div>
                 <div className="text-xs text-slate-500 mt-0.5">{p.description}</div>
@@ -367,7 +367,7 @@ export default function LinkBudgetCalculatorPage() {
           {/* ── Transmitter Section ── */}
           <div className="card p-5">
             <h3 className="text-lg font-semibold text-slate-100 mb-1 flex items-center gap-2">
-              <svg className="w-5 h-5 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <svg className="w-5 h-5 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M5.636 18.364a9 9 0 010-12.728m12.728 0a9 9 0 010 12.728m-9.9-2.829a5 5 0 010-7.07m7.072 0a5 5 0 010 7.07M13 12a1 1 0 11-2 0 1 1 0 012 0z" />
               </svg>
               Transmitter
@@ -393,10 +393,10 @@ export default function LinkBudgetCalculatorPage() {
               description="Losses between transmitter and antenna"
             />
 
-            <div className="card p-3 bg-cyan-500/5 border-cyan-500/20 mt-2">
+            <div className="card p-3 bg-white/5 border-white/10 mt-2">
               <div className="flex justify-between items-center">
                 <span className="text-xs text-slate-400">EIRP (Effective Isotropic Radiated Power)</span>
-                <span className="text-sm font-bold text-cyan-400">{fmtDb(results.eirp)} dBW</span>
+                <span className="text-sm font-bold text-slate-300">{fmtDb(results.eirp)} dBW</span>
               </div>
               <div className="text-xs text-slate-600 mt-1">
                 = {fmtDb(wToDbw(txPower))} dBW + {fmtDb(txGain)} dBi - {fmtDb(txLoss)} dB
@@ -424,7 +424,7 @@ export default function LinkBudgetCalculatorPage() {
                     onClick={() => setBand(key)}
                     className={`py-2 px-2 rounded-lg text-xs font-medium transition-all border ${
                       band === key
-                        ? 'bg-cyan-500/15 border-cyan-500/40 text-cyan-400'
+                        ? 'bg-white/8 border-white/15/40 text-slate-300'
                         : 'bg-slate-900/50 border-slate-700/50 text-slate-400 hover:border-slate-600/50'
                     }`}
                   >
@@ -458,7 +458,7 @@ export default function LinkBudgetCalculatorPage() {
               <button
                 onClick={() => setRainEnabled(!rainEnabled)}
                 className={`relative w-10 h-5 rounded-full transition-colors ${
-                  rainEnabled ? 'bg-cyan-500' : 'bg-slate-700'
+                  rainEnabled ? 'bg-white' : 'bg-slate-700'
                 }`}
               >
                 <span className={`absolute top-0.5 w-4 h-4 rounded-full bg-white transition-transform ${
@@ -624,12 +624,12 @@ export default function LinkBudgetCalculatorPage() {
               <tbody className="text-slate-300">
                 <tr className="border-b border-slate-800/50">
                   <td className="py-2 pr-4 text-slate-400">Transmit Power</td>
-                  <td className="py-2 px-4 text-right text-cyan-400">{fmtDb(wToDbw(txPower))} dBW</td>
+                  <td className="py-2 px-4 text-right text-slate-300">{fmtDb(wToDbw(txPower))} dBW</td>
                   <td className="py-2 pl-4 text-right text-slate-500">{txPower} W</td>
                 </tr>
                 <tr className="border-b border-slate-800/50">
                   <td className="py-2 pr-4 text-slate-400">Transmit Antenna Gain</td>
-                  <td className="py-2 px-4 text-right text-cyan-400">+{fmtDb(txGain)} dBi</td>
+                  <td className="py-2 px-4 text-right text-slate-300">+{fmtDb(txGain)} dBi</td>
                   <td className="py-2 pl-4 text-right text-slate-500">{fmtDb(Math.pow(10, txGain / 10), 1)}x</td>
                 </tr>
                 <tr className="border-b border-slate-800/50">
@@ -639,7 +639,7 @@ export default function LinkBudgetCalculatorPage() {
                 </tr>
                 <tr className="border-b border-slate-700/50 font-medium">
                   <td className="py-2 pr-4 text-slate-200">EIRP</td>
-                  <td className="py-2 px-4 text-right text-cyan-400">{fmtDb(results.eirp)} dBW</td>
+                  <td className="py-2 px-4 text-right text-slate-300">{fmtDb(results.eirp)} dBW</td>
                   <td className="py-2 pl-4 text-right text-slate-500">{fmtDb(Math.pow(10, results.eirp / 10), 2)} W</td>
                 </tr>
 
@@ -757,30 +757,30 @@ export default function LinkBudgetCalculatorPage() {
 
         {/* ── Related Links ── */}
         <ScrollReveal delay={0.2}>
-        <div className="card p-5 border border-cyan-500/20">
+        <div className="card p-5 border border-white/10">
           <h3 className="text-lg font-semibold text-white mb-4">Related Tools</h3>
           <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
             <StaggerItem>
             <Link href="/orbital-calculator" className="block p-3 rounded-lg bg-slate-700/30 hover:bg-slate-700/50 transition-colors group">
-              <div className="text-sm font-medium text-white group-hover:text-cyan-200">Orbital Calculator</div>
+              <div className="text-sm font-medium text-white group-hover:text-slate-200">Orbital Calculator</div>
               <p className="text-xs text-slate-400 mt-1">Delta-v, periods, escape velocity</p>
             </Link>
             </StaggerItem>
             <StaggerItem>
             <Link href="/satellites" className="block p-3 rounded-lg bg-slate-700/30 hover:bg-slate-700/50 transition-colors group">
-              <div className="text-sm font-medium text-white group-hover:text-cyan-200">Satellite Tracker</div>
+              <div className="text-sm font-medium text-white group-hover:text-slate-200">Satellite Tracker</div>
               <p className="text-xs text-slate-400 mt-1">Track objects in orbit</p>
             </Link>
             </StaggerItem>
             <StaggerItem>
             <Link href="/spectrum" className="block p-3 rounded-lg bg-slate-700/30 hover:bg-slate-700/50 transition-colors group">
-              <div className="text-sm font-medium text-white group-hover:text-cyan-200">Spectrum Management</div>
+              <div className="text-sm font-medium text-white group-hover:text-slate-200">Spectrum Management</div>
               <p className="text-xs text-slate-400 mt-1">Frequency allocation and planning</p>
             </Link>
             </StaggerItem>
             <StaggerItem>
             <Link href="/spaceports" className="block p-3 rounded-lg bg-slate-700/30 hover:bg-slate-700/50 transition-colors group">
-              <div className="text-sm font-medium text-white group-hover:text-cyan-200">Ground Stations</div>
+              <div className="text-sm font-medium text-white group-hover:text-slate-200">Ground Stations</div>
               <p className="text-xs text-slate-400 mt-1">Spaceports and communications</p>
             </Link>
             </StaggerItem>

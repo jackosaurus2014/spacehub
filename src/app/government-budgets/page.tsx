@@ -112,7 +112,7 @@ export default function GovernmentBudgetsPage() {
               <div key={stat.label} className="card p-4 text-center">
                 <p className="text-2xl font-bold text-white">{stat.value}</p>
                 <p className="text-xs text-slate-400 mt-1">{stat.label}</p>
-                <p className="text-xs text-cyan-400 mt-0.5">{stat.sub}</p>
+                <p className="text-xs text-slate-300 mt-0.5">{stat.sub}</p>
               </div>
             ))}
           </div>
@@ -124,7 +124,7 @@ export default function GovernmentBudgetsPage() {
             <span className="text-sm text-slate-400">Region:</span>
             {REGIONS.map(r => (
               <button key={r} onClick={() => setRegionFilter(r)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${regionFilter === r ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-400/40' : 'bg-slate-800/50 text-slate-400 border border-slate-700/50 hover:text-white'}`}>
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${regionFilter === r ? 'bg-white/10 text-slate-200 border border-white/10/40' : 'bg-slate-800/50 text-slate-400 border border-slate-700/50 hover:text-white'}`}>
                 {r}
               </button>
             ))}
@@ -176,7 +176,7 @@ export default function GovernmentBudgetsPage() {
                         </td>
                         <td className="px-4 py-3">
                           <div className="w-full bg-slate-700/40 rounded-full h-2.5">
-                            <div className="h-2.5 rounded-full bg-gradient-to-r from-cyan-500 to-purple-500 transition-all"
+                            <div className="h-2.5 rounded-full bg-gradient-to-r from-white to-purple-500 transition-all"
                               style={{ width: `${(agency.budget / maxBudget) * 100}%` }} />
                           </div>
                         </td>
@@ -217,7 +217,7 @@ export default function GovernmentBudgetsPage() {
                   {/* Relative progress bar */}
                   <div className="w-full bg-slate-700/40 rounded-full h-2 mb-3">
                     <div
-                      className="h-2 rounded-full bg-gradient-to-r from-cyan-500 to-purple-500 transition-all"
+                      className="h-2 rounded-full bg-gradient-to-r from-white to-purple-500 transition-all"
                       style={{ width: `${(agency.budget / maxBudget) * 100}%` }}
                     />
                   </div>
@@ -263,7 +263,7 @@ export default function GovernmentBudgetsPage() {
                       <span className="text-white font-medium">${r.amount.toFixed(1)}B ({r.pct}%)</span>
                     </div>
                     <div className="w-full bg-slate-700/40 rounded-full h-3">
-                      <div className="h-3 rounded-full bg-gradient-to-r from-purple-500 to-cyan-500 transition-all"
+                      <div className="h-3 rounded-full bg-gradient-to-r from-purple-500 to-slate-200 transition-all"
                         style={{ width: `${parseFloat(r.pct)}%` }} />
 
         <RelatedModules modules={PAGE_RELATIONS['government-budgets']} />
@@ -280,7 +280,7 @@ export default function GovernmentBudgetsPage() {
               <div className="space-y-4">
                 {[
                   { label: 'Military Space', pct: 52, amount: 53.6, color: 'from-red-500 to-orange-500' },
-                  { label: 'Civil Space', pct: 38, amount: 39.1, color: 'from-cyan-500 to-blue-500' },
+                  { label: 'Civil Space', pct: 38, amount: 39.1, color: 'from-white to-blue-500' },
                   { label: 'Intelligence', pct: 10, amount: 10.3, color: 'from-purple-500 to-pink-500' },
                 ].map(cat => (
                   <div key={cat.label}>
@@ -309,7 +309,7 @@ export default function GovernmentBudgetsPage() {
                   ].map(item => (
                     <div key={item.country} className="flex justify-between text-xs bg-slate-700/30 rounded-lg px-3 py-2">
                       <span className="text-slate-300">{item.country}</span>
-                      <span className="text-cyan-400 font-medium">{item.value}</span>
+                      <span className="text-slate-300 font-medium">{item.value}</span>
                     </div>
                   ))}
                 </div>
@@ -326,12 +326,12 @@ export default function GovernmentBudgetsPage() {
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {KEY_PROGRAMS.map(prog => (
-                <div key={prog.name} className="card p-4 hover:border-cyan-400/30 transition-colors">
+                <div key={prog.name} className="card p-4 hover:border-white/10 transition-colors">
                   <div className="flex items-start justify-between mb-2">
                     <h4 className="text-sm font-bold text-white">{prog.name}</h4>
                     <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
                       prog.status === 'Operational' ? 'bg-emerald-500/20 text-emerald-400' :
-                      prog.status === 'Active' ? 'bg-cyan-500/20 text-cyan-400' :
+                      prog.status === 'Active' ? 'bg-white/10 text-slate-300' :
                       prog.status === 'Deploying' ? 'bg-yellow-500/20 text-yellow-400' :
                       prog.status === 'Testing' ? 'bg-orange-500/20 text-orange-400' :
                       'bg-purple-500/20 text-purple-400'

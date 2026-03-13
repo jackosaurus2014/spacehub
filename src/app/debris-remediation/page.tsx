@@ -99,7 +99,7 @@ const APPROACH_INFO: Record<ApproachType, { label: string; color: string; icon: 
   'net-capture': { label: 'Net Capture', color: 'bg-teal-500/20 text-teal-400 border-teal-500/30', icon: '\u{1FAA4}' },
   'harpoon': { label: 'Harpoon', color: 'bg-red-500/20 text-red-400 border-red-500/30', icon: '\u{1F531}' },
   'laser-ablation': { label: 'Laser Ablation', color: 'bg-amber-500/20 text-amber-400 border-amber-500/30', icon: '\u{1F4A5}' },
-  'drag-sail': { label: 'Drag Sail', color: 'bg-cyan-500/20 text-cyan-400 border-cyan-500/30', icon: '\u{26F5}' },
+  'drag-sail': { label: 'Drag Sail', color: 'bg-white/10 text-slate-300 border-white/10', icon: '\u{26F5}' },
   'ion-beam': { label: 'Ion Beam Deflection', color: 'bg-indigo-500/20 text-indigo-400 border-indigo-500/30', icon: '\u{26A1}' },
   'capture-bag': { label: 'Capture Bag', color: 'bg-orange-500/20 text-orange-400 border-orange-500/30', icon: '\u{1F4E6}' },
   'collision-avoidance': { label: 'Collision Avoidance', color: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30', icon: '\u{1F6E1}\u{FE0F}' },
@@ -136,7 +136,7 @@ const REGULATION_TYPE_COLORS: Record<string, string> = {
 };
 
 const TECH_CATEGORY_COLORS: Record<string, string> = {
-  capture: 'bg-cyan-500/20 text-cyan-400 border-cyan-500/30',
+  capture: 'bg-white/10 text-slate-300 border-white/10',
   deorbit: 'bg-orange-500/20 text-orange-400 border-orange-500/30',
   deflection: 'bg-purple-500/20 text-purple-400 border-purple-500/30',
   servicing: 'bg-green-500/20 text-green-400 border-green-500/30',
@@ -425,7 +425,7 @@ const DEBRIS_STATISTICS: DebrisStat[] = [
     value: '~36,500',
     detail: 'Cataloged by the US Space Surveillance Network (18th Space Defense Squadron). Includes active satellites, spent rocket bodies, and fragments.',
     icon: '\u{1F4E1}',
-    color: 'from-cyan-500 to-blue-600',
+    color: 'from-white to-blue-600',
   },
   {
     label: 'Objects 1-10 cm',
@@ -902,7 +902,7 @@ function CompaniesTab() {
       <ScrollReveal>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div className="card p-4 text-center">
-            <div className="text-2xl font-bold text-cyan-400">{ADR_COMPANIES.length}</div>
+            <div className="text-2xl font-bold text-slate-300">{ADR_COMPANIES.length}</div>
             <div className="text-sm text-slate-400 mt-1">Companies/Missions</div>
           </div>
           <div className="card p-4 text-center">
@@ -930,7 +930,7 @@ function CompaniesTab() {
                 placeholder="Search companies, missions, or approaches..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full bg-slate-900/50 border border-slate-700 rounded-lg px-4 py-2.5 pl-10 text-slate-200 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50"
+                className="w-full bg-slate-900/50 border border-slate-700 rounded-lg px-4 py-2.5 pl-10 text-slate-200 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-white/20 focus:border-white/15"
               />
               <svg className="absolute left-3 top-3 w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -939,7 +939,7 @@ function CompaniesTab() {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value as MissionStatus | 'all')}
-              className="bg-slate-900/50 border border-slate-700 rounded-lg px-3 py-2.5 text-slate-200 focus:outline-none focus:ring-2 focus:ring-cyan-500/50"
+              className="bg-slate-900/50 border border-slate-700 rounded-lg px-3 py-2.5 text-slate-200 focus:outline-none focus:ring-2 focus:ring-white/20"
             >
               <option value="all">All Statuses</option>
               {uniqueStatuses.map((s) => (
@@ -949,7 +949,7 @@ function CompaniesTab() {
             <select
               value={approachFilter}
               onChange={(e) => setApproachFilter(e.target.value as ApproachType | 'all')}
-              className="bg-slate-900/50 border border-slate-700 rounded-lg px-3 py-2.5 text-slate-200 focus:outline-none focus:ring-2 focus:ring-cyan-500/50"
+              className="bg-slate-900/50 border border-slate-700 rounded-lg px-3 py-2.5 text-slate-200 focus:outline-none focus:ring-2 focus:ring-white/20"
             >
               <option value="all">All Approaches</option>
               {uniqueApproaches.map((a) => (
@@ -962,7 +962,7 @@ function CompaniesTab() {
               <span>Showing {filtered.length} of {ADR_COMPANIES.length} entries</span>
               <button
                 onClick={() => { setSearch(''); setStatusFilter('all'); setApproachFilter('all'); }}
-                className="text-cyan-400 hover:text-cyan-300 underline"
+                className="text-slate-300 hover:text-white underline"
               >
                 Clear filters
               </button>
@@ -981,7 +981,7 @@ function CompaniesTab() {
             <StaggerItem key={company.id}>
               <div
                 className={`bg-slate-800/60 border rounded-xl overflow-hidden transition-all duration-300 ${
-                  isExpanded ? 'border-cyan-500/50 shadow-lg shadow-cyan-500/10' : 'border-slate-700/50 hover:border-slate-600/50'
+                  isExpanded ? 'border-white/15 shadow-lg shadow-black/5' : 'border-slate-700/50 hover:border-slate-600/50'
                 }`}
               >
                 <button
@@ -994,7 +994,7 @@ function CompaniesTab() {
                         <h3 className="text-lg font-semibold text-slate-100">{company.company}</h3>
                         <span className="text-xs text-slate-500">{company.country}</span>
                       </div>
-                      <p className="text-sm text-cyan-400 font-medium">{company.missionName}</p>
+                      <p className="text-sm text-slate-300 font-medium">{company.missionName}</p>
                       <p className="text-sm text-slate-400 mt-1 line-clamp-2">{company.description}</p>
                     </div>
                     <div className="flex flex-wrap gap-2 sm:flex-col sm:items-end shrink-0">
@@ -1034,7 +1034,7 @@ function CompaniesTab() {
                         href={company.website}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-sm text-cyan-400 hover:text-cyan-300 underline"
+                        className="text-sm text-slate-300 hover:text-white underline"
                       >
                         Visit Website
                       </a>
@@ -1127,7 +1127,7 @@ function StatisticsTab() {
                 key={band.name}
                 onClick={() => setExpandedBand(isExpanded ? null : band.name)}
                 className={`w-full text-left bg-slate-800/60 border rounded-xl p-4 transition-all ${
-                  isExpanded ? 'border-cyan-500/40' : 'border-slate-700/50 hover:border-slate-600/50'
+                  isExpanded ? 'border-white/15/40' : 'border-slate-700/50 hover:border-slate-600/50'
                 }`}
               >
                 <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">

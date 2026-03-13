@@ -96,8 +96,8 @@ export default function Footer() {
   return (
     <>
       <footer className="bg-slate-900 border-t border-slate-800 mt-auto relative">
-        {/* Gradient separator */}
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-500/40 to-transparent" />
+        {/* Top border */}
+        <div className="absolute top-0 left-0 right-0 h-px bg-white/[0.06]" />
 
         <div className="container mx-auto px-4">
           {/* Quick CTA */}
@@ -108,7 +108,7 @@ export default function Footer() {
               </p>
               <Link
                 href="/register"
-                className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-cyan-600 hover:bg-cyan-500 rounded-lg transition-colors shrink-0 animate-pulse-glow"
+                className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-medium text-slate-900 bg-white hover:bg-slate-100 rounded-lg transition-colors shrink-0"
               >
                 Get Started Free
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -122,26 +122,26 @@ export default function Footer() {
           <div className="sm:hidden border-b border-slate-800/60 py-6">
             <h4 className="text-white font-semibold text-xs uppercase tracking-wider mb-3">Quick Links</h4>
             <div className="grid grid-cols-2 gap-2">
-              <Link href="/getting-started" className="flex items-center gap-2 text-slate-400 hover:text-cyan-400 text-sm py-2 min-h-[44px] transition-colors">
-                <svg className="w-4 h-4 text-cyan-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <Link href="/getting-started" className="flex items-center gap-2 text-slate-400 hover:text-white text-sm py-2 min-h-[44px] transition-colors">
+                <svg className="w-4 h-4 text-slate-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
                 </svg>
                 Getting Started
               </Link>
-              <Link href="/faq" className="flex items-center gap-2 text-slate-400 hover:text-cyan-400 text-sm py-2 min-h-[44px] transition-colors">
-                <svg className="w-4 h-4 text-cyan-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <Link href="/faq" className="flex items-center gap-2 text-slate-400 hover:text-white text-sm py-2 min-h-[44px] transition-colors">
+                <svg className="w-4 h-4 text-slate-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
                 FAQ
               </Link>
-              <Link href="/contact" className="flex items-center gap-2 text-slate-400 hover:text-cyan-400 text-sm py-2 min-h-[44px] transition-colors">
-                <svg className="w-4 h-4 text-cyan-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <Link href="/contact" className="flex items-center gap-2 text-slate-400 hover:text-white text-sm py-2 min-h-[44px] transition-colors">
+                <svg className="w-4 h-4 text-slate-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                 </svg>
                 Contact Us
               </Link>
-              <Link href="/book-demo" className="flex items-center gap-2 text-slate-400 hover:text-cyan-400 text-sm py-2 min-h-[44px] transition-colors">
-                <svg className="w-4 h-4 text-cyan-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <Link href="/book-demo" className="flex items-center gap-2 text-slate-400 hover:text-white text-sm py-2 min-h-[44px] transition-colors">
+                <svg className="w-4 h-4 text-slate-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
                 </svg>
                 Book Demo
@@ -172,7 +172,7 @@ export default function Footer() {
                   href="https://www.linkedin.com/company/112094370"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-slate-400 hover:text-cyan-400 transition-colors"
+                  className="text-slate-400 hover:text-white transition-colors"
                   aria-label="SpaceNexus on LinkedIn"
                 >
                   <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -183,7 +183,7 @@ export default function Footer() {
                   href="https://twitter.com/spacenexus"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-slate-400 hover:text-cyan-400 transition-colors"
+                  className="text-slate-400 hover:text-white transition-colors"
                   aria-label="SpaceNexus on X (Twitter)"
                 >
                   <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -194,7 +194,7 @@ export default function Footer() {
                   href="https://github.com/jackosaurus2014/spacehub"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-slate-400 hover:text-cyan-400 transition-colors"
+                  className="text-slate-400 hover:text-white transition-colors"
                   aria-label="SpaceNexus on GitHub"
                 >
                   <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -223,7 +223,7 @@ export default function Footer() {
                     <li key={link.href}>
                       <Link
                         href={link.href}
-                        className="text-slate-400 hover:text-cyan-400 text-sm transition-colors inline-block"
+                        className="text-slate-400 hover:text-white text-sm transition-colors inline-block"
                       >
                         {link.label}
                       </Link>
@@ -243,21 +243,21 @@ export default function Footer() {
 
             {/* Legal links */}
             <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1">
-              <Link href="/privacy" className="text-slate-400 hover:text-cyan-400 text-xs transition-colors">
+              <Link href="/privacy" className="text-slate-400 hover:text-white text-xs transition-colors">
                 Privacy
               </Link>
-              <Link href="/terms" className="text-slate-400 hover:text-cyan-400 text-xs transition-colors">
+              <Link href="/terms" className="text-slate-400 hover:text-white text-xs transition-colors">
                 Terms
               </Link>
-              <Link href="/legal/dmca" className="text-slate-400 hover:text-cyan-400 text-xs transition-colors">
+              <Link href="/legal/dmca" className="text-slate-400 hover:text-white text-xs transition-colors">
                 DMCA
               </Link>
-              <Link href="/cookies" className="text-slate-400 hover:text-cyan-400 text-xs transition-colors">
+              <Link href="/cookies" className="text-slate-400 hover:text-white text-xs transition-colors">
                 Cookie Policy
               </Link>
               <button
                 onClick={() => setDisclaimerOpen(true)}
-                className="text-slate-400 hover:text-cyan-400 text-xs transition-colors"
+                className="text-slate-400 hover:text-white text-xs transition-colors"
               >
                 Legal Disclaimer
               </button>
@@ -268,7 +268,7 @@ export default function Footer() {
                     (opener as () => void)();
                   }
                 }}
-                className="text-slate-400 hover:text-cyan-400 text-xs transition-colors flex items-center gap-1"
+                className="text-slate-400 hover:text-white text-xs transition-colors flex items-center gap-1"
                 aria-label="Open keyboard shortcuts help"
               >
                 Press
@@ -279,7 +279,7 @@ export default function Footer() {
               </button>
               <button
                 onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-                className="text-slate-400 hover:text-cyan-400 text-xs transition-colors flex items-center gap-1"
+                className="text-slate-400 hover:text-white text-xs transition-colors flex items-center gap-1"
                 aria-label="Back to top"
               >
                 <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">

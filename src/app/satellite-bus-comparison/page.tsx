@@ -776,13 +776,13 @@ export default function SatelliteBusComparisonPage() {
               onClick={() => setActiveTab(tab.id)}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                 activeTab === tab.id
-                  ? 'bg-cyan-600 text-white shadow-lg shadow-cyan-600/20'
+                  ? 'bg-white text-white shadow-lg shadow-black/10'
                   : 'bg-slate-800/60 text-slate-400 hover:bg-slate-700/60 hover:text-slate-200'
               }`}
             >
               {tab.label}
               {tab.id === 'compare' && compareSelection.length > 0 && (
-                <span className="ml-1.5 px-1.5 py-0.5 bg-cyan-400/20 text-cyan-300 rounded text-xs">
+                <span className="ml-1.5 px-1.5 py-0.5 bg-white/10 text-slate-200 rounded text-xs">
                   {compareSelection.length}
                 </span>
               )}
@@ -806,7 +806,7 @@ export default function SatelliteBusComparisonPage() {
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Bus name, manufacturer..."
-                    className="w-full px-3 py-2 bg-slate-800/60 border border-slate-600/50 rounded-lg text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-cyan-500/50"
+                    className="w-full px-3 py-2 bg-slate-800/60 border border-slate-600/50 rounded-lg text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-white/15"
                   />
                 </div>
                 {/* Mass Class */}
@@ -815,7 +815,7 @@ export default function SatelliteBusComparisonPage() {
                   <select
                     value={massClassFilter}
                     onChange={(e) => setMassClassFilter(e.target.value as MassClass | '')}
-                    className="w-full px-3 py-2 bg-slate-800/60 border border-slate-600/50 rounded-lg text-sm text-white focus:outline-none focus:border-cyan-500/50"
+                    className="w-full px-3 py-2 bg-slate-800/60 border border-slate-600/50 rounded-lg text-sm text-white focus:outline-none focus:border-white/15"
                   >
                     <option value="">All Classes</option>
                     <option value="Small">Small / Micro (50-300 kg)</option>
@@ -829,7 +829,7 @@ export default function SatelliteBusComparisonPage() {
                   <select
                     value={orbitFilter}
                     onChange={(e) => setOrbitFilter(e.target.value as OrbitType | '')}
-                    className="w-full px-3 py-2 bg-slate-800/60 border border-slate-600/50 rounded-lg text-sm text-white focus:outline-none focus:border-cyan-500/50"
+                    className="w-full px-3 py-2 bg-slate-800/60 border border-slate-600/50 rounded-lg text-sm text-white focus:outline-none focus:border-white/15"
                   >
                     <option value="">All Orbits</option>
                     {allOrbits.map(o => (
@@ -843,7 +843,7 @@ export default function SatelliteBusComparisonPage() {
                   <select
                     value={manufacturerFilter}
                     onChange={(e) => setManufacturerFilter(e.target.value)}
-                    className="w-full px-3 py-2 bg-slate-800/60 border border-slate-600/50 rounded-lg text-sm text-white focus:outline-none focus:border-cyan-500/50"
+                    className="w-full px-3 py-2 bg-slate-800/60 border border-slate-600/50 rounded-lg text-sm text-white focus:outline-none focus:border-white/15"
                   >
                     <option value="">All Manufacturers</option>
                     {allManufacturers.map(m => (
@@ -857,7 +857,7 @@ export default function SatelliteBusComparisonPage() {
                   <select
                     value={sortBy}
                     onChange={(e) => setSortBy(e.target.value as SortKey)}
-                    className="w-full px-3 py-2 bg-slate-800/60 border border-slate-600/50 rounded-lg text-sm text-white focus:outline-none focus:border-cyan-500/50"
+                    className="w-full px-3 py-2 bg-slate-800/60 border border-slate-600/50 rounded-lg text-sm text-white focus:outline-none focus:border-white/15"
                   >
                     <option value="name">Name</option>
                     <option value="mass">Mass (low to high)</option>
@@ -914,7 +914,7 @@ export default function SatelliteBusComparisonPage() {
                         <td className="p-3">
                           <div className="flex flex-wrap gap-1">
                             {bus.orbits.map(o => (
-                              <span key={o} className="px-1.5 py-0.5 rounded text-[10px] bg-cyan-900/30 text-cyan-400 border border-cyan-500/20">
+                              <span key={o} className="px-1.5 py-0.5 rounded text-[10px] bg-slate-800/40 text-slate-300 border border-white/10">
                                 {o}
                               </span>
                             ))}
@@ -928,7 +928,7 @@ export default function SatelliteBusComparisonPage() {
                             disabled={!compareSelection.includes(bus.id) && compareSelection.length >= 3}
                             className={`px-2.5 py-1 rounded text-xs font-medium transition-all ${
                               compareSelection.includes(bus.id)
-                                ? 'bg-cyan-500 text-slate-900'
+                                ? 'bg-white text-slate-900'
                                 : compareSelection.length >= 3
                                   ? 'bg-slate-700/30 text-slate-600 cursor-not-allowed'
                                   : 'bg-slate-700 text-slate-300 hover:bg-slate-600 hover:text-white'
@@ -1012,7 +1012,7 @@ export default function SatelliteBusComparisonPage() {
                     {/* Orbits + Missions */}
                     <div className="flex flex-wrap gap-1.5 mb-3">
                       {bus.orbits.map(o => (
-                        <span key={o} className="px-2 py-0.5 rounded text-[10px] bg-cyan-900/30 text-cyan-400 border border-cyan-500/20">
+                        <span key={o} className="px-2 py-0.5 rounded text-[10px] bg-slate-800/40 text-slate-300 border border-white/10">
                           {o}
                         </span>
                       ))}
@@ -1047,7 +1047,7 @@ export default function SatelliteBusComparisonPage() {
                 </p>
                 <button
                   onClick={() => setActiveTab('database')}
-                  className="px-5 py-2.5 bg-cyan-600 hover:bg-cyan-500 text-white text-sm rounded-lg font-medium transition-colors"
+                  className="px-5 py-2.5 bg-white hover:bg-slate-100 text-white text-sm rounded-lg font-medium transition-colors"
                 >
                   Go to Bus Database
                 </button>
@@ -1059,12 +1059,12 @@ export default function SatelliteBusComparisonPage() {
                   {selectedBuses.map(bus => (
                     <span
                       key={bus.id}
-                      className="inline-flex items-center gap-2 px-3 py-1.5 bg-cyan-900/30 border border-cyan-500/30 rounded-lg text-sm text-cyan-300"
+                      className="inline-flex items-center gap-2 px-3 py-1.5 bg-slate-800/40 border border-white/10 rounded-lg text-sm text-slate-200"
                     >
                       {bus.name} ({bus.manufacturer})
                       <button
                         onClick={() => toggleCompare(bus)}
-                        className="text-cyan-400 hover:text-red-400 transition-colors font-bold"
+                        className="text-slate-300 hover:text-red-400 transition-colors font-bold"
                         aria-label={`Remove ${bus.name} from comparison`}
                       >
                         x
@@ -1074,7 +1074,7 @@ export default function SatelliteBusComparisonPage() {
                   {selectedBuses.length < 3 && (
                     <button
                       onClick={() => setActiveTab('database')}
-                      className="px-3 py-1.5 bg-slate-800/60 border border-dashed border-slate-600/50 rounded-lg text-sm text-slate-400 hover:text-white hover:border-cyan-500/30 transition-colors"
+                      className="px-3 py-1.5 bg-slate-800/60 border border-dashed border-slate-600/50 rounded-lg text-sm text-slate-400 hover:text-white hover:border-white/10 transition-colors"
                     >
                       + Add Bus
                     </button>
@@ -1105,7 +1105,7 @@ export default function SatelliteBusComparisonPage() {
                           { label: 'Orbits', render: (b: SatelliteBus) => (
                             <div className="flex flex-wrap gap-1">
                               {b.orbits.map(o => (
-                                <span key={o} className="px-1.5 py-0.5 rounded text-[10px] bg-cyan-900/30 text-cyan-400 border border-cyan-500/20">{o}</span>
+                                <span key={o} className="px-1.5 py-0.5 rounded text-[10px] bg-slate-800/40 text-slate-300 border border-white/10">{o}</span>
                               ))}
                             </div>
                           )},
@@ -1178,7 +1178,7 @@ export default function SatelliteBusComparisonPage() {
                             </div>
                             <div className="h-3 bg-slate-700 rounded-full overflow-hidden">
                               <div
-                                className="h-full rounded-full transition-all bg-cyan-500"
+                                className="h-full rounded-full transition-all bg-white"
                                 style={{ width: `${pct}%` }}
                               />
                             </div>
@@ -1271,7 +1271,7 @@ export default function SatelliteBusComparisonPage() {
                     </div>
                     <div className="bg-slate-800/40 rounded-lg p-2.5">
                       <span className="text-[10px] text-slate-500 uppercase tracking-wider block">Bus Platforms</span>
-                      <span className="text-sm text-cyan-400 font-semibold">{mfr.busCount} in database</span>
+                      <span className="text-sm text-slate-300 font-semibold">{mfr.busCount} in database</span>
                     </div>
                   </div>
 
@@ -1279,7 +1279,7 @@ export default function SatelliteBusComparisonPage() {
                     <span className="text-[10px] text-slate-500 uppercase tracking-wider block mb-1.5">Specialties</span>
                     <div className="flex flex-wrap gap-1.5">
                       {mfr.specialties.map(s => (
-                        <span key={s} className="px-2 py-0.5 rounded text-[10px] bg-cyan-900/20 text-cyan-400 border border-cyan-500/20">
+                        <span key={s} className="px-2 py-0.5 rounded text-[10px] bg-slate-800/30 text-slate-300 border border-white/10">
                           {s}
                         </span>
                       ))}
@@ -1445,7 +1445,7 @@ export default function SatelliteBusComparisonPage() {
                   ].map(section => (
                     <div key={section.title}>
                       <h4 className={`text-sm font-bold mb-3 ${
-                        section.color === 'cyan' ? 'text-cyan-400' :
+                        section.color === 'cyan' ? 'text-slate-300' :
                         section.color === 'purple' ? 'text-purple-400' :
                         section.color === 'emerald' ? 'text-emerald-400' :
                         'text-amber-400'
@@ -1454,7 +1454,7 @@ export default function SatelliteBusComparisonPage() {
                         {section.items.map(item => (
                           <li key={item} className="text-sm text-slate-300 flex items-start gap-2">
                             <span className={`mt-1.5 h-1.5 w-1.5 rounded-full flex-shrink-0 ${
-                              section.color === 'cyan' ? 'bg-cyan-400' :
+                              section.color === 'cyan' ? 'bg-white' :
                               section.color === 'purple' ? 'bg-purple-400' :
                               section.color === 'emerald' ? 'bg-emerald-400' :
                               'bg-amber-400'
@@ -1517,7 +1517,7 @@ export default function SatelliteBusComparisonPage() {
                       rec.color === 'amber' ? 'border-amber-500/20' :
                       rec.color === 'red' ? 'border-red-500/20' :
                       rec.color === 'purple' ? 'border-purple-500/20' :
-                      rec.color === 'cyan' ? 'border-cyan-500/20' :
+                      rec.color === 'cyan' ? 'border-white/10' :
                       'border-emerald-500/20'
                     }`}>
                       <h5 className={`text-sm font-bold mb-2 ${
@@ -1525,7 +1525,7 @@ export default function SatelliteBusComparisonPage() {
                         rec.color === 'amber' ? 'text-amber-400' :
                         rec.color === 'red' ? 'text-red-400' :
                         rec.color === 'purple' ? 'text-purple-400' :
-                        rec.color === 'cyan' ? 'text-cyan-400' :
+                        rec.color === 'cyan' ? 'text-slate-300' :
                         'text-emerald-400'
                       }`}>{rec.mission}</h5>
                       <div className="flex flex-wrap gap-1 mb-3">
@@ -1570,7 +1570,7 @@ export default function SatelliteBusComparisonPage() {
                     },
                   ].map(step => (
                     <div key={step.step} className="bg-slate-800/40 rounded-xl p-4 relative">
-                      <div className="absolute -top-3 -left-1 w-7 h-7 bg-cyan-600 rounded-full flex items-center justify-center text-white text-xs font-bold">
+                      <div className="absolute -top-3 -left-1 w-7 h-7 bg-white rounded-full flex items-center justify-center text-white text-xs font-bold">
                         {step.step}
                       </div>
                       <h5 className="text-sm font-bold text-white mt-2 mb-2">{step.title}</h5>
@@ -1599,7 +1599,7 @@ export default function SatelliteBusComparisonPage() {
                     { term: 'Delta-V Budget', def: 'Total velocity change capacity of the propulsion system. Determines orbit transfer capability and on-orbit maneuvering lifetime.' },
                   ].map(item => (
                     <div key={item.term} className="py-2">
-                      <dt className="text-sm font-semibold text-cyan-400">{item.term}</dt>
+                      <dt className="text-sm font-semibold text-slate-300">{item.term}</dt>
                       <dd className="text-xs text-slate-400 mt-0.5 leading-relaxed">{item.def}</dd>
                     </div>
                   ))}

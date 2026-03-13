@@ -90,17 +90,17 @@ function SectorStageHeatmap({ investors }: { investors: Investor[] }) {
   function getCellColor(count: number): string {
     if (count === 0) return 'bg-slate-800/30';
     const intensity = count / maxCount;
-    if (intensity >= 0.8) return 'bg-cyan-500/70';
-    if (intensity >= 0.6) return 'bg-cyan-500/50';
-    if (intensity >= 0.4) return 'bg-cyan-500/35';
-    if (intensity >= 0.2) return 'bg-cyan-500/20';
-    return 'bg-cyan-500/10';
+    if (intensity >= 0.8) return 'bg-white/70';
+    if (intensity >= 0.6) return 'bg-white/50';
+    if (intensity >= 0.4) return 'bg-white/35';
+    if (intensity >= 0.2) return 'bg-white/10';
+    return 'bg-white/5';
   }
 
   return (
     <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-6">
       <h3 className="text-lg font-semibold text-white mb-1 flex items-center gap-2">
-        <span className="w-8 h-8 rounded-lg bg-cyan-500/20 flex items-center justify-center text-sm">
+        <span className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-sm">
           {'#'}
         </span>
         Sector x Stage Heatmap
@@ -143,7 +143,7 @@ function SectorStageHeatmap({ investors }: { investors: Investor[] }) {
                           getCellColor(count)
                         } ${
                           isHovered
-                            ? 'border-cyan-400/60 ring-1 ring-cyan-400/30'
+                            ? 'border-white/10/60 ring-1 ring-white/10'
                             : 'border-slate-700/30'
                         }`}
                         onMouseEnter={() => setHoveredCell({ sector, stage })}
@@ -175,7 +175,7 @@ function SectorStageHeatmap({ investors }: { investors: Investor[] }) {
       <div className="flex items-center gap-2 mt-4 justify-end">
         <span className="text-xs text-slate-500">Low</span>
         <div className="flex gap-0.5">
-          {['bg-cyan-500/10', 'bg-cyan-500/20', 'bg-cyan-500/35', 'bg-cyan-500/50', 'bg-cyan-500/70'].map(
+          {['bg-white/5', 'bg-white/10', 'bg-white/35', 'bg-white/50', 'bg-white/70'].map(
             (color, i) => (
               <div key={i} className={`w-5 h-3 rounded-sm ${color}`} />
             )
@@ -248,7 +248,7 @@ function GeographicDistribution({ investors }: { investors: Investor[] }) {
               </div>
               <div className="w-full bg-slate-700/30 rounded-full h-2.5">
                 <div
-                  className="bg-gradient-to-r from-purple-500 to-cyan-400 h-2.5 rounded-full transition-all duration-500"
+                  className="bg-gradient-to-r from-purple-500 to-slate-400 h-2.5 rounded-full transition-all duration-500"
                   style={{ width: `${Math.max(widthPct, 2)}%` }}
                 />
               </div>
@@ -275,7 +275,7 @@ export default function PortfolioAnalysis({ investors }: PortfolioAnalysisProps)
         onClick={() => setIsExpanded(!isExpanded)}
         className="flex items-center gap-3 mb-4 group cursor-pointer"
       >
-        <h2 className="text-xl font-bold text-white group-hover:text-cyan-400 transition-colors">
+        <h2 className="text-xl font-bold text-white group-hover:text-white transition-colors">
           Portfolio Analysis
         </h2>
         <svg

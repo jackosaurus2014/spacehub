@@ -264,7 +264,7 @@ const CONSTELLATIONS: SatelliteConstellation[] = [
 function getOrbitColor(orbit: OrbitType): { bg: string; text: string; border: string } {
   switch (orbit) {
     case 'LEO':
-      return { bg: 'bg-cyan-900/30', text: 'text-cyan-400', border: 'border-cyan-500/30' };
+      return { bg: 'bg-slate-800/40', text: 'text-slate-300', border: 'border-white/10' };
     case 'MEO':
       return { bg: 'bg-purple-900/30', text: 'text-purple-400', border: 'border-purple-500/30' };
     case 'GEO':
@@ -293,7 +293,7 @@ function getStatusColor(status: ConstellationStatus): { bg: string; text: string
 
 function getPurposeColor(purpose: Purpose): string {
   switch (purpose) {
-    case 'Broadband': return 'text-cyan-400';
+    case 'Broadband': return 'text-slate-300';
     case 'Navigation': return 'text-purple-400';
     case 'Earth Observation': return 'text-emerald-400';
     case 'Voice/Data': return 'text-blue-400';
@@ -367,7 +367,7 @@ function StatusBadge({ status }: { status: ConstellationStatus }) {
 
 function DeploymentBar({ planned, deployed }: { planned: number; deployed: number }) {
   const pct = planned > 0 ? Math.min(100, Math.round((deployed / planned) * 100)) : 0;
-  const barColor = pct >= 90 ? 'bg-green-500' : pct >= 50 ? 'bg-yellow-500' : pct >= 10 ? 'bg-cyan-500' : 'bg-slate-600';
+  const barColor = pct >= 90 ? 'bg-green-500' : pct >= 50 ? 'bg-yellow-500' : pct >= 10 ? 'bg-white' : 'bg-slate-600';
 
   return (
     <div className="flex items-center gap-2">
@@ -405,7 +405,7 @@ function ComparisonChart({ selected }: { selected: SatelliteConstellation[] }) {
   ];
 
   const chartColors = [
-    { bar: 'bg-cyan-500', text: 'text-cyan-400', dot: 'bg-cyan-400' },
+    { bar: 'bg-white', text: 'text-slate-300', dot: 'bg-white' },
     { bar: 'bg-purple-500', text: 'text-purple-400', dot: 'bg-purple-400' },
     { bar: 'bg-amber-500', text: 'text-amber-400', dot: 'bg-amber-400' },
     { bar: 'bg-emerald-500', text: 'text-emerald-400', dot: 'bg-emerald-400' },
@@ -414,7 +414,7 @@ function ComparisonChart({ selected }: { selected: SatelliteConstellation[] }) {
   return (
     <div className="card p-6 mb-6">
       <h3 className="text-sm font-semibold text-white mb-4 flex items-center gap-2">
-        <svg className="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className="w-4 h-4 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
         </svg>
         Visual Comparison
@@ -572,7 +572,7 @@ function ComparisonDetailTable({ selected }: { selected: SatelliteConstellation[
                   <tr key={`section-${idx}`} className="bg-slate-800/40">
                     <td
                       colSpan={selected.length + 1}
-                      className="py-2 px-4 text-xs font-bold text-cyan-400 uppercase tracking-widest"
+                      className="py-2 px-4 text-xs font-bold text-slate-300 uppercase tracking-widest"
                     >
                       {row.label}
                     </td>
@@ -618,7 +618,7 @@ function ConstellationCard({
   return (
     <div
       className={`card p-4 transition-all duration-200 ${
-        isSelected ? 'ring-2 ring-cyan-500/60' : ''
+        isSelected ? 'ring-2 ring-white/15/60' : ''
       }`}
     >
       <div className="flex items-start justify-between mb-3">
@@ -636,7 +636,7 @@ function ConstellationCard({
           <span
             className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${
               isSelected
-                ? 'bg-cyan-500 border-cyan-500'
+                ? 'bg-white border-white/15'
                 : 'border-slate-600 hover:border-slate-400'
             }`}
           >
@@ -717,7 +717,7 @@ function SortableHeader({
     >
       <div className="flex items-center gap-1">
         {label}
-        <span className={`transition-colors ${isActive ? 'text-cyan-400' : 'text-slate-600'}`}>
+        <span className={`transition-colors ${isActive ? 'text-slate-300' : 'text-slate-600'}`}>
           {isActive && currentDir === 'asc' ? (
             <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
               <path fillRule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clipRule="evenodd" />
@@ -870,7 +870,7 @@ export default function SatelliteConstellationComparePage() {
                   placeholder="Search by name, operator, or country..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2.5 bg-slate-800/80 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50 transition-all"
+                  className="w-full pl-10 pr-4 py-2.5 bg-slate-800/80 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-white/20 focus:border-white/15 transition-all"
                 />
               </div>
             </div>
@@ -883,7 +883,7 @@ export default function SatelliteConstellationComparePage() {
               <select
                 value={orbitFilter}
                 onChange={(e) => setOrbitFilter(e.target.value as OrbitType | 'all')}
-                className="bg-slate-800/80 border border-slate-700 rounded-xl text-sm text-white px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50 transition-all"
+                className="bg-slate-800/80 border border-slate-700 rounded-xl text-sm text-white px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-white/20 focus:border-white/15 transition-all"
               >
                 <option value="all">All Orbits</option>
                 {orbitTypes.map((o) => (
@@ -900,7 +900,7 @@ export default function SatelliteConstellationComparePage() {
               <select
                 value={purposeFilter}
                 onChange={(e) => setPurposeFilter(e.target.value as Purpose | 'all')}
-                className="bg-slate-800/80 border border-slate-700 rounded-xl text-sm text-white px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50 transition-all"
+                className="bg-slate-800/80 border border-slate-700 rounded-xl text-sm text-white px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-white/20 focus:border-white/15 transition-all"
               >
                 <option value="all">All Purposes</option>
                 {purposes.map((p) => (
@@ -917,7 +917,7 @@ export default function SatelliteConstellationComparePage() {
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value as ConstellationStatus | 'all')}
-                className="bg-slate-800/80 border border-slate-700 rounded-xl text-sm text-white px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50 transition-all"
+                className="bg-slate-800/80 border border-slate-700 rounded-xl text-sm text-white px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-white/20 focus:border-white/15 transition-all"
               >
                 <option value="all">All Statuses</option>
                 {statuses.map((s) => (
@@ -932,7 +932,7 @@ export default function SatelliteConstellationComparePage() {
                 onClick={() => setViewMode('table')}
                 className={`p-2.5 rounded-lg border transition-all ${
                   viewMode === 'table'
-                    ? 'bg-cyan-500/15 border-cyan-500/30 text-cyan-400'
+                    ? 'bg-white/8 border-white/10 text-slate-300'
                     : 'bg-slate-800/50 border-slate-700 text-slate-400 hover:text-white'
                 }`}
                 title="Table view"
@@ -945,7 +945,7 @@ export default function SatelliteConstellationComparePage() {
                 onClick={() => setViewMode('cards')}
                 className={`p-2.5 rounded-lg border transition-all ${
                   viewMode === 'cards'
-                    ? 'bg-cyan-500/15 border-cyan-500/30 text-cyan-400'
+                    ? 'bg-white/8 border-white/10 text-slate-300'
                     : 'bg-slate-800/50 border-slate-700 text-slate-400 hover:text-white'
                 }`}
                 title="Card view"
@@ -968,7 +968,7 @@ export default function SatelliteConstellationComparePage() {
                   setPurposeFilter('all');
                   setStatusFilter('all');
                 }}
-                className="text-xs text-cyan-400 hover:text-cyan-300 transition-colors"
+                className="text-xs text-slate-300 hover:text-white transition-colors"
               >
                 Clear filters
               </button>
@@ -980,7 +980,7 @@ export default function SatelliteConstellationComparePage() {
       {/* ── Selection Bar ── */}
       {selectedIds.size > 0 && (
         <ScrollReveal>
-          <div className="card p-4 mb-6 border-cyan-500/40">
+          <div className="card p-4 mb-6 border-white/15/40">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div className="flex items-center gap-3 flex-wrap">
                 <span className="text-sm text-white font-medium">
@@ -989,7 +989,7 @@ export default function SatelliteConstellationComparePage() {
                 {selectedConstellations.map((c) => (
                   <span
                     key={c.id}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-cyan-500/15 text-cyan-400 border border-cyan-500/30 rounded-lg text-xs font-medium"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white/8 text-slate-300 border border-white/10 rounded-lg text-xs font-medium"
                   >
                     {c.name}
                     <button
@@ -1016,7 +1016,7 @@ export default function SatelliteConstellationComparePage() {
                   disabled={selectedIds.size < 2}
                   className={`px-4 py-2 rounded-lg text-xs font-semibold transition-all ${
                     selectedIds.size >= 2
-                      ? 'bg-cyan-500 text-white hover:bg-cyan-400 shadow-lg shadow-cyan-500/25'
+                      ? 'bg-white text-white hover:bg-slate-100 shadow-lg shadow-black/20/25'
                       : 'bg-slate-700 text-slate-400 cursor-not-allowed'
                   }`}
                 >
@@ -1034,7 +1034,7 @@ export default function SatelliteConstellationComparePage() {
           <div className="mb-6">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                <svg className="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                 </svg>
                 Side-by-Side Comparison
@@ -1095,7 +1095,7 @@ export default function SatelliteConstellationComparePage() {
                         key={c.id}
                         className={`transition-colors cursor-pointer ${
                           isSelected
-                            ? 'bg-cyan-500/5 hover:bg-cyan-500/10'
+                            ? 'bg-white/5 hover:bg-slate-100/10'
                             : 'hover:bg-slate-800/30'
                         }`}
                         onClick={() => toggleSelection(c.id)}
@@ -1111,7 +1111,7 @@ export default function SatelliteConstellationComparePage() {
                             <span
                               className={`w-4 h-4 rounded border-2 flex items-center justify-center transition-all ${
                                 isSelected
-                                  ? 'bg-cyan-500 border-cyan-500'
+                                  ? 'bg-white border-white/15'
                                   : 'border-slate-600 hover:border-slate-400'
                               }`}
                             >
@@ -1160,7 +1160,7 @@ export default function SatelliteConstellationComparePage() {
               <span>Click row or checkbox to select for comparison</span>
               <span className="hidden sm:inline">|</span>
               <span className="flex items-center gap-1.5">
-                <span className="px-1.5 py-0.5 rounded bg-cyan-900/30 text-cyan-400 border border-cyan-500/30 text-xs font-semibold">LEO</span>
+                <span className="px-1.5 py-0.5 rounded bg-slate-800/40 text-slate-300 border border-white/10 text-xs font-semibold">LEO</span>
                 <span className="px-1.5 py-0.5 rounded bg-purple-900/30 text-purple-400 border border-purple-500/30 text-xs font-semibold">MEO</span>
                 <span className="px-1.5 py-0.5 rounded bg-amber-900/30 text-amber-400 border border-amber-500/30 text-xs font-semibold">GEO</span>
                 <span className="px-1.5 py-0.5 rounded bg-emerald-900/30 text-emerald-400 border border-emerald-500/30 text-xs font-semibold">SSO</span>
@@ -1197,7 +1197,7 @@ export default function SatelliteConstellationComparePage() {
       <ScrollReveal delay={0.1}>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
           <div className="card p-4 text-center">
-            <div className="text-2xl font-bold text-cyan-400">{CONSTELLATIONS.length}</div>
+            <div className="text-2xl font-bold text-slate-300">{CONSTELLATIONS.length}</div>
             <div className="text-xs text-slate-400 mt-1">Constellations Tracked</div>
           </div>
           <div className="card p-4 text-center">
@@ -1255,31 +1255,31 @@ export default function SatelliteConstellationComparePage() {
           <div className="flex flex-wrap gap-3">
             <Link
               href="/compare"
-              className="px-4 py-2 bg-slate-800/50 border border-slate-700 rounded-lg text-xs text-slate-400 hover:border-cyan-500/40 hover:text-cyan-400 transition-all"
+              className="px-4 py-2 bg-slate-800/50 border border-slate-700 rounded-lg text-xs text-slate-400 hover:border-white/15/40 hover:text-white transition-all"
             >
               All Comparisons
             </Link>
             <Link
               href="/satellites"
-              className="px-4 py-2 bg-slate-800/50 border border-slate-700 rounded-lg text-xs text-slate-400 hover:border-cyan-500/40 hover:text-cyan-400 transition-all"
+              className="px-4 py-2 bg-slate-800/50 border border-slate-700 rounded-lg text-xs text-slate-400 hover:border-white/15/40 hover:text-white transition-all"
             >
               Satellite Tracker
             </Link>
             <Link
               href="/compare/launch-vehicles"
-              className="px-4 py-2 bg-slate-800/50 border border-slate-700 rounded-lg text-xs text-slate-400 hover:border-cyan-500/40 hover:text-cyan-400 transition-all"
+              className="px-4 py-2 bg-slate-800/50 border border-slate-700 rounded-lg text-xs text-slate-400 hover:border-white/15/40 hover:text-white transition-all"
             >
               Compare Launch Vehicles
             </Link>
             <Link
               href="/compare/companies"
-              className="px-4 py-2 bg-slate-800/50 border border-slate-700 rounded-lg text-xs text-slate-400 hover:border-cyan-500/40 hover:text-cyan-400 transition-all"
+              className="px-4 py-2 bg-slate-800/50 border border-slate-700 rounded-lg text-xs text-slate-400 hover:border-white/15/40 hover:text-white transition-all"
             >
               Compare Companies
             </Link>
             <Link
               href="/constellations"
-              className="px-4 py-2 bg-slate-800/50 border border-slate-700 rounded-lg text-xs text-slate-400 hover:border-cyan-500/40 hover:text-cyan-400 transition-all"
+              className="px-4 py-2 bg-slate-800/50 border border-slate-700 rounded-lg text-xs text-slate-400 hover:border-white/15/40 hover:text-white transition-all"
             >
               Constellation Tracker
             </Link>

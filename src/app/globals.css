@@ -102,12 +102,12 @@ html.high-contrast .border-slate-700\/50 {
   border-color: rgba(100, 116, 139, 0.7) !important;
 }
 
-html.high-contrast .border-cyan-400\/30 {
-  border-color: rgba(34, 211, 238, 0.55) !important;
+html.high-contrast .border-white\/10 {
+  border-color: rgba(255, 255, 255, 0.25) !important;
 }
 
-html.high-contrast .border-cyan-400\/40 {
-  border-color: rgba(34, 211, 238, 0.65) !important;
+html.high-contrast .border-white\/15 {
+  border-color: rgba(255, 255, 255, 0.35) !important;
 }
 
 /* ——— High-contrast card backgrounds (slightly lighter) ——— */
@@ -374,10 +374,10 @@ body::after {
 
 .card-cyan {
   @apply rounded-xl transition-all duration-200;
-  background: rgba(10, 22, 32, 0.7);
-  border: 1px solid rgba(6, 182, 212, 0.15);
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.06);
 }
-.card-cyan:hover { border-color: rgba(6, 182, 212, 0.25); }
+.card-cyan:hover { border-color: rgba(255, 255, 255, 0.12); }
 
 .card-amber {
   @apply rounded-xl transition-all duration-200;
@@ -440,11 +440,11 @@ body::after {
 
 /* Links in cards */
 .card a, .card-elevated a, .card-interactive a {
-  color: #67e8f9 !important; /* cyan-300 */
+  color: #cbd5e1 !important; /* slate-300 */
 }
 
 .card a:hover, .card-elevated a:hover, .card-interactive a:hover {
-  color: #22d3ee !important; /* cyan-400 */
+  color: #f1f5f9 !important; /* slate-100 */
 }
 
 /* Border colors in cards - lighten them */
@@ -479,7 +479,7 @@ body::after {
   background-color: rgba(239, 68, 68, 0.15) !important; /* red-500/15 */
 }
 .card .bg-cyan-100, .card-elevated .bg-cyan-100, .card-interactive .bg-cyan-100 {
-  background-color: rgba(6, 182, 212, 0.15) !important; /* cyan-500/15 */
+  background-color: rgba(148, 163, 184, 0.15) !important; /* slate-400/15 */
 }
 
 /* Colored dark text in cards — lighten to visible-on-dark equivalents */
@@ -502,7 +502,7 @@ body::after {
   color: #fde047 !important; /* yellow-300 */
 }
 .card .text-cyan-700, .card-elevated .text-cyan-700, .card-interactive .text-cyan-700 {
-  color: #67e8f9 !important; /* cyan-300 */
+  color: #cbd5e1 !important; /* slate-300 */
 }
 
 /* Input Styles — clean, neutral borders */
@@ -1426,7 +1426,7 @@ pre {
   }
 
   .text-cyan-300, .text-cyan-400, .text-cyan-500 {
-    color: #0891b2 !important;
+    color: #475569 !important; /* slate-600 for print */
   }
 
   .text-emerald-400, .text-emerald-500 {

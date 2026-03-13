@@ -150,14 +150,14 @@ function getEventIcon(type: string): string {
 
 function getScoreColor(score: number): string {
   if (score >= 80) return 'text-emerald-400';
-  if (score >= 60) return 'text-cyan-400';
+  if (score >= 60) return 'text-slate-300';
   if (score >= 40) return 'text-amber-400';
   return 'text-red-400';
 }
 
 function getScoreBarColor(score: number): string {
   if (score >= 80) return 'bg-emerald-500';
-  if (score >= 60) return 'bg-cyan-500';
+  if (score >= 60) return 'bg-white';
   if (score >= 40) return 'bg-amber-500';
   return 'bg-red-500';
 }
@@ -213,7 +213,7 @@ function MarketplaceActions({ companySlug, companyId, companyName, verificationL
       {claimed && contactEmail && (
         <a
           href={`mailto:${contactEmail}`}
-          className="text-xs px-3 py-1.5 bg-cyan-600 hover:bg-cyan-500 text-white rounded-lg font-medium transition-colors"
+          className="text-xs px-3 py-1.5 bg-white hover:bg-slate-100 text-white rounded-lg font-medium transition-colors"
         >
           Contact Provider
         </a>
@@ -237,7 +237,7 @@ function MarketplaceActions({ companySlug, companyId, companyName, verificationL
       {!claimed && !showClaimForm && (
         <button
           onClick={() => setShowClaimForm(true)}
-          className="text-xs px-3 py-1.5 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white rounded-lg font-medium transition-all"
+          className="text-xs px-3 py-1.5 bg-gradient-to-r from-slate-200 to-blue-600 hover:from-white hover:to-blue-500 text-white rounded-lg font-medium transition-all"
         >
           Claim This Profile
         </button>
@@ -254,7 +254,7 @@ function MarketplaceActions({ companySlug, companyId, companyName, verificationL
           <button
             onClick={handleClaim}
             disabled={claiming || !claimEmail}
-            className="text-xs px-3 py-1.5 bg-cyan-600 hover:bg-cyan-500 disabled:bg-slate-700 text-white rounded-lg font-medium transition-colors"
+            className="text-xs px-3 py-1.5 bg-white hover:bg-slate-100 disabled:bg-slate-700 text-white rounded-lg font-medium transition-colors"
           >
             {claiming ? 'Claiming...' : 'Confirm'}
           </button>
@@ -457,7 +457,7 @@ function OverviewTab({ company }: { company: CompanyDetail }) {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
             {company.facilities.map(f => (
               <div key={f.id} className="bg-slate-800/30 border border-slate-700/30 rounded-lg p-3">
-                <div className="text-xs text-cyan-400 mb-1 capitalize">{f.type.replace(/_/g, ' ')}</div>
+                <div className="text-xs text-slate-300 mb-1 capitalize">{f.type.replace(/_/g, ' ')}</div>
                 <div className="text-sm font-medium text-white">{f.name}</div>
                 <div className="text-xs text-slate-400">{[f.city, f.country].filter(Boolean).join(', ')}</div>
               </div>
@@ -483,7 +483,7 @@ function FinancialsTab({ company }: { company: CompanyDetail }) {
               {company.fundingRounds.slice().reverse().map((r, i) => {
                 const total = company.totalFunding || 1;
                 const pct = ((r.amount || 0) / total) * 100;
-                const colors = ['bg-cyan-500', 'bg-emerald-500', 'bg-purple-500', 'bg-amber-500', 'bg-blue-500', 'bg-pink-500', 'bg-indigo-500'];
+                const colors = ['bg-white', 'bg-emerald-500', 'bg-purple-500', 'bg-amber-500', 'bg-blue-500', 'bg-pink-500', 'bg-indigo-500'];
                 return (
                   <motion.div
                     key={r.id}
@@ -524,7 +524,7 @@ function FinancialsTab({ company }: { company: CompanyDetail }) {
                     >
                       <td className="py-2.5 text-slate-400">{fmtDate(r.date)}</td>
                       <td className="py-2.5">
-                        <span className="bg-cyan-500/10 text-cyan-400 px-2 py-0.5 rounded text-xs">
+                        <span className="bg-white/5 text-slate-300 px-2 py-0.5 rounded text-xs">
                           {r.seriesLabel || r.roundType || 'Unknown'}
                         </span>
                       </td>
@@ -624,7 +624,7 @@ function ProductsTab({ company }: { company: CompanyDetail }) {
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.08 }}
-              className="bg-slate-800/30 border border-slate-700/30 rounded-xl p-5 hover:border-cyan-500/30 transition-colors"
+              className="bg-slate-800/30 border border-slate-700/30 rounded-xl p-5 hover:border-white/10 transition-colors"
             >
               <div className="flex items-center justify-between mb-2">
                 <h4 className="font-semibold text-white text-lg">{p.name}</h4>
@@ -635,7 +635,7 @@ function ProductsTab({ company }: { company: CompanyDetail }) {
                 }`}>{p.status.toUpperCase()}</span>
               </div>
               {p.category && (
-                <div className="text-xs text-cyan-400 mb-3 capitalize">{p.category.replace(/_/g, ' ')}</div>
+                <div className="text-xs text-slate-300 mb-3 capitalize">{p.category.replace(/_/g, ' ')}</div>
               )}
               {p.description && (
                 <p className="text-sm text-slate-400 leading-relaxed mb-3">{p.description}</p>
@@ -656,7 +656,7 @@ function ProductsTab({ company }: { company: CompanyDetail }) {
                 <div className="mt-3 pt-3 border-t border-slate-700/30">
                   <Link
                     href="/launch-vehicles"
-                    className="inline-flex items-center gap-1.5 text-xs text-cyan-400 hover:text-cyan-300 transition-colors"
+                    className="inline-flex items-center gap-1.5 text-xs text-slate-300 hover:text-white transition-colors"
                   >
                     <span>View full specs in Launch Vehicles</span>
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -689,12 +689,12 @@ function PeopleTab({ company }: { company: CompanyDetail }) {
               className="bg-slate-800/30 border border-slate-700/30 rounded-xl p-4"
             >
               <div className="flex items-start gap-3">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-cyan-500/30 to-purple-500/30 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-white/30 to-purple-500/30 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
                   {p.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
                 </div>
                 <div className="min-w-0">
                   <h4 className="font-semibold text-white text-sm">{p.name}</h4>
-                  <div className="text-xs text-cyan-400">{p.title}</div>
+                  <div className="text-xs text-slate-300">{p.title}</div>
                   {p.role && <div className="text-xs text-slate-500 capitalize mt-0.5">{p.role}</div>}
                 </div>
               </div>
@@ -734,7 +734,7 @@ function ContractsTab({ company }: { company: CompanyDetail }) {
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: i * 0.05 }}
-              className="bg-slate-800/30 border border-slate-700/30 rounded-lg p-4 hover:border-cyan-500/20 transition-colors"
+              className="bg-slate-800/30 border border-slate-700/30 rounded-lg p-4 hover:border-white/10 transition-colors"
             >
               <div className="flex items-start justify-between">
                 <div>
@@ -778,11 +778,11 @@ function SpaceAssetsTab({ company }: { company: CompanyDetail }) {
           <div className="flex flex-wrap gap-4">
             {Object.entries(byOrbit).map(([orbit, count]) => (
               <div key={orbit} className="bg-slate-800/30 border border-slate-700/30 rounded-lg p-3 text-center min-w-[100px]">
-                <div className="text-2xl font-bold text-cyan-400">{count}</div>
+                <div className="text-2xl font-bold text-slate-300">{count}</div>
                 <div className="text-xs text-slate-500">{orbit}</div>
               </div>
             ))}
-            <div className="bg-slate-800/30 border border-cyan-500/30 rounded-lg p-3 text-center min-w-[100px]">
+            <div className="bg-slate-800/30 border border-white/10 rounded-lg p-3 text-center min-w-[100px]">
               <div className="text-2xl font-bold text-white">{company.summary.totalSatellites}</div>
               <div className="text-xs text-slate-500">Total</div>
             </div>
@@ -810,7 +810,7 @@ function SpaceAssetsTab({ company }: { company: CompanyDetail }) {
                 {company.satelliteAssets.slice(0, 50).map(s => (
                   <tr key={s.id} className="border-b border-slate-800/50">
                     <td className="py-2 text-white">{s.satelliteName}</td>
-                    <td className="py-2 text-cyan-400 text-xs">{s.orbitType || '—'}</td>
+                    <td className="py-2 text-slate-300 text-xs">{s.orbitType || '—'}</td>
                     <td className="py-2 text-slate-400 text-xs capitalize">{s.missionType?.replace(/-/g, ' ') || '—'}</td>
                     <td className="py-2">
                       <span className={`text-xs px-1.5 py-0.5 rounded ${
@@ -843,7 +843,7 @@ function TimelineTab({ company }: { company: CompanyDetail }) {
       ) : (
         <div className="relative pl-6">
           {/* Timeline line */}
-          <div className="absolute left-[11px] top-2 bottom-2 w-0.5 bg-gradient-to-b from-cyan-500 via-purple-500 to-slate-700" />
+          <div className="absolute left-[11px] top-2 bottom-2 w-0.5 bg-gradient-to-b from-white via-purple-500 to-slate-700" />
 
           {company.events.map((e, i) => (
             <motion.div
@@ -854,9 +854,9 @@ function TimelineTab({ company }: { company: CompanyDetail }) {
               className="relative mb-4 last:mb-0"
             >
               {/* Dot */}
-              <div className="absolute -left-6 top-1 w-3.5 h-3.5 rounded-full bg-slate-900 border-2 border-cyan-500 z-10" />
+              <div className="absolute -left-6 top-1 w-3.5 h-3.5 rounded-full bg-slate-900 border-2 border-white/15 z-10" />
 
-              <div className="bg-slate-800/30 border border-slate-700/30 rounded-lg p-3 hover:border-cyan-500/20 transition-colors ml-2">
+              <div className="bg-slate-800/30 border border-slate-700/30 rounded-lg p-3 hover:border-white/10 transition-colors ml-2">
                 <div className="flex items-center gap-2 mb-1">
                   <span className="text-sm">{getEventIcon(e.type)}</span>
                   <span className="text-xs text-slate-500">{fmtDate(e.date)}</span>
@@ -918,7 +918,7 @@ function NewsTab({ companySlug, companyName }: { companySlug: string; companyNam
 
   const categoryColors: Record<string, string> = {
     launches: 'bg-orange-500/20 text-orange-300', missions: 'bg-purple-500/20 text-purple-300',
-    companies: 'bg-blue-500/20 text-blue-300', satellites: 'bg-cyan-500/20 text-cyan-300',
+    companies: 'bg-blue-500/20 text-blue-300', satellites: 'bg-white/10 text-slate-200',
     defense: 'bg-slate-500/20 text-slate-300', earnings: 'bg-green-500/20 text-green-300',
     mergers: 'bg-fuchsia-500/20 text-fuchsia-300', development: 'bg-yellow-500/20 text-yellow-300',
     policy: 'bg-red-500/20 text-red-300', debris: 'bg-amber-500/20 text-amber-300',
@@ -943,7 +943,7 @@ function NewsTab({ companySlug, companyName }: { companySlug: string; companyNam
                 <Image src={article.imageUrl} alt={article.title} width={64} height={48} sizes="64px" className="w-16 h-12 rounded object-cover flex-shrink-0" unoptimized />
               )}
               <div className="flex-1 min-w-0">
-                <h4 className="text-sm font-medium text-white group-hover:text-cyan-400 transition-colors line-clamp-1">
+                <h4 className="text-sm font-medium text-white group-hover:text-white transition-colors line-clamp-1">
                   {article.title}
                 </h4>
                 {article.summary && (
@@ -959,7 +959,7 @@ function NewsTab({ companySlug, companyName }: { companySlug: string; companyNam
                   </span>
                 </div>
               </div>
-              <svg className="w-4 h-4 text-slate-500 group-hover:text-cyan-400 mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4 text-slate-500 group-hover:text-white mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
               </svg>
             </motion.a>
@@ -967,7 +967,7 @@ function NewsTab({ companySlug, companyName }: { companySlug: string; companyNam
         </div>
       </SectionCard>
       <div className="mt-4 text-center">
-        <Link href="/news" className="text-sm text-slate-400 hover:text-cyan-400 transition-colors">
+        <Link href="/news" className="text-sm text-slate-400 hover:text-white transition-colors">
           See all space news on SpaceNexus &rarr;
         </Link>
       </div>
@@ -1030,7 +1030,7 @@ function DigestTab({ companyId, companyName }: { companyId: string; companyName:
                 <ul className="space-y-1">
                   {highlights.map((h: string, i: number) => (
                     <li key={i} className="flex items-start gap-2 text-xs text-slate-300">
-                      <span className="text-cyan-400 mt-0.5">•</span>
+                      <span className="text-slate-300 mt-0.5">•</span>
                       <span>{h}</span>
                     </li>
                   ))}
@@ -1111,7 +1111,7 @@ function CompanyScoreSection({ company }: { company: CompanyDetail }) {
           <div className="text-xs font-medium text-slate-500 uppercase tracking-wider">Key Insights</div>
           {scoreResult.insights.slice(0, 4).map((insight, i) => (
             <div key={i} className="flex items-start gap-2 text-xs text-slate-400">
-              <span className="text-cyan-400 mt-0.5">•</span>
+              <span className="text-slate-300 mt-0.5">•</span>
               <span>{insight}</span>
             </div>
           ))}
@@ -1124,7 +1124,7 @@ function CompanyScoreSection({ company }: { company: CompanyDetail }) {
 function IntelligenceTab({ company }: { company: CompanyDetail }) {
   const entityLinks = getEntityLinks(company.slug);
   const links = [
-    { label: 'Related News', description: 'News articles mentioning this company', href: entityLinks.relatedNews, icon: '📰', color: 'border-cyan-500/30 hover:border-cyan-500/50' },
+    { label: 'Related News', description: 'News articles mentioning this company', href: entityLinks.relatedNews, icon: '📰', color: 'border-white/10 hover:border-white/15' },
     { label: 'Patent Filings', description: 'Patents and IP associated with this company', href: entityLinks.relatedPatents, icon: '📋', color: 'border-amber-500/30 hover:border-amber-500/50' },
     { label: 'Job Postings', description: 'Open positions at this company', href: entityLinks.relatedJobs, icon: '💼', color: 'border-emerald-500/30 hover:border-emerald-500/50' },
     { label: 'Launch History', description: 'Launches associated with this company', href: entityLinks.relatedLaunches, icon: '🚀', color: 'border-purple-500/30 hover:border-purple-500/50' },
@@ -1195,7 +1195,7 @@ function RelationshipsTab({ company }: { company: CompanyDetail }) {
               <Link key={c.id} href={`/company-profiles/${c.slug}`}>
                 <motion.div
                   whileHover={{ scale: 1.02 }}
-                  className="bg-slate-800/30 border border-slate-700/30 rounded-lg p-3 flex items-center gap-3 cursor-pointer hover:border-cyan-500/30 transition-colors"
+                  className="bg-slate-800/30 border border-slate-700/30 rounded-lg p-3 flex items-center gap-3 cursor-pointer hover:border-white/10 transition-colors"
                 >
                   <div className="w-8 h-8 rounded-lg bg-slate-700 flex items-center justify-center text-sm">
                     {c.logoUrl ? <Image src={c.logoUrl} alt={`${c.name} logo`} width={20} height={20} sizes="20px" className="w-5 h-5 rounded" unoptimized /> : getSectorIcon(c.sector)}
@@ -1262,7 +1262,7 @@ function QuickStatsSection({ company }: { company: CompanyDetail }) {
       label: 'Founded',
       value: String(company.foundedYear),
       icon: (
-        <svg className="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className="w-5 h-5 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
         </svg>
       ),
@@ -1340,7 +1340,7 @@ function QuickStatsSection({ company }: { company: CompanyDetail }) {
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 + i * 0.06, duration: 0.4, ease: 'easeOut' }}
-            className="bg-slate-800/40 backdrop-blur-sm border border-slate-700/40 rounded-xl p-4 text-center hover:border-cyan-500/20 transition-colors"
+            className="bg-slate-800/40 backdrop-blur-sm border border-slate-700/40 rounded-xl p-4 text-center hover:border-white/10 transition-colors"
           >
             <div className="flex justify-center mb-2">{stat.icon}</div>
             <div className="text-white text-lg font-bold leading-tight">{stat.value}</div>
@@ -1397,14 +1397,14 @@ function RecentNewsSnippet({ companySlug, companyName }: { companySlug: string; 
     <div className="card p-5">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-semibold text-white flex items-center gap-2">
-          <svg className="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-5 h-5 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
           </svg>
           Recent News
         </h3>
         <Link
           href={`/news?search=${encodeURIComponent(companyName)}`}
-          className="text-xs text-cyan-400 hover:text-cyan-300 transition-colors"
+          className="text-xs text-slate-300 hover:text-white transition-colors"
         >
           View all &rarr;
         </Link>
@@ -1419,10 +1419,10 @@ function RecentNewsSnippet({ companySlug, companyName }: { companySlug: string; 
             initial={{ opacity: 0, x: -10 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: i * 0.08 }}
-            className="flex items-center justify-between gap-4 p-3 rounded-lg bg-slate-800/30 border border-slate-700/30 hover:border-cyan-500/20 transition-colors group"
+            className="flex items-center justify-between gap-4 p-3 rounded-lg bg-slate-800/30 border border-slate-700/30 hover:border-white/10 transition-colors group"
           >
             <div className="flex-1 min-w-0">
-              <h4 className="text-sm font-medium text-white group-hover:text-cyan-400 transition-colors line-clamp-1">
+              <h4 className="text-sm font-medium text-white group-hover:text-white transition-colors line-clamp-1">
                 {article.title}
               </h4>
               <div className="flex items-center gap-2 mt-1">
@@ -1435,7 +1435,7 @@ function RecentNewsSnippet({ companySlug, companyName }: { companySlug: string; 
                 </span>
               </div>
             </div>
-            <svg className="w-4 h-4 text-slate-600 group-hover:text-cyan-400 flex-shrink-0 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-4 h-4 text-slate-600 group-hover:text-white flex-shrink-0 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
             </svg>
           </motion.a>
@@ -1514,7 +1514,7 @@ export default function CompanyProfileDetailPage() {
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <button
               onClick={() => { setLoading(true); setError(null); setCompany(null); window.location.reload(); }}
-              className="px-5 py-2.5 bg-cyan-600 hover:bg-cyan-500 text-white text-sm rounded-lg font-medium transition-colors"
+              className="px-5 py-2.5 bg-white hover:bg-slate-100 text-white text-sm rounded-lg font-medium transition-colors"
             >
               Try Again
             </button>
@@ -1564,7 +1564,7 @@ export default function CompanyProfileDetailPage() {
         className="card p-6 mb-6 relative overflow-hidden"
       >
         {/* Animated background gradient */}
-        <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/5 via-purple-500/5 to-cyan-500/5" />
+        <div className="absolute inset-0 bg-gradient-to-r from-white/5 via-purple-500/5 to-slate-200/5" />
 
         <div className="relative z-10">
           {company.sponsorTier === 'premium' && company.sponsorBanner && (
@@ -1596,7 +1596,7 @@ export default function CompanyProfileDetailPage() {
                 <div className="flex items-center gap-3 flex-wrap">
                   <h1 className="text-2xl lg:text-3xl font-bold text-white">{company.name}</h1>
                   {company.ticker && (
-                    <span className="font-mono text-cyan-400 text-lg">{company.ticker}</span>
+                    <span className="font-mono text-slate-300 text-lg">{company.ticker}</span>
                   )}
                   <span className={`text-xs px-2 py-0.5 rounded-full font-bold ${
                     company.status === 'active' ? 'bg-emerald-500/20 text-emerald-400' :
@@ -1626,7 +1626,7 @@ export default function CompanyProfileDetailPage() {
                     <span className="text-xs text-slate-500 flex items-center gap-1">👥 {company.employeeRange} employees</span>
                   )}
                   {company.website && (
-                    <a href={company.website} target="_blank" rel="noopener noreferrer" className="text-xs text-cyan-400 hover:text-cyan-300 flex items-center gap-1">
+                    <a href={company.website} target="_blank" rel="noopener noreferrer" className="text-xs text-slate-300 hover:text-white flex items-center gap-1">
                       🌐 Website →
                     </a>
                   )}
@@ -1640,7 +1640,7 @@ export default function CompanyProfileDetailPage() {
                 {/* Tags */}
                 <div className="flex flex-wrap gap-1.5 mt-3">
                   {company.sector && (
-                    <span className="text-xs px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
+                    <span className="text-xs px-2 py-0.5 rounded-full bg-white/5 text-slate-300 border border-white/10">
                       {getSectorIcon(company.sector)} {company.sector}
                     </span>
                   )}
@@ -1664,7 +1664,7 @@ export default function CompanyProfileDetailPage() {
                 <MetricCard label="Valuation" value={fmt(company.valuation)} icon="📊" color="text-purple-400" />
               ) : null}
               {company.revenueEstimate && (
-                <MetricCard label="Est. Revenue" value={fmt(company.revenueEstimate)} icon="💵" color="text-cyan-400" />
+                <MetricCard label="Est. Revenue" value={fmt(company.revenueEstimate)} icon="💵" color="text-slate-300" />
               )}
               {company.summary.activeSatellites > 0 && (
                 <MetricCard label="Active Satellites" value={company.summary.activeSatellites.toString()} icon="🛰️" color="text-amber-400" />
@@ -1781,7 +1781,7 @@ export default function CompanyProfileDetailPage() {
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={`relative px-4 py-3 text-sm font-medium whitespace-nowrap transition-colors flex items-center gap-1.5 ${
-                activeTab === tab.id ? 'text-cyan-400' : 'text-slate-400 hover:text-white'
+                activeTab === tab.id ? 'text-slate-300' : 'text-slate-400 hover:text-white'
               }`}
             >
               <span>{tab.icon}</span>
@@ -1789,7 +1789,7 @@ export default function CompanyProfileDetailPage() {
               {activeTab === tab.id && (
                 <motion.div
                   layoutId="tab-indicator-company"
-                  className="absolute bottom-0 left-0 right-0 h-0.5 bg-cyan-400"
+                  className="absolute bottom-0 left-0 right-0 h-0.5 bg-white"
                   transition={{ type: 'spring', stiffness: 500, damping: 30 }}
                 />
               )}
@@ -1827,7 +1827,7 @@ export default function CompanyProfileDetailPage() {
             <div className="text-center py-16">
               <div className="text-4xl mb-3">✉️</div>
               <p className="text-slate-400 text-sm">Direct contact is available for verified and premium sponsors.</p>
-              <Link href="/company-profiles/sponsor" className="text-cyan-400 hover:text-cyan-300 text-sm mt-2 inline-block">
+              <Link href="/company-profiles/sponsor" className="text-slate-300 hover:text-white text-sm mt-2 inline-block">
                 Learn about sponsorship →
               </Link>
             </div>

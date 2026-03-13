@@ -329,9 +329,9 @@ export default function ContactPage() {
                 <h3 className="text-lg font-semibold text-white mb-4">Other Ways to Reach Us</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="flex items-start gap-3">
-                    <div className="w-10 h-10 bg-cyan-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <div className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center flex-shrink-0">
                       <svg
-                        className="w-5 h-5 text-cyan-400"
+                        className="w-5 h-5 text-slate-300"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -348,16 +348,16 @@ export default function ContactPage() {
                       <p className="text-slate-400 text-sm font-medium">Email</p>
                       <a
                         href="mailto:support@spacenexus.us"
-                        className="text-cyan-400 hover:text-cyan-300 transition-colors"
+                        className="text-slate-300 hover:text-white transition-colors"
                       >
                         support@spacenexus.us
                       </a>
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
-                    <div className="w-10 h-10 bg-cyan-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <div className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center flex-shrink-0">
                       <svg
-                        className="w-5 h-5 text-cyan-400"
+                        className="w-5 h-5 text-slate-300"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -374,7 +374,7 @@ export default function ContactPage() {
                       <p className="text-slate-400 text-sm font-medium">Help Center</p>
                       <Link
                         href="/faq"
-                        className="text-cyan-400 hover:text-cyan-300 transition-colors"
+                        className="text-slate-300 hover:text-white transition-colors"
                       >
                         Browse FAQ
                       </Link>

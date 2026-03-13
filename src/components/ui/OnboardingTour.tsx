@@ -179,7 +179,7 @@ export default function OnboardingTour() {
         className="relative bg-slate-900 border border-slate-700/50 rounded-2xl w-full max-w-xl max-h-[90vh] overflow-hidden shadow-2xl"
       >
         {/* Top gradient accent */}
-        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-cyan-500 via-purple-500 to-pink-500" />
+        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-white via-purple-500 to-pink-500" />
 
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-slate-700/50">
@@ -214,14 +214,14 @@ export default function OnboardingTour() {
                     onClick={() => setSelectedPersona(persona.id)}
                     className={`text-left p-4 rounded-xl border transition-all duration-200 ${
                       selectedPersona === persona.id
-                        ? 'border-cyan-400 bg-cyan-500/10 shadow-lg shadow-cyan-500/10'
+                        ? 'border-white/10 bg-white/5 shadow-lg shadow-black/5'
                         : 'border-slate-700/50 bg-slate-800/50 hover:border-slate-600 hover:bg-slate-800'
                     }`}
                   >
                     <div className="flex items-start gap-3">
                       <span className="text-2xl flex-shrink-0">{persona.icon}</span>
                       <div>
-                        <div className={`font-semibold text-sm ${selectedPersona === persona.id ? 'text-cyan-300' : 'text-white'}`}>
+                        <div className={`font-semibold text-sm ${selectedPersona === persona.id ? 'text-slate-200' : 'text-white'}`}>
                           {persona.title}
                         </div>
                         <div className="text-xs text-slate-400 mt-0.5">{persona.description}</div>
@@ -243,7 +243,7 @@ export default function OnboardingTour() {
                     key={highlight}
                     className="flex items-center gap-2 px-3 py-2 rounded-lg bg-slate-800/60 border border-slate-700/40"
                   >
-                    <svg className="w-4 h-4 text-cyan-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-4 h-4 text-slate-300 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                     </svg>
                     <span className="text-sm text-slate-300">{highlight}</span>
@@ -261,9 +261,9 @@ export default function OnboardingTour() {
               key={i}
               className={`rounded-full transition-all duration-300 ${
                 i === step
-                  ? 'w-6 h-2 bg-cyan-400'
+                  ? 'w-6 h-2 bg-white'
                   : i < step
-                    ? 'w-2 h-2 bg-cyan-600'
+                    ? 'w-2 h-2 bg-white'
                     : 'w-2 h-2 bg-slate-600'
               }`}
             />
@@ -289,7 +289,7 @@ export default function OnboardingTour() {
               isPersonaStep && !selectedPersona
                 ? 'bg-slate-700 text-slate-500 cursor-not-allowed'
                 : step === TOUR_STEPS.length
-                  ? 'bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-400 hover:to-purple-400 text-white shadow-lg'
+                  ? 'bg-gradient-to-r from-white to-purple-500 hover:from-slate-300 hover:to-purple-400 text-white shadow-lg'
                   : 'bg-nebula-500 hover:bg-nebula-600 text-white'
             }`}
           >

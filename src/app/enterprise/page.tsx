@@ -51,9 +51,9 @@ const ENTERPRISE_FEATURES = [
         <path strokeLinecap="round" strokeLinejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" />
       </svg>
     ),
-    gradient: 'from-cyan-500/20 to-blue-500/20',
-    borderColor: 'border-cyan-500/30',
-    iconColor: 'text-cyan-400',
+    gradient: 'from-white/5 to-blue-500/20',
+    borderColor: 'border-white/10',
+    iconColor: 'text-slate-300',
   },
   {
     title: 'API & Integrations',
@@ -208,7 +208,7 @@ export default function EnterprisePage() {
         {/* Hero Section */}
         <section className="container mx-auto px-4 pt-12 pb-16 text-center">
           <ScrollReveal>
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-sm font-medium mb-6">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-slate-300 text-sm font-medium mb-6">
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
               </svg>
@@ -216,7 +216,7 @@ export default function EnterprisePage() {
             </div>
             <h1 className="text-3xl md:text-5xl font-bold text-white mb-4 tracking-tight">
               Space Intelligence for Your
-              <span className="block bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
+              <span className="block bg-gradient-to-r from-slate-300 to-blue-500 bg-clip-text text-transparent">
                 Entire Organization
               </span>
             </h1>
@@ -228,7 +228,7 @@ export default function EnterprisePage() {
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
               <Link
                 href="/contact?utm_source=enterprise&utm_medium=hero&utm_campaign=demo"
-                className="inline-flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-semibold rounded-lg transition-all shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40"
+                className="inline-flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-white to-blue-600 hover:from-slate-300 hover:to-blue-500 text-white font-semibold rounded-lg transition-all shadow-lg shadow-black/20/25 hover:shadow-black/20/40"
               >
                 Schedule a Demo
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
@@ -287,8 +287,8 @@ export default function EnterprisePage() {
                     key={diff.title}
                     className="text-center p-4 rounded-xl bg-slate-800/40 border border-slate-700/30"
                   >
-                    <div className="w-10 h-10 mx-auto mb-3 rounded-full bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center">
-                      <svg className="w-5 h-5 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
+                    <div className="w-10 h-10 mx-auto mb-3 rounded-full bg-white/5 border border-white/10 flex items-center justify-center">
+                      <svg className="w-5 h-5 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
                       </svg>
                     </div>
@@ -330,10 +330,10 @@ export default function EnterprisePage() {
         {/* Pricing Callout */}
         <section className="container mx-auto px-4 pb-20">
           <ScrollReveal>
-            <div className="max-w-3xl mx-auto text-center bg-gradient-to-br from-cyan-500/10 to-blue-600/10 border border-cyan-500/20 rounded-2xl p-8 sm:p-12">
+            <div className="max-w-3xl mx-auto text-center bg-gradient-to-br from-white/5 to-blue-600/10 border border-white/10 rounded-2xl p-8 sm:p-12">
               <h2 className="text-2xl md:text-3xl font-bold text-white mb-3">
                 Starting at{' '}
-                <span className="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-slate-300 to-blue-500 bg-clip-text text-transparent">
                   $49.99/month
                 </span>{' '}
                 per seat
@@ -345,7 +345,7 @@ export default function EnterprisePage() {
               <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
                 <Link
                   href="/contact?utm_source=enterprise&utm_medium=pricing&utm_campaign=demo"
-                  className="inline-flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-semibold rounded-lg transition-all shadow-lg shadow-cyan-500/25"
+                  className="inline-flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-white to-blue-600 hover:from-slate-300 hover:to-blue-500 text-white font-semibold rounded-lg transition-all shadow-lg shadow-black/20/25"
                 >
                   Get Custom Pricing
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
@@ -377,19 +377,19 @@ export default function EnterprisePage() {
                   </p>
                   <ul className="space-y-2 text-sm text-slate-300">
                     <li className="flex items-center gap-2">
-                      <svg className="w-4 h-4 text-cyan-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
+                      <svg className="w-4 h-4 text-slate-300 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
                       </svg>
                       30-minute personalized walkthrough
                     </li>
                     <li className="flex items-center gap-2">
-                      <svg className="w-4 h-4 text-cyan-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
+                      <svg className="w-4 h-4 text-slate-300 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
                       </svg>
                       Custom workspace setup for your team
                     </li>
                     <li className="flex items-center gap-2">
-                      <svg className="w-4 h-4 text-cyan-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
+                      <svg className="w-4 h-4 text-slate-300 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
                       </svg>
                       14-day free enterprise trial included
@@ -399,7 +399,7 @@ export default function EnterprisePage() {
                 <div className="shrink-0">
                   <Link
                     href="/contact?utm_source=enterprise&utm_medium=cta&utm_campaign=demo"
-                    className="inline-flex items-center gap-2 px-10 py-4 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold text-lg rounded-xl transition-all shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40"
+                    className="inline-flex items-center gap-2 px-10 py-4 bg-gradient-to-r from-white to-blue-600 hover:from-slate-300 hover:to-blue-500 text-white font-bold text-lg rounded-xl transition-all shadow-lg shadow-black/20/25 hover:shadow-black/20/40"
                   >
                     Book Your Demo
                     <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">

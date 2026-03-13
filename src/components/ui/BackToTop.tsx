@@ -24,7 +24,7 @@ export default function BackToTop() {
       {/* Scroll progress bar at top of page */}
       <div className="fixed top-0 left-0 right-0 z-[9998] h-0.5 bg-transparent pointer-events-none">
         <div
-          className="h-full bg-gradient-to-r from-cyan-400 to-blue-500 transition-all duration-150"
+          className="h-full bg-gradient-to-r from-slate-300 to-blue-500 transition-all duration-150"
           style={{ width: `${progress}%` }}
         />
       </div>
@@ -33,7 +33,7 @@ export default function BackToTop() {
       {visible && (
         <button
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-          className="fixed bottom-6 right-6 z-40 w-12 h-12 rounded-full bg-cyan-500/90 hover:bg-cyan-400 text-white shadow-lg shadow-cyan-500/20 transition-all duration-300 flex items-center justify-center group"
+          className="fixed bottom-6 right-6 z-40 w-12 h-12 rounded-full bg-white/90 hover:bg-slate-100 text-white shadow-lg shadow-black/10 transition-all duration-300 flex items-center justify-center group"
           aria-label="Back to top"
         >
           {/* Circular progress ring */}

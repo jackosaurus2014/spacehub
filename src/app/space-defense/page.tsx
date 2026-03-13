@@ -102,7 +102,7 @@ const CATEGORY_STYLES: Record<DefenseProgram['category'], { label: string; color
   navigation: { label: 'Navigation', color: 'text-green-300' },
   launch: { label: 'Launch', color: 'text-orange-300' },
   surveillance: { label: 'Surveillance', color: 'text-purple-300' },
-  sda: { label: 'SDA Architecture', color: 'text-cyan-300' },
+  sda: { label: 'SDA Architecture', color: 'text-slate-200' },
   ground: { label: 'Ground Systems', color: 'text-yellow-300' },
   classified: { label: 'Classified', color: 'text-slate-300' },
 };
@@ -114,7 +114,7 @@ const EVENT_TYPE_STYLES: Record<CounterspaceEvent['type'], { label: string; colo
   co_orbital: { label: 'Co-Orbital / RPO', color: 'text-orange-400', bg: 'bg-orange-900/20' },
   electronic_warfare: { label: 'Electronic Warfare', color: 'text-yellow-400', bg: 'bg-yellow-900/20' },
   cyber: { label: 'Cyber Attack', color: 'text-purple-400', bg: 'bg-purple-900/20' },
-  directed_energy: { label: 'Directed Energy', color: 'text-cyan-400', bg: 'bg-cyan-900/20' },
+  directed_energy: { label: 'Directed Energy', color: 'text-slate-300', bg: 'bg-slate-800/30' },
   rpo: { label: 'RPO', color: 'text-orange-400', bg: 'bg-orange-900/20' },
 };
 
@@ -2230,7 +2230,7 @@ export default function SpaceDefensePage() {
                       presolicitation: { label: 'Pre-Solicitation', color: 'text-yellow-400', bg: 'bg-yellow-900/20' },
                       award: { label: 'Award', color: 'text-green-400', bg: 'bg-green-900/20' },
                       sources_sought: { label: 'Sources Sought', color: 'text-purple-400', bg: 'bg-purple-900/20' },
-                      special_notice: { label: 'Special Notice', color: 'text-cyan-400', bg: 'bg-cyan-900/20' },
+                      special_notice: { label: 'Special Notice', color: 'text-slate-300', bg: 'bg-slate-800/30' },
                     };
                     const typeStyle = typeStyles[opp.type || 'solicitation'] || typeStyles.solicitation;
 

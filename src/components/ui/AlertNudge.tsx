@@ -86,7 +86,7 @@ export default function AlertNudge({
       role="complementary"
       aria-label={`${moduleName} alert nudge`}
       className={[
-        'border-l-4 border-cyan-500 bg-slate-800/60 rounded-r-lg px-4 py-3',
+        'border-l-4 border-white/15 bg-slate-800/60 rounded-r-lg px-4 py-3',
         'flex items-center gap-3 transition-opacity duration-300',
         fadingOut ? 'opacity-0' : 'animate-fade-in opacity-100',
         className,
@@ -104,7 +104,7 @@ export default function AlertNudge({
 
       <Link
         href={ctaHref}
-        className="flex-shrink-0 text-xs font-medium text-cyan-400 hover:text-cyan-300 transition-colors whitespace-nowrap"
+        className="flex-shrink-0 text-xs font-medium text-slate-300 hover:text-white transition-colors whitespace-nowrap"
       >
         Set Up &rarr;
       </Link>

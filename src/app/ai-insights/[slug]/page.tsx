@@ -38,7 +38,7 @@ const CATEGORY_COLORS: Record<string, { badge: string }> = {
     badge: 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30',
   },
   technology: {
-    badge: 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30',
+    badge: 'bg-white/10 text-slate-200 border border-white/10',
   },
   geopolitical: {
     badge: 'bg-purple-500/20 text-purple-300 border border-purple-500/30',
@@ -302,7 +302,7 @@ export default function AIInsightDetailPage() {
               <ConfidenceBadge level={getDetailConfidence(insight.sources)} />
               <button
                 onClick={handleShare}
-                className="inline-flex items-center gap-1.5 text-sm text-slate-400 hover:text-cyan-400 transition-colors"
+                className="inline-flex items-center gap-1.5 text-sm text-slate-400 hover:text-white transition-colors"
               >
                 <svg
                   className="w-4 h-4"
@@ -337,16 +337,16 @@ export default function AIInsightDetailPage() {
                     h3: ({children}) => <h3 className="text-xl font-semibold text-white mt-8 mb-3">{children}</h3>,
                     h4: ({children}) => <h4 className="text-lg font-semibold text-slate-200 mt-6 mb-2">{children}</h4>,
                     p: ({children}) => <p className="text-slate-300 leading-relaxed mb-4">{children}</p>,
-                    a: ({href, children}) => <a href={href} className="text-cyan-400 hover:text-cyan-300 hover:underline" target="_blank" rel="noopener noreferrer">{children}</a>,
+                    a: ({href, children}) => <a href={href} className="text-slate-300 hover:text-white hover:underline" target="_blank" rel="noopener noreferrer">{children}</a>,
                     ul: ({children}) => <ul className="list-disc list-inside space-y-2 text-slate-300 mb-4">{children}</ul>,
                     ol: ({children}) => <ol className="list-decimal list-inside space-y-2 text-slate-300 mb-4">{children}</ol>,
                     li: ({children}) => <li className="text-slate-300">{children}</li>,
-                    blockquote: ({children}) => <blockquote className="border-l-4 border-cyan-500/40 pl-4 my-4 text-slate-400 italic">{children}</blockquote>,
+                    blockquote: ({children}) => <blockquote className="border-l-4 border-white/15/40 pl-4 my-4 text-slate-400 italic">{children}</blockquote>,
                     code: ({children, className}) => {
                       const isBlock = className?.includes('language-');
                       return isBlock
-                        ? <pre className="bg-slate-800/50 rounded-lg p-4 overflow-x-auto my-4"><code className="text-sm text-cyan-300">{children}</code></pre>
-                        : <code className="bg-slate-800/50 px-1.5 py-0.5 rounded text-cyan-300 text-sm">{children}</code>;
+                        ? <pre className="bg-slate-800/50 rounded-lg p-4 overflow-x-auto my-4"><code className="text-sm text-slate-200">{children}</code></pre>
+                        : <code className="bg-slate-800/50 px-1.5 py-0.5 rounded text-slate-200 text-sm">{children}</code>;
                     },
                     strong: ({children}) => <strong className="text-white font-semibold">{children}</strong>,
                     em: ({children}) => <em className="text-slate-200">{children}</em>,
@@ -383,7 +383,7 @@ export default function AIInsightDetailPage() {
                     {sources.map((source, index) => (
                       <li key={index} className="flex items-start gap-2">
                         <svg
-                          className="w-4 h-4 mt-1 text-cyan-400 flex-shrink-0"
+                          className="w-4 h-4 mt-1 text-slate-300 flex-shrink-0"
                           fill="none"
                           viewBox="0 0 24 24"
                           stroke="currentColor"
@@ -399,7 +399,7 @@ export default function AIInsightDetailPage() {
                           href={source.url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-sm text-cyan-400 hover:text-cyan-300 transition-colors break-all"
+                          className="text-sm text-slate-300 hover:text-white transition-colors break-all"
                         >
                           {source.title || source.url}
                         </a>

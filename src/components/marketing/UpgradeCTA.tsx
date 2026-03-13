@@ -25,12 +25,12 @@ function InlineCTA({ feature, module }: { feature?: string; module?: string }) {
     <div className="relative border-l-2 border-transparent bg-slate-800/50 rounded-r-lg px-4 py-3 my-4" style={{ borderImage: 'linear-gradient(to bottom, #06b6d4, #3b82f6) 1' }}>
       <div className="flex items-center justify-between gap-4 flex-wrap">
         <p className="text-sm text-slate-300">
-          <span className="text-cyan-400 font-medium">Unlock {featureText}</span>
+          <span className="text-slate-300 font-medium">Unlock {featureText}</span>
           {moduleText} with Pro
         </p>
         <Link
           href="/pricing"
-          className="text-xs font-semibold text-cyan-400 hover:text-cyan-300 transition-colors flex items-center gap-1 shrink-0"
+          className="text-xs font-semibold text-slate-300 hover:text-white transition-colors flex items-center gap-1 shrink-0"
         >
           Upgrade
           <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -47,14 +47,14 @@ function CardCTA({ feature, module }: { feature?: string; module?: string }) {
   const moduleText = module ? `for ${module}` : '';
 
   return (
-    <div className="relative bg-gradient-to-br from-slate-800 to-slate-900 border border-cyan-500/20 rounded-2xl p-6 overflow-hidden">
+    <div className="relative bg-gradient-to-br from-slate-800 to-slate-900 border border-white/10 rounded-2xl p-6 overflow-hidden">
       {/* Decorative glow */}
-      <div className="absolute -top-12 -right-12 w-32 h-32 bg-cyan-500/10 rounded-full blur-[60px] pointer-events-none" />
+      <div className="absolute -top-12 -right-12 w-32 h-32 bg-white/10 rounded-full blur-[60px] pointer-events-none" />
 
       <div className="relative">
         {/* Icon */}
-        <div className="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center mb-4">
-          <svg className="w-5 h-5 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+        <div className="w-10 h-10 rounded-xl bg-white/10 border border-white/10 flex items-center justify-center mb-4">
+          <svg className="w-5 h-5 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 00-2.455 2.456z" />
           </svg>
         </div>
@@ -71,7 +71,7 @@ function CardCTA({ feature, module }: { feature?: string; module?: string }) {
         <ul className="space-y-2.5 mb-6">
           {PRO_FEATURES.map((f) => (
             <li key={f} className="flex items-start gap-2 text-sm text-slate-300">
-              <svg className="w-4 h-4 text-cyan-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <svg className="w-4 h-4 text-slate-300 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
               </svg>
               {f}
@@ -81,7 +81,7 @@ function CardCTA({ feature, module }: { feature?: string; module?: string }) {
 
         <Link
           href="/pricing"
-          className="block w-full text-center py-2.5 px-4 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 text-white text-sm font-semibold transition-all duration-200 shadow-lg shadow-cyan-500/20"
+          className="block w-full text-center py-2.5 px-4 rounded-xl bg-gradient-to-r bg-white hover:bg-slate-100 text-slate-900 text-sm font-semibold transition-all duration-200 shadow-lg shadow-black/20"
         >
           Start 14-Day Trial
         </Link>
@@ -149,8 +149,8 @@ function FloatingCTA({ feature }: { feature?: string }) {
 
         <div className="flex items-start gap-3 pr-6">
           {/* Sparkle icon */}
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-500/20 to-blue-500/20 border border-cyan-500/30 flex items-center justify-center shrink-0">
-            <svg className="w-4 h-4 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-white/5 to-white/10 border border-white/10 flex items-center justify-center shrink-0">
+            <svg className="w-4 h-4 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
             </svg>
           </div>
@@ -163,7 +163,7 @@ function FloatingCTA({ feature }: { feature?: string }) {
             </p>
             <Link
               href="/pricing"
-              className="inline-flex items-center gap-1 text-xs font-semibold text-cyan-400 hover:text-cyan-300 transition-colors"
+              className="inline-flex items-center gap-1 text-xs font-semibold text-slate-300 hover:text-white transition-colors"
             >
               See plans
               <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>

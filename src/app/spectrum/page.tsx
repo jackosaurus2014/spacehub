@@ -819,7 +819,7 @@ function SpectrumContent() {
                 <select
                   value={statusFilter}
                   onChange={(e) => handleStatusFilterChange(e.target.value)}
-                  className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+                  className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                 >
                   <option value="">All Statuses</option>
                   {OPERATOR_FILING_STATUSES.map((s) => (
@@ -830,7 +830,7 @@ function SpectrumContent() {
                 <select
                   value={bandFilter}
                   onChange={(e) => handleBandFilterChange(e.target.value)}
-                  className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+                  className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                 >
                   <option value="">All Bands</option>
                   {filingBands.map((band) => {

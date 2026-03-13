@@ -46,13 +46,13 @@ export default function StateOfSpace2026Page() {
       {/* Hero Section */}
       <section className="relative overflow-hidden">
         {/* Background elements */}
-        <div className="absolute inset-0 bg-gradient-to-b from-cyan-950/20 via-slate-950 to-slate-950" />
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-cyan-500/5 rounded-full blur-[120px]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-slate-900/20 via-slate-950 to-slate-950" />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-white/5 rounded-full blur-[120px]" />
 
         <div className="relative max-w-5xl mx-auto px-4 sm:px-6 pt-16 pb-12 md:pt-24 md:pb-16">
           <ScrollReveal>
             <div className="text-center">
-              <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-cyan-900/30 border border-cyan-500/20 rounded-full text-cyan-400 text-sm font-medium mb-6">
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-slate-800/40 border border-white/10 rounded-full text-slate-300 text-sm font-medium mb-6">
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
@@ -62,7 +62,7 @@ export default function StateOfSpace2026Page() {
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
                 State of the Space
                 <br />
-                <span className="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-slate-300 to-blue-400 bg-clip-text text-transparent">
                   Industry 2026
                 </span>
               </h1>
@@ -108,13 +108,13 @@ export default function StateOfSpace2026Page() {
             {KEY_STATS.map((stat) => (
               <div
                 key={stat.label}
-                className="bg-slate-900/60 border border-slate-800 rounded-xl p-5 text-center hover:border-cyan-500/20 transition-colors"
+                className="bg-slate-900/60 border border-slate-800 rounded-xl p-5 text-center hover:border-white/10 transition-colors"
               >
-                <div className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent mb-1">
+                <div className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-slate-300 to-blue-400 bg-clip-text text-transparent mb-1">
                   {stat.value}
                 </div>
                 <div className="text-sm text-slate-400 mb-2">{stat.label}</div>
-                <div className="text-xs text-cyan-500/80 font-medium">{stat.trend}</div>
+                <div className="text-xs text-slate-300/80 font-medium">{stat.trend}</div>
               </div>
             ))}
           </div>
@@ -136,14 +136,14 @@ export default function StateOfSpace2026Page() {
                     key={item.chapter}
                     className={`flex items-center gap-4 p-3.5 rounded-xl border transition-colors ${
                       item.unlocked
-                        ? 'bg-slate-900/40 border-slate-800 hover:border-cyan-500/20'
+                        ? 'bg-slate-900/40 border-slate-800 hover:border-white/10'
                         : 'bg-slate-900/20 border-slate-800/50'
                     }`}
                   >
                     <div
                       className={`flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold ${
                         item.unlocked
-                          ? 'bg-cyan-900/40 text-cyan-400'
+                          ? 'bg-slate-800/60 text-slate-300'
                           : 'bg-slate-800/60 text-slate-600'
                       }`}
                     >
@@ -192,7 +192,7 @@ export default function StateOfSpace2026Page() {
                 </div>
                 <div className="absolute inset-0 flex items-center justify-center">
                   <div className="bg-slate-900/90 border border-slate-700 rounded-lg px-5 py-2.5 flex items-center gap-2">
-                    <svg className="w-4 h-4 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg className="w-4 h-4 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path
                         strokeLinecap="round"
                         strokeLinejoin="round"
@@ -269,8 +269,8 @@ export default function StateOfSpace2026Page() {
                 },
               ].map((item) => (
                 <div key={item.title} className="flex gap-4">
-                  <div className="flex-shrink-0 w-10 h-10 bg-cyan-900/30 border border-cyan-500/20 rounded-lg flex items-center justify-center">
-                    <svg className="w-5 h-5 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <div className="flex-shrink-0 w-10 h-10 bg-slate-800/40 border border-white/10 rounded-lg flex items-center justify-center">
+                    <svg className="w-5 h-5 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       {item.icon}
                     </svg>
                   </div>
@@ -298,19 +298,19 @@ export default function StateOfSpace2026Page() {
               Published by the SpaceNexus Intelligence Team using data from NASA, NOAA, SEC, CelesTrak, SAM.gov, and 50+ additional sources.
             </p>
             <div className="flex items-center justify-center gap-4 text-xs text-slate-600">
-              <a href="/blog" className="hover:text-cyan-400 transition-colors">
+              <a href="/blog" className="hover:text-white transition-colors">
                 Read our blog
               </a>
               <span>|</span>
-              <a href="/company-profiles" className="hover:text-cyan-400 transition-colors">
+              <a href="/company-profiles" className="hover:text-white transition-colors">
                 Company Profiles
               </a>
               <span>|</span>
-              <a href="/market-intel" className="hover:text-cyan-400 transition-colors">
+              <a href="/market-intel" className="hover:text-white transition-colors">
                 Market Intelligence
               </a>
               <span>|</span>
-              <a href="/pricing" className="hover:text-cyan-400 transition-colors">
+              <a href="/pricing" className="hover:text-white transition-colors">
                 Pricing
               </a>
             </div>

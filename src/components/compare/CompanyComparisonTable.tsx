@@ -107,7 +107,7 @@ function getTierLabel(tier: number): string {
 function getTierBadge(tier: number) {
   const styles: Record<number, { bg: string; text: string; label: string }> = {
     1: { bg: 'bg-amber-500/20', text: 'text-amber-400', label: 'TIER 1' },
-    2: { bg: 'bg-cyan-500/20', text: 'text-cyan-400', label: 'TIER 2' },
+    2: { bg: 'bg-white/10', text: 'text-slate-300', label: 'TIER 2' },
     3: { bg: 'bg-purple-500/20', text: 'text-purple-400', label: 'TIER 3' },
   };
   const style = styles[tier] || styles[3];
@@ -135,7 +135,7 @@ function getScoreByType(scores: Score[], type: string): number | null {
 function getScoreColor(score: number | null): string {
   if (score == null) return 'text-slate-500';
   if (score >= 80) return 'text-emerald-400';
-  if (score >= 60) return 'text-cyan-400';
+  if (score >= 60) return 'text-slate-300';
   if (score >= 40) return 'text-amber-400';
   return 'text-red-400';
 }
@@ -211,7 +211,7 @@ export default function CompanyComparisonTable({ companies, onRemove }: CompanyC
                 href={c.website}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-cyan-400 hover:text-cyan-300 text-xs truncate block max-w-[180px]"
+                className="text-slate-300 hover:text-white text-xs truncate block max-w-[180px]"
               >
                 {c.website.replace(/^https?:\/\/(www\.)?/, '')}
               </a>
@@ -338,7 +338,7 @@ export default function CompanyComparisonTable({ companies, onRemove }: CompanyC
                 {c.products.slice(0, 5).map((p) => (
                   <span
                     key={p.id}
-                    className="text-xs px-1.5 py-0.5 rounded bg-cyan-500/10 text-cyan-400 border border-cyan-500/20"
+                    className="text-xs px-1.5 py-0.5 rounded bg-white/5 text-slate-300 border border-white/10"
                   >
                     {p.name}
                   </span>
@@ -629,7 +629,7 @@ export default function CompanyComparisonTable({ companies, onRemove }: CompanyC
                         </div>
                         <a
                           href={`/company-profiles/${company.slug}`}
-                          className="text-sm font-semibold text-white hover:text-cyan-400 transition-colors"
+                          className="text-sm font-semibold text-white hover:text-white transition-colors"
                         >
                           {company.name}
                         </a>

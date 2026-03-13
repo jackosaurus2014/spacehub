@@ -145,7 +145,7 @@ function LeaderboardRow({
           {/* Company Info */}
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2">
-              <span className="font-semibold text-white group-hover:text-cyan-400 transition-colors truncate">
+              <span className="font-semibold text-white group-hover:text-white transition-colors truncate">
                 {entry.name}
               </span>
               <span className={`text-xs font-bold px-1.5 py-0.5 rounded ${entry.score.tier.bgColor} ${entry.score.tier.color}`}>
@@ -182,7 +182,7 @@ function LeaderboardRow({
           </div>
 
           {/* Arrow */}
-          <svg className="w-4 h-4 text-slate-600 group-hover:text-cyan-400 transition-colors flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-4 h-4 text-slate-600 group-hover:text-white transition-colors flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
           </svg>
         </motion.div>
@@ -364,7 +364,7 @@ function MethodologyTab() {
             </thead>
             <tbody className="text-slate-400">
               <tr className="border-b border-slate-800/50">
-                <td className="py-3 font-semibold text-cyan-400">SpaceNexus Space Score</td>
+                <td className="py-3 font-semibold text-slate-300">SpaceNexus Space Score</td>
                 <td className="py-3">Holistic space company assessment</td>
                 <td className="py-3">0-1000 (5 dimensions x 200)</td>
                 <td className="py-3">Algorithmic, multi-dimensional, transparent, updated in real-time</td>
@@ -403,7 +403,7 @@ function MethodologyTab() {
         </p>
         <Link
           href="/contact?subject=Space+Score+Factor+Suggestion"
-          className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white rounded-lg text-sm font-medium transition-all"
+          className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-slate-200 to-blue-600 hover:from-white hover:to-blue-500 text-white rounded-lg text-sm font-medium transition-all"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
@@ -502,7 +502,7 @@ function SpaceScoreContent() {
 
       {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
-        <StatCard label="Companies Rated" value={allEntries.length.toString()} icon="🏢" color="bg-cyan-500/20" />
+        <StatCard label="Companies Rated" value={allEntries.length.toString()} icon="🏢" color="bg-white/10" />
         <StatCard label="Highest Score" value={topScore.toString()} icon="🏆" color="bg-blue-500/20" />
         <StatCard label="Average Score" value={avgScore.toString()} icon="📊" color="bg-emerald-500/20" />
         <StatCard label="Elite Companies" value={eliteCount.toString()} icon="⭐" color="bg-amber-500/20" />
@@ -516,7 +516,7 @@ function SpaceScoreContent() {
               key={tab.id}
               onClick={() => handleTabChange(tab.id)}
               className={`relative px-6 py-3 text-sm font-medium whitespace-nowrap transition-colors flex items-center gap-2 ${
-                activeTab === tab.id ? 'text-cyan-400' : 'text-slate-400 hover:text-white'
+                activeTab === tab.id ? 'text-slate-300' : 'text-slate-400 hover:text-white'
               }`}
             >
               <span>{tab.icon}</span>
@@ -524,7 +524,7 @@ function SpaceScoreContent() {
               {activeTab === tab.id && (
                 <motion.div
                   layoutId="tab-indicator-score"
-                  className="absolute bottom-0 left-0 right-0 h-0.5 bg-cyan-400"
+                  className="absolute bottom-0 left-0 right-0 h-0.5 bg-white"
                   transition={{ type: 'spring', stiffness: 500, damping: 30 }}
                 />
               )}
@@ -555,7 +555,7 @@ function SpaceScoreContent() {
                       placeholder="Search companies by name or sector..."
                       value={search}
                       onChange={(e) => setSearch(e.target.value)}
-                      className="w-full pl-10 pr-4 bg-slate-800 border border-slate-700 text-white rounded-lg py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+                      className="w-full pl-10 pr-4 bg-slate-800 border border-slate-700 text-white rounded-lg py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                     />
                     <svg className="absolute left-3 top-3 w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -567,7 +567,7 @@ function SpaceScoreContent() {
                     aria-label="Filter by score tier"
                     value={tierFilter}
                     onChange={(e) => setTierFilter(e.target.value)}
-                    className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+                    className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                   >
                     {TIER_FILTER_OPTIONS.map(opt => (
                       <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -579,7 +579,7 @@ function SpaceScoreContent() {
                     aria-label="Filter by sector"
                     value={sectorFilter}
                     onChange={(e) => setSectorFilter(e.target.value)}
-                    className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+                    className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                   >
                     {SECTOR_FILTER_OPTIONS.map(opt => (
                       <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -591,7 +591,7 @@ function SpaceScoreContent() {
                     aria-label="Sort by dimension"
                     value={sortBy}
                     onChange={(e) => setSortBy(e.target.value)}
-                    className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+                    className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                   >
                     {SORT_OPTIONS.map(opt => (
                       <option key={opt.value} value={opt.value}>Sort: {opt.label}</option>

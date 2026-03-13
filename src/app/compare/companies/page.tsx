@@ -265,7 +265,7 @@ function CompareCompaniesContent() {
           </p>
           <Link
             href="/company-profiles"
-            className="inline-flex items-center gap-2 px-5 py-2.5 bg-cyan-600 hover:bg-cyan-500 text-white rounded-lg font-medium transition-colors"
+            className="inline-flex items-center gap-2 px-5 py-2.5 bg-white hover:bg-slate-100 text-white rounded-lg font-medium transition-colors"
           >
             Browse Company Directory
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

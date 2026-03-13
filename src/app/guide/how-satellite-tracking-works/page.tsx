@@ -182,9 +182,9 @@ export default function HowSatelliteTrackingWorksPage() {
                     <li key={item.id}>
                       <a
                         href={`#${item.id}`}
-                        className="flex items-start gap-2 text-star-300 hover:text-cyan-400 transition-colors"
+                        className="flex items-start gap-2 text-star-300 hover:text-white transition-colors"
                       >
-                        <span className="text-cyan-500/60 font-mono text-xs mt-0.5">
+                        <span className="text-slate-300/60 font-mono text-xs mt-0.5">
                           {String(i + 1).padStart(2, '0')}
                         </span>
                         {item.label}
@@ -259,43 +259,43 @@ export default function HowSatelliteTrackingWorksPage() {
                       The Six Classical Orbital Elements
                     </h3>
                     <div className="space-y-3 text-sm">
-                      <div className="flex gap-3 border-b border-cyan-400/10 pb-2">
-                        <span className="text-cyan-400 font-mono font-semibold w-8 shrink-0">a</span>
+                      <div className="flex gap-3 border-b border-white/10/10 pb-2">
+                        <span className="text-slate-300 font-mono font-semibold w-8 shrink-0">a</span>
                         <div>
                           <span className="text-white font-medium">Semi-major axis</span>
                           <span className="text-star-300"> -- size of the orbit (determines period)</span>
                         </div>
                       </div>
-                      <div className="flex gap-3 border-b border-cyan-400/10 pb-2">
-                        <span className="text-cyan-400 font-mono font-semibold w-8 shrink-0">e</span>
+                      <div className="flex gap-3 border-b border-white/10/10 pb-2">
+                        <span className="text-slate-300 font-mono font-semibold w-8 shrink-0">e</span>
                         <div>
                           <span className="text-white font-medium">Eccentricity</span>
                           <span className="text-star-300"> -- shape of the orbit (0 = circular, 0-1 = elliptical)</span>
                         </div>
                       </div>
-                      <div className="flex gap-3 border-b border-cyan-400/10 pb-2">
-                        <span className="text-cyan-400 font-mono font-semibold w-8 shrink-0">i</span>
+                      <div className="flex gap-3 border-b border-white/10/10 pb-2">
+                        <span className="text-slate-300 font-mono font-semibold w-8 shrink-0">i</span>
                         <div>
                           <span className="text-white font-medium">Inclination</span>
                           <span className="text-star-300"> -- tilt of the orbit relative to the equator</span>
                         </div>
                       </div>
-                      <div className="flex gap-3 border-b border-cyan-400/10 pb-2">
-                        <span className="text-cyan-400 font-mono font-semibold w-8 shrink-0">&Omega;</span>
+                      <div className="flex gap-3 border-b border-white/10/10 pb-2">
+                        <span className="text-slate-300 font-mono font-semibold w-8 shrink-0">&Omega;</span>
                         <div>
                           <span className="text-white font-medium">Right ascension of ascending node (RAAN)</span>
                           <span className="text-star-300"> -- orientation of the orbital plane</span>
                         </div>
                       </div>
-                      <div className="flex gap-3 border-b border-cyan-400/10 pb-2">
-                        <span className="text-cyan-400 font-mono font-semibold w-8 shrink-0">&omega;</span>
+                      <div className="flex gap-3 border-b border-white/10/10 pb-2">
+                        <span className="text-slate-300 font-mono font-semibold w-8 shrink-0">&omega;</span>
                         <div>
                           <span className="text-white font-medium">Argument of perigee</span>
                           <span className="text-star-300"> -- orientation of the ellipse within the orbital plane</span>
                         </div>
                       </div>
                       <div className="flex gap-3">
-                        <span className="text-cyan-400 font-mono font-semibold w-8 shrink-0">&nu;</span>
+                        <span className="text-slate-300 font-mono font-semibold w-8 shrink-0">&nu;</span>
                         <div>
                           <span className="text-white font-medium">True anomaly</span>
                           <span className="text-star-300"> -- position of the satellite along the orbit at a given time</span>
@@ -380,7 +380,7 @@ export default function HowSatelliteTrackingWorksPage() {
                   </p>
 
                   <p className="mt-4">
-                    <Link href="/satellites" className="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+                    <Link href="/satellites" className="text-slate-300 hover:text-white underline underline-offset-2">
                       Explore satellite orbits in real time on SpaceNexus
                     </Link>
                   </p>
@@ -470,18 +470,18 @@ export default function HowSatelliteTrackingWorksPage() {
                   Space Surveillance Networks
                 </h2>
                 <div className="space-y-4 text-star-200 leading-relaxed text-lg">
-                  <div className="card p-6 my-8 border-l-4 border-l-cyan-400">
+                  <div className="card p-6 my-8 border-l-4 border-l-white/30">
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-center">
                       <div>
-                        <div className="text-3xl font-display font-bold text-cyan-400">48,000+</div>
+                        <div className="text-3xl font-display font-bold text-slate-300">48,000+</div>
                         <div className="text-star-300 text-sm mt-1">Tracked Objects (U.S. Catalog)</div>
                       </div>
                       <div>
-                        <div className="text-3xl font-display font-bold text-cyan-400">30+</div>
+                        <div className="text-3xl font-display font-bold text-slate-300">30+</div>
                         <div className="text-star-300 text-sm mt-1">SSN Sensor Sites</div>
                       </div>
                       <div>
-                        <div className="text-3xl font-display font-bold text-cyan-400">400K+</div>
+                        <div className="text-3xl font-display font-bold text-slate-300">400K+</div>
                         <div className="text-star-300 text-sm mt-1">Daily Observations</div>
                       </div>
                     </div>
@@ -538,7 +538,7 @@ export default function HowSatelliteTrackingWorksPage() {
 
                   <div className="card p-6 my-8 bg-slate-800/50 font-mono text-sm overflow-x-auto">
                     <div className="text-star-300 text-xs mb-2 font-sans">Example TLE (ISS):</div>
-                    <pre className="text-cyan-300 whitespace-pre">
+                    <pre className="text-slate-200 whitespace-pre">
 {`ISS (ZARYA)
 1 25544U 98067A   26038.51234567  .00016717  00000-0  10270-3 0  9993
 2 25544  51.6416 247.4627 0006703 130.5360 229.6100 15.50000000123456`}
@@ -574,7 +574,7 @@ export default function HowSatelliteTrackingWorksPage() {
                   </p>
 
                   <p className="mt-4">
-                    <Link href="/satellites" className="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+                    <Link href="/satellites" className="text-slate-300 hover:text-white underline underline-offset-2">
                       View live TLE data and satellite positions on SpaceNexus
                     </Link>
                   </p>
@@ -639,7 +639,7 @@ export default function HowSatelliteTrackingWorksPage() {
                   </p>
 
                   <p className="mt-4">
-                    <Link href="/space-environment" className="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+                    <Link href="/space-environment" className="text-slate-300 hover:text-white underline underline-offset-2">
                       Monitor space weather and its effects on orbits with SpaceNexus
                     </Link>
                   </p>
@@ -788,11 +788,11 @@ export default function HowSatelliteTrackingWorksPage() {
                   </p>
 
                   <p className="mt-4">
-                    <Link href="/space-environment" className="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+                    <Link href="/space-environment" className="text-slate-300 hover:text-white underline underline-offset-2">
                       Track debris and space environment data on SpaceNexus
                     </Link>
                     {' '}&middot;{' '}
-                    <Link href="/cislunar" className="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+                    <Link href="/cislunar" className="text-slate-300 hover:text-white underline underline-offset-2">
                       Explore cislunar activity tracking
                     </Link>
                   </p>
@@ -832,7 +832,7 @@ export default function HowSatelliteTrackingWorksPage() {
                   </p>
 
                   <p className="mt-4">
-                    <Link href="/compliance" className="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+                    <Link href="/compliance" className="text-slate-300 hover:text-white underline underline-offset-2">
                       Track space regulations and compliance requirements on SpaceNexus
                     </Link>
                   </p>
@@ -857,23 +857,23 @@ export default function HowSatelliteTrackingWorksPage() {
                       Key Satellite Tracking Resources
                     </h3>
                     <div className="space-y-3 text-sm">
-                      <div className="border-b border-cyan-400/10 pb-2">
+                      <div className="border-b border-white/10/10 pb-2">
                         <span className="text-white font-medium">Space-Track.org</span>
                         <span className="text-star-300"> -- Official U.S. Space Force catalog data (TLEs, CDMs). Free registration required.</span>
                       </div>
-                      <div className="border-b border-cyan-400/10 pb-2">
+                      <div className="border-b border-white/10/10 pb-2">
                         <span className="text-white font-medium">CelesTrak</span>
                         <span className="text-star-300"> -- Curated TLE data and supplemental orbital data, maintained by Dr. T.S. Kelso. Free.</span>
                       </div>
-                      <div className="border-b border-cyan-400/10 pb-2">
+                      <div className="border-b border-white/10/10 pb-2">
                         <span className="text-white font-medium">N2YO.com</span>
                         <span className="text-star-300"> -- Free web-based satellite tracking with 3D visualization.</span>
                       </div>
-                      <div className="border-b border-cyan-400/10 pb-2">
+                      <div className="border-b border-white/10/10 pb-2">
                         <span className="text-white font-medium">Heavens-Above</span>
                         <span className="text-star-300"> -- Visual observation predictions (ISS passes, satellite flybys).</span>
                       </div>
-                      <div className="border-b border-cyan-400/10 pb-2">
+                      <div className="border-b border-white/10/10 pb-2">
                         <span className="text-white font-medium">AGI STK (Systems Tool Kit)</span>
                         <span className="text-star-300"> -- Professional-grade astrodynamics and mission analysis software.</span>
                       </div>
@@ -950,7 +950,7 @@ export default function HowSatelliteTrackingWorksPage() {
                         <span>{item.q}</span>
                         <span
                           aria-hidden="true"
-                          className="ml-4 shrink-0 text-cyan-400 transition-transform group-open:rotate-45 text-xl leading-none"
+                          className="ml-4 shrink-0 text-slate-300 transition-transform group-open:rotate-45 text-xl leading-none"
                         >
                           +
                         </span>

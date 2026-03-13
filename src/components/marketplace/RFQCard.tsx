@@ -54,7 +54,7 @@ export default function RFQCard({ rfq, index = 0 }: RFQCardProps) {
           </div>
 
           {/* Title */}
-          <h3 className="font-semibold text-white group-hover:text-cyan-400 transition-colors mb-2 line-clamp-2">
+          <h3 className="font-semibold text-white group-hover:text-white transition-colors mb-2 line-clamp-2">
             {rfq.title}
           </h3>
 
@@ -74,7 +74,7 @@ export default function RFQCard({ rfq, index = 0 }: RFQCardProps) {
             </div>
             <div className="bg-slate-800/50 rounded p-2">
               <div className="text-xs text-slate-500 uppercase tracking-wider">Proposals</div>
-              <div className="text-xs font-semibold text-cyan-400">
+              <div className="text-xs font-semibold text-slate-300">
                 {rfq._count?.proposals ?? 0}
               </div>
             </div>

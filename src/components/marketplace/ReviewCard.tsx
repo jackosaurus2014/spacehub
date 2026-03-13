@@ -87,9 +87,9 @@ export default function ReviewCard({ review }: ReviewCardProps) {
 
       {/* Provider Response */}
       {review.providerResponse && (
-        <div className="bg-slate-800/50 rounded-lg p-3 ml-4 border-l-2 border-cyan-500/30">
+        <div className="bg-slate-800/50 rounded-lg p-3 ml-4 border-l-2 border-white/10">
           <div className="flex items-center gap-2 mb-1">
-            <span className="text-xs font-bold text-cyan-400">Provider Response</span>
+            <span className="text-xs font-bold text-slate-300">Provider Response</span>
             {review.providerRespondedAt && (
               <span className="text-xs text-slate-600">
                 {new Date(review.providerRespondedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' })}

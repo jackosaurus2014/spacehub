@@ -346,7 +346,7 @@ function SeverityBadge({ severity }: { severity: 'Critical' | 'High' | 'Medium' 
 
 function ImpactBadge({ impact }: { impact: 'Critical' | 'High' | 'Medium' }) {
   const colors = {
-    Critical: 'bg-cyan-500/20 text-cyan-300 border-cyan-500/30',
+    Critical: 'bg-white/10 text-slate-200 border-white/10',
     High: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30',
     Medium: 'bg-purple-500/20 text-purple-300 border-purple-500/30',
   };
@@ -373,7 +373,7 @@ function CategoryBadge({ category }: { category: Company['category'] }) {
 
 function StatusDot({ status }: { status: Company['status'] }) {
   const colors = {
-    Active: 'bg-cyan-400',
+    Active: 'bg-white',
     Operational: 'bg-emerald-400',
     Expanding: 'bg-amber-400',
   };
@@ -394,7 +394,7 @@ function MarketOverview() {
     <section className="mb-12">
       <ScrollReveal>
         <h2 className="text-2xl font-bold text-slate-100 mb-6 flex items-center gap-3">
-          <svg className="w-6 h-6 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+          <svg className="w-6 h-6 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
           </svg>
           Market Overview
@@ -405,12 +405,12 @@ function MarketOverview() {
       <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         {MARKET_STATS.map((stat) => {
           const borderColors: Record<string, string> = {
-            cyan: 'border-cyan-500/40 hover:border-cyan-400/60',
+            cyan: 'border-white/15/40 hover:border-white/10/60',
             emerald: 'border-emerald-500/40 hover:border-emerald-400/60',
             purple: 'border-purple-500/40 hover:border-purple-400/60',
           };
           const textColors: Record<string, string> = {
-            cyan: 'text-cyan-400',
+            cyan: 'text-slate-300',
             emerald: 'text-emerald-400',
             purple: 'text-purple-400',
           };
@@ -418,7 +418,7 @@ function MarketOverview() {
             <StaggerItem key={stat.label}>
               <div className={`card p-6 text-center border ${borderColors[stat.color] || ''}`}>
                 <p className="text-sm text-slate-400 mb-1 uppercase tracking-wide">{stat.label}</p>
-                <p className={`text-4xl font-bold ${textColors[stat.color] || 'text-cyan-400'}`}>{stat.value}</p>
+                <p className={`text-4xl font-bold ${textColors[stat.color] || 'text-slate-300'}`}>{stat.value}</p>
                 <p className="text-sm text-slate-300 mt-2">{stat.detail}</p>
               </div>
             </StaggerItem>
@@ -435,7 +435,7 @@ function MarketOverview() {
           <StaggerItem key={driver.title}>
             <div className="card p-5">
               <h4 className="font-semibold text-slate-100 mb-2 flex items-center gap-2">
-                <svg className="w-4 h-4 text-cyan-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <svg className="w-4 h-4 text-slate-300 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
                 </svg>
                 {driver.title}
@@ -482,7 +482,7 @@ function CompanyProfiles() {
               onClick={() => setFilter(btn.value)}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                 filter === btn.value
-                  ? 'bg-cyan-600 text-white'
+                  ? 'bg-white text-white'
                   : 'bg-slate-800/60 text-slate-300 hover:bg-slate-700/60 hover:text-white'
               }`}
             >
@@ -499,7 +499,7 @@ function CompanyProfiles() {
               <div className="flex items-start justify-between mb-3">
                 <div>
                   <h3 className="text-lg font-bold text-slate-100">{company.name}</h3>
-                  <p className="text-sm text-cyan-400 font-medium">{company.focus}</p>
+                  <p className="text-sm text-slate-300 font-medium">{company.focus}</p>
                 </div>
                 <StatusDot status={company.status} />
               </div>
@@ -517,7 +517,7 @@ function CompanyProfiles() {
                   href={company.website}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-xs text-cyan-400 hover:text-cyan-300 transition-colors flex items-center gap-1"
+                  className="text-xs text-slate-300 hover:text-white transition-colors flex items-center gap-1"
                 >
                   Visit
                   <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -594,7 +594,7 @@ function TechnologyComparison() {
               <thead>
                 <tr className="border-b border-slate-700/50">
                   <th className="text-left p-4 text-slate-400 font-medium uppercase tracking-wider text-xs">Category</th>
-                  <th className="text-left p-4 text-cyan-400 font-medium uppercase tracking-wider text-xs">Option A</th>
+                  <th className="text-left p-4 text-slate-300 font-medium uppercase tracking-wider text-xs">Option A</th>
                   <th className="text-left p-4 text-slate-400 font-medium text-xs">Pros</th>
                   <th className="text-left p-4 text-slate-400 font-medium text-xs">Cons</th>
                   <th className="text-left p-4 text-purple-400 font-medium uppercase tracking-wider text-xs">Option B</th>
@@ -606,7 +606,7 @@ function TechnologyComparison() {
                 {TECH_COMPARISON.map((row, i) => (
                   <tr key={row.category} className={`border-b border-slate-700/30 ${i % 2 === 0 ? 'bg-slate-800/20' : ''}`}>
                     <td className="p-4 font-semibold text-slate-200 whitespace-nowrap">{row.category}</td>
-                    <td className="p-4 text-cyan-300 font-medium">{row.option1}</td>
+                    <td className="p-4 text-slate-200 font-medium">{row.option1}</td>
                     <td className="p-4 text-emerald-300/80 text-xs">{row.option1Pros}</td>
                     <td className="p-4 text-red-300/80 text-xs">{row.option1Cons}</td>
                     <td className="p-4 text-purple-300 font-medium">{row.option2}</td>
@@ -627,8 +627,8 @@ function TechnologyComparison() {
             <div className="card p-5">
               <h4 className="font-semibold text-slate-100 mb-4 text-base">{row.category}</h4>
               <div className="space-y-4">
-                <div className="bg-cyan-500/5 border border-cyan-500/20 rounded-lg p-3">
-                  <p className="text-sm font-medium text-cyan-300 mb-2">{row.option1}</p>
+                <div className="bg-white/5 border border-white/10 rounded-lg p-3">
+                  <p className="text-sm font-medium text-slate-200 mb-2">{row.option1}</p>
                   <p className="text-xs text-emerald-300/80 mb-1">+ {row.option1Pros}</p>
                   <p className="text-xs text-red-300/80">- {row.option1Cons}</p>
                 </div>
@@ -763,7 +763,7 @@ export default function SpaceEdgeComputingPage() {
           subtitle="Explore the emerging $5.2B space-based cloud computing market — in-orbit data centers, edge AI, and the companies transforming how we process data beyond Earth."
           accentColor="cyan"
           icon={
-            <svg className="w-10 h-10 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+            <svg className="w-10 h-10 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 3v1.5M4.5 8.25H3m18 0h-1.5M4.5 12H3m18 0h-1.5m-15 3.75H3m18 0h-1.5M8.25 19.5V21M12 3v1.5m0 15V21m3.75-18v1.5m0 15V21m-9-1.5h9a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0015.75 4.5h-9A2.25 2.25 0 004.5 6.75v10.5A2.25 2.25 0 006.75 19.5z" />
             </svg>
           }

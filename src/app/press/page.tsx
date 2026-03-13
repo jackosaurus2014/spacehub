@@ -100,7 +100,7 @@ export default function PressPage() {
             <StaggerContainer className="grid grid-cols-2 md:grid-cols-3 gap-4">
               {KEY_STATS.map((stat) => (
                 <StaggerItem key={stat.label}><div className="card p-6 text-center">
-                  <div className="text-3xl font-bold text-cyan-400 mb-1">{stat.value}</div>
+                  <div className="text-3xl font-bold text-slate-300 mb-1">{stat.value}</div>
                   <div className="text-sm font-semibold text-white">{stat.label}</div>
                   <div className="text-xs text-slate-400 mt-1">{stat.description}</div>
                 </div></StaggerItem>
@@ -182,7 +182,7 @@ export default function PressPage() {
                 {LOGO_ASSETS.map((asset) => (
                   <div key={asset.name} className="card p-4">
                     <div className="bg-[#0f172a] rounded-lg p-4 mb-3 flex items-center justify-center h-24">
-                      <span className="text-cyan-400 font-bold text-lg">SN</span>
+                      <span className="text-slate-300 font-bold text-lg">SN</span>
                     </div>
                     <h4 className="font-semibold text-white text-sm">{asset.name}</h4>
                     <p className="text-slate-400 text-xs mt-1">{asset.description}</p>
@@ -279,7 +279,7 @@ export default function PressPage() {
                     <p className="text-slate-400"><strong className="text-slate-400">Email:</strong> press@spacenexus.us</p>
                     <p className="text-slate-400"><strong className="text-slate-400">General:</strong> support@spacenexus.us</p>
                     <p className="text-slate-400"><strong className="text-slate-400">Website:</strong>{' '}
-                      <a href="https://spacenexus.us" className="text-cyan-500 hover:underline">spacenexus.us</a>
+                      <a href="https://spacenexus.us" className="text-slate-300 hover:underline">spacenexus.us</a>
                     </p>
                   </div>
                   <p className="text-slate-400 text-xs mt-4">
@@ -291,13 +291,13 @@ export default function PressPage() {
                   <h3 className="text-lg font-semibold text-white mb-4">Follow Us</h3>
                   <div className="space-y-2 text-sm">
                     <p className="text-slate-400"><strong className="text-slate-400">LinkedIn:</strong>{' '}
-                      <a href="https://linkedin.com/company/spacenexus" className="text-cyan-500 hover:underline" target="_blank" rel="noopener noreferrer">SpaceNexus LLC</a>
+                      <a href="https://linkedin.com/company/spacenexus" className="text-slate-300 hover:underline" target="_blank" rel="noopener noreferrer">SpaceNexus LLC</a>
                     </p>
                     <p className="text-slate-400"><strong className="text-slate-400">Twitter/X:</strong>{' '}
-                      <a href="https://twitter.com/spacenexus" className="text-cyan-500 hover:underline" target="_blank" rel="noopener noreferrer">@spacenexus</a>
+                      <a href="https://twitter.com/spacenexus" className="text-slate-300 hover:underline" target="_blank" rel="noopener noreferrer">@spacenexus</a>
                     </p>
                     <p className="text-slate-400"><strong className="text-slate-400">GitHub:</strong>{' '}
-                      <a href="https://github.com/jackosaurus2014/spacehub" className="text-cyan-500 hover:underline" target="_blank" rel="noopener noreferrer">jackosaurus2014/spacehub</a>
+                      <a href="https://github.com/jackosaurus2014/spacehub" className="text-slate-300 hover:underline" target="_blank" rel="noopener noreferrer">jackosaurus2014/spacehub</a>
                     </p>
                   </div>
                 </div>
@@ -312,7 +312,7 @@ export default function PressPage() {
           <section>
             <h2 className="text-2xl font-bold text-white mb-6 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">Approved Quotes</h2>
             <div className="card p-8 space-y-6">
-              <blockquote className="border-l-4 border-cyan-500 pl-4">
+              <blockquote className="border-l-4 border-white/15 pl-4">
                 <p className="text-slate-400 italic leading-relaxed">
                   &quot;The space industry has been making decisions with fragmented, expensive data for too long.
                   SpaceNexus brings everything together&mdash;launches, markets, companies, procurement, compliance&mdash;into

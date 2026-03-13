@@ -85,16 +85,16 @@ export default function InvestorsSolutionPage() {
 
       {/* Hero */}
       <section className="relative py-20 md:py-28 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-transparent to-blue-600/10 pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-br from-white/5 via-transparent to-blue-600/10 pointer-events-none" />
         <div className="container mx-auto px-4 relative z-10">
           <ScrollReveal>
             <div className="max-w-3xl mx-auto text-center">
-              <span className="inline-block px-4 py-1.5 rounded-full text-xs font-semibold tracking-wide uppercase bg-cyan-500/10 text-cyan-300 border border-cyan-500/20 mb-6">
+              <span className="inline-block px-4 py-1.5 rounded-full text-xs font-semibold tracking-wide uppercase bg-white/5 text-slate-200 border border-white/10 mb-6">
                 For Investors &amp; VCs
               </span>
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
                 Make Smarter{' '}
-                <span className="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-slate-300 to-blue-500 bg-clip-text text-transparent">
                   Space Investments
                 </span>
               </h1>
@@ -104,7 +104,7 @@ export default function InvestorsSolutionPage() {
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link
                   href="/pricing"
-                  className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-semibold hover:from-cyan-400 hover:to-blue-500 transition-all shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40"
+                  className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-xl bg-gradient-to-r from-white to-blue-600 text-white font-semibold hover:from-slate-300 hover:to-blue-500 transition-all shadow-lg shadow-black/20/25 hover:shadow-black/20/40"
                 >
                   Start Free &mdash; No Credit Card Required
                 </Link>
@@ -159,8 +159,8 @@ export default function InvestorsSolutionPage() {
           <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto" staggerDelay={0.08}>
             {FEATURES.map((feature) => (
               <StaggerItem key={feature.name}>
-                <Link href={feature.href} className="block rounded-2xl border border-slate-700/50 bg-slate-900/50 p-6 h-full hover:border-cyan-500/30 transition-colors group">
-                  <h3 className="text-base font-semibold text-white mb-2 group-hover:text-cyan-300 transition-colors">{feature.name}</h3>
+                <Link href={feature.href} className="block rounded-2xl border border-slate-700/50 bg-slate-900/50 p-6 h-full hover:border-white/10 transition-colors group">
+                  <h3 className="text-base font-semibold text-white mb-2 group-hover:text-white transition-colors">{feature.name}</h3>
                   <p className="text-slate-400 text-sm leading-relaxed">{feature.desc}</p>
                 </Link>
               </StaggerItem>
@@ -175,7 +175,7 @@ export default function InvestorsSolutionPage() {
           <ScrollReveal>
             <div className="max-w-3xl mx-auto text-center">
               <div className="rounded-2xl border border-slate-700/50 bg-slate-900/50 backdrop-blur-sm p-8 md:p-12">
-                <svg className="w-10 h-10 text-cyan-500/40 mx-auto mb-6" fill="currentColor" viewBox="0 0 24 24">
+                <svg className="w-10 h-10 text-slate-300/40 mx-auto mb-6" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M4.583 17.321C3.553 16.227 3 15 3 13.011c0-3.5 2.457-6.637 6.03-8.188l.893 1.378c-3.335 1.804-3.987 4.145-4.247 5.621.537-.278 1.24-.375 1.929-.311 1.804.167 3.226 1.648 3.226 3.489a3.5 3.5 0 01-3.5 3.5 3.871 3.871 0 01-2.748-1.179zm10 0C13.553 16.227 13 15 13 13.011c0-3.5 2.457-6.637 6.03-8.188l.893 1.378c-3.335 1.804-3.987 4.145-4.247 5.621.537-.278 1.24-.375 1.929-.311 1.804.167 3.226 1.648 3.226 3.489a3.5 3.5 0 01-3.5 3.5 3.871 3.871 0 01-2.748-1.179z" />
                 </svg>
                 <blockquote className="text-lg md:text-xl text-slate-200 italic mb-6 leading-relaxed">
@@ -221,7 +221,7 @@ export default function InvestorsSolutionPage() {
               </p>
               <Link
                 href="/pricing"
-                className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-semibold hover:from-cyan-400 hover:to-blue-500 transition-all shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40"
+                className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl bg-gradient-to-r from-white to-blue-600 text-white font-semibold hover:from-slate-300 hover:to-blue-500 transition-all shadow-lg shadow-black/20/25 hover:shadow-black/20/40"
               >
                 Start Free Today
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -72,7 +72,7 @@ const INVESTOR_TYPES = ['All', 'Dedicated Space VC', 'Deep Tech VC', 'Generalist
 const STAGE_OPTIONS = ['All', 'Pre-seed', 'Seed', 'Series A', 'Series B', 'Series C', 'Late Stage'];
 
 const TYPE_COLORS: Record<string, string> = {
-  'Dedicated Space VC': 'bg-cyan-500/20 text-cyan-400 border-cyan-500/30',
+  'Dedicated Space VC': 'bg-white/10 text-slate-300 border-white/10',
   'Deep Tech VC': 'bg-purple-500/20 text-purple-400 border-purple-500/30',
   'Generalist VC': 'bg-blue-500/20 text-blue-400 border-blue-500/30',
   'Corporate VC': 'bg-amber-500/20 text-amber-400 border-amber-500/30',
@@ -477,7 +477,7 @@ function OverviewTab({ investors, fundingByYear, startups }: {
         </StaggerItem>
         <StaggerItem>
           <div className="card p-6 text-center">
-            <div className="text-3xl md:text-4xl font-bold text-cyan-400">{investors.length}+</div>
+            <div className="text-3xl md:text-4xl font-bold text-slate-300">{investors.length}+</div>
             <div className="text-slate-400 text-xs uppercase tracking-widest mt-1">Active Investors</div>
           </div>
         </StaggerItem>
@@ -514,7 +514,7 @@ function OverviewTab({ investors, fundingByYear, startups }: {
                     className={`w-full max-w-[52px] rounded-t-md transition-all duration-500 ${
                       isMax
                         ? 'bg-gradient-to-t from-green-600 to-green-400'
-                        : 'bg-gradient-to-t from-cyan-600 to-cyan-400'
+                        : 'bg-gradient-to-t from-slate-200 to-slate-400'
                     }`}
                     style={{ height: `${heightPct * 1.6}px` }}
                   />
@@ -543,7 +543,7 @@ function OverviewTab({ investors, fundingByYear, startups }: {
                   <div className="text-white font-medium text-sm truncate">{inv.name}</div>
                   <div className="text-slate-400 text-xs">{inv.type} &middot; {inv.aum} AUM</div>
                 </div>
-                <span className="text-cyan-400 text-sm font-mono">{inv.dealCount}+ deals</span>
+                <span className="text-slate-300 text-sm font-mono">{inv.dealCount}+ deals</span>
               </div>
             ))}
           </div>
@@ -597,7 +597,7 @@ function InvestorsTab({ investors }: { investors: Investor[] }) {
           <select
             value={typeFilter}
             onChange={(e) => setTypeFilter(e.target.value)}
-            className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+            className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
           >
             {INVESTOR_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
           </select>
@@ -607,7 +607,7 @@ function InvestorsTab({ investors }: { investors: Investor[] }) {
           <select
             value={stageFilter}
             onChange={(e) => setStageFilter(e.target.value)}
-            className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+            className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
           >
             {STAGE_OPTIONS.map(s => <option key={s} value={s}>{s}</option>)}
           </select>
@@ -619,7 +619,7 @@ function InvestorsTab({ investors }: { investors: Investor[] }) {
       <StaggerContainer className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {filtered.map((inv, idx) => (
           <StaggerItem key={inv.id}>
-            <div className="card p-5 hover:border-cyan-500/30 transition-colors">
+            <div className="card p-5 hover:border-white/10 transition-colors">
               <div className="flex items-start justify-between mb-3">
                 <div>
                   <div className="flex items-center gap-2 mb-1">
@@ -631,7 +631,7 @@ function InvestorsTab({ investors }: { investors: Investor[] }) {
                   </span>
                 </div>
                 <div className="text-right">
-                  <div className="text-cyan-400 font-mono font-bold">{inv.aum}</div>
+                  <div className="text-slate-300 font-mono font-bold">{inv.aum}</div>
                   <div className="text-slate-500 text-xs">AUM</div>
                 </div>
               </div>
@@ -659,7 +659,7 @@ function InvestorsTab({ investors }: { investors: Investor[] }) {
               {/* Sector pills */}
               <div className="flex flex-wrap gap-1 mb-3">
                 {inv.sectorFocus.map(s => (
-                  <span key={s} className="text-xs bg-cyan-900/30 text-cyan-400 px-2 py-0.5 rounded">{s}</span>
+                  <span key={s} className="text-xs bg-slate-800/40 text-slate-300 px-2 py-0.5 rounded">{s}</span>
                 ))}
               </div>
 
@@ -715,7 +715,7 @@ function StartupsTab({ startups }: { startups: StartupCompany[] }) {
             onClick={() => setCategoryFilter(cat)}
             className={`px-3 py-1.5 text-sm rounded-lg transition-colors ${
               categoryFilter === cat
-                ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/40'
+                ? 'bg-white/10 text-slate-300 border border-white/15/40'
                 : 'bg-slate-800/50 text-slate-400 border border-slate-700/50 hover:text-white'
             }`}
           >
@@ -777,7 +777,7 @@ function StartupsTab({ startups }: { startups: StartupCompany[] }) {
               {s.keyInvestors && s.keyInvestors.length > 0 && (
                 <div className="mt-3 pt-2 border-t border-slate-700/30">
                   <span className="text-slate-500 text-xs">Key Investors: </span>
-                  <span className="text-cyan-400 text-xs">{s.keyInvestors.join(', ')}</span>
+                  <span className="text-slate-300 text-xs">{s.keyInvestors.join(', ')}</span>
                 </div>
               )}
             </div>
@@ -860,7 +860,7 @@ function MatchmakerTab({ investors, startups }: { investors: Investor[]; startup
           onClick={() => { setMode('startup'); setSelectedInvestor(''); }}
           className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
             mode === 'startup'
-              ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/40'
+              ? 'bg-white/10 text-slate-300 border border-white/15/40'
               : 'bg-slate-800/50 text-slate-400 border border-slate-700/50 hover:text-white'
           }`}
         >
@@ -870,7 +870,7 @@ function MatchmakerTab({ investors, startups }: { investors: Investor[]; startup
           onClick={() => { setMode('investor'); setSelectedCategory(''); setSelectedStage(''); }}
           className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
             mode === 'investor'
-              ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/40'
+              ? 'bg-white/10 text-slate-300 border border-white/15/40'
               : 'bg-slate-800/50 text-slate-400 border border-slate-700/50 hover:text-white'
           }`}
         >
@@ -889,7 +889,7 @@ function MatchmakerTab({ investors, startups }: { investors: Investor[]; startup
                 <select
                   value={selectedCategory}
                   onChange={(e) => setSelectedCategory(e.target.value)}
-                  className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+                  className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                 >
                   <option value="">Select sector...</option>
                   {sectorOptions.map(s => <option key={s} value={s}>{s}</option>)}
@@ -900,7 +900,7 @@ function MatchmakerTab({ investors, startups }: { investors: Investor[]; startup
                 <select
                   value={selectedStage}
                   onChange={(e) => setSelectedStage(e.target.value)}
-                  className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+                  className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                 >
                   <option value="">Select stage...</option>
                   {stageOptions.map(s => <option key={s} value={s}>{s}</option>)}
@@ -952,7 +952,7 @@ function MatchmakerTab({ investors, startups }: { investors: Investor[]; startup
               <select
                 value={selectedInvestor}
                 onChange={(e) => setSelectedInvestor(e.target.value)}
-                className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none w-full max-w-md"
+                className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none w-full max-w-md"
               >
                 <option value="">Choose an investor...</option>
                 {investors.map(i => <option key={i.id} value={i.id}>{i.name} ({i.type})</option>)}
@@ -961,12 +961,12 @@ function MatchmakerTab({ investors, startups }: { investors: Investor[]; startup
           </div>
 
           {selectedInvestorData && (
-            <div className="card border-cyan-500/30 p-5">
+            <div className="card border-white/10 p-5">
               <h4 className="text-white font-semibold mb-1">{selectedInvestorData.name}</h4>
               <p className="text-slate-400 text-sm mb-3">{selectedInvestorData.investmentThesis}</p>
               <div className="flex flex-wrap gap-1">
                 {selectedInvestorData.sectorFocus.map(s => (
-                  <span key={s} className="text-xs bg-cyan-900/30 text-cyan-400 px-2 py-0.5 rounded">{s}</span>
+                  <span key={s} className="text-xs bg-slate-800/40 text-slate-300 px-2 py-0.5 rounded">{s}</span>
                 ))}
               </div>
             </div>
@@ -1153,7 +1153,7 @@ function SpaceCapitalInner() {
             <div className="text-red-400 text-sm font-medium mb-3">{error}</div>
             <button
               onClick={fetchData}
-              className="px-4 py-2 bg-cyan-600 hover:bg-cyan-500 text-white rounded-lg text-sm font-medium transition-colors"
+              className="px-4 py-2 bg-white hover:bg-slate-100 text-white rounded-lg text-sm font-medium transition-colors"
             >
               Try Again
             </button>
@@ -1169,7 +1169,7 @@ function SpaceCapitalInner() {
                 onClick={() => handleTabChange(tab.id)}
                 className={`px-4 py-2.5 text-sm font-medium whitespace-nowrap border-b-2 transition-colors ${
                   activeTab === tab.id
-                    ? 'border-cyan-500 text-cyan-400'
+                    ? 'border-white/15 text-slate-300'
                     : 'border-transparent text-slate-400 hover:text-white hover:border-slate-500'
                 }`}
               >

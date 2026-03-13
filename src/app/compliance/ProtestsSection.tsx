@@ -46,7 +46,7 @@ const PROTEST_FORUM_STYLES: Record<ProtestForum, { bg: string; text: string; lab
   gao: { bg: 'bg-blue-500/20', text: 'text-blue-400', label: 'GAO' },
   cofc: { bg: 'bg-purple-500/20', text: 'text-purple-400', label: 'COFC' },
   dc_circuit: { bg: 'bg-orange-500/20', text: 'text-orange-400', label: 'D.C. Circuit' },
-  district_court: { bg: 'bg-cyan-500/20', text: 'text-cyan-400', label: 'District Court' },
+  district_court: { bg: 'bg-white/10', text: 'text-slate-300', label: 'District Court' },
 };
 
 const PROTEST_PROGRAM_LABELS: Record<ProtestProgram, string> = {
@@ -113,11 +113,11 @@ function ProtestsOverviewTab({ protests }: { protests: BidProtest[] }) {
       </div>
 
       <div className="card p-4 mb-6"><div className="flex flex-wrap items-center gap-3">
-        <input type="search" placeholder="Search case, protester, awardee..." aria-label="Search bid protests" value={search} onChange={(e) => setSearch(e.target.value)} className="flex-1 min-w-[200px] bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none" />
-        <select value={forumFilter} onChange={(e) => setForumFilter(e.target.value)} className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"><option value="">All Forums</option>{uniqueForums.map((f) => (<option key={f} value={f}>{(PROTEST_FORUM_STYLES[f] || DEFAULT_PROTEST_STYLE).label}</option>))}</select>
-        <select value={outcomeFilter} onChange={(e) => setOutcomeFilter(e.target.value)} className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"><option value="">All Outcomes</option>{uniqueOutcomes.map((o) => (<option key={o} value={o}>{(PROTEST_OUTCOME_STYLES[o] || DEFAULT_PROTEST_STYLE).label}</option>))}</select>
-        <select value={programFilter} onChange={(e) => setProgramFilter(e.target.value)} className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"><option value="">All Programs</option>{uniquePrograms.map((p) => (<option key={p} value={p}>{PROTEST_PROGRAM_LABELS[p]}</option>))}</select>
-        <select value={agencyFilter} onChange={(e) => setAgencyFilter(e.target.value)} className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"><option value="">All Agencies</option>{uniqueAgencies.map((a) => (<option key={a} value={a}>{a}</option>))}</select>
+        <input type="search" placeholder="Search case, protester, awardee..." aria-label="Search bid protests" value={search} onChange={(e) => setSearch(e.target.value)} className="flex-1 min-w-[200px] bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none" />
+        <select value={forumFilter} onChange={(e) => setForumFilter(e.target.value)} className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"><option value="">All Forums</option>{uniqueForums.map((f) => (<option key={f} value={f}>{(PROTEST_FORUM_STYLES[f] || DEFAULT_PROTEST_STYLE).label}</option>))}</select>
+        <select value={outcomeFilter} onChange={(e) => setOutcomeFilter(e.target.value)} className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"><option value="">All Outcomes</option>{uniqueOutcomes.map((o) => (<option key={o} value={o}>{(PROTEST_OUTCOME_STYLES[o] || DEFAULT_PROTEST_STYLE).label}</option>))}</select>
+        <select value={programFilter} onChange={(e) => setProgramFilter(e.target.value)} className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"><option value="">All Programs</option>{uniquePrograms.map((p) => (<option key={p} value={p}>{PROTEST_PROGRAM_LABELS[p]}</option>))}</select>
+        <select value={agencyFilter} onChange={(e) => setAgencyFilter(e.target.value)} className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"><option value="">All Agencies</option>{uniqueAgencies.map((a) => (<option key={a} value={a}>{a}</option>))}</select>
         <span className="text-xs text-star-300 ml-auto">{filtered.length} cases</span>
       </div></div>
 
@@ -147,7 +147,7 @@ function ProtestsOverviewTab({ protests }: { protests: BidProtest[] }) {
             <button onClick={() => setExpandedId(isExpanded ? null : protest.id)} className="text-sm text-nebula-300 hover:text-nebula-200 transition-colors mb-2">{isExpanded ? 'Show Less' : 'View Key Findings & Significance'}</button>
             {isExpanded && (
               <div className="mt-3 pt-3 border-t border-white/10 space-y-3">
-                <div><h5 className="text-xs font-semibold text-star-300 mb-2 uppercase tracking-wider">Key Findings</h5><ul className="space-y-1.5">{protest.keyFindings.map((finding, i) => (<li key={i} className="flex items-start gap-2 text-xs text-star-300"><svg className="w-3 h-3 text-cyan-400 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>{finding}</li>))}</ul></div>
+                <div><h5 className="text-xs font-semibold text-star-300 mb-2 uppercase tracking-wider">Key Findings</h5><ul className="space-y-1.5">{protest.keyFindings.map((finding, i) => (<li key={i} className="flex items-start gap-2 text-xs text-star-300"><svg className="w-3 h-3 text-slate-300 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>{finding}</li>))}</ul></div>
                 <div><h5 className="text-xs font-semibold text-star-300 mb-1 uppercase tracking-wider">Significance</h5><p className="text-xs text-star-300">{protest.significance}</p></div>
                 <div className="text-xs text-star-300">
                   <span className="font-medium text-white">{protest.title}</span>
@@ -199,7 +199,7 @@ function ProtestsTimelineTab({ protests }: { protests: BidProtest[] }) {
 
   return (
     <div>
-      <div className="card p-5 mb-6 border border-cyan-500/20 bg-cyan-500/5">
+      <div className="card p-5 mb-6 border border-white/10 bg-white/5">
         <h3 className="text-white font-semibold mb-2">Protest Timeline</h3>
         <p className="text-star-300 text-sm leading-relaxed">Chronological view of space industry bid protests grouped by decision year, with color-coded outcome indicators.</p>
       </div>
@@ -361,7 +361,7 @@ function ProtestsAnalysisTab({ protests }: { protests: BidProtest[] }) {
               <div key={year} className="flex items-center gap-3">
                 <span className="text-xs text-star-300 w-10 text-right font-mono">{year}</span>
                 <div className="flex-1 h-6 bg-white/5 rounded overflow-hidden">
-                  <div className="h-full bg-gradient-to-r from-nebula-500 to-cyan-400 rounded flex items-center justify-end pr-2" style={{ width: `${(volumeByYear[year] / maxVolume) * 100}%` }}>
+                  <div className="h-full bg-gradient-to-r from-nebula-500 to-slate-400 rounded flex items-center justify-end pr-2" style={{ width: `${(volumeByYear[year] / maxVolume) * 100}%` }}>
                     <span className="text-xs text-white font-bold">{volumeByYear[year]}</span>
                   </div>
                 </div>

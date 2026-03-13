@@ -262,7 +262,7 @@ function RiskFactorReference() {
                     <div className="px-5 pb-4 space-y-2">
                       <p className="text-sm text-slate-300">{f.description}</p>
                       <div className="bg-slate-900/50 rounded-lg p-3">
-                        <p className="text-xs text-cyan-400 font-medium mb-1">Assessment Question:</p>
+                        <p className="text-xs text-slate-300 font-medium mb-1">Assessment Question:</p>
                         <p className="text-xs text-slate-400">{f.assessmentQuestion}</p>
                       </div>
                       {LICENSE_TIMELINES[f.id] && (
@@ -404,7 +404,7 @@ export default function RegulatoryRiskPage() {
                       onClick={() => setSelectedSector(s.id)}
                       className={`px-4 py-3 rounded-xl text-left text-sm font-medium transition-all border ${
                         selectedSector === s.id
-                          ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40 shadow-lg shadow-cyan-500/10'
+                          ? 'bg-white/10 text-slate-200 border-white/15/40 shadow-lg shadow-black/5'
                           : 'bg-slate-800/50 text-slate-300 border-slate-700/50 hover:bg-slate-700/50 hover:text-slate-100'
                       }`}
                     >
@@ -436,7 +436,7 @@ export default function RegulatoryRiskPage() {
                         type="checkbox"
                         checked={selectedActivities.includes(a.id)}
                         onChange={() => toggleActivity(a.id)}
-                        className="w-4 h-4 rounded bg-slate-700 border-slate-600 text-cyan-500 focus:ring-cyan-500 focus:ring-offset-0"
+                        className="w-4 h-4 rounded bg-slate-700 border-slate-600 text-slate-300 focus:ring-white/30 focus:ring-offset-0"
                       />
                       <span className="text-sm">{a.label}</span>
                     </label>
@@ -482,7 +482,7 @@ export default function RegulatoryRiskPage() {
                 <div className="mt-6 p-4 bg-slate-900/50 rounded-xl border border-slate-700/30">
                   <p className="text-xs text-slate-500 mb-2 uppercase tracking-wider font-medium">Selected Profile</p>
                   <div className="flex flex-wrap gap-2">
-                    <span className="px-3 py-1 rounded-full bg-cyan-500/15 text-cyan-400 text-xs font-medium border border-cyan-500/20">
+                    <span className="px-3 py-1 rounded-full bg-white/8 text-slate-300 text-xs font-medium border border-white/10">
                       {SECTORS.find(s => s.id === selectedSector)?.label}
                     </span>
                     {selectedActivities.map(a => (
@@ -608,7 +608,7 @@ export default function RegulatoryRiskPage() {
                   </button>
                   <Link
                     href="/compliance"
-                    className="px-5 py-2.5 rounded-xl text-sm font-medium bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 hover:bg-cyan-500/20 transition-all"
+                    className="px-5 py-2.5 rounded-xl text-sm font-medium bg-white/5 text-slate-300 border border-white/10 hover:bg-slate-100/20 transition-all"
                   >
                     View Full Compliance Hub
                   </Link>
@@ -660,11 +660,11 @@ export default function RegulatoryRiskPage() {
         <div className="mt-12 text-center">
           <p className="text-sm text-slate-500">
             Need help navigating space regulations?{' '}
-            <Link href="/compliance" className="text-cyan-400 hover:text-cyan-300 transition-colors">
+            <Link href="/compliance" className="text-slate-300 hover:text-white transition-colors">
               Explore the Compliance Hub
             </Link>{' '}
             for detailed regulatory tracking, or{' '}
-            <Link href="/contact" className="text-cyan-400 hover:text-cyan-300 transition-colors">
+            <Link href="/contact" className="text-slate-300 hover:text-white transition-colors">
               contact us
             </Link>{' '}
             for expert referrals.

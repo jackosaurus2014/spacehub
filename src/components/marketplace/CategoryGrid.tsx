@@ -32,12 +32,12 @@ export default function CategoryGrid({ categoryCounts, onSelect, selectedCategor
               aria-pressed={isSelected}
               className={`card p-4 cursor-pointer text-center group transition-all w-full ${
                 isSelected
-                  ? 'ring-2 ring-cyan-500 bg-cyan-500/10'
+                  ? 'ring-2 ring-white/15 bg-white/5'
                   : 'hover:ring-1 hover:ring-slate-500'
               }`}
             >
               <div className="text-2xl mb-2">{cat.icon}</div>
-              <div className="text-xs font-semibold text-white group-hover:text-cyan-400 transition-colors mb-1">
+              <div className="text-xs font-semibold text-white group-hover:text-white transition-colors mb-1">
                 {cat.label}
               </div>
               <div className="text-xs text-slate-500">
@@ -58,7 +58,7 @@ export default function CategoryGrid({ categoryCounts, onSelect, selectedCategor
             className="card p-4 cursor-pointer text-center group transition-all hover:ring-1 hover:ring-slate-500"
           >
             <div className="text-2xl mb-2">{cat.icon}</div>
-            <div className="text-xs font-semibold text-white group-hover:text-cyan-400 transition-colors mb-1">
+            <div className="text-xs font-semibold text-white group-hover:text-white transition-colors mb-1">
               {cat.label}
             </div>
             <div className="text-xs text-slate-500">

@@ -490,7 +490,7 @@ function typeColor(type: PropulsionType): string {
     case 'Green': return 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30';
     case 'Nuclear': return 'bg-purple-500/20 text-purple-300 border-purple-500/30';
     case 'Cold Gas': return 'bg-slate-500/20 text-slate-300 border-slate-500/30';
-    case 'Electrospray': return 'bg-cyan-500/20 text-cyan-300 border-cyan-500/30';
+    case 'Electrospray': return 'bg-white/10 text-slate-200 border-white/10';
     default: return 'bg-slate-500/20 text-slate-300 border-slate-500/30';
   }
 }
@@ -896,9 +896,9 @@ export default function PropulsionDatabasePage() {
                 </div>
               </div>
               <div className="flex gap-3">
-                <span className="shrink-0 mt-0.5 w-3 h-3 rounded-full bg-cyan-500/60" />
+                <span className="shrink-0 mt-0.5 w-3 h-3 rounded-full bg-white/60" />
                 <div>
-                  <div className="font-medium text-cyan-300">Cold Gas / Electrospray</div>
+                  <div className="font-medium text-slate-200">Cold Gas / Electrospray</div>
                   <div className="text-slate-400">Miniaturized systems for CubeSats and nanosats. Low thrust, high precision or simplicity.</div>
                 </div>
               </div>

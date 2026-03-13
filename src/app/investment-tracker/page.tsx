@@ -582,7 +582,7 @@ const CATEGORY_BREAKDOWN: CategoryBreakdown[] = [
 ];
 
 const GEO_DISTRIBUTION: GeoDistribution[] = [
-  { region: 'US', percentage: 62, totalBillions: 33.1, deals: 489, color: 'from-cyan-500 to-blue-500' },
+  { region: 'US', percentage: 62, totalBillions: 33.1, deals: 489, color: 'from-white to-blue-500' },
   { region: 'Europe', percentage: 18, totalBillions: 9.6, deals: 142, color: 'from-purple-500 to-pink-500' },
   { region: 'Asia', percentage: 14, totalBillions: 7.5, deals: 110, color: 'from-amber-500 to-orange-500' },
   { region: 'Other', percentage: 6, totalBillions: 3.1, deals: 49, color: 'from-emerald-500 to-teal-500' },
@@ -662,7 +662,7 @@ const ROUND_TYPE_COLORS: Record<string, string> = {
   'Series C': 'bg-amber-500/20 text-amber-400 border-amber-500/30',
   'Series N': 'bg-red-500/20 text-red-400 border-red-500/30',
   'Series E': 'bg-red-500/20 text-red-400 border-red-500/30',
-  'SPAC': 'bg-cyan-500/20 text-cyan-400 border-cyan-500/30',
+  'SPAC': 'bg-white/10 text-slate-300 border-white/10',
   'IPO': 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30',
 };
 
@@ -734,8 +734,8 @@ export default function InvestmentTrackerPage() {
         <ScrollReveal>
           <StaggerContainer className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
             <StaggerItem>
-              <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-5 text-center hover:border-cyan-500/30 transition-colors">
-                <div className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
+              <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-5 text-center hover:border-white/10 transition-colors">
+                <div className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-slate-300 to-blue-400 bg-clip-text text-transparent">
                   {formatAmount(metrics.totalInvestment)}
                 </div>
                 <div className="text-slate-400 text-xs uppercase tracking-widest mt-1">
@@ -787,7 +787,7 @@ export default function InvestmentTrackerPage() {
                 <select
                   value={yearFilter}
                   onChange={(e) => setYearFilter(e.target.value as YearFilter)}
-                  className="bg-slate-900 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+                  className="bg-slate-900 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                 >
                   {YEAR_OPTIONS.map((o) => (
                     <option key={o.value} value={o.value}>{o.label}</option>
@@ -799,7 +799,7 @@ export default function InvestmentTrackerPage() {
                 <select
                   value={categoryFilter}
                   onChange={(e) => setCategoryFilter(e.target.value as Category | '')}
-                  className="bg-slate-900 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+                  className="bg-slate-900 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                 >
                   {CATEGORY_OPTIONS.map((o) => (
                     <option key={o.value} value={o.value}>{o.label}</option>
@@ -811,7 +811,7 @@ export default function InvestmentTrackerPage() {
                 <select
                   value={roundTypeFilter}
                   onChange={(e) => setRoundTypeFilter(e.target.value as RoundTypeFilter)}
-                  className="bg-slate-900 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+                  className="bg-slate-900 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                 >
                   {ROUND_TYPE_OPTIONS.map((o) => (
                     <option key={o.value} value={o.value}>{o.label}</option>
@@ -953,7 +953,7 @@ export default function InvestmentTrackerPage() {
                   onClick={() => setYearFilter(yearFilter === String(y.year) ? '' : String(y.year) as YearFilter)}
                   className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all border ${
                     yearFilter === String(y.year)
-                      ? 'bg-cyan-500/20 text-cyan-400 border-cyan-500/40'
+                      ? 'bg-white/10 text-slate-300 border-white/15/40'
                       : 'bg-slate-800 text-slate-400 border-slate-700 hover:border-slate-600'
                   }`}
                 >
@@ -996,7 +996,7 @@ export default function InvestmentTrackerPage() {
                       <div
                         className={`w-full max-w-[36px] rounded-t-md transition-all duration-500 cursor-pointer ${
                           isPeakYear
-                            ? 'bg-gradient-to-t from-cyan-600 to-cyan-400'
+                            ? 'bg-gradient-to-t from-slate-200 to-slate-400'
                             : 'bg-gradient-to-t from-slate-600 to-slate-400'
                         } ${isHovered ? 'opacity-100 scale-x-110' : 'opacity-80 hover:opacity-100'}`}
                         style={{
@@ -1011,7 +1011,7 @@ export default function InvestmentTrackerPage() {
 
                       {/* Year label (only on Q1) */}
                       {q.quarter === 'Q1' && (
-                        <div className="text-xs text-cyan-400 font-semibold">{q.year}</div>
+                        <div className="text-xs text-slate-300 font-semibold">{q.year}</div>
                       )}
                       {q.quarter !== 'Q1' && (
                         <div className="text-xs text-transparent select-none">&nbsp;</div>
@@ -1028,7 +1028,7 @@ export default function InvestmentTrackerPage() {
             {/* Peak annotation */}
             <div className="mt-4 flex flex-wrap items-center gap-4 text-xs">
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-sm bg-gradient-to-t from-cyan-600 to-cyan-400" />
+                <div className="w-3 h-3 rounded-sm bg-gradient-to-t from-slate-200 to-slate-400" />
                 <span className="text-slate-400">2021 peak (SPAC boom)</span>
               </div>
               <div className="flex items-center gap-2">
@@ -1072,7 +1072,7 @@ export default function InvestmentTrackerPage() {
                       <div className="flex items-center gap-2 flex-wrap">
                         <Link
                           href={`/company-profiles/${round.companySlug}`}
-                          className="text-white font-medium text-sm hover:text-cyan-400 transition-colors truncate"
+                          className="text-white font-medium text-sm hover:text-white transition-colors truncate"
                         >
                           {round.company}
                         </Link>
@@ -1101,7 +1101,7 @@ export default function InvestmentTrackerPage() {
                         setCategoryFilter('');
                         setRoundTypeFilter('');
                       }}
-                      className="text-cyan-400 text-sm mt-2 hover:underline"
+                      className="text-slate-300 text-sm mt-2 hover:underline"
                     >
                       Clear filters
                     </button>
@@ -1122,8 +1122,8 @@ export default function InvestmentTrackerPage() {
           <ScrollReveal>
             <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-6 h-full">
               <h2 className="text-lg font-semibold text-white mb-1 flex items-center gap-2">
-                <span className="w-8 h-8 rounded-lg bg-cyan-500/20 flex items-center justify-center text-sm">
-                  <svg className="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <span className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-sm">
+                  <svg className="w-4 h-4 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                   </svg>
                 </span>
@@ -1148,7 +1148,7 @@ export default function InvestmentTrackerPage() {
                       </div>
                     </div>
                     <div className="text-right shrink-0">
-                      <div className="text-cyan-400 font-mono text-sm font-bold">
+                      <div className="text-slate-300 font-mono text-sm font-bold">
                         {inv.dealCount} deals
                       </div>
                       <div className="text-slate-500 text-xs font-mono">
@@ -1198,7 +1198,7 @@ export default function InvestmentTrackerPage() {
                       <tr
                         key={y.year}
                         className={`border-b border-slate-700/20 hover:bg-slate-700/20 transition-colors cursor-pointer ${
-                          yearFilter === String(y.year) ? 'bg-cyan-500/5' : ''
+                          yearFilter === String(y.year) ? 'bg-white/5' : ''
                         }`}
                         onClick={() => setYearFilter(yearFilter === String(y.year) ? '' : String(y.year) as YearFilter)}
                       >
@@ -1227,7 +1227,7 @@ export default function InvestmentTrackerPage() {
                             <div
                               className={`h-2 rounded-full transition-all duration-500 ${
                                 y.year === 2021
-                                  ? 'bg-gradient-to-r from-cyan-500 to-cyan-400'
+                                  ? 'bg-gradient-to-r from-white to-slate-400'
                                   : 'bg-gradient-to-r from-slate-500 to-slate-400'
                               }`}
                               style={{ width: `${Math.max(barWidth, 4)}%` }}
@@ -1250,14 +1250,14 @@ export default function InvestmentTrackerPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <Link
                 href="/space-capital"
-                className="group p-4 rounded-lg bg-slate-900/50 border border-slate-700/30 hover:border-cyan-500/40 transition-all"
+                className="group p-4 rounded-lg bg-slate-900/50 border border-slate-700/30 hover:border-white/15/40 transition-all"
               >
-                <div className="text-cyan-400 text-xl mb-2">
+                <div className="text-slate-300 text-xl mb-2">
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                 </div>
-                <div className="text-white font-semibold text-sm group-hover:text-cyan-400 transition-colors">Space Capital</div>
+                <div className="text-white font-semibold text-sm group-hover:text-white transition-colors">Space Capital</div>
                 <div className="text-slate-500 text-xs mt-1">VC landscape and investor profiles</div>
               </Link>
               <Link

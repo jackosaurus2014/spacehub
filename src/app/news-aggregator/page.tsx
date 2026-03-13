@@ -37,7 +37,7 @@ const SOURCE_COLORS: Record<Source, { bg: string; text: string; border: string }
   'Ars Technica': { bg: 'bg-orange-500/20', text: 'text-orange-400', border: 'border-orange-500/40' },
   'The Verge': { bg: 'bg-purple-500/20', text: 'text-purple-400', border: 'border-purple-500/40' },
   NASA: { bg: 'bg-red-500/20', text: 'text-red-400', border: 'border-red-500/40' },
-  ESA: { bg: 'bg-cyan-500/20', text: 'text-cyan-400', border: 'border-cyan-500/40' },
+  ESA: { bg: 'bg-white/10', text: 'text-slate-300', border: 'border-white/15/40' },
   SpaceX: { bg: 'bg-slate-400/20', text: 'text-slate-300', border: 'border-slate-400/40' },
 };
 
@@ -520,7 +520,7 @@ export default function NewsAggregatorPage() {
             subtitle="Real-time news from 50+ sources across the global space industry. Filter, search, and stay ahead."
             icon={
               <svg
-                className="w-8 h-8 text-cyan-400"
+                className="w-8 h-8 text-slate-300"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -587,14 +587,14 @@ export default function NewsAggregatorPage() {
                   }}
                   className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
                     isActive
-                      ? 'bg-cyan-600 text-white shadow-lg shadow-cyan-500/25'
+                      ? 'bg-white text-white shadow-lg shadow-black/20/25'
                       : 'bg-slate-800/60 text-slate-400 hover:bg-slate-700/60 hover:text-slate-200'
                   }`}
                 >
                   {cat}
                   <span
                     className={`ml-2 text-xs ${
-                      isActive ? 'text-cyan-200' : 'text-slate-500'
+                      isActive ? 'text-slate-200' : 'text-slate-500'
                     }`}
                   >
                     {count}
@@ -631,7 +631,7 @@ export default function NewsAggregatorPage() {
                   setVisibleCount(12);
                 }}
                 placeholder="Search articles by title or summary..."
-                className="w-full pl-10 pr-4 py-2.5 bg-slate-800/60 border border-slate-700/50 rounded-lg text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/30 transition-colors"
+                className="w-full pl-10 pr-4 py-2.5 bg-slate-800/60 border border-slate-700/50 rounded-lg text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-white/15 focus:ring-1 focus:ring-white/30/30 transition-colors"
               />
               {searchQuery && (
                 <button
@@ -653,7 +653,7 @@ export default function NewsAggregatorPage() {
             <select
               value={sortOption}
               onChange={(e) => setSortOption(e.target.value as SortOption)}
-              className="px-4 py-2.5 bg-slate-800/60 border border-slate-700/50 rounded-lg text-sm text-slate-200 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/30 transition-colors appearance-none cursor-pointer"
+              className="px-4 py-2.5 bg-slate-800/60 border border-slate-700/50 rounded-lg text-sm text-slate-200 focus:outline-none focus:border-white/15 focus:ring-1 focus:ring-white/30/30 transition-colors appearance-none cursor-pointer"
               style={{
                 backgroundImage:
                   'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' fill=\'none\' viewBox=\'0 0 24 24\' stroke=\'%2394a3b8\' stroke-width=\'2\'%3E%3Cpath stroke-linecap=\'round\' stroke-linejoin=\'round\' d=\'M19.5 8.25l-7.5 7.5-7.5-7.5\'/%3E%3C/svg%3E")',
@@ -673,7 +673,7 @@ export default function NewsAggregatorPage() {
               onClick={() => setShowSourceFilters(!showSourceFilters)}
               className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
                 showSourceFilters
-                  ? 'bg-cyan-600/20 text-cyan-400 border border-cyan-500/40'
+                  ? 'bg-white/20 text-slate-300 border border-white/15/40'
                   : 'bg-slate-800/60 text-slate-400 border border-slate-700/50 hover:bg-slate-700/60 hover:text-slate-200'
               }`}
             >
@@ -686,7 +686,7 @@ export default function NewsAggregatorPage() {
               </svg>
               Sources
               {selectedSources.size < SOURCES.length && (
-                <span className="bg-cyan-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                <span className="bg-white text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
                   {selectedSources.size}
                 </span>
               )}
@@ -715,7 +715,7 @@ export default function NewsAggregatorPage() {
                     return (
                       <label
                         key={source}
-                        className={`flex items-center gap-2 px-3 py-1.5 rounded-lg cursor-pointer transition-all duration-200 border text-sm focus-within:ring-2 focus-within:ring-cyan-400/50 ${
+                        className={`flex items-center gap-2 px-3 py-1.5 rounded-lg cursor-pointer transition-all duration-200 border text-sm focus-within:ring-2 focus-within:ring-white/10/50 ${
                           isSelected
                             ? `${colors.bg} ${colors.text} ${colors.border}`
                             : 'bg-slate-800/40 text-slate-500 border-slate-700/30 hover:border-slate-600/50'
@@ -746,7 +746,7 @@ export default function NewsAggregatorPage() {
                   })}
                   <button
                     onClick={() => setSelectedSources(new Set(SOURCES))}
-                    className="text-xs text-slate-500 hover:text-cyan-400 transition-colors ml-auto"
+                    className="text-xs text-slate-500 hover:text-white transition-colors ml-auto"
                   >
                     Select All
                   </button>
@@ -767,7 +767,7 @@ export default function NewsAggregatorPage() {
             {searchQuery && (
               <span>
                 {' '}
-                for &quot;<span className="text-cyan-400">{searchQuery}</span>&quot;
+                for &quot;<span className="text-slate-300">{searchQuery}</span>&quot;
               </span>
             )}
           </div>
@@ -796,7 +796,7 @@ export default function NewsAggregatorPage() {
                 setSelectedSources(new Set(SOURCES));
                 setVisibleCount(12);
               }}
-              className="px-4 py-2 bg-cyan-600 hover:bg-cyan-500 text-white text-sm rounded-lg font-medium transition-colors"
+              className="px-4 py-2 bg-white hover:bg-slate-100 text-white text-sm rounded-lg font-medium transition-colors"
             >
               Clear All Filters
             </button>
@@ -828,7 +828,7 @@ export default function NewsAggregatorPage() {
                   </div>
 
                   {/* Title */}
-                  <h3 className="text-sm font-semibold text-white mb-2 line-clamp-2 group-hover:text-cyan-400 transition-colors">
+                  <h3 className="text-sm font-semibold text-white mb-2 line-clamp-2 group-hover:text-white transition-colors">
                     {article.title}
                   </h3>
 
@@ -867,7 +867,7 @@ export default function NewsAggregatorPage() {
             <div className="flex justify-center mt-10">
               <button
                 onClick={() => setVisibleCount((prev) => prev + 12)}
-                className="px-8 py-3 bg-slate-800/60 hover:bg-slate-700/60 border border-slate-700/50 hover:border-cyan-500/30 text-slate-300 hover:text-white rounded-xl text-sm font-medium transition-all duration-200 flex items-center gap-2"
+                className="px-8 py-3 bg-slate-800/60 hover:bg-slate-700/60 border border-slate-700/50 hover:border-white/10 text-slate-300 hover:text-white rounded-xl text-sm font-medium transition-all duration-200 flex items-center gap-2"
               >
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 13.5L12 21m0 0l-7.5-7.5M12 21V3" />

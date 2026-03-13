@@ -163,7 +163,7 @@ export default function LaunchDayDashboard({ event }: LaunchDayDashboardProps) {
                 <h1 className="text-white font-bold text-lg truncate">{event.name}</h1>
                 <div className="flex items-center gap-2 text-xs text-slate-400">
                   {event.agency && <span>{event.agency}</span>}
-                  {event.rocket && <span className="text-cyan-400">{event.rocket}</span>}
+                  {event.rocket && <span className="text-slate-300">{event.rocket}</span>}
                 </div>
               </div>
             </div>
@@ -177,7 +177,7 @@ export default function LaunchDayDashboard({ event }: LaunchDayDashboardProps) {
                 className={`font-mono text-xl font-bold ${
                   missionTime !== null && missionTime >= 0
                     ? 'text-green-400'
-                    : 'text-cyan-400'
+                    : 'text-slate-300'
                 }`}
                 style={{
                   textShadow: `0 0 12px ${missionTime !== null && missionTime >= 0 ? 'rgba(74,222,128,0.4)' : 'rgba(34,211,238,0.4)'}`,
@@ -241,9 +241,9 @@ export default function LaunchDayDashboard({ event }: LaunchDayDashboardProps) {
                 </div>
               )}
               {event.orbitType && (
-                <div className="bg-slate-800/50 rounded-lg p-3 border border-cyan-500/20">
+                <div className="bg-slate-800/50 rounded-lg p-3 border border-white/10">
                   <div className="text-slate-400 text-xs mb-1">Target Orbit</div>
-                  <div className="text-cyan-400 text-sm font-medium truncate">{event.orbitType}</div>
+                  <div className="text-slate-300 text-sm font-medium truncate">{event.orbitType}</div>
                 </div>
               )}
               {event.crewCount && event.crewCount > 0 && (

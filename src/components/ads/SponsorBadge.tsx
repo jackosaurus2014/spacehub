@@ -39,13 +39,13 @@ export default function SponsorBadge({
         </div>
       ) : null}
 
-      <span className="text-slate-300 text-xs font-semibold group-hover:text-cyan-400 transition-colors">
+      <span className="text-slate-300 text-xs font-semibold group-hover:text-white transition-colors">
         {sponsorName}
       </span>
 
       {/* External link indicator */}
       <svg
-        className="w-3 h-3 text-slate-400 group-hover:text-cyan-400 transition-colors"
+        className="w-3 h-3 text-slate-400 group-hover:text-white transition-colors"
         fill="none"
         stroke="currentColor"
         viewBox="0 0 24 24"

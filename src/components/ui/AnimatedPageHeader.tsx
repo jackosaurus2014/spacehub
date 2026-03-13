@@ -103,7 +103,7 @@ export default function AnimatedPageHeader({
                 <li key={i} className="flex items-center gap-1.5">
                   {i > 0 && <span className="text-slate-600">→</span>}
                   {!isLast && route ? (
-                    <Link href={route} className="hover:text-cyan-400 transition-colors">{label}</Link>
+                    <Link href={route} className="hover:text-white transition-colors">{label}</Link>
                   ) : (
                     <span className={isLast ? 'text-slate-300' : ''}>{label}</span>
                   )}

@@ -441,10 +441,10 @@ const CATEGORY_COLORS: Record<Category, { bg: string; text: string; border: stri
     chip: 'bg-red-500/20 text-red-300 border-red-500/40',
   },
   Spacecraft: {
-    bg: 'bg-cyan-500/10',
-    text: 'text-cyan-400',
-    border: 'border-cyan-500/30',
-    chip: 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40',
+    bg: 'bg-white/5',
+    text: 'text-slate-300',
+    border: 'border-white/10',
+    chip: 'bg-white/10 text-slate-200 border-white/15/40',
   },
   'Space Environment': {
     bg: 'bg-yellow-500/10',
@@ -590,7 +590,7 @@ export default function GlossaryPage() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search terms or definitions..."
-                className="w-full pl-12 pr-4 py-3 bg-slate-800/50 border border-slate-700/50 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-400/50 focus:border-cyan-400/30 transition-all"
+                className="w-full pl-12 pr-4 py-3 bg-slate-800/50 border border-slate-700/50 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-white/20 focus:border-white/10 transition-all"
               />
               {searchQuery && (
                 <button
@@ -611,7 +611,7 @@ export default function GlossaryPage() {
                 onClick={() => setSelectedCategory(null)}
                 className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-all ${
                   selectedCategory === null
-                    ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40 shadow-lg shadow-cyan-500/10'
+                    ? 'bg-white/10 text-slate-200 border-white/15/40 shadow-lg shadow-black/5'
                     : 'bg-slate-800/50 text-slate-400 border-slate-700/50 hover:border-slate-600 hover:text-slate-300'
                 }`}
               >
@@ -640,7 +640,7 @@ export default function GlossaryPage() {
             {/* Results count */}
             <p className="text-sm text-slate-400">
               Showing{' '}
-              <span className="text-cyan-400 font-semibold">{visibleCount}</span> of{' '}
+              <span className="text-slate-300 font-semibold">{visibleCount}</span> of{' '}
               <span className="text-slate-300">{GLOSSARY_TERMS.length}</span> terms
             </p>
           </div>
@@ -662,7 +662,7 @@ export default function GlossaryPage() {
                     disabled={!hasTerms}
                     className={`w-9 h-9 rounded-lg text-sm font-bold flex items-center justify-center transition-all ${
                       hasTerms
-                        ? 'bg-slate-800/50 text-cyan-400 border border-slate-700/50 hover:bg-cyan-500/20 hover:border-cyan-400/30 hover:shadow-lg hover:shadow-cyan-500/5 cursor-pointer'
+                        ? 'bg-slate-800/50 text-slate-300 border border-slate-700/50 hover:bg-slate-100/20 hover:border-white/10 hover:shadow-lg hover:shadow-black/20/5 cursor-pointer'
                         : 'text-slate-600 cursor-not-allowed'
                     }`}
                     aria-label={`Jump to letter ${letter}`}
@@ -692,10 +692,10 @@ export default function GlossaryPage() {
                 {/* Letter heading */}
                 <ScrollReveal>
                   <div className="flex items-center gap-3 mb-4">
-                    <span className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-br from-cyan-400 to-blue-500 leading-none">
+                    <span className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-br from-slate-300 to-blue-500 leading-none">
                       {letter}
                     </span>
-                    <div className="flex-1 h-px bg-gradient-to-r from-cyan-500/30 to-transparent" />
+                    <div className="flex-1 h-px bg-gradient-to-r from-white/30 to-transparent" />
                     <span className="text-xs text-slate-500 font-medium">
                       {terms.length} term{terms.length !== 1 ? 's' : ''}
                     </span>
@@ -713,8 +713,8 @@ export default function GlossaryPage() {
                         <div
                           className={`group rounded-xl border transition-all duration-300 ${
                             isExpanded
-                              ? 'bg-slate-800/70 border-cyan-400/30 shadow-lg shadow-cyan-500/5'
-                              : 'bg-slate-800/50 border-slate-700/50 hover:border-cyan-400/30 hover:bg-slate-800/60'
+                              ? 'bg-slate-800/70 border-white/10 shadow-lg shadow-black/20/5'
+                              : 'bg-slate-800/50 border-slate-700/50 hover:border-white/10 hover:bg-slate-800/60'
                           }`}
                         >
                           <button
@@ -725,7 +725,7 @@ export default function GlossaryPage() {
                             {/* Expand/collapse chevron */}
                             <svg
                               className={`w-5 h-5 text-slate-400 transition-transform duration-300 flex-shrink-0 ${
-                                isExpanded ? 'rotate-90 text-cyan-400' : 'group-hover:text-cyan-400'
+                                isExpanded ? 'rotate-90 text-slate-300' : 'group-hover:text-white'
                               }`}
                               fill="none"
                               viewBox="0 0 24 24"
@@ -736,7 +736,7 @@ export default function GlossaryPage() {
                             </svg>
 
                             {/* Term name */}
-                            <span className="text-white font-semibold text-lg flex-1 group-hover:text-cyan-50 transition-colors">
+                            <span className="text-white font-semibold text-lg flex-1 group-hover:text-white transition-colors">
                               {item.term}
                             </span>
 
@@ -786,7 +786,7 @@ export default function GlossaryPage() {
                   setSearchQuery('');
                   setSelectedCategory(null);
                 }}
-                className="px-4 py-2 rounded-lg bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 hover:bg-cyan-500/30 transition-all text-sm font-medium"
+                className="px-4 py-2 rounded-lg bg-white/10 text-slate-200 border border-white/15/40 hover:bg-slate-100/30 transition-all text-sm font-medium"
               >
                 Reset filters
               </button>
@@ -799,7 +799,7 @@ export default function GlossaryPage() {
           <div className="mt-16 mb-8 pt-8 border-t border-slate-800/50">
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
               {[
-                { label: 'Total Terms', value: GLOSSARY_TERMS.length, color: 'text-cyan-400' },
+                { label: 'Total Terms', value: GLOSSARY_TERMS.length, color: 'text-slate-300' },
                 { label: 'Categories', value: ALL_CATEGORIES.length, color: 'text-purple-400' },
                 {
                   label: 'Letters Covered',
@@ -817,7 +817,7 @@ export default function GlossaryPage() {
               ].map((stat) => (
                 <div
                   key={stat.label}
-                  className="card p-4 text-center hover:border-cyan-400/20"
+                  className="card p-4 text-center hover:border-white/10"
                 >
                   <div className={`text-2xl font-bold ${stat.color}`}>{stat.value}</div>
                   <div className="text-xs text-slate-400 mt-1">{stat.label}</div>
@@ -832,20 +832,20 @@ export default function GlossaryPage() {
           <section className="mt-16 border-t border-slate-800 pt-8">
             <h2 className="text-xl font-bold text-white mb-6">Explore More</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <a href="/timeline" className="card p-4 hover:border-cyan-500/50 transition-colors group">
-                <h3 className="text-white font-medium group-hover:text-cyan-400 transition-colors">Space Industry Timeline</h3>
+              <a href="/timeline" className="card p-4 hover:border-white/15 transition-colors group">
+                <h3 className="text-white font-medium group-hover:text-white transition-colors">Space Industry Timeline</h3>
                 <p className="text-slate-400 text-sm mt-1">68+ years of milestones from Sputnik to Artemis and the commercial era.</p>
               </a>
-              <a href="/faq" className="card p-4 hover:border-cyan-500/50 transition-colors group">
-                <h3 className="text-white font-medium group-hover:text-cyan-400 transition-colors">Frequently Asked Questions</h3>
+              <a href="/faq" className="card p-4 hover:border-white/15 transition-colors group">
+                <h3 className="text-white font-medium group-hover:text-white transition-colors">Frequently Asked Questions</h3>
                 <p className="text-slate-400 text-sm mt-1">Answers to common questions about the space industry and SpaceNexus.</p>
               </a>
-              <a href="/education-pathways" className="card p-4 hover:border-cyan-500/50 transition-colors group">
-                <h3 className="text-white font-medium group-hover:text-cyan-400 transition-colors">Education Pathways</h3>
+              <a href="/education-pathways" className="card p-4 hover:border-white/15 transition-colors group">
+                <h3 className="text-white font-medium group-hover:text-white transition-colors">Education Pathways</h3>
                 <p className="text-slate-400 text-sm mt-1">Career tracks, top university programs, certifications, and salary data.</p>
               </a>
-              <a href="/standards-reference" className="card p-4 hover:border-cyan-500/50 transition-colors group">
-                <h3 className="text-white font-medium group-hover:text-cyan-400 transition-colors">Standards Reference</h3>
+              <a href="/standards-reference" className="card p-4 hover:border-white/15 transition-colors group">
+                <h3 className="text-white font-medium group-hover:text-white transition-colors">Standards Reference</h3>
                 <p className="text-slate-400 text-sm mt-1">Technical standards and specifications used across the space industry.</p>
               </a>
             </div>

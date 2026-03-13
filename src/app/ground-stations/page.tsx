@@ -328,8 +328,8 @@ const FALLBACK_FREQUENCY_BANDS: FrequencyBand[] = [
   {
     name: 'S-band',
     range: '2 - 4 GHz',
-    color: 'text-cyan-400',
-    borderColor: 'border-cyan-500/30',
+    color: 'text-slate-300',
+    borderColor: 'border-white/10',
     useCases: [
       'Telemetry, tracking, and command (TT&C)',
       'CubeSat and SmallSat communications',
@@ -484,7 +484,7 @@ const FALLBACK_FREQUENCY_BANDS: FrequencyBand[] = [
 ];
 
 const FALLBACK_HERO_STATS: HeroStat[] = [
-  { label: 'Commercial Networks', value: '15+', color: 'text-cyan-400' },
+  { label: 'Commercial Networks', value: '15+', color: 'text-slate-300' },
   { label: 'Antennas Worldwide', value: '500+', color: 'text-blue-400' },
   { label: 'GSaaS Market (2030)', value: '$5B+', color: 'text-purple-400' },
   { label: 'Frequency Bands', value: '8', color: 'text-amber-400' },
@@ -568,22 +568,22 @@ function NetworkCard({ network }: { network: GroundStationNetwork }) {
 
   const modelColors: Record<string, string> = {
     'Owned': 'text-blue-400 bg-blue-500/10 border-blue-500/30',
-    'GaaS': 'text-cyan-400 bg-cyan-500/10 border-cyan-500/30',
+    'GaaS': 'text-slate-300 bg-white/5 border-white/10',
     'Aggregator': 'text-purple-400 bg-purple-500/10 border-purple-500/30',
     'Government': 'text-amber-400 bg-amber-500/10 border-amber-500/30',
     'Cloud-integrated': 'text-green-400 bg-green-500/10 border-green-500/30',
   };
 
   return (
-    <div className="card-elevated p-6 border border-space-700 hover:border-cyan-500/30 transition-all group">
+    <div className="card-elevated p-6 border border-space-700 hover:border-white/10 transition-all group">
       {/* Header */}
       <div className="flex items-start justify-between mb-4">
         <div>
-          <h3 className="text-white font-semibold text-lg group-hover:text-cyan-300 transition-colors">
+          <h3 className="text-white font-semibold text-lg group-hover:text-white transition-colors">
             {network.name}
           </h3>
           <div className="flex items-center gap-3 mt-1">
-            <span className="text-cyan-400 text-sm font-medium">{network.stations}</span>
+            <span className="text-slate-300 text-sm font-medium">{network.stations}</span>
             <span className="text-slate-500">|</span>
             <span className="text-slate-400 text-sm">{network.coverage}</span>
           </div>
@@ -598,7 +598,7 @@ function NetworkCard({ network }: { network: GroundStationNetwork }) {
         {(network.bands || []).map((band) => (
           <span
             key={band}
-            className="px-2 py-0.5 bg-space-700 text-cyan-300 border border-space-600 rounded text-xs font-medium"
+            className="px-2 py-0.5 bg-space-700 text-slate-200 border border-space-600 rounded text-xs font-medium"
           >
             {band}
           </span>
@@ -638,7 +638,7 @@ function NetworkCard({ network }: { network: GroundStationNetwork }) {
             <ul className="space-y-1">
               {(network.highlights || []).map((h, i) => (
                 <li key={i} className="text-slate-300 text-sm flex items-start gap-2">
-                  <span className="text-cyan-400 mt-0.5 flex-shrink-0">-</span>
+                  <span className="text-slate-300 mt-0.5 flex-shrink-0">-</span>
                   {h}
                 </li>
               ))}
@@ -650,7 +650,7 @@ function NetworkCard({ network }: { network: GroundStationNetwork }) {
       {/* Toggle */}
       <button
         onClick={() => setExpanded(!expanded)}
-        className="text-sm text-cyan-400 hover:text-cyan-300 transition-colors"
+        className="text-sm text-slate-300 hover:text-white transition-colors"
       >
         {expanded ? 'Show less' : 'Show details'} {expanded ? String.fromCharCode(8593) : String.fromCharCode(8595)}
       </button>
@@ -682,11 +682,11 @@ function ComparisonTable({ networks }: { networks: GroundStationNetwork[] }) {
               }`}
             >
               <td className="py-3 px-4 text-white font-medium whitespace-nowrap">{network.name}</td>
-              <td className="py-3 px-4 text-cyan-400 whitespace-nowrap">{network.stations}</td>
+              <td className="py-3 px-4 text-slate-300 whitespace-nowrap">{network.stations}</td>
               <td className="py-3 px-4">
                 <div className="flex flex-wrap gap-1">
                   {(network.bands || []).map((band) => (
-                    <span key={band} className="px-1.5 py-0.5 bg-space-700 text-cyan-300 rounded text-xs">
+                    <span key={band} className="px-1.5 py-0.5 bg-space-700 text-slate-200 rounded text-xs">
                       {band}
                     </span>
                   ))}
@@ -695,7 +695,7 @@ function ComparisonTable({ networks }: { networks: GroundStationNetwork[] }) {
               <td className="py-3 px-4 text-slate-300 whitespace-nowrap">{network.coverage}</td>
               <td className="py-3 px-4">
                 <span className={`text-xs font-medium px-2 py-0.5 rounded ${
-                  network.model === 'GaaS' ? 'text-cyan-400 bg-cyan-500/10' :
+                  network.model === 'GaaS' ? 'text-slate-300 bg-white/5' :
                   network.model === 'Owned' ? 'text-blue-400 bg-blue-500/10' :
                   network.model === 'Cloud-integrated' ? 'text-green-400 bg-green-500/10' :
                   network.model === 'Aggregator' ? 'text-purple-400 bg-purple-500/10' :
@@ -911,7 +911,7 @@ export default function GroundStationsPage() {
         </ScrollReveal>
 
         {/* Industry Overview Banner */}
-        <div className="bg-gradient-to-r from-cyan-500/10 via-blue-500/10 to-purple-500/10 border border-cyan-500/30 rounded-xl p-5 mb-8">
+        <div className="bg-gradient-to-r from-white/5 via-blue-500/10 to-purple-500/10 border border-white/10 rounded-xl p-5 mb-8">
           <div className="flex items-start gap-4">
             <span className="text-3xl flex-shrink-0">{String.fromCodePoint(0x1F30D)}</span>
             <div>
@@ -936,7 +936,7 @@ export default function GroundStationsPage() {
                 onClick={() => setActiveTab(tab.id)}
                 className={`px-4 py-2.5 text-sm font-medium whitespace-nowrap border-b-2 transition-colors ${
                   activeTab === tab.id
-                    ? 'border-cyan-500 text-cyan-300'
+                    ? 'border-white/15 text-slate-200'
                     : 'border-transparent text-slate-400 hover:text-white hover:border-slate-600'
                 }`}
               >
@@ -961,7 +961,7 @@ export default function GroundStationsPage() {
                     onClick={() => setModelFilter(model)}
                     className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
                       modelFilter === model
-                        ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/50'
+                        ? 'bg-white/10 text-slate-200 border border-white/15'
                         : 'bg-space-800 text-slate-400 border border-space-700 hover:border-space-600 hover:text-white'
                     }`}
                   >
@@ -991,7 +991,7 @@ export default function GroundStationsPage() {
                 <h3 className="font-semibold text-white mb-4">Network Coverage Summary</h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="bg-space-800/50 rounded-xl p-4">
-                    <div className="text-cyan-400 text-2xl font-bold mb-1">
+                    <div className="text-slate-300 text-2xl font-bold mb-1">
                       {GROUND_STATION_NETWORKS.filter((n) => n.model === 'GaaS').length}
                     </div>
                     <div className="text-slate-400 text-sm">GaaS Providers</div>
@@ -1040,8 +1040,8 @@ export default function GroundStationsPage() {
 
               {/* Model Explanation */}
               <div className="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                <div className="card-elevated p-5 border border-cyan-500/20">
-                  <h4 className="text-cyan-400 font-semibold mb-2">GaaS (Ground as a Service)</h4>
+                <div className="card-elevated p-5 border border-white/10">
+                  <h4 className="text-slate-300 font-semibold mb-2">GaaS (Ground as a Service)</h4>
                   <p className="text-slate-400 text-sm leading-relaxed">
                     Cloud-like model where operators pay per contact or per minute. No antenna ownership required.
                     Provider manages all hardware, maintenance, and operations. Fastest time-to-first-contact.
@@ -1068,7 +1068,7 @@ export default function GroundStationsPage() {
                 <h3 className="text-white font-semibold mb-4">Key Selection Insights</h3>
                 <div className="space-y-3">
                   <div className="flex items-start gap-3">
-                    <span className="text-cyan-400 font-bold text-sm mt-0.5 flex-shrink-0">01</span>
+                    <span className="text-slate-300 font-bold text-sm mt-0.5 flex-shrink-0">01</span>
                     <p className="text-slate-300 text-sm">
                       <strong className="text-white">Polar coverage is a bottleneck.</strong> Only KSAT and SSC offer
                       true pole-to-pole coverage. For Sun-synchronous orbit satellites, Svalbard ground station access
@@ -1076,7 +1076,7 @@ export default function GroundStationsPage() {
                     </p>
                   </div>
                   <div className="flex items-start gap-3">
-                    <span className="text-cyan-400 font-bold text-sm mt-0.5 flex-shrink-0">02</span>
+                    <span className="text-slate-300 font-bold text-sm mt-0.5 flex-shrink-0">02</span>
                     <p className="text-slate-300 text-sm">
                       <strong className="text-white">Cloud integration is the differentiator.</strong> AWS Ground Station
                       and Azure Orbital convert antenna contacts into cloud-native data pipelines, eliminating the
@@ -1084,7 +1084,7 @@ export default function GroundStationsPage() {
                     </p>
                   </div>
                   <div className="flex items-start gap-3">
-                    <span className="text-cyan-400 font-bold text-sm mt-0.5 flex-shrink-0">03</span>
+                    <span className="text-slate-300 font-bold text-sm mt-0.5 flex-shrink-0">03</span>
                     <p className="text-slate-300 text-sm">
                       <strong className="text-white">Aggregator networks maximize scheduling flexibility.</strong> RBC Signals
                       and Infostellar StellarStation combine capacity from 20-40+ partner antennas, making them ideal
@@ -1092,7 +1092,7 @@ export default function GroundStationsPage() {
                     </p>
                   </div>
                   <div className="flex items-start gap-3">
-                    <span className="text-cyan-400 font-bold text-sm mt-0.5 flex-shrink-0">04</span>
+                    <span className="text-slate-300 font-bold text-sm mt-0.5 flex-shrink-0">04</span>
                     <p className="text-slate-300 text-sm">
                       <strong className="text-white">SmallSat operators should start with GaaS.</strong> Leaf Space and
                       Atlas Space Operations offer rapid onboarding (weeks) with no capital expenditure. Scale to
@@ -1124,7 +1124,7 @@ export default function GroundStationsPage() {
                     <div className="bg-green-500/30 flex-[3] flex items-center justify-center text-xs text-green-300 font-medium border-r border-space-900">
                       UHF
                     </div>
-                    <div className="bg-cyan-500/30 flex-[2] flex items-center justify-center text-xs text-cyan-300 font-medium border-r border-space-900">
+                    <div className="bg-white/30 flex-[2] flex items-center justify-center text-xs text-slate-200 font-medium border-r border-space-900">
                       S
                     </div>
                     <div className="bg-blue-500/30 flex-[4] flex items-center justify-center text-xs text-blue-300 font-medium border-r border-space-900">
@@ -1181,7 +1181,7 @@ export default function GroundStationsPage() {
                       ].map((row, idx) => (
                         <tr key={idx} className={`border-b border-space-800 ${idx % 2 === 0 ? 'bg-space-900/50' : ''}`}>
                           <td className="py-2 px-3 text-white">{row.mission}</td>
-                          <td className="py-2 px-3 text-cyan-400 font-medium">{row.band}</td>
+                          <td className="py-2 px-3 text-slate-300 font-medium">{row.band}</td>
                           <td className="py-2 px-3 text-slate-400">{row.reason}</td>
                         </tr>
                       ))}
@@ -1219,7 +1219,7 @@ export default function GroundStationsPage() {
                     <div className="space-y-2">
                       {(factor.details || []).map((detail, i) => (
                         <div key={i} className="text-slate-300 text-sm flex items-start gap-2 bg-space-800/50 rounded-lg p-3">
-                          <span className="text-cyan-400 font-bold text-xs mt-0.5 flex-shrink-0">
+                          <span className="text-slate-300 font-bold text-xs mt-0.5 flex-shrink-0">
                             {String(i + 1).padStart(2, '0')}
                           </span>
                           <span>{detail}</span>
@@ -1257,7 +1257,7 @@ export default function GroundStationsPage() {
                         <tr key={idx} className={`border-b border-space-800 ${idx % 2 === 0 ? 'bg-space-900/50' : ''}`}>
                           <td className="py-2 px-3 text-white">{row.scenario}</td>
                           <td className="py-2 px-3 text-slate-300">{row.approach}</td>
-                          <td className="py-2 px-3 text-cyan-400">{row.providers}</td>
+                          <td className="py-2 px-3 text-slate-300">{row.providers}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -1266,12 +1266,12 @@ export default function GroundStationsPage() {
               </div>
 
               {/* Pro Tips */}
-              <div className="card-elevated p-6 border border-cyan-500/20">
-                <h3 className="text-cyan-400 font-semibold mb-4">Operator Best Practices</h3>
+              <div className="card-elevated p-6 border border-white/10">
+                <h3 className="text-slate-300 font-semibold mb-4">Operator Best Practices</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-3">
                     <div className="flex items-start gap-2">
-                      <span className="text-cyan-400 font-bold text-sm flex-shrink-0">01</span>
+                      <span className="text-slate-300 font-bold text-sm flex-shrink-0">01</span>
                       <p className="text-slate-300 text-sm">
                         <strong className="text-white">Start with GaaS, scale to owned.</strong> Use pay-per-pass services
                         during development and early operations. Transition to owned or hybrid infrastructure only when
@@ -1279,14 +1279,14 @@ export default function GroundStationsPage() {
                       </p>
                     </div>
                     <div className="flex items-start gap-2">
-                      <span className="text-cyan-400 font-bold text-sm flex-shrink-0">02</span>
+                      <span className="text-slate-300 font-bold text-sm flex-shrink-0">02</span>
                       <p className="text-slate-300 text-sm">
                         <strong className="text-white">Always have multi-provider backup.</strong> No single ground station
                         provider offers 100% availability. Contract with at least two providers for mission-critical contacts.
                       </p>
                     </div>
                     <div className="flex items-start gap-2">
-                      <span className="text-cyan-400 font-bold text-sm flex-shrink-0">03</span>
+                      <span className="text-slate-300 font-bold text-sm flex-shrink-0">03</span>
                       <p className="text-slate-300 text-sm">
                         <strong className="text-white">Test your RF chain early.</strong> Schedule test contacts with your
                         ground station provider before launch. Verify modulation schemes, data rates, and commanding
@@ -1296,7 +1296,7 @@ export default function GroundStationsPage() {
                   </div>
                   <div className="space-y-3">
                     <div className="flex items-start gap-2">
-                      <span className="text-cyan-400 font-bold text-sm flex-shrink-0">04</span>
+                      <span className="text-slate-300 font-bold text-sm flex-shrink-0">04</span>
                       <p className="text-slate-300 text-sm">
                         <strong className="text-white">Plan for data pipeline, not just antenna.</strong> The antenna contact
                         is just the first step. Ensure your ground station provider integrates with your data processing,
@@ -1304,14 +1304,14 @@ export default function GroundStationsPage() {
                       </p>
                     </div>
                     <div className="flex items-start gap-2">
-                      <span className="text-cyan-400 font-bold text-sm flex-shrink-0">05</span>
+                      <span className="text-slate-300 font-bold text-sm flex-shrink-0">05</span>
                       <p className="text-slate-300 text-sm">
                         <strong className="text-white">Consider geographic diversity.</strong> Stations in different weather
                         zones reduce simultaneous rain fade. Stations in different geopolitical regions reduce regulatory risk.
                       </p>
                     </div>
                     <div className="flex items-start gap-2">
-                      <span className="text-cyan-400 font-bold text-sm flex-shrink-0">06</span>
+                      <span className="text-slate-300 font-bold text-sm flex-shrink-0">06</span>
                       <p className="text-slate-300 text-sm">
                         <strong className="text-white">Negotiate based on volume commitments.</strong> Most providers offer
                         significant discounts for annual commitments or guaranteed minimum contacts per month.

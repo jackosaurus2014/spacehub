@@ -40,9 +40,9 @@ export default function TrustSignals() {
             {DATA_SOURCES.map((source) => (
               <div
                 key={source.name}
-                className="group relative px-4 py-2 rounded-full border border-cyan-400/20 bg-cyan-400/5 hover:border-cyan-400/40 hover:bg-cyan-400/10 transition-all duration-200"
+                className="group relative px-4 py-2 rounded-full border border-white/10 bg-white/5 hover:border-white/10/40 hover:bg-slate-100/10 transition-all duration-200"
               >
-                <span className="text-cyan-300 font-semibold text-sm">{source.name}</span>
+                <span className="text-slate-200 font-semibold text-sm">{source.name}</span>
                 <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 bg-slate-800 text-slate-200 text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none shadow-lg">
                   {source.description}
                 </div>
@@ -59,7 +59,7 @@ export default function TrustSignals() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto">
             {PLATFORM_STATS.map((stat) => (
               <div key={stat.label} className="glass-panel p-4 text-center">
-                <div className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-b from-white to-cyan-300">
+                <div className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-b from-white to-slate-300">
                   {stat.value}
                 </div>
                 <div className="text-slate-400 text-xs font-medium mt-1">{stat.label}</div>

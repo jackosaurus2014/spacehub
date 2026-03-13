@@ -460,7 +460,7 @@ function SolarExplorationContent() {
                   <select
                     value={statusFilter || ''}
                     onChange={(e) => setStatusFilter(e.target.value || null)}
-                    className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+                    className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                   >
                     <option value="">All Status</option>
                     {Object.entries(LANDER_STATUS_INFO).map(([value, info]) => (
@@ -474,7 +474,7 @@ function SolarExplorationContent() {
                   <select
                     value={typeFilter || ''}
                     onChange={(e) => setTypeFilter(e.target.value || null)}
-                    className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+                    className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                   >
                     <option value="">All Types</option>
                     {LANDER_MISSION_TYPES.map((type) => (

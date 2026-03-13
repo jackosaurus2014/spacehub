@@ -317,7 +317,7 @@ export default function CustomerDiscoveryPage() {
                     {keywords.map(kw => (
                       <span
                         key={kw}
-                        className="inline-flex items-center gap-1.5 px-3 py-1 bg-cyan-500/15 text-cyan-400 rounded-full text-sm border border-cyan-500/30"
+                        className="inline-flex items-center gap-1.5 px-3 py-1 bg-white/8 text-slate-300 rounded-full text-sm border border-white/10"
                       >
                         {kw}
                         <button
@@ -466,7 +466,7 @@ export default function CustomerDiscoveryPage() {
                                     </span>
                                   )}
                                   <span className="flex items-center gap-1.5">
-                                    <svg className="w-3.5 h-3.5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg className="w-3.5 h-3.5 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                                     </svg>
                                     <span className="text-slate-400">Decision cycle: {segment.decisionCycle}</span>
@@ -495,12 +495,12 @@ export default function CustomerDiscoveryPage() {
                                 {/* Matching tech needs */}
                                 {segment.matchingTechNeeds.length > 0 && (
                                   <div className="mb-3">
-                                    <span className="text-xs font-medium text-cyan-400 mr-2">Matching tech needs:</span>
+                                    <span className="text-xs font-medium text-slate-300 mr-2">Matching tech needs:</span>
                                     <div className="inline-flex flex-wrap gap-1.5 mt-1">
                                       {segment.matchingTechNeeds.map(need => (
                                         <span
                                           key={need}
-                                          className="text-xs px-2 py-0.5 rounded bg-cyan-500/15 text-cyan-300 border border-cyan-500/25"
+                                          className="text-xs px-2 py-0.5 rounded bg-white/8 text-slate-200 border border-white/15/25"
                                         >
                                           {need}
                                         </span>

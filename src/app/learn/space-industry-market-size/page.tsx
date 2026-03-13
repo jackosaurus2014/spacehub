@@ -247,9 +247,9 @@ export default function SpaceIndustryMarketSizePage() {
       <div className="container mx-auto px-4 max-w-4xl">
         {/* Breadcrumb */}
         <nav className="flex items-center gap-2 text-sm text-slate-400 pt-8 mb-8 overflow-x-auto" aria-label="Breadcrumb">
-          <Link href="/" className="hover:text-cyan-400 whitespace-nowrap min-h-[44px] flex items-center">Home</Link>
+          <Link href="/" className="hover:text-white whitespace-nowrap min-h-[44px] flex items-center">Home</Link>
           <span className="text-slate-600">/</span>
-          <Link href="/learn" className="hover:text-cyan-400 whitespace-nowrap min-h-[44px] flex items-center">Learn</Link>
+          <Link href="/learn" className="hover:text-white whitespace-nowrap min-h-[44px] flex items-center">Learn</Link>
           <span className="text-slate-600">/</span>
           <span className="text-slate-300 whitespace-nowrap">Space Economy</span>
         </nav>

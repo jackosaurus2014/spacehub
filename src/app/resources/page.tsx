@@ -127,7 +127,7 @@ export default function ResourcesPage() {
             placeholder="Search all resources..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-10 pr-10 py-3 bg-slate-800/60 border border-slate-700 rounded-lg text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 transition-colors"
+            className="w-full pl-10 pr-10 py-3 bg-slate-800/60 border border-slate-700 rounded-lg text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-white/20 focus:border-white/15 transition-colors"
           />
           {search && (
             <button onClick={() => setSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200">
@@ -147,9 +147,9 @@ export default function ResourcesPage() {
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {filtered.map((item) => (
-                  <Link key={item.href} href={item.href} className="group block bg-slate-900/60 border border-slate-800 rounded-xl p-5 hover:border-cyan-500/40 hover:bg-slate-900/80 transition-all hover:shadow-lg hover:shadow-cyan-500/5">
-                    <h3 className="text-base font-semibold text-slate-100 group-hover:text-cyan-300 transition-colors">{item.name}</h3>
-                    <p className="text-xs text-cyan-400/70 mt-0.5">{item.category}</p>
+                  <Link key={item.href} href={item.href} className="group block bg-slate-900/60 border border-slate-800 rounded-xl p-5 hover:border-white/15/40 hover:bg-slate-900/80 transition-all hover:shadow-lg hover:shadow-black/20/5">
+                    <h3 className="text-base font-semibold text-slate-100 group-hover:text-white transition-colors">{item.name}</h3>
+                    <p className="text-xs text-slate-300/70 mt-0.5">{item.category}</p>
                     <p className="text-sm text-slate-400 mt-2 line-clamp-2">{item.description}</p>
                   </Link>
                 ))}
@@ -173,10 +173,10 @@ export default function ResourcesPage() {
                   <p className="text-sm text-slate-400 mb-5 ml-10">{category.description}</p>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {category.items.map((item) => (
-                      <Link key={item.href} href={item.href} className="group block bg-slate-900/60 border border-slate-800 rounded-xl p-5 hover:border-cyan-500/40 hover:bg-slate-900/80 transition-all hover:shadow-lg hover:shadow-cyan-500/5">
+                      <Link key={item.href} href={item.href} className="group block bg-slate-900/60 border border-slate-800 rounded-xl p-5 hover:border-white/15/40 hover:bg-slate-900/80 transition-all hover:shadow-lg hover:shadow-black/20/5">
                         <div className="flex items-center justify-between mb-2">
-                          <h3 className="text-base font-semibold text-slate-100 group-hover:text-cyan-300 transition-colors">{item.name}</h3>
-                          <svg className="w-4 h-4 text-slate-600 group-hover:text-cyan-400 transition-all group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <h3 className="text-base font-semibold text-slate-100 group-hover:text-white transition-colors">{item.name}</h3>
+                          <svg className="w-4 h-4 text-slate-600 group-hover:text-white transition-all group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                           </svg>
                         </div>

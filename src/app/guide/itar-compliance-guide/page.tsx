@@ -189,9 +189,9 @@ export default function ItarComplianceGuidePage() {
                     <li key={item.id}>
                       <a
                         href={`#${item.id}`}
-                        className="flex items-start gap-2 text-star-300 hover:text-cyan-400 transition-colors"
+                        className="flex items-start gap-2 text-star-300 hover:text-white transition-colors"
                       >
-                        <span className="text-cyan-500/60 font-mono text-xs mt-0.5">
+                        <span className="text-slate-300/60 font-mono text-xs mt-0.5">
                           {String(i + 1).padStart(2, '0')}
                         </span>
                         {item.label}
@@ -262,15 +262,15 @@ export default function ItarComplianceGuidePage() {
 
                   <div className="card p-6 my-8">
                     <div className="space-y-4 text-sm">
-                      <div className="border-b border-cyan-400/10 pb-3">
-                        <span className="text-cyan-400 font-semibold">Defense Articles</span>
+                      <div className="border-b border-white/10/10 pb-3">
+                        <span className="text-slate-300 font-semibold">Defense Articles</span>
                         <p className="text-star-300 mt-1">
                           Physical items listed on the USML, including spacecraft, launch vehicles,
                           satellites, and associated components, parts, and accessories.
                         </p>
                       </div>
-                      <div className="border-b border-cyan-400/10 pb-3">
-                        <span className="text-cyan-400 font-semibold">Defense Services</span>
+                      <div className="border-b border-white/10/10 pb-3">
+                        <span className="text-slate-300 font-semibold">Defense Services</span>
                         <p className="text-star-300 mt-1">
                           The furnishing of assistance (including training) to foreign persons in the
                           design, development, engineering, manufacture, production, assembly, testing,
@@ -278,7 +278,7 @@ export default function ItarComplianceGuidePage() {
                         </p>
                       </div>
                       <div>
-                        <span className="text-cyan-400 font-semibold">Technical Data</span>
+                        <span className="text-slate-300 font-semibold">Technical Data</span>
                         <p className="text-star-300 mt-1">
                           Information required for the design, development, production, manufacture,
                           assembly, operation, repair, testing, or modification of defense articles.
@@ -375,7 +375,7 @@ export default function ItarComplianceGuidePage() {
                   </p>
 
                   <p className="mt-4">
-                    <Link href="/compliance" className="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+                    <Link href="/compliance" className="text-slate-300 hover:text-white underline underline-offset-2">
                       Track USML and regulatory changes on SpaceNexus Compliance Hub
                     </Link>
                   </p>
@@ -395,28 +395,28 @@ export default function ItarComplianceGuidePage() {
                     chain. The following types of entities are typically subject to ITAR:
                   </p>
 
-                  <div className="card p-6 my-8 border-l-4 border-l-cyan-400">
+                  <div className="card p-6 my-8 border-l-4 border-l-white/30">
                     <h3 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">
                       Entities Subject to ITAR
                     </h3>
                     <div className="space-y-3 text-sm text-star-200">
-                      <div className="border-b border-cyan-400/10 pb-2">
+                      <div className="border-b border-white/10/10 pb-2">
                         <strong className="text-white">Launch vehicle manufacturers</strong> -- Virtually all launch vehicle
                         technology remains USML-controlled.
                       </div>
-                      <div className="border-b border-cyan-400/10 pb-2">
+                      <div className="border-b border-white/10/10 pb-2">
                         <strong className="text-white">Satellite manufacturers</strong> -- Military/intelligence spacecraft
                         on USML; commercial satellites may be CCL (EAR) or USML depending on capabilities.
                       </div>
-                      <div className="border-b border-cyan-400/10 pb-2">
+                      <div className="border-b border-white/10/10 pb-2">
                         <strong className="text-white">Component suppliers</strong> -- Companies manufacturing space-qualified
                         components including propulsion, guidance, radiation-hardened electronics.
                       </div>
-                      <div className="border-b border-cyan-400/10 pb-2">
+                      <div className="border-b border-white/10/10 pb-2">
                         <strong className="text-white">Ground systems providers</strong> -- Providers of ground control
                         systems for USML-listed spacecraft.
                       </div>
-                      <div className="border-b border-cyan-400/10 pb-2">
+                      <div className="border-b border-white/10/10 pb-2">
                         <strong className="text-white">Engineering service providers</strong> -- Companies providing design,
                         testing, or integration services for USML articles.
                       </div>
@@ -635,29 +635,29 @@ export default function ItarComplianceGuidePage() {
                     </h3>
                     <table className="w-full text-sm">
                       <thead>
-                        <tr className="border-b border-cyan-400/20 text-left">
+                        <tr className="border-b border-white/10 text-left">
                           <th className="py-2 pr-4 text-star-300 font-medium">Aspect</th>
                           <th className="py-2 pr-4 text-star-300 font-medium">ITAR</th>
                           <th className="py-2 text-star-300 font-medium">EAR</th>
                         </tr>
                       </thead>
                       <tbody className="text-star-200">
-                        <tr className="border-b border-cyan-400/10">
+                        <tr className="border-b border-white/10/10">
                           <td className="py-2 pr-4 text-white font-medium">Agency</td>
                           <td className="py-2 pr-4">State Department (DDTC)</td>
                           <td className="py-2">Commerce Department (BIS)</td>
                         </tr>
-                        <tr className="border-b border-cyan-400/10">
+                        <tr className="border-b border-white/10/10">
                           <td className="py-2 pr-4 text-white font-medium">Control List</td>
                           <td className="py-2 pr-4">USML (21 categories)</td>
                           <td className="py-2">CCL (10 categories, ECCNs)</td>
                         </tr>
-                        <tr className="border-b border-cyan-400/10">
+                        <tr className="border-b border-white/10/10">
                           <td className="py-2 pr-4 text-white font-medium">Scope</td>
                           <td className="py-2 pr-4">Defense articles &amp; services</td>
                           <td className="py-2">Dual-use &amp; commercial items</td>
                         </tr>
-                        <tr className="border-b border-cyan-400/10">
+                        <tr className="border-b border-white/10/10">
                           <td className="py-2 pr-4 text-white font-medium">License Exceptions</td>
                           <td className="py-2 pr-4">Limited exemptions</td>
                           <td className="py-2">More license exceptions available</td>
@@ -836,11 +836,11 @@ export default function ItarComplianceGuidePage() {
                   </p>
 
                   <p className="mt-4">
-                    <Link href="/compliance" className="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+                    <Link href="/compliance" className="text-slate-300 hover:text-white underline underline-offset-2">
                       Manage regulatory compliance on SpaceNexus
                     </Link>
                     {' '}&middot;{' '}
-                    <Link href="/business-opportunities" className="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+                    <Link href="/business-opportunities" className="text-slate-300 hover:text-white underline underline-offset-2">
                       Track government contracts and procurement
                     </Link>
                   </p>
@@ -909,7 +909,7 @@ export default function ItarComplianceGuidePage() {
                   </p>
 
                   <p className="mt-4">
-                    <Link href="/space-defense" className="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+                    <Link href="/space-defense" className="text-slate-300 hover:text-white underline underline-offset-2">
                       Monitor defense and security space developments on SpaceNexus
                     </Link>
                   </p>
@@ -927,7 +927,7 @@ export default function ItarComplianceGuidePage() {
                   <p>
                     SpaceNexus provides regulatory and compliance tracking tools designed for space
                     industry professionals. Our{' '}
-                    <Link href="/compliance" className="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+                    <Link href="/compliance" className="text-slate-300 hover:text-white underline underline-offset-2">
                       Regulatory &amp; Compliance Hub
                     </Link>{' '}
                     tracks space law developments, regulatory filings, and licensing updates across
@@ -975,7 +975,7 @@ export default function ItarComplianceGuidePage() {
                         <span>{item.q}</span>
                         <span
                           aria-hidden="true"
-                          className="ml-4 shrink-0 text-cyan-400 transition-transform group-open:rotate-45 text-xl leading-none"
+                          className="ml-4 shrink-0 text-slate-300 transition-transform group-open:rotate-45 text-xl leading-none"
                         >
                           +
                         </span>

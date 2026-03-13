@@ -76,7 +76,7 @@ export default function CookieConsent() {
       {/* Banner container with dark space theme */}
       <div className="mx-4 mb-4 md:mx-auto md:max-w-4xl">
         <div
-          className="backdrop-blur-xl border border-cyan-400/30 rounded-2xl p-6
+          className="backdrop-blur-xl border border-white/10 rounded-2xl p-6
                      shadow-lg shadow-black/50"
           style={{
             background: `linear-gradient(145deg,
@@ -88,7 +88,7 @@ export default function CookieConsent() {
           }}
         >
           {/* Top gradient accent */}
-          <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-400/40 to-transparent rounded-t-2xl" />
+          <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent rounded-t-2xl" />
 
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             {/* Text content */}
@@ -107,7 +107,7 @@ export default function CookieConsent() {
                 You can accept or decline analytics cookies.{' '}
                 <Link
                   href="/privacy"
-                  className="text-cyan-400 hover:text-cyan-300 underline underline-offset-2 transition-colors"
+                  className="text-slate-300 hover:text-white underline underline-offset-2 transition-colors"
                 >
                   Learn more
                 </Link>
@@ -122,17 +122,17 @@ export default function CookieConsent() {
                          text-slate-300 border border-slate-500/50
                          hover:bg-slate-700/50 hover:border-slate-400/50
                          transition-all duration-200
-                         focus:outline-none focus:ring-2 focus:ring-cyan-400/50 focus:ring-offset-2 focus:ring-offset-slate-800"
+                         focus:outline-none focus:ring-2 focus:ring-white/20 focus:ring-offset-2 focus:ring-offset-slate-800"
               >
                 Decline
               </button>
               <button
                 onClick={handleAccept}
                 className="px-5 py-2.5 rounded-xl text-sm font-medium
-                         text-slate-900 bg-cyan-400
-                         hover:bg-cyan-300
+                         text-slate-900 bg-white
+                         hover:bg-slate-200
                          transition-all duration-200
-                         focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:ring-offset-2 focus:ring-offset-slate-800"
+                         focus:outline-none focus:ring-2 focus:ring-white/30 focus:ring-offset-2 focus:ring-offset-slate-800"
               >
                 Accept
               </button>

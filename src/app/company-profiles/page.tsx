@@ -117,7 +117,7 @@ function getSectorIcon(sector: string | null): string {
 function getTierBadge(tier: number) {
   const styles: Record<number, { bg: string; text: string; label: string }> = {
     1: { bg: 'bg-amber-500/20', text: 'text-amber-400', label: 'TIER 1' },
-    2: { bg: 'bg-cyan-500/20', text: 'text-cyan-400', label: 'TIER 2' },
+    2: { bg: 'bg-white/10', text: 'text-slate-300', label: 'TIER 2' },
     3: { bg: 'bg-purple-500/20', text: 'text-purple-400', label: 'TIER 3' },
   };
   const style = styles[tier] || styles[3];
@@ -147,7 +147,7 @@ function CompanyCardComponent({ company, index }: { company: CompanyCard; index:
         >
           {/* Animated gradient border on hover */}
           <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-            <div className="absolute inset-[-1px] rounded-xl bg-gradient-to-r from-cyan-500/30 via-purple-500/30 to-cyan-500/30 animate-pulse" />
+            <div className="absolute inset-[-1px] rounded-xl bg-gradient-to-r from-white/30 via-purple-500/30 to-slate-200/30 animate-pulse" />
             <div className="absolute inset-[1px] rounded-xl bg-slate-900/95" />
           </div>
 
@@ -163,12 +163,12 @@ function CompanyCardComponent({ company, index }: { company: CompanyCard; index:
                   )}
                 </div>
                 <div className="min-w-0">
-                  <h3 className="font-semibold text-white truncate group-hover:text-cyan-400 transition-colors">
+                  <h3 className="font-semibold text-white truncate group-hover:text-white transition-colors">
                     {company.name}
                   </h3>
                   <div className="flex items-center gap-2 text-xs text-slate-400">
                     {company.ticker && (
-                      <span className="font-mono text-cyan-400">{company.ticker}</span>
+                      <span className="font-mono text-slate-300">{company.ticker}</span>
                     )}
                     {company.headquarters && (
                       <span className="truncate">{company.headquarters}</span>
@@ -189,7 +189,7 @@ function CompanyCardComponent({ company, index }: { company: CompanyCard; index:
             </p>
 
             {company.sponsorTagline && (
-              <p className="text-xs text-cyan-300/80 italic mb-2">{company.sponsorTagline}</p>
+              <p className="text-xs text-slate-200/80 italic mb-2">{company.sponsorTagline}</p>
             )}
 
             {/* Key Metrics Row */}
@@ -414,7 +414,7 @@ export default function CompanyProfilesPage() {
       {/* Stats Bar */}
       {stats && (
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
-          <StatCard label="Companies Tracked" value={stats.totalCompanies.toString()} icon="🏢" color="bg-cyan-500/20" />
+          <StatCard label="Companies Tracked" value={stats.totalCompanies.toString()} icon="🏢" color="bg-white/10" />
           <StatCard label="Funding Tracked" value={formatMoney(stats.totalFundingTracked)} icon="💰" color="bg-emerald-500/20" />
           <StatCard label="Market Cap Tracked" value={formatMoney(stats.totalMarketCap)} icon="📈" color="bg-blue-500/20" />
           <StatCard label="Avg Completeness" value={`${stats.avgCompleteness}%`} icon="📊" color="bg-purple-500/20" />
@@ -433,7 +433,7 @@ export default function CompanyProfilesPage() {
                 placeholder="Search companies by name, ticker, or location..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-10 pr-4 bg-slate-800 border border-slate-700 text-white rounded-lg py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+                className="w-full pl-10 pr-4 bg-slate-800 border border-slate-700 text-white rounded-lg py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
               />
               <svg className="absolute left-3 top-3 w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -445,7 +445,7 @@ export default function CompanyProfilesPage() {
               aria-label="Filter by sector"
               value={sector}
               onChange={(e) => setSector(e.target.value)}
-              className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+              className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
             >
               {SECTOR_OPTIONS.map(opt => (
                 <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -456,7 +456,7 @@ export default function CompanyProfilesPage() {
               aria-label="Filter by tier"
               value={tier}
               onChange={(e) => setTier(e.target.value)}
-              className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+              className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
             >
               {TIER_OPTIONS.map(opt => (
                 <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -467,7 +467,7 @@ export default function CompanyProfilesPage() {
               aria-label="Filter by status"
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+              className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
             >
               {STATUS_OPTIONS.map(opt => (
                 <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -483,7 +483,7 @@ export default function CompanyProfilesPage() {
                 setSortBy(field);
                 setSortOrder(order);
               }}
-              className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+              className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
             >
               <option value="tier-asc">Sort: Tier (1→3)</option>
               <option value="name-asc">Sort: Name (A→Z)</option>
@@ -499,7 +499,7 @@ export default function CompanyProfilesPage() {
               <button
                 onClick={() => setViewMode('grid')}
                 aria-label="Grid view"
-                className={`min-w-[44px] min-h-[44px] px-3 py-2.5 text-sm transition-colors flex items-center justify-center ${viewMode === 'grid' ? 'bg-cyan-500/20 text-cyan-400' : 'text-slate-400 hover:text-white'}`}
+                className={`min-w-[44px] min-h-[44px] px-3 py-2.5 text-sm transition-colors flex items-center justify-center ${viewMode === 'grid' ? 'bg-white/10 text-slate-300' : 'text-slate-400 hover:text-white'}`}
               >
                 <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 16 16">
                   <path d="M1 2.5A1.5 1.5 0 012.5 1h3A1.5 1.5 0 017 2.5v3A1.5 1.5 0 015.5 7h-3A1.5 1.5 0 011 5.5v-3zm8 0A1.5 1.5 0 0110.5 1h3A1.5 1.5 0 0115 2.5v3A1.5 1.5 0 0113.5 7h-3A1.5 1.5 0 019 5.5v-3zm-8 8A1.5 1.5 0 012.5 9h3A1.5 1.5 0 017 10.5v3A1.5 1.5 0 015.5 15h-3A1.5 1.5 0 011 13.5v-3zm8 0A1.5 1.5 0 0110.5 9h3a1.5 1.5 0 011.5 1.5v3a1.5 1.5 0 01-1.5 1.5h-3A1.5 1.5 0 019 13.5v-3z"/>
@@ -508,7 +508,7 @@ export default function CompanyProfilesPage() {
               <button
                 onClick={() => setViewMode('list')}
                 aria-label="List view"
-                className={`min-w-[44px] min-h-[44px] px-3 py-2.5 text-sm transition-colors flex items-center justify-center ${viewMode === 'list' ? 'bg-cyan-500/20 text-cyan-400' : 'text-slate-400 hover:text-white'}`}
+                className={`min-w-[44px] min-h-[44px] px-3 py-2.5 text-sm transition-colors flex items-center justify-center ${viewMode === 'list' ? 'bg-white/10 text-slate-300' : 'text-slate-400 hover:text-white'}`}
               >
                 <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 16 16">
                   <path fillRule="evenodd" d="M2.5 12a.5.5 0 01.5-.5h10a.5.5 0 010 1H3a.5.5 0 01-.5-.5zm0-4a.5.5 0 01.5-.5h10a.5.5 0 010 1H3a.5.5 0 01-.5-.5zm0-4a.5.5 0 01.5-.5h10a.5.5 0 010 1H3a.5.5 0 01-.5-.5z"/>
@@ -539,7 +539,7 @@ export default function CompanyProfilesPage() {
                     <button
                       key={s.sector}
                       onClick={() => setSector(s.sector || '')}
-                      className="px-3 py-1.5 min-h-[44px] rounded bg-slate-800/50 hover:bg-slate-700/50 transition-colors whitespace-nowrap flex-shrink-0 text-xs focus:outline-none focus:ring-2 focus:ring-cyan-400/50"
+                      className="px-3 py-1.5 min-h-[44px] rounded bg-slate-800/50 hover:bg-slate-700/50 transition-colors whitespace-nowrap flex-shrink-0 text-xs focus:outline-none focus:ring-2 focus:ring-white/20"
                     >
                       {getSectorIcon(s.sector)} {s.sector} ({s.count})
                     </button>
@@ -642,11 +642,11 @@ export default function CompanyProfilesPage() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
-                        <span className="font-semibold text-white group-hover:text-cyan-400 transition-colors truncate">
+                        <span className="font-semibold text-white group-hover:text-white transition-colors truncate">
                           {company.name}
                         </span>
                         {company.ticker && (
-                          <span className="text-xs font-mono text-cyan-400">{company.ticker}</span>
+                          <span className="text-xs font-mono text-slate-300">{company.ticker}</span>
                         )}
                         {getTierBadge(company.tier)}
                         {company.sponsorTier && <SponsorBadge tier={company.sponsorTier as 'verified' | 'premium'} />}
@@ -675,7 +675,7 @@ export default function CompanyProfilesPage() {
                         </div>
                       )}
                     </div>
-                    <svg className="w-4 h-4 text-slate-600 group-hover:text-cyan-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-4 h-4 text-slate-600 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                     </svg>
                   </motion.div>
@@ -692,7 +692,7 @@ export default function CompanyProfilesPage() {
           <button
             onClick={loadMore}
             disabled={loadingMore}
-            className="px-8 py-3 bg-slate-800/80 hover:bg-slate-700/80 border border-slate-600/50 hover:border-cyan-500/30 text-slate-300 hover:text-cyan-300 rounded-xl transition-all duration-200 font-medium text-sm flex items-center gap-2 disabled:opacity-50"
+            className="px-8 py-3 bg-slate-800/80 hover:bg-slate-700/80 border border-slate-600/50 hover:border-white/10 text-slate-300 hover:text-white rounded-xl transition-all duration-200 font-medium text-sm flex items-center gap-2 disabled:opacity-50"
           >
             {loadingMore ? (
               <>

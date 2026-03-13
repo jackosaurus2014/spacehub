@@ -184,7 +184,7 @@ function ApiKeyCard({
       <div className="flex items-center justify-between mb-3">
         <div>
           <h4 className="font-semibold text-white">{apiKey.name}</h4>
-          <code className="text-sm text-cyan-400 font-mono">{apiKey.keyPrefix}...</code>
+          <code className="text-sm text-slate-300 font-mono">{apiKey.keyPrefix}...</code>
         </div>
         <div className="flex items-center gap-2">
           <span
@@ -403,13 +403,13 @@ export default function DeveloperPortalPage() {
     <div className="min-h-screen bg-slate-950 text-white">
       {/* Hero Section */}
       <div className="relative overflow-hidden border-b border-slate-800">
-        <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-transparent to-blue-500/10" />
+        <div className="absolute inset-0 bg-gradient-to-br from-white/5 via-transparent to-blue-500/10" />
         <div className="max-w-7xl mx-auto px-4 py-16 relative">
           <ScrollReveal>
           <div className="text-center">
             <h1 className="text-4xl md:text-5xl font-bold mb-4">
               SpaceNexus{' '}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-slate-300 to-blue-500">
                 Developer API
               </span>
             </h1>
@@ -421,27 +421,27 @@ export default function DeveloperPortalPage() {
               {session?.user ? (
                 <button
                   onClick={() => setActiveTab('keys')}
-                  className="px-6 py-3 bg-cyan-500 hover:bg-cyan-400 text-slate-900 font-semibold rounded-lg transition-colors"
+                  className="px-6 py-3 bg-white hover:bg-slate-100 text-slate-900 font-semibold rounded-lg transition-colors"
                 >
                   Manage API Keys
                 </button>
               ) : (
                 <Link
                   href="/register"
-                  className="px-6 py-3 bg-cyan-500 hover:bg-cyan-400 text-slate-900 font-semibold rounded-lg transition-colors"
+                  className="px-6 py-3 bg-white hover:bg-slate-100 text-slate-900 font-semibold rounded-lg transition-colors"
                 >
                   Create Account
                 </Link>
               )}
               <Link
                 href="/developer/docs"
-                className="px-6 py-3 border border-slate-600 hover:border-cyan-500 text-slate-300 hover:text-cyan-400 rounded-lg transition-colors"
+                className="px-6 py-3 border border-slate-600 hover:border-white/15 text-slate-300 hover:text-white rounded-lg transition-colors"
               >
                 API Docs
               </Link>
               <Link
                 href="/developer/explorer"
-                className="px-6 py-3 border border-slate-600 hover:border-cyan-500 text-slate-300 hover:text-cyan-400 rounded-lg transition-colors"
+                className="px-6 py-3 border border-slate-600 hover:border-white/15 text-slate-300 hover:text-white rounded-lg transition-colors"
               >
                 API Explorer
               </Link>
@@ -461,7 +461,7 @@ export default function DeveloperPortalPage() {
                 onClick={() => setActiveTab(tab)}
                 className={`px-4 py-3 text-sm font-medium capitalize transition-colors border-b-2 ${
                   activeTab === tab
-                    ? 'text-cyan-400 border-cyan-400'
+                    ? 'text-slate-300 border-white/10'
                     : 'text-slate-400 border-transparent hover:text-slate-300'
                 }`}
               >
@@ -501,7 +501,7 @@ export default function DeveloperPortalPage() {
                 ].map((item) => (
                   <StaggerItem key={item.step}>
                     <div className="card p-6">
-                      <div className="w-10 h-10 rounded-full bg-cyan-500/20 text-cyan-400 flex items-center justify-center font-bold text-lg mb-4">
+                      <div className="w-10 h-10 rounded-full bg-white/10 text-slate-300 flex items-center justify-center font-bold text-lg mb-4">
                         {item.step}
                       </div>
                       <h3 className="text-lg font-semibold text-white mb-2">{item.title}</h3>
@@ -528,7 +528,7 @@ export default function DeveloperPortalPage() {
                 ].map((f) => (
                   <StaggerItem key={f.title}>
                     <div className="card p-4">
-                      <h3 className="font-semibold text-cyan-400 mb-1">{f.title}</h3>
+                      <h3 className="font-semibold text-slate-300 mb-1">{f.title}</h3>
                       <p className="text-sm text-slate-400">{f.desc}</p>
                     </div>
                   </StaggerItem>
@@ -547,19 +547,19 @@ export default function DeveloperPortalPage() {
                     <div
                       className={`border rounded-lg p-6 ${
                         tier.highlighted
-                          ? 'border-cyan-500 bg-cyan-500/5 relative'
+                          ? 'border-white/15 bg-white/5 relative'
                           : 'border-slate-700 bg-slate-800/30'
                       }`}
                     >
                       {tier.highlighted && (
                         <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                          <span className="bg-cyan-500 text-slate-900 text-xs font-semibold px-3 py-1 rounded-full">
+                          <span className="bg-white text-slate-900 text-xs font-semibold px-3 py-1 rounded-full">
                             Recommended
                           </span>
                         </div>
                       )}
                       <h3 className="text-xl font-bold mb-1">{tier.name}</h3>
-                      <p className="text-sm text-cyan-400 mb-4">{tier.price}</p>
+                      <p className="text-sm text-slate-300 mb-4">{tier.price}</p>
                       <div className="mb-4">
                         <div className="text-3xl font-bold">
                           {tier.monthlyLimit}
@@ -572,7 +572,7 @@ export default function DeveloperPortalPage() {
                       <ul className="space-y-2">
                         {tier.features.map((f) => (
                           <li key={f} className="flex items-start gap-2 text-sm text-slate-300">
-                            <svg className="w-4 h-4 text-cyan-400 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <svg className="w-4 h-4 text-slate-300 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                             </svg>
                             {f}
@@ -584,7 +584,7 @@ export default function DeveloperPortalPage() {
                 ))}
               </StaggerContainer>
               <p className="text-sm text-slate-500 mt-4 text-center">
-                API access is included with your SpaceNexus subscription. <Link href="/pricing" className="text-cyan-400 hover:text-cyan-300">View subscription plans</Link>
+                API access is included with your SpaceNexus subscription. <Link href="/pricing" className="text-slate-300 hover:text-white">View subscription plans</Link>
               </p>
             </section>
             </ScrollReveal>
@@ -601,7 +601,7 @@ export default function DeveloperPortalPage() {
                 <p className="text-slate-400 mb-4">Sign in to manage your API keys.</p>
                 <Link
                   href="/login"
-                  className="inline-block px-6 py-3 bg-cyan-500 hover:bg-cyan-400 text-slate-900 font-semibold rounded-lg transition-colors"
+                  className="inline-block px-6 py-3 bg-white hover:bg-slate-100 text-slate-900 font-semibold rounded-lg transition-colors"
                 >
                   Sign In
                 </Link>
@@ -617,13 +617,13 @@ export default function DeveloperPortalPage() {
                       placeholder="Key name (e.g., Production, Development)"
                       value={newKeyName}
                       onChange={(e) => setNewKeyName(e.target.value)}
-                      className="flex-1 bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+                      className="flex-1 bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                       maxLength={100}
                     />
                     <button
                       onClick={handleCreateKey}
                       disabled={creatingKey || !newKeyName.trim()}
-                      className="px-4 py-2 bg-cyan-500 hover:bg-cyan-400 disabled:opacity-50 disabled:cursor-not-allowed text-slate-900 font-semibold rounded-lg transition-colors"
+                      className="px-4 py-2 bg-white hover:bg-slate-100 disabled:opacity-50 disabled:cursor-not-allowed text-slate-900 font-semibold rounded-lg transition-colors"
                     >
                       {creatingKey ? 'Creating...' : 'Create Key'}
                     </button>
@@ -663,7 +663,7 @@ export default function DeveloperPortalPage() {
                 <p className="text-slate-400 mb-4">Sign in to view your usage analytics.</p>
                 <Link
                   href="/login"
-                  className="inline-block px-6 py-3 bg-cyan-500 hover:bg-cyan-400 text-slate-900 font-semibold rounded-lg transition-colors"
+                  className="inline-block px-6 py-3 bg-white hover:bg-slate-100 text-slate-900 font-semibold rounded-lg transition-colors"
                 >
                   Sign In
                 </Link>
@@ -719,7 +719,7 @@ export default function DeveloperPortalPage() {
                             title={`${day.date}: ${day.calls} calls (${day.errors} errors)`}
                           >
                             <div
-                              className="bg-cyan-500/60 hover:bg-cyan-400/80 rounded-t transition-colors"
+                              className="bg-white/60 hover:bg-slate-100/80 rounded-t transition-colors"
                               style={{ height: `${Math.max(height, 2)}%` }}
                             />
                             <div className="hidden group-hover:block absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-2 py-1 bg-slate-700 text-xs text-white rounded whitespace-nowrap z-10">
@@ -743,12 +743,12 @@ export default function DeveloperPortalPage() {
                         return (
                           <div key={ep.endpoint}>
                             <div className="flex items-center justify-between text-sm mb-1">
-                              <code className="text-cyan-400">{ep.endpoint}</code>
+                              <code className="text-slate-300">{ep.endpoint}</code>
                               <span className="text-slate-400">{ep.count.toLocaleString()}</span>
                             </div>
                             <div className="w-full bg-slate-700 rounded-full h-1.5">
                               <div
-                                className="bg-cyan-500 h-1.5 rounded-full"
+                                className="bg-white h-1.5 rounded-full"
                                 style={{ width: `${width}%` }}
                               />
                             </div>
@@ -771,7 +771,7 @@ export default function DeveloperPortalPage() {
             {/* Authentication */}
             <ScrollReveal>
             <section className="card p-6">
-              <h3 className="text-lg font-semibold text-cyan-400 mb-3">Authentication</h3>
+              <h3 className="text-lg font-semibold text-slate-300 mb-3">Authentication</h3>
               <p className="text-slate-300 mb-3">
                 All API requests require authentication via an API key. Pass your key using either method:
               </p>
@@ -790,7 +790,7 @@ export default function DeveloperPortalPage() {
             {/* Response Format */}
             <ScrollReveal>
             <section className="card p-6">
-              <h3 className="text-lg font-semibold text-cyan-400 mb-3">Response Format</h3>
+              <h3 className="text-lg font-semibold text-slate-300 mb-3">Response Format</h3>
               <p className="text-slate-300 mb-3">
                 All successful responses follow a consistent format:
               </p>
@@ -821,7 +821,7 @@ export default function DeveloperPortalPage() {
             {/* Rate Limit Headers */}
             <ScrollReveal>
             <section className="card p-6">
-              <h3 className="text-lg font-semibold text-cyan-400 mb-3">Rate Limit Headers</h3>
+              <h3 className="text-lg font-semibold text-slate-300 mb-3">Rate Limit Headers</h3>
               <p className="text-slate-300 mb-3">
                 Every response includes rate limit information:
               </p>
@@ -837,7 +837,7 @@ export default function DeveloperPortalPage() {
             {/* Available Endpoints */}
             <ScrollReveal>
             <section className="card p-6">
-              <h3 className="text-lg font-semibold text-cyan-400 mb-3">Available Endpoints</h3>
+              <h3 className="text-lg font-semibold text-slate-300 mb-3">Available Endpoints</h3>
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
@@ -862,7 +862,7 @@ export default function DeveloperPortalPage() {
                     ].map((ep) => (
                       <tr key={ep.path} className="border-b border-slate-700/50">
                         <td className="py-2 pr-4">
-                          <code className="text-cyan-400">{ep.path}</code>
+                          <code className="text-slate-300">{ep.path}</code>
                         </td>
                         <td className="py-2 pr-4">{ep.desc}</td>
                         <td className="py-2">
@@ -881,7 +881,7 @@ export default function DeveloperPortalPage() {
             {/* Code Examples */}
             <ScrollReveal>
             <section className="card p-6">
-              <h3 className="text-lg font-semibold text-cyan-400 mb-3">Code Examples</h3>
+              <h3 className="text-lg font-semibold text-slate-300 mb-3">Code Examples</h3>
               <div className="flex gap-2 mb-4">
                 {(['curl', 'javascript', 'axios', 'python'] as const).map((lang) => (
                   <button
@@ -889,7 +889,7 @@ export default function DeveloperPortalPage() {
                     onClick={() => setCodeLanguage(lang)}
                     className={`px-3 py-1.5 text-sm rounded ${
                       codeLanguage === lang
-                        ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/50'
+                        ? 'bg-white/10 text-slate-300 border border-white/15'
                         : 'bg-slate-700 text-slate-400 hover:text-slate-300 border border-transparent'
                     }`}
                   >
@@ -919,13 +919,13 @@ export default function DeveloperPortalPage() {
               <div className="flex items-center justify-center gap-4 flex-wrap">
                 <Link
                   href="/developer/docs"
-                  className="inline-block px-6 py-3 bg-cyan-500 hover:bg-cyan-400 text-slate-900 font-semibold rounded-lg transition-colors"
+                  className="inline-block px-6 py-3 bg-white hover:bg-slate-100 text-slate-900 font-semibold rounded-lg transition-colors"
                 >
                   Full API Docs
                 </Link>
                 <Link
                   href="/developer/explorer"
-                  className="inline-block px-6 py-3 border border-slate-600 hover:border-cyan-500 text-slate-300 hover:text-cyan-400 font-semibold rounded-lg transition-colors"
+                  className="inline-block px-6 py-3 border border-slate-600 hover:border-white/15 text-slate-300 hover:text-white font-semibold rounded-lg transition-colors"
                 >
                   API Explorer
                 </Link>
@@ -933,7 +933,7 @@ export default function DeveloperPortalPage() {
                   href="/api/v1/openapi.json"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-block px-6 py-3 border border-slate-600 hover:border-cyan-500 text-slate-300 hover:text-cyan-400 font-semibold rounded-lg transition-colors"
+                  className="inline-block px-6 py-3 border border-slate-600 hover:border-white/15 text-slate-300 hover:text-white font-semibold rounded-lg transition-colors"
                 >
                   OpenAPI Spec
                 </a>

@@ -11,7 +11,7 @@ const TESTIMONIALS = [
     company: "Orbital Systems Inc.",
     persona: "Executive",
     initials: "SC",
-    gradient: "from-cyan-500 to-blue-600",
+    gradient: "from-white to-blue-600",
   },
   {
     quote: "The mission planning calculators saved our team weeks of work. The orbital mechanics and thermal analysis tools are genuinely useful.",
@@ -153,7 +153,7 @@ export default function SocialProof() {
         {/* Section Header */}
         <div className="text-center mb-14">
           <motion.p
-            className="text-sm font-semibold uppercase tracking-widest text-cyan-400 mb-3"
+            className="text-sm font-semibold uppercase tracking-widest text-slate-300 mb-3"
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -168,7 +168,7 @@ export default function SocialProof() {
             viewport={{ once: true }}
             transition={{ duration: 0.4, delay: 0.1 }}
           >
-            Trusted by Space Industry Leaders
+            What Space Professionals Are Saying
           </motion.h2>
           <motion.p
             className="text-slate-400 text-lg max-w-2xl mx-auto"
@@ -177,7 +177,7 @@ export default function SocialProof() {
             viewport={{ once: true }}
             transition={{ duration: 0.4, delay: 0.15 }}
           >
-            From executives to engineers to investors, SpaceNexus is the platform teams rely on daily.
+            SpaceNexus brings together real-time data, analytics, and tools for every role in the space industry.
           </motion.p>
           <div className="gradient-line max-w-xs mx-auto mt-5" />
         </div>
@@ -199,11 +199,11 @@ export default function SocialProof() {
               data-index={i}
             >
               {/* Gradient border effect */}
-              <div className="absolute -inset-[1px] rounded-2xl bg-gradient-to-b from-slate-600/40 via-slate-700/20 to-slate-800/10 group-hover:from-cyan-500/30 group-hover:via-blue-500/15 group-hover:to-transparent transition-all duration-500" />
+              <div className="absolute -inset-[1px] rounded-2xl bg-gradient-to-b from-slate-600/40 via-slate-700/20 to-slate-800/10 group-hover:from-white/30 group-hover:via-blue-500/15 group-hover:to-transparent transition-all duration-500" />
 
               <div className="relative card p-7 rounded-2xl backdrop-blur-sm h-full flex flex-col">
                 {/* Large decorative quotation mark */}
-                <div className="absolute top-4 right-5 text-6xl font-serif leading-none text-cyan-500/[0.07] select-none pointer-events-none">
+                <div className="absolute top-4 right-5 text-6xl font-serif leading-none text-slate-300/[0.07] select-none pointer-events-none">
                   &ldquo;
                 </div>
 
@@ -212,9 +212,9 @@ export default function SocialProof() {
 
                 {/* Quote */}
                 <p className="text-slate-300 leading-relaxed mb-6 flex-1 relative z-10">
-                  <span className="text-cyan-400 text-xl font-serif">&ldquo;</span>
+                  <span className="text-slate-300 text-xl font-serif">&ldquo;</span>
                   {t.quote}
-                  <span className="text-cyan-400 text-xl font-serif">&rdquo;</span>
+                  <span className="text-slate-300 text-xl font-serif">&rdquo;</span>
                 </p>
 
                 {/* Divider */}
@@ -230,7 +230,7 @@ export default function SocialProof() {
                     <p className="text-sm font-semibold text-white truncate">{t.name}</p>
                     <p className="text-xs text-slate-400 truncate">{t.title}, {t.company}</p>
                   </div>
-                  <span className="text-[10px] font-semibold uppercase tracking-wider px-2 py-1 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 shrink-0">
+                  <span className="text-[10px] font-semibold uppercase tracking-wider px-2 py-1 rounded-full bg-white/5 text-slate-300 border border-white/10 shrink-0">
                     {t.persona}
                   </span>
                 </div>
@@ -246,7 +246,7 @@ export default function SocialProof() {
               key={i}
               className={`w-2 h-2 rounded-full transition-all duration-300 ${
                 activeCard === i
-                  ? 'bg-cyan-400 w-6'
+                  ? 'bg-white w-6'
                   : 'bg-slate-600 hover:bg-slate-500'
               }`}
               onClick={() => scrollToCard(i)}
@@ -264,7 +264,7 @@ export default function SocialProof() {
           transition={{ duration: 0.5 }}
         >
           <p className="text-center text-sm font-semibold text-slate-500 uppercase tracking-widest mb-5">
-            Trusted by professionals from
+            Built for professionals across
           </p>
           <div className="flex flex-wrap justify-center gap-3">
             {['Aerospace Firms', 'Government Agencies', 'Venture Capital', 'Defense', 'Startups', 'Universities'].map((label) => (
@@ -286,9 +286,9 @@ export default function SocialProof() {
           viewport={{ once: true, amount: 0.4 }}
           transition={{ duration: 0.5 }}
         >
-          <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/[0.04] via-transparent to-blue-500/[0.04] pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-r from-white/[0.04] via-transparent to-blue-500/[0.04] pointer-events-none" />
           <p className="text-center text-lg font-bold text-white mb-6 relative z-10">
-            Join <span className="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">10,000+</span> space professionals
+            The space intelligence platform
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-center relative z-10">
             {[
@@ -297,7 +297,7 @@ export default function SocialProof() {
               { stat: '30+', label: 'Intelligence Modules' },
             ].map((item) => (
               <div key={item.label} className="group/usage">
-                <p className="text-2xl md:text-3xl font-bold text-white group-hover/usage:text-cyan-400 transition-colors duration-200">
+                <p className="text-2xl md:text-3xl font-bold text-white group-hover/usage:text-slate-300 transition-colors duration-200">
                   {item.stat}
                 </p>
                 <p className="text-sm text-slate-400 mt-1 font-medium">{item.label}</p>
@@ -316,7 +316,7 @@ export default function SocialProof() {
           transition={{ duration: 0.5 }}
         >
           {/* Subtle background gradient */}
-          <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/[0.03] via-transparent to-blue-500/[0.03] pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-r from-white/[0.03] via-transparent to-blue-500/[0.03] pointer-events-none" />
 
           <h3 className="text-center text-sm font-semibold text-slate-500 mb-6 uppercase tracking-widest relative z-10">
             SpaceNexus by the Numbers
@@ -324,7 +324,7 @@ export default function SocialProof() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center relative z-10">
             {STATS.map((s) => (
               <div key={s.label} className="group/stat">
-                <p className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent group-hover/stat:from-cyan-300 group-hover/stat:to-blue-400 transition-all duration-300">
+                <p className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-slate-300 to-blue-500 bg-clip-text text-transparent group-hover/stat:from-white group-hover/stat:to-blue-400 transition-all duration-300">
                   <AnimatedCounter value={s.value} prefix={s.prefix} suffix={s.suffix} inView={statsInView} />
                 </p>
                 <p className="text-sm text-slate-400 mt-1.5 font-medium">{s.label}</p>

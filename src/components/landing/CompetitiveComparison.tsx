@@ -13,7 +13,7 @@ const FEATURES = [
 ];
 
 function CellValue({ value }: { value: boolean | string }) {
-  if (value === true) return <span className="text-cyan-400 font-semibold">Included</span>;
+  if (value === true) return <span className="text-slate-300 font-semibold">Included</span>;
   if (value === false) return <span className="text-slate-500">Not available</span>;
   return <span className="text-slate-400">{value}</span>;
 }
@@ -43,7 +43,7 @@ export default function CompetitiveComparison() {
                   <th className="text-left text-slate-400 font-medium p-4 w-[34%]">Feature</th>
                   <th className="text-center text-slate-400 font-medium p-4 w-[22%]">Traditional Consulting</th>
                   <th className="text-center text-slate-400 font-medium p-4 w-[22%]">Bloomberg Terminal</th>
-                  <th className="text-center p-4 w-[22%] bg-cyan-500/5 border-x border-cyan-500/20 text-cyan-300 font-semibold">
+                  <th className="text-center p-4 w-[22%] bg-white/5 border-x border-white/10 text-slate-200 font-semibold">
                     SpaceNexus
                   </th>
                 </tr>
@@ -54,7 +54,7 @@ export default function CompetitiveComparison() {
                     <td className="p-4 text-slate-300 font-medium">{row.feature}</td>
                     <td className="p-4 text-center text-slate-400">{row.consulting}</td>
                     <td className="p-4 text-center"><CellValue value={row.bloomberg} /></td>
-                    <td className="p-4 text-center bg-cyan-500/5 border-x border-cyan-500/20">
+                    <td className="p-4 text-center bg-white/5 border-x border-white/10">
                       <CellValue value={row.spacenexus} />
                     </td>
                   </tr>
@@ -64,8 +64,8 @@ export default function CompetitiveComparison() {
                   <td className="p-4 text-white font-semibold">Starting Price</td>
                   <td className="p-4 text-center text-slate-300 font-medium">$5,000/project</td>
                   <td className="p-4 text-center text-slate-300 font-medium">$2,000+/month</td>
-                  <td className="p-4 text-center bg-cyan-500/5 border-x border-cyan-500/20">
-                    <span className="text-2xl font-bold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
+                  <td className="p-4 text-center bg-white/5 border-x border-white/10">
+                    <span className="text-2xl font-bold bg-gradient-to-r from-slate-300 to-blue-400 bg-clip-text text-transparent">
                       Free
                     </span>
                   </td>
@@ -90,8 +90,8 @@ export default function CompetitiveComparison() {
                     <span className="text-slate-500">Bloomberg</span>
                     <CellValue value={row.bloomberg} />
                   </div>
-                  <div className="flex justify-between border-t border-cyan-500/20 pt-2 mt-2">
-                    <span className="text-cyan-300 font-medium">SpaceNexus</span>
+                  <div className="flex justify-between border-t border-white/10 pt-2 mt-2">
+                    <span className="text-slate-200 font-medium">SpaceNexus</span>
                     <CellValue value={row.spacenexus} />
                   </div>
                 </div>
@@ -100,9 +100,9 @@ export default function CompetitiveComparison() {
           ))}
           {/* Mobile price card */}
           <ScrollReveal delay={FEATURES.length * 0.07}>
-            <div className="rounded-xl border border-cyan-500/30 bg-cyan-500/5 p-4 text-center">
+            <div className="rounded-xl border border-white/10 bg-white/5 p-4 text-center">
               <p className="text-slate-400 text-sm mb-1">Others start at $2,000-$5,000+</p>
-              <p className="text-3xl font-bold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
+              <p className="text-3xl font-bold bg-gradient-to-r from-slate-300 to-blue-400 bg-clip-text text-transparent">
                 SpaceNexus is Free
               </p>
             </div>
@@ -114,7 +114,7 @@ export default function CompetitiveComparison() {
           <div className="text-center mt-10">
             <Link
               href="/register"
-              className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-semibold hover:from-cyan-400 hover:to-blue-500 transition-all duration-300 shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40"
+              className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl bg-gradient-to-r from-white to-blue-600 text-white font-semibold hover:from-slate-300 hover:to-blue-500 transition-all duration-300 shadow-lg shadow-black/20/25 hover:shadow-black/20/40"
             >
               Start Free Today
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

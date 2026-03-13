@@ -63,7 +63,7 @@ export default function WidgetContent({ moduleId, widgetType }: WidgetContentPro
         <p className="text-slate-400 text-sm">{error}</p>
         <Link
           href={MODULE_ROUTES[moduleId] || '#'}
-          className="text-cyan-400 hover:text-cyan-300 text-sm mt-2 underline"
+          className="text-slate-300 hover:text-white text-sm mt-2 underline"
         >
           Open full module
         </Link>
@@ -104,7 +104,7 @@ export default function WidgetContent({ moduleId, widgetType }: WidgetContentPro
               <Link
                 key={item.id}
                 href={item.url || moduleRoute}
-                className="block p-2.5 rounded-lg bg-slate-800/50 border border-slate-700/50 hover:border-cyan-400/40 transition-colors"
+                className="block p-2.5 rounded-lg bg-slate-800/50 border border-slate-700/50 hover:border-white/10/40 transition-colors"
               >
                 <p className="text-sm font-medium text-slate-100 line-clamp-2">{item.title}</p>
                 {item.subtitle && (
@@ -126,14 +126,14 @@ export default function WidgetContent({ moduleId, widgetType }: WidgetContentPro
             {[40, 65, 50, 80, 45, 70, 55, 90, 60, 75, 85, 50].map((h, i) => (
               <div
                 key={i}
-                className="flex-1 bg-gradient-to-t from-cyan-500/60 to-cyan-400/30 rounded-t"
+                className="flex-1 bg-gradient-to-t from-white/60 to-slate-400/30 rounded-t"
                 style={{ height: `${h}%` }}
               />
             ))}
           </div>
           <p className="text-xs text-slate-400 mt-3">
             View full chart in{' '}
-            <Link href={moduleRoute} className="text-cyan-400 hover:underline">
+            <Link href={moduleRoute} className="text-slate-300 hover:underline">
               module
             </Link>
           </p>
@@ -157,7 +157,7 @@ export default function WidgetContent({ moduleId, widgetType }: WidgetContentPro
             <div className="space-y-1.5">
               {items.slice(0, 3).map((item) => (
                 <div key={item.id} className="flex items-center gap-2 text-sm">
-                  <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 flex-shrink-0" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-white flex-shrink-0" />
                   <span className="text-slate-300 truncate">{item.title}</span>
                 </div>
               ))}
@@ -165,7 +165,7 @@ export default function WidgetContent({ moduleId, widgetType }: WidgetContentPro
           )}
           <Link
             href={moduleRoute}
-            className="block text-xs text-cyan-400 hover:text-cyan-300 text-center"
+            className="block text-xs text-slate-300 hover:text-white text-center"
           >
             View more
           </Link>
@@ -190,7 +190,7 @@ export default function WidgetContent({ moduleId, widgetType }: WidgetContentPro
             <Link
               key={item.id}
               href={item.url || moduleRoute}
-              className="block p-3 rounded-lg bg-slate-800/50 border border-slate-700/50 hover:border-cyan-400/40 transition-colors"
+              className="block p-3 rounded-lg bg-slate-800/50 border border-slate-700/50 hover:border-white/10/40 transition-colors"
             >
               <p className="text-sm font-medium text-slate-100 line-clamp-2">{item.title}</p>
               {item.subtitle && (
@@ -201,7 +201,7 @@ export default function WidgetContent({ moduleId, widgetType }: WidgetContentPro
           {items.length === 0 && stats.length === 0 && (
             <div className="text-center py-8">
               <p className="text-slate-400 text-sm">No data available</p>
-              <Link href={moduleRoute} className="text-cyan-400 hover:underline text-sm mt-1 inline-block">
+              <Link href={moduleRoute} className="text-slate-300 hover:underline text-sm mt-1 inline-block">
                 Open module
               </Link>
             </div>

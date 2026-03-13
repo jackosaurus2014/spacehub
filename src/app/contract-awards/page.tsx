@@ -423,7 +423,7 @@ const AGENCY_COLORS: Record<string, string> = {
   NRO: 'bg-slate-500/20 text-slate-300 border-slate-500/40',
   ESA: 'bg-teal-500/20 text-teal-300 border-teal-500/40',
   Commercial: 'bg-green-500/20 text-green-300 border-green-500/40',
-  NOAA: 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40',
+  NOAA: 'bg-white/10 text-slate-200 border-white/15/40',
   JAXA: 'bg-orange-500/20 text-orange-300 border-orange-500/40',
   ISRO: 'bg-amber-500/20 text-amber-300 border-amber-500/40',
   KARI: 'bg-indigo-500/20 text-indigo-300 border-indigo-500/40',
@@ -510,7 +510,7 @@ export default function ContractAwardsPage() {
             </div>
             <div className="card p-4">
               <p className="text-xs text-slate-400 uppercase tracking-wider mb-1">Avg. Size</p>
-              <p className="text-2xl font-bold text-cyan-400">{formatCurrency(stats.avgSize)}</p>
+              <p className="text-2xl font-bold text-slate-300">{formatCurrency(stats.avgSize)}</p>
               <p className="text-xs text-slate-500 mt-1">Per contract</p>
             </div>
             <div className="card p-4">

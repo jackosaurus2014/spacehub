@@ -123,7 +123,7 @@ export default function SpaceLaunchSchedule2026Page() {
                 <li key={item.id}>
                   <a
                     href={`#${item.id}`}
-                    className="text-cyan-500 hover:text-cyan-400 text-sm transition-colors"
+                    className="text-slate-300 hover:text-white text-sm transition-colors"
                   >
                     {i + 1}. {item.label}
                   </a>
@@ -150,11 +150,11 @@ export default function SpaceLaunchSchedule2026Page() {
                 for dedicated rideshare missions. The mega-constellation buildout continues with Starlink,
                 OneWeb, and Amazon&apos;s Project Kuiper all requiring dozens of flights.
               </p>
-              <div className="bg-cyan-900/20 border border-cyan-700/50 rounded-lg p-4">
-                <p className="text-cyan-300 text-sm">
+              <div className="bg-slate-800/30 border border-white/10 rounded-lg p-4">
+                <p className="text-slate-200 text-sm">
                   <strong>Live tracking:</strong> SpaceNexus tracks every launch in real time with countdown
                   timers, mission details, and launch vehicle specs.{' '}
-                  <Link href="/launch" className="text-cyan-400 underline hover:text-cyan-500">
+                  <Link href="/launch" className="text-slate-300 underline hover:text-slate-300">
                     View the live launch dashboard &rarr;
                   </Link>
                 </p>
@@ -183,7 +183,7 @@ export default function SpaceLaunchSchedule2026Page() {
                       <tr key={provider.name} className="border-b border-slate-700/50">
                         <td className="py-3 pr-4 text-white font-medium">{provider.name}</td>
                         <td className="py-3 pr-4 text-slate-400">{provider.vehicle}</td>
-                        <td className="py-3 pr-4 text-cyan-400 font-semibold">{provider.missions}</td>
+                        <td className="py-3 pr-4 text-slate-300 font-semibold">{provider.missions}</td>
                         <td className="py-3 text-slate-400">{provider.country}</td>
                       </tr>
                     ))}
@@ -191,7 +191,7 @@ export default function SpaceLaunchSchedule2026Page() {
                 </table>
               </div>
               <p className="text-slate-400 text-sm mt-4">
-                <Link href="/company-profiles" className="text-cyan-500 hover:underline">
+                <Link href="/company-profiles" className="text-slate-300 hover:underline">
                   View detailed profiles for all 200+ space companies &rarr;
                 </Link>
               </p>
@@ -203,13 +203,13 @@ export default function SpaceLaunchSchedule2026Page() {
               <p className="text-slate-400 leading-relaxed mb-4">
                 Launch schedules are dynamic and subject to delays. SpaceNexus updates this data in real time
                 as providers announce schedule changes. For the most current information, visit our{' '}
-                <Link href="/launch" className="text-cyan-500 hover:underline">live launch dashboard</Link>.
+                <Link href="/launch" className="text-slate-300 hover:underline">live launch dashboard</Link>.
               </p>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                 {['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'].map((month) => (
                   <div key={month} className="card p-3 text-center">
                     <div className="text-sm font-semibold text-slate-300">{month} 2026</div>
-                    <div className="text-lg font-bold text-cyan-400 mt-1">20-25</div>
+                    <div className="text-lg font-bold text-slate-300 mt-1">20-25</div>
                     <div className="text-xs text-slate-400">expected launches</div>
                   </div>
                 ))}
@@ -250,7 +250,7 @@ export default function SpaceLaunchSchedule2026Page() {
                 </div>
               </div>
               <p className="text-slate-400 text-sm mt-4">
-                <Link href="/launch-vehicles" className="text-cyan-500 hover:underline">
+                <Link href="/launch-vehicles" className="text-slate-300 hover:underline">
                   Compare all launch vehicles with specs and pricing &rarr;
                 </Link>
               </p>
@@ -280,7 +280,7 @@ export default function SpaceLaunchSchedule2026Page() {
                 </table>
               </div>
               <p className="text-slate-400 text-sm mt-4">
-                <Link href="/spaceports" className="text-cyan-500 hover:underline">
+                <Link href="/spaceports" className="text-slate-300 hover:underline">
                   Explore our interactive spaceport map &rarr;
                 </Link>
               </p>
@@ -301,7 +301,7 @@ export default function SpaceLaunchSchedule2026Page() {
                   'Commercial space station demonstrations (Orbital Reef, Starlab)',
                 ].map((milestone) => (
                   <li key={milestone} className="flex items-start gap-3">
-                    <span className="text-cyan-500 mt-1 flex-shrink-0">&#9656;</span>
+                    <span className="text-slate-300 mt-1 flex-shrink-0">&#9656;</span>
                     <span className="text-slate-400 text-sm">{milestone}</span>
                   </li>
                 ))}
@@ -323,7 +323,7 @@ export default function SpaceLaunchSchedule2026Page() {
                   'Read post-launch analysis in our News feed, auto-tagged by company',
                 ].map((step, i) => (
                   <li key={step} className="flex items-start gap-3">
-                    <span className="bg-cyan-500 text-white text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0">
+                    <span className="bg-white text-white text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0">
                       {i + 1}
                     </span>
                     <span className="text-slate-400 text-sm">{step}</span>
@@ -360,16 +360,16 @@ export default function SpaceLaunchSchedule2026Page() {
             <section className="pt-6 border-t border-slate-700">
               <h3 className="text-lg font-bold text-white mb-4">Related Guides</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <Link href="/guide/space-industry" className="text-cyan-500 hover:text-cyan-400 text-sm transition-colors">
+                <Link href="/guide/space-industry" className="text-slate-300 hover:text-white text-sm transition-colors">
                   Complete Guide to the Space Industry &rarr;
                 </Link>
-                <Link href="/guide/space-launch-cost-comparison" className="text-cyan-500 hover:text-cyan-400 text-sm transition-colors">
+                <Link href="/guide/space-launch-cost-comparison" className="text-slate-300 hover:text-white text-sm transition-colors">
                   Space Launch Cost Comparison &rarr;
                 </Link>
-                <Link href="/guide/space-industry-market-size" className="text-cyan-500 hover:text-cyan-400 text-sm transition-colors">
+                <Link href="/guide/space-industry-market-size" className="text-slate-300 hover:text-white text-sm transition-colors">
                   Space Industry Market Size &rarr;
                 </Link>
-                <Link href="/guide/how-satellite-tracking-works" className="text-cyan-500 hover:text-cyan-400 text-sm transition-colors">
+                <Link href="/guide/how-satellite-tracking-works" className="text-slate-300 hover:text-white text-sm transition-colors">
                   How Satellite Tracking Works &rarr;
                 </Link>
               </div>

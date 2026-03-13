@@ -20,12 +20,12 @@ const SECTIONS = [
     description: 'Browse and search space industry professionals. Connect with engineers, executives, investors, and researchers across the space sector.',
     href: '/community/directory',
     icon: (
-      <svg className="w-8 h-8 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg className="w-8 h-8 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
       </svg>
     ),
-    accent: 'from-cyan-500/20 to-blue-500/20',
-    borderAccent: 'hover:border-cyan-500/30',
+    accent: 'from-white/5 to-blue-500/20',
+    borderAccent: 'hover:border-white/10',
   },
   {
     title: 'Messages',
@@ -137,13 +137,13 @@ export default function CommunityPage() {
                     <div className="w-14 h-14 rounded-xl bg-slate-800/60 border border-slate-700/50 flex items-center justify-center mb-4 group-hover:border-slate-600/50 transition-colors">
                       {section.icon}
                     </div>
-                    <h3 className="text-lg font-semibold text-white group-hover:text-cyan-300 transition-colors mb-2">
+                    <h3 className="text-lg font-semibold text-white group-hover:text-white transition-colors mb-2">
                       {section.title}
                     </h3>
                     <p className="text-sm text-slate-400 leading-relaxed">
                       {section.description}
                     </p>
-                    <div className="mt-4 flex items-center text-sm text-cyan-400 font-medium">
+                    <div className="mt-4 flex items-center text-sm text-slate-300 font-medium">
                       Explore
                       <svg className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -168,7 +168,7 @@ export default function CommunityPage() {
             </div>
             <Link
               href="/community/profile"
-              className="px-5 py-2.5 bg-cyan-600 hover:bg-cyan-500 text-white font-medium rounded-lg transition-colors flex items-center gap-2 flex-shrink-0"
+              className="px-5 py-2.5 bg-white hover:bg-slate-100 text-white font-medium rounded-lg transition-colors flex items-center gap-2 flex-shrink-0"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />

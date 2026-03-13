@@ -42,7 +42,7 @@ export default function MobileDataCard({
     <div
       onClick={onClick}
       className={`rounded-xl border border-slate-700/50 p-4 backdrop-blur-sm transition-all duration-150 ${
-        onClick ? 'cursor-pointer active:scale-[0.98] active:bg-slate-800/60 hover:border-cyan-500/30' : ''
+        onClick ? 'cursor-pointer active:scale-[0.98] active:bg-slate-800/60 hover:border-white/10' : ''
       } ${className}`}
       style={{
         background: 'linear-gradient(145deg, rgba(15, 23, 42, 0.9), rgba(30, 41, 59, 0.85))',
@@ -74,7 +74,7 @@ export default function MobileDataCard({
 
       {/* Primary value */}
       <div className="mb-3">
-        <div className="text-2xl font-bold text-cyan-400 tabular-nums">{primaryValue}</div>
+        <div className="text-2xl font-bold text-slate-300 tabular-nums">{primaryValue}</div>
         <div className="text-xs text-slate-400 mt-0.5">{primaryLabel}</div>
       </div>
 

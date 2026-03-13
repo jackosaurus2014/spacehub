@@ -127,7 +127,7 @@ export default function MarketplacePage() {
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="px-6 py-3 min-h-[44px] bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white rounded-lg font-semibold transition-all"
+                className="px-6 py-3 min-h-[44px] bg-gradient-to-r from-slate-200 to-blue-600 hover:from-white hover:to-blue-500 text-white rounded-lg font-semibold transition-all"
               >
                 Browse Services
               </motion.button>
@@ -145,7 +145,7 @@ export default function MarketplacePage() {
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="px-6 py-3 min-h-[44px] bg-gradient-to-r from-purple-500/20 to-cyan-500/20 border border-purple-500/30 text-purple-300 hover:border-purple-400/50 rounded-lg font-semibold transition-all flex items-center gap-2"
+                className="px-6 py-3 min-h-[44px] bg-gradient-to-r from-purple-500/20 to-white/10 border border-purple-500/30 text-purple-300 hover:border-purple-400/50 rounded-lg font-semibold transition-all flex items-center gap-2"
               >
                 <span>🤖</span> AI Copilot
               </motion.button>
@@ -158,7 +158,7 @@ export default function MarketplacePage() {
           <ScrollReveal>
             <StaggerContainer className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {[
-                { label: 'Active Providers', value: stats.activeProviders, color: 'text-cyan-400' },
+                { label: 'Active Providers', value: stats.activeProviders, color: 'text-slate-300' },
                 { label: 'Service Listings', value: stats.activeListings, color: 'text-emerald-400' },
                 { label: 'Open RFQs', value: stats.openRFQs, color: 'text-yellow-400' },
                 { label: 'Proposals Submitted', value: stats.totalProposals, color: 'text-purple-400' },
@@ -179,7 +179,7 @@ export default function MarketplacePage() {
           <div>
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-semibold text-white">Browse by Category</h2>
-              <Link href="/marketplace/search" className="text-xs text-cyan-400 hover:text-cyan-300">
+              <Link href="/marketplace/search" className="text-xs text-slate-300 hover:text-white">
                 View All →
               </Link>
             </div>
@@ -193,7 +193,7 @@ export default function MarketplacePage() {
             <div>
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-lg font-semibold text-white">Recent Listings</h2>
-                <Link href="/marketplace/search" className="text-xs text-cyan-400 hover:text-cyan-300">
+                <Link href="/marketplace/search" className="text-xs text-slate-300 hover:text-white">
                   View All →
                 </Link>
               </div>
@@ -219,7 +219,7 @@ export default function MarketplacePage() {
             <div>
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-lg font-semibold text-white">Open RFQs</h2>
-                <Link href="/marketplace/search?tab=rfqs" className="text-xs text-cyan-400 hover:text-cyan-300">
+                <Link href="/marketplace/search?tab=rfqs" className="text-xs text-slate-300 hover:text-white">
                   View All →
                 </Link>
               </div>
@@ -330,14 +330,14 @@ export default function MarketplacePage() {
 
         {/* CTA */}
         <ScrollReveal>
-        <div className="text-center card p-8 bg-gradient-to-r from-cyan-900/30 to-blue-900/30 border-cyan-800/50">
+        <div className="text-center card p-8 bg-gradient-to-r from-slate-800/30 to-blue-900/30 border-white/10">
           <h2 className="text-lg font-semibold text-white mb-2">Are you a space service provider?</h2>
           <p className="text-sm text-slate-400 mb-4">
             Claim your company profile, list your services, and start receiving RFQs from buyers worldwide.
           </p>
           <div className="flex flex-wrap justify-center gap-3">
             <Link href="/company-profiles">
-              <button className="px-5 py-2.5 min-h-[44px] bg-cyan-600 hover:bg-cyan-500 text-white rounded-lg text-sm font-medium transition-colors">
+              <button className="px-5 py-2.5 min-h-[44px] bg-white hover:bg-slate-100 text-white rounded-lg text-sm font-medium transition-colors">
                 Claim Your Profile
               </button>
             </Link>

@@ -15,7 +15,7 @@ export default function Tooltip({ content, children, position = 'top' }: Tooltip
     <span className="relative inline-flex group/tip">
       <button
         type="button"
-        className="inline-flex items-center cursor-help focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500 rounded"
+        className="inline-flex items-center cursor-help focus:outline-none focus-visible:ring-2 focus-visible:ring-white/15 rounded"
       >
         {children}
       </button>

@@ -770,7 +770,7 @@ function SupplyChainContent() {
           </StaggerItem>
           <StaggerItem>
             <div className="card-elevated p-4 text-center">
-              <div className="text-2xl font-bold font-display tracking-tight text-cyan-400">
+              <div className="text-2xl font-bold font-display tracking-tight text-slate-300">
                 {stats.tier1Suppliers}
               </div>
               <div className="text-slate-400 text-xs uppercase tracking-widest font-medium mt-1">Tier 1</div>
@@ -877,7 +877,7 @@ function SupplyChainContent() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder={activeTab === 'companies' ? 'Search companies, products, locations...' : activeTab === 'shortages' ? 'Search materials, categories...' : 'Search...'}
-                className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg pl-10 pr-4 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none placeholder:text-slate-500"
+                className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg pl-10 pr-4 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none placeholder:text-slate-500"
               />
               {searchQuery && (
                 <button
@@ -897,7 +897,7 @@ function SupplyChainContent() {
               <select
                 value={tierFilter}
                 onChange={(e) => setTierFilter(e.target.value)}
-                className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+                className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
               >
                 <option value="">All Tiers</option>
                 {SUPPLY_CHAIN_TIERS.map((t) => (
@@ -907,7 +907,7 @@ function SupplyChainContent() {
               <select
                 value={countryFilter}
                 onChange={(e) => setCountryFilter(e.target.value)}
-                className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+                className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
               >
                 <option value="">All Countries</option>
                 {Object.entries(SUPPLY_CHAIN_COUNTRIES).map(([code, info]) => (
@@ -917,7 +917,7 @@ function SupplyChainContent() {
               <select
                 value={categoryFilter}
                 onChange={(e) => setCategoryFilter(e.target.value)}
-                className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+                className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
               >
                 <option value="">All Product Categories</option>
                 {SUPPLY_CHAIN_PRODUCT_CATEGORIES.map((c) => (
@@ -931,7 +931,7 @@ function SupplyChainContent() {
               <select
                 value={severityFilter}
                 onChange={(e) => setSeverityFilter(e.target.value)}
-                className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+                className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
               >
                 <option value="">All Severities</option>
                 {Object.entries(SHORTAGE_SEVERITY_INFO).map(([key, info]) => (
@@ -941,7 +941,7 @@ function SupplyChainContent() {
               <select
                 value={categoryFilter}
                 onChange={(e) => setCategoryFilter(e.target.value)}
-                className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+                className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
               >
                 <option value="">All Categories</option>
                 {SUPPLY_CHAIN_PRODUCT_CATEGORIES.map((c) => (
@@ -1006,7 +1006,7 @@ function SupplyChainContent() {
           <div className="text-red-400 text-sm font-medium">{error}</div>
           <button
             onClick={() => fetchTabData()}
-            className="mt-3 px-4 py-2 min-h-[44px] bg-cyan-500/20 text-cyan-400 rounded-lg hover:bg-cyan-500/30 transition-colors text-sm font-medium"
+            className="mt-3 px-4 py-2 min-h-[44px] bg-white/10 text-slate-300 rounded-lg hover:bg-slate-100/30 transition-colors text-sm font-medium"
           >
             Try Again
           </button>

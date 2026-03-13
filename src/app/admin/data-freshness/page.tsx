@@ -328,7 +328,7 @@ export default function DataFreshnessPage() {
           <div className="bg-red-900/20 border border-red-500/30 rounded-lg p-4 text-red-400">
             {error}
           </div>
-          <Link href="/admin" className="text-cyan-400 hover:underline mt-4 inline-block text-sm">
+          <Link href="/admin" className="text-slate-300 hover:underline mt-4 inline-block text-sm">
             Back to Admin
           </Link>
         </div>
@@ -362,7 +362,7 @@ export default function DataFreshnessPage() {
                 Last updated: {new Date(data.generatedAt).toLocaleString('en-US', { timeZone: 'UTC' })}
               </p>
             </div>
-            <Link href="/admin" className="text-cyan-400 hover:underline text-sm">
+            <Link href="/admin" className="text-slate-300 hover:underline text-sm">
               Back to Admin
             </Link>
           </div>
@@ -393,7 +393,7 @@ export default function DataFreshnessPage() {
                       onClick={() => setSortBy(s)}
                       className={`px-2.5 py-1 text-xs font-medium transition-colors capitalize ${
                         sortBy === s
-                          ? 'bg-cyan-500/20 text-cyan-300'
+                          ? 'bg-white/10 text-slate-200'
                           : 'text-slate-400 hover:text-white hover:bg-slate-700/50'
                       }`}
                     >
@@ -517,7 +517,7 @@ export default function DataFreshnessPage() {
                     disabled={refreshing !== null}
                     className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${
                       refreshing === mod.key
-                        ? 'bg-cyan-500/20 border-cyan-500/40 text-cyan-300 animate-pulse'
+                        ? 'bg-white/10 border-white/15/40 text-slate-200 animate-pulse'
                         : 'bg-slate-800/50 border-slate-700/30 text-slate-300 hover:bg-slate-700/50 hover:text-white'
                     } disabled:opacity-50`}
                   >

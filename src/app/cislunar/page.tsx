@@ -134,7 +134,7 @@ let INTERNATIONAL_PARTNERS: InternationalPartner[] = [];
 
 const ARTEMIS_STATUS_STYLES: Record<ArtemisMission['status'], { label: string; color: string; bg: string; border: string }> = {
   'completed': { label: 'Completed', color: 'text-green-400', bg: 'bg-green-900/20', border: 'border-green-500/30' },
-  'in-progress': { label: 'In Progress', color: 'text-cyan-400', bg: 'bg-cyan-900/20', border: 'border-cyan-500/30' },
+  'in-progress': { label: 'In Progress', color: 'text-slate-300', bg: 'bg-slate-800/30', border: 'border-white/10' },
   'upcoming': { label: 'Upcoming', color: 'text-yellow-400', bg: 'bg-yellow-900/20', border: 'border-yellow-500/30' },
   'planned': { label: 'Planned', color: 'text-blue-400', bg: 'bg-blue-900/20', border: 'border-blue-500/30' },
 };
@@ -145,7 +145,7 @@ const CLPS_STATUS_STYLES: Record<CLPSMission['status'], { label: string; color: 
   'success': { label: 'Success', color: 'text-green-400', bg: 'bg-green-900/20' },
   'partial-success': { label: 'Partial Success', color: 'text-yellow-400', bg: 'bg-yellow-900/20' },
   'failure': { label: 'Failed', color: 'text-red-400', bg: 'bg-red-900/20' },
-  'in-transit': { label: 'In Transit', color: 'text-cyan-400', bg: 'bg-cyan-900/20' },
+  'in-transit': { label: 'In Transit', color: 'text-slate-300', bg: 'bg-slate-800/30' },
   'upcoming': { label: 'Upcoming', color: 'text-orange-400', bg: 'bg-orange-900/20' },
   'planned': { label: 'Planned', color: 'text-blue-400', bg: 'bg-blue-900/20' },
 };
@@ -163,7 +163,7 @@ const DEFAULT_ISRU_STATUS_STYLE = { label: 'Unknown', color: 'text-slate-400', b
 
 const INFRA_STATUS_STYLES: Record<InfrastructureElement['status'], { label: string; color: string; bg: string }> = {
   'operational': { label: 'Operational', color: 'text-green-400', bg: 'bg-green-900/20' },
-  'under-construction': { label: 'Under Construction', color: 'text-cyan-400', bg: 'bg-cyan-900/20' },
+  'under-construction': { label: 'Under Construction', color: 'text-slate-300', bg: 'bg-slate-800/30' },
   'development': { label: 'In Development', color: 'text-yellow-400', bg: 'bg-yellow-900/20' },
   'design': { label: 'Design Phase', color: 'text-orange-400', bg: 'bg-orange-900/20' },
   'concept': { label: 'Concept', color: 'text-purple-400', bg: 'bg-purple-900/20' },
@@ -195,7 +195,7 @@ const DEFAULT_INFRA_CATEGORY_STYLE = { label: 'Unknown', icon: '?' };
 const GATEWAY_MODULE_STATUS_STYLES: Record<GatewayModule['status'], { label: string; color: string; bg: string }> = {
   integration: { label: 'Integration Testing', color: 'text-green-400', bg: 'bg-green-900/30' },
   construction: { label: 'Under Construction', color: 'text-blue-400', bg: 'bg-blue-900/30' },
-  manufacturing: { label: 'Design/Manufacturing', color: 'text-cyan-400', bg: 'bg-cyan-900/30' },
+  manufacturing: { label: 'Design/Manufacturing', color: 'text-slate-300', bg: 'bg-slate-800/40' },
   design: { label: 'Design Phase', color: 'text-yellow-400', bg: 'bg-yellow-900/30' },
   development: { label: 'Development', color: 'text-orange-400', bg: 'bg-orange-900/30' },
   study: { label: 'Under Study', color: 'text-purple-400', bg: 'bg-purple-900/30' },
@@ -413,7 +413,7 @@ function ArtemisTab() {
                       : mission.status === 'upcoming'
                         ? 'bg-yellow-500 border-yellow-400 animate-pulse'
                         : mission.status === 'in-progress'
-                          ? 'bg-cyan-500 border-cyan-400 animate-pulse'
+                          ? 'bg-white border-white/10 animate-pulse'
                           : 'bg-slate-600 border-slate-500'
                   }`} />
                   <div className={`rounded-lg border ${style.border} ${style.bg} p-4`}>
@@ -512,7 +512,7 @@ function CommercialLunarTab() {
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
-          className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+          className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
         >
           <option value="all">All Statuses</option>
           {statuses.map((s) => (
@@ -522,7 +522,7 @@ function CommercialLunarTab() {
         <select
           value={companyFilter}
           onChange={(e) => setCompanyFilter(e.target.value)}
-          className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+          className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
         >
           <option value="all">All Companies</option>
           {companies.map((c) => (
@@ -694,7 +694,7 @@ function ISRUTab() {
         <select
           value={categoryFilter}
           onChange={(e) => setCategoryFilter(e.target.value)}
-          className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+          className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
         >
           <option value="all">All Categories</option>
           {categories.map((c) => (
@@ -785,7 +785,7 @@ function InfrastructureTab() {
         <select
           value={categoryFilter}
           onChange={(e) => setCategoryFilter(e.target.value)}
-          className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+          className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
         >
           <option value="all">All Categories</option>
           {categories.map((c) => (
@@ -919,7 +919,7 @@ function InvestmentTab() {
         <select
           value={typeFilter}
           onChange={(e) => setTypeFilter(e.target.value)}
-          className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+          className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
         >
           <option value="all">All Types</option>
           {types.map((t) => (

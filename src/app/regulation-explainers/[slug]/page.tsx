@@ -53,7 +53,7 @@ export default function RegulationExplainerDetailPage() {
       <div className="min-h-screen flex flex-col items-center justify-center gap-4">
         <div className="text-4xl">📜</div>
         <p className="text-slate-400">{error || 'Not found'}</p>
-        <Link href="/regulation-explainers" className="text-cyan-400 hover:underline text-sm">
+        <Link href="/regulation-explainers" className="text-slate-300 hover:underline text-sm">
           Back to Regulation Explainers
         </Link>
       </div>
@@ -172,7 +172,7 @@ export default function RegulationExplainerDetailPage() {
                       href={url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-cyan-400 hover:underline text-xs break-all"
+                      className="text-slate-300 hover:underline text-xs break-all"
                     >
                       {url}
                     </a>

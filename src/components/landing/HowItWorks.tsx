@@ -61,7 +61,7 @@ export default function HowItWorks() {
           viewport={{ once: true, amount: 0.3 }}
         >
           {/* Connecting gradient lines (desktop only) */}
-          <div className="hidden md:block absolute top-10 left-[calc(16.67%+24px)] right-[calc(16.67%+24px)] h-0.5 bg-gradient-to-r from-cyan-500/40 via-blue-500/30 to-cyan-500/40 rounded-full" />
+          <div className="hidden md:block absolute top-10 left-[calc(16.67%+24px)] right-[calc(16.67%+24px)] h-0.5 bg-gradient-to-r from-white/40 via-blue-500/30 to-slate-200/40 rounded-full" />
 
           {STEPS.map((s) => (
             <motion.div
@@ -70,13 +70,13 @@ export default function HowItWorks() {
               whileHover={{ y: -4, transition: { duration: 0.2 } }}
               className="group flex flex-col items-center text-center cursor-default"
             >
-              <div className="relative z-10 w-20 h-20 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center shadow-lg shadow-cyan-500/20 mb-5 group-hover:shadow-xl group-hover:shadow-cyan-500/30 transition-all duration-300 ring-4 ring-cyan-500/10 group-hover:ring-cyan-500/20">
-                <span className="absolute -top-1.5 -right-1.5 w-7 h-7 rounded-full bg-gradient-to-br from-slate-800 to-slate-900 border-2 border-cyan-400 text-xs font-bold text-cyan-300 flex items-center justify-center shadow-md">
+              <div className="relative z-10 w-20 h-20 rounded-full bg-gradient-to-br from-white to-blue-600 flex items-center justify-center shadow-lg shadow-black/10 mb-5 group-hover:shadow-xl group-hover:shadow-black/15 transition-all duration-300 ring-4 ring-white/15/10 group-hover:ring-white/15/20">
+                <span className="absolute -top-1.5 -right-1.5 w-7 h-7 rounded-full bg-gradient-to-br from-slate-800 to-slate-900 border-2 border-white/10 text-xs font-bold text-slate-200 flex items-center justify-center shadow-md">
                   {s.step}
                 </span>
                 <span className="text-white">{s.icon}</span>
               </div>
-              <h3 className="text-lg font-semibold text-white mb-2 group-hover:text-cyan-300 transition-colors duration-200">{s.title}</h3>
+              <h3 className="text-lg font-semibold text-white mb-2 group-hover:text-white transition-colors duration-200">{s.title}</h3>
               <p className="text-sm text-slate-400 leading-relaxed max-w-xs">{s.description}</p>
             </motion.div>
           ))}
@@ -85,7 +85,7 @@ export default function HowItWorks() {
         <div className="text-center mt-12">
           <Link
             href="/register"
-            className="inline-flex items-center gap-2 px-8 py-3 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-semibold hover:from-cyan-400 hover:to-blue-500 transition-all duration-200 shadow-lg shadow-cyan-500/25"
+            className="inline-flex items-center gap-2 px-8 py-3 rounded-xl bg-gradient-to-r from-white to-blue-600 text-white font-semibold hover:from-slate-300 hover:to-blue-500 transition-all duration-200 shadow-lg shadow-black/20/25"
           >
             Get Started in 60 Seconds
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -97,7 +97,7 @@ export default function LaunchCountdown() {
         <h2 className="text-sm font-semibold text-slate-300 uppercase tracking-wider flex items-center gap-2">
           <span className="text-lg">🚀</span> Launch Countdown
         </h2>
-        <Link href="/launch" className="text-xs text-cyan-400 hover:text-cyan-300 transition-colors">
+        <Link href="/launch" className="text-xs text-slate-300 hover:text-white transition-colors">
           Full Schedule &rarr;
         </Link>
       </div>
@@ -116,7 +116,7 @@ export default function LaunchCountdown() {
             { val: cd.secs, label: 'SEC' },
           ].map((u) => (
             <div key={u.label} className="text-center">
-              <span className="block text-2xl font-bold font-mono bg-gradient-to-b from-cyan-300 to-cyan-500 bg-clip-text text-transparent">
+              <span className="block text-2xl font-bold font-mono bg-gradient-to-b from-white to-slate-300 bg-clip-text text-transparent">
                 {pad(u.val)}
               </span>
               <span className="text-[10px] text-slate-500 tracking-wider">{u.label}</span>
@@ -140,7 +140,7 @@ export default function LaunchCountdown() {
                   <p className="text-[11px] text-slate-500">{l.provider}</p>
                 </div>
                 <div className="flex items-center gap-2 flex-shrink-0">
-                  <span className="text-xs font-mono text-cyan-400">
+                  <span className="text-xs font-mono text-slate-300">
                     {t.days}d {pad(t.hours)}h
                   </span>
                   <StatusBadge status={l.status} />

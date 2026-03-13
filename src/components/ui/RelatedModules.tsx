@@ -40,14 +40,14 @@ export default function RelatedModules({ modules, title = 'Related Intelligence'
           >
             <Link
               href={mod.href}
-              className="flex items-center gap-3 p-3 rounded-lg bg-slate-800/50 border border-slate-700/30 hover:border-cyan-500/30 hover:bg-slate-800 transition-all duration-200 group h-full"
+              className="flex items-center gap-3 p-3 rounded-lg bg-slate-800/50 border border-slate-700/30 hover:border-white/10 hover:bg-slate-800 transition-all duration-200 group h-full"
             >
               <span className="text-xl shrink-0 group-hover:scale-110 transition-transform duration-200">{mod.icon}</span>
               <div className="min-w-0 flex-1">
-                <div className="text-sm font-medium text-white group-hover:text-cyan-400 transition-colors">{mod.name}</div>
+                <div className="text-sm font-medium text-white group-hover:text-slate-300 transition-colors">{mod.name}</div>
                 <div className="text-xs text-slate-400 truncate">{mod.description}</div>
               </div>
-              <svg className="w-4 h-4 text-slate-600 group-hover:text-cyan-400 transition-colors shrink-0 opacity-0 group-hover:opacity-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4 text-slate-600 group-hover:text-slate-300 transition-colors shrink-0 opacity-0 group-hover:opacity-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
             </Link>

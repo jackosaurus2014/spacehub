@@ -44,7 +44,7 @@ interface SpaceLawEntry {
 const STATUS_CONFIG: Record<EntryStatus, { label: string; bg: string; text: string; border: string }> = {
   in_force: { label: 'In Force', bg: 'bg-green-500/20', text: 'text-green-400', border: 'border-green-500/30' },
   pending: { label: 'Pending', bg: 'bg-yellow-500/20', text: 'text-yellow-400', border: 'border-yellow-500/30' },
-  adopted: { label: 'Adopted', bg: 'bg-cyan-500/20', text: 'text-cyan-400', border: 'border-cyan-500/30' },
+  adopted: { label: 'Adopted', bg: 'bg-white/10', text: 'text-slate-300', border: 'border-white/10' },
   proposed: { label: 'Proposed', bg: 'bg-blue-500/20', text: 'text-blue-400', border: 'border-blue-500/30' },
   not_widely_ratified: { label: 'Not Widely Ratified', bg: 'bg-orange-500/20', text: 'text-orange-400', border: 'border-orange-500/30' },
 };
@@ -662,7 +662,7 @@ function EntryCard({ entry }: { entry: SpaceLawEntry }) {
           <ul className="space-y-1.5">
             {entry.keyProvisions.map((provision, i) => (
               <li key={i} className="flex items-start gap-2 text-xs text-slate-400">
-                <svg className="w-3 h-3 text-cyan-400 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <svg className="w-3 h-3 text-slate-300 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                 </svg>
                 {provision}
@@ -758,13 +758,13 @@ function TabContent({ entries, tabId }: { entries: SpaceLawEntry[]; tabId: TabId
             aria-label={`Search ${tabId} entries`}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="flex-1 min-w-[200px] bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+            className="flex-1 min-w-[200px] bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
           />
           {uniqueTypes.length > 1 && (
             <select
               value={typeFilter}
               onChange={(e) => setTypeFilter(e.target.value)}
-              className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+              className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
             >
               <option value="">All Types</option>
               {uniqueTypes.map((t) => (
@@ -775,7 +775,7 @@ function TabContent({ entries, tabId }: { entries: SpaceLawEntry[]; tabId: TabId
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+            className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
           >
             <option value="">All Statuses</option>
             {uniqueStatuses.map((s) => (
@@ -785,7 +785,7 @@ function TabContent({ entries, tabId }: { entries: SpaceLawEntry[]; tabId: TabId
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
-            className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+            className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
           >
             <option value="year-desc">Newest First</option>
             <option value="year-asc">Oldest First</option>
@@ -928,7 +928,7 @@ function SpaceLawContent() {
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
           <StatCard value={stats.total} label="Total Entries" color="text-white" />
           <StatCard value={stats.inForce} label="In Force" color="text-green-400" />
-          <StatCard value={stats.totalParties} label="Total Parties" color="text-cyan-400" />
+          <StatCard value={stats.totalParties} label="Total Parties" color="text-slate-300" />
           <StatCard value={stats.countriesCount} label="National Laws" color="text-emerald-400" />
           <StatCard value={stats.oldestYear} label="Oldest" color="text-amber-400" />
           <StatCard value={stats.newestYear} label="Most Recent" color="text-purple-400" />
@@ -948,7 +948,7 @@ function SpaceLawContent() {
                 { year: '1967', event: 'Outer Space Treaty signed - foundation of space law', color: 'bg-purple-400' },
                 { year: '1968-76', event: 'Rescue, Liability, and Registration treaties complete the UN framework', color: 'bg-blue-400' },
                 { year: '1979', event: 'Moon Agreement adopted but fails to gain major power support', color: 'bg-orange-400' },
-                { year: '1987-96', event: 'MTCR and Wassenaar establish export control regimes', color: 'bg-cyan-400' },
+                { year: '1987-96', event: 'MTCR and Wassenaar establish export control regimes', color: 'bg-white' },
                 { year: '2002-19', event: 'Debris mitigation guidelines and sustainability norms emerge', color: 'bg-green-400' },
                 { year: '2015-23', event: 'National space resource laws enacted by US, Luxembourg, UAE, and others', color: 'bg-emerald-400' },
                 { year: '2020+', event: 'Artemis Accords and new frameworks for the commercial space era', color: 'bg-amber-400' },
@@ -998,7 +998,7 @@ function SpaceLawContent() {
 
       {/* Tab Description Banner */}
       <ScrollReveal>
-        <div className="card p-5 mb-6 border border-cyan-500/20 bg-cyan-500/5">
+        <div className="card p-5 mb-6 border border-white/10 bg-white/5">
           <div className="flex items-center gap-3 mb-2">
             <span className="text-2xl">{tabDesc.icon}</span>
             <h3 className="text-white font-semibold">{tabDesc.title}</h3>

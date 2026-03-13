@@ -208,7 +208,7 @@ export default function DashboardBuilder({
             <>
               <button
                 onClick={() => setShowAddModal(true)}
-                className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-cyan-500 to-blue-500 rounded-lg hover:from-cyan-600 hover:to-blue-600 shadow-sm"
+                className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-white to-blue-500 rounded-lg hover:from-slate-200 hover:to-blue-600 shadow-sm"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -250,7 +250,7 @@ export default function DashboardBuilder({
             className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg shadow-sm transition-all ${
               isEditing
                 ? 'text-slate-300 bg-slate-800 hover:bg-slate-700 border border-slate-700'
-                : 'text-cyan-400 bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30'
+                : 'text-slate-300 bg-white/5 hover:bg-slate-100/20 border border-white/10'
             }`}
           >
             {isEditing ? (
@@ -350,7 +350,7 @@ export default function DashboardBuilder({
             {isEditing ? (
               <button
                 onClick={() => setShowAddModal(true)}
-                className="text-sm text-cyan-500 hover:text-cyan-400 font-medium"
+                className="text-sm text-slate-300 hover:text-white font-medium"
               >
                 Add your first widget
               </button>
@@ -387,7 +387,7 @@ export default function DashboardBuilder({
             {isEditing && (
               <button
                 onClick={() => setShowAddModal(true)}
-                className="text-sm text-cyan-500 hover:text-cyan-400 font-medium mt-2"
+                className="text-sm text-slate-300 hover:text-white font-medium mt-2"
               >
                 Add your first widget
               </button>

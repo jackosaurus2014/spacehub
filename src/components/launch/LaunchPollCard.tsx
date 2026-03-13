@@ -118,7 +118,7 @@ export default function LaunchPollCard({ eventId }: LaunchPollCardProps) {
                     className={`w-full relative overflow-hidden rounded-lg border transition-all text-left ${
                       hasVoted
                         ? 'border-slate-700/30 cursor-default'
-                        : 'border-slate-600/50 hover:border-cyan-500/40 cursor-pointer'
+                        : 'border-slate-600/50 hover:border-white/15/40 cursor-pointer'
                     }`}
                   >
                     {/* Progress background */}
@@ -127,7 +127,7 @@ export default function LaunchPollCard({ eventId }: LaunchPollCardProps) {
                         initial={{ width: 0 }}
                         animate={{ width: `${pct}%` }}
                         transition={{ duration: 0.5, ease: 'easeOut' }}
-                        className="absolute inset-y-0 left-0 bg-cyan-500/10"
+                        className="absolute inset-y-0 left-0 bg-white/5"
                       />
                     )}
 
@@ -136,7 +136,7 @@ export default function LaunchPollCard({ eventId }: LaunchPollCardProps) {
                         {option}
                       </span>
                       {hasVoted && (
-                        <span className="text-xs font-mono text-cyan-400 font-bold ml-2">
+                        <span className="text-xs font-mono text-slate-300 font-bold ml-2">
                           {pct}%
                         </span>
                       )}

@@ -73,7 +73,7 @@ export function computeInvestorActivity(
   return {
     trend: 'steady',
     label: 'Steady',
-    color: 'text-cyan-400',
+    color: 'text-slate-300',
   };
 }
 

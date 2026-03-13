@@ -48,7 +48,7 @@ function getGradeColor(grade: Grade): string {
   const letter = grade.charAt(0);
   switch (letter) {
     case 'A': return 'text-emerald-400';
-    case 'B': return 'text-cyan-400';
+    case 'B': return 'text-slate-300';
     case 'C': return 'text-amber-400';
     case 'D': return 'text-orange-400';
     case 'F': return 'text-red-400';
@@ -60,7 +60,7 @@ function getGradeBg(grade: Grade): string {
   const letter = grade.charAt(0);
   switch (letter) {
     case 'A': return 'bg-emerald-500/20 border-emerald-500/40';
-    case 'B': return 'bg-cyan-500/20 border-cyan-500/40';
+    case 'B': return 'bg-white/10 border-white/15/40';
     case 'C': return 'bg-amber-500/20 border-amber-500/40';
     case 'D': return 'bg-orange-500/20 border-orange-500/40';
     case 'F': return 'bg-red-500/20 border-red-500/40';
@@ -72,7 +72,7 @@ function getGradeRingColor(grade: Grade): string {
   const letter = grade.charAt(0);
   switch (letter) {
     case 'A': return 'ring-emerald-500/50';
-    case 'B': return 'ring-cyan-500/50';
+    case 'B': return 'ring-white/15';
     case 'C': return 'ring-amber-500/50';
     case 'D': return 'ring-orange-500/50';
     case 'F': return 'ring-red-500/50';
@@ -669,7 +669,7 @@ export default function ReportCardsPage() {
                     <div
                       className={`w-full rounded-sm ${
                         letter === 'A' ? 'bg-emerald-500' :
-                        letter === 'B' ? 'bg-cyan-500' :
+                        letter === 'B' ? 'bg-white' :
                         letter === 'C' ? 'bg-amber-500' :
                         letter === 'D' ? 'bg-orange-500' :
                         'bg-red-500'
@@ -745,7 +745,7 @@ export default function ReportCardsPage() {
             <select
               value={gradeFilter}
               onChange={e => setGradeFilter(e.target.value as GradeRange)}
-              className="bg-slate-800 border border-slate-700 text-slate-200 text-sm rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-500/50"
+              className="bg-slate-800 border border-slate-700 text-slate-200 text-sm rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-white/20"
             >
               {GRADE_RANGES.map(opt => (
                 <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -755,7 +755,7 @@ export default function ReportCardsPage() {
             <select
               value={sectorFilter}
               onChange={e => setSectorFilter(e.target.value as Sector | '')}
-              className="bg-slate-800 border border-slate-700 text-slate-200 text-sm rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-500/50"
+              className="bg-slate-800 border border-slate-700 text-slate-200 text-sm rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-white/20"
             >
               <option value="">All Sectors</option>
               {SECTORS.map(s => (
@@ -766,7 +766,7 @@ export default function ReportCardsPage() {
             <select
               value={outlookFilter}
               onChange={e => setOutlookFilter(e.target.value as Outlook | '')}
-              className="bg-slate-800 border border-slate-700 text-slate-200 text-sm rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-500/50"
+              className="bg-slate-800 border border-slate-700 text-slate-200 text-sm rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-white/20"
             >
               {OUTLOOK_OPTIONS.map(opt => (
                 <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -776,7 +776,7 @@ export default function ReportCardsPage() {
             <select
               value={sortBy}
               onChange={e => setSortBy(e.target.value as SortKey)}
-              className="bg-slate-800 border border-slate-700 text-slate-200 text-sm rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-500/50"
+              className="bg-slate-800 border border-slate-700 text-slate-200 text-sm rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-white/20"
             >
               {SORT_OPTIONS.map(opt => (
                 <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -923,7 +923,7 @@ export default function ReportCardsPage() {
                       {/* Analyst Summary */}
                       <div>
                         <h4 className="text-xs text-slate-400 uppercase tracking-wider mb-2">Analyst Summary</h4>
-                        <p className="text-sm text-slate-300 leading-relaxed bg-slate-800/30 rounded-lg p-4 border-l-4 border-cyan-500/40">
+                        <p className="text-sm text-slate-300 leading-relaxed bg-slate-800/30 rounded-lg p-4 border-l-4 border-white/15/40">
                           {card.summary}
                         </p>
                       </div>
@@ -940,7 +940,7 @@ export default function ReportCardsPage() {
               <div className="text-lg text-slate-300">No companies match the selected filters.</div>
               <button
                 onClick={() => { setGradeFilter(''); setSectorFilter(''); setOutlookFilter(''); }}
-                className="mt-4 px-4 py-2 text-sm bg-cyan-600 hover:bg-cyan-500 text-white rounded-lg transition-colors"
+                className="mt-4 px-4 py-2 text-sm bg-white hover:bg-slate-100 text-white rounded-lg transition-colors"
               >
                 Clear Filters
               </button>
@@ -957,7 +957,7 @@ export default function ReportCardsPage() {
                 <h4 className="text-slate-300 font-semibold mb-1">Grading Criteria</h4>
                 <ul className="space-y-1">
                   <li><span className="text-emerald-400 font-bold">A Range</span> &mdash; Industry leaders with strong execution, growth, and market position</li>
-                  <li><span className="text-cyan-400 font-bold">B Range</span> &mdash; Solid performers with clear competitive advantages and growth trajectory</li>
+                  <li><span className="text-slate-300 font-bold">B Range</span> &mdash; Solid performers with clear competitive advantages and growth trajectory</li>
                   <li><span className="text-amber-400 font-bold">C Range</span> &mdash; Mixed results with notable challenges alongside some strengths</li>
                   <li><span className="text-orange-400 font-bold">D Range</span> &mdash; Significant concerns around execution, viability, or market fit</li>
                   <li><span className="text-red-400 font-bold">F</span> &mdash; Fundamental business model or survival risk</li>
@@ -989,37 +989,37 @@ export default function ReportCardsPage() {
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               <Link
                 href="/company-profiles"
-                className="card p-4 hover:border-cyan-400/60 transition-colors group text-center"
+                className="card p-4 hover:border-white/10/60 transition-colors group text-center"
               >
                 <div className="text-2xl mb-1">🏢</div>
-                <div className="text-sm font-semibold text-slate-200 group-hover:text-cyan-400 transition-colors">Company Profiles</div>
+                <div className="text-sm font-semibold text-slate-200 group-hover:text-white transition-colors">Company Profiles</div>
                 <div className="text-xs text-slate-500">Detailed company intelligence</div>
               </Link>
 
               <Link
                 href="/space-score"
-                className="card p-4 hover:border-cyan-400/60 transition-colors group text-center"
+                className="card p-4 hover:border-white/10/60 transition-colors group text-center"
               >
                 <div className="text-2xl mb-1">🏆</div>
-                <div className="text-sm font-semibold text-slate-200 group-hover:text-cyan-400 transition-colors">Space Score</div>
+                <div className="text-sm font-semibold text-slate-200 group-hover:text-white transition-colors">Space Score</div>
                 <div className="text-xs text-slate-500">Quantitative scoring system</div>
               </Link>
 
               <Link
                 href="/market-intel"
-                className="card p-4 hover:border-cyan-400/60 transition-colors group text-center"
+                className="card p-4 hover:border-white/10/60 transition-colors group text-center"
               >
                 <div className="text-2xl mb-1">📈</div>
-                <div className="text-sm font-semibold text-slate-200 group-hover:text-cyan-400 transition-colors">Market Intel</div>
+                <div className="text-sm font-semibold text-slate-200 group-hover:text-white transition-colors">Market Intel</div>
                 <div className="text-xs text-slate-500">Space market intelligence</div>
               </Link>
 
               <Link
                 href="/investment-tracker"
-                className="card p-4 hover:border-cyan-400/60 transition-colors group text-center"
+                className="card p-4 hover:border-white/10/60 transition-colors group text-center"
               >
                 <div className="text-2xl mb-1">💰</div>
-                <div className="text-sm font-semibold text-slate-200 group-hover:text-cyan-400 transition-colors">Investment Tracker</div>
+                <div className="text-sm font-semibold text-slate-200 group-hover:text-white transition-colors">Investment Tracker</div>
                 <div className="text-xs text-slate-500">Funding rounds and deals</div>
               </Link>
             </div>

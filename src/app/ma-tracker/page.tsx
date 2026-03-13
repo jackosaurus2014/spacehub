@@ -619,7 +619,7 @@ function getStatusColor(status: DealStatus): string {
   switch (status) {
     case 'Completed': return 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30';
     case 'Pending': return 'bg-amber-500/20 text-amber-400 border-amber-500/30';
-    case 'Announced': return 'bg-cyan-500/20 text-cyan-400 border-cyan-500/30';
+    case 'Announced': return 'bg-white/10 text-slate-300 border-white/10';
     case 'Failed': return 'bg-red-500/20 text-red-400 border-red-500/30';
   }
 }
@@ -699,7 +699,7 @@ const TREND_INSIGHTS: TrendInsight[] = [
     title: 'Communications Mega-Mergers',
     description: 'The satellite communications sector is experiencing unprecedented consolidation as operators combine GEO and LEO assets to create multi-orbit networks capable of competing with terrestrial 5G and fiber.',
     icon: 'signal',
-    color: 'from-blue-500/20 to-cyan-500/20 border-blue-500/30',
+    color: 'from-blue-500/20 to-white/10 border-blue-500/30',
     examples: [
       'Viasat + Inmarsat ($7.3B) global broadband',
       'SES + Intelsat ($3.1B) multi-orbit operator',
@@ -903,7 +903,7 @@ export default function MATrackerPage() {
 
   const SortIcon = ({ field }: { field: SortField }) => {
     if (sortField !== field) return <span className="text-slate-600 ml-1">&#x2195;</span>;
-    return <span className="text-cyan-400 ml-1">{sortDir === 'desc' ? '\u2193' : '\u2191'}</span>;
+    return <span className="text-slate-300 ml-1">{sortDir === 'desc' ? '\u2193' : '\u2191'}</span>;
   };
 
   // ─── Render ────────────────────────────────────────────────────────
@@ -944,7 +944,7 @@ export default function MATrackerPage() {
               <p className="text-xs text-slate-400 uppercase tracking-wider mb-1">Most Acquisitive</p>
               <div>
                 {summaryStats.topAcquirers.map(([name, count], i) => (
-                  <p key={name} className={`text-sm ${i === 0 ? 'text-cyan-400 font-semibold' : 'text-slate-400'}`}>
+                  <p key={name} className={`text-sm ${i === 0 ? 'text-slate-300 font-semibold' : 'text-slate-400'}`}>
                     {name} ({count} deals)
                   </p>
                 ))}
@@ -965,7 +965,7 @@ export default function MATrackerPage() {
               onClick={() => setActiveTab(key)}
               className={`px-4 py-2.5 rounded-lg text-sm font-medium transition-all min-h-[44px] ${
                 activeTab === key
-                  ? 'bg-cyan-600 text-white shadow-lg shadow-cyan-500/20'
+                  ? 'bg-white text-white shadow-lg shadow-black/10'
                   : 'text-slate-400 hover:text-white hover:bg-slate-700/50'
               }`}
             >
@@ -993,7 +993,7 @@ export default function MATrackerPage() {
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Search acquirer, target, sector..."
-                    className="w-full px-3 py-2 bg-slate-800/80 border border-slate-700 rounded-lg text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 transition-colors min-h-[44px]"
+                    className="w-full px-3 py-2 bg-slate-800/80 border border-slate-700 rounded-lg text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-white/15 transition-colors min-h-[44px]"
                   />
                 </div>
 
@@ -1003,7 +1003,7 @@ export default function MATrackerPage() {
                   <select
                     value={filterYear ?? ''}
                     onChange={(e) => setFilterYear(e.target.value ? Number(e.target.value) : null)}
-                    className="px-3 py-2 bg-slate-800/80 border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-cyan-500 transition-colors min-h-[44px]"
+                    className="px-3 py-2 bg-slate-800/80 border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-white/15 transition-colors min-h-[44px]"
                   >
                     <option value="">All Years</option>
                     {ALL_YEARS.map((y) => (
@@ -1018,7 +1018,7 @@ export default function MATrackerPage() {
                   <select
                     value={filterSizeIdx}
                     onChange={(e) => setFilterSizeIdx(Number(e.target.value))}
-                    className="px-3 py-2 bg-slate-800/80 border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-cyan-500 transition-colors min-h-[44px]"
+                    className="px-3 py-2 bg-slate-800/80 border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-white/15 transition-colors min-h-[44px]"
                   >
                     {DEAL_SIZE_RANGES.map((r, i) => (
                       <option key={i} value={i}>{r.label}</option>
@@ -1032,7 +1032,7 @@ export default function MATrackerPage() {
                   <select
                     value={filterSector}
                     onChange={(e) => setFilterSector(e.target.value as DealSector | '')}
-                    className="px-3 py-2 bg-slate-800/80 border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-cyan-500 transition-colors min-h-[44px]"
+                    className="px-3 py-2 bg-slate-800/80 border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-white/15 transition-colors min-h-[44px]"
                   >
                     <option value="">All Sectors</option>
                     {ALL_SECTORS.map((s) => (
@@ -1047,7 +1047,7 @@ export default function MATrackerPage() {
                   <select
                     value={filterType}
                     onChange={(e) => setFilterType(e.target.value as DealType | '')}
-                    className="px-3 py-2 bg-slate-800/80 border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-cyan-500 transition-colors min-h-[44px]"
+                    className="px-3 py-2 bg-slate-800/80 border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-white/15 transition-colors min-h-[44px]"
                   >
                     <option value="">All Types</option>
                     {ALL_DEAL_TYPES.map((t) => (
@@ -1062,7 +1062,7 @@ export default function MATrackerPage() {
                   <select
                     value={filterStatus}
                     onChange={(e) => setFilterStatus(e.target.value as DealStatus | '')}
-                    className="px-3 py-2 bg-slate-800/80 border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-cyan-500 transition-colors min-h-[44px]"
+                    className="px-3 py-2 bg-slate-800/80 border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-white/15 transition-colors min-h-[44px]"
                   >
                     <option value="">All Status</option>
                     {ALL_STATUSES.map((s) => (
@@ -1185,7 +1185,7 @@ export default function MATrackerPage() {
                 {filteredDeals.length === 0 && (
                   <div className="text-center py-12">
                     <p className="text-slate-400 text-lg mb-2">No deals match your filters</p>
-                    <button onClick={resetFilters} className="text-cyan-400 hover:text-cyan-300 text-sm transition-colors">
+                    <button onClick={resetFilters} className="text-slate-300 hover:text-white text-sm transition-colors">
                       Clear all filters
                     </button>
                   </div>
@@ -1210,7 +1210,7 @@ export default function MATrackerPage() {
                             whileInView={{ width: `${pct}%` }}
                             viewport={{ once: true }}
                             transition={{ duration: 0.8, ease: 'easeOut' }}
-                            className="h-full bg-gradient-to-r from-cyan-500 to-purple-500 rounded-full flex items-center justify-end pr-2"
+                            className="h-full bg-gradient-to-r from-white to-purple-500 rounded-full flex items-center justify-end pr-2"
                           >
                             <span className="text-xs text-white font-medium">{data.count}</span>
                           </motion.div>
@@ -1248,7 +1248,7 @@ export default function MATrackerPage() {
                       <p className="text-xs text-slate-400 uppercase tracking-wider">Key Deals</p>
                       {trend.examples.map((ex, i) => (
                         <div key={i} className="flex items-start gap-2 text-sm">
-                          <span className="text-cyan-400 mt-0.5 shrink-0">&bull;</span>
+                          <span className="text-slate-300 mt-0.5 shrink-0">&bull;</span>
                           <span className="text-slate-300">{ex}</span>
                         </div>
                       ))}
@@ -1391,7 +1391,7 @@ function AcquirerCard({ profile }: { profile: AcquirerProfile }) {
         <div className="flex-1">
           <div className="flex items-center gap-3 mb-2">
             <h3 className="text-xl font-bold text-white">{profile.name}</h3>
-            <span className="px-2 py-0.5 bg-cyan-500/20 text-cyan-400 rounded text-xs font-medium">
+            <span className="px-2 py-0.5 bg-white/10 text-slate-300 rounded text-xs font-medium">
               {profile.totalDeals} deals
             </span>
           </div>
@@ -1417,7 +1417,7 @@ function AcquirerCard({ profile }: { profile: AcquirerProfile }) {
       {/* Toggle deal history */}
       <button
         onClick={() => setExpanded(!expanded)}
-        className="mt-4 text-sm text-cyan-400 hover:text-cyan-300 transition-colors flex items-center gap-1"
+        className="mt-4 text-sm text-slate-300 hover:text-white transition-colors flex items-center gap-1"
       >
         {expanded ? 'Hide' : 'Show'} deal history
         <span className={`transition-transform ${expanded ? 'rotate-180' : ''}`}>&#x25BC;</span>

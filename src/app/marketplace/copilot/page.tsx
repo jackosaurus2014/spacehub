@@ -196,7 +196,7 @@ export default function CopilotPage() {
                 <StaggerItem key={i}>
                   <button
                     onClick={() => { setInput(s); inputRef.current?.focus(); }}
-                    className="text-xs px-3 py-2 rounded-lg bg-space-800/50 border border-space-600/30 text-slate-300 hover:border-cyan-500/40 hover:text-cyan-300 transition-colors text-left"
+                    className="text-xs px-3 py-2 rounded-lg bg-space-800/50 border border-space-600/30 text-slate-300 hover:border-white/15/40 hover:text-white transition-colors text-left"
                   >
                     {s}
                   </button>
@@ -220,7 +220,7 @@ export default function CopilotPage() {
                 <div
                   className={`rounded-2xl px-4 py-3 ${
                     msg.role === 'user'
-                      ? 'bg-cyan-500/20 border border-cyan-500/30 text-slate-200'
+                      ? 'bg-white/10 border border-white/10 text-slate-200'
                       : 'bg-space-800/60 border border-space-600/30 text-slate-300'
                   }`}
                 >
@@ -233,12 +233,12 @@ export default function CopilotPage() {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.2 }}
-                    className="mt-3 rounded-xl bg-space-800/80 border border-cyan-500/20 p-4"
+                    className="mt-3 rounded-xl bg-space-800/80 border border-white/10 p-4"
                   >
                     <div className="flex items-center gap-2 mb-3">
                       <span className="text-lg">{getCategoryIcon(msg.rfqData.category)}</span>
                       <h3 className="text-sm font-semibold text-white">Generated RFQ Draft</h3>
-                      <span className="text-xs px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300">
+                      <span className="text-xs px-2 py-0.5 rounded-full bg-white/10 text-slate-200">
                         {getCategoryLabel(msg.rfqData.category)}
                       </span>
                     </div>
@@ -276,7 +276,7 @@ export default function CopilotPage() {
                       <button
                         onClick={() => submitRfq(msg.rfqData!)}
                         disabled={submittingRfq}
-                        className="flex-1 text-xs px-3 py-2 rounded-lg bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 hover:bg-cyan-500/30 transition-colors disabled:opacity-50"
+                        className="flex-1 text-xs px-3 py-2 rounded-lg bg-white/10 text-slate-200 border border-white/10 hover:bg-slate-100/30 transition-colors disabled:opacity-50"
                       >
                         {submittingRfq ? 'Submitting...' : 'Submit This RFQ'}
                       </button>
@@ -312,7 +312,7 @@ export default function CopilotPage() {
                           className="flex items-center justify-between p-2 rounded-lg bg-space-700/30 hover:bg-space-700/50 transition-colors group"
                         >
                           <div>
-                            <div className="text-xs font-medium text-white group-hover:text-cyan-300 transition-colors">
+                            <div className="text-xs font-medium text-white group-hover:text-white transition-colors">
                               {p.name}
                             </div>
                             <div className="text-xs text-slate-500">{p.company}</div>
@@ -343,9 +343,9 @@ export default function CopilotPage() {
           >
             <div className="bg-space-800/60 border border-space-600/30 rounded-2xl px-4 py-3">
               <div className="flex gap-1">
-                <span className="w-2 h-2 bg-cyan-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                <span className="w-2 h-2 bg-cyan-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                <span className="w-2 h-2 bg-cyan-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                <span className="w-2 h-2 bg-white rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                <span className="w-2 h-2 bg-white rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                <span className="w-2 h-2 bg-white rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
               </div>
             </div>
           </motion.div>
@@ -366,7 +366,7 @@ export default function CopilotPage() {
               aria-label="Describe what you need"
               placeholder="Describe what you need... (e.g., 'I need to launch a 500kg satellite to SSO by Q3 2027')"
               rows={1}
-              className="w-full resize-none rounded-xl bg-space-800/60 border border-space-600/30 text-slate-200 placeholder-slate-500 px-4 py-3 pr-12 text-sm focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50 outline-none transition-colors"
+              className="w-full resize-none rounded-xl bg-space-800/60 border border-space-600/30 text-slate-200 placeholder-slate-500 px-4 py-3 pr-12 text-sm focus:ring-2 focus:ring-white/20 focus:border-white/15 outline-none transition-colors"
               style={{ minHeight: '48px', maxHeight: '120px' }}
               onInput={e => {
                 const t = e.currentTarget;
@@ -378,7 +378,7 @@ export default function CopilotPage() {
           <button
             onClick={sendMessage}
             disabled={!input.trim() || loading}
-            className="flex-shrink-0 w-12 h-12 rounded-xl bg-cyan-500/20 border border-cyan-500/30 text-cyan-300 hover:bg-cyan-500/30 transition-colors disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center"
+            className="flex-shrink-0 w-12 h-12 rounded-xl bg-white/10 border border-white/10 text-slate-200 hover:bg-slate-100/30 transition-colors disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center"
           >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
               <path d="M3.478 2.404a.75.75 0 0 0-.926.941l2.432 7.905H13.5a.75.75 0 0 1 0 1.5H4.984l-2.432 7.905a.75.75 0 0 0 .926.94 60.519 60.519 0 0 0 18.445-8.986.75.75 0 0 0 0-1.218A60.517 60.517 0 0 0 3.478 2.404Z" />

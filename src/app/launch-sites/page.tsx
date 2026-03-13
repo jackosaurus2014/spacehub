@@ -526,7 +526,7 @@ function latitudeAdvantage(lat: number): { label: string; color: string; bonus: 
   const absLat = Math.abs(lat);
   if (absLat <= 5) return { label: 'Excellent', color: 'text-emerald-400', bonus: '~15% GTO bonus' };
   if (absLat <= 15) return { label: 'Very Good', color: 'text-green-400', bonus: '~10% GTO bonus' };
-  if (absLat <= 30) return { label: 'Good', color: 'text-cyan-400', bonus: '~5% GTO bonus' };
+  if (absLat <= 30) return { label: 'Good', color: 'text-slate-300', bonus: '~5% GTO bonus' };
   if (absLat <= 45) return { label: 'Moderate', color: 'text-yellow-400', bonus: 'Minimal GTO bonus' };
   return { label: 'High Latitude', color: 'text-orange-400', bonus: 'Polar orbit advantage' };
 }
@@ -649,7 +649,7 @@ export default function LaunchSiteDatabasePage() {
         <ScrollReveal>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
             <div className="bg-slate-800/60 border border-slate-700/50 rounded-xl p-4 text-center">
-              <p className="text-2xl font-bold text-cyan-400">{stats.active}</p>
+              <p className="text-2xl font-bold text-slate-300">{stats.active}</p>
               <p className="text-xs text-slate-400 mt-1">Active Sites</p>
             </div>
             <div className="bg-slate-800/60 border border-slate-700/50 rounded-xl p-4 text-center">
@@ -679,7 +679,7 @@ export default function LaunchSiteDatabasePage() {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search by name, location, operator, vehicle..."
-                  className="w-full bg-slate-900/60 border border-slate-600/50 rounded-lg px-3 py-2 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50"
+                  className="w-full bg-slate-900/60 border border-slate-600/50 rounded-lg px-3 py-2 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-white/20 focus:border-white/15"
                 />
               </div>
 
@@ -689,7 +689,7 @@ export default function LaunchSiteDatabasePage() {
                 <select
                   value={countryFilter}
                   onChange={(e) => setCountryFilter(e.target.value)}
-                  className="w-full bg-slate-900/60 border border-slate-600/50 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-cyan-500/50"
+                  className="w-full bg-slate-900/60 border border-slate-600/50 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-white/20"
                 >
                   <option value="all">All Countries</option>
                   {ALL_COUNTRIES.map((c) => (
@@ -706,7 +706,7 @@ export default function LaunchSiteDatabasePage() {
                 <select
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value)}
-                  className="w-full bg-slate-900/60 border border-slate-600/50 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-cyan-500/50"
+                  className="w-full bg-slate-900/60 border border-slate-600/50 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-white/20"
                 >
                   <option value="all">All Statuses</option>
                   {ALL_STATUSES.map((s) => (
@@ -723,7 +723,7 @@ export default function LaunchSiteDatabasePage() {
                 <select
                   value={capabilityFilter}
                   onChange={(e) => setCapabilityFilter(e.target.value)}
-                  className="w-full bg-slate-900/60 border border-slate-600/50 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-cyan-500/50"
+                  className="w-full bg-slate-900/60 border border-slate-600/50 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-white/20"
                 >
                   <option value="all">All Capabilities</option>
                   {ALL_CAPABILITIES.map((c) => (
@@ -749,7 +749,7 @@ export default function LaunchSiteDatabasePage() {
                   onClick={() => handleSort(field)}
                   className={`px-3 py-1 rounded-md text-xs font-medium transition-colors ${
                     sortField === field
-                      ? 'bg-cyan-600/30 text-cyan-300 border border-cyan-500/40'
+                      ? 'bg-white/30 text-slate-200 border border-white/15/40'
                       : 'bg-slate-700/40 text-slate-400 border border-slate-600/30 hover:bg-slate-700/60 hover:text-slate-300'
                   }`}
                 >
@@ -762,7 +762,7 @@ export default function LaunchSiteDatabasePage() {
                   onClick={() => setViewMode('grid')}
                   className={`px-3 py-1 rounded-md text-xs font-medium transition-colors ${
                     viewMode === 'grid'
-                      ? 'bg-cyan-600/30 text-cyan-300 border border-cyan-500/40'
+                      ? 'bg-white/30 text-slate-200 border border-white/15/40'
                       : 'bg-slate-700/40 text-slate-400 border border-slate-600/30 hover:bg-slate-700/60'
                   }`}
                   aria-label="Grid view"
@@ -773,7 +773,7 @@ export default function LaunchSiteDatabasePage() {
                   onClick={() => setViewMode('table')}
                   className={`px-3 py-1 rounded-md text-xs font-medium transition-colors ${
                     viewMode === 'table'
-                      ? 'bg-cyan-600/30 text-cyan-300 border border-cyan-500/40'
+                      ? 'bg-white/30 text-slate-200 border border-white/15/40'
                       : 'bg-slate-700/40 text-slate-400 border border-slate-600/30 hover:bg-slate-700/60'
                   }`}
                   aria-label="Table view"
@@ -810,7 +810,7 @@ export default function LaunchSiteDatabasePage() {
                 <span>60°+</span>
               </div>
               {/* Background gradient bar */}
-              <div className="h-3 rounded-full bg-gradient-to-r from-emerald-500/40 via-cyan-500/30 via-yellow-500/20 to-orange-500/20 mb-3" />
+              <div className="h-3 rounded-full bg-gradient-to-r from-emerald-500/40 via-white/8 via-yellow-500/20 to-orange-500/20 mb-3" />
               {/* Site markers */}
               <div className="relative h-auto space-y-1">
                 {filteredSites.map((site) => {
@@ -826,10 +826,10 @@ export default function LaunchSiteDatabasePage() {
                       </div>
                       <div className="flex-1 relative h-5 bg-slate-900/40 rounded-full overflow-hidden">
                         <div
-                          className="absolute left-0 top-0 h-full rounded-full bg-gradient-to-r from-cyan-600/50 to-cyan-400/30 flex items-center justify-end pr-2"
+                          className="absolute left-0 top-0 h-full rounded-full bg-gradient-to-r from-slate-200/50 to-slate-400/30 flex items-center justify-end pr-2"
                           style={{ width: `${Math.max(pct, 8)}%` }}
                         >
-                          <span className="text-[9px] text-cyan-300 whitespace-nowrap">
+                          <span className="text-[9px] text-slate-200 whitespace-nowrap">
                             {absLat.toFixed(1)}°
                           </span>
                         </div>
@@ -854,14 +854,14 @@ export default function LaunchSiteDatabasePage() {
                   <div
                     className={`bg-slate-800/50 border rounded-xl overflow-hidden transition-all duration-300 ${
                       isExpanded
-                        ? 'border-cyan-500/40 shadow-lg shadow-cyan-500/10'
+                        ? 'border-white/15/40 shadow-lg shadow-black/5'
                         : 'border-slate-700/50 hover:border-slate-600/60'
                     }`}
                   >
                     {/* Card Header */}
                     <button
                       onClick={() => setExpandedSite(isExpanded ? null : site.id)}
-                      className="w-full text-left p-4 focus:outline-none focus:ring-2 focus:ring-cyan-500/40 rounded-t-xl"
+                      className="w-full text-left p-4 focus:outline-none focus:ring-2 focus:ring-white/30/40 rounded-t-xl"
                       aria-expanded={isExpanded}
                     >
                       <div className="flex items-start justify-between gap-3">
@@ -889,7 +889,7 @@ export default function LaunchSiteDatabasePage() {
                       {/* Quick stats row */}
                       <div className="flex flex-wrap gap-3 mt-3">
                         <div className="text-center">
-                          <p className="text-sm font-bold text-cyan-400">{site.annualLaunchRate}</p>
+                          <p className="text-sm font-bold text-slate-300">{site.annualLaunchRate}</p>
                           <p className="text-[9px] text-slate-500 uppercase tracking-wide">Launches/yr</p>
                         </div>
                         <div className="text-center">
@@ -933,7 +933,7 @@ export default function LaunchSiteDatabasePage() {
                             {site.orbitalCapabilities.map((cap) => (
                               <span
                                 key={cap}
-                                className="px-2 py-0.5 bg-cyan-500/15 text-cyan-300 rounded-md text-[11px] border border-cyan-500/20"
+                                className="px-2 py-0.5 bg-white/8 text-slate-200 rounded-md text-[11px] border border-white/10"
                               >
                                 {cap}
                               </span>
@@ -970,7 +970,7 @@ export default function LaunchSiteDatabasePage() {
                                   key={i}
                                   className="text-xs text-slate-300 flex items-start gap-2"
                                 >
-                                  <span className="text-cyan-500 mt-0.5 shrink-0">&#x25B8;</span>
+                                  <span className="text-slate-300 mt-0.5 shrink-0">&#x25B8;</span>
                                   {launch}
                                 </li>
                               ))}
@@ -1042,7 +1042,7 @@ export default function LaunchSiteDatabasePage() {
                           </span>
                         </td>
                         <td className="px-3 py-3 text-xs text-slate-300 text-center">{site.padCount}</td>
-                        <td className="px-3 py-3 text-xs text-cyan-400 font-semibold text-center">
+                        <td className="px-3 py-3 text-xs text-slate-300 font-semibold text-center">
                           {site.annualLaunchRate}
                         </td>
                         <td className="px-3 py-3 text-xs text-slate-300 font-mono text-center">
@@ -1077,7 +1077,7 @@ export default function LaunchSiteDatabasePage() {
 
             {/* Table row expansion */}
             {expandedSite && (
-              <div className="bg-slate-800/50 border border-cyan-500/30 rounded-xl p-5 mb-8 -mt-4">
+              <div className="bg-slate-800/50 border border-white/10 rounded-xl p-5 mb-8 -mt-4">
                 {(() => {
                   const site = LAUNCH_SITES.find((s) => s.id === expandedSite);
                   if (!site) return null;
@@ -1101,7 +1101,7 @@ export default function LaunchSiteDatabasePage() {
                       <p className="text-sm text-slate-300 leading-relaxed">{site.description}</p>
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                         <div className="bg-slate-900/50 rounded-lg p-3 text-center">
-                          <p className="text-lg font-bold text-cyan-400">{site.annualLaunchRate}</p>
+                          <p className="text-lg font-bold text-slate-300">{site.annualLaunchRate}</p>
                           <p className="text-[10px] text-slate-500">Launches/yr</p>
                         </div>
                         <div className="bg-slate-900/50 rounded-lg p-3 text-center">
@@ -1128,7 +1128,7 @@ export default function LaunchSiteDatabasePage() {
                             {site.orbitalCapabilities.map((cap) => (
                               <span
                                 key={cap}
-                                className="px-2 py-0.5 bg-cyan-500/15 text-cyan-300 rounded-md text-[11px] border border-cyan-500/20"
+                                className="px-2 py-0.5 bg-white/8 text-slate-200 rounded-md text-[11px] border border-white/10"
                               >
                                 {cap}
                               </span>
@@ -1158,7 +1158,7 @@ export default function LaunchSiteDatabasePage() {
                             <ul className="space-y-1">
                               {site.notableLaunches.map((launch, i) => (
                                 <li key={i} className="text-xs text-slate-300 flex items-start gap-1.5">
-                                  <span className="text-cyan-500 mt-0.5 shrink-0">&#x25B8;</span>
+                                  <span className="text-slate-300 mt-0.5 shrink-0">&#x25B8;</span>
                                   {launch}
                                 </li>
                               ))}
@@ -1190,7 +1190,7 @@ export default function LaunchSiteDatabasePage() {
                 setStatusFilter('all');
                 setCapabilityFilter('all');
               }}
-              className="mt-4 px-4 py-2 bg-cyan-600/20 text-cyan-300 rounded-lg text-sm border border-cyan-500/30 hover:bg-cyan-600/30 transition-colors"
+              className="mt-4 px-4 py-2 bg-white/20 text-slate-200 rounded-lg text-sm border border-white/10 hover:bg-slate-700/30 transition-colors"
             >
               Clear All Filters
             </button>
@@ -1204,11 +1204,11 @@ export default function LaunchSiteDatabasePage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
               <Link
                 href="/spaceports"
-                className="flex items-center gap-3 p-3 bg-slate-900/40 rounded-lg border border-slate-700/40 hover:border-cyan-500/30 hover:bg-slate-800/50 transition-all group"
+                className="flex items-center gap-3 p-3 bg-slate-900/40 rounded-lg border border-slate-700/40 hover:border-white/10 hover:bg-slate-800/50 transition-all group"
               >
                 <span className="text-2xl" role="img" aria-label="Spaceport">&#x1F680;</span>
                 <div>
-                  <p className="text-sm font-medium text-slate-200 group-hover:text-cyan-300 transition-colors">
+                  <p className="text-sm font-medium text-slate-200 group-hover:text-white transition-colors">
                     Spaceports
                   </p>
                   <p className="text-[10px] text-slate-500">Global spaceport directory</p>
@@ -1216,11 +1216,11 @@ export default function LaunchSiteDatabasePage() {
               </Link>
               <Link
                 href="/launch-vehicles"
-                className="flex items-center gap-3 p-3 bg-slate-900/40 rounded-lg border border-slate-700/40 hover:border-cyan-500/30 hover:bg-slate-800/50 transition-all group"
+                className="flex items-center gap-3 p-3 bg-slate-900/40 rounded-lg border border-slate-700/40 hover:border-white/10 hover:bg-slate-800/50 transition-all group"
               >
                 <span className="text-2xl" role="img" aria-label="Rocket">&#x1F6F8;</span>
                 <div>
-                  <p className="text-sm font-medium text-slate-200 group-hover:text-cyan-300 transition-colors">
+                  <p className="text-sm font-medium text-slate-200 group-hover:text-white transition-colors">
                     Launch Vehicles
                   </p>
                   <p className="text-[10px] text-slate-500">Rocket specs &amp; comparisons</p>
@@ -1228,11 +1228,11 @@ export default function LaunchSiteDatabasePage() {
               </Link>
               <Link
                 href="/launch-windows"
-                className="flex items-center gap-3 p-3 bg-slate-900/40 rounded-lg border border-slate-700/40 hover:border-cyan-500/30 hover:bg-slate-800/50 transition-all group"
+                className="flex items-center gap-3 p-3 bg-slate-900/40 rounded-lg border border-slate-700/40 hover:border-white/10 hover:bg-slate-800/50 transition-all group"
               >
                 <span className="text-2xl" role="img" aria-label="Calendar">&#x1F4C5;</span>
                 <div>
-                  <p className="text-sm font-medium text-slate-200 group-hover:text-cyan-300 transition-colors">
+                  <p className="text-sm font-medium text-slate-200 group-hover:text-white transition-colors">
                     Launch Windows
                   </p>
                   <p className="text-[10px] text-slate-500">Upcoming launch schedule</p>
@@ -1240,11 +1240,11 @@ export default function LaunchSiteDatabasePage() {
               </Link>
               <Link
                 href="/mission-cost"
-                className="flex items-center gap-3 p-3 bg-slate-900/40 rounded-lg border border-slate-700/40 hover:border-cyan-500/30 hover:bg-slate-800/50 transition-all group"
+                className="flex items-center gap-3 p-3 bg-slate-900/40 rounded-lg border border-slate-700/40 hover:border-white/10 hover:bg-slate-800/50 transition-all group"
               >
                 <span className="text-2xl" role="img" aria-label="Calculator">&#x1F4B0;</span>
                 <div>
-                  <p className="text-sm font-medium text-slate-200 group-hover:text-cyan-300 transition-colors">
+                  <p className="text-sm font-medium text-slate-200 group-hover:text-white transition-colors">
                     Mission Planning
                   </p>
                   <p className="text-[10px] text-slate-500">Cost estimator &amp; planning tools</p>

@@ -106,7 +106,7 @@ const ROUND_TYPE_COLORS: Record<string, string> = {
   'Series D': 'bg-red-500/20 text-red-400 border-red-500/30',
   'Series E': 'bg-red-500/20 text-red-400 border-red-500/30',
   'Series F': 'bg-red-500/20 text-red-400 border-red-500/30',
-  'SPAC Merger': 'bg-cyan-500/20 text-cyan-400 border-cyan-500/30',
+  'SPAC Merger': 'bg-white/10 text-slate-300 border-white/10',
   'IPO': 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30',
   'Acquisition': 'bg-pink-500/20 text-pink-400 border-pink-500/30',
   'Follow-on': 'bg-slate-500/20 text-slate-300 border-slate-500/30',
@@ -255,7 +255,7 @@ function FundingTrackerPageInner() {
               </StaggerItem>
               <StaggerItem>
                 <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-5 text-center">
-                  <div className="text-2xl md:text-3xl font-bold text-cyan-400">
+                  <div className="text-2xl md:text-3xl font-bold text-slate-300">
                     {stats.summary.last12MonthsDealCount}
                   </div>
                   <div className="text-slate-400 text-xs uppercase tracking-widest mt-1">
@@ -364,7 +364,7 @@ function FundingTrackerPageInner() {
                         </div>
                         <div className="w-full bg-slate-700/30 rounded-full h-2.5">
                           <div
-                            className="bg-gradient-to-r from-purple-500 to-cyan-400 h-2.5 rounded-full transition-all duration-500"
+                            className="bg-gradient-to-r from-purple-500 to-slate-400 h-2.5 rounded-full transition-all duration-500"
                             style={{ width: `${Math.max(widthPct, 2)}%` }}
                           />
                         </div>
@@ -403,7 +403,7 @@ function FundingTrackerPageInner() {
                           {r.companySlug ? (
                             <Link
                               href={`/company-profiles/${r.companySlug}`}
-                              className="text-white font-medium text-sm hover:text-cyan-400 transition-colors truncate"
+                              className="text-white font-medium text-sm hover:text-white transition-colors truncate"
                             >
                               {r.companyName}
                             </Link>
@@ -449,7 +449,7 @@ function FundingTrackerPageInner() {
             <ScrollReveal>
               <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-6">
                 <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-                  <span className="w-8 h-8 rounded-lg bg-cyan-500/20 flex items-center justify-center text-sm">
+                  <span className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-sm">
                     🏦
                   </span>
                   Top Investors by Deal Count
@@ -468,13 +468,13 @@ function FundingTrackerPageInner() {
                           href={`/investors?search=${encodeURIComponent(
                             inv.name
                           )}`}
-                          className="text-white font-medium text-sm hover:text-cyan-400 transition-colors truncate block"
+                          className="text-white font-medium text-sm hover:text-white transition-colors truncate block"
                         >
                           {inv.name}
                         </Link>
                       </div>
                       <div className="text-right">
-                        <div className="text-cyan-400 font-mono text-sm">
+                        <div className="text-slate-300 font-mono text-sm">
                           {inv.deals} deals
                         </div>
                         <div className="text-slate-500 text-xs">
@@ -486,7 +486,7 @@ function FundingTrackerPageInner() {
                 </div>
                 <Link
                   href="/investors"
-                  className="block mt-4 text-center text-sm text-cyan-400 hover:text-cyan-300 transition-colors"
+                  className="block mt-4 text-center text-sm text-slate-300 hover:text-white transition-colors"
                 >
                   View All Investors &rarr;
                 </Link>
@@ -541,7 +541,7 @@ function FundingTrackerPageInner() {
                 <select
                   value={timeRange}
                   onChange={(e) => setTimeRange(e.target.value)}
-                  className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+                  className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                 >
                   {TIME_RANGES.map((t) => (
                     <option key={t.value} value={t.value}>
@@ -557,7 +557,7 @@ function FundingTrackerPageInner() {
                 <select
                   value={roundType}
                   onChange={(e) => setRoundType(e.target.value)}
-                  className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+                  className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                 >
                   {ROUND_TYPES.map((t) => (
                     <option key={t.value} value={t.value}>
@@ -573,7 +573,7 @@ function FundingTrackerPageInner() {
                 <select
                   value={sector}
                   onChange={(e) => setSector(e.target.value)}
-                  className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+                  className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                 >
                   {SECTOR_OPTIONS.map((s) => (
                     <option key={s.value} value={s.value}>
@@ -591,7 +591,7 @@ function FundingTrackerPageInner() {
                   value={investorSearch}
                   onChange={(e) => setInvestorSearch(e.target.value)}
                   placeholder="Search investor..."
-                  className="bg-slate-900 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-500 w-48"
+                  className="bg-slate-900 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-white/15 w-48"
                 />
               </div>
               {(timeRange || roundType || sector || investorSearch) && (
@@ -637,7 +637,7 @@ function FundingTrackerPageInner() {
                         <div className="flex items-center gap-2 flex-wrap">
                           <Link
                             href={`/company-profiles/${round.company.slug}`}
-                            className="text-white font-semibold hover:text-cyan-400 transition-colors"
+                            className="text-white font-semibold hover:text-white transition-colors"
                           >
                             {round.company.name}
                           </Link>
@@ -687,7 +687,7 @@ function FundingTrackerPageInner() {
                           Investors:{' '}
                         </span>
                         {round.leadInvestor && (
-                          <span className="text-cyan-400 text-xs font-medium">
+                          <span className="text-slate-300 text-xs font-medium">
                             {round.leadInvestor} (lead)
                           </span>
                         )}

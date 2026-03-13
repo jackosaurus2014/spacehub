@@ -394,9 +394,9 @@ const IMPACT_CONFIG: Record<ImpactLevel, { label: string; color: string; bg: str
   },
   significant: {
     label: 'Significant',
-    color: 'text-cyan-400',
-    bg: 'bg-cyan-400/10',
-    border: 'border-cyan-400/30',
+    color: 'text-slate-300',
+    bg: 'bg-white/5',
+    border: 'border-white/10',
   },
   emerging: {
     label: 'Emerging',
@@ -467,7 +467,7 @@ export default function IndustryTrendsPage() {
         <ScrollReveal>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
             <div className="bg-slate-900/50 border border-slate-700/50 rounded-xl p-4 text-center">
-              <p className="text-2xl font-bold text-cyan-400">{TRENDS.length}</p>
+              <p className="text-2xl font-bold text-slate-300">{TRENDS.length}</p>
               <p className="text-sm text-slate-400 mt-1">Tracked Trends</p>
             </div>
             <div className="bg-slate-900/50 border border-slate-700/50 rounded-xl p-4 text-center">
@@ -475,7 +475,7 @@ export default function IndustryTrendsPage() {
               <p className="text-sm text-slate-400 mt-1">Transformative</p>
             </div>
             <div className="bg-slate-900/50 border border-slate-700/50 rounded-xl p-4 text-center">
-              <p className="text-2xl font-bold text-cyan-400">{impactCounts.significant}</p>
+              <p className="text-2xl font-bold text-slate-300">{impactCounts.significant}</p>
               <p className="text-sm text-slate-400 mt-1">Significant</p>
             </div>
             <div className="bg-slate-900/50 border border-slate-700/50 rounded-xl p-4 text-center">
@@ -494,7 +494,7 @@ export default function IndustryTrendsPage() {
               <select
                 value={categoryFilter}
                 onChange={(e) => setCategoryFilter(e.target.value as TrendCategory | 'all')}
-                className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500"
+                className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-white/20 focus:border-white/15"
               >
                 <option value="all">All Categories ({TRENDS.length})</option>
                 {ALL_CATEGORIES.map((cat) => {
@@ -561,7 +561,7 @@ export default function IndustryTrendsPage() {
               <ScrollReveal key={trend.title} delay={idx * 0.05}>
                 <div
                   className={`bg-slate-900/60 border rounded-xl transition-all duration-300 ${
-                    isExpanded ? 'border-cyan-500/40 shadow-lg shadow-cyan-500/5' : 'border-slate-700/50 hover:border-slate-600/50'
+                    isExpanded ? 'border-white/15/40 shadow-lg shadow-black/20/5' : 'border-slate-700/50 hover:border-slate-600/50'
                   }`}
                 >
                   {/* Card Header */}
@@ -597,7 +597,7 @@ export default function IndustryTrendsPage() {
                           <div className="flex flex-wrap gap-3 mt-3">
                             {trend.metrics.slice(0, 3).map((m) => (
                               <span key={m.label} className="text-xs text-slate-500">
-                                <span className="text-cyan-400 font-semibold">{m.value}</span>{' '}
+                                <span className="text-slate-300 font-semibold">{m.value}</span>{' '}
                                 {m.label}
                               </span>
                             ))}
@@ -637,7 +637,7 @@ export default function IndustryTrendsPage() {
                           <ul className="space-y-2">
                             {trend.evidence.map((item, i) => (
                               <li key={i} className="flex items-start gap-2 text-sm text-slate-300">
-                                <span className="text-cyan-400 mt-0.5 flex-shrink-0">&#8226;</span>
+                                <span className="text-slate-300 mt-0.5 flex-shrink-0">&#8226;</span>
                                 <span>{item}</span>
                               </li>
                             ))}
@@ -670,7 +670,7 @@ export default function IndustryTrendsPage() {
                                 key={m.label}
                                 className="bg-slate-800/60 border border-slate-700/40 rounded-lg p-3"
                               >
-                                <p className="text-lg font-bold text-cyan-400">{m.value}</p>
+                                <p className="text-lg font-bold text-slate-300">{m.value}</p>
                                 <p className="text-xs text-slate-400 mt-0.5">{m.label}</p>
                               </div>
                             ))}
@@ -699,7 +699,7 @@ export default function IndustryTrendsPage() {
                   setCategoryFilter('all');
                   setImpactFilter('all');
                 }}
-                className="text-sm text-cyan-400 hover:text-cyan-300 underline underline-offset-2"
+                className="text-sm text-slate-300 hover:text-white underline underline-offset-2"
               >
                 Clear all filters
               </button>
@@ -714,10 +714,10 @@ export default function IndustryTrendsPage() {
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <Link
                 href="/market-intel"
-                className="group bg-slate-900/50 border border-slate-700/50 rounded-xl p-4 hover:border-cyan-500/30 transition-colors"
+                className="group bg-slate-900/50 border border-slate-700/50 rounded-xl p-4 hover:border-white/10 transition-colors"
               >
                 <div className="text-2xl mb-2">📊</div>
-                <h3 className="text-sm font-semibold text-slate-200 group-hover:text-cyan-400 transition-colors">
+                <h3 className="text-sm font-semibold text-slate-200 group-hover:text-white transition-colors">
                   Market Intelligence
                 </h3>
                 <p className="text-xs text-slate-400 mt-1">
@@ -726,10 +726,10 @@ export default function IndustryTrendsPage() {
               </Link>
               <Link
                 href="/market-map"
-                className="group bg-slate-900/50 border border-slate-700/50 rounded-xl p-4 hover:border-cyan-500/30 transition-colors"
+                className="group bg-slate-900/50 border border-slate-700/50 rounded-xl p-4 hover:border-white/10 transition-colors"
               >
                 <div className="text-2xl mb-2">🗺️</div>
-                <h3 className="text-sm font-semibold text-slate-200 group-hover:text-cyan-400 transition-colors">
+                <h3 className="text-sm font-semibold text-slate-200 group-hover:text-white transition-colors">
                   Market Map
                 </h3>
                 <p className="text-xs text-slate-400 mt-1">
@@ -738,10 +738,10 @@ export default function IndustryTrendsPage() {
               </Link>
               <Link
                 href="/investment-tracker"
-                className="group bg-slate-900/50 border border-slate-700/50 rounded-xl p-4 hover:border-cyan-500/30 transition-colors"
+                className="group bg-slate-900/50 border border-slate-700/50 rounded-xl p-4 hover:border-white/10 transition-colors"
               >
                 <div className="text-2xl mb-2">💰</div>
-                <h3 className="text-sm font-semibold text-slate-200 group-hover:text-cyan-400 transition-colors">
+                <h3 className="text-sm font-semibold text-slate-200 group-hover:text-white transition-colors">
                   Investment Tracker
                 </h3>
                 <p className="text-xs text-slate-400 mt-1">
@@ -750,10 +750,10 @@ export default function IndustryTrendsPage() {
               </Link>
               <Link
                 href="/tech-readiness"
-                className="group bg-slate-900/50 border border-slate-700/50 rounded-xl p-4 hover:border-cyan-500/30 transition-colors"
+                className="group bg-slate-900/50 border border-slate-700/50 rounded-xl p-4 hover:border-white/10 transition-colors"
               >
                 <div className="text-2xl mb-2">🔬</div>
-                <h3 className="text-sm font-semibold text-slate-200 group-hover:text-cyan-400 transition-colors">
+                <h3 className="text-sm font-semibold text-slate-200 group-hover:text-white transition-colors">
                   Tech Readiness
                 </h3>
                 <p className="text-xs text-slate-400 mt-1">

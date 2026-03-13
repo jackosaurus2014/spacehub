@@ -207,7 +207,7 @@ export default function PWAInstallPrompt() {
       }}
     >
       <div
-        className="relative overflow-hidden rounded-2xl border border-cyan-400/30 p-4"
+        className="relative overflow-hidden rounded-2xl border border-white/10 p-4"
         style={{
           background: 'linear-gradient(145deg, rgba(15, 23, 42, 0.98) 0%, rgba(30, 41, 59, 0.96) 50%, rgba(15, 23, 42, 0.98) 100%)',
           backdropFilter: 'blur(20px)',
@@ -245,7 +245,7 @@ export default function PWAInstallPrompt() {
             }}
           >
             <svg
-              className="w-8 h-8 text-cyan-400"
+              className="w-8 h-8 text-slate-300"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -333,7 +333,7 @@ export default function PWAInstallPrompt() {
         </div>
 
         {/* Subtle indicator */}
-        <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-cyan-400/40 to-transparent" />
+        <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-white/10 to-transparent" />
       </div>
 
       <style jsx>{`

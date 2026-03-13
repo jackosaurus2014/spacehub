@@ -115,7 +115,7 @@ const CATEGORY_COLORS: Record<string, { bg: string; text: string }> = {
   exploration: { bg: 'bg-indigo-500/20', text: 'text-indigo-400' },
   navigation: { bg: 'bg-teal-500/20', text: 'text-teal-400' },
   earth_science: { bg: 'bg-emerald-500/20', text: 'text-emerald-400' },
-  general: { bg: 'bg-cyan-500/20', text: 'text-cyan-400' },
+  general: { bg: 'bg-white/10', text: 'text-slate-300' },
 };
 
 const AGENCY_ICONS: Record<string, string> = {
@@ -169,7 +169,7 @@ function getStatusBadge(status: string) {
   const styles: Record<string, { bg: string; text: string; label: string }> = {
     open: { bg: 'bg-emerald-500/20', text: 'text-emerald-400', label: 'OPEN' },
     upcoming: { bg: 'bg-blue-500/20', text: 'text-blue-400', label: 'UPCOMING' },
-    rolling: { bg: 'bg-cyan-500/20', text: 'text-cyan-400', label: 'ROLLING' },
+    rolling: { bg: 'bg-white/10', text: 'text-slate-300', label: 'ROLLING' },
     closed: { bg: 'bg-slate-500/20', text: 'text-slate-400', label: 'CLOSED' },
   };
   const style = styles[status] || styles.closed;
@@ -256,11 +256,11 @@ function OpportunityCard({ opp, index }: { opp: FundingOpportunity; index: numbe
             {getAgencyIcon(opp.agency)}
           </div>
           <div className="min-w-0 flex-1">
-            <h3 className="font-semibold text-white leading-tight line-clamp-2 group-hover:text-cyan-400 transition-colors">
+            <h3 className="font-semibold text-white leading-tight line-clamp-2 group-hover:text-white transition-colors">
               {opp.title}
             </h3>
             <div className="flex items-center gap-2 text-xs text-slate-400 mt-0.5">
-              <span className="font-medium text-cyan-400">{opp.agency}</span>
+              <span className="font-medium text-slate-300">{opp.agency}</span>
               {opp.program && (
                 <>
                   <span className="text-slate-600">|</span>
@@ -282,7 +282,7 @@ function OpportunityCard({ opp, index }: { opp: FundingOpportunity; index: numbe
       {opp.description && opp.description.length > 150 && (
         <button
           onClick={() => setExpanded(!expanded)}
-          className="text-xs text-cyan-400 hover:text-cyan-300 mb-3 transition-colors"
+          className="text-xs text-slate-300 hover:text-white mb-3 transition-colors"
         >
           {expanded ? 'Show less' : 'Read more'}
         </button>
@@ -342,7 +342,7 @@ function OpportunityCard({ opp, index }: { opp: FundingOpportunity; index: numbe
         <div className="flex items-center gap-3 text-xs text-slate-500">
           <span>Source: {opp.source}</span>
           {opp.recurring && (
-            <span className="text-cyan-400 font-medium">Recurring</span>
+            <span className="text-slate-300 font-medium">Recurring</span>
           )}
           {opp.solicitationNumber && (
             <span className="font-mono">{opp.solicitationNumber}</span>
@@ -353,7 +353,7 @@ function OpportunityCard({ opp, index }: { opp: FundingOpportunity; index: numbe
             href={opp.applicationUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-cyan-500/20 text-cyan-400 text-xs font-medium hover:bg-cyan-500/30 transition-colors border border-cyan-500/30"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/10 text-slate-300 text-xs font-medium hover:bg-slate-100/30 transition-colors border border-white/10"
           >
             Apply Now
             <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -438,7 +438,7 @@ export default function FundingOpportunitiesPage() {
     <div className="min-h-screen">
       {/* Hero Section */}
       <section className="relative overflow-hidden border-b border-slate-700/50">
-        <div className="absolute inset-0 bg-gradient-to-br from-emerald-900/20 via-slate-900 to-cyan-900/20" />
+        <div className="absolute inset-0 bg-gradient-to-br from-emerald-900/20 via-slate-900 to-slate-800/20" />
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-5" />
         <div className="relative max-w-7xl mx-auto px-4 py-12 sm:py-16">
           <motion.div
@@ -449,7 +449,7 @@ export default function FundingOpportunitiesPage() {
           >
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4">
               Space Funding{' '}
-              <span className="bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-emerald-400 to-slate-400 bg-clip-text text-transparent">
                 Opportunities
               </span>
             </h1>
@@ -467,7 +467,7 @@ export default function FundingOpportunitiesPage() {
                 <div className="text-xs text-slate-400 mt-1">Open Opportunities</div>
               </div>
               <div className="bg-slate-800/60 backdrop-blur rounded-xl p-4 border border-slate-700/50">
-                <div className="text-2xl font-bold text-cyan-400">
+                <div className="text-2xl font-bold text-slate-300">
                   {stats?.total ?? '--'}
                 </div>
                 <div className="text-xs text-slate-400 mt-1">Total Tracked</div>
@@ -503,7 +503,7 @@ export default function FundingOpportunitiesPage() {
                 placeholder="Search opportunities..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 rounded-lg bg-slate-800/80 border border-slate-700/50 text-white text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-500/40 focus:border-cyan-500/40"
+                className="w-full pl-10 pr-4 py-2 rounded-lg bg-slate-800/80 border border-slate-700/50 text-white text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-white/30/40 focus:border-white/15/40"
               />
             </div>
 
@@ -511,7 +511,7 @@ export default function FundingOpportunitiesPage() {
             <select
               value={status}
               onChange={(e) => setStatus(e.target.value)}
-              className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+              className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
             >
               {STATUS_OPTIONS.map(opt => (
                 <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -522,7 +522,7 @@ export default function FundingOpportunitiesPage() {
             <select
               value={agency}
               onChange={(e) => setAgency(e.target.value)}
-              className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+              className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
             >
               {AGENCY_OPTIONS.map(opt => (
                 <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -533,7 +533,7 @@ export default function FundingOpportunitiesPage() {
             <select
               value={category}
               onChange={(e) => setCategory(e.target.value)}
-              className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none hidden sm:block"
+              className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none hidden sm:block"
             >
               {CATEGORY_OPTIONS.map(opt => (
                 <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -544,7 +544,7 @@ export default function FundingOpportunitiesPage() {
             <select
               value={fundingType}
               onChange={(e) => setFundingType(e.target.value)}
-              className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none hidden sm:block"
+              className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none hidden sm:block"
             >
               {TYPE_OPTIONS.map(opt => (
                 <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -612,7 +612,7 @@ export default function FundingOpportunitiesPage() {
                 <button
                   onClick={() => setOffset(Math.max(0, offset - limit))}
                   disabled={offset === 0}
-                  className="px-4 py-2 rounded-lg bg-slate-800 text-slate-300 text-sm border border-slate-700/50 hover:border-cyan-500/40 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                  className="px-4 py-2 rounded-lg bg-slate-800 text-slate-300 text-sm border border-slate-700/50 hover:border-white/15/40 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                 >
                   Previous
                 </button>
@@ -633,8 +633,8 @@ export default function FundingOpportunitiesPage() {
                       onClick={() => setOffset((pageNum - 1) * limit)}
                       className={`w-9 h-9 rounded-lg text-sm font-medium transition-colors ${
                         currentPage === pageNum
-                          ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/40'
-                          : 'bg-slate-800 text-slate-400 border border-slate-700/50 hover:border-cyan-500/40'
+                          ? 'bg-white/10 text-slate-300 border border-white/15/40'
+                          : 'bg-slate-800 text-slate-400 border border-slate-700/50 hover:border-white/15/40'
                       }`}
                     >
                       {pageNum}
@@ -644,7 +644,7 @@ export default function FundingOpportunitiesPage() {
                 <button
                   onClick={() => setOffset(Math.min((totalPages - 1) * limit, offset + limit))}
                   disabled={currentPage >= totalPages}
-                  className="px-4 py-2 rounded-lg bg-slate-800 text-slate-300 text-sm border border-slate-700/50 hover:border-cyan-500/40 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                  className="px-4 py-2 rounded-lg bg-slate-800 text-slate-300 text-sm border border-slate-700/50 hover:border-white/15/40 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                 >
                   Next
                 </button>
@@ -666,10 +666,10 @@ export default function FundingOpportunitiesPage() {
               <button
                 key={agencyName}
                 onClick={() => { setAgency(agencyName); setOffset(0); }}
-                className="bg-slate-800/60 rounded-xl p-4 border border-slate-700/50 hover:border-cyan-500/30 transition-colors text-left group"
+                className="bg-slate-800/60 rounded-xl p-4 border border-slate-700/50 hover:border-white/10 transition-colors text-left group"
               >
                 <div className="text-lg mb-1">{getAgencyIcon(agencyName)}</div>
-                <div className="text-sm font-medium text-white group-hover:text-cyan-400 transition-colors truncate">{agencyName}</div>
+                <div className="text-sm font-medium text-white group-hover:text-white transition-colors truncate">{agencyName}</div>
                 <div className="text-xs text-slate-400">{count} opportunit{count === 1 ? 'y' : 'ies'}</div>
               </button>
             ))}
@@ -686,7 +686,7 @@ export default function FundingOpportunitiesPage() {
               <button
                 key={type}
                 onClick={() => { setFundingType(type); setOffset(0); }}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-800/60 border border-slate-700/50 hover:border-cyan-500/30 transition-colors"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-800/60 border border-slate-700/50 hover:border-white/10 transition-colors"
               >
                 <span className="text-sm text-white">{getTypeLabel(type)}</span>
                 <span className="text-xs text-slate-400 bg-slate-700/50 px-2 py-0.5 rounded-full">{count}</span>

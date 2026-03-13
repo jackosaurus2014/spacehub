@@ -141,10 +141,10 @@ export default function InstallPrompt() {
       role="dialog"
       aria-label="Install SpaceNexus application"
     >
-      <div className="bg-slate-900 border-t border-cyan-500/30 px-4 py-3 safe-area-bottom">
+      <div className="bg-slate-900 border-t border-white/10 px-4 py-3 safe-area-bottom">
         <div className="max-w-lg mx-auto flex items-center gap-3">
           {/* SpaceNexus icon */}
-          <div className="flex-shrink-0 w-10 h-10 rounded-lg overflow-hidden border border-cyan-500/20">
+          <div className="flex-shrink-0 w-10 h-10 rounded-lg overflow-hidden border border-white/10">
             <Image
               src="/icons/icon-192x192.png"
               alt="SpaceNexus"
@@ -171,7 +171,7 @@ export default function InstallPrompt() {
             <button
               onClick={handleInstall}
               disabled={isInstalling}
-              className="px-4 py-1.5 text-xs font-semibold text-white bg-cyan-600 hover:bg-cyan-500 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5"
+              className="px-4 py-1.5 text-xs font-semibold text-white bg-white hover:bg-slate-100 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5"
             >
               {isInstalling ? (
                 <svg className="w-3.5 h-3.5 animate-spin" fill="none" viewBox="0 0 24 24">

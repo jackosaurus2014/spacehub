@@ -132,7 +132,7 @@ export default function CookieConsent() {
                   We use cookies to enhance your experience. By continuing to visit this site you agree to our use of cookies.{' '}
                   <Link
                     href="/cookies"
-                    className="text-cyan-400 hover:text-cyan-300 underline underline-offset-2 transition-colors"
+                    className="text-slate-300 hover:text-white underline underline-offset-2 transition-colors"
                   >
                     Cookie Policy
                   </Link>
@@ -147,7 +147,7 @@ export default function CookieConsent() {
                            text-slate-400 hover:text-slate-200
                            border border-slate-600 hover:border-slate-500
                            transition-all duration-200
-                           focus:outline-none focus:ring-2 focus:ring-cyan-400/50 focus:ring-offset-2 focus:ring-offset-slate-900"
+                           focus:outline-none focus:ring-2 focus:ring-white/20 focus:ring-offset-2 focus:ring-offset-slate-900"
                 >
                   Cookie Settings
                 </button>
@@ -158,16 +158,16 @@ export default function CookieConsent() {
                            border border-slate-500/50 hover:border-slate-400/50
                            hover:bg-slate-800
                            transition-all duration-200
-                           focus:outline-none focus:ring-2 focus:ring-cyan-400/50 focus:ring-offset-2 focus:ring-offset-slate-900"
+                           focus:outline-none focus:ring-2 focus:ring-white/20 focus:ring-offset-2 focus:ring-offset-slate-900"
                 >
                   Reject Non-Essential
                 </button>
                 <button
                   onClick={handleAcceptAll}
                   className="px-5 py-2 rounded-lg text-sm font-medium
-                           text-slate-900 bg-cyan-400 hover:bg-cyan-300
+                           text-slate-900 bg-white hover:bg-slate-200
                            transition-all duration-200
-                           focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:ring-offset-2 focus:ring-offset-slate-900"
+                           focus:outline-none focus:ring-2 focus:ring-white/20 focus:ring-offset-2 focus:ring-offset-slate-900"
                 >
                   Accept All
                 </button>
@@ -182,7 +182,7 @@ export default function CookieConsent() {
                   <div className="flex items-start gap-3">
                     <div className="mt-0.5">
                       <div
-                        className="w-9 h-5 rounded-full bg-cyan-500 relative cursor-not-allowed opacity-70"
+                        className="w-9 h-5 rounded-full bg-white relative cursor-not-allowed opacity-70"
                         title="Essential cookies are always enabled"
                       >
                         <div className="absolute right-0.5 top-0.5 w-4 h-4 rounded-full bg-white shadow-sm" />
@@ -199,8 +199,8 @@ export default function CookieConsent() {
                     <div className="mt-0.5">
                       <button
                         onClick={() => setAnalyticsEnabled(!analyticsEnabled)}
-                        className={`w-9 h-5 rounded-full relative transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-cyan-400/50 ${
-                          analyticsEnabled ? 'bg-cyan-500' : 'bg-slate-600'
+                        className={`w-9 h-5 rounded-full relative transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-white/20 ${
+                          analyticsEnabled ? 'bg-white' : 'bg-slate-600'
                         }`}
                         role="switch"
                         aria-checked={analyticsEnabled}
@@ -224,8 +224,8 @@ export default function CookieConsent() {
                     <div className="mt-0.5">
                       <button
                         onClick={() => setMarketingEnabled(!marketingEnabled)}
-                        className={`w-9 h-5 rounded-full relative transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-cyan-400/50 ${
-                          marketingEnabled ? 'bg-cyan-500' : 'bg-slate-600'
+                        className={`w-9 h-5 rounded-full relative transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-white/20 ${
+                          marketingEnabled ? 'bg-white' : 'bg-slate-600'
                         }`}
                         role="switch"
                         aria-checked={marketingEnabled}
@@ -252,7 +252,7 @@ export default function CookieConsent() {
                              text-white bg-slate-700 hover:bg-slate-600
                              border border-slate-600 hover:border-slate-500
                              transition-all duration-200
-                             focus:outline-none focus:ring-2 focus:ring-cyan-400/50 focus:ring-offset-2 focus:ring-offset-slate-900"
+                             focus:outline-none focus:ring-2 focus:ring-white/20 focus:ring-offset-2 focus:ring-offset-slate-900"
                   >
                     Save Preferences
                   </button>

@@ -150,13 +150,13 @@ export default function ClarificationThread({ rfqId, userRole }: ClarificationTh
                       onChange={(e) => setAnswerText(e.target.value)}
                       placeholder="Write your answer..."
                       rows={3}
-                      className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+                      className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                     />
                     <div className="flex gap-2">
                       <button
                         onClick={() => handleAnswer(c.id)}
                         disabled={submitting || !answerText.trim()}
-                        className="px-3 py-1.5 bg-cyan-600 hover:bg-cyan-500 disabled:bg-slate-700 text-white text-xs rounded font-medium"
+                        className="px-3 py-1.5 bg-white hover:bg-slate-100 disabled:bg-slate-700 text-white text-xs rounded font-medium"
                       >
                         {submitting ? 'Submitting...' : 'Submit Answer'}
                       </button>
@@ -171,7 +171,7 @@ export default function ClarificationThread({ rfqId, userRole }: ClarificationTh
                 ) : (
                   <button
                     onClick={() => setAnsweringId(c.id)}
-                    className="ml-14 text-xs text-cyan-400 hover:text-cyan-300"
+                    className="ml-14 text-xs text-slate-300 hover:text-white"
                   >
                     Answer this question
                   </button>
@@ -198,7 +198,7 @@ export default function ClarificationThread({ rfqId, userRole }: ClarificationTh
             placeholder="Ask a question about this RFQ..."
             rows={3}
             maxLength={2000}
-            className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+            className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
           />
           <div className="flex items-center justify-between">
             <label className="flex items-center gap-2 text-xs text-slate-400">
@@ -213,7 +213,7 @@ export default function ClarificationThread({ rfqId, userRole }: ClarificationTh
             <button
               type="submit"
               disabled={submitting || !question.trim()}
-              className="px-4 py-1.5 bg-cyan-600 hover:bg-cyan-500 disabled:bg-slate-700 text-white text-xs rounded-lg font-medium"
+              className="px-4 py-1.5 bg-white hover:bg-slate-100 disabled:bg-slate-700 text-white text-xs rounded-lg font-medium"
             >
               {submitting ? 'Submitting...' : 'Submit Question'}
             </button>

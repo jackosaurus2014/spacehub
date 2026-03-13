@@ -143,7 +143,7 @@ export default function SpaceAgenciesPage() {
                   <span className="text-lg flex-shrink-0">{a.flag}</span>
                   <span className="w-28 text-sm text-slate-300 truncate flex-shrink-0">{a.name}</span>
                   <div className="flex-1 h-6 bg-slate-800 rounded-full overflow-hidden relative">
-                    <div className="h-full rounded-full bg-gradient-to-r from-blue-600 to-cyan-500 transition-all duration-700" style={{ width: `${(a.budget / maxBudget) * 100}%` }} />
+                    <div className="h-full rounded-full bg-gradient-to-r from-blue-600 to-slate-200 transition-all duration-700" style={{ width: `${(a.budget / maxBudget) * 100}%` }} />
                     <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs font-medium text-slate-200">{fmtBudget(a.budget)}</span>
 
         <RelatedModules modules={PAGE_RELATIONS['space-agencies']} />
@@ -294,7 +294,7 @@ export default function SpaceAgenciesPage() {
                         <div className="flex items-center gap-3">
                           <span className="text-xs text-slate-500 w-24 flex-shrink-0">Global share</span>
                           <div className="flex-1 h-3 bg-slate-800 rounded-full overflow-hidden">
-                            <div className="h-full rounded-full bg-gradient-to-r from-blue-600 to-cyan-500" style={{ width: `${(a.budget / TOTAL_BUDGET) * 100}%` }} />
+                            <div className="h-full rounded-full bg-gradient-to-r from-blue-600 to-slate-200" style={{ width: `${(a.budget / TOTAL_BUDGET) * 100}%` }} />
                           </div>
                           <span className="text-xs text-slate-400 w-12 text-right flex-shrink-0">{((a.budget / TOTAL_BUDGET) * 100).toFixed(1)}%</span>
                         </div>

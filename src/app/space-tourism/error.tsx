@@ -19,7 +19,7 @@ export default function Error({
         <p className="text-slate-400 mb-6">{error.message || 'Failed to load space tourism data. Please try again.'}</p>
         <button
           onClick={reset}
-          className="px-6 py-3 bg-cyan-500 hover:bg-cyan-600 text-white rounded-xl font-medium transition-colors"
+          className="px-6 py-3 bg-white hover:bg-slate-700 text-white rounded-xl font-medium transition-colors"
         >
           Try Again
         </button>

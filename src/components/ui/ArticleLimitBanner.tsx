@@ -96,7 +96,7 @@ export default function ArticleLimitBanner({
 
           <Link
             href="/pricing"
-            className="relative flex-shrink-0 px-4 py-2 rounded-lg bg-gradient-to-r from-cyan-500 to-purple-500 text-white text-sm font-semibold hover:from-cyan-400 hover:to-purple-400 transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/20"
+            className="relative flex-shrink-0 px-4 py-2 rounded-lg bg-gradient-to-r from-white to-purple-500 text-white text-sm font-semibold hover:from-slate-300 hover:to-purple-400 transition-all duration-300 hover:shadow-lg hover:shadow-black/10"
           >
             Upgrade Now
           </Link>

@@ -13,9 +13,9 @@ const SECURITY_FEATURES = [
         <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
       </svg>
     ),
-    gradient: 'from-cyan-500/20 to-blue-500/20',
-    borderColor: 'border-cyan-500/30',
-    iconColor: 'text-cyan-400',
+    gradient: 'from-white/5 to-blue-500/20',
+    borderColor: 'border-white/10',
+    iconColor: 'text-slate-300',
   },
   {
     title: 'Access Controls',
@@ -175,7 +175,7 @@ export default function SecurityPage() {
         <section className="py-20 px-4">
           <div className="max-w-7xl mx-auto text-center">
             <ScrollReveal>
-              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-sm font-medium mb-6">
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-slate-300 text-sm font-medium mb-6">
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
                 </svg>
@@ -317,7 +317,7 @@ export default function SecurityPage() {
                       <span className="text-slate-500">Contact:</span>
                       <a
                         href="mailto:security@spacenexus.us"
-                        className="text-cyan-400 hover:text-cyan-300 transition-colors underline underline-offset-2"
+                        className="text-slate-300 hover:text-white transition-colors underline underline-offset-2"
                       >
                         security@spacenexus.us
                       </a>
@@ -333,7 +333,7 @@ export default function SecurityPage() {
         <section className="py-20 px-4">
           <div className="max-w-7xl mx-auto">
             <ScrollReveal>
-              <div className="max-w-3xl mx-auto text-center bg-gradient-to-br from-cyan-500/10 to-blue-600/10 border border-cyan-500/20 rounded-2xl p-8 sm:p-12">
+              <div className="max-w-3xl mx-auto text-center bg-gradient-to-br from-white/5 to-blue-600/10 border border-white/10 rounded-2xl p-8 sm:p-12">
                 <h2 className="text-2xl md:text-3xl font-bold text-white mb-3">
                   Have Security Questions?
                 </h2>
@@ -344,7 +344,7 @@ export default function SecurityPage() {
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
                   <Link
                     href="/contact?utm_source=security&utm_medium=cta&utm_campaign=security-inquiry"
-                    className="inline-flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-semibold rounded-lg transition-all shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40"
+                    className="inline-flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-white to-blue-600 hover:from-slate-300 hover:to-blue-500 text-white font-semibold rounded-lg transition-all shadow-lg shadow-black/20/25 hover:shadow-black/20/40"
                   >
                     Contact Our Security Team
                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">

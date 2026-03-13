@@ -440,7 +440,7 @@ export default function DebrisTrackingTab() {
           <div className="text-red-400 text-sm font-medium mb-3">{error}</div>
           <button
             onClick={fetchData}
-            className="px-4 py-2 bg-cyan-600 hover:bg-cyan-500 text-white rounded-lg text-sm font-medium transition-colors"
+            className="px-4 py-2 bg-white hover:bg-slate-100 text-white rounded-lg text-sm font-medium transition-colors"
           >
             Try Again
           </button>

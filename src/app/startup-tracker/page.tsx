@@ -110,7 +110,7 @@ const ALL_STATUSES: Status[] = ['Active', 'Restructuring', 'Public'];
 const SECTOR_COLORS: Record<string, string> = {
   'Launch': 'bg-red-500/20 text-red-400',
   'Earth Observation': 'bg-emerald-500/20 text-emerald-400',
-  'Satellites': 'bg-cyan-500/20 text-cyan-400',
+  'Satellites': 'bg-white/10 text-slate-300',
   'In-Space Transport': 'bg-violet-500/20 text-violet-400',
   'Space Stations': 'bg-amber-500/20 text-amber-400',
   'Manufacturing': 'bg-pink-500/20 text-pink-400',
@@ -130,7 +130,7 @@ const SECTOR_COLORS: Record<string, string> = {
 const SECTOR_BAR_COLORS: Record<string, string> = {
   'Launch': 'bg-red-500',
   'Earth Observation': 'bg-emerald-500',
-  'Satellites': 'bg-cyan-500',
+  'Satellites': 'bg-white',
   'In-Space Transport': 'bg-violet-500',
   'Space Stations': 'bg-amber-500',
   'Manufacturing': 'bg-pink-500',
@@ -152,14 +152,14 @@ const STAGE_COLORS: Record<Stage, string> = {
   'Series A': 'bg-blue-500/20 text-blue-400',
   'Series B': 'bg-purple-500/20 text-purple-400',
   'Late': 'bg-green-500/20 text-green-400',
-  'Public': 'bg-cyan-500/20 text-cyan-400',
+  'Public': 'bg-white/10 text-slate-300',
   'Restructuring': 'bg-rose-500/20 text-rose-400',
 };
 
 const STATUS_COLORS: Record<Status, string> = {
   'Active': 'text-green-400',
   'Restructuring': 'text-amber-400',
-  'Public': 'text-cyan-400',
+  'Public': 'text-slate-300',
 };
 
 // ────────────────────────────────────────
@@ -421,7 +421,7 @@ function StartupTrackerContent() {
           </StaggerItem>
           <StaggerItem>
             <div className="card-elevated p-6 text-center">
-              <div className="text-4xl font-bold font-display tracking-tight text-cyan-400">{publicCount}</div>
+              <div className="text-4xl font-bold font-display tracking-tight text-slate-300">{publicCount}</div>
               <div className="text-slate-400 text-xs uppercase tracking-widest font-medium mt-1">Publicly Traded</div>
             </div>
           </StaggerItem>

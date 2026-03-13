@@ -214,7 +214,7 @@ function ResultCard({ label, value, unit, accent = 'amber', highlight }: {
 }) {
   const colors = {
     amber: 'text-amber-400',
-    cyan: 'text-cyan-400',
+    cyan: 'text-slate-300',
     emerald: 'text-emerald-400',
     red: 'text-red-400',
     purple: 'text-purple-400',
@@ -448,7 +448,7 @@ export default function PowerBudgetCalculatorPage() {
           {/* ── Battery Section ── */}
           <div className="card p-5">
             <h3 className="text-lg font-semibold text-slate-100 mb-1 flex items-center gap-2">
-              <svg className="w-5 h-5 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <svg className="w-5 h-5 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M21 10.5h.375c.621 0 1.125.504 1.125 1.125v2.25c0 .621-.504 1.125-1.125 1.125H21M4.5 10.5H18V15.75c0 .621-.504 1.125-1.125 1.125H5.625A1.125 1.125 0 014.5 15.75V10.5zM3.75 18h15A2.25 2.25 0 0021 15.75v-6a2.25 2.25 0 00-2.25-2.25h-15A2.25 2.25 0 001.5 9.75v6A2.25 2.25 0 003.75 18z" />
               </svg>
               Battery &amp; Energy Storage
@@ -492,7 +492,7 @@ export default function PowerBudgetCalculatorPage() {
             <div className="grid grid-cols-2 gap-3 mt-4">
               <div className="card p-3 bg-slate-800/30">
                 <div className="text-xs text-slate-500 mb-1">Usable Capacity</div>
-                <div className="text-sm text-cyan-300 font-medium">
+                <div className="text-sm text-slate-200 font-medium">
                   {(batteryCapacity * dod / 100).toFixed(1)} Wh
                 </div>
               </div>

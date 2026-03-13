@@ -28,7 +28,7 @@ export default function ExplorationProgress({ variant = 'card' }: ExplorationPro
   // Color based on progress
   const getProgressColor = () => {
     if (percentage >= 75) return 'from-emerald-500 to-emerald-400';
-    if (percentage >= 40) return 'from-cyan-500 to-cyan-400';
+    if (percentage >= 40) return 'from-white to-slate-400';
     if (percentage >= 15) return 'from-purple-500 to-purple-400';
     return 'from-slate-500 to-slate-400';
   };

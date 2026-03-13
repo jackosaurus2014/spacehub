@@ -19,7 +19,7 @@ export default function Loading() {
             <div
               key={i}
               className={`bg-slate-800/50 rounded-xl p-6 sm:p-8 animate-pulse ${
-                i === 1 ? 'ring-2 ring-cyan-500/30' : ''
+                i === 1 ? 'ring-2 ring-white/10' : ''
               }`}
             >
               <div className="h-5 w-24 bg-slate-700 rounded mb-2" />

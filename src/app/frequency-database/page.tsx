@@ -76,7 +76,7 @@ const FREQUENCY_BANDS: FrequencyBand[] = [
     name: 'S-band',
     range: '2-4 GHz',
     rangeGHz: [2, 4],
-    color: 'from-teal-400 to-cyan-600',
+    color: 'from-teal-400 to-slate-300',
     description: 'Weather satellites, ISS communications, and some mobile broadband. Good balance of bandwidth and atmospheric penetration.',
     applications: ['Weather satellite data', 'ISS communications', 'NASA deep space (S-band up)', 'Satellite radio (SiriusXM)'],
   },
@@ -441,7 +441,7 @@ export default function FrequencyDatabasePage() {
 
   const SortIcon = ({ field }: { field: SortField }) => {
     if (sortField !== field) return <span className="text-slate-600 ml-1">&#x25B4;&#x25BE;</span>;
-    return <span className="text-cyan-400 ml-1">{sortDirection === 'asc' ? '\u25B4' : '\u25BE'}</span>;
+    return <span className="text-slate-300 ml-1">{sortDirection === 'asc' ? '\u25B4' : '\u25BE'}</span>;
   };
 
   const showOverview = activeSection === 'all' || activeSection === 'overview';
@@ -538,7 +538,7 @@ export default function FrequencyDatabasePage() {
           <ScrollReveal>
           <section className="mb-12">
             <h2 className="text-2xl font-bold text-slate-100 mb-6 flex items-center gap-3">
-              <span className="text-cyan-400">&#9632;</span>
+              <span className="text-slate-300">&#9632;</span>
               Frequency Allocation Table
               <span className="text-sm font-normal text-slate-400 ml-2">
                 ({filteredAllocations.length} of {FREQUENCY_ALLOCATIONS.length} entries)
@@ -813,13 +813,13 @@ export default function FrequencyDatabasePage() {
 
             <div className="card p-6 mb-6">
               <p className="text-sm text-slate-300 leading-relaxed mb-6">
-                The International Telecommunication Union (ITU) coordinates satellite frequency assignments globally through the Radiocommunication Bureau. Filing for orbital slots and frequency rights is a multi-year process governed by the ITU Radio Regulations. The typical timeline from initial filing to satellite launch spans <span className="text-cyan-300 font-semibold">7+ years</span>.
+                The International Telecommunication Union (ITU) coordinates satellite frequency assignments globally through the Radiocommunication Bureau. Filing for orbital slots and frequency rights is a multi-year process governed by the ITU Radio Regulations. The typical timeline from initial filing to satellite launch spans <span className="text-slate-200 font-semibold">7+ years</span>.
               </p>
 
               {/* Timeline steps */}
               <div className="relative">
                 {/* Vertical connector line */}
-                <div className="absolute left-6 top-8 bottom-8 w-0.5 bg-gradient-to-b from-emerald-500/50 via-cyan-500/50 to-purple-500/50" />
+                <div className="absolute left-6 top-8 bottom-8 w-0.5 bg-gradient-to-b from-emerald-500/50 via-slate-300/50 to-purple-500/50" />
 
                 <div className="space-y-8">
                   {ITU_FILING_STEPS.map((step, idx) => (
@@ -827,7 +827,7 @@ export default function FrequencyDatabasePage() {
                       {/* Step number circle */}
                       <div className={`relative z-10 w-12 h-12 rounded-full flex items-center justify-center text-sm font-bold text-white shadow-lg flex-shrink-0 ${
                         idx === 0 ? 'bg-gradient-to-br from-emerald-500 to-emerald-700' :
-                        idx === 1 ? 'bg-gradient-to-br from-cyan-500 to-cyan-700' :
+                        idx === 1 ? 'bg-gradient-to-br from-white to-slate-600' :
                         'bg-gradient-to-br from-purple-500 to-purple-700'
                       }`}>
                         {step.step}
@@ -854,7 +854,7 @@ export default function FrequencyDatabasePage() {
               <div className="card p-5">
                 <h4 className="text-sm font-bold text-slate-100 mb-2">Regulatory Deadline</h4>
                 <p className="text-xs text-slate-400 leading-relaxed">
-                  Satellites must be brought into use within <span className="text-cyan-300 font-medium">7 years</span> of the API filing date. Non-GSO systems have additional milestones requiring deployment progress (e.g., 10% of constellation within 2 years of BIU date).
+                  Satellites must be brought into use within <span className="text-slate-200 font-medium">7 years</span> of the API filing date. Non-GSO systems have additional milestones requiring deployment progress (e.g., 10% of constellation within 2 years of BIU date).
                 </p>
               </div>
               <div className="card p-5">
@@ -883,7 +883,7 @@ export default function FrequencyDatabasePage() {
               <p className="text-xs text-slate-400">Frequency Bands</p>
             </div>
             <div>
-              <p className="text-2xl font-bold text-cyan-300">{FREQUENCY_ALLOCATIONS.length}</p>
+              <p className="text-2xl font-bold text-slate-200">{FREQUENCY_ALLOCATIONS.length}</p>
               <p className="text-xs text-slate-400">Allocations Tracked</p>
             </div>
             <div>

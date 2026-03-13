@@ -34,7 +34,7 @@ const INTERESTS = [
 const BENEFITS = [
   {
     icon: (
-      <svg className="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg className="w-5 h-5 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
       </svg>
@@ -43,7 +43,7 @@ const BENEFITS = [
   },
   {
     icon: (
-      <svg className="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg className="w-5 h-5 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
       </svg>
@@ -52,7 +52,7 @@ const BENEFITS = [
   },
   {
     icon: (
-      <svg className="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg className="w-5 h-5 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
       </svg>
     ),
@@ -60,7 +60,7 @@ const BENEFITS = [
   },
   {
     icon: (
-      <svg className="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg className="w-5 h-5 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
       </svg>
     ),
@@ -153,7 +153,7 @@ export default function BookDemoPage() {
     return (
       <div className="min-h-screen pb-16">
         <section className="relative py-20 md:py-28">
-          <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-transparent to-emerald-600/10 pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-br from-white/5 via-transparent to-emerald-600/10 pointer-events-none" />
           <div className="container mx-auto px-4 relative z-10">
             <div className="max-w-lg mx-auto text-center">
               <div className="w-20 h-20 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mx-auto mb-6">
@@ -170,7 +170,7 @@ export default function BookDemoPage() {
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link
                   href="/pricing"
-                  className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-semibold hover:from-cyan-400 hover:to-blue-500 transition-all shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40"
+                  className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl bg-gradient-to-r from-white to-blue-600 text-white font-semibold hover:from-slate-300 hover:to-blue-500 transition-all shadow-lg shadow-black/20/25 hover:shadow-black/20/40"
                 >
                   Explore Pricing
                 </Link>
@@ -189,23 +189,23 @@ export default function BookDemoPage() {
   }
 
   const inputClass =
-    'w-full bg-slate-800/80 border border-slate-600 rounded-xl text-slate-100 placeholder:text-slate-500 focus:border-cyan-500/50 focus:outline-none focus:ring-1 focus:ring-cyan-500/30 px-4 py-3 text-sm transition-colors';
+    'w-full bg-slate-800/80 border border-slate-600 rounded-xl text-slate-100 placeholder:text-slate-500 focus:border-white/15 focus:outline-none focus:ring-1 focus:ring-white/30/30 px-4 py-3 text-sm transition-colors';
   const labelClass = 'block text-sm font-medium text-slate-300 mb-1.5';
 
   return (
     <div className="min-h-screen pb-16">
       {/* Hero */}
       <section className="relative py-20 md:py-28 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-transparent to-purple-600/10 pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-br from-white/5 via-transparent to-purple-600/10 pointer-events-none" />
         <div className="container mx-auto px-4 relative z-10">
           <ScrollReveal>
             <div className="max-w-3xl mx-auto text-center">
-              <span className="inline-block px-4 py-1.5 rounded-full text-xs font-semibold tracking-wide uppercase bg-cyan-500/10 text-cyan-300 border border-cyan-500/20 mb-6">
+              <span className="inline-block px-4 py-1.5 rounded-full text-xs font-semibold tracking-wide uppercase bg-white/5 text-slate-200 border border-white/10 mb-6">
                 Request a Demo
               </span>
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
                 See SpaceNexus{' '}
-                <span className="bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-slate-300 to-purple-400 bg-clip-text text-transparent">
                   in Action
                 </span>
               </h1>
@@ -369,7 +369,7 @@ export default function BookDemoPage() {
                   type="submit"
                   id="demo-submit-btn"
                   disabled={status === 'submitting'}
-                  className="w-full inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-semibold hover:from-cyan-400 hover:to-blue-500 transition-all shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-xl bg-gradient-to-r from-white to-blue-600 text-white font-semibold hover:from-slate-300 hover:to-blue-500 transition-all shadow-lg shadow-black/20/25 hover:shadow-black/20/40 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {status === 'submitting' ? (
                     <>
@@ -431,7 +431,7 @@ export default function BookDemoPage() {
                   </p>
                   <Link
                     href="/pricing"
-                    className="inline-flex items-center gap-2 text-cyan-400 hover:text-cyan-300 text-sm font-medium transition-colors"
+                    className="inline-flex items-center gap-2 text-slate-300 hover:text-white text-sm font-medium transition-colors"
                   >
                     View self-serve plans
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

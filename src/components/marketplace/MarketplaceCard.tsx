@@ -52,7 +52,7 @@ export default function MarketplaceCard({ listing, index = 0 }: MarketplaceCardP
           className="card p-5 h-full group cursor-pointer relative overflow-hidden"
         >
           <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-            <div className="absolute inset-[-1px] rounded-xl bg-gradient-to-r from-cyan-500/30 via-purple-500/30 to-cyan-500/30" />
+            <div className="absolute inset-[-1px] rounded-xl bg-gradient-to-r from-white/30 via-purple-500/30 to-slate-200/30" />
             <div className="absolute inset-[1px] rounded-xl bg-slate-900/95" />
           </div>
 
@@ -75,7 +75,7 @@ export default function MarketplaceCard({ listing, index = 0 }: MarketplaceCardP
             </div>
 
             {/* Title */}
-            <h3 className="font-semibold text-white group-hover:text-cyan-400 transition-colors mb-1 line-clamp-1">
+            <h3 className="font-semibold text-white group-hover:text-white transition-colors mb-1 line-clamp-1">
               {listing.name}
             </h3>
 

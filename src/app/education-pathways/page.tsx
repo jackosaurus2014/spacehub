@@ -72,7 +72,7 @@ const INTEREST_FILTERS: Record<InterestFilter, { label: string; color: string }>
   engineering:  { label: 'Engineering',  color: 'text-blue-400' },
   science:      { label: 'Science',      color: 'text-purple-400' },
   business:     { label: 'Business',     color: 'text-amber-400' },
-  software:     { label: 'Software',     color: 'text-cyan-400' },
+  software:     { label: 'Software',     color: 'text-slate-300' },
   operations:   { label: 'Operations',   color: 'text-green-400' },
 };
 
@@ -142,9 +142,9 @@ const CAREER_PATHWAYS: CareerPathway[] = [
     title: 'Software Engineering',
     interest: 'software',
     icon: '\u{1F4BB}',
-    color: 'text-cyan-400',
-    borderColor: 'border-cyan-500/30',
-    bgColor: 'bg-cyan-500/10',
+    color: 'text-slate-300',
+    borderColor: 'border-white/10',
+    bgColor: 'bg-white/5',
     description: 'Build the software that controls spacecraft, processes telemetry, runs ground systems, and analyzes mission data. Software is the fastest-growing discipline in the space industry.',
     educationTrack: 'BS/MS in Computer Science, Computer Engineering, or related field',
     progressionSteps: ['Junior Developer', 'Mission Software Engineer', 'Flight Software Engineer', 'Staff/Principal Engineer', 'Software Architect / Engineering Director'],
@@ -382,7 +382,7 @@ function UniversityRow({ uni }: { uni: University }) {
         className="w-full flex items-center gap-4 py-3 px-4 hover:bg-slate-800/40 transition-colors text-left"
         aria-expanded={expanded}
       >
-        <span className="text-sm font-bold text-cyan-400 w-8 shrink-0">#{uni.rank}</span>
+        <span className="text-sm font-bold text-slate-300 w-8 shrink-0">#{uni.rank}</span>
         <span className="text-sm text-slate-200 flex-1 min-w-0">{uni.name}</span>
         <span className="text-xs text-slate-400 hidden sm:inline shrink-0">{uni.acceptanceRate}</span>
         <svg
@@ -399,7 +399,7 @@ function UniversityRow({ uni }: { uni: University }) {
             <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Program Strengths</p>
             <div className="flex flex-wrap gap-1">
               {uni.strengths.map((s) => (
-                <span key={s} className="text-xs bg-cyan-500/10 text-cyan-400 px-2 py-0.5 rounded border border-cyan-500/20">{s}</span>
+                <span key={s} className="text-xs bg-white/5 text-slate-300 px-2 py-0.5 rounded border border-white/10">{s}</span>
               ))}
             </div>
           </div>
@@ -470,7 +470,7 @@ export default function EducationPathwaysPage() {
                 onClick={() => setActiveSection(section.id)}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                   activeSection === section.id
-                    ? 'bg-cyan-600 text-white shadow-lg shadow-cyan-500/20'
+                    ? 'bg-white text-white shadow-lg shadow-black/10'
                     : 'bg-slate-800/60 text-slate-300 hover:bg-slate-700/60 border border-slate-700/50'
                 }`}
               >
@@ -494,7 +494,7 @@ export default function EducationPathwaysPage() {
                       onClick={() => setActiveFilter(key)}
                       className={`px-3 py-1.5 rounded-lg text-sm transition-all ${
                         activeFilter === key
-                          ? 'bg-cyan-600 text-white'
+                          ? 'bg-white text-white'
                           : `bg-slate-800/60 ${val.color} hover:bg-slate-700/60 border border-slate-700/50`
                       }`}
                     >
@@ -520,7 +520,7 @@ export default function EducationPathwaysPage() {
                 <p className="text-lg text-slate-400">No pathways match the selected filter.</p>
                 <button
                   onClick={() => setActiveFilter('all')}
-                  className="mt-3 text-cyan-400 hover:text-cyan-300 underline text-sm"
+                  className="mt-3 text-slate-300 hover:text-white underline text-sm"
                 >
                   Show all paths
                 </button>
@@ -572,7 +572,7 @@ export default function EducationPathwaysPage() {
                     <div className="flex items-start justify-between mb-3">
                       <div>
                         <h3 className="text-lg font-semibold text-slate-100">{cert.name}</h3>
-                        <span className="text-xs bg-cyan-500/15 text-cyan-400 px-2 py-0.5 rounded border border-cyan-500/20 inline-block mt-1">
+                        <span className="text-xs bg-white/8 text-slate-300 px-2 py-0.5 rounded border border-white/10 inline-block mt-1">
                           {cert.acronym}
                         </span>
                       </div>
@@ -686,7 +686,7 @@ export default function EducationPathwaysPage() {
                     <div className="flex items-start justify-between mb-2">
                       <div>
                         <h3 className="text-base font-semibold text-slate-100">{program.company}</h3>
-                        <p className="text-xs text-cyan-400">{program.programName}</p>
+                        <p className="text-xs text-slate-300">{program.programName}</p>
                       </div>
                       <div className="flex items-center gap-2 shrink-0">
                         <span className="text-xs bg-green-500/15 text-green-400 px-2 py-0.5 rounded border border-green-500/20">
@@ -701,7 +701,7 @@ export default function EducationPathwaysPage() {
                         href={program.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-xs text-cyan-400 hover:text-cyan-300 transition-colors flex items-center gap-1"
+                        className="text-xs text-slate-300 hover:text-white transition-colors flex items-center gap-1"
                       >
                         Learn more
                         <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -728,7 +728,7 @@ export default function EducationPathwaysPage() {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {/* Technical Skills */}
                 <div className="card p-5">
-                  <h3 className="text-base font-semibold text-cyan-400 mb-4 flex items-center gap-2">
+                  <h3 className="text-base font-semibold text-slate-300 mb-4 flex items-center gap-2">
                     <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5" />
                     </svg>
@@ -805,7 +805,7 @@ export default function EducationPathwaysPage() {
               { label: 'Internships', value: '10', sub: 'pipeline programs' },
             ].map((stat) => (
               <div key={stat.label} className="card p-4 text-center">
-                <p className="text-2xl font-bold text-cyan-400">{stat.value}</p>
+                <p className="text-2xl font-bold text-slate-300">{stat.value}</p>
                 <p className="text-sm text-slate-300 font-medium">{stat.label}</p>
                 <p className="text-xs text-slate-500">{stat.sub}</p>
               </div>
@@ -818,20 +818,20 @@ export default function EducationPathwaysPage() {
           <section className="mt-16 border-t border-slate-800 pt-8 mb-8">
             <h2 className="text-xl font-bold text-white mb-6">Explore More</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <a href="/salary-benchmarks" className="card p-4 hover:border-cyan-500/50 transition-colors group">
-                <h3 className="text-white font-medium group-hover:text-cyan-400 transition-colors">Salary Benchmarks</h3>
+              <a href="/salary-benchmarks" className="card p-4 hover:border-white/15 transition-colors group">
+                <h3 className="text-white font-medium group-hover:text-white transition-colors">Salary Benchmarks</h3>
                 <p className="text-slate-400 text-sm mt-1">Detailed compensation data by role, level, and location across the space sector.</p>
               </a>
-              <a href="/workforce-analytics" className="card p-4 hover:border-cyan-500/50 transition-colors group">
-                <h3 className="text-white font-medium group-hover:text-cyan-400 transition-colors">Workforce Analytics</h3>
+              <a href="/workforce-analytics" className="card p-4 hover:border-white/15 transition-colors group">
+                <h3 className="text-white font-medium group-hover:text-white transition-colors">Workforce Analytics</h3>
                 <p className="text-slate-400 text-sm mt-1">Trends in space industry hiring, skills demand, and workforce demographics.</p>
               </a>
-              <a href="/space-talent" className="card p-4 hover:border-cyan-500/50 transition-colors group">
-                <h3 className="text-white font-medium group-hover:text-cyan-400 transition-colors">Space Talent Hub</h3>
+              <a href="/space-talent" className="card p-4 hover:border-white/15 transition-colors group">
+                <h3 className="text-white font-medium group-hover:text-white transition-colors">Space Talent Hub</h3>
                 <p className="text-slate-400 text-sm mt-1">Browse open positions and connect with space industry employers.</p>
               </a>
-              <a href="/career-guide" className="card p-4 hover:border-cyan-500/50 transition-colors group">
-                <h3 className="text-white font-medium group-hover:text-cyan-400 transition-colors">Career Guide</h3>
+              <a href="/career-guide" className="card p-4 hover:border-white/15 transition-colors group">
+                <h3 className="text-white font-medium group-hover:text-white transition-colors">Career Guide</h3>
                 <p className="text-slate-400 text-sm mt-1">25 detailed career paths with progression steps and salary ranges.</p>
               </a>
             </div>

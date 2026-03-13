@@ -31,7 +31,7 @@ const RECENT_UPDATES = [
       'Deep-dive profiles covering financials, satellite assets, facility locations, and competitive scoring for top space companies.',
     href: '/company-profiles',
     badge: 'Expanded',
-    badgeColor: 'bg-cyan-500/20 text-cyan-400 border-cyan-500/30',
+    badgeColor: 'bg-white/10 text-slate-300 border-white/10',
     icon: '\uD83C\uDFE2',
   },
   {
@@ -88,7 +88,7 @@ export default function RecentUpdates() {
             >
               <Link
                 href={update.href}
-                className="group card p-5 rounded-2xl border border-slate-700/50 hover:border-cyan-500/40 transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/10 flex items-start gap-4"
+                className="group card p-5 rounded-2xl border border-slate-700/50 hover:border-white/15/40 transition-all duration-300 hover:shadow-lg hover:shadow-black/5 flex items-start gap-4"
               >
                 {/* Icon */}
                 <span className="text-3xl flex-shrink-0 mt-0.5" role="img" aria-hidden="true">
@@ -103,7 +103,7 @@ export default function RecentUpdates() {
                     </span>
                     <span className="text-xs text-slate-500">{update.date}</span>
                   </div>
-                  <h3 className="text-lg font-semibold text-white group-hover:text-cyan-300 transition-colors mb-1">
+                  <h3 className="text-lg font-semibold text-white group-hover:text-white transition-colors mb-1">
                     {update.title}
                   </h3>
                   <p className="text-sm text-slate-400 leading-relaxed line-clamp-2">
@@ -113,7 +113,7 @@ export default function RecentUpdates() {
 
                 {/* Arrow */}
                 <svg
-                  className="w-5 h-5 text-slate-600 group-hover:text-cyan-400 group-hover:translate-x-0.5 transition-all duration-200 flex-shrink-0 mt-1"
+                  className="w-5 h-5 text-slate-600 group-hover:text-white group-hover:translate-x-0.5 transition-all duration-200 flex-shrink-0 mt-1"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"

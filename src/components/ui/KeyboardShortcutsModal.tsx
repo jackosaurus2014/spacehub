@@ -132,7 +132,7 @@ export default function KeyboardShortcutsModal() {
         <div className="space-y-6">
           {SHORTCUT_SECTIONS.map((section) => (
             <div key={section.title}>
-              <h3 className="text-cyan-400 text-xs uppercase tracking-widest font-medium mb-2">
+              <h3 className="text-slate-300 text-xs uppercase tracking-widest font-medium mb-2">
                 {section.title}
               </h3>
               <div className="divide-y divide-slate-700/50">

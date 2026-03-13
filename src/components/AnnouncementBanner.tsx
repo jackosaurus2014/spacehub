@@ -33,7 +33,7 @@ export default function AnnouncementBanner() {
   if (dismissed) return null;
 
   return (
-    <div className="relative z-50 bg-gradient-to-r from-cyan-600/90 via-blue-600/90 to-purple-600/90 backdrop-blur-sm border-b border-cyan-500/20">
+    <div className="relative z-50 bg-gradient-to-r from-slate-800/95 via-slate-900/95 to-purple-600/90 backdrop-blur-sm border-b border-white/10">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-center gap-3 py-2.5 text-sm">
           <span className="hidden sm:inline" aria-hidden="true">{ANNOUNCEMENT.emoji}</span>

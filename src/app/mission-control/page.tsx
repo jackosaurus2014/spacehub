@@ -321,10 +321,10 @@ function CountdownCard({ event }: { event: SpaceEvent }) {
   return (
     <div className="relative group">
       {/* Glow effect background */}
-      <div className="absolute -inset-0.5 bg-gradient-to-r from-green-500 via-cyan-500 to-green-500 rounded-xl opacity-75 blur group-hover:opacity-100 transition duration-300 animate-pulse" />
+      <div className="absolute -inset-0.5 bg-gradient-to-r from-green-500 via-slate-300 to-green-500 rounded-xl opacity-75 blur group-hover:opacity-100 transition duration-300 animate-pulse" />
 
       <div className="relative card overflow-hidden bg-slate-900 border-0">
-        <div className="absolute inset-0 bg-gradient-to-br from-green-500/10 via-transparent to-cyan-500/10" />
+        <div className="absolute inset-0 bg-gradient-to-br from-green-500/10 via-transparent to-white/5" />
 
         <div className="relative flex flex-col sm:flex-row items-center sm:items-stretch">
           {/* Mission Type Thumbnail */}
@@ -356,7 +356,7 @@ function CountdownCard({ event }: { event: SpaceEvent }) {
             </div>
 
             {event.agency && (
-              <p className="text-cyan-400 text-sm font-medium">
+              <p className="text-slate-300 text-sm font-medium">
                 {getCompanyProfileUrl(event.agency) ? (
                   <Link href={getCompanyProfileUrl(event.agency)!} className="hover:underline">{event.agency}</Link>
                 ) : event.agency}
@@ -532,7 +532,7 @@ function LiveNowSection({ events }: { events: SpaceEvent[] }) {
         </h2>
         <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-slate-800 via-slate-900 to-slate-800 border border-slate-700/50">
           <div className="absolute inset-0 overflow-hidden">
-            <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-cyan-500/5 rounded-full blur-3xl animate-pulse" />
+            <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-white/5 rounded-full blur-3xl animate-pulse" />
             <div className="absolute bottom-1/4 right-1/4 w-48 h-48 bg-purple-500/5 rounded-full blur-3xl animate-pulse delay-1000" />
           </div>
           <div className="relative p-8 text-center">
@@ -1093,7 +1093,7 @@ function MissionControlContent() {
                   onClick={() => setSelectedType(type.value)}
                   className={`px-3 py-2 rounded-lg font-medium transition-all duration-200 flex items-center gap-1 text-sm ${
                     selectedType === type.value
-                      ? 'bg-cyan-500/20 text-white border-cyan-400/50 shadow-glow-sm'
+                      ? 'bg-white/10 text-white border-white/15 shadow-glow-sm'
                       : 'bg-transparent text-slate-300 border border-slate-700/50 hover:border-slate-600'
                   }`}
                 >
@@ -1125,7 +1125,7 @@ function MissionControlContent() {
         {/* Stats */}
         <StaggerContainer className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           <StaggerItem><div className="card-elevated p-6 text-center">
-            <div className="text-4xl font-bold font-display tracking-tight text-cyan-400">{events.length}</div>
+            <div className="text-4xl font-bold font-display tracking-tight text-slate-300">{events.length}</div>
             <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Total Events</div>
           </div></StaggerItem>
           <StaggerItem><div className="card-elevated p-6 text-center">

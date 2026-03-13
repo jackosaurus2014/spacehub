@@ -53,11 +53,11 @@ export default function QuiltyComparisonPage() {
         {/* Breadcrumbs */}
         <nav className="pt-6 mb-4" aria-label="Breadcrumb">
           <ol className="flex items-center gap-2 text-sm text-slate-400">
-            <li><Link href="/" className="hover:text-cyan-400 transition-colors">Home</Link></li>
+            <li><Link href="/" className="hover:text-white transition-colors">Home</Link></li>
             <li>/</li>
-            <li><Link href="/compare" className="hover:text-cyan-400 transition-colors">Compare</Link></li>
+            <li><Link href="/compare" className="hover:text-white transition-colors">Compare</Link></li>
             <li>/</li>
-            <li className="text-cyan-400">Quilty Space Analytics</li>
+            <li className="text-slate-300">Quilty Space Analytics</li>
           </ol>
         </nav>
 
@@ -83,7 +83,7 @@ export default function QuiltyComparisonPage() {
           </header>
 
           {/* TL;DR */}
-          <div className="card p-6 mb-10 border-l-4 border-cyan-500">
+          <div className="card p-6 mb-10 border-l-4 border-white/15">
             <h2 className="text-lg font-bold text-white mb-2">TL;DR</h2>
             <p className="text-slate-400 text-sm leading-relaxed">
               <strong className="text-slate-300">Quilty Space</strong> excels at deep, analyst-driven
@@ -102,33 +102,33 @@ export default function QuiltyComparisonPage() {
               The Key Difference: Reports vs. Platform
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="card p-6 ring-2 ring-cyan-500">
-                <div className="text-xs font-semibold text-cyan-600 uppercase tracking-wider mb-3">SpaceNexus</div>
+              <div className="card p-6 ring-2 ring-white/15">
+                <div className="text-xs font-semibold text-slate-300 uppercase tracking-wider mb-3">SpaceNexus</div>
                 <h3 className="text-lg font-bold text-white mb-3">Self-Service Platform</h3>
                 <ul className="space-y-2 text-sm text-slate-400">
                   <li className="flex items-start gap-2">
-                    <span className="text-cyan-500 mt-0.5 flex-shrink-0">&#9656;</span>
+                    <span className="text-slate-300 mt-0.5 flex-shrink-0">&#9656;</span>
                     <span>Access data 24/7, explore interactively</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <span className="text-cyan-500 mt-0.5 flex-shrink-0">&#9656;</span>
+                    <span className="text-slate-300 mt-0.5 flex-shrink-0">&#9656;</span>
                     <span>Real-time updates (not periodic reports)</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <span className="text-cyan-500 mt-0.5 flex-shrink-0">&#9656;</span>
+                    <span className="text-slate-300 mt-0.5 flex-shrink-0">&#9656;</span>
                     <span>AI copilot for on-demand analysis</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <span className="text-cyan-500 mt-0.5 flex-shrink-0">&#9656;</span>
+                    <span className="text-slate-300 mt-0.5 flex-shrink-0">&#9656;</span>
                     <span>10 integrated modules, 200+ company profiles</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <span className="text-cyan-500 mt-0.5 flex-shrink-0">&#9656;</span>
+                    <span className="text-slate-300 mt-0.5 flex-shrink-0">&#9656;</span>
                     <span>Free tier, no sales process required</span>
                   </li>
                 </ul>
                 <div className="mt-4 pt-4 border-t border-slate-700">
-                  <div className="text-2xl font-bold text-cyan-600">Free &ndash; $99<span className="text-sm text-slate-400 font-normal">/mo</span></div>
+                  <div className="text-2xl font-bold text-slate-300">Free &ndash; $99<span className="text-sm text-slate-400 font-normal">/mo</span></div>
                 </div>
               </div>
               <div className="card p-6">
@@ -173,7 +173,7 @@ export default function QuiltyComparisonPage() {
                 <thead>
                   <tr className="border-b border-slate-700">
                     <th className="py-4 px-4 text-left text-slate-300 font-semibold">Feature</th>
-                    <th className="py-4 px-4 text-left text-cyan-600 font-semibold">SpaceNexus</th>
+                    <th className="py-4 px-4 text-left text-slate-300 font-semibold">SpaceNexus</th>
                     <th className="py-4 px-4 text-left text-slate-300 font-semibold">Quilty Space</th>
                   </tr>
                 </thead>
@@ -211,7 +211,7 @@ export default function QuiltyComparisonPage() {
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="card p-6">
-                <h3 className="text-lg font-semibold text-cyan-600 mb-4">Choose SpaceNexus if you:</h3>
+                <h3 className="text-lg font-semibold text-slate-300 mb-4">Choose SpaceNexus if you:</h3>
                 <ul className="space-y-3">
                   {[
                     'Want to explore space industry data on your own terms, 24/7',
@@ -224,7 +224,7 @@ export default function QuiltyComparisonPage() {
                     'Want API access to build space data into your own tools',
                   ].map((item) => (
                     <li key={item} className="flex items-start gap-2 text-sm text-slate-400">
-                      <span className="text-cyan-500 mt-0.5 flex-shrink-0">&#9656;</span>
+                      <span className="text-slate-300 mt-0.5 flex-shrink-0">&#9656;</span>
                       <span>{item}</span>
                     </li>
                   ))}
@@ -274,7 +274,7 @@ export default function QuiltyComparisonPage() {
                   { title: 'Procurement advantage', desc: 'SAM.gov integration and SBIR/STTR tracking give you a direct path from intelligence to revenue — something research reports cannot provide.' },
                 ].map((item) => (
                   <li key={item.title} className="flex items-start gap-3">
-                    <span className="text-cyan-500 mt-1 flex-shrink-0 font-bold">&#10003;</span>
+                    <span className="text-slate-300 mt-1 flex-shrink-0 font-bold">&#10003;</span>
                     <div>
                       <strong className="text-slate-300">{item.title}:</strong>{' '}
                       <span className="text-slate-400 text-sm">{item.desc}</span>
@@ -337,7 +337,7 @@ export default function QuiltyComparisonPage() {
 
           {/* Back Link */}
           <div className="text-center">
-            <Link href="/compare" className="text-cyan-500 hover:text-cyan-400 text-sm transition-colors">
+            <Link href="/compare" className="text-slate-300 hover:text-white text-sm transition-colors">
               &larr; Back to all comparisons
             </Link>
           </div>

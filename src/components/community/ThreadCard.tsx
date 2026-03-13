@@ -52,8 +52,8 @@ export default function ThreadCard({ thread, categorySlug, index = 0 }: ThreadCa
     >
       <Link href={`/community/forums/${categorySlug}/${thread.id}`}>
         <div
-          className={`card px-5 py-4 group cursor-pointer transition-colors hover:border-cyan-500/30 ${
-            thread.isPinned ? 'border-l-2 border-l-cyan-400/50' : ''
+          className={`card px-5 py-4 group cursor-pointer transition-colors hover:border-white/10 ${
+            thread.isPinned ? 'border-l-2 border-l-white/30' : ''
           }`}
         >
           <div className="flex items-start gap-3">
@@ -82,7 +82,7 @@ export default function ThreadCard({ thread, categorySlug, index = 0 }: ThreadCa
               <div className="flex items-center gap-2 mb-1 flex-wrap">
                 {/* Indicators */}
                 {thread.isPinned && (
-                  <span className="text-xs px-1.5 py-0.5 bg-cyan-500/10 text-cyan-400 rounded font-medium flex-shrink-0 flex items-center gap-1">
+                  <span className="text-xs px-1.5 py-0.5 bg-white/5 text-slate-300 rounded font-medium flex-shrink-0 flex items-center gap-1">
                     <span aria-hidden="true" className="text-[10px]">{String.fromCodePoint(0x1F4CC)}</span>
                     Pinned
                   </span>
@@ -95,7 +95,7 @@ export default function ThreadCard({ thread, categorySlug, index = 0 }: ThreadCa
                     Locked
                   </span>
                 )}
-                <span className="text-xs px-1.5 py-0.5 bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 rounded flex-shrink-0">
+                <span className="text-xs px-1.5 py-0.5 bg-white/5 text-slate-300 border border-white/10 rounded flex-shrink-0">
                   {thread.category}
                 </span>
                 {thread.acceptedPostId && (
@@ -114,7 +114,7 @@ export default function ThreadCard({ thread, categorySlug, index = 0 }: ThreadCa
               </div>
 
               {/* Title */}
-              <h3 className="font-medium text-slate-200 group-hover:text-cyan-400 transition-colors line-clamp-1 mb-1">
+              <h3 className="font-medium text-slate-200 group-hover:text-white transition-colors line-clamp-1 mb-1">
                 {thread.title}
               </h3>
 

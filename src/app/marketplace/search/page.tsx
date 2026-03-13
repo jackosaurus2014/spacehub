@@ -149,7 +149,7 @@ function SearchContent() {
               key={t.key}
               onClick={() => { setTab(t.key); setPage(1); }}
               className={`px-4 py-1.5 rounded text-sm font-medium transition-colors ${
-                tab === t.key ? 'bg-cyan-600 text-white' : 'text-slate-400 hover:text-white'
+                tab === t.key ? 'bg-white text-white' : 'text-slate-400 hover:text-white'
               }`}
             >
               {t.label}
@@ -179,7 +179,7 @@ function SearchContent() {
                 id="marketplace-category"
                 value={category}
                 onChange={(e) => { setCategory(e.target.value); setPage(1); }}
-                className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+                className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
               >
                 <option value="">All Categories</option>
                 {MARKETPLACE_CATEGORIES.map((cat) => (
@@ -222,7 +222,7 @@ function SearchContent() {
                     id="marketplace-verification"
                     value={verFilter}
                     onChange={(e) => { setVerFilter(e.target.value); setPage(1); }}
-                    className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+                    className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                   >
                     <option value="">Any Level</option>
                     {Object.entries(VERIFICATION_LEVELS).filter(([k]) => k !== 'none').map(([key, val]) => (
@@ -241,7 +241,7 @@ function SearchContent() {
                           type="checkbox"
                           checked={certFilter.includes(cert.value)}
                           onChange={() => toggleCert(cert.value)}
-                          className="rounded bg-slate-700 border-slate-600 text-cyan-500"
+                          className="rounded bg-slate-700 border-slate-600 text-slate-300"
                         />
                         {cert.label}
                       </label>
@@ -275,7 +275,7 @@ function SearchContent() {
                     aria-label="Sort listings"
                     value={sort}
                     onChange={(e) => { setSort(e.target.value); setPage(1); }}
-                    className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+                    className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                   >
                     <option value="newest">Newest First</option>
                     <option value="price_low">Price: Low to High</option>
@@ -285,13 +285,13 @@ function SearchContent() {
                 <div className="flex bg-slate-800 rounded overflow-hidden">
                   <button
                     onClick={() => setViewMode('grid')}
-                    className={`px-2 py-1.5 text-xs ${viewMode === 'grid' ? 'bg-cyan-600 text-white' : 'text-slate-400'}`}
+                    className={`px-2 py-1.5 text-xs ${viewMode === 'grid' ? 'bg-white text-white' : 'text-slate-400'}`}
                   >
                     Grid
                   </button>
                   <button
                     onClick={() => setViewMode('list')}
-                    className={`px-2 py-1.5 text-xs ${viewMode === 'list' ? 'bg-cyan-600 text-white' : 'text-slate-400'}`}
+                    className={`px-2 py-1.5 text-xs ${viewMode === 'list' ? 'bg-white text-white' : 'text-slate-400'}`}
                   >
                     List
                   </button>

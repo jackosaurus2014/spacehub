@@ -196,15 +196,15 @@ function ThesisSkeleton() {
   return (
     <div className="space-y-6 animate-pulse">
       {/* Loading indicator */}
-      <div className="bg-slate-800/30 border border-cyan-500/20 rounded-2xl p-8 text-center">
+      <div className="bg-slate-800/30 border border-white/10 rounded-2xl p-8 text-center">
         <div className="flex justify-center mb-6">
           <div className="relative">
             <div className="w-16 h-16 border-4 border-slate-700 rounded-full" />
-            <div className="absolute top-0 left-0 w-16 h-16 border-4 border-t-cyan-400 rounded-full animate-spin" />
+            <div className="absolute top-0 left-0 w-16 h-16 border-4 border-t-white rounded-full animate-spin" />
           </div>
         </div>
         <p className="text-lg font-medium text-slate-200 mb-2">Generating Investment Thesis</p>
-        <p className="text-sm text-cyan-400 transition-opacity duration-300">
+        <p className="text-sm text-slate-300 transition-opacity duration-300">
           {LOADING_MESSAGES[messageIndex]}
         </p>
         <p className="text-xs text-slate-500 mt-4">This typically takes 10-15 seconds</p>
@@ -659,7 +659,7 @@ export default function InvestmentThesisPage() {
                     <div className="flex items-center gap-2">
                       <Link
                         href={`/company-profiles/${thesisData.company.slug}`}
-                        className="px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800/50 text-cyan-400 border border-cyan-500/20 hover:bg-cyan-500/10 transition-all"
+                        className="px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800/50 text-slate-300 border border-white/10 hover:bg-slate-100/10 transition-all"
                       >
                         View Company Profile
                       </Link>
@@ -698,8 +698,8 @@ export default function InvestmentThesisPage() {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="bg-slate-800/30 border border-slate-700/50 rounded-2xl p-6">
                     <div className="flex items-center gap-2 mb-3">
-                      <div className="w-8 h-8 rounded-lg bg-cyan-500/15 flex items-center justify-center">
-                        <svg className="w-4 h-4 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <div className="w-8 h-8 rounded-lg bg-white/8 flex items-center justify-center">
+                        <svg className="w-4 h-4 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064" />
                         </svg>
                       </div>
@@ -797,7 +797,7 @@ export default function InvestmentThesisPage() {
                     <p className="text-sm text-slate-300 leading-relaxed">{thesis.financialAnalysis.fundingEfficiency}</p>
                   </div>
                   <div className="bg-slate-800/30 border border-slate-700/50 rounded-2xl p-6">
-                    <h4 className="text-sm font-semibold text-cyan-400 mb-3">Revenue Trajectory</h4>
+                    <h4 className="text-sm font-semibold text-slate-300 mb-3">Revenue Trajectory</h4>
                     <p className="text-sm text-slate-300 leading-relaxed">{thesis.financialAnalysis.revenueTrajectory}</p>
                   </div>
                   <div className="bg-slate-800/30 border border-slate-700/50 rounded-2xl p-6">
@@ -961,7 +961,7 @@ export default function InvestmentThesisPage() {
                   </button>
                   <Link
                     href={`/company-profiles/${thesisData.company.slug}`}
-                    className="px-5 py-2.5 rounded-xl text-sm font-medium bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 hover:bg-cyan-500/20 transition-all"
+                    className="px-5 py-2.5 rounded-xl text-sm font-medium bg-white/5 text-slate-300 border border-white/10 hover:bg-slate-100/20 transition-all"
                   >
                     View Full Company Profile
                   </Link>
@@ -981,19 +981,19 @@ export default function InvestmentThesisPage() {
         <div className="mt-12 text-center">
           <p className="text-sm text-slate-500">
             Explore more tools:{' '}
-            <Link href="/company-profiles" className="text-cyan-400 hover:text-cyan-300 transition-colors">
+            <Link href="/company-profiles" className="text-slate-300 hover:text-white transition-colors">
               Company Profiles
             </Link>
             {' '}&middot;{' '}
-            <Link href="/market-sizing" className="text-cyan-400 hover:text-cyan-300 transition-colors">
+            <Link href="/market-sizing" className="text-slate-300 hover:text-white transition-colors">
               Market Sizing
             </Link>
             {' '}&middot;{' '}
-            <Link href="/regulatory-risk" className="text-cyan-400 hover:text-cyan-300 transition-colors">
+            <Link href="/regulatory-risk" className="text-slate-300 hover:text-white transition-colors">
               Regulatory Risk
             </Link>
             {' '}&middot;{' '}
-            <Link href="/funding-tracker" className="text-cyan-400 hover:text-cyan-300 transition-colors">
+            <Link href="/funding-tracker" className="text-slate-300 hover:text-white transition-colors">
               Funding Tracker
             </Link>
           </p>
@@ -1035,7 +1035,7 @@ export default function InvestmentThesisPage() {
           .text-purple-400 {
             color: #7c3aed !important;
           }
-          .text-cyan-400 {
+          .text-slate-300 {
             color: #0891b2 !important;
           }
           .text-amber-400 {

@@ -245,7 +245,7 @@ export default function PushOptInBanner() {
     >
       {/* Banner container */}
       <div
-        className="mx-3 mb-2 rounded-2xl border border-cyan-500/20 overflow-hidden"
+        className="mx-3 mb-2 rounded-2xl border border-white/10 overflow-hidden"
         style={{
           background: 'linear-gradient(135deg, rgba(15, 23, 42, 0.97) 0%, rgba(22, 33, 56, 0.97) 50%, rgba(15, 23, 42, 0.97) 100%)',
           boxShadow: '0 -4px 24px -4px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(6, 182, 212, 0.08)',
@@ -265,12 +265,12 @@ export default function PushOptInBanner() {
           <div className="flex items-start gap-3">
             {/* Bell icon with gradient background */}
             <div
-              className="flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center border border-cyan-500/20"
+              className="flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center border border-white/10"
               style={{
                 background: 'linear-gradient(135deg, rgba(6, 182, 212, 0.15) 0%, rgba(59, 130, 246, 0.15) 100%)',
               }}
             >
-              <BellIcon className="w-5 h-5 text-cyan-400" />
+              <BellIcon className="w-5 h-5 text-slate-300" />
             </div>
 
             {/* Text content */}
@@ -317,7 +317,7 @@ export default function PushOptInBanner() {
                 'transition-all duration-200',
                 enabling
                   ? 'opacity-70 cursor-not-allowed'
-                  : 'hover:shadow-lg hover:shadow-cyan-500/20 active:scale-[0.98]',
+                  : 'hover:shadow-lg hover:shadow-black/10 active:scale-[0.98]',
               ].join(' ')}
               style={{
                 background: enabling

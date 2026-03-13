@@ -46,7 +46,7 @@ export default function SupplyChainNode({
       case 'prime':
         return 'border-blue-500/50 hover:border-blue-400';
       case 'tier1':
-        return 'border-cyan-500/50 hover:border-cyan-400';
+        return 'border-white/15 hover:border-white/10';
       case 'tier2':
         return 'border-green-500/50 hover:border-green-400';
       case 'tier3':
@@ -62,7 +62,7 @@ export default function SupplyChainNode({
       case 'prime':
         return 'shadow-blue-500/20';
       case 'tier1':
-        return 'shadow-cyan-500/20';
+        return 'shadow-black/10';
       case 'tier2':
         return 'shadow-green-500/20';
       case 'tier3':

@@ -85,17 +85,17 @@ function DetailModal({
         }}
       >
         {/* Top gradient accent */}
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-400/50 to-transparent" />
+        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-slate-300/50 to-transparent" />
 
         {/* Header */}
         <div className="p-6 border-b border-slate-700/50">
           <div className="flex items-start justify-between">
             <div className="flex items-center gap-4">
-              <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-slate-700 to-slate-800 flex items-center justify-center text-2xl font-bold text-cyan-400 border border-slate-600/50">
+              <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-slate-700 to-slate-800 flex items-center justify-center text-2xl font-bold text-slate-300 border border-slate-600/50">
                 {offering.logoIcon}
               </div>
               <div>
-                <p className="text-cyan-400 text-sm font-medium">{offering.provider}</p>
+                <p className="text-slate-300 text-sm font-medium">{offering.provider}</p>
                 <h2 className="text-2xl font-display font-bold text-white">{offering.name}</h2>
                 <div className="flex items-center gap-2 mt-2">
                   <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-800/80 text-slate-300 text-xs font-medium">
@@ -125,7 +125,7 @@ function DetailModal({
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div className="bg-slate-800/50 rounded-lg p-4 text-center">
               <p className="text-slate-400 text-xs mb-1">Price</p>
-              <p className="text-cyan-400 font-bold text-xl">{offering.priceDisplay}</p>
+              <p className="text-slate-300 font-bold text-xl">{offering.priceDisplay}</p>
             </div>
             <div className="bg-slate-800/50 rounded-lg p-4 text-center">
               <p className="text-slate-400 text-xs mb-1">Duration</p>
@@ -235,7 +235,7 @@ function DetailModal({
             href={offering.websiteUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="block w-full py-3 px-4 rounded-lg bg-gradient-to-r from-cyan-500 to-blue-500 text-white font-semibold text-center hover:from-cyan-400 hover:to-blue-400 transition-all shadow-lg shadow-cyan-500/25"
+            className="block w-full py-3 px-4 rounded-lg bg-gradient-to-r from-white to-blue-500 text-white font-semibold text-center hover:from-slate-300 hover:to-blue-400 transition-all shadow-lg shadow-black/20/25"
           >
             Visit {offering.provider} Website
           </a>
@@ -250,7 +250,7 @@ function IndustryStatisticsSection() {
   const stats = TOURISM_STATS;
 
   const statCards = [
-    { label: 'Space Tourists to Date', value: stats.totalTouristsLabel, color: 'text-cyan-400', subtext: 'Since Dennis Tito (2001)' },
+    { label: 'Space Tourists to Date', value: stats.totalTouristsLabel, color: 'text-slate-300', subtext: 'Since Dennis Tito (2001)' },
     { label: 'Revenue Projection (2030)', value: stats.revenueProjection2030, color: 'text-green-400', subtext: `Growing at ${stats.marketGrowthRate}` },
     { label: 'Total Industry Investment', value: stats.totalInvestment, color: 'text-purple-400', subtext: 'Across all providers' },
     { label: 'Active Providers', value: `${stats.activeProviders}`, color: 'text-blue-400', subtext: `${stats.plannedProviders} more planned` },
@@ -322,7 +322,7 @@ function IndustryStatisticsSection() {
             {[
               { year: '2020', value: '$0.3B', width: '10%', color: 'from-slate-500 to-slate-600' },
               { year: '2023', value: '$0.8B', width: '27%', color: 'from-blue-500 to-blue-600' },
-              { year: '2025', value: '$1.2B', width: '40%', color: 'from-cyan-500 to-cyan-600' },
+              { year: '2025', value: '$1.2B', width: '40%', color: 'from-white to-slate-300' },
               { year: '2027', value: '$1.8B', width: '60%', color: 'from-purple-500 to-purple-600' },
               { year: '2030', value: '$3.0B', width: '100%', color: 'from-green-500 to-green-600' },
             ].map((bar) => (
@@ -410,7 +410,7 @@ function ComparisonTableSection() {
             <select
               value={filterType}
               onChange={(e) => setFilterType(e.target.value as ExperienceType | '')}
-              className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-1.5 text-sm focus:ring-2 focus:ring-cyan-500 outline-none"
+              className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-1.5 text-sm focus:ring-2 focus:ring-white/30 outline-none"
             >
               <option value="">All Types</option>
               {EXPERIENCE_TYPES.map((type) => (
@@ -420,7 +420,7 @@ function ComparisonTableSection() {
             <select
               value={filterStatus}
               onChange={(e) => setFilterStatus(e.target.value as TourismStatus | '')}
-              className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-1.5 text-sm focus:ring-2 focus:ring-cyan-500 outline-none"
+              className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-1.5 text-sm focus:ring-2 focus:ring-white/30 outline-none"
             >
               <option value="">All Statuses</option>
               <option value="active">Active</option>
@@ -450,7 +450,7 @@ function ComparisonTableSection() {
                   <th
                     key={col.key}
                     onClick={() => handleSort(col.key)}
-                    className="px-4 py-3 text-left text-slate-300 font-medium cursor-pointer hover:text-cyan-400 transition-colors whitespace-nowrap"
+                    className="px-4 py-3 text-left text-slate-300 font-medium cursor-pointer hover:text-white transition-colors whitespace-nowrap"
                   >
                     <span className="flex items-center gap-1">
                       {col.label}
@@ -486,7 +486,7 @@ function ComparisonTableSection() {
                     <td className="px-4 py-3 text-slate-300 whitespace-nowrap">{row.duration}</td>
                     <td className="px-4 py-3 text-amber-400 font-medium whitespace-nowrap">{row.gForces}</td>
                     <td className="px-4 py-3 text-slate-300 whitespace-nowrap">{row.training}</td>
-                    <td className="px-4 py-3 text-cyan-400 font-bold whitespace-nowrap">{row.price}</td>
+                    <td className="px-4 py-3 text-slate-300 font-bold whitespace-nowrap">{row.price}</td>
                     <td className="px-4 py-3 text-white text-center">{row.seats}</td>
                     <td className="px-4 py-3 whitespace-nowrap">
                       <span className={`font-medium ${statusColors[row.status]}`}>
@@ -533,7 +533,7 @@ function TimelineSection() {
 
         <div className="relative">
           {/* Vertical line */}
-          <div className="absolute left-6 top-0 bottom-0 w-px bg-gradient-to-b from-cyan-500/50 via-purple-500/50 to-slate-700/50" />
+          <div className="absolute left-6 top-0 bottom-0 w-px bg-gradient-to-b from-white/50 via-purple-500/50 to-slate-700/50" />
 
           <div className="space-y-8">
             {TOURISM_MILESTONES.map((milestone, idx) => {
@@ -544,7 +544,7 @@ function TimelineSection() {
                   {/* Timeline dot */}
                   <div className={`relative z-10 w-12 h-12 flex-shrink-0 rounded-full flex items-center justify-center text-xl border-2 ${
                     isCurrent
-                      ? 'bg-cyan-500/20 border-cyan-400 shadow-lg shadow-cyan-500/30'
+                      ? 'bg-white/10 border-white/10 shadow-lg shadow-black/15'
                       : isPast
                         ? 'bg-slate-800 border-slate-600'
                         : 'bg-purple-500/10 border-purple-500/30'
@@ -556,12 +556,12 @@ function TimelineSection() {
                   <div className={`flex-1 pb-2 ${isCurrent ? '' : ''}`}>
                     <div className="flex items-center gap-3 mb-1">
                       <span className={`text-sm font-mono font-bold ${
-                        isCurrent ? 'text-cyan-400' : isPast ? 'text-slate-300' : 'text-purple-400'
+                        isCurrent ? 'text-slate-300' : isPast ? 'text-slate-300' : 'text-purple-400'
                       }`}>
                         {milestone.year}
                       </span>
                       {isCurrent && (
-                        <span className="px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-400 text-xs font-medium border border-cyan-500/30">
+                        <span className="px-2 py-0.5 rounded-full bg-white/10 text-slate-300 text-xs font-medium border border-white/10">
                           Current
                         </span>
                       )}
@@ -649,7 +649,7 @@ function FutureDestinationsSection() {
                   <div className="grid grid-cols-2 gap-3 mb-4">
                     <div className="bg-slate-800/50 rounded-lg p-3">
                       <p className="text-slate-400 text-xs mb-1">Estimated Cost</p>
-                      <p className="text-cyan-400 font-semibold text-sm">{dest.estimatedCost}</p>
+                      <p className="text-slate-300 font-semibold text-sm">{dest.estimatedCost}</p>
                     </div>
                     <div className="bg-slate-800/50 rounded-lg p-3">
                       <p className="text-slate-400 text-xs mb-1">Distance</p>
@@ -695,7 +695,7 @@ function FutureDestinationsSection() {
                   {/* Toggle Button */}
                   <button
                     onClick={() => setExpandedId(isExpanded ? null : dest.id)}
-                    className="mt-4 text-cyan-400 hover:text-cyan-300 text-sm font-medium transition-colors flex items-center gap-1"
+                    className="mt-4 text-slate-300 hover:text-white text-sm font-medium transition-colors flex items-center gap-1"
                   >
                     {isExpanded ? 'Show Less' : 'Learn More'}
                     <svg
@@ -859,7 +859,7 @@ function SpaceTourismContent() {
             <ScrollReveal>
               <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 mb-8">
                 {[
-                  { label: 'Total Offerings', value: offerings.length.toString(), color: 'text-cyan-400' },
+                  { label: 'Total Offerings', value: offerings.length.toString(), color: 'text-slate-300' },
                   { label: 'Active Programs', value: offerings.filter((o) => o.status === 'active').length.toString(), color: 'text-green-400' },
                   { label: 'Providers', value: TOURISM_PROVIDERS.length.toString(), color: 'text-purple-400' },
                   { label: 'Starting From', value: '$50K', color: 'text-white' },
@@ -895,7 +895,7 @@ function SpaceTourismContent() {
                       onClick={() => handleTabChange(tab.id)}
                       className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all ${
                         activeTab === tab.id
-                          ? 'bg-gradient-to-r from-cyan-500/20 to-blue-500/20 text-cyan-400 border border-cyan-500/30'
+                          ? 'bg-gradient-to-r from-white/5 to-blue-500/20 text-slate-300 border border-white/10'
                           : 'text-slate-400 hover:text-white hover:bg-slate-800/50'
                       }`}
                     >
@@ -922,7 +922,7 @@ function SpaceTourismContent() {
                       <select
                         value={providerFilter}
                         onChange={(e) => handleProviderChange(e.target.value)}
-                        className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+                        className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                       >
                         <option value="">All Providers ({TOURISM_PROVIDERS.length})</option>
                         {TOURISM_PROVIDERS.map((provider) => (
@@ -939,7 +939,7 @@ function SpaceTourismContent() {
                       <select
                         value={experienceFilter}
                         onChange={(e) => handleExperienceChange(e.target.value)}
-                        className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+                        className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                       >
                         <option value="">All Types</option>
                         {EXPERIENCE_TYPES.map((type) => (
@@ -956,7 +956,7 @@ function SpaceTourismContent() {
                       <select
                         value={priceRangeIndex}
                         onChange={(e) => handlePriceRangeChange(e.target.value)}
-                        className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+                        className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                       >
                         {PRICE_RANGES.map((range, i) => (
                           <option key={i} value={i}>
@@ -973,7 +973,7 @@ function SpaceTourismContent() {
                         disabled={selectedForCompare.length < 2}
                         className={`px-5 py-2 rounded-lg font-semibold text-sm transition-all ${
                           selectedForCompare.length >= 2
-                            ? 'bg-gradient-to-r from-cyan-500 to-blue-500 text-white shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40'
+                            ? 'bg-gradient-to-r from-white to-blue-500 text-white shadow-lg shadow-black/20/25 hover:shadow-black/20/40'
                             : 'bg-slate-700 text-slate-400 cursor-not-allowed'
                         }`}
                       >
@@ -993,7 +993,7 @@ function SpaceTourismContent() {
                           return (
                             <span
                               key={id}
-                              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-cyan-500/20 text-cyan-400 text-xs font-medium border border-cyan-500/30"
+                              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 text-slate-300 text-xs font-medium border border-white/10"
                             >
                               {offering.name}
                               <button

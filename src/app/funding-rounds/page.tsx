@@ -62,7 +62,7 @@ const ROUND_TYPE_COLORS: Record<string, string> = {
   'Series F': 'bg-red-500/20 text-red-200 border border-red-500/30',
   'Series K': 'bg-rose-500/20 text-rose-300 border border-rose-500/30',
   'IPO': 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30',
-  'SPAC': 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30',
+  'SPAC': 'bg-white/10 text-slate-300 border border-white/10',
   'Debt': 'bg-slate-500/20 text-slate-300 border border-slate-500/30',
   'Acquisition': 'bg-pink-500/20 text-pink-400 border border-pink-500/30',
   'Secondary': 'bg-indigo-500/20 text-indigo-400 border border-indigo-500/30',
@@ -74,7 +74,7 @@ const SECTOR_COLORS: Record<string, string> = {
   'Satellite': 'bg-blue-500/15 text-blue-400',
   'Earth Observation': 'bg-green-500/15 text-green-400',
   'Communications': 'bg-violet-500/15 text-violet-400',
-  'In-Space Services': 'bg-cyan-500/15 text-cyan-400',
+  'In-Space Services': 'bg-white/8 text-slate-300',
   'Defense': 'bg-red-500/15 text-red-400',
   'Analytics': 'bg-amber-500/15 text-amber-400',
   'Propulsion': 'bg-rose-500/15 text-rose-400',
@@ -543,8 +543,8 @@ export default function FundingRoundsPage() {
   const SortIcon = ({ field }: { field: SortField }) => {
     if (sortField !== field) return <span className="text-slate-600 ml-1">&#x25B4;&#x25BE;</span>;
     return sortDirection === 'asc'
-      ? <span className="text-cyan-400 ml-1">&#x25B4;</span>
-      : <span className="text-cyan-400 ml-1">&#x25BE;</span>;
+      ? <span className="text-slate-300 ml-1">&#x25B4;</span>
+      : <span className="text-slate-300 ml-1">&#x25BE;</span>;
   };
 
   return (
@@ -563,7 +563,7 @@ export default function FundingRoundsPage() {
         <StaggerContainer className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           <StaggerItem><div className="card p-5">
             <p className="text-xs uppercase tracking-wider text-slate-400 mb-1">Total Raised (2025)</p>
-            <p className="text-2xl md:text-3xl font-bold text-cyan-400">${(summaryStats.total2025 / 1000).toFixed(1)}B</p>
+            <p className="text-2xl md:text-3xl font-bold text-slate-300">${(summaryStats.total2025 / 1000).toFixed(1)}B</p>
             <p className="text-sm text-slate-400 mt-1">{summaryStats.deals2025} deals</p>
           </div></StaggerItem>
           <StaggerItem><div className="card p-5">
@@ -597,7 +597,7 @@ export default function FundingRoundsPage() {
               onClick={() => setActiveTab(tab.key)}
               className={`px-4 py-2 text-sm font-medium rounded-lg transition-all min-h-[44px] ${
                 activeTab === tab.key
-                  ? 'bg-cyan-600 text-white shadow-lg shadow-cyan-500/20'
+                  ? 'bg-white text-white shadow-lg shadow-black/10'
                   : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/50'
               }`}
             >
@@ -621,7 +621,7 @@ export default function FundingRoundsPage() {
                     placeholder="Company or investor..."
                     value={searchQuery}
                     onChange={e => setSearchQuery(e.target.value)}
-                    className="w-full bg-slate-800/80 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 min-h-[44px]"
+                    className="w-full bg-slate-800/80 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-white/15 focus:ring-1 focus:ring-white/30 min-h-[44px]"
                   />
                 </div>
 
@@ -631,7 +631,7 @@ export default function FundingRoundsPage() {
                   <select
                     value={selectedRoundType}
                     onChange={e => setSelectedRoundType(e.target.value)}
-                    className="w-full bg-slate-800/80 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 min-h-[44px]"
+                    className="w-full bg-slate-800/80 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-white/15 focus:ring-1 focus:ring-white/30 min-h-[44px]"
                   >
                     {ROUND_TYPES.map(t => (
                       <option key={t} value={t}>{t}</option>
@@ -645,7 +645,7 @@ export default function FundingRoundsPage() {
                   <select
                     value={selectedSector}
                     onChange={e => setSelectedSector(e.target.value)}
-                    className="w-full bg-slate-800/80 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 min-h-[44px]"
+                    className="w-full bg-slate-800/80 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-white/15 focus:ring-1 focus:ring-white/30 min-h-[44px]"
                   >
                     {SECTORS.map(s => (
                       <option key={s} value={s}>{s}</option>
@@ -659,7 +659,7 @@ export default function FundingRoundsPage() {
                   <select
                     value={selectedAmountRange}
                     onChange={e => setSelectedAmountRange(Number(e.target.value))}
-                    className="w-full bg-slate-800/80 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 min-h-[44px]"
+                    className="w-full bg-slate-800/80 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-white/15 focus:ring-1 focus:ring-white/30 min-h-[44px]"
                   >
                     {AMOUNT_RANGES.map((r, i) => (
                       <option key={i} value={i}>{r.label}</option>
@@ -673,7 +673,7 @@ export default function FundingRoundsPage() {
                   <select
                     value={selectedYear}
                     onChange={e => setSelectedYear(e.target.value)}
-                    className="w-full bg-slate-800/80 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 min-h-[44px]"
+                    className="w-full bg-slate-800/80 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-white/15 focus:ring-1 focus:ring-white/30 min-h-[44px]"
                   >
                     {YEARS.map(y => (
                       <option key={y} value={y}>{y}</option>
@@ -696,7 +696,7 @@ export default function FundingRoundsPage() {
                       setSelectedAmountRange(0);
                       setSelectedYear('All');
                     }}
-                    className="text-xs text-cyan-400 hover:text-cyan-300 underline"
+                    className="text-xs text-slate-300 hover:text-white underline"
                   >
                     Clear all filters
                   </button>
@@ -711,7 +711,7 @@ export default function FundingRoundsPage() {
                   <thead>
                     <tr className="border-b border-slate-700/50">
                       <th
-                        className="text-left px-4 py-3 text-xs uppercase tracking-wider text-slate-400 cursor-pointer hover:text-cyan-400 transition-colors"
+                        className="text-left px-4 py-3 text-xs uppercase tracking-wider text-slate-400 cursor-pointer hover:text-white transition-colors"
                         onClick={() => handleSort('company')}
                       >
                         Company <SortIcon field="company" />
@@ -720,13 +720,13 @@ export default function FundingRoundsPage() {
                         Round
                       </th>
                       <th
-                        className="text-right px-4 py-3 text-xs uppercase tracking-wider text-slate-400 cursor-pointer hover:text-cyan-400 transition-colors"
+                        className="text-right px-4 py-3 text-xs uppercase tracking-wider text-slate-400 cursor-pointer hover:text-white transition-colors"
                         onClick={() => handleSort('amount')}
                       >
                         Amount <SortIcon field="amount" />
                       </th>
                       <th
-                        className="text-left px-4 py-3 text-xs uppercase tracking-wider text-slate-400 cursor-pointer hover:text-cyan-400 transition-colors hidden md:table-cell"
+                        className="text-left px-4 py-3 text-xs uppercase tracking-wider text-slate-400 cursor-pointer hover:text-white transition-colors hidden md:table-cell"
                         onClick={() => handleSort('date')}
                       >
                         Date <SortIcon field="date" />
@@ -735,7 +735,7 @@ export default function FundingRoundsPage() {
                         Lead Investor
                       </th>
                       <th
-                        className="text-right px-4 py-3 text-xs uppercase tracking-wider text-slate-400 cursor-pointer hover:text-cyan-400 transition-colors hidden lg:table-cell"
+                        className="text-right px-4 py-3 text-xs uppercase tracking-wider text-slate-400 cursor-pointer hover:text-white transition-colors hidden lg:table-cell"
                         onClick={() => handleSort('valuation')}
                       >
                         Valuation <SortIcon field="valuation" />
@@ -847,7 +847,7 @@ export default function FundingRoundsPage() {
 
                       {/* Stats */}
                       <div className="text-right flex-shrink-0">
-                        <p className="text-cyan-400 font-bold">{investor.deals} deals</p>
+                        <p className="text-slate-300 font-bold">{investor.deals} deals</p>
                         <p className="text-xs text-slate-500">{formatAmount(investor.totalAmount)} total</p>
 
         <RelatedModules modules={PAGE_RELATIONS['funding-rounds']} />
@@ -890,7 +890,7 @@ export default function FundingRoundsPage() {
                 <h3 className="text-sm font-semibold text-slate-300 uppercase tracking-wider mb-3">Investment Types</h3>
                 <div className="space-y-2.5">
                   {[
-                    { label: 'Venture Capital', pct: 62, color: 'bg-cyan-500' },
+                    { label: 'Venture Capital', pct: 62, color: 'bg-white' },
                     { label: 'Strategic / Corp', pct: 18, color: 'bg-purple-500' },
                     { label: 'Debt / Credit', pct: 10, color: 'bg-amber-500' },
                     { label: 'Public / SPAC / IPO', pct: 7, color: 'bg-emerald-500' },
@@ -954,7 +954,7 @@ export default function FundingRoundsPage() {
 
               <div className="card p-5">
                 <p className="text-xs uppercase tracking-wider text-slate-400 mb-2">2026 Pace (YTD)</p>
-                <p className="text-3xl font-bold text-cyan-400">
+                <p className="text-3xl font-bold text-slate-300">
                   {formatAmount(trendAnalysis.total2026)}
                 </p>
                 <p className="text-xs text-slate-500 mt-1">
@@ -975,7 +975,7 @@ export default function FundingRoundsPage() {
                     <div key={sector} className="bg-slate-800/40 rounded-xl p-4 border border-slate-700/30">
                       <div className="flex items-center gap-2 mb-2">
                         <span className={`w-2 h-2 rounded-full ${
-                          i === 0 ? 'bg-cyan-400' : i === 1 ? 'bg-purple-400' : i === 2 ? 'bg-amber-400' : 'bg-emerald-400'
+                          i === 0 ? 'bg-white' : i === 1 ? 'bg-purple-400' : i === 2 ? 'bg-amber-400' : 'bg-emerald-400'
                         }`} />
                         <span className={`text-sm font-medium px-2 py-0.5 rounded ${getSectorColor(sector)}`}>{sector}</span>
                       </div>
@@ -995,7 +995,7 @@ export default function FundingRoundsPage() {
                 <div className="space-y-4">
                   {[
                     { year: '2024', amount: trendAnalysis.total2024, deals: FUNDING_ROUNDS.filter(r => r.date.startsWith('2024')).length, color: 'bg-blue-500' },
-                    { year: '2025', amount: trendAnalysis.total2025, deals: FUNDING_ROUNDS.filter(r => r.date.startsWith('2025')).length, color: 'bg-cyan-500' },
+                    { year: '2025', amount: trendAnalysis.total2025, deals: FUNDING_ROUNDS.filter(r => r.date.startsWith('2025')).length, color: 'bg-white' },
                     { year: '2026 (YTD)', amount: trendAnalysis.total2026, deals: FUNDING_ROUNDS.filter(r => r.date.startsWith('2026')).length, color: 'bg-purple-500' },
                   ].map(item => {
                     const maxAmount = Math.max(trendAnalysis.total2024, trendAnalysis.total2025, trendAnalysis.total2026);
@@ -1034,7 +1034,7 @@ export default function FundingRoundsPage() {
                         </div>
                         <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
                           <div
-                            className="h-full bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full transition-all duration-700"
+                            className="h-full bg-gradient-to-r from-white to-blue-500 rounded-full transition-all duration-700"
                             style={{ width: `${pct}%` }}
                           />
                         </div>
@@ -1088,11 +1088,11 @@ export default function FundingRoundsPage() {
                   </div>
                 </div>
 
-                <div className="bg-slate-800/40 rounded-xl p-4 border border-cyan-500/20">
+                <div className="bg-slate-800/40 rounded-xl p-4 border border-white/10">
                   <div className="flex items-start gap-3">
                     <span className="text-2xl flex-shrink-0 mt-0.5" aria-hidden="true">&#9650;</span>
                     <div>
-                      <p className="text-sm font-semibold text-cyan-400">Space Station Race</p>
+                      <p className="text-sm font-semibold text-slate-300">Space Station Race</p>
                       <p className="text-xs text-slate-400 mt-1">
                         With ISS decommissioning approaching, commercial station developers Sierra Space, Axiom, Vast,
                         and Voyager raised a combined $1B+ in 2025. NASA contracts anchoring market confidence.

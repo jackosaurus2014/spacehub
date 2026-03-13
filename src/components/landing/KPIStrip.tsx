@@ -17,7 +17,7 @@ const KPI_METRICS: KPIMetric[] = [
     value: 42,
     suffix: '',
     prefix: '',
-    colorClass: 'text-cyan-400',
+    colorClass: 'text-slate-300',
   },
   {
     label: 'Active Satellites',
@@ -38,7 +38,7 @@ const KPI_METRICS: KPIMetric[] = [
     value: 1.2,
     suffix: 'T',
     prefix: '$',
-    colorClass: 'text-cyan-400',
+    colorClass: 'text-slate-300',
   },
   {
     label: 'Funding YTD',

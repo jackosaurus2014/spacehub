@@ -91,7 +91,7 @@ function ExpressInterestButton({ opportunityId }: { opportunityId: string }) {
           <button
             onClick={handleSubmit}
             disabled={submitting || !email}
-            className="text-xs px-2.5 py-1 min-h-[44px] bg-cyan-600 hover:bg-cyan-500 disabled:bg-slate-700 text-white rounded font-medium transition-colors"
+            className="text-xs px-2.5 py-1 min-h-[44px] bg-white hover:bg-slate-100 disabled:bg-slate-700 text-white rounded font-medium transition-colors"
           >
             {submitting ? '...' : 'Confirm'}
           </button>
@@ -100,7 +100,7 @@ function ExpressInterestButton({ opportunityId }: { opportunityId: string }) {
       ) : (
         <button
           onClick={() => setShowForm(true)}
-          className="text-xs px-2.5 py-1 min-h-[44px] bg-cyan-600 hover:bg-cyan-500 text-white rounded font-medium transition-colors"
+          className="text-xs px-2.5 py-1 min-h-[44px] bg-white hover:bg-slate-100 text-white rounded font-medium transition-colors"
         >
           Express Interest
         </button>
@@ -232,7 +232,7 @@ function OpportunityRow({ opportunity }: { opportunity: BusinessOpportunity }) {
             )}
             <Link
               href={`/marketplace/search?category=${opportunity.category === 'launch_services' ? 'launch' : opportunity.category === 'satellites' ? 'satellite' : ''}`}
-              className="text-xs text-cyan-400 hover:text-cyan-300 bg-cyan-500/10 px-2 py-1 rounded transition-colors"
+              className="text-xs text-slate-300 hover:text-white bg-white/5 px-2 py-1 rounded transition-colors"
             >
               Find providers on Marketplace →
             </Link>
@@ -488,7 +488,7 @@ function BusinessOpportunitiesContent() {
                     id="opp-type-filter"
                     value={selectedType}
                     onChange={(e) => setSelectedType(e.target.value as OpportunityType | '')}
-                    className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+                    className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                   >
                     <option value="">All Types</option>
                     {OPPORTUNITY_TYPES.map((type) => (
@@ -507,7 +507,7 @@ function BusinessOpportunitiesContent() {
                     onChange={(e) =>
                       setSelectedCategory(e.target.value as OpportunityCategory | '')
                     }
-                    className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+                    className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                   >
                     <option value="">All Categories</option>
                     {OPPORTUNITY_CATEGORIES.map((cat) => (
@@ -526,7 +526,7 @@ function BusinessOpportunitiesContent() {
                     onChange={(e) =>
                       setSelectedAudience(e.target.value as TargetAudience | '')
                     }
-                    className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+                    className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                   >
                     <option value="">All Audiences</option>
                     <option value="entrepreneurs">💡 Entrepreneurs</option>
@@ -544,7 +544,7 @@ function BusinessOpportunitiesContent() {
                     onChange={(e) =>
                       setSelectedDifficulty(e.target.value as OpportunityDifficulty | '')
                     }
-                    className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+                    className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                   >
                     <option value="">All Difficulties</option>
                     {(Object.entries(DIFFICULTY_INFO) as [OpportunityDifficulty, { label: string; color: string }][]).map(([value, info]) => (
@@ -673,7 +673,7 @@ function BusinessOpportunitiesContent() {
                     <Link
                       key={tool.href}
                       href={tool.href}
-                      className="card p-3 flex items-center gap-3 hover:border-cyan-500/30 transition-colors"
+                      className="card p-3 flex items-center gap-3 hover:border-white/10 transition-colors"
                     >
                       <span className="text-xl">{tool.icon}</span>
                       <div>

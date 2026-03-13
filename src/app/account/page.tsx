@@ -91,7 +91,7 @@ export default function AccountPage() {
                   onClick={() => setActiveSection(tab.key)}
                   className={`flex items-center gap-2 py-3 px-4 min-h-[44px] font-medium text-sm transition-colors border-b-2 -mb-px whitespace-nowrap ${
                     activeSection === tab.key
-                      ? 'border-cyan-500 text-white'
+                      ? 'border-white/15 text-white'
                       : 'border-transparent text-slate-400 hover:text-white'
                   }`}
                 >
@@ -122,19 +122,19 @@ export default function AccountPage() {
           <div className="flex flex-wrap gap-4">
             <Link
               href="/privacy"
-              className="text-sm text-cyan-400 hover:text-cyan-300 transition-colors"
+              className="text-sm text-slate-300 hover:text-white transition-colors"
             >
               Privacy Policy
             </Link>
             <Link
               href="/terms"
-              className="text-sm text-cyan-400 hover:text-cyan-300 transition-colors"
+              className="text-sm text-slate-300 hover:text-white transition-colors"
             >
               Terms of Service
             </Link>
             <Link
               href="/faq"
-              className="text-sm text-cyan-400 hover:text-cyan-300 transition-colors"
+              className="text-sm text-slate-300 hover:text-white transition-colors"
             >
               FAQ & Support
             </Link>
@@ -217,7 +217,7 @@ function ProfileSection({ session }: { session: any }) {
 
   const tierColors: Record<string, string> = {
     free: 'bg-slate-700 text-slate-300',
-    pro: 'bg-cyan-900/50 text-cyan-300 border border-cyan-700/50',
+    pro: 'bg-slate-800/50 text-slate-200 border border-white/10',
     enterprise: 'bg-purple-900/50 text-purple-300 border border-purple-700/50',
   };
 
@@ -250,7 +250,7 @@ function ProfileSection({ session }: { session: any }) {
                 onChange={(e) => setEditName(e.target.value)}
                 autoComplete="name"
                 enterKeyHint="done"
-                className="flex-1 px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                className="flex-1 px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-white/30 focus:border-transparent"
                 placeholder="Your name"
                 autoFocus
                 onKeyDown={(e) => {
@@ -264,7 +264,7 @@ function ProfileSection({ session }: { session: any }) {
               <button
                 onClick={handleSaveName}
                 disabled={isSavingName}
-                className="px-4 py-2 bg-cyan-600 hover:bg-cyan-700 disabled:bg-cyan-800 text-white rounded-lg text-sm font-medium transition-colors"
+                className="px-4 py-2 bg-white hover:bg-slate-600 disabled:bg-slate-700 text-white rounded-lg text-sm font-medium transition-colors"
               >
                 {isSavingName ? 'Saving...' : 'Save'}
               </button>
@@ -283,7 +283,7 @@ function ProfileSection({ session }: { session: any }) {
               <p className="text-white">{profile?.name || 'Not set'}</p>
               <button
                 onClick={() => setIsEditing(true)}
-                className="text-sm text-cyan-400 hover:text-cyan-300 transition-colors"
+                className="text-sm text-slate-300 hover:text-white transition-colors"
               >
                 Edit
               </button>
@@ -415,7 +415,7 @@ function SecuritySection() {
               type={showCurrent ? 'text' : 'password'}
               value={currentPassword}
               onChange={(e) => setCurrentPassword(e.target.value)}
-              className="w-full px-3 py-2 pr-10 bg-slate-800 border border-slate-700 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+              className="w-full px-3 py-2 pr-10 bg-slate-800 border border-slate-700 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-white/30 focus:border-transparent"
               placeholder="Enter current password"
               autoComplete="current-password"
               enterKeyHint="next"
@@ -448,7 +448,7 @@ function SecuritySection() {
               type={showNew ? 'text' : 'password'}
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
-              className="w-full px-3 py-2 pr-10 bg-slate-800 border border-slate-700 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+              className="w-full px-3 py-2 pr-10 bg-slate-800 border border-slate-700 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-white/30 focus:border-transparent"
               placeholder="Enter new password"
               autoComplete="new-password"
               enterKeyHint="next"
@@ -484,7 +484,7 @@ function SecuritySection() {
               type={showConfirm ? 'text' : 'password'}
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              className="w-full px-3 py-2 pr-10 bg-slate-800 border border-slate-700 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+              className="w-full px-3 py-2 pr-10 bg-slate-800 border border-slate-700 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-white/30 focus:border-transparent"
               placeholder="Confirm new password"
               autoComplete="new-password"
               enterKeyHint="done"
@@ -515,7 +515,7 @@ function SecuritySection() {
         <button
           type="submit"
           disabled={isChanging || !currentPassword || !newPassword || !confirmPassword}
-          className="px-6 py-2 bg-cyan-600 hover:bg-cyan-700 disabled:bg-slate-700 disabled:text-slate-500 text-white rounded-lg text-sm font-medium transition-colors"
+          className="px-6 py-2 bg-white hover:bg-slate-600 disabled:bg-slate-700 disabled:text-slate-500 text-white rounded-lg text-sm font-medium transition-colors"
         >
           {isChanging ? 'Changing Password...' : 'Change Password'}
         </button>
@@ -657,8 +657,8 @@ function NotificationsSection() {
               aria-checked={!!preferences[toggle.key]}
               onClick={() => handleToggle(toggle.key)}
               disabled={savingKey === toggle.key}
-              className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 focus:ring-offset-slate-900 disabled:opacity-50 ${
-                preferences[toggle.key] ? 'bg-cyan-600' : 'bg-slate-600'
+              className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-white/30 focus:ring-offset-2 focus:ring-offset-slate-900 disabled:opacity-50 ${
+                preferences[toggle.key] ? 'bg-white' : 'bg-slate-600'
               }`}
             >
               <span
@@ -682,7 +682,7 @@ function NotificationsSection() {
             value={preferences.digestFrequency}
             onChange={(e) => handleFrequencyChange(e.target.value)}
             disabled={savingKey === 'digestFrequency'}
-            className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none disabled:opacity-50 sm:w-40"
+            className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none disabled:opacity-50 sm:w-40"
           >
             <option value="daily">Daily</option>
             <option value="weekly">Weekly</option>
@@ -732,8 +732,8 @@ function AppearanceSection() {
             role="switch"
             aria-checked={oledEnabled}
             onClick={handleToggleOled}
-            className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 focus:ring-offset-slate-900 ${
-              oledEnabled ? 'bg-cyan-600' : 'bg-slate-600'
+            className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-white/30 focus:ring-offset-2 focus:ring-offset-slate-900 ${
+              oledEnabled ? 'bg-white' : 'bg-slate-600'
             }`}
           >
             <span

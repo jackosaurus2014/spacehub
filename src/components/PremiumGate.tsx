@@ -356,7 +356,7 @@ export default function PremiumGate({
           className="card p-8 text-center max-w-md mx-auto"
         >
           {/* Glow effect */}
-          <div className="absolute inset-0 rounded-2xl bg-gradient-to-b from-cyan-500/10 via-transparent to-purple-500/10 pointer-events-none" />
+          <div className="absolute inset-0 rounded-2xl bg-gradient-to-b from-white/5 via-transparent to-purple-500/10 pointer-events-none" />
 
           <div className="relative">
             {/* Icon */}
@@ -364,13 +364,13 @@ export default function PremiumGate({
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ type: 'spring', stiffness: 400, damping: 15, delay: 0.1 }}
-              className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-cyan-500/20 to-purple-500/20 border border-cyan-400/30 flex items-center justify-center"
+              className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-white/5 to-purple-500/20 border border-white/10 flex items-center justify-center"
             >
               <span className="text-3xl">{contextMessage?.icon || '\u{1F680}'}</span>
             </motion.div>
 
             {/* Title */}
-            <h3 className="text-xl font-bold text-cyan-50 mb-2">
+            <h3 className="text-xl font-bold text-white mb-2">
               {contextMessage?.title || `Upgrade to ${plan?.name || 'Premium'}`}
             </h3>
 
@@ -393,7 +393,7 @@ export default function PremiumGate({
                     key={highlight}
                     className="flex items-center gap-2 text-sm text-slate-300"
                   >
-                    <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 flex-shrink-0" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-white flex-shrink-0" />
                     {highlight}
                   </li>
                 ))}
@@ -404,7 +404,7 @@ export default function PremiumGate({
             <div className="space-y-3">
               <Link
                 href="/pricing"
-                className="block w-full py-3 px-6 rounded-xl bg-gradient-to-r from-cyan-500 to-purple-500 text-white font-semibold hover:from-cyan-400 hover:to-purple-400 transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/25"
+                className="block w-full py-3 px-6 rounded-xl bg-gradient-to-r from-white to-purple-500 text-white font-semibold hover:from-slate-300 hover:to-purple-400 transition-all duration-300 hover:shadow-lg hover:shadow-black/20/25"
               >
                 {plan?.trialDays
                   ? `Start ${plan.trialDays}-Day Free Trial`
@@ -412,7 +412,7 @@ export default function PremiumGate({
               </Link>
               <Link
                 href="/pricing"
-                className="block text-slate-400 hover:text-cyan-300 text-sm transition-colors"
+                className="block text-slate-400 hover:text-white text-sm transition-colors"
               >
                 Compare all features &rarr;
               </Link>
@@ -429,7 +429,7 @@ export function PremiumBadge({ tier }: { tier: SubscriptionTier }) {
   if (tier === 'free') return null;
 
   const colors: Record<string, string> = {
-    pro: 'bg-cyan-500/10 text-cyan-300 border-cyan-500/30',
+    pro: 'bg-white/5 text-slate-200 border-white/10',
     enterprise: 'bg-purple-500/10 text-purple-300 border-purple-500/30',
     test: 'bg-green-500/10 text-green-300 border-green-500/30',
   };
@@ -488,7 +488,7 @@ export function UpgradePrompt({
   return (
     <Link
       href="/pricing"
-      className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 text-sm hover:bg-cyan-500/20 hover:border-cyan-400/50 transition-all duration-200"
+      className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-slate-200 text-sm hover:bg-slate-100/20 hover:border-white/15 transition-all duration-200"
     >
       <span>{contextMessage?.icon || '\u{1F512}'}</span>
       <span>{contextMessage ? contextMessage.title : `Upgrade to unlock ${feature}`}</span>

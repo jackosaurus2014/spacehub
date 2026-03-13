@@ -143,8 +143,8 @@ export default function QuickAccessSidebar() {
           isExpanded ? 'w-80' : 'w-16'
         }`}
         style={{
-          background: 'linear-gradient(180deg, rgba(15, 23, 42, 0.98) 0%, rgba(30, 41, 59, 0.96) 50%, rgba(15, 23, 42, 0.98) 100%)',
-          boxShadow: '4px 0 16px -4px rgba(0, 0, 0, 0.4), inset -1px 0 0 rgba(6, 182, 212, 0.15)',
+          background: 'rgba(15, 23, 42, 0.98)',
+          boxShadow: 'inset -1px 0 0 rgba(255, 255, 255, 0.06)',
         }}
         onMouseEnter={() => setIsExpanded(true)}
         onMouseLeave={() => setIsExpanded(false)}
@@ -152,7 +152,7 @@ export default function QuickAccessSidebar() {
         {/* Toggle Button */}
         <button
           onClick={() => setIsExpanded(!isExpanded)}
-          className="absolute -right-3 top-4 w-6 h-6 rounded-full bg-slate-800 border border-cyan-400/30 flex items-center justify-center text-cyan-400 hover:text-cyan-300 hover:border-cyan-400/50 transition-colors shadow-lg"
+          className="absolute -right-3 top-4 w-6 h-6 rounded-full bg-slate-800 border border-white/10 flex items-center justify-center text-slate-400 hover:text-white hover:border-white/20 transition-colors shadow-lg"
           aria-label={isExpanded ? 'Collapse sidebar' : 'Expand sidebar'}
         >
           <svg
@@ -170,7 +170,7 @@ export default function QuickAccessSidebar() {
           {/* Pinned Section Header */}
           {pinnedModules.length > 0 && isExpanded && (
             <div className="px-4 mb-2">
-              <span className="text-xs uppercase tracking-widest text-cyan-400/60 font-medium">
+              <span className="text-xs uppercase tracking-widest text-slate-500 font-medium">
                 Pinned
               </span>
             </div>
@@ -200,8 +200,8 @@ export default function QuickAccessSidebar() {
                           onClick={() => toggleParent(module.moduleId)}
                           className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 w-full text-left ${
                             active
-                              ? 'bg-cyan-500/20 text-cyan-300 shadow-lg shadow-cyan-500/10'
-                              : 'text-slate-300 hover:bg-slate-700/50 hover:text-cyan-300'
+                              ? 'bg-white/10 text-white'
+                              : 'text-slate-300 hover:bg-slate-700/50 hover:text-white'
                           }`}
                         >
                           {/* Icon */}
@@ -238,8 +238,8 @@ export default function QuickAccessSidebar() {
                           href={getModuleRoute(module.moduleId)}
                           className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 w-full ${
                             active
-                              ? 'bg-cyan-500/20 text-cyan-300 shadow-lg shadow-cyan-500/10'
-                              : 'text-slate-300 hover:bg-slate-700/50 hover:text-cyan-300'
+                              ? 'bg-white/10 text-white'
+                              : 'text-slate-300 hover:bg-slate-700/50 hover:text-white'
                           }`}
                         >
                           {/* Icon */}
@@ -258,7 +258,7 @@ export default function QuickAccessSidebar() {
 
                           {/* Premium Badge */}
                           {module.isPremium && isExpanded && (
-                            <span className="ml-auto text-xs font-semibold px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 flex-shrink-0">
+                            <span className="ml-auto text-xs font-semibold px-1.5 py-0.5 rounded bg-white/10 text-slate-300 border border-white/10 flex-shrink-0">
                               PRO
                             </span>
                           )}
@@ -275,7 +275,7 @@ export default function QuickAccessSidebar() {
                           }}
                           className={`absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded transition-all duration-200 ${
                             isPinned
-                              ? 'text-cyan-400 hover:text-cyan-300'
+                              ? 'text-white hover:text-slate-300'
                               : 'text-slate-400 hover:text-slate-300 opacity-0 group-hover:opacity-100'
                           }`}
                           aria-label={isPinned ? 'Unpin module' : 'Pin module'}
@@ -300,10 +300,10 @@ export default function QuickAccessSidebar() {
 
                     {/* Tooltip (only when collapsed) */}
                     {!isExpanded && (
-                      <div className="absolute left-full top-1/2 -translate-y-1/2 ml-2 px-3 py-2 rounded-lg bg-slate-800 border border-cyan-400/30 shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 whitespace-nowrap">
+                      <div className="absolute left-full top-1/2 -translate-y-1/2 ml-2 px-3 py-2 rounded-lg bg-slate-800 border border-white/10 shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 whitespace-nowrap">
                         <span className="text-sm text-slate-200 font-medium">{module.name}</span>
                         {module.isPremium && (
-                          <span className="ml-2 text-xs font-semibold px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">
+                          <span className="ml-2 text-xs font-semibold px-1.5 py-0.5 rounded bg-white/10 text-slate-300 border border-white/10">
                             PRO
                           </span>
                         )}
@@ -313,7 +313,7 @@ export default function QuickAccessSidebar() {
                               <Link
                                 key={child.moduleId}
                                 href={getModuleRoute(child.moduleId)}
-                                className="block text-xs text-slate-400 hover:text-cyan-300 py-0.5 transition-colors"
+                                className="block text-xs text-slate-400 hover:text-white py-0.5 transition-colors"
                               >
                                 {child.icon} {child.name}
                               </Link>
@@ -321,7 +321,7 @@ export default function QuickAccessSidebar() {
                           </div>
                         )}
                         {/* Tooltip arrow */}
-                        <div className="absolute left-0 top-1/2 -translate-x-1 -translate-y-1/2 w-2 h-2 bg-slate-800 border-l border-b border-cyan-400/30 rotate-45" />
+                        <div className="absolute left-0 top-1/2 -translate-x-1 -translate-y-1/2 w-2 h-2 bg-slate-800 border-l border-b border-white/10 rotate-45" />
                       </div>
                     )}
                   </div>
@@ -337,8 +337,8 @@ export default function QuickAccessSidebar() {
                               href={getModuleRoute(child.moduleId)}
                               className={`flex items-center gap-2.5 px-2.5 py-2 rounded-lg transition-all duration-200 text-sm ${
                                 childActive
-                                  ? 'bg-cyan-500/15 text-cyan-300'
-                                  : 'text-slate-400 hover:bg-slate-700/40 hover:text-cyan-300'
+                                  ? 'bg-white/10 text-white'
+                                  : 'text-slate-400 hover:bg-slate-700/40 hover:text-white'
                               }`}
                             >
                               <span className="text-sm flex-shrink-0 w-5 text-center" role="img" aria-label={child.name}>
@@ -348,7 +348,7 @@ export default function QuickAccessSidebar() {
                                 {child.name}
                               </span>
                               {child.isPremium && (
-                                <span className="ml-auto text-[9px] font-semibold px-1 py-0.5 rounded bg-cyan-500/15 text-cyan-400/70 border border-cyan-500/20 flex-shrink-0">
+                                <span className="ml-auto text-[9px] font-semibold px-1 py-0.5 rounded bg-white/10 text-slate-400 border border-white/10 flex-shrink-0">
                                   PRO
                                 </span>
                               )}
@@ -370,8 +370,8 @@ export default function QuickAccessSidebar() {
             href="/blog"
             className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 ${
               pathname?.startsWith('/blog')
-                ? 'bg-cyan-500/20 text-cyan-300'
-                : 'text-slate-300 hover:bg-slate-700/50 hover:text-cyan-300'
+                ? 'bg-white/10 text-white'
+                : 'text-slate-300 hover:bg-slate-700/50 hover:text-white'
             }`}
           >
             <span className="text-lg flex-shrink-0 w-6 text-center">
@@ -391,8 +391,8 @@ export default function QuickAccessSidebar() {
             href="/ai-insights"
             className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 ${
               pathname?.startsWith('/ai-insights')
-                ? 'bg-cyan-500/20 text-cyan-300'
-                : 'text-slate-300 hover:bg-slate-700/50 hover:text-cyan-300'
+                ? 'bg-white/10 text-white'
+                : 'text-slate-300 hover:bg-slate-700/50 hover:text-white'
             }`}
           >
             <span className="text-lg flex-shrink-0 w-6 text-center">
@@ -412,8 +412,8 @@ export default function QuickAccessSidebar() {
             href="/marketplace"
             className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 ${
               pathname?.startsWith('/marketplace') || pathname?.startsWith('/provider-dashboard')
-                ? 'bg-cyan-500/20 text-cyan-300'
-                : 'text-slate-300 hover:bg-slate-700/50 hover:text-cyan-300'
+                ? 'bg-white/10 text-white'
+                : 'text-slate-300 hover:bg-slate-700/50 hover:text-white'
             }`}
           >
             <span className="text-lg flex-shrink-0 w-6 text-center">🏪</span>
@@ -429,8 +429,8 @@ export default function QuickAccessSidebar() {
             href="/community/forums"
             className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 ${
               pathname?.startsWith('/community')
-                ? 'bg-cyan-500/20 text-cyan-300'
-                : 'text-slate-300 hover:bg-slate-700/50 hover:text-cyan-300'
+                ? 'bg-white/10 text-white'
+                : 'text-slate-300 hover:bg-slate-700/50 hover:text-white'
             }`}
           >
             <span className="text-lg flex-shrink-0 w-6 text-center">
@@ -450,8 +450,8 @@ export default function QuickAccessSidebar() {
             href="/deal-rooms"
             className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 ${
               pathname?.startsWith('/deal-rooms')
-                ? 'bg-cyan-500/20 text-cyan-300'
-                : 'text-slate-300 hover:bg-slate-700/50 hover:text-cyan-300'
+                ? 'bg-white/10 text-white'
+                : 'text-slate-300 hover:bg-slate-700/50 hover:text-white'
             }`}
           >
             <span className="text-lg flex-shrink-0 w-6 text-center">
@@ -471,8 +471,8 @@ export default function QuickAccessSidebar() {
             href="/funding-opportunities"
             className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 ${
               pathname?.startsWith('/funding-opportunities')
-                ? 'bg-cyan-500/20 text-cyan-300'
-                : 'text-slate-300 hover:bg-slate-700/50 hover:text-cyan-300'
+                ? 'bg-white/10 text-white'
+                : 'text-slate-300 hover:bg-slate-700/50 hover:text-white'
             }`}
           >
             <span className="text-lg flex-shrink-0 w-6 text-center">💰</span>
@@ -488,8 +488,8 @@ export default function QuickAccessSidebar() {
             href="/customer-discovery"
             className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 ${
               pathname?.startsWith('/customer-discovery')
-                ? 'bg-cyan-500/20 text-cyan-300'
-                : 'text-slate-300 hover:bg-slate-700/50 hover:text-cyan-300'
+                ? 'bg-white/10 text-white'
+                : 'text-slate-300 hover:bg-slate-700/50 hover:text-white'
             }`}
           >
             <span className="text-lg flex-shrink-0 w-6 text-center">
@@ -509,8 +509,8 @@ export default function QuickAccessSidebar() {
             href="/my-watchlists"
             className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 ${
               pathname === '/my-watchlists'
-                ? 'bg-cyan-500/20 text-cyan-300'
-                : 'text-slate-300 hover:bg-slate-700/50 hover:text-cyan-300'
+                ? 'bg-white/10 text-white'
+                : 'text-slate-300 hover:bg-slate-700/50 hover:text-white'
             }`}
           >
             <span className="text-lg flex-shrink-0 w-6 text-center">&#x2605;</span>
@@ -526,8 +526,8 @@ export default function QuickAccessSidebar() {
             href="/dashboard"
             className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 ${
               pathname === '/dashboard'
-                ? 'bg-cyan-500/20 text-cyan-300'
-                : 'text-slate-300 hover:bg-slate-700/50 hover:text-cyan-300'
+                ? 'bg-white/10 text-white'
+                : 'text-slate-300 hover:bg-slate-700/50 hover:text-white'
             }`}
           >
             <span className="text-lg flex-shrink-0 w-6 text-center">

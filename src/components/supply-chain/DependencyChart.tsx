@@ -174,7 +174,7 @@ export default function DependencyChart({
             <span className="text-slate-400">Prime</span>
           </div>
           <div className="flex items-center gap-1">
-            <div className="w-3 h-3 rounded-full bg-cyan-500"></div>
+            <div className="w-3 h-3 rounded-full bg-white"></div>
             <span className="text-slate-400">Tier 1</span>
           </div>
           <div className="flex items-center gap-1">

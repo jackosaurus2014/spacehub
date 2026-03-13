@@ -364,7 +364,7 @@ function CompaniesTab() {
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
-          className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+          className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
         >
           <option value="">All Statuses</option>
           {statuses.map((s) => (
@@ -374,7 +374,7 @@ function CompaniesTab() {
         <select
           value={sortBy}
           onChange={(e) => setSortBy(e.target.value as 'name' | 'trl' | 'founded')}
-          className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+          className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
         >
           <option value="trl">Sort by TRL</option>
           <option value="name">Sort by Name</option>
@@ -506,7 +506,7 @@ function ProcessesTab() {
     'fiber-optics': 'text-purple-400 bg-purple-500/10 border-purple-500/30',
     'bioprinting': 'text-green-400 bg-green-500/10 border-green-500/30',
     'regolith': 'text-amber-400 bg-amber-500/10 border-amber-500/30',
-    'assembly': 'text-cyan-400 bg-cyan-500/10 border-cyan-500/30',
+    'assembly': 'text-slate-300 bg-white/5 border-white/10',
   };
 
   const filteredProcesses = categoryFilter
@@ -714,7 +714,7 @@ function ProcessesTab() {
                         {process.keyPlayers.map((player) => (
                           <span
                             key={player}
-                            className="px-2 py-0.5 bg-cyan-500/10 text-cyan-300 border border-cyan-500/20 rounded text-xs font-medium"
+                            className="px-2 py-0.5 bg-white/5 text-slate-200 border border-white/10 rounded text-xs font-medium"
                           >
                             {player}
                           </span>
@@ -1198,10 +1198,10 @@ function ImgProviderCard({ provider }: { provider: ImageryProvider }) {
   const [expanded, setExpanded] = useState(false);
   const statusStyle = IMG_STATUS_STYLES[provider.status] || DEFAULT_IMG_STATUS_STYLE;
   return (
-    <div className="card p-6 hover:border-cyan-500/30 group">
+    <div className="card p-6 hover:border-white/10 group">
       <div className="flex items-start justify-between mb-3">
         <div className="flex-1 min-w-0">
-          <h3 className="text-white font-semibold text-lg group-hover:text-cyan-300 transition-colors">{provider.name}</h3>
+          <h3 className="text-white font-semibold text-lg group-hover:text-white transition-colors">{provider.name}</h3>
           <p className="text-star-400 text-sm mt-0.5">{provider.headquarters}</p>
         </div>
         <div className="flex items-center gap-2 flex-shrink-0 ml-3">
@@ -1219,7 +1219,7 @@ function ImgProviderCard({ provider }: { provider: ImageryProvider }) {
         <span className="px-2 py-0.5 bg-slate-700/50 text-star-300 border border-slate-600/30 rounded text-xs">Swath: {provider.swathWidthKm}km</span>
         <span className="px-2 py-0.5 bg-slate-700/50 text-amber-300 border border-slate-600/30 rounded text-xs font-semibold">{provider.pricingTier}</span>
         {provider.archiveAvailable && <span className="px-2 py-0.5 bg-green-900/20 text-green-400 border border-green-500/20 rounded text-xs">Archive</span>}
-        {provider.taskingAvailable && <span className="px-2 py-0.5 bg-cyan-900/20 text-cyan-400 border border-cyan-500/20 rounded text-xs">Tasking</span>}
+        {provider.taskingAvailable && <span className="px-2 py-0.5 bg-slate-800/30 text-slate-300 border border-white/10 rounded text-xs">Tasking</span>}
       </div>
       <p className="text-star-300 text-sm leading-relaxed mb-4">{expanded ? (provider.description || '') : (provider.description || '').slice(0, 180) + '...'}</p>
       {expanded && (
@@ -1232,11 +1232,11 @@ function ImgProviderCard({ provider }: { provider: ImageryProvider }) {
           </div>
           <div>
             <div className="text-star-400 text-xs uppercase tracking-widest mb-2">Key Highlights</div>
-            <ul className="space-y-1">{(provider.highlights || []).map((h, i) => (<li key={i} className="text-star-300 text-sm flex items-start gap-2"><span className="text-cyan-400 mt-0.5 flex-shrink-0">-</span>{h}</li>))}</ul>
+            <ul className="space-y-1">{(provider.highlights || []).map((h, i) => (<li key={i} className="text-star-300 text-sm flex items-start gap-2"><span className="text-slate-300 mt-0.5 flex-shrink-0">-</span>{h}</li>))}</ul>
           </div>
         </div>
       )}
-      <button onClick={() => setExpanded(!expanded)} className="text-sm text-cyan-400 hover:text-cyan-300 transition-colors">
+      <button onClick={() => setExpanded(!expanded)} className="text-sm text-slate-300 hover:text-white transition-colors">
         {expanded ? 'Show less' : 'Show details'} {expanded ? '\u2191' : '\u2193'}
       </button>
     </div>
@@ -1266,7 +1266,7 @@ function ImgComparisonTable({ sensorFilter }: { sensorFilter: string }) {
             <tr key={p.id} className={`border-b border-slate-700/30 hover:bg-slate-700/20 transition-colors ${idx % 2 === 0 ? 'bg-slate-800/30' : ''}`}>
               <td className="py-3 px-4 text-white font-medium whitespace-nowrap">{p.name}</td>
               <td className="py-3 px-4 whitespace-nowrap"><span className={`text-xs font-medium px-2 py-0.5 rounded border ${SENSOR_COLORS[p.sensorType] || 'text-star-400 bg-slate-500/10 border-slate-500/30'}`}>{p.sensorType}</span></td>
-              <td className="py-3 px-4 text-cyan-400 font-mono whitespace-nowrap">{p.resolutionM}m</td>
+              <td className="py-3 px-4 text-slate-300 font-mono whitespace-nowrap">{p.resolutionM}m</td>
               <td className="py-3 px-4 text-star-300 whitespace-nowrap">{p.revisitHours}h</td>
               <td className="py-3 px-4 text-star-400 max-w-[200px] truncate">{p.spectralBands}</td>
               <td className="py-3 px-4 text-star-300 whitespace-nowrap">{p.coveragePercent}%</td>
@@ -1296,18 +1296,18 @@ function ImgComparisonTable({ sensorFilter }: { sensorFilter: string }) {
 function ImgUseCaseCard({ useCase }: { useCase: UseCase }) {
   const [expanded, setExpanded] = useState(false);
   return (
-    <div className="card p-6 hover:border-cyan-500/30">
+    <div className="card p-6 hover:border-white/10">
       <div className="flex items-start gap-3 mb-3">
         <span className="text-2xl flex-shrink-0">{useCase.icon}</span>
         <div><h3 className="text-white font-semibold text-lg">{useCase.name}</h3><p className="text-star-400 text-sm mt-1 leading-relaxed">{useCase.description}</p></div>
       </div>
-      <div className="flex flex-wrap gap-1.5 mb-4">{(useCase.keyMetrics || []).map((metric) => (<span key={metric} className="px-2 py-0.5 bg-cyan-900/20 text-cyan-300 border border-cyan-500/20 rounded text-xs font-medium">{metric}</span>))}</div>
+      <div className="flex flex-wrap gap-1.5 mb-4">{(useCase.keyMetrics || []).map((metric) => (<span key={metric} className="px-2 py-0.5 bg-slate-800/30 text-slate-200 border border-white/10 rounded text-xs font-medium">{metric}</span>))}</div>
       <div className="mb-4">
         <div className="text-star-400 text-xs uppercase tracking-widest mb-2">Recommended Providers</div>
         <div className="flex flex-wrap gap-1.5">{(useCase.topProviders || []).map((provider, idx) => (<span key={provider} className={`px-2.5 py-1 rounded text-xs font-medium ${idx === 0 ? 'bg-amber-900/20 text-amber-300 border border-amber-500/20' : 'bg-slate-700/50 text-star-300 border border-slate-600/30'}`}>{idx === 0 ? `\u2B50 ${provider}` : provider}</span>))}</div>
       </div>
-      {expanded && (<div className="mb-4"><div className="text-star-400 text-xs uppercase tracking-widest mb-2">Key Requirements</div><ul className="space-y-1">{(useCase.requirements || []).map((req, i) => (<li key={i} className="text-star-300 text-sm flex items-start gap-2"><span className="text-cyan-400 mt-0.5 flex-shrink-0">-</span>{req}</li>))}</ul></div>)}
-      <button onClick={() => setExpanded(!expanded)} className="text-sm text-cyan-400 hover:text-cyan-300 transition-colors">{expanded ? 'Show less' : 'View requirements'} {expanded ? '\u2191' : '\u2193'}</button>
+      {expanded && (<div className="mb-4"><div className="text-star-400 text-xs uppercase tracking-widest mb-2">Key Requirements</div><ul className="space-y-1">{(useCase.requirements || []).map((req, i) => (<li key={i} className="text-star-300 text-sm flex items-start gap-2"><span className="text-slate-300 mt-0.5 flex-shrink-0">-</span>{req}</li>))}</ul></div>)}
+      <button onClick={() => setExpanded(!expanded)} className="text-sm text-slate-300 hover:text-white transition-colors">{expanded ? 'Show less' : 'View requirements'} {expanded ? '\u2191' : '\u2193'}</button>
     </div>
   );
 }
@@ -1332,7 +1332,7 @@ function ImageryMarketplaceContent() {
       </div>
 
       {/* Market Overview Banner */}
-      <div className="bg-gradient-to-r from-cyan-500/10 via-blue-500/10 to-purple-500/10 border border-cyan-500/30 rounded-xl p-5 mb-8">
+      <div className="bg-gradient-to-r from-white/5 via-blue-500/10 to-purple-500/10 border border-white/10 rounded-xl p-5 mb-8">
         <div className="flex items-start gap-4">
           <span className="text-3xl flex-shrink-0">{'\uD83C\uDF0D'}</span>
           <div>
@@ -1352,7 +1352,7 @@ function ImageryMarketplaceContent() {
         <div className="flex gap-1 overflow-x-auto">
           {IMG_TABS.map((tab) => (
             <button key={tab.id} onClick={() => setImgTab(tab.id)}
-              className={`px-4 py-2.5 text-sm font-medium whitespace-nowrap border-b-2 transition-colors ${imgTab === tab.id ? 'border-cyan-500 text-cyan-300' : 'border-transparent text-star-300 hover:text-white hover:border-slate-500'}`}>
+              className={`px-4 py-2.5 text-sm font-medium whitespace-nowrap border-b-2 transition-colors ${imgTab === tab.id ? 'border-white/15 text-slate-200' : 'border-transparent text-star-300 hover:text-white hover:border-slate-500'}`}>
               <span className="mr-1.5">{tab.icon}</span>{tab.label}
             </button>
           ))}
@@ -1364,10 +1364,10 @@ function ImageryMarketplaceContent() {
         <div>
           <div className="flex flex-wrap items-center gap-3 mb-6">
             <span className="text-star-400 text-sm">Filter by sensor:</span>
-            <button onClick={() => setSensorFilter('')} className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${sensorFilter === '' ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/50' : 'bg-slate-800 text-star-400 border border-slate-700 hover:border-slate-600 hover:text-white'}`}>All ({IMG_PROVIDERS.length})</button>
+            <button onClick={() => setSensorFilter('')} className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${sensorFilter === '' ? 'bg-white/10 text-slate-200 border border-white/15' : 'bg-slate-800 text-star-400 border border-slate-700 hover:border-slate-600 hover:text-white'}`}>All ({IMG_PROVIDERS.length})</button>
             {sensorTypes.map((type) => {
               const count = IMG_PROVIDERS.filter((p) => p.sensorType === type).length;
-              return (<button key={type} onClick={() => setSensorFilter(type)} className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${sensorFilter === type ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/50' : 'bg-slate-800 text-star-400 border border-slate-700 hover:border-slate-600 hover:text-white'}`}>{type} ({count})</button>);
+              return (<button key={type} onClick={() => setSensorFilter(type)} className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${sensorFilter === type ? 'bg-white/10 text-slate-200 border border-white/15' : 'bg-slate-800 text-star-400 border border-slate-700 hover:border-slate-600 hover:text-white'}`}>{type} ({count})</button>);
             })}
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
@@ -1392,8 +1392,8 @@ function ImageryMarketplaceContent() {
         <div>
           <div className="flex flex-wrap items-center gap-3 mb-6">
             <span className="text-star-400 text-sm">Filter by sensor:</span>
-            <button onClick={() => setSensorFilter('')} className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${sensorFilter === '' ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/50' : 'bg-slate-800 text-star-400 border border-slate-700 hover:border-slate-600 hover:text-white'}`}>All</button>
-            {sensorTypes.map((type) => (<button key={type} onClick={() => setSensorFilter(type)} className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${sensorFilter === type ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/50' : 'bg-slate-800 text-star-400 border border-slate-700 hover:border-slate-600 hover:text-white'}`}>{type}</button>))}
+            <button onClick={() => setSensorFilter('')} className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${sensorFilter === '' ? 'bg-white/10 text-slate-200 border border-white/15' : 'bg-slate-800 text-star-400 border border-slate-700 hover:border-slate-600 hover:text-white'}`}>All</button>
+            {sensorTypes.map((type) => (<button key={type} onClick={() => setSensorFilter(type)} className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${sensorFilter === type ? 'bg-white/10 text-slate-200 border border-white/15' : 'bg-slate-800 text-star-400 border border-slate-700 hover:border-slate-600 hover:text-white'}`}>{type}</button>))}
           </div>
           <ImgComparisonTable sensorFilter={sensorFilter} />
           <div className="mt-6 card p-6">
@@ -1404,7 +1404,7 @@ function ImageryMarketplaceContent() {
                 { num: '02', text: <><strong className="text-white">SAR is essential for all-weather operations.</strong> If your use case requires cloud-penetrating or nighttime imaging, SAR providers (ICEYE, Capella, Umbra) are necessary.</> },
                 { num: '03', text: <><strong className="text-white">Archive vs. tasking pricing differs significantly.</strong> Archive imagery is typically 30-60% cheaper than new tasking collections. Always check archive availability before commissioning new collects.</> },
                 { num: '04', text: <><strong className="text-white">Hyperspectral is the emerging differentiator.</strong> Pixxel, Wyvern, and Planet Tanager enable material identification and gas detection that traditional multispectral imagery cannot achieve.</> },
-              ].map((item) => (<div key={item.num} className="flex items-start gap-3"><span className="text-cyan-400 font-bold text-sm mt-0.5 flex-shrink-0">{item.num}</span><p className="text-star-300 text-sm">{item.text}</p></div>))}
+              ].map((item) => (<div key={item.num} className="flex items-start gap-3"><span className="text-slate-300 font-bold text-sm mt-0.5 flex-shrink-0">{item.num}</span><p className="text-star-300 text-sm">{item.text}</p></div>))}
             </div>
           </div>
         </div>
@@ -1427,12 +1427,12 @@ function ImageryMarketplaceContent() {
                 IMG_USE_CASES.forEach((uc) => { (uc.topProviders || []).forEach((p) => { providerCounts[p] = (providerCounts[p] || 0) + 1; }); });
                 const sorted = Object.entries(providerCounts).sort(([, a], [, b]) => b - a).slice(0, 8);
                 const maxCount = sorted[0]?.[1] || 1;
-                return sorted.map(([name, count]) => (<div key={name} className="flex items-center gap-4"><div className="w-40 flex-shrink-0 text-sm text-white font-medium truncate">{name}</div><div className="flex-1 h-6 bg-slate-700/30 rounded overflow-hidden relative"><div className="h-full bg-gradient-to-r from-cyan-600 to-cyan-400 rounded transition-all" style={{ width: `${Math.max((count / maxCount) * 100, 3)}%` }} /><span className="absolute inset-0 flex items-center px-2 text-xs text-white font-mono">{count} use cases</span></div></div>));
+                return sorted.map(([name, count]) => (<div key={name} className="flex items-center gap-4"><div className="w-40 flex-shrink-0 text-sm text-white font-medium truncate">{name}</div><div className="flex-1 h-6 bg-slate-700/30 rounded overflow-hidden relative"><div className="h-full bg-gradient-to-r from-slate-200 to-slate-400 rounded transition-all" style={{ width: `${Math.max((count / maxCount) * 100, 3)}%` }} /><span className="absolute inset-0 flex items-center px-2 text-xs text-white font-mono">{count} use cases</span></div></div>));
               })()}
             </div>
           </div>
           <div className="mt-6 card p-6">
-            <h3 className="text-cyan-400 font-semibold mb-4">Multi-Sensor Fusion Strategy</h3>
+            <h3 className="text-slate-300 font-semibold mb-4">Multi-Sensor Fusion Strategy</h3>
             <p className="text-star-400 text-sm leading-relaxed mb-4">Most operational intelligence workflows benefit from combining multiple sensor types:</p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {[
@@ -1440,7 +1440,7 @@ function ImageryMarketplaceContent() {
                 { combo: 'Daily Optical + Hyperspectral', providers: 'Planet + Pixxel', reason: 'Daily change detection combined with material-level identification. Ideal for agriculture and environmental monitoring.' },
                 { combo: 'SAR + Thermal', providers: 'Capella + SatVu', reason: 'Infrastructure monitoring combining structural displacement detection with thermal anomaly identification.' },
                 { combo: 'VHR Optical + Daily MS', providers: 'Airbus + Planet', reason: 'Detailed feature extraction from 30cm imagery combined with daily temporal monitoring at 3m.' },
-              ].map((s) => (<div key={s.combo} className="bg-slate-700/30 rounded-lg p-4"><div className="text-white font-semibold text-sm mb-1">{s.combo}</div><div className="text-cyan-400 text-xs font-medium mb-2">{s.providers}</div><p className="text-star-400 text-xs leading-relaxed">{s.reason}</p></div>))}
+              ].map((s) => (<div key={s.combo} className="bg-slate-700/30 rounded-lg p-4"><div className="text-white font-semibold text-sm mb-1">{s.combo}</div><div className="text-slate-300 text-xs font-medium mb-2">{s.providers}</div><p className="text-star-400 text-xs leading-relaxed">{s.reason}</p></div>))}
             </div>
           </div>
         </div>
@@ -1453,7 +1453,7 @@ function ImageryMarketplaceContent() {
             <h3 className="text-white font-semibold text-lg mb-4">Global Earth Observation Market</h3>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
               {[
-                { label: '2024 Market Size', value: '$5.5B', color: 'text-cyan-400' },
+                { label: '2024 Market Size', value: '$5.5B', color: 'text-slate-300' },
                 { label: '2028 Projected', value: '$8.3B', color: 'text-green-400' },
                 { label: 'CAGR 2024-2030', value: '~12%', color: 'text-amber-400' },
                 { label: 'Commercial EO Sats', value: '1,000+', color: 'text-purple-400' },
@@ -1481,7 +1481,7 @@ function ImageryMarketplaceContent() {
               {[
                 { era: '1999-2010', title: 'Pioneer Era', description: 'IKONOS (1m), QuickBird (60cm), WorldView-1 (50cm). First commercial high-resolution satellites. Government as primary customer.', color: 'text-star-400' },
                 { era: '2010-2018', title: 'NewSpace Revolution', description: 'Planet launches Dove flock (3m daily). WorldView-3 achieves 31cm. Smallsat EO becomes viable. SAR microsatellites emerge (ICEYE).', color: 'text-blue-400' },
-                { era: '2018-2023', title: 'Constellation Scale', description: 'Planet achieves daily global imaging. ICEYE and Capella deploy commercial SAR fleets. Maxar launches WorldView Legion (30cm). Pricing drops significantly.', color: 'text-cyan-400' },
+                { era: '2018-2023', title: 'Constellation Scale', description: 'Planet achieves daily global imaging. ICEYE and Capella deploy commercial SAR fleets. Maxar launches WorldView Legion (30cm). Pricing drops significantly.', color: 'text-slate-300' },
                 { era: '2024-2028', title: 'Multi-Modal & AI Era', description: 'Hyperspectral goes operational (Pixxel, Tanager). Thermal from space (SatVu). 10cm VLEO planned (Albedo). AI analytics become primary product. Market exceeds $8B.', color: 'text-green-400' },
               ].map((era) => (<div key={era.era} className="flex items-start gap-4"><div className={`text-sm font-mono font-bold flex-shrink-0 w-24 ${era.color}`}>{era.era}</div><div><h4 className="text-white font-semibold text-sm">{era.title}</h4><p className="text-star-400 text-xs leading-relaxed mt-1">{era.description}</p></div></div>))}
             </div>
@@ -1492,7 +1492,7 @@ function ImageryMarketplaceContent() {
               <div className="space-y-3">
                 {[
                   { region: 'North America', share: '38%', color: 'from-blue-500 to-blue-400', providers: 'Maxar, Planet, Capella, BlackSky, Umbra, Albedo' },
-                  { region: 'Europe', share: '28%', color: 'from-cyan-500 to-cyan-400', providers: 'Airbus, ICEYE, SatVu' },
+                  { region: 'Europe', share: '28%', color: 'from-white to-slate-400', providers: 'Airbus, ICEYE, SatVu' },
                   { region: 'Asia-Pacific', share: '22%', color: 'from-green-500 to-green-400', providers: 'Pixxel, Synspective' },
                   { region: 'Rest of World', share: '12%', color: 'from-amber-500 to-amber-400', providers: 'Satellogic, Wyvern, EarthDaily' },
                 ].map((r) => (<div key={r.region}><div className="flex justify-between mb-1"><span className="text-white text-sm font-medium">{r.region}</span><span className="text-star-400 text-sm">{r.share}</span></div><div className="h-2 bg-slate-700/30 rounded-full overflow-hidden mb-1"><div className={`h-full rounded-full bg-gradient-to-r ${r.color}`} style={{ width: r.share }} /></div><p className="text-star-400 text-xs">{r.providers}</p></div>))}
@@ -1503,7 +1503,7 @@ function ImageryMarketplaceContent() {
               <div className="space-y-3">
                 {[
                   { type: 'Optical (VHR)', share: '45%', growth: '8% CAGR', color: 'from-blue-500 to-blue-400' },
-                  { type: 'SAR', share: '25%', growth: '17% CAGR', color: 'from-cyan-500 to-cyan-400' },
+                  { type: 'SAR', share: '25%', growth: '17% CAGR', color: 'from-white to-slate-400' },
                   { type: 'Multispectral (Med-Res)', share: '18%', growth: '10% CAGR', color: 'from-green-500 to-green-400' },
                   { type: 'Hyperspectral', share: '7%', growth: '25% CAGR', color: 'from-purple-500 to-purple-400' },
                   { type: 'Thermal / Other', share: '5%', growth: '20% CAGR', color: 'from-red-500 to-red-400' },
@@ -1637,7 +1637,7 @@ function ManufacturingAndImageryContent() {
               href="/space-manufacturing?tab=imagery"
               className={`px-5 py-3 text-sm font-semibold whitespace-nowrap border-b-2 transition-colors ${
                 topTab === 'imagery'
-                  ? 'border-cyan-500 text-cyan-300'
+                  ? 'border-white/15 text-slate-200'
                   : 'border-transparent text-star-300 hover:text-white hover:border-slate-500'
               }`}
             >

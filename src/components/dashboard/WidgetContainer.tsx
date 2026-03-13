@@ -61,7 +61,7 @@ export default function WidgetContainer({
     <div
       className={`
         card overflow-hidden flex flex-col h-full
-        ${isEditing ? 'ring-2 ring-cyan-400/30 ring-dashed' : ''}
+        ${isEditing ? 'ring-2 ring-white/10 ring-dashed' : ''}
         ${hasError ? 'border-red-400/30' : ''}
       `}
     >
@@ -118,7 +118,7 @@ export default function WidgetContainer({
           {!isEditing && (
             <Link
               href={moduleRoute}
-              className="text-slate-400 hover:text-cyan-500 p-1 rounded"
+              className="text-slate-400 hover:text-slate-300 p-1 rounded"
               aria-label="Open full module"
             >
               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -150,7 +150,7 @@ export default function WidgetContainer({
               <p className="text-red-400 text-sm">Something went wrong</p>
               <button
                 onClick={() => setHasError(false)}
-                className="text-cyan-400 hover:text-cyan-300 text-sm mt-2 underline"
+                className="text-slate-300 hover:text-white text-sm mt-2 underline"
               >
                 Try again
               </button>

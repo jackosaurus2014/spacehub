@@ -458,7 +458,7 @@ export default function DashboardBuilderPage() {
 
             <button
               onClick={() => setShowLayoutSelector(true)}
-              className="flex items-center gap-2 px-4 py-2 text-sm text-slate-300 bg-slate-800 border border-slate-700 rounded-lg hover:border-cyan-400/50 hover:bg-cyan-900/30 transition-all shadow-sm"
+              className="flex items-center gap-2 px-4 py-2 text-sm text-slate-300 bg-slate-800 border border-slate-700 rounded-lg hover:border-white/15 hover:bg-slate-800/40 transition-all shadow-sm"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
@@ -485,7 +485,7 @@ export default function DashboardBuilderPage() {
                   <StaggerItem key={index}>
                     <button
                       onClick={() => handleCreateFromPreset(preset)}
-                      className="px-5 py-3 rounded-xl border border-slate-700 hover:border-cyan-400/50 hover:bg-cyan-900/30 transition-all text-left max-w-xs"
+                      className="px-5 py-3 rounded-xl border border-slate-700 hover:border-white/15 hover:bg-slate-800/40 transition-all text-left max-w-xs"
                     >
                       <p className="text-sm font-semibold text-white">{preset.name}</p>
                       <p className="text-xs text-slate-400 mt-0.5">{preset.description}</p>
@@ -495,7 +495,7 @@ export default function DashboardBuilderPage() {
                 <StaggerItem>
                   <button
                     onClick={handleCreateBlank}
-                    className="px-5 py-3 rounded-xl border border-dashed border-slate-600 hover:border-cyan-400/50 hover:bg-cyan-900/30 transition-all"
+                    className="px-5 py-3 rounded-xl border border-dashed border-slate-600 hover:border-white/15 hover:bg-slate-800/40 transition-all"
                   >
                     <p className="text-sm font-semibold text-white">Blank Dashboard</p>
                     <p className="text-xs text-slate-400 mt-0.5">Start from scratch</p>

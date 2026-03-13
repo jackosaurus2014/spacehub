@@ -40,7 +40,7 @@ interface Constellation {
 
 const STATUS_CONFIG: Record<ConstellationStatus, { label: string; bg: string; text: string; border: string }> = {
   operational: { label: 'Operational', bg: 'bg-green-900/30', text: 'text-green-400', border: 'border-green-500/40' },
-  deploying: { label: 'Deploying', bg: 'bg-cyan-900/30', text: 'text-cyan-400', border: 'border-cyan-500/40' },
+  deploying: { label: 'Deploying', bg: 'bg-slate-800/40', text: 'text-slate-300', border: 'border-white/15/40' },
   'pre-launch': { label: 'Pre-Launch', bg: 'bg-amber-900/30', text: 'text-amber-400', border: 'border-amber-500/40' },
   development: { label: 'Development', bg: 'bg-purple-900/30', text: 'text-purple-400', border: 'border-purple-500/40' },
 };
@@ -441,7 +441,7 @@ function HeroStats({ constellations }: { constellations: Constellation[] }) {
 
   const stats = [
     { label: 'Constellations Tracked', value: totalConstellations.toString(), color: 'text-white' },
-    { label: 'Active Satellites', value: formatNumber(totalActive), color: 'text-cyan-400' },
+    { label: 'Active Satellites', value: formatNumber(totalActive), color: 'text-slate-300' },
     { label: 'Total Authorized', value: formatNumber(totalAuthorized), color: 'text-amber-400' },
     { label: 'Est. Global Coverage', value: `${coverageEstimate}%`, color: 'text-green-400' },
   ];
@@ -506,7 +506,7 @@ function ConstellationCard({ constellation }: { constellation: Constellation }) 
               deployPct >= 90
                 ? 'bg-gradient-to-r from-green-500 to-green-400'
                 : deployPct >= 50
-                ? 'bg-gradient-to-r from-cyan-500 to-cyan-400'
+                ? 'bg-gradient-to-r from-white to-slate-400'
                 : deployPct >= 10
                 ? 'bg-gradient-to-r from-amber-500 to-amber-400'
                 : 'bg-gradient-to-r from-purple-500 to-purple-400'
@@ -590,7 +590,7 @@ function ComparisonTable({ constellations }: { constellations: Constellation[] }
                       <div className="w-16 h-1.5 bg-white/5 rounded-full overflow-hidden">
                         <div
                           className={`h-full rounded-full ${
-                            deployPct >= 90 ? 'bg-green-400' : deployPct >= 50 ? 'bg-cyan-400' : deployPct >= 10 ? 'bg-amber-400' : 'bg-purple-400'
+                            deployPct >= 90 ? 'bg-green-400' : deployPct >= 50 ? 'bg-white' : deployPct >= 10 ? 'bg-amber-400' : 'bg-purple-400'
                           }`}
                           style={{ width: `${Math.max(deployPct, 2)}%` }}
                         />
@@ -621,7 +621,7 @@ function ComparisonTable({ constellations }: { constellations: Constellation[] }
         <span>Total active: <span className="text-white font-bold">{formatNumber(constellations.reduce((s, c) => s + c.activeSatellites, 0))}</span></span>
         <span>Total authorized: <span className="text-white font-bold">{formatNumber(constellations.reduce((s, c) => s + c.authorizedSatellites, 0))}</span></span>
         <span>Operational: <span className="text-green-400 font-bold">{constellations.filter(c => c.status === 'operational').length}</span></span>
-        <span>Deploying: <span className="text-cyan-400 font-bold">{constellations.filter(c => c.status === 'deploying').length}</span></span>
+        <span>Deploying: <span className="text-slate-300 font-bold">{constellations.filter(c => c.status === 'deploying').length}</span></span>
         <span>Development/Pre-Launch: <span className="text-amber-400 font-bold">{constellations.filter(c => c.status === 'development' || c.status === 'pre-launch').length}</span></span>
       </div>
     </div>
@@ -646,7 +646,7 @@ function ConstellationDetail({ constellation }: { constellation: Constellation }
           <p className="text-star-300 text-sm mt-1">{constellation.operator} &mdash; {constellation.country}</p>
         </div>
         <div className="text-right">
-          <div className="text-3xl font-bold font-display text-cyan-400">{formatNumber(constellation.activeSatellites)}</div>
+          <div className="text-3xl font-bold font-display text-slate-300">{formatNumber(constellation.activeSatellites)}</div>
           <div className="text-star-300 text-xs">of {formatNumber(constellation.authorizedSatellites)} authorized</div>
         </div>
       </div>
@@ -666,7 +666,7 @@ function ConstellationDetail({ constellation }: { constellation: Constellation }
               deployPct >= 90
                 ? 'bg-gradient-to-r from-green-500 to-green-400'
                 : deployPct >= 50
-                ? 'bg-gradient-to-r from-cyan-500 to-cyan-400'
+                ? 'bg-gradient-to-r from-white to-slate-400'
                 : deployPct >= 10
                 ? 'bg-gradient-to-r from-amber-500 to-amber-400'
                 : 'bg-gradient-to-r from-purple-500 to-purple-400'
@@ -967,7 +967,7 @@ export default function ConstellationTrackerPage() {
                         <div className="w-32 flex-shrink-0 text-sm text-white font-medium truncate">{c.name}</div>
                         <div className="flex-1 h-6 bg-white/5 rounded overflow-hidden relative">
                           <div
-                            className="h-full bg-gradient-to-r from-cyan-600 to-cyan-400 rounded transition-all"
+                            className="h-full bg-gradient-to-r from-slate-200 to-slate-400 rounded transition-all"
                             style={{ width: `${Math.max(barWidth, 0.5)}%` }}
                           />
                           <span className="absolute inset-0 flex items-center px-2 text-xs text-white font-mono">

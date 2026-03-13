@@ -29,13 +29,13 @@ export default function TalentCard({ talent, compact = false }: TalentCardProps)
 
   if (compact) {
     return (
-      <div className="bg-slate-800/50 border border-slate-700/50 rounded-lg p-4 hover:border-cyan-500/50 transition-all">
+      <div className="bg-slate-800/50 border border-slate-700/50 rounded-lg p-4 hover:border-white/15 transition-all">
         <div className="flex items-start justify-between gap-3">
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1">
               <h4 className="font-semibold text-white text-sm truncate">{talent.name}</h4>
               {talent.featured && (
-                <span className="text-xs bg-cyan-500/20 text-cyan-400 px-1.5 py-0.5 rounded">
+                <span className="text-xs bg-white/10 text-slate-300 px-1.5 py-0.5 rounded">
                   Featured
                 </span>
               )}
@@ -58,21 +58,21 @@ export default function TalentCard({ talent, compact = false }: TalentCardProps)
               );
             })}
           </div>
-          <span className="text-cyan-400 font-medium text-sm">{formatRate(talent.consultingRate)}</span>
+          <span className="text-slate-300 font-medium text-sm">{formatRate(talent.consultingRate)}</span>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="bg-slate-800/50 border border-slate-700/50 rounded-lg p-5 hover:border-cyan-500/50 transition-all">
+    <div className="bg-slate-800/50 border border-slate-700/50 rounded-lg p-5 hover:border-white/15 transition-all">
       {/* Header */}
       <div className="flex items-start justify-between mb-4">
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-1">
             <h3 className="font-semibold text-white text-lg">{talent.name}</h3>
             {talent.featured && (
-              <span className="text-xs bg-cyan-500/20 text-cyan-400 px-2 py-0.5 rounded">
+              <span className="text-xs bg-white/10 text-slate-300 px-2 py-0.5 rounded">
                 Featured Expert
               </span>
             )}
@@ -84,7 +84,7 @@ export default function TalentCard({ talent, compact = false }: TalentCardProps)
           <span className={`inline-block text-xs px-2 py-1 rounded ${availabilityInfo.bgColor}/20 ${availabilityInfo.color} mb-1`}>
             {availabilityInfo.label}
           </span>
-          <div className="text-cyan-400 font-bold text-lg">{formatRate(talent.consultingRate)}</div>
+          <div className="text-slate-300 font-bold text-lg">{formatRate(talent.consultingRate)}</div>
         </div>
       </div>
 
@@ -100,7 +100,7 @@ export default function TalentCard({ talent, compact = false }: TalentCardProps)
         {talent.expertise.map(exp => {
           const { label, icon } = getExpertiseLabel(exp);
           return (
-            <span key={exp} className="text-xs bg-cyan-500/10 text-cyan-300 px-2 py-1 rounded border border-cyan-500/20">
+            <span key={exp} className="text-xs bg-white/5 text-slate-200 px-2 py-1 rounded border border-white/10">
               {icon} {label}
             </span>
           );
@@ -113,7 +113,7 @@ export default function TalentCard({ talent, compact = false }: TalentCardProps)
       {/* Actions */}
       <div className="flex items-center gap-3">
         <button
-          className="flex-1 bg-cyan-500 hover:bg-cyan-600 text-white text-sm font-medium py-2 px-4 rounded-lg transition-colors"
+          className="flex-1 bg-white hover:bg-slate-700 text-white text-sm font-medium py-2 px-4 rounded-lg transition-colors"
           onClick={() => window.location.href = `mailto:${talent.contactEmail}?subject=Consultation Request`}
         >
           Book Consultation

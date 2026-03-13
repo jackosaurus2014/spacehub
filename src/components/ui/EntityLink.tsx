@@ -49,7 +49,7 @@ function TooltipCard({
       <div className="flex flex-wrap gap-1.5">
         <Link
           href={links.companyProfile}
-          className="text-[11px] px-2 py-1 rounded bg-cyan-600/20 text-cyan-400 hover:bg-cyan-600/30 transition-colors font-medium"
+          className="text-[11px] px-2 py-1 rounded bg-white/20 text-slate-300 hover:bg-slate-700/30 transition-colors font-medium"
         >
           View Profile
         </Link>
@@ -128,7 +128,7 @@ export default function EntityLink({
       <Link
         ref={linkRef}
         href={`/company-profiles/${slug}`}
-        className={`text-cyan-400 hover:text-cyan-300 underline decoration-cyan-400/30 hover:decoration-cyan-300/50 underline-offset-2 transition-colors duration-150 ${className}`}
+        className={`text-slate-300 hover:text-white underline decoration-slate-500/30 hover:decoration-white/40 underline-offset-2 transition-colors duration-150 ${className}`}
         onMouseEnter={showTip}
         onMouseLeave={hideTip}
         onFocus={showTip}
@@ -173,7 +173,7 @@ export function EntityLinkInline({
   return (
     <Link
       href={`/company-profiles/${slug}`}
-      className={`text-cyan-400 hover:text-cyan-300 underline decoration-cyan-400/30 hover:decoration-cyan-300/50 underline-offset-2 transition-colors duration-150 ${className}`}
+      className={`text-slate-300 hover:text-white underline decoration-slate-500/30 hover:decoration-white/40 underline-offset-2 transition-colors duration-150 ${className}`}
     >
       {name}
     </Link>

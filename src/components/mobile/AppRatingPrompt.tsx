@@ -277,7 +277,7 @@ export default function AppRatingPrompt() {
                 'flex items-center justify-center gap-2',
                 'w-full py-3 px-4 rounded-xl',
                 'text-sm font-semibold text-white',
-                'hover:shadow-lg hover:shadow-cyan-500/20 active:scale-[0.98]',
+                'hover:shadow-lg hover:shadow-black/10 active:scale-[0.98]',
                 'transition-all duration-200',
               ].join(' ')}
               style={{

@@ -29,7 +29,7 @@ export default function InvestorActivityBadge({
       ? 'bg-emerald-500/10 border-emerald-500/20'
       : trend === 'decreasing'
       ? 'bg-amber-500/10 border-amber-500/20'
-      : 'bg-cyan-500/10 border-cyan-500/20';
+      : 'bg-white/5 border-white/10';
 
   return (
     <div

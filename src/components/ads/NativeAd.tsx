@@ -66,7 +66,7 @@ export default function NativeAd({
 
       {/* Content section - matches NewsCard styling */}
       <div className="p-4 bg-slate-900/50">
-        <h3 className="font-semibold text-slate-200 line-clamp-2 group-hover:text-cyan-400 transition-colors">
+        <h3 className="font-semibold text-slate-200 line-clamp-2 group-hover:text-white transition-colors">
           {title}
         </h3>
         <p className="text-slate-400 text-sm mt-2 line-clamp-2">
@@ -81,7 +81,7 @@ export default function NativeAd({
           </div>
 
           {/* CTA indicator */}
-          <span className="text-cyan-400 text-xs font-medium flex items-center gap-1 group-hover:gap-2 transition-all">
+          <span className="text-slate-300 text-xs font-medium flex items-center gap-1 group-hover:gap-2 transition-all">
             Learn more
             <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />

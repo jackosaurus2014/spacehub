@@ -143,7 +143,7 @@ function StatsBar() {
       </div>
       <div className="bg-slate-800/40 border border-slate-700/30 rounded-xl p-4">
         <p className="text-xs text-slate-400 uppercase tracking-wider mb-1">Agencies Tracked</p>
-        <p className="text-2xl font-bold text-cyan-400">{Object.keys(stats.byAgency).length}</p>
+        <p className="text-2xl font-bold text-slate-300">{Object.keys(stats.byAgency).length}</p>
       </div>
     </div>
   );
@@ -379,7 +379,7 @@ function MonthView({
                 <span
                   className={`text-sm font-medium ${
                     isTodayCell
-                      ? 'text-cyan-400 bg-cyan-500/20 rounded-full w-7 h-7 flex items-center justify-center'
+                      ? 'text-slate-300 bg-white/10 rounded-full w-7 h-7 flex items-center justify-center'
                       : 'text-slate-300'
                   }`}
                 >
@@ -639,7 +639,7 @@ export default function RegulatoryCalendarPage() {
           title="Regulatory Deadline Calendar"
           subtitle="Track 100+ space industry regulatory deadlines across FCC, FAA, NASA, DoD, ITU, and international bodies for 2026-2027."
           icon={
-            <svg className="w-9 h-9 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-9 h-9 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
           }
@@ -735,7 +735,7 @@ export default function RegulatoryCalendarPage() {
               </button>
               <button
                 onClick={goToToday}
-                className="ml-1 px-3 py-2 text-xs font-medium rounded-lg bg-slate-800/60 border border-slate-700/30 text-slate-400 hover:text-cyan-400 hover:border-cyan-500/30 transition-colors"
+                className="ml-1 px-3 py-2 text-xs font-medium rounded-lg bg-slate-800/60 border border-slate-700/30 text-slate-400 hover:text-white hover:border-white/10 transition-colors"
               >
                 Today
               </button>
@@ -759,7 +759,7 @@ export default function RegulatoryCalendarPage() {
             <select
               value={typeFilter}
               onChange={(e) => setTypeFilter(e.target.value as DeadlineType | '')}
-              className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+              className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
             >
               <option value="">All Types</option>
               {ALL_TYPES.map((t) => (
@@ -771,7 +771,7 @@ export default function RegulatoryCalendarPage() {
             <select
               value={priorityFilter}
               onChange={(e) => setPriorityFilter(e.target.value as DeadlinePriority | '')}
-              className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+              className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
             >
               <option value="">All Priorities</option>
               {ALL_PRIORITIES.map((p) => (

@@ -260,7 +260,7 @@ function StatsSummary({ launches }: { launches: Launch[] }) {
     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
       <div className="bg-slate-800/40 border border-slate-700/30 rounded-xl p-4">
         <p className="text-xs text-slate-400 uppercase tracking-wider mb-1">This Month</p>
-        <p className="text-2xl font-bold text-cyan-400">{thisMonthLaunches.length}</p>
+        <p className="text-2xl font-bold text-slate-300">{thisMonthLaunches.length}</p>
         <p className="text-xs text-slate-500 mt-1">launches scheduled</p>
       </div>
       <div className="bg-slate-800/40 border border-slate-700/30 rounded-xl p-4">
@@ -316,7 +316,7 @@ function FilterPanel({
   return (
     <div className="card p-5 mb-6">
       <div className="flex items-center gap-2 mb-4">
-        <svg className="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className="w-5 h-5 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
         </svg>
         <h3 className="text-sm font-semibold text-slate-200 uppercase tracking-wider">Filters</h3>
@@ -330,7 +330,7 @@ function FilterPanel({
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder="e.g. Starlink, GPS, Dragon..."
-          className="w-full bg-slate-800/60 border border-slate-700/50 rounded-lg px-3 py-2 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-500/60 transition-colors"
+          className="w-full bg-slate-800/60 border border-slate-700/50 rounded-lg px-3 py-2 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-white/15/60 transition-colors"
         />
       </div>
 
@@ -341,7 +341,7 @@ function FilterPanel({
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="w-full bg-slate-800/60 border border-slate-700/50 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-cyan-500/60 transition-colors"
+            className="w-full bg-slate-800/60 border border-slate-700/50 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-white/15/60 transition-colors"
           >
             {STATUS_OPTIONS.map((opt) => (
               <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -353,7 +353,7 @@ function FilterPanel({
           <select
             value={siteFilter}
             onChange={(e) => setSiteFilter(e.target.value)}
-            className="w-full bg-slate-800/60 border border-slate-700/50 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-cyan-500/60 transition-colors"
+            className="w-full bg-slate-800/60 border border-slate-700/50 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-white/15/60 transition-colors"
           >
             <option value="all">All Sites</option>
             {LAUNCH_SITES.map((site) => (
@@ -376,7 +376,7 @@ function FilterPanel({
                 onClick={() => toggleVehicle(family)}
                 className={`px-3 py-1.5 text-xs rounded-lg border transition-colors ${
                   isActive
-                    ? 'bg-cyan-500/20 border-cyan-500/50 text-cyan-300'
+                    ? 'bg-white/10 border-white/15 text-slate-200'
                     : 'bg-slate-800/40 border-slate-700/30 text-slate-500'
                 }`}
               >
@@ -429,7 +429,7 @@ function LaunchDetailModal({
 
           {/* Title */}
           <h3 className="text-lg font-semibold text-slate-100 mb-1">{launch.payload}</h3>
-          <p className="text-sm text-cyan-400 mb-4">{launch.vehicle}</p>
+          <p className="text-sm text-slate-300 mb-4">{launch.vehicle}</p>
 
           {/* Details grid */}
           <div className="grid grid-cols-2 gap-4 mb-4">
@@ -520,7 +520,7 @@ function CalendarView({
       <div className="flex items-center justify-between mb-5">
         <button
           onClick={onPrevMonth}
-          className="p-2 rounded-lg bg-slate-800/60 border border-slate-700/40 hover:border-cyan-500/50 text-slate-300 hover:text-cyan-400 transition-colors"
+          className="p-2 rounded-lg bg-slate-800/60 border border-slate-700/40 hover:border-white/15 text-slate-300 hover:text-white transition-colors"
           aria-label="Previous month"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -532,7 +532,7 @@ function CalendarView({
         </h2>
         <button
           onClick={onNextMonth}
-          className="p-2 rounded-lg bg-slate-800/60 border border-slate-700/40 hover:border-cyan-500/50 text-slate-300 hover:text-cyan-400 transition-colors"
+          className="p-2 rounded-lg bg-slate-800/60 border border-slate-700/40 hover:border-white/15 text-slate-300 hover:text-white transition-colors"
           aria-label="Next month"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -569,14 +569,14 @@ function CalendarView({
               disabled={!hasLaunches}
               className={`h-20 rounded-lg border text-left p-1.5 transition-all relative ${
                 isSelected
-                  ? 'border-cyan-400/80 bg-cyan-500/15 ring-1 ring-cyan-400/40'
+                  ? 'border-white/10/80 bg-white/8 ring-1 ring-white/10/40'
                   : hasLaunches
                     ? `${getDayColor(dayLaunches)} hover:scale-[1.03] cursor-pointer`
                     : 'border-slate-800/30 bg-slate-800/10'
-              } ${isTodayCell ? 'ring-2 ring-cyan-500/60' : ''}`}
+              } ${isTodayCell ? 'ring-2 ring-white/15/60' : ''}`}
             >
               <span className={`text-xs font-medium ${
-                isTodayCell ? 'text-cyan-400 font-bold' : hasLaunches ? 'text-slate-200' : 'text-slate-600'
+                isTodayCell ? 'text-slate-300 font-bold' : hasLaunches ? 'text-slate-200' : 'text-slate-600'
               }`}>
                 {day}
               </span>
@@ -600,7 +600,7 @@ function CalendarView({
                 </div>
               )}
               {isTodayCell && (
-                <span className="absolute bottom-1 right-1 text-[8px] text-cyan-400 font-bold uppercase">Today</span>
+                <span className="absolute bottom-1 right-1 text-[8px] text-slate-300 font-bold uppercase">Today</span>
               )}
             </button>
           );
@@ -670,7 +670,7 @@ function DayDetailPanel({
                     <span className={`w-2 h-2 rounded-full ${colors.dot}`} />
                     <span className="text-sm font-semibold text-slate-100">{launch.payload}</span>
                   </div>
-                  <p className="text-xs text-cyan-400 mb-1">{launch.vehicle}</p>
+                  <p className="text-xs text-slate-300 mb-1">{launch.vehicle}</p>
                   <p className="text-xs text-slate-400">{launch.site}</p>
                 </div>
                 <div className="text-right shrink-0">
@@ -718,7 +718,7 @@ function ListView({
         return (
           <div key={key}>
             <h3 className="text-lg font-bold text-slate-100 mb-3 flex items-center gap-2">
-              <svg className="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
               {monthLabel}
@@ -811,7 +811,7 @@ function LaunchSitesMap({ launches }: { launches: Launch[] }) {
   return (
     <div className="card p-5 mb-6">
       <h3 className="text-sm font-semibold text-slate-200 uppercase tracking-wider mb-4 flex items-center gap-2">
-        <svg className="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className="w-5 h-5 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
         </svg>
@@ -831,7 +831,7 @@ function LaunchSitesMap({ launches }: { launches: Launch[] }) {
               key={site.name}
               className={`p-3 rounded-lg border transition-colors ${
                 count > 0
-                  ? 'border-cyan-500/30 bg-cyan-500/5'
+                  ? 'border-white/10 bg-white/5'
                   : 'border-slate-700/20 bg-slate-800/20'
               }`}
             >
@@ -842,7 +842,7 @@ function LaunchSitesMap({ launches }: { launches: Launch[] }) {
                   <p className="text-[10px] text-slate-500 mt-1 font-mono">{site.latitude}, {site.longitude}</p>
                 </div>
                 {count > 0 && (
-                  <span className="text-lg font-bold text-cyan-400">{count}</span>
+                  <span className="text-lg font-bold text-slate-300">{count}</span>
                 )}
               </div>
             </div>
@@ -969,7 +969,7 @@ export default function LaunchManifestPage() {
               onClick={() => { setViewMode('calendar'); setSelectedDay(null); }}
               className={`px-4 py-2 text-sm rounded-lg border transition-colors ${
                 viewMode === 'calendar'
-                  ? 'bg-cyan-500/20 border-cyan-500/50 text-cyan-300'
+                  ? 'bg-white/10 border-white/15 text-slate-200'
                   : 'bg-slate-800/40 border-slate-700/30 text-slate-400 hover:text-slate-200'
               }`}
             >
@@ -984,7 +984,7 @@ export default function LaunchManifestPage() {
               onClick={() => { setViewMode('list'); setSelectedDay(null); }}
               className={`px-4 py-2 text-sm rounded-lg border transition-colors ${
                 viewMode === 'list'
-                  ? 'bg-cyan-500/20 border-cyan-500/50 text-cyan-300'
+                  ? 'bg-white/10 border-white/15 text-slate-200'
                   : 'bg-slate-800/40 border-slate-700/30 text-slate-400 hover:text-slate-200'
               }`}
             >
@@ -1000,7 +1000,7 @@ export default function LaunchManifestPage() {
             onClick={() => setShowFilters(!showFilters)}
             className={`px-4 py-2 text-sm rounded-lg border transition-colors ${
               showFilters
-                ? 'bg-cyan-500/20 border-cyan-500/50 text-cyan-300'
+                ? 'bg-white/10 border-white/15 text-slate-200'
                 : 'bg-slate-800/40 border-slate-700/30 text-slate-400 hover:text-slate-200'
             }`}
           >
@@ -1010,7 +1010,7 @@ export default function LaunchManifestPage() {
               </svg>
               Filters
               {(vehicleFilter.size > 0 || siteFilter !== 'all' || statusFilter !== 'all' || searchQuery.trim()) && (
-                <span className="w-2 h-2 rounded-full bg-cyan-400" />
+                <span className="w-2 h-2 rounded-full bg-white" />
               )}
             </span>
           </button>

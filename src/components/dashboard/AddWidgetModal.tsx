@@ -117,7 +117,7 @@ export default function AddWidgetModal({
                   placeholder="Search modules..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-lg border border-slate-700 bg-slate-800 text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-400/50 focus:border-cyan-400 text-sm"
+                  className="w-full px-4 py-2.5 rounded-lg border border-slate-700 bg-slate-800 text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-white/20 focus:border-white/10 text-sm"
                   autoFocus
                 />
               </div>
@@ -138,7 +138,7 @@ export default function AddWidgetModal({
                         ${
                           alreadyAdded
                             ? 'border-slate-700 bg-slate-800/50 opacity-60'
-                            : 'border-slate-700 hover:border-cyan-400/50 hover:bg-cyan-500/10 hover:shadow-sm'
+                            : 'border-slate-700 hover:border-white/15 hover:bg-slate-100/10 hover:shadow-sm'
                         }
                       `}
                     >
@@ -196,7 +196,7 @@ export default function AddWidgetModal({
                       w-full p-4 rounded-xl border text-left transition-all flex items-center gap-4
                       ${
                         selectedType === type
-                          ? 'border-cyan-400 bg-cyan-500/10 ring-1 ring-cyan-400/30'
+                          ? 'border-white/10 bg-white/5 ring-1 ring-white/10'
                           : 'border-slate-700 hover:border-slate-600'
                       }
                     `}
@@ -210,7 +210,7 @@ export default function AddWidgetModal({
                       </p>
                     </div>
                     {selectedType === type && (
-                      <svg className="w-5 h-5 text-cyan-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                      <svg className="w-5 h-5 text-slate-300 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                         <path
                           fillRule="evenodd"
                           d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
@@ -237,7 +237,7 @@ export default function AddWidgetModal({
             <button
               onClick={handleAdd}
               disabled={!selectedType}
-              className="px-5 py-2 text-sm font-medium text-white bg-gradient-to-r from-cyan-500 to-blue-500 rounded-lg hover:from-cyan-600 hover:to-blue-600 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
+              className="px-5 py-2 text-sm font-medium text-white bg-gradient-to-r from-white to-blue-500 rounded-lg hover:from-slate-200 hover:to-blue-600 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
             >
               Add to Dashboard
             </button>

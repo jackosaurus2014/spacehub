@@ -167,9 +167,9 @@ const SPECTRUM_BANDS: SpectrumBand[] = [
     freqStartMHz: 2000,
     freqEndMHz: 4000,
     color: '#06b6d4',
-    colorBg: 'bg-cyan-500/10',
-    colorBorder: 'border-cyan-500/30',
-    colorText: 'text-cyan-400',
+    colorBg: 'bg-white/5',
+    colorBorder: 'border-white/10',
+    colorText: 'text-slate-300',
     wavelength: '7.5 - 15 cm',
     applications: [
       'NASA deep space communications (S-band up/downlinks)',
@@ -922,7 +922,7 @@ function BandDetailCard({ band }: { band: SpectrumBand }) {
             <ul className="space-y-2">
               {band.terrestrialConflict.mitigationApproaches.map((approach, i) => (
                 <li key={i} className="flex items-start gap-2 text-sm text-slate-300">
-                  <svg className="w-4 h-4 text-cyan-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-4 h-4 text-slate-300 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                   </svg>
                   {approach}
@@ -975,7 +975,7 @@ function EmergingTrendsSection() {
                 </div>
                 <div>
                   <span className="text-xs text-slate-500 uppercase tracking-wide">Timeline</span>
-                  <p className="text-sm text-cyan-400 mt-0.5">{trend.timeline}</p>
+                  <p className="text-sm text-slate-300 mt-0.5">{trend.timeline}</p>
                 </div>
               </div>
             </div>
@@ -998,7 +998,7 @@ function RegulatorySection() {
             <StaggerItem key={idx}>
               <div className="card p-6 h-full">
                 <div className="flex items-center gap-2 mb-3">
-                  <span className="text-xs px-2 py-0.5 rounded-full bg-cyan-500/15 text-cyan-400 border border-cyan-500/30 font-medium">
+                  <span className="text-xs px-2 py-0.5 rounded-full bg-white/8 text-slate-300 border border-white/10 font-medium">
                     {region.region}
                   </span>
                   <h3 className="text-base font-semibold text-slate-100">
@@ -1026,7 +1026,7 @@ function RegulatorySection() {
                   <ul className="space-y-1.5">
                     {region.highlights.map((hl, i) => (
                       <li key={i} className="flex items-start gap-2 text-xs text-slate-300">
-                        <span className="mt-1 w-1 h-1 rounded-full bg-cyan-400 flex-shrink-0" />
+                        <span className="mt-1 w-1 h-1 rounded-full bg-white flex-shrink-0" />
                         {hl}
                       </li>
                     ))}
@@ -1068,7 +1068,7 @@ function RegulatorySection() {
                     key={idx}
                     className="border-b border-slate-700/20 hover:bg-slate-800/30 transition-colors"
                   >
-                    <td className="px-4 py-3 font-mono text-cyan-400 whitespace-nowrap">
+                    <td className="px-4 py-3 font-mono text-slate-300 whitespace-nowrap">
                       {item.agendaItem}
                     </td>
                     <td className="px-4 py-3 text-slate-200 font-medium">
@@ -1117,8 +1117,8 @@ function SpaceVsTerrestrialSummary({ bands }: { bands: SpectrumBand[] }) {
               </div>
               <div className="space-y-3">
                 <div className="grid grid-cols-2 gap-3">
-                  <div className="bg-cyan-500/5 border border-cyan-500/20 rounded-lg p-3">
-                    <p className="text-[10px] text-cyan-400 uppercase tracking-wide mb-1 font-semibold">
+                  <div className="bg-white/5 border border-white/10 rounded-lg p-3">
+                    <p className="text-[10px] text-slate-300 uppercase tracking-wide mb-1 font-semibold">
                       Space Use
                     </p>
                     <p className="text-xs text-slate-300">
@@ -1236,7 +1236,7 @@ function LinkBudgetQuickRef({ bands }: { bands: SpectrumBand[] }) {
                   <td className="px-4 py-3 text-center text-xs text-amber-400 font-mono">
                     {band.linkBudget.rainAttenuation.temperate}
                   </td>
-                  <td className="px-4 py-3 text-center text-xs text-cyan-400 font-mono">
+                  <td className="px-4 py-3 text-center text-xs text-slate-300 font-mono">
                     {band.linkBudget.rainAttenuation.arctic}
                   </td>
                 </tr>
@@ -1270,7 +1270,7 @@ export default function RFSpectrumPage() {
           subtitle="Interactive visualization of radio frequency spectrum allocations for satellite and space communications. Explore frequency bands, link budgets, regulatory frameworks, and emerging spectrum trends."
           accentColor="cyan"
           icon={
-            <svg className="w-8 h-8 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-8 h-8 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.858 15.355-5.858 21.213 0" />
             </svg>
           }

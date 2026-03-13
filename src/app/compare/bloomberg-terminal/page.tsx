@@ -54,11 +54,11 @@ export default function BloombergComparisonPage() {
         {/* Breadcrumbs */}
         <nav className="pt-6 mb-4" aria-label="Breadcrumb">
           <ol className="flex items-center gap-2 text-sm text-slate-400">
-            <li><Link href="/" className="hover:text-cyan-400 transition-colors">Home</Link></li>
+            <li><Link href="/" className="hover:text-white transition-colors">Home</Link></li>
             <li>/</li>
-            <li><Link href="/compare" className="hover:text-cyan-400 transition-colors">Compare</Link></li>
+            <li><Link href="/compare" className="hover:text-white transition-colors">Compare</Link></li>
             <li>/</li>
-            <li className="text-cyan-400">Bloomberg Terminal</li>
+            <li className="text-slate-300">Bloomberg Terminal</li>
           </ol>
         </nav>
 
@@ -84,7 +84,7 @@ export default function BloombergComparisonPage() {
 
           {/* TL;DR */}
           <ScrollReveal>
-          <div className="card p-6 mb-10 border-l-4 border-cyan-500">
+          <div className="card p-6 mb-10 border-l-4 border-white/15">
             <h2 className="text-lg font-bold text-white mb-2">TL;DR</h2>
             <p className="text-slate-400 text-sm leading-relaxed">
               <strong className="text-slate-300">Bloomberg Terminal</strong> excels at deep financial data across
@@ -104,12 +104,12 @@ export default function BloombergComparisonPage() {
               Pricing Comparison
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="card p-6 ring-2 ring-cyan-500">
-                <div className="text-xs font-semibold text-cyan-600 uppercase tracking-wider mb-2">SpaceNexus</div>
+              <div className="card p-6 ring-2 ring-white/15">
+                <div className="text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">SpaceNexus</div>
                 <div className="space-y-3">
                   <div className="flex justify-between items-baseline">
                     <span className="text-slate-300 font-medium">Explorer</span>
-                    <span className="text-2xl font-bold text-cyan-600">Free</span>
+                    <span className="text-2xl font-bold text-slate-300">Free</span>
                   </div>
                   <div className="flex justify-between items-baseline">
                     <span className="text-slate-300 font-medium">Professional</span>
@@ -137,8 +137,8 @@ export default function BloombergComparisonPage() {
                 <p className="text-xs text-slate-400 mt-3">2-year minimum contract typical. Bloomberg API billed separately.</p>
               </div>
             </div>
-            <div className="card p-4 mt-4 bg-cyan-50 border-cyan-200">
-              <p className="text-cyan-800 text-sm">
+            <div className="card p-4 mt-4 bg-slate-50 border-slate-200">
+              <p className="text-slate-700 text-sm">
                 <strong>Cost savings:</strong> A team of 5 would pay ~$125,000/year for Bloomberg Terminals.
                 SpaceNexus Enterprise for 5 users costs $5,940/year &mdash; a <strong>95% savings</strong> with
                 space-specific features Bloomberg does not offer.
@@ -158,7 +158,7 @@ export default function BloombergComparisonPage() {
                 <thead>
                   <tr className="border-b border-slate-700">
                     <th className="py-4 px-4 text-left text-slate-300 font-semibold">Feature</th>
-                    <th className="py-4 px-4 text-left text-cyan-600 font-semibold">SpaceNexus</th>
+                    <th className="py-4 px-4 text-left text-slate-300 font-semibold">SpaceNexus</th>
                     <th className="py-4 px-4 text-left text-slate-300 font-semibold">Bloomberg Terminal</th>
                   </tr>
                 </thead>
@@ -198,7 +198,7 @@ export default function BloombergComparisonPage() {
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="card p-6">
-                <h3 className="text-lg font-semibold text-cyan-600 mb-4">Choose SpaceNexus if you:</h3>
+                <h3 className="text-lg font-semibold text-slate-300 mb-4">Choose SpaceNexus if you:</h3>
                 <ul className="space-y-3">
                   {[
                     'Need space-specific data: launches, satellites, orbital slots, spectrum',
@@ -211,7 +211,7 @@ export default function BloombergComparisonPage() {
                     'Need regulatory tracking for FCC, ITU, and space law',
                   ].map((item) => (
                     <li key={item} className="flex items-start gap-2 text-sm text-slate-400">
-                      <span className="text-cyan-500 mt-0.5 flex-shrink-0">&#9656;</span>
+                      <span className="text-slate-300 mt-0.5 flex-shrink-0">&#9656;</span>
                       <span>{item}</span>
                     </li>
                   ))}
@@ -263,7 +263,7 @@ export default function BloombergComparisonPage() {
                   { title: 'Free tier available', desc: 'Start exploring space industry data immediately with no credit card, no sales call, and no 2-year contract. Upgrade when you need more.' },
                 ].map((item) => (
                   <li key={item.title} className="flex items-start gap-3">
-                    <span className="text-cyan-500 mt-1 flex-shrink-0 font-bold">&#10003;</span>
+                    <span className="text-slate-300 mt-1 flex-shrink-0 font-bold">&#10003;</span>
                     <div>
                       <strong className="text-slate-300">{item.title}:</strong>{' '}
                       <span className="text-slate-400 text-sm">{item.desc}</span>
@@ -296,7 +296,7 @@ export default function BloombergComparisonPage() {
                   'An AI copilot that understands space industry terminology and relationships',
                 ].map((item) => (
                   <li key={item} className="flex items-start gap-2 text-sm text-slate-400">
-                    <span className="text-cyan-500 mt-0.5 flex-shrink-0">&#9656;</span>
+                    <span className="text-slate-300 mt-0.5 flex-shrink-0">&#9656;</span>
                     <span>{item}</span>
                   </li>
                 ))}
@@ -330,7 +330,7 @@ export default function BloombergComparisonPage() {
 
           {/* Back Link */}
           <div className="text-center">
-            <Link href="/compare" className="text-cyan-500 hover:text-cyan-400 text-sm transition-colors">
+            <Link href="/compare" className="text-slate-300 hover:text-white text-sm transition-colors">
               &larr; Back to all comparisons
             </Link>
           </div>

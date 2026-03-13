@@ -60,7 +60,7 @@ const COMPANY_COLORS: Record<string, string> = {
   'Lockheed Martin': 'bg-blue-800',
   L3Harris: 'bg-emerald-700',
   'BAE Systems': 'bg-red-800',
-  'Planet Labs': 'bg-cyan-700',
+  'Planet Labs': 'bg-slate-600',
   Maxar: 'bg-purple-700',
   BlackSky: 'bg-slate-600',
   'Spire Global': 'bg-teal-700',
@@ -84,7 +84,7 @@ const COMPANY_COLORS: Record<string, string> = {
 };
 
 function getCompanyColor(company: string): string {
-  return COMPANY_COLORS[company] || 'bg-cyan-700';
+  return COMPANY_COLORS[company] || 'bg-slate-600';
 }
 
 // ────────────────────────────────────────
@@ -1275,7 +1275,7 @@ function getExperienceBadgeColor(level: ExperienceLevel): string {
     case 'Entry':
       return 'bg-green-500/20 text-green-400';
     case 'Mid':
-      return 'bg-cyan-500/20 text-cyan-400';
+      return 'bg-white/10 text-slate-300';
     case 'Senior':
       return 'bg-purple-500/20 text-purple-400';
     case 'Lead':
@@ -1312,7 +1312,7 @@ function JobCard({
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-4">
             <div>
-              <h3 className="text-lg font-semibold text-slate-100 group-hover:text-cyan-400 transition-colors truncate">
+              <h3 className="text-lg font-semibold text-slate-100 group-hover:text-white transition-colors truncate">
                 {job.title}
               </h3>
               <p className="text-slate-400 text-sm mt-0.5">
@@ -1320,7 +1320,7 @@ function JobCard({
               </p>
             </div>
             <div className="text-right shrink-0 hidden sm:block">
-              <p className="text-cyan-400 font-semibold text-sm">
+              <p className="text-slate-300 font-semibold text-sm">
                 {formatSalary(job.salaryMin)} - {formatSalary(job.salaryMax)}
               </p>
               <p className="text-slate-500 text-xs mt-0.5">
@@ -1331,7 +1331,7 @@ function JobCard({
 
           {/* Mobile salary & date */}
           <div className="flex items-center gap-3 mt-2 sm:hidden">
-            <p className="text-cyan-400 font-semibold text-sm">
+            <p className="text-slate-300 font-semibold text-sm">
               {formatSalary(job.salaryMin)} - {formatSalary(job.salaryMax)}
             </p>
             <span className="text-slate-600">&middot;</span>
@@ -1363,7 +1363,7 @@ function JobCard({
             {job.skills.slice(0, 4).map((skill) => (
               <span
                 key={skill}
-                className="text-xs px-2 py-0.5 rounded bg-cyan-500/10 text-cyan-300 border border-cyan-500/20"
+                className="text-xs px-2 py-0.5 rounded bg-white/5 text-slate-200 border border-white/10"
               >
                 {skill}
               </span>
@@ -1422,7 +1422,7 @@ function JobCard({
                   {job.skills.map((skill) => (
                     <span
                       key={skill}
-                      className="text-xs px-2.5 py-1 rounded bg-cyan-500/10 text-cyan-300 border border-cyan-500/20"
+                      className="text-xs px-2.5 py-1 rounded bg-white/5 text-slate-200 border border-white/10"
                     >
                       {skill}
                     </span>
@@ -1441,7 +1441,7 @@ function JobCard({
                       key={i}
                       className="text-sm text-slate-400 flex items-start gap-2"
                     >
-                      <span className="text-cyan-500 mt-1 shrink-0">
+                      <span className="text-slate-300 mt-1 shrink-0">
                         &#x2022;
                       </span>
                       {req}
@@ -1454,7 +1454,7 @@ function JobCard({
               <div className="flex items-center gap-3 pt-2">
                 <a
                   href={job.applyUrl}
-                  className="inline-flex items-center gap-2 px-5 py-2.5 bg-cyan-600 hover:bg-cyan-500 text-white text-sm rounded-lg font-medium transition-colors"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 bg-white hover:bg-slate-100 text-white text-sm rounded-lg font-medium transition-colors"
                   onClick={(e) => e.stopPropagation()}
                 >
                   <svg
@@ -1636,7 +1636,7 @@ export default function JobsBoardPage() {
               setSearchQuery(e.target.value);
               setVisibleCount(15);
             }}
-            className="w-full pl-10 pr-3 py-2.5 bg-slate-800/60 border border-slate-700 rounded-lg text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500/30 transition-colors"
+            className="w-full pl-10 pr-3 py-2.5 bg-slate-800/60 border border-slate-700 rounded-lg text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-white/15 focus:ring-1 focus:ring-white/30/30 transition-colors"
           />
         </div>
       </div>
@@ -1652,7 +1652,7 @@ export default function JobsBoardPage() {
             setSelectedCategory(e.target.value as JobCategory | '');
             setVisibleCount(15);
           }}
-          className="w-full px-3 py-2.5 bg-slate-800/60 border border-slate-700 rounded-lg text-sm text-slate-200 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500/30 transition-colors appearance-none"
+          className="w-full px-3 py-2.5 bg-slate-800/60 border border-slate-700 rounded-lg text-sm text-slate-200 focus:outline-none focus:border-white/15 focus:ring-1 focus:ring-white/30/30 transition-colors appearance-none"
         >
           <option value="">All Categories</option>
           {CATEGORIES.map((cat) => (
@@ -1678,7 +1678,7 @@ export default function JobsBoardPage() {
               }}
               className={`text-xs px-3 py-2 rounded-full border transition-colors ${
                 selectedExperience === level
-                  ? 'bg-cyan-500/20 border-cyan-500/50 text-cyan-400'
+                  ? 'bg-white/10 border-white/15 text-slate-300'
                   : 'bg-slate-800/40 border-slate-700 text-slate-400 hover:border-slate-600'
               }`}
             >
@@ -1703,7 +1703,7 @@ export default function JobsBoardPage() {
               }}
               className={`text-xs px-3 py-2 rounded-full border transition-colors ${
                 selectedJobType === type
-                  ? 'bg-cyan-500/20 border-cyan-500/50 text-cyan-400'
+                  ? 'bg-white/10 border-white/15 text-slate-300'
                   : 'bg-slate-800/40 border-slate-700 text-slate-400 hover:border-slate-600'
               }`}
             >
@@ -1728,7 +1728,7 @@ export default function JobsBoardPage() {
               }}
               className={`text-xs px-3 py-2 rounded-full border transition-colors ${
                 selectedLocation === loc
-                  ? 'bg-cyan-500/20 border-cyan-500/50 text-cyan-400'
+                  ? 'bg-white/10 border-white/15 text-slate-300'
                   : 'bg-slate-800/40 border-slate-700 text-slate-400 hover:border-slate-600'
               }`}
             >
@@ -1758,7 +1758,7 @@ export default function JobsBoardPage() {
                 placeholder="$0"
                 step={10000}
                 min={0}
-                className="w-full px-2.5 py-2 bg-slate-800/60 border border-slate-700 rounded-lg text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500/30 transition-colors"
+                className="w-full px-2.5 py-2 bg-slate-800/60 border border-slate-700 rounded-lg text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-white/15 focus:ring-1 focus:ring-white/30/30 transition-colors"
               />
             </div>
             <span className="text-slate-600 mt-4">-</span>
@@ -1775,7 +1775,7 @@ export default function JobsBoardPage() {
                 placeholder="No max"
                 step={10000}
                 min={0}
-                className="w-full px-2.5 py-2 bg-slate-800/60 border border-slate-700 rounded-lg text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500/30 transition-colors"
+                className="w-full px-2.5 py-2 bg-slate-800/60 border border-slate-700 rounded-lg text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-white/15 focus:ring-1 focus:ring-white/30/30 transition-colors"
               />
             </div>
           </div>
@@ -1789,7 +1789,7 @@ export default function JobsBoardPage() {
               setSalaryMin(Number(e.target.value));
               setVisibleCount(15);
             }}
-            className="w-full accent-cyan-500"
+            className="w-full accent-slate-400"
           />
           <p className="text-xs text-slate-500 text-center">
             {formatSalary(salaryMin)} &mdash;{' '}
@@ -1802,7 +1802,7 @@ export default function JobsBoardPage() {
       {activeFilterCount > 0 && (
         <button
           onClick={handleClearFilters}
-          className="w-full py-2 text-sm text-slate-400 hover:text-cyan-400 border border-slate-700 hover:border-cyan-500/40 rounded-lg transition-colors"
+          className="w-full py-2 text-sm text-slate-400 hover:text-white border border-slate-700 hover:border-white/15/40 rounded-lg transition-colors"
         >
           Clear all filters ({activeFilterCount})
         </button>
@@ -1849,8 +1849,8 @@ export default function JobsBoardPage() {
             </div>
 
             {filteredJobs.length !== JOB_POSTINGS.length && (
-              <div className="px-4 py-2.5 rounded-xl bg-cyan-500/10 border border-cyan-500/20">
-                <span className="text-sm text-cyan-400">
+              <div className="px-4 py-2.5 rounded-xl bg-white/5 border border-white/10">
+                <span className="text-sm text-slate-300">
                   Showing{' '}
                   <span className="font-bold">{filteredJobs.length}</span>{' '}
                   matching jobs
@@ -1866,7 +1866,7 @@ export default function JobsBoardPage() {
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as SortOption)}
-                className="px-3 py-2 bg-slate-800/60 border border-slate-700 rounded-lg text-sm text-slate-200 focus:outline-none focus:border-cyan-500 transition-colors appearance-none"
+                className="px-3 py-2 bg-slate-800/60 border border-slate-700 rounded-lg text-sm text-slate-200 focus:outline-none focus:border-white/15 transition-colors appearance-none"
               >
                 {SORT_OPTIONS.map((opt) => (
                   <option key={opt.value} value={opt.value}>
@@ -1882,7 +1882,7 @@ export default function JobsBoardPage() {
         <div className="flex items-center gap-3 mb-4 lg:hidden">
           <button
             onClick={() => setMobileFiltersOpen(!mobileFiltersOpen)}
-            className="flex items-center gap-2 px-4 py-2.5 bg-slate-800/60 border border-slate-700 rounded-lg text-sm text-slate-300 hover:border-cyan-500/50 transition-colors"
+            className="flex items-center gap-2 px-4 py-2.5 bg-slate-800/60 border border-slate-700 rounded-lg text-sm text-slate-300 hover:border-white/15 transition-colors"
           >
             <svg
               className="w-4 h-4"
@@ -1899,7 +1899,7 @@ export default function JobsBoardPage() {
             </svg>
             Filters
             {activeFilterCount > 0 && (
-              <span className="w-5 h-5 rounded-full bg-cyan-500 text-white text-[10px] flex items-center justify-center font-bold">
+              <span className="w-5 h-5 rounded-full bg-white text-white text-[10px] flex items-center justify-center font-bold">
                 {activeFilterCount}
               </span>
             )}
@@ -1907,7 +1907,7 @@ export default function JobsBoardPage() {
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value as SortOption)}
-            className="flex-1 px-3 py-2.5 bg-slate-800/60 border border-slate-700 rounded-lg text-sm text-slate-200 focus:outline-none focus:border-cyan-500 transition-colors appearance-none"
+            className="flex-1 px-3 py-2.5 bg-slate-800/60 border border-slate-700 rounded-lg text-sm text-slate-200 focus:outline-none focus:border-white/15 transition-colors appearance-none"
           >
             {SORT_OPTIONS.map((opt) => (
               <option key={opt.value} value={opt.value}>
@@ -1945,7 +1945,7 @@ export default function JobsBoardPage() {
                   action={
                     <button
                       onClick={handleClearFilters}
-                      className="px-5 py-2.5 bg-cyan-600 hover:bg-cyan-500 text-white text-sm rounded-lg font-medium transition-colors"
+                      className="px-5 py-2.5 bg-white hover:bg-slate-100 text-white text-sm rounded-lg font-medium transition-colors"
                     >
                       Clear All Filters
                     </button>
@@ -1975,7 +1975,7 @@ export default function JobsBoardPage() {
               <div className="mt-8 text-center">
                 <button
                   onClick={handleLoadMore}
-                  className="px-8 py-3 bg-slate-800/60 border border-slate-700 hover:border-cyan-500/50 text-slate-300 hover:text-cyan-400 rounded-lg text-sm font-medium transition-colors"
+                  className="px-8 py-3 bg-slate-800/60 border border-slate-700 hover:border-white/15 text-slate-300 hover:text-white rounded-lg text-sm font-medium transition-colors"
                 >
                   Load More ({filteredJobs.length - visibleCount} remaining)
                 </button>

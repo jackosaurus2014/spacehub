@@ -92,7 +92,7 @@ export default function LandingValueProp() {
           <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
             {VALUE_PILLARS.map((pillar) => (
               <StaggerItem key={pillar.title}>
-                <div className="glass-panel p-8 text-center h-full hover:border-cyan-400/30 transition-all duration-300 hover:-translate-y-1">
+                <div className="glass-panel p-8 text-center h-full hover:border-white/10 transition-all duration-300 hover:-translate-y-1">
                   <div className="text-4xl mb-4">{pillar.icon}</div>
                   <h3 className="text-xl font-display font-bold text-white mb-3">
                     {pillar.title}
@@ -114,7 +114,7 @@ export default function LandingValueProp() {
             {STATS.map((stat) => (
               <ScrollReveal key={stat.label} delay={0.1}>
                 <div className="text-center">
-                  <div className="text-4xl md:text-5xl font-display font-bold text-transparent bg-clip-text bg-gradient-to-b from-white to-cyan-300 mb-2">
+                  <div className="text-4xl md:text-5xl font-display font-bold text-transparent bg-clip-text bg-gradient-to-b from-white to-slate-300 mb-2">
                     {stat.prefix}
                     <AnimatedCounter target={stat.value} />
                     {stat.suffix}
@@ -149,7 +149,7 @@ export default function LandingValueProp() {
           <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 max-w-5xl mx-auto" staggerDelay={0.08}>
             {AUDIENCES.map((audience) => (
               <StaggerItem key={audience.title}>
-                <div className="glass-panel p-6 h-full hover:border-cyan-400/30 transition-all duration-300 hover:-translate-y-1">
+                <div className="glass-panel p-6 h-full hover:border-white/10 transition-all duration-300 hover:-translate-y-1">
                   <div className="flex items-start gap-4">
                     <span className="text-2xl flex-shrink-0 mt-1">{audience.icon}</span>
                     <div>

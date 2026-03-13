@@ -719,7 +719,7 @@ function EducationPipelineSection() {
           <div className="text-xs text-slate-400">Relevant STEM Grads/yr</div>
         </div>
         <div className="bg-slate-800/50 rounded-lg p-3 text-center">
-          <div className="text-lg font-bold text-cyan-400">{(totalEntering / 1000).toFixed(1)}K</div>
+          <div className="text-lg font-bold text-slate-300">{(totalEntering / 1000).toFixed(1)}K</div>
           <div className="text-xs text-slate-400">Entering Space Sector</div>
         </div>
         <div className="bg-slate-800/50 rounded-lg p-3 text-center">
@@ -758,7 +758,7 @@ function EducationPipelineSection() {
                   </div>
                   <div>
                     <span className="text-slate-400 block">Entering Space</span>
-                    <span className="text-cyan-400 font-bold">{edu.enteringSpace.toLocaleString()}</span>
+                    <span className="text-slate-300 font-bold">{edu.enteringSpace.toLocaleString()}</span>
                   </div>
                   <div>
                     <span className="text-slate-400 block">Conversion</span>
@@ -773,7 +773,7 @@ function EducationPipelineSection() {
                 {/* Stacked bar showing graduates vs entering space */}
                 <div className="h-2 bg-slate-800/50 rounded-full overflow-hidden" style={{ width: `${gradBarPct}%` }}>
                   <div
-                    className="h-full bg-cyan-500 rounded-full"
+                    className="h-full bg-white rounded-full"
                     style={{ width: `${enterPct}%` }}
                   />
                 </div>
@@ -900,7 +900,7 @@ function TopEmployersSection() {
 
   const tierColors = {
     prime: { bg: 'bg-blue-500/15', text: 'text-blue-400', border: 'border-blue-500/30', label: 'Defense Prime' },
-    major: { bg: 'bg-cyan-500/15', text: 'text-cyan-400', border: 'border-cyan-500/30', label: 'Major Player' },
+    major: { bg: 'bg-white/8', text: 'text-slate-300', border: 'border-white/10', label: 'Major Player' },
     growth: { bg: 'bg-emerald-500/15', text: 'text-emerald-400', border: 'border-emerald-500/30', label: 'High Growth' },
   };
 
@@ -1013,7 +1013,7 @@ function TopEmployersSection() {
               <div className="h-2 bg-slate-800/50 rounded-full overflow-hidden mb-3">
                 <div
                   className={`h-full rounded-full transition-all duration-500 ${
-                    employer.tier === 'prime' ? 'bg-blue-500' : employer.tier === 'major' ? 'bg-cyan-500' : 'bg-emerald-500'
+                    employer.tier === 'prime' ? 'bg-blue-500' : employer.tier === 'major' ? 'bg-white' : 'bg-emerald-500'
                   }`}
                   style={{ width: `${barPct}%` }}
                 />
@@ -1502,7 +1502,7 @@ function SpaceTalentHubContent() {
           onClick={() => handleTopTabChange('talent')}
           className={`py-3 px-6 min-h-[44px] font-medium text-sm transition-colors border-b-2 -mb-px whitespace-nowrap ${
             topTab === 'talent'
-              ? 'border-cyan-500 text-white'
+              ? 'border-white/15 text-white'
               : 'border-transparent text-slate-400 hover:text-white'
           }`}
         >
@@ -1514,7 +1514,7 @@ function SpaceTalentHubContent() {
           onClick={() => handleTopTabChange('workforce')}
           className={`py-3 px-6 min-h-[44px] font-medium text-sm transition-colors border-b-2 -mb-px whitespace-nowrap ${
             topTab === 'workforce'
-              ? 'border-cyan-500 text-white'
+              ? 'border-white/15 text-white'
               : 'border-transparent text-slate-400 hover:text-white'
           }`}
         >
@@ -1535,7 +1535,7 @@ function SpaceTalentHubContent() {
               onClick={() => setTalentSubTab('experts')}
               className={`py-3 px-6 min-h-[44px] font-medium text-sm transition-colors border-b-2 -mb-px whitespace-nowrap ${
                 talentSubTab === 'experts'
-                  ? 'border-cyan-500 text-white'
+                  ? 'border-white/15 text-white'
                   : 'border-transparent text-slate-400 hover:text-white'
               }`}
             >
@@ -1547,7 +1547,7 @@ function SpaceTalentHubContent() {
               onClick={() => setTalentSubTab('webinars')}
               className={`py-3 px-6 min-h-[44px] font-medium text-sm transition-colors border-b-2 -mb-px whitespace-nowrap ${
                 talentSubTab === 'webinars'
-                  ? 'border-cyan-500 text-white'
+                  ? 'border-white/15 text-white'
                   : 'border-transparent text-slate-400 hover:text-white'
               }`}
             >
@@ -1566,16 +1566,16 @@ function SpaceTalentHubContent() {
           {talentSubTab === 'experts' && (
             <div>
               {/* Description */}
-              <div className="bg-gradient-to-r from-cyan-500/10 to-purple-500/10 border border-cyan-500/20 rounded-lg p-4 mb-6">
+              <div className="bg-gradient-to-r from-white/5 to-purple-500/10 border border-white/10 rounded-lg p-4 mb-6">
                 <p className="text-slate-300 text-sm">
-                  <strong className="text-cyan-400">Find the right expert for your project.</strong>{' '}
+                  <strong className="text-slate-300">Find the right expert for your project.</strong>{' '}
                   Our network includes space lawyers, regulatory specialists, aerospace engineers,
                   policy advisors, and business consultants with deep industry experience.
                 </p>
               </div>
 
               {/* Service Provider Listing CTA */}
-              <div className="bg-gradient-to-r from-purple-500/10 to-cyan-500/10 border border-purple-500/20 rounded-lg p-4 mb-6">
+              <div className="bg-gradient-to-r from-purple-500/10 to-white/5 border border-purple-500/20 rounded-lg p-4 mb-6">
                 <p className="text-slate-300 text-sm">
                   If you are a service provider in this area and would like to be listed here, please{' '}
                   <button
@@ -1585,7 +1585,7 @@ function SpaceTalentHubContent() {
                       setSpSubmitSuccess(false);
                       setIsContactModalOpen(true);
                     }}
-                    className="text-cyan-400 hover:text-cyan-300 underline underline-offset-2 font-medium transition-colors"
+                    className="text-slate-300 hover:text-white underline underline-offset-2 font-medium transition-colors"
                   >
                     contact us
                   </button>
@@ -1602,7 +1602,7 @@ function SpaceTalentHubContent() {
                     <div className="text-slate-400 text-xs">Total Experts</div>
                   </div>
                   <div className="card p-4 text-center">
-                    <div className="text-2xl font-bold text-cyan-400">{talentStats.featuredCount}</div>
+                    <div className="text-2xl font-bold text-slate-300">{talentStats.featuredCount}</div>
                     <div className="text-slate-400 text-xs">Featured</div>
                   </div>
                   <div className="card p-4 text-center">
@@ -1627,14 +1627,14 @@ function SpaceTalentHubContent() {
                       placeholder="Search by name, title, organization, or expertise..."
                       value={talentSearch}
                       onChange={(e) => setTalentSearch(e.target.value)}
-                      className="w-full bg-slate-700/50 border border-slate-600/50 rounded-lg px-4 py-2 text-white placeholder-slate-400 text-sm focus:outline-none focus:border-cyan-500"
+                      className="w-full bg-slate-700/50 border border-slate-600/50 rounded-lg px-4 py-2 text-white placeholder-slate-400 text-sm focus:outline-none focus:border-white/15"
                     />
                   </div>
                   <select
                     aria-label="Filter by expertise area"
                     value={expertiseFilter}
                     onChange={(e) => setExpertiseFilter(e.target.value as TalentExpertiseArea | '')}
-                    className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+                    className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                   >
                     <option value="">All Expertise Areas</option>
                     {TALENT_EXPERTISE_AREAS.map(exp => (
@@ -1647,7 +1647,7 @@ function SpaceTalentHubContent() {
                     aria-label="Filter by availability"
                     value={availabilityFilter}
                     onChange={(e) => setAvailabilityFilter(e.target.value as TalentAvailability | '')}
-                    className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+                    className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                   >
                     <option value="">All Availability</option>
                     {Object.entries(TALENT_AVAILABILITY_INFO).map(([key, info]) => (
@@ -1660,7 +1660,7 @@ function SpaceTalentHubContent() {
               {/* Disclaimer */}
               <div className="card p-4 mb-6">
                 <div className="flex gap-3">
-                  <svg className="w-5 h-5 text-cyan-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-5 h-5 text-slate-300 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                   <p className="text-sm text-slate-300">
@@ -1698,7 +1698,7 @@ function SpaceTalentHubContent() {
                       setAvailabilityFilter('');
                       setTalentSearch('');
                     }}
-                    className="mt-4 text-cyan-400 hover:text-cyan-300 text-sm"
+                    className="mt-4 text-slate-300 hover:text-white text-sm"
                   >
                     Clear filters
                   </button>
@@ -1713,7 +1713,7 @@ function SpaceTalentHubContent() {
                 </p>
                 <a
                   href="mailto:talent@spacenexus.us?subject=Expert Network Application"
-                  className="inline-flex items-center gap-2 bg-cyan-500 hover:bg-cyan-600 text-white font-medium px-6 py-2 rounded-lg transition-colors"
+                  className="inline-flex items-center gap-2 bg-white hover:bg-slate-700 text-white font-medium px-6 py-2 rounded-lg transition-colors"
                 >
                   Apply to Join Network
                 </a>
@@ -1745,7 +1745,7 @@ function SpaceTalentHubContent() {
                     <div className="text-slate-400 text-xs">Live Now</div>
                   </div>
                   <div className="card p-4 text-center">
-                    <div className="text-2xl font-bold text-cyan-400">{webinarStats.upcomingCount}</div>
+                    <div className="text-2xl font-bold text-slate-300">{webinarStats.upcomingCount}</div>
                     <div className="text-slate-400 text-xs">Upcoming</div>
                   </div>
                   <div className="card p-4 text-center">
@@ -1766,7 +1766,7 @@ function SpaceTalentHubContent() {
                     {[
                       { value: 'all', label: 'All' },
                       { value: 'live', label: 'Live', color: 'text-red-400' },
-                      { value: 'upcoming', label: 'Upcoming', color: 'text-cyan-400' },
+                      { value: 'upcoming', label: 'Upcoming', color: 'text-slate-300' },
                       { value: 'past', label: 'Past', color: 'text-slate-400' },
                     ].map(filter => (
                       <button
@@ -1774,7 +1774,7 @@ function SpaceTalentHubContent() {
                         onClick={() => setWebinarFilter(filter.value as typeof webinarFilter)}
                         className={`px-3 py-1.5 rounded text-sm font-medium transition-all ${
                           webinarFilter === filter.value
-                            ? 'bg-cyan-500 text-white'
+                            ? 'bg-white text-white'
                             : `bg-slate-700/50 hover:bg-slate-600/50 ${filter.color || 'text-slate-300'}`
                         }`}
                       >
@@ -1786,7 +1786,7 @@ function SpaceTalentHubContent() {
                     aria-label="Filter by topic"
                     value={topicFilter}
                     onChange={(e) => setTopicFilter(e.target.value)}
-                    className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+                    className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                   >
                     <option value="">All Topics</option>
                     {WEBINAR_TOPICS.map(topic => (
@@ -1819,7 +1819,7 @@ function SpaceTalentHubContent() {
                       setWebinarFilter('all');
                       setTopicFilter('');
                     }}
-                    className="mt-4 text-cyan-400 hover:text-cyan-300 text-sm"
+                    className="mt-4 text-slate-300 hover:text-white text-sm"
                   >
                     Clear filters
                   </button>
@@ -1849,13 +1849,13 @@ function SpaceTalentHubContent() {
             <div className="flex flex-wrap gap-3">
               <Link
                 href="/business-opportunities"
-                className="px-4 py-2 bg-slate-800/50 border border-slate-700/50 rounded-lg text-sm text-slate-300 hover:text-white hover:border-cyan-500/50 transition-all"
+                className="px-4 py-2 bg-slate-800/50 border border-slate-700/50 rounded-lg text-sm text-slate-300 hover:text-white hover:border-white/15 transition-all"
               >
                 Business Opportunities
               </Link>
               <Link
                 href="/compliance"
-                className="px-4 py-2 bg-slate-800/50 border border-slate-700/50 rounded-lg text-sm text-slate-300 hover:text-white hover:border-cyan-500/50 transition-all"
+                className="px-4 py-2 bg-slate-800/50 border border-slate-700/50 rounded-lg text-sm text-slate-300 hover:text-white hover:border-white/15 transition-all"
               >
                 Compliance & Regulations
               </Link>
@@ -1905,7 +1905,7 @@ function SpaceTalentHubContent() {
                       </p>
                       <button
                         onClick={() => setIsContactModalOpen(false)}
-                        className="bg-cyan-500 hover:bg-cyan-600 text-white font-medium px-6 py-2 rounded-lg transition-colors"
+                        className="bg-white hover:bg-slate-700 text-white font-medium px-6 py-2 rounded-lg transition-colors"
                       >
                         Close
                       </button>
@@ -1996,7 +1996,7 @@ function SpaceTalentHubContent() {
                           type="text"
                           value={spFormData.businessName}
                           onChange={(e) => setSpFormData(prev => ({ ...prev, businessName: e.target.value }))}
-                          className={`w-full bg-slate-800/50 border rounded-lg px-4 py-2 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-cyan-500 ${
+                          className={`w-full bg-slate-800/50 border rounded-lg px-4 py-2 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-white/15 ${
                             spFormErrors.businessName ? 'border-red-500/50' : 'border-slate-600/50'
                           }`}
                           placeholder="Your business or provider name"
@@ -2016,7 +2016,7 @@ function SpaceTalentHubContent() {
                           type="text"
                           value={spFormData.contactName}
                           onChange={(e) => setSpFormData(prev => ({ ...prev, contactName: e.target.value }))}
-                          className="w-full bg-slate-800/50 border border-slate-600/50 rounded-lg px-4 py-2 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-cyan-500"
+                          className="w-full bg-slate-800/50 border border-slate-600/50 rounded-lg px-4 py-2 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-white/15"
                           placeholder="Primary contact person"
                         />
                       </div>
@@ -2031,7 +2031,7 @@ function SpaceTalentHubContent() {
                           type="tel"
                           value={spFormData.phone}
                           onChange={(e) => setSpFormData(prev => ({ ...prev, phone: e.target.value }))}
-                          className="w-full bg-slate-800/50 border border-slate-600/50 rounded-lg px-4 py-2 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-cyan-500"
+                          className="w-full bg-slate-800/50 border border-slate-600/50 rounded-lg px-4 py-2 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-white/15"
                           placeholder="+1 (555) 123-4567"
                         />
                       </div>
@@ -2046,7 +2046,7 @@ function SpaceTalentHubContent() {
                           type="email"
                           value={spFormData.email}
                           onChange={(e) => setSpFormData(prev => ({ ...prev, email: e.target.value }))}
-                          className={`w-full bg-slate-800/50 border rounded-lg px-4 py-2 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-cyan-500 ${
+                          className={`w-full bg-slate-800/50 border rounded-lg px-4 py-2 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-white/15 ${
                             spFormErrors.email ? 'border-red-500/50' : 'border-slate-600/50'
                           }`}
                           placeholder="you@company.com"
@@ -2066,7 +2066,7 @@ function SpaceTalentHubContent() {
                           type="url"
                           value={spFormData.website}
                           onChange={(e) => setSpFormData(prev => ({ ...prev, website: e.target.value }))}
-                          className={`w-full bg-slate-800/50 border rounded-lg px-4 py-2 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-cyan-500 ${
+                          className={`w-full bg-slate-800/50 border rounded-lg px-4 py-2 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-white/15 ${
                             spFormErrors.website ? 'border-red-500/50' : 'border-slate-600/50'
                           }`}
                           placeholder="https://yourcompany.com"
@@ -2086,7 +2086,7 @@ function SpaceTalentHubContent() {
                           value={spFormData.description}
                           onChange={(e) => setSpFormData(prev => ({ ...prev, description: e.target.value }))}
                           rows={4}
-                          className={`w-full bg-slate-800/50 border rounded-lg px-4 py-2 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-cyan-500 resize-vertical ${
+                          className={`w-full bg-slate-800/50 border rounded-lg px-4 py-2 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-white/15 resize-vertical ${
                             spFormErrors.description ? 'border-red-500/50' : 'border-slate-600/50'
                           }`}
                           placeholder="Describe the services you offer, your areas of expertise, and what makes you stand out..."
@@ -2107,7 +2107,7 @@ function SpaceTalentHubContent() {
                           value={spFormData.pricing}
                           onChange={(e) => setSpFormData(prev => ({ ...prev, pricing: e.target.value }))}
                           rows={2}
-                          className="w-full bg-slate-800/50 border border-slate-600/50 rounded-lg px-4 py-2 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-cyan-500 resize-vertical"
+                          className="w-full bg-slate-800/50 border border-slate-600/50 rounded-lg px-4 py-2 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-white/15 resize-vertical"
                           placeholder="e.g., Hourly rates, project-based pricing, consultation fees..."
                         />
                       </div>
@@ -2117,7 +2117,7 @@ function SpaceTalentHubContent() {
                         <button
                           type="submit"
                           disabled={spSubmitting}
-                          className="flex-1 bg-cyan-500 hover:bg-cyan-600 disabled:bg-cyan-500/50 disabled:cursor-not-allowed text-white font-medium py-2.5 rounded-lg transition-colors flex items-center justify-center gap-2"
+                          className="flex-1 bg-white hover:bg-slate-700 disabled:bg-white/50 disabled:cursor-not-allowed text-white font-medium py-2.5 rounded-lg transition-colors flex items-center justify-center gap-2"
                         >
                           {spSubmitting ? (
                             <>
@@ -2275,7 +2275,7 @@ function SpaceTalentHubContent() {
                     aria-label="Filter by job category"
                     value={categoryFilter}
                     onChange={(e) => handleCategoryChange(e.target.value as JobCategory | '')}
-                    className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+                    className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                   >
                     <option value="">All Categories</option>
                     {JOB_CATEGORIES.map((c) => (
@@ -2290,7 +2290,7 @@ function SpaceTalentHubContent() {
                     aria-label="Filter by seniority level"
                     value={seniorityFilter}
                     onChange={(e) => handleSeniorityChange(e.target.value as SeniorityLevel | '')}
-                    className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+                    className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                   >
                     <option value="">All Levels</option>
                     {SENIORITY_LEVELS.map((s) => (
@@ -2561,9 +2561,9 @@ function SpaceTalentHubContent() {
           {wfSubTab === 'insights' && (
             <div>
               {/* Intro banner */}
-              <div className="bg-gradient-to-r from-cyan-500/10 to-purple-500/10 border border-cyan-500/20 rounded-lg p-4 mb-6">
+              <div className="bg-gradient-to-r from-white/5 to-purple-500/10 border border-white/10 rounded-lg p-4 mb-6">
                 <p className="text-slate-300 text-sm">
-                  <strong className="text-cyan-400">Deep-dive workforce intelligence.</strong>{' '}
+                  <strong className="text-slate-300">Deep-dive workforce intelligence.</strong>{' '}
                   Explore workforce demographics, top employers by headcount, the most critical skill shortages,
                   employment across sectors, geographic hiring patterns, and the STEM education pipeline.
                 </p>

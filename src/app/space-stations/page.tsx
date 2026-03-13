@@ -692,7 +692,7 @@ const FALLBACK_ISS_POSITION: ISSPosition = {
 
 const STATUS_STYLES: Record<StationStatus, { label: string; color: string; bg: string; border: string }> = {
   operational: { label: 'Operational', color: 'text-green-400', bg: 'bg-green-900/30', border: 'border-green-500/40' },
-  assembly: { label: 'Under Assembly', color: 'text-cyan-400', bg: 'bg-cyan-900/30', border: 'border-cyan-500/40' },
+  assembly: { label: 'Under Assembly', color: 'text-slate-300', bg: 'bg-slate-800/40', border: 'border-white/15/40' },
   development: { label: 'In Development', color: 'text-yellow-400', bg: 'bg-yellow-900/30', border: 'border-yellow-500/40' },
   concept: { label: 'Concept Phase', color: 'text-purple-400', bg: 'bg-purple-900/30', border: 'border-purple-500/40' },
   planned: { label: 'Planned', color: 'text-blue-400', bg: 'bg-blue-900/30', border: 'border-blue-500/40' },
@@ -761,7 +761,7 @@ function ActiveStationCard({ station }: { station: SpaceStation }) {
         </div>
         {station.currentCrew !== undefined && (
           <div className="text-center px-3 py-2 rounded-lg bg-slate-900/50 border border-slate-700/50">
-            <div className="text-cyan-400 font-bold text-xl">{station.currentCrew}</div>
+            <div className="text-slate-300 font-bold text-xl">{station.currentCrew}</div>
             <div className="text-star-400 text-xs">Crew</div>
           </div>
         )}
@@ -809,7 +809,7 @@ function ActiveStationCard({ station }: { station: SpaceStation }) {
         <div className="flex flex-wrap gap-2">
           {station.visitingVehicles.map((v) => (
             <span key={v.name} className={`px-2 py-1 rounded text-xs font-medium border ${
-              v.type === 'crew' ? 'bg-cyan-900/20 text-cyan-400 border-cyan-500/30' :
+              v.type === 'crew' ? 'bg-slate-800/30 text-slate-300 border-white/10' :
               v.type === 'cargo' ? 'bg-purple-900/20 text-purple-400 border-purple-500/30' :
               'bg-blue-900/20 text-blue-400 border-blue-500/30'
             }`}>
@@ -906,7 +906,7 @@ function CommercialStationCard({ station }: { station: CommercialStation }) {
           <p className="text-star-400 text-sm">{station.developer}</p>
         </div>
         <div className="text-center px-3 py-2 rounded-lg bg-slate-900/50 border border-slate-700/50">
-          <div className="text-cyan-400 font-bold text-lg">{station.crewCapacity}</div>
+          <div className="text-slate-300 font-bold text-lg">{station.crewCapacity}</div>
           <div className="text-star-400 text-xs">Crew Cap.</div>
         </div>
       </div>
@@ -953,7 +953,7 @@ function CommercialStationCard({ station }: { station: CommercialStation }) {
         <ul className="space-y-1">
           {station.capabilities.slice(0, expanded ? undefined : 4).map((cap) => (
             <li key={cap} className="text-star-300 text-sm flex items-start gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-cyan-500 mt-1.5 flex-shrink-0" />
+              <span className="w-1.5 h-1.5 rounded-full bg-white mt-1.5 flex-shrink-0" />
               {cap}
             </li>
           ))}
@@ -1151,7 +1151,7 @@ function CrewTracker({ currentCrew, crewRotations }: { currentCrew: CrewMember[]
           <div className="text-star-400 text-xs uppercase tracking-widest">Humans in Space</div>
         </div>
         <div className="card p-4 text-center">
-          <div className="text-cyan-400 font-bold text-2xl">{issCrewCount}</div>
+          <div className="text-slate-300 font-bold text-2xl">{issCrewCount}</div>
           <div className="text-star-400 text-xs uppercase tracking-widest">ISS Crew</div>
         </div>
         <div className="card p-4 text-center">
@@ -1181,7 +1181,7 @@ function CrewTracker({ currentCrew, crewRotations }: { currentCrew: CrewMember[]
                   </div>
                   <div className="h-2 bg-slate-700/50 rounded-full overflow-hidden">
                     <div
-                      className="h-full bg-gradient-to-r from-cyan-500 to-nebula-500 rounded-full"
+                      className="h-full bg-gradient-to-r from-white to-nebula-500 rounded-full"
                       style={{ width: `${pct}%` }}
                     />
                   </div>
@@ -1219,7 +1219,7 @@ function CrewTracker({ currentCrew, crewRotations }: { currentCrew: CrewMember[]
         return (
           <div key={stationName} className="card p-5">
             <h3 className="text-white font-bold text-lg mb-4 flex items-center gap-2">
-              <span className={`w-3 h-3 rounded-full ${stationName === 'ISS' ? 'bg-cyan-500' : 'bg-amber-500'}`} />
+              <span className={`w-3 h-3 rounded-full ${stationName === 'ISS' ? 'bg-white' : 'bg-amber-500'}`} />
               {stationName} Current Crew ({crew.length})
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -1299,7 +1299,7 @@ function ISSTransition({ cldMilestones, transitionRisks }: { cldMilestones: CLDM
             how it now buys crew transportation from SpaceX.
           </p>
           <p>
-            The program has awarded a combined <span className="text-cyan-400 font-semibold">~$575.5 million</span> across
+            The program has awarded a combined <span className="text-slate-300 font-semibold">~$575.5 million</span> across
             three providers (Axiom Space, Blue Origin/Sierra Space, and Voyager Space/Airbus) to develop commercial
             stations that can host NASA astronauts and research alongside paying commercial customers. This public-private
             partnership model aims to reduce NASA&apos;s LEO operational costs from approximately $3-4 billion per year
@@ -1339,14 +1339,14 @@ function ISSTransition({ cldMilestones, transitionRisks }: { cldMilestones: CLDM
             {cldMilestones.map((milestone) => {
               const dotColor = milestone.status === 'completed' ? 'bg-green-500 border-green-400' :
                 milestone.status === 'in-progress' ? 'bg-yellow-500 border-yellow-400 animate-pulse' :
-                milestone.status === 'upcoming' ? 'bg-cyan-500 border-cyan-400' :
+                milestone.status === 'upcoming' ? 'bg-white border-white/10' :
                 'bg-slate-600 border-slate-500';
               const statusLabel = milestone.status === 'completed' ? 'Completed' :
                 milestone.status === 'in-progress' ? 'In Progress' :
                 milestone.status === 'upcoming' ? 'Upcoming' : 'Planned';
               const statusColor = milestone.status === 'completed' ? 'text-green-400' :
                 milestone.status === 'in-progress' ? 'text-yellow-400' :
-                milestone.status === 'upcoming' ? 'text-cyan-400' : 'text-blue-400';
+                milestone.status === 'upcoming' ? 'text-slate-300' : 'text-blue-400';
 
               return (
                 <div key={milestone.event} className="relative pl-12">
@@ -1375,7 +1375,7 @@ function ISSTransition({ cldMilestones, transitionRisks }: { cldMilestones: CLDM
         <div className="space-y-3 text-star-300 text-sm leading-relaxed">
           <p>
             NASA has contracted <span className="text-white font-semibold">SpaceX</span> for approximately
-            <span className="text-cyan-400 font-semibold"> $843 million</span> to develop and build a dedicated
+            <span className="text-slate-300 font-semibold"> $843 million</span> to develop and build a dedicated
             deorbit vehicle for the ISS. The station, weighing approximately 420,000 kg, will be the largest
             human-made object ever intentionally deorbited.
           </p>
@@ -1438,7 +1438,7 @@ function ISSTransition({ cldMilestones, transitionRisks }: { cldMilestones: CLDM
           ].map((provider) => (
             <div key={provider.name} className="rounded-lg bg-slate-900/50 border border-slate-700/30 p-4">
               <div className="text-white font-semibold mb-1">{provider.name}</div>
-              <div className="text-cyan-400 font-bold text-lg mb-2">{provider.award}</div>
+              <div className="text-slate-300 font-bold text-lg mb-2">{provider.award}</div>
               <div className="text-star-400 text-xs uppercase tracking-widest mb-1">Station</div>
               <div className="text-star-200 text-sm mb-2">{provider.station}</div>
               <div className="text-star-400 text-xs uppercase tracking-widest mb-1">Status</div>
@@ -1603,7 +1603,7 @@ export default function SpaceStationTrackerPage() {
 
         {/* ISS Live Position */}
         {issPosition && (
-          <div className="card p-5 border-2 border-cyan-500/40 bg-gradient-to-r from-cyan-900/20 to-slate-800/50 mb-6 mt-4">
+          <div className="card p-5 border-2 border-white/15/40 bg-gradient-to-r from-slate-800/20 to-slate-800/50 mb-6 mt-4">
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-white font-bold text-lg flex items-center gap-2">
                 <span className="w-3 h-3 rounded-full bg-green-500 animate-pulse" />
@@ -1612,7 +1612,7 @@ export default function SpaceStationTrackerPage() {
               <button
                 onClick={refreshIssPosition}
                 disabled={issPositionLoading}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-cyan-500/20 text-cyan-300 hover:bg-cyan-500/30 transition-colors border border-cyan-500/30 disabled:opacity-50"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-white/10 text-slate-200 hover:bg-slate-100/30 transition-colors border border-white/10 disabled:opacity-50"
               >
                 <svg
                   className={`w-3.5 h-3.5 ${issPositionLoading ? 'animate-spin' : ''}`}
@@ -1634,11 +1634,11 @@ export default function SpaceStationTrackerPage() {
               </div>
               <div className="rounded-lg bg-slate-900/50 border border-slate-700/50 p-3 text-center">
                 <div className="text-star-400 text-xs uppercase tracking-widest mb-1">Altitude</div>
-                <div className="text-cyan-400 font-bold text-lg">{issPosition.altitude.toFixed(1)} km</div>
+                <div className="text-slate-300 font-bold text-lg">{issPosition.altitude.toFixed(1)} km</div>
               </div>
               <div className="rounded-lg bg-slate-900/50 border border-slate-700/50 p-3 text-center">
                 <div className="text-star-400 text-xs uppercase tracking-widest mb-1">Velocity</div>
-                <div className="text-cyan-400 font-bold text-lg">{issPosition.velocity.toFixed(0)} km/h</div>
+                <div className="text-slate-300 font-bold text-lg">{issPosition.velocity.toFixed(0)} km/h</div>
               </div>
               <div className="rounded-lg bg-slate-900/50 border border-slate-700/50 p-3 text-center">
                 <div className="text-star-400 text-xs uppercase tracking-widest mb-1">Visibility</div>

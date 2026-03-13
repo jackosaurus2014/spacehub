@@ -80,7 +80,7 @@ const AUDIT_ACTION_STYLES: Record<string, string> = {
   unban_user: 'bg-green-500/20 text-green-300',
   unmute_user: 'bg-green-500/20 text-green-300',
   seed_data: 'bg-purple-500/20 text-purple-300',
-  refresh_data: 'bg-cyan-500/20 text-cyan-300',
+  refresh_data: 'bg-white/10 text-slate-200',
   moderation_action: 'bg-orange-500/20 text-orange-300',
 };
 

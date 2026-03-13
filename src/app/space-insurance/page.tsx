@@ -1324,7 +1324,7 @@ function InsuranceContent() {
                         <div className="space-y-3">
                           {[
                             { label: 'Launch Risk', value: calcResult.launchRisk, color: 'from-red-500 to-orange-500', icon: '🚀' },
-                            { label: 'In-Orbit Risk (Year 1)', value: calcResult.inOrbitRisk, color: 'from-blue-500 to-cyan-500', icon: '🛰️' },
+                            { label: 'In-Orbit Risk (Year 1)', value: calcResult.inOrbitRisk, color: 'from-blue-500 to-slate-200', icon: '🛰️' },
                             { label: 'Third-Party Liability', value: calcResult.thirdPartyLiability, color: 'from-purple-500 to-pink-500', icon: '⚖️' },
                           ].map((item) => {
                             const pct = calcResult.totalPremium > 0 ? (item.value / calcResult.totalPremium) * 100 : 0;
@@ -1688,7 +1688,7 @@ function InsuranceContent() {
                                   </span>
                                 </div>
                                 <div
-                                  className="h-full bg-gradient-to-r from-blue-500/80 to-cyan-500/80 rounded-sm transition-all duration-500 relative group"
+                                  className="h-full bg-gradient-to-r from-blue-500/80 to-slate-200/80 rounded-sm transition-all duration-500 relative group"
                                   style={{ width: `${(yr.avgInOrbitRate / maxRate) * 100}%` }}
                                   title={`In-Orbit: ${yr.avgInOrbitRate}%`}
                                 >
@@ -1716,7 +1716,7 @@ function InsuranceContent() {
                     </div>
                     <div className="flex items-center gap-4 mt-4 pt-3 border-t border-slate-700/50 text-xs text-slate-400">
                       <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-sm bg-gradient-to-r from-red-500/80 to-orange-500/80" /> Launch</span>
-                      <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-sm bg-gradient-to-r from-blue-500/80 to-cyan-500/80" /> In-Orbit</span>
+                      <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-sm bg-gradient-to-r from-blue-500/80 to-slate-200/80" /> In-Orbit</span>
                       <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-sm bg-gradient-to-r from-purple-500/80 to-pink-500/80" /> Liability</span>
                       <span className="ml-auto">LR = Loss Ratio</span>
                     </div>
@@ -1833,7 +1833,7 @@ function InsuranceContent() {
                       <div className="space-y-3">
                         {[
                           { type: 'Launch Failure', frequency: 5.2, color: 'from-red-500 to-orange-500' },
-                          { type: 'In-Orbit Anomaly', frequency: 8.1, color: 'from-blue-500 to-cyan-500' },
+                          { type: 'In-Orbit Anomaly', frequency: 8.1, color: 'from-blue-500 to-slate-200' },
                           { type: 'Partial Loss', frequency: 12.5, color: 'from-yellow-500 to-amber-500' },
                           { type: 'Deployment Failure', frequency: 3.8, color: 'from-purple-500 to-pink-500' },
                           { type: 'Debris Collision', frequency: 0.4, color: 'from-slate-500 to-slate-400' },

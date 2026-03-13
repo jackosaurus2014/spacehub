@@ -54,7 +54,7 @@ export default function MissionTimeline({ currentPhaseId, missionTimeSeconds }: 
       {/* Header */}
       <div className="px-4 py-3 border-b border-slate-700/50 bg-slate-800/50">
         <h3 className="text-white font-semibold flex items-center gap-2 text-sm">
-          <svg className="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-4 h-4 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
           </svg>
           Mission Timeline
@@ -87,7 +87,7 @@ export default function MissionTimeline({ currentPhaseId, missionTimeSeconds }: 
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: index * 0.05, duration: 0.3 }}
                   className={`relative flex items-start gap-3 pl-1 py-1.5 rounded-lg transition-colors cursor-pointer ${
-                    isCurrent ? 'bg-cyan-500/10' : 'hover:bg-slate-800/30'
+                    isCurrent ? 'bg-white/5' : 'hover:bg-slate-800/30'
                   }`}
                   onClick={() => setExpandedPhase(isExpanded ? null : phase.id)}
                 >
@@ -98,7 +98,7 @@ export default function MissionTimeline({ currentPhaseId, missionTimeSeconds }: 
                         isCompleted
                           ? 'bg-green-500/20 border-green-500 text-green-400'
                           : isCurrent
-                          ? 'bg-cyan-500/20 border-cyan-400 text-cyan-400 shadow-[0_0_12px_rgba(34,211,238,0.4)]'
+                          ? 'bg-white/10 border-white/10 text-slate-300 shadow-[0_0_12px_rgba(34,211,238,0.4)]'
                           : 'bg-slate-800 border-slate-600 text-slate-500'
                       }`}
                     >
@@ -113,7 +113,7 @@ export default function MissionTimeline({ currentPhaseId, missionTimeSeconds }: 
 
                     {/* Pulse for current */}
                     {isCurrent && (
-                      <div className="absolute inset-0 rounded-full border-2 border-cyan-400 animate-ping opacity-30" />
+                      <div className="absolute inset-0 rounded-full border-2 border-white/10 animate-ping opacity-30" />
                     )}
                   </div>
 
@@ -122,13 +122,13 @@ export default function MissionTimeline({ currentPhaseId, missionTimeSeconds }: 
                     <div className="flex items-center gap-2">
                       <span
                         className={`text-sm font-medium ${
-                          isCompleted ? 'text-green-400' : isCurrent ? 'text-cyan-400' : 'text-slate-500'
+                          isCompleted ? 'text-green-400' : isCurrent ? 'text-slate-300' : 'text-slate-500'
                         }`}
                       >
                         {phase.name}
                       </span>
                       {isCurrent && (
-                        <span className="text-xs font-bold px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-400 uppercase tracking-wider">
+                        <span className="text-xs font-bold px-1.5 py-0.5 rounded bg-white/10 text-slate-300 uppercase tracking-wider">
                           Now
                         </span>
                       )}
@@ -159,14 +159,14 @@ export default function MissionTimeline({ currentPhaseId, missionTimeSeconds }: 
                         <div className="flex items-center gap-2 mb-0.5">
                           <div className="flex-1 h-1 bg-slate-700/50 rounded-full overflow-hidden">
                             <motion.div
-                              className="h-full rounded-full bg-gradient-to-r from-cyan-500 to-cyan-400"
+                              className="h-full rounded-full bg-gradient-to-r from-white to-slate-400"
                               initial={{ width: 0 }}
                               animate={{ width: `${currentProgress * 100}%` }}
                               transition={{ duration: 0.8, ease: 'easeOut' }}
                               style={{ boxShadow: '0 0 6px rgba(34,211,238,0.3)' }}
                             />
                           </div>
-                          <span className="text-[9px] font-mono text-cyan-400">
+                          <span className="text-[9px] font-mono text-slate-300">
                             {Math.round(currentProgress * 100)}%
                           </span>
                         </div>

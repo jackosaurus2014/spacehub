@@ -275,7 +275,7 @@ const CATEGORIES = [
   { id: 'Propulsion', icon: '\u{1F680}', color: 'text-orange-400' },
   { id: 'Power & Energy', icon: '\u{26A1}', color: 'text-yellow-400' },
   { id: 'Communications', icon: '\u{1F4E1}', color: 'text-blue-400' },
-  { id: 'Manufacturing & ISRU', icon: '\u{1F3ED}', color: 'text-cyan-400' },
+  { id: 'Manufacturing & ISRU', icon: '\u{1F3ED}', color: 'text-slate-300' },
   { id: 'AI & Autonomy', icon: '\u{1F916}', color: 'text-purple-400' },
   { id: 'Life Support', icon: '\u{1FAC1}', color: 'text-green-400' },
   { id: 'Materials & Structures', icon: '\u{1F9F1}', color: 'text-amber-400' },
@@ -1230,7 +1230,7 @@ export default function TechReadinessPage() {
                   </div>
                   <div className="w-full bg-slate-800 rounded-full h-3 overflow-hidden">
                     <div
-                      className="h-3 rounded-full bg-gradient-to-r from-purple-600 to-cyan-500 transition-all duration-500"
+                      className="h-3 rounded-full bg-gradient-to-r from-purple-600 to-slate-200 transition-all duration-500"
                       style={{ width: `${assessmentProgress}%` }}
                     />
                   </div>
@@ -1827,7 +1827,7 @@ export default function TechReadinessPage() {
                                   <ul className="mt-1 space-y-1">
                                     {TRL_SCALE[tech.trl].activities.map((a, i) => (
                                       <li key={i} className="flex items-start gap-1.5 text-xs text-slate-400">
-                                        <span className="text-cyan-400 mt-0.5 flex-shrink-0">&#x25B8;</span>
+                                        <span className="text-slate-300 mt-0.5 flex-shrink-0">&#x25B8;</span>
                                         {a}
                                       </li>
                                     ))}

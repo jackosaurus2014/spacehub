@@ -12,7 +12,7 @@ interface GlassCardProps {
 
 const glowStyles = {
   none: '',
-  cyan: 'hover:shadow-cyan-500/10 hover:border-cyan-500/30',
+  cyan: 'hover:shadow-black/5 hover:border-white/10',
   purple: 'hover:shadow-purple-500/10 hover:border-purple-500/30',
   emerald: 'hover:shadow-emerald-500/10 hover:border-emerald-500/30',
 };

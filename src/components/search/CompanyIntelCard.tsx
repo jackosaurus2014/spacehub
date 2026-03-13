@@ -36,7 +36,7 @@ export default function CompanyIntelCard({ item }: { item: CompanyIntelResult })
   return (
     <Link
       href={`/company-profiles/${item.slug}`}
-      className="card p-5 block hover:border-cyan-400/60 transition-all group"
+      className="card p-5 block hover:border-white/10/60 transition-all group"
     >
       <div className="flex items-start gap-4">
         {/* Company icon / logo */}
@@ -53,7 +53,7 @@ export default function CompanyIntelCard({ item }: { item: CompanyIntelResult })
         <div className="flex-1 min-w-0">
           {/* Name + badges row */}
           <div className="flex items-center gap-2 flex-wrap">
-            <h3 className="text-slate-100 font-medium group-hover:text-cyan-300 transition-colors">
+            <h3 className="text-slate-100 font-medium group-hover:text-white transition-colors">
               {item.name}
             </h3>
             {item.isPublic && item.ticker && (
@@ -85,7 +85,7 @@ export default function CompanyIntelCard({ item }: { item: CompanyIntelResult })
             {item.totalFunding && (
               <>
                 <span className="text-star-300/40">|</span>
-                <span className="text-cyan-400">{formatFunding(item.totalFunding)} raised</span>
+                <span className="text-slate-300">{formatFunding(item.totalFunding)} raised</span>
               </>
             )}
           </div>
@@ -109,7 +109,7 @@ export default function CompanyIntelCard({ item }: { item: CompanyIntelResult })
                 </span>
               )}
               {counts.satelliteAssets > 0 && (
-                <span className="text-xs px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
+                <span className="text-xs px-2 py-0.5 rounded-full bg-white/5 text-slate-300 border border-white/10">
                   {counts.satelliteAssets} Satellites
                 </span>
               )}
@@ -131,7 +131,7 @@ export default function CompanyIntelCard({ item }: { item: CompanyIntelResult })
             <div className="mt-2.5 flex items-center gap-2">
               <div className="flex-1 h-1 bg-slate-700/50 rounded-full overflow-hidden max-w-[120px]">
                 <div
-                  className="h-full rounded-full bg-gradient-to-r from-cyan-500 to-emerald-500 transition-all"
+                  className="h-full rounded-full bg-gradient-to-r from-white to-emerald-500 transition-all"
                   style={{ width: `${Math.min(item.dataCompleteness, 100)}%` }}
                 />
               </div>

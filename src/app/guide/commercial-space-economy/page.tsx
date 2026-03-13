@@ -137,11 +137,11 @@ export default function CommercialSpaceEconomyPage() {
           />
           <div className="relative container mx-auto px-4 text-center max-w-4xl">
             <nav className="flex items-center justify-center gap-2 text-sm text-slate-400 mb-4 overflow-x-auto" aria-label="Breadcrumb">
-              <Link href="/" className="hover:text-cyan-400 whitespace-nowrap min-h-[44px] flex items-center">
+              <Link href="/" className="hover:text-white whitespace-nowrap min-h-[44px] flex items-center">
                 Home
               </Link>
               <span className="text-slate-600">/</span>
-              <Link href="/guide/space-industry" className="hover:text-cyan-400 whitespace-nowrap min-h-[44px] flex items-center">
+              <Link href="/guide/space-industry" className="hover:text-white whitespace-nowrap min-h-[44px] flex items-center">
                 Guides
               </Link>
               <span className="text-slate-600">/</span>
@@ -181,9 +181,9 @@ export default function CommercialSpaceEconomyPage() {
                     <li key={item.id}>
                       <a
                         href={`#${item.id}`}
-                        className="flex items-start gap-2 text-star-300 hover:text-cyan-400 transition-colors"
+                        className="flex items-start gap-2 text-star-300 hover:text-white transition-colors"
                       >
-                        <span className="text-cyan-500/60 font-mono text-xs mt-0.5">
+                        <span className="text-slate-300/60 font-mono text-xs mt-0.5">
                           {String(i + 1).padStart(2, '0')}
                         </span>
                         {item.label}
@@ -240,18 +240,18 @@ export default function CommercialSpaceEconomyPage() {
                   Commercial vs. Government Space
                 </h2>
                 <div className="space-y-4 text-star-200 leading-relaxed text-lg">
-                  <div className="card p-6 my-8 border-l-4 border-l-cyan-400">
+                  <div className="card p-6 my-8 border-l-4 border-l-white/30">
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-center">
                       <div>
-                        <div className="text-3xl font-display font-bold text-cyan-400">~60%</div>
+                        <div className="text-3xl font-display font-bold text-slate-300">~60%</div>
                         <div className="text-star-300 text-sm mt-1">Commercial Share</div>
                       </div>
                       <div>
-                        <div className="text-3xl font-display font-bold text-cyan-400">~40%</div>
+                        <div className="text-3xl font-display font-bold text-slate-300">~40%</div>
                         <div className="text-star-300 text-sm mt-1">Government Share</div>
                       </div>
                       <div>
-                        <div className="text-3xl font-display font-bold text-cyan-400">$380B+</div>
+                        <div className="text-3xl font-display font-bold text-slate-300">$380B+</div>
                         <div className="text-star-300 text-sm mt-1">Commercial Revenue</div>
                       </div>
                     </div>
@@ -373,7 +373,7 @@ export default function CommercialSpaceEconomyPage() {
                   </p>
 
                   <p className="mt-4">
-                    <Link href="/space-economy" className="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+                    <Link href="/space-economy" className="text-slate-300 hover:text-white underline underline-offset-2">
                       Track satellite broadband market data on SpaceNexus
                     </Link>
                   </p>
@@ -450,7 +450,7 @@ export default function CommercialSpaceEconomyPage() {
                   </p>
 
                   <p className="mt-4">
-                    <Link href="/market-intel" className="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+                    <Link href="/market-intel" className="text-slate-300 hover:text-white underline underline-offset-2">
                       Track EO companies and market data on SpaceNexus
                     </Link>
                   </p>
@@ -480,15 +480,15 @@ export default function CommercialSpaceEconomyPage() {
                       Launch Market Segments
                     </h3>
                     <div className="space-y-3 text-sm">
-                      <div className="border-b border-cyan-400/10 pb-2">
+                      <div className="border-b border-white/10/10 pb-2">
                         <span className="text-white font-medium">Super Heavy-Lift</span>
                         <span className="text-star-300"> (Starship, SLS) -- &gt;50,000 kg to LEO. For mega-constellations, deep space, and heavy government payloads.</span>
                       </div>
-                      <div className="border-b border-cyan-400/10 pb-2">
+                      <div className="border-b border-white/10/10 pb-2">
                         <span className="text-white font-medium">Heavy-Lift</span>
                         <span className="text-star-300"> (Falcon Heavy, New Glenn) -- 20,000-65,000 kg to LEO. For large GEO satellites, national security missions.</span>
                       </div>
-                      <div className="border-b border-cyan-400/10 pb-2">
+                      <div className="border-b border-white/10/10 pb-2">
                         <span className="text-white font-medium">Medium-Lift</span>
                         <span className="text-star-300"> (Falcon 9, Ariane 6, Vulcan, Neutron) -- 10,000-25,000 kg to LEO. The workhorse segment for most commercial missions.</span>
                       </div>
@@ -509,7 +509,7 @@ export default function CommercialSpaceEconomyPage() {
                   </p>
 
                   <p className="mt-4">
-                    <Link href="/mission-cost" className="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+                    <Link href="/mission-cost" className="text-slate-300 hover:text-white underline underline-offset-2">
                       Compare launch providers and costs on SpaceNexus
                     </Link>
                   </p>
@@ -550,7 +550,7 @@ export default function CommercialSpaceEconomyPage() {
                   </p>
 
                   <p className="mt-4">
-                    <Link href="/space-manufacturing" className="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+                    <Link href="/space-manufacturing" className="text-slate-300 hover:text-white underline underline-offset-2">
                       Explore space manufacturing on SpaceNexus
                     </Link>
                   </p>
@@ -671,7 +671,7 @@ export default function CommercialSpaceEconomyPage() {
                   </p>
 
                   <p className="mt-4">
-                    <Link href="/space-stations" className="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+                    <Link href="/space-stations" className="text-slate-300 hover:text-white underline underline-offset-2">
                       Track space station developments on SpaceNexus
                     </Link>
                   </p>
@@ -739,7 +739,7 @@ export default function CommercialSpaceEconomyPage() {
                   </p>
 
                   <p className="mt-4">
-                    <Link href="/space-capital" className="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+                    <Link href="/space-capital" className="text-slate-300 hover:text-white underline underline-offset-2">
                       Track space investors and startups on SpaceNexus
                     </Link>
                   </p>
@@ -866,11 +866,11 @@ export default function CommercialSpaceEconomyPage() {
                   </p>
 
                   <p className="mt-4">
-                    <Link href="/business-opportunities" className="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+                    <Link href="/business-opportunities" className="text-slate-300 hover:text-white underline underline-offset-2">
                       Explore business opportunities on SpaceNexus
                     </Link>
                     {' '}&middot;{' '}
-                    <Link href="/supply-chain" className="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+                    <Link href="/supply-chain" className="text-slate-300 hover:text-white underline underline-offset-2">
                       Track the space supply chain
                     </Link>
                   </p>
@@ -935,7 +935,7 @@ export default function CommercialSpaceEconomyPage() {
                         <span>{item.q}</span>
                         <span
                           aria-hidden="true"
-                          className="ml-4 shrink-0 text-cyan-400 transition-transform group-open:rotate-45 text-xl leading-none"
+                          className="ml-4 shrink-0 text-slate-300 transition-transform group-open:rotate-45 text-xl leading-none"
                         >
                           +
                         </span>

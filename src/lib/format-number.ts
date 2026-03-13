@@ -73,7 +73,7 @@ export const formatFunding = formatMoney;
 export function getTierInfo(tier: number): { label: string; color: string } {
   switch (tier) {
     case 1: return { label: 'Tier 1', color: 'bg-amber-500/20 text-amber-400 border-amber-500/30' };
-    case 2: return { label: 'Tier 2', color: 'bg-cyan-500/20 text-cyan-400 border-cyan-500/30' };
+    case 2: return { label: 'Tier 2', color: 'bg-white/10 text-slate-300 border-white/10' };
     case 3: return { label: 'Tier 3', color: 'bg-slate-500/20 text-slate-400 border-slate-500/30' };
     default: return { label: `Tier ${tier}`, color: 'bg-slate-500/20 text-slate-400 border-slate-500/30' };
   }

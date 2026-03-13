@@ -282,10 +282,10 @@ function FeatureComparisonTable() {
                 <div>Explorer</div>
                 <div className="text-xs font-normal text-slate-400 mt-0.5">Free</div>
               </th>
-              <th className="py-3 px-2 sm:py-4 sm:px-4 text-center text-sm font-semibold text-cyan-300 w-[20%] border-x border-cyan-500/20 bg-cyan-500/5">
+              <th className="py-3 px-2 sm:py-4 sm:px-4 text-center text-sm font-semibold text-slate-200 w-[20%] border-x border-white/10 bg-white/5">
                 <div className="flex items-center justify-center gap-1.5">
                   Professional
-                  <span className="text-[10px] bg-cyan-400/20 text-cyan-300 px-1.5 py-0.5 rounded-full font-medium">Popular</span>
+                  <span className="text-[10px] bg-white/10 text-slate-200 px-1.5 py-0.5 rounded-full font-medium">Popular</span>
                 </div>
                 <div className="text-xs font-normal text-slate-400 mt-0.5">$19.99/mo</div>
               </th>
@@ -300,7 +300,7 @@ function FeatureComparisonTable() {
               <Fragment key={category.name}>
                 {/* Category header */}
                 <tr className="bg-slate-800/50">
-                  <td colSpan={4} className="py-2.5 px-5 text-xs font-semibold uppercase tracking-wider text-cyan-400">
+                  <td colSpan={4} className="py-2.5 px-5 text-xs font-semibold uppercase tracking-wider text-slate-300">
                     {category.name}
                   </td>
                 </tr>
@@ -309,7 +309,7 @@ function FeatureComparisonTable() {
                   <tr key={feature.label} className="border-b border-slate-800/50 hover:bg-slate-800/30 transition-colors">
                     <td className="py-2.5 px-3 sm:py-3 sm:px-5 text-sm text-slate-300">{feature.label}</td>
                     <td className="py-2.5 px-2 sm:py-3 sm:px-4 text-center">{renderCellValue(feature.free)}</td>
-                    <td className="py-2.5 px-2 sm:py-3 sm:px-4 text-center border-x border-cyan-500/20 bg-cyan-500/[0.02]">{renderCellValue(feature.pro)}</td>
+                    <td className="py-2.5 px-2 sm:py-3 sm:px-4 text-center border-x border-white/10 bg-white/[0.02]">{renderCellValue(feature.pro)}</td>
                     <td className="py-2.5 px-2 sm:py-3 sm:px-4 text-center">{renderCellValue(feature.enterprise)}</td>
                   </tr>
                 ))}
@@ -350,7 +350,7 @@ function SocialProofSection() {
       {/* Trust badges */}
       <div className="text-center mb-8">
         <p className="text-lg font-semibold text-white mb-4 drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">
-          Trusted by 10,000+ space professionals
+          Built for space professionals
         </p>
         <div className="flex flex-wrap justify-center gap-4">
           {TRUST_AUDIENCES.map((a) => (
@@ -366,7 +366,7 @@ function SocialProofSection() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {PRICING_TESTIMONIALS.map((t) => (
           <div key={t.name} className="p-5 rounded-xl bg-slate-800/40 border border-slate-700/50">
-            <svg className="w-6 h-6 text-cyan-500/40 mb-3" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <svg className="w-6 h-6 text-slate-300/40 mb-3" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
               <path d="M4.583 17.321C3.553 16.227 3 15 3 13.011c0-3.5 2.457-6.637 6.03-8.188l.893 1.378c-3.335 1.804-3.987 4.145-4.247 5.621.537-.278 1.24-.375 1.929-.311 1.804.167 3.226 1.648 3.226 3.489a3.5 3.5 0 01-3.5 3.5c-1.073 0-2.099-.49-2.748-1.179zm10 0C13.553 16.227 13 15 13 13.011c0-3.5 2.457-6.637 6.03-8.188l.893 1.378c-3.335 1.804-3.987 4.145-4.247 5.621.537-.278 1.24-.375 1.929-.311 1.804.167 3.226 1.648 3.226 3.489a3.5 3.5 0 01-3.5 3.5c-1.073 0-2.099-.49-2.748-1.179z" />
             </svg>
             <p className="text-slate-300 text-sm leading-relaxed mb-4 italic">
@@ -527,7 +527,7 @@ function PricingPageContent() {
             {['Entrepreneurs', 'Executives', 'Mission Planners', 'Lawyers', 'Investors', 'Enthusiasts'].map((audience) => (
               <span
                 key={audience}
-                className="px-3 py-1 rounded-full text-xs font-medium border border-cyan-400/30 text-cyan-300 bg-cyan-400/5"
+                className="px-3 py-1 rounded-full text-xs font-medium border border-white/10 text-slate-200 bg-white/5"
               >
                 {audience}
               </span>
@@ -624,7 +624,7 @@ function PricingPageContent() {
         <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto text-left" staggerDelay={0.1}>
           {PRICING_FAQ.map((faq) => (
             <StaggerItem key={faq.question}>
-              <div className="card p-6 hover:border-cyan-500/30 transition-colors">
+              <div className="card p-6 hover:border-white/10 transition-colors">
                 <h3 className="font-semibold text-white mb-2">
                   {faq.question}
                 </h3>
@@ -688,15 +688,15 @@ function PricingPageContent() {
           <div className="text-center">
             <p className="text-slate-500 text-sm mb-3">See how SpaceNexus compares</p>
             <div className="flex flex-wrap justify-center gap-3">
-              <Link href="/compare/payload-space" className="text-sm text-slate-400 hover:text-cyan-400 transition-colors link-underline">
+              <Link href="/compare/payload-space" className="text-sm text-slate-400 hover:text-white transition-colors link-underline">
                 vs. Payload Space
               </Link>
               <span className="text-slate-700">&bull;</span>
-              <Link href="/compare/quilty-analytics" className="text-sm text-slate-400 hover:text-cyan-400 transition-colors link-underline">
+              <Link href="/compare/quilty-analytics" className="text-sm text-slate-400 hover:text-white transition-colors link-underline">
                 vs. Quilty Analytics
               </Link>
               <span className="text-slate-700">&bull;</span>
-              <Link href="/compare/bloomberg-terminal" className="text-sm text-slate-400 hover:text-cyan-400 transition-colors link-underline">
+              <Link href="/compare/bloomberg-terminal" className="text-sm text-slate-400 hover:text-white transition-colors link-underline">
                 vs. Bloomberg Terminal
               </Link>
             </div>

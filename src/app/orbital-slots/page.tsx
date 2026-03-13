@@ -886,7 +886,7 @@ function OrbitalManagementContent() {
                   </div>
                 </div>
                 <div className="card-elevated p-4 text-center">
-                  <div className="text-2xl font-bold font-display text-cyan-400">
+                  <div className="text-2xl font-bold font-display text-slate-300">
                     {KEY_GEO_SLOTS.length}
                   </div>
                   <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">
@@ -1139,7 +1139,7 @@ function OrbitalManagementContent() {
                               <div className="text-slate-400 text-xs uppercase tracking-widest">Active Satellites</div>
                             </div>
                             <div className="bg-slate-700/50 rounded-lg p-3 text-center">
-                              <div className="text-2xl font-bold font-display text-cyan-400">{regime.altitudeRange.split(' ')[0]}</div>
+                              <div className="text-2xl font-bold font-display text-slate-300">{regime.altitudeRange.split(' ')[0]}</div>
                               <div className="text-slate-400 text-xs uppercase tracking-widest">Min Alt (km)</div>
                             </div>
                             <div className="bg-slate-700/50 rounded-lg p-3 text-center">
@@ -1285,7 +1285,7 @@ function OrbitalManagementContent() {
                 {/* GEO Introduction */}
                 <div className="card p-5">
                   <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center flex-shrink-0">
+                    <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center flex-shrink-0">
                       <span className="text-2xl">{'\u{1F4E1}'}</span>
                     </div>
                     <div>
@@ -1313,7 +1313,7 @@ function OrbitalManagementContent() {
                         onClick={() => setGeoSortBy(option.value)}
                         className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
                           geoSortBy === option.value
-                            ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 shadow-glow-sm'
+                            ? 'bg-white/10 text-slate-200 border border-white/10 shadow-glow-sm'
                             : 'bg-transparent text-slate-400 border border-slate-700/50 hover:border-slate-300'
                         }`}
                       >
@@ -1332,12 +1332,12 @@ function OrbitalManagementContent() {
                     const flag = COUNTRY_FLAGS[slot.country] || '\u{1F30D}';
                     return (
                       <StaggerItem key={slot.position}>
-                        <div className="card p-5 hover:border-cyan-500/30 transition-colors h-full flex flex-col">
+                        <div className="card p-5 hover:border-white/10 transition-colors h-full flex flex-col">
                           {/* Position Header */}
                           <div className="flex items-start justify-between mb-4">
                             <div className="flex items-center gap-3">
-                              <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-cyan-500/20 to-blue-500/20 border border-cyan-500/30 flex items-center justify-center">
-                                <span className="text-cyan-300 font-bold text-sm font-display">{slot.position}</span>
+                              <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-white/5 to-blue-500/20 border border-white/10 flex items-center justify-center">
+                                <span className="text-slate-200 font-bold text-sm font-display">{slot.position}</span>
                               </div>
                               <div>
                                 <h4 className="text-white font-semibold">{slot.operator}</h4>
@@ -1418,7 +1418,7 @@ function OrbitalManagementContent() {
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm">
                     <div>
                       <div className="flex items-center gap-2 mb-2">
-                        <span className="w-8 h-8 rounded-lg bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-300 font-bold text-sm">1</span>
+                        <span className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-slate-200 font-bold text-sm">1</span>
                         <h4 className="text-white font-medium">Filing</h4>
                       </div>
                       <p className="text-slate-400 text-xs leading-relaxed">
@@ -1428,7 +1428,7 @@ function OrbitalManagementContent() {
                     </div>
                     <div>
                       <div className="flex items-center gap-2 mb-2">
-                        <span className="w-8 h-8 rounded-lg bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-300 font-bold text-sm">2</span>
+                        <span className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-slate-200 font-bold text-sm">2</span>
                         <h4 className="text-white font-medium">Coordination</h4>
                       </div>
                       <p className="text-slate-400 text-xs leading-relaxed">
@@ -1438,7 +1438,7 @@ function OrbitalManagementContent() {
                     </div>
                     <div>
                       <div className="flex items-center gap-2 mb-2">
-                        <span className="w-8 h-8 rounded-lg bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-300 font-bold text-sm">3</span>
+                        <span className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-slate-200 font-bold text-sm">3</span>
                         <h4 className="text-white font-medium">Recording</h4>
                       </div>
                       <p className="text-slate-400 text-xs leading-relaxed">
@@ -1469,7 +1469,7 @@ function OrbitalManagementContent() {
                     <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Operational</div>
                   </div>
                   <div className="card-elevated p-4 text-center">
-                    <div className="text-2xl font-bold font-display text-cyan-400">
+                    <div className="text-2xl font-bold font-display text-slate-300">
                       {formatNumber(MEGA_CONSTELLATIONS.reduce((s, c) => s + c.approved, 0))}
                     </div>
                     <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Approved</div>
@@ -1577,7 +1577,7 @@ function OrbitalManagementContent() {
                             </div>
                             <div className="h-4 bg-slate-700/50 rounded-full overflow-hidden relative">
                               <div
-                                className="h-full bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full transition-all duration-1000"
+                                className="h-full bg-gradient-to-r from-white to-blue-500 rounded-full transition-all duration-1000"
                                 style={{ width: `${Math.min(launchProgress, 100)}%` }}
                               />
                               {constellation.gen2Target && constellation.gen2Target > constellation.approved && (
@@ -1607,7 +1607,7 @@ function OrbitalManagementContent() {
                               <div className="text-slate-400 text-xs">Operational</div>
                             </div>
                             <div className="bg-slate-700/50 rounded-lg p-3 text-center">
-                              <div className="text-lg font-bold text-cyan-400">{formatNumber(constellation.approved)}</div>
+                              <div className="text-lg font-bold text-slate-300">{formatNumber(constellation.approved)}</div>
                               <div className="text-slate-400 text-xs">Approved</div>
                             </div>
                             <div className="bg-slate-700/50 rounded-lg p-3 text-center">

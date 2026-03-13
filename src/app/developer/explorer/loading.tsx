@@ -25,7 +25,7 @@ export default function ExplorerLoading() {
                   <div key={i} className="h-10 bg-slate-800 rounded animate-pulse" />
                 ))}
               </div>
-              <div className="h-12 bg-cyan-500/20 rounded animate-pulse" />
+              <div className="h-12 bg-white/10 rounded animate-pulse" />
             </div>
           </div>
 

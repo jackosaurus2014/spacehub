@@ -104,7 +104,7 @@ export default function LayoutSelector({
                       onCreateFromPreset(preset);
                       setShowPresets(false);
                     }}
-                    className="w-full p-4 rounded-xl border border-slate-700 hover:border-cyan-400/50 hover:bg-cyan-500/10 text-left transition-all"
+                    className="w-full p-4 rounded-xl border border-slate-700 hover:border-white/15 hover:bg-slate-100/10 text-left transition-all"
                   >
                     <p className="text-sm font-semibold text-slate-100">{preset.name}</p>
                     <p className="text-xs text-slate-500 mt-1">{preset.description}</p>
@@ -120,7 +120,7 @@ export default function LayoutSelector({
                     onCreateBlank();
                     setShowPresets(false);
                   }}
-                  className="w-full p-4 rounded-xl border border-dashed border-slate-600 hover:border-cyan-400/50 hover:bg-cyan-500/10 text-left transition-all"
+                  className="w-full p-4 rounded-xl border border-dashed border-slate-600 hover:border-white/15 hover:bg-slate-100/10 text-left transition-all"
                 >
                   <div className="flex items-center gap-2">
                     <svg className="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -146,7 +146,7 @@ export default function LayoutSelector({
                         p-4 rounded-xl border transition-all
                         ${
                           layout.id === activeLayoutId
-                            ? 'border-cyan-400/50 bg-cyan-500/10'
+                            ? 'border-white/15 bg-white/5'
                             : 'border-slate-600/50 hover:border-slate-500/50'
                         }
                       `}
@@ -159,7 +159,7 @@ export default function LayoutSelector({
                           <div className="flex items-center gap-2">
                             <p className="text-sm font-semibold text-slate-100">{layout.name}</p>
                             {layout.isDefault && (
-                              <span className="text-xs bg-cyan-500/20 text-cyan-300 px-1.5 py-0.5 rounded">
+                              <span className="text-xs bg-white/10 text-slate-200 px-1.5 py-0.5 rounded">
                                 Default
                               </span>
                             )}
@@ -182,7 +182,7 @@ export default function LayoutSelector({
                           {!layout.isDefault && (
                             <button
                               onClick={() => onSetDefault(layout.id)}
-                              className="text-xs text-slate-400 hover:text-cyan-500 p-1 rounded"
+                              className="text-xs text-slate-400 hover:text-slate-300 p-1 rounded"
                               title="Set as default"
                             >
                               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -237,13 +237,13 @@ export default function LayoutSelector({
               {canCreate && (
                 <button
                   onClick={() => setShowPresets(true)}
-                  className="w-full p-4 rounded-xl border border-dashed border-slate-600 hover:border-cyan-400/50 hover:bg-cyan-500/10 text-center transition-all"
+                  className="w-full p-4 rounded-xl border border-dashed border-slate-600 hover:border-white/15 hover:bg-slate-100/10 text-center transition-all"
                 >
                   <div className="flex items-center justify-center gap-2">
-                    <svg className="w-5 h-5 text-cyan-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-5 h-5 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                     </svg>
-                    <span className="text-sm font-medium text-cyan-400">New Layout</span>
+                    <span className="text-sm font-medium text-slate-300">New Layout</span>
                   </div>
                 </button>
               )}

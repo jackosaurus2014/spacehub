@@ -306,14 +306,14 @@ const REGULATORY_FRAMEWORKS: RegulatoryFramework[] = [
 
 function getGradeColor(grade: ScoreGrade): string {
   if (grade.startsWith('A')) return 'text-emerald-400';
-  if (grade.startsWith('B')) return 'text-cyan-400';
+  if (grade.startsWith('B')) return 'text-slate-300';
   if (grade.startsWith('C')) return 'text-amber-400';
   return 'text-red-400';
 }
 
 function getGradeBg(grade: ScoreGrade): string {
   if (grade.startsWith('A')) return 'bg-emerald-500/20 border-emerald-500/40';
-  if (grade.startsWith('B')) return 'bg-cyan-500/20 border-cyan-500/40';
+  if (grade.startsWith('B')) return 'bg-white/10 border-white/15/40';
   if (grade.startsWith('C')) return 'bg-amber-500/20 border-amber-500/40';
   return 'bg-red-500/20 border-red-500/40';
 }
@@ -321,7 +321,7 @@ function getGradeBg(grade: ScoreGrade): string {
 function getScoreBarColor(score: number, max: number): string {
   const pct = score / max;
   if (pct >= 0.85) return 'bg-emerald-500';
-  if (pct >= 0.7) return 'bg-cyan-500';
+  if (pct >= 0.7) return 'bg-white';
   if (pct >= 0.55) return 'bg-amber-500';
   return 'bg-red-500';
 }
@@ -364,7 +364,7 @@ function getStatusBadge(status: string): string {
     case 'enacted': return 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30';
     case 'proposed': return 'bg-amber-500/20 text-amber-300 border-amber-500/30';
     case 'recommended':
-    case 'guideline': return 'bg-cyan-500/20 text-cyan-300 border-cyan-500/30';
+    case 'guideline': return 'bg-white/10 text-slate-200 border-white/10';
     case 'standard': return 'bg-purple-500/20 text-purple-300 border-purple-500/30';
     default: return 'bg-slate-500/20 text-slate-300 border-slate-500/30';
   }
@@ -514,7 +514,7 @@ function OperatorCard({ operator, rank }: { operator: Operator; rank: number }) 
       {/* Expand toggle */}
       <button
         onClick={() => setExpanded(!expanded)}
-        className="text-xs text-cyan-400 hover:text-cyan-300 transition-colors flex items-center gap-1"
+        className="text-xs text-slate-300 hover:text-white transition-colors flex items-center gap-1"
         aria-expanded={expanded}
         aria-label={`${expanded ? 'Collapse' : 'Expand'} details for ${operator.name}`}
       >
@@ -625,7 +625,7 @@ function RegulatoryFrameworkSection() {
                   {framework.status}
                 </span>
               </div>
-              <p className="text-xs text-cyan-400 mb-2">{framework.body}</p>
+              <p className="text-xs text-slate-300 mb-2">{framework.body}</p>
               <p className="text-xs text-slate-400 leading-relaxed flex-1">{framework.description}</p>
               <div className="mt-3 pt-3 border-t border-slate-700/50 flex items-center justify-between">
                 <span className="text-[10px] text-slate-500">Scope: {framework.scope}</span>
@@ -702,7 +702,7 @@ export default function SustainabilityScorecardPage() {
                   placeholder="Search operators..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2.5 bg-slate-800/60 border border-slate-700/50 rounded-lg text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/30 transition-colors"
+                  className="w-full pl-10 pr-4 py-2.5 bg-slate-800/60 border border-slate-700/50 rounded-lg text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-white/15 focus:ring-1 focus:ring-white/30/30 transition-colors"
                   aria-label="Search operators"
                 />
               </div>
@@ -711,7 +711,7 @@ export default function SustainabilityScorecardPage() {
               <select
                 value={scoreRange}
                 onChange={(e) => setScoreRange(e.target.value as ScoreRange)}
-                className="px-4 py-2.5 bg-slate-800/60 border border-slate-700/50 rounded-lg text-sm text-slate-200 focus:outline-none focus:border-cyan-500/50 transition-colors cursor-pointer"
+                className="px-4 py-2.5 bg-slate-800/60 border border-slate-700/50 rounded-lg text-sm text-slate-200 focus:outline-none focus:border-white/15 transition-colors cursor-pointer"
                 aria-label="Filter by score range"
               >
                 <option value="all">All Scores</option>
@@ -725,7 +725,7 @@ export default function SustainabilityScorecardPage() {
               <select
                 value={operatorType}
                 onChange={(e) => setOperatorType(e.target.value as OperatorType | 'all')}
-                className="px-4 py-2.5 bg-slate-800/60 border border-slate-700/50 rounded-lg text-sm text-slate-200 focus:outline-none focus:border-cyan-500/50 transition-colors cursor-pointer"
+                className="px-4 py-2.5 bg-slate-800/60 border border-slate-700/50 rounded-lg text-sm text-slate-200 focus:outline-none focus:border-white/15 transition-colors cursor-pointer"
                 aria-label="Filter by operator type"
               >
                 <option value="all">All Types</option>
@@ -757,7 +757,7 @@ export default function SustainabilityScorecardPage() {
                 <p className="text-slate-400 text-sm">No operators match the current filters.</p>
                 <button
                   onClick={() => { setScoreRange('all'); setOperatorType('all'); setSearchQuery(''); }}
-                  className="mt-3 text-xs text-cyan-400 hover:text-cyan-300 transition-colors"
+                  className="mt-3 text-xs text-slate-300 hover:text-white transition-colors"
                 >
                   Clear all filters
                 </button>
@@ -795,16 +795,16 @@ export default function SustainabilityScorecardPage() {
           <section className="mt-16 border-t border-slate-800 pt-8">
             <h2 className="text-xl font-bold text-white mb-6">Explore More</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <a href="/debris-catalog" className="card p-4 hover:border-cyan-500/50 transition-colors group">
-                <h3 className="text-white font-medium group-hover:text-cyan-400 transition-colors">Debris Catalog</h3>
+              <a href="/debris-catalog" className="card p-4 hover:border-white/15 transition-colors group">
+                <h3 className="text-white font-medium group-hover:text-white transition-colors">Debris Catalog</h3>
                 <p className="text-slate-400 text-sm mt-1">Tracked orbital debris objects, fragmentation events, and catalog statistics.</p>
               </a>
-              <a href="/space-environment" className="card p-4 hover:border-cyan-500/50 transition-colors group">
-                <h3 className="text-white font-medium group-hover:text-cyan-400 transition-colors">Space Environment</h3>
+              <a href="/space-environment" className="card p-4 hover:border-white/15 transition-colors group">
+                <h3 className="text-white font-medium group-hover:text-white transition-colors">Space Environment</h3>
                 <p className="text-slate-400 text-sm mt-1">Solar weather, debris tracking, and space operations awareness in real time.</p>
               </a>
-              <a href="/regulatory-tracker" className="card p-4 hover:border-cyan-500/50 transition-colors group">
-                <h3 className="text-white font-medium group-hover:text-cyan-400 transition-colors">Regulatory Tracker</h3>
+              <a href="/regulatory-tracker" className="card p-4 hover:border-white/15 transition-colors group">
+                <h3 className="text-white font-medium group-hover:text-white transition-colors">Regulatory Tracker</h3>
                 <p className="text-slate-400 text-sm mt-1">Track space regulations, licensing requirements, and compliance frameworks.</p>
               </a>
             </div>

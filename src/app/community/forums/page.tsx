@@ -169,7 +169,7 @@ export default function ForumsPage() {
                             whileHover={{ y: -3, scale: 1.005 }}
                             whileTap={{ scale: 0.98 }}
                             transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-                            className="card p-5 h-full group cursor-pointer relative overflow-hidden hover:border-cyan-500/30"
+                            className="card p-5 h-full group cursor-pointer relative overflow-hidden hover:border-white/10"
                           >
                             <div className="flex items-start gap-4">
                               {/* Icon */}
@@ -180,7 +180,7 @@ export default function ForumsPage() {
                               <div className="flex-1 min-w-0">
                                 {/* Name + thread count */}
                                 <div className="flex items-center justify-between mb-1">
-                                  <h3 className="font-semibold text-white group-hover:text-cyan-400 transition-colors">
+                                  <h3 className="font-semibold text-white group-hover:text-white transition-colors">
                                     {category.name}
                                   </h3>
                                   <span className="text-xs text-slate-500 flex-shrink-0 ml-2">

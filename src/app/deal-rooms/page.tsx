@@ -78,7 +78,7 @@ interface DealRoom {
 const CATEGORY_COLORS: Record<string, { bg: string; text: string; border: string }> = {
   pitch_deck: { bg: 'bg-purple-500/20', text: 'text-purple-300', border: 'border-purple-500/30' },
   financials: { bg: 'bg-emerald-500/20', text: 'text-emerald-300', border: 'border-emerald-500/30' },
-  technical: { bg: 'bg-cyan-500/20', text: 'text-cyan-300', border: 'border-cyan-500/30' },
+  technical: { bg: 'bg-white/10', text: 'text-slate-200', border: 'border-white/10' },
   legal: { bg: 'bg-amber-500/20', text: 'text-amber-300', border: 'border-amber-500/30' },
   team: { bg: 'bg-blue-500/20', text: 'text-blue-300', border: 'border-blue-500/30' },
   general: { bg: 'bg-slate-500/20', text: 'text-slate-300', border: 'border-slate-500/30' },
@@ -95,7 +95,7 @@ const CATEGORY_LABELS: Record<string, string> = {
 
 const ROLE_BADGES: Record<string, { bg: string; text: string }> = {
   owner: { bg: 'bg-amber-500/20', text: 'text-amber-300' },
-  admin: { bg: 'bg-cyan-500/20', text: 'text-cyan-300' },
+  admin: { bg: 'bg-white/10', text: 'text-slate-200' },
   viewer: { bg: 'bg-slate-500/20', text: 'text-slate-300' },
 };
 
@@ -479,7 +479,7 @@ function DealRoomsPageInner() {
         <div className="max-w-md w-full">
           <div className="text-center mb-8">
             <div className="text-5xl mb-4">
-              <svg className="w-16 h-16 mx-auto text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-16 h-16 mx-auto text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
               </svg>
             </div>
@@ -494,13 +494,13 @@ function DealRoomsPageInner() {
             </p>
             <Link
               href="/login"
-              className="inline-block w-full px-4 py-3 bg-cyan-600 hover:bg-cyan-500 text-white font-semibold rounded-lg transition-colors text-center"
+              className="inline-block w-full px-4 py-3 bg-white hover:bg-slate-100 text-white font-semibold rounded-lg transition-colors text-center"
             >
               Sign In
             </Link>
             <p className="text-xs text-slate-500 mt-3">
               Don&apos;t have an account?{' '}
-              <Link href="/register" className="text-cyan-400 hover:text-cyan-300">
+              <Link href="/register" className="text-slate-300 hover:text-white">
                 Create one
               </Link>
             </p>
@@ -571,7 +571,7 @@ function DealRoomsPageInner() {
               setActiveTab('documents');
               fetchRooms();
             }}
-            className="flex items-center gap-2 text-slate-400 hover:text-cyan-300 mb-6 transition-colors"
+            className="flex items-center gap-2 text-slate-400 hover:text-white mb-6 transition-colors"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -605,7 +605,7 @@ function DealRoomsPageInner() {
                   <p className="text-slate-400 mb-2">{room.description}</p>
                 )}
                 {room.companySlug && (
-                  <Link href={`/company-profiles/${room.companySlug}`} className="text-sm text-cyan-400 hover:text-cyan-300 transition-colors">
+                  <Link href={`/company-profiles/${room.companySlug}`} className="text-sm text-slate-300 hover:text-white transition-colors">
                     View Company Profile
                   </Link>
                 )}
@@ -616,7 +616,7 @@ function DealRoomsPageInner() {
                 <div className="bg-slate-900/50 border border-slate-700/50 rounded-lg p-3 min-w-[200px]">
                   <p className="text-xs text-slate-500 mb-1">Invite Code</p>
                   <div className="flex items-center gap-2">
-                    <code className="text-sm font-mono text-cyan-300 bg-slate-800 px-2 py-1 rounded flex-1">
+                    <code className="text-sm font-mono text-slate-200 bg-slate-800 px-2 py-1 rounded flex-1">
                       {room.accessCode}
                     </code>
                     <button
@@ -673,7 +673,7 @@ function DealRoomsPageInner() {
                   onClick={() => setActiveTab(tab)}
                   className={`flex-1 px-4 py-2.5 rounded-md text-sm font-medium transition-colors ${
                     activeTab === tab
-                      ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30'
+                      ? 'bg-white/10 text-slate-200 border border-white/10'
                       : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/50 border border-transparent'
                   }`}
                 >
@@ -708,7 +708,7 @@ function DealRoomsPageInner() {
                     <div className="flex justify-end mb-4">
                       <button
                         onClick={() => setShowUploadForm(!showUploadForm)}
-                        className="px-4 py-2 bg-cyan-600 hover:bg-cyan-500 text-white font-medium rounded-lg transition-colors flex items-center gap-2"
+                        className="px-4 py-2 bg-white hover:bg-slate-100 text-white font-medium rounded-lg transition-colors flex items-center gap-2"
                       >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -731,7 +731,7 @@ function DealRoomsPageInner() {
                             value={uploadForm.name}
                             onChange={(e) => setUploadForm(f => ({ ...f, name: e.target.value }))}
                             placeholder="Q4 2025 Pitch Deck"
-                            className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+                            className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                             required
                           />
                         </div>
@@ -740,7 +740,7 @@ function DealRoomsPageInner() {
                           <select
                             value={uploadForm.category}
                             onChange={(e) => setUploadForm(f => ({ ...f, category: e.target.value }))}
-                            className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+                            className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                           >
                             {Object.entries(CATEGORY_LABELS).map(([key, label]) => (
                               <option key={key} value={key}>{label}</option>
@@ -752,7 +752,7 @@ function DealRoomsPageInner() {
                           <select
                             value={uploadForm.fileType}
                             onChange={(e) => setUploadForm(f => ({ ...f, fileType: e.target.value }))}
-                            className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+                            className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                           >
                             {Object.entries(FILE_TYPE_ICONS).map(([key, label]) => (
                               <option key={key} value={key}>.{key} ({label})</option>
@@ -767,7 +767,7 @@ function DealRoomsPageInner() {
                             value={uploadForm.fileSize || ''}
                             onChange={(e) => setUploadForm(f => ({ ...f, fileSize: parseInt(e.target.value) || 0 }))}
                             placeholder="1048576"
-                            className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+                            className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                           />
                         </div>
                         <div className="md:col-span-2">
@@ -777,13 +777,13 @@ function DealRoomsPageInner() {
                             value={uploadForm.description}
                             onChange={(e) => setUploadForm(f => ({ ...f, description: e.target.value }))}
                             placeholder="Latest investor presentation with Q4 financials"
-                            className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+                            className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                           />
                         </div>
                         <div className="md:col-span-2 flex gap-3">
                           <button
                             type="submit"
-                            className="px-4 py-2 bg-cyan-600 hover:bg-cyan-500 text-white font-medium rounded-lg transition-colors"
+                            className="px-4 py-2 bg-white hover:bg-slate-100 text-white font-medium rounded-lg transition-colors"
                           >
                             Add Document
                           </button>
@@ -852,7 +852,7 @@ function DealRoomsPageInner() {
                 <div className="flex justify-end mb-4">
                   <button
                     onClick={() => setShowInviteForm(!showInviteForm)}
-                    className="px-4 py-2 bg-cyan-600 hover:bg-cyan-500 text-white font-medium rounded-lg transition-colors flex items-center gap-2"
+                    className="px-4 py-2 bg-white hover:bg-slate-100 text-white font-medium rounded-lg transition-colors flex items-center gap-2"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
@@ -872,20 +872,20 @@ function DealRoomsPageInner() {
                       value={inviteForm.email}
                       onChange={(e) => setInviteForm(f => ({ ...f, email: e.target.value }))}
                       placeholder="investor@example.com"
-                      className="flex-1 bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+                      className="flex-1 bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                       required
                     />
                     <select
                       value={inviteForm.role}
                       onChange={(e) => setInviteForm(f => ({ ...f, role: e.target.value }))}
-                      className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+                      className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                     >
                       <option value="viewer">Viewer</option>
                       <option value="admin">Admin</option>
                     </select>
                     <button
                       type="submit"
-                      className="px-4 py-2 bg-cyan-600 hover:bg-cyan-500 text-white font-medium rounded-lg transition-colors"
+                      className="px-4 py-2 bg-white hover:bg-slate-100 text-white font-medium rounded-lg transition-colors"
                     >
                       Send Invite
                     </button>
@@ -982,7 +982,7 @@ function DealRoomsPageInner() {
                       <div className="flex-shrink-0 w-8 h-8 rounded-full bg-slate-700 border-2 border-slate-600 flex items-center justify-center mt-0.5 z-10">
                         <div className={`w-2 h-2 rounded-full ${
                           activity.action.includes('created') ? 'bg-emerald-400' :
-                          activity.action.includes('uploaded') ? 'bg-cyan-400' :
+                          activity.action.includes('uploaded') ? 'bg-white' :
                           activity.action.includes('joined') || activity.action.includes('accepted') ? 'bg-blue-400' :
                           activity.action.includes('removed') || activity.action.includes('archived') ? 'bg-red-400' :
                           'bg-slate-400'
@@ -991,7 +991,7 @@ function DealRoomsPageInner() {
                       {/* Content */}
                       <div className="pb-6 flex-1">
                         <p className="text-sm text-slate-200">
-                          <span className="font-medium text-cyan-300">{activity.userEmail || 'System'}</span>
+                          <span className="font-medium text-slate-200">{activity.userEmail || 'System'}</span>
                           {' '}
                           <span className="text-slate-400">{ACTION_LABELS[activity.action] || activity.action}</span>
                         </p>
@@ -1019,7 +1019,7 @@ function DealRoomsPageInner() {
                       type="text"
                       value={editForm.name}
                       onChange={(e) => setEditForm(f => ({ ...f, name: e.target.value }))}
-                      className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+                      className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                       required
                     />
                   </div>
@@ -1029,7 +1029,7 @@ function DealRoomsPageInner() {
                       value={editForm.description}
                       onChange={(e) => setEditForm(f => ({ ...f, description: e.target.value }))}
                       rows={3}
-                      className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none resize-none"
+                      className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none resize-none"
                     />
                   </div>
                   <div className="flex items-center gap-3">
@@ -1040,7 +1040,7 @@ function DealRoomsPageInner() {
                         onChange={(e) => setEditForm(f => ({ ...f, ndaRequired: e.target.checked }))}
                         className="sr-only peer"
                       />
-                      <div className="w-11 h-6 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-cyan-600"></div>
+                      <div className="w-11 h-6 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-white"></div>
                     </label>
                     <span className="text-sm text-slate-300">Require NDA before document access</span>
                   </div>
@@ -1052,13 +1052,13 @@ function DealRoomsPageInner() {
                         onChange={(e) => setEditForm(f => ({ ...f, ndaText: e.target.value }))}
                         rows={6}
                         placeholder="Enter your Non-Disclosure Agreement text here..."
-                        className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none resize-none"
+                        className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none resize-none"
                       />
                     </div>
                   )}
                   <button
                     type="submit"
-                    className="px-4 py-2 bg-cyan-600 hover:bg-cyan-500 text-white font-medium rounded-lg transition-colors"
+                    className="px-4 py-2 bg-white hover:bg-slate-100 text-white font-medium rounded-lg transition-colors"
                   >
                     Save Changes
                   </button>
@@ -1094,12 +1094,12 @@ function DealRoomsPageInner() {
         {/* Hero */}
         <div className="mb-8">
           <div className="flex items-center gap-4 mb-2">
-            <svg className="w-10 h-10 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-10 h-10 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
             </svg>
             <div>
               <h1 className="text-3xl md:text-4xl font-bold text-slate-100">Space Industry Deal Room</h1>
-              <div className="h-1 w-16 mt-2 rounded-full bg-gradient-to-r from-cyan-400 to-blue-500" />
+              <div className="h-1 w-16 mt-2 rounded-full bg-gradient-to-r from-slate-300 to-blue-500" />
             </div>
           </div>
           <p className="mt-3 text-lg text-slate-300 max-w-3xl">
@@ -1122,7 +1122,7 @@ function DealRoomsPageInner() {
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
             </svg>
-            Signed in as <span className="text-cyan-300 font-medium">{userEmail}</span>
+            Signed in as <span className="text-slate-200 font-medium">{userEmail}</span>
           </div>
         </div>
 
@@ -1130,7 +1130,7 @@ function DealRoomsPageInner() {
         <div className="flex flex-wrap gap-3 mb-6">
           <button
             onClick={() => { setShowCreateForm(!showCreateForm); setShowJoinForm(false); }}
-            className="px-4 py-2.5 bg-cyan-600 hover:bg-cyan-500 text-white font-semibold rounded-lg transition-colors flex items-center gap-2"
+            className="px-4 py-2.5 bg-white hover:bg-slate-100 text-white font-semibold rounded-lg transition-colors flex items-center gap-2"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -1160,7 +1160,7 @@ function DealRoomsPageInner() {
                   value={createForm.name}
                   onChange={(e) => setCreateForm(f => ({ ...f, name: e.target.value }))}
                   placeholder="Series A Due Diligence - Acme Space Corp"
-                  className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+                  className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                   required
                 />
               </div>
@@ -1171,7 +1171,7 @@ function DealRoomsPageInner() {
                   onChange={(e) => setCreateForm(f => ({ ...f, description: e.target.value }))}
                   rows={3}
                   placeholder="Confidential materials for Series A investors reviewing Acme Space Corp"
-                  className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none resize-none"
+                  className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none resize-none"
                 />
               </div>
               <div>
@@ -1181,7 +1181,7 @@ function DealRoomsPageInner() {
                   value={createForm.companySlug}
                   onChange={(e) => setCreateForm(f => ({ ...f, companySlug: e.target.value }))}
                   placeholder="acme-space-corp"
-                  className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+                  className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                 />
                 <p className="text-xs text-slate-500 mt-1">Link this room to a company profile on SpaceNexus</p>
               </div>
@@ -1193,7 +1193,7 @@ function DealRoomsPageInner() {
                     onChange={(e) => setCreateForm(f => ({ ...f, ndaRequired: e.target.checked }))}
                     className="sr-only peer"
                   />
-                  <div className="w-11 h-6 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-cyan-600"></div>
+                  <div className="w-11 h-6 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-white"></div>
                 </label>
                 <span className="text-sm text-slate-300">Require NDA before viewing documents</span>
               </div>
@@ -1205,14 +1205,14 @@ function DealRoomsPageInner() {
                     onChange={(e) => setCreateForm(f => ({ ...f, ndaText: e.target.value }))}
                     rows={6}
                     placeholder="Enter your Non-Disclosure Agreement text here..."
-                    className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none resize-none"
+                    className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none resize-none"
                   />
                 </div>
               )}
               <div className="flex gap-3">
                 <button
                   type="submit"
-                  className="px-6 py-2.5 bg-cyan-600 hover:bg-cyan-500 text-white font-semibold rounded-lg transition-colors"
+                  className="px-6 py-2.5 bg-white hover:bg-slate-100 text-white font-semibold rounded-lg transition-colors"
                 >
                   Create Room
                 </button>
@@ -1238,12 +1238,12 @@ function DealRoomsPageInner() {
                 value={joinCode}
                 onChange={(e) => setJoinCode(e.target.value)}
                 placeholder="Enter 12-character access code"
-                className="flex-1 bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none font-mono"
+                className="flex-1 bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none font-mono"
                 required
               />
               <button
                 type="submit"
-                className="px-6 py-2.5 bg-cyan-600 hover:bg-cyan-500 text-white font-semibold rounded-lg transition-colors"
+                className="px-6 py-2.5 bg-white hover:bg-slate-100 text-white font-semibold rounded-lg transition-colors"
               >
                 Join Room
               </button>
@@ -1268,8 +1268,8 @@ function DealRoomsPageInner() {
         {/* Rooms Grid */}
         {!loading && rooms.length === 0 && (
           <div className="text-center py-20">
-            <div className="mx-auto w-24 h-24 rounded-2xl bg-gradient-to-br from-cyan-500/15 to-purple-500/15 border border-cyan-500/20 flex items-center justify-center mb-6">
-              <svg className="w-12 h-12 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="mx-auto w-24 h-24 rounded-2xl bg-gradient-to-br from-white/15 to-purple-500/15 border border-white/10 flex items-center justify-center mb-6">
+              <svg className="w-12 h-12 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
             </div>
@@ -1282,7 +1282,7 @@ function DealRoomsPageInner() {
             <div className="flex flex-wrap justify-center gap-3">
               <button
                 onClick={() => setShowCreateForm(true)}
-                className="px-6 py-2.5 bg-cyan-600 hover:bg-cyan-500 text-white font-semibold rounded-lg transition-colors flex items-center gap-2"
+                className="px-6 py-2.5 bg-white hover:bg-slate-100 text-white font-semibold rounded-lg transition-colors flex items-center gap-2"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -1310,10 +1310,10 @@ function DealRoomsPageInner() {
                 <button
                   key={room.id}
                   onClick={() => fetchRoomDetail(room.id)}
-                  className="bg-slate-800/60 border border-slate-700/50 rounded-xl p-5 text-left hover:border-cyan-500/30 hover:bg-slate-800/80 transition-all group"
+                  className="bg-slate-800/60 border border-slate-700/50 rounded-xl p-5 text-left hover:border-white/10 hover:bg-slate-800/80 transition-all group"
                 >
                   <div className="flex items-start justify-between mb-3">
-                    <h3 className="text-lg font-semibold text-slate-200 group-hover:text-cyan-300 transition-colors line-clamp-1">
+                    <h3 className="text-lg font-semibold text-slate-200 group-hover:text-white transition-colors line-clamp-1">
                       {room.name}
                     </h3>
                     <span className={`px-2 py-0.5 rounded text-xs font-semibold flex-shrink-0 ml-2 ${
@@ -1330,7 +1330,7 @@ function DealRoomsPageInner() {
                   )}
 
                   {room.companySlug && (
-                    <p className="text-xs text-cyan-400/60 mb-3">
+                    <p className="text-xs text-slate-300/60 mb-3">
                       Company: {room.companySlug}
                     </p>
                   )}
@@ -1376,8 +1376,8 @@ function DealRoomsPageInner() {
         <StaggerContainer className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-4">
           <StaggerItem>
           <div className="bg-slate-800/40 border border-slate-700/40 rounded-xl p-5">
-            <div className="w-10 h-10 rounded-lg bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center mb-3">
-              <svg className="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="w-10 h-10 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center mb-3">
+              <svg className="w-5 h-5 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
               </svg>
             </div>

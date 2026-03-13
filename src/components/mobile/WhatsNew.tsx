@@ -112,7 +112,7 @@ export function WhatsNewDot({ className }: { className?: string }) {
 
   return (
     <span
-      className={`inline-block w-1.5 h-1.5 rounded-full bg-cyan-400 ${className ?? ''}`}
+      className={`inline-block w-1.5 h-1.5 rounded-full bg-white ${className ?? ''}`}
       aria-hidden="true"
       style={{
         animation: 'whatsNewPulse 2s ease-in-out infinite',
@@ -270,7 +270,7 @@ export function WhatsNewModal({ open, onClose }: WhatsNewModalProps) {
           {/* Header */}
           <div className="flex items-center justify-between px-5 py-3 border-b border-slate-700/50">
             <div className="flex items-center gap-2.5">
-              <SparkleIcon className="w-5 h-5 text-cyan-400" />
+              <SparkleIcon className="w-5 h-5 text-slate-300" />
               <div>
                 <h2 className="text-base font-bold text-white">What&apos;s New</h2>
                 {unseenCount > 0 && (
@@ -309,7 +309,7 @@ export function WhatsNewModal({ open, onClose }: WhatsNewModalProps) {
                     {/* Unseen indicator bar */}
                     {unseen && (
                       <div
-                        className="absolute left-0 top-3 bottom-3 w-0.5 rounded-full bg-cyan-400"
+                        className="absolute left-0 top-3 bottom-3 w-0.5 rounded-full bg-white"
                         aria-hidden="true"
                       />
                     )}
@@ -318,7 +318,7 @@ export function WhatsNewModal({ open, onClose }: WhatsNewModalProps) {
                     <div
                       className={`flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center text-lg ${
                         unseen
-                          ? 'bg-cyan-500/10 border border-cyan-500/20'
+                          ? 'bg-white/5 border border-white/10'
                           : 'bg-slate-800/60 border border-slate-700/40'
                       }`}
                       aria-hidden="true"
@@ -337,7 +337,7 @@ export function WhatsNewModal({ open, onClose }: WhatsNewModalProps) {
                           {announcement.title}
                         </h3>
                         {unseen && (
-                          <span className="flex-shrink-0 text-[10px] font-bold uppercase tracking-wider text-cyan-400 bg-cyan-500/10 px-1.5 py-0.5 rounded">
+                          <span className="flex-shrink-0 text-[10px] font-bold uppercase tracking-wider text-slate-300 bg-white/5 px-1.5 py-0.5 rounded">
                             New
                           </span>
                         )}
@@ -360,7 +360,7 @@ export function WhatsNewModal({ open, onClose }: WhatsNewModalProps) {
             {unseenCount > 0 ? (
               <button
                 onClick={handleMarkAllRead}
-                className="w-full py-2.5 text-sm font-medium text-white bg-cyan-600 hover:bg-cyan-500 rounded-xl transition-colors"
+                className="w-full py-2.5 text-sm font-medium text-white bg-white hover:bg-slate-100 rounded-xl transition-colors"
               >
                 Mark all as read
               </button>
@@ -402,7 +402,7 @@ export default function WhatsNew() {
       {/* Trigger button */}
       <button
         onClick={() => setIsOpen(true)}
-        className="relative p-2 text-slate-400 hover:text-cyan-300 transition-colors rounded-lg hover:bg-slate-800/50"
+        className="relative p-2 text-slate-400 hover:text-white transition-colors rounded-lg hover:bg-slate-800/50"
         aria-label={`What's new${unseenCount > 0 ? ` (${unseenCount} unseen updates)` : ''}`}
       >
         <SparkleIcon className="w-5 h-5" />
@@ -410,7 +410,7 @@ export default function WhatsNew() {
         {/* Pulsing dot overlay */}
         {unseenCount > 0 && (
           <span
-            className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-cyan-400"
+            className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-white"
             aria-hidden="true"
             style={{
               animation: 'whatsNewPulse 2s ease-in-out infinite',

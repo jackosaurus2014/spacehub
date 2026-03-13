@@ -37,7 +37,7 @@ const CATEGORY_COLORS: Record<string, string> = {
   Launch: 'text-orange-400 bg-orange-400/10 border-orange-400/30',
   Funding: 'text-emerald-400 bg-emerald-400/10 border-emerald-400/30',
   Regulatory: 'text-purple-400 bg-purple-400/10 border-purple-400/30',
-  Technology: 'text-cyan-400 bg-cyan-400/10 border-cyan-400/30',
+  Technology: 'text-slate-300 bg-white/5 border-white/10',
   Defense: 'text-red-400 bg-red-400/10 border-red-400/30',
   Commercial: 'text-blue-400 bg-blue-400/10 border-blue-400/30',
   Science: 'text-indigo-400 bg-indigo-400/10 border-indigo-400/30',
@@ -345,7 +345,7 @@ export default function NewsDigestPage() {
                     onClick={() => setSelectedCategory('All')}
                     className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${
                       selectedCategory === 'All'
-                        ? 'bg-cyan-500/20 text-cyan-400 border-cyan-500/40'
+                        ? 'bg-white/10 text-slate-300 border-white/15/40'
                         : 'bg-slate-800/50 text-slate-400 border-slate-700 hover:border-slate-600'
                     }`}
                   >
@@ -377,7 +377,7 @@ export default function NewsDigestPage() {
                     onClick={() => setSelectedSignificance('All')}
                     className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${
                       selectedSignificance === 'All'
-                        ? 'bg-cyan-500/20 text-cyan-400 border-cyan-500/40'
+                        ? 'bg-white/10 text-slate-300 border-white/15/40'
                         : 'bg-slate-800/50 text-slate-400 border-slate-700 hover:border-slate-600'
                     }`}
                   >
@@ -473,7 +473,7 @@ export default function NewsDigestPage() {
 
                       {/* Arrow */}
                       <svg
-                        className="w-4 h-4 text-slate-500 group-hover:text-cyan-400 transition-colors mt-1 flex-shrink-0"
+                        className="w-4 h-4 text-slate-500 group-hover:text-white transition-colors mt-1 flex-shrink-0"
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
@@ -500,7 +500,7 @@ export default function NewsDigestPage() {
                 setSelectedCategory('All');
                 setSelectedSignificance('All');
               }}
-              className="mt-4 px-4 py-2 text-sm bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 rounded-lg hover:bg-cyan-500/20 transition-colors"
+              className="mt-4 px-4 py-2 text-sm bg-white/5 text-slate-300 border border-white/10 rounded-lg hover:bg-slate-100/20 transition-colors"
             >
               Reset Filters
             </button>
@@ -514,7 +514,7 @@ export default function NewsDigestPage() {
               {
                 label: 'Total Headlines',
                 value: totalItems,
-                color: 'text-cyan-400',
+                color: 'text-slate-300',
               },
               {
                 label: 'High Significance',
@@ -582,11 +582,11 @@ export default function NewsDigestPage() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="group flex items-start gap-3 p-3 rounded-lg border border-slate-800/60 hover:border-cyan-500/30 hover:bg-cyan-500/5 transition-all duration-200"
+                  className="group flex items-start gap-3 p-3 rounded-lg border border-slate-800/60 hover:border-white/10 hover:bg-slate-100/5 transition-all duration-200"
                 >
                   <span className="text-xl">{link.icon}</span>
                   <div>
-                    <div className="text-sm font-medium text-slate-200 group-hover:text-cyan-400 transition-colors">
+                    <div className="text-sm font-medium text-slate-200 group-hover:text-white transition-colors">
                       {link.title}
                     </div>
                     <div className="text-xs text-slate-500 mt-0.5">{link.desc}</div>

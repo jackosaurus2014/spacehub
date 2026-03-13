@@ -40,7 +40,7 @@ function getMoveTypeBadge(type: string) {
     hired: { bg: 'bg-emerald-500/20', text: 'text-emerald-400', label: 'HIRED' },
     departed: { bg: 'bg-red-500/20', text: 'text-red-400', label: 'DEPARTED' },
     promoted: { bg: 'bg-amber-500/20', text: 'text-amber-400', label: 'PROMOTED' },
-    appointed: { bg: 'bg-cyan-500/20', text: 'text-cyan-400', label: 'APPOINTED' },
+    appointed: { bg: 'bg-white/10', text: 'text-slate-300', label: 'APPOINTED' },
   };
   const style = styles[type] || styles.hired;
   return (
@@ -77,7 +77,7 @@ function CompanyLink({ name, slug }: { name: string | null; slug?: string }) {
     return (
       <Link
         href={`/company-profiles/${slug}`}
-        className="text-cyan-400 hover:text-cyan-300 hover:underline transition-colors"
+        className="text-slate-300 hover:text-white hover:underline transition-colors"
       >
         {name}
       </Link>
@@ -99,7 +99,7 @@ function NotableMovesCard({ move, index }: { move: ExecutiveMove; index: number 
         move.moveType === 'hired' ? 'bg-emerald-500' :
         move.moveType === 'departed' ? 'bg-red-500' :
         move.moveType === 'promoted' ? 'bg-amber-500' :
-        'bg-cyan-500'
+        'bg-white'
       }`} />
 
       <div className="flex items-start justify-between mb-3">
@@ -250,7 +250,7 @@ function ExecutiveMovesContent() {
       >
         <div className="card p-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-cyan-500/20 flex items-center justify-center text-xl">
+            <div className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center text-xl">
               👤
             </div>
             <div>
@@ -309,7 +309,7 @@ function ExecutiveMovesContent() {
           className="mb-8"
         >
           <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
+            <span className="w-2 h-2 rounded-full bg-white animate-pulse" />
             Most Recent Moves
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
@@ -336,7 +336,7 @@ function ExecutiveMovesContent() {
               placeholder="Search by person name, company, or title..."
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
-              className="w-full pl-10 pr-4 bg-slate-800 border border-slate-700 text-white rounded-lg py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+              className="w-full pl-10 pr-4 bg-slate-800 border border-slate-700 text-white rounded-lg py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
             />
             <svg className="absolute left-3 top-3 w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -348,7 +348,7 @@ function ExecutiveMovesContent() {
             aria-label="Filter by move type"
             value={moveType}
             onChange={(e) => updateParams({ moveType: e.target.value })}
-            className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+            className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
           >
             {MOVE_TYPE_OPTIONS.map(opt => (
               <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -363,7 +363,7 @@ function ExecutiveMovesContent() {
               placeholder="Filter by company..."
               value={company}
               onChange={(e) => updateParams({ company: e.target.value })}
-              className="w-full lg:w-48 bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+              className="w-full lg:w-48 bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
             />
           </div>
 
@@ -470,7 +470,7 @@ function ExecutiveMovesContent() {
                               {move.personName.split(' ').map(n => n[0]).join('').slice(0, 2)}
                             </div>
                             <div>
-                              <div className="font-medium text-white text-sm group-hover:text-cyan-400 transition-colors">
+                              <div className="font-medium text-white text-sm group-hover:text-white transition-colors">
                                 {move.personName}
                               </div>
                               {move.summary && (
@@ -505,7 +505,7 @@ function ExecutiveMovesContent() {
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                               </svg>
                             ) : (
-                              <svg className="w-4 h-4 mx-auto text-cyan-500/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <svg className="w-4 h-4 mx-auto text-slate-300/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                               </svg>
                             )}
@@ -636,7 +636,7 @@ function ExecutiveMovesContent() {
                     onClick={() => updateParams({ page: p.toString() })}
                     className={`w-9 h-9 rounded-lg text-sm font-medium transition-colors ${
                       p === page
-                        ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30'
+                        ? 'bg-white/10 text-slate-300 border border-white/10'
                         : 'text-slate-400 hover:text-white hover:bg-slate-800/50'
                     }`}
                   >

@@ -61,7 +61,7 @@ export default function SubscribeButton({
       disabled={isSubmitting}
       className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-colors duration-150 disabled:opacity-50 ${
         subscribed
-          ? 'bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 hover:bg-cyan-500/20'
+          ? 'bg-white/5 text-slate-300 border border-white/10 hover:bg-slate-100/20'
           : 'bg-slate-800 text-slate-400 border border-slate-700 hover:bg-slate-700 hover:text-slate-300'
       }`}
       title={subscribed ? 'Unsubscribe from thread' : 'Subscribe to thread'}

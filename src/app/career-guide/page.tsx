@@ -42,7 +42,7 @@ interface CareerPath {
 
 const CATEGORIES: Record<CareerCategory, { label: string; color: string; bg: string; border: string }> = {
   engineering:   { label: 'Engineering',   color: 'text-blue-400',    bg: 'bg-blue-500/20',    border: 'border-blue-500/30' },
-  software:      { label: 'Software',      color: 'text-cyan-400',    bg: 'bg-cyan-500/20',    border: 'border-cyan-500/30' },
+  software:      { label: 'Software',      color: 'text-slate-300',    bg: 'bg-white/10',    border: 'border-white/10' },
   business:      { label: 'Business',      color: 'text-yellow-400',  bg: 'bg-yellow-500/20',  border: 'border-yellow-500/30' },
   science:       { label: 'Science',       color: 'text-purple-400',  bg: 'bg-purple-500/20',  border: 'border-purple-500/30' },
   operations:    { label: 'Operations',    color: 'text-green-400',   bg: 'bg-green-500/20',   border: 'border-green-500/30' },

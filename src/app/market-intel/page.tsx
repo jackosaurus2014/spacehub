@@ -729,7 +729,7 @@ function MarketIntelContent() {
                   <select
                     value={selectedCountry}
                     onChange={(e) => setSelectedCountry(e.target.value)}
-                    className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+                    className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                   >
                     {COUNTRY_FILTERS.map((option) => (
                       <option key={option.value} value={option.value}>
@@ -744,7 +744,7 @@ function MarketIntelContent() {
                   <select
                     value={selectedType}
                     onChange={(e) => setSelectedType(e.target.value as '' | 'public' | 'private')}
-                    className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+                    className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                   >
                     <option value="">All Types</option>
                     <option value="public">Public</option>
@@ -757,7 +757,7 @@ function MarketIntelContent() {
                   <select
                     value={selectedFocus}
                     onChange={(e) => setSelectedFocus(e.target.value as CompanyFocusArea | '')}
-                    className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+                    className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                   >
                     <option value="">All Focus Areas</option>
                     {FOCUS_AREAS.map((focus) => (
@@ -810,7 +810,7 @@ function MarketIntelContent() {
             <div className="text-red-400 text-sm font-medium">{error}</div>
             <button
               onClick={() => fetchData()}
-              className="mt-3 px-4 py-2 min-h-[44px] bg-cyan-500/20 text-cyan-400 rounded-lg hover:bg-cyan-500/30 transition-colors text-sm font-medium"
+              className="mt-3 px-4 py-2 min-h-[44px] bg-white/10 text-slate-300 rounded-lg hover:bg-slate-100/30 transition-colors text-sm font-medium"
             >
               Try Again
             </button>

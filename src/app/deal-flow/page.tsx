@@ -504,7 +504,7 @@ function getDealTypeBadgeClasses(type: Deal['type']): string {
     case 'M&A':
       return 'bg-purple-500/20 text-purple-400 border border-purple-500/30';
     case 'Contract':
-      return 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30';
+      return 'bg-white/10 text-slate-300 border border-white/10';
     case 'Partnership':
       return 'bg-amber-500/20 text-amber-400 border border-amber-500/30';
     case 'SPAC':
@@ -520,7 +520,7 @@ function getStageBadgeClasses(stage: string): string {
   if (stage === 'Early' || stage === 'Seed') return 'text-lime-400';
   if (stage === 'Early Growth') return 'text-emerald-400';
   if (stage === 'Growth') return 'text-teal-400';
-  if (stage === 'Late Stage') return 'text-cyan-400';
+  if (stage === 'Late Stage') return 'text-slate-300';
   if (stage === 'Operational') return 'text-sky-400';
   if (stage === 'Public') return 'text-blue-400';
   if (stage === 'Completed') return 'text-purple-400';
@@ -620,7 +620,7 @@ export default function DealFlowPage() {
             </div>
             <div className="card p-5">
               <p className="text-sm font-medium text-slate-400">Deal Count</p>
-              <p className="mt-1 text-2xl font-bold text-cyan-400">{stats.dealCount}</p>
+              <p className="mt-1 text-2xl font-bold text-slate-300">{stats.dealCount}</p>
             </div>
             <div className="card p-5">
               <p className="text-sm font-medium text-slate-400">Average Size</p>
@@ -924,7 +924,7 @@ export default function DealFlowPage() {
                       <div className="flex-1">
                         <div className="h-2 overflow-hidden rounded-full bg-slate-700/50">
                           <div
-                            className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-cyan-500 transition-all duration-500"
+                            className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-slate-200 transition-all duration-500"
                             style={{ width: `${pct}%` }}
                           />
                         </div>
@@ -960,7 +960,7 @@ export default function DealFlowPage() {
                   href: '/funding-tracker',
                   title: 'Funding Tracker',
                   desc: 'Real-time funding round data across 100+ space companies.',
-                  accent: 'cyan',
+                  accent: 'slate',
                 },
                 {
                   href: '/space-capital',
@@ -977,7 +977,7 @@ export default function DealFlowPage() {
               ].map((link) => {
                 const accentMap: Record<string, string> = {
                   emerald: 'group-hover:border-emerald-500/40 group-hover:text-emerald-400',
-                  cyan: 'group-hover:border-cyan-500/40 group-hover:text-cyan-400',
+                  cyan: 'group-hover:border-white/15/40 group-hover:text-white',
                   amber: 'group-hover:border-amber-500/40 group-hover:text-amber-400',
                   purple: 'group-hover:border-purple-500/40 group-hover:text-purple-400',
                 };

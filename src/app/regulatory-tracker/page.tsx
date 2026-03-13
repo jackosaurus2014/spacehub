@@ -332,9 +332,9 @@ const AGENCY_CONFIG: Record<Agency, { label: string; color: string; bgColor: str
   },
   NOAA: {
     label: 'NOAA',
-    color: 'text-cyan-400',
-    bgColor: 'bg-cyan-500/15',
-    borderColor: 'border-cyan-500/30',
+    color: 'text-slate-300',
+    bgColor: 'bg-white/8',
+    borderColor: 'border-white/10',
     focusAreas: ['Remote sensing licenses', 'Weather data policy', 'Commercial imagery'],
   },
   DoC: {
@@ -649,7 +649,7 @@ export default function RegulatoryTrackerPage() {
                   value={searchQuery}
                   onChange={e => setSearchQuery(e.target.value)}
                   placeholder="Search proceedings, docket numbers..."
-                  className="w-full pl-10 pr-4 py-2.5 bg-slate-800/60 border border-slate-700/50 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/30 transition-colors"
+                  className="w-full pl-10 pr-4 py-2.5 bg-slate-800/60 border border-slate-700/50 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-white/15 focus:ring-1 focus:ring-white/30/30 transition-colors"
                 />
               </div>
 
@@ -681,7 +681,7 @@ export default function RegulatoryTrackerPage() {
                 <select
                   value={sortField}
                   onChange={e => handleSort(e.target.value as SortField)}
-                  className="bg-slate-800/60 border border-slate-700/50 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-cyan-500/50"
+                  className="bg-slate-800/60 border border-slate-700/50 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-white/15"
                 >
                   <option value="date">Expected Date</option>
                   <option value="impact">Impact Level</option>
@@ -710,7 +710,7 @@ export default function RegulatoryTrackerPage() {
                     key={mode}
                     onClick={() => setViewMode(mode)}
                     className={`p-2 rounded-lg transition-colors ${
-                      viewMode === mode ? 'bg-cyan-500/20 text-cyan-400' : 'text-slate-500 hover:text-slate-300 hover:bg-slate-700/50'
+                      viewMode === mode ? 'bg-white/10 text-slate-300' : 'text-slate-500 hover:text-slate-300 hover:bg-slate-700/50'
                     }`}
                     title={`${mode.charAt(0).toUpperCase() + mode.slice(1)} view`}
                   >
@@ -733,7 +733,7 @@ export default function RegulatoryTrackerPage() {
                     onClick={() => toggleSector(sector)}
                     className={`px-2.5 py-1 text-xs rounded-full border transition-all ${
                       isActive
-                        ? 'bg-cyan-500/20 border-cyan-500/50 text-cyan-300'
+                        ? 'bg-white/10 border-white/15 text-slate-200'
                         : 'bg-slate-800/40 border-slate-700/40 text-slate-400 hover:text-slate-300 hover:border-slate-600/60'
                     }`}
                     aria-pressed={isActive}
@@ -783,8 +783,8 @@ export default function RegulatoryTrackerPage() {
                       <div key={monthKey} className="flex-shrink-0 min-w-[200px] px-2 first:pl-0 last:pr-0">
                         {/* Month marker */}
                         <div className="relative flex flex-col items-center mb-4">
-                          <div className="w-3 h-3 rounded-full bg-cyan-400 border-2 border-slate-900 z-10" />
-                          <span className="text-xs font-medium text-cyan-400 mt-2">
+                          <div className="w-3 h-3 rounded-full bg-white border-2 border-slate-900 z-10" />
+                          <span className="text-xs font-medium text-slate-300 mt-2">
                             {getMonthLabel(monthKey + '-01')}
                           </span>
                           <span className="text-[10px] text-slate-500">{items.length} item{items.length !== 1 ? 's' : ''}</span>
@@ -797,7 +797,7 @@ export default function RegulatoryTrackerPage() {
                               onClick={() => setExpandedId(expandedId === p.id ? null : p.id)}
                               className={`w-full text-left p-2.5 rounded-lg border transition-all ${
                                 expandedId === p.id
-                                  ? 'bg-slate-800/80 border-cyan-500/40'
+                                  ? 'bg-slate-800/80 border-white/15/40'
                                   : 'bg-slate-800/40 border-slate-700/30 hover:border-slate-600/50'
                               }`}
                             >
@@ -858,7 +858,7 @@ export default function RegulatoryTrackerPage() {
                       setSectorFilters([]);
                       setSearchQuery('');
                     }}
-                    className="mt-3 text-sm text-cyan-400 hover:text-cyan-300 transition-colors"
+                    className="mt-3 text-sm text-slate-300 hover:text-white transition-colors"
                   >
                     Clear all filters
                   </button>
@@ -975,7 +975,7 @@ export default function RegulatoryTrackerPage() {
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 onClick={e => e.stopPropagation()}
-                                className="inline-flex items-center gap-1 mt-3 text-xs text-cyan-400 hover:text-cyan-300 transition-colors"
+                                className="inline-flex items-center gap-1 mt-3 text-xs text-slate-300 hover:text-white transition-colors"
                               >
                                 View Official Source
                                 <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -1007,7 +1007,7 @@ export default function RegulatoryTrackerPage() {
                     setSectorFilters([]);
                     setSearchQuery('');
                   }}
-                  className="mt-3 text-sm text-cyan-400 hover:text-cyan-300 transition-colors"
+                  className="mt-3 text-sm text-slate-300 hover:text-white transition-colors"
                 >
                   Clear all filters
                 </button>
@@ -1121,7 +1121,7 @@ export default function RegulatoryTrackerPage() {
                   key={sector}
                   onClick={() => toggleSector(sector)}
                   className={`card p-4 text-left transition-all cursor-pointer ${
-                    sectorFilters.includes(sector) ? 'ring-2 ring-cyan-500/50 ring-offset-1 ring-offset-slate-900' : ''
+                    sectorFilters.includes(sector) ? 'ring-2 ring-white/15 ring-offset-1 ring-offset-slate-900' : ''
                   }`}
                   aria-pressed={sectorFilters.includes(sector)}
                 >
@@ -1162,7 +1162,7 @@ export default function RegulatoryTrackerPage() {
                 </p>
               </div>
               <div className="p-4 rounded-lg bg-slate-800/40 border border-slate-700/30">
-                <h4 className="text-sm font-medium text-cyan-400 mb-2">Export Control Liberalization</h4>
+                <h4 className="text-sm font-medium text-slate-300 mb-2">Export Control Liberalization</h4>
                 <p className="text-xs text-slate-400 leading-relaxed">
                   Ongoing ITAR reform efforts aim to transfer commercial satellite and launch vehicle components from USML to the CCL, reducing licensing burden for commercial operators while maintaining controls on military-critical technologies.
                 </p>

@@ -163,10 +163,10 @@ const CATEGORY_COLORS: Record<Category, { bg: string; text: string; border: stri
     chip: 'bg-blue-500/20 text-blue-300 border-blue-500/40',
   },
   Technology: {
-    bg: 'bg-cyan-500/10',
-    text: 'text-cyan-400',
-    border: 'border-cyan-500/30',
-    chip: 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40',
+    bg: 'bg-white/5',
+    text: 'text-slate-300',
+    border: 'border-white/10',
+    chip: 'bg-white/10 text-slate-200 border-white/15/40',
   },
   Orbits: {
     bg: 'bg-indigo-500/10',
@@ -306,7 +306,7 @@ export default function AcronymsPage() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search acronyms, full forms, or definitions..."
-                className="w-full pl-12 pr-4 py-3 bg-slate-800/50 border border-slate-700/50 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-400/50 focus:border-cyan-400/30 transition-all"
+                className="w-full pl-12 pr-4 py-3 bg-slate-800/50 border border-slate-700/50 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-white/20 focus:border-white/10 transition-all"
               />
               {searchQuery && (
                 <button
@@ -327,7 +327,7 @@ export default function AcronymsPage() {
                 onClick={() => setSelectedCategory(null)}
                 className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-all ${
                   selectedCategory === null
-                    ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40 shadow-lg shadow-cyan-500/10'
+                    ? 'bg-white/10 text-slate-200 border-white/15/40 shadow-lg shadow-black/5'
                     : 'bg-slate-800/50 text-slate-400 border-slate-700/50 hover:border-slate-600 hover:text-slate-300'
                 }`}
               >
@@ -356,7 +356,7 @@ export default function AcronymsPage() {
             {/* Results count */}
             <p className="text-sm text-slate-400">
               Showing{' '}
-              <span className="text-cyan-400 font-semibold">{visibleCount}</span> of{' '}
+              <span className="text-slate-300 font-semibold">{visibleCount}</span> of{' '}
               <span className="text-slate-300">{ACRONYMS.length}</span> acronyms
             </p>
           </div>
@@ -378,7 +378,7 @@ export default function AcronymsPage() {
                     disabled={!hasAcronyms}
                     className={`w-9 h-9 rounded-lg text-sm font-bold flex items-center justify-center transition-all ${
                       hasAcronyms
-                        ? 'bg-slate-800/50 text-cyan-400 border border-slate-700/50 hover:bg-cyan-500/20 hover:border-cyan-400/30 hover:shadow-lg hover:shadow-cyan-500/5 cursor-pointer'
+                        ? 'bg-slate-800/50 text-slate-300 border border-slate-700/50 hover:bg-slate-100/20 hover:border-white/10 hover:shadow-lg hover:shadow-black/20/5 cursor-pointer'
                         : 'text-slate-600 cursor-not-allowed'
                     }`}
                     aria-label={`Jump to letter ${letter}`}
@@ -406,10 +406,10 @@ export default function AcronymsPage() {
                 {/* Letter heading */}
                 <ScrollReveal>
                   <div className="flex items-center gap-3 mb-4">
-                    <span className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-br from-cyan-400 to-blue-500 leading-none">
+                    <span className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-br from-slate-300 to-blue-500 leading-none">
                       {letter}
                     </span>
-                    <div className="flex-1 h-px bg-gradient-to-r from-cyan-500/30 to-transparent" />
+                    <div className="flex-1 h-px bg-gradient-to-r from-white/30 to-transparent" />
                     <span className="text-xs text-slate-500 font-medium">
                       {items.length} acronym{items.length !== 1 ? 's' : ''}
                     </span>
@@ -423,11 +423,11 @@ export default function AcronymsPage() {
 
                     return (
                       <ScrollReveal key={item.acronym} delay={idx * 0.03}>
-                        <div className="group rounded-xl border bg-slate-800/50 border-slate-700/50 hover:border-cyan-400/30 hover:bg-slate-800/70 transition-all duration-300 p-5">
+                        <div className="group rounded-xl border bg-slate-800/50 border-slate-700/50 hover:border-white/10 hover:bg-slate-800/70 transition-all duration-300 p-5">
                           <div className="flex flex-col sm:flex-row sm:items-start gap-3">
                             {/* Acronym badge */}
                             <div className="flex-shrink-0">
-                              <span className="inline-flex items-center justify-center px-3 py-1.5 rounded-lg bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 font-mono font-bold text-lg tracking-wide min-w-[80px] text-center">
+                              <span className="inline-flex items-center justify-center px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-slate-200 font-mono font-bold text-lg tracking-wide min-w-[80px] text-center">
                                 {item.acronym}
                               </span>
                             </div>
@@ -435,7 +435,7 @@ export default function AcronymsPage() {
                             {/* Content */}
                             <div className="flex-1 min-w-0">
                               <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-2">
-                                <h3 className="text-white font-semibold text-base group-hover:text-cyan-50 transition-colors">
+                                <h3 className="text-white font-semibold text-base group-hover:text-white transition-colors">
                                   {item.fullForm}
                                 </h3>
                                 <span
@@ -472,7 +472,7 @@ export default function AcronymsPage() {
                 setSearchQuery('');
                 setSelectedCategory(null);
               }}
-              className="mt-4 px-4 py-2 rounded-lg bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 hover:bg-cyan-500/30 transition-all text-sm font-medium"
+              className="mt-4 px-4 py-2 rounded-lg bg-white/10 text-slate-200 border border-white/15/40 hover:bg-slate-100/30 transition-all text-sm font-medium"
             >
               Reset filters
             </button>
@@ -484,7 +484,7 @@ export default function AcronymsPage() {
           <div className="mt-16 pt-8 border-t border-slate-800/50">
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-12">
               {[
-                { label: 'Total Acronyms', value: ACRONYMS.length, color: 'text-cyan-400' },
+                { label: 'Total Acronyms', value: ACRONYMS.length, color: 'text-slate-300' },
                 { label: 'Categories', value: ALL_CATEGORIES.length, color: 'text-purple-400' },
                 {
                   label: 'Letters Covered',
@@ -502,7 +502,7 @@ export default function AcronymsPage() {
               ].map((stat) => (
                 <div
                   key={stat.label}
-                  className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-4 text-center hover:border-cyan-400/20 transition-all"
+                  className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-4 text-center hover:border-white/10 transition-all"
                 >
                   <div className={`text-2xl font-bold ${stat.color}`}>{stat.value}</div>
                   <div className="text-xs text-slate-400 mt-1">{stat.label}</div>
@@ -546,10 +546,10 @@ export default function AcronymsPage() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="group bg-slate-800/50 border border-slate-700/50 rounded-xl p-5 hover:border-cyan-400/30 hover:bg-slate-800/70 transition-all duration-300"
+                  className="group bg-slate-800/50 border border-slate-700/50 rounded-xl p-5 hover:border-white/10 hover:bg-slate-800/70 transition-all duration-300"
                 >
                   <div className="text-2xl mb-2">{link.icon}</div>
-                  <h3 className="text-white font-semibold mb-1 group-hover:text-cyan-300 transition-colors">
+                  <h3 className="text-white font-semibold mb-1 group-hover:text-white transition-colors">
                     {link.title}
                   </h3>
                   <p className="text-slate-400 text-sm">{link.description}</p>

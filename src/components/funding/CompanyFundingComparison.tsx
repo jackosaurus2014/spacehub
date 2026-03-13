@@ -49,7 +49,7 @@ interface CompanyFundingComparisonProps {
 // ────────────────────────────────────────
 
 const COMPANY_COLORS = [
-  { bg: 'bg-cyan-500/20', text: 'text-cyan-400', border: 'border-cyan-500/40', bar: 'bg-cyan-500' },
+  { bg: 'bg-white/10', text: 'text-slate-300', border: 'border-white/15/40', bar: 'bg-white' },
   { bg: 'bg-emerald-500/20', text: 'text-emerald-400', border: 'border-emerald-500/40', bar: 'bg-emerald-500' },
   { bg: 'bg-purple-500/20', text: 'text-purple-400', border: 'border-purple-500/40', bar: 'bg-purple-500' },
   { bg: 'bg-amber-500/20', text: 'text-amber-400', border: 'border-amber-500/40', bar: 'bg-amber-500' },
@@ -295,7 +295,7 @@ export default function CompanyFundingComparison({ allRounds }: CompanyFundingCo
                               <div className={`w-3 h-3 rounded-full ${colorSet.bar}`} />
                               <Link
                                 href={`/company-profiles/${company.slug}`}
-                                className={`font-medium hover:text-cyan-400 transition-colors ${colorSet.text}`}
+                                className={`font-medium hover:text-white transition-colors ${colorSet.text}`}
                               >
                                 {company.name}
                               </Link>

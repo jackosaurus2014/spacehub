@@ -356,15 +356,15 @@ export default function MissionPipelinePage() {
         <ScrollReveal delay={0.1}>
           <div className="grid grid-cols-3 gap-4 mb-8">
             <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-4 text-center">
-              <p className="text-2xl md:text-3xl font-bold text-cyan-400">{MISSIONS.length}+</p>
+              <p className="text-2xl md:text-3xl font-bold text-slate-300">{MISSIONS.length}+</p>
               <p className="text-sm text-slate-400 mt-1">Planned Missions</p>
             </div>
             <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-4 text-center">
-              <p className="text-2xl md:text-3xl font-bold text-cyan-400">{uniqueAgencies}+</p>
+              <p className="text-2xl md:text-3xl font-bold text-slate-300">{uniqueAgencies}+</p>
               <p className="text-sm text-slate-400 mt-1">Agencies &amp; Operators</p>
             </div>
             <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-4 text-center">
-              <p className="text-2xl md:text-3xl font-bold text-cyan-400">6</p>
+              <p className="text-2xl md:text-3xl font-bold text-slate-300">6</p>
               <p className="text-sm text-slate-400 mt-1">Year Range</p>
             </div>
           </div>
@@ -385,7 +385,7 @@ export default function MissionPipelinePage() {
                     onClick={() => setSelectedYear(year)}
                     className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
                       selectedYear === year
-                        ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/40 shadow-lg shadow-cyan-500/10'
+                        ? 'bg-white/10 text-slate-300 border border-white/15/40 shadow-lg shadow-black/5'
                         : 'bg-slate-800/50 text-slate-400 border border-slate-700/50 hover:bg-slate-700/50 hover:text-slate-300'
                     }`}
                   >
@@ -405,7 +405,7 @@ export default function MissionPipelinePage() {
                   onClick={() => setSelectedCategory('All')}
                   className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
                     selectedCategory === 'All'
-                      ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/40 shadow-lg shadow-cyan-500/10'
+                      ? 'bg-white/10 text-slate-300 border border-white/15/40 shadow-lg shadow-black/5'
                       : 'bg-slate-800/50 text-slate-400 border border-slate-700/50 hover:bg-slate-700/50 hover:text-slate-300'
                   }`}
                 >
@@ -417,7 +417,7 @@ export default function MissionPipelinePage() {
                     onClick={() => setSelectedCategory(cat)}
                     className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
                       selectedCategory === cat
-                        ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/40 shadow-lg shadow-cyan-500/10'
+                        ? 'bg-white/10 text-slate-300 border border-white/15/40 shadow-lg shadow-black/5'
                         : 'bg-slate-800/50 text-slate-400 border border-slate-700/50 hover:bg-slate-700/50 hover:text-slate-300'
                     }`}
                   >
@@ -434,11 +434,11 @@ export default function MissionPipelinePage() {
         <ScrollReveal delay={0.2}>
           <p className="text-sm text-slate-500 mb-6">
             Showing {filteredMissions.length} of {MISSIONS.length} missions
-            {selectedYear !== 'All' && <span> in <span className="text-cyan-400">{selectedYear}</span></span>}
+            {selectedYear !== 'All' && <span> in <span className="text-slate-300">{selectedYear}</span></span>}
             {selectedCategory !== 'All' && (
               <span>
                 {' '}
-                &middot; <span className="text-cyan-400">{selectedCategory}</span>
+                &middot; <span className="text-slate-300">{selectedCategory}</span>
               </span>
             )}
           </p>
@@ -459,7 +459,7 @@ export default function MissionPipelinePage() {
               const conf = CONFIDENCE_STYLES[mission.confidence];
               return (
                 <StaggerItem key={`${mission.year}-${mission.name}`}>
-                  <div className="group bg-slate-800/50 border border-slate-700/50 rounded-2xl p-6 h-full flex flex-col hover:border-cyan-500/30 hover:bg-slate-800/70 transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/5">
+                  <div className="group bg-slate-800/50 border border-slate-700/50 rounded-2xl p-6 h-full flex flex-col hover:border-white/10 hover:bg-slate-800/70 transition-all duration-300 hover:shadow-lg hover:shadow-black/20/5">
                     {/* Top Row: Icon + Year Badge */}
                     <div className="flex items-start justify-between mb-3">
                       <span className="text-3xl" role="img" aria-label={mission.name}>
@@ -471,12 +471,12 @@ export default function MissionPipelinePage() {
                     </div>
 
                     {/* Mission Name */}
-                    <h3 className="text-lg font-semibold text-slate-100 mb-1 group-hover:text-cyan-300 transition-colors">
+                    <h3 className="text-lg font-semibold text-slate-100 mb-1 group-hover:text-white transition-colors">
                       {mission.name}
                     </h3>
 
                     {/* Operator */}
-                    <p className="text-sm text-cyan-400/80 mb-3">{mission.operator}</p>
+                    <p className="text-sm text-slate-300/80 mb-3">{mission.operator}</p>
 
                     {/* Badges Row */}
                     <div className="flex flex-wrap gap-2 mb-3">

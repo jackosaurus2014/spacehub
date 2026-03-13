@@ -23,7 +23,7 @@ const TRANSFER_TYPE_COLORS: Record<TransferType, { bg: string; text: string; lab
   hohmann: { bg: 'bg-blue-500/20', text: 'text-blue-400', label: 'Hohmann' },
   direct: { bg: 'bg-green-500/20', text: 'text-green-400', label: 'Direct' },
   gravity_assist: { bg: 'bg-purple-500/20', text: 'text-purple-400', label: 'Gravity Assist' },
-  low_energy: { bg: 'bg-cyan-500/20', text: 'text-cyan-400', label: 'Low Energy' },
+  low_energy: { bg: 'bg-white/10', text: 'text-slate-300', label: 'Low Energy' },
 };
 
 function formatTravelTime(days: number): string {

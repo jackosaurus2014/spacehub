@@ -197,7 +197,7 @@ export default function ExitIntentPopup() {
         </button>
 
         {/* Decorative glow */}
-        <div className="absolute -top-16 left-1/2 -translate-x-1/2 w-40 h-40 bg-cyan-500/10 rounded-full blur-[60px] pointer-events-none" />
+        <div className="absolute -top-16 left-1/2 -translate-x-1/2 w-40 h-40 bg-white/10 rounded-full blur-[60px] pointer-events-none" />
 
         {status === 'success' ? (
           /* Success state */
@@ -213,7 +213,7 @@ export default function ExitIntentPopup() {
             </p>
             <button
               onClick={handleDismiss}
-              className="text-sm text-cyan-400 hover:text-cyan-300 transition-colors"
+              className="text-sm text-slate-300 hover:text-white transition-colors"
             >
               Close
             </button>
@@ -222,8 +222,8 @@ export default function ExitIntentPopup() {
           /* Form state */
           <div className="relative">
             {/* Rocket icon */}
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-500/20 to-blue-500/20 border border-cyan-500/30 flex items-center justify-center mx-auto mb-5">
-              <svg className="w-6 h-6 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-white/5 to-white/10 border border-white/10 flex items-center justify-center mx-auto mb-5">
+              <svg className="w-6 h-6 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15.59 14.37a6 6 0 01-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 006.16-12.12A14.98 14.98 0 009.631 8.41m5.96 5.96a14.926 14.926 0 01-5.841 2.58m-.119-8.54a6 6 0 00-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 00-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 01-2.448-2.448 14.9 14.9 0 01.06-.312m-2.24 2.39a4.493 4.493 0 00-1.757 4.306 4.493 4.493 0 004.306-1.758M16.5 9a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z" />
               </svg>
             </div>
@@ -232,7 +232,7 @@ export default function ExitIntentPopup() {
               Wait — here&apos;s an exclusive offer
             </h3>
             <p className="text-sm text-slate-400 text-center mb-3">
-              Subscribe now and get a <span className="text-cyan-400 font-semibold">free extended 30-day trial</span> of SpaceNexus Pro
+              Subscribe now and get a <span className="text-slate-300 font-semibold">free extended 30-day trial</span> of SpaceNexus Pro
             </p>
 
             {/* Countdown timer */}
@@ -244,7 +244,7 @@ export default function ExitIntentPopup() {
               ].map((unit) => (
                 <div key={unit.label} className="text-center">
                   <div className="w-12 h-12 rounded-lg bg-slate-800 border border-slate-600 flex items-center justify-center">
-                    <span className="text-lg font-bold text-cyan-400 tabular-nums">
+                    <span className="text-lg font-bold text-slate-300 tabular-nums">
                       {String(unit.value).padStart(2, '0')}
                     </span>
                   </div>
@@ -257,7 +257,7 @@ export default function ExitIntentPopup() {
             <ul className="space-y-2.5 mb-6">
               {BENEFITS.map((b) => (
                 <li key={b} className="flex items-start gap-2.5 text-sm text-slate-300">
-                  <svg className="w-4 h-4 text-cyan-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <svg className="w-4 h-4 text-slate-300 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                   </svg>
                   {b}
@@ -276,7 +276,7 @@ export default function ExitIntentPopup() {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Enter your email address"
                 aria-label="Email address"
-                className="w-full px-4 py-3 bg-slate-800/80 border border-slate-600 rounded-xl text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-cyan-500/50 transition-colors text-sm"
+                className="w-full px-4 py-3 bg-slate-800/80 border border-slate-600 rounded-xl text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-white/15 transition-colors text-sm"
                 required
                 disabled={status === 'loading'}
                 autoFocus
@@ -284,7 +284,7 @@ export default function ExitIntentPopup() {
               <button
                 type="submit"
                 disabled={status === 'loading' || !email}
-                className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold text-sm transition-all duration-200 shadow-lg shadow-cyan-500/20"
+                className="w-full py-3 px-4 rounded-xl bg-gradient-to-r bg-white hover:bg-slate-100 disabled:opacity-50 disabled:cursor-not-allowed text-slate-900 font-semibold text-sm transition-all duration-200 shadow-lg shadow-black/20"
               >
                 {status === 'loading' ? (
                   <span className="flex items-center justify-center gap-2">

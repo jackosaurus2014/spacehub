@@ -365,7 +365,7 @@ const PODCASTS: Podcast[] = [
 // ---------------------------------------------------------------------------
 
 const CATEGORY_CONFIG: Record<PodcastCategory, { label: string; color: string; bg: string; icon: string }> = {
-  news: { label: 'News & Analysis', color: 'text-cyan-400', bg: 'bg-cyan-500/15 border-cyan-500/30', icon: 'N' },
+  news: { label: 'News & Analysis', color: 'text-slate-300', bg: 'bg-white/8 border-white/10', icon: 'N' },
   technical: { label: 'Technical', color: 'text-purple-400', bg: 'bg-purple-500/15 border-purple-500/30', icon: 'T' },
   business: { label: 'Business & Finance', color: 'text-emerald-400', bg: 'bg-emerald-500/15 border-emerald-500/30', icon: 'B' },
   educational: { label: 'Educational & Science', color: 'text-amber-400', bg: 'bg-amber-500/15 border-amber-500/30', icon: 'E' },
@@ -450,7 +450,7 @@ function PodcastCard({ podcast, index }: { podcast: Podcast; index: number }) {
       >
         {/* Hover gradient border */}
         <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-          <div className="absolute inset-[-1px] rounded-xl bg-gradient-to-r from-cyan-500/30 via-purple-500/30 to-cyan-500/30 animate-pulse" />
+          <div className="absolute inset-[-1px] rounded-xl bg-gradient-to-r from-white/30 via-purple-500/30 to-slate-200/30 animate-pulse" />
           <div className="absolute inset-[1px] rounded-xl bg-slate-900/95" />
         </div>
 
@@ -462,7 +462,7 @@ function PodcastCard({ podcast, index }: { podcast: Podcast; index: number }) {
                 {catConfig.icon}
               </div>
               <div className="min-w-0">
-                <h3 className="font-semibold text-white truncate group-hover:text-cyan-400 transition-colors text-sm leading-snug">
+                <h3 className="font-semibold text-white truncate group-hover:text-white transition-colors text-sm leading-snug">
                   {podcast.name}
                 </h3>
                 <p className="text-xs text-slate-400 truncate">
@@ -497,7 +497,7 @@ function PodcastCard({ podcast, index }: { podcast: Podcast; index: number }) {
           <div className="grid grid-cols-2 gap-2 mb-3">
             <div className="bg-slate-800/50 rounded-lg p-2">
               <div className="text-xs text-slate-500 uppercase tracking-wider">Episodes</div>
-              <div className="text-sm font-semibold text-cyan-400">
+              <div className="text-sm font-semibold text-slate-300">
                 {podcast.episodeCount.toLocaleString()}+
               </div>
             </div>
@@ -674,7 +674,7 @@ export default function PodcastsPage() {
             label="Total Episodes"
             value={stats.totalEpisodes.toLocaleString() + '+'}
             icon="E"
-            color="bg-cyan-500/20"
+            color="bg-white/10"
           />
           <StatCard
             label="Avg Rating"
@@ -804,7 +804,7 @@ export default function PodcastsPage() {
           </p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="bg-slate-800/40 rounded-lg p-4">
-              <h3 className="text-sm font-semibold text-cyan-400 mb-1">For Professionals</h3>
+              <h3 className="text-sm font-semibold text-slate-300 mb-1">For Professionals</h3>
               <p className="text-xs text-slate-400">
                 Stay current with daily and weekly news shows like T-Minus Space Daily, Main Engine
                 Cut Off, and This Week in Space.

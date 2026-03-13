@@ -402,7 +402,7 @@ export default function ROICalculator() {
               </div>
               <div className="bg-slate-800/50 rounded-xl p-4 text-center">
                 <p className="text-xs text-slate-500 mb-1">Return on investment</p>
-                <p className="text-lg sm:text-xl font-bold text-cyan-400 tabular-nums">
+                <p className="text-lg sm:text-xl font-bold text-slate-300 tabular-nums">
                   {fmtPercent(animROI)}
                 </p>
                 <p className="text-xs text-slate-500">ROI</p>
@@ -412,7 +412,7 @@ export default function ROICalculator() {
             {/* CTA */}
             <Link
               href="/pricing"
-              className="block w-full text-center bg-gradient-to-r from-cyan-500 to-emerald-500 hover:from-cyan-400 hover:to-emerald-400 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 shadow-lg shadow-cyan-500/20 hover:shadow-cyan-500/30 hover:-translate-y-0.5"
+              className="block w-full text-center bg-gradient-to-r bg-white hover:bg-slate-100 text-slate-900 font-semibold py-3 px-6 rounded-xl transition-all duration-200 shadow-lg shadow-black/20 hover:shadow-black/20 hover:-translate-y-0.5"
             >
               Start Your Free 14-Day Trial
             </Link>

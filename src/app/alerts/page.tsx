@@ -118,7 +118,7 @@ const TRIGGER_TYPE_ICONS: Record<string, string> = {
 };
 
 const TRIGGER_TYPE_COLORS: Record<string, string> = {
-  keyword: 'text-cyan-400',
+  keyword: 'text-slate-300',
   price_threshold: 'text-emerald-400',
   regulatory_filing: 'text-amber-400',
   launch_status: 'text-orange-400',
@@ -143,7 +143,7 @@ const CHANNEL_ICONS: Record<string, string> = {
 
 const PRIORITY_COLORS: Record<string, string> = {
   low: 'bg-slate-700/60 text-slate-300',
-  normal: 'bg-cyan-900/50 text-cyan-300',
+  normal: 'bg-slate-800/50 text-slate-200',
   high: 'bg-orange-900/50 text-orange-300',
   critical: 'bg-red-900/50 text-red-300',
 };
@@ -705,7 +705,7 @@ function AlertsPageInner() {
       <div className="min-h-screen bg-slate-950 flex items-center justify-center px-4">
         <div className="text-center max-w-md">
           <svg
-            className="w-16 h-16 text-cyan-400 mx-auto mb-4"
+            className="w-16 h-16 text-slate-300 mx-auto mb-4"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -723,7 +723,7 @@ function AlertsPageInner() {
           </p>
           <Link
             href="/login"
-            className="inline-block px-6 py-3 bg-cyan-600 hover:bg-cyan-500 text-white font-medium rounded-lg transition-colors"
+            className="inline-block px-6 py-3 bg-white hover:bg-slate-100 text-white font-medium rounded-lg transition-colors"
           >
             Sign In
           </Link>
@@ -764,7 +764,7 @@ function AlertsPageInner() {
           </p>
           <button
             onClick={() => setShowRuleBuilder(true)}
-            className="inline-flex items-center gap-2 px-5 py-2.5 bg-cyan-600 hover:bg-cyan-500 text-white font-medium rounded-lg transition-colors"
+            className="inline-flex items-center gap-2 px-5 py-2.5 bg-white hover:bg-slate-100 text-white font-medium rounded-lg transition-colors"
           >
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -785,7 +785,7 @@ function AlertsPageInner() {
                 {/* Title Row */}
                 <div className="flex items-center gap-3 mb-1.5">
                   <svg
-                    className={`w-5 h-5 flex-shrink-0 ${TRIGGER_TYPE_COLORS[rule.triggerType] || 'text-cyan-400'}`}
+                    className={`w-5 h-5 flex-shrink-0 ${TRIGGER_TYPE_COLORS[rule.triggerType] || 'text-slate-300'}`}
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -861,7 +861,7 @@ function AlertsPageInner() {
                   onClick={() => toggleRule(rule.id, rule.isActive)}
                   disabled={togglingRuleId === rule.id}
                   className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                    rule.isActive ? 'bg-cyan-600' : 'bg-slate-700'
+                    rule.isActive ? 'bg-white' : 'bg-slate-700'
                   } ${togglingRuleId === rule.id ? 'opacity-50' : ''}`}
                   title={rule.isActive ? 'Pause alert' : 'Activate alert'}
                   aria-label={rule.isActive ? 'Pause alert' : 'Activate alert'}
@@ -924,7 +924,7 @@ function AlertsPageInner() {
           </p>
           <button
             onClick={markAllRead}
-            className="text-sm text-cyan-400 hover:text-cyan-300 transition-colors font-medium"
+            className="text-sm text-slate-300 hover:text-white transition-colors font-medium"
           >
             Mark All Read
           </button>
@@ -952,7 +952,7 @@ function AlertsPageInner() {
                 key={delivery.id}
                 className={`bg-slate-900/80 border rounded-xl transition-all cursor-pointer ${
                   isUnread
-                    ? 'border-cyan-800/50 bg-cyan-950/10'
+                    ? 'border-white/10 bg-slate-900/10'
                     : 'border-slate-800 hover:border-slate-700'
                 }`}
                 onClick={() => {
@@ -965,7 +965,7 @@ function AlertsPageInner() {
                     {/* Unread indicator */}
                     <div className="flex-shrink-0 mt-1.5">
                       {isUnread ? (
-                        <span className="block w-2.5 h-2.5 bg-cyan-400 rounded-full ring-2 ring-cyan-400/30" />
+                        <span className="block w-2.5 h-2.5 bg-white rounded-full ring-2 ring-white/10" />
                       ) : (
                         <span className="block w-2.5 h-2.5 bg-slate-700 rounded-full" />
                       )}
@@ -1064,7 +1064,7 @@ function AlertsPageInner() {
               <button
                 onClick={loadMoreDeliveries}
                 disabled={loadingMoreDeliveries}
-                className="px-5 py-2 text-sm text-cyan-400 hover:text-cyan-300 border border-slate-700 hover:border-slate-600 rounded-lg transition-colors disabled:opacity-50"
+                className="px-5 py-2 text-sm text-slate-300 hover:text-white border border-slate-700 hover:border-slate-600 rounded-lg transition-colors disabled:opacity-50"
               >
                 {loadingMoreDeliveries ? (
                   <span className="flex items-center gap-2 justify-center">
@@ -1118,7 +1118,7 @@ function AlertsPageInner() {
           <div className="flex flex-wrap gap-3 justify-center">
             <Link
               href="/company-profiles"
-              className="inline-flex items-center gap-2 px-4 py-2.5 bg-cyan-600 hover:bg-cyan-500 text-white text-sm font-medium rounded-lg transition-colors"
+              className="inline-flex items-center gap-2 px-4 py-2.5 bg-white hover:bg-slate-100 text-white text-sm font-medium rounded-lg transition-colors"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
@@ -1170,7 +1170,7 @@ function AlertsPageInner() {
                     {/* Re-run link */}
                     <Link
                       href={buildSearchUrl(search)}
-                      className="inline-flex items-center gap-1 text-xs text-cyan-400 hover:text-cyan-300 transition-colors"
+                      className="inline-flex items-center gap-1 text-xs text-slate-300 hover:text-white transition-colors"
                     >
                       <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -1192,7 +1192,7 @@ function AlertsPageInner() {
                     <button
                       onClick={() => toggleSavedSearchAlert(search.id, search.alertEnabled)}
                       className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
-                        search.alertEnabled ? 'bg-cyan-600' : 'bg-slate-700'
+                        search.alertEnabled ? 'bg-white' : 'bg-slate-700'
                       }`}
                       title={search.alertEnabled ? 'Disable alerts' : 'Enable alerts'}
                       aria-label={search.alertEnabled ? 'Disable alerts' : 'Enable alerts'}
@@ -1290,7 +1290,7 @@ function AlertsPageInner() {
               key={option.value}
               className={`flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition-all ${
                 prefs.alertDigestMode === option.value
-                  ? 'border-cyan-600 bg-cyan-950/20'
+                  ? 'border-white/15 bg-slate-900/20'
                   : 'border-slate-700 hover:border-slate-600 bg-slate-800/40'
               }`}
             >
@@ -1300,7 +1300,7 @@ function AlertsPageInner() {
                 value={option.value}
                 checked={prefs.alertDigestMode === option.value}
                 onChange={() => setPrefs((p) => ({ ...p, alertDigestMode: option.value }))}
-                className="mt-0.5 accent-cyan-500"
+                className="mt-0.5 accent-slate-400"
               />
               <div>
                 <span className="text-sm font-medium text-white">{option.label}</span>
@@ -1328,7 +1328,7 @@ function AlertsPageInner() {
               }
             }}
             className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-              quietHoursEnabled ? 'bg-cyan-600' : 'bg-slate-700'
+              quietHoursEnabled ? 'bg-white' : 'bg-slate-700'
             }`}
             aria-label={quietHoursEnabled ? 'Disable quiet hours' : 'Enable quiet hours'}
           >
@@ -1353,7 +1353,7 @@ function AlertsPageInner() {
                 <select
                   value={prefs.quietHoursStart ?? 22}
                   onChange={(e) => setPrefs((p) => ({ ...p, quietHoursStart: parseInt(e.target.value) }))}
-                  className="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                  className="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-white/30 focus:border-transparent"
                 >
                   {Array.from({ length: 24 }, (_, i) => (
                     <option key={i} value={i}>
@@ -1369,7 +1369,7 @@ function AlertsPageInner() {
                 <select
                   value={prefs.quietHoursEnd ?? 7}
                   onChange={(e) => setPrefs((p) => ({ ...p, quietHoursEnd: parseInt(e.target.value) }))}
-                  className="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                  className="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-white/30 focus:border-transparent"
                 >
                   {Array.from({ length: 24 }, (_, i) => (
                     <option key={i} value={i}>
@@ -1445,7 +1445,7 @@ function AlertsPageInner() {
               <select
                 value={prefs.quietHoursTimezone}
                 onChange={(e) => setPrefs((p) => ({ ...p, quietHoursTimezone: e.target.value }))}
-                className="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                className="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-white/30 focus:border-transparent"
               >
                 {COMMON_TIMEZONES.map((tz) => (
                   <option key={tz} value={tz}>
@@ -1463,7 +1463,7 @@ function AlertsPageInner() {
 
       {/* Info Box */}
       <div className="bg-slate-900/40 border border-slate-800 rounded-xl p-4 flex gap-3">
-        <svg className="w-5 h-5 text-cyan-400 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <svg className="w-5 h-5 text-slate-300 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
         <div className="text-sm text-slate-400">
@@ -1482,7 +1482,7 @@ function AlertsPageInner() {
         <button
           onClick={savePreferences}
           disabled={savingPrefs}
-          className="inline-flex items-center gap-2 px-6 py-2.5 bg-cyan-600 hover:bg-cyan-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-colors"
+          className="inline-flex items-center gap-2 px-6 py-2.5 bg-white hover:bg-slate-100 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-colors"
         >
           {savingPrefs ? (
             <>
@@ -1513,7 +1513,7 @@ function AlertsPageInner() {
     <div className="space-y-6">
       <div className="bg-slate-900/80 border border-slate-700 rounded-xl p-5">
         <h3 className="text-base font-semibold text-white mb-4 flex items-center gap-2">
-          <svg className="w-5 h-5 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg className="w-5 h-5 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
           </svg>
           Add Webhook Integration
@@ -1521,7 +1521,7 @@ function AlertsPageInner() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
           <div>
             <label htmlFor="webhook-name" className="block text-sm text-slate-400 mb-1">Integration Name</label>
-            <input id="webhook-name" type="text" value={webhookName} onChange={(e) => setWebhookName(e.target.value)} placeholder="e.g. Launch Alerts Channel" className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent" maxLength={100} />
+            <input id="webhook-name" type="text" value={webhookName} onChange={(e) => setWebhookName(e.target.value)} placeholder="e.g. Launch Alerts Channel" className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-white/30 focus:border-transparent" maxLength={100} />
           </div>
           <div>
             <label className="block text-sm text-slate-400 mb-1">Platform</label>
@@ -1539,10 +1539,10 @@ function AlertsPageInner() {
         </div>
         <div className="mb-4">
           <label htmlFor="webhook-url" className="block text-sm text-slate-400 mb-1">Webhook URL</label>
-          <input id="webhook-url" type="url" autoComplete="url" inputMode="url" enterKeyHint="done" value={webhookUrl} onChange={(e) => setWebhookUrl(e.target.value)} placeholder={webhookType === 'slack' ? 'https://hooks.slack.com/services/...' : 'https://discord.com/api/webhooks/...'} className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent font-mono" />
+          <input id="webhook-url" type="url" autoComplete="url" inputMode="url" enterKeyHint="done" value={webhookUrl} onChange={(e) => setWebhookUrl(e.target.value)} placeholder={webhookType === 'slack' ? 'https://hooks.slack.com/services/...' : 'https://discord.com/api/webhooks/...'} className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-white/30 focus:border-transparent font-mono" />
           <p className="text-xs text-slate-500 mt-1">{webhookType === 'slack' ? 'Create an Incoming Webhook in your Slack workspace settings.' : 'Create a webhook in your Discord server\'s channel Integrations settings.'}</p>
         </div>
-        <button onClick={addWebhook} disabled={addingWebhook || !webhookName.trim() || !webhookUrl.trim()} className="inline-flex items-center gap-2 px-4 py-2 bg-cyan-600 hover:bg-cyan-500 disabled:bg-slate-700 disabled:text-slate-500 text-white font-medium rounded-lg transition-colors text-sm">
+        <button onClick={addWebhook} disabled={addingWebhook || !webhookName.trim() || !webhookUrl.trim()} className="inline-flex items-center gap-2 px-4 py-2 bg-white hover:bg-slate-100 disabled:bg-slate-700 disabled:text-slate-500 text-white font-medium rounded-lg transition-colors text-sm">
           {addingWebhook ? (<span className="flex items-center gap-2"><svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg>Adding...</span>) : (<span className="flex items-center gap-2"><svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>Add Webhook</span>)}
         </button>
       </div>
@@ -1574,7 +1574,7 @@ function AlertsPageInner() {
                   </div>
                 </div>
                 <div className="flex items-center gap-2 flex-shrink-0">
-                  <button onClick={() => testWebhook(webhook.id)} disabled={testingWebhookId === webhook.id} className="inline-flex items-center gap-1 px-3 py-2.5 text-xs font-medium text-cyan-400 border border-slate-700 hover:border-cyan-700 hover:bg-cyan-900/20 rounded-lg transition-colors disabled:opacity-50 min-h-[44px]" aria-label="Send a test message">
+                  <button onClick={() => testWebhook(webhook.id)} disabled={testingWebhookId === webhook.id} className="inline-flex items-center gap-1 px-3 py-2.5 text-xs font-medium text-slate-300 border border-slate-700 hover:border-white/15 hover:bg-slate-800/30 rounded-lg transition-colors disabled:opacity-50 min-h-[44px]" aria-label="Send a test message">
                     {testingWebhookId === webhook.id ? (<span className="flex items-center gap-1"><svg className="w-3.5 h-3.5 animate-spin" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg>Testing...</span>) : (<span className="flex items-center gap-1"><svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>Test</span>)}
                   </button>
                   <button onClick={() => { if (confirm('Remove this webhook integration?')) deleteWebhook(webhook.id); }} disabled={deletingWebhookId === webhook.id} className={`p-1.5 text-slate-500 hover:text-red-400 transition-colors rounded-md hover:bg-red-900/20 ${deletingWebhookId === webhook.id ? 'opacity-50 cursor-not-allowed' : ''}`} aria-label="Remove webhook">
@@ -1604,7 +1604,7 @@ function AlertsPageInner() {
             subtitle="Create custom alert rules and manage notifications for space industry events."
             icon={
               <svg
-                className="w-8 h-8 text-cyan-400"
+                className="w-8 h-8 text-slate-300"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -1622,7 +1622,7 @@ function AlertsPageInner() {
           >
             <button
               onClick={() => setShowRuleBuilder(true)}
-              className="inline-flex items-center gap-2 px-4 py-2.5 bg-cyan-600 hover:bg-cyan-500 text-white font-medium rounded-lg transition-colors mt-2"
+              className="inline-flex items-center gap-2 px-4 py-2.5 bg-white hover:bg-slate-100 text-white font-medium rounded-lg transition-colors mt-2"
             >
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -1640,7 +1640,7 @@ function AlertsPageInner() {
             <StaggerItem>
               <div className="bg-slate-900/80 border border-slate-800 rounded-xl p-4">
                 <p className="text-xs text-slate-400 uppercase tracking-wider">Active Rules</p>
-                <p className="text-2xl font-bold text-cyan-400 mt-1">{stats.activeRules}</p>
+                <p className="text-2xl font-bold text-slate-300 mt-1">{stats.activeRules}</p>
               </div>
             </StaggerItem>
             <StaggerItem>
@@ -1672,7 +1672,7 @@ function AlertsPageInner() {
             onClick={() => setTab('alerts')}
             className={`flex items-center gap-1.5 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
               currentTab === 'alerts'
-                ? 'bg-cyan-600 text-white shadow-lg shadow-cyan-900/30'
+                ? 'bg-white text-white shadow-lg shadow-black/15'
                 : 'text-slate-400 hover:text-white'
             }`}
           >
@@ -1685,7 +1685,7 @@ function AlertsPageInner() {
             onClick={() => setTab('notifications')}
             className={`flex items-center gap-1.5 px-4 py-2 rounded-md text-sm font-medium transition-colors relative ${
               currentTab === 'notifications'
-                ? 'bg-cyan-600 text-white shadow-lg shadow-cyan-900/30'
+                ? 'bg-white text-white shadow-lg shadow-black/15'
                 : 'text-slate-400 hover:text-white'
             }`}
           >
@@ -1703,7 +1703,7 @@ function AlertsPageInner() {
             onClick={() => setTab('saved-searches')}
             className={`flex items-center gap-1.5 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
               currentTab === 'saved-searches'
-                ? 'bg-cyan-600 text-white shadow-lg shadow-cyan-900/30'
+                ? 'bg-white text-white shadow-lg shadow-black/15'
                 : 'text-slate-400 hover:text-white'
             }`}
           >
@@ -1721,7 +1721,7 @@ function AlertsPageInner() {
             onClick={() => setTab('webhooks')}
             className={`flex items-center gap-1.5 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
               currentTab === 'webhooks'
-                ? 'bg-cyan-600 text-white shadow-lg shadow-cyan-900/30'
+                ? 'bg-white text-white shadow-lg shadow-black/15'
                 : 'text-slate-400 hover:text-white'
             }`}
           >
@@ -1739,7 +1739,7 @@ function AlertsPageInner() {
             onClick={() => setTab('preferences')}
             className={`flex items-center gap-1.5 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
               currentTab === 'preferences'
-                ? 'bg-cyan-600 text-white shadow-lg shadow-cyan-900/30'
+                ? 'bg-white text-white shadow-lg shadow-black/15'
                 : 'text-slate-400 hover:text-white'
             }`}
           >

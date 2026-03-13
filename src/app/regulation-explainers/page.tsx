@@ -87,7 +87,7 @@ function ExplainersContent() {
           <select
             value={agency}
             onChange={(e) => { setAgency(e.target.value); setPage(1); }}
-            className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+            className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
           >
             <option value="">All Agencies</option>
             {AGENCIES.map((a) => (
@@ -98,7 +98,7 @@ function ExplainersContent() {
           <select
             value={category}
             onChange={(e) => { setCategory(e.target.value); setPage(1); }}
-            className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+            className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
           >
             <option value="">All Categories</option>
             {CATEGORIES.map((c) => (
@@ -109,7 +109,7 @@ function ExplainersContent() {
           <select
             value={impactLevel}
             onChange={(e) => { setImpactLevel(e.target.value); setPage(1); }}
-            className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+            className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
           >
             <option value="">All Impact Levels</option>
             {IMPACT_LEVELS.map((l) => (
@@ -141,7 +141,7 @@ function ExplainersContent() {
               return (
                 <StaggerItem key={exp.id}>
                   <Link href={`/regulation-explainers/${exp.slug}`}>
-                    <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-5 hover:border-cyan-500/30 transition-all cursor-pointer h-full flex flex-col">
+                    <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-5 hover:border-white/10 transition-all cursor-pointer h-full flex flex-col">
                       <div className="flex items-center gap-2 mb-3">
                         <span className={`px-2 py-0.5 rounded text-xs font-medium border ${impact.color}`}>
                           {impact.label}

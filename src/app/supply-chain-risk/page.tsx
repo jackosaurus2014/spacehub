@@ -544,7 +544,7 @@ export default function SupplyChainRiskPage() {
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value as SortOption)}
-            className="bg-slate-800/60 border border-slate-700/50 text-slate-200 text-sm rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-cyan-500/50"
+            className="bg-slate-800/60 border border-slate-700/50 text-slate-200 text-sm rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-white/20"
           >
             <option value="risk-desc">Risk Level (High to Low)</option>
             <option value="risk-asc">Risk Level (Low to High)</option>
@@ -558,7 +558,7 @@ export default function SupplyChainRiskPage() {
           <select
             value={filterCategory}
             onChange={(e) => setFilterCategory(e.target.value)}
-            className="bg-slate-800/60 border border-slate-700/50 text-slate-200 text-sm rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-cyan-500/50"
+            className="bg-slate-800/60 border border-slate-700/50 text-slate-200 text-sm rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-white/20"
           >
             <option value="all">All Categories</option>
             {RISK_CATEGORIES.map((cat) => (

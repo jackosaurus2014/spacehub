@@ -83,7 +83,7 @@ export default function AnalystsSolutionPage() {
 
       {/* Hero */}
       <section className="relative py-20 md:py-28 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 via-transparent to-cyan-600/10 pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 via-transparent to-slate-300/10 pointer-events-none" />
         <div className="container mx-auto px-4 relative z-10">
           <ScrollReveal>
             <div className="max-w-3xl mx-auto text-center">
@@ -92,7 +92,7 @@ export default function AnalystsSolutionPage() {
               </span>
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
                 Space Market Intelligence{' '}
-                <span className="bg-gradient-to-r from-purple-400 to-cyan-400 bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-purple-400 to-slate-400 bg-clip-text text-transparent">
                   at Your Fingertips
                 </span>
               </h1>
@@ -102,7 +102,7 @@ export default function AnalystsSolutionPage() {
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link
                   href="/pricing"
-                  className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-xl bg-gradient-to-r from-purple-500 to-cyan-600 text-white font-semibold hover:from-purple-400 hover:to-cyan-500 transition-all shadow-lg shadow-purple-500/25 hover:shadow-purple-500/40"
+                  className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-xl bg-gradient-to-r from-purple-500 to-slate-300 text-white font-semibold hover:from-purple-400 hover:to-slate-200 transition-all shadow-lg shadow-purple-500/25 hover:shadow-purple-500/40"
                 >
                   Start Free &mdash; No Credit Card Required
                 </Link>
@@ -219,7 +219,7 @@ export default function AnalystsSolutionPage() {
               </p>
               <Link
                 href="/pricing"
-                className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl bg-gradient-to-r from-purple-500 to-cyan-600 text-white font-semibold hover:from-purple-400 hover:to-cyan-500 transition-all shadow-lg shadow-purple-500/25 hover:shadow-purple-500/40"
+                className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl bg-gradient-to-r from-purple-500 to-slate-300 text-white font-semibold hover:from-purple-400 hover:to-slate-200 transition-all shadow-lg shadow-purple-500/25 hover:shadow-purple-500/40"
               >
                 Start Free Today
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

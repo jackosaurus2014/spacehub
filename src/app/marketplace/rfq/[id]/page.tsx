@@ -67,7 +67,7 @@ export default function RFQDetailPage({ params }: { params: { id: string } }) {
         <div className="text-center">
           <div className="text-4xl mb-3">🔒</div>
           <div className="text-slate-400">{error || 'RFQ not found'}</div>
-          <Link href="/marketplace" className="text-cyan-400 text-sm hover:underline mt-2 block">
+          <Link href="/marketplace" className="text-slate-300 text-sm hover:underline mt-2 block">
             Back to Marketplace
           </Link>
         </div>
@@ -87,9 +87,9 @@ export default function RFQDetailPage({ params }: { params: { id: string } }) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
         {/* Breadcrumb Navigation */}
         <nav className="flex items-center gap-2 text-sm text-slate-400 mb-4 overflow-x-auto" aria-label="Breadcrumb">
-          <Link href="/" className="hover:text-cyan-400 whitespace-nowrap min-h-[44px] flex items-center">Home</Link>
+          <Link href="/" className="hover:text-white whitespace-nowrap min-h-[44px] flex items-center">Home</Link>
           <span className="text-slate-600">/</span>
-          <Link href="/marketplace" className="hover:text-cyan-400 whitespace-nowrap min-h-[44px] flex items-center">Marketplace</Link>
+          <Link href="/marketplace" className="hover:text-white whitespace-nowrap min-h-[44px] flex items-center">Marketplace</Link>
           <span className="text-slate-600">/</span>
           <span className="text-slate-300 whitespace-nowrap">{rfqData?.title || 'RFQ Details'}</span>
         </nav>
@@ -148,7 +148,7 @@ export default function RFQDetailPage({ params }: { params: { id: string } }) {
           </div>
           <div className="card p-3">
             <div className="text-xs text-slate-500 uppercase">Proposals</div>
-            <div className="text-sm font-semibold text-cyan-400">
+            <div className="text-sm font-semibold text-slate-300">
               {rfqData.proposals?.length ?? rfqData._count?.proposals ?? 0}
             </div>
           </div>
@@ -166,7 +166,7 @@ export default function RFQDetailPage({ params }: { params: { id: string } }) {
             <h3 className="text-sm font-semibold text-white mb-2">Required Certifications</h3>
             <div className="flex flex-wrap gap-2">
               {rfqData.complianceReqs.map((cert: string) => (
-                <span key={cert} className="text-xs px-2 py-1 bg-cyan-500/10 text-cyan-400 rounded">
+                <span key={cert} className="text-xs px-2 py-1 bg-white/5 text-slate-300 rounded">
                   {cert}
                 </span>
               ))}
@@ -245,7 +245,7 @@ export default function RFQDetailPage({ params }: { params: { id: string } }) {
             ) : (
               <button
                 onClick={() => setShowProposalForm(true)}
-                className="w-full py-3 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white rounded-lg font-semibold transition-all"
+                className="w-full py-3 bg-gradient-to-r from-slate-200 to-blue-600 hover:from-white hover:to-blue-500 text-white rounded-lg font-semibold transition-all"
               >
                 Submit a Proposal
               </button>
@@ -264,7 +264,7 @@ export default function RFQDetailPage({ params }: { params: { id: string } }) {
             <p className="text-sm text-slate-400 mb-3">
               Sign in and claim a company profile to submit a proposal for this RFQ.
             </p>
-            <Link href="/login" className="text-cyan-400 hover:text-cyan-300 text-sm font-medium">
+            <Link href="/login" className="text-slate-300 hover:text-white text-sm font-medium">
               Sign In →
             </Link>
           </div>

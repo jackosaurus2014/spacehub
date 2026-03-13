@@ -22,7 +22,7 @@ export default function TourismCard({
     <div
       className={`relative backdrop-blur-xl rounded-xl border transition-all duration-300 overflow-hidden ${
         isSelected
-          ? 'border-cyan-400/60 shadow-lg shadow-cyan-500/20'
+          ? 'border-white/10/60 shadow-lg shadow-black/10'
           : 'border-slate-700/50 hover:border-slate-600/50'
       }`}
       style={{
@@ -30,7 +30,7 @@ export default function TourismCard({
       }}
     >
       {/* Top gradient accent */}
-      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-400/30 to-transparent" />
+      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-slate-300/30 to-transparent" />
 
       {/* Compare checkbox */}
       <div className="absolute top-4 right-4 z-10">
@@ -43,8 +43,8 @@ export default function TourismCard({
           />
           <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${
             isSelected
-              ? 'bg-cyan-500 border-cyan-500'
-              : 'border-slate-500 group-hover:border-cyan-400'
+              ? 'bg-white border-white/15'
+              : 'border-slate-500 group-hover:border-white/10'
           }`}>
             {isSelected && (
               <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
@@ -60,11 +60,11 @@ export default function TourismCard({
         {/* Provider Logo/Icon & Status */}
         <div className="flex items-start justify-between mb-4">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-slate-700 to-slate-800 flex items-center justify-center text-lg font-bold text-cyan-400 border border-slate-600/50">
+            <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-slate-700 to-slate-800 flex items-center justify-center text-lg font-bold text-slate-300 border border-slate-600/50">
               {offering.logoIcon}
             </div>
             <div>
-              <p className="text-cyan-400 text-sm font-medium">{offering.provider}</p>
+              <p className="text-slate-300 text-sm font-medium">{offering.provider}</p>
               <h3 className="text-white font-display font-bold text-lg">{offering.name}</h3>
             </div>
           </div>
@@ -147,7 +147,7 @@ export default function TourismCard({
         {/* Learn More Button */}
         <button
           onClick={() => onLearnMore(offering)}
-          className="w-full py-3 px-4 rounded-lg bg-gradient-to-r from-cyan-500 to-blue-500 text-white font-semibold text-sm hover:from-cyan-400 hover:to-blue-400 transition-all shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40"
+          className="w-full py-3 px-4 rounded-lg bg-gradient-to-r from-white to-blue-500 text-white font-semibold text-sm hover:from-slate-300 hover:to-blue-400 transition-all shadow-lg shadow-black/20/25 hover:shadow-black/20/40"
         >
           Learn More
         </button>

@@ -52,7 +52,7 @@ export const CONTRACT_TYPES: { value: ContractType; label: string; color: string
   { value: 'RFP', label: 'RFP', color: 'bg-green-600' },
   { value: 'RFI', label: 'RFI', color: 'bg-yellow-600' },
   { value: 'Award', label: 'Award', color: 'bg-purple-600' },
-  { value: 'IDIQ', label: 'IDIQ', color: 'bg-cyan-600' },
+  { value: 'IDIQ', label: 'IDIQ', color: 'bg-slate-600' },
 ];
 
 // Status badges

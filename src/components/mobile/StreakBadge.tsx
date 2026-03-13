@@ -13,7 +13,7 @@ const TIER_GRADIENTS: Record<string, string> = {
   bronze: 'from-amber-700 via-amber-500 to-amber-700',
   silver: 'from-slate-400 via-slate-200 to-slate-400',
   gold: 'from-yellow-500 via-yellow-300 to-yellow-500',
-  platinum: 'from-cyan-400 via-cyan-200 to-cyan-400',
+  platinum: 'from-slate-300 via-slate-200 to-slate-400',
   diamond: 'from-blue-400 via-purple-300 to-blue-400',
   master: 'from-purple-500 via-pink-400 to-purple-500',
   legend: 'from-emerald-400 via-teal-300 to-emerald-400',
@@ -79,8 +79,8 @@ function CompactBadge({ streak, className }: { streak: number; className: string
       className={`
         inline-flex items-center gap-1 rounded-full
         bg-slate-800/50 px-2.5 py-0.5
-        text-sm font-semibold text-cyan-400
-        backdrop-blur-sm border border-cyan-400/20
+        text-sm font-semibold text-slate-300
+        backdrop-blur-sm border border-white/10
         ${className}
       `}
       aria-label={`${streak} day visit streak`}
@@ -152,7 +152,7 @@ function FullBadge({
             {'\u{1F525}'}
           </span>
           <div>
-            <div className="text-2xl font-bold text-cyan-400">
+            <div className="text-2xl font-bold text-slate-300">
               {streakData.currentStreak}
               <span className="text-sm font-normal text-slate-400 ml-1">
                 {streakData.currentStreak === 1 ? 'day' : 'days'}

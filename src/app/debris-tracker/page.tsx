@@ -106,7 +106,7 @@ const KEY_STATISTICS: DebrisStat[] = [
     value: '32/yr avg',
     detail: 'ISS collision avoidance maneuvers in recent years',
     trend: 'up',
-    color: 'text-cyan-400',
+    color: 'text-slate-300',
   },
   {
     label: 'Kessler Syndrome Risk',
@@ -664,19 +664,19 @@ function OverviewTab() {
             <h3 className="font-semibold text-slate-200 mb-3">Avoidance Maneuver Statistics</h3>
             <ul className="space-y-2 text-sm text-slate-400">
               <li className="flex items-start gap-2">
-                <span className="text-cyan-400 mt-0.5">&#9679;</span>
+                <span className="text-slate-300 mt-0.5">&#9679;</span>
                 <span>ISS performs 1-3 avoidance maneuvers per month on average</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-cyan-400 mt-0.5">&#9679;</span>
+                <span className="text-slate-300 mt-0.5">&#9679;</span>
                 <span>SpaceX Starlink performs ~10,000 autonomous avoidance maneuvers per month</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-cyan-400 mt-0.5">&#9679;</span>
+                <span className="text-slate-300 mt-0.5">&#9679;</span>
                 <span>ESA spacecraft averaged 2-3 collision avoidance maneuvers per satellite/year</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-cyan-400 mt-0.5">&#9679;</span>
+                <span className="text-slate-300 mt-0.5">&#9679;</span>
                 <span>Maneuver cost: 0.1-5 m/s delta-v per event depending on urgency and orbit</span>
               </li>
             </ul>
@@ -795,7 +795,7 @@ function EventsTab() {
               <p className="text-xs text-slate-400">Still tracked from those events</p>
             </div>
             <div>
-              <p className="text-2xl font-bold text-cyan-400">100+ yrs</p>
+              <p className="text-2xl font-bold text-slate-300">100+ yrs</p>
               <p className="text-xs text-slate-400">Estimated orbital lifetime</p>
             </div>
           </div>
@@ -966,7 +966,7 @@ function RegulationsTab() {
               </p>
             </div>
             <div className="p-3 rounded-lg bg-slate-800/50">
-              <p className="text-sm font-medium text-cyan-300 mb-1">Financial Responsibility</p>
+              <p className="text-sm font-medium text-slate-200 mb-1">Financial Responsibility</p>
               <p className="text-xs text-slate-400">
                 Proposals for debris removal bonds, orbital-use fees, and insurance mandates
                 are advancing in the US, EU, and UK to internalize the cost of debris risk.

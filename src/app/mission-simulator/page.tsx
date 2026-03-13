@@ -414,12 +414,12 @@ export default function MissionSimulatorPage() {
               <button
                 key={t.label}
                 onClick={() => applyTemplate(t)}
-                className="group flex items-center gap-2 px-4 py-2.5 rounded-lg border border-slate-700 hover:border-cyan-500/60 bg-slate-800/60 hover:bg-slate-800 transition-all text-sm"
+                className="group flex items-center gap-2 px-4 py-2.5 rounded-lg border border-slate-700 hover:border-white/15/60 bg-slate-800/60 hover:bg-slate-800 transition-all text-sm"
                 title={t.description}
               >
                 <span className="text-lg">{t.icon}</span>
                 <div className="text-left">
-                  <div className="text-slate-200 font-medium group-hover:text-cyan-400 transition-colors">{t.label}</div>
+                  <div className="text-slate-200 font-medium group-hover:text-white transition-colors">{t.label}</div>
                   <div className="text-xs text-slate-500">{t.description}</div>
                 </div>
               </button>
@@ -433,7 +433,7 @@ export default function MissionSimulatorPage() {
           <ScrollReveal className="lg:col-span-1">
             <div className="card p-6 sticky top-24">
               <h2 className="text-xl font-bold text-slate-100 mb-6 flex items-center gap-2">
-                <span className="text-cyan-400">&#9881;</span> Mission Configuration
+                <span className="text-slate-300">&#9881;</span> Mission Configuration
               </h2>
 
               {/* Mission Type */}
@@ -451,7 +451,7 @@ export default function MissionSimulatorPage() {
                       setPayloadMass(info.defaultPayload);
                     }
                   }}
-                  className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2.5 text-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50"
+                  className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2.5 text-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-white/20 focus:border-white/15"
                 >
                   {MISSION_TYPES.map((mt) => (
                     <option key={mt.id} value={mt.id}>{mt.label}</option>
@@ -468,7 +468,7 @@ export default function MissionSimulatorPage() {
                 <select
                   value={vehicleId}
                   onChange={(e) => setVehicleId(e.target.value as LaunchVehicleId)}
-                  className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2.5 text-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50"
+                  className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2.5 text-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-white/20 focus:border-white/15"
                 >
                   {LAUNCH_VEHICLES.map((v) => (
                     <option key={v.id} value={v.id}>{v.name} ({v.provider})</option>
@@ -489,7 +489,7 @@ export default function MissionSimulatorPage() {
                   max={200000}
                   value={payloadMass}
                   onChange={(e) => setPayloadMass(Math.max(1, parseInt(e.target.value) || 1))}
-                  className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2.5 text-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50"
+                  className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2.5 text-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-white/20 focus:border-white/15"
                 />
                 {!results.payloadFeasible && (
                   <p className="text-xs text-red-400 mt-1">
@@ -504,7 +504,7 @@ export default function MissionSimulatorPage() {
                 <select
                   value={targetOrbit}
                   onChange={(e) => setTargetOrbit(e.target.value as TargetOrbit)}
-                  className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2.5 text-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50"
+                  className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2.5 text-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-white/20 focus:border-white/15"
                 >
                   {(Object.keys(ORBITS) as TargetOrbit[]).map((o) => (
                     <option key={o} value={o}>{ORBITS[o].label}</option>
@@ -519,7 +519,7 @@ export default function MissionSimulatorPage() {
                 <select
                   value={launchSite}
                   onChange={(e) => setLaunchSite(e.target.value as LaunchSite)}
-                  className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2.5 text-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50"
+                  className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2.5 text-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-white/20 focus:border-white/15"
                 >
                   {(Object.keys(LAUNCH_SITES) as LaunchSite[]).map((s) => (
                     <option key={s} value={s}>{LAUNCH_SITES[s].label}</option>
@@ -533,7 +533,7 @@ export default function MissionSimulatorPage() {
               {/* Simulate Button */}
               <button
                 onClick={runSimulation}
-                className="w-full py-3 rounded-lg bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-semibold text-sm transition-all shadow-lg shadow-cyan-900/30 hover:shadow-cyan-800/50"
+                className="w-full py-3 rounded-lg bg-gradient-to-r from-slate-200 to-blue-600 hover:from-white hover:to-blue-500 text-white font-semibold text-sm transition-all shadow-lg shadow-black/15 hover:shadow-black/20"
               >
                 Run Simulation
               </button>
@@ -558,7 +558,7 @@ export default function MissionSimulatorPage() {
                 <ScrollReveal>
                   <div className="card p-6">
                     <h2 className="text-xl font-bold text-slate-100 mb-5 flex items-center gap-2">
-                      <span className="text-cyan-400">&#9672;</span> Simulation Results
+                      <span className="text-slate-300">&#9672;</span> Simulation Results
                       {!results.payloadFeasible && (
                         <span className="ml-2 px-2 py-0.5 bg-red-900/50 text-red-400 text-xs rounded-full border border-red-700/50">
                           Payload Exceeds Capacity
@@ -570,7 +570,7 @@ export default function MissionSimulatorPage() {
                       <StaggerItem>
                         <div className="bg-slate-800/50 rounded-xl p-4 border border-slate-700/50">
                           <p className="text-xs text-slate-500 uppercase tracking-wide mb-1">Delta-V Required</p>
-                          <p className="text-2xl font-bold text-cyan-400">{(results.deltaV / 1000).toFixed(1)} km/s</p>
+                          <p className="text-2xl font-bold text-slate-300">{(results.deltaV / 1000).toFixed(1)} km/s</p>
                           <p className="text-xs text-slate-500 mt-1">{results.deltaV.toLocaleString()} m/s</p>
                         </div>
                       </StaggerItem>
@@ -628,24 +628,24 @@ export default function MissionSimulatorPage() {
                 <ScrollReveal>
                   <div className="card p-6">
                     <h2 className="text-xl font-bold text-slate-100 mb-5 flex items-center gap-2">
-                      <span className="text-cyan-400">&#9202;</span> Mission Timeline
+                      <span className="text-slate-300">&#9202;</span> Mission Timeline
                     </h2>
 
                     <div className="relative">
                       {/* Vertical line */}
-                      <div className="absolute left-6 top-0 bottom-0 w-px bg-gradient-to-b from-cyan-500/60 via-blue-500/40 to-transparent" />
+                      <div className="absolute left-6 top-0 bottom-0 w-px bg-gradient-to-b from-white/60 via-blue-500/40 to-transparent" />
 
                       <div className="space-y-4">
                         {results.phases.map((phase, idx) => (
                           <div key={idx} className="relative flex gap-4 pl-2">
                             {/* Timeline dot */}
-                            <div className="relative z-10 flex-shrink-0 w-9 h-9 rounded-full bg-slate-800 border-2 border-cyan-500/60 flex items-center justify-center text-lg">
+                            <div className="relative z-10 flex-shrink-0 w-9 h-9 rounded-full bg-slate-800 border-2 border-white/15/60 flex items-center justify-center text-lg">
                               {phase.icon}
                             </div>
                             {/* Phase card */}
-                            <div className="flex-1 bg-slate-800/40 rounded-lg border border-slate-700/50 p-3 hover:border-cyan-500/30 transition-colors">
+                            <div className="flex-1 bg-slate-800/40 rounded-lg border border-slate-700/50 p-3 hover:border-white/10 transition-colors">
                               <div className="flex items-center gap-3 mb-1">
-                                <span className="text-xs font-mono text-cyan-400 bg-cyan-950/50 px-2 py-0.5 rounded">{phase.time}</span>
+                                <span className="text-xs font-mono text-slate-300 bg-slate-900/50 px-2 py-0.5 rounded">{phase.time}</span>
                                 <h4 className="text-sm font-semibold text-slate-200">{phase.label}</h4>
                               </div>
                               <p className="text-xs text-slate-400">{phase.description}</p>
@@ -663,7 +663,7 @@ export default function MissionSimulatorPage() {
                 <ScrollReveal>
                   <div className="card p-6">
                     <h2 className="text-xl font-bold text-slate-100 mb-5 flex items-center gap-2">
-                      <span className="text-cyan-400">&#128176;</span> Cost Breakdown
+                      <span className="text-slate-300">&#128176;</span> Cost Breakdown
                     </h2>
 
                     <div className="space-y-3">
@@ -684,12 +684,12 @@ export default function MissionSimulatorPage() {
                       ))}
 
                       {/* Total */}
-                      <div className="flex items-center justify-between bg-gradient-to-r from-cyan-900/30 to-blue-900/30 rounded-lg px-4 py-4 border border-cyan-700/40 mt-2">
+                      <div className="flex items-center justify-between bg-gradient-to-r from-slate-800/30 to-blue-900/30 rounded-lg px-4 py-4 border border-white/10 mt-2">
                         <div>
                           <p className="text-base font-bold text-slate-100">Total Mission Cost</p>
                           <p className="text-xs text-slate-400">All-inclusive estimate</p>
                         </div>
-                        <p className="text-xl font-bold text-cyan-400 tabular-nums">{formatCurrency(results.costs.total)}</p>
+                        <p className="text-xl font-bold text-slate-300 tabular-nums">{formatCurrency(results.costs.total)}</p>
                       </div>
 
                       {/* Cost per kg */}
@@ -709,7 +709,7 @@ export default function MissionSimulatorPage() {
                 <ScrollReveal>
                   <div className="card p-6">
                     <h2 className="text-xl font-bold text-slate-100 mb-5 flex items-center gap-2">
-                      <span className="text-cyan-400">&#128218;</span> Similar Historical Missions
+                      <span className="text-slate-300">&#128218;</span> Similar Historical Missions
                     </h2>
 
                     <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -748,7 +748,7 @@ export default function MissionSimulatorPage() {
                 <ScrollReveal>
                   <div className="card p-6">
                     <h2 className="text-xl font-bold text-slate-100 mb-5 flex items-center gap-2">
-                      <span className="text-cyan-400">&#128640;</span> {vehicle.name} Specifications
+                      <span className="text-slate-300">&#128640;</span> {vehicle.name} Specifications
                     </h2>
 
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -777,7 +777,7 @@ export default function MissionSimulatorPage() {
                           className={`h-full rounded-full transition-all duration-700 ${
                             results.fuelFraction > 0.95 ? 'bg-gradient-to-r from-red-500 to-red-400' :
                             results.fuelFraction > 0.85 ? 'bg-gradient-to-r from-amber-500 to-amber-400' :
-                            'bg-gradient-to-r from-cyan-500 to-blue-500'
+                            'bg-gradient-to-r from-white to-blue-500'
                           }`}
                           style={{ width: `${Math.min(results.fuelFraction * 100, 100)}%` }}
                         />
@@ -800,24 +800,24 @@ export default function MissionSimulatorPage() {
           <section className="mt-16 border-t border-slate-800 pt-8">
             <h2 className="text-xl font-bold text-white mb-6">Explore More</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <a href="/orbital-calculator" className="card p-4 hover:border-cyan-500/50 transition-colors group">
-                <h3 className="text-white font-medium group-hover:text-cyan-400 transition-colors">Orbital Calculator</h3>
+              <a href="/orbital-calculator" className="card p-4 hover:border-white/15 transition-colors group">
+                <h3 className="text-white font-medium group-hover:text-white transition-colors">Orbital Calculator</h3>
                 <p className="text-slate-400 text-sm mt-1">Calculate orbital parameters, transfer orbits, and delta-V budgets.</p>
               </a>
-              <a href="/thermal-calculator" className="card p-4 hover:border-cyan-500/50 transition-colors group">
-                <h3 className="text-white font-medium group-hover:text-cyan-400 transition-colors">Thermal Calculator</h3>
+              <a href="/thermal-calculator" className="card p-4 hover:border-white/15 transition-colors group">
+                <h3 className="text-white font-medium group-hover:text-white transition-colors">Thermal Calculator</h3>
                 <p className="text-slate-400 text-sm mt-1">Model spacecraft thermal environments and heat dissipation requirements.</p>
               </a>
-              <a href="/radiation-calculator" className="card p-4 hover:border-cyan-500/50 transition-colors group">
-                <h3 className="text-white font-medium group-hover:text-cyan-400 transition-colors">Radiation Calculator</h3>
+              <a href="/radiation-calculator" className="card p-4 hover:border-white/15 transition-colors group">
+                <h3 className="text-white font-medium group-hover:text-white transition-colors">Radiation Calculator</h3>
                 <p className="text-slate-400 text-sm mt-1">Estimate radiation exposure across orbital regimes and shielding levels.</p>
               </a>
-              <a href="/launch-economics" className="card p-4 hover:border-cyan-500/50 transition-colors group">
-                <h3 className="text-white font-medium group-hover:text-cyan-400 transition-colors">Launch Economics</h3>
+              <a href="/launch-economics" className="card p-4 hover:border-white/15 transition-colors group">
+                <h3 className="text-white font-medium group-hover:text-white transition-colors">Launch Economics</h3>
                 <p className="text-slate-400 text-sm mt-1">Cost analysis and market trends for orbital launch vehicles.</p>
               </a>
-              <a href="/constellation-designer" className="card p-4 hover:border-cyan-500/50 transition-colors group">
-                <h3 className="text-white font-medium group-hover:text-cyan-400 transition-colors">Constellation Designer</h3>
+              <a href="/constellation-designer" className="card p-4 hover:border-white/15 transition-colors group">
+                <h3 className="text-white font-medium group-hover:text-white transition-colors">Constellation Designer</h3>
                 <p className="text-slate-400 text-sm mt-1">Design satellite constellations with coverage analysis and optimization.</p>
               </a>
             </div>

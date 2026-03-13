@@ -78,18 +78,18 @@ export default function ProfileCard({ profile, isFollowing = false, onFollowTogg
       >
         {/* Hover glow */}
         <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-          <div className="absolute inset-[-1px] rounded-xl bg-gradient-to-r from-cyan-500/30 via-purple-500/30 to-cyan-500/30" />
+          <div className="absolute inset-[-1px] rounded-xl bg-gradient-to-r from-white/30 via-purple-500/30 to-slate-200/30" />
           <div className="absolute inset-[1px] rounded-xl bg-slate-900/95" />
         </div>
 
         <div className="relative z-10">
           {/* Avatar + Name */}
           <div className="flex items-start gap-3 mb-3">
-            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-cyan-500/20 to-purple-500/20 border border-cyan-500/30 flex items-center justify-center text-sm font-bold text-cyan-300 flex-shrink-0">
+            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-white/5 to-purple-500/20 border border-white/10 flex items-center justify-center text-sm font-bold text-slate-200 flex-shrink-0">
               {getInitials(profile.user.name)}
             </div>
             <div className="min-w-0 flex-1">
-              <h3 className="font-semibold text-white group-hover:text-cyan-400 transition-colors truncate">
+              <h3 className="font-semibold text-white group-hover:text-white transition-colors truncate">
                 {profile.user.name || 'Anonymous'}
               </h3>
               {profile.headline && (
@@ -113,7 +113,7 @@ export default function ProfileCard({ profile, isFollowing = false, onFollowTogg
               {profile.expertise.slice(0, 4).map((tag) => (
                 <span
                   key={tag}
-                  className="text-xs px-1.5 py-0.5 bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 rounded"
+                  className="text-xs px-1.5 py-0.5 bg-white/5 text-slate-300 border border-white/10 rounded"
                 >
                   {tag}
                 </span>
@@ -134,7 +134,7 @@ export default function ProfileCard({ profile, isFollowing = false, onFollowTogg
               className={`flex-1 px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${
                 following
                   ? 'bg-slate-700 text-slate-300 hover:bg-slate-600'
-                  : 'bg-cyan-600 text-white hover:bg-cyan-500'
+                  : 'bg-white text-white hover:bg-slate-100'
               } disabled:opacity-50`}
             >
               {loading ? '...' : following ? 'Following' : 'Follow'}

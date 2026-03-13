@@ -231,7 +231,7 @@ function NewsResultCard({ item }: { item: NewsResult }) {
       href={item.url}
       target="_blank"
       rel="noopener noreferrer"
-      className="card p-5 block hover:border-cyan-400/60 transition-all group"
+      className="card p-5 block hover:border-white/10/60 transition-all group"
     >
       <div className="flex items-start gap-4">
         <div className="flex-shrink-0 p-2.5 rounded-lg bg-blue-500/10 text-blue-400 border border-blue-500/20">
@@ -240,11 +240,11 @@ function NewsResultCard({ item }: { item: NewsResult }) {
           </svg>
         </div>
         <div className="flex-1 min-w-0">
-          <h3 className="text-slate-100 font-medium group-hover:text-cyan-300 transition-colors line-clamp-1">
+          <h3 className="text-slate-100 font-medium group-hover:text-white transition-colors line-clamp-1">
             {item.title}
           </h3>
           {item.snippet ? (
-            <p className="text-star-300 text-sm mt-1 line-clamp-2 [&_mark]:bg-cyan-400/20 [&_mark]:text-cyan-200 [&_mark]:rounded-sm [&_mark]:px-0.5">
+            <p className="text-star-300 text-sm mt-1 line-clamp-2 [&_mark]:bg-white/10 [&_mark]:text-slate-200 [&_mark]:rounded-sm [&_mark]:px-0.5">
               <HighlightedText html={item.snippet} fallback={item.summary || ''} />
             </p>
           ) : item.summary ? (
@@ -260,7 +260,7 @@ function NewsResultCard({ item }: { item: NewsResult }) {
             )}
           </div>
         </div>
-        <svg className="w-4 h-4 text-star-300 group-hover:text-cyan-400 flex-shrink-0 mt-1 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className="w-4 h-4 text-star-300 group-hover:text-white flex-shrink-0 mt-1 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
         </svg>
       </div>
@@ -274,7 +274,7 @@ function EventResultCard({ item }: { item: EventResult }) {
   return (
     <a
       href="/mission-control"
-      className="card p-5 block hover:border-cyan-400/60 transition-all group"
+      className="card p-5 block hover:border-white/10/60 transition-all group"
     >
       <div className="flex items-start gap-4">
         <div className="flex-shrink-0 p-2.5 rounded-lg bg-orange-500/10 text-orange-400 border border-orange-500/20">
@@ -284,12 +284,12 @@ function EventResultCard({ item }: { item: EventResult }) {
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
-            <h3 className="text-slate-100 font-medium group-hover:text-cyan-300 transition-colors line-clamp-1">
+            <h3 className="text-slate-100 font-medium group-hover:text-white transition-colors line-clamp-1">
               {item.name}
             </h3>
             <span className={`text-xs px-1.5 py-0.5 rounded font-medium ${
               item.status === 'upcoming'
-                ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30'
+                ? 'bg-white/10 text-slate-300 border border-white/10'
                 : item.status === 'completed'
                 ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
                 : 'bg-slate-500/20 text-slate-400 border border-slate-500/30'
@@ -298,7 +298,7 @@ function EventResultCard({ item }: { item: EventResult }) {
             </span>
           </div>
           {item.snippet ? (
-            <p className="text-star-300 text-sm mt-1 line-clamp-2 [&_mark]:bg-cyan-400/20 [&_mark]:text-cyan-200 [&_mark]:rounded-sm [&_mark]:px-0.5">
+            <p className="text-star-300 text-sm mt-1 line-clamp-2 [&_mark]:bg-white/10 [&_mark]:text-slate-200 [&_mark]:rounded-sm [&_mark]:px-0.5">
               <HighlightedText html={item.snippet} fallback={item.description || ''} />
             </p>
           ) : item.description ? (
@@ -325,7 +325,7 @@ function OpportunityResultCard({ item }: { item: OpportunityResult }) {
   return (
     <a
       href={`/business-opportunities/${item.slug}`}
-      className="card p-5 block hover:border-cyan-400/60 transition-all group"
+      className="card p-5 block hover:border-white/10/60 transition-all group"
     >
       <div className="flex items-start gap-4">
         <div className="flex-shrink-0 p-2.5 rounded-lg bg-purple-500/10 text-purple-400 border border-purple-500/20">
@@ -334,11 +334,11 @@ function OpportunityResultCard({ item }: { item: OpportunityResult }) {
           </svg>
         </div>
         <div className="flex-1 min-w-0">
-          <h3 className="text-slate-100 font-medium group-hover:text-cyan-300 transition-colors line-clamp-1">
+          <h3 className="text-slate-100 font-medium group-hover:text-white transition-colors line-clamp-1">
             {item.title}
           </h3>
           {item.snippet ? (
-            <p className="text-star-300 text-sm mt-1 line-clamp-2 [&_mark]:bg-cyan-400/20 [&_mark]:text-cyan-200 [&_mark]:rounded-sm [&_mark]:px-0.5">
+            <p className="text-star-300 text-sm mt-1 line-clamp-2 [&_mark]:bg-white/10 [&_mark]:text-slate-200 [&_mark]:rounded-sm [&_mark]:px-0.5">
               <HighlightedText html={item.snippet} fallback={item.description || ''} />
             </p>
           ) : item.description ? (
@@ -367,7 +367,7 @@ function BlogResultCard({ item }: { item: BlogResult }) {
       href={item.url}
       target="_blank"
       rel="noopener noreferrer"
-      className="card p-5 block hover:border-cyan-400/60 transition-all group"
+      className="card p-5 block hover:border-white/10/60 transition-all group"
     >
       <div className="flex items-start gap-4">
         <div className="flex-shrink-0 p-2.5 rounded-lg bg-pink-500/10 text-pink-400 border border-pink-500/20">
@@ -376,11 +376,11 @@ function BlogResultCard({ item }: { item: BlogResult }) {
           </svg>
         </div>
         <div className="flex-1 min-w-0">
-          <h3 className="text-slate-100 font-medium group-hover:text-cyan-300 transition-colors line-clamp-1">
+          <h3 className="text-slate-100 font-medium group-hover:text-white transition-colors line-clamp-1">
             {item.title}
           </h3>
           {item.snippet ? (
-            <p className="text-star-300 text-sm mt-1 line-clamp-2 [&_mark]:bg-cyan-400/20 [&_mark]:text-cyan-200 [&_mark]:rounded-sm [&_mark]:px-0.5">
+            <p className="text-star-300 text-sm mt-1 line-clamp-2 [&_mark]:bg-white/10 [&_mark]:text-slate-200 [&_mark]:rounded-sm [&_mark]:px-0.5">
               <HighlightedText html={item.snippet} fallback={item.excerpt || ''} />
             </p>
           ) : item.excerpt ? (
@@ -396,7 +396,7 @@ function BlogResultCard({ item }: { item: BlogResult }) {
             )}
           </div>
         </div>
-        <svg className="w-4 h-4 text-star-300 group-hover:text-cyan-400 flex-shrink-0 mt-1 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className="w-4 h-4 text-star-300 group-hover:text-white flex-shrink-0 mt-1 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
         </svg>
       </div>
@@ -622,7 +622,7 @@ function SearchContent() {
       {/* Search Input */}
       <div className="relative mb-6">
         <div className="absolute inset-y-0 left-0 flex items-center pl-5 pointer-events-none">
-          <svg className="w-6 h-6 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-6 h-6 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
         </div>
@@ -633,11 +633,11 @@ function SearchContent() {
           onChange={(e) => setQuery(e.target.value)}
           aria-label="Search across news, companies, events, opportunities, and blogs"
           placeholder="Search across news, companies, events, opportunities, and blogs..."
-          className="w-full pl-14 pr-12 py-4 text-lg bg-slate-800/60 border border-cyan-400/30 rounded-2xl text-slate-100 placeholder-star-400 focus:outline-none focus:border-cyan-400/60 focus:ring-2 focus:ring-cyan-400/20 transition-all"
+          className="w-full pl-14 pr-12 py-4 text-lg bg-slate-800/60 border border-white/10 rounded-2xl text-slate-100 placeholder-star-400 focus:outline-none focus:border-white/10/60 focus:ring-2 focus:ring-white/20/20 transition-all"
         />
         {loading && (
           <div className="absolute inset-y-0 right-0 flex items-center pr-5">
-            <div className="w-5 h-5 border-2 border-cyan-400/30 border-t-cyan-400 rounded-full animate-spin" />
+            <div className="w-5 h-5 border-2 border-white/10 border-t-white rounded-full animate-spin" />
           </div>
         )}
         {!loading && query && (
@@ -731,8 +731,8 @@ function SearchContent() {
             onClick={() => setFilterOpen(!filterOpen)}
             className={`lg:hidden flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all ${
               filterOpen
-                ? 'bg-cyan-400/10 text-cyan-300 border border-cyan-400/40'
-                : 'bg-slate-800/60 text-star-300 border border-slate-600/40 hover:border-cyan-400/30'
+                ? 'bg-white/5 text-slate-200 border border-white/10/40'
+                : 'bg-slate-800/60 text-star-300 border border-slate-600/40 hover:border-white/10'
             }`}
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -740,7 +740,7 @@ function SearchContent() {
             </svg>
             Filters
             {hasActiveFilters && (
-              <span className="w-2 h-2 rounded-full bg-cyan-400" />
+              <span className="w-2 h-2 rounded-full bg-white" />
             )}
           </button>
 
@@ -748,7 +748,7 @@ function SearchContent() {
             <span className="text-sm text-star-300">
               {totalResults} {totalResults === 1 ? 'result' : 'results'} found
               {searchMethod === 'fts' && (
-                <span className="ml-2 text-xs px-1.5 py-0.5 rounded bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
+                <span className="ml-2 text-xs px-1.5 py-0.5 rounded bg-white/5 text-slate-300 border border-white/10">
                   Full-text
                 </span>
               )}
@@ -763,7 +763,7 @@ function SearchContent() {
             id="sort-select"
             value={sortOption}
             onChange={(e) => setSortOption(e.target.value as SortOption)}
-            className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+            className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
           >
             {SORT_OPTIONS.map((opt) => (
               <option key={opt.value} value={opt.value}>
@@ -787,7 +787,7 @@ function SearchContent() {
                 <h3 className="text-sm font-semibold text-star-200 uppercase tracking-wider">Modules</h3>
                 <button
                   onClick={selectAllModules}
-                  className="text-xs text-cyan-400 hover:text-cyan-300 transition-colors"
+                  className="text-xs text-slate-300 hover:text-white transition-colors"
                 >
                   Select All
                 </button>
@@ -798,7 +798,7 @@ function SearchContent() {
                     key={key}
                     className={`flex items-center gap-3 p-2.5 rounded-xl cursor-pointer transition-all ${
                       selectedModules.has(key)
-                        ? 'bg-cyan-400/5 border border-cyan-400/20'
+                        ? 'bg-white/5 border border-white/10'
                         : 'border border-transparent hover:bg-slate-700/30'
                     }`}
                   >
@@ -810,7 +810,7 @@ function SearchContent() {
                     />
                     <div className={`w-4 h-4 rounded border flex items-center justify-center transition-all ${
                       selectedModules.has(key)
-                        ? 'bg-cyan-400 border-cyan-400'
+                        ? 'bg-white border-white/10'
                         : 'border-star-400 bg-transparent'
                     }`}>
                       {selectedModules.has(key) && (
@@ -841,7 +841,7 @@ function SearchContent() {
                     type="date"
                     value={dateFrom}
                     onChange={(e) => setDateFrom(e.target.value)}
-                    className="w-full bg-slate-800/60 border border-slate-600/40 rounded-xl px-3 py-2 text-sm text-star-200 focus:outline-none focus:border-cyan-400/40 focus:ring-1 focus:ring-cyan-400/20 transition-all"
+                    className="w-full bg-slate-800/60 border border-slate-600/40 rounded-xl px-3 py-2 text-sm text-star-200 focus:outline-none focus:border-white/10/40 focus:ring-1 focus:ring-white/20/20 transition-all"
                   />
                 </div>
                 <div>
@@ -851,7 +851,7 @@ function SearchContent() {
                     type="date"
                     value={dateTo}
                     onChange={(e) => setDateTo(e.target.value)}
-                    className="w-full bg-slate-800/60 border border-slate-600/40 rounded-xl px-3 py-2 text-sm text-star-200 focus:outline-none focus:border-cyan-400/40 focus:ring-1 focus:ring-cyan-400/20 transition-all"
+                    className="w-full bg-slate-800/60 border border-slate-600/40 rounded-xl px-3 py-2 text-sm text-star-200 focus:outline-none focus:border-white/10/40 focus:ring-1 focus:ring-white/20/20 transition-all"
                   />
                 </div>
               </div>
@@ -861,7 +861,7 @@ function SearchContent() {
             {hasActiveFilters && (
               <button
                 onClick={clearFilters}
-                className="w-full py-2 text-sm text-star-300 hover:text-cyan-300 border border-slate-600/40 rounded-xl hover:border-cyan-400/30 transition-all"
+                className="w-full py-2 text-sm text-star-300 hover:text-white border border-slate-600/40 rounded-xl hover:border-white/10 transition-all"
               >
                 Clear All Filters
               </button>
@@ -880,8 +880,8 @@ function SearchContent() {
           {!loading && !hasSearched && (
             <ScrollReveal>
             <div className="card p-12 text-center">
-              <div className="w-16 h-16 mx-auto mb-6 rounded-2xl bg-cyan-400/10 border border-cyan-400/20 flex items-center justify-center">
-                <svg className="w-8 h-8 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="w-16 h-16 mx-auto mb-6 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center">
+                <svg className="w-8 h-8 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
               </div>
@@ -895,7 +895,7 @@ function SearchContent() {
                   <button
                     key={suggestion}
                     onClick={() => setQuery(suggestion)}
-                    className="px-4 py-1.5 text-sm rounded-full bg-slate-700/40 text-star-300 border border-slate-600/40 hover:border-cyan-400/30 hover:text-cyan-300 transition-all"
+                    className="px-4 py-1.5 text-sm rounded-full bg-slate-700/40 text-star-300 border border-slate-600/40 hover:border-white/10 hover:text-white transition-all"
                   >
                     {suggestion}
                   </button>
@@ -917,14 +917,14 @@ function SearchContent() {
                   {hasActiveFilters && (
                     <button
                       onClick={clearFilters}
-                      className="px-4 py-2 text-sm rounded-xl bg-cyan-400/10 text-cyan-300 border border-cyan-400/30 hover:bg-cyan-400/20 transition-all"
+                      className="px-4 py-2 text-sm rounded-xl bg-white/5 text-slate-200 border border-white/10 hover:bg-slate-100/20 transition-all"
                     >
                       Clear Filters
                     </button>
                   )}
                   <button
                     onClick={() => setQuery('')}
-                    className="px-4 py-2 text-sm rounded-xl bg-slate-700/40 text-star-300 border border-slate-600/40 hover:border-cyan-400/30 transition-all"
+                    className="px-4 py-2 text-sm rounded-xl bg-slate-700/40 text-star-300 border border-slate-600/40 hover:border-white/10 transition-all"
                   >
                     Clear Search
                   </button>

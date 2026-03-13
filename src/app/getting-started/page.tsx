@@ -56,9 +56,9 @@ const USE_CASES = [
         <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 003 12c0-1.605.42-3.113 1.157-4.418" />
       </svg>
     ),
-    gradient: 'from-cyan-500/20 to-blue-500/20',
-    borderColor: 'border-cyan-500/30',
-    iconColor: 'text-cyan-400',
+    gradient: 'from-white/5 to-blue-500/20',
+    borderColor: 'border-white/10',
+    iconColor: 'text-slate-300',
   },
   {
     title: 'Research Companies',
@@ -132,7 +132,7 @@ const PERSONAS = [
     title: 'Investors',
     description: 'Track deal flow, funding rounds, and portfolio companies',
     href: '/solutions/investors',
-    gradient: 'from-emerald-500/20 to-cyan-500/20',
+    gradient: 'from-emerald-500/20 to-white/10',
     borderColor: 'border-emerald-500/30',
     iconColor: 'text-emerald-400',
     icon: (
@@ -189,16 +189,16 @@ export default function GettingStartedPage() {
 
       {/* Hero */}
       <section className="relative py-20 md:py-28 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-transparent to-purple-600/10 pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-br from-white/5 via-transparent to-purple-600/10 pointer-events-none" />
         <div className="container mx-auto px-4 relative z-10">
           <ScrollReveal>
             <div className="max-w-3xl mx-auto text-center">
-              <span className="inline-block px-4 py-1.5 rounded-full text-xs font-semibold tracking-wide uppercase bg-cyan-500/10 text-cyan-300 border border-cyan-500/20 mb-6">
+              <span className="inline-block px-4 py-1.5 rounded-full text-xs font-semibold tracking-wide uppercase bg-white/5 text-slate-200 border border-white/10 mb-6">
                 Quick Start Guide
               </span>
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
                 Get Started with{' '}
-                <span className="bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-slate-300 to-purple-400 bg-clip-text text-transparent">
                   SpaceNexus
                 </span>
               </h1>
@@ -227,13 +227,13 @@ export default function GettingStartedPage() {
               <ScrollReveal key={step.step} delay={index * 0.1}>
                 <div className="relative flex items-start gap-6 rounded-2xl border border-slate-700/50 bg-slate-900/50 backdrop-blur-sm p-6 md:p-8">
                   {/* Step number */}
-                  <div className="shrink-0 w-14 h-14 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-cyan-500/25">
+                  <div className="shrink-0 w-14 h-14 rounded-full bg-gradient-to-br from-white to-blue-600 flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-black/20/25">
                     {step.step}
                   </div>
 
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-3 mb-2">
-                      <span className="text-cyan-400">{step.icon}</span>
+                      <span className="text-slate-300">{step.icon}</span>
                       <h3 className="text-xl md:text-2xl font-bold text-white">{step.title}</h3>
                     </div>
                     <p className="text-slate-300 text-sm md:text-base leading-relaxed mb-4">
@@ -241,7 +241,7 @@ export default function GettingStartedPage() {
                     </p>
                     <Link
                       href={step.href}
-                      className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-white text-sm font-semibold transition-colors"
+                      className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-white hover:bg-slate-100 text-white text-sm font-semibold transition-colors"
                     >
                       {step.cta}
                       <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -278,11 +278,11 @@ export default function GettingStartedPage() {
                   className={`block h-full rounded-2xl border ${uc.borderColor} bg-gradient-to-br ${uc.gradient} p-6 hover:scale-[1.02] transition-transform group`}
                 >
                   <div className={`${uc.iconColor} mb-4`}>{uc.icon}</div>
-                  <h3 className="text-lg font-bold text-white mb-2 group-hover:text-cyan-300 transition-colors">
+                  <h3 className="text-lg font-bold text-white mb-2 group-hover:text-white transition-colors">
                     {uc.title}
                   </h3>
                   <p className="text-slate-300 text-sm leading-relaxed">{uc.description}</p>
-                  <span className="inline-flex items-center gap-1 mt-4 text-sm font-medium text-cyan-400 group-hover:gap-2 transition-all">
+                  <span className="inline-flex items-center gap-1 mt-4 text-sm font-medium text-slate-300 group-hover:gap-2 transition-all">
                     Explore
                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
@@ -315,11 +315,11 @@ export default function GettingStartedPage() {
                   className={`block h-full rounded-2xl border ${persona.borderColor} bg-gradient-to-br ${persona.gradient} p-6 text-center hover:scale-[1.03] transition-transform group`}
                 >
                   <div className={`${persona.iconColor} flex justify-center mb-4`}>{persona.icon}</div>
-                  <h3 className="text-lg font-bold text-white mb-2 group-hover:text-cyan-300 transition-colors">
+                  <h3 className="text-lg font-bold text-white mb-2 group-hover:text-white transition-colors">
                     {persona.title}
                   </h3>
                   <p className="text-slate-300 text-sm leading-relaxed">{persona.description}</p>
-                  <span className="inline-flex items-center gap-1 mt-4 text-sm font-medium text-cyan-400 group-hover:gap-2 transition-all">
+                  <span className="inline-flex items-center gap-1 mt-4 text-sm font-medium text-slate-300 group-hover:gap-2 transition-all">
                     Get Started
                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
@@ -344,7 +344,7 @@ export default function GettingStartedPage() {
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link
                   href="/register"
-                  className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-semibold hover:from-cyan-400 hover:to-blue-500 transition-all shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40"
+                  className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl bg-gradient-to-r from-white to-blue-600 text-white font-semibold hover:from-slate-300 hover:to-blue-500 transition-all shadow-lg shadow-black/20/25 hover:shadow-black/20/40"
                 >
                   Create Free Account
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

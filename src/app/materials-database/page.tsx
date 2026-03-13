@@ -91,7 +91,7 @@ function categoryColor(cat: MaterialCategory): string {
     case 'Polymer': return 'bg-violet-500/20 text-violet-300 border-violet-500/30';
     case 'Thermal': return 'bg-amber-500/20 text-amber-300 border-amber-500/30';
     case 'Shielding': return 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30';
-    case 'Coating': return 'bg-cyan-500/20 text-cyan-300 border-cyan-500/30';
+    case 'Coating': return 'bg-white/10 text-slate-200 border-white/10';
     default: return 'bg-slate-500/20 text-slate-300 border-slate-500/30';
   }
 }
@@ -973,9 +973,9 @@ export default function MaterialsDatabasePage() {
                 </div>
               </div>
               <div className="flex gap-3 sm:col-span-2 lg:col-span-1">
-                <span className="shrink-0 mt-0.5 w-3 h-3 rounded-full bg-cyan-500/60" />
+                <span className="shrink-0 mt-0.5 w-3 h-3 rounded-full bg-white/60" />
                 <div>
-                  <div className="font-medium text-cyan-300">Coatings</div>
+                  <div className="font-medium text-slate-200">Coatings</div>
                   <div className="text-slate-400">Surface treatments for thermal control, optical performance, and environmental protection.</div>
                 </div>
               </div>

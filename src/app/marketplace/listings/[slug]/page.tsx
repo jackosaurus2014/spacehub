@@ -67,7 +67,7 @@ export default function ListingDetailPage({ params }: { params: { slug: string }
       />
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
         {/* Back */}
-        <Link href="/marketplace/search" className="text-xs text-cyan-400 hover:text-cyan-300">
+        <Link href="/marketplace/search" className="text-xs text-slate-300 hover:text-white">
           ← Back to Search
         </Link>
 
@@ -112,7 +112,7 @@ export default function ListingDetailPage({ params }: { params: { slug: string }
                   <div className="text-sm font-medium text-purple-300">Editorial Listing</div>
                   <p className="text-xs text-slate-400 mt-1">
                     This listing was curated by SpaceNexus from public data. Are you the provider?{' '}
-                    <Link href={`/company-profiles/${listing.company.slug}`} className="text-cyan-400 hover:underline">
+                    <Link href={`/company-profiles/${listing.company.slug}`} className="text-slate-300 hover:underline">
                       Claim this profile
                     </Link>{' '}
                     to manage and verify this listing.
@@ -167,7 +167,7 @@ export default function ListingDetailPage({ params }: { params: { slug: string }
                 {!showReviewForm && (
                   <button
                     onClick={() => setShowReviewForm(true)}
-                    className="text-xs text-cyan-400 hover:text-cyan-300 font-medium"
+                    className="text-xs text-slate-300 hover:text-white font-medium"
                   >
                     Write a Review
                   </button>
@@ -224,7 +224,7 @@ export default function ListingDetailPage({ params }: { params: { slug: string }
                     )}
                   </div>
                   <div>
-                    <div className="font-semibold text-white group-hover:text-cyan-400 transition-colors">
+                    <div className="font-semibold text-white group-hover:text-white transition-colors">
                       {listing.company.name}
                     </div>
                     <VerificationBadge level={listing.company.verificationLevel} />
@@ -235,7 +235,7 @@ export default function ListingDetailPage({ params }: { params: { slug: string }
               {listing.company.contactEmail && (
                 <a
                   href={`mailto:${listing.company.contactEmail}`}
-                  className="block w-full text-center py-2 bg-cyan-600 hover:bg-cyan-500 text-white text-sm rounded-lg font-medium transition-colors mb-2"
+                  className="block w-full text-center py-2 bg-white hover:bg-slate-100 text-white text-sm rounded-lg font-medium transition-colors mb-2"
                 >
                   Contact Provider
                 </a>
@@ -261,7 +261,7 @@ export default function ListingDetailPage({ params }: { params: { slug: string }
               <div className="card p-4">
                 <Link
                   href={`/company-profiles/${listing.company.slug}?tab=news`}
-                  className="flex items-center justify-between text-sm text-slate-400 hover:text-cyan-400 transition-colors"
+                  className="flex items-center justify-between text-sm text-slate-400 hover:text-white transition-colors"
                 >
                   <span>News about {listing.company.name}</span>
                   <span>&rarr;</span>

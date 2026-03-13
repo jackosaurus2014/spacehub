@@ -45,9 +45,9 @@ const popularPages = [
 
 const colorClasses: Record<string, { border: string; bg: string; text: string; glow: string }> = {
   cyan: {
-    border: 'border-cyan-500/30 hover:border-cyan-400/60',
-    bg: 'bg-cyan-500/10',
-    text: 'text-cyan-400',
+    border: 'border-white/10 hover:border-white/10/60',
+    bg: 'bg-white/5',
+    text: 'text-slate-300',
     glow: 'group-hover:shadow-[0_0_20px_rgba(6,182,212,0.15)]',
   },
   purple: {
@@ -190,7 +190,7 @@ export default function NotFound() {
           className="relative w-52 h-52 mx-auto mb-4"
         >
           {/* Orbit rings */}
-          <div className="absolute inset-2 rounded-full border border-dashed border-cyan-500/15" style={{ animation: 'pulse-ring 4s ease-in-out infinite' }} />
+          <div className="absolute inset-2 rounded-full border border-dashed border-white/15/15" style={{ animation: 'pulse-ring 4s ease-in-out infinite' }} />
           <div className="absolute inset-6 rounded-full border border-dashed border-purple-500/10" style={{ animation: 'pulse-ring 5s ease-in-out 1s infinite' }} />
           <div className="absolute inset-10 rounded-full border border-dashed border-blue-500/8" style={{ animation: 'pulse-ring 6s ease-in-out 2s infinite' }} />
 
@@ -233,7 +233,7 @@ export default function NotFound() {
             <div className="w-1.5 h-1.5 bg-slate-400/60 rounded-sm" style={{ animation: 'drift 3s linear infinite' }} />
           </div>
           <div className="absolute top-1/2 left-1/2" style={{ animation: 'orbit 12s linear infinite reverse' }}>
-            <div className="w-1 h-1 bg-cyan-400/40 rounded-full" />
+            <div className="w-1 h-1 bg-white/40 rounded-full" />
           </div>
           <div className="absolute top-1/2 left-1/2" style={{ animation: 'orbit 15s linear 2s infinite' }}>
             <div className="w-0.5 h-0.5 bg-purple-400/30 rounded-full" />
@@ -245,7 +245,7 @@ export default function NotFound() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.2 }}
-          className="text-[7rem] sm:text-[9rem] font-black leading-none tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-cyan-400 via-blue-500 to-purple-600 select-none"
+          className="text-[7rem] sm:text-[9rem] font-black leading-none tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-slate-300 via-blue-500 to-purple-600 select-none"
           style={{ lineHeight: 0.85 }}
         >
           404
@@ -274,7 +274,7 @@ export default function NotFound() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.55 }}
-          className="flex items-center max-w-md mx-auto mb-8 bg-slate-900/80 backdrop-blur-sm border border-slate-700/80 rounded-xl overflow-hidden focus-within:border-cyan-500/50 focus-within:shadow-[0_0_20px_rgba(6,182,212,0.1)] transition-all duration-300"
+          className="flex items-center max-w-md mx-auto mb-8 bg-slate-900/80 backdrop-blur-sm border border-slate-700/80 rounded-xl overflow-hidden focus-within:border-white/15 focus-within:shadow-[0_0_20px_rgba(6,182,212,0.1)] transition-all duration-300"
         >
           <svg className="w-4 h-4 text-slate-500 ml-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -289,7 +289,7 @@ export default function NotFound() {
           />
           <button
             type="submit"
-            className="px-4 py-3 text-cyan-400 hover:text-cyan-300 hover:bg-cyan-500/10 text-sm font-medium transition-colors"
+            className="px-4 py-3 text-slate-300 hover:text-white hover:bg-slate-100/10 text-sm font-medium transition-colors"
           >
             Search
           </button>
@@ -315,7 +315,7 @@ export default function NotFound() {
           </button>
           <Link
             href="/"
-            className="px-5 py-2.5 bg-gradient-to-r from-cyan-600 to-cyan-500 hover:from-cyan-500 hover:to-cyan-400 text-white text-sm rounded-lg font-medium transition-all duration-200 shadow-lg shadow-cyan-500/20 hover:shadow-cyan-500/30"
+            className="px-5 py-2.5 bg-gradient-to-r from-slate-200 to-slate-200 hover:from-white hover:to-slate-400 text-white text-sm rounded-lg font-medium transition-all duration-200 shadow-lg shadow-black/10 hover:shadow-black/15"
           >
             <span className="flex items-center gap-2">
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -381,7 +381,7 @@ export default function NotFound() {
           className="text-slate-600 text-xs mt-8"
         >
           If you believe this is an error, please{' '}
-          <Link href="/contact" className="text-cyan-500 hover:text-cyan-400 underline underline-offset-2 transition-colors">
+          <Link href="/contact" className="text-slate-300 hover:text-white underline underline-offset-2 transition-colors">
             contact us
           </Link>
           .

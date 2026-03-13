@@ -802,7 +802,7 @@ function getStatusColor(status: VehicleStatus): { bg: string; text: string; bord
     case 'Operational':
       return { bg: 'bg-green-900/30', text: 'text-green-400', border: 'border-green-500/30' };
     case 'In Development':
-      return { bg: 'bg-cyan-900/30', text: 'text-cyan-400', border: 'border-cyan-500/30' };
+      return { bg: 'bg-slate-800/40', text: 'text-slate-300', border: 'border-white/10' };
     case 'Retired':
       return { bg: 'bg-slate-800/30', text: 'text-slate-400', border: 'border-slate-500/30' };
   }
@@ -838,7 +838,7 @@ function VehicleCard({ vehicle, onSelect, isSelected }: { vehicle: LaunchVehicle
   return (
     <div
       className={`card p-5 transition-all cursor-default ${
-        isSelected ? 'ring-2 ring-cyan-500 border-cyan-500/50' : ''
+        isSelected ? 'ring-2 ring-white/15 border-white/15' : ''
       }`}
     >
       <div className="flex items-start justify-between gap-2 mb-3">
@@ -906,7 +906,7 @@ function VehicleCard({ vehicle, onSelect, isSelected }: { vehicle: LaunchVehicle
       {/* Tags */}
       <div className="flex flex-wrap gap-1.5 mb-3">
         {vehicle.reusable && (
-          <span className="px-2 py-0.5 rounded text-xs bg-cyan-900/30 text-cyan-400 border border-cyan-500/30">
+          <span className="px-2 py-0.5 rounded text-xs bg-slate-800/40 text-slate-300 border border-white/10">
             Reusable
           </span>
         )}
@@ -925,7 +925,7 @@ function VehicleCard({ vehicle, onSelect, isSelected }: { vehicle: LaunchVehicle
           onClick={() => onSelect(vehicle)}
           className={`w-full py-1.5 rounded text-xs font-medium transition-all ${
             isSelected
-              ? 'bg-cyan-500 text-slate-900'
+              ? 'bg-white text-slate-900'
               : 'bg-slate-700 text-star-300 hover:bg-slate-600 hover:text-white'
           }`}
         >
@@ -1157,7 +1157,7 @@ export default function LaunchVehiclesPage() {
             <div className="text-star-300 text-xs uppercase tracking-widest font-medium">Operational</div>
           </div>
           <div className="card-elevated p-4 text-center">
-            <div className="text-2xl font-bold font-display text-cyan-400">{totalInDev}</div>
+            <div className="text-2xl font-bold font-display text-slate-300">{totalInDev}</div>
             <div className="text-star-300 text-xs uppercase tracking-widest font-medium">In Development</div>
           </div>
           <div className="card-elevated p-4 text-center">
@@ -1181,7 +1181,7 @@ export default function LaunchVehiclesPage() {
               {tab.label}
               {tab.id === 'compare' && compareSelection.length > 0 && (
                 <span className={`text-xs px-1.5 py-0.5 rounded-full ${
-                  activeTab === tab.id ? 'bg-slate-200 text-slate-900' : 'bg-cyan-500/30 text-cyan-400'
+                  activeTab === tab.id ? 'bg-slate-200 text-slate-900' : 'bg-white/30 text-slate-300'
                 }`}>
                   {compareSelection.length}
                 </span>
@@ -1202,7 +1202,7 @@ export default function LaunchVehiclesPage() {
                     placeholder="Search by name, manufacturer, country, or propellant..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full px-4 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white placeholder-star-300 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 text-sm"
+                    className="w-full px-4 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white placeholder-star-300 focus:outline-none focus:border-white/15 focus:ring-1 focus:ring-white/30 text-sm"
                   />
                 </div>
                 <div className="flex items-center gap-2">
@@ -1210,7 +1210,7 @@ export default function LaunchVehiclesPage() {
                   <select
                     value={statusFilter}
                     onChange={(e) => setStatusFilter(e.target.value as VehicleStatus | '')}
-                    className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+                    className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                   >
                     <option value="">All</option>
                     <option value="Operational">Operational</option>
@@ -1223,7 +1223,7 @@ export default function LaunchVehiclesPage() {
                   <select
                     value={countryFilter}
                     onChange={(e) => setCountryFilter(e.target.value)}
-                    className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+                    className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                   >
                     <option value="">All</option>
                     {countries.map(c => (
@@ -1236,7 +1236,7 @@ export default function LaunchVehiclesPage() {
                   <select
                     value={sortBy}
                     onChange={(e) => setSortBy(e.target.value)}
-                    className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+                    className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                   >
                     <option value="payloadLeo">Payload LEO</option>
                     <option value="payloadGto">Payload GTO</option>
@@ -1257,7 +1257,7 @@ export default function LaunchVehiclesPage() {
                 {(searchQuery || statusFilter || countryFilter) && (
                   <button
                     onClick={() => { setSearchQuery(''); setStatusFilter(''); setCountryFilter(''); }}
-                    className="ml-2 text-cyan-400 hover:text-cyan-300"
+                    className="ml-2 text-slate-300 hover:text-white"
                   >
                     Clear filters
                   </button>
@@ -1300,7 +1300,7 @@ export default function LaunchVehiclesPage() {
             <div className="mb-4 flex items-center gap-3">
               <Link
                 href="/compare/launch-vehicles"
-                className="inline-flex items-center gap-2 px-4 py-2 bg-cyan-500/10 border border-cyan-500/30 rounded-lg text-sm text-cyan-400 hover:bg-cyan-500/20 hover:border-cyan-500/50 transition-all"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-sm text-slate-300 hover:bg-slate-100/20 hover:border-white/15 transition-all"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
                 Open Dedicated Comparison Tool
@@ -1319,7 +1319,7 @@ export default function LaunchVehiclesPage() {
                     onClick={() => toggleCompare(v)}
                     className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all border ${
                       compareSelection.includes(v.id)
-                        ? 'bg-cyan-500/20 text-cyan-400 border-cyan-500/50'
+                        ? 'bg-white/10 text-slate-300 border-white/15'
                         : 'bg-slate-800 text-star-300 border-slate-700 hover:border-slate-500'
                     } ${compareSelection.length >= 4 && !compareSelection.includes(v.id) ? 'opacity-40 cursor-not-allowed' : ''}`}
                     disabled={compareSelection.length >= 4 && !compareSelection.includes(v.id)}
@@ -1367,7 +1367,7 @@ export default function LaunchVehiclesPage() {
                   <tbody className="divide-y divide-slate-800">
                     {/* General */}
                     <tr className="bg-slate-800/30">
-                      <td colSpan={selectedVehicles.length + 1} className="py-2 px-4 text-xs font-bold text-cyan-400 uppercase tracking-widest">General</td>
+                      <td colSpan={selectedVehicles.length + 1} className="py-2 px-4 text-xs font-bold text-slate-300 uppercase tracking-widest">General</td>
                     </tr>
                     <tr>
                       <td className="py-2 px-4 text-star-300 sticky left-0 bg-slate-900">Status</td>
@@ -1395,7 +1395,7 @@ export default function LaunchVehiclesPage() {
 
                     {/* Dimensions */}
                     <tr className="bg-slate-800/30">
-                      <td colSpan={selectedVehicles.length + 1} className="py-2 px-4 text-xs font-bold text-cyan-400 uppercase tracking-widest">Dimensions</td>
+                      <td colSpan={selectedVehicles.length + 1} className="py-2 px-4 text-xs font-bold text-slate-300 uppercase tracking-widest">Dimensions</td>
                     </tr>
                     <tr>
                       <td className="py-2 px-4 text-star-300 sticky left-0 bg-slate-900">Height</td>
@@ -1416,20 +1416,20 @@ export default function LaunchVehiclesPage() {
 
                     {/* Payload */}
                     <tr className="bg-slate-800/30">
-                      <td colSpan={selectedVehicles.length + 1} className="py-2 px-4 text-xs font-bold text-cyan-400 uppercase tracking-widest">Payload Capacity</td>
+                      <td colSpan={selectedVehicles.length + 1} className="py-2 px-4 text-xs font-bold text-slate-300 uppercase tracking-widest">Payload Capacity</td>
                     </tr>
                     <tr>
                       <td className="py-2 px-4 text-star-300 sticky left-0 bg-slate-900">LEO</td>
                       {selectedVehicles.map(v => {
                         const max = Math.max(...selectedVehicles.map(sv => sv.payloadLeoKg));
-                        return <td key={v.id} className={`py-2 px-4 text-center font-semibold ${v.payloadLeoKg === max ? 'text-cyan-400' : 'text-white'}`}>{formatNumber(v.payloadLeoKg)} kg</td>;
+                        return <td key={v.id} className={`py-2 px-4 text-center font-semibold ${v.payloadLeoKg === max ? 'text-slate-300' : 'text-white'}`}>{formatNumber(v.payloadLeoKg)} kg</td>;
                       })}
                     </tr>
                     <tr>
                       <td className="py-2 px-4 text-star-300 sticky left-0 bg-slate-900">GTO</td>
                       {selectedVehicles.map(v => {
                         const max = Math.max(...selectedVehicles.map(sv => sv.payloadGtoKg ?? 0));
-                        return <td key={v.id} className={`py-2 px-4 text-center font-semibold ${v.payloadGtoKg === max && max > 0 ? 'text-cyan-400' : 'text-white'}`}>{v.payloadGtoKg ? `${formatNumber(v.payloadGtoKg)} kg` : '--'}</td>;
+                        return <td key={v.id} className={`py-2 px-4 text-center font-semibold ${v.payloadGtoKg === max && max > 0 ? 'text-slate-300' : 'text-white'}`}>{v.payloadGtoKg ? `${formatNumber(v.payloadGtoKg)} kg` : '--'}</td>;
                       })}
                     </tr>
                     <tr>
@@ -1443,7 +1443,7 @@ export default function LaunchVehiclesPage() {
 
                     {/* Propulsion */}
                     <tr className="bg-slate-800/30">
-                      <td colSpan={selectedVehicles.length + 1} className="py-2 px-4 text-xs font-bold text-cyan-400 uppercase tracking-widest">Propulsion</td>
+                      <td colSpan={selectedVehicles.length + 1} className="py-2 px-4 text-xs font-bold text-slate-300 uppercase tracking-widest">Propulsion</td>
                     </tr>
                     <tr>
                       <td className="py-2 px-4 text-star-300 sticky left-0 bg-slate-900">Engines</td>
@@ -1456,7 +1456,7 @@ export default function LaunchVehiclesPage() {
 
                     {/* Cost */}
                     <tr className="bg-slate-800/30">
-                      <td colSpan={selectedVehicles.length + 1} className="py-2 px-4 text-xs font-bold text-cyan-400 uppercase tracking-widest">Cost</td>
+                      <td colSpan={selectedVehicles.length + 1} className="py-2 px-4 text-xs font-bold text-slate-300 uppercase tracking-widest">Cost</td>
                     </tr>
                     <tr>
                       <td className="py-2 px-4 text-star-300 sticky left-0 bg-slate-900">Launch Price</td>
@@ -1476,7 +1476,7 @@ export default function LaunchVehiclesPage() {
 
                     {/* Reliability */}
                     <tr className="bg-slate-800/30">
-                      <td colSpan={selectedVehicles.length + 1} className="py-2 px-4 text-xs font-bold text-cyan-400 uppercase tracking-widest">Reliability</td>
+                      <td colSpan={selectedVehicles.length + 1} className="py-2 px-4 text-xs font-bold text-slate-300 uppercase tracking-widest">Reliability</td>
                     </tr>
                     <tr>
                       <td className="py-2 px-4 text-star-300 sticky left-0 bg-slate-900">Total Launches</td>
@@ -1553,7 +1553,7 @@ export default function LaunchVehiclesPage() {
                             <Link href={getCompanyProfileUrl(v.manufacturer)!} className="hover:underline">{v.manufacturer}</Link>
                           ) : v.manufacturer})</span>
                           {v.reusable && (
-                            <span className="px-1.5 py-0.5 rounded text-xs bg-cyan-900/30 text-cyan-400 border border-cyan-500/30 hidden md:inline">
+                            <span className="px-1.5 py-0.5 rounded text-xs bg-slate-800/40 text-slate-300 border border-white/10 hidden md:inline">
                               Reusable
                             </span>
                           )}
@@ -1604,11 +1604,11 @@ export default function LaunchVehiclesPage() {
                       <div key={v.id}>
                         <div className="flex items-center justify-between mb-1">
                           <span className="text-white text-sm font-medium">{v.name}</span>
-                          <span className="text-cyan-400 text-sm font-bold">{v.consecutiveSuccesses}</span>
+                          <span className="text-slate-300 text-sm font-bold">{v.consecutiveSuccesses}</span>
                         </div>
                         <div className="h-2 bg-slate-700 rounded-full overflow-hidden">
                           <div
-                            className="h-full bg-gradient-to-r from-cyan-600 to-cyan-400 rounded-full transition-all"
+                            className="h-full bg-gradient-to-r from-slate-200 to-slate-400 rounded-full transition-all"
                             style={{ width: `${pct}%` }}
                           />
                         </div>
@@ -1665,7 +1665,7 @@ export default function LaunchVehiclesPage() {
                 <div className="text-star-300 text-xs mt-0.5">Falcon 9</div>
               </div>
               <div className="card p-4 text-center">
-                <div className="text-2xl font-bold font-display text-cyan-400">
+                <div className="text-2xl font-bold font-display text-slate-300">
                   {ACTIVE_VEHICLES.filter(v => v.reusable).length}
                 </div>
                 <div className="text-star-300 text-xs uppercase tracking-widest font-medium">Reusable Vehicles</div>
@@ -1682,7 +1682,7 @@ export default function LaunchVehiclesPage() {
             {/* Cost per kg to LEO Ranking */}
             <div className="card p-5">
               <h3 className="text-lg font-semibold text-white mb-2">Cost per Kilogram to LEO</h3>
-              <p className="text-star-300 text-sm mb-6">Published or estimated launch cost divided by maximum LEO payload capacity. Lower is better. Reusable vehicles shown with cyan accent.</p>
+              <p className="text-star-300 text-sm mb-6">Published or estimated launch cost divided by maximum LEO payload capacity. Lower is better. Reusable vehicles shown highlighted.</p>
               <div className="space-y-4">
                 {costRanked.map((v, idx) => {
                   const maxCost = costRanked[costRanked.length - 1]?.costPerKgLeo ?? 1;
@@ -1697,13 +1697,13 @@ export default function LaunchVehiclesPage() {
                             <Link href={getCompanyProfileUrl(v.manufacturer)!} className="hover:underline">{v.manufacturer}</Link>
                           ) : v.manufacturer})</span>
                           {v.reusable && (
-                            <span className="px-1.5 py-0.5 rounded text-xs bg-cyan-900/30 text-cyan-400 border border-cyan-500/30">
+                            <span className="px-1.5 py-0.5 rounded text-xs bg-slate-800/40 text-slate-300 border border-white/10">
                               Reusable
                             </span>
                           )}
                         </div>
                         <div className="flex items-center gap-3 flex-shrink-0 ml-3">
-                          <span className={`text-sm font-bold ${idx === 0 ? 'text-green-400' : idx < 3 ? 'text-cyan-400' : 'text-white'}`}>
+                          <span className={`text-sm font-bold ${idx === 0 ? 'text-green-400' : idx < 3 ? 'text-slate-300' : 'text-white'}`}>
                             {formatCostPerKg(v.costPerKgLeo)}
                           </span>
                         </div>
@@ -1711,7 +1711,7 @@ export default function LaunchVehiclesPage() {
                       <div className="h-2 bg-slate-700 rounded-full overflow-hidden">
                         <div
                           className={`h-full rounded-full transition-all ${
-                            v.reusable ? 'bg-gradient-to-r from-cyan-600 to-cyan-400' : 'bg-gradient-to-r from-slate-500 to-slate-400'
+                            v.reusable ? 'bg-gradient-to-r from-slate-200 to-slate-400' : 'bg-gradient-to-r from-slate-500 to-slate-400'
                           }`}
                           style={{ width: `${Math.max(pct, 2)}%` }}
                         />
@@ -1755,7 +1755,7 @@ export default function LaunchVehiclesPage() {
                             ) : v.manufacturer}
                           </td>
                           <td className="py-2.5 px-3 text-right text-white font-semibold">{formatCost(v.costMillions)}</td>
-                          <td className="py-2.5 px-3 text-right text-cyan-400 font-semibold">{formatCostPerKg(v.costPerKgLeo)}</td>
+                          <td className="py-2.5 px-3 text-right text-slate-300 font-semibold">{formatCostPerKg(v.costPerKgLeo)}</td>
                           <td className="py-2.5 px-3 text-right text-white">{formatNumber(v.payloadLeoKg)} kg</td>
                           <td className="py-2.5 px-3 text-center">
                             {v.reusable ? (
@@ -1772,12 +1772,12 @@ export default function LaunchVehiclesPage() {
             </div>
 
             {/* Reusability Impact */}
-            <div className="card p-5 border border-cyan-500/20 bg-gradient-to-br from-cyan-900/10 to-transparent">
+            <div className="card p-5 border border-white/10 bg-gradient-to-br from-slate-800/10 to-transparent">
               <h3 className="text-lg font-semibold text-white mb-3">Reusability Impact on Pricing</h3>
               <p className="text-star-300 text-sm mb-4">Reusable vehicles demonstrate significantly lower cost per kilogram compared to expendable counterparts.</p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <h4 className="text-cyan-400 font-medium text-sm mb-3 uppercase tracking-widest">Reusable Vehicles</h4>
+                  <h4 className="text-slate-300 font-medium text-sm mb-3 uppercase tracking-widest">Reusable Vehicles</h4>
                   <div className="space-y-3">
                     {ACTIVE_VEHICLES.filter(v => v.reusable && v.costPerKgLeo !== null).sort((a, b) => (a.costPerKgLeo ?? 0) - (b.costPerKgLeo ?? 0)).map(v => (
                       <div key={v.id} className="flex items-center justify-between">
@@ -1789,13 +1789,13 @@ export default function LaunchVehiclesPage() {
                             ) : v.manufacturer}
                           </span>
                         </div>
-                        <span className="text-cyan-400 font-bold text-sm">{formatCostPerKg(v.costPerKgLeo)}</span>
+                        <span className="text-slate-300 font-bold text-sm">{formatCostPerKg(v.costPerKgLeo)}</span>
                       </div>
                     ))}
                     <div className="pt-2 border-t border-slate-700">
                       <div className="flex items-center justify-between">
                         <span className="text-star-300 text-sm">Average $/kg</span>
-                        <span className="text-cyan-400 font-bold text-sm">
+                        <span className="text-slate-300 font-bold text-sm">
                           ${Math.round(
                             ACTIVE_VEHICLES.filter(v => v.reusable && v.costPerKgLeo !== null).reduce((sum, v) => sum + (v.costPerKgLeo ?? 0), 0)
                             / ACTIVE_VEHICLES.filter(v => v.reusable && v.costPerKgLeo !== null).length

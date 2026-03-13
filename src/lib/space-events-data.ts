@@ -1403,7 +1403,7 @@ export function generateGoogleCalendarUrl(event: SpaceEvent): string {
 // ── Type/filter helpers ──
 
 export const EVENT_TYPES: { value: SpaceEvent['type']; label: string; color: string }[] = [
-  { value: 'conference', label: 'Conference', color: 'bg-cyan-500' },
+  { value: 'conference', label: 'Conference', color: 'bg-slate-400' },
   { value: 'tradeshow', label: 'Trade Show', color: 'bg-green-500' },
   { value: 'expo', label: 'Expo', color: 'bg-purple-500' },
   { value: 'workshop', label: 'Workshop', color: 'bg-amber-500' },

@@ -181,9 +181,9 @@ export default function SpaceIndustryMarketSizePage() {
                     <li key={item.id}>
                       <a
                         href={`#${item.id}`}
-                        className="flex items-start gap-2 text-star-300 hover:text-cyan-400 transition-colors"
+                        className="flex items-start gap-2 text-star-300 hover:text-white transition-colors"
                       >
-                        <span className="text-cyan-500/60 font-mono text-xs mt-0.5">
+                        <span className="text-slate-300/60 font-mono text-xs mt-0.5">
                           {String(i + 1).padStart(2, '0')}
                         </span>
                         {item.label}
@@ -250,22 +250,22 @@ export default function SpaceIndustryMarketSizePage() {
                   </p>
 
                   {/* Data callout */}
-                  <div className="card p-6 my-8 border-l-4 border-l-cyan-400">
+                  <div className="card p-6 my-8 border-l-4 border-l-white/30">
                     <div className="grid grid-cols-1 sm:grid-cols-4 gap-6 text-center">
                       <div>
-                        <div className="text-3xl font-display font-bold text-cyan-400">$630B+</div>
+                        <div className="text-3xl font-display font-bold text-slate-300">$630B+</div>
                         <div className="text-star-300 text-sm mt-1">Total Space Economy (2025)</div>
                       </div>
                       <div>
-                        <div className="text-3xl font-display font-bold text-cyan-400">~60%</div>
+                        <div className="text-3xl font-display font-bold text-slate-300">~60%</div>
                         <div className="text-star-300 text-sm mt-1">Commercial Share</div>
                       </div>
                       <div>
-                        <div className="text-3xl font-display font-bold text-cyan-400">~40%</div>
+                        <div className="text-3xl font-display font-bold text-slate-300">~40%</div>
                         <div className="text-star-300 text-sm mt-1">Government Share</div>
                       </div>
                       <div>
-                        <div className="text-3xl font-display font-bold text-cyan-400">7-9%</div>
+                        <div className="text-3xl font-display font-bold text-slate-300">7-9%</div>
                         <div className="text-star-300 text-sm mt-1">Annual Growth Rate</div>
                       </div>
                     </div>
@@ -313,41 +313,41 @@ export default function SpaceIndustryMarketSizePage() {
                     </h3>
                     <table className="w-full text-sm">
                       <thead>
-                        <tr className="border-b border-cyan-400/20 text-left">
+                        <tr className="border-b border-white/10 text-left">
                           <th className="py-2 pr-4 text-star-300 font-medium">Sector</th>
                           <th className="py-2 pr-4 text-star-300 font-medium text-right">Est. Revenue</th>
                           <th className="py-2 text-star-300 font-medium text-right">Growth Rate</th>
                         </tr>
                       </thead>
                       <tbody className="text-star-200">
-                        <tr className="border-b border-cyan-400/10">
+                        <tr className="border-b border-white/10/10">
                           <td className="py-2 pr-4">Satellite Services</td>
-                          <td className="py-2 pr-4 text-right text-cyan-400 font-semibold">$113B</td>
+                          <td className="py-2 pr-4 text-right text-slate-300 font-semibold">$113B</td>
                           <td className="py-2 text-right">~8%</td>
                         </tr>
-                        <tr className="border-b border-cyan-400/10">
+                        <tr className="border-b border-white/10/10">
                           <td className="py-2 pr-4">Ground Equipment</td>
-                          <td className="py-2 pr-4 text-right text-cyan-400 font-semibold">$145B</td>
+                          <td className="py-2 pr-4 text-right text-slate-300 font-semibold">$145B</td>
                           <td className="py-2 text-right">~5%</td>
                         </tr>
-                        <tr className="border-b border-cyan-400/10">
+                        <tr className="border-b border-white/10/10">
                           <td className="py-2 pr-4">Satellite Manufacturing</td>
-                          <td className="py-2 pr-4 text-right text-cyan-400 font-semibold">$19B</td>
+                          <td className="py-2 pr-4 text-right text-slate-300 font-semibold">$19B</td>
                           <td className="py-2 text-right">~12%</td>
                         </tr>
-                        <tr className="border-b border-cyan-400/10">
+                        <tr className="border-b border-white/10/10">
                           <td className="py-2 pr-4">Launch Services</td>
-                          <td className="py-2 pr-4 text-right text-cyan-400 font-semibold">$9B</td>
+                          <td className="py-2 pr-4 text-right text-slate-300 font-semibold">$9B</td>
                           <td className="py-2 text-right">~15%</td>
                         </tr>
-                        <tr className="border-b border-cyan-400/10">
+                        <tr className="border-b border-white/10/10">
                           <td className="py-2 pr-4">Government Budgets (Global)</td>
-                          <td className="py-2 pr-4 text-right text-cyan-400 font-semibold">$117B</td>
+                          <td className="py-2 pr-4 text-right text-slate-300 font-semibold">$117B</td>
                           <td className="py-2 text-right">~6%</td>
                         </tr>
                         <tr>
                           <td className="py-2 pr-4">Other (downstream, PNT ecosystem)</td>
-                          <td className="py-2 pr-4 text-right text-cyan-400 font-semibold">$230B+</td>
+                          <td className="py-2 pr-4 text-right text-slate-300 font-semibold">$230B+</td>
                           <td className="py-2 text-right">~9%</td>
                         </tr>
                       </tbody>
@@ -443,7 +443,7 @@ export default function SpaceIndustryMarketSizePage() {
                   </p>
 
                   <p className="mt-4">
-                    <Link href="/market-intel" className="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+                    <Link href="/market-intel" className="text-slate-300 hover:text-white underline underline-offset-2">
                       Explore real-time satellite market data on SpaceNexus
                     </Link>
                   </p>
@@ -507,7 +507,7 @@ export default function SpaceIndustryMarketSizePage() {
                   </p>
 
                   <p className="mt-4">
-                    <Link href="/mission-cost" className="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+                    <Link href="/mission-cost" className="text-slate-300 hover:text-white underline underline-offset-2">
                       Compare launch costs and plan missions on SpaceNexus
                     </Link>
                   </p>
@@ -551,7 +551,7 @@ export default function SpaceIndustryMarketSizePage() {
                   </p>
 
                   <p className="mt-4">
-                    <Link href="/satellites" className="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+                    <Link href="/satellites" className="text-slate-300 hover:text-white underline underline-offset-2">
                       Track satellite constellations and ground stations on SpaceNexus
                     </Link>
                   </p>
@@ -580,29 +580,29 @@ export default function SpaceIndustryMarketSizePage() {
                       Top Government Space Budgets (2025 Estimates)
                     </h3>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
-                      <div className="flex justify-between items-center border-b border-cyan-400/10 pb-2">
+                      <div className="flex justify-between items-center border-b border-white/10/10 pb-2">
                         <span className="text-star-300">United States (Total)</span>
-                        <span className="text-cyan-400 font-semibold">~$73B</span>
+                        <span className="text-slate-300 font-semibold">~$73B</span>
                       </div>
-                      <div className="flex justify-between items-center border-b border-cyan-400/10 pb-2">
+                      <div className="flex justify-between items-center border-b border-white/10/10 pb-2">
                         <span className="text-star-300">China (est.)</span>
-                        <span className="text-cyan-400 font-semibold">~$14B</span>
+                        <span className="text-slate-300 font-semibold">~$14B</span>
                       </div>
-                      <div className="flex justify-between items-center border-b border-cyan-400/10 pb-2">
+                      <div className="flex justify-between items-center border-b border-white/10/10 pb-2">
                         <span className="text-star-300">Europe (ESA + national)</span>
-                        <span className="text-cyan-400 font-semibold">~$12B</span>
+                        <span className="text-slate-300 font-semibold">~$12B</span>
                       </div>
-                      <div className="flex justify-between items-center border-b border-cyan-400/10 pb-2">
+                      <div className="flex justify-between items-center border-b border-white/10/10 pb-2">
                         <span className="text-star-300">Japan</span>
-                        <span className="text-cyan-400 font-semibold">~$4.5B</span>
+                        <span className="text-slate-300 font-semibold">~$4.5B</span>
                       </div>
-                      <div className="flex justify-between items-center border-b border-cyan-400/10 pb-2">
+                      <div className="flex justify-between items-center border-b border-white/10/10 pb-2">
                         <span className="text-star-300">India</span>
-                        <span className="text-cyan-400 font-semibold">~$2B</span>
+                        <span className="text-slate-300 font-semibold">~$2B</span>
                       </div>
-                      <div className="flex justify-between items-center border-b border-cyan-400/10 pb-2">
+                      <div className="flex justify-between items-center border-b border-white/10/10 pb-2">
                         <span className="text-star-300">Rest of World</span>
-                        <span className="text-cyan-400 font-semibold">~$11.5B</span>
+                        <span className="text-slate-300 font-semibold">~$11.5B</span>
                       </div>
                     </div>
                     <p className="text-star-300/60 text-xs mt-4">
@@ -630,7 +630,7 @@ export default function SpaceIndustryMarketSizePage() {
                   </p>
 
                   <p className="mt-4">
-                    <Link href="/business-opportunities" className="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+                    <Link href="/business-opportunities" className="text-slate-300 hover:text-white underline underline-offset-2">
                       Track government procurement opportunities on SpaceNexus
                     </Link>
                   </p>
@@ -796,19 +796,19 @@ export default function SpaceIndustryMarketSizePage() {
                       Major Space Economy Forecasts
                     </h3>
                     <div className="space-y-4 text-sm">
-                      <div className="flex justify-between items-center border-b border-cyan-400/10 pb-2">
+                      <div className="flex justify-between items-center border-b border-white/10/10 pb-2">
                         <span className="text-star-300">Morgan Stanley (2023)</span>
                         <span className="text-rocket-400 font-semibold">$1.8T by 2035</span>
                       </div>
-                      <div className="flex justify-between items-center border-b border-cyan-400/10 pb-2">
+                      <div className="flex justify-between items-center border-b border-white/10/10 pb-2">
                         <span className="text-star-300">Bank of America (2023)</span>
                         <span className="text-rocket-400 font-semibold">$1.4T by 2030</span>
                       </div>
-                      <div className="flex justify-between items-center border-b border-cyan-400/10 pb-2">
+                      <div className="flex justify-between items-center border-b border-white/10/10 pb-2">
                         <span className="text-star-300">Euroconsult (2024)</span>
                         <span className="text-rocket-400 font-semibold">$737B core by 2033</span>
                       </div>
-                      <div className="flex justify-between items-center border-b border-cyan-400/10 pb-2">
+                      <div className="flex justify-between items-center border-b border-white/10/10 pb-2">
                         <span className="text-star-300">McKinsey &amp; Company (2024)</span>
                         <span className="text-rocket-400 font-semibold">$1.8T by 2035</span>
                       </div>
@@ -840,7 +840,7 @@ export default function SpaceIndustryMarketSizePage() {
                   </p>
 
                   <p className="mt-4">
-                    <Link href="/market-intel" className="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+                    <Link href="/market-intel" className="text-slate-300 hover:text-white underline underline-offset-2">
                       Track market forecasts and analytics on SpaceNexus Market Intelligence
                     </Link>
                   </p>
@@ -885,7 +885,7 @@ export default function SpaceIndustryMarketSizePage() {
                   </p>
 
                   <p className="mt-4">
-                    <Link href="/space-economy" className="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+                    <Link href="/space-economy" className="text-slate-300 hover:text-white underline underline-offset-2">
                       Explore space economy data and startup tracking on SpaceNexus
                     </Link>
                   </p>
@@ -947,7 +947,7 @@ export default function SpaceIndustryMarketSizePage() {
                   <p>
                     SpaceNexus provides real-time space market intelligence that goes beyond static
                     reports. Our{' '}
-                    <Link href="/market-intel" className="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+                    <Link href="/market-intel" className="text-slate-300 hover:text-white underline underline-offset-2">
                       Market Intelligence module
                     </Link>{' '}
                     delivers company analytics, startup funding tracking, market trend dashboards,
@@ -1000,7 +1000,7 @@ export default function SpaceIndustryMarketSizePage() {
                         <span>{item.q}</span>
                         <span
                           aria-hidden="true"
-                          className="ml-4 shrink-0 text-cyan-400 transition-transform group-open:rotate-45 text-xl leading-none"
+                          className="ml-4 shrink-0 text-slate-300 transition-transform group-open:rotate-45 text-xl leading-none"
                         >
                           +
                         </span>

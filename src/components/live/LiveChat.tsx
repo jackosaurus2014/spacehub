@@ -164,7 +164,7 @@ export default function LiveChat() {
       {/* Header */}
       <div className="px-4 py-3 border-b border-slate-700/50 bg-space-800/50 flex items-center justify-between">
         <h3 className="text-white font-semibold flex items-center gap-2">
-          <svg className="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-5 h-5 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
           </svg>
           Live Chat
@@ -173,7 +173,7 @@ export default function LiveChat() {
           {username && (
             <button
               onClick={() => setIsEditingUsername(true)}
-              className="text-xs text-slate-400 hover:text-cyan-400 transition-colors flex items-center gap-1"
+              className="text-xs text-slate-400 hover:text-white transition-colors flex items-center gap-1"
             >
               <span className="truncate max-w-[100px]">{username}</span>
               <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -196,7 +196,7 @@ export default function LiveChat() {
       {/* Username Modal */}
       {isEditingUsername && (
         <div className="absolute inset-0 z-10 bg-space-900/95 flex items-center justify-center p-4">
-          <div className="bg-space-800 rounded-xl border border-cyan-500/30 p-6 max-w-sm w-full">
+          <div className="bg-space-800 rounded-xl border border-white/10 p-6 max-w-sm w-full">
             <h4 className="text-white font-semibold mb-4">
               {username ? 'Change Username' : 'Set Your Username'}
             </h4>
@@ -207,13 +207,13 @@ export default function LiveChat() {
                 onChange={(e) => setTempUsername(e.target.value)}
                 placeholder="Enter username"
                 maxLength={20}
-                className="w-full px-4 py-2 rounded-lg bg-space-900 border border-slate-700 text-white placeholder-slate-400 focus:outline-none focus:border-cyan-500 mb-4"
+                className="w-full px-4 py-2 rounded-lg bg-space-900 border border-slate-700 text-white placeholder-slate-400 focus:outline-none focus:border-white/15 mb-4"
                 autoFocus
               />
               <div className="flex gap-2">
                 <button
                   type="submit"
-                  className="flex-1 px-4 py-2 rounded-lg bg-cyan-500 text-white font-medium hover:bg-cyan-400 transition-colors"
+                  className="flex-1 px-4 py-2 rounded-lg bg-white text-white font-medium hover:bg-slate-100 transition-colors"
                 >
                   Save
                 </button>
@@ -262,7 +262,7 @@ export default function LiveChat() {
                 <div className="flex items-center gap-2 mb-1">
                   <span
                     className={`text-xs font-medium ${
-                      msg.username === username ? 'text-cyan-400' : 'text-purple-400'
+                      msg.username === username ? 'text-slate-300' : 'text-purple-400'
                     }`}
                   >
                     {msg.username}
@@ -272,7 +272,7 @@ export default function LiveChat() {
                 <div
                   className={`px-3 py-2 rounded-lg text-sm ${
                     msg.username === username
-                      ? 'bg-cyan-500/20 text-cyan-100 border border-cyan-500/30'
+                      ? 'bg-white/10 text-slate-200 border border-white/10'
                       : 'bg-slate-800/50 text-slate-200 border border-slate-700/30'
                   }`}
                 >
@@ -294,11 +294,11 @@ export default function LiveChat() {
             onChange={(e) => setNewMessage(e.target.value)}
             placeholder={username ? 'Type a message...' : 'Set username to chat'}
             maxLength={500}
-            className="flex-1 px-4 py-2 rounded-lg bg-space-900 border border-slate-700 text-white placeholder-slate-400 focus:outline-none focus:border-cyan-500 text-sm"
+            className="flex-1 px-4 py-2 rounded-lg bg-space-900 border border-slate-700 text-white placeholder-slate-400 focus:outline-none focus:border-white/15 text-sm"
           />
           <button
             type="submit"
-            className="px-4 py-2 rounded-lg bg-cyan-500 text-white font-medium hover:bg-cyan-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-4 py-2 rounded-lg bg-white text-white font-medium hover:bg-slate-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             disabled={!newMessage.trim()}
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -310,7 +310,7 @@ export default function LiveChat() {
           <button
             type="button"
             onClick={() => setIsEditingUsername(true)}
-            className="mt-2 text-xs text-cyan-400 hover:text-cyan-300 transition-colors"
+            className="mt-2 text-xs text-slate-300 hover:text-white transition-colors"
           >
             Click here to set your username
           </button>

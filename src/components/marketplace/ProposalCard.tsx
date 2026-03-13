@@ -48,7 +48,7 @@ export default function ProposalCard({ proposal, isBuyer, onAction }: ProposalCa
         <div className="flex items-center gap-2">
           {proposal.rfq && !isBuyer ? (
             <>
-              <div className="w-8 h-8 rounded bg-cyan-500/20 flex items-center justify-center text-sm flex-shrink-0">
+              <div className="w-8 h-8 rounded bg-white/10 flex items-center justify-center text-sm flex-shrink-0">
                 📋
               </div>
               <div>

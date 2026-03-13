@@ -151,15 +151,6 @@ export default function LandingHero() {
             </div>
           </HeroReveal>
 
-          {/* Trust Signal Strip — minimal */}
-          <HeroReveal delay={1.0}>
-            <div className="flex items-center justify-center gap-2 mb-8 text-xs text-slate-500">
-              <span>
-                Trusted by teams at SpaceX, NASA, L3Harris &amp; 200+ firms
-              </span>
-            </div>
-          </HeroReveal>
-
           {/* Animated Platform Stats */}
           <HeroReveal delay={1.1}>
             <div
@@ -180,8 +171,8 @@ export default function LandingHero() {
         className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-float animate-reveal-up"
         style={{ animationDelay: '1.6s', animationFillMode: 'both' }}
       >
-        <div className="w-6 h-10 border-2 border-cyan-400/50 rounded-full flex items-start justify-center p-1.5 shadow-lg shadow-cyan-500/20">
-          <div className="w-1.5 h-2.5 bg-cyan-400/70 rounded-full animate-pulse" />
+        <div className="w-6 h-10 border-2 border-white/15 rounded-full flex items-start justify-center p-1.5 shadow-lg shadow-black/10">
+          <div className="w-1.5 h-2.5 bg-white/70 rounded-full animate-pulse" />
         </div>
       </div>
 

@@ -45,7 +45,7 @@ export default function DataFreshnessBadge({
     if (!updatedDate) return 'text-star-500';
     const hoursOld = (Date.now() - updatedDate.getTime()) / 3600000;
     if (hoursOld < 1) return 'text-green-400';
-    if (hoursOld < 6) return 'text-cyan-400';
+    if (hoursOld < 6) return 'text-slate-300';
     if (hoursOld < 24) return 'text-amber-400';
     return 'text-red-400';
   };
@@ -79,7 +79,7 @@ export default function DataFreshnessBadge({
       {onRefresh && (
         <button
           onClick={onRefresh}
-          className="text-cyan-400 hover:text-cyan-300 transition-colors flex items-center gap-1 min-h-[44px] md:min-h-0"
+          className="text-slate-300 hover:text-white transition-colors flex items-center gap-1 min-h-[44px] md:min-h-0"
         >
           <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />

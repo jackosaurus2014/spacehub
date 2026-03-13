@@ -396,7 +396,7 @@ function LaunchWindowsSection({ launchWindows: LAUNCH_WINDOWS, transferTypes: TR
           {TRANSFER_TYPES.map((t) => (
             <div key={t.name} className="bg-slate-800/50 rounded-xl p-4 border border-slate-700/50">
               <div className="text-white font-semibold mb-1">{t.name}</div>
-              <div className="text-cyan-400 text-sm font-bold mb-2">{t.duration}</div>
+              <div className="text-slate-300 text-sm font-bold mb-2">{t.duration}</div>
               <p className="text-slate-400 text-xs leading-relaxed">{t.description}</p>
             </div>
           ))}

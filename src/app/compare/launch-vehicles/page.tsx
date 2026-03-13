@@ -419,7 +419,7 @@ function getStatusStyle(status: VehicleStatus): { bg: string; text: string } {
     case 'Operational':
       return { bg: 'bg-green-900/30 border border-green-500/30', text: 'text-green-400' };
     case 'In Development':
-      return { bg: 'bg-cyan-900/30 border border-cyan-500/30', text: 'text-cyan-400' };
+      return { bg: 'bg-slate-800/40 border border-white/10', text: 'text-slate-300' };
     case 'Retired':
       return { bg: 'bg-slate-800/30 border border-slate-500/30', text: 'text-slate-400' };
   }
@@ -633,7 +633,7 @@ function VehicleSelector({
           {selected.map((v) => (
             <span
               key={v.id}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-cyan-500/15 text-cyan-400 border border-cyan-500/30 rounded-lg text-xs font-medium"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white/8 text-slate-300 border border-white/10 rounded-lg text-xs font-medium"
             >
               {v.name}
               <button
@@ -683,7 +683,7 @@ function VehicleSelector({
                 setDropdownOpen(true);
               }}
               onFocus={() => setDropdownOpen(true)}
-              className="w-full pl-10 pr-4 py-2.5 bg-slate-800/80 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50 transition-all"
+              className="w-full pl-10 pr-4 py-2.5 bg-slate-800/80 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-white/20 focus:border-white/15 transition-all"
             />
           </div>
 
@@ -730,7 +730,7 @@ function VehicleSelector({
                 className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-all border ${
                   selected.length >= maxVehicles
                     ? 'opacity-30 cursor-not-allowed bg-slate-800 text-star-300 border-slate-700'
-                    : 'bg-slate-800 text-star-300 border-slate-700 hover:border-cyan-500/50 hover:text-cyan-400'
+                    : 'bg-slate-800 text-star-300 border-slate-700 hover:border-white/15 hover:text-white'
                 }`}
               >
                 {v.name}
@@ -761,7 +761,7 @@ function VehicleSelector({
                 selected.forEach((v) => onRemove(v.id));
                 vehicles.forEach((v) => onAdd(v));
               }}
-              className="px-3 py-1.5 bg-slate-800/50 border border-slate-700 rounded-lg text-xs text-star-300 hover:border-cyan-500/40 hover:text-cyan-400 transition-all"
+              className="px-3 py-1.5 bg-slate-800/50 border border-slate-700 rounded-lg text-xs text-star-300 hover:border-white/15/40 hover:text-white transition-all"
             >
               {preset.label}
             </button>
@@ -878,7 +878,7 @@ function CostEfficiencyChart({ vehicles }: { vehicles: LaunchVehicle[] }) {
       </div>
       <div className="mt-4 pt-3 border-t border-slate-700/50 flex flex-wrap items-center gap-3 text-xs text-star-300">
         <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-sm bg-green-500" /> Under $1K/kg</span>
-        <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-sm bg-cyan-500" /> $1K-$3K/kg</span>
+        <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-sm bg-white" /> $1K-$3K/kg</span>
         <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-sm bg-amber-500" /> $3K-$5K/kg</span>
         <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-sm bg-red-500" /> Over $5K/kg</span>
       </div>
@@ -972,7 +972,7 @@ function ComparisonTable({ vehicles }: { vehicles: LaunchVehicle[] }) {
                   <tr key={`section-${rowIdx}`} className="bg-slate-800/40">
                     <td
                       colSpan={vehicles.length + 1}
-                      className="py-2 px-4 text-xs font-bold text-cyan-400 uppercase tracking-widest"
+                      className="py-2 px-4 text-xs font-bold text-slate-300 uppercase tracking-widest"
                     >
                       {row.label}
                     </td>
@@ -1094,7 +1094,7 @@ export default function LaunchVehicleComparePage() {
               onClick={() => setViewMode('table')}
               className={`px-4 py-1.5 rounded-md text-xs font-medium transition-all ${
                 viewMode === 'table'
-                  ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30'
+                  ? 'bg-white/10 text-slate-300 border border-white/10'
                   : 'text-star-300 hover:text-white border border-transparent'
               }`}
             >
@@ -1104,7 +1104,7 @@ export default function LaunchVehicleComparePage() {
               onClick={() => setViewMode('charts')}
               className={`px-4 py-1.5 rounded-md text-xs font-medium transition-all ${
                 viewMode === 'charts'
-                  ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30'
+                  ? 'bg-white/10 text-slate-300 border border-white/10'
                   : 'text-star-300 hover:text-white border border-transparent'
               }`}
             >
@@ -1130,7 +1130,7 @@ export default function LaunchVehicleComparePage() {
       <ScrollReveal delay={0.1}>
       <div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-3">
         <div className="card p-4 text-center">
-          <div className="text-2xl font-bold text-cyan-400">{VEHICLES.length}</div>
+          <div className="text-2xl font-bold text-slate-300">{VEHICLES.length}</div>
           <div className="text-xs text-star-300 mt-1">Vehicles in Database</div>
         </div>
         <div className="card p-4 text-center">
@@ -1161,25 +1161,25 @@ export default function LaunchVehicleComparePage() {
         <div className="flex flex-wrap gap-3">
           <Link
             href="/launch-vehicles"
-            className="px-4 py-2 bg-slate-800/50 border border-slate-700 rounded-lg text-xs text-star-300 hover:border-cyan-500/40 hover:text-cyan-400 transition-all"
+            className="px-4 py-2 bg-slate-800/50 border border-slate-700 rounded-lg text-xs text-star-300 hover:border-white/15/40 hover:text-white transition-all"
           >
             Launch Vehicle Database
           </Link>
           <Link
             href="/launch-cost-calculator"
-            className="px-4 py-2 bg-slate-800/50 border border-slate-700 rounded-lg text-xs text-star-300 hover:border-cyan-500/40 hover:text-cyan-400 transition-all"
+            className="px-4 py-2 bg-slate-800/50 border border-slate-700 rounded-lg text-xs text-star-300 hover:border-white/15/40 hover:text-white transition-all"
           >
             Launch Cost Calculator
           </Link>
           <Link
             href="/compare/companies"
-            className="px-4 py-2 bg-slate-800/50 border border-slate-700 rounded-lg text-xs text-star-300 hover:border-cyan-500/40 hover:text-cyan-400 transition-all"
+            className="px-4 py-2 bg-slate-800/50 border border-slate-700 rounded-lg text-xs text-star-300 hover:border-white/15/40 hover:text-white transition-all"
           >
             Compare Companies
           </Link>
           <Link
             href="/mission-cost"
-            className="px-4 py-2 bg-slate-800/50 border border-slate-700 rounded-lg text-xs text-star-300 hover:border-cyan-500/40 hover:text-cyan-400 transition-all"
+            className="px-4 py-2 bg-slate-800/50 border border-slate-700 rounded-lg text-xs text-star-300 hover:border-white/15/40 hover:text-white transition-all"
           >
             Mission Planning
           </Link>

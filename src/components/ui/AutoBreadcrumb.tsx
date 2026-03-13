@@ -93,7 +93,7 @@ export default function AutoBreadcrumb() {
                 ) : (
                   <Link
                     href={item.href}
-                    className="text-slate-400 hover:text-cyan-400 transition-colors whitespace-nowrap flex items-center gap-1"
+                    className="text-slate-400 hover:text-white transition-colors whitespace-nowrap flex items-center gap-1"
                   >
                     {/* Home icon */}
                     {isFirst && (

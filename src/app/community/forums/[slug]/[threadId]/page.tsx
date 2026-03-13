@@ -227,7 +227,7 @@ export default function ThreadDetailPage() {
             <p className="text-slate-400 mb-6">This thread may have been deleted or the URL is incorrect.</p>
             <Link
               href={`/community/forums/${slug}`}
-              className="px-5 py-2.5 bg-cyan-600 hover:bg-cyan-500 text-white font-medium rounded-lg transition-colors"
+              className="px-5 py-2.5 bg-white hover:bg-slate-100 text-white font-medium rounded-lg transition-colors"
             >
               Back to Forum
             </Link>
@@ -242,13 +242,13 @@ export default function ThreadDetailPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Breadcrumb */}
         <nav className="flex items-center gap-2 text-sm text-slate-400 mb-6 overflow-x-auto" aria-label="Breadcrumb">
-          <Link href="/" className="hover:text-cyan-400 whitespace-nowrap min-h-[44px] flex items-center">Home</Link>
+          <Link href="/" className="hover:text-white whitespace-nowrap min-h-[44px] flex items-center">Home</Link>
           <span className="text-slate-600">/</span>
-          <Link href="/community" className="hover:text-cyan-400 whitespace-nowrap min-h-[44px] flex items-center">Community</Link>
+          <Link href="/community" className="hover:text-white whitespace-nowrap min-h-[44px] flex items-center">Community</Link>
           <span className="text-slate-600">/</span>
-          <Link href="/community/forums" className="hover:text-cyan-400 whitespace-nowrap min-h-[44px] flex items-center">Forums</Link>
+          <Link href="/community/forums" className="hover:text-white whitespace-nowrap min-h-[44px] flex items-center">Forums</Link>
           <span className="text-slate-600">/</span>
-          <Link href={`/community/forums/${slug}`} className="hover:text-cyan-400 whitespace-nowrap min-h-[44px] flex items-center">
+          <Link href={`/community/forums/${slug}`} className="hover:text-white whitespace-nowrap min-h-[44px] flex items-center">
             {thread.categoryName || slug}
           </Link>
           <span className="text-slate-600">/</span>
@@ -280,7 +280,7 @@ export default function ThreadDetailPage() {
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-3 flex-wrap">
                 {thread.isPinned && (
-                  <span className="text-xs px-1.5 py-0.5 bg-cyan-500/10 text-cyan-400 rounded font-medium flex items-center gap-0.5">
+                  <span className="text-xs px-1.5 py-0.5 bg-white/5 text-slate-300 rounded font-medium flex items-center gap-0.5">
                     <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
                     </svg>
@@ -295,7 +295,7 @@ export default function ThreadDetailPage() {
                     Locked
                   </span>
                 )}
-                <span className="text-xs px-1.5 py-0.5 bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 rounded">
+                <span className="text-xs px-1.5 py-0.5 bg-white/5 text-slate-300 border border-white/10 rounded">
                   {thread.category}
                 </span>
                 {thread.acceptedPostId && (
@@ -318,7 +318,7 @@ export default function ThreadDetailPage() {
               )}
 
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-9 h-9 rounded-full bg-gradient-to-br from-cyan-500/20 to-purple-500/20 border border-cyan-500/30 flex items-center justify-center text-xs font-bold text-cyan-300">
+                <div className="w-9 h-9 rounded-full bg-gradient-to-br from-white/5 to-purple-500/20 border border-white/10 flex items-center justify-center text-xs font-bold text-slate-200">
                   {getInitials(thread.authorName)}
                 </div>
                 <div>
@@ -445,7 +445,7 @@ export default function ThreadDetailPage() {
                 onChange={(e) => setReplyContent(e.target.value)}
                 placeholder="Share your thoughts... (Markdown supported, use @username to mention someone)"
                 rows={4}
-                className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none resize-none mb-1"
+                className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none resize-none mb-1"
                 required
               />
               <p className="text-xs text-slate-500 mb-3">Supports **bold**, *italic*, `code`, [links](url), @mentions, and more Markdown formatting</p>
@@ -453,7 +453,7 @@ export default function ThreadDetailPage() {
                 <button
                   type="submit"
                   disabled={submitting || !replyContent.trim()}
-                  className="px-5 py-2 bg-cyan-600 hover:bg-cyan-500 text-white font-medium rounded-lg transition-colors disabled:opacity-50 flex items-center gap-2"
+                  className="px-5 py-2 bg-white hover:bg-slate-100 text-white font-medium rounded-lg transition-colors disabled:opacity-50 flex items-center gap-2"
                 >
                   {submitting ? (
                     <>

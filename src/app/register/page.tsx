@@ -131,23 +131,23 @@ export default function RegisterPage() {
           </p>
           <ul className="space-y-4 text-left">
             <li className="flex items-start gap-3">
-              <span className="text-cyan-400 mt-0.5 flex-shrink-0">&#10003;</span>
+              <span className="text-slate-300 mt-0.5 flex-shrink-0">&#10003;</span>
               <span className="text-slate-200 text-sm">30+ integrated modules covering every dimension of the space industry</span>
             </li>
             <li className="flex items-start gap-3">
-              <span className="text-cyan-400 mt-0.5 flex-shrink-0">&#10003;</span>
+              <span className="text-slate-300 mt-0.5 flex-shrink-0">&#10003;</span>
               <span className="text-slate-200 text-sm">Real-time data from 50+ government and industry sources</span>
             </li>
             <li className="flex items-start gap-3">
-              <span className="text-cyan-400 mt-0.5 flex-shrink-0">&#10003;</span>
+              <span className="text-slate-300 mt-0.5 flex-shrink-0">&#10003;</span>
               <span className="text-slate-200 text-sm">Interactive tools: satellite trackers, mission calculators, compliance wizards</span>
             </li>
             <li className="flex items-start gap-3">
-              <span className="text-cyan-400 mt-0.5 flex-shrink-0">&#10003;</span>
+              <span className="text-slate-300 mt-0.5 flex-shrink-0">&#10003;</span>
               <span className="text-slate-200 text-sm">Unified regulatory intelligence: FCC, FAA, ITU, SEC filings in one place</span>
             </li>
             <li className="flex items-start gap-3">
-              <span className="text-cyan-400 mt-0.5 flex-shrink-0">&#10003;</span>
+              <span className="text-slate-300 mt-0.5 flex-shrink-0">&#10003;</span>
               <span className="text-slate-200 text-sm">Free tier with generous access &mdash; no credit card required</span>
             </li>
           </ul>
@@ -338,7 +338,7 @@ export default function RegisterPage() {
           {/* Social proof */}
           <div className="mt-6 text-center">
             <p className="text-slate-400 text-sm">
-              Join <span className="text-cyan-400 font-semibold">10,000+</span> space industry professionals
+              Start your space intelligence journey
             </p>
             <div className="flex items-center justify-center gap-1 mt-2">
               {[...Array(5)].map((_, i) => (

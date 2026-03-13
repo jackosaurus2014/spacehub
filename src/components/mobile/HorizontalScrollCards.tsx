@@ -29,7 +29,7 @@ export default function HorizontalScrollCards<T>({
           {showAllHref && (
             <Link
               href={showAllHref}
-              className="text-xs text-cyan-400 hover:text-cyan-300 font-medium transition-colors"
+              className="text-xs text-slate-300 hover:text-white font-medium transition-colors"
             >
               See All &rarr;
             </Link>

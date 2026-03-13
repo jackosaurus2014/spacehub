@@ -17,7 +17,7 @@ const topicColors: Record<string, string> = {
   space_law: 'bg-purple-500',
   investment: 'bg-green-500',
   policy: 'bg-blue-500',
-  technology: 'bg-cyan-500',
+  technology: 'bg-white',
   business: 'bg-yellow-500',
   exploration: 'bg-rocket-500',
 };

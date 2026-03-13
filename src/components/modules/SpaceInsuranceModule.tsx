@@ -310,7 +310,7 @@ export default function SpaceInsuranceModule() {
                   inputMode="decimal"
                   value={calcValue}
                   onChange={(e) => setCalcValue(e.target.value)}
-                  className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+                  className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                   placeholder="100"
                   min="1"
                 />
@@ -324,7 +324,7 @@ export default function SpaceInsuranceModule() {
                   onChange={(e) =>
                     setCalcMissionType(e.target.value as InsuranceMissionType)
                   }
-                  className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+                  className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                 >
                   {INSURANCE_MISSION_TYPES.map((type) => (
                     <option key={type.value} value={type.value}>

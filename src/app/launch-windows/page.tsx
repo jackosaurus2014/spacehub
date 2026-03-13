@@ -42,14 +42,14 @@ const DESTINATION_TYPE_INFO: Record<string, { label: string; icon: string; color
   moon: { label: 'Moon', icon: '🌙', color: 'text-slate-300' },
   planet: { label: 'Planet', icon: '🪐', color: 'text-orange-400' },
   asteroid: { label: 'Asteroid', icon: '☄️', color: 'text-amber-400' },
-  lagrange: { label: 'Lagrange Point', icon: '⚖️', color: 'text-cyan-400' },
+  lagrange: { label: 'Lagrange Point', icon: '⚖️', color: 'text-slate-300' },
 };
 
 const TRANSFER_TYPE_INFO: Record<TransferType, { label: string; color: string; bgColor: string }> = {
   hohmann: { label: 'Hohmann', color: 'text-blue-400', bgColor: 'bg-blue-500/20' },
   low_energy: { label: 'Low-Energy', color: 'text-green-400', bgColor: 'bg-green-500/20' },
   gravity_assist: { label: 'Gravity Assist', color: 'text-purple-400', bgColor: 'bg-purple-500/20' },
-  direct: { label: 'Direct', color: 'text-cyan-400', bgColor: 'bg-cyan-500/20' },
+  direct: { label: 'Direct', color: 'text-slate-300', bgColor: 'bg-white/10' },
 };
 
 const MISSION_TYPE_INFO: Record<string, { label: string; icon: string }> = {
@@ -140,22 +140,22 @@ function CountdownTimer({ targetDate }: { targetDate: Date | string }) {
   return (
     <div className="flex items-center gap-3">
       <div className="text-center">
-        <div className="text-2xl font-bold font-display text-cyan-400">{timeLeft.days}</div>
+        <div className="text-2xl font-bold font-display text-slate-300">{timeLeft.days}</div>
         <div className="text-xs text-slate-400 uppercase tracking-widest">Days</div>
       </div>
       <span className="text-slate-400">:</span>
       <div className="text-center">
-        <div className="text-2xl font-bold font-display text-cyan-400">{String(timeLeft.hours).padStart(2, '0')}</div>
+        <div className="text-2xl font-bold font-display text-slate-300">{String(timeLeft.hours).padStart(2, '0')}</div>
         <div className="text-xs text-slate-400 uppercase tracking-widest">Hrs</div>
       </div>
       <span className="text-slate-400">:</span>
       <div className="text-center">
-        <div className="text-2xl font-bold font-display text-cyan-400">{String(timeLeft.minutes).padStart(2, '0')}</div>
+        <div className="text-2xl font-bold font-display text-slate-300">{String(timeLeft.minutes).padStart(2, '0')}</div>
         <div className="text-xs text-slate-400 uppercase tracking-widest">Min</div>
       </div>
       <span className="text-slate-400">:</span>
       <div className="text-center">
-        <div className="text-2xl font-bold font-display text-cyan-400">{String(timeLeft.seconds).padStart(2, '0')}</div>
+        <div className="text-2xl font-bold font-display text-slate-300">{String(timeLeft.seconds).padStart(2, '0')}</div>
         <div className="text-xs text-slate-400 uppercase tracking-widest">Sec</div>
 
         <RelatedModules modules={PAGE_RELATIONS['launch-windows']} />
@@ -174,7 +174,7 @@ function DestinationCard({ destination }: { destination: CelestialDestination })
   const successColor = getSuccessRateColor(successRate);
 
   return (
-    <div className="card p-5 hover:border-cyan-500/30 transition-all">
+    <div className="card p-5 hover:border-white/10 transition-all">
       {/* Header */}
       <div className="flex items-start justify-between mb-4">
         <div className="flex items-center gap-3">
@@ -242,7 +242,7 @@ function DestinationCard({ destination }: { destination: CelestialDestination })
           {destination.deltaVToOrbit && (
             <div className="flex-1">
               <span className="text-slate-400 text-xs">To Orbit</span>
-              <div className="text-cyan-400 font-semibold">{destination.deltaVToOrbit} km/s</div>
+              <div className="text-slate-300 font-semibold">{destination.deltaVToOrbit} km/s</div>
             </div>
           )}
           {destination.deltaVToLand && (
@@ -250,7 +250,7 @@ function DestinationCard({ destination }: { destination: CelestialDestination })
               <div className="w-px h-8 bg-slate-700/50" />
               <div className="flex-1">
                 <span className="text-slate-400 text-xs">To Land</span>
-                <div className="text-cyan-400 font-semibold">{destination.deltaVToLand} km/s</div>
+                <div className="text-slate-300 font-semibold">{destination.deltaVToLand} km/s</div>
               </div>
             </>
           )}
@@ -281,7 +281,7 @@ function WindowCard({ window: launchWindow }: { window: LaunchWindow }) {
     <div className={`bg-slate-800/50 border rounded-xl p-5 transition-all ${
       isOpen ? 'border-green-500/50 shadow-[0_0_20px_rgba(34,197,94,0.1)]' :
       isPast ? 'border-slate-700/30 opacity-60' :
-      'border-slate-700/50 hover:border-cyan-500/30'
+      'border-slate-700/50 hover:border-white/10'
     }`}>
       {/* Header */}
       <div className="flex items-start justify-between mb-4">
@@ -309,7 +309,7 @@ function WindowCard({ window: launchWindow }: { window: LaunchWindow }) {
             </span>
           ) : (
             <div>
-              <div className="text-cyan-400 font-bold text-lg">T-{daysToOpen}d</div>
+              <div className="text-slate-300 font-bold text-lg">T-{daysToOpen}d</div>
               <div className="text-xs text-slate-400 uppercase tracking-widest">Until Open</div>
             </div>
           )}
@@ -322,9 +322,9 @@ function WindowCard({ window: launchWindow }: { window: LaunchWindow }) {
           <span className="text-slate-400 text-xs block mb-1">Window Opens</span>
           <span className="text-white text-sm font-medium">{formatDateShort(launchWindow.windowOpen)}</span>
         </div>
-        <div className="bg-slate-900/50 rounded-lg p-3 text-center border border-cyan-500/20">
-          <span className="text-cyan-500 text-xs block mb-1">Optimal</span>
-          <span className="text-cyan-400 text-sm font-medium">{formatDateShort(launchWindow.optimalDate)}</span>
+        <div className="bg-slate-900/50 rounded-lg p-3 text-center border border-white/10">
+          <span className="text-slate-300 text-xs block mb-1">Optimal</span>
+          <span className="text-slate-300 text-sm font-medium">{formatDateShort(launchWindow.optimalDate)}</span>
         </div>
         <div className="bg-slate-900/50 rounded-lg p-3 text-center">
           <span className="text-slate-400 text-xs block mb-1">Window Closes</span>
@@ -533,7 +533,7 @@ function LaunchWindowsContent() {
             <button
               onClick={handleInitialize}
               disabled={initializing}
-              className="bg-cyan-500 hover:bg-cyan-400 text-slate-900 font-semibold py-3 px-6 rounded-lg transition-colors"
+              className="bg-white hover:bg-slate-100 text-slate-900 font-semibold py-3 px-6 rounded-lg transition-colors"
             >
               {initializing ? (
                 <span className="flex items-center gap-2">
@@ -581,7 +581,7 @@ function LaunchWindowsContent() {
             </div>
           </div>
           <div className="card p-6 text-center">
-            <div className="text-4xl font-bold font-display tracking-tight text-cyan-400">
+            <div className="text-4xl font-bold font-display tracking-tight text-slate-300">
               {data.stats.upcomingWindows}
             </div>
             <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">
@@ -640,12 +640,12 @@ function LaunchWindowsContent() {
 
         {/* Next Window Countdown */}
         {nextWindow && (
-          <ScrollReveal delay={0.1}><div className="bg-gradient-to-r from-slate-800/80 to-slate-800/50 border border-cyan-500/20 rounded-xl p-6 mb-8">
+          <ScrollReveal delay={0.1}><div className="bg-gradient-to-r from-slate-800/80 to-slate-800/50 border border-white/10 rounded-xl p-6 mb-8">
             <div className="flex flex-col md:flex-row items-center justify-between gap-6">
               <div>
                 <h3 className="text-lg font-semibold text-white mb-1">Next Launch Window</h3>
                 <p className="text-slate-400 text-sm">
-                  <span className="text-cyan-400 font-medium">{nextWindow.destination}</span>
+                  <span className="text-slate-300 font-medium">{nextWindow.destination}</span>
                   {' '} - {MISSION_TYPE_INFO[nextWindow.missionType]?.label || nextWindow.missionType} mission via{' '}
                   {TRANSFER_TYPE_INFO[nextWindow.transferType]?.label || nextWindow.transferType} transfer
                 </p>
@@ -666,7 +666,7 @@ function LaunchWindowsContent() {
               onClick={() => handleTabChange(tab.id)}
               className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
                 activeTab === tab.id
-                  ? 'bg-cyan-500 text-slate-900 shadow-[0_0_20px_rgba(6,182,212,0.3)]'
+                  ? 'bg-white text-slate-900 shadow-[0_0_20px_rgba(6,182,212,0.3)]'
                   : 'bg-slate-800/50 text-slate-400 hover:bg-slate-700/50'
               }`}
             >
@@ -697,7 +697,7 @@ function LaunchWindowsContent() {
                   onClick={() => handleDestinationFilterChange('')}
                   className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
                     destinationFilter === ''
-                      ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30'
+                      ? 'bg-white/10 text-slate-300 border border-white/10'
                       : 'bg-slate-700/50 text-slate-400 hover:bg-slate-700'
                   }`}
                 >
@@ -711,7 +711,7 @@ function LaunchWindowsContent() {
                       onClick={() => handleDestinationFilterChange(dest)}
                       className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
                         destinationFilter === dest
-                          ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30'
+                          ? 'bg-white/10 text-slate-300 border border-white/10'
                           : 'bg-slate-700/50 text-slate-400 hover:bg-slate-700'
                       }`}
                     >
@@ -794,26 +794,26 @@ function LaunchWindowsContent() {
             )}
 
             {/* Cross-module Links */}
-            <div className="bg-slate-800/50 border border-cyan-500/20 rounded-xl p-5 mt-8">
+            <div className="bg-slate-800/50 border border-white/10 rounded-xl p-5 mt-8">
               <h3 className="text-white font-semibold mb-3">Related Resources</h3>
               <div className="flex flex-wrap gap-3">
                 <Link
                   href="/solar-exploration"
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-cyan-500/10 text-cyan-400 hover:bg-cyan-500/20 transition-colors"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-white/5 text-slate-300 hover:bg-slate-100/20 transition-colors"
                 >
                   <span>🌍</span>
                   Solar Exploration
                 </Link>
                 <Link
                   href="/space-environment?tab=debris"
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-cyan-500/10 text-cyan-400 hover:bg-cyan-500/20 transition-colors"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-white/5 text-slate-300 hover:bg-slate-100/20 transition-colors"
                 >
                   <span>⚠️</span>
                   Debris Monitor
                 </Link>
                 <Link
                   href="/orbital-slots"
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-cyan-500/10 text-cyan-400 hover:bg-cyan-500/20 transition-colors"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-white/5 text-slate-300 hover:bg-slate-100/20 transition-colors"
                 >
                   <span>🛰️</span>
                   Orbital Slots

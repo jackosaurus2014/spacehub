@@ -940,7 +940,7 @@ export default function SatelliteBusComparisonPage() {
             <div className="text-xs text-slate-400 mt-1">Total Heritage Units</div>
           </div>
           <div className="card p-4 text-center">
-            <div className="text-2xl font-bold text-cyan-400">{ALL_CLASSES.length}</div>
+            <div className="text-2xl font-bold text-slate-300">{ALL_CLASSES.length}</div>
             <div className="text-xs text-slate-400 mt-1">Bus Classes</div>
           </div>
         </div>

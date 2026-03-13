@@ -368,7 +368,7 @@ const TECH_CATEGORIES: TechCategory[] = [
   {
     id: 'optical-comms',
     name: 'Optical Communications',
-    color: 'text-cyan-400',
+    color: 'text-slate-300',
     totalPatents: 3100,
     growthRate: 24.7,
     recentFilings: 980,
@@ -999,7 +999,7 @@ function PortfoliosTab({ holdersData }: { holdersData: PatentHolder[] }) {
             <select
               value={countryFilter}
               onChange={(e) => setCountryFilter(e.target.value)}
-              className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+              className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
             >
               <option value="">All Countries</option>
               {countries.map(c => (
@@ -1013,7 +1013,7 @@ function PortfoliosTab({ holdersData }: { holdersData: PatentHolder[] }) {
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as 'portfolio' | 'recent' | 'citations' | 'growth')}
-              className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+              className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
             >
               <option value="portfolio">Portfolio Size</option>
               <option value="recent">Recent Filings</option>
@@ -1217,7 +1217,7 @@ function TrendsTab({ categoriesData, filingsData }: { categoriesData: TechCatego
           <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Accelerating Fields</div>
         </div>
         <div className="card-elevated p-6 text-center">
-          <div className="text-4xl font-bold font-display tracking-tight text-cyan-400">
+          <div className="text-4xl font-bold font-display tracking-tight text-slate-300">
             +{fastestGrowth.toFixed(1)}%
           </div>
           <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Fastest Growth</div>
@@ -1260,7 +1260,7 @@ function TrendsTab({ categoriesData, filingsData }: { categoriesData: TechCatego
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value as 'patents' | 'growth' | 'recent')}
-            className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+            className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
           >
             <option value="patents">Sort by Total Patents</option>
             <option value="growth">Sort by Growth Rate</option>
@@ -1469,7 +1469,7 @@ function NASATab({ nasaData }: { nasaData: NASAPatent[] }) {
             <select
               value={categoryFilter}
               onChange={(e) => setCategoryFilter(e.target.value)}
-              className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+              className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
             >
               <option value="">All Categories</option>
               {categories.map(c => (
@@ -1483,7 +1483,7 @@ function NASATab({ nasaData }: { nasaData: NASAPatent[] }) {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+              className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
             >
               <option value="">All Statuses</option>
               {statuses.map(s => (

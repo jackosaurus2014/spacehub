@@ -25,7 +25,7 @@ const categoryColors: Record<string, string> = {
   launches: 'bg-rocket-500/20 text-rocket-400',
   missions: 'bg-nebula-500/20 text-nebula-400',
   companies: 'bg-blue-500/20 text-blue-400',
-  satellites: 'bg-cyan-500/20 text-cyan-400',
+  satellites: 'bg-white/10 text-slate-300',
   defense: 'bg-slate-500/20 text-slate-300',
   earnings: 'bg-green-500/20 text-green-400',
   mergers: 'bg-purple-500/20 text-purple-400',
@@ -148,7 +148,7 @@ export default function ReadingListPage() {
             accentColor="cyan"
             icon={
               <svg
-                className="w-8 h-8 text-cyan-400"
+                className="w-8 h-8 text-slate-300"
                 fill="none"
                 stroke="currentColor"
                 strokeWidth={1.5}
@@ -185,7 +185,7 @@ export default function ReadingListPage() {
             accentColor="cyan"
             icon={
               <svg
-                className="w-8 h-8 text-cyan-400"
+                className="w-8 h-8 text-slate-300"
                 fill="none"
                 stroke="currentColor"
                 strokeWidth={1.5}
@@ -246,7 +246,7 @@ export default function ReadingListPage() {
           accentColor="cyan"
           icon={
             <svg
-              className="w-8 h-8 text-cyan-400"
+              className="w-8 h-8 text-slate-300"
               fill="none"
               stroke="currentColor"
               strokeWidth={1.5}
@@ -263,7 +263,7 @@ export default function ReadingListPage() {
           <div className="flex items-center gap-2">
             <Link
               href="/news"
-              className="text-sm text-cyan-400 hover:text-cyan-300 transition-colors inline-flex items-center gap-1"
+              className="text-sm text-slate-300 hover:text-white transition-colors inline-flex items-center gap-1"
             >
               <svg
                 className="w-4 h-4"
@@ -296,7 +296,7 @@ export default function ReadingListPage() {
               onClick={() => setFilter('all')}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                 filter === 'all'
-                  ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30'
+                  ? 'bg-white/10 text-slate-200 border border-white/10'
                   : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/50'
               }`}
             >
@@ -306,7 +306,7 @@ export default function ReadingListPage() {
               onClick={() => setFilter('unread')}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                 filter === 'unread'
-                  ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30'
+                  ? 'bg-white/10 text-slate-200 border border-white/10'
                   : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/50'
               }`}
             >
@@ -316,7 +316,7 @@ export default function ReadingListPage() {
               onClick={() => setFilter('read')}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                 filter === 'read'
-                  ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30'
+                  ? 'bg-white/10 text-slate-200 border border-white/10'
                   : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/50'
               }`}
             >
@@ -337,7 +337,7 @@ export default function ReadingListPage() {
             action={
               <Link
                 href="/news"
-                className="inline-flex items-center gap-2 px-5 py-2.5 bg-cyan-600 hover:bg-cyan-500 text-white font-medium rounded-lg transition-colors"
+                className="inline-flex items-center gap-2 px-5 py-2.5 bg-white hover:bg-slate-100 text-white font-medium rounded-lg transition-colors"
               >
                 Browse News Articles
               </Link>
@@ -378,7 +378,7 @@ export default function ReadingListPage() {
                 className={`group relative rounded-xl border transition-all duration-200 ${
                   item.read
                     ? 'bg-slate-800/30 border-slate-700/30'
-                    : 'bg-slate-800/60 border-slate-700/50 hover:border-cyan-500/30'
+                    : 'bg-slate-800/60 border-slate-700/50 hover:border-white/10'
                 }`}
               >
                 <div className="flex items-start gap-4 p-4">
@@ -387,8 +387,8 @@ export default function ReadingListPage() {
                     onClick={() => toggleRead(item.id)}
                     className={`mt-1 flex-shrink-0 w-5 h-5 rounded border-2 transition-colors flex items-center justify-center ${
                       item.read
-                        ? 'bg-cyan-500/20 border-cyan-500/50 text-cyan-400'
-                        : 'border-slate-600 hover:border-cyan-500/50'
+                        ? 'bg-white/10 border-white/15 text-slate-300'
+                        : 'border-slate-600 hover:border-white/15'
                     }`}
                     aria-label={
                       item.read ? 'Mark as unread' : 'Mark as read'
@@ -421,7 +421,7 @@ export default function ReadingListPage() {
                       className={`block font-medium leading-snug transition-colors ${
                         item.read
                           ? 'text-slate-400 hover:text-slate-200'
-                          : 'text-slate-100 hover:text-cyan-300'
+                          : 'text-slate-100 hover:text-white'
                       }`}
                     >
                       {item.title}
@@ -462,7 +462,7 @@ export default function ReadingListPage() {
                       href={item.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="p-1.5 rounded-lg text-slate-500 hover:text-cyan-400 hover:bg-slate-700/50 transition-colors"
+                      className="p-1.5 rounded-lg text-slate-500 hover:text-white hover:bg-slate-700/50 transition-colors"
                       aria-label="Open article"
                     >
                       <svg

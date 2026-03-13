@@ -182,7 +182,7 @@ function eventTypeLabel(type: RecentSolarEvent['type']): { label: string; color:
     case 'flare':     return { label: 'Solar Flare',     color: 'bg-orange-500/20 text-orange-300 border-orange-500/40', icon: '\u2600\uFE0F' };
     case 'cme':       return { label: 'CME',             color: 'bg-purple-500/20 text-purple-300 border-purple-500/40', icon: '\uD83C\uDF0A' };
     case 'radiation': return { label: 'Radiation Storm',  color: 'bg-red-500/20 text-red-300 border-red-500/40',         icon: '\u2622\uFE0F' };
-    case 'filament':  return { label: 'Filament Eruption', color: 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40',    icon: '\uD83C\uDF0B' };
+    case 'filament':  return { label: 'Filament Eruption', color: 'bg-white/10 text-slate-200 border-white/15/40',    icon: '\uD83C\uDF0B' };
     case 'proton':    return { label: 'Proton Event',     color: 'bg-pink-500/20 text-pink-300 border-pink-500/40',      icon: '\u26A1' };
   }
 }
@@ -499,7 +499,7 @@ export default function SpaceWeatherDashboard() {
                   <BigStat label="Sunspot Number" sublabel="Monthly Smoothed" value={solarCycle.sunspotNumber.toString()} color="text-amber-400" />
                   <BigStat label="Daily Sunspots" sublabel="Observed Today" value={solarCycle.sunspotNumberDaily.toString()} color="text-yellow-400" />
                   <BigStat label="Solar Flux (F10.7)" sublabel="10.7 cm Radio Flux (sfu)" value={solarCycle.solarFluxIndex.toFixed(1)} color="text-orange-400" />
-                  <BigStat label="Cycle Progress" sublabel={`Started ${solarCycle.startDate}`} value={`${solarCycle.monthsSinceMin} mo`} color="text-cyan-400" />
+                  <BigStat label="Cycle Progress" sublabel={`Started ${solarCycle.startDate}`} value={`${solarCycle.monthsSinceMin} mo`} color="text-slate-300" />
                 </div>
 
                 {/* Sunspot trend sparkline (text-based bar chart) */}
@@ -532,7 +532,7 @@ export default function SpaceWeatherDashboard() {
                   <div className="bg-slate-900/30 rounded-lg p-3">
                     <p className="text-xs text-slate-400 mb-1">Northern Hemisphere</p>
                     <div className="flex items-center gap-2">
-                      <span className="text-lg font-bold text-cyan-400">{solarCycle.hemisphereActivity.north}</span>
+                      <span className="text-lg font-bold text-slate-300">{solarCycle.hemisphereActivity.north}</span>
                       <span className="text-xs text-slate-500">sunspot groups</span>
                     </div>
                   </div>
@@ -750,7 +750,7 @@ export default function SpaceWeatherDashboard() {
                   <div className="grid grid-cols-2 gap-4 mb-5">
                     <div>
                       <p className="text-xs text-slate-400">Northern Auroral Boundary</p>
-                      <p className="text-2xl font-bold text-cyan-400">{auroralOval.northLatitude}&#176; N</p>
+                      <p className="text-2xl font-bold text-slate-300">{auroralOval.northLatitude}&#176; N</p>
                     </div>
                     <div>
                       <p className="text-xs text-slate-400">Southern Auroral Boundary</p>
@@ -762,7 +762,7 @@ export default function SpaceWeatherDashboard() {
                   <p className="text-xs text-slate-400 font-medium mb-3">Aurora Visibility Probability (Next 3 Hours)</p>
                   <div className="space-y-3 mb-5">
                     <AuroraProbRow label="High Latitudes" sublabel="> 60\u00B0 N/S" percent={auroralOval.highLatProb} color="bg-green-500" />
-                    <AuroraProbRow label="Mid Latitudes" sublabel="40-60\u00B0 N/S" percent={auroralOval.midLatProb} color="bg-cyan-500" />
+                    <AuroraProbRow label="Mid Latitudes" sublabel="40-60\u00B0 N/S" percent={auroralOval.midLatProb} color="bg-white" />
                     <AuroraProbRow label="Low Latitudes" sublabel="< 40\u00B0 N/S" percent={auroralOval.lowLatProb} color="bg-purple-500" />
                   </div>
 
@@ -770,7 +770,7 @@ export default function SpaceWeatherDashboard() {
                   <p className="text-xs text-slate-400 font-medium mb-2">Currently Visible From</p>
                   <div className="flex flex-wrap gap-1.5">
                     {auroralOval.visibility.map((loc) => (
-                      <span key={loc} className="px-2 py-0.5 bg-cyan-900/30 border border-cyan-700/40 rounded text-xs text-cyan-300">
+                      <span key={loc} className="px-2 py-0.5 bg-slate-800/40 border border-white/10 rounded text-xs text-slate-200">
                         {loc}
                       </span>
                     ))}
@@ -852,7 +852,7 @@ export default function SpaceWeatherDashboard() {
                 <MiniStatCard label="Solar Flares (7d)" value="6" sublabel="4 C-class, 2 M-class" color="text-orange-400" />
                 <MiniStatCard label="CMEs (7d)" value="2" sublabel="1 Earth-directed" color="text-purple-400" />
                 <MiniStatCard label="Proton Events" value="1" sublabel="Below S1 threshold" color="text-pink-400" />
-                <MiniStatCard label="Filament Eruptions" value="1" sublabel="Glancing CME possible" color="text-cyan-400" />
+                <MiniStatCard label="Filament Eruptions" value="1" sublabel="Glancing CME possible" color="text-slate-300" />
               </div>
             </ScrollReveal>
 
@@ -1213,7 +1213,7 @@ export default function SpaceWeatherDashboard() {
                 <h3 className="text-sm font-semibold text-slate-200 mb-4">Solar Cycle Context</h3>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                   <div className="text-center">
-                    <p className="text-2xl font-bold text-cyan-400">25</p>
+                    <p className="text-2xl font-bold text-slate-300">25</p>
                     <p className="text-xs text-slate-400 mt-1">Current Solar Cycle</p>
                   </div>
                   <div className="text-center">

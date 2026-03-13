@@ -125,7 +125,7 @@ export default function LaunchCountdownBanner() {
                     ? 'text-red-400'
                     : isImminent
                     ? 'text-orange-400'
-                    : 'text-cyan-400'
+                    : 'text-slate-300'
                 }`}
               >
                 {countdown}
@@ -139,7 +139,7 @@ export default function LaunchCountdownBanner() {
                 className={`px-3 py-1 rounded-lg text-xs font-bold transition-colors ${
                   launch.isLive
                     ? 'bg-red-500 text-white hover:bg-red-400'
-                    : 'bg-cyan-500 text-white hover:bg-cyan-400'
+                    : 'bg-white text-white hover:bg-slate-100'
                 }`}
               >
                 {launch.isLive ? 'Watch Live' : 'View Launch'}

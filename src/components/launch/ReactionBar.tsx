@@ -141,7 +141,7 @@ export default function ReactionBar({ eventId, currentPhase }: ReactionBarProps)
                   <span className="text-lg">{EMOJI_MAP[key]}</span>
                   {totalCount > 0 && (
                     <span className={`text-xs font-mono font-bold ${
-                      hasActivity ? 'text-cyan-400' : 'text-slate-500'
+                      hasActivity ? 'text-slate-300' : 'text-slate-500'
                     }`}>
                       {totalCount > 999 ? `${(totalCount / 1000).toFixed(1)}k` : totalCount}
                     </span>
@@ -149,7 +149,7 @@ export default function ReactionBar({ eventId, currentPhase }: ReactionBarProps)
 
                   {/* Activity pulse */}
                   {hasActivity && (
-                    <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-cyan-400 rounded-full animate-ping opacity-50" />
+                    <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-white rounded-full animate-ping opacity-50" />
                   )}
                 </motion.button>
               );

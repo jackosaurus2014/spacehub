@@ -50,7 +50,7 @@ const CATEGORY_COLORS: Record<SalaryCategory, { text: string; bg: string; border
   science: { text: 'text-purple-400', bg: 'bg-purple-500/20', border: 'border-purple-500/30', bar: '#c084fc' },
   executive: { text: 'text-red-400', bg: 'bg-red-500/20', border: 'border-red-500/30', bar: '#f87171' },
   manufacturing: { text: 'text-orange-400', bg: 'bg-orange-500/20', border: 'border-orange-500/30', bar: '#fb923c' },
-  emerging: { text: 'text-cyan-400', bg: 'bg-cyan-500/20', border: 'border-cyan-500/30', bar: '#22d3ee' },
+  emerging: { text: 'text-slate-300', bg: 'bg-white/10', border: 'border-white/10', bar: '#22d3ee' },
 };
 
 const DEMAND_BADGES: Record<DemandLevel, { label: string; classes: string }> = {
@@ -229,7 +229,7 @@ function RoleCard({
           </div>
         </div>
         <div className="text-right ml-3 flex-shrink-0">
-          <div className="text-lg font-bold text-cyan-400">{formatSalary(adjMedian)}</div>
+          <div className="text-lg font-bold text-slate-300">{formatSalary(adjMedian)}</div>
           <div className="text-xs text-slate-500">median</div>
         </div>
       </div>
@@ -261,7 +261,7 @@ function RoleCard({
       </div>
 
       {/* Expand/Collapse */}
-      <button onClick={() => setExpanded(!expanded)} className="text-xs text-cyan-400 hover:text-cyan-300 transition-colors min-h-[44px] min-w-[44px] inline-flex items-center">
+      <button onClick={() => setExpanded(!expanded)} className="text-xs text-slate-300 hover:text-white transition-colors min-h-[44px] min-w-[44px] inline-flex items-center">
         {expanded ? 'Show less' : 'Show details'}
       </button>
 
@@ -320,7 +320,7 @@ function RoleCard({
             <h4 className="text-xs font-medium text-slate-400 mb-2">Top Paying Companies</h4>
             <div className="flex flex-wrap gap-1.5">
               {role.topCompanies.map((company) => (
-                <span key={company} className="text-xs px-2 py-0.5 rounded bg-cyan-500/10 text-cyan-300">
+                <span key={company} className="text-xs px-2 py-0.5 rounded bg-white/5 text-slate-200">
                   {company}
                 </span>
               ))}
@@ -362,7 +362,7 @@ function RoleCard({
 
 function CompanyCard({ comp }: { comp: (typeof COMPANY_COMPENSATIONS)[0] }) {
   const typeColors = {
-    'new-space': 'text-cyan-400 bg-cyan-500/10 border-cyan-500/30',
+    'new-space': 'text-slate-300 bg-white/5 border-white/10',
     'traditional-defense': 'text-blue-400 bg-blue-500/10 border-blue-500/30',
     government: 'text-green-400 bg-green-500/10 border-green-500/30',
     startup: 'text-purple-400 bg-purple-500/10 border-purple-500/30',
@@ -386,7 +386,7 @@ function CompanyCard({ comp }: { comp: (typeof COMPANY_COMPENSATIONS)[0] }) {
         <div>
           <Link
             href={`/company-profiles/${comp.slug}`}
-            className="font-semibold text-white text-base hover:text-cyan-400 transition-colors"
+            className="font-semibold text-white text-base hover:text-white transition-colors"
           >
             {comp.company}
           </Link>
@@ -432,7 +432,7 @@ function LocationModifierSection({
   return (
     <div className="card p-4">
       <div className="flex items-center gap-2 mb-3">
-        <svg className="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className="w-4 h-4 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -458,7 +458,7 @@ function LocationModifierSection({
               onClick={() => onSelect(isSelected ? '' : loc.id)}
               className={`text-center px-2 py-2 rounded-lg border transition-all text-xs ${
                 isSelected
-                  ? 'bg-cyan-500/20 border-cyan-500/50 text-white'
+                  ? 'bg-white/10 border-white/15 text-white'
                   : 'bg-slate-700/30 border-slate-700/50 text-slate-400 hover:border-slate-600 hover:text-slate-300'
               }`}
               title={loc.description}
@@ -613,7 +613,7 @@ function SalaryBenchmarksContent() {
             <div className="text-slate-400 text-xs mt-1">Roles Tracked</div>
           </div>
           <div className="card p-5 text-center">
-            <div className="text-3xl font-bold text-cyan-400">{formatSalary(overviewStats.avgMedian)}</div>
+            <div className="text-3xl font-bold text-slate-300">{formatSalary(overviewStats.avgMedian)}</div>
             <div className="text-slate-400 text-xs mt-1">Average Median Salary</div>
           </div>
           <div className="card p-5 text-center">
@@ -628,9 +628,9 @@ function SalaryBenchmarksContent() {
       </ScrollReveal>
 
       {/* Intro */}
-      <div className="bg-gradient-to-r from-cyan-500/10 to-purple-500/10 border border-cyan-500/20 rounded-xl p-5 mb-8">
+      <div className="bg-gradient-to-r from-white/5 to-purple-500/10 border border-white/10 rounded-xl p-5 mb-8">
         <p className="text-slate-300 text-sm leading-relaxed">
-          Space industry professionals earn a <strong className="text-cyan-400">{overviewStats.techPremium}% premium</strong> over
+          Space industry professionals earn a <strong className="text-slate-300">{overviewStats.techPremium}% premium</strong> over
           general technology roles, driven by specialized skills in propulsion, avionics, orbital mechanics, and RF engineering.
           Salaries vary significantly by employer type: traditional defense contractors like Lockheed Martin and Northrop Grumman
           offer higher base pay with clearance bonuses, while new-space companies like SpaceX trade lower base for equity upside.
@@ -653,7 +653,7 @@ function SalaryBenchmarksContent() {
             }}
             className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
               activeView === tab.id
-                ? 'bg-cyan-500 text-white shadow-lg shadow-cyan-500/25'
+                ? 'bg-white text-white shadow-lg shadow-black/20/25'
                 : 'bg-slate-800/50 text-slate-400 hover:bg-slate-700/50 hover:text-white'
             }`}
           >
@@ -696,7 +696,7 @@ function SalaryBenchmarksContent() {
                     setSearchQuery(e.target.value);
                     updateUrl({ search: e.target.value || null });
                   }}
-                  className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+                  className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                 />
               </div>
               <select
@@ -707,7 +707,7 @@ function SalaryBenchmarksContent() {
                   setExperienceLevel(val);
                   updateUrl({ experience: val === 'all' ? null : val });
                 }}
-                className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+                className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
               >
                 <option value="all">All Experience Levels</option>
                 <option value="junior">Junior (0-3 years)</option>
@@ -722,7 +722,7 @@ function SalaryBenchmarksContent() {
                   setLocationFilter(val);
                   updateUrl({ location: val || null });
                 }}
-                className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+                className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
               >
                 <option value="">All Regions</option>
                 <option value="US">United States</option>
@@ -739,7 +739,7 @@ function SalaryBenchmarksContent() {
                   updateUrl({ category: null });
                 }}
                 className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                  activeCategory === '' ? 'bg-cyan-500 text-white' : 'bg-slate-700/50 text-slate-400 hover:text-white'
+                  activeCategory === '' ? 'bg-white text-white' : 'bg-slate-700/50 text-slate-400 hover:text-white'
                 }`}
               >
                 All ({SALARY_ROLES.length})
@@ -776,8 +776,8 @@ function SalaryBenchmarksContent() {
 
           {/* Location adjustment notice */}
           {metroLocation && (
-            <div className="mb-4 bg-cyan-500/10 border border-cyan-500/20 rounded-lg px-4 py-2">
-              <p className="text-cyan-300 text-xs">
+            <div className="mb-4 bg-white/5 border border-white/10 rounded-lg px-4 py-2">
+              <p className="text-slate-200 text-xs">
                 Salaries adjusted for{' '}
                 <strong>{LOCATION_MODIFIERS.find((l) => l.id === metroLocation)?.label}</strong> (
                 {locationMultiplier >= 1 ? '+' : ''}
@@ -799,7 +799,7 @@ function SalaryBenchmarksContent() {
                   setExperienceLevel('all');
                   updateUrl({ category: null, location: null, search: null, experience: null });
                 }}
-                className="text-cyan-400 hover:text-cyan-300 text-sm"
+                className="text-slate-300 hover:text-white text-sm"
               >
                 Clear all filters
               </button>
@@ -910,11 +910,11 @@ function SalaryBenchmarksContent() {
       {/* ================================================================= */}
       {activeView === 'companies' && (
         <div>
-          <div className="bg-gradient-to-r from-blue-500/10 to-cyan-500/10 border border-blue-500/20 rounded-xl p-5 mb-6">
+          <div className="bg-gradient-to-r from-blue-500/10 to-white/5 border border-blue-500/20 rounded-xl p-5 mb-6">
             <p className="text-slate-300 text-sm leading-relaxed">
               Compensation in the space industry varies dramatically by employer type.{' '}
               <strong className="text-blue-400">Traditional defense contractors</strong> offer the highest base salaries with
-              clearance bonuses and stability, while <strong className="text-cyan-400">new-space companies</strong> trade lower
+              clearance bonuses and stability, while <strong className="text-slate-300">new-space companies</strong> trade lower
               base for equity upside. <strong className="text-green-400">Government positions</strong> offer the best benefits and
               job security at lower cash compensation.
             </p>
@@ -971,31 +971,31 @@ function SalaryBenchmarksContent() {
         <div className="flex flex-wrap gap-3">
           <Link
             href="/space-talent"
-            className="card px-4 py-2 text-sm text-slate-300 hover:text-white hover:border-cyan-500/50"
+            className="card px-4 py-2 text-sm text-slate-300 hover:text-white hover:border-white/15"
           >
             Space Talent Hub
           </Link>
           <Link
             href="/space-talent?tab=workforce"
-            className="card px-4 py-2 text-sm text-slate-300 hover:text-white hover:border-cyan-500/50"
+            className="card px-4 py-2 text-sm text-slate-300 hover:text-white hover:border-white/15"
           >
             Workforce Analytics
           </Link>
           <Link
             href="/company-profiles"
-            className="card px-4 py-2 text-sm text-slate-300 hover:text-white hover:border-cyan-500/50"
+            className="card px-4 py-2 text-sm text-slate-300 hover:text-white hover:border-white/15"
           >
             Company Profiles
           </Link>
           <Link
             href="/ecosystem-map"
-            className="card px-4 py-2 text-sm text-slate-300 hover:text-white hover:border-cyan-500/50"
+            className="card px-4 py-2 text-sm text-slate-300 hover:text-white hover:border-white/15"
           >
             Ecosystem Map
           </Link>
           <Link
             href="/marketplace"
-            className="card px-4 py-2 text-sm text-slate-300 hover:text-white hover:border-cyan-500/50"
+            className="card px-4 py-2 text-sm text-slate-300 hover:text-white hover:border-white/15"
           >
             Marketplace
           </Link>

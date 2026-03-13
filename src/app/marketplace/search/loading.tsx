@@ -28,8 +28,8 @@ export default function Loading() {
                 <div className="h-4 w-full bg-slate-700/30 rounded" />
                 <div className="h-4 w-2/3 bg-slate-700/30 rounded" />
                 <div className="flex gap-2 pt-1">
-                  <div className="h-5 w-16 bg-cyan-500/20 rounded-full" />
-                  <div className="h-5 w-16 bg-cyan-500/20 rounded-full" />
+                  <div className="h-5 w-16 bg-white/10 rounded-full" />
+                  <div className="h-5 w-16 bg-white/10 rounded-full" />
                 </div>
               </div>
             ))}

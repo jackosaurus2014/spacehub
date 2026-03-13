@@ -61,7 +61,7 @@ const ORBIT_TYPES: OrbitType[] = [
       'Growing debris and congestion risk',
       'Requires large constellations for global coverage',
     ],
-    color: 'bg-cyan-500',
+    color: 'bg-white',
     barHeight: 5,
   },
   {
@@ -530,7 +530,7 @@ function OrbitCard({ orbit, index }: { orbit: OrbitType; index: number }) {
                 <ul className="space-y-1">
                   {orbit.uses.map((use) => (
                     <li key={use} className="flex items-start gap-2 text-sm text-slate-300">
-                      <span className="text-cyan-400 mt-0.5">&#8226;</span>
+                      <span className="text-slate-300 mt-0.5">&#8226;</span>
                       {use}
                     </li>
                   ))}
@@ -683,7 +683,7 @@ function KeyConcepts() {
       <div className="grid md:grid-cols-2 gap-4">
         {concepts.map((c) => (
           <div key={c.term} className="bg-slate-900/40 rounded-lg p-4">
-            <h3 className="text-sm font-bold text-cyan-400 uppercase tracking-wider mb-1">
+            <h3 className="text-sm font-bold text-slate-300 uppercase tracking-wider mb-1">
               {c.term}
             </h3>
             <p className="text-sm text-slate-300 leading-relaxed">{c.definition}</p>
@@ -740,7 +740,7 @@ export default function OrbitGuidePage() {
                 onClick={() => setFilter(cat)}
                 className={`px-3 py-1.5 text-sm rounded-lg border transition-colors ${
                   filter === cat
-                    ? 'bg-cyan-500/20 border-cyan-500/50 text-cyan-300'
+                    ? 'bg-white/10 border-white/15 text-slate-200'
                     : 'bg-slate-800/50 border-slate-700 text-slate-400 hover:text-slate-200 hover:border-slate-500'
                 }`}
               >
@@ -784,13 +784,13 @@ export default function OrbitGuidePage() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="block bg-slate-900/50 border border-slate-700 rounded-lg p-4 hover:border-cyan-500/50 hover:bg-slate-800/80 transition-colors group"
+                  className="block bg-slate-900/50 border border-slate-700 rounded-lg p-4 hover:border-white/15 hover:bg-slate-800/80 transition-colors group"
                 >
-                  <span className="text-sm font-semibold text-slate-200 group-hover:text-cyan-300 transition-colors">
+                  <span className="text-sm font-semibold text-slate-200 group-hover:text-white transition-colors">
                     {link.label}
                   </span>
                   <span className="block text-xs text-slate-400 mt-1">{link.desc}</span>
-                  <span className="inline-flex items-center gap-1 text-xs text-cyan-400 mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <span className="inline-flex items-center gap-1 text-xs text-slate-300 mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
                     Explore
                     <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />

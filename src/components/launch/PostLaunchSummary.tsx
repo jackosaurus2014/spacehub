@@ -105,7 +105,7 @@ export default function PostLaunchSummary({ eventId, missionTimeSeconds }: PostL
         {/* Stats Grid */}
         <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
           <StatCard label="Max Altitude" value={stats.maxAltitude.toFixed(1)} unit="km" color="text-purple-400" />
-          <StatCard label="Max Velocity" value={stats.maxVelocity.toFixed(3)} unit="km/s" color="text-cyan-400" />
+          <StatCard label="Max Velocity" value={stats.maxVelocity.toFixed(3)} unit="km/s" color="text-slate-300" />
           <StatCard label="Peak G-Force" value={stats.maxGForce.toFixed(2)} unit="G" color="text-orange-400" />
           <StatCard label="Peak Q" value={stats.maxDynamicPressure.toFixed(1)} unit="kPa" color="text-rose-400" />
           <StatCard

@@ -113,7 +113,7 @@ export default function DirectoryPage() {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search by name, headline, or expertise..."
-                className="w-full pl-10 pr-4 bg-slate-800 border border-slate-700 text-white rounded-lg py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+                className="w-full pl-10 pr-4 bg-slate-800 border border-slate-700 text-white rounded-lg py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
               />
             </div>
 
@@ -121,7 +121,7 @@ export default function DirectoryPage() {
             <select
               value={expertise}
               onChange={(e) => setExpertise(e.target.value)}
-              className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none min-w-[180px]"
+              className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none min-w-[180px]"
             >
               {EXPERTISE_OPTIONS.map((opt) => (
                 <option key={opt} value={opt === 'All Expertise' ? '' : opt}>
@@ -136,7 +136,7 @@ export default function DirectoryPage() {
               value={location}
               onChange={(e) => setLocation(e.target.value)}
               placeholder="Location..."
-              className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none sm:w-[160px]"
+              className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none sm:w-[160px]"
             />
           </div>
         </div>

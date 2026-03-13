@@ -71,7 +71,7 @@ function HeroStats({ segments }: { segments: MarketSegment[] }) {
         {
           label: 'Global Space Economy (2024)',
           value: formatBillions(global.currentTAM),
-          color: 'text-cyan-400',
+          color: 'text-slate-300',
           sub: `${formatCAGR(global.cagr)} CAGR`,
         },
         {
@@ -131,7 +131,7 @@ function GlobalGrowthChart({ history }: { history: MarketDataPoint[] }) {
         <h2 className="text-lg font-semibold text-white">Global Space Economy Growth (2019-2035)</h2>
         <div className="flex items-center gap-4 text-xs">
           <div className="flex items-center gap-1.5">
-            <div className="w-3 h-0.5 bg-cyan-400 rounded-full" />
+            <div className="w-3 h-0.5 bg-white rounded-full" />
             <span className="text-slate-400">Projected</span>
           </div>
           <div className="flex items-center gap-1.5">
@@ -287,7 +287,7 @@ function SegmentDetailPanel({
       {/* Back button */}
       <button
         onClick={onBack}
-        className="flex items-center gap-2 text-sm text-cyan-400 hover:text-cyan-300 transition-colors"
+        className="flex items-center gap-2 text-sm text-slate-300 hover:text-white transition-colors"
       >
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -372,7 +372,7 @@ function SegmentDetailPanel({
           />
           <div className="flex gap-3 mt-3 text-xs text-slate-500">
             {sortedHistory.map(d => (
-              <span key={d.year} className={d.type === 'projected' ? 'text-cyan-500/60' : 'text-slate-400'}>
+              <span key={d.year} className={d.type === 'projected' ? 'text-slate-300/60' : 'text-slate-400'}>
                 {d.year}: {formatBillions(d.value)}
                 {d.type === 'projected' ? ' (P)' : ''}
               </span>
@@ -392,7 +392,7 @@ function SegmentDetailPanel({
               <Link
                 key={player}
                 href={`/company-profiles?search=${encodeURIComponent(player)}`}
-                className="text-xs px-3 py-1.5 rounded-lg bg-slate-800/50 border border-slate-700/50 text-slate-300 hover:border-cyan-500/30 hover:text-cyan-400 transition-colors"
+                className="text-xs px-3 py-1.5 rounded-lg bg-slate-800/50 border border-slate-700/50 text-slate-300 hover:border-white/10 hover:text-white transition-colors"
               >
                 {player}
               </Link>
@@ -406,7 +406,7 @@ function SegmentDetailPanel({
           <ul className="space-y-2">
             {segment.trends.map((trend, i) => (
               <li key={i} className="flex items-start gap-2 text-sm text-slate-300">
-                <span className="text-cyan-400 mt-0.5 flex-shrink-0">&#x2022;</span>
+                <span className="text-slate-300 mt-0.5 flex-shrink-0">&#x2022;</span>
                 {trend}
               </li>
             ))}
@@ -515,7 +515,7 @@ function SegmentCards({
 
                 <div className="flex items-start justify-between mb-3">
                   <div className="min-w-0 pr-3">
-                    <h3 className="font-semibold text-white text-sm group-hover:text-cyan-400 transition-colors truncate">
+                    <h3 className="font-semibold text-white text-sm group-hover:text-white transition-colors truncate">
                       {segment.name}
                     </h3>
                     {segment.parentId && (
@@ -638,7 +638,7 @@ function GrowthLeadersTable({
                         className="w-2 h-2 rounded-full flex-shrink-0"
                         style={{ backgroundColor: segment.color }}
                       />
-                      <span className="text-white font-medium hover:text-cyan-400 transition-colors text-xs">
+                      <span className="text-white font-medium hover:text-white transition-colors text-xs">
                         {segment.name}
                       </span>
                     </div>
@@ -864,7 +864,7 @@ export default function MarketSizingPage() {
 
             {/* CTA */}
             <ScrollReveal delay={0.2}>
-              <div className="text-center card p-8 bg-gradient-to-r from-cyan-900/30 to-purple-900/30 border-cyan-800/50">
+              <div className="text-center card p-8 bg-gradient-to-r from-slate-800/30 to-purple-900/30 border-white/10">
                 <h2 className="text-lg font-semibold text-white mb-2">Deep Dive Into Space Market Intelligence</h2>
                 <p className="text-sm text-slate-400 mb-4 max-w-xl mx-auto">
                   Explore company profiles, financial data, and competitive analysis for 100+ space industry companies.
@@ -874,7 +874,7 @@ export default function MarketSizingPage() {
                     <motion.button
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
-                      className="px-5 py-2 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white rounded-lg text-sm font-medium transition-all"
+                      className="px-5 py-2 bg-gradient-to-r from-slate-200 to-blue-600 hover:from-white hover:to-blue-500 text-white rounded-lg text-sm font-medium transition-all"
                     >
                       Company Profiles
                     </motion.button>

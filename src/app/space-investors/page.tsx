@@ -472,7 +472,7 @@ const SORT_OPTIONS: { value: SortKey; label: string }[] = [
 
 function typeColor(type: InvestorType): string {
   switch (type) {
-    case 'VC': return 'bg-cyan-500/20 text-cyan-300 border-cyan-500/30';
+    case 'VC': return 'bg-white/10 text-slate-200 border-white/10';
     case 'CVC': return 'bg-purple-500/20 text-purple-300 border-purple-500/30';
     case 'Government': return 'bg-amber-500/20 text-amber-300 border-amber-500/30';
     case 'Angel': return 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30';
@@ -591,7 +591,7 @@ export default function SpaceInvestorsPage() {
               <p className="text-xs uppercase tracking-wider text-slate-400 mb-1">
                 Investors Tracked
               </p>
-              <p className="text-2xl md:text-3xl font-bold text-cyan-400">
+              <p className="text-2xl md:text-3xl font-bold text-slate-300">
                 {MARKET_STATS.totalInvestors}
               </p>
               <p className="text-xs text-slate-400 mt-1">
@@ -705,7 +705,7 @@ export default function SpaceInvestorsPage() {
                     placeholder="Search investors, portfolio companies, key people..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2.5 bg-slate-800/60 border border-slate-700/50 rounded-lg text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/40 focus:border-cyan-500/50 transition-colors"
+                    className="w-full pl-10 pr-4 py-2.5 bg-slate-800/60 border border-slate-700/50 rounded-lg text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-white/30/40 focus:border-white/15 transition-colors"
                   />
                 </div>
               </div>
@@ -714,7 +714,7 @@ export default function SpaceInvestorsPage() {
               <select
                 value={stageFilter}
                 onChange={(e) => setStageFilter(e.target.value as StageTag | '')}
-                className="px-4 py-2.5 bg-slate-800/60 border border-slate-700/50 rounded-lg text-slate-200 focus:outline-none focus:ring-2 focus:ring-cyan-500/40 min-w-[150px]"
+                className="px-4 py-2.5 bg-slate-800/60 border border-slate-700/50 rounded-lg text-slate-200 focus:outline-none focus:ring-2 focus:ring-white/30/40 min-w-[150px]"
               >
                 {STAGE_OPTIONS.map((opt) => (
                   <option key={opt.value} value={opt.value}>
@@ -727,7 +727,7 @@ export default function SpaceInvestorsPage() {
               <select
                 value={typeFilter}
                 onChange={(e) => setTypeFilter(e.target.value as InvestorType | '')}
-                className="px-4 py-2.5 bg-slate-800/60 border border-slate-700/50 rounded-lg text-slate-200 focus:outline-none focus:ring-2 focus:ring-cyan-500/40 min-w-[150px]"
+                className="px-4 py-2.5 bg-slate-800/60 border border-slate-700/50 rounded-lg text-slate-200 focus:outline-none focus:ring-2 focus:ring-white/30/40 min-w-[150px]"
               >
                 {TYPE_OPTIONS.map((opt) => (
                   <option key={opt.value} value={opt.value}>
@@ -740,7 +740,7 @@ export default function SpaceInvestorsPage() {
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as SortKey)}
-                className="px-4 py-2.5 bg-slate-800/60 border border-slate-700/50 rounded-lg text-slate-200 focus:outline-none focus:ring-2 focus:ring-cyan-500/40 min-w-[160px]"
+                className="px-4 py-2.5 bg-slate-800/60 border border-slate-700/50 rounded-lg text-slate-200 focus:outline-none focus:ring-2 focus:ring-white/30/40 min-w-[160px]"
               >
                 {SORT_OPTIONS.map((opt) => (
                   <option key={opt.value} value={opt.value}>
@@ -762,7 +762,7 @@ export default function SpaceInvestorsPage() {
                     setStageFilter('');
                     setTypeFilter('');
                   }}
-                  className="ml-2 text-cyan-400 hover:text-cyan-300 underline transition-colors"
+                  className="ml-2 text-slate-300 hover:text-white underline transition-colors"
                 >
                   Clear filters
                 </button>
@@ -807,7 +807,7 @@ export default function SpaceInvestorsPage() {
                   <div className="grid grid-cols-3 gap-3 mb-4">
                     <div className="text-center bg-slate-800/40 rounded-lg py-2 px-1">
                       <p className="text-xs text-slate-500 uppercase tracking-wider">AUM</p>
-                      <p className="text-sm font-semibold text-cyan-400 mt-0.5">
+                      <p className="text-sm font-semibold text-slate-300 mt-0.5">
                         {inv.aumDisplay}
                       </p>
                     </div>
@@ -865,7 +865,7 @@ export default function SpaceInvestorsPage() {
                       onClick={() =>
                         setExpandedCard(expandedCard === inv.id ? null : inv.id)
                       }
-                      className="flex items-center gap-1.5 text-xs uppercase tracking-wider text-slate-500 hover:text-cyan-400 transition-colors mb-1.5"
+                      className="flex items-center gap-1.5 text-xs uppercase tracking-wider text-slate-500 hover:text-white transition-colors mb-1.5"
                     >
                       <span>Investment Thesis</span>
                       <svg
@@ -903,7 +903,7 @@ export default function SpaceInvestorsPage() {
                       href={inv.website}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-xs text-cyan-400 hover:text-cyan-300 transition-colors flex items-center gap-1"
+                      className="text-xs text-slate-300 hover:text-white transition-colors flex items-center gap-1"
                     >
                       Visit Website
                       <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -930,7 +930,7 @@ export default function SpaceInvestorsPage() {
                   setStageFilter('');
                   setTypeFilter('');
                 }}
-                className="px-5 py-2 text-sm text-cyan-400 hover:text-cyan-300 border border-cyan-500/30 rounded-lg hover:border-cyan-500/50 transition-colors"
+                className="px-5 py-2 text-sm text-slate-300 hover:text-white border border-white/10 rounded-lg hover:border-white/15 transition-colors"
               >
                 Reset Filters
               </button>
@@ -960,7 +960,7 @@ export default function SpaceInvestorsPage() {
                   </div>
                   <div className="w-full bg-slate-700/50 rounded-full h-2">
                     <div
-                      className="h-2 rounded-full bg-gradient-to-r from-cyan-500 to-purple-500 transition-all"
+                      className="h-2 rounded-full bg-gradient-to-r from-white to-purple-500 transition-all"
                       style={{ width: `${(count / INVESTORS.length) * 100}%` }}
                     />
                   </div>
@@ -1001,10 +1001,10 @@ export default function SpaceInvestorsPage() {
                       transition={{ duration: 0.8, delay: 0.1 }}
                       className={`h-6 rounded-full ${
                         yr.year === 2024
-                          ? 'bg-gradient-to-r from-emerald-500 to-cyan-500'
+                          ? 'bg-gradient-to-r from-emerald-500 to-slate-200'
                           : yr.year === 2021
                             ? 'bg-gradient-to-r from-purple-500 to-pink-500'
-                            : 'bg-gradient-to-r from-cyan-600 to-blue-600'
+                            : 'bg-gradient-to-r from-slate-200 to-blue-600'
                       }`}
                     />
                     <span className="absolute inset-y-0 left-3 flex items-center text-xs font-medium text-white">
@@ -1031,7 +1031,7 @@ export default function SpaceInvestorsPage() {
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm text-slate-300">
               <div>
-                <h3 className="font-medium text-cyan-400 mb-2">For Founders</h3>
+                <h3 className="font-medium text-slate-300 mb-2">For Founders</h3>
                 <p className="leading-relaxed">
                   Identify investors whose stage focus and thesis align with your company. Check their portfolio for potential conflicts or synergies. Warm introductions through shared portfolio companies yield the highest response rates.
                 </p>

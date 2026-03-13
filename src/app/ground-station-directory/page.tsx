@@ -245,7 +245,7 @@ const REGION_MAP: RegionGroup[] = [
 ];
 
 const KEY_METRICS = [
-  { label: 'Total Stations Globally', value: '200+', color: 'text-cyan-400', bgColor: 'bg-cyan-500/10', borderColor: 'border-cyan-500/30' },
+  { label: 'Total Stations Globally', value: '200+', color: 'text-slate-300', bgColor: 'bg-white/5', borderColor: 'border-white/10' },
   { label: 'Average Contact Cost', value: '$3\u201315/min', color: 'text-amber-400', bgColor: 'bg-amber-500/10', borderColor: 'border-amber-500/30' },
   { label: 'Bands Available', value: 'S, X, Ka, UHF, L', color: 'text-purple-400', bgColor: 'bg-purple-500/10', borderColor: 'border-purple-500/30' },
   { label: 'LEO Orbit Coverage', value: '95%+', color: 'text-emerald-400', bgColor: 'bg-emerald-500/10', borderColor: 'border-emerald-500/30' },
@@ -269,7 +269,7 @@ const PRICING_MODELS = ['Pay-per-minute', 'Per-pass / subscription', 'Contract /
 
 function BandBadge({ band }: { band: string }) {
   const colors: Record<string, string> = {
-    S: 'bg-cyan-500/15 text-cyan-300 border-cyan-500/30',
+    S: 'bg-white/8 text-slate-200 border-white/10',
     X: 'bg-blue-500/15 text-blue-300 border-blue-500/30',
     Ka: 'bg-amber-500/15 text-amber-300 border-amber-500/30',
     UHF: 'bg-green-500/15 text-green-300 border-green-500/30',
@@ -304,7 +304,7 @@ function ProviderCardComponent({ provider, onToggle, isExpanded }: {
   isExpanded: boolean;
 }) {
   const accentBorders: Record<string, string> = {
-    cyan: 'border-cyan-500/30 hover:border-cyan-500/50',
+    cyan: 'border-white/10 hover:border-white/15',
     blue: 'border-blue-500/30 hover:border-blue-500/50',
     amber: 'border-amber-500/30 hover:border-amber-500/50',
     emerald: 'border-emerald-500/30 hover:border-emerald-500/50',
@@ -313,7 +313,7 @@ function ProviderCardComponent({ provider, onToggle, isExpanded }: {
   };
 
   const accentTexts: Record<string, string> = {
-    cyan: 'text-cyan-400',
+    cyan: 'text-slate-300',
     blue: 'text-blue-400',
     amber: 'text-amber-400',
     emerald: 'text-emerald-400',
@@ -329,7 +329,7 @@ function ProviderCardComponent({ provider, onToggle, isExpanded }: {
           <div>
             <h3 className="text-lg font-bold text-white">{provider.name}</h3>
             <div className="flex items-center gap-2 mt-0.5">
-              <span className={`text-sm font-medium ${accentTexts[provider.accentColor] || 'text-cyan-400'}`}>
+              <span className={`text-sm font-medium ${accentTexts[provider.accentColor] || 'text-slate-300'}`}>
                 {provider.locations} locations
               </span>
               <span className="text-slate-600">|</span>
@@ -368,7 +368,7 @@ function ProviderCardComponent({ provider, onToggle, isExpanded }: {
       <div className="flex items-center justify-between pt-3 border-t border-slate-700/50">
         <button
           onClick={onToggle}
-          className="text-xs text-slate-400 hover:text-cyan-400 transition-colors"
+          className="text-xs text-slate-400 hover:text-white transition-colors"
         >
           {isExpanded ? 'Show less' : 'Show more'}
         </button>
@@ -376,7 +376,7 @@ function ProviderCardComponent({ provider, onToggle, isExpanded }: {
           href={provider.website}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-1 text-xs font-medium text-cyan-400 hover:text-cyan-300 transition-colors"
+          className="inline-flex items-center gap-1 text-xs font-medium text-slate-300 hover:text-white transition-colors"
         >
           Visit website
           <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -397,11 +397,11 @@ function SortIcon({ active, direction }: { active: boolean; direction: SortDirec
     );
   }
   return direction === 'asc' ? (
-    <svg className="w-3 h-3 text-cyan-400 ml-1 inline-block" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <svg className="w-3 h-3 text-slate-300 ml-1 inline-block" fill="none" viewBox="0 0 24 24" stroke="currentColor">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
     </svg>
   ) : (
-    <svg className="w-3 h-3 text-cyan-400 ml-1 inline-block" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <svg className="w-3 h-3 text-slate-300 ml-1 inline-block" fill="none" viewBox="0 0 24 24" stroke="currentColor">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
     </svg>
   );
@@ -602,7 +602,7 @@ export default function GroundStationDirectoryPage() {
                 placeholder="Search providers, bands, regions..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 bg-slate-800/50 border border-slate-700/50 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/30 transition-colors"
+                className="w-full pl-10 pr-4 py-2.5 bg-slate-800/50 border border-slate-700/50 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-white/15 focus:ring-1 focus:ring-white/30/30 transition-colors"
               />
             </div>
 
@@ -615,7 +615,7 @@ export default function GroundStationDirectoryPage() {
                   onClick={() => toggleBand(band)}
                   className={`px-2.5 py-1 rounded-full text-xs font-medium border transition-colors ${
                     selectedBands.includes(band)
-                      ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/50'
+                      ? 'bg-white/10 text-slate-200 border-white/15'
                       : 'bg-slate-800/50 text-slate-400 border-slate-700/50 hover:border-slate-600'
                   }`}
                 >
@@ -628,7 +628,7 @@ export default function GroundStationDirectoryPage() {
             <select
               value={selectedRegion}
               onChange={(e) => setSelectedRegion(e.target.value)}
-              className="px-3 py-2.5 bg-slate-800/50 border border-slate-700/50 rounded-lg text-sm text-white focus:outline-none focus:border-cyan-500/50 transition-colors"
+              className="px-3 py-2.5 bg-slate-800/50 border border-slate-700/50 rounded-lg text-sm text-white focus:outline-none focus:border-white/15 transition-colors"
             >
               <option value="">All Regions</option>
               {ALL_REGIONS.map((region) => (
@@ -640,7 +640,7 @@ export default function GroundStationDirectoryPage() {
             <select
               value={selectedPricing}
               onChange={(e) => setSelectedPricing(e.target.value)}
-              className="px-3 py-2.5 bg-slate-800/50 border border-slate-700/50 rounded-lg text-sm text-white focus:outline-none focus:border-cyan-500/50 transition-colors"
+              className="px-3 py-2.5 bg-slate-800/50 border border-slate-700/50 rounded-lg text-sm text-white focus:outline-none focus:border-white/15 transition-colors"
             >
               <option value="">All Pricing</option>
               {PRICING_MODELS.map((model) => (
@@ -656,7 +656,7 @@ export default function GroundStationDirectoryPage() {
               </span>
               <button
                 onClick={clearFilters}
-                className="text-xs text-cyan-400 hover:text-cyan-300 transition-colors ml-auto"
+                className="text-xs text-slate-300 hover:text-white transition-colors ml-auto"
               >
                 Clear all filters
               </button>
@@ -675,7 +675,7 @@ export default function GroundStationDirectoryPage() {
               onClick={() => setActiveSection(tab.id)}
               className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${
                 activeSection === tab.id
-                  ? 'bg-cyan-500/15 text-cyan-300 border border-cyan-500/30'
+                  ? 'bg-white/8 text-slate-200 border border-white/10'
                   : 'bg-slate-800/50 text-slate-400 border border-slate-700/30 hover:text-white hover:border-slate-600'
               }`}
             >
@@ -694,7 +694,7 @@ export default function GroundStationDirectoryPage() {
               <div className="card p-12 text-center">
                 <div className="text-4xl mb-3">{String.fromCodePoint(0x1F50D)}</div>
                 <p className="text-slate-400 mb-2">No providers match your filters.</p>
-                <button onClick={clearFilters} className="text-sm text-cyan-400 hover:text-cyan-300 transition-colors">
+                <button onClick={clearFilters} className="text-sm text-slate-300 hover:text-white transition-colors">
                   Clear filters
                 </button>
               </div>
@@ -734,7 +734,7 @@ export default function GroundStationDirectoryPage() {
                         <th
                           key={col.field}
                           onClick={() => handleSort(col.field)}
-                          className="px-4 py-3 text-left text-xs font-semibold text-slate-300 uppercase tracking-wider cursor-pointer hover:text-cyan-400 transition-colors select-none whitespace-nowrap"
+                          className="px-4 py-3 text-left text-xs font-semibold text-slate-300 uppercase tracking-wider cursor-pointer hover:text-white transition-colors select-none whitespace-nowrap"
                         >
                           {col.label}
                           <SortIcon active={sortField === col.field} direction={sortDirection} />
@@ -804,7 +804,7 @@ export default function GroundStationDirectoryPage() {
                   'Europe': 'border-emerald-500/30',
                   'Asia-Pacific': 'border-amber-500/30',
                   'Africa': 'border-purple-500/30',
-                  'Polar': 'border-cyan-500/30',
+                  'Polar': 'border-white/10',
                 };
 
                 return (
@@ -818,7 +818,7 @@ export default function GroundStationDirectoryPage() {
                       {region.locations.map((loc) => (
                         <div key={loc.name} className="pb-3 border-b border-slate-700/30 last:border-0 last:pb-0">
                           <div className="flex items-center gap-2 mb-1.5">
-                            <svg className="w-3.5 h-3.5 text-cyan-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                            <svg className="w-3.5 h-3.5 text-slate-300 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                               <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
                             </svg>
                             <span className="text-sm font-medium text-white">{loc.name}</span>
@@ -847,7 +847,7 @@ export default function GroundStationDirectoryPage() {
               <div className="grid grid-cols-2 md:grid-cols-5 gap-4 text-center">
                 {REGION_MAP.map((region) => (
                   <div key={region.name}>
-                    <div className="text-2xl font-bold text-cyan-400">{region.locations.length}</div>
+                    <div className="text-2xl font-bold text-slate-300">{region.locations.length}</div>
                     <div className="text-xs text-slate-400">{region.name} sites</div>
                   </div>
                 ))}
@@ -873,7 +873,7 @@ export default function GroundStationDirectoryPage() {
                   <div>
                     <label className="flex items-center justify-between text-sm text-slate-300 mb-2">
                       <span>Number of contacts per day</span>
-                      <span className="text-cyan-400 font-mono font-bold">{contactsPerDay}</span>
+                      <span className="text-slate-300 font-mono font-bold">{contactsPerDay}</span>
                     </label>
                     <input
                       type="range"
@@ -881,7 +881,7 @@ export default function GroundStationDirectoryPage() {
                       max={50}
                       value={contactsPerDay}
                       onChange={(e) => setContactsPerDay(parseInt(e.target.value))}
-                      className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-cyan-500"
+                      className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-slate-400"
                     />
                     <div className="flex justify-between text-xs text-slate-500 mt-1">
                       <span>1</span>
@@ -894,7 +894,7 @@ export default function GroundStationDirectoryPage() {
                   <div>
                     <label className="flex items-center justify-between text-sm text-slate-300 mb-2">
                       <span>Contact duration (minutes)</span>
-                      <span className="text-cyan-400 font-mono font-bold">{contactDuration} min</span>
+                      <span className="text-slate-300 font-mono font-bold">{contactDuration} min</span>
                     </label>
                     <input
                       type="range"
@@ -902,7 +902,7 @@ export default function GroundStationDirectoryPage() {
                       max={30}
                       value={contactDuration}
                       onChange={(e) => setContactDuration(parseInt(e.target.value))}
-                      className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-cyan-500"
+                      className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-slate-400"
                     />
                     <div className="flex justify-between text-xs text-slate-500 mt-1">
                       <span>1 min</span>
@@ -921,7 +921,7 @@ export default function GroundStationDirectoryPage() {
                           onClick={() => setCalcBand(band)}
                           className={`px-4 py-2 rounded-lg text-sm font-medium border transition-colors ${
                             calcBand === band
-                              ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/50'
+                              ? 'bg-white/10 text-slate-200 border-white/15'
                               : 'bg-slate-800/50 text-slate-400 border-slate-700/50 hover:border-slate-600'
                           }`}
                         >
@@ -960,11 +960,11 @@ export default function GroundStationDirectoryPage() {
               </div>
 
               {/* Result Panel */}
-              <div className="card p-6 border border-cyan-500/30 bg-gradient-to-br from-cyan-900/10 to-transparent">
+              <div className="card p-6 border border-white/10 bg-gradient-to-br from-slate-800/10 to-transparent">
                 <h3 className="text-lg font-semibold text-white mb-5">Estimated Monthly Cost</h3>
 
                 <div className="text-center mb-6">
-                  <div className="text-4xl md:text-5xl font-bold text-cyan-400 mb-1">
+                  <div className="text-4xl md:text-5xl font-bold text-slate-300 mb-1">
                     ${estimatedMonthlyCost.min.toLocaleString()} - ${estimatedMonthlyCost.max.toLocaleString()}
                   </div>
                   <div className="text-sm text-slate-400">per month ({calcBand}-band, pay-per-minute model)</div>
@@ -997,7 +997,7 @@ export default function GroundStationDirectoryPage() {
                   <h4 className="text-sm font-semibold text-white mb-2">Cost Optimization Tips</h4>
                   <ul className="space-y-1.5 text-xs text-slate-400">
                     <li className="flex items-start gap-2">
-                      <span className="text-cyan-400 mt-0.5 flex-shrink-0">
+                      <span className="text-slate-300 mt-0.5 flex-shrink-0">
                         <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                           <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
                         </svg>
@@ -1005,7 +1005,7 @@ export default function GroundStationDirectoryPage() {
                       <span>Subscription plans become cost-effective at 200+ contacts/month</span>
                     </li>
                     <li className="flex items-start gap-2">
-                      <span className="text-cyan-400 mt-0.5 flex-shrink-0">
+                      <span className="text-slate-300 mt-0.5 flex-shrink-0">
                         <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                           <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
                         </svg>
@@ -1013,7 +1013,7 @@ export default function GroundStationDirectoryPage() {
                       <span>Multi-year contracts can reduce rates by 20-40%</span>
                     </li>
                     <li className="flex items-start gap-2">
-                      <span className="text-cyan-400 mt-0.5 flex-shrink-0">
+                      <span className="text-slate-300 mt-0.5 flex-shrink-0">
                         <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                           <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
                         </svg>
@@ -1021,7 +1021,7 @@ export default function GroundStationDirectoryPage() {
                       <span>Off-peak scheduling windows may offer lower rates</span>
                     </li>
                     <li className="flex items-start gap-2">
-                      <span className="text-cyan-400 mt-0.5 flex-shrink-0">
+                      <span className="text-slate-300 mt-0.5 flex-shrink-0">
                         <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                           <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
                         </svg>
@@ -1042,10 +1042,10 @@ export default function GroundStationDirectoryPage() {
                       const barWidth = Math.min(100, (contactCostMax / maxPossible) * 100);
                       return (
                         <div key={band} className="flex items-center gap-3">
-                          <span className={`text-xs font-medium w-8 ${band === calcBand ? 'text-cyan-400' : 'text-slate-400'}`}>{band}</span>
+                          <span className={`text-xs font-medium w-8 ${band === calcBand ? 'text-slate-300' : 'text-slate-400'}`}>{band}</span>
                           <div className="flex-1 h-5 bg-slate-800/50 rounded-full overflow-hidden relative">
                             <div
-                              className={`h-full rounded-full transition-all duration-300 ${band === calcBand ? 'bg-cyan-500/40' : 'bg-slate-700/50'}`}
+                              className={`h-full rounded-full transition-all duration-300 ${band === calcBand ? 'bg-white/40' : 'bg-slate-700/50'}`}
                               style={{ width: `${barWidth}%` }}
                             />
                             <span className="absolute inset-0 flex items-center justify-center text-xs text-slate-300">
@@ -1080,7 +1080,7 @@ export default function GroundStationDirectoryPage() {
             </div>
             <a
               href="/ground-stations"
-              className="inline-flex items-center gap-2 px-5 py-2.5 bg-cyan-600 hover:bg-cyan-500 text-white text-sm rounded-lg font-medium transition-colors whitespace-nowrap"
+              className="inline-flex items-center gap-2 px-5 py-2.5 bg-white hover:bg-slate-100 text-white text-sm rounded-lg font-medium transition-colors whitespace-nowrap"
             >
               View Ground Station Map
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">

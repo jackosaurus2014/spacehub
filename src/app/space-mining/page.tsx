@@ -129,7 +129,7 @@ const SPECTRAL_TYPE_INFO: Record<string, { label: string; description: string; c
   X: { label: 'X-type', description: 'Metallic or enstatite', color: 'text-slate-400' },
   D: { label: 'D-type', description: 'Dark, organic-rich', color: 'text-amber-400' },
   P: { label: 'P-type', description: 'Primitive, low albedo', color: 'text-amber-500' },
-  E: { label: 'E-type (Enstatite)', description: 'Enstatite achondrite', color: 'text-cyan-400' },
+  E: { label: 'E-type (Enstatite)', description: 'Enstatite achondrite', color: 'text-slate-300' },
   B: { label: 'B-type', description: 'Blue, volatile-rich', color: 'text-blue-300' },
   Q: { label: 'Q-type', description: 'Ordinary chondrite', color: 'text-orange-400' },
 };
@@ -954,11 +954,11 @@ const COMPANY_STATUS_STYLES: Record<MiningCompany['status'], { label: string; co
 function CompanyCard({ company }: { company: MiningCompany }) {
   const statusStyle = COMPANY_STATUS_STYLES[company.status];
   return (
-    <div className="bg-slate-800/50 rounded-xl p-5 border border-slate-700/50 hover:border-cyan-500/30 transition-all">
+    <div className="bg-slate-800/50 rounded-xl p-5 border border-slate-700/50 hover:border-white/10 transition-all">
       <div className="flex items-start justify-between mb-3">
         <div>
           <h3 className="text-white font-semibold text-lg">{company.name}</h3>
-          <p className="text-cyan-400 text-sm font-medium">{company.focus}</p>
+          <p className="text-slate-300 text-sm font-medium">{company.focus}</p>
         </div>
         <span className={`text-xs font-bold px-2.5 py-1 rounded ${statusStyle.bg} ${statusStyle.color}`}>
           {statusStyle.label}
@@ -979,7 +979,7 @@ function CompanyCard({ company }: { company: MiningCompany }) {
         <div className="text-slate-400 text-xs uppercase tracking-widest mb-1.5">Key Technologies</div>
         <div className="flex flex-wrap gap-1.5">
           {company.keyTech.map((tech) => (
-            <span key={tech} className="px-2 py-0.5 bg-cyan-500/10 text-cyan-400 rounded text-xs font-medium">{tech}</span>
+            <span key={tech} className="px-2 py-0.5 bg-white/5 text-slate-300 rounded text-xs font-medium">{tech}</span>
           ))}
         </div>
       </div>
@@ -995,7 +995,7 @@ function CompanyCard({ company }: { company: MiningCompany }) {
         href={company.website}
         target="_blank"
         rel="noopener noreferrer"
-        className="text-cyan-400 hover:text-cyan-300 text-sm font-medium inline-flex items-center gap-1 mt-1"
+        className="text-slate-300 hover:text-white text-sm font-medium inline-flex items-center gap-1 mt-1"
       >
         Visit Website
         <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
@@ -1097,7 +1097,7 @@ const DEMAND_STYLES: Record<ResourceEstimate['demandOutlook'], { label: string; 
   very_high: { label: 'Very High', color: 'text-green-400' },
   high: { label: 'High', color: 'text-emerald-400' },
   medium: { label: 'Medium', color: 'text-yellow-400' },
-  emerging: { label: 'Emerging', color: 'text-cyan-400' },
+  emerging: { label: 'Emerging', color: 'text-slate-300' },
 };
 
 function ResourceEstimateCard({ resource }: { resource: ResourceEstimate }) {
@@ -1170,7 +1170,7 @@ function SearchInput({ value, onChange, placeholder }: { value: string; onChange
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder || 'Search...'}
-        className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg pl-10 pr-4 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none placeholder:text-slate-500"
+        className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg pl-10 pr-4 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none placeholder:text-slate-500"
       />
       {value && (
         <button
@@ -1214,7 +1214,7 @@ function FilterBar({
       <select
         value={bodyType}
         onChange={(e) => setBodyType(e.target.value as MiningBodyType | '')}
-        className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm min-w-[140px] focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+        className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm min-w-[140px] focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
       >
         <option value="">All Body Types</option>
         {MINING_BODY_TYPES.map((t) => (
@@ -1225,7 +1225,7 @@ function FilterBar({
       <select
         value={spectralType}
         onChange={(e) => setSpectralType(e.target.value as SpectralType | '')}
-        className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm min-w-[140px] focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+        className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm min-w-[140px] focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
       >
         <option value="">All Spectral Types</option>
         {SPECTRAL_TYPES.map((t) => (
@@ -1236,7 +1236,7 @@ function FilterBar({
       <select
         value={trajectoryStatus}
         onChange={(e) => setTrajectoryStatus(e.target.value as TrajectoryStatus | '')}
-        className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm min-w-[140px] focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+        className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm min-w-[140px] focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
       >
         <option value="">All Accessibility</option>
         {Object.entries(TRAJECTORY_STYLES).map(([key, { label }]) => (
@@ -1247,7 +1247,7 @@ function FilterBar({
       <select
         value={sortBy}
         onChange={(e) => setSortBy(e.target.value as 'value' | 'deltaV' | 'diameter' | 'name')}
-        className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm min-w-[140px] focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+        className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm min-w-[140px] focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
       >
         <option value="value">Sort by Value</option>
         <option value="deltaV">Sort by Delta-V</option>
@@ -1577,7 +1577,7 @@ function SpaceMiningContent() {
           <select
             value={companyStatusFilter}
             onChange={(e) => setCompanyStatusFilter(e.target.value as MiningCompany['status'] | '')}
-            className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm min-w-[140px] focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+            className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm min-w-[140px] focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
           >
             <option value="">All Statuses</option>
             <option value="active">Active</option>
@@ -1588,7 +1588,7 @@ function SpaceMiningContent() {
           <select
             value={companySortBy}
             onChange={(e) => setCompanySortBy(e.target.value as 'name' | 'founded' | 'status')}
-            className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm min-w-[140px] focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+            className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm min-w-[140px] focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
           >
             <option value="name">Sort by Name</option>
             <option value="founded">Sort by Founded</option>
@@ -1602,7 +1602,7 @@ function SpaceMiningContent() {
           <select
             value={techCategoryFilter}
             onChange={(e) => setTechCategoryFilter(e.target.value as MiningTechnology['category'] | '')}
-            className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm min-w-[140px] focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+            className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm min-w-[140px] focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
           >
             <option value="">All Categories</option>
             <option value="extraction">Extraction</option>
@@ -1613,7 +1613,7 @@ function SpaceMiningContent() {
           <select
             value={techSortBy}
             onChange={(e) => setTechSortBy(e.target.value as 'name' | 'trl' | 'category')}
-            className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm min-w-[140px] focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+            className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm min-w-[140px] focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
           >
             <option value="trl">Sort by TRL (Readiness)</option>
             <option value="name">Sort by Name</option>
@@ -1627,7 +1627,7 @@ function SpaceMiningContent() {
           <select
             value={resourceCategoryFilter}
             onChange={(e) => setResourceCategoryFilter(e.target.value as ResourceEstimate['category'] | '')}
-            className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm min-w-[140px] focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+            className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm min-w-[140px] focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
           >
             <option value="">All Categories</option>
             <option value="volatile">Volatiles</option>
@@ -1951,7 +1951,7 @@ function SpaceMiningContent() {
                     {target.missionStatus && (
                       <div className="flex items-center gap-1.5 mb-3">
                         <span className="text-xs text-slate-500">Mission:</span>
-                        <span className="text-xs text-cyan-400 font-medium">{target.missionStatus}</span>
+                        <span className="text-xs text-slate-300 font-medium">{target.missionStatus}</span>
                       </div>
                     )}
                     {target.keyResources && target.keyResources.length > 0 && (
@@ -1986,10 +1986,10 @@ function SpaceMiningContent() {
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
               <div className="bg-slate-900/50 rounded-lg p-4 border border-slate-700/30">
-                <div className="text-cyan-400 text-xs uppercase tracking-widest mb-2 font-semibold">Active Companies</div>
+                <div className="text-slate-300 text-xs uppercase tracking-widest mb-2 font-semibold">Active Companies</div>
                 <div className="text-white font-bold text-2xl mb-1">{MINING_COMPANIES.filter(c => c.status === 'active').length}</div>
                 <p className="text-slate-400 text-xs">Developing asteroid and lunar mining technologies</p>
-                <button onClick={() => handleTabChange('companies')} className="text-cyan-400 hover:text-cyan-300 text-xs mt-2 font-medium min-h-[44px] inline-flex items-center">View all companies &rarr;</button>
+                <button onClick={() => handleTabChange('companies')} className="text-slate-300 hover:text-white text-xs mt-2 font-medium min-h-[44px] inline-flex items-center">View all companies &rarr;</button>
               </div>
               <div className="bg-slate-900/50 rounded-lg p-4 border border-slate-700/30">
                 <div className="text-orange-400 text-xs uppercase tracking-widest mb-2 font-semibold">Mining Technologies</div>

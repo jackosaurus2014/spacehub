@@ -21,8 +21,8 @@ export default function Loading() {
               </div>
               <div className="h-4 w-full bg-slate-700/20 rounded" />
               <div className="flex gap-2">
-                <div className="h-5 w-14 bg-cyan-500/20 rounded-full" />
-                <div className="h-5 w-14 bg-cyan-500/20 rounded-full" />
+                <div className="h-5 w-14 bg-white/10 rounded-full" />
+                <div className="h-5 w-14 bg-white/10 rounded-full" />
               </div>
             </div>
           ))}

@@ -194,10 +194,10 @@ export default function SearchSuggestions({
   }
 
   return (
-    <div className="border-b border-cyan-400/20">
+    <div className="border-b border-white/10">
       {isLoading && allItems.length === 0 && (
         <div className="px-4 py-3 flex items-center gap-3">
-          <div className="w-4 h-4 border-2 border-cyan-400/30 border-t-cyan-400 rounded-full animate-spin" />
+          <div className="w-4 h-4 border-2 border-white/10 border-t-white rounded-full animate-spin" />
           <span className="text-sm text-slate-400">Finding suggestions...</span>
         </div>
       )}
@@ -205,7 +205,7 @@ export default function SearchSuggestions({
       {groups.map((group) => (
         <div key={group.label}>
           <div className="px-4 py-1.5">
-            <span className="text-[10px] font-semibold uppercase tracking-widest text-cyan-400/60">
+            <span className="text-[10px] font-semibold uppercase tracking-widest text-slate-300/60">
               {group.label}
             </span>
           </div>
@@ -221,7 +221,7 @@ export default function SearchSuggestions({
                 onClick={() => onSelect(item.path)}
                 className={`w-full flex items-center gap-3 px-4 py-2.5 text-left transition-colors ${
                   isSelected
-                    ? 'bg-cyan-400/10 border-l-2 border-cyan-400'
+                    ? 'bg-white/5 border-l-2 border-white/10'
                     : 'border-l-2 border-transparent hover:bg-slate-700/30'
                 }`}
               >
@@ -237,7 +237,7 @@ export default function SearchSuggestions({
                   <div className="flex items-center gap-2">
                     <span
                       className={`text-sm font-medium truncate ${
-                        isSelected ? 'text-cyan-300' : 'text-slate-200'
+                        isSelected ? 'text-slate-200' : 'text-slate-200'
                       }`}
                     >
                       {item.name}

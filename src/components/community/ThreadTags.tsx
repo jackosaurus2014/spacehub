@@ -27,7 +27,7 @@ const COLOR_CLASSES: Record<string, { bg: string; text: string; ring: string }> 
   blue:    { bg: 'bg-blue-500/20',    text: 'text-blue-400',    ring: 'ring-blue-500/30' },
   purple:  { bg: 'bg-purple-500/20',  text: 'text-purple-400',  ring: 'ring-purple-500/30' },
   amber:   { bg: 'bg-amber-500/20',   text: 'text-amber-400',   ring: 'ring-amber-500/30' },
-  cyan:    { bg: 'bg-cyan-500/20',    text: 'text-cyan-400',    ring: 'ring-cyan-500/30' },
+  cyan:    { bg: 'bg-white/10',    text: 'text-slate-300',    ring: 'ring-white/10' },
   green:   { bg: 'bg-green-500/20',   text: 'text-green-400',   ring: 'ring-green-500/30' },
   red:     { bg: 'bg-red-500/20',     text: 'text-red-400',     ring: 'ring-red-500/30' },
   orange:  { bg: 'bg-orange-500/20',  text: 'text-orange-400',  ring: 'ring-orange-500/30' },

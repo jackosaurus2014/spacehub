@@ -54,11 +54,11 @@ export default function PayloadComparisonPage() {
         {/* Breadcrumbs */}
         <nav className="pt-6 mb-4" aria-label="Breadcrumb">
           <ol className="flex items-center gap-2 text-sm text-slate-400">
-            <li><Link href="/" className="hover:text-cyan-400 transition-colors">Home</Link></li>
+            <li><Link href="/" className="hover:text-white transition-colors">Home</Link></li>
             <li>/</li>
-            <li><Link href="/compare" className="hover:text-cyan-400 transition-colors">Compare</Link></li>
+            <li><Link href="/compare" className="hover:text-white transition-colors">Compare</Link></li>
             <li>/</li>
-            <li className="text-cyan-400">Payload Space</li>
+            <li className="text-slate-300">Payload Space</li>
           </ol>
         </nav>
 
@@ -84,7 +84,7 @@ export default function PayloadComparisonPage() {
           </header>
 
           {/* TL;DR */}
-          <div className="card p-6 mb-10 border-l-4 border-cyan-500">
+          <div className="card p-6 mb-10 border-l-4 border-white/15">
             <h2 className="text-lg font-bold text-white mb-2">TL;DR</h2>
             <p className="text-slate-400 text-sm leading-relaxed">
               <strong className="text-slate-300">Payload Space</strong> is an excellent curated newsletter
@@ -101,8 +101,8 @@ export default function PayloadComparisonPage() {
               Newsletter vs. Platform: Different Tools for Different Jobs
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="card p-6 ring-2 ring-cyan-500">
-                <div className="text-xs font-semibold text-cyan-600 uppercase tracking-wider mb-3">SpaceNexus</div>
+              <div className="card p-6 ring-2 ring-white/15">
+                <div className="text-xs font-semibold text-slate-300 uppercase tracking-wider mb-3">SpaceNexus</div>
                 <h3 className="text-lg font-bold text-white mb-3">Interactive Intelligence Platform</h3>
                 <p className="text-slate-400 text-sm mb-4">
                   A full-featured platform where you explore data, track assets, research companies,
@@ -110,7 +110,7 @@ export default function PayloadComparisonPage() {
                 </p>
                 <div className="grid grid-cols-2 gap-2">
                   {['Satellite Tracking', 'Launch Dashboard', 'Company Profiles', 'Market Intel', 'Procurement', 'AI Copilot', 'Marketplace', 'Regulatory'].map((feature) => (
-                    <div key={feature} className="bg-cyan-50 text-cyan-700 text-xs px-2 py-1 rounded text-center font-medium">
+                    <div key={feature} className="bg-slate-50 text-slate-600 text-xs px-2 py-1 rounded text-center font-medium">
                       {feature}
                     </div>
                   ))}
@@ -144,7 +144,7 @@ export default function PayloadComparisonPage() {
                 <thead>
                   <tr className="border-b border-slate-700">
                     <th className="py-4 px-4 text-left text-slate-300 font-semibold">Feature</th>
-                    <th className="py-4 px-4 text-left text-cyan-600 font-semibold">SpaceNexus</th>
+                    <th className="py-4 px-4 text-left text-slate-300 font-semibold">SpaceNexus</th>
                     <th className="py-4 px-4 text-left text-slate-300 font-semibold">Payload Space</th>
                   </tr>
                 </thead>
@@ -196,7 +196,7 @@ export default function PayloadComparisonPage() {
                   { title: 'Regulatory tracking', desc: 'Monitor FCC filings, ITU spectrum allocations, space law developments, and export control changes in real time.' },
                 ].map((item) => (
                   <li key={item.title} className="flex items-start gap-3">
-                    <span className="text-cyan-500 mt-1 flex-shrink-0 font-bold">&#10003;</span>
+                    <span className="text-slate-300 mt-1 flex-shrink-0 font-bold">&#10003;</span>
                     <div>
                       <strong className="text-slate-300">{item.title}:</strong>{' '}
                       <span className="text-slate-400 text-sm">{item.desc}</span>
@@ -293,7 +293,7 @@ export default function PayloadComparisonPage() {
                   { title: 'Free to start', desc: 'Like Payload, SpaceNexus has a free tier. Unlike Payload, that free tier includes satellite tracking, launch monitoring, and company research tools.' },
                 ].map((item) => (
                   <li key={item.title} className="flex items-start gap-3">
-                    <span className="text-cyan-500 mt-1 flex-shrink-0 font-bold">&#10003;</span>
+                    <span className="text-slate-300 mt-1 flex-shrink-0 font-bold">&#10003;</span>
                     <div>
                       <strong className="text-slate-300">{item.title}:</strong>{' '}
                       <span className="text-slate-400 text-sm">{item.desc}</span>
@@ -327,7 +327,7 @@ export default function PayloadComparisonPage() {
 
           {/* Back Link */}
           <div className="text-center">
-            <Link href="/compare" className="text-cyan-500 hover:text-cyan-400 text-sm transition-colors">
+            <Link href="/compare" className="text-slate-300 hover:text-white text-sm transition-colors">
               &larr; Back to all comparisons
             </Link>
           </div>

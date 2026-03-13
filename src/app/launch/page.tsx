@@ -73,7 +73,7 @@ function LaunchCard({ event, variant }: { event: LaunchEvent; variant: 'live' | 
         variant === 'live'
           ? 'border-red-500/50 bg-slate-900 hover:shadow-red-500/10'
           : variant === 'upcoming'
-          ? 'border-cyan-500/30 bg-slate-900 hover:shadow-cyan-500/10'
+          ? 'border-white/10 bg-slate-900 hover:shadow-black/5'
           : 'border-slate-700/50 bg-slate-900/80 hover:shadow-slate-500/5'
       }`}
     >
@@ -109,7 +109,7 @@ function LaunchCard({ event, variant }: { event: LaunchEvent; variant: 'live' | 
             </div>
           )}
           {variant === 'upcoming' && (
-            <div className="absolute top-2 left-2 px-2 py-1 rounded-full bg-cyan-500/20 text-cyan-400 text-xs font-bold border border-cyan-500/30">
+            <div className="absolute top-2 left-2 px-2 py-1 rounded-full bg-white/10 text-slate-300 text-xs font-bold border border-white/10">
               UPCOMING
             </div>
           )}
@@ -122,7 +122,7 @@ function LaunchCard({ event, variant }: { event: LaunchEvent; variant: 'live' | 
 
         {/* Content */}
         <div className="flex-1 p-4">
-          <h3 className="text-white font-bold text-lg line-clamp-2 group-hover:text-cyan-400 transition-colors">
+          <h3 className="text-white font-bold text-lg line-clamp-2 group-hover:text-white transition-colors">
             {event.name}
           </h3>
           {event.agency && (
@@ -135,7 +135,7 @@ function LaunchCard({ event, variant }: { event: LaunchEvent; variant: 'live' | 
 
           <div className="flex flex-wrap items-center gap-3 mt-2 text-xs text-slate-400">
             {event.rocket && (
-              <span className="flex items-center gap-1 text-cyan-400">
+              <span className="flex items-center gap-1 text-slate-300">
                 🚀 {event.rocket}
               </span>
             )}
@@ -149,7 +149,7 @@ function LaunchCard({ event, variant }: { event: LaunchEvent; variant: 'live' | 
           {/* Countdown + Action */}
           <div className="flex items-center justify-between mt-3 pt-3 border-t border-slate-700/50">
             {event.launchDate && (
-              <div className={variant === 'live' ? 'text-red-400' : variant === 'upcoming' ? 'text-cyan-400' : 'text-slate-400'}>
+              <div className={variant === 'live' ? 'text-red-400' : variant === 'upcoming' ? 'text-slate-300' : 'text-slate-400'}>
                 <CountdownTimer launchDate={event.launchDate} />
               </div>
             )}
@@ -168,7 +168,7 @@ function LaunchCard({ event, variant }: { event: LaunchEvent; variant: 'live' | 
                 className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${
                   variant === 'live'
                     ? 'bg-red-500 text-white hover:bg-red-400'
-                    : 'bg-cyan-500/20 text-cyan-400 hover:bg-cyan-500/30 border border-cyan-500/30'
+                    : 'bg-white/10 text-slate-300 hover:bg-slate-100/30 border border-white/10'
                 }`}
               >
                 {variant === 'live' ? 'Watch Live' : 'View Details'}
@@ -256,7 +256,7 @@ export default function LaunchListPage() {
             </p>
             <Link
               href="/mission-control"
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-cyan-500 text-white font-medium hover:bg-cyan-400 transition-colors"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white text-white font-medium hover:bg-slate-100 transition-colors"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />

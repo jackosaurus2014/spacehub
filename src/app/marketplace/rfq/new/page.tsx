@@ -13,9 +13,9 @@ export default function NewRFQPage() {
     <div className="min-h-screen">
       <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <nav className="flex items-center gap-2 text-sm text-slate-400 mb-4 overflow-x-auto" aria-label="Breadcrumb">
-          <Link href="/" className="hover:text-cyan-400 whitespace-nowrap min-h-[44px] flex items-center">Home</Link>
+          <Link href="/" className="hover:text-white whitespace-nowrap min-h-[44px] flex items-center">Home</Link>
           <span className="text-slate-600">/</span>
-          <Link href="/marketplace" className="hover:text-cyan-400 whitespace-nowrap min-h-[44px] flex items-center">Marketplace</Link>
+          <Link href="/marketplace" className="hover:text-white whitespace-nowrap min-h-[44px] flex items-center">Marketplace</Link>
           <span className="text-slate-600">/</span>
           <span className="text-slate-300 whitespace-nowrap">New RFQ</span>
         </nav>

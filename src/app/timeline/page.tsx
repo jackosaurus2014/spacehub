@@ -354,7 +354,7 @@ const TIMELINE_EVENTS: TimelineEvent[] = [
 // ---------------------------------------------------------------------------
 
 const CATEGORY_CONFIG: Record<Category, { color: string; bgClass: string; borderClass: string; textClass: string; dotClass: string }> = {
-  Milestone:     { color: 'cyan',    bgClass: 'bg-cyan-500/10',    borderClass: 'border-cyan-500/30',    textClass: 'text-cyan-400',    dotClass: 'bg-cyan-400' },
+  Milestone:     { color: 'cyan',    bgClass: 'bg-white/5',    borderClass: 'border-white/10',    textClass: 'text-slate-300',    dotClass: 'bg-white' },
   Commercial:    { color: 'emerald', bgClass: 'bg-emerald-500/10', borderClass: 'border-emerald-500/30', textClass: 'text-emerald-400', dotClass: 'bg-emerald-400' },
   Government:    { color: 'blue',    bgClass: 'bg-blue-500/10',    borderClass: 'border-blue-500/30',    textClass: 'text-blue-400',    dotClass: 'bg-blue-400' },
   Science:       { color: 'purple',  bgClass: 'bg-purple-500/10',  borderClass: 'border-purple-500/30',  textClass: 'text-purple-400',  dotClass: 'bg-purple-400' },
@@ -448,7 +448,7 @@ function TimelineCard({
     >
       <div
         className={`group relative bg-slate-800/50 border border-slate-700/50 rounded-xl p-6 backdrop-blur-sm
-          hover:border-cyan-500/40 hover:bg-slate-800/70 hover:shadow-lg hover:shadow-cyan-500/5 transition-all duration-300`}
+          hover:border-white/15/40 hover:bg-slate-800/70 hover:shadow-lg hover:shadow-black/20/5 transition-all duration-300`}
       >
         {/* Year badge */}
         <div className="flex items-center gap-3 mb-3">
@@ -459,7 +459,7 @@ function TimelineCard({
             <span className={`text-xs font-bold tracking-widest uppercase ${cfg.textClass}`}>
               {event.category}
             </span>
-            <h3 className="text-lg font-bold text-white leading-snug group-hover:text-cyan-300 transition-colors duration-200">
+            <h3 className="text-lg font-bold text-white leading-snug group-hover:text-white transition-colors duration-200">
               {event.title}
             </h3>
           </div>
@@ -541,7 +541,7 @@ export default function SpaceTimelinePage() {
             onClick={() => setSelectedEra(era)}
             className={`px-5 py-2 rounded-lg text-sm font-semibold border transition-all duration-200 ${
               selectedEra === era
-                ? 'bg-cyan-500/15 border-cyan-500/40 text-cyan-300 shadow-sm shadow-cyan-500/10'
+                ? 'bg-white/8 border-white/15/40 text-slate-200 shadow-sm shadow-black/5'
                 : 'bg-slate-800/40 border-slate-700/40 text-slate-400 hover:border-slate-600 hover:text-slate-200'
             }`}
           >
@@ -595,7 +595,7 @@ export default function SpaceTimelinePage() {
               setSelectedEra('All');
               setSelectedCategories(new Set());
             }}
-            className="mt-4 text-cyan-400 hover:text-cyan-300 underline text-sm"
+            className="mt-4 text-slate-300 hover:text-white underline text-sm"
           >
             Reset all filters
           </button>
@@ -646,7 +646,7 @@ export default function SpaceTimelinePage() {
                   dividerBefore = (
                     <EraDivider
                       label="Space Race (1957 - 1975)"
-                      gradient="from-transparent via-cyan-500/60 to-transparent"
+                      gradient="from-transparent via-slate-300/60 to-transparent"
                     />
                   );
                 }
@@ -724,7 +724,7 @@ export default function SpaceTimelinePage() {
 
           {/* Timeline end cap */}
           <div className="flex justify-center mt-8">
-            <div className="w-3 h-3 rounded-full bg-cyan-400/40 ring-4 ring-slate-900" />
+            <div className="w-3 h-3 rounded-full bg-white/40 ring-4 ring-slate-900" />
           </div>
         </div>
       )}
@@ -740,7 +740,7 @@ export default function SpaceTimelinePage() {
           { label: 'Eras', value: '3', icon: '\u23F3' },
         ].map((stat) => (
           <ScrollReveal key={stat.label} delay={0.1}>
-            <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-4 text-center hover:border-cyan-500/30 transition-colors duration-200">
+            <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-4 text-center hover:border-white/10 transition-colors duration-200">
               <span className="text-2xl block mb-1">{stat.icon}</span>
               <p className="text-2xl font-bold text-white">{stat.value}</p>
               <p className="text-xs text-slate-400 uppercase tracking-wider">{stat.label}</p>
@@ -756,20 +756,20 @@ export default function SpaceTimelinePage() {
         <section className="mt-16 border-t border-slate-800 pt-8">
           <h2 className="text-xl font-bold text-white mb-6">Explore More</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <a href="/glossary" className="card p-4 hover:border-cyan-500/50 transition-colors group">
-              <h3 className="text-white font-medium group-hover:text-cyan-400 transition-colors">Space Industry Glossary</h3>
+            <a href="/glossary" className="card p-4 hover:border-white/15 transition-colors group">
+              <h3 className="text-white font-medium group-hover:text-white transition-colors">Space Industry Glossary</h3>
               <p className="text-slate-400 text-sm mt-1">Comprehensive reference of key terms, acronyms, and concepts.</p>
             </a>
-            <a href="/mission-heritage" className="card p-4 hover:border-cyan-500/50 transition-colors group">
-              <h3 className="text-white font-medium group-hover:text-cyan-400 transition-colors">Mission Heritage</h3>
+            <a href="/mission-heritage" className="card p-4 hover:border-white/15 transition-colors group">
+              <h3 className="text-white font-medium group-hover:text-white transition-colors">Mission Heritage</h3>
               <p className="text-slate-400 text-sm mt-1">Explore the legacy and lineage of historic space missions.</p>
             </a>
-            <a href="/space-agencies" className="card p-4 hover:border-cyan-500/50 transition-colors group">
-              <h3 className="text-white font-medium group-hover:text-cyan-400 transition-colors">Space Agencies</h3>
+            <a href="/space-agencies" className="card p-4 hover:border-white/15 transition-colors group">
+              <h3 className="text-white font-medium group-hover:text-white transition-colors">Space Agencies</h3>
               <p className="text-slate-400 text-sm mt-1">Profiles of government space agencies from around the world.</p>
             </a>
-            <a href="/mission-stats" className="card p-4 hover:border-cyan-500/50 transition-colors group">
-              <h3 className="text-white font-medium group-hover:text-cyan-400 transition-colors">Mission Statistics</h3>
+            <a href="/mission-stats" className="card p-4 hover:border-white/15 transition-colors group">
+              <h3 className="text-white font-medium group-hover:text-white transition-colors">Mission Statistics</h3>
               <p className="text-slate-400 text-sm mt-1">Launch data, success rates, and orbital mission analytics.</p>
             </a>
           </div>

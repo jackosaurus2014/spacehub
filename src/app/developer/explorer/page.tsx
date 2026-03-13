@@ -318,7 +318,7 @@ function ApiExplorerPageInner() {
           <div className="flex items-center gap-3">
             <Link
               href="/developer/docs"
-              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 text-sm border border-slate-700 hover:border-cyan-500 text-slate-300 hover:text-cyan-400 rounded-lg transition-colors"
+              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 text-sm border border-slate-700 hover:border-white/15 text-slate-300 hover:text-white rounded-lg transition-colors"
             >
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -343,7 +343,7 @@ function ApiExplorerPageInner() {
                 <select
                   value={baseUrl}
                   onChange={(e) => setBaseUrl(e.target.value)}
-                  className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+                  className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                 >
                   {BASE_URL_OPTIONS.map((opt) => (
                     <option key={opt.value} value={opt.value}>
@@ -361,7 +361,7 @@ function ApiExplorerPageInner() {
                     const ep = ALL_ENDPOINTS.find((ep) => ep.operationId === e.target.value);
                     if (ep) setSelectedEndpoint(ep);
                   }}
-                  className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+                  className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                 >
                   {endpointOptions.map((group) => (
                     <optgroup key={group.label} label={group.label}>
@@ -403,7 +403,7 @@ function ApiExplorerPageInner() {
                     value={apiKey}
                     onChange={(e) => setApiKey(e.target.value)}
                     placeholder="snx_YOUR_API_KEY"
-                    className="w-full pr-20 bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 font-mono focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+                    className="w-full pr-20 bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 font-mono focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                   />
                   <button
                     onClick={() => setShowApiKey(!showApiKey)}
@@ -425,7 +425,7 @@ function ApiExplorerPageInner() {
                     {selectedEndpoint.parameters.map((param) => (
                       <div key={param.name}>
                         <div className="flex items-center gap-2 mb-1">
-                          <code className="text-xs text-cyan-400 font-mono">{param.name}</code>
+                          <code className="text-xs text-slate-300 font-mono">{param.name}</code>
                           <span className="text-xs text-slate-500">{param.type}</span>
                           {param.required && (
                             <span className="text-xs text-red-400">required</span>
@@ -437,7 +437,7 @@ function ApiExplorerPageInner() {
                             onChange={(e) =>
                               setParamValues((prev) => ({ ...prev, [param.name]: e.target.value }))
                             }
-                            className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+                            className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                           >
                             <option value="">-- any --</option>
                             {param.enum.map((v) => (
@@ -454,7 +454,7 @@ function ApiExplorerPageInner() {
                               setParamValues((prev) => ({ ...prev, [param.name]: e.target.value }))
                             }
                             placeholder={param.description}
-                            className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+                            className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                           />
                         )}
                       </div>
@@ -467,7 +467,7 @@ function ApiExplorerPageInner() {
               <button
                 onClick={handleSendRequest}
                 disabled={loading || !apiKey.trim()}
-                className="w-full py-3 bg-cyan-500 hover:bg-cyan-400 disabled:opacity-50 disabled:cursor-not-allowed text-slate-900 font-bold rounded-lg transition-colors flex items-center justify-center gap-2"
+                className="w-full py-3 bg-white hover:bg-slate-100 disabled:opacity-50 disabled:cursor-not-allowed text-slate-900 font-bold rounded-lg transition-colors flex items-center justify-center gap-2"
               >
                 {loading ? (
                   <>
@@ -519,7 +519,7 @@ function ApiExplorerPageInner() {
                     <button
                       key={item.id}
                       onClick={() => handleReplayHistory(item)}
-                      className="w-full text-left px-3 py-2 bg-slate-800/30 border border-slate-700/50 rounded-lg hover:border-cyan-500/30 transition-colors group"
+                      className="w-full text-left px-3 py-2 bg-slate-800/30 border border-slate-700/50 rounded-lg hover:border-white/10 transition-colors group"
                     >
                       <div className="flex items-center gap-2 text-xs">
                         <span className={`font-bold font-mono ${METHOD_COLORS[item.method] || 'text-white'}`}>
@@ -566,14 +566,14 @@ function ApiExplorerPageInner() {
                 <p className="text-slate-500">Select an endpoint, enter your API key, and click Send Request.</p>
                 <p className="text-sm text-slate-600 mt-2">
                   Need an API key?{' '}
-                  <Link href="/developer" className="text-cyan-400 hover:text-cyan-300">
+                  <Link href="/developer" className="text-slate-300 hover:text-white">
                     Get one from the Developer Portal
                   </Link>
                 </p>
               </div>
             ) : loading ? (
               <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-12 text-center">
-                <svg className="animate-spin w-8 h-8 mx-auto text-cyan-400 mb-3" viewBox="0 0 24 24" fill="none">
+                <svg className="animate-spin w-8 h-8 mx-auto text-slate-300 mb-3" viewBox="0 0 24 24" fill="none">
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                   <path
                     className="opacity-75"
@@ -602,7 +602,7 @@ function ApiExplorerPageInner() {
                     onClick={() => setActiveResponseTab('body')}
                     className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
                       activeResponseTab === 'body'
-                        ? 'text-cyan-400 border-cyan-400'
+                        ? 'text-slate-300 border-white/10'
                         : 'text-slate-400 border-transparent hover:text-slate-300'
                     }`}
                   >
@@ -612,7 +612,7 @@ function ApiExplorerPageInner() {
                     onClick={() => setActiveResponseTab('headers')}
                     className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
                       activeResponseTab === 'headers'
-                        ? 'text-cyan-400 border-cyan-400'
+                        ? 'text-slate-300 border-white/10'
                         : 'text-slate-400 border-transparent hover:text-slate-300'
                     }`}
                   >
@@ -655,7 +655,7 @@ function ApiExplorerPageInner() {
                         <tbody>
                           {Object.entries(response.headers).map(([key, value]) => (
                             <tr key={key} className="border-b border-slate-700/50">
-                              <td className="py-1.5 pr-4 text-cyan-400 font-mono whitespace-nowrap">
+                              <td className="py-1.5 pr-4 text-slate-300 font-mono whitespace-nowrap">
                                 {key}
                               </td>
                               <td className="py-1.5 text-slate-300 font-mono break-all">{value}</td>

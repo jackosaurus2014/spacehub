@@ -116,7 +116,7 @@ export default function ReviewForm({ companyId, rfqId, onSuccess }: ReviewFormPr
           onChange={(e) => setTitle(e.target.value)}
           placeholder="Summarize your experience"
           maxLength={200}
-          className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+          className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
         />
       </div>
 
@@ -130,14 +130,14 @@ export default function ReviewForm({ companyId, rfqId, onSuccess }: ReviewFormPr
           placeholder="Share details about your experience working with this provider..."
           rows={4}
           maxLength={5000}
-          className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none"
+          className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
         />
       </div>
 
       <button
         type="submit"
         disabled={submitting || overallRating === 0}
-        className="w-full py-2.5 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 disabled:from-slate-700 disabled:to-slate-700 text-white rounded-lg font-semibold transition-all"
+        className="w-full py-2.5 bg-gradient-to-r from-slate-200 to-blue-600 hover:from-white hover:to-blue-500 disabled:from-slate-700 disabled:to-slate-700 text-white rounded-lg font-semibold transition-all"
       >
         {submitting ? 'Submitting...' : 'Submit Review'}
       </button>

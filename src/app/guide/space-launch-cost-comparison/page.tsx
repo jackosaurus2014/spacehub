@@ -179,9 +179,9 @@ export default function SpaceLaunchCostComparisonPage() {
                     <li key={item.id}>
                       <a
                         href={`#${item.id}`}
-                        className="flex items-start gap-2 text-star-300 hover:text-cyan-400 transition-colors"
+                        className="flex items-start gap-2 text-star-300 hover:text-white transition-colors"
                       >
-                        <span className="text-cyan-500/60 font-mono text-xs mt-0.5">
+                        <span className="text-slate-300/60 font-mono text-xs mt-0.5">
                           {String(i + 1).padStart(2, '0')}
                         </span>
                         {item.label}
@@ -244,34 +244,34 @@ export default function SpaceLaunchCostComparisonPage() {
                     missions.
                   </p>
 
-                  <div className="card p-6 my-8 border-l-4 border-l-cyan-400">
+                  <div className="card p-6 my-8 border-l-4 border-l-white/30">
                     <h3 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">
                       Historical Cost Per Kilogram to LEO
                     </h3>
                     <div className="space-y-3 text-sm">
-                      <div className="flex justify-between items-center border-b border-cyan-400/10 pb-2">
+                      <div className="flex justify-between items-center border-b border-white/10/10 pb-2">
                         <span className="text-star-300">Space Shuttle (1981-2011)</span>
-                        <span className="text-cyan-400 font-semibold">~$54,000/kg</span>
+                        <span className="text-slate-300 font-semibold">~$54,000/kg</span>
                       </div>
-                      <div className="flex justify-between items-center border-b border-cyan-400/10 pb-2">
+                      <div className="flex justify-between items-center border-b border-white/10/10 pb-2">
                         <span className="text-star-300">Delta IV Heavy</span>
-                        <span className="text-cyan-400 font-semibold">~$14,000/kg</span>
+                        <span className="text-slate-300 font-semibold">~$14,000/kg</span>
                       </div>
-                      <div className="flex justify-between items-center border-b border-cyan-400/10 pb-2">
+                      <div className="flex justify-between items-center border-b border-white/10/10 pb-2">
                         <span className="text-star-300">Atlas V 551</span>
-                        <span className="text-cyan-400 font-semibold">~$10,000/kg</span>
+                        <span className="text-slate-300 font-semibold">~$10,000/kg</span>
                       </div>
-                      <div className="flex justify-between items-center border-b border-cyan-400/10 pb-2">
+                      <div className="flex justify-between items-center border-b border-white/10/10 pb-2">
                         <span className="text-star-300">Ariane 5</span>
-                        <span className="text-cyan-400 font-semibold">~$9,000/kg</span>
+                        <span className="text-slate-300 font-semibold">~$9,000/kg</span>
                       </div>
-                      <div className="flex justify-between items-center border-b border-cyan-400/10 pb-2">
+                      <div className="flex justify-between items-center border-b border-white/10/10 pb-2">
                         <span className="text-star-300">Falcon 9 (expendable, 2013)</span>
-                        <span className="text-cyan-400 font-semibold">~$4,600/kg</span>
+                        <span className="text-slate-300 font-semibold">~$4,600/kg</span>
                       </div>
                       <div className="flex justify-between items-center">
                         <span className="text-star-300">Falcon 9 (reusable, 2026)</span>
-                        <span className="text-cyan-400 font-semibold">~$2,700/kg</span>
+                        <span className="text-slate-300 font-semibold">~$2,700/kg</span>
                       </div>
                     </div>
                     <p className="text-star-300/60 text-xs mt-4">
@@ -429,7 +429,7 @@ export default function SpaceLaunchCostComparisonPage() {
                     </h3>
                     <table className="w-full text-sm">
                       <thead>
-                        <tr className="border-b border-cyan-400/20 text-left">
+                        <tr className="border-b border-white/10 text-left">
                           <th className="py-2 pr-3 text-star-300 font-medium">Vehicle</th>
                           <th className="py-2 pr-3 text-star-300 font-medium text-right">LEO Payload</th>
                           <th className="py-2 pr-3 text-star-300 font-medium text-right">List Price</th>
@@ -437,59 +437,59 @@ export default function SpaceLaunchCostComparisonPage() {
                         </tr>
                       </thead>
                       <tbody className="text-star-200">
-                        <tr className="border-b border-cyan-400/10">
+                        <tr className="border-b border-white/10/10">
                           <td className="py-2 pr-3 text-white">Falcon Heavy</td>
                           <td className="py-2 pr-3 text-right">63,800 kg</td>
                           <td className="py-2 pr-3 text-right">$97M</td>
-                          <td className="py-2 text-right text-cyan-400 font-semibold">$1,520</td>
+                          <td className="py-2 text-right text-slate-300 font-semibold">$1,520</td>
                         </tr>
-                        <tr className="border-b border-cyan-400/10">
+                        <tr className="border-b border-white/10/10">
                           <td className="py-2 pr-3 text-white">New Glenn</td>
                           <td className="py-2 pr-3 text-right">45,000 kg</td>
                           <td className="py-2 pr-3 text-right">~$85M (est.)</td>
-                          <td className="py-2 text-right text-cyan-400 font-semibold">~$1,900</td>
+                          <td className="py-2 text-right text-slate-300 font-semibold">~$1,900</td>
                         </tr>
-                        <tr className="border-b border-cyan-400/10">
+                        <tr className="border-b border-white/10/10">
                           <td className="py-2 pr-3 text-white">Falcon 9</td>
                           <td className="py-2 pr-3 text-right">22,800 kg</td>
                           <td className="py-2 pr-3 text-right">$67M</td>
-                          <td className="py-2 text-right text-cyan-400 font-semibold">$2,940</td>
+                          <td className="py-2 text-right text-slate-300 font-semibold">$2,940</td>
                         </tr>
-                        <tr className="border-b border-cyan-400/10">
+                        <tr className="border-b border-white/10/10">
                           <td className="py-2 pr-3 text-white">Neutron (est.)</td>
                           <td className="py-2 pr-3 text-right">13,000 kg</td>
                           <td className="py-2 pr-3 text-right">~$50M (est.)</td>
-                          <td className="py-2 text-right text-cyan-400 font-semibold">~$3,850</td>
+                          <td className="py-2 text-right text-slate-300 font-semibold">~$3,850</td>
                         </tr>
-                        <tr className="border-b border-cyan-400/10">
+                        <tr className="border-b border-white/10/10">
                           <td className="py-2 pr-3 text-white">Ariane 64</td>
                           <td className="py-2 pr-3 text-right">21,650 kg</td>
                           <td className="py-2 pr-3 text-right">~$115M</td>
-                          <td className="py-2 text-right text-cyan-400 font-semibold">~$5,310</td>
+                          <td className="py-2 text-right text-slate-300 font-semibold">~$5,310</td>
                         </tr>
-                        <tr className="border-b border-cyan-400/10">
+                        <tr className="border-b border-white/10/10">
                           <td className="py-2 pr-3 text-white">Vulcan Centaur</td>
                           <td className="py-2 pr-3 text-right">27,200 kg</td>
                           <td className="py-2 pr-3 text-right">~$120M (est.)</td>
-                          <td className="py-2 text-right text-cyan-400 font-semibold">~$4,410</td>
+                          <td className="py-2 text-right text-slate-300 font-semibold">~$4,410</td>
                         </tr>
-                        <tr className="border-b border-cyan-400/10">
+                        <tr className="border-b border-white/10/10">
                           <td className="py-2 pr-3 text-white">H3 (Japan)</td>
                           <td className="py-2 pr-3 text-right">6,500 kg</td>
                           <td className="py-2 pr-3 text-right">~$50M</td>
-                          <td className="py-2 text-right text-cyan-400 font-semibold">~$7,690</td>
+                          <td className="py-2 text-right text-slate-300 font-semibold">~$7,690</td>
                         </tr>
-                        <tr className="border-b border-cyan-400/10">
+                        <tr className="border-b border-white/10/10">
                           <td className="py-2 pr-3 text-white">Electron</td>
                           <td className="py-2 pr-3 text-right">300 kg</td>
                           <td className="py-2 pr-3 text-right">$7.5M</td>
-                          <td className="py-2 text-right text-cyan-400 font-semibold">$25,000</td>
+                          <td className="py-2 text-right text-slate-300 font-semibold">$25,000</td>
                         </tr>
                         <tr>
                           <td className="py-2 pr-3 text-white">Starship (target)</td>
                           <td className="py-2 pr-3 text-right">150,000 kg</td>
                           <td className="py-2 pr-3 text-right">TBD</td>
-                          <td className="py-2 text-right text-cyan-400 font-semibold">$100-500 (target)</td>
+                          <td className="py-2 text-right text-slate-300 font-semibold">$100-500 (target)</td>
                         </tr>
                       </tbody>
                     </table>
@@ -510,7 +510,7 @@ export default function SpaceLaunchCostComparisonPage() {
                   </p>
 
                   <p className="mt-4">
-                    <Link href="/mission-cost" className="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+                    <Link href="/mission-cost" className="text-slate-300 hover:text-white underline underline-offset-2">
                       Calculate launch costs for your specific mission on SpaceNexus
                     </Link>
                   </p>
@@ -597,15 +597,15 @@ export default function SpaceLaunchCostComparisonPage() {
                       U.S. Government Launch Contract Values
                     </h3>
                     <div className="space-y-3 text-sm">
-                      <div className="flex justify-between items-center border-b border-cyan-400/10 pb-2">
+                      <div className="flex justify-between items-center border-b border-white/10/10 pb-2">
                         <span className="text-star-300">NSSL Phase 2 (SpaceX, avg.)</span>
                         <span className="text-nebula-300 font-semibold">~$95M-$110M</span>
                       </div>
-                      <div className="flex justify-between items-center border-b border-cyan-400/10 pb-2">
+                      <div className="flex justify-between items-center border-b border-white/10/10 pb-2">
                         <span className="text-star-300">NSSL Phase 2 (ULA, avg.)</span>
                         <span className="text-nebula-300 font-semibold">~$130M-$180M</span>
                       </div>
-                      <div className="flex justify-between items-center border-b border-cyan-400/10 pb-2">
+                      <div className="flex justify-between items-center border-b border-white/10/10 pb-2">
                         <span className="text-star-300">NASA CRS-2 (SpaceX, per mission)</span>
                         <span className="text-nebula-300 font-semibold">~$150M-$170M</span>
                       </div>
@@ -630,7 +630,7 @@ export default function SpaceLaunchCostComparisonPage() {
                   </p>
 
                   <p className="mt-4">
-                    <Link href="/business-opportunities" className="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+                    <Link href="/business-opportunities" className="text-slate-300 hover:text-white underline underline-offset-2">
                       Track government launch procurement on SpaceNexus
                     </Link>
                   </p>
@@ -696,11 +696,11 @@ export default function SpaceLaunchCostComparisonPage() {
                   </p>
 
                   <p className="mt-4">
-                    <Link href="/space-insurance" className="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+                    <Link href="/space-insurance" className="text-slate-300 hover:text-white underline underline-offset-2">
                       Explore space insurance options on SpaceNexus
                     </Link>
                     {' '}&middot;{' '}
-                    <Link href="/launch-vehicles" className="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+                    <Link href="/launch-vehicles" className="text-slate-300 hover:text-white underline underline-offset-2">
                       Compare launch vehicles
                     </Link>
                   </p>
@@ -757,7 +757,7 @@ export default function SpaceLaunchCostComparisonPage() {
                   </p>
 
                   <p className="mt-4">
-                    <Link href="/market-intel" className="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+                    <Link href="/market-intel" className="text-slate-300 hover:text-white underline underline-offset-2">
                       Track launch market trends on SpaceNexus Market Intelligence
                     </Link>
                   </p>
@@ -823,7 +823,7 @@ export default function SpaceLaunchCostComparisonPage() {
                     SpaceNexus provides mission planning tools including launch cost calculators,
                     vehicle comparison features, launch window analysis, and insurance estimation
                     tools. Our{' '}
-                    <Link href="/mission-cost" className="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+                    <Link href="/mission-cost" className="text-slate-300 hover:text-white underline underline-offset-2">
                       Mission Planning module
                     </Link>{' '}
                     helps you evaluate options and estimate total mission costs across all major
@@ -870,7 +870,7 @@ export default function SpaceLaunchCostComparisonPage() {
                         <span>{item.q}</span>
                         <span
                           aria-hidden="true"
-                          className="ml-4 shrink-0 text-cyan-400 transition-transform group-open:rotate-45 text-xl leading-none"
+                          className="ml-4 shrink-0 text-slate-300 transition-transform group-open:rotate-45 text-xl leading-none"
                         >
                           +
                         </span>

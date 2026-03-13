@@ -15,7 +15,7 @@ export default function Loading() {
               {/* Featured image placeholder */}
               <div className="h-48 w-full bg-slate-700/40 rounded-lg" />
               {/* Category badge */}
-              <div className="h-5 w-24 bg-cyan-500/20 rounded-full" />
+              <div className="h-5 w-24 bg-white/10 rounded-full" />
               {/* Title */}
               <div className="h-6 w-5/6 bg-slate-700/50 rounded" />
               {/* Excerpt */}
@@ -35,7 +35,7 @@ export default function Loading() {
           {Array.from({ length: 6 }).map((_, i) => (
             <div key={i} className="bg-slate-800/40 rounded-xl animate-pulse p-5 space-y-3">
               {/* Category badge */}
-              <div className="h-5 w-20 bg-cyan-500/20 rounded-full" />
+              <div className="h-5 w-20 bg-white/10 rounded-full" />
               {/* Title */}
               <div className="h-5 w-3/4 bg-slate-700/50 rounded" />
               {/* Excerpt */}

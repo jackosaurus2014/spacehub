@@ -57,7 +57,7 @@ export default function MobileSocialProofBar() {
           <div className="flex items-center gap-2 min-w-0 flex-1">
             {/* Avatars cluster */}
             <div className="flex -space-x-1.5 shrink-0" aria-hidden="true">
-              <div className="w-5 h-5 rounded-full bg-gradient-to-br from-cyan-400 to-blue-500 border border-slate-900 flex items-center justify-center">
+              <div className="w-5 h-5 rounded-full bg-gradient-to-br from-slate-300 to-slate-400 border border-slate-900 flex items-center justify-center">
                 <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" />
                 </svg>
@@ -75,12 +75,12 @@ export default function MobileSocialProofBar() {
             </div>
 
             <p className="text-xs text-slate-300 truncate">
-              Join <span className="text-cyan-400 font-semibold">10,000+</span> space professionals
+              Start exploring space intelligence
             </p>
 
             <Link
               href="/register"
-              className="shrink-0 inline-flex items-center gap-0.5 text-xs font-semibold text-cyan-400 hover:text-cyan-300 transition-colors"
+              className="shrink-0 inline-flex items-center gap-0.5 text-xs font-semibold text-slate-300 hover:text-white transition-colors"
             >
               Start Free
               <svg

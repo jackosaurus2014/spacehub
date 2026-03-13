@@ -86,20 +86,20 @@ export default function Modal({ isOpen, onClose, title, children }: ModalProps) 
         aria-modal="true"
         aria-labelledby="modal-title"
         tabIndex={-1}
-        className="relative w-full max-w-lg max-h-[90vh] overflow-y-auto overscroll-contain bg-slate-900/95 backdrop-blur-xl border border-cyan-500/20 rounded-2xl shadow-2xl shadow-black/40 p-6 animate-scale-in focus:outline-none"
+        className="relative w-full max-w-lg max-h-[90vh] overflow-y-auto overscroll-contain bg-slate-900/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl shadow-black/40 p-6 animate-scale-in focus:outline-none"
       >
         {/* Mobile drag handle indicator */}
         <div className="md:hidden flex justify-center pt-2 pb-3">
           <div className="w-10 h-1 rounded-full bg-slate-600" />
         </div>
         {/* Top gradient accent */}
-        <div className="hidden md:block absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-400/40 to-transparent" />
+        <div className="hidden md:block absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
         <div className="flex items-center justify-between mb-6">
           <h2 id="modal-title" className="text-xl font-display font-bold text-slate-100">{title}</h2>
           <button
             onClick={onClose}
             aria-label="Close dialog"
-            className="text-slate-400 hover:text-cyan-400 transition-colors p-1 min-h-[44px] min-w-[44px] flex items-center justify-center"
+            className="text-slate-400 hover:text-white transition-colors p-1 min-h-[44px] min-w-[44px] flex items-center justify-center"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />

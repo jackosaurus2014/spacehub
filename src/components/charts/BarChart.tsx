@@ -169,7 +169,7 @@ export default function BarChart({
       {/* Zoom controls */}
       {isZoomed && (
         <div className="absolute top-2 right-2 z-10 flex items-center gap-2">
-          <span className="text-xs text-cyan-400 bg-slate-800/80 px-2 py-1 rounded border border-slate-600">
+          <span className="text-xs text-slate-300 bg-slate-800/80 px-2 py-1 rounded border border-slate-600">
             {transform.scale.toFixed(1)}x
           </span>
           <button
@@ -486,7 +486,7 @@ export default function BarChart({
           activeIndex !== null ? (
             <>
               <div className="text-slate-300 text-xs">{data[activeIndex].label}</div>
-              <div className="text-cyan-400 font-semibold">
+              <div className="text-slate-300 font-semibold">
                 {valueFormatter(data[activeIndex].value)}
               </div>
             </>
