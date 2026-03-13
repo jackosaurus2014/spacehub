@@ -125,7 +125,6 @@ export default function LandingValueProp() {
               </ScrollReveal>
             ))}
           </div>
-          <div className="gradient-line max-w-lg mx-auto mt-16" />
         </div>
       </section>
 
@@ -166,8 +165,6 @@ export default function LandingValueProp() {
         </div>
       </section>
 
-      {/* Bottom divider */}
-      <div className="gradient-line max-w-lg mx-auto" />
     </div>
   );
 }

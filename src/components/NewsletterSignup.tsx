@@ -138,11 +138,11 @@ export default function NewsletterSignup({
 
   // CTA variant (main page)
   return (
-    <div className="relative card p-10 md:p-16 text-center rounded-3xl overflow-hidden">
+    <div className="relative card-glass p-10 md:p-16 text-center overflow-hidden">
       {/* Decorative glow orb */}
-      <div className="absolute -top-20 -right-20 w-64 h-64 bg-slate-300/20 rounded-full blur-[80px] pointer-events-none" />
+      <div className="absolute -top-20 -right-20 w-64 h-64 bg-white/[0.04] rounded-full blur-[80px] pointer-events-none" />
       <div className="relative">
-        <h2 className="text-3xl md:text-display-md font-display font-bold text-slate-100 mb-4">
+        <h2 className="text-display text-3xl md:text-4xl text-white mb-4">
           Stay Ahead of the Curve
         </h2>
         <p className="text-lg text-slate-400 mb-8 max-w-2xl mx-auto leading-relaxed">
@@ -191,7 +191,7 @@ export default function NewsletterSignup({
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Your name (optional)"
                 aria-label="Your name"
-                className="flex-1 px-4 py-3 bg-slate-800/80 border border-slate-600 rounded-xl text-slate-100 placeholder:text-slate-400 focus:outline-none focus:border-white/15 transition-colors"
+                className="flex-1 px-4 py-3 bg-white/[0.03] border border-white/[0.08] rounded-xl text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-white/[0.15] transition-colors ease-smooth"
                 disabled={status === 'loading'}
               />
               <input
@@ -203,7 +203,7 @@ export default function NewsletterSignup({
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Your email address"
                 aria-label="Email address"
-                className="flex-1 px-4 py-3 bg-slate-800/80 border border-slate-600 rounded-xl text-slate-100 placeholder:text-slate-400 focus:outline-none focus:border-white/15 transition-colors"
+                className="flex-1 px-4 py-3 bg-white/[0.03] border border-white/[0.08] rounded-xl text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-white/[0.15] transition-colors ease-smooth"
                 required
                 disabled={status === 'loading'}
               />
@@ -211,7 +211,7 @@ export default function NewsletterSignup({
             <button
               type="submit"
               disabled={status === 'loading' || !email}
-              className="btn-primary text-base py-4 px-10 w-full sm:w-auto"
+              className="bg-white text-slate-900 font-medium text-base py-4 px-10 rounded-xl hover:bg-slate-100 transition-all duration-200 ease-smooth w-full sm:w-auto"
             >
               {status === 'loading' ? (
                 <span className="flex items-center justify-center gap-2">

@@ -128,13 +128,12 @@ export default function PersonaDashboard() {
             </svg>
             {PERSONA_LABELS[persona]}
           </div>
-          <h2 className="text-display-sm font-display font-bold text-white mb-3 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+          <h2 className="text-display text-3xl md:text-4xl text-white mb-3">
             Your Quick Access Tools
           </h2>
           <p className="text-slate-400 text-lg max-w-2xl mx-auto">
             {config.tagline}
           </p>
-          <div className="gradient-line max-w-xs mx-auto mt-4" />
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-5xl mx-auto">
@@ -142,7 +141,7 @@ export default function PersonaDashboard() {
             <Link
               key={link.href}
               href={link.href}
-              className="group flex items-start gap-4 p-5 rounded-xl border border-slate-700/50 bg-slate-800/30 hover:border-white/15 hover:bg-slate-800/60 transition-all duration-300 hover:shadow-lg hover:shadow-black/20"
+              className="group card-glass flex items-start gap-4 p-5"
             >
               <span className="text-2xl flex-shrink-0 mt-0.5">{link.icon}</span>
               <div className="min-w-0">

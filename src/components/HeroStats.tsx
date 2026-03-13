@@ -201,7 +201,7 @@ export default function HeroStats() {
     return (
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         {[1, 2, 3, 4].map(i => (
-          <div key={i} className="card p-4 animate-pulse">
+          <div key={i} className="card-glass p-4 animate-pulse">
             <div className="h-4 bg-slate-600/50 rounded w-1/2 mb-2"></div>
             <div className="h-6 bg-slate-600/50 rounded w-3/4"></div>
           </div>
@@ -236,7 +236,7 @@ export default function HeroStats() {
         }.`}
       </span>
       {/* Next Launch */}
-      <Link href="/mission-control" className="card p-4 hover:border-white/15 transition-all group !bg-slate-900/95">
+      <Link href="/mission-control" className="card-glass p-4 group">
         <div className="flex items-center gap-2 mb-2">
           <span className="text-xl">🚀</span>
           <span className="text-xs uppercase tracking-wider text-slate-300 font-medium">Next Launch</span>
@@ -257,7 +257,7 @@ export default function HeroStats() {
       </Link>
 
       {/* Market Highlight */}
-      <Link href="/market-intel" className="card p-4 hover:border-white/15 transition-all group !bg-slate-900/95">
+      <Link href="/market-intel" className="card-glass p-4 group">
         <div className="flex items-center gap-2 mb-2">
           <span className="text-xl">{market?.type === 'ipo' ? '🔔' : '📈'}</span>
           <span className="text-xs uppercase tracking-wider text-slate-300 font-medium">
@@ -314,7 +314,7 @@ export default function HeroStats() {
       </Link>
 
       {/* Solar Activity */}
-      <Link href="/space-environment" className="card p-4 hover:border-white/15 transition-all group !bg-slate-900/95">
+      <Link href="/space-environment" className="card-glass p-4 group">
         <div className="flex items-center gap-2 mb-2">
           <span className="text-xl">☀️</span>
           <span className="text-xs uppercase tracking-wider text-slate-300 font-medium">Space Weather</span>

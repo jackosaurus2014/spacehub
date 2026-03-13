@@ -24,13 +24,12 @@ export default function TrustSignals() {
       <div className="container mx-auto px-4">
         <ScrollReveal>
           <div className="text-center mb-10">
-            <h2 className="text-display-sm font-display font-bold text-white mb-3 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+            <h2 className="text-display text-3xl md:text-4xl text-white mb-3">
               Powered by Authoritative Data
             </h2>
-            <p className="text-slate-300 text-sm max-w-xl mx-auto drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]">
+            <p className="text-slate-400 text-sm max-w-xl mx-auto">
               SpaceNexus aggregates real-time data from government agencies, industry feeds, and curated sources
             </p>
-            <div className="gradient-line max-w-xs mx-auto mt-4" />
           </div>
         </ScrollReveal>
 
@@ -58,8 +57,8 @@ export default function TrustSignals() {
         <ScrollReveal delay={0.2}>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto">
             {PLATFORM_STATS.map((stat) => (
-              <div key={stat.label} className="glass-panel p-4 text-center">
-                <div className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-b from-white to-slate-300">
+              <div key={stat.label} className="card-glass p-4 text-center">
+                <div className="text-2xl font-bold text-white">
                   {stat.value}
                 </div>
                 <div className="text-slate-400 text-xs font-medium mt-1">{stat.label}</div>
