@@ -67,7 +67,7 @@ export default function ReputationBadge({ reputation, size = 'sm' }: ReputationB
       </div>
       {nextLevel && (
         <div className="flex items-center gap-1.5">
-          <div className="flex-1 h-1 bg-slate-700/50 rounded-full overflow-hidden">
+          <div className="flex-1 h-1 bg-white/[0.06] rounded-full overflow-hidden">
             <div
               className={`h-full rounded-full transition-all duration-500 ${
                 current.color.includes('slate')

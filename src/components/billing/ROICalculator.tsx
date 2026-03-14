@@ -106,7 +106,7 @@ function SliderField({
   return (
     <div className="mb-6">
       <div className="flex items-center justify-between mb-2">
-        <label className="text-sm font-medium text-slate-300">{label}</label>
+        <label className="text-sm font-medium text-white/70">{label}</label>
         <span className="text-sm font-semibold text-white tabular-nums">
           {prefix}
           {value.toLocaleString('en-US')}
@@ -164,9 +164,9 @@ function BreakdownRow({
   positive?: boolean;
 }) {
   return (
-    <div className="flex items-start justify-between py-2.5 border-b border-slate-700/30 last:border-0">
+    <div className="flex items-start justify-between py-2.5 border-b border-white/[0.04] last:border-0">
       <div className="min-w-0 mr-3">
-        <p className="text-sm text-slate-300">{label}</p>
+        <p className="text-sm text-white/70">{label}</p>
         {detail && <p className="text-xs text-slate-500 mt-0.5">{detail}</p>}
       </div>
       <span
@@ -245,12 +245,12 @@ export default function ROICalculator() {
           border-radius: 50%;
           background: #06b6d4;
           border: 3px solid #0e1729;
-          box-shadow: 0 0 0 2px rgba(6, 182, 212, 0.3), 0 2px 8px rgba(0, 0, 0, 0.4);
+          box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.15), 0 2px 8px rgba(0, 0, 0, 0.4);
           cursor: pointer;
           transition: box-shadow 0.2s, transform 0.15s;
         }
         .roi-slider::-webkit-slider-thumb:hover {
-          box-shadow: 0 0 0 4px rgba(6, 182, 212, 0.3), 0 2px 12px rgba(0, 0, 0, 0.5);
+          box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.15), 0 2px 12px rgba(0, 0, 0, 0.5);
           transform: scale(1.1);
         }
         .roi-slider::-moz-range-thumb {
@@ -259,12 +259,12 @@ export default function ROICalculator() {
           border-radius: 50%;
           background: #06b6d4;
           border: 3px solid #0e1729;
-          box-shadow: 0 0 0 2px rgba(6, 182, 212, 0.3), 0 2px 8px rgba(0, 0, 0, 0.4);
+          box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.15), 0 2px 8px rgba(0, 0, 0, 0.4);
           cursor: pointer;
           transition: box-shadow 0.2s, transform 0.15s;
         }
         .roi-slider::-moz-range-thumb:hover {
-          box-shadow: 0 0 0 4px rgba(6, 182, 212, 0.3), 0 2px 12px rgba(0, 0, 0, 0.5);
+          box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.15), 0 2px 12px rgba(0, 0, 0, 0.5);
           transform: scale(1.1);
         }
         .roi-slider::-moz-range-track {
@@ -273,14 +273,14 @@ export default function ROICalculator() {
           background: transparent;
         }
         .roi-slider:focus-visible::-webkit-slider-thumb {
-          box-shadow: 0 0 0 4px rgba(6, 182, 212, 0.5), 0 2px 12px rgba(0, 0, 0, 0.5);
+          box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.25), 0 2px 12px rgba(0, 0, 0, 0.5);
         }
         .roi-slider:focus-visible::-moz-range-thumb {
-          box-shadow: 0 0 0 4px rgba(6, 182, 212, 0.5), 0 2px 12px rgba(0, 0, 0, 0.5);
+          box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.25), 0 2px 12px rgba(0, 0, 0, 0.5);
         }
       `}</style>
 
-      <div className="bg-slate-900/50 border border-slate-700/50 rounded-2xl overflow-hidden">
+      <div className="bg-black/50 border border-white/[0.06] rounded-2xl overflow-hidden">
         {/* Header */}
         <div className="px-6 pt-6 pb-4 sm:px-8 sm:pt-8">
           <h2
@@ -296,7 +296,7 @@ export default function ROICalculator() {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 lg:gap-0">
           {/* ---- Left: Inputs ---- */}
-          <div className="px-6 pb-6 sm:px-8 lg:border-r lg:border-slate-700/30">
+          <div className="px-6 pb-6 sm:px-8 lg:border-r lg:border-white/[0.04]">
             <SliderField
               label="Team size"
               value={teamSize}
@@ -330,7 +330,7 @@ export default function ROICalculator() {
             />
 
             {/* Assumptions footnote */}
-            <div className="mt-2 p-3 bg-slate-800/40 rounded-lg">
+            <div className="mt-2 p-3 bg-white/[0.04] rounded-lg">
               <p className="text-xs text-slate-500 leading-relaxed">
                 Based on $85/hr fully-loaded rate, 60% research time savings, and
                 40% tool cost replacement. Actual results vary by use case.
@@ -339,7 +339,7 @@ export default function ROICalculator() {
           </div>
 
           {/* ---- Right: Results ---- */}
-          <div className="px-6 pb-6 sm:px-8 pt-6 lg:pt-0 border-t lg:border-t-0 border-slate-700/30" aria-live="polite">
+          <div className="px-6 pb-6 sm:px-8 pt-6 lg:pt-0 border-t lg:border-t-0 border-white/[0.04]" aria-live="polite">
             {/* Hero savings number */}
             <div className="text-center lg:text-left mb-6">
               <p className="text-xs font-medium uppercase tracking-wider text-slate-500 mb-2">
@@ -392,7 +392,7 @@ export default function ROICalculator() {
 
             {/* Annual + ROI summary */}
             <div className="grid grid-cols-2 gap-3 mb-6">
-              <div className="bg-slate-800/50 rounded-xl p-4 text-center">
+              <div className="bg-white/[0.04] rounded-xl p-4 text-center">
                 <p className="text-xs text-slate-500 mb-1">Annual savings</p>
                 <p className="text-lg sm:text-xl font-bold text-emerald-400 tabular-nums">
                   {results.annualSavings >= 0 ? '' : '-'}
@@ -400,9 +400,9 @@ export default function ROICalculator() {
                 </p>
                 <p className="text-xs text-slate-500">per year</p>
               </div>
-              <div className="bg-slate-800/50 rounded-xl p-4 text-center">
+              <div className="bg-white/[0.04] rounded-xl p-4 text-center">
                 <p className="text-xs text-slate-500 mb-1">Return on investment</p>
-                <p className="text-lg sm:text-xl font-bold text-slate-300 tabular-nums">
+                <p className="text-lg sm:text-xl font-bold text-white/70 tabular-nums">
                   {fmtPercent(animROI)}
                 </p>
                 <p className="text-xs text-slate-500">ROI</p>

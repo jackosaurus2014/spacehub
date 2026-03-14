@@ -182,12 +182,12 @@ function MessagesPageInner() {
           <div className="flex h-full">
             {/* Conversation list — left panel */}
             <div
-              className={`w-full sm:w-80 sm:border-r border-slate-700/50 flex-shrink-0 overflow-y-auto ${
+              className={`w-full sm:w-80 sm:border-r border-white/[0.06] flex-shrink-0 overflow-y-auto ${
                 showList ? 'block' : 'hidden sm:block'
               }`}
             >
-              <div className="px-4 py-3 border-b border-slate-700/50">
-                <h3 className="text-sm font-semibold text-slate-300">Conversations</h3>
+              <div className="px-4 py-3 border-b border-white/[0.06]">
+                <h3 className="text-sm font-semibold text-white/70">Conversations</h3>
               </div>
               <ConversationList
                 conversations={conversations}
@@ -204,7 +204,7 @@ function MessagesPageInner() {
               }`}
             >
               {/* Mobile back button */}
-              <div className="sm:hidden px-4 py-2 border-b border-slate-700/50">
+              <div className="sm:hidden px-4 py-2 border-b border-white/[0.06]">
                 <button
                   onClick={handleBack}
                   className="flex items-center gap-1 text-sm text-slate-400 hover:text-white transition-colors"

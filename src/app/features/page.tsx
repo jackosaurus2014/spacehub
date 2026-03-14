@@ -182,7 +182,7 @@ export default function FeaturesPage() {
   const related = getRelatedModules('features');
 
   return (
-    <div className="min-h-screen bg-[#050a15]">
+    <div className="min-h-screen bg-black">
       {/* ── Hero ── */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-white/5 via-transparent to-transparent pointer-events-none" />
@@ -190,7 +190,7 @@ export default function FeaturesPage() {
           <ScrollReveal>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 leading-tight">
               Everything You Need for{' '}
-              <span className="bg-gradient-to-r from-slate-300 to-blue-500 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-white/80 to-white/40 bg-clip-text text-transparent">
                 Space Industry Intelligence
               </span>
             </h1>
@@ -212,10 +212,10 @@ export default function FeaturesPage() {
               <a
                 key={cat.id}
                 href={`#${cat.id}`}
-                className="group flex items-center gap-2 px-5 py-2.5 rounded-full bg-slate-800/60 border border-slate-700/40 hover:border-white/15 hover:bg-slate-100/10 transition-all text-sm text-slate-300 hover:text-white"
+                className="group flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/[0.06] border border-white/[0.06] hover:border-white/15 hover:bg-white/[0.08] transition-all text-sm text-slate-300 hover:text-white"
               >
                 <span className="font-medium">{cat.title}</span>
-                <span className="text-xs text-slate-500 bg-slate-800 px-1.5 py-0.5 rounded-full group-hover:text-white group-hover:bg-slate-100/20 transition-colors">{cat.modules.length}</span>
+                <span className="text-xs text-slate-500 bg-white/[0.06] px-1.5 py-0.5 rounded-full group-hover:text-white group-hover:bg-white/[0.1] transition-colors">{cat.modules.length}</span>
               </a>
             ))}
           </div>
@@ -238,7 +238,7 @@ export default function FeaturesPage() {
                 <StaggerItem key={mod.href}>
                   <Link
                     href={mod.href}
-                    className="group relative flex flex-col p-5 rounded-xl border border-slate-700/50 bg-slate-800/30 hover:border-white/15 hover:bg-slate-800/60 transition-all h-full"
+                    className="group relative flex flex-col p-5 rounded-xl border border-white/[0.06] bg-white/[0.04] hover:border-white/15 hover:bg-white/[0.06] transition-all h-full"
                   >
                     {mod.tier && (
                       <span
@@ -277,14 +277,14 @@ export default function FeaturesPage() {
         </ScrollReveal>
 
         <ScrollReveal delay={0.1}>
-          <div className="overflow-x-auto rounded-xl border border-slate-700/50">
+          <div className="overflow-x-auto rounded-xl border border-white/[0.06]">
             <table className="w-full border-collapse text-sm">
               <thead>
-                <tr className="bg-slate-800/60">
-                  <th className="sticky left-0 bg-slate-800/90 backdrop-blur text-left p-4 text-slate-300 font-medium w-[200px] min-w-[160px] border-b border-slate-700/50">
+                <tr className="bg-white/[0.06]">
+                  <th className="sticky left-0 bg-white/[0.06] backdrop-blur text-left p-4 text-slate-300 font-medium w-[200px] min-w-[160px] border-b border-white/[0.06]">
                     Feature
                   </th>
-                  <th className="p-4 text-center text-slate-300 font-medium border-b border-slate-700/50 min-w-[140px]">
+                  <th className="p-4 text-center text-slate-300 font-medium border-b border-white/[0.06] min-w-[140px]">
                     <div className="text-white">Explorer</div>
                     <div className="text-xs text-slate-500 mt-0.5">Free</div>
                   </th>
@@ -295,7 +295,7 @@ export default function FeaturesPage() {
                       Most Popular
                     </span>
                   </th>
-                  <th className="p-4 text-center text-slate-300 font-medium border-b border-slate-700/50 min-w-[140px]">
+                  <th className="p-4 text-center text-slate-300 font-medium border-b border-white/[0.06] min-w-[140px]">
                     <div className="text-white">Enterprise</div>
                     <div className="text-xs text-slate-500 mt-0.5">$49.99 / mo</div>
                   </th>
@@ -305,18 +305,18 @@ export default function FeaturesPage() {
                 {PLAN_ROWS.map((row, idx) => (
                   <tr
                     key={row.feature}
-                    className={idx % 2 === 0 ? 'bg-slate-900/30' : 'bg-slate-800/20'}
+                    className={idx % 2 === 0 ? 'bg-black/30' : 'bg-white/[0.04]'}
                   >
-                    <td className="sticky left-0 bg-inherit p-4 text-slate-300 font-medium border-b border-slate-700/30">
+                    <td className="sticky left-0 bg-inherit p-4 text-slate-300 font-medium border-b border-white/[0.06]">
                       {row.feature}
                     </td>
-                    <td className="p-4 text-center text-slate-400 border-b border-slate-700/30">
+                    <td className="p-4 text-center text-slate-400 border-b border-white/[0.06]">
                       <CellValue value={row.explorer} />
                     </td>
-                    <td className="p-4 text-center border-b border-slate-700/30 bg-white/[0.02]">
+                    <td className="p-4 text-center border-b border-white/[0.06] bg-white/[0.02]">
                       <CellValue value={row.professional} highlight />
                     </td>
-                    <td className="p-4 text-center text-slate-400 border-b border-slate-700/30">
+                    <td className="p-4 text-center text-slate-400 border-b border-white/[0.06]">
                       <CellValue value={row.enterprise} />
                     </td>
                   </tr>
@@ -330,7 +330,7 @@ export default function FeaturesPage() {
       {/* ── CTA ── */}
       <section className="container mx-auto px-4 pb-20 content-auto">
         <ScrollReveal>
-          <div className="text-center rounded-2xl border border-slate-700/50 bg-gradient-to-br from-slate-800/60 to-slate-900/60 p-10 md:p-16">
+          <div className="text-center rounded-2xl border border-white/[0.06] bg-gradient-to-br from-white/[0.06] to-[#0a0a0a]/60 p-10 md:p-16">
             <h2 className="text-2xl md:text-3xl font-bold text-white mb-3">
               Start Building Your Space Intelligence Stack
             </h2>
@@ -344,7 +344,7 @@ export default function FeaturesPage() {
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link
                 href="/register"
-                className="inline-flex items-center justify-center px-8 py-3 rounded-lg bg-gradient-to-r from-white to-blue-600 hover:from-slate-300 hover:to-blue-500 text-white font-semibold transition-all shadow-lg shadow-black/15"
+                className="inline-flex items-center justify-center px-8 py-3 rounded-lg bg-gradient-to-r from-white/80 to-white/40 hover:from-white hover:to-white/60 text-black font-semibold transition-all shadow-lg shadow-black/15"
               >
                 Get Started Free
                 <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -353,7 +353,7 @@ export default function FeaturesPage() {
               </Link>
               <Link
                 href="/pricing"
-                className="inline-flex items-center justify-center px-6 py-3 rounded-lg border border-slate-600 hover:border-slate-500 text-slate-300 hover:text-white font-semibold transition-colors"
+                className="inline-flex items-center justify-center px-6 py-3 rounded-lg border border-white/[0.1] hover:border-white/[0.15] text-slate-300 hover:text-white font-semibold transition-colors"
               >
                 Compare Plans
               </Link>
@@ -385,13 +385,13 @@ function CellValue({ value, highlight }: { value: string; highlight?: boolean })
   }
   if (value.startsWith('\u2713 ')) {
     return (
-      <span className={highlight ? 'text-slate-200' : 'text-slate-300'}>
+      <span className={highlight ? 'text-white/90' : 'text-slate-300'}>
         <span className={highlight ? 'text-slate-300' : 'text-emerald-400'}>&#10003;</span>{' '}
         {value.slice(2)}
       </span>
     );
   }
   return (
-    <span className={highlight ? 'text-slate-200 font-medium' : 'text-slate-300'}>{value}</span>
+    <span className={highlight ? 'text-white/90 font-medium' : 'text-slate-300'}>{value}</span>
   );
 }

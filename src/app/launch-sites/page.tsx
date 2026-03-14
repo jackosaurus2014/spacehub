@@ -526,7 +526,7 @@ function latitudeAdvantage(lat: number): { label: string; color: string; bonus: 
   const absLat = Math.abs(lat);
   if (absLat <= 5) return { label: 'Excellent', color: 'text-emerald-400', bonus: '~15% GTO bonus' };
   if (absLat <= 15) return { label: 'Very Good', color: 'text-green-400', bonus: '~10% GTO bonus' };
-  if (absLat <= 30) return { label: 'Good', color: 'text-slate-300', bonus: '~5% GTO bonus' };
+  if (absLat <= 30) return { label: 'Good', color: 'text-white/70', bonus: '~5% GTO bonus' };
   if (absLat <= 45) return { label: 'Moderate', color: 'text-yellow-400', bonus: 'Minimal GTO bonus' };
   return { label: 'High Latitude', color: 'text-orange-400', bonus: 'Polar orbit advantage' };
 }
@@ -648,19 +648,19 @@ export default function LaunchSiteDatabasePage() {
         {/* Summary Statistics */}
         <ScrollReveal>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-            <div className="bg-slate-800/60 border border-slate-700/50 rounded-xl p-4 text-center">
-              <p className="text-2xl font-bold text-slate-300">{stats.active}</p>
+            <div className="bg-white/[0.05] border border-white/[0.06] rounded-xl p-4 text-center">
+              <p className="text-2xl font-bold text-white/70">{stats.active}</p>
               <p className="text-xs text-slate-400 mt-1">Active Sites</p>
             </div>
-            <div className="bg-slate-800/60 border border-slate-700/50 rounded-xl p-4 text-center">
+            <div className="bg-white/[0.05] border border-white/[0.06] rounded-xl p-4 text-center">
               <p className="text-2xl font-bold text-emerald-400">{stats.totalPads}</p>
               <p className="text-xs text-slate-400 mt-1">Total Launch Pads</p>
             </div>
-            <div className="bg-slate-800/60 border border-slate-700/50 rounded-xl p-4 text-center">
+            <div className="bg-white/[0.05] border border-white/[0.06] rounded-xl p-4 text-center">
               <p className="text-2xl font-bold text-amber-400">~{stats.totalLaunches}</p>
               <p className="text-xs text-slate-400 mt-1">Annual Launches (est.)</p>
             </div>
-            <div className="bg-slate-800/60 border border-slate-700/50 rounded-xl p-4 text-center">
+            <div className="bg-white/[0.05] border border-white/[0.06] rounded-xl p-4 text-center">
               <p className="text-2xl font-bold text-purple-400">{stats.countries}</p>
               <p className="text-xs text-slate-400 mt-1">Countries</p>
             </div>
@@ -669,7 +669,7 @@ export default function LaunchSiteDatabasePage() {
 
         {/* Filters & Controls */}
         <ScrollReveal delay={0.1}>
-          <div className="bg-slate-800/40 border border-slate-700/50 rounded-xl p-4 mb-6">
+          <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-4 mb-6">
             <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-end">
               {/* Search */}
               <div className="flex-1 w-full lg:w-auto">
@@ -679,7 +679,7 @@ export default function LaunchSiteDatabasePage() {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search by name, location, operator, vehicle..."
-                  className="w-full bg-slate-900/60 border border-slate-600/50 rounded-lg px-3 py-2 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-white/20 focus:border-white/15"
+                  className="w-full bg-black/60 border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-white/90 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-white/20 focus:border-white/15"
                 />
               </div>
 
@@ -689,7 +689,7 @@ export default function LaunchSiteDatabasePage() {
                 <select
                   value={countryFilter}
                   onChange={(e) => setCountryFilter(e.target.value)}
-                  className="w-full bg-slate-900/60 border border-slate-600/50 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-white/20"
+                  className="w-full bg-black/60 border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-white/90 focus:outline-none focus:ring-2 focus:ring-white/20"
                 >
                   <option value="all">All Countries</option>
                   {ALL_COUNTRIES.map((c) => (
@@ -706,7 +706,7 @@ export default function LaunchSiteDatabasePage() {
                 <select
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value)}
-                  className="w-full bg-slate-900/60 border border-slate-600/50 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-white/20"
+                  className="w-full bg-black/60 border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-white/90 focus:outline-none focus:ring-2 focus:ring-white/20"
                 >
                   <option value="all">All Statuses</option>
                   {ALL_STATUSES.map((s) => (
@@ -723,7 +723,7 @@ export default function LaunchSiteDatabasePage() {
                 <select
                   value={capabilityFilter}
                   onChange={(e) => setCapabilityFilter(e.target.value)}
-                  className="w-full bg-slate-900/60 border border-slate-600/50 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-white/20"
+                  className="w-full bg-black/60 border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-white/90 focus:outline-none focus:ring-2 focus:ring-white/20"
                 >
                   <option value="all">All Capabilities</option>
                   {ALL_CAPABILITIES.map((c) => (
@@ -736,7 +736,7 @@ export default function LaunchSiteDatabasePage() {
             </div>
 
             {/* Sort & View toggles */}
-            <div className="flex flex-wrap items-center gap-3 mt-4 pt-3 border-t border-slate-700/40">
+            <div className="flex flex-wrap items-center gap-3 mt-4 pt-3 border-t border-white/[0.06]">
               <span className="text-xs text-slate-500">Sort by:</span>
               {[
                 { field: 'annualLaunchRate' as SortField, label: 'Launch Rate' },
@@ -749,8 +749,8 @@ export default function LaunchSiteDatabasePage() {
                   onClick={() => handleSort(field)}
                   className={`px-3 py-1 rounded-md text-xs font-medium transition-colors ${
                     sortField === field
-                      ? 'bg-white/30 text-slate-200 border border-white/15'
-                      : 'bg-slate-700/40 text-slate-400 border border-slate-600/30 hover:bg-slate-700/60 hover:text-slate-300'
+                      ? 'bg-white/30 text-white/90 border border-white/15'
+                      : 'bg-slate-700/40 text-slate-400 border border-white/[0.06] hover:bg-slate-700/60 hover:text-white/70'
                   }`}
                 >
                   {label}
@@ -762,8 +762,8 @@ export default function LaunchSiteDatabasePage() {
                   onClick={() => setViewMode('grid')}
                   className={`px-3 py-1 rounded-md text-xs font-medium transition-colors ${
                     viewMode === 'grid'
-                      ? 'bg-white/30 text-slate-200 border border-white/15'
-                      : 'bg-slate-700/40 text-slate-400 border border-slate-600/30 hover:bg-slate-700/60'
+                      ? 'bg-white/30 text-white/90 border border-white/15'
+                      : 'bg-slate-700/40 text-slate-400 border border-white/[0.06] hover:bg-slate-700/60'
                   }`}
                   aria-label="Grid view"
                 >
@@ -773,8 +773,8 @@ export default function LaunchSiteDatabasePage() {
                   onClick={() => setViewMode('table')}
                   className={`px-3 py-1 rounded-md text-xs font-medium transition-colors ${
                     viewMode === 'table'
-                      ? 'bg-white/30 text-slate-200 border border-white/15'
-                      : 'bg-slate-700/40 text-slate-400 border border-slate-600/30 hover:bg-slate-700/60'
+                      ? 'bg-white/30 text-white/90 border border-white/15'
+                      : 'bg-slate-700/40 text-slate-400 border border-white/[0.06] hover:bg-slate-700/60'
                   }`}
                   aria-label="Table view"
                 >
@@ -792,7 +792,7 @@ export default function LaunchSiteDatabasePage() {
 
         {/* ── Latitude Advantage Visualization ── */}
         <ScrollReveal delay={0.15}>
-          <div className="bg-slate-800/40 border border-slate-700/50 rounded-xl p-5 mb-8">
+          <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-5 mb-8">
             <h2 className="text-lg font-semibold text-slate-100 mb-3">
               Latitude Advantage Visualization
             </h2>
@@ -820,16 +820,16 @@ export default function LaunchSiteDatabasePage() {
                   return (
                     <div key={site.id} className="flex items-center gap-2 group">
                       <div className="w-40 sm:w-52 text-right truncate">
-                        <span className="text-[11px] text-slate-400 group-hover:text-slate-200 transition-colors">
+                        <span className="text-[11px] text-slate-400 group-hover:text-white/90 transition-colors">
                           {site.name.length > 28 ? site.name.slice(0, 28) + '...' : site.name}
                         </span>
                       </div>
-                      <div className="flex-1 relative h-5 bg-slate-900/40 rounded-full overflow-hidden">
+                      <div className="flex-1 relative h-5 bg-black/40 rounded-full overflow-hidden">
                         <div
                           className="absolute left-0 top-0 h-full rounded-full bg-gradient-to-r from-slate-200/50 to-slate-400/30 flex items-center justify-end pr-2"
                           style={{ width: `${Math.max(pct, 8)}%` }}
                         >
-                          <span className="text-[9px] text-slate-200 whitespace-nowrap">
+                          <span className="text-[9px] text-white/90 whitespace-nowrap">
                             {absLat.toFixed(1)}°
                           </span>
                         </div>
@@ -852,10 +852,10 @@ export default function LaunchSiteDatabasePage() {
               return (
                 <ScrollReveal key={site.id} delay={Math.min(idx * 0.04, 0.4)}>
                   <div
-                    className={`bg-slate-800/50 border rounded-xl overflow-hidden transition-all duration-300 ${
+                    className={`bg-white/[0.04] border rounded-xl overflow-hidden transition-all duration-300 ${
                       isExpanded
                         ? 'border-white/15 shadow-lg shadow-black/5'
-                        : 'border-slate-700/50 hover:border-slate-600/60'
+                        : 'border-white/[0.06] hover:border-white/[0.1]'
                     }`}
                   >
                     {/* Card Header */}
@@ -889,7 +889,7 @@ export default function LaunchSiteDatabasePage() {
                       {/* Quick stats row */}
                       <div className="flex flex-wrap gap-3 mt-3">
                         <div className="text-center">
-                          <p className="text-sm font-bold text-slate-300">{site.annualLaunchRate}</p>
+                          <p className="text-sm font-bold text-white/70">{site.annualLaunchRate}</p>
                           <p className="text-[9px] text-slate-500 uppercase tracking-wide">Launches/yr</p>
                         </div>
                         <div className="text-center">
@@ -911,15 +911,15 @@ export default function LaunchSiteDatabasePage() {
 
                     {/* Expanded Detail */}
                     {isExpanded && (
-                      <div className="border-t border-slate-700/40 p-4 bg-slate-900/30 space-y-4">
-                        <p className="text-sm text-slate-300 leading-relaxed">{site.description}</p>
+                      <div className="border-t border-white/[0.06] p-4 bg-black/30 space-y-4">
+                        <p className="text-sm text-white/70 leading-relaxed">{site.description}</p>
 
                         {/* Coordinates */}
                         <div>
                           <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">
                             Coordinates
                           </h4>
-                          <p className="text-sm text-slate-200 font-mono">
+                          <p className="text-sm text-white/90 font-mono">
                             {formatCoordinate(site.latitude, site.longitude)}
                           </p>
                         </div>
@@ -933,7 +933,7 @@ export default function LaunchSiteDatabasePage() {
                             {site.orbitalCapabilities.map((cap) => (
                               <span
                                 key={cap}
-                                className="px-2 py-0.5 bg-white/8 text-slate-200 rounded-md text-[11px] border border-white/10"
+                                className="px-2 py-0.5 bg-white/8 text-white/90 rounded-md text-[11px] border border-white/10"
                               >
                                 {cap}
                               </span>
@@ -968,9 +968,9 @@ export default function LaunchSiteDatabasePage() {
                               {site.notableLaunches.map((launch, i) => (
                                 <li
                                   key={i}
-                                  className="text-xs text-slate-300 flex items-start gap-2"
+                                  className="text-xs text-white/70 flex items-start gap-2"
                                 >
-                                  <span className="text-slate-300 mt-0.5 shrink-0">&#x25B8;</span>
+                                  <span className="text-white/70 mt-0.5 shrink-0">&#x25B8;</span>
                                   {launch}
                                 </li>
                               ))}
@@ -992,7 +992,7 @@ export default function LaunchSiteDatabasePage() {
             <div className="overflow-x-auto mb-8">
               <table className="w-full text-sm border-collapse">
                 <thead>
-                  <tr className="border-b border-slate-700/60">
+                  <tr className="border-b border-white/[0.06]">
                     {[
                       { field: 'name' as SortField, label: 'Launch Site', width: 'w-56' },
                       { field: 'name' as SortField, label: 'Country', width: 'w-32' },
@@ -1006,7 +1006,7 @@ export default function LaunchSiteDatabasePage() {
                       <th
                         key={i}
                         onClick={() => handleSort(field)}
-                        className={`${width} px-3 py-3 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider cursor-pointer hover:text-slate-200 transition-colors`}
+                        className={`${width} px-3 py-3 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider cursor-pointer hover:text-white/90 transition-colors`}
                       >
                         {label}
                         {sortIndicator(field)}
@@ -1021,17 +1021,17 @@ export default function LaunchSiteDatabasePage() {
                       <tr
                         key={site.id}
                         onClick={() => setExpandedSite(expandedSite === site.id ? null : site.id)}
-                        className={`border-b border-slate-800/60 cursor-pointer transition-colors ${
-                          idx % 2 === 0 ? 'bg-slate-800/20' : 'bg-slate-800/10'
-                        } hover:bg-slate-700/30`}
+                        className={`border-b border-white/[0.06] cursor-pointer transition-colors ${
+                          idx % 2 === 0 ? 'bg-white/[0.03]' : 'bg-white/[0.03]'
+                        } hover:bg-white/[0.06]`}
                       >
                         <td className="px-3 py-3">
-                          <p className="font-medium text-slate-200 text-xs leading-tight">
+                          <p className="font-medium text-white/90 text-xs leading-tight">
                             {site.name}
                           </p>
                           <p className="text-[10px] text-slate-500 mt-0.5">{site.operator}</p>
                         </td>
-                        <td className="px-3 py-3 text-xs text-slate-300">{site.country}</td>
+                        <td className="px-3 py-3 text-xs text-white/70">{site.country}</td>
                         <td className="px-3 py-3">
                           <span
                             className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-medium border ${statusColor(
@@ -1041,11 +1041,11 @@ export default function LaunchSiteDatabasePage() {
                             {site.status}
                           </span>
                         </td>
-                        <td className="px-3 py-3 text-xs text-slate-300 text-center">{site.padCount}</td>
-                        <td className="px-3 py-3 text-xs text-slate-300 font-semibold text-center">
+                        <td className="px-3 py-3 text-xs text-white/70 text-center">{site.padCount}</td>
+                        <td className="px-3 py-3 text-xs text-white/70 font-semibold text-center">
                           {site.annualLaunchRate}
                         </td>
-                        <td className="px-3 py-3 text-xs text-slate-300 font-mono text-center">
+                        <td className="px-3 py-3 text-xs text-white/70 font-mono text-center">
                           {Math.abs(site.latitude).toFixed(1)}°
                         </td>
                         <td className={`px-3 py-3 text-xs font-medium ${adv.color}`}>
@@ -1077,7 +1077,7 @@ export default function LaunchSiteDatabasePage() {
 
             {/* Table row expansion */}
             {expandedSite && (
-              <div className="bg-slate-800/50 border border-white/10 rounded-xl p-5 mb-8 -mt-4">
+              <div className="bg-white/[0.04] border border-white/10 rounded-xl p-5 mb-8 -mt-4">
                 {(() => {
                   const site = LAUNCH_SITES.find((s) => s.id === expandedSite);
                   if (!site) return null;
@@ -1092,29 +1092,29 @@ export default function LaunchSiteDatabasePage() {
                         </div>
                         <button
                           onClick={() => setExpandedSite(null)}
-                          className="text-slate-500 hover:text-slate-300 text-lg transition-colors"
+                          className="text-slate-500 hover:text-white/70 text-lg transition-colors"
                           aria-label="Close details"
                         >
                           &#x2715;
                         </button>
                       </div>
-                      <p className="text-sm text-slate-300 leading-relaxed">{site.description}</p>
+                      <p className="text-sm text-white/70 leading-relaxed">{site.description}</p>
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        <div className="bg-slate-900/50 rounded-lg p-3 text-center">
-                          <p className="text-lg font-bold text-slate-300">{site.annualLaunchRate}</p>
+                        <div className="bg-black/50 rounded-lg p-3 text-center">
+                          <p className="text-lg font-bold text-white/70">{site.annualLaunchRate}</p>
                           <p className="text-[10px] text-slate-500">Launches/yr</p>
                         </div>
-                        <div className="bg-slate-900/50 rounded-lg p-3 text-center">
+                        <div className="bg-black/50 rounded-lg p-3 text-center">
                           <p className="text-lg font-bold text-emerald-400">{site.padCount}</p>
                           <p className="text-[10px] text-slate-500">Launch Pads</p>
                         </div>
-                        <div className="bg-slate-900/50 rounded-lg p-3 text-center">
-                          <p className="text-sm font-mono font-bold text-slate-200">
+                        <div className="bg-black/50 rounded-lg p-3 text-center">
+                          <p className="text-sm font-mono font-bold text-white/90">
                             {formatCoordinate(site.latitude, site.longitude)}
                           </p>
                           <p className="text-[10px] text-slate-500">Coordinates</p>
                         </div>
-                        <div className="bg-slate-900/50 rounded-lg p-3 text-center">
+                        <div className="bg-black/50 rounded-lg p-3 text-center">
                           <p className={`text-lg font-bold ${adv.color}`}>{adv.label}</p>
                           <p className="text-[10px] text-slate-500">{adv.bonus}</p>
                         </div>
@@ -1128,7 +1128,7 @@ export default function LaunchSiteDatabasePage() {
                             {site.orbitalCapabilities.map((cap) => (
                               <span
                                 key={cap}
-                                className="px-2 py-0.5 bg-white/8 text-slate-200 rounded-md text-[11px] border border-white/10"
+                                className="px-2 py-0.5 bg-white/8 text-white/90 rounded-md text-[11px] border border-white/10"
                               >
                                 {cap}
                               </span>
@@ -1157,8 +1157,8 @@ export default function LaunchSiteDatabasePage() {
                           {site.notableLaunches.length > 0 ? (
                             <ul className="space-y-1">
                               {site.notableLaunches.map((launch, i) => (
-                                <li key={i} className="text-xs text-slate-300 flex items-start gap-1.5">
-                                  <span className="text-slate-300 mt-0.5 shrink-0">&#x25B8;</span>
+                                <li key={i} className="text-xs text-white/70 flex items-start gap-1.5">
+                                  <span className="text-white/70 mt-0.5 shrink-0">&#x25B8;</span>
                                   {launch}
                                 </li>
                               ))}
@@ -1190,7 +1190,7 @@ export default function LaunchSiteDatabasePage() {
                 setStatusFilter('all');
                 setCapabilityFilter('all');
               }}
-              className="mt-4 px-4 py-2 bg-white/20 text-slate-200 rounded-lg text-sm border border-white/10 hover:bg-slate-700/30 transition-colors"
+              className="mt-4 px-4 py-2 bg-white/20 text-white/90 rounded-lg text-sm border border-white/10 hover:bg-white/[0.06] transition-colors"
             >
               Clear All Filters
             </button>
@@ -1199,16 +1199,16 @@ export default function LaunchSiteDatabasePage() {
 
         {/* ── Related Links ── */}
         <ScrollReveal delay={0.2}>
-          <div className="bg-slate-800/40 border border-slate-700/50 rounded-xl p-5 mt-8">
+          <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-5 mt-8">
             <h2 className="text-lg font-semibold text-slate-100 mb-4">Related Resources</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
               <Link
                 href="/spaceports"
-                className="flex items-center gap-3 p-3 bg-slate-900/40 rounded-lg border border-slate-700/40 hover:border-white/10 hover:bg-slate-800/50 transition-all group"
+                className="flex items-center gap-3 p-3 bg-black/40 rounded-lg border border-white/[0.06] hover:border-white/10 hover:bg-white/[0.04] transition-all group"
               >
                 <span className="text-2xl" role="img" aria-label="Spaceport">&#x1F680;</span>
                 <div>
-                  <p className="text-sm font-medium text-slate-200 group-hover:text-white transition-colors">
+                  <p className="text-sm font-medium text-white/90 group-hover:text-white transition-colors">
                     Spaceports
                   </p>
                   <p className="text-[10px] text-slate-500">Global spaceport directory</p>
@@ -1216,11 +1216,11 @@ export default function LaunchSiteDatabasePage() {
               </Link>
               <Link
                 href="/launch-vehicles"
-                className="flex items-center gap-3 p-3 bg-slate-900/40 rounded-lg border border-slate-700/40 hover:border-white/10 hover:bg-slate-800/50 transition-all group"
+                className="flex items-center gap-3 p-3 bg-black/40 rounded-lg border border-white/[0.06] hover:border-white/10 hover:bg-white/[0.04] transition-all group"
               >
                 <span className="text-2xl" role="img" aria-label="Rocket">&#x1F6F8;</span>
                 <div>
-                  <p className="text-sm font-medium text-slate-200 group-hover:text-white transition-colors">
+                  <p className="text-sm font-medium text-white/90 group-hover:text-white transition-colors">
                     Launch Vehicles
                   </p>
                   <p className="text-[10px] text-slate-500">Rocket specs &amp; comparisons</p>
@@ -1228,11 +1228,11 @@ export default function LaunchSiteDatabasePage() {
               </Link>
               <Link
                 href="/launch-windows"
-                className="flex items-center gap-3 p-3 bg-slate-900/40 rounded-lg border border-slate-700/40 hover:border-white/10 hover:bg-slate-800/50 transition-all group"
+                className="flex items-center gap-3 p-3 bg-black/40 rounded-lg border border-white/[0.06] hover:border-white/10 hover:bg-white/[0.04] transition-all group"
               >
                 <span className="text-2xl" role="img" aria-label="Calendar">&#x1F4C5;</span>
                 <div>
-                  <p className="text-sm font-medium text-slate-200 group-hover:text-white transition-colors">
+                  <p className="text-sm font-medium text-white/90 group-hover:text-white transition-colors">
                     Launch Windows
                   </p>
                   <p className="text-[10px] text-slate-500">Upcoming launch schedule</p>
@@ -1240,11 +1240,11 @@ export default function LaunchSiteDatabasePage() {
               </Link>
               <Link
                 href="/mission-cost"
-                className="flex items-center gap-3 p-3 bg-slate-900/40 rounded-lg border border-slate-700/40 hover:border-white/10 hover:bg-slate-800/50 transition-all group"
+                className="flex items-center gap-3 p-3 bg-black/40 rounded-lg border border-white/[0.06] hover:border-white/10 hover:bg-white/[0.04] transition-all group"
               >
                 <span className="text-2xl" role="img" aria-label="Calculator">&#x1F4B0;</span>
                 <div>
-                  <p className="text-sm font-medium text-slate-200 group-hover:text-white transition-colors">
+                  <p className="text-sm font-medium text-white/90 group-hover:text-white transition-colors">
                     Mission Planning
                   </p>
                   <p className="text-[10px] text-slate-500">Cost estimator &amp; planning tools</p>

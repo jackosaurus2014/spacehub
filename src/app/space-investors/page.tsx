@@ -472,13 +472,13 @@ const SORT_OPTIONS: { value: SortKey; label: string }[] = [
 
 function typeColor(type: InvestorType): string {
   switch (type) {
-    case 'VC': return 'bg-white/10 text-slate-200 border-white/10';
+    case 'VC': return 'bg-white/10 text-white/90 border-white/10';
     case 'CVC': return 'bg-purple-500/20 text-purple-300 border-purple-500/30';
     case 'Government': return 'bg-amber-500/20 text-amber-300 border-amber-500/30';
     case 'Angel': return 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30';
     case 'Accelerator': return 'bg-pink-500/20 text-pink-300 border-pink-500/30';
     case 'PE': return 'bg-blue-500/20 text-blue-300 border-blue-500/30';
-    default: return 'bg-slate-500/20 text-slate-300 border-slate-500/30';
+    default: return 'bg-slate-500/20 text-white/70 border-slate-500/30';
   }
 }
 
@@ -489,7 +489,7 @@ function stageColor(stage: StageTag): string {
     case 'Series B': return 'bg-indigo-500/15 text-indigo-300';
     case 'Growth': return 'bg-purple-500/15 text-purple-300';
     case 'Late Stage': return 'bg-amber-500/15 text-amber-300';
-    default: return 'bg-slate-500/15 text-slate-300';
+    default: return 'bg-slate-500/15 text-white/70';
   }
 }
 
@@ -591,7 +591,7 @@ export default function SpaceInvestorsPage() {
               <p className="text-xs uppercase tracking-wider text-slate-400 mb-1">
                 Investors Tracked
               </p>
-              <p className="text-2xl md:text-3xl font-bold text-slate-300">
+              <p className="text-2xl md:text-3xl font-bold text-white/70">
                 {MARKET_STATS.totalInvestors}
               </p>
               <p className="text-xs text-slate-400 mt-1">
@@ -626,13 +626,13 @@ export default function SpaceInvestorsPage() {
         {/* ── Deal Size Trends ─────────────────────────────────────────── */}
         <ScrollReveal>
           <div className="card p-6 mb-8">
-            <h2 className="text-lg font-semibold text-slate-100 mb-4">
+            <h2 className="text-lg font-semibold text-white mb-4">
               Average Deal Size Trends (Space Sector)
             </h2>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-slate-700/50">
+                  <tr className="border-b border-white/[0.06]">
                     <th className="text-left py-2 pr-4 text-slate-400 font-medium">Stage</th>
                     <th className="text-right py-2 px-4 text-slate-400 font-medium">2021</th>
                     <th className="text-right py-2 px-4 text-slate-400 font-medium">2022</th>
@@ -641,8 +641,8 @@ export default function SpaceInvestorsPage() {
                     <th className="text-right py-2 pl-4 text-slate-400 font-medium">Trend</th>
                   </tr>
                 </thead>
-                <tbody className="text-slate-300">
-                  <tr className="border-b border-slate-800/50">
+                <tbody className="text-white/70">
+                  <tr className="border-b border-white/[0.06]">
                     <td className="py-2.5 pr-4 font-medium">Seed</td>
                     <td className="text-right py-2.5 px-4">$3.1M</td>
                     <td className="text-right py-2.5 px-4">$3.8M</td>
@@ -650,7 +650,7 @@ export default function SpaceInvestorsPage() {
                     <td className="text-right py-2.5 px-4 text-emerald-400 font-medium">$5.2M</td>
                     <td className="text-right py-2.5 pl-4 text-emerald-400">+68%</td>
                   </tr>
-                  <tr className="border-b border-slate-800/50">
+                  <tr className="border-b border-white/[0.06]">
                     <td className="py-2.5 pr-4 font-medium">Series A</td>
                     <td className="text-right py-2.5 px-4">$15M</td>
                     <td className="text-right py-2.5 px-4">$18M</td>
@@ -658,7 +658,7 @@ export default function SpaceInvestorsPage() {
                     <td className="text-right py-2.5 px-4 text-emerald-400 font-medium">$22M</td>
                     <td className="text-right py-2.5 pl-4 text-emerald-400">+47%</td>
                   </tr>
-                  <tr className="border-b border-slate-800/50">
+                  <tr className="border-b border-white/[0.06]">
                     <td className="py-2.5 pr-4 font-medium">Series B</td>
                     <td className="text-right py-2.5 px-4">$40M</td>
                     <td className="text-right py-2.5 px-4">$48M</td>
@@ -705,7 +705,7 @@ export default function SpaceInvestorsPage() {
                     placeholder="Search investors, portfolio companies, key people..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2.5 bg-slate-800/60 border border-slate-700/50 rounded-lg text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-white/30 focus:border-white/15 transition-colors"
+                    className="w-full pl-10 pr-4 py-2.5 bg-white/[0.04] border border-white/[0.06] rounded-lg text-white/90 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-white/30 focus:border-white/15 transition-colors"
                   />
                 </div>
               </div>
@@ -714,7 +714,7 @@ export default function SpaceInvestorsPage() {
               <select
                 value={stageFilter}
                 onChange={(e) => setStageFilter(e.target.value as StageTag | '')}
-                className="px-4 py-2.5 bg-slate-800/60 border border-slate-700/50 rounded-lg text-slate-200 focus:outline-none focus:ring-2 focus:ring-white/30 min-w-[150px]"
+                className="px-4 py-2.5 bg-white/[0.04] border border-white/[0.06] rounded-lg text-white/90 focus:outline-none focus:ring-2 focus:ring-white/30 min-w-[150px]"
               >
                 {STAGE_OPTIONS.map((opt) => (
                   <option key={opt.value} value={opt.value}>
@@ -727,7 +727,7 @@ export default function SpaceInvestorsPage() {
               <select
                 value={typeFilter}
                 onChange={(e) => setTypeFilter(e.target.value as InvestorType | '')}
-                className="px-4 py-2.5 bg-slate-800/60 border border-slate-700/50 rounded-lg text-slate-200 focus:outline-none focus:ring-2 focus:ring-white/30 min-w-[150px]"
+                className="px-4 py-2.5 bg-white/[0.04] border border-white/[0.06] rounded-lg text-white/90 focus:outline-none focus:ring-2 focus:ring-white/30 min-w-[150px]"
               >
                 {TYPE_OPTIONS.map((opt) => (
                   <option key={opt.value} value={opt.value}>
@@ -740,7 +740,7 @@ export default function SpaceInvestorsPage() {
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as SortKey)}
-                className="px-4 py-2.5 bg-slate-800/60 border border-slate-700/50 rounded-lg text-slate-200 focus:outline-none focus:ring-2 focus:ring-white/30 min-w-[160px]"
+                className="px-4 py-2.5 bg-white/[0.04] border border-white/[0.06] rounded-lg text-white/90 focus:outline-none focus:ring-2 focus:ring-white/30 min-w-[160px]"
               >
                 {SORT_OPTIONS.map((opt) => (
                   <option key={opt.value} value={opt.value}>
@@ -762,7 +762,7 @@ export default function SpaceInvestorsPage() {
                     setStageFilter('');
                     setTypeFilter('');
                   }}
-                  className="ml-2 text-slate-300 hover:text-white underline transition-colors"
+                  className="ml-2 text-white/70 hover:text-white underline transition-colors"
                 >
                   Clear filters
                 </button>
@@ -789,7 +789,7 @@ export default function SpaceInvestorsPage() {
                   {/* Header */}
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex-1 min-w-0">
-                      <h3 className="text-lg font-semibold text-slate-100 truncate">
+                      <h3 className="text-lg font-semibold text-white truncate">
                         {inv.name}
                       </h3>
                       <p className="text-sm text-slate-400 mt-0.5">
@@ -805,21 +805,21 @@ export default function SpaceInvestorsPage() {
 
                   {/* Key stats row */}
                   <div className="grid grid-cols-3 gap-3 mb-4">
-                    <div className="text-center bg-slate-800/40 rounded-lg py-2 px-1">
+                    <div className="text-center bg-white/[0.04] rounded-lg py-2 px-1">
                       <p className="text-xs text-slate-500 uppercase tracking-wider">AUM</p>
-                      <p className="text-sm font-semibold text-slate-300 mt-0.5">
+                      <p className="text-sm font-semibold text-white/70 mt-0.5">
                         {inv.aumDisplay}
                       </p>
                     </div>
-                    <div className="text-center bg-slate-800/40 rounded-lg py-2 px-1">
+                    <div className="text-center bg-white/[0.04] rounded-lg py-2 px-1">
                       <p className="text-xs text-slate-500 uppercase tracking-wider">Space Deals</p>
                       <p className="text-sm font-semibold text-purple-400 mt-0.5">
                         {inv.spaceInvestments}
                       </p>
                     </div>
-                    <div className="text-center bg-slate-800/40 rounded-lg py-2 px-1">
+                    <div className="text-center bg-white/[0.04] rounded-lg py-2 px-1">
                       <p className="text-xs text-slate-500 uppercase tracking-wider">Since</p>
-                      <p className="text-sm font-semibold text-slate-300 mt-0.5">
+                      <p className="text-sm font-semibold text-white/70 mt-0.5">
                         {inv.founded}
                       </p>
                     </div>
@@ -846,7 +846,7 @@ export default function SpaceInvestorsPage() {
                       {inv.notablePortfolio.slice(0, expandedCard === inv.id ? undefined : 4).map((company) => (
                         <span
                           key={company}
-                          className="px-2 py-0.5 text-xs bg-slate-700/50 text-slate-300 rounded border border-slate-600/30"
+                          className="px-2 py-0.5 text-xs bg-white/[0.06] text-white/70 rounded border border-white/[0.1]/30"
                         >
                           {company}
                         </span>
@@ -886,7 +886,7 @@ export default function SpaceInvestorsPage() {
                           transition={{ duration: 0.25 }}
                           className="overflow-hidden"
                         >
-                          <p className="text-sm text-slate-300 leading-relaxed">
+                          <p className="text-sm text-white/70 leading-relaxed">
                             {inv.thesis}
                           </p>
                         </motion.div>
@@ -895,7 +895,7 @@ export default function SpaceInvestorsPage() {
                   </div>
 
                   {/* Footer */}
-                  <div className="flex items-center justify-between mt-4 pt-3 border-t border-slate-700/40">
+                  <div className="flex items-center justify-between mt-4 pt-3 border-t border-white/[0.06]">
                     <span className="text-xs text-slate-500">
                       {inv.hq}
                     </span>
@@ -903,7 +903,7 @@ export default function SpaceInvestorsPage() {
                       href={inv.website}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-xs text-slate-300 hover:text-white transition-colors flex items-center gap-1"
+                      className="text-xs text-white/70 hover:text-white transition-colors flex items-center gap-1"
                     >
                       Visit Website
                       <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -930,7 +930,7 @@ export default function SpaceInvestorsPage() {
                   setStageFilter('');
                   setTypeFilter('');
                 }}
-                className="px-5 py-2 text-sm text-slate-300 hover:text-white border border-white/10 rounded-lg hover:border-white/15 transition-colors"
+                className="px-5 py-2 text-sm text-white/70 hover:text-white border border-white/10 rounded-lg hover:border-white/15 transition-colors"
               >
                 Reset Filters
               </button>
@@ -941,7 +941,7 @@ export default function SpaceInvestorsPage() {
         {/* ── Investor Type Breakdown ──────────────────────────────────── */}
         <ScrollReveal>
           <div className="card p-6 mb-8">
-            <h2 className="text-lg font-semibold text-slate-100 mb-5">
+            <h2 className="text-lg font-semibold text-white mb-5">
               Space Investor Landscape by Type
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -951,14 +951,14 @@ export default function SpaceInvestorsPage() {
                   return acc;
                 }, {} as Record<InvestorType, number>)
               ) as [InvestorType, number][]).sort((a, b) => b[1] - a[1]).map(([type, count]) => (
-                <div key={type} className="bg-slate-800/40 rounded-xl p-4">
+                <div key={type} className="bg-white/[0.04] rounded-xl p-4">
                   <div className="flex items-center justify-between mb-2">
                     <span className={`px-2.5 py-1 text-xs font-medium rounded-full border ${typeColor(type)}`}>
                       {type}
                     </span>
-                    <span className="text-lg font-bold text-slate-200">{count}</span>
+                    <span className="text-lg font-bold text-white/90">{count}</span>
                   </div>
-                  <div className="w-full bg-slate-700/50 rounded-full h-2">
+                  <div className="w-full bg-white/[0.06] rounded-full h-2">
                     <div
                       className="h-2 rounded-full bg-gradient-to-r from-white to-purple-500 transition-all"
                       style={{ width: `${(count / INVESTORS.length) * 100}%` }}
@@ -976,7 +976,7 @@ export default function SpaceInvestorsPage() {
         {/* ── Annual Space Investment Timeline ─────────────────────────── */}
         <ScrollReveal>
           <div className="card p-6 mb-8">
-            <h2 className="text-lg font-semibold text-slate-100 mb-5">
+            <h2 className="text-lg font-semibold text-white mb-5">
               Annual Global Space Venture Capital Investment
             </h2>
             <div className="space-y-3">
@@ -993,7 +993,7 @@ export default function SpaceInvestorsPage() {
                   <span className="text-sm font-medium text-slate-400 w-10 flex-shrink-0">
                     {yr.year}
                   </span>
-                  <div className="flex-1 bg-slate-800/40 rounded-full h-6 relative overflow-hidden">
+                  <div className="flex-1 bg-white/[0.04] rounded-full h-6 relative overflow-hidden">
                     <motion.div
                       initial={{ width: 0 }}
                       whileInView={{ width: `${(yr.amount / 15) * 100}%` }}
@@ -1026,12 +1026,12 @@ export default function SpaceInvestorsPage() {
         {/* ── How to Use This Directory ────────────────────────────────── */}
         <ScrollReveal>
           <div className="card p-6">
-            <h2 className="text-lg font-semibold text-slate-100 mb-4">
+            <h2 className="text-lg font-semibold text-white mb-4">
               How to Use This Directory
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm text-slate-300">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm text-white/70">
               <div>
-                <h3 className="font-medium text-slate-300 mb-2">For Founders</h3>
+                <h3 className="font-medium text-white/70 mb-2">For Founders</h3>
                 <p className="leading-relaxed">
                   Identify investors whose stage focus and thesis align with your company. Check their portfolio for potential conflicts or synergies. Warm introductions through shared portfolio companies yield the highest response rates.
                 </p>

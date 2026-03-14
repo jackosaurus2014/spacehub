@@ -214,7 +214,7 @@ function OverviewTab() {
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {PRODUCT_CATEGORIES.slice(0, 6).map((product) => (
-            <div key={product.id} className="bg-slate-700/30 rounded-lg p-4 border border-slate-600/30">
+            <div key={product.id} className="bg-white/[0.06] rounded-lg p-4 border border-white/[0.06]">
               <div className="flex items-center gap-2 mb-2">
                 <span className="text-xl">{product.icon}</span>
                 <h3 className="text-white font-semibold text-sm">{product.name}</h3>
@@ -262,7 +262,7 @@ function OverviewTab() {
               metricLabel: 'Autonomous operation',
             },
           ].map((enabler) => (
-            <div key={enabler.title} className="bg-slate-700/30 rounded-lg p-4 border border-slate-600/30">
+            <div key={enabler.title} className="bg-white/[0.06] rounded-lg p-4 border border-white/[0.06]">
               <div className="flex items-start justify-between mb-2">
                 <h3 className="text-white font-semibold">{enabler.title}</h3>
                 <div className="text-right">
@@ -288,7 +288,7 @@ function OverviewTab() {
         </p>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {SPACE_ENVIRONMENT_ADVANTAGES.map((advantage) => (
-            <div key={advantage.id} className="bg-slate-700/30 rounded-lg p-4 border border-slate-600/30 hover:border-white/10 transition-all">
+            <div key={advantage.id} className="bg-white/[0.06] rounded-lg p-4 border border-white/[0.06] hover:border-white/10 transition-all">
               <div className="flex items-center gap-2 mb-2">
                 <span className="text-2xl">{advantage.icon}</span>
                 <h3 className="text-white font-semibold text-sm">{advantage.name}</h3>
@@ -296,7 +296,7 @@ function OverviewTab() {
               <p className="text-star-300 text-xs mb-3 leading-relaxed">{advantage.description}</p>
               <div className="flex flex-wrap gap-1.5">
                 {advantage.enabledProducts.slice(0, 4).map((product) => (
-                  <span key={product} className="px-1.5 py-0.5 bg-white/10 text-slate-200 rounded text-xs">
+                  <span key={product} className="px-1.5 py-0.5 bg-white/10 text-white/90 rounded text-xs">
                     {product}
                   </span>
                 ))}
@@ -313,23 +313,23 @@ function OverviewTab() {
           Market Snapshot
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-          <div className="bg-slate-700/30 rounded-lg p-4 border border-green-500/20">
+          <div className="bg-white/[0.06] rounded-lg p-4 border border-green-500/20">
             <div className="text-green-400 font-bold text-2xl">~$7B</div>
             <div className="text-star-400 text-xs uppercase tracking-widest mt-1">By 2030 (Conservative)</div>
             <p className="text-star-300 text-xs mt-2">Focused on near-term products: ZBLAN fiber optics, pharmaceutical crystallization, and bioprinting research services.</p>
           </div>
-          <div className="bg-slate-700/30 rounded-lg p-4 border border-white/15">
+          <div className="bg-white/[0.06] rounded-lg p-4 border border-white/15">
             <div className="text-slate-300 font-bold text-2xl">~$18B</div>
             <div className="text-star-400 text-xs uppercase tracking-widest mt-1">By 2030 (Mid-range)</div>
             <p className="text-star-300 text-xs mt-2">Includes commercial station manufacturing, semiconductor production, and early ISRU operations on the Moon.</p>
           </div>
-          <div className="bg-slate-700/30 rounded-lg p-4 border border-purple-500/20">
+          <div className="bg-white/[0.06] rounded-lg p-4 border border-purple-500/20">
             <div className="text-purple-400 font-bold text-2xl">~$70B+</div>
             <div className="text-star-400 text-xs uppercase tracking-widest mt-1">By 2035 (Optimistic)</div>
             <p className="text-star-300 text-xs mt-2">Full-scale commercial manufacturing, bioprinted organs, space-based solar power construction, and lunar industrial base.</p>
           </div>
         </div>
-        <div className="bg-slate-700/20 rounded-lg p-3 border border-slate-600/30">
+        <div className="bg-white/[0.04] rounded-lg p-3 border border-white/[0.06]">
           <p className="text-star-400 text-xs leading-relaxed">
             <span className="text-white font-semibold">Key growth drivers:</span> Declining launch costs (SpaceX Starship targeting $200-500/kg to LEO),
             commercial space station deployment (4+ stations planned for late 2020s), returnable capsule technology for product recovery,
@@ -364,7 +364,7 @@ function CompaniesTab() {
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
-          className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+          className="bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
         >
           <option value="">All Statuses</option>
           {statuses.map((s) => (
@@ -374,7 +374,7 @@ function CompaniesTab() {
         <select
           value={sortBy}
           onChange={(e) => setSortBy(e.target.value as 'name' | 'trl' | 'founded')}
-          className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+          className="bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
         >
           <option value="trl">Sort by TRL</option>
           <option value="name">Sort by Name</option>
@@ -418,16 +418,16 @@ function CompaniesTab() {
 
               {/* Key Stats */}
               <div className="grid grid-cols-3 gap-3 mb-4">
-                <div className="bg-slate-700/30 rounded-lg p-2.5 text-center">
+                <div className="bg-white/[0.06] rounded-lg p-2.5 text-center">
                   <div className="text-star-400 text-xs uppercase tracking-widest mb-1">TRL</div>
                   <div className={`font-bold text-lg ${getTRLColor(company.trl)}`}>{company.trl}</div>
                   <div className={`text-xs ${getTRLColor(company.trl)}`}>{getTRLLabel(company.trl)}</div>
                 </div>
-                <div className="bg-slate-700/30 rounded-lg p-2.5 text-center">
+                <div className="bg-white/[0.06] rounded-lg p-2.5 text-center">
                   <div className="text-star-400 text-xs uppercase tracking-widest mb-1">Founded</div>
                   <div className="text-white font-bold text-lg">{company.founded}</div>
                 </div>
-                <div className="bg-slate-700/30 rounded-lg p-2.5 text-center">
+                <div className="bg-white/[0.06] rounded-lg p-2.5 text-center">
                   <div className="text-star-400 text-xs uppercase tracking-widest mb-1">Funding</div>
                   <div className="text-green-400 font-bold text-sm">{company.funding}</div>
                 </div>
@@ -446,7 +446,7 @@ function CompaniesTab() {
                   {(company.keyProducts || []).map((product) => (
                     <span
                       key={product}
-                      className="px-2 py-0.5 bg-white/10 text-slate-200 rounded text-xs font-medium"
+                      className="px-2 py-0.5 bg-white/10 text-white/90 rounded text-xs font-medium"
                     >
                       {product}
                     </span>
@@ -468,12 +468,12 @@ function CompaniesTab() {
               </div>
 
               {/* Footer */}
-              <div className="flex items-center justify-between pt-3 border-t border-slate-700/50">
+              <div className="flex items-center justify-between pt-3 border-t border-white/[0.06]">
                 <a
                   href={company.website}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-slate-200 hover:text-white text-sm inline-flex items-center gap-1"
+                  className="text-white/90 hover:text-white text-sm inline-flex items-center gap-1"
                 >
                   Visit Website &rarr;
                 </a>
@@ -560,8 +560,8 @@ function ProcessesTab() {
           onClick={() => setCategoryFilter('')}
           className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
             categoryFilter === ''
-              ? 'bg-white/10 text-slate-200 border border-white/15'
-              : 'bg-slate-800 text-star-400 border border-slate-700 hover:border-slate-600 hover:text-white'
+              ? 'bg-white/10 text-white/90 border border-white/15'
+              : 'bg-white/[0.06] text-star-400 border border-white/[0.06] hover:border-white/[0.1] hover:text-white'
           }`}
         >
           All ({MANUFACTURING_PROCESSES.length})
@@ -574,8 +574,8 @@ function ProcessesTab() {
               onClick={() => setCategoryFilter(cat)}
               className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
                 categoryFilter === cat
-                  ? 'bg-white/10 text-slate-200 border border-white/15'
-                  : 'bg-slate-800 text-star-400 border border-slate-700 hover:border-slate-600 hover:text-white'
+                  ? 'bg-white/10 text-white/90 border border-white/15'
+                  : 'bg-white/[0.06] text-star-400 border border-white/[0.06] hover:border-white/[0.1] hover:text-white'
               }`}
             >
               {categoryLabels[cat] || cat} ({count})
@@ -588,7 +588,7 @@ function ProcessesTab() {
       <div className="space-y-4">
         {filteredProcesses.map((process) => {
           const isExpanded = selectedProcess === process.id;
-          const catColor = categoryColors[process.category] || 'text-star-400 bg-slate-500/10 border-slate-500/30';
+          const catColor = categoryColors[process.category] || 'text-star-400 bg-white/[0.06] border-white/[0.08]';
           return (
             <div
               key={process.id}
@@ -627,13 +627,13 @@ function ProcessesTab() {
 
               {isExpanded && (
                 <div className="px-5 pb-5 space-y-4">
-                  <div className="border-t border-slate-700/50 pt-4">
+                  <div className="border-t border-white/[0.06] pt-4">
                     <p className="text-star-300 text-sm leading-relaxed">{process.description}</p>
                   </div>
 
                   {/* Microgravity Advantage */}
                   <div className="bg-gradient-to-r from-white/10 to-purple-500/10 rounded-lg p-4 border border-white/15">
-                    <h4 className="text-slate-200 font-semibold text-sm mb-2 flex items-center gap-2">
+                    <h4 className="text-white/90 font-semibold text-sm mb-2 flex items-center gap-2">
                       <span>🪶</span> Microgravity / Space Advantage
                     </h4>
                     <p className="text-star-300 text-sm leading-relaxed">{process.microgravityAdvantage}</p>
@@ -647,7 +647,7 @@ function ProcessesTab() {
                         TRL {process.trl} - {getTRLLabel(process.trl)}
                       </span>
                     </div>
-                    <div className="w-full bg-slate-700/50 rounded-full h-3 flex">
+                    <div className="w-full bg-white/[0.08] rounded-full h-3 flex">
                       {Array.from({ length: 9 }, (_, i) => (
                         <div
                           key={i}
@@ -660,8 +660,8 @@ function ProcessesTab() {
                                 : process.trl >= 4
                                 ? 'bg-orange-500/60'
                                 : 'bg-red-500/60'
-                              : 'bg-slate-700/30'
-                          } ${i > 0 ? 'border-l border-slate-600/30' : ''}`}
+                              : 'bg-white/[0.06]'
+                          } ${i > 0 ? 'border-l border-white/[0.06]' : ''}`}
                         />
                       ))}
                     </div>
@@ -669,7 +669,7 @@ function ProcessesTab() {
 
                   {/* Techniques & Materials */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="bg-slate-700/30 rounded-lg p-4 border border-slate-600/30">
+                    <div className="bg-white/[0.06] rounded-lg p-4 border border-white/[0.06]">
                       <h4 className="text-white font-semibold text-sm mb-2">Manufacturing Techniques</h4>
                       <ul className="space-y-1.5">
                         {process.techniques.map((technique, i) => (
@@ -680,13 +680,13 @@ function ProcessesTab() {
                         ))}
                       </ul>
                     </div>
-                    <div className="bg-slate-700/30 rounded-lg p-4 border border-slate-600/30">
+                    <div className="bg-white/[0.06] rounded-lg p-4 border border-white/[0.06]">
                       <h4 className="text-white font-semibold text-sm mb-2">Materials</h4>
                       <div className="flex flex-wrap gap-1.5">
                         {process.materials.map((material) => (
                           <span
                             key={material}
-                            className="px-2 py-0.5 bg-white/10 text-slate-200 rounded text-xs"
+                            className="px-2 py-0.5 bg-white/10 text-white/90 rounded text-xs"
                           >
                             {material}
                           </span>
@@ -697,7 +697,7 @@ function ProcessesTab() {
 
                   {/* Applications & Key Players */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="bg-slate-700/30 rounded-lg p-4 border border-slate-600/30">
+                    <div className="bg-white/[0.06] rounded-lg p-4 border border-white/[0.06]">
                       <h4 className="text-white font-semibold text-sm mb-2">Applications</h4>
                       <ul className="space-y-1.5">
                         {process.applications.map((app, i) => (
@@ -708,13 +708,13 @@ function ProcessesTab() {
                         ))}
                       </ul>
                     </div>
-                    <div className="bg-slate-700/30 rounded-lg p-4 border border-slate-600/30">
+                    <div className="bg-white/[0.06] rounded-lg p-4 border border-white/[0.06]">
                       <h4 className="text-white font-semibold text-sm mb-2">Key Players</h4>
                       <div className="flex flex-wrap gap-1.5 mb-3">
                         {process.keyPlayers.map((player) => (
                           <span
                             key={player}
-                            className="px-2 py-0.5 bg-white/5 text-slate-200 border border-white/10 rounded text-xs font-medium"
+                            className="px-2 py-0.5 bg-white/5 text-white/90 border border-white/10 rounded text-xs font-medium"
                           >
                             {player}
                           </span>
@@ -746,7 +746,7 @@ function ProcessesTab() {
         </h2>
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-slate-700/50">
+            <thead className="bg-white/[0.08]">
               <tr>
                 <th className="text-left px-4 py-3 text-star-300 text-sm font-medium">Process</th>
                 <th className="text-center px-4 py-3 text-star-300 text-sm font-medium">Category</th>
@@ -755,11 +755,11 @@ function ProcessesTab() {
                 <th className="text-left px-4 py-3 text-star-300 text-sm font-medium">Key Players</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-700/50">
+            <tbody className="divide-y divide-white/[0.06]">
               {MANUFACTURING_PROCESSES.map((process) => {
-                const catColor = categoryColors[process.category] || 'text-star-400 bg-slate-500/10 border-slate-500/30';
+                const catColor = categoryColors[process.category] || 'text-star-400 bg-white/[0.06] border-white/[0.08]';
                 return (
-                  <tr key={process.id} className="hover:bg-slate-700/30">
+                  <tr key={process.id} className="hover:bg-white/[0.06]">
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
                         <span>{process.icon}</span>
@@ -800,7 +800,7 @@ function ProcessesTab() {
         </p>
         <div className="space-y-4">
           {SPACE_ENVIRONMENT_ADVANTAGES.map((advantage) => (
-            <div key={advantage.id} className="bg-slate-700/30 rounded-lg p-5 border border-slate-600/30">
+            <div key={advantage.id} className="bg-white/[0.06] rounded-lg p-5 border border-white/[0.06]">
               <div className="flex items-center gap-3 mb-3">
                 <span className="text-3xl">{advantage.icon}</span>
                 <div>
@@ -809,7 +809,7 @@ function ProcessesTab() {
                 </div>
               </div>
               <div className="card p-4 mb-3">
-                <h4 className="text-slate-200 text-xs uppercase tracking-widest mb-2">Physics Explanation</h4>
+                <h4 className="text-white/90 text-xs uppercase tracking-widest mb-2">Physics Explanation</h4>
                 <p className="text-star-300 text-sm leading-relaxed">{advantage.physicsExplanation}</p>
               </div>
               <div>
@@ -898,7 +898,7 @@ function ISSLabTab() {
               >
                 <button
                   onClick={() => setExpandedCategory(isExpanded ? null : category.name)}
-                  className="w-full p-4 flex items-center gap-4 text-left hover:bg-slate-700/20 transition-colors"
+                  className="w-full p-4 flex items-center gap-4 text-left hover:bg-white/[0.04] transition-colors"
                 >
                   <span className="text-2xl">{category.icon}</span>
                   <div className="flex-1">
@@ -906,7 +906,7 @@ function ISSLabTab() {
                       <h3 className={`font-semibold ${category.color}`}>{category.name}</h3>
                       <span className="text-white font-bold">{category.count.toLocaleString()}</span>
                     </div>
-                    <div className="w-full bg-slate-700/50 rounded-full h-2">
+                    <div className="w-full bg-white/[0.08] rounded-full h-2">
                       <div
                         className="bg-white/60 h-2 rounded-full transition-all duration-500"
                         style={{ width: `${percentage}%` }}
@@ -926,7 +926,7 @@ function ISSLabTab() {
 
                 {isExpanded && (
                   <div className="px-4 pb-4 pt-0">
-                    <div className="bg-slate-700/30 rounded-lg p-4 border border-slate-600/30">
+                    <div className="bg-white/[0.06] rounded-lg p-4 border border-white/[0.06]">
                       <h4 className="text-white font-semibold text-sm mb-3">Key Results & Publications</h4>
                       <ul className="space-y-2">
                         {(category.keyResults || []).map((result, i) => (
@@ -996,7 +996,7 @@ function ISSLabTab() {
               since: '2001',
             },
           ].map((facility) => (
-            <div key={facility.name} className="bg-slate-700/30 rounded-lg p-4 border border-slate-600/30">
+            <div key={facility.name} className="bg-white/[0.06] rounded-lg p-4 border border-white/[0.06]">
               <h3 className="text-white font-semibold text-sm mb-1">{facility.name}</h3>
               <p className="text-slate-300 text-xs mb-2">{facility.operator}</p>
               <p className="text-star-300 text-xs mb-3">{facility.capability}</p>
@@ -1088,7 +1088,7 @@ function ProductsTab() {
 
               {isExpanded && (
                 <div className="px-5 pb-5 space-y-4">
-                  <div className="border-t border-slate-700/50 pt-4">
+                  <div className="border-t border-white/[0.06] pt-4">
                     <p className="text-star-300 text-sm leading-relaxed">{product.description}</p>
                   </div>
 
@@ -1100,7 +1100,7 @@ function ProductsTab() {
                         TRL {product.trl} - {getTRLLabel(product.trl)}
                       </span>
                     </div>
-                    <div className="w-full bg-slate-700/50 rounded-full h-3 flex">
+                    <div className="w-full bg-white/[0.08] rounded-full h-3 flex">
                       {Array.from({ length: 9 }, (_, i) => (
                         <div
                           key={i}
@@ -1113,22 +1113,22 @@ function ProductsTab() {
                                 : product.trl >= 4
                                 ? 'bg-orange-500/60'
                                 : 'bg-red-500/60'
-                              : 'bg-slate-700/30'
-                          } ${i > 0 ? 'border-l border-slate-600/30' : ''}`}
+                              : 'bg-white/[0.06]'
+                          } ${i > 0 ? 'border-l border-white/[0.06]' : ''}`}
                         />
                       ))}
                     </div>
                   </div>
 
                   {/* Competitive Landscape */}
-                  <div className="bg-slate-700/30 rounded-lg p-4 border border-slate-600/30">
+                  <div className="bg-white/[0.06] rounded-lg p-4 border border-white/[0.06]">
                     <h4 className="text-white font-semibold text-sm mb-2">Competitive Landscape</h4>
                     <p className="text-star-300 text-sm mb-3">{product.competitiveLandscape}</p>
                     <div className="flex flex-wrap gap-1.5">
                       {(product.leaders || []).map((leader) => (
                         <span
                           key={leader}
-                          className="px-2 py-0.5 bg-white/10 text-slate-200 rounded text-xs font-medium"
+                          className="px-2 py-0.5 bg-white/10 text-white/90 rounded text-xs font-medium"
                         >
                           {leader}
                         </span>
@@ -1150,7 +1150,7 @@ function ProductsTab() {
         </h2>
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-slate-700/50">
+            <thead className="bg-white/[0.08]">
               <tr>
                 <th className="text-left px-4 py-3 text-star-300 text-sm font-medium">Product</th>
                 <th className="text-center px-4 py-3 text-star-300 text-sm font-medium">TRL</th>
@@ -1159,9 +1159,9 @@ function ProductsTab() {
                 <th className="text-left px-4 py-3 text-star-300 text-sm font-medium">Leaders</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-700/50">
+            <tbody className="divide-y divide-white/[0.06]">
               {PRODUCT_CATEGORIES.map((product) => (
-                <tr key={product.id} className="hover:bg-slate-700/30">
+                <tr key={product.id} className="hover:bg-white/[0.06]">
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2">
                       <span>{product.icon}</span>
@@ -1205,30 +1205,30 @@ function ImgProviderCard({ provider }: { provider: ImageryProvider }) {
           <p className="text-star-400 text-sm mt-0.5">{provider.headquarters}</p>
         </div>
         <div className="flex items-center gap-2 flex-shrink-0 ml-3">
-          <span className={`text-xs font-bold px-2.5 py-1 rounded border ${SENSOR_COLORS[provider.sensorType] || 'text-star-400 bg-slate-500/10 border-slate-500/30'}`}>{provider.sensorType}</span>
+          <span className={`text-xs font-bold px-2.5 py-1 rounded border ${SENSOR_COLORS[provider.sensorType] || 'text-star-400 bg-white/[0.06] border-white/[0.08]'}`}>{provider.sensorType}</span>
           <span className={`text-xs font-bold px-2.5 py-1 rounded border ${statusStyle.bg} ${statusStyle.text} ${statusStyle.border}`}>{provider.status}</span>
         </div>
       </div>
       <div className="grid grid-cols-3 gap-3 mb-4">
-        <div className="bg-slate-700/30 rounded-lg p-2.5"><div className="text-star-400 text-xs uppercase tracking-widest mb-0.5">Resolution</div><div className="text-white text-sm font-semibold">{provider.resolutionM || '?'}m</div></div>
-        <div className="bg-slate-700/30 rounded-lg p-2.5"><div className="text-star-400 text-xs uppercase tracking-widest mb-0.5">Revisit</div><div className="text-white text-sm font-semibold">{provider.revisitHours || '?'}h</div></div>
-        <div className="bg-slate-700/30 rounded-lg p-2.5"><div className="text-star-400 text-xs uppercase tracking-widest mb-0.5">Satellites</div><div className="text-white text-sm font-semibold">{(provider.constellationSize || '').split(' ')[0] || '?'}</div></div>
+        <div className="bg-white/[0.06] rounded-lg p-2.5"><div className="text-star-400 text-xs uppercase tracking-widest mb-0.5">Resolution</div><div className="text-white text-sm font-semibold">{provider.resolutionM || '?'}m</div></div>
+        <div className="bg-white/[0.06] rounded-lg p-2.5"><div className="text-star-400 text-xs uppercase tracking-widest mb-0.5">Revisit</div><div className="text-white text-sm font-semibold">{provider.revisitHours || '?'}h</div></div>
+        <div className="bg-white/[0.06] rounded-lg p-2.5"><div className="text-star-400 text-xs uppercase tracking-widest mb-0.5">Satellites</div><div className="text-white text-sm font-semibold">{(provider.constellationSize || '').split(' ')[0] || '?'}</div></div>
       </div>
       <div className="flex flex-wrap gap-1.5 mb-4">
-        <span className="px-2 py-0.5 bg-slate-700/50 text-star-300 border border-slate-600/30 rounded text-xs">{provider.spectralBands}</span>
-        <span className="px-2 py-0.5 bg-slate-700/50 text-star-300 border border-slate-600/30 rounded text-xs">Swath: {provider.swathWidthKm}km</span>
-        <span className="px-2 py-0.5 bg-slate-700/50 text-amber-300 border border-slate-600/30 rounded text-xs font-semibold">{provider.pricingTier}</span>
+        <span className="px-2 py-0.5 bg-white/[0.08] text-star-300 border border-white/[0.06] rounded text-xs">{provider.spectralBands}</span>
+        <span className="px-2 py-0.5 bg-white/[0.08] text-star-300 border border-white/[0.06] rounded text-xs">Swath: {provider.swathWidthKm}km</span>
+        <span className="px-2 py-0.5 bg-white/[0.08] text-amber-300 border border-white/[0.06] rounded text-xs font-semibold">{provider.pricingTier}</span>
         {provider.archiveAvailable && <span className="px-2 py-0.5 bg-green-900/20 text-green-400 border border-green-500/20 rounded text-xs">Archive</span>}
-        {provider.taskingAvailable && <span className="px-2 py-0.5 bg-slate-800/30 text-slate-300 border border-white/10 rounded text-xs">Tasking</span>}
+        {provider.taskingAvailable && <span className="px-2 py-0.5 bg-white/[0.04] text-slate-300 border border-white/10 rounded text-xs">Tasking</span>}
       </div>
       <p className="text-star-300 text-sm leading-relaxed mb-4">{expanded ? (provider.description || '') : (provider.description || '').slice(0, 180) + '...'}</p>
       {expanded && (
         <div className="space-y-4 mb-4">
           <div className="grid grid-cols-2 gap-3">
-            <div className="bg-slate-700/30 rounded-lg p-3"><div className="text-star-400 text-xs uppercase tracking-widest mb-1">Orbit</div><div className="text-white text-sm">{provider.orbit}</div></div>
-            <div className="bg-slate-700/30 rounded-lg p-3"><div className="text-star-400 text-xs uppercase tracking-widest mb-1">Since</div><div className="text-white text-sm">{provider.launchYear}</div></div>
-            <div className="bg-slate-700/30 rounded-lg p-3"><div className="text-star-400 text-xs uppercase tracking-widest mb-1">Constellation</div><div className="text-white text-sm">{provider.constellationSize}</div></div>
-            <div className="bg-slate-700/30 rounded-lg p-3"><div className="text-star-400 text-xs uppercase tracking-widest mb-1">Coverage</div><div className="text-white text-sm">{provider.coveragePercent}% global</div></div>
+            <div className="bg-white/[0.06] rounded-lg p-3"><div className="text-star-400 text-xs uppercase tracking-widest mb-1">Orbit</div><div className="text-white text-sm">{provider.orbit}</div></div>
+            <div className="bg-white/[0.06] rounded-lg p-3"><div className="text-star-400 text-xs uppercase tracking-widest mb-1">Since</div><div className="text-white text-sm">{provider.launchYear}</div></div>
+            <div className="bg-white/[0.06] rounded-lg p-3"><div className="text-star-400 text-xs uppercase tracking-widest mb-1">Constellation</div><div className="text-white text-sm">{provider.constellationSize}</div></div>
+            <div className="bg-white/[0.06] rounded-lg p-3"><div className="text-star-400 text-xs uppercase tracking-widest mb-1">Coverage</div><div className="text-white text-sm">{provider.coveragePercent}% global</div></div>
           </div>
           <div>
             <div className="text-star-400 text-xs uppercase tracking-widest mb-2">Key Highlights</div>
@@ -1248,10 +1248,10 @@ function ImgComparisonTable({ sensorFilter }: { sensorFilter: string }) {
   const filtered = sensorFilter ? IMG_PROVIDERS.filter((p) => p.sensorType === sensorFilter) : IMG_PROVIDERS;
   return (
     <div className="card overflow-hidden">
-      <div className="p-4 border-b border-slate-700/50"><h3 className="text-white font-semibold">Provider Comparison</h3><p className="text-star-400 text-sm mt-1">Side-by-side comparison of {filtered.length} satellite imagery providers</p></div>
+      <div className="p-4 border-b border-white/[0.06]"><h3 className="text-white font-semibold">Provider Comparison</h3><p className="text-star-400 text-sm mt-1">Side-by-side comparison of {filtered.length} satellite imagery providers</p></div>
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
-          <thead><tr className="border-b border-slate-700/50">
+          <thead><tr className="border-b border-white/[0.06]">
             <th className="text-left py-3 px-4 text-star-400 font-medium uppercase tracking-widest text-xs whitespace-nowrap">Provider</th>
             <th className="text-left py-3 px-4 text-star-400 font-medium uppercase tracking-widest text-xs whitespace-nowrap">Type</th>
             <th className="text-left py-3 px-4 text-star-400 font-medium uppercase tracking-widest text-xs whitespace-nowrap">Resolution</th>
@@ -1263,9 +1263,9 @@ function ImgComparisonTable({ sensorFilter }: { sensorFilter: string }) {
             <th className="text-left py-3 px-4 text-star-400 font-medium uppercase tracking-widest text-xs whitespace-nowrap">Tasking</th>
           </tr></thead>
           <tbody>{filtered.map((p, idx) => (
-            <tr key={p.id} className={`border-b border-slate-700/30 hover:bg-slate-700/20 transition-colors ${idx % 2 === 0 ? 'bg-slate-800/30' : ''}`}>
+            <tr key={p.id} className={`border-b border-white/[0.06] hover:bg-white/[0.04] transition-colors ${idx % 2 === 0 ? 'bg-white/[0.04]' : ''}`}>
               <td className="py-3 px-4 text-white font-medium whitespace-nowrap">{p.name}</td>
-              <td className="py-3 px-4 whitespace-nowrap"><span className={`text-xs font-medium px-2 py-0.5 rounded border ${SENSOR_COLORS[p.sensorType] || 'text-star-400 bg-slate-500/10 border-slate-500/30'}`}>{p.sensorType}</span></td>
+              <td className="py-3 px-4 whitespace-nowrap"><span className={`text-xs font-medium px-2 py-0.5 rounded border ${SENSOR_COLORS[p.sensorType] || 'text-star-400 bg-white/[0.06] border-white/[0.08]'}`}>{p.sensorType}</span></td>
               <td className="py-3 px-4 text-slate-300 font-mono whitespace-nowrap">{p.resolutionM}m</td>
               <td className="py-3 px-4 text-star-300 whitespace-nowrap">{p.revisitHours}h</td>
               <td className="py-3 px-4 text-star-400 max-w-[200px] truncate">{p.spectralBands}</td>
@@ -1277,11 +1277,11 @@ function ImgComparisonTable({ sensorFilter }: { sensorFilter: string }) {
           ))}</tbody>
         </table>
       </div>
-      <div className="p-4 border-t border-slate-700/50">
+      <div className="p-4 border-t border-white/[0.06]">
         <h4 className="text-white font-semibold text-sm mb-3">Pricing Reference (Typical Ranges)</h4>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {Object.entries(IMG_PRICING_INFO).map(([tier, info]) => (
-            <div key={tier} className="bg-slate-700/30 rounded-lg p-3">
+            <div key={tier} className="bg-white/[0.06] rounded-lg p-3">
               <div className="text-amber-400 font-bold text-lg mb-2">{tier}</div>
               <div className="space-y-1 mb-2"><div className="text-star-300 text-xs"><span className="text-star-400">Archive:</span> {info.archive}</div><div className="text-star-300 text-xs"><span className="text-star-400">Tasking:</span> {info.tasking}</div></div>
               <p className="text-star-400 text-xs leading-relaxed">{info.notes}</p>
@@ -1301,10 +1301,10 @@ function ImgUseCaseCard({ useCase }: { useCase: UseCase }) {
         <span className="text-2xl flex-shrink-0">{useCase.icon}</span>
         <div><h3 className="text-white font-semibold text-lg">{useCase.name}</h3><p className="text-star-400 text-sm mt-1 leading-relaxed">{useCase.description}</p></div>
       </div>
-      <div className="flex flex-wrap gap-1.5 mb-4">{(useCase.keyMetrics || []).map((metric) => (<span key={metric} className="px-2 py-0.5 bg-slate-800/30 text-slate-200 border border-white/10 rounded text-xs font-medium">{metric}</span>))}</div>
+      <div className="flex flex-wrap gap-1.5 mb-4">{(useCase.keyMetrics || []).map((metric) => (<span key={metric} className="px-2 py-0.5 bg-white/[0.04] text-white/90 border border-white/10 rounded text-xs font-medium">{metric}</span>))}</div>
       <div className="mb-4">
         <div className="text-star-400 text-xs uppercase tracking-widest mb-2">Recommended Providers</div>
-        <div className="flex flex-wrap gap-1.5">{(useCase.topProviders || []).map((provider, idx) => (<span key={provider} className={`px-2.5 py-1 rounded text-xs font-medium ${idx === 0 ? 'bg-amber-900/20 text-amber-300 border border-amber-500/20' : 'bg-slate-700/50 text-star-300 border border-slate-600/30'}`}>{idx === 0 ? `\u2B50 ${provider}` : provider}</span>))}</div>
+        <div className="flex flex-wrap gap-1.5">{(useCase.topProviders || []).map((provider, idx) => (<span key={provider} className={`px-2.5 py-1 rounded text-xs font-medium ${idx === 0 ? 'bg-amber-900/20 text-amber-300 border border-amber-500/20' : 'bg-white/[0.08] text-star-300 border border-white/[0.06]'}`}>{idx === 0 ? `\u2B50 ${provider}` : provider}</span>))}</div>
       </div>
       {expanded && (<div className="mb-4"><div className="text-star-400 text-xs uppercase tracking-widest mb-2">Key Requirements</div><ul className="space-y-1">{(useCase.requirements || []).map((req, i) => (<li key={i} className="text-star-300 text-sm flex items-start gap-2"><span className="text-slate-300 mt-0.5 flex-shrink-0">-</span>{req}</li>))}</ul></div>)}
       <button onClick={() => setExpanded(!expanded)} className="text-sm text-slate-300 hover:text-white transition-colors">{expanded ? 'Show less' : 'View requirements'} {expanded ? '\u2191' : '\u2193'}</button>
@@ -1348,11 +1348,11 @@ function ImageryMarketplaceContent() {
       </div>
 
       {/* Imagery Sub-Tab Navigation */}
-      <div className="border-b border-slate-700/50 mb-6">
+      <div className="border-b border-white/[0.06] mb-6">
         <div className="flex gap-1 overflow-x-auto">
           {IMG_TABS.map((tab) => (
             <button key={tab.id} onClick={() => setImgTab(tab.id)}
-              className={`px-4 py-2.5 text-sm font-medium whitespace-nowrap border-b-2 transition-colors ${imgTab === tab.id ? 'border-white/15 text-slate-200' : 'border-transparent text-star-300 hover:text-white hover:border-slate-500'}`}>
+              className={`px-4 py-2.5 text-sm font-medium whitespace-nowrap border-b-2 transition-colors ${imgTab === tab.id ? 'border-white/15 text-white/90' : 'border-transparent text-star-300 hover:text-white hover:border-white/[0.1]'}`}>
               <span className="mr-1.5">{tab.icon}</span>{tab.label}
             </button>
           ))}
@@ -1364,10 +1364,10 @@ function ImageryMarketplaceContent() {
         <div>
           <div className="flex flex-wrap items-center gap-3 mb-6">
             <span className="text-star-400 text-sm">Filter by sensor:</span>
-            <button onClick={() => setSensorFilter('')} className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${sensorFilter === '' ? 'bg-white/10 text-slate-200 border border-white/15' : 'bg-slate-800 text-star-400 border border-slate-700 hover:border-slate-600 hover:text-slate-900'}`}>All ({IMG_PROVIDERS.length})</button>
+            <button onClick={() => setSensorFilter('')} className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${sensorFilter === '' ? 'bg-white/10 text-white/90 border border-white/15' : 'bg-white/[0.06] text-star-400 border border-white/[0.06] hover:border-white/[0.1] hover:text-white'}`}>All ({IMG_PROVIDERS.length})</button>
             {sensorTypes.map((type) => {
               const count = IMG_PROVIDERS.filter((p) => p.sensorType === type).length;
-              return (<button key={type} onClick={() => setSensorFilter(type)} className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${sensorFilter === type ? 'bg-white/10 text-slate-200 border border-white/15' : 'bg-slate-800 text-star-400 border border-slate-700 hover:border-slate-600 hover:text-slate-900'}`}>{type} ({count})</button>);
+              return (<button key={type} onClick={() => setSensorFilter(type)} className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${sensorFilter === type ? 'bg-white/10 text-white/90 border border-white/15' : 'bg-white/[0.06] text-star-400 border border-white/[0.06] hover:border-white/[0.1] hover:text-white'}`}>{type} ({count})</button>);
             })}
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
@@ -1380,7 +1380,7 @@ function ImageryMarketplaceContent() {
               {sensorTypes.map((type) => {
                 const count = IMG_PROVIDERS.filter((p) => p.sensorType === type).length;
                 const colorClass = SENSOR_COLORS[type]?.split(' ')[0] || 'text-star-400';
-                return (<div key={type} className="bg-slate-700/30 rounded-xl p-4 text-center"><div className={`text-2xl font-bold mb-1 ${colorClass}`}>{count}</div><div className="text-star-400 text-sm">{type}</div></div>);
+                return (<div key={type} className="bg-white/[0.06] rounded-xl p-4 text-center"><div className={`text-2xl font-bold mb-1 ${colorClass}`}>{count}</div><div className="text-star-400 text-sm">{type}</div></div>);
               })}
             </div>
           </div>
@@ -1392,8 +1392,8 @@ function ImageryMarketplaceContent() {
         <div>
           <div className="flex flex-wrap items-center gap-3 mb-6">
             <span className="text-star-400 text-sm">Filter by sensor:</span>
-            <button onClick={() => setSensorFilter('')} className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${sensorFilter === '' ? 'bg-white/10 text-slate-200 border border-white/15' : 'bg-slate-800 text-star-400 border border-slate-700 hover:border-slate-600 hover:text-slate-900'}`}>All</button>
-            {sensorTypes.map((type) => (<button key={type} onClick={() => setSensorFilter(type)} className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${sensorFilter === type ? 'bg-white/10 text-slate-200 border border-white/15' : 'bg-slate-800 text-star-400 border border-slate-700 hover:border-slate-600 hover:text-slate-900'}`}>{type}</button>))}
+            <button onClick={() => setSensorFilter('')} className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${sensorFilter === '' ? 'bg-white/10 text-white/90 border border-white/15' : 'bg-white/[0.06] text-star-400 border border-white/[0.06] hover:border-white/[0.1] hover:text-white'}`}>All</button>
+            {sensorTypes.map((type) => (<button key={type} onClick={() => setSensorFilter(type)} className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${sensorFilter === type ? 'bg-white/10 text-white/90 border border-white/15' : 'bg-white/[0.06] text-star-400 border border-white/[0.06] hover:border-white/[0.1] hover:text-white'}`}>{type}</button>))}
           </div>
           <ImgComparisonTable sensorFilter={sensorFilter} />
           <div className="mt-6 card p-6">
@@ -1427,7 +1427,7 @@ function ImageryMarketplaceContent() {
                 IMG_USE_CASES.forEach((uc) => { (uc.topProviders || []).forEach((p) => { providerCounts[p] = (providerCounts[p] || 0) + 1; }); });
                 const sorted = Object.entries(providerCounts).sort(([, a], [, b]) => b - a).slice(0, 8);
                 const maxCount = sorted[0]?.[1] || 1;
-                return sorted.map(([name, count]) => (<div key={name} className="flex items-center gap-4"><div className="w-40 flex-shrink-0 text-sm text-white font-medium truncate">{name}</div><div className="flex-1 h-6 bg-slate-700/30 rounded overflow-hidden relative"><div className="h-full bg-gradient-to-r from-slate-200 to-slate-400 rounded transition-all" style={{ width: `${Math.max((count / maxCount) * 100, 3)}%` }} /><span className="absolute inset-0 flex items-center px-2 text-xs text-white font-mono">{count} use cases</span></div></div>));
+                return sorted.map(([name, count]) => (<div key={name} className="flex items-center gap-4"><div className="w-40 flex-shrink-0 text-sm text-white font-medium truncate">{name}</div><div className="flex-1 h-6 bg-white/[0.06] rounded overflow-hidden relative"><div className="h-full bg-gradient-to-r from-slate-200 to-slate-400 rounded transition-all" style={{ width: `${Math.max((count / maxCount) * 100, 3)}%` }} /><span className="absolute inset-0 flex items-center px-2 text-xs text-white font-mono">{count} use cases</span></div></div>));
               })()}
             </div>
           </div>
@@ -1440,7 +1440,7 @@ function ImageryMarketplaceContent() {
                 { combo: 'Daily Optical + Hyperspectral', providers: 'Planet + Pixxel', reason: 'Daily change detection combined with material-level identification. Ideal for agriculture and environmental monitoring.' },
                 { combo: 'SAR + Thermal', providers: 'Capella + SatVu', reason: 'Infrastructure monitoring combining structural displacement detection with thermal anomaly identification.' },
                 { combo: 'VHR Optical + Daily MS', providers: 'Airbus + Planet', reason: 'Detailed feature extraction from 30cm imagery combined with daily temporal monitoring at 3m.' },
-              ].map((s) => (<div key={s.combo} className="bg-slate-700/30 rounded-lg p-4"><div className="text-white font-semibold text-sm mb-1">{s.combo}</div><div className="text-slate-300 text-xs font-medium mb-2">{s.providers}</div><p className="text-star-400 text-xs leading-relaxed">{s.reason}</p></div>))}
+              ].map((s) => (<div key={s.combo} className="bg-white/[0.06] rounded-lg p-4"><div className="text-white font-semibold text-sm mb-1">{s.combo}</div><div className="text-slate-300 text-xs font-medium mb-2">{s.providers}</div><p className="text-star-400 text-xs leading-relaxed">{s.reason}</p></div>))}
             </div>
           </div>
         </div>
@@ -1457,12 +1457,12 @@ function ImageryMarketplaceContent() {
                 { label: '2028 Projected', value: '$8.3B', color: 'text-green-400' },
                 { label: 'CAGR 2024-2030', value: '~12%', color: 'text-amber-400' },
                 { label: 'Commercial EO Sats', value: '1,000+', color: 'text-purple-400' },
-              ].map((stat) => (<div key={stat.label} className="bg-slate-700/30 rounded-xl p-4 text-center"><div className={`text-2xl font-bold ${stat.color}`}>{stat.value}</div><div className="text-star-400 text-xs uppercase tracking-widest mt-1">{stat.label}</div></div>))}
+              ].map((stat) => (<div key={stat.label} className="bg-white/[0.06] rounded-xl p-4 text-center"><div className={`text-2xl font-bold ${stat.color}`}>{stat.value}</div><div className="text-star-400 text-xs uppercase tracking-widest mt-1">{stat.label}</div></div>))}
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="bg-slate-700/30 rounded-lg p-4"><h4 className="text-white font-semibold text-sm mb-2">Data Revenue</h4><p className="text-star-400 text-xs leading-relaxed">Satellite imagery data sales represent approximately 60% of the EO market. Archive sales continue growing as historical datasets become more valuable for AI training and change detection.</p></div>
-              <div className="bg-slate-700/30 rounded-lg p-4"><h4 className="text-white font-semibold text-sm mb-2">Analytics / Value-Added</h4><p className="text-star-400 text-xs leading-relaxed">Value-added analytics represent the fastest-growing segment at 18-22% CAGR. Multiple providers report analytics revenue growing faster than raw data revenue.</p></div>
-              <div className="bg-slate-700/30 rounded-lg p-4"><h4 className="text-white font-semibold text-sm mb-2">Government vs. Commercial</h4><p className="text-star-400 text-xs leading-relaxed">Government and defense remain the largest customer segment (~55% of revenue), but commercial adoption is accelerating in insurance, agriculture, energy, and finance.</p></div>
+              <div className="bg-white/[0.06] rounded-lg p-4"><h4 className="text-white font-semibold text-sm mb-2">Data Revenue</h4><p className="text-star-400 text-xs leading-relaxed">Satellite imagery data sales represent approximately 60% of the EO market. Archive sales continue growing as historical datasets become more valuable for AI training and change detection.</p></div>
+              <div className="bg-white/[0.06] rounded-lg p-4"><h4 className="text-white font-semibold text-sm mb-2">Analytics / Value-Added</h4><p className="text-star-400 text-xs leading-relaxed">Value-added analytics represent the fastest-growing segment at 18-22% CAGR. Multiple providers report analytics revenue growing faster than raw data revenue.</p></div>
+              <div className="bg-white/[0.06] rounded-lg p-4"><h4 className="text-white font-semibold text-sm mb-2">Government vs. Commercial</h4><p className="text-star-400 text-xs leading-relaxed">Government and defense remain the largest customer segment (~55% of revenue), but commercial adoption is accelerating in insurance, agriculture, energy, and finance.</p></div>
             </div>
           </div>
           <h3 className="text-white font-semibold text-lg mb-4">Key Market Trends</h3>
@@ -1495,7 +1495,7 @@ function ImageryMarketplaceContent() {
                   { region: 'Europe', share: '28%', color: 'from-white to-slate-400', providers: 'Airbus, ICEYE, SatVu' },
                   { region: 'Asia-Pacific', share: '22%', color: 'from-green-500 to-green-400', providers: 'Pixxel, Synspective' },
                   { region: 'Rest of World', share: '12%', color: 'from-amber-500 to-amber-400', providers: 'Satellogic, Wyvern, EarthDaily' },
-                ].map((r) => (<div key={r.region}><div className="flex justify-between mb-1"><span className="text-white text-sm font-medium">{r.region}</span><span className="text-star-400 text-sm">{r.share}</span></div><div className="h-2 bg-slate-700/30 rounded-full overflow-hidden mb-1"><div className={`h-full rounded-full bg-gradient-to-r ${r.color}`} style={{ width: r.share }} /></div><p className="text-star-400 text-xs">{r.providers}</p></div>))}
+                ].map((r) => (<div key={r.region}><div className="flex justify-between mb-1"><span className="text-white text-sm font-medium">{r.region}</span><span className="text-star-400 text-sm">{r.share}</span></div><div className="h-2 bg-white/[0.06] rounded-full overflow-hidden mb-1"><div className={`h-full rounded-full bg-gradient-to-r ${r.color}`} style={{ width: r.share }} /></div><p className="text-star-400 text-xs">{r.providers}</p></div>))}
               </div>
             </div>
             <div className="card p-6">
@@ -1507,7 +1507,7 @@ function ImageryMarketplaceContent() {
                   { type: 'Multispectral (Med-Res)', share: '18%', growth: '10% CAGR', color: 'from-green-500 to-green-400' },
                   { type: 'Hyperspectral', share: '7%', growth: '25% CAGR', color: 'from-purple-500 to-purple-400' },
                   { type: 'Thermal / Other', share: '5%', growth: '20% CAGR', color: 'from-red-500 to-red-400' },
-                ].map((s) => (<div key={s.type}><div className="flex justify-between mb-1"><span className="text-white text-sm font-medium">{s.type}</span><div className="flex items-center gap-3"><span className="text-green-400 text-xs">{s.growth}</span><span className="text-star-400 text-sm">{s.share}</span></div></div><div className="h-2 bg-slate-700/30 rounded-full overflow-hidden"><div className={`h-full rounded-full bg-gradient-to-r ${s.color}`} style={{ width: s.share }} /></div></div>))}
+                ].map((s) => (<div key={s.type}><div className="flex justify-between mb-1"><span className="text-white text-sm font-medium">{s.type}</span><div className="flex items-center gap-3"><span className="text-green-400 text-xs">{s.growth}</span><span className="text-star-400 text-sm">{s.share}</span></div></div><div className="h-2 bg-white/[0.06] rounded-full overflow-hidden"><div className={`h-full rounded-full bg-gradient-to-r ${s.color}`} style={{ width: s.share }} /></div></div>))}
               </div>
             </div>
           </div>
@@ -1589,10 +1589,10 @@ function ManufacturingAndImageryContent() {
       <div className="min-h-screen bg-[#0B0F1A] text-white p-6">
         <div className="max-w-7xl mx-auto">
           <div className="animate-pulse space-y-4">
-            <div className="h-8 bg-slate-800 rounded w-1/3"></div>
-            <div className="h-4 bg-slate-800 rounded w-2/3"></div>
+            <div className="h-8 bg-white/[0.06] rounded w-1/3"></div>
+            <div className="h-4 bg-white/[0.06] rounded w-2/3"></div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8">
-              {[1,2,3,4].map(i => <div key={i} className="h-48 bg-slate-800 rounded-lg"></div>)}
+              {[1,2,3,4].map(i => <div key={i} className="h-48 bg-white/[0.06] rounded-lg"></div>)}
             </div>
           </div>
         </div>
@@ -1620,14 +1620,14 @@ function ManufacturingAndImageryContent() {
         )}
 
         {/* Top-Level Tab Navigation */}
-        <div className="border-b border-slate-700/50 mb-8">
+        <div className="border-b border-white/[0.06] mb-8">
           <div className="flex gap-1">
             <Link
               href="/space-manufacturing"
               className={`px-5 py-3 text-sm font-semibold whitespace-nowrap border-b-2 transition-colors ${
                 topTab === 'manufacturing'
-                  ? 'border-white/15 text-slate-200'
-                  : 'border-transparent text-star-300 hover:text-white hover:border-slate-500'
+                  ? 'border-white/15 text-white/90'
+                  : 'border-transparent text-star-300 hover:text-white hover:border-white/[0.1]'
               }`}
             >
               <span className="mr-1.5">{'🏭'}</span>
@@ -1637,8 +1637,8 @@ function ManufacturingAndImageryContent() {
               href="/space-manufacturing?tab=imagery"
               className={`px-5 py-3 text-sm font-semibold whitespace-nowrap border-b-2 transition-colors ${
                 topTab === 'imagery'
-                  ? 'border-white/15 text-slate-200'
-                  : 'border-transparent text-star-300 hover:text-white hover:border-slate-500'
+                  ? 'border-white/15 text-white/90'
+                  : 'border-transparent text-star-300 hover:text-white hover:border-white/[0.1]'
               }`}
             >
               <span className="mr-1.5">{'\uD83D\uDEF0\uFE0F'}</span>
@@ -1651,7 +1651,7 @@ function ManufacturingAndImageryContent() {
         {topTab === 'manufacturing' && (
           <>
             {/* Manufacturing Sub-Tab Navigation */}
-            <div className="border-b border-slate-700/50 mb-8">
+            <div className="border-b border-white/[0.06] mb-8">
               <div className="flex gap-1 overflow-x-auto">
                 {MFG_TABS.map((tab) => (
                   <button
@@ -1659,8 +1659,8 @@ function ManufacturingAndImageryContent() {
                     onClick={() => setMfgTab(tab.id)}
                     className={`px-4 py-2.5 text-sm font-medium whitespace-nowrap border-b-2 transition-colors ${
                       mfgTab === tab.id
-                        ? 'border-white/15 text-slate-200'
-                        : 'border-transparent text-star-300 hover:text-white hover:border-slate-500'
+                        ? 'border-white/15 text-white/90'
+                        : 'border-transparent text-star-300 hover:text-white hover:border-white/[0.1]'
                     }`}
                   >
                     <span className="mr-1.5">{tab.icon}</span>
@@ -1685,22 +1685,22 @@ function ManufacturingAndImageryContent() {
         <ScrollReveal><div className="card p-4 mt-8">
           <h3 className="text-sm font-semibold text-white mb-3">Related Modules</h3>
           <div className="flex flex-wrap gap-3">
-            <Link href="/space-mining" className="px-3 py-1.5 rounded-lg bg-slate-700/50 text-star-300 hover:text-white hover:bg-slate-600/50 text-sm transition-colors">
+            <Link href="/space-mining" className="px-3 py-1.5 rounded-lg bg-white/[0.08] text-star-300 hover:text-white hover:bg-white/[0.08] text-sm transition-colors">
               Space Mining
             </Link>
-            <Link href="/orbital-slots" className="px-3 py-1.5 rounded-lg bg-slate-700/50 text-star-300 hover:text-white hover:bg-slate-600/50 text-sm transition-colors">
+            <Link href="/orbital-slots" className="px-3 py-1.5 rounded-lg bg-white/[0.08] text-star-300 hover:text-white hover:bg-white/[0.08] text-sm transition-colors">
               Orbital Services
             </Link>
-            <Link href="/space-capital" className="px-3 py-1.5 rounded-lg bg-slate-700/50 text-star-300 hover:text-white hover:bg-slate-600/50 text-sm transition-colors">
+            <Link href="/space-capital" className="px-3 py-1.5 rounded-lg bg-white/[0.08] text-star-300 hover:text-white hover:bg-white/[0.08] text-sm transition-colors">
               Space Capital
             </Link>
-            <Link href="/supply-chain" className="px-3 py-1.5 rounded-lg bg-slate-700/50 text-star-300 hover:text-white hover:bg-slate-600/50 text-sm transition-colors">
+            <Link href="/supply-chain" className="px-3 py-1.5 rounded-lg bg-white/[0.08] text-star-300 hover:text-white hover:bg-white/[0.08] text-sm transition-colors">
               Supply Chain
             </Link>
-            <Link href="/market-intel" className="px-3 py-1.5 rounded-lg bg-slate-700/50 text-star-300 hover:text-white hover:bg-slate-600/50 text-sm transition-colors">
+            <Link href="/market-intel" className="px-3 py-1.5 rounded-lg bg-white/[0.08] text-star-300 hover:text-white hover:bg-white/[0.08] text-sm transition-colors">
               Market Intel
             </Link>
-            <Link href="/resource-exchange" className="px-3 py-1.5 rounded-lg bg-slate-700/50 text-star-300 hover:text-white hover:bg-slate-600/50 text-sm transition-colors">
+            <Link href="/resource-exchange" className="px-3 py-1.5 rounded-lg bg-white/[0.08] text-star-300 hover:text-white hover:bg-white/[0.08] text-sm transition-colors">
               Resource Exchange
             </Link>
           </div>

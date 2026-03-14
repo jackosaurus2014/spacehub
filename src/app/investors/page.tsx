@@ -52,7 +52,7 @@ const TYPE_OPTIONS = [
 ];
 
 const TYPE_BADGE_COLORS: Record<string, string> = {
-  vc: 'bg-white/10 text-slate-300 border-white/10',
+  vc: 'bg-white/10 text-white/70 border-white/10',
   pe: 'bg-purple-500/20 text-purple-400 border-purple-500/30',
   corporate: 'bg-amber-500/20 text-amber-400 border-amber-500/30',
   government: 'bg-red-500/20 text-red-400 border-red-500/30',
@@ -195,7 +195,7 @@ function InvestorsPageInner() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-900">
+    <div className="min-h-screen bg-black">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <AnimatedPageHeader
           title="Space Industry Investors"
@@ -219,8 +219,8 @@ function InvestorsPageInner() {
         {/* Stats Bar */}
         <StaggerContainer className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           <StaggerItem>
-            <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-5 text-center">
-              <div className="text-2xl md:text-3xl font-bold text-slate-300">
+            <div className="bg-white/[0.04] rounded-xl border border-white/[0.06] p-5 text-center">
+              <div className="text-2xl md:text-3xl font-bold text-white/70">
                 {investors.length}
               </div>
               <div className="text-slate-400 text-xs uppercase tracking-widest mt-1">
@@ -229,7 +229,7 @@ function InvestorsPageInner() {
             </div>
           </StaggerItem>
           <StaggerItem>
-            <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-5 text-center">
+            <div className="bg-white/[0.04] rounded-xl border border-white/[0.06] p-5 text-center">
               <div className="text-2xl md:text-3xl font-bold text-green-400">
                 {totalAUM > 0 ? formatAUM(totalAUM) : '--'}
               </div>
@@ -239,7 +239,7 @@ function InvestorsPageInner() {
             </div>
           </StaggerItem>
           <StaggerItem>
-            <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-5 text-center">
+            <div className="bg-white/[0.04] rounded-xl border border-white/[0.06] p-5 text-center">
               <div className="text-2xl md:text-3xl font-bold text-purple-400">
                 {vcCount}
               </div>
@@ -249,7 +249,7 @@ function InvestorsPageInner() {
             </div>
           </StaggerItem>
           <StaggerItem>
-            <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-5 text-center">
+            <div className="bg-white/[0.04] rounded-xl border border-white/[0.06] p-5 text-center">
               <div className="text-2xl md:text-3xl font-bold text-amber-400">
                 {totalDeals}
               </div>
@@ -261,7 +261,7 @@ function InvestorsPageInner() {
         </StaggerContainer>
 
         {/* Filters */}
-        <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-4 mb-6">
+        <div className="bg-white/[0.04] rounded-xl border border-white/[0.06] p-4 mb-6">
           <div className="flex flex-wrap gap-4 items-end">
             <div>
               <label className="block text-slate-400 text-xs mb-1">
@@ -270,7 +270,7 @@ function InvestorsPageInner() {
               <select
                 value={typeFilter}
                 onChange={(e) => setTypeFilter(e.target.value)}
-                className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+                className="bg-white/[0.06] border border-white/[0.08] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
               >
                 {TYPE_OPTIONS.map((t) => (
                   <option key={t.value} value={t.value}>
@@ -286,7 +286,7 @@ function InvestorsPageInner() {
               <select
                 value={sectorFilter}
                 onChange={(e) => setSectorFilter(e.target.value)}
-                className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+                className="bg-white/[0.06] border border-white/[0.08] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
               >
                 <option value="">All Sectors</option>
                 <option value="launch">Launch</option>
@@ -306,7 +306,7 @@ function InvestorsPageInner() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search by name, location, portfolio..."
-                className="bg-slate-900 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-white/15 w-64"
+                className="bg-black border border-white/[0.08] text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-white/15 w-64"
               />
             </div>
             <span className="text-slate-500 text-sm pb-2">
@@ -334,10 +334,10 @@ function InvestorsPageInner() {
               return (
                 <StaggerItem key={inv.id}>
                   <div
-                    className={`bg-slate-800/50 rounded-xl border transition-colors p-5 ${
+                    className={`bg-white/[0.04] rounded-xl border transition-colors p-5 ${
                       isExpanded
                         ? 'border-white/15'
-                        : 'border-slate-700/50 hover:border-white/10'
+                        : 'border-white/[0.06] hover:border-white/10'
                     }`}
                   >
                     {/* Header */}
@@ -350,7 +350,7 @@ function InvestorsPageInner() {
                           <span
                             className={`text-xs px-2 py-0.5 rounded border ${
                               TYPE_BADGE_COLORS[inv.type] ||
-                              'bg-slate-700/50 text-slate-300 border-slate-600'
+                              'bg-slate-700/50 text-white/70 border-white/[0.1]'
                             }`}
                           >
                             {TYPE_LABELS[inv.type] || inv.type}
@@ -368,14 +368,14 @@ function InvestorsPageInner() {
                       <div className="text-right ml-3">
                         {inv.aum ? (
                           <>
-                            <div className="text-slate-300 font-mono font-bold text-sm">
+                            <div className="text-white/70 font-mono font-bold text-sm">
                               {formatAUM(inv.aum)}
                             </div>
                             <div className="text-slate-500 text-xs">AUM</div>
                           </>
                         ) : inv.fundSize ? (
                           <>
-                            <div className="text-slate-300 font-mono font-bold text-sm">
+                            <div className="text-white/70 font-mono font-bold text-sm">
                               {formatAUM(inv.fundSize)}
                             </div>
                             <div className="text-slate-500 text-xs">
@@ -388,7 +388,7 @@ function InvestorsPageInner() {
 
                     {/* Stats */}
                     <div className="grid grid-cols-2 gap-3 mb-3">
-                      <div className="bg-slate-900/50 rounded-lg p-2">
+                      <div className="bg-black/50 rounded-lg p-2">
                         <div className="text-slate-500 text-xs">
                           Space Deals
                         </div>
@@ -396,7 +396,7 @@ function InvestorsPageInner() {
                           {inv.dealCount || inv.portfolioCount || 0}
                         </div>
                       </div>
-                      <div className="bg-slate-900/50 rounded-lg p-2">
+                      <div className="bg-black/50 rounded-lg p-2">
                         <div className="text-slate-500 text-xs">
                           Total Invested
                         </div>
@@ -413,7 +413,7 @@ function InvestorsPageInner() {
                       {inv.sectorFocus.map((s) => (
                         <span
                           key={s}
-                          className="text-xs bg-slate-800/40 text-slate-300 px-2 py-0.5 rounded"
+                          className="text-xs bg-white/[0.04] text-white/70 px-2 py-0.5 rounded"
                         >
                           {SECTOR_LABELS[s] || s}
                         </span>
@@ -425,7 +425,7 @@ function InvestorsPageInner() {
                       {inv.investmentStage.map((s) => (
                         <span
                           key={s}
-                          className="text-xs bg-slate-700/50 text-slate-300 px-2 py-0.5 rounded"
+                          className="text-xs bg-slate-700/50 text-white/70 px-2 py-0.5 rounded"
                         >
                           {STAGE_LABELS[s] || s}
                         </span>
@@ -450,7 +450,7 @@ function InvestorsPageInner() {
                       onClick={() =>
                         setExpandedId(isExpanded ? null : inv.id)
                       }
-                      className="text-xs text-slate-300 hover:text-white transition-colors"
+                      className="text-xs text-white/70 hover:text-white transition-colors"
                     >
                       {isExpanded
                         ? 'Show less'
@@ -459,7 +459,7 @@ function InvestorsPageInner() {
 
                     {/* Expanded content */}
                     {isExpanded && (
-                      <div className="mt-3 pt-3 border-t border-slate-700/50 space-y-3">
+                      <div className="mt-3 pt-3 border-t border-white/[0.06] space-y-3">
                         {inv.description && (
                           <p className="text-slate-400 text-sm">
                             {inv.description}
@@ -488,7 +488,7 @@ function InvestorsPageInner() {
                               href={inv.website}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-slate-300 hover:text-white transition-colors"
+                              className="text-white/70 hover:text-white transition-colors"
                             >
                               Website
                             </a>
@@ -497,7 +497,7 @@ function InvestorsPageInner() {
                             href={`/funding-tracker?investor=${encodeURIComponent(
                               inv.name
                             )}`}
-                            className="text-slate-300 hover:text-white transition-colors"
+                            className="text-white/70 hover:text-white transition-colors"
                           >
                             View Deals
                           </Link>
@@ -522,7 +522,7 @@ function InvestorsPageInner() {
             </Link>
             <Link
               href="/space-capital"
-              className="px-6 py-3 rounded-lg bg-slate-700/50 text-slate-300 border border-slate-600/50 hover:bg-slate-700 transition-colors text-sm font-medium"
+              className="px-6 py-3 rounded-lg bg-slate-700/50 text-white/70 border border-white/[0.08] hover:bg-slate-700 transition-colors text-sm font-medium"
             >
               Space Capital Overview
             </Link>
@@ -531,7 +531,7 @@ function InvestorsPageInner() {
 
         {/* Data Sources Footer */}
         <ScrollReveal>
-          <div className="bg-slate-800/30 rounded-xl border border-slate-700/30 p-6">
+          <div className="bg-white/[0.03] rounded-xl border border-white/[0.04] p-6">
             <h4 className="text-slate-400 font-semibold text-sm mb-3">
               Data Sources
             </h4>

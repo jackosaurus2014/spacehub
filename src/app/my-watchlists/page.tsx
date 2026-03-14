@@ -53,7 +53,7 @@ const PRIORITY_COLORS: Record<string, string> = {
 };
 
 const SEARCH_TYPE_LABELS: Record<string, { label: string; icon: string; color: string }> = {
-  company_directory: { label: 'Companies', icon: '🏢', color: 'text-slate-300' },
+  company_directory: { label: 'Companies', icon: '🏢', color: 'text-white/70' },
   marketplace_listings: { label: 'Listings', icon: '🏪', color: 'text-emerald-400' },
   marketplace_rfqs: { label: 'RFQs', icon: '📋', color: 'text-purple-400' },
 };
@@ -231,7 +231,7 @@ function WatchlistsContent() {
           <div className="text-4xl">🔒</div>
           <h2 className="text-lg font-semibold text-white">Sign in Required</h2>
           <p className="text-sm text-slate-400">Please sign in to manage your watchlists and saved searches.</p>
-          <Link href="/login" className="text-slate-300 hover:text-white text-sm font-medium">
+          <Link href="/login" className="text-white/70 hover:text-white text-sm font-medium">
             Sign In →
           </Link>
         </div>
@@ -257,7 +257,7 @@ function WatchlistsContent() {
 
         {/* Tabs */}
         <ScrollReveal delay={0.1}>
-          <div className="flex items-center gap-1 bg-slate-800 rounded-lg p-1 w-fit">
+          <div className="flex items-center gap-1 bg-white/[0.06] rounded-lg p-1 w-fit">
             {tabs.map((t) => (
               <button
                 key={t.key}
@@ -433,7 +433,7 @@ function WatchlistsContent() {
                           title={search.alertEnabled ? 'Disable alerts' : 'Enable alerts'}
                           className={`text-sm px-2 py-1 rounded transition-colors ${
                             search.alertEnabled
-                              ? 'bg-white/10 text-slate-300'
+                              ? 'bg-white/10 text-white/70'
                               : 'bg-slate-700/50 text-slate-500 hover:text-white'
                           }`}
                         >
@@ -536,20 +536,20 @@ function WatchlistsContent() {
                       </span>
                     </div>
 
-                    <p className="text-slate-300 text-xs leading-relaxed">{digest.summary}</p>
+                    <p className="text-white/70 text-xs leading-relaxed">{digest.summary}</p>
 
                     {highlights.length > 0 && (
                       <ul className="space-y-1">
                         {highlights.slice(0, 3).map((h: string, j: number) => (
                           <li key={j} className="flex items-start gap-2 text-[11px] text-slate-400">
-                            <span className="text-slate-300 mt-0.5">•</span>
+                            <span className="text-white/70 mt-0.5">•</span>
                             <span>{h}</span>
                           </li>
                         ))}
                       </ul>
                     )}
 
-                    <div className="text-xs text-slate-500 pt-1 border-t border-slate-700/50">
+                    <div className="text-xs text-slate-500 pt-1 border-t border-white/[0.06]">
                       {digest.newsCount} articles analyzed
                     </div>
                   </motion.div>

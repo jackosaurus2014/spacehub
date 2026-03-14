@@ -249,8 +249,8 @@ export default function DashboardBuilder({
             onClick={onToggleEdit}
             className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg shadow-sm transition-all ${
               isEditing
-                ? 'text-slate-300 bg-slate-800 hover:bg-slate-700 border border-slate-700'
-                : 'text-slate-300 bg-white/5 hover:bg-slate-100/20 border border-white/10'
+                ? 'text-white/70 bg-white/[0.06] hover:bg-white/[0.08] border border-white/[0.08]'
+                : 'text-white/70 bg-white/5 hover:bg-slate-100/20 border border-white/10'
             }`}
           >
             {isEditing ? (
@@ -343,14 +343,14 @@ export default function DashboardBuilder({
         {/* Empty state */}
         {localWidgets.length === 0 && (
           <div className="flex flex-col items-center justify-center h-64 text-center">
-            <svg className="w-12 h-12 text-slate-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-12 h-12 text-white/70 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" />
             </svg>
             <p className="text-slate-400 text-sm mb-2">No widgets yet</p>
             {isEditing ? (
               <button
                 onClick={() => setShowAddModal(true)}
-                className="text-sm text-slate-300 hover:text-white font-medium"
+                className="text-sm text-white/70 hover:text-white font-medium"
               >
                 Add your first widget
               </button>
@@ -387,7 +387,7 @@ export default function DashboardBuilder({
             {isEditing && (
               <button
                 onClick={() => setShowAddModal(true)}
-                className="text-sm text-slate-300 hover:text-white font-medium mt-2"
+                className="text-sm text-white/70 hover:text-white font-medium mt-2"
               >
                 Add your first widget
               </button>

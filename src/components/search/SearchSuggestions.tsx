@@ -222,7 +222,7 @@ export default function SearchSuggestions({
                 className={`w-full flex items-center gap-3 px-4 py-2.5 text-left transition-colors ${
                   isSelected
                     ? 'bg-white/5 border-l-2 border-white/10'
-                    : 'border-l-2 border-transparent hover:bg-slate-700/30'
+                    : 'border-l-2 border-transparent hover:bg-white/[0.06]'
                 }`}
               >
                 <div
@@ -237,7 +237,7 @@ export default function SearchSuggestions({
                   <div className="flex items-center gap-2">
                     <span
                       className={`text-sm font-medium truncate ${
-                        isSelected ? 'text-slate-200' : 'text-slate-200'
+                        isSelected ? 'text-white/90' : 'text-white/90'
                       }`}
                     >
                       {item.name}
@@ -256,7 +256,7 @@ export default function SearchSuggestions({
                 </div>
                 {isSelected && (
                   <div className="flex-shrink-0">
-                    <kbd className="px-1.5 py-0.5 rounded bg-slate-700/50 border border-slate-600/50 text-[10px] font-mono text-slate-400">
+                    <kbd className="px-1.5 py-0.5 rounded bg-white/[0.05] border border-white/[0.08] text-[10px] font-mono text-slate-400">
                       Enter
                     </kbd>
                   </div>

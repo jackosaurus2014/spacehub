@@ -110,7 +110,7 @@ const TRAJECTORY_STYLES: Record<TrajectoryStatus, { label: string; color: string
   not_feasible: { label: 'Not Feasible', color: 'text-red-400', bg: 'bg-red-900/20' },
 };
 
-const DEFAULT_TRAJECTORY_STYLE = { label: 'Unknown', color: 'text-slate-400', bg: 'bg-slate-900/20' };
+const DEFAULT_TRAJECTORY_STYLE = { label: 'Unknown', color: 'text-slate-400', bg: 'bg-black/20' };
 
 const CONFIDENCE_STYLES: Record<ValueConfidence, { label: string; color: string }> = {
   high: { label: 'High Confidence', color: 'text-green-400' },
@@ -735,7 +735,7 @@ function MiningBodyCard({ body }: { body: MiningBody }) {
     .slice(0, 5);
 
   return (
-    <div className="bg-slate-800/50 rounded-xl p-5 border border-slate-700/50 hover:border-amber-500/30 transition-all">
+    <div className="bg-white/[0.04] rounded-xl p-5 border border-white/[0.06] hover:border-amber-500/30 transition-all">
       {/* Header */}
       <div className="flex items-start justify-between mb-3">
         <div className="flex items-center gap-3">
@@ -768,7 +768,7 @@ function MiningBodyCard({ body }: { body: MiningBody }) {
 
       {/* Key Stats Grid */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
-        <div className="bg-slate-900/50 rounded-lg p-2.5 text-center border border-slate-700/30">
+        <div className="bg-black/50 rounded-lg p-2.5 text-center border border-white/[0.06]">
           <div className="text-slate-400 text-xs uppercase tracking-widest mb-1">Value</div>
           <div className="text-white font-bold text-sm">
             {body.estimatedValue ? formatLargeValue(body.estimatedValue) : 'Unknown'}
@@ -777,19 +777,19 @@ function MiningBodyCard({ body }: { body: MiningBody }) {
             <div className={`text-xs ${confidence.color}`}>{confidence.label}</div>
           )}
         </div>
-        <div className="bg-slate-900/50 rounded-lg p-2.5 text-center border border-slate-700/30">
+        <div className="bg-black/50 rounded-lg p-2.5 text-center border border-white/[0.06]">
           <div className="text-slate-400 text-xs uppercase tracking-widest mb-1">Delta-V</div>
           <div className={`font-bold text-sm ${getDeltaVColor(body.deltaV)}`}>
             {formatDeltaV(body.deltaV)}
           </div>
         </div>
-        <div className="bg-slate-900/50 rounded-lg p-2.5 text-center border border-slate-700/30">
+        <div className="bg-black/50 rounded-lg p-2.5 text-center border border-white/[0.06]">
           <div className="text-slate-400 text-xs uppercase tracking-widest mb-1">Diameter</div>
           <div className="text-white font-bold text-sm">
             {body.diameter ? formatDistance(body.diameter) : 'Unknown'}
           </div>
         </div>
-        <div className="bg-slate-900/50 rounded-lg p-2.5 text-center border border-slate-700/30">
+        <div className="bg-black/50 rounded-lg p-2.5 text-center border border-white/[0.06]">
           <div className="text-slate-400 text-xs uppercase tracking-widest mb-1">Mass</div>
           <div className="text-white font-bold text-sm">
             {body.mass ? formatMass(body.mass) : 'Unknown'}
@@ -817,7 +817,7 @@ function MiningBodyCard({ body }: { body: MiningBody }) {
       )}
 
       {/* Orbital Info */}
-      <div className="flex flex-wrap gap-3 text-xs text-slate-400 border-t border-slate-700/30 pt-3">
+      <div className="flex flex-wrap gap-3 text-xs text-slate-400 border-t border-white/[0.06] pt-3">
         {body.orbitalFamily && (
           <span className="flex items-center gap-1">
             <span className="text-slate-500">Family:</span> {body.orbitalFamily}
@@ -837,7 +837,7 @@ function MiningBodyCard({ body }: { body: MiningBody }) {
 
       {/* Mission History */}
       {missionHistory.length > 0 && (
-        <div className="mt-3 pt-3 border-t border-slate-700/30">
+        <div className="mt-3 pt-3 border-t border-white/[0.06]">
           <div className="text-slate-400 text-xs uppercase tracking-widest mb-1">Missions</div>
           <div className="text-slate-400 text-xs">{missionHistory.join(', ')}</div>
         </div>
@@ -868,7 +868,7 @@ function CommodityCard({ commodity }: { commodity: CommodityPrice }) {
   } catch { /* ignore malformed JSON */ }
 
   return (
-    <div className="bg-slate-800/50 rounded-xl p-4 border border-slate-700/50 hover:border-amber-500/30 transition-all">
+    <div className="bg-white/[0.04] rounded-xl p-4 border border-white/[0.06] hover:border-amber-500/30 transition-all">
       <div className="flex items-start justify-between mb-2">
         <div>
           <h4 className="text-white font-semibold">{commodity.name}</h4>
@@ -876,13 +876,13 @@ function CommodityCard({ commodity }: { commodity: CommodityPrice }) {
             <span className="text-slate-400 text-sm">{commodity.symbol}</span>
           )}
         </div>
-        <span className={`text-xs font-medium px-2 py-0.5 rounded ${categoryInfo.color} bg-slate-700/50`}>
+        <span className={`text-xs font-medium px-2 py-0.5 rounded ${categoryInfo.color} bg-white/[0.08]`}>
           {categoryInfo.label}
         </span>
       </div>
 
       <div className="grid grid-cols-2 gap-2 mb-3">
-        <div className="bg-slate-900/50 rounded p-2 border border-slate-700/30">
+        <div className="bg-black/50 rounded p-2 border border-white/[0.06]">
           <div className="text-slate-400 text-xs">Earth Price</div>
           <div className="text-white font-bold text-sm">
             ${commodity.pricePerKg != null
@@ -911,7 +911,7 @@ function CommodityCard({ commodity }: { commodity: CommodityPrice }) {
       {spaceApplications.length > 0 && (
         <div className="flex flex-wrap gap-1">
           {spaceApplications.slice(0, 3).map((app: string) => (
-            <span key={app} className="px-1.5 py-0.5 bg-slate-700/50 text-slate-300 rounded text-xs">
+            <span key={app} className="px-1.5 py-0.5 bg-white/[0.08] text-slate-300 rounded text-xs">
               {app}
             </span>
           ))}
@@ -927,7 +927,7 @@ function CommodityCard({ commodity }: { commodity: CommodityPrice }) {
 
 function StatsCard({ label, value, subValue, icon }: { label: string; value: string; subValue?: string; icon: string }) {
   return (
-    <div className="bg-slate-800/50 rounded-xl p-4 border border-slate-700/50">
+    <div className="bg-white/[0.04] rounded-xl p-4 border border-white/[0.06]">
       <div className="flex items-center gap-3">
         <span className="text-2xl">{icon}</span>
         <div>
@@ -954,7 +954,7 @@ const COMPANY_STATUS_STYLES: Record<MiningCompany['status'], { label: string; co
 function CompanyCard({ company }: { company: MiningCompany }) {
   const statusStyle = COMPANY_STATUS_STYLES[company.status];
   return (
-    <div className="bg-slate-800/50 rounded-xl p-5 border border-slate-700/50 hover:border-white/10 transition-all">
+    <div className="bg-white/[0.04] rounded-xl p-5 border border-white/[0.06] hover:border-white/10 transition-all">
       <div className="flex items-start justify-between mb-3">
         <div>
           <h3 className="text-white font-semibold text-lg">{company.name}</h3>
@@ -966,11 +966,11 @@ function CompanyCard({ company }: { company: MiningCompany }) {
       </div>
       <p className="text-slate-400 text-sm mb-4 leading-relaxed">{company.description}</p>
       <div className="grid grid-cols-2 gap-3 mb-4">
-        <div className="bg-slate-900/50 rounded-lg p-2.5 border border-slate-700/30">
+        <div className="bg-black/50 rounded-lg p-2.5 border border-white/[0.06]">
           <div className="text-slate-400 text-xs uppercase tracking-widest mb-1">Founded</div>
           <div className="text-white font-bold text-sm">{company.founded}</div>
         </div>
-        <div className="bg-slate-900/50 rounded-lg p-2.5 border border-slate-700/30">
+        <div className="bg-black/50 rounded-lg p-2.5 border border-white/[0.06]">
           <div className="text-slate-400 text-xs uppercase tracking-widest mb-1">Funding</div>
           <div className="text-white font-bold text-sm">{company.fundingStage}</div>
         </div>
@@ -1022,7 +1022,7 @@ function TechnologyCard({ tech }: { tech: MiningTechnology }) {
   const trlBarColor = tech.trl >= 7 ? 'bg-green-500' : tech.trl >= 5 ? 'bg-yellow-500' : tech.trl >= 3 ? 'bg-orange-500' : 'bg-red-500';
 
   return (
-    <div className="bg-slate-800/50 rounded-xl p-5 border border-slate-700/50 hover:border-orange-500/30 transition-all">
+    <div className="bg-white/[0.04] rounded-xl p-5 border border-white/[0.06] hover:border-orange-500/30 transition-all">
       <div className="flex items-start justify-between mb-3">
         <h3 className="text-white font-semibold text-lg pr-2">{tech.name}</h3>
         <span className={`text-xs font-bold px-2.5 py-1 rounded whitespace-nowrap ${catStyle.bg} ${catStyle.color}`}>
@@ -1036,7 +1036,7 @@ function TechnologyCard({ tech }: { tech: MiningTechnology }) {
           <span className="text-slate-400 text-xs uppercase tracking-widest">Technology Readiness</span>
           <span className={`text-sm font-bold ${trlColor}`}>TRL {tech.trl}/9</span>
         </div>
-        <div className="w-full bg-slate-700/50 rounded-full h-2">
+        <div className="w-full bg-white/[0.08] rounded-full h-2">
           <div className={`h-2 rounded-full ${trlBarColor} transition-all`} style={{ width: trlBarWidth }} />
         </div>
       </div>
@@ -1066,7 +1066,7 @@ function TechnologyCard({ tech }: { tech: MiningTechnology }) {
         </div>
       </div>
 
-      <div className="flex flex-wrap gap-4 text-xs border-t border-slate-700/30 pt-3">
+      <div className="flex flex-wrap gap-4 text-xs border-t border-white/[0.06] pt-3">
         <div>
           <span className="text-slate-500">Developers: </span>
           <span className="text-slate-300">{tech.developers.join(', ')}</span>
@@ -1074,7 +1074,7 @@ function TechnologyCard({ tech }: { tech: MiningTechnology }) {
       </div>
       <div className="flex flex-wrap gap-1.5 mt-2">
         {tech.applicableBodies.map((body) => (
-          <span key={body} className="px-2 py-0.5 bg-slate-700/50 text-slate-300 rounded text-xs">{body}</span>
+          <span key={body} className="px-2 py-0.5 bg-white/[0.08] text-slate-300 rounded text-xs">{body}</span>
         ))}
       </div>
     </div>
@@ -1090,7 +1090,7 @@ const RESOURCE_CATEGORY_STYLES: Record<ResourceEstimate['category'], { label: st
   precious_metal: { label: 'Precious Metal', color: 'text-yellow-400', bg: 'bg-yellow-900/30', icon: '💰' },
   rare_earth: { label: 'Rare Earth', color: 'text-purple-400', bg: 'bg-purple-900/30', icon: '⚛' },
   fuel: { label: 'Fuel', color: 'text-red-400', bg: 'bg-red-900/30', icon: '🔥' },
-  structural: { label: 'Structural', color: 'text-slate-300', bg: 'bg-slate-700/30', icon: '🏗' },
+  structural: { label: 'Structural', color: 'text-slate-300', bg: 'bg-white/[0.06]', icon: '🏗' },
 };
 
 const DEMAND_STYLES: Record<ResourceEstimate['demandOutlook'], { label: string; color: string }> = {
@@ -1105,7 +1105,7 @@ function ResourceEstimateCard({ resource }: { resource: ResourceEstimate }) {
   const demandStyle = DEMAND_STYLES[resource.demandOutlook];
 
   return (
-    <div className="bg-slate-800/50 rounded-xl p-5 border border-slate-700/50 hover:border-purple-500/30 transition-all">
+    <div className="bg-white/[0.04] rounded-xl p-5 border border-white/[0.06] hover:border-purple-500/30 transition-all">
       <div className="flex items-start justify-between mb-3">
         <div className="flex items-center gap-2">
           <span className="text-2xl">{catStyle.icon}</span>
@@ -1117,7 +1117,7 @@ function ResourceEstimateCard({ resource }: { resource: ResourceEstimate }) {
       </div>
 
       <div className="grid grid-cols-2 gap-3 mb-4">
-        <div className="bg-slate-900/50 rounded-lg p-3 border border-slate-700/30">
+        <div className="bg-black/50 rounded-lg p-3 border border-white/[0.06]">
           <div className="text-slate-400 text-xs uppercase tracking-widest mb-1">Earth Price</div>
           <div className="text-white font-bold text-sm">{resource.earthPrice}</div>
         </div>
@@ -1147,7 +1147,7 @@ function ResourceEstimateCard({ resource }: { resource: ResourceEstimate }) {
         <div className="text-slate-400 text-xs uppercase tracking-widest mb-1.5">Applications</div>
         <div className="flex flex-wrap gap-1.5">
           {resource.applications.map((app) => (
-            <span key={app} className="px-2 py-0.5 bg-slate-700/50 text-slate-300 rounded text-xs">{app}</span>
+            <span key={app} className="px-2 py-0.5 bg-white/[0.08] text-slate-300 rounded text-xs">{app}</span>
           ))}
         </div>
       </div>
@@ -1170,7 +1170,7 @@ function SearchInput({ value, onChange, placeholder }: { value: string; onChange
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder || 'Search...'}
-        className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg pl-10 pr-4 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none placeholder:text-slate-500"
+        className="w-full bg-white/[0.06] border border-white/[0.06] text-white rounded-lg pl-10 pr-4 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none placeholder:text-slate-500"
       />
       {value && (
         <button
@@ -1214,7 +1214,7 @@ function FilterBar({
       <select
         value={bodyType}
         onChange={(e) => setBodyType(e.target.value as MiningBodyType | '')}
-        className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm min-w-[140px] focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+        className="bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm min-w-[140px] focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
       >
         <option value="">All Body Types</option>
         {MINING_BODY_TYPES.map((t) => (
@@ -1225,7 +1225,7 @@ function FilterBar({
       <select
         value={spectralType}
         onChange={(e) => setSpectralType(e.target.value as SpectralType | '')}
-        className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm min-w-[140px] focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+        className="bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm min-w-[140px] focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
       >
         <option value="">All Spectral Types</option>
         {SPECTRAL_TYPES.map((t) => (
@@ -1236,7 +1236,7 @@ function FilterBar({
       <select
         value={trajectoryStatus}
         onChange={(e) => setTrajectoryStatus(e.target.value as TrajectoryStatus | '')}
-        className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm min-w-[140px] focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+        className="bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm min-w-[140px] focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
       >
         <option value="">All Accessibility</option>
         {Object.entries(TRAJECTORY_STYLES).map(([key, { label }]) => (
@@ -1247,7 +1247,7 @@ function FilterBar({
       <select
         value={sortBy}
         onChange={(e) => setSortBy(e.target.value as 'value' | 'deltaV' | 'diameter' | 'name')}
-        className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm min-w-[140px] focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+        className="bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm min-w-[140px] focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
       >
         <option value="value">Sort by Value</option>
         <option value="deltaV">Sort by Delta-V</option>
@@ -1530,7 +1530,7 @@ function SpaceMiningContent() {
       )}
 
       {/* Tabs */}
-      <div className="border-b border-slate-500/30">
+      <div className="border-b border-white/[0.08]">
         <div className="flex gap-1 overflow-x-auto">
           {tabs.map((tab) => (
             <button
@@ -1538,8 +1538,8 @@ function SpaceMiningContent() {
               onClick={() => handleTabChange(tab.id)}
               className={`px-4 py-2.5 text-sm font-medium whitespace-nowrap border-b-2 transition-colors ${
                 activeTab === tab.id
-                  ? 'border-white/15 text-slate-200 drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]'
-                  : 'border-transparent text-slate-200 hover:text-white hover:border-slate-400 drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]'
+                  ? 'border-white/15 text-white/90 drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]'
+                  : 'border-transparent text-white/90 hover:text-white hover:border-white/[0.1] drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]'
               }`}
             >
               <span className="mr-1.5">{tab.icon}</span>
@@ -1577,7 +1577,7 @@ function SpaceMiningContent() {
           <select
             value={companyStatusFilter}
             onChange={(e) => setCompanyStatusFilter(e.target.value as MiningCompany['status'] | '')}
-            className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm min-w-[140px] focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+            className="bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm min-w-[140px] focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
           >
             <option value="">All Statuses</option>
             <option value="active">Active</option>
@@ -1588,7 +1588,7 @@ function SpaceMiningContent() {
           <select
             value={companySortBy}
             onChange={(e) => setCompanySortBy(e.target.value as 'name' | 'founded' | 'status')}
-            className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm min-w-[140px] focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+            className="bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm min-w-[140px] focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
           >
             <option value="name">Sort by Name</option>
             <option value="founded">Sort by Founded</option>
@@ -1602,7 +1602,7 @@ function SpaceMiningContent() {
           <select
             value={techCategoryFilter}
             onChange={(e) => setTechCategoryFilter(e.target.value as MiningTechnology['category'] | '')}
-            className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm min-w-[140px] focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+            className="bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm min-w-[140px] focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
           >
             <option value="">All Categories</option>
             <option value="extraction">Extraction</option>
@@ -1613,7 +1613,7 @@ function SpaceMiningContent() {
           <select
             value={techSortBy}
             onChange={(e) => setTechSortBy(e.target.value as 'name' | 'trl' | 'category')}
-            className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm min-w-[140px] focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+            className="bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm min-w-[140px] focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
           >
             <option value="trl">Sort by TRL (Readiness)</option>
             <option value="name">Sort by Name</option>
@@ -1627,7 +1627,7 @@ function SpaceMiningContent() {
           <select
             value={resourceCategoryFilter}
             onChange={(e) => setResourceCategoryFilter(e.target.value as ResourceEstimate['category'] | '')}
-            className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm min-w-[140px] focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+            className="bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm min-w-[140px] focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
           >
             <option value="">All Categories</option>
             <option value="volatile">Volatiles</option>
@@ -1648,7 +1648,7 @@ function SpaceMiningContent() {
             </h2>
           </div>
           {filteredCompanies.length === 0 ? (
-            <div className="text-center py-12 text-slate-200 drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]">
+            <div className="text-center py-12 text-white/90 drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]">
               <p className="text-4xl mb-4">🏢</p>
               <p>No companies found matching your filters.</p>
             </div>
@@ -1670,7 +1670,7 @@ function SpaceMiningContent() {
             </h2>
           </div>
           {filteredTechnologies.length === 0 ? (
-            <div className="text-center py-12 text-slate-200 drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]">
+            <div className="text-center py-12 text-white/90 drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]">
               <p className="text-4xl mb-4">🔧</p>
               <p>No technologies found matching your filters.</p>
             </div>
@@ -1692,7 +1692,7 @@ function SpaceMiningContent() {
             </h2>
           </div>
           {filteredResources.length === 0 ? (
-            <div className="text-center py-12 text-slate-200 drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]">
+            <div className="text-center py-12 text-white/90 drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]">
               <p className="text-4xl mb-4">💎</p>
               <p>No resources found matching your filters.</p>
             </div>
@@ -1733,7 +1733,7 @@ function SpaceMiningContent() {
             />
           </div>
           {filteredCommodities.length === 0 ? (
-            <div className="text-center py-12 text-slate-200 drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]">
+            <div className="text-center py-12 text-white/90 drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]">
               <p className="text-4xl mb-4">💰</p>
               <p>No commodities found matching your search.</p>
             </div>
@@ -1761,7 +1761,7 @@ function SpaceMiningContent() {
           </div>
 
           {filteredBodies.length === 0 ? (
-            <div className="text-center py-12 text-slate-200 drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]">
+            <div className="text-center py-12 text-white/90 drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]">
               <p className="text-4xl mb-4">🪨</p>
               <p>No mining bodies found matching your filters.</p>
               <p className="text-sm mt-2">Try adjusting your filter criteria or search term.</p>
@@ -1780,7 +1780,7 @@ function SpaceMiningContent() {
 
       {/* Spectral Type Legend - only on body tabs */}
       {(activeTab === 'overview' || activeTab === 'asteroids' || activeTab === 'moons' || activeTab === 'planets') && (
-        <div className="bg-slate-800/50 rounded-xl p-4 border border-slate-700/50">
+        <div className="bg-white/[0.04] rounded-xl p-4 border border-white/[0.06]">
           <h3 className="text-sm font-semibold text-white mb-3">Spectral Type Guide</h3>
           <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
             {Object.entries(SPECTRAL_TYPE_INFO).slice(0, 5).map(([type, info]) => (
@@ -1798,7 +1798,7 @@ function SpaceMiningContent() {
 
       {/* Top Mining Targets (DynamicContent) - Enhanced with detailed cards */}
       <ScrollReveal>
-        <div className="bg-slate-800/50 rounded-xl p-6 border border-slate-700/50">
+        <div className="bg-white/[0.04] rounded-xl p-6 border border-white/[0.06]">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-semibold text-white flex items-center gap-2">
               <span className="text-2xl">💎</span> High-Value Target Asteroids
@@ -1856,7 +1856,7 @@ function SpaceMiningContent() {
                       return (
                         <tr
                           key={target.full_name}
-                          className={`border-b border-slate-700/30 hover:bg-amber-500/5 transition-colors ${
+                          className={`border-b border-white/[0.06] hover:bg-amber-500/5 transition-colors ${
                             isTop3 ? 'bg-amber-500/5' : ''
                           }`}
                         >
@@ -1877,7 +1877,7 @@ function SpaceMiningContent() {
                           <td className="py-2.5 px-3">
                             <div className="flex gap-1">
                               {target.spec_T && (
-                                <span className="px-1.5 py-0.5 bg-slate-700/50 text-slate-300 rounded text-xs">{target.spec_T}</span>
+                                <span className="px-1.5 py-0.5 bg-white/[0.08] text-slate-300 rounded text-xs">{target.spec_T}</span>
                               )}
                               {target.spec_B && (
                                 <span className="px-1.5 py-0.5 bg-white/10 text-slate-300 rounded text-xs">{target.spec_B}</span>
@@ -1924,10 +1924,10 @@ function SpaceMiningContent() {
               </div>
 
               {/* Detailed target cards */}
-              <h4 className="text-sm font-semibold text-white mb-3 border-t border-slate-700/30 pt-4">Detailed Target Profiles</h4>
+              <h4 className="text-sm font-semibold text-white mb-3 border-t border-white/[0.06] pt-4">Detailed Target Profiles</h4>
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 {filteredMiningTargets.map((target, idx) => (
-                  <div key={target.full_name} className="bg-slate-900/50 rounded-xl p-4 border border-slate-700/30 hover:border-amber-500/20 transition-all">
+                  <div key={target.full_name} className="bg-black/50 rounded-xl p-4 border border-white/[0.06] hover:border-amber-500/20 transition-all">
                     <div className="flex items-start justify-between mb-2">
                       <div className="flex items-center gap-2">
                         <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-amber-500/20 text-amber-400 text-xs font-bold">
@@ -1936,7 +1936,7 @@ function SpaceMiningContent() {
                         <div>
                           <h5 className="text-white font-semibold">{target.full_name}</h5>
                           <div className="flex gap-1 mt-0.5">
-                            {target.spec_T && <span className="px-1.5 py-0.5 bg-slate-700/50 text-slate-300 rounded text-xs">{target.spec_T}-type</span>}
+                            {target.spec_T && <span className="px-1.5 py-0.5 bg-white/[0.08] text-slate-300 rounded text-xs">{target.spec_T}-type</span>}
                             {target.diameter != null && <span className="text-slate-400 text-xs">{target.diameter.toFixed(target.diameter < 1 ? 3 : 1)} km diameter</span>}
                           </div>
                         </div>
@@ -1961,7 +1961,7 @@ function SpaceMiningContent() {
                         ))}
                       </div>
                     )}
-                    <div className="flex flex-wrap gap-3 text-xs text-slate-400 mt-3 pt-2 border-t border-slate-700/20">
+                    <div className="flex flex-wrap gap-3 text-xs text-slate-400 mt-3 pt-2 border-t border-white/[0.06]/20">
                       {target.accessibility != null && (
                         <span>Accessibility: <span className={`font-medium ${target.accessibility >= 1.5 ? 'text-green-400' : target.accessibility >= 1.0 ? 'text-yellow-400' : 'text-orange-400'}`}>{target.accessibility.toFixed(2)}</span></span>
                       )}
@@ -1980,24 +1980,24 @@ function SpaceMiningContent() {
       {/* Industry Overview Summary - only on overview tab */}
       {activeTab === 'overview' && (
         <ScrollReveal>
-          <div className="bg-slate-800/50 rounded-xl p-6 border border-slate-700/50">
+          <div className="bg-white/[0.04] rounded-xl p-6 border border-white/[0.06]">
             <h3 className="text-lg font-semibold text-white flex items-center gap-2 mb-4">
               <span className="text-2xl">🏭</span> Space Mining Industry at a Glance
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-              <div className="bg-slate-900/50 rounded-lg p-4 border border-slate-700/30">
+              <div className="bg-black/50 rounded-lg p-4 border border-white/[0.06]">
                 <div className="text-slate-300 text-xs uppercase tracking-widest mb-2 font-semibold">Active Companies</div>
                 <div className="text-white font-bold text-2xl mb-1">{MINING_COMPANIES.filter(c => c.status === 'active').length}</div>
                 <p className="text-slate-400 text-xs">Developing asteroid and lunar mining technologies</p>
                 <button onClick={() => handleTabChange('companies')} className="text-slate-300 hover:text-white text-xs mt-2 font-medium min-h-[44px] inline-flex items-center">View all companies &rarr;</button>
               </div>
-              <div className="bg-slate-900/50 rounded-lg p-4 border border-slate-700/30">
+              <div className="bg-black/50 rounded-lg p-4 border border-white/[0.06]">
                 <div className="text-orange-400 text-xs uppercase tracking-widest mb-2 font-semibold">Mining Technologies</div>
                 <div className="text-white font-bold text-2xl mb-1">{MINING_TECHNOLOGIES.length}</div>
                 <p className="text-slate-400 text-xs">From optical mining to beneficiation in microgravity</p>
                 <button onClick={() => handleTabChange('technologies')} className="text-orange-400 hover:text-orange-300 text-xs mt-2 font-medium min-h-[44px] inline-flex items-center">View technologies &rarr;</button>
               </div>
-              <div className="bg-slate-900/50 rounded-lg p-4 border border-slate-700/30">
+              <div className="bg-black/50 rounded-lg p-4 border border-white/[0.06]">
                 <div className="text-purple-400 text-xs uppercase tracking-widest mb-2 font-semibold">Tracked Resources</div>
                 <div className="text-white font-bold text-2xl mb-1">{RESOURCE_ESTIMATES.length}</div>
                 <p className="text-slate-400 text-xs">Water, PGMs, rare earths, He-3, iron, silicon, carbon</p>
@@ -2010,7 +2010,7 @@ function SpaceMiningContent() {
 
       {/* Cross-links */}
       <ScrollReveal>
-      <div className="bg-slate-800/50 rounded-xl p-4 border border-slate-700/50">
+      <div className="bg-white/[0.04] rounded-xl p-4 border border-white/[0.06]">
         <h3 className="text-sm font-semibold text-white mb-3">Related Modules</h3>
         <div className="flex flex-wrap gap-3">
           <Link href="/solar-exploration" className="btn-secondary text-sm">
@@ -2044,7 +2044,7 @@ function SpaceMiningContent() {
 
 export default function SpaceMiningPage() {
   return (
-    <div className="min-h-screen bg-slate-950">
+    <div className="min-h-screen bg-black">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <AnimatedPageHeader
           title="Space Mining Intelligence"

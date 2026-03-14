@@ -86,7 +86,7 @@ export default function AlertNudge({
       role="complementary"
       aria-label={`${moduleName} alert nudge`}
       className={[
-        'border-l-4 border-white/15 bg-slate-800/60 rounded-r-lg px-4 py-3',
+        'border-l-4 border-white/15 bg-white/[0.05] rounded-r-lg px-4 py-3',
         'flex items-center gap-3 transition-opacity duration-300',
         fadingOut ? 'opacity-0' : 'animate-fade-in opacity-100',
         className,
@@ -98,13 +98,13 @@ export default function AlertNudge({
         {config.icon}
       </span>
 
-      <p className="text-sm text-slate-300 flex-1 min-w-0">
+      <p className="text-sm text-white/70 flex-1 min-w-0">
         {config.message}
       </p>
 
       <Link
         href={ctaHref}
-        className="flex-shrink-0 text-xs font-medium text-slate-300 hover:text-white transition-colors whitespace-nowrap"
+        className="flex-shrink-0 text-xs font-medium text-white/70 hover:text-white transition-colors whitespace-nowrap"
       >
         Set Up &rarr;
       </Link>
@@ -112,7 +112,7 @@ export default function AlertNudge({
       <button
         onClick={dismiss}
         aria-label="Dismiss alert nudge"
-        className="flex-shrink-0 text-slate-500 hover:text-slate-300 transition-colors text-sm leading-none p-1 -mr-1"
+        className="flex-shrink-0 text-slate-500 hover:text-white/70 transition-colors text-sm leading-none p-1 -mr-1"
       >
         &#10005;
       </button>

@@ -49,7 +49,7 @@ function ResendVerificationForm() {
   }
 
   return (
-    <div className="mt-6 border-t border-slate-700/50 pt-4">
+    <div className="mt-6 border-t border-white/[0.06] pt-4">
       <p className="text-slate-400 text-sm mb-3">
         Need a new verification link? Enter your email below:
       </p>
@@ -148,7 +148,7 @@ function VerifyEmailContent() {
       </div>
       <h2 className="text-lg font-semibold text-white mb-2">Verification Failed</h2>
       <p className="text-slate-400 mb-4">{message}</p>
-      <Link href="/login" className="text-plasma-400 hover:text-plasma-300 transition-colors">
+      <Link href="/login" className="text-white/70 hover:text-white transition-colors">
         Go to login
       </Link>
       <ResendVerificationForm />

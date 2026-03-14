@@ -3,10 +3,10 @@ export default function Loading() {
     <div className="min-h-screen py-8">
       <div className="container mx-auto px-4">
         {/* Breadcrumb */}
-        <div className="h-4 w-36 bg-slate-800/40 rounded animate-pulse mb-6" />
+        <div className="h-4 w-36 bg-white/[0.04] rounded animate-pulse mb-6" />
 
         {/* Launch event hero */}
-        <div className="bg-slate-800/40 rounded-xl animate-pulse p-6 mb-8 space-y-4">
+        <div className="bg-white/[0.04] rounded-xl animate-pulse p-6 mb-8 space-y-4">
           <div className="h-5 w-24 bg-green-500/20 rounded-full" />
           <div className="h-8 w-2/3 bg-slate-700/50 rounded" />
           <div className="h-4 w-48 bg-slate-700/30 rounded" />
@@ -25,7 +25,7 @@ export default function Loading() {
         {/* Details grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 space-y-4">
-            <div className="bg-slate-800/40 rounded-xl animate-pulse p-5 space-y-3">
+            <div className="bg-white/[0.04] rounded-xl animate-pulse p-5 space-y-3">
               <div className="h-5 w-36 bg-slate-700/50 rounded" />
               <div className="h-4 w-full bg-slate-700/30 rounded" />
               <div className="h-4 w-full bg-slate-700/30 rounded" />
@@ -33,7 +33,7 @@ export default function Loading() {
             </div>
           </div>
           <div className="space-y-4">
-            <div className="bg-slate-800/40 rounded-xl animate-pulse p-5 space-y-3">
+            <div className="bg-white/[0.04] rounded-xl animate-pulse p-5 space-y-3">
               <div className="h-5 w-28 bg-slate-700/50 rounded" />
               <div className="h-4 w-full bg-slate-700/30 rounded" />
               <div className="h-4 w-3/4 bg-slate-700/30 rounded" />

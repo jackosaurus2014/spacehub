@@ -99,7 +99,7 @@ function DashboardContent() {
           <div className="text-4xl">🔒</div>
           <h2 className="text-lg font-semibold text-white">Sign in Required</h2>
           <p className="text-sm text-slate-400">Please sign in to access the provider dashboard.</p>
-          <Link href="/login" className="text-slate-300 hover:text-white text-sm font-medium">
+          <Link href="/login" className="text-white/70 hover:text-white text-sm font-medium">
             Sign In →
           </Link>
         </div>
@@ -155,7 +155,7 @@ function DashboardContent() {
         {/* Stats */}
         <StaggerContainer className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {[
-            { label: 'Active Listings', value: listings.filter((l) => l.status === 'active').length, color: 'text-slate-300' },
+            { label: 'Active Listings', value: listings.filter((l) => l.status === 'active').length, color: 'text-white/70' },
             { label: 'Total Views', value: listings.reduce((s, l) => s + (l.viewCount || 0), 0), color: 'text-emerald-400' },
             { label: 'Avg Rating', value: reviews.length > 0 ? (reviews.reduce((s, r) => s + r.overallRating, 0) / reviews.length).toFixed(1) : 'N/A', color: 'text-yellow-400' },
             { label: 'Proposals', value: proposals.length, color: 'text-purple-400' },
@@ -175,7 +175,7 @@ function DashboardContent() {
         </StaggerContainer>
 
         {/* Tabs */}
-        <div className="flex items-center gap-1 bg-slate-800 rounded-lg p-1 w-fit">
+        <div className="flex items-center gap-1 bg-white/[0.06] rounded-lg p-1 w-fit">
           {tabs.map((t) => (
             <button
               key={t.key}
@@ -242,7 +242,7 @@ function DashboardContent() {
                         <span className={verification.criteria[item.key] ? 'text-green-400' : 'text-slate-600'}>
                           {verification.criteria[item.key] ? '✓' : '○'}
                         </span>
-                        <span className={verification.criteria[item.key] ? 'text-slate-300' : 'text-slate-500'}>
+                        <span className={verification.criteria[item.key] ? 'text-white/70' : 'text-slate-500'}>
                           {item.label}
                         </span>
                         <span className="text-xs text-slate-600 ml-auto">{item.level}</span>
@@ -251,7 +251,7 @@ function DashboardContent() {
                   </div>
                 )}
                 {verification.canUpgrade && (
-                  <div className="mt-3 text-xs text-slate-300 bg-white/5 rounded p-2 text-center">
+                  <div className="mt-3 text-xs text-white/70 bg-white/5 rounded p-2 text-center">
                     You qualify for a verification upgrade! It will be applied automatically.
                   </div>
                 )}
@@ -300,9 +300,9 @@ function DashboardContent() {
                     { icon: '📄', title: 'Contract Manager', desc: 'Milestone tracking, change orders, and SLA monitoring' },
                   ].map((feature) => (
                     <StaggerItem key={feature.title}>
-                      <div className="card p-4 opacity-60 border-dashed border-slate-700">
+                      <div className="card p-4 opacity-60 border-dashed border-white/[0.08]">
                         <div className="text-xl mb-2">{feature.icon}</div>
-                        <div className="text-xs font-semibold text-slate-300">{feature.title}</div>
+                        <div className="text-xs font-semibold text-white/70">{feature.title}</div>
                         <div className="text-xs text-slate-500 mt-1">{feature.desc}</div>
                       </div>
                     </StaggerItem>
@@ -326,7 +326,7 @@ function DashboardContent() {
             ) : (
               <div className="text-center py-20">
                 <div className="mx-auto w-20 h-20 rounded-2xl bg-gradient-to-br from-white/5 to-emerald-500/20 border border-white/10 flex items-center justify-center mb-6">
-                  <svg className="w-10 h-10 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-10 h-10 text-white/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                   </svg>
                 </div>

@@ -26,7 +26,7 @@ const CATEGORY_COLORS: Record<string, string> = {
   'Launch Vehicles': 'bg-blue-500/20 text-blue-300',
   Policy: 'bg-rose-500/20 text-rose-300',
   Stations: 'bg-purple-500/20 text-purple-300',
-  Missions: 'bg-white/10 text-slate-200',
+  Missions: 'bg-white/10 text-white/90',
   Technology: 'bg-amber-500/20 text-amber-300',
 };
 
@@ -55,14 +55,14 @@ export default function NewsTicker() {
 
   return (
     <div
-      className="relative z-10 bg-slate-900/80 border-y border-slate-700/40 overflow-hidden"
+      className="relative z-10 bg-black/80 border-y border-white/[0.05] overflow-hidden"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
       {/* Left fade */}
-      <div className="absolute left-0 top-0 bottom-0 w-16 bg-gradient-to-r from-slate-900 to-transparent z-10 pointer-events-none" />
+      <div className="absolute left-0 top-0 bottom-0 w-16 bg-gradient-to-r from-black to-transparent z-10 pointer-events-none" />
       {/* Right fade */}
-      <div className="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-slate-900 to-transparent z-10 pointer-events-none" />
+      <div className="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-black to-transparent z-10 pointer-events-none" />
 
       <div
         className="flex whitespace-nowrap py-2.5"
@@ -73,10 +73,10 @@ export default function NewsTicker() {
       >
         {items.map((h, i) => (
           <Link key={i} href="/news" className="inline-flex items-center gap-2 px-5 shrink-0 group">
-            <span className={`text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded ${CATEGORY_COLORS[h.category] || 'bg-slate-700/50 text-slate-400'}`}>
+            <span className={`text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded ${CATEGORY_COLORS[h.category] || 'bg-white/[0.05] text-slate-400'}`}>
               {h.category}
             </span>
-            <span className="text-sm text-slate-300 group-hover:text-white transition-colors">{h.title}</span>
+            <span className="text-sm text-white/70 group-hover:text-white transition-colors">{h.title}</span>
             <span className="text-slate-600 mx-2">|</span>
           </Link>
         ))}

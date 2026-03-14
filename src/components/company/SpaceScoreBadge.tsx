@@ -199,7 +199,7 @@ export function SpaceScoreMiniBar({
             style={{ width: segmentWidth, height }}
           >
             {/* Background */}
-            <div className="absolute inset-0 bg-slate-800/60" />
+            <div className="absolute inset-0 bg-white/[0.05]" />
             {/* Fill */}
             <div
               className="absolute inset-y-0 left-0 transition-all duration-1000"

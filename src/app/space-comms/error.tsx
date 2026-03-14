@@ -8,7 +8,7 @@ export default function Error({
   reset: () => void;
 }) {
   return (
-    <div className="min-h-screen bg-slate-950 text-white flex items-center justify-center">
+    <div className="min-h-screen bg-black text-white flex items-center justify-center">
       <div className="text-center max-w-md mx-auto px-4">
         <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
           <svg className="w-8 h-8 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -19,7 +19,7 @@ export default function Error({
         <p className="text-slate-400 mb-6">{error.message || 'Failed to load space communications data. Please try again.'}</p>
         <button
           onClick={reset}
-          className="px-6 py-3 bg-white hover:bg-slate-700 text-slate-900 rounded-xl font-medium transition-colors"
+          className="px-6 py-3 bg-white hover:bg-slate-100 text-slate-900 rounded-xl font-medium transition-colors"
         >
           Try Again
         </button>

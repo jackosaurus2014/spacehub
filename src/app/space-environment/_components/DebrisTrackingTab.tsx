@@ -40,7 +40,7 @@ const RISK_COLORS: Record<ConjunctionRisk, { bg: string; text: string; border: s
   low: { bg: 'bg-green-900/30', text: 'text-green-400', border: 'border-green-500', label: 'Low' },
 };
 
-const DEFAULT_RISK_COLOR = { bg: 'bg-slate-900/30', text: 'text-slate-400', border: 'border-slate-500', label: 'Unknown' };
+const DEFAULT_RISK_COLOR = { bg: 'bg-black/30', text: 'text-slate-400', border: 'border-slate-500', label: 'Unknown' };
 
 const OBJECT_TYPE_COLORS: Record<string, string> = {
   payload: 'text-green-400',
@@ -141,18 +141,18 @@ function DebrisConjunctionCard({ event }: { event: ConjunctionEvent }) {
               })}
             </span>
             {isPast && (
-              <span className="text-xs bg-slate-700/50 text-slate-500 px-2 py-0.5 rounded">Past</span>
+              <span className="text-xs bg-white/[0.06] text-slate-500 px-2 py-0.5 rounded">Past</span>
             )}
           </div>
 
           <div className="flex flex-wrap items-center gap-2 text-sm mt-2">
-            <div className="bg-slate-700/50 rounded px-3 py-1.5">
+            <div className="bg-white/[0.06] rounded px-3 py-1.5">
               <span className="text-slate-400 text-xs block">Primary</span>
               <span className="text-white font-medium">{event.primaryObject}</span>
               <span className="text-slate-400 text-xs ml-1">({event.primaryType})</span>
             </div>
             <span className="text-slate-400 font-bold">vs</span>
-            <div className="bg-slate-700/50 rounded px-3 py-1.5">
+            <div className="bg-white/[0.06] rounded px-3 py-1.5">
               <span className="text-slate-400 text-xs block">Secondary</span>
               <span className="text-white font-medium">{event.secondaryObject}</span>
               <span className="text-slate-400 text-xs ml-1">({event.secondaryType})</span>
@@ -164,7 +164,7 @@ function DebrisConjunctionCard({ event }: { event: ConjunctionEvent }) {
               {primaryIsOperator && (
                 <Link
                   href="/orbital-slots?tab=operators"
-                  className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium bg-white/10 text-slate-200 hover:bg-white/15 transition-colors border border-white/10"
+                  className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium bg-white/10 text-white/90 hover:bg-white/15 transition-colors border border-white/10"
                 >
                   View {event.primaryObject} operator &rarr;
                 </Link>
@@ -172,7 +172,7 @@ function DebrisConjunctionCard({ event }: { event: ConjunctionEvent }) {
               {secondaryIsOperator && (
                 <Link
                   href="/orbital-slots?tab=operators"
-                  className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium bg-white/10 text-slate-200 hover:bg-white/15 transition-colors border border-white/10"
+                  className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium bg-white/10 text-white/90 hover:bg-white/15 transition-colors border border-white/10"
                 >
                   View {event.secondaryObject} operator &rarr;
                 </Link>
@@ -201,7 +201,7 @@ function DebrisConjunctionCard({ event }: { event: ConjunctionEvent }) {
         </div>
       </div>
 
-      <div className="flex flex-wrap items-center gap-4 mt-4 pt-3 border-t border-slate-700/50 text-xs">
+      <div className="flex flex-wrap items-center gap-4 mt-4 pt-3 border-t border-white/[0.06] text-xs">
         <span className="text-slate-400">
           Altitude: <span className="text-slate-400 font-medium">{event.altitude.toFixed(0)} km</span>
         </span>
@@ -247,7 +247,7 @@ function DebrisObjectCard({ obj }: { obj: DebrisObject }) {
             <h4 className="font-semibold text-white text-sm truncate">{obj.name}</h4>
           </div>
           <div className="flex flex-wrap items-center gap-2 text-xs">
-            <span className={`px-2 py-0.5 rounded bg-slate-700/50 ${typeColor}`}>
+            <span className={`px-2 py-0.5 rounded bg-white/[0.06] ${typeColor}`}>
               {typeInfo?.label || obj.objectType}
             </span>
             {obj.noradId && (
@@ -260,7 +260,7 @@ function DebrisObjectCard({ obj }: { obj: DebrisObject }) {
           {isActivePayload && (
             <Link
               href="/orbital-slots?tab=operators"
-              className="inline-flex items-center gap-1 mt-2 px-2 py-0.5 rounded text-xs font-medium bg-white/10 text-slate-200 hover:bg-white/15 transition-colors border border-white/10"
+              className="inline-flex items-center gap-1 mt-2 px-2 py-0.5 rounded text-xs font-medium bg-white/10 text-white/90 hover:bg-white/15 transition-colors border border-white/10"
             >
               View in Operator Registry &rarr;
             </Link>
@@ -298,7 +298,7 @@ function DebrisObjectCard({ obj }: { obj: DebrisObject }) {
       {obj.deorbitDate && (
         <div className="mt-2 text-xs">
           <span className="text-slate-400">Est. Deorbit: </span>
-          <span className="text-slate-200 font-medium">
+          <span className="text-white/90 font-medium">
             {new Date(obj.deorbitDate).toLocaleDateString('en-US', {
               month: 'short',
               day: 'numeric',
@@ -500,13 +500,13 @@ export default function DebrisTrackingTab() {
             className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
               activeSubTab === tab.id
                 ? 'bg-white text-slate-900'
-                : 'bg-slate-700/50 text-slate-500 hover:bg-slate-700/50'
+                : 'bg-white/[0.06] text-slate-500 hover:bg-white/[0.06]'
             }`}
           >
             {tab.label}
             {tab.count !== undefined && tab.count > 0 && (
               <span className={`text-xs px-1.5 py-0.5 rounded-full ${
-                activeSubTab === tab.id ? 'bg-white/20 text-slate-900' : 'bg-slate-700/50 text-slate-500'
+                activeSubTab === tab.id ? 'bg-white/20 text-slate-900' : 'bg-white/[0.06] text-slate-500'
               }`}>
                 {tab.count}
               </span>
@@ -537,7 +537,7 @@ export default function DebrisTrackingTab() {
                         </div>
                         <span className="text-slate-400 text-sm font-medium">{orbit.count.toLocaleString()} ({pct.toFixed(1)}%)</span>
                       </div>
-                      <div className="h-3 bg-slate-700/50 rounded-full overflow-hidden">
+                      <div className="h-3 bg-white/[0.06] rounded-full overflow-hidden">
                         <div className={`h-full bg-gradient-to-r ${orbit.color} rounded-full transition-all`} style={{ width: `${Math.min(pct, 100)}%` }} />
                       </div>
                     </div>
@@ -562,7 +562,7 @@ export default function DebrisTrackingTab() {
                         <span className="text-slate-400 text-sm">{type.label}</span>
                         <span className="text-slate-400 text-sm font-medium">{type.count.toLocaleString()} ({pct.toFixed(1)}%)</span>
                       </div>
-                      <div className="h-3 bg-slate-700/50 rounded-full overflow-hidden">
+                      <div className="h-3 bg-white/[0.06] rounded-full overflow-hidden">
                         <div className={`h-full bg-gradient-to-r ${type.color} rounded-full transition-all`} style={{ width: `${Math.min(pct, 100)}%` }} />
                       </div>
                     </div>
@@ -591,7 +591,7 @@ export default function DebrisTrackingTab() {
                 <div className="text-slate-400 text-xs">Compliance Rate</div>
               </div>
             </div>
-            <div className="h-4 bg-slate-700/50 rounded-full overflow-hidden">
+            <div className="h-4 bg-white/[0.06] rounded-full overflow-hidden">
               <div
                 className={`h-full rounded-full transition-all ${
                   (overview?.complianceRate ?? 0) >= 0.8 ? 'bg-gradient-to-r from-green-500 to-green-400' :
@@ -607,7 +607,7 @@ export default function DebrisTrackingTab() {
             <div>
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold text-white">Critical & High-Risk Events</h3>
-                <button onClick={() => handleSubTabChange('conjunctions')} className="text-slate-200 hover:text-white text-sm transition-colors">
+                <button onClick={() => handleSubTabChange('conjunctions')} className="text-white/90 hover:text-white text-sm transition-colors">
                   View All &rarr;
                 </button>
               </div>
@@ -647,7 +647,7 @@ export default function DebrisTrackingTab() {
                 scenarios based on real-world debris events and orbital mechanics. Object counts align with
                 ESA Space Environment Report and USSPACECOM public catalog data.
               </p>
-              <Link href="/orbital-slots" className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-white/10 text-slate-200 hover:bg-white/15 transition-colors border border-white/10 whitespace-nowrap">
+              <Link href="/orbital-slots" className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-white/10 text-white/90 hover:bg-white/15 transition-colors border border-white/10 whitespace-nowrap">
                 See tracked operators &rarr;
               </Link>
             </div>
@@ -661,14 +661,14 @@ export default function DebrisTrackingTab() {
           <div className="card p-4 mb-6">
             <div className="flex flex-wrap items-center gap-2">
               <span className="text-slate-400 text-sm mr-2">Filter by risk:</span>
-              <button onClick={() => setRiskFilter('')} className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${riskFilter === '' ? 'bg-slate-700/50 text-white border border-slate-700/50' : 'bg-transparent text-slate-400 border border-slate-700/50 hover:border-slate-300'}`}>
+              <button onClick={() => setRiskFilter('')} className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${riskFilter === '' ? 'bg-white/[0.06] text-white border border-white/[0.06]' : 'bg-transparent text-slate-400 border border-white/[0.06] hover:border-white/30'}`}>
                 All ({conjunctions.length})
               </button>
               {(['critical', 'high', 'moderate', 'low'] as ConjunctionRisk[]).map((level) => {
                 const count = conjunctions.filter((c) => c.riskLevel === level).length;
                 const info = RISK_COLORS[level] || DEFAULT_RISK_COLOR;
                 return (
-                  <button key={level} onClick={() => setRiskFilter(level)} className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${riskFilter === level ? `${info.bg} ${info.text} border ${info.border}` : 'bg-transparent text-slate-400 border border-slate-700/50 hover:border-slate-300'}`}>
+                  <button key={level} onClick={() => setRiskFilter(level)} className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${riskFilter === level ? `${info.bg} ${info.text} border ${info.border}` : 'bg-transparent text-slate-400 border border-white/[0.06] hover:border-white/30'}`}>
                     {info.label} ({count})
                   </button>
                 );
@@ -701,13 +701,13 @@ export default function DebrisTrackingTab() {
           <div className="card p-4 mb-6">
             <div className="flex flex-wrap items-center gap-2">
               <span className="text-slate-400 text-sm mr-2">Filter by type:</span>
-              <button onClick={() => setObjectTypeFilter('')} className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${objectTypeFilter === '' ? 'bg-slate-700/50 text-white border border-slate-700/50' : 'bg-transparent text-slate-400 border border-slate-700/50 hover:border-slate-300'}`}>
+              <button onClick={() => setObjectTypeFilter('')} className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${objectTypeFilter === '' ? 'bg-white/[0.06] text-white border border-white/[0.06]' : 'bg-transparent text-slate-400 border border-white/[0.06] hover:border-white/30'}`}>
                 All ({notableDebris.length})
               </button>
               {DEBRIS_OBJECT_TYPES.map((type) => {
                 const count = notableDebris.filter((o) => o.objectType === type.value).length;
                 return (
-                  <button key={type.value} onClick={() => setObjectTypeFilter(type.value)} className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all flex items-center gap-1 ${objectTypeFilter === type.value ? 'bg-slate-700/50 text-white border border-slate-700/50' : 'bg-transparent text-slate-400 border border-slate-700/50 hover:border-slate-300'}`}>
+                  <button key={type.value} onClick={() => setObjectTypeFilter(type.value)} className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all flex items-center gap-1 ${objectTypeFilter === type.value ? 'bg-white/[0.06] text-white border border-white/[0.06]' : 'bg-transparent text-slate-400 border border-white/[0.06] hover:border-white/30'}`}>
                     <span>{type.icon}</span>
                     {type.label} ({count})
                   </button>

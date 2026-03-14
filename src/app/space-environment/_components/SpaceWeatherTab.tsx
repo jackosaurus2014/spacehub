@@ -72,12 +72,12 @@ const EARTH_EVENT_CATEGORY_COLORS: Record<string, string> = {
   wildfires: 'bg-orange-500/20 text-orange-400 border-orange-500/30',
   'severe storms': 'bg-blue-500/20 text-blue-400 border-blue-500/30',
   volcanoes: 'bg-red-500/20 text-red-400 border-red-500/30',
-  floods: 'bg-white/10 text-slate-300 border-white/10',
+  floods: 'bg-white/10 text-white/70 border-white/10',
   earthquakes: 'bg-amber-500/20 text-amber-400 border-amber-500/30',
   drought: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30',
   'sea and lake ice': 'bg-sky-500/20 text-sky-400 border-sky-500/30',
   landslides: 'bg-stone-500/20 text-stone-400 border-stone-500/30',
-  'snow': 'bg-slate-400/20 text-slate-300 border-slate-400/30',
+  'snow': 'bg-slate-400/20 text-white/70 border-slate-400/30',
   'temperature extremes': 'bg-rose-500/20 text-rose-400 border-rose-500/30',
 };
 
@@ -186,7 +186,7 @@ function getEventCategoryColor(categoryTitle: string): string {
   for (const [key, value] of Object.entries(EARTH_EVENT_CATEGORY_COLORS)) {
     if (lower.includes(key)) return value;
   }
-  return 'bg-slate-800/30 text-slate-400 border-slate-500/30';
+  return 'bg-white/[0.03] text-slate-400 border-slate-500/30';
 }
 
 // ════════════════════════════════════════════════════════════════
@@ -395,8 +395,8 @@ export default function SpaceWeatherTab() {
             onClick={() => setSelectedSubTab(tab)}
             className={`px-4 py-2 rounded-lg font-medium capitalize transition-all ${
               selectedSubTab === tab
-                ? 'bg-slate-700/50 text-white border-slate-700/50'
-                : 'bg-transparent text-slate-400 border border-slate-700/50 hover:border-slate-300'
+                ? 'bg-white/[0.06] text-white border-white/[0.06]'
+                : 'bg-transparent text-slate-400 border border-white/[0.06] hover:border-white/30'
             }`}
           >
             {tab}
@@ -459,7 +459,7 @@ export default function SpaceWeatherTab() {
                           </div>
                         </div>
                         {forecast.notes && (
-                          <p className="text-slate-400 text-sm mt-2 border-t border-slate-700/50 pt-2">
+                          <p className="text-slate-400 text-sm mt-2 border-t border-white/[0.06] pt-2">
                             {forecast.notes}
                           </p>
                         )}
@@ -480,7 +480,7 @@ export default function SpaceWeatherTab() {
                   const classInfo = FLARE_CLASSIFICATIONS.find(c => c.value === flare.classification);
 
                   return (
-                    <div key={flare.id} className="p-4 bg-slate-700/30 rounded-lg">
+                    <div key={flare.id} className="p-4 bg-white/[0.04] rounded-lg">
                       <div className="flex items-start gap-4">
                         <div className={`w-14 h-14 rounded-lg flex items-center justify-center text-white font-bold text-lg ${classInfo?.color || 'bg-slate-500'}`}>
                           {flare.classification}{flare.intensity}
@@ -536,19 +536,19 @@ export default function SpaceWeatherTab() {
               <span>&#128279;</span> Related Modules
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-              <Link href="/space-environment?tab=debris" className="p-3 rounded-lg bg-slate-700/30 hover:bg-slate-700/50 transition-colors group">
+              <Link href="/space-environment?tab=debris" className="p-3 rounded-lg bg-white/[0.04] hover:bg-white/[0.06] transition-colors group">
                 <div className="text-sm font-medium text-white group-hover:text-white">&#128752; Debris Monitor</div>
                 <p className="text-xs text-slate-400 mt-1">Solar storms can alter debris orbits</p>
               </Link>
-              <Link href="/orbital-slots" className="p-3 rounded-lg bg-slate-700/30 hover:bg-slate-700/50 transition-colors group">
+              <Link href="/orbital-slots" className="p-3 rounded-lg bg-white/[0.04] hover:bg-white/[0.06] transition-colors group">
                 <div className="text-sm font-medium text-white group-hover:text-white">&#128225; Orbital Slots</div>
                 <p className="text-xs text-slate-400 mt-1">Check satellite exposure to solar events</p>
               </Link>
-              <Link href="/space-insurance" className="p-3 rounded-lg bg-slate-700/30 hover:bg-slate-700/50 transition-colors group">
+              <Link href="/space-insurance" className="p-3 rounded-lg bg-white/[0.04] hover:bg-white/[0.06] transition-colors group">
                 <div className="text-sm font-medium text-white group-hover:text-white">&#128737;&#65039; Space Insurance</div>
                 <p className="text-xs text-slate-400 mt-1">Solar activity affects insurance risk</p>
               </Link>
-              <Link href="/mission-control" className="p-3 rounded-lg bg-slate-700/30 hover:bg-slate-700/50 transition-colors group">
+              <Link href="/mission-control" className="p-3 rounded-lg bg-white/[0.04] hover:bg-white/[0.06] transition-colors group">
                 <div className="text-sm font-medium text-white group-hover:text-white">&#127919; Mission Control</div>
                 <p className="text-xs text-slate-400 mt-1">Solar weather impacts launch windows</p>
               </Link>
@@ -584,7 +584,7 @@ export default function SpaceWeatherTab() {
                       </div>
                     )}
                     <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block z-10">
-                      <div className="bg-slate-800/50 border border-slate-700/50 rounded-lg p-3 text-sm whitespace-nowrap shadow-xl">
+                      <div className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-3 text-sm whitespace-nowrap shadow-xl">
                         <div className="font-medium text-white">
                           {date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                         </div>
@@ -600,7 +600,7 @@ export default function SpaceWeatherTab() {
             </div>
           </div>
           {/* Legend */}
-          <div className="flex flex-wrap gap-4 mt-8 pt-4 border-t border-slate-700/50">
+          <div className="flex flex-wrap gap-4 mt-8 pt-4 border-t border-white/[0.06]">
             {Object.entries(RISK_LEVEL_INFO).map(([level, info]) => (
               <div key={level} className="flex items-center gap-2">
                 <div className={`w-4 h-4 rounded ${info.bgColor}`} />
@@ -620,7 +620,7 @@ export default function SpaceWeatherTab() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="text-left text-slate-400 border-b border-slate-700/50">
+                <tr className="text-left text-slate-400 border-b border-white/[0.06]">
                   <th className="pb-3 pr-4">Class</th>
                   <th className="pb-3 pr-4">Date/Time</th>
                   <th className="pb-3 pr-4">Region</th>
@@ -634,7 +634,7 @@ export default function SpaceWeatherTab() {
                   const classInfo = FLARE_CLASSIFICATIONS.find(c => c.value === flare.classification);
 
                   return (
-                    <tr key={flare.id} className="border-b border-slate-700/50">
+                    <tr key={flare.id} className="border-b border-white/[0.06]">
                       <td className="py-3 pr-4">
                         <span className={`px-2 py-1 rounded text-white font-bold ${classInfo?.color}`}>
                           {flare.classification}{flare.intensity}
@@ -716,7 +716,7 @@ export default function SpaceWeatherTab() {
                         <span className={`text-xs px-2 py-0.5 rounded border ${categoryColor}`}>
                           {categoryTitle}
                         </span>
-                        <span className={`text-xs px-2 py-0.5 rounded ${isOpen ? 'bg-green-500/20 text-green-400' : 'bg-slate-800/30 text-slate-400'}`}>
+                        <span className={`text-xs px-2 py-0.5 rounded ${isOpen ? 'bg-green-500/20 text-green-400' : 'bg-white/[0.03] text-slate-400'}`}>
                           {isOpen ? 'Active' : 'Closed'}
                         </span>
                       </div>
@@ -739,12 +739,12 @@ export default function SpaceWeatherTab() {
                         </div>
                       )}
                       {event.sources && event.sources.length > 0 && (
-                        <div className="mt-2 pt-2 border-t border-slate-700/50">
+                        <div className="mt-2 pt-2 border-t border-white/[0.06]">
                           <a
                             href={event.sources[0].url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-xs text-slate-200 hover:text-white transition-colors"
+                            className="text-xs text-white/90 hover:text-white transition-colors"
                           >
                             Source: {event.sources[0].id} &rarr;
                           </a>
@@ -767,7 +767,7 @@ export default function SpaceWeatherTab() {
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                 {solarImagery.map((img) => (
                   <div key={img.id} className="card overflow-hidden">
-                    <div className="relative h-48 bg-slate-900">
+                    <div className="relative h-48 bg-black">
                       <Image
                         src={img.image_url}
                         alt={img.name || 'Solar image'}
@@ -778,7 +778,7 @@ export default function SpaceWeatherTab() {
                     </div>
                     <div className="p-3">
                       <div className="flex items-center gap-2 mb-1">
-                        <span className="text-xs bg-slate-700/50 text-slate-300 px-2 py-0.5 rounded font-medium">
+                        <span className="text-xs bg-white/[0.06] text-white/70 px-2 py-0.5 rounded font-medium">
                           {img.instrument}
                         </span>
                         <span className="text-xs text-slate-400">{img.measurement}</span>

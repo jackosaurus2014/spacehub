@@ -28,7 +28,7 @@ function highlightText(text: string, query: string): React.ReactNode {
   const parts = text.split(new RegExp(`(${query})`, 'gi'));
   return parts.map((part, index) =>
     part.toLowerCase() === query.toLowerCase() ? (
-      <mark key={index} className="bg-white/30 text-slate-200 rounded px-0.5">
+      <mark key={index} className="bg-white/30 text-white/90 rounded px-0.5">
         {part}
       </mark>
     ) : (
@@ -39,17 +39,17 @@ function highlightText(text: string, query: string): React.ReactNode {
 
 function AccordionItem({ item, isOpen, onToggle, searchQuery }: AccordionItemProps) {
   return (
-    <div className="border-b border-slate-700/50 last:border-b-0">
+    <div className="border-b border-white/[0.06] last:border-b-0">
       <button
         onClick={onToggle}
-        className="w-full py-4 px-5 flex items-center justify-between text-left hover:bg-slate-800/50 transition-colors"
+        className="w-full py-4 px-5 flex items-center justify-between text-left hover:bg-white/[0.04] transition-colors"
         aria-expanded={isOpen}
       >
         <span className="font-medium text-slate-100 pr-4">
           {searchQuery ? highlightText(item.question, searchQuery) : item.question}
         </span>
         <span
-          className={`flex-shrink-0 w-6 h-6 rounded-full bg-slate-700 flex items-center justify-center transition-transform duration-200 ${
+          className={`flex-shrink-0 w-6 h-6 rounded-full bg-white/[0.08] flex items-center justify-center transition-transform duration-200 ${
             isOpen ? 'rotate-180' : ''
           }`}
         >
@@ -142,7 +142,7 @@ export default function FAQAccordion({ items, categories, searchQuery = '' }: FA
   if (filteredItems.length === 0) {
     return (
       <div className="card p-12 text-center">
-        <div className="w-16 h-16 bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-4">
+        <div className="w-16 h-16 bg-white/[0.06] rounded-full flex items-center justify-center mx-auto mb-4">
           <svg
             className="w-8 h-8 text-slate-400"
             fill="none"
@@ -173,8 +173,8 @@ export default function FAQAccordion({ items, categories, searchQuery = '' }: FA
           onClick={() => setActiveCategory(null)}
           className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
             activeCategory === null
-              ? 'bg-white/10 text-slate-300 border border-white/10'
-              : 'bg-slate-800 text-slate-400 border border-slate-700 hover:border-slate-600'
+              ? 'bg-white/10 text-white/70 border border-white/10'
+              : 'bg-white/[0.06] text-slate-400 border border-white/[0.08] hover:border-white/[0.1]'
           }`}
         >
           All Categories
@@ -185,8 +185,8 @@ export default function FAQAccordion({ items, categories, searchQuery = '' }: FA
             onClick={() => setActiveCategory(category.id)}
             className={`px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 ${
               activeCategory === category.id
-                ? 'bg-white/10 text-slate-300 border border-white/10'
-                : 'bg-slate-800 text-slate-400 border border-slate-700 hover:border-slate-600'
+                ? 'bg-white/10 text-white/70 border border-white/10'
+                : 'bg-white/[0.06] text-slate-400 border border-white/[0.08] hover:border-white/[0.1]'
             }`}
           >
             <span>{category.icon}</span>
@@ -203,14 +203,14 @@ export default function FAQAccordion({ items, categories, searchQuery = '' }: FA
         <div className="flex items-center gap-2">
           <button
             onClick={expandAll}
-            className="text-sm text-slate-300 hover:text-white transition-colors"
+            className="text-sm text-white/70 hover:text-white transition-colors"
           >
             Expand All
           </button>
           <span className="text-slate-400">|</span>
           <button
             onClick={collapseAll}
-            className="text-sm text-slate-300 hover:text-white transition-colors"
+            className="text-sm text-white/70 hover:text-white transition-colors"
           >
             Collapse All
           </button>

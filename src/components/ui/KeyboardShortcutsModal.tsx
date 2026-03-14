@@ -57,7 +57,7 @@ const SHORTCUT_SECTIONS: ShortcutSection[] = [
 
 function Kbd({ children }: { children: React.ReactNode }) {
   return (
-    <kbd className="inline-flex items-center justify-center min-w-[28px] h-7 bg-slate-700 border border-slate-600 rounded px-2 py-0.5 font-mono text-sm text-slate-200 shadow-sm">
+    <kbd className="inline-flex items-center justify-center min-w-[28px] h-7 bg-white/[0.08] border border-white/[0.1] rounded px-2 py-0.5 font-mono text-sm text-white/90 shadow-sm">
       {children}
     </kbd>
   );
@@ -132,10 +132,10 @@ export default function KeyboardShortcutsModal() {
         <div className="space-y-6">
           {SHORTCUT_SECTIONS.map((section) => (
             <div key={section.title}>
-              <h3 className="text-slate-300 text-xs uppercase tracking-widest font-medium mb-2">
+              <h3 className="text-white/70 text-xs uppercase tracking-widest font-medium mb-2">
                 {section.title}
               </h3>
-              <div className="divide-y divide-slate-700/50">
+              <div className="divide-y divide-white/[0.06]">
                 {section.shortcuts.map((shortcut, index) => (
                   <ShortcutRow key={index} shortcut={shortcut} />
                 ))}
@@ -143,7 +143,7 @@ export default function KeyboardShortcutsModal() {
             </div>
           ))}
         </div>
-        <div className="mt-6 pt-4 border-t border-slate-700/50">
+        <div className="mt-6 pt-4 border-t border-white/[0.06]">
           <p className="text-slate-400 text-xs text-center">
             Press <Kbd>?</Kbd> anywhere to toggle this dialog
           </p>

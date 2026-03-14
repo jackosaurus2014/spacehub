@@ -458,7 +458,7 @@ export default function DashboardBuilderPage() {
 
             <button
               onClick={() => setShowLayoutSelector(true)}
-              className="flex items-center gap-2 px-4 py-2 text-sm text-slate-300 bg-slate-800 border border-slate-700 rounded-lg hover:border-white/15 hover:bg-slate-800/40 transition-all shadow-sm"
+              className="flex items-center gap-2 px-4 py-2 text-sm text-white/70 bg-white/[0.06] border border-white/[0.08] rounded-lg hover:border-white/15 hover:bg-white/[0.04] transition-all shadow-sm"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
@@ -472,7 +472,7 @@ export default function DashboardBuilderPage() {
         {layouts.length === 0 && !activeLayoutId && (
           <ScrollReveal delay={0.1}>
             <div className="card p-8 text-center mb-6">
-              <svg className="w-16 h-16 text-slate-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-16 h-16 text-white/70 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" />
               </svg>
               <h2 className="text-lg font-bold text-white mb-2">Build Your Dashboard</h2>
@@ -485,7 +485,7 @@ export default function DashboardBuilderPage() {
                   <StaggerItem key={index}>
                     <button
                       onClick={() => handleCreateFromPreset(preset)}
-                      className="px-5 py-3 rounded-xl border border-slate-700 hover:border-white/15 hover:bg-slate-800/40 transition-all text-left max-w-xs"
+                      className="px-5 py-3 rounded-xl border border-white/[0.08] hover:border-white/15 hover:bg-white/[0.04] transition-all text-left max-w-xs"
                     >
                       <p className="text-sm font-semibold text-white">{preset.name}</p>
                       <p className="text-xs text-slate-400 mt-0.5">{preset.description}</p>
@@ -495,7 +495,7 @@ export default function DashboardBuilderPage() {
                 <StaggerItem>
                   <button
                     onClick={handleCreateBlank}
-                    className="px-5 py-3 rounded-xl border border-dashed border-slate-600 hover:border-white/15 hover:bg-slate-800/40 transition-all"
+                    className="px-5 py-3 rounded-xl border border-dashed border-white/[0.1] hover:border-white/15 hover:bg-white/[0.04] transition-all"
                   >
                     <p className="text-sm font-semibold text-white">Blank Dashboard</p>
                     <p className="text-xs text-slate-400 mt-0.5">Start from scratch</p>

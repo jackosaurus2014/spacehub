@@ -121,18 +121,18 @@ export default function CookieConsent() {
       aria-modal="false"
       aria-label="Cookie consent"
     >
-      <div className="bg-slate-900 border-t border-slate-700 shadow-[0_-4px_20px_rgba(0,0,0,0.4)]">
+      <div className="bg-black border-t border-white/[0.08] shadow-[0_-4px_20px_rgba(0,0,0,0.4)]">
         <div className="max-w-6xl mx-auto px-4 py-4 sm:px-6">
           {/* Main banner content */}
           <div className="flex flex-col gap-4">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
               {/* Text */}
               <div className="flex-1">
-                <p className="text-sm text-slate-300 leading-relaxed">
+                <p className="text-sm text-white/70 leading-relaxed">
                   We use cookies to enhance your experience. By continuing to visit this site you agree to our use of cookies.{' '}
                   <Link
                     href="/cookies"
-                    className="text-slate-300 hover:text-white underline underline-offset-2 transition-colors"
+                    className="text-white/70 hover:text-white underline underline-offset-2 transition-colors"
                   >
                     Cookie Policy
                   </Link>
@@ -144,21 +144,21 @@ export default function CookieConsent() {
                 <button
                   onClick={() => setShowSettings(!showSettings)}
                   className="px-4 py-2 rounded-lg text-sm font-medium
-                           text-slate-400 hover:text-slate-200
-                           border border-slate-600 hover:border-slate-500
+                           text-slate-400 hover:text-white/90
+                           border border-white/[0.1] hover:border-white/[0.12]
                            transition-all duration-200
-                           focus:outline-none focus:ring-2 focus:ring-white/20 focus:ring-offset-2 focus:ring-offset-slate-900"
+                           focus:outline-none focus:ring-2 focus:ring-white/20 focus:ring-offset-2 focus:ring-offset-black"
                 >
                   Cookie Settings
                 </button>
                 <button
                   onClick={handleRejectNonEssential}
                   className="px-4 py-2 rounded-lg text-sm font-medium
-                           text-slate-300
-                           border border-slate-500/50 hover:border-slate-400/50
-                           hover:bg-slate-800
+                           text-white/70
+                           border border-white/[0.08] hover:border-white/[0.1]
+                           hover:bg-white/[0.06]
                            transition-all duration-200
-                           focus:outline-none focus:ring-2 focus:ring-white/20 focus:ring-offset-2 focus:ring-offset-slate-900"
+                           focus:outline-none focus:ring-2 focus:ring-white/20 focus:ring-offset-2 focus:ring-offset-black"
                 >
                   Reject Non-Essential
                 </button>
@@ -167,7 +167,7 @@ export default function CookieConsent() {
                   className="px-5 py-2 rounded-lg text-sm font-medium
                            text-slate-900 bg-white hover:bg-slate-200
                            transition-all duration-200
-                           focus:outline-none focus:ring-2 focus:ring-white/20 focus:ring-offset-2 focus:ring-offset-slate-900"
+                           focus:outline-none focus:ring-2 focus:ring-white/20 focus:ring-offset-2 focus:ring-offset-black"
                 >
                   Accept All
                 </button>
@@ -176,7 +176,7 @@ export default function CookieConsent() {
 
             {/* Expandable cookie settings panel */}
             {showSettings && (
-              <div className="border-t border-slate-700 pt-4 mt-1">
+              <div className="border-t border-white/[0.08]pt-4 mt-1">
                 <div className="grid gap-4 sm:grid-cols-3 max-w-3xl">
                   {/* Essential cookies - always on */}
                   <div className="flex items-start gap-3">
@@ -189,7 +189,7 @@ export default function CookieConsent() {
                       </div>
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-slate-200">Essential</p>
+                      <p className="text-sm font-medium text-white/90">Essential</p>
                       <p className="text-xs text-slate-400 mt-0.5">Required for the site to function. Always enabled.</p>
                     </div>
                   </div>
@@ -214,7 +214,7 @@ export default function CookieConsent() {
                       </button>
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-slate-200">Analytics</p>
+                      <p className="text-sm font-medium text-white/90">Analytics</p>
                       <p className="text-xs text-slate-400 mt-0.5">Help us understand how visitors use the site.</p>
                     </div>
                   </div>
@@ -239,7 +239,7 @@ export default function CookieConsent() {
                       </button>
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-slate-200">Marketing</p>
+                      <p className="text-sm font-medium text-white/90">Marketing</p>
                       <p className="text-xs text-slate-400 mt-0.5">Used to deliver relevant ads and track campaigns.</p>
                     </div>
                   </div>
@@ -249,10 +249,10 @@ export default function CookieConsent() {
                   <button
                     onClick={handleSaveSettings}
                     className="px-5 py-2 rounded-lg text-sm font-medium
-                             text-white bg-slate-700 hover:bg-slate-600
-                             border border-slate-600 hover:border-slate-500
+                             text-white bg-white/[0.08] hover:bg-white/[0.1]
+                             border border-white/[0.1] hover:border-white/[0.12]
                              transition-all duration-200
-                             focus:outline-none focus:ring-2 focus:ring-white/20 focus:ring-offset-2 focus:ring-offset-slate-900"
+                             focus:outline-none focus:ring-2 focus:ring-white/20 focus:ring-offset-2 focus:ring-offset-black"
                   >
                     Save Preferences
                   </button>

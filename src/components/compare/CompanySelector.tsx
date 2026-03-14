@@ -23,7 +23,7 @@ interface CompanySelectorProps {
 function getTierBadge(tier: number) {
   const styles: Record<number, { bg: string; text: string; label: string }> = {
     1: { bg: 'bg-amber-500/20', text: 'text-amber-400', label: 'T1' },
-    2: { bg: 'bg-white/10', text: 'text-slate-300', label: 'T2' },
+    2: { bg: 'bg-white/10', text: 'text-white/70', label: 'T2' },
     3: { bg: 'bg-purple-500/20', text: 'text-purple-400', label: 'T3' },
   };
   const style = styles[tier] || styles[3];
@@ -134,7 +134,7 @@ export default function CompanySelector({
           }
           disabled={isFull}
           aria-label="Search companies to compare"
-          className="w-full pl-10 pr-4 bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full pl-10 pr-4 bg-white/[0.06] border border-white/[0.08] text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none disabled:opacity-50 disabled:cursor-not-allowed"
         />
         <svg
           className="absolute left-3 top-3.5 w-4 h-4 text-slate-500"
@@ -159,15 +159,15 @@ export default function CompanySelector({
         {isOpen && results.length > 0 && (
           <div
             ref={dropdownRef}
-            className="absolute z-50 w-full mt-1 bg-slate-800 border border-slate-700/50 rounded-lg shadow-xl max-h-64 overflow-y-auto"
+            className="absolute z-50 w-full mt-1 bg-white/[0.06] border border-white/[0.06] rounded-lg shadow-xl max-h-64 overflow-y-auto"
           >
             {results.map((company) => (
               <button
                 key={company.slug}
                 onClick={() => handleSelect(company.slug)}
-                className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-slate-700/50 transition-colors"
+                className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-white/[0.08] transition-colors"
               >
-                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-slate-700 to-slate-600 flex items-center justify-center text-sm flex-shrink-0 border border-slate-600/50">
+                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-white/[0.08] to-white/[0.08] flex items-center justify-center text-sm flex-shrink-0 border border-white/[0.08]">
                   {company.logoUrl ? (
                     <Image
                       src={company.logoUrl}
@@ -197,7 +197,7 @@ export default function CompanySelector({
         {isOpen && query.trim() && !searching && results.length === 0 && (
           <div
             ref={dropdownRef}
-            className="absolute z-50 w-full mt-1 bg-slate-800 border border-slate-700/50 rounded-lg shadow-xl p-4"
+            className="absolute z-50 w-full mt-1 bg-white/[0.06] border border-white/[0.06] rounded-lg shadow-xl p-4"
           >
             <p className="text-sm text-slate-500 text-center">No companies found for &quot;{query}&quot;</p>
           </div>
@@ -210,7 +210,7 @@ export default function CompanySelector({
           {selectedSlugs.map((slug) => (
             <span
               key={slug}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white/5 border border-white/10 text-slate-300 rounded-lg text-sm font-medium"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white/5 border border-white/10 text-white/70 rounded-lg text-sm font-medium"
             >
               {slug}
               <button

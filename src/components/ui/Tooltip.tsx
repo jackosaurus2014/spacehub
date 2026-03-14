@@ -21,7 +21,7 @@ export default function Tooltip({ content, children, position = 'top' }: Tooltip
       </button>
       <span
         role="tooltip"
-        className={`absolute ${posClasses} z-50 px-3 py-2 text-sm text-white bg-slate-800 rounded-lg shadow-lg max-w-[250px] w-max pointer-events-none opacity-0 scale-95 group-hover/tip:opacity-100 group-hover/tip:scale-100 group-focus-within/tip:opacity-100 group-focus-within/tip:scale-100 transition-all duration-150 ease-out`}
+        className={`absolute ${posClasses} z-50 px-3 py-2 text-sm text-white bg-white/[0.06] rounded-lg shadow-lg max-w-[250px] w-max pointer-events-none opacity-0 scale-95 group-hover/tip:opacity-100 group-hover/tip:scale-100 group-focus-within/tip:opacity-100 group-focus-within/tip:scale-100 transition-all duration-150 ease-out`}
       >
         {content}
       </span>

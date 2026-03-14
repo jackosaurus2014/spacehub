@@ -181,7 +181,7 @@ export default function ForumCategoryPage() {
                 <h3 className="text-sm font-semibold text-amber-300 mb-1">Category Not Found</h3>
                 <p className="text-sm text-slate-400">
                   The forum category &ldquo;{slug}&rdquo; does not exist yet. Forum categories may need to be initialized.
-                  Please go back to the <Link href="/community/forums" className="text-slate-300 hover:text-white underline">forums page</Link> and try again, or contact an administrator.
+                  Please go back to the <Link href="/community/forums" className="text-white/70 hover:text-white underline">forums page</Link> and try again, or contact an administrator.
                 </p>
               </div>
             </div>
@@ -196,7 +196,7 @@ export default function ForumCategoryPage() {
             exit={{ opacity: 0, height: 0 }}
             className="card p-5 mb-6"
           >
-            <h3 className="text-lg font-semibold text-slate-200 mb-4">Create New Thread</h3>
+            <h3 className="text-lg font-semibold text-white/90 mb-4">Create New Thread</h3>
             <form onSubmit={handleCreateThread} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-slate-400 mb-1">Title</label>
@@ -206,7 +206,7 @@ export default function ForumCategoryPage() {
                   onChange={(e) => setNewTitle(e.target.value)}
                   placeholder="What would you like to discuss?"
                   maxLength={200}
-                  className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+                  className="w-full bg-white/[0.06] border border-white/[0.08] text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                   required
                 />
               </div>
@@ -217,7 +217,7 @@ export default function ForumCategoryPage() {
                   onChange={(e) => setNewContent(e.target.value)}
                   placeholder="Share your thoughts, questions, or insights..."
                   rows={5}
-                  className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none resize-none"
+                  className="w-full bg-white/[0.06] border border-white/[0.08] text-white rounded-lg px-3 py-2 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none resize-none"
                   required
                 />
               </div>
@@ -243,7 +243,7 @@ export default function ForumCategoryPage() {
                 <button
                   type="button"
                   onClick={() => { setShowNewThread(false); setNewTitle(''); setNewContent(''); setNewTags([]); }}
-                  className="px-5 py-2 bg-slate-700 hover:bg-slate-600 text-slate-300 rounded-lg transition-colors"
+                  className="px-5 py-2 bg-white/[0.08] hover:bg-white/[0.1] text-white/70 rounded-lg transition-colors"
                 >
                   Cancel
                 </button>
@@ -262,12 +262,12 @@ export default function ForumCategoryPage() {
         {/* Empty state */}
         {!loading && !categoryNotFound && sortedThreads.length === 0 && (
           <div className="text-center py-20">
-            <div className="mx-auto w-16 h-16 rounded-2xl bg-slate-800/60 border border-slate-700/50 flex items-center justify-center mb-4">
+            <div className="mx-auto w-16 h-16 rounded-2xl bg-white/[0.05] border border-white/[0.06] flex items-center justify-center mb-4">
               <svg className="w-8 h-8 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
               </svg>
             </div>
-            <h3 className="text-lg font-semibold text-slate-200 mb-1">No threads yet</h3>
+            <h3 className="text-lg font-semibold text-white/90 mb-1">No threads yet</h3>
             <p className="text-sm text-slate-400 mb-4">Be the first to start a discussion in this category.</p>
             <button
               onClick={() => setShowNewThread(true)}
@@ -285,7 +285,7 @@ export default function ForumCategoryPage() {
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+              className="bg-white/[0.06] border border-white/[0.08] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
             >
               <option value="newest">Newest</option>
               <option value="popular">Most Viewed</option>

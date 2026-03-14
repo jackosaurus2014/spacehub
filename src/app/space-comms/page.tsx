@@ -719,7 +719,7 @@ const DSN_STATS = {
 const FREQUENCY_BANDS = [
   { band: 'UHF', range: '0.3-1 GHz', use: 'LEO proximity links, EVA comms', maxRate: '10 Mbps', color: 'text-purple-400', bgColor: 'bg-purple-500/10' },
   { band: 'L-band', range: '1-2 GHz', use: 'Mobile satellite (Iridium, Inmarsat)', maxRate: '1.4 Mbps', color: 'text-blue-400', bgColor: 'bg-blue-500/10' },
-  { band: 'S-band', range: '2-4 GHz', use: 'TT&C, deep space command', maxRate: '10 Mbps', color: 'text-slate-300', bgColor: 'bg-white/5' },
+  { band: 'S-band', range: '2-4 GHz', use: 'TT&C, deep space command', maxRate: '10 Mbps', color: 'text-white/70', bgColor: 'bg-white/5' },
   { band: 'C-band', range: '4-8 GHz', use: 'FSS, broadcast distribution', maxRate: '100 Mbps', color: 'text-teal-400', bgColor: 'bg-teal-500/10' },
   { band: 'X-band', range: '8-12 GHz', use: 'Deep space science data, military', maxRate: '800 Mbps', color: 'text-green-400', bgColor: 'bg-green-500/10' },
   { band: 'Ku-band', range: '12-18 GHz', use: 'DTH broadcast, VSAT, Starlink', maxRate: '1+ Gbps', color: 'text-yellow-400', bgColor: 'bg-yellow-500/10' },
@@ -730,7 +730,7 @@ const FREQUENCY_BANDS = [
 
 const LATENCY_TABLE = [
   { destination: 'LEO (550 km)', oneWay: '~3.6 ms', roundTrip: '~7.2 ms', color: 'text-green-400' },
-  { destination: 'MEO (8,000 km)', oneWay: '~27 ms', roundTrip: '~54 ms', color: 'text-slate-300' },
+  { destination: 'MEO (8,000 km)', oneWay: '~27 ms', roundTrip: '~54 ms', color: 'text-white/70' },
   { destination: 'GEO (35,786 km)', oneWay: '~120 ms', roundTrip: '~240 ms', color: 'text-yellow-400' },
   { destination: 'Moon', oneWay: '~1.3 s', roundTrip: '~2.6 s', color: 'text-orange-400' },
   { destination: 'Mars (closest)', oneWay: '~3 min', roundTrip: '~6 min', color: 'text-red-400' },
@@ -892,7 +892,7 @@ const RELATED_MODULES = [
 function StatusBadge({ status }: { status: string }) {
   const colors: Record<string, string> = {
     operational: 'text-green-400 bg-green-500/10 border-green-500/30',
-    deploying: 'text-slate-300 bg-white/5 border-white/10',
+    deploying: 'text-white/70 bg-white/5 border-white/10',
     demonstrated: 'text-blue-400 bg-blue-500/10 border-blue-500/30',
     development: 'text-amber-400 bg-amber-500/10 border-amber-500/30',
     planned: 'text-purple-400 bg-purple-500/10 border-purple-500/30',
@@ -919,7 +919,7 @@ function ImpactBadge({ impact }: { impact: string }) {
   );
 }
 
-function MetricCard({ label, value, color = 'text-slate-300' }: { label: string; value: string; color?: string }) {
+function MetricCard({ label, value, color = 'text-white/70' }: { label: string; value: string; color?: string }) {
   return (
     <div className="bg-space-800/50 rounded-lg p-3">
       <div className="text-slate-500 text-xs uppercase tracking-widest mb-1">{label}</div>
@@ -965,7 +965,7 @@ function TechnologiesTab() {
       <ScrollReveal>
         <div className="bg-gradient-to-r from-white/5 via-blue-500/10 to-purple-500/10 border border-white/10 rounded-xl p-5 mb-8">
           <h3 className="font-semibold text-white mb-1">The Laser Communications Revolution</h3>
-          <p className="text-sm text-slate-300 leading-relaxed">
+          <p className="text-sm text-white/70 leading-relaxed">
             Space communications is undergoing its most significant transformation since the advent of satellite relay systems.
             NASA&apos;s DSOC achieved 267 Mbps from deep space -- 10-100x faster than radio -- while SpaceX has deployed
             over 9,000 laser terminals on Starlink. The SDA Transport Layer is building a military mesh network using optical
@@ -994,8 +994,8 @@ function TechnologiesTab() {
                   <tr key={band.band} className={`border-b border-space-800 ${idx % 2 === 0 ? 'bg-space-900/50' : ''}`}>
                     <td className={`py-2 px-3 font-bold ${band.color}`}>{band.band}</td>
                     <td className="py-2 px-3 text-white">{band.range}</td>
-                    <td className="py-2 px-3 text-slate-300">{band.use}</td>
-                    <td className="py-2 px-3 text-slate-300 font-medium">{band.maxRate}</td>
+                    <td className="py-2 px-3 text-white/70">{band.use}</td>
+                    <td className="py-2 px-3 text-white/70 font-medium">{band.maxRate}</td>
                   </tr>
                 ))}
               </tbody>
@@ -1031,7 +1031,7 @@ function TechnologiesTab() {
             onClick={() => setCategoryFilter(cat.id)}
             className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
               categoryFilter === cat.id
-                ? 'bg-white/10 text-slate-200 border border-white/15'
+                ? 'bg-white/10 text-white/90 border border-white/15'
                 : 'bg-space-800 text-slate-400 border border-space-700 hover:border-space-600 hover:text-white'
             }`}
           >
@@ -1051,7 +1051,7 @@ function TechnologiesTab() {
                   <div className="flex-1 min-w-0">
                     <h3 className="text-white font-semibold text-lg">{tech.name}</h3>
                     <div className="flex items-center gap-2 mt-1">
-                      <span className="text-xs px-2 py-0.5 bg-space-700 text-slate-300 border border-space-600 rounded">
+                      <span className="text-xs px-2 py-0.5 bg-space-700 text-white/70 border border-space-600 rounded">
                         {tech.category.toUpperCase()}
                       </span>
                     </div>
@@ -1076,8 +1076,8 @@ function TechnologiesTab() {
                       <div className="text-slate-500 text-xs uppercase tracking-widest mb-2">Technical Details</div>
                       <ul className="space-y-1.5">
                         {tech.details.map((detail, i) => (
-                          <li key={i} className="text-slate-300 text-sm flex items-start gap-2">
-                            <span className="text-slate-300 mt-0.5 flex-shrink-0">-</span>
+                          <li key={i} className="text-white/70 text-sm flex items-start gap-2">
+                            <span className="text-white/70 mt-0.5 flex-shrink-0">-</span>
                             {detail}
                           </li>
                         ))}
@@ -1087,7 +1087,7 @@ function TechnologiesTab() {
                       <div className="text-slate-500 text-xs uppercase tracking-widest mb-2">Key Programs</div>
                       <div className="flex flex-wrap gap-1.5">
                         {tech.programs.map((prog) => (
-                          <span key={prog} className="px-2 py-0.5 bg-space-700 text-slate-300 border border-space-600 rounded text-xs">
+                          <span key={prog} className="px-2 py-0.5 bg-space-700 text-white/70 border border-space-600 rounded text-xs">
                             {prog}
                           </span>
                         ))}
@@ -1098,7 +1098,7 @@ function TechnologiesTab() {
 
                 <button
                   onClick={() => setExpandedId(isExpanded ? null : tech.id)}
-                  className="text-sm text-slate-300 hover:text-white transition-colors"
+                  className="text-sm text-white/70 hover:text-white transition-colors"
                 >
                   {isExpanded ? 'Show less' : 'Show details'} {isExpanded ? '\u2191' : '\u2193'}
                 </button>
@@ -1141,7 +1141,7 @@ function ProvidersTab() {
       {/* Provider Stats */}
       <ScrollReveal>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          <HeroStat value={String(SATCOM_PROVIDERS.length)} label="Providers Tracked" color="text-slate-300" />
+          <HeroStat value={String(SATCOM_PROVIDERS.length)} label="Providers Tracked" color="text-white/70" />
           <HeroStat
             value={String(SATCOM_PROVIDERS.filter((p) => p.status === 'operational').length)}
             label="Operational"
@@ -1188,7 +1188,7 @@ function ProvidersTab() {
                   <tr key={row.factor} className={`border-b border-space-800 ${idx % 2 === 0 ? 'bg-space-900/50' : ''}`}>
                     <td className="py-2 px-3 text-white font-medium">{row.factor}</td>
                     <td className="py-2 px-3 text-green-400">{row.leo}</td>
-                    <td className="py-2 px-3 text-slate-300">{row.meo}</td>
+                    <td className="py-2 px-3 text-white/70">{row.meo}</td>
                     <td className="py-2 px-3 text-amber-400">{row.geo}</td>
                   </tr>
                 ))}
@@ -1250,13 +1250,13 @@ function ProvidersTab() {
                       {provider.parent && (
                         <span className="text-slate-500 text-sm">({provider.parent})</span>
                       )}
-                      <span className="text-slate-300 text-sm font-medium">{provider.headquarters}</span>
+                      <span className="text-white/70 text-sm font-medium">{provider.headquarters}</span>
                       <span className="text-slate-500 text-sm">Est. {provider.founded}</span>
                     </div>
                   </div>
                   <div className="flex flex-col items-end gap-1 flex-shrink-0 ml-3">
                     <StatusBadge status={provider.status} />
-                    <span className="text-xs px-2 py-0.5 bg-space-700 text-slate-300 border border-space-600 rounded">
+                    <span className="text-xs px-2 py-0.5 bg-space-700 text-white/70 border border-space-600 rounded">
                       {provider.orbitType}
                     </span>
                   </div>
@@ -1271,7 +1271,7 @@ function ProvidersTab() {
                   <MetricCard label="Constellation" value={provider.constellationSize} />
                   <MetricCard label="Status" value={provider.status.charAt(0).toUpperCase() + provider.status.slice(1)} color={
                     provider.status === 'operational' ? 'text-green-400' :
-                    provider.status === 'deploying' ? 'text-slate-300' :
+                    provider.status === 'deploying' ? 'text-white/70' :
                     'text-amber-400'
                   } />
                 </div>
@@ -1285,7 +1285,7 @@ function ProvidersTab() {
                   <div className="text-slate-500 text-xs uppercase tracking-widest mb-2">Key Products</div>
                   <div className="flex flex-wrap gap-1.5">
                     {provider.keyProducts.map((prod) => (
-                      <span key={prod} className="px-2 py-0.5 bg-space-700 text-slate-200 border border-space-600 rounded text-xs">
+                      <span key={prod} className="px-2 py-0.5 bg-space-700 text-white/90 border border-space-600 rounded text-xs">
                         {prod}
                       </span>
                     ))}
@@ -1298,8 +1298,8 @@ function ProvidersTab() {
                       <div className="text-slate-500 text-xs uppercase tracking-widest mb-2">Highlights</div>
                       <ul className="space-y-1.5">
                         {provider.highlights.map((h, i) => (
-                          <li key={i} className="text-slate-300 text-sm flex items-start gap-2">
-                            <span className="text-slate-300 mt-0.5 flex-shrink-0">-</span>
+                          <li key={i} className="text-white/70 text-sm flex items-start gap-2">
+                            <span className="text-white/70 mt-0.5 flex-shrink-0">-</span>
                             {h}
                           </li>
                         ))}
@@ -1307,14 +1307,14 @@ function ProvidersTab() {
                     </div>
                     <div>
                       <div className="text-slate-500 text-xs uppercase tracking-widest mb-2">Primary Use Cases</div>
-                      <p className="text-slate-300 text-sm">{provider.useCase}</p>
+                      <p className="text-white/70 text-sm">{provider.useCase}</p>
                     </div>
                   </div>
                 )}
 
                 <button
                   onClick={() => setExpandedId(isExpanded ? null : provider.id)}
-                  className="text-sm text-slate-300 hover:text-white transition-colors"
+                  className="text-sm text-white/70 hover:text-white transition-colors"
                 >
                   {isExpanded ? 'Show less' : 'Show details'} {isExpanded ? '\u2191' : '\u2193'}
                 </button>
@@ -1329,7 +1329,7 @@ function ProvidersTab() {
           <p className="text-slate-400">No providers match the selected filters.</p>
           <button
             onClick={() => { setOrbitFilter('all'); setStatusFilter('all'); setSearchQuery(''); }}
-            className="mt-3 text-sm text-slate-300 hover:text-white"
+            className="mt-3 text-sm text-white/70 hover:text-white"
           >
             Clear all filters
           </button>
@@ -1349,7 +1349,7 @@ function DSNTab() {
       {/* DSN Overview Stats */}
       <ScrollReveal>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
-          <HeroStat value={String(DSN_STATS.complexes)} label="Ground Complexes" color="text-slate-300" />
+          <HeroStat value={String(DSN_STATS.complexes)} label="Ground Complexes" color="text-white/70" />
           <HeroStat value={String(DSN_STATS.totalAntennas)} label="Total Antennas" color="text-green-400" />
           <HeroStat value={String(DSN_STATS.seventyMeterDishes)} label="70m Dishes" color="text-amber-400" />
           <HeroStat value={DSN_STATS.missionsSupported} label="Missions Supported" color="text-blue-400" />
@@ -1371,7 +1371,7 @@ function DSNTab() {
           </p>
           <div className="bg-gradient-to-r from-white/5 to-blue-500/10 border border-white/10 rounded-lg p-4">
             <h4 className="text-white font-medium text-sm mb-2">120-Degree Spacing Principle</h4>
-            <p className="text-slate-300 text-sm">
+            <p className="text-white/70 text-sm">
               With three complexes separated by ~120 degrees of longitude, the DSN guarantees continuous coverage: as one
               complex rotates out of view of a deep space target, the next complex rotates into view. This &quot;follow the sun&quot;
               architecture ensures no gaps in communication for missions beyond Earth orbit.
@@ -1403,8 +1403,8 @@ function DSNTab() {
                 ].map((row, idx) => (
                   <tr key={row.type} className={`border-b border-space-800 ${idx % 2 === 0 ? 'bg-space-900/50' : ''}`}>
                     <td className="py-2 px-3 text-white font-medium">{row.type}</td>
-                    <td className="py-2 px-3 text-slate-300 font-bold">{row.diameter}</td>
-                    <td className="py-2 px-3 text-slate-300">{row.bands}</td>
+                    <td className="py-2 px-3 text-white/70 font-bold">{row.diameter}</td>
+                    <td className="py-2 px-3 text-white/70">{row.bands}</td>
                     <td className="py-2 px-3 text-slate-400">{row.use}</td>
                     <td className="py-2 px-3 text-white">{row.count}</td>
                   </tr>
@@ -1429,7 +1429,7 @@ function DSNTab() {
                   <div>
                     <h3 className="text-white font-semibold text-lg">{complex.name}</h3>
                     <div className="flex items-center gap-3 mt-1">
-                      <span className="text-slate-300 text-sm font-medium">{complex.location}</span>
+                      <span className="text-white/70 text-sm font-medium">{complex.location}</span>
                       <span className="text-slate-500">|</span>
                       <span className="text-slate-400 text-sm">Est. {complex.established}</span>
                     </div>
@@ -1450,11 +1450,11 @@ function DSNTab() {
                       <div key={antenna.designation} className="bg-space-800/50 rounded-lg p-3">
                         <div className="flex items-center justify-between mb-1">
                           <span className="text-white text-sm font-medium">{antenna.designation}</span>
-                          <span className="text-slate-300 text-xs font-bold">{antenna.diameter}</span>
+                          <span className="text-white/70 text-xs font-bold">{antenna.diameter}</span>
                         </div>
                         <div className="flex flex-wrap gap-1 mb-1">
                           {antenna.bands.map((band) => (
-                            <span key={band} className="px-1.5 py-0.5 bg-space-700 text-slate-200 border border-space-600 rounded text-xs">
+                            <span key={band} className="px-1.5 py-0.5 bg-space-700 text-white/90 border border-space-600 rounded text-xs">
                               {band}
                             </span>
                           ))}
@@ -1472,7 +1472,7 @@ function DSNTab() {
                     <div className="text-slate-500 text-xs uppercase tracking-widest mb-2">Missions Served</div>
                     <div className="flex flex-wrap gap-1.5">
                       {complex.missionsServed.map((mission) => (
-                        <span key={mission} className="px-2 py-0.5 bg-space-700 text-slate-300 border border-space-600 rounded text-xs">
+                        <span key={mission} className="px-2 py-0.5 bg-space-700 text-white/70 border border-space-600 rounded text-xs">
                           {mission}
                         </span>
                       ))}
@@ -1482,7 +1482,7 @@ function DSNTab() {
 
                 <button
                   onClick={() => setExpandedComplex(isExpanded ? null : complex.name)}
-                  className="text-sm text-slate-300 hover:text-white transition-colors"
+                  className="text-sm text-white/70 hover:text-white transition-colors"
                 >
                   {isExpanded ? 'Show less' : 'Show details'} {isExpanded ? '\u2191' : '\u2193'}
                 </button>
@@ -1523,9 +1523,9 @@ function DSNTab() {
                 ].map((station, idx) => (
                   <tr key={station.name} className={`border-b border-space-800 ${idx % 2 === 0 ? 'bg-space-900/50' : ''}`}>
                     <td className="py-2 px-3 text-white font-medium">{station.name}</td>
-                    <td className="py-2 px-3 text-slate-300">{station.location}</td>
-                    <td className="py-2 px-3 text-slate-300 font-bold">{station.diameter}</td>
-                    <td className="py-2 px-3 text-slate-300">{station.bands}</td>
+                    <td className="py-2 px-3 text-white/70">{station.location}</td>
+                    <td className="py-2 px-3 text-white/70 font-bold">{station.diameter}</td>
+                    <td className="py-2 px-3 text-white/70">{station.bands}</td>
                     <td className="py-2 px-3 text-slate-400">{station.role}</td>
                   </tr>
                 ))}
@@ -1563,14 +1563,14 @@ function DSNTab() {
                 ].map((row, idx) => (
                   <tr key={row.name} className={`border-b border-space-800 ${idx % 2 === 0 ? 'bg-space-900/50' : ''}`}>
                     <td className="py-2 px-3 text-white font-medium">{row.name}</td>
-                    <td className="py-2 px-3 text-slate-300">{row.operator}</td>
-                    <td className="py-2 px-3 text-slate-300">{row.orbit}</td>
-                    <td className="py-2 px-3 text-slate-300">{row.link}</td>
+                    <td className="py-2 px-3 text-white/70">{row.operator}</td>
+                    <td className="py-2 px-3 text-white/70">{row.orbit}</td>
+                    <td className="py-2 px-3 text-white/70">{row.link}</td>
                     <td className="py-2 px-3 text-amber-400 font-medium">{row.rate}</td>
                     <td className="py-2 px-3">
                       <span className={`text-xs font-bold px-2 py-0.5 rounded ${
                         row.status === 'Operational' ? 'text-green-400 bg-green-500/10' :
-                        row.status === 'Deploying' ? 'text-slate-300 bg-white/5' :
+                        row.status === 'Deploying' ? 'text-white/70 bg-white/5' :
                         'text-amber-400 bg-amber-500/10'
                       }`}>
                         {row.status}
@@ -1598,7 +1598,7 @@ function TrendsTab() {
       <ScrollReveal>
         <div className="bg-gradient-to-r from-purple-500/10 via-pink-500/10 to-rose-500/10 border border-purple-500/30 rounded-xl p-5 mb-8">
           <h3 className="font-semibold text-white mb-1">The Future of Space Communications</h3>
-          <p className="text-sm text-slate-300 leading-relaxed">
+          <p className="text-sm text-white/70 leading-relaxed">
             Space communications is at an inflection point. Direct-to-device connectivity will bring satellite service to
             every smartphone. Optical inter-satellite links are creating space-based mesh networks faster than terrestrial
             fiber for some routes. Lunar and Mars relay networks will extend the Internet to the solar system. And quantum
@@ -1636,7 +1636,7 @@ function TrendsTab() {
                   <div className="text-slate-500 text-xs uppercase tracking-widest mb-2">Key Players</div>
                   <div className="flex flex-wrap gap-1.5">
                     {trend.keyPlayers.map((player) => (
-                      <span key={player} className="px-2 py-0.5 bg-space-700 text-slate-200 border border-space-600 rounded text-xs">
+                      <span key={player} className="px-2 py-0.5 bg-space-700 text-white/90 border border-space-600 rounded text-xs">
                         {player}
                       </span>
                     ))}
@@ -1648,7 +1648,7 @@ function TrendsTab() {
                     <div className="text-slate-500 text-xs uppercase tracking-widest mb-2">Details</div>
                     <ul className="space-y-1.5">
                       {trend.details.map((detail, i) => (
-                        <li key={i} className="text-slate-300 text-sm flex items-start gap-2">
+                        <li key={i} className="text-white/70 text-sm flex items-start gap-2">
                           <span className="text-purple-400 mt-0.5 flex-shrink-0">-</span>
                           {detail}
                         </li>
@@ -1683,7 +1683,7 @@ function TrendsTab() {
               <div key={phase.year} className={`border-l-2 ${phase.color} pl-4`}>
                 <div className="flex items-center gap-3 mb-2">
                   <span className="text-white font-semibold text-sm">{phase.year}</span>
-                  <span className="text-xs px-2 py-0.5 bg-space-700 text-slate-300 border border-space-600 rounded">
+                  <span className="text-xs px-2 py-0.5 bg-space-700 text-white/70 border border-space-600 rounded">
                     {phase.status}
                   </span>
                 </div>
@@ -1742,7 +1742,7 @@ function SpaceCommsContent() {
         {/* Hero Stats Row */}
         <ScrollReveal>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-            <HeroStat value="15+" label="SATCOM Providers" color="text-slate-300" />
+            <HeroStat value="15+" label="SATCOM Providers" color="text-white/70" />
             <HeroStat value="10" label="Comm Technologies" color="text-green-400" />
             <HeroStat value="3" label="DSN Complexes" color="text-amber-400" />
             <HeroStat value="6" label="Emerging Trends" color="text-purple-400" />
@@ -1758,8 +1758,8 @@ function SpaceCommsContent() {
                 onClick={() => handleTabChange(tab.id)}
                 className={`px-5 py-3 text-sm font-medium whitespace-nowrap border-b-2 transition-colors ${
                   activeTab === tab.id
-                    ? 'border-white/15 text-slate-200'
-                    : 'border-transparent text-slate-400 hover:text-white hover:border-slate-600'
+                    ? 'border-white/15 text-white/90'
+                    : 'border-transparent text-slate-400 hover:text-white hover:border-white/[0.1]'
                 }`}
               >
                 {tab.label}
@@ -1795,17 +1795,17 @@ export default function SpaceCommsPage() {
         <main className="min-h-screen py-8 px-4 sm:px-6">
           <div className="max-w-7xl mx-auto">
             <div className="animate-pulse space-y-6">
-              <div className="h-10 bg-slate-800 rounded-lg w-80" />
-              <div className="h-5 bg-slate-800 rounded-lg w-full max-w-xl" />
+              <div className="h-10 bg-white/[0.06] rounded-lg w-80" />
+              <div className="h-5 bg-white/[0.06] rounded-lg w-full max-w-xl" />
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {[1, 2, 3, 4].map((i) => (
-                  <div key={i} className="h-20 bg-slate-800 rounded-lg" />
+                  <div key={i} className="h-20 bg-white/[0.06] rounded-lg" />
                 ))}
               </div>
-              <div className="h-12 bg-slate-800 rounded-lg" />
+              <div className="h-12 bg-white/[0.06] rounded-lg" />
               <div className="space-y-4">
                 {[1, 2, 3].map((i) => (
-                  <div key={i} className="h-48 bg-slate-800 rounded-lg" />
+                  <div key={i} className="h-48 bg-white/[0.06] rounded-lg" />
                 ))}
               </div>
             </div>

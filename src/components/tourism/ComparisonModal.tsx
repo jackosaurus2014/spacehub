@@ -116,14 +116,14 @@ export default function ComparisonModal({
       <div
         className="relative w-full max-w-6xl max-h-[90vh] overflow-hidden rounded-2xl animate-scale-in"
         style={{
-          background: 'linear-gradient(145deg, rgba(15, 23, 42, 0.98) 0%, rgba(30, 41, 59, 0.96) 100%)'
+          background: 'linear-gradient(145deg, rgba(10, 10, 10, 0.98) 0%, rgba(20, 20, 20, 0.96) 100%)'
         }}
       >
         {/* Top gradient accent */}
         <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-slate-300/50 to-transparent" />
 
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-slate-700/50">
+        <div className="flex items-center justify-between p-6 border-b border-white/[0.08]">
           <div>
             <h2 className="text-2xl font-display font-bold text-white">Compare Experiences</h2>
             <p className="text-slate-400 text-sm mt-1">
@@ -144,14 +144,14 @@ export default function ComparisonModal({
         <div className="overflow-x-auto overflow-y-auto max-h-[calc(90vh-120px)]">
           <table className="w-full">
             <thead className="sticky top-0 z-10">
-              <tr style={{ background: 'rgba(15, 23, 42, 0.98)' }}>
-                <th className="text-left p-4 text-slate-400 text-sm font-medium border-b border-slate-700/50 min-w-[140px]">
+              <tr style={{ background: 'rgba(10, 10, 10, 0.98)' }}>
+                <th className="text-left p-4 text-slate-400 text-sm font-medium border-b border-white/[0.08] min-w-[140px]">
                   Feature
                 </th>
                 {offerings.map((offering) => (
                   <th
                     key={offering.id}
-                    className="p-4 text-center border-b border-slate-700/50 min-w-[200px]"
+                    className="p-4 text-center border-b border-white/[0.08] min-w-[200px]"
                   >
                     <div className="relative">
                       <button
@@ -163,10 +163,10 @@ export default function ComparisonModal({
                           <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                         </svg>
                       </button>
-                      <div className="w-14 h-14 mx-auto rounded-lg bg-gradient-to-br from-slate-700 to-slate-800 flex items-center justify-center text-xl font-bold text-slate-300 border border-slate-600/50 mb-2">
+                      <div className="w-14 h-14 mx-auto rounded-lg bg-gradient-to-br from-white/[0.08] to-white/[0.06] flex items-center justify-center text-xl font-bold text-white/70 border border-white/[0.1] mb-2">
                         {offering.logoIcon}
                       </div>
-                      <p className="text-slate-300 text-sm font-medium">{offering.provider}</p>
+                      <p className="text-white/70 text-sm font-medium">{offering.provider}</p>
                       <h3 className="text-white font-display font-bold">{offering.name}</h3>
                     </div>
                   </th>
@@ -177,16 +177,16 @@ export default function ComparisonModal({
               {comparisonRows.map((row, idx) => (
                 <tr
                   key={row.label}
-                  className={idx % 2 === 0 ? 'bg-slate-800/30' : 'bg-transparent'}
+                  className={idx % 2 === 0 ? 'bg-white/[0.04]' : 'bg-transparent'}
                 >
-                  <td className="p-4 text-slate-400 text-sm font-medium border-r border-slate-700/30">
+                  <td className="p-4 text-slate-400 text-sm font-medium border-r border-white/[0.06]">
                     {row.label}
                   </td>
                   {offerings.map((offering) => (
                     <td
                       key={offering.id}
                       className={`p-4 text-center ${
-                        row.highlight ? 'text-slate-300 font-bold text-lg' : 'text-white'
+                        row.highlight ? 'text-white/70 font-bold text-lg' : 'text-white'
                       }`}
                     >
                       {row.getValue(offering)}
@@ -196,15 +196,15 @@ export default function ComparisonModal({
               ))}
 
               {/* Features Row */}
-              <tr className="bg-slate-800/30">
-                <td className="p-4 text-slate-400 text-sm font-medium border-r border-slate-700/30 align-top">
+              <tr className="bg-white/[0.04]">
+                <td className="p-4 text-slate-400 text-sm font-medium border-r border-white/[0.06] align-top">
                   Key Features
                 </td>
                 {offerings.map((offering) => (
                   <td key={offering.id} className="p-4 align-top">
                     <ul className="space-y-1.5 text-left">
                       {offering.features.slice(0, 5).map((feature, i) => (
-                        <li key={i} className="flex items-start gap-2 text-sm text-slate-300">
+                        <li key={i} className="flex items-start gap-2 text-sm text-white/70">
                           <svg className="w-4 h-4 text-green-400 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                             <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                           </svg>
@@ -223,7 +223,7 @@ export default function ComparisonModal({
 
               {/* Requirements Row */}
               <tr>
-                <td className="p-4 text-slate-400 text-sm font-medium border-r border-slate-700/30 align-top">
+                <td className="p-4 text-slate-400 text-sm font-medium border-r border-white/[0.06] align-top">
                   Requirements
                 </td>
                 {offerings.map((offering) => (
@@ -251,13 +251,13 @@ export default function ComparisonModal({
         </div>
 
         {/* Footer */}
-        <div className="p-4 border-t border-slate-700/50 flex items-center justify-between">
+        <div className="p-4 border-t border-white/[0.08] flex items-center justify-between">
           <p className="text-slate-400 text-sm">
             Tip: Select up to 4 experiences to compare side by side
           </p>
           <button
             onClick={onClose}
-            className="px-6 py-2 rounded-lg bg-slate-700 text-white font-medium hover:bg-slate-600 transition-colors"
+            className="px-6 py-2 rounded-lg bg-white/[0.08] text-white font-medium hover:bg-white/[0.1] transition-colors"
           >
             Close
           </button>

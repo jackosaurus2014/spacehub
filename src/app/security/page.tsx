@@ -15,7 +15,7 @@ const SECURITY_FEATURES = [
     ),
     gradient: 'from-white/5 to-blue-500/20',
     borderColor: 'border-white/10',
-    iconColor: 'text-slate-300',
+    iconColor: 'text-white/70',
   },
   {
     title: 'Access Controls',
@@ -170,12 +170,12 @@ export default function SecurityPage() {
   return (
     <>
 
-      <div className="min-h-screen bg-[#050a15]">
+      <div className="min-h-screen bg-black">
         {/* Hero Section */}
         <section className="py-20 px-4">
           <div className="max-w-7xl mx-auto text-center">
             <ScrollReveal>
-              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-slate-300 text-sm font-medium mb-6">
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-white/70 text-sm font-medium mb-6">
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
                 </svg>
@@ -217,7 +217,7 @@ export default function SecurityPage() {
                   >
                     <div className={`${feature.iconColor} mb-4`}>{feature.icon}</div>
                     <h3 className="text-lg font-bold text-white mb-2">{feature.title}</h3>
-                    <p className="text-sm text-slate-300 leading-relaxed">{feature.description}</p>
+                    <p className="text-sm text-white/70 leading-relaxed">{feature.description}</p>
                   </div>
                 </StaggerItem>
               ))}
@@ -240,7 +240,7 @@ export default function SecurityPage() {
             <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
               {COMPLIANCE_BADGES.map((badge) => (
                 <StaggerItem key={badge.title}>
-                  <div className="rounded-2xl bg-slate-900/50 border border-slate-700/50 p-6 h-full text-center">
+                  <div className="rounded-2xl bg-black/50 border border-white/[0.06] p-6 h-full text-center">
                     <div className={`inline-flex items-center justify-center w-16 h-16 rounded-full ${badge.badgeBg} border mb-4`}>
                       <div className={badge.badgeColor}>{badge.icon}</div>
                     </div>
@@ -260,7 +260,7 @@ export default function SecurityPage() {
         <section className="py-20 px-4">
           <div className="max-w-7xl mx-auto">
             <ScrollReveal>
-              <div className="max-w-3xl mx-auto bg-slate-900/50 border border-slate-700/50 rounded-2xl p-8 sm:p-10">
+              <div className="max-w-3xl mx-auto bg-black/50 border border-white/[0.06] rounded-2xl p-8 sm:p-10">
                 <div className="text-center mb-8">
                   <h2 className="text-2xl md:text-3xl font-bold text-white mb-3">
                     Our Data Handling Promise
@@ -274,10 +274,10 @@ export default function SecurityPage() {
                   {DATA_PRACTICES.map((practice) => (
                     <div
                       key={practice.text}
-                      className="flex items-start gap-3 p-4 rounded-xl bg-slate-800/40 border border-slate-700/30"
+                      className="flex items-start gap-3 p-4 rounded-xl bg-white/[0.04] border border-white/[0.06]"
                     >
                       {practice.icon}
-                      <span className="text-sm text-slate-200 leading-relaxed">{practice.text}</span>
+                      <span className="text-sm text-white/90 leading-relaxed">{practice.text}</span>
                     </div>
                   ))}
                 </div>
@@ -290,7 +290,7 @@ export default function SecurityPage() {
         <section className="py-20 px-4">
           <div className="max-w-7xl mx-auto">
             <ScrollReveal>
-              <div className="max-w-3xl mx-auto bg-slate-900/50 border border-slate-700/50 rounded-2xl p-8 sm:p-10">
+              <div className="max-w-3xl mx-auto bg-black/50 border border-white/[0.06] rounded-2xl p-8 sm:p-10">
                 <div className="flex flex-col md:flex-row items-start gap-6">
                   <div className="shrink-0">
                     <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-amber-500/10 border border-amber-500/30">
@@ -317,7 +317,7 @@ export default function SecurityPage() {
                       <span className="text-slate-500">Contact:</span>
                       <a
                         href="mailto:security@spacenexus.us"
-                        className="text-slate-300 hover:text-white transition-colors underline underline-offset-2"
+                        className="text-white/70 hover:text-white transition-colors underline underline-offset-2"
                       >
                         security@spacenexus.us
                       </a>
@@ -344,7 +344,7 @@ export default function SecurityPage() {
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
                   <Link
                     href="/contact?utm_source=security&utm_medium=cta&utm_campaign=security-inquiry"
-                    className="inline-flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-white to-blue-600 hover:from-slate-300 hover:to-blue-500 text-white font-semibold rounded-lg transition-all shadow-lg shadow-black/15 hover:shadow-black/20"
+                    className="inline-flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-white to-blue-600 hover:from-white/80 hover:to-blue-500 text-white font-semibold rounded-lg transition-all shadow-lg shadow-black/15 hover:shadow-black/20"
                   >
                     Contact Our Security Team
                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
@@ -353,7 +353,7 @@ export default function SecurityPage() {
                   </Link>
                   <Link
                     href="/enterprise"
-                    className="inline-flex items-center gap-2 px-8 py-3 border border-slate-600 hover:border-slate-500 text-slate-300 hover:text-white font-medium rounded-lg transition-colors"
+                    className="inline-flex items-center gap-2 px-8 py-3 border border-white/[0.1] hover:border-white/[0.15] text-white/70 hover:text-white font-medium rounded-lg transition-colors"
                   >
                     Enterprise Solutions
                   </Link>

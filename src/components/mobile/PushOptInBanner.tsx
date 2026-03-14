@@ -247,8 +247,8 @@ export default function PushOptInBanner() {
       <div
         className="mx-3 mb-2 rounded-2xl border border-white/10 overflow-hidden"
         style={{
-          background: 'linear-gradient(135deg, rgba(15, 23, 42, 0.97) 0%, rgba(22, 33, 56, 0.97) 50%, rgba(15, 23, 42, 0.97) 100%)',
-          boxShadow: '0 -4px 24px -4px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(6, 182, 212, 0.08)',
+          background: 'linear-gradient(135deg, rgba(10, 10, 10, 0.97) 0%, rgba(10, 10, 10, 0.97) 50%, rgba(10, 10, 10, 0.97) 100%)',
+          boxShadow: '0 -4px 24px -4px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05)',
           backdropFilter: 'blur(12px)',
         }}
       >
@@ -267,10 +267,10 @@ export default function PushOptInBanner() {
             <div
               className="flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center border border-white/10"
               style={{
-                background: 'linear-gradient(135deg, rgba(6, 182, 212, 0.15) 0%, rgba(59, 130, 246, 0.15) 100%)',
+                background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.04) 100%)',
               }}
             >
-              <BellIcon className="w-5 h-5 text-slate-300" />
+              <BellIcon className="w-5 h-5 text-white/70" />
             </div>
 
             {/* Text content */}
@@ -287,7 +287,7 @@ export default function PushOptInBanner() {
             <button
               type="button"
               onClick={handleDismiss}
-              className="flex-shrink-0 -mt-0.5 -mr-1 w-8 h-8 flex items-center justify-center rounded-lg text-slate-500 hover:text-slate-300 hover:bg-slate-800/60 transition-colors"
+              className="flex-shrink-0 -mt-0.5 -mr-1 w-8 h-8 flex items-center justify-center rounded-lg text-slate-500 hover:text-white/70 hover:bg-white/[0.06] transition-colors"
               aria-label="Dismiss notification prompt"
             >
               <svg
@@ -369,7 +369,7 @@ export default function PushOptInBanner() {
             <button
               type="button"
               onClick={handleDismiss}
-              className="flex-shrink-0 py-2 px-3 text-xs font-medium text-slate-500 hover:text-slate-300 rounded-lg hover:bg-slate-800/40 transition-colors"
+              className="flex-shrink-0 py-2 px-3 text-xs font-medium text-slate-500 hover:text-white/70 rounded-lg hover:bg-white/[0.06] transition-colors"
             >
               Not now
             </button>

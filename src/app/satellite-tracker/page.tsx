@@ -97,11 +97,11 @@ function drawMap(
   const dpr = window.devicePixelRatio || 1;
 
   // Clear
-  ctx.fillStyle = '#0f172a'; // slate-900
+  ctx.fillStyle = '#0a0a0a'; // black
   ctx.fillRect(0, 0, width, height);
 
   // Draw grid lines
-  ctx.strokeStyle = '#1e293b'; // slate-800
+  ctx.strokeStyle = 'rgba(255,255,255,0.06)'; // white/[0.06]
   ctx.lineWidth = 0.5 * dpr;
   // Latitude lines every 30 degrees
   for (let lat = -60; lat <= 60; lat += 30) {
@@ -121,7 +121,7 @@ function drawMap(
   }
 
   // Draw equator
-  ctx.strokeStyle = '#334155'; // slate-700
+  ctx.strokeStyle = 'rgba(255,255,255,0.08)'; // white/[0.08]
   ctx.lineWidth = 1 * dpr;
   const eqY = latToY(0, height);
   ctx.beginPath();
@@ -130,8 +130,8 @@ function drawMap(
   ctx.stroke();
 
   // Draw continent outlines
-  ctx.strokeStyle = '#475569'; // slate-600
-  ctx.fillStyle = '#1e293b20'; // very faint fill
+  ctx.strokeStyle = 'rgba(255,255,255,0.1)'; // white/[0.1]
+  ctx.fillStyle = 'rgba(255,255,255,0.03)'; // very faint fill
   ctx.lineWidth = 1.2 * dpr;
 
   for (const continent of CONTINENT_PATHS) {
@@ -182,7 +182,7 @@ function drawMap(
     if (isSelected || (isFeatured && !satellites.find((s) => s.noradId === selectedId))) {
       const label = sat.name.length > 20 ? sat.name.substring(0, 18) + '...' : sat.name;
       ctx.font = `${(isSelected ? 12 : 10) * dpr}px Inter, system-ui, sans-serif`;
-      ctx.fillStyle = '#e2e8f0'; // slate-200
+      ctx.fillStyle = 'rgba(255,255,255,0.9)'; // white/90
       ctx.textAlign = 'left';
       ctx.textBaseline = 'middle';
       const textX = x + radius + 6 * dpr;
@@ -191,7 +191,7 @@ function drawMap(
       // Background for readability
       const metrics = ctx.measureText(label);
       const pad = 3 * dpr;
-      ctx.fillStyle = '#0f172acc';
+      ctx.fillStyle = 'rgba(10,10,10,0.8)';
       ctx.fillRect(textX - pad, textY - 7 * dpr, metrics.width + pad * 2, 14 * dpr);
       ctx.fillStyle = isSelected ? '#ffffff' : '#cbd5e1';
       ctx.fillText(label, textX, textY);
@@ -217,7 +217,7 @@ function drawLegend(ctx: CanvasRenderingContext2D, width: number, height: number
   ];
 
   // Background
-  ctx.fillStyle = '#0f172acc';
+  ctx.fillStyle = 'rgba(10,10,10,0.8)';
   ctx.fillRect(legendX - 4 * dpr, legendY - 4 * dpr, 60 * dpr, items.length * lineHeight + 8 * dpr);
 
   items.forEach(([label, color], i) => {
@@ -496,7 +496,7 @@ export default function SatelliteTrackerPage() {
               </div>
               {iss && (
                 <div className="card-elevated p-3 text-center border border-white/10">
-                  <div className="text-xs font-bold text-slate-200 truncate">
+                  <div className="text-xs font-bold text-white/90 truncate">
                     ISS: {iss.position.lat.toFixed(1)}, {iss.position.lng.toFixed(1)}
                   </div>
                   <div className="text-slate-400 text-xs uppercase tracking-widest">
@@ -537,7 +537,7 @@ export default function SatelliteTrackerPage() {
                 <div className="relative">
                   <div
                     ref={containerRef}
-                    className="relative w-full rounded-xl overflow-hidden border border-slate-700/50 bg-slate-900"
+                    className="relative w-full rounded-xl overflow-hidden border border-white/[0.06] bg-black"
                     style={{ height: 'clamp(350px, 50vw, 550px)' }}
                   >
                     <canvas
@@ -551,13 +551,13 @@ export default function SatelliteTrackerPage() {
                     />
 
                     {/* Map overlay: last refresh */}
-                    <div className="absolute top-3 right-3 px-2 py-1 rounded text-xs text-slate-400 bg-slate-900/80 border border-slate-700/50">
+                    <div className="absolute top-3 right-3 px-2 py-1 rounded text-xs text-slate-400 bg-black/80 border border-white/[0.06]">
                       {lastRefresh ? `Updated: ${lastRefresh}` : 'Loading...'}
                     </div>
 
                     {/* Selected satellite info overlay */}
                     {selectedSatData && (
-                      <div className="absolute bottom-3 left-3 right-3 sm:right-auto sm:max-w-sm p-4 rounded-xl bg-slate-900/95 border border-slate-700/50 backdrop-blur-sm">
+                      <div className="absolute bottom-3 left-3 right-3 sm:right-auto sm:max-w-sm p-4 rounded-xl bg-black/95 border border-white/[0.06] backdrop-blur-sm">
                         <div className="flex items-start justify-between gap-3">
                           <div className="min-w-0">
                             <h4 className="text-white font-semibold text-sm truncate">
@@ -577,7 +577,7 @@ export default function SatelliteTrackerPage() {
                             {selectedSatData.orbitClass}
                           </span>
                         </div>
-                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-3 pt-3 border-t border-slate-700/50">
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-3 pt-3 border-t border-white/[0.06]">
                           <div>
                             <div className="text-xs text-slate-500 uppercase tracking-wider">Lat</div>
                             <div className="text-sm text-white font-mono">
@@ -640,7 +640,7 @@ export default function SatelliteTrackerPage() {
                       onChange={(e) => setSearchQuery(e.target.value)}
                       placeholder="Search by name or NORAD ID..."
                       aria-label="Search satellites"
-                      className="w-full pl-10 pr-4 py-2.5 h-11 rounded-lg bg-slate-800 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-white/15 focus:ring-1 focus:ring-white/30 text-sm"
+                      className="w-full pl-10 pr-4 py-2.5 h-11 rounded-lg bg-white/[0.06] border border-white/[0.06] text-white placeholder-slate-500 focus:outline-none focus:border-white/15 focus:ring-1 focus:ring-white/30 text-sm"
                     />
                   </div>
 
@@ -650,7 +650,7 @@ export default function SatelliteTrackerPage() {
                       value={orbitFilter}
                       onChange={(e) => setOrbitFilter(e.target.value as OrbitClass | '')}
                       aria-label="Filter by orbit type"
-                      className="flex-1 bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-10 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+                      className="flex-1 bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-10 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                     >
                       <option value="">All Orbits</option>
                       <option value="LEO">LEO</option>
@@ -662,7 +662,7 @@ export default function SatelliteTrackerPage() {
                       value={categoryFilter}
                       onChange={(e) => setCategoryFilter(e.target.value as SatCategory)}
                       aria-label="Filter by category"
-                      className="flex-1 bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-10 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+                      className="flex-1 bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-10 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                     >
                       {CATEGORY_OPTIONS.map((opt) => (
                         <option key={opt.value} value={opt.value}>
@@ -690,7 +690,7 @@ export default function SatelliteTrackerPage() {
                   </div>
 
                   {/* Satellite list */}
-                  <div className="flex-1 overflow-y-auto max-h-[420px] space-y-1 pr-1 scrollbar-thin scrollbar-track-slate-800 scrollbar-thumb-slate-700">
+                  <div className="flex-1 overflow-y-auto max-h-[420px] space-y-1 pr-1 scrollbar-thin scrollbar-track-white/[0.06] scrollbar-thumb-white/[0.08]">
                     {filteredSatellites.length === 0 ? (
                       <div className="text-center py-8 text-slate-500 text-sm">
                         No satellites match your filters.
@@ -703,7 +703,7 @@ export default function SatelliteTrackerPage() {
                           className={`w-full text-left px-3 py-2.5 rounded-lg transition-all text-sm group ${
                             sat.noradId === selectedSat
                               ? 'bg-white/5 border border-white/10'
-                              : 'bg-slate-800/50 border border-transparent hover:bg-slate-800 hover:border-slate-700/50'
+                              : 'bg-white/[0.04] border border-transparent hover:bg-white/[0.06] hover:border-white/[0.06]'
                           }`}
                         >
                           <div className="flex items-center justify-between gap-2">
@@ -769,7 +769,7 @@ export default function SatelliteTrackerPage() {
                             {sat.orbitClass}
                           </span>
                         </div>
-                        <div className="grid grid-cols-3 gap-2 mt-3 pt-3 border-t border-slate-700/50">
+                        <div className="grid grid-cols-3 gap-2 mt-3 pt-3 border-t border-white/[0.06]">
                           <div>
                             <div className="text-xs text-slate-500">Alt</div>
                             <div className="text-sm text-white font-mono">

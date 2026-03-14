@@ -291,7 +291,7 @@ function TotalMarketBanner() {
             <span>2024: ${TOTAL_MARKET_2024}B</span>
             <span>2030 Target: ${(TOTAL_MARKET_2030 / 1000).toFixed(1)}T</span>
           </div>
-          <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
+          <div className="h-2 bg-white/[0.06] rounded-full overflow-hidden">
             <motion.div
               initial={{ width: 0 }}
               animate={{ width: `${(TOTAL_MARKET_2024 / TOTAL_MARKET_2030) * 100}%` }}
@@ -354,7 +354,7 @@ function SegmentCard({ segment }: { segment: MarketSegment }) {
 
       {/* Market size bar relative to largest segment */}
       <div className="mb-3">
-        <div className="h-1.5 bg-slate-800 rounded-full overflow-hidden">
+        <div className="h-1.5 bg-white/[0.06] rounded-full overflow-hidden">
           <div
             className={`h-full bg-gradient-to-r ${segment.color} rounded-full transition-all duration-700`}
             style={{ width: `${Math.max((segment.marketSize / 195) * 100, 2)}%` }}
@@ -365,7 +365,7 @@ function SegmentCard({ segment }: { segment: MarketSegment }) {
       {/* Key Players */}
       <div className="flex flex-wrap gap-1.5 mb-3">
         {segment.keyPlayers.map((player) => (
-          <span key={player} className="text-xs px-2 py-0.5 bg-slate-800/80 text-slate-300 rounded-md border border-slate-700/50">
+          <span key={player} className="text-xs px-2 py-0.5 bg-white/[0.06] text-white/70 rounded-md border border-white/[0.06]">
             {player}
           </span>
         ))}
@@ -378,7 +378,7 @@ function SegmentCard({ segment }: { segment: MarketSegment }) {
         transition={{ duration: 0.3, ease: 'easeInOut' }}
         className="overflow-hidden"
       >
-        <p className="text-sm text-slate-400 leading-relaxed pt-2 border-t border-slate-700/50">
+        <p className="text-sm text-slate-400 leading-relaxed pt-2 border-t border-white/[0.06]">
           {segment.description}
         </p>
       </motion.div>
@@ -478,7 +478,7 @@ function GrowthMatrix({ segments }: { segments: MarketSegment[] }) {
               const bottom = (rate / maxCagr) * 100;
               return (
                 <div key={rate} className="absolute left-10 right-0" style={{ bottom: `${bottom}%` }}>
-                  <div className="border-t border-slate-800 w-full" />
+                  <div className="border-t border-white/[0.06] w-full" />
                   <span className="absolute -left-10 -top-2.5 text-xs text-slate-600 w-8 text-right">{rate}%</span>
                 </div>
               );
@@ -526,7 +526,7 @@ function GrowthMatrix({ segments }: { segments: MarketSegment[] }) {
                 <span className={`${bubbleSize > 40 ? 'text-base' : 'text-xs'}`}>{segment.icon}</span>
 
                 {/* Tooltip on hover */}
-                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-slate-900/95 border border-slate-700 rounded-lg px-3 py-2 text-xs opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-20 shadow-xl">
+                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-black/95 border border-white/[0.08] rounded-lg px-3 py-2 text-xs opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-20 shadow-xl">
                   <p className="font-semibold text-slate-100">{segment.name}</p>
                   <p className="text-slate-400">{formatMarketSize(segment.marketSize)} | {segment.cagrLabel}</p>
                 </div>
@@ -542,7 +542,7 @@ function GrowthMatrix({ segments }: { segments: MarketSegment[] }) {
         </div>
 
         {/* Legend */}
-        <div className="mt-8 pt-4 border-t border-slate-800">
+        <div className="mt-8 pt-4 border-t border-white/[0.06]">
           <div className="flex flex-wrap gap-3">
             {segments.map((s) => (
               <div key={s.id} className="flex items-center gap-1.5">
@@ -595,7 +595,7 @@ function InvestmentInsights() {
                   <li key={s.id} className="flex items-center gap-2 text-sm">
                     <span className="text-slate-600 font-mono">{i + 1}.</span>
                     <span>{s.icon}</span>
-                    <span className="text-slate-300">{s.name}</span>
+                    <span className="text-white/70">{s.name}</span>
                     <span className="ml-auto text-emerald-400 font-semibold">{s.cagr}%</span>
                   </li>
                 ))}
@@ -612,8 +612,8 @@ function InvestmentInsights() {
                   <li key={s.id} className="flex items-center gap-2 text-sm">
                     <span className="text-slate-600 font-mono">{i + 1}.</span>
                     <span>{s.icon}</span>
-                    <span className="text-slate-300">{s.name}</span>
-                    <span className="ml-auto text-slate-300 font-semibold">{formatMarketSize(s.marketSize)}</span>
+                    <span className="text-white/70">{s.name}</span>
+                    <span className="ml-auto text-white/70 font-semibold">{formatMarketSize(s.marketSize)}</span>
                   </li>
                 ))}
             </ol>
@@ -629,7 +629,7 @@ function InvestmentInsights() {
                   <li key={s.id} className="flex items-center gap-2 text-sm">
                     <span className="text-slate-600 font-mono">{i + 1}.</span>
                     <span>{s.icon}</span>
-                    <span className="text-slate-300">{s.name}</span>
+                    <span className="text-white/70">{s.name}</span>
                     <span className={`ml-auto text-xs px-1.5 py-0.5 rounded border ${getMaturityColor(s.maturity)}`}>{s.maturity}</span>
                   </li>
                 ))}
@@ -712,7 +712,7 @@ export default function MarketSegmentsPage() {
                 id="sort-select"
                 value={sortKey}
                 onChange={(e) => setSortKey(e.target.value as SortKey)}
-                className="bg-slate-800 border border-slate-700 text-slate-200 text-sm rounded-lg px-3 py-2 focus:ring-white/30 focus:border-white/15 outline-none"
+                className="bg-white/[0.06] border border-white/[0.08] text-white/90 text-sm rounded-lg px-3 py-2 focus:ring-white/30 focus:border-white/15 outline-none"
               >
                 {SORT_OPTIONS.map(opt => (
                   <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -726,7 +726,7 @@ export default function MarketSegmentsPage() {
                 id="maturity-select"
                 value={maturityFilter}
                 onChange={(e) => setMaturityFilter(e.target.value as MaturityFilter)}
-                className="bg-slate-800 border border-slate-700 text-slate-200 text-sm rounded-lg px-3 py-2 focus:ring-white/30 focus:border-white/15 outline-none"
+                className="bg-white/[0.06] border border-white/[0.08] text-white/90 text-sm rounded-lg px-3 py-2 focus:ring-white/30 focus:border-white/15 outline-none"
               >
                 {MATURITY_OPTIONS.map(opt => (
                   <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -754,7 +754,7 @@ export default function MarketSegmentsPage() {
             <p className="text-slate-500 text-lg">No segments match the current filter.</p>
             <button
               onClick={() => setMaturityFilter('all')}
-              className="mt-3 text-slate-300 hover:text-white text-sm transition-colors"
+              className="mt-3 text-white/70 hover:text-white text-sm transition-colors"
             >
               Clear filter
             </button>

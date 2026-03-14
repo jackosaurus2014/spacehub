@@ -140,7 +140,7 @@ function DSNComplexCard({ complex }: { complex: DSNComplex }) {
               </div>
               <div className="flex flex-wrap gap-1 mb-1">
                 {antenna.bands.map((band) => (
-                  <span key={band} className="px-1.5 py-0.5 bg-space-700 text-slate-200 border border-space-600 rounded text-xs">
+                  <span key={band} className="px-1.5 py-0.5 bg-space-700 text-white/90 border border-space-600 rounded text-xs">
                     {band}
                   </span>
                 ))}
@@ -427,8 +427,8 @@ export default function SpaceportsCommunicationsTab({
               onClick={() => setCommsSubTab(tab.id)}
               className={`px-4 py-2.5 text-sm font-medium whitespace-nowrap border-b-2 transition-colors ${
                 commsSubTab === tab.id
-                  ? 'border-white/15 text-slate-200'
-                  : 'border-transparent text-slate-400 hover:text-white hover:border-slate-600'
+                  ? 'border-white/15 text-white/90'
+                  : 'border-transparent text-slate-400 hover:text-white hover:border-white/[0.1]'
               }`}
             >
               {tab.label}
@@ -515,7 +515,7 @@ export default function SpaceportsCommunicationsTab({
             <div className="flex flex-wrap items-center gap-3 mb-6">
               <span className="text-slate-400 text-sm">Filter by status:</span>
               {['', 'operational', 'deploying', 'development'].map((status) => (
-                <button key={status} onClick={() => setRelayFilter(status)} className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${relayFilter === status ? 'bg-white/10 text-slate-200 border border-white/15' : 'bg-space-800 text-slate-400 border border-space-700 hover:border-space-600 hover:text-slate-900'}`}>
+                <button key={status} onClick={() => setRelayFilter(status)} className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${relayFilter === status ? 'bg-white/10 text-white/90 border border-white/15' : 'bg-space-800 text-slate-400 border border-space-700 hover:border-space-600 hover:text-slate-900'}`}>
                   {status ? status.charAt(0).toUpperCase() + status.slice(1) : 'All'}
                 </button>
               ))}
@@ -681,7 +681,7 @@ export default function SpaceportsCommunicationsTab({
                 <div className="text-slate-500 text-xs mb-2">Space Communications Spectrum (Low {String.fromCharCode(8594)} High)</div>
                 <div className="flex rounded-lg overflow-hidden h-8">
                   <div className="bg-green-500/30 flex-[1] flex items-center justify-center text-xs text-green-300 font-medium border-r border-space-900">UHF</div>
-                  <div className="bg-white/30 flex-[1] flex items-center justify-center text-xs text-slate-200 font-medium border-r border-space-900">S</div>
+                  <div className="bg-white/30 flex-[1] flex items-center justify-center text-xs text-white/90 font-medium border-r border-space-900">S</div>
                   <div className="bg-blue-500/30 flex-[2] flex items-center justify-center text-xs text-blue-300 font-medium border-r border-space-900">X</div>
                   <div className="bg-purple-500/30 flex-[3] flex items-center justify-center text-xs text-purple-300 font-medium border-r border-space-900">Ku</div>
                   <div className="bg-amber-500/30 flex-[6] flex items-center justify-center text-xs text-amber-300 font-medium border-r border-space-900">Ka</div>

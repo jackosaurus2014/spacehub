@@ -164,14 +164,14 @@ function OpsConjunctionCard({ event }: { event: OperationalConjunction }) {
           </div>
 
           <div className="flex flex-wrap items-center gap-2 text-sm mt-2">
-            <div className="bg-slate-800/50 rounded px-3 py-1.5">
+            <div className="bg-white/[0.04] rounded px-3 py-1.5">
               <span className="text-slate-400 text-xs block">Primary</span>
-              <span className="text-slate-200 font-medium">{event.primaryObject}</span>
+              <span className="text-white/90 font-medium">{event.primaryObject}</span>
             </div>
             <span className="text-slate-400 font-bold">vs</span>
-            <div className="bg-slate-800/50 rounded px-3 py-1.5">
+            <div className="bg-white/[0.04] rounded px-3 py-1.5">
               <span className="text-slate-400 text-xs block">Secondary</span>
-              <span className="text-slate-200 font-medium">{event.secondaryObject}</span>
+              <span className="text-white/90 font-medium">{event.secondaryObject}</span>
             </div>
           </div>
         </div>
@@ -191,20 +191,20 @@ function OpsConjunctionCard({ event }: { event: OperationalConjunction }) {
         </div>
       </div>
 
-      <div className="flex flex-wrap items-center gap-4 mt-4 pt-3 border-t border-slate-700/50 text-xs">
+      <div className="flex flex-wrap items-center gap-4 mt-4 pt-3 border-t border-white/[0.06] text-xs">
         <span className="text-slate-400">
-          Miss Distance: <span className="text-slate-300 font-bold">{event.missDistance.toFixed(1)} m</span>
+          Miss Distance: <span className="text-white/70 font-bold">{event.missDistance.toFixed(1)} m</span>
         </span>
         <span className="text-slate-400">
           Collision Prob: <span className={`font-bold ${
-            (event.collisionProb || 0) > 0.0001 ? 'text-red-400' : 'text-slate-300'
+            (event.collisionProb || 0) > 0.0001 ? 'text-red-400' : 'text-white/70'
           }`}>
             {formatProbability(event.collisionProb)}
           </span>
         </span>
         {event.relativeVelocity && (
           <span className="text-slate-400">
-            Rel. Velocity: <span className="text-slate-300 font-medium">{event.relativeVelocity.toFixed(1)} m/s</span>
+            Rel. Velocity: <span className="text-white/70 font-medium">{event.relativeVelocity.toFixed(1)} m/s</span>
           </span>
         )}
       </div>
@@ -223,7 +223,7 @@ function ScorecardCard({ scorecard }: { scorecard: SustainabilityScorecard }) {
     <div className="card p-5">
       <div className="flex items-start justify-between mb-4">
         <div>
-          <h3 className="text-lg font-semibold text-slate-100">{scorecard.operatorName}</h3>
+          <h3 className="text-lg font-semibold text-white">{scorecard.operatorName}</h3>
           <p className="text-slate-400 text-sm">{scorecard.totalSatellites.toLocaleString()} satellites</p>
         </div>
         <div className="text-center">
@@ -239,7 +239,7 @@ function ScorecardCard({ scorecard }: { scorecard: SustainabilityScorecard }) {
           { label: 'Debris', score: scorecard.debrisScore },
           { label: 'Transparency', score: scorecard.transparencyScore },
         ].map((item) => (
-          <div key={item.label} className="bg-slate-800/50 rounded p-2">
+          <div key={item.label} className="bg-white/[0.04] rounded p-2">
             <div className="flex items-center justify-between mb-1">
               <span className="text-slate-400 text-xs">{item.label}</span>
               <span className={`text-sm font-bold ${
@@ -248,7 +248,7 @@ function ScorecardCard({ scorecard }: { scorecard: SustainabilityScorecard }) {
                 'text-red-400'
               }`}>{item.score}</span>
             </div>
-            <div className="h-1.5 bg-slate-700 rounded-full overflow-hidden">
+            <div className="h-1.5 bg-white/[0.08]rounded-full overflow-hidden">
               <div
                 className={`h-full rounded-full ${
                   item.score >= 80 ? 'bg-green-500' :
@@ -263,9 +263,9 @@ function ScorecardCard({ scorecard }: { scorecard: SustainabilityScorecard }) {
       </div>
 
       {scorecard.deorbitPlan && (
-        <div className="bg-slate-800/30 rounded p-3 mb-3">
+        <div className="bg-white/[0.03] rounded p-3 mb-3">
           <h4 className="text-slate-400 text-xs uppercase tracking-wider mb-1">Deorbit Plan</h4>
-          <p className="text-slate-300 text-sm line-clamp-3">{scorecard.deorbitPlan}</p>
+          <p className="text-white/70 text-sm line-clamp-3">{scorecard.deorbitPlan}</p>
         </div>
       )}
 
@@ -273,7 +273,7 @@ function ScorecardCard({ scorecard }: { scorecard: SustainabilityScorecard }) {
         <p className="text-slate-400 text-xs line-clamp-2">{scorecard.notes}</p>
       )}
 
-      <div className="mt-3 pt-3 border-t border-slate-700/50 text-xs text-slate-400">
+      <div className="mt-3 pt-3 border-t border-white/[0.06] text-xs text-slate-400">
         Last updated: {new Date(scorecard.lastUpdated).toLocaleDateString('en-US', {
           month: 'short',
           day: 'numeric',
@@ -296,14 +296,14 @@ function SpectrumAlertCard({ alert }: { alert: SpectrumAlert }) {
       alert.severity === 'critical' ? 'border-red-500' :
       alert.severity === 'high' ? 'border-orange-500' :
       alert.severity === 'medium' ? 'border-yellow-500' :
-      'border-slate-700'
+      'border-white/[0.08]'
     }`}>
       <div className="flex items-start justify-between mb-3">
         <div className="flex items-center gap-2">
           <span className={`text-xs font-bold px-2.5 py-1 rounded ${severityInfo.bgColor} ${severityInfo.color}`}>
             {severityInfo.label.toUpperCase()}
           </span>
-          <span className="text-xs bg-slate-700 text-slate-300 px-2 py-0.5 rounded capitalize">
+          <span className="text-xs bg-white/[0.08] text-white/70 px-2 py-0.5 rounded capitalize">
             {alert.alertType}
           </span>
           {alert.status === 'resolved' && (
@@ -323,7 +323,7 @@ function SpectrumAlertCard({ alert }: { alert: SpectrumAlert }) {
       </div>
 
       <div className="flex items-center gap-3 mb-3">
-        <div className="bg-white/10 text-slate-200 px-3 py-1 rounded text-sm font-medium">
+        <div className="bg-white/10 text-white/90 px-3 py-1 rounded text-sm font-medium">
           {alert.frequencyBand}
         </div>
         {alert.affectedService && (
@@ -331,7 +331,7 @@ function SpectrumAlertCard({ alert }: { alert: SpectrumAlert }) {
         )}
       </div>
 
-      <p className="text-slate-300 text-sm mb-3">{alert.description}</p>
+      <p className="text-white/70 text-sm mb-3">{alert.description}</p>
 
       {alert.location && (
         <div className="text-slate-400 text-xs">
@@ -444,7 +444,7 @@ export default function OperationsTab() {
     return (
       <div className="card p-12 text-center">
         <span className="text-6xl block mb-4">&#128640;</span>
-        <h2 className="text-2xl font-semibold text-slate-100 mb-2">
+        <h2 className="text-2xl font-semibold text-white mb-2">
           No Operational Data Available
         </h2>
         <p className="text-slate-400 mb-6 max-w-lg mx-auto">
@@ -494,7 +494,7 @@ export default function OperationsTab() {
                 </div>
               </div>
               <div className="text-right">
-                <div className="text-2xl font-bold text-slate-100">{overview.conjunctions.total}</div>
+                <div className="text-2xl font-bold text-white">{overview.conjunctions.total}</div>
                 <div className="text-slate-400 text-xs">Active Events</div>
               </div>
             </div>
@@ -508,7 +508,7 @@ export default function OperationsTab() {
                 </div>
               </div>
               <div className="text-right">
-                <div className="text-2xl font-bold text-slate-100">{overview.spectrum.totalAlerts}</div>
+                <div className="text-2xl font-bold text-white">{overview.spectrum.totalAlerts}</div>
                 <div className="text-slate-400 text-xs">Active Alerts</div>
               </div>
             </div>
@@ -522,7 +522,7 @@ export default function OperationsTab() {
                 </div>
               </div>
               <div className="text-right">
-                <div className="text-2xl font-bold text-slate-100">{overview.sustainability.averageScore}</div>
+                <div className="text-2xl font-bold text-white">{overview.sustainability.averageScore}</div>
                 <div className="text-slate-400 text-xs">Avg. Score</div>
               </div>
             </div>
@@ -544,14 +544,14 @@ export default function OperationsTab() {
             className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
               activeSubTab === tab.id
                 ? 'bg-white text-slate-900'
-                : 'bg-slate-800/50 text-slate-400 hover:bg-slate-700/50'
+                : 'bg-white/[0.04] text-slate-400 hover:bg-white/[0.08]'
             }`}
           >
             {tab.label}
             {tab.count !== undefined && tab.count > 0 && (
               <span
                 className={`text-xs px-1.5 py-0.5 rounded-full ${
-                  activeSubTab === tab.id ? 'bg-white/20 text-slate-900' : 'bg-slate-700 text-slate-400'
+                  activeSubTab === tab.id ? 'bg-white/20 text-slate-900' : 'bg-white/[0.08] text-slate-400'
                 }`}
               >
                 {tab.count}
@@ -592,10 +592,10 @@ export default function OperationsTab() {
           {overview.conjunctions.critical.length > 0 && (
             <div>
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-semibold text-slate-100">Critical Conjunction Events</h2>
+                <h2 className="text-xl font-semibold text-white">Critical Conjunction Events</h2>
                 <button
                   onClick={() => handleSubTabChange('conjunctions')}
-                  className="text-slate-200 hover:text-white text-sm"
+                  className="text-white/90 hover:text-white text-sm"
                 >
                   View All &rarr;
                 </button>
@@ -612,10 +612,10 @@ export default function OperationsTab() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div>
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-semibold text-slate-100">Top Sustainability Performers</h2>
+                <h2 className="text-xl font-semibold text-white">Top Sustainability Performers</h2>
                 <button
                   onClick={() => handleSubTabChange('scorecards')}
-                  className="text-slate-200 hover:text-white text-sm"
+                  className="text-white/90 hover:text-white text-sm"
                 >
                   View All &rarr;
                 </button>
@@ -624,7 +624,7 @@ export default function OperationsTab() {
                 {overview.sustainability.topPerformers.slice(0, 3).map((scorecard) => (
                   <div key={scorecard.id} className="card p-4 flex items-center justify-between">
                     <div>
-                      <h3 className="font-medium text-slate-200">{scorecard.operatorName}</h3>
+                      <h3 className="font-medium text-white/90">{scorecard.operatorName}</h3>
                       <p className="text-slate-400 text-sm">{scorecard.totalSatellites.toLocaleString()} satellites</p>
                     </div>
                     <div className="text-center">
@@ -639,7 +639,7 @@ export default function OperationsTab() {
             </div>
 
             <div>
-              <h2 className="text-xl font-semibold text-slate-100 mb-4">Critical Spectrum Alerts</h2>
+              <h2 className="text-xl font-semibold text-white mb-4">Critical Spectrum Alerts</h2>
               {overview.spectrum.critical.length > 0 ? (
                 <div className="space-y-4">
                   {overview.spectrum.critical.slice(0, 3).map((alert) => (
@@ -650,9 +650,9 @@ export default function OperationsTab() {
                         <span className={`text-xs font-bold px-2 py-0.5 rounded ${SEVERITY_INFO[alert.severity].bgColor} ${SEVERITY_INFO[alert.severity].color}`}>
                           {alert.severity.toUpperCase()}
                         </span>
-                        <span className="text-slate-200 font-medium">{alert.frequencyBand}</span>
+                        <span className="text-white/90 font-medium">{alert.frequencyBand}</span>
                       </div>
-                      <p className="text-slate-300 text-sm line-clamp-2">{alert.description}</p>
+                      <p className="text-white/70 text-sm line-clamp-2">{alert.description}</p>
                     </div>
                   ))}
                 </div>
@@ -668,7 +668,7 @@ export default function OperationsTab() {
           {/* Grade Distribution */}
           <ScrollReveal>
           <div className="card p-6">
-            <h2 className="text-xl font-semibold text-slate-100 mb-4">Sustainability Grade Distribution</h2>
+            <h2 className="text-xl font-semibold text-white mb-4">Sustainability Grade Distribution</h2>
             <div className="flex items-end gap-4 h-40">
               {(['A', 'B', 'C', 'D', 'F'] as ScorecardGrade[]).map((grade) => {
                 const count = overview.sustainability.gradeDistribution[grade] || 0;
@@ -712,7 +712,7 @@ export default function OperationsTab() {
                 className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
                   alertLevelFilter === ''
                     ? 'bg-white text-slate-900'
-                    : 'bg-slate-700 text-slate-400 hover:bg-slate-600'
+                    : 'bg-white/[0.08] text-slate-400 hover:bg-white/[0.1]'
                 }`}
               >
                 All ({conjunctions.length})
@@ -727,7 +727,7 @@ export default function OperationsTab() {
                     className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
                       alertLevelFilter === level
                         ? `${info.bgColor} ${info.color} border ${info.borderColor}`
-                        : 'bg-slate-700 text-slate-400 hover:bg-slate-600'
+                        : 'bg-white/[0.08] text-slate-400 hover:bg-white/[0.1]'
                     }`}
                   >
                     {info.label} ({count})
@@ -783,7 +783,7 @@ export default function OperationsTab() {
                 className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
                   gradeFilter === ''
                     ? 'bg-white text-slate-900'
-                    : 'bg-slate-700 text-slate-400 hover:bg-slate-600'
+                    : 'bg-white/[0.08] text-slate-400 hover:bg-white/[0.1]'
                 }`}
               >
                 All ({scorecards.length})
@@ -798,7 +798,7 @@ export default function OperationsTab() {
                     className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
                       gradeFilter === grade
                         ? `${info.bgColor} ${info.color}`
-                        : 'bg-slate-700 text-slate-400 hover:bg-slate-600'
+                        : 'bg-white/[0.08] text-slate-400 hover:bg-white/[0.1]'
                     }`}
                   >
                     {grade} ({count})
@@ -818,7 +818,7 @@ export default function OperationsTab() {
 
           {filteredScorecards.length === 0 ? (
             <div className="card p-12 text-center">
-              <h3 className="text-xl font-semibold text-slate-300 mb-2">No Scorecards Found</h3>
+              <h3 className="text-xl font-semibold text-white/70 mb-2">No Scorecards Found</h3>
               <p className="text-slate-400">
                 {gradeFilter
                   ? `No operators with grade ${gradeFilter}.`
@@ -839,19 +839,19 @@ export default function OperationsTab() {
 
           {/* Scoring Methodology */}
           <div className="card p-6 mt-8 border-dashed">
-            <h3 className="text-lg font-semibold text-slate-100 mb-4">Scoring Methodology</h3>
+            <h3 className="text-lg font-semibold text-white mb-4">Scoring Methodology</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
               <div>
-                <h4 className="text-slate-300 font-medium mb-2">Score Components</h4>
+                <h4 className="text-white/70 font-medium mb-2">Score Components</h4>
                 <ul className="space-y-2 text-slate-400">
-                  <li><span className="text-slate-200">Deorbit Score:</span> Compliance with deorbit guidelines, active propulsion capability, target deorbit timeline</li>
-                  <li><span className="text-slate-200">Maneuver Score:</span> Collision avoidance responsiveness, autonomous maneuvering capability</li>
-                  <li><span className="text-slate-200">Debris Score:</span> Historical debris creation, design for demise compliance</li>
-                  <li><span className="text-slate-200">Transparency Score:</span> Data sharing with Space-Track, public reporting</li>
+                  <li><span className="text-white/90">Deorbit Score:</span> Compliance with deorbit guidelines, active propulsion capability, target deorbit timeline</li>
+                  <li><span className="text-white/90">Maneuver Score:</span> Collision avoidance responsiveness, autonomous maneuvering capability</li>
+                  <li><span className="text-white/90">Debris Score:</span> Historical debris creation, design for demise compliance</li>
+                  <li><span className="text-white/90">Transparency Score:</span> Data sharing with Space-Track, public reporting</li>
                 </ul>
               </div>
               <div>
-                <h4 className="text-slate-300 font-medium mb-2">Grade Thresholds</h4>
+                <h4 className="text-white/70 font-medium mb-2">Grade Thresholds</h4>
                 <ul className="space-y-2 text-slate-400">
                   <li><span className="text-green-400 font-medium">A (90-100):</span> Industry leader, exceeds all requirements</li>
                   <li><span className="text-blue-400 font-medium">B (80-89):</span> Above average, meets most best practices</li>
@@ -876,7 +876,7 @@ export default function OperationsTab() {
                 className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
                   severityFilter === ''
                     ? 'bg-white text-slate-900'
-                    : 'bg-slate-700 text-slate-400 hover:bg-slate-600'
+                    : 'bg-white/[0.08] text-slate-400 hover:bg-white/[0.1]'
                 }`}
               >
                 All ({spectrumAlerts.length})
@@ -891,7 +891,7 @@ export default function OperationsTab() {
                     className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
                       severityFilter === sev
                         ? `${info.bgColor} ${info.color}`
-                        : 'bg-slate-700 text-slate-400 hover:bg-slate-600'
+                        : 'bg-white/[0.08] text-slate-400 hover:bg-white/[0.1]'
                     }`}
                   >
                     {info.label} ({count})
@@ -936,7 +936,7 @@ export default function OperationsTab() {
 
           {/* Frequency Band Reference */}
           <div className="card p-6 mt-8">
-            <h3 className="text-lg font-semibold text-slate-100 mb-4">Frequency Band Reference</h3>
+            <h3 className="text-lg font-semibold text-white mb-4">Frequency Band Reference</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
               {[
                 { band: 'L-band', range: '1-2 GHz', services: ['MSS', 'GPS/GNSS', 'D2D'], level: 'high' },
@@ -947,9 +947,9 @@ export default function OperationsTab() {
                 { band: 'Ka-band', range: '26.5-40 GHz', services: ['HTS', 'LEO Broadband', 'Gateways'], level: 'very_high' },
                 { band: 'V-band', range: '40-75 GHz', services: ['Next-Gen Broadband', 'Feeder Links'], level: 'emerging' },
               ].map((band) => (
-                <div key={band.band} className="bg-slate-800/50 rounded-lg p-4">
+                <div key={band.band} className="bg-white/[0.04] rounded-lg p-4">
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-slate-200 font-medium">{band.band}</span>
+                    <span className="text-white/90 font-medium">{band.band}</span>
                     <span className={`text-xs px-2 py-0.5 rounded ${
                       band.level === 'very_high' ? 'bg-red-500/20 text-red-400' :
                       band.level === 'high' ? 'bg-orange-500/20 text-orange-400' :
@@ -965,7 +965,7 @@ export default function OperationsTab() {
                   <div className="text-slate-400 text-sm mb-2">{band.range}</div>
                   <div className="flex flex-wrap gap-1">
                     {band.services.map((service) => (
-                      <span key={service} className="text-xs bg-slate-700 text-slate-400 px-2 py-0.5 rounded">
+                      <span key={service} className="text-xs bg-white/[0.08] text-slate-400 px-2 py-0.5 rounded">
                         {service}
                       </span>
                     ))}
@@ -977,7 +977,7 @@ export default function OperationsTab() {
 
           {/* SCS Coordination Note */}
           <div className="card p-6 mt-6 border-l-4 border-white/15">
-            <h3 className="text-lg font-semibold text-slate-100 mb-2">SCS Coordination Status</h3>
+            <h3 className="text-lg font-semibold text-white mb-2">SCS Coordination Status</h3>
             <p className="text-slate-400 text-sm mb-4">
               Supplemental Coverage from Space (SCS) enables direct-to-device (D2D) satellite connectivity for smartphones.
               The FCC has authorized several operators for SCS services, requiring careful coordination with terrestrial networks.

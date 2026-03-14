@@ -17,7 +17,7 @@ const KPI_METRICS: KPIMetric[] = [
     value: 42,
     suffix: '',
     prefix: '',
-    colorClass: 'text-slate-300',
+    colorClass: 'text-white/70',
   },
   {
     label: 'Active Satellites',
@@ -38,7 +38,7 @@ const KPI_METRICS: KPIMetric[] = [
     value: 1.2,
     suffix: 'T',
     prefix: '$',
-    colorClass: 'text-slate-300',
+    colorClass: 'text-white/70',
   },
   {
     label: 'Funding YTD',
@@ -114,7 +114,7 @@ function AnimatedCounter({ metric, shouldAnimate }: { metric: KPIMetric; shouldA
       >
         {formatted}
       </span>
-      <span className="text-xs md:text-sm text-slate-400 mt-1 font-medium whitespace-nowrap group-hover/kpi:text-slate-300 transition-colors duration-200">
+      <span className="text-xs md:text-sm text-slate-400 mt-1 font-medium whitespace-nowrap group-hover/kpi:text-white/70 transition-colors duration-200">
         {metric.label}
       </span>
     </div>
@@ -164,7 +164,7 @@ export default function KPIStrip() {
       <div className="container mx-auto px-4">
         <div className="card-glass overflow-hidden">
           <div className="overflow-x-auto md:overflow-x-visible scrollbar-hide">
-            <div className="grid grid-cols-3 md:grid-cols-6 min-w-0 divide-x divide-slate-700/30">
+            <div className="grid grid-cols-3 md:grid-cols-6 min-w-0 divide-x divide-white/[0.04]">
               {KPI_METRICS.map((metric) => (
                 <AnimatedCounter
                   key={metric.label}

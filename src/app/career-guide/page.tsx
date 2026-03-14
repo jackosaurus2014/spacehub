@@ -42,7 +42,7 @@ interface CareerPath {
 
 const CATEGORIES: Record<CareerCategory, { label: string; color: string; bg: string; border: string }> = {
   engineering:   { label: 'Engineering',   color: 'text-blue-400',    bg: 'bg-blue-500/20',    border: 'border-blue-500/30' },
-  software:      { label: 'Software',      color: 'text-slate-300',    bg: 'bg-white/10',    border: 'border-white/10' },
+  software:      { label: 'Software',      color: 'text-white/70',    bg: 'bg-white/10',    border: 'border-white/10' },
   business:      { label: 'Business',      color: 'text-yellow-400',  bg: 'bg-yellow-500/20',  border: 'border-yellow-500/30' },
   science:       { label: 'Science',       color: 'text-purple-400',  bg: 'bg-purple-500/20',  border: 'border-purple-500/30' },
   operations:    { label: 'Operations',    color: 'text-green-400',   bg: 'bg-green-500/20',   border: 'border-green-500/30' },
@@ -53,7 +53,7 @@ const CATEGORIES: Record<CareerCategory, { label: string; color: string; bg: str
 const GROWTH_BADGES: Record<GrowthRate, { label: string; icon: string; classes: string }> = {
   hot:       { label: 'Hot',       icon: '\u{1F525}', classes: 'bg-red-500/20 text-red-400 border-red-500/30' },
   growing:   { label: 'Growing',   icon: '\u{1F4C8}', classes: 'bg-green-500/20 text-green-400 border-green-500/30' },
-  stable:    { label: 'Stable',    icon: '\u{2696}\u{FE0F}',  classes: 'bg-slate-500/20 text-slate-300 border-slate-500/30' },
+  stable:    { label: 'Stable',    icon: '\u{2696}\u{FE0F}',  classes: 'bg-slate-500/20 text-white/70 border-slate-500/30' },
   declining: { label: 'Declining', icon: '\u{1F4C9}', classes: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30' },
 };
 
@@ -407,7 +407,7 @@ function CareerCard({ career }: { career: CareerPath }) {
   const maxPct = (career.salaryRange.max / MAX_SALARY) * 100;
 
   return (
-    <div className={`bg-slate-800/60 border ${cat.border} rounded-xl p-5 hover:bg-slate-800/80 transition-colors`}>
+    <div className={`bg-white/[0.05] border ${cat.border} rounded-xl p-5 hover:bg-white/[0.06] transition-colors`}>
       {/* Header */}
       <div className="flex items-start justify-between gap-3 mb-3">
         <div className="flex-1 min-w-0">
@@ -430,7 +430,7 @@ function CareerCard({ career }: { career: CareerPath }) {
       </div>
 
       {/* Salary Bar */}
-      <div className="relative h-2 bg-slate-700 rounded-full mb-3 overflow-hidden" aria-label={`Salary range from ${formatSalary(career.salaryRange.min)} to ${formatSalary(career.salaryRange.max)}`}>
+      <div className="relative h-2 bg-white/[0.08] rounded-full mb-3 overflow-hidden" aria-label={`Salary range from ${formatSalary(career.salaryRange.min)} to ${formatSalary(career.salaryRange.max)}`}>
         <div
           className="absolute h-full rounded-full bg-gradient-to-r from-emerald-500 to-teal-400"
           style={{ left: `${minPct}%`, width: `${maxPct - minPct}%` }}
@@ -438,12 +438,12 @@ function CareerCard({ career }: { career: CareerPath }) {
       </div>
 
       {/* Description */}
-      <p className="text-sm text-slate-300 mb-3 leading-relaxed">{career.description}</p>
+      <p className="text-sm text-white/70 mb-3 leading-relaxed">{career.description}</p>
 
       {/* Skills */}
       <div className="flex flex-wrap gap-1.5 mb-3">
         {career.skills.map((skill) => (
-          <span key={skill} className="text-xs bg-slate-700/60 text-slate-300 px-2 py-0.5 rounded-md">
+          <span key={skill} className="text-xs bg-white/[0.06] text-white/70 px-2 py-0.5 rounded-md">
             {skill}
           </span>
         ))}
@@ -454,7 +454,7 @@ function CareerCard({ career }: { career: CareerPath }) {
         <p className="text-xs text-slate-400 mb-1">Who&apos;s hiring:</p>
         <div className="flex flex-wrap gap-1.5">
           {career.companies.map((company) => (
-            <span key={company} className="text-xs bg-slate-700/40 text-slate-300 px-2 py-0.5 rounded border border-slate-600/50">
+            <span key={company} className="text-xs bg-white/[0.04] text-white/70 px-2 py-0.5 rounded border border-white/[0.08]">
               {company}
             </span>
           ))}
@@ -479,9 +479,9 @@ function CareerCard({ career }: { career: CareerPath }) {
       </button>
 
       {expanded && (
-        <div className="mt-3 p-4 bg-slate-900/50 rounded-lg border border-slate-700/50">
+        <div className="mt-3 p-4 bg-black/50 rounded-lg border border-white/[0.06]">
           <p className="text-xs text-emerald-400 font-semibold mb-1 uppercase tracking-wider">A Day in the Life</p>
-          <p className="text-sm text-slate-300 leading-relaxed">{career.dayInLife}</p>
+          <p className="text-sm text-white/70 leading-relaxed">{career.dayInLife}</p>
         </div>
       )}
     </div>
@@ -506,9 +506,9 @@ function StatsBar({ careers }: { careers: CareerPath[] }) {
         { label: 'Hot Careers', value: hotCount.toString(), sub: 'rapid growth' },
         { label: 'Categories', value: categories.toString(), sub: 'disciplines' },
       ].map((stat) => (
-        <div key={stat.label} className="bg-slate-800/60 border border-slate-700/50 rounded-lg p-4 text-center">
+        <div key={stat.label} className="bg-white/[0.05] border border-white/[0.06] rounded-lg p-4 text-center">
           <p className="text-2xl font-bold text-emerald-400">{stat.value}</p>
-          <p className="text-sm text-slate-300 font-medium">{stat.label}</p>
+          <p className="text-sm text-white/70 font-medium">{stat.label}</p>
           <p className="text-xs text-slate-500">{stat.sub}</p>
         </div>
       ))}
@@ -524,7 +524,7 @@ function SalaryOverview({ careers }: { careers: CareerPath[] }) {
   const sorted = [...careers].sort((a, b) => b.salaryRange.max - a.salaryRange.max).slice(0, 10);
 
   return (
-    <div className="bg-slate-800/60 border border-slate-700/50 rounded-xl p-5 mb-8">
+    <div className="bg-white/[0.05] border border-white/[0.06] rounded-xl p-5 mb-8">
       <h3 className="text-lg font-semibold text-slate-100 mb-4">Top 10 Highest-Paying Careers</h3>
       <div className="space-y-3">
         {sorted.map((career) => {
@@ -533,10 +533,10 @@ function SalaryOverview({ careers }: { careers: CareerPath[] }) {
           const maxPct = (career.salaryRange.max / MAX_SALARY) * 100;
           return (
             <div key={career.title} className="flex items-center gap-3">
-              <span className="text-xs text-slate-300 w-44 truncate shrink-0" title={career.title}>
+              <span className="text-xs text-white/70 w-44 truncate shrink-0" title={career.title}>
                 {career.title}
               </span>
-              <div className="relative flex-1 h-5 bg-slate-700/50 rounded">
+              <div className="relative flex-1 h-5 bg-white/[0.06] rounded">
                 <div
                   className={`absolute h-full rounded ${cat.bg} border ${cat.border}`}
                   style={{ left: `${minPct}%`, width: `${maxPct - minPct}%` }}
@@ -645,7 +645,7 @@ export default function CareerGuidePage() {
 
         {/* Filters */}
         <ScrollReveal delay={0.2}>
-          <div className="bg-slate-800/40 border border-slate-700/50 rounded-xl p-5 mb-8">
+          <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-5 mb-8">
             <h3 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-4">Filter Careers</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {/* Search */}
@@ -657,7 +657,7 @@ export default function CareerGuidePage() {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Title, skill, or company..."
-                  className="w-full bg-slate-900/60 border border-slate-600/50 rounded-lg px-3 py-2 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500"
+                  className="w-full bg-black/60 border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-white/90 placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500"
                 />
               </div>
 
@@ -668,7 +668,7 @@ export default function CareerGuidePage() {
                   id="career-category"
                   value={categoryFilter}
                   onChange={(e) => setCategoryFilter(e.target.value as CareerCategory | 'all')}
-                  className="w-full bg-slate-900/60 border border-slate-600/50 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500"
+                  className="w-full bg-black/60 border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-white/90 focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500"
                 >
                   <option value="all">All Categories</option>
                   {(Object.entries(CATEGORIES) as [CareerCategory, typeof CATEGORIES[CareerCategory]][]).map(([key, val]) => (
@@ -684,7 +684,7 @@ export default function CareerGuidePage() {
                   id="career-salary"
                   value={salaryBracket}
                   onChange={(e) => setSalaryBracket(Number(e.target.value))}
-                  className="w-full bg-slate-900/60 border border-slate-600/50 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500"
+                  className="w-full bg-black/60 border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-white/90 focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500"
                 >
                   {SALARY_BRACKETS.map((b, i) => (
                     <option key={b.label} value={i}>{b.label}</option>
@@ -699,7 +699,7 @@ export default function CareerGuidePage() {
                   id="career-education"
                   value={educationFilter}
                   onChange={(e) => setEducationFilter(e.target.value as EducationLevel | 'all')}
-                  className="w-full bg-slate-900/60 border border-slate-600/50 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500"
+                  className="w-full bg-black/60 border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-white/90 focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500"
                 >
                   <option value="all">All Levels</option>
                   <option value="bachelors">Bachelor&apos;s Degree</option>
@@ -712,7 +712,7 @@ export default function CareerGuidePage() {
 
             {/* Active filter count */}
             {(categoryFilter !== 'all' || salaryBracket !== 0 || educationFilter !== 'all' || searchQuery) && (
-              <div className="flex items-center justify-between mt-4 pt-3 border-t border-slate-700/50">
+              <div className="flex items-center justify-between mt-4 pt-3 border-t border-white/[0.06]">
                 <p className="text-sm text-slate-400">
                   Showing <span className="text-emerald-400 font-semibold">{filteredCareers.length}</span> of{' '}
                   {CAREER_PATHS.length} careers
@@ -724,7 +724,7 @@ export default function CareerGuidePage() {
                     setEducationFilter('all');
                     setSearchQuery('');
                   }}
-                  className="text-sm text-slate-400 hover:text-slate-200 underline"
+                  className="text-sm text-slate-400 hover:text-white/90 underline"
                 >
                   Clear all filters
                 </button>
@@ -767,7 +767,7 @@ export default function CareerGuidePage() {
             <div className="grid md:grid-cols-2 gap-6">
               <div>
                 <h3 className="text-sm font-semibold text-emerald-400 uppercase tracking-wider mb-2">For Students</h3>
-                <ul className="space-y-2 text-sm text-slate-300">
+                <ul className="space-y-2 text-sm text-white/70">
                   <li className="flex items-start gap-2">
                     <span className="text-emerald-400 mt-0.5">&#9656;</span>
                     Pursue STEM internships at NASA centers, national labs, or space companies during undergrad
@@ -788,7 +788,7 @@ export default function CareerGuidePage() {
               </div>
               <div>
                 <h3 className="text-sm font-semibold text-emerald-400 uppercase tracking-wider mb-2">For Career Changers</h3>
-                <ul className="space-y-2 text-sm text-slate-300">
+                <ul className="space-y-2 text-sm text-white/70">
                   <li className="flex items-start gap-2">
                     <span className="text-emerald-400 mt-0.5">&#9656;</span>
                     Software engineers: your skills transfer directly -- space companies need modern dev practices
@@ -813,7 +813,7 @@ export default function CareerGuidePage() {
 
         {/* Related Links */}
         <ScrollReveal delay={0.1}>
-          <div className="bg-slate-800/40 border border-slate-700/50 rounded-xl p-6 mb-8">
+          <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-6 mb-8">
             <h3 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-4">Continue Exploring</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
               {[
@@ -825,11 +825,11 @@ export default function CareerGuidePage() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="flex items-start gap-3 p-3 rounded-lg bg-slate-900/40 border border-slate-700/30 hover:border-emerald-500/40 hover:bg-slate-800/60 transition-colors group"
+                  className="flex items-start gap-3 p-3 rounded-lg bg-black/40 border border-white/[0.04] hover:border-emerald-500/40 hover:bg-white/[0.05] transition-colors group"
                 >
                   <span className="text-2xl">{link.icon}</span>
                   <div>
-                    <p className="text-sm font-medium text-slate-200 group-hover:text-emerald-400 transition-colors">{link.label}</p>
+                    <p className="text-sm font-medium text-white/90 group-hover:text-emerald-400 transition-colors">{link.label}</p>
                     <p className="text-xs text-slate-400">{link.desc}</p>
                   </div>
                 </Link>

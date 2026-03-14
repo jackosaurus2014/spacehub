@@ -937,14 +937,14 @@ export const REGULATION_CATEGORIES: { value: RegulationCategory; label: string; 
 ];
 
 export const EVENT_TYPE_INFO: Record<SpaceEventType, { label: string; icon: string; color: string }> = {
-  launch: { label: 'Launch', icon: '🚀', color: 'bg-rocket-500' },
+  launch: { label: 'Launch', icon: '🚀', color: 'bg-orange-500' },
   moon_mission: { label: 'Moon Mission', icon: '🌙', color: 'bg-slate-400' },
   mars_mission: { label: 'Mars Mission', icon: '🔴', color: 'bg-red-500' },
   rover: { label: 'Rover', icon: '🤖', color: 'bg-yellow-500' },
   payload: { label: 'Payload', icon: '📦', color: 'bg-blue-500' },
   orbital_hab: { label: 'Orbital Habitat', icon: '🏠', color: 'bg-green-500' },
   space_station: { label: 'Space Station', icon: '🛰️', color: 'bg-purple-500' },
-  crewed_mission: { label: 'Crewed Mission', icon: '👨‍🚀', color: 'bg-nebula-500' },
+  crewed_mission: { label: 'Crewed Mission', icon: '👨‍🚀', color: 'bg-violet-500' },
   satellite: { label: 'Satellite', icon: '📡', color: 'bg-cyan-500' },
   probe: { label: 'Probe', icon: '🛸', color: 'bg-indigo-500' },
 };
@@ -1312,7 +1312,7 @@ export const OPPORTUNITY_TYPES: { value: OpportunityType; label: string; icon: s
   { value: 'industry_need', label: 'Industry Need', icon: '🏭', color: 'bg-purple-500' },
   { value: 'resource_shortage', label: 'Resource Shortage', icon: '⚠️', color: 'bg-orange-500' },
   { value: 'service_gap', label: 'Service Gap', icon: '🔧', color: 'bg-cyan-500' },
-  { value: 'ai_insight', label: 'AI Insight', icon: '🤖', color: 'bg-nebula-500' },
+  { value: 'ai_insight', label: 'AI Insight', icon: '🤖', color: 'bg-violet-500' },
   { value: 'market_trend', label: 'Market Trend', icon: '📈', color: 'bg-green-500' },
 ];
 

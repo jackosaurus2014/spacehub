@@ -140,14 +140,14 @@ export default function TelemetryDisplay({ eventId, isLive }: TelemetryDisplayPr
 
   if (!isLive) {
     return (
-      <div className="bg-slate-900/95 rounded-xl border border-slate-700/50 p-6">
+      <div className="bg-black/95 rounded-xl border border-white/[0.06] p-6">
         <h3 className="text-white font-semibold flex items-center gap-2 mb-4">
-          <svg className="w-5 h-5 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-5 h-5 text-white/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
           </svg>
           Telemetry
         </h3>
-        <div className="text-slate-400 text-sm text-center py-8 bg-slate-800/30 rounded-lg">
+        <div className="text-slate-400 text-sm text-center py-8 bg-white/[0.03] rounded-lg">
           Telemetry data will display when the launch is live
         </div>
       </div>
@@ -156,7 +156,7 @@ export default function TelemetryDisplay({ eventId, isLive }: TelemetryDisplayPr
 
   if (error && !telemetry) {
     return (
-      <div className="bg-slate-900/95 rounded-xl border border-slate-700/50 p-6">
+      <div className="bg-black/95 rounded-xl border border-white/[0.06] p-6">
         <h3 className="text-white font-semibold mb-4">Telemetry</h3>
         <div className="text-red-400 text-sm text-center py-4">
           Unable to load telemetry data
@@ -168,11 +168,11 @@ export default function TelemetryDisplay({ eventId, isLive }: TelemetryDisplayPr
   const isMaxQ = telemetry?.isMaxQ ?? false;
 
   return (
-    <div className="bg-slate-900/95 rounded-xl border border-slate-700/50 overflow-hidden">
+    <div className="bg-black/95 rounded-xl border border-white/[0.06] overflow-hidden">
       {/* Header */}
-      <div className="px-4 py-3 border-b border-slate-700/50 bg-slate-800/50 flex items-center justify-between">
+      <div className="px-4 py-3 border-b border-white/[0.06] bg-white/[0.04] flex items-center justify-between">
         <h3 className="text-white font-semibold flex items-center gap-2 text-sm">
-          <svg className="w-4 h-4 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-4 h-4 text-white/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
           </svg>
           Live Telemetry
@@ -212,7 +212,7 @@ export default function TelemetryDisplay({ eventId, isLive }: TelemetryDisplayPr
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-slate-800/50 rounded-lg p-3 border border-slate-700/30"
+          className="bg-white/[0.04] rounded-lg p-3 border border-white/[0.04]"
         >
           <div className="flex items-center gap-1.5 mb-1">
             <svg className="w-3.5 h-3.5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -232,10 +232,10 @@ export default function TelemetryDisplay({ eventId, isLive }: TelemetryDisplayPr
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.05 }}
-          className="bg-slate-800/50 rounded-lg p-3 border border-slate-700/30"
+          className="bg-white/[0.04] rounded-lg p-3 border border-white/[0.04]"
         >
           <div className="flex items-center gap-1.5 mb-1">
-            <svg className="w-3.5 h-3.5 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-3.5 h-3.5 text-white/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
             </svg>
             <span className="text-slate-400 text-xs uppercase tracking-wider">Velocity</span>
@@ -255,7 +255,7 @@ export default function TelemetryDisplay({ eventId, isLive }: TelemetryDisplayPr
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="bg-slate-800/50 rounded-lg p-3 border border-slate-700/30"
+          className="bg-white/[0.04] rounded-lg p-3 border border-white/[0.04]"
         >
           <div className="flex items-center gap-1.5 mb-1">
             <svg className="w-3.5 h-3.5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -275,7 +275,7 @@ export default function TelemetryDisplay({ eventId, isLive }: TelemetryDisplayPr
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.15 }}
-          className="bg-slate-800/50 rounded-lg p-3 border border-slate-700/30"
+          className="bg-white/[0.04] rounded-lg p-3 border border-white/[0.04]"
         >
           <div className="flex items-center gap-1.5 mb-1">
             <svg className="w-3.5 h-3.5 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -295,7 +295,7 @@ export default function TelemetryDisplay({ eventId, isLive }: TelemetryDisplayPr
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className={`bg-slate-800/50 rounded-lg p-3 border ${isMaxQ ? 'border-red-500/50' : 'border-slate-700/30'} relative overflow-hidden`}
+          className={`bg-white/[0.04] rounded-lg p-3 border ${isMaxQ ? 'border-red-500/50' : 'border-white/[0.04]'} relative overflow-hidden`}
         >
           {isMaxQ && (
             <div className="absolute inset-0 bg-red-500/5 animate-pulse pointer-events-none" />
@@ -320,7 +320,7 @@ export default function TelemetryDisplay({ eventId, isLive }: TelemetryDisplayPr
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.25 }}
-          className="bg-slate-800/50 rounded-lg p-3 border border-slate-700/30"
+          className="bg-white/[0.04] rounded-lg p-3 border border-white/[0.04]"
         >
           <div className="flex items-center gap-1.5 mb-1">
             <svg className="w-3.5 h-3.5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -334,7 +334,7 @@ export default function TelemetryDisplay({ eventId, isLive }: TelemetryDisplayPr
               {(telemetry?.fuelRemaining ?? 100).toFixed(0)}%
             </span>
           </div>
-          <div className="w-full bg-slate-700/50 rounded-full h-2.5 overflow-hidden">
+          <div className="w-full bg-white/[0.06] rounded-full h-2.5 overflow-hidden">
             <motion.div
               className={`h-full rounded-full ${
                 (telemetry?.fuelRemaining ?? 100) > 50 ? 'bg-gradient-to-r from-green-500 to-green-400' :
@@ -354,7 +354,7 @@ export default function TelemetryDisplay({ eventId, isLive }: TelemetryDisplayPr
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="bg-slate-800/50 rounded-lg p-3 border border-slate-700/30 col-span-2 lg:col-span-3"
+          className="bg-white/[0.04] rounded-lg p-3 border border-white/[0.04] col-span-2 lg:col-span-3"
         >
           <div className="flex items-center gap-1.5 mb-1">
             <svg className="w-3.5 h-3.5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -365,7 +365,7 @@ export default function TelemetryDisplay({ eventId, isLive }: TelemetryDisplayPr
               {(telemetry?.throttle ?? 0).toFixed(0)}%
             </span>
           </div>
-          <div className="w-full bg-slate-700/50 rounded-full h-3 overflow-hidden">
+          <div className="w-full bg-white/[0.06] rounded-full h-3 overflow-hidden">
             <motion.div
               className="h-full rounded-full bg-gradient-to-r from-green-500 to-green-400"
               initial={{ width: 0 }}

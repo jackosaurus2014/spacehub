@@ -203,12 +203,12 @@ function ModuleSection({ title, icon, modules, sizeClasses, delay }: {
             <StaggerItem key={mod.href}>
               <Link
                 href={mod.href}
-                className={`group relative card ${sizeClasses.padding} hover:border-white/10 hover:bg-slate-800/80 block`}
+                className={`group relative card ${sizeClasses.padding} hover:border-white/10 hover:bg-white/[0.06] block`}
               >
                 <div className="flex items-start gap-3">
                   <span className="text-2xl flex-shrink-0 mt-0.5">{mod.icon}</span>
                   <div className="min-w-0">
-                    <h3 className="text-sm font-semibold text-slate-200 group-hover:text-white transition-colors truncate">
+                    <h3 className="text-sm font-semibold text-white/90 group-hover:text-white transition-colors truncate">
                       {mod.label}
                     </h3>
                     <p className="text-xs text-slate-400 mt-0.5 line-clamp-2">
@@ -325,7 +325,7 @@ export default function DashboardPage() {
         <div className="flex justify-end gap-3 mb-4">
           <button
             onClick={() => setModuleConfigOpen(true)}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-white/5 to-purple-500/20 border border-white/10 hover:border-white/15 text-white hover:text-white transition-all text-sm font-medium shadow-sm hover:shadow-md hover:shadow-black/5"
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-white/5 to-white/10 border border-white/10 hover:border-white/15 text-white hover:text-white transition-all text-sm font-medium shadow-sm hover:shadow-md hover:shadow-black/5"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
@@ -335,7 +335,7 @@ export default function DashboardPage() {
           </button>
           <button
             onClick={() => setLayoutSelectorOpen(true)}
-            className="flex items-center gap-2 px-4 py-2 text-sm text-slate-400 hover:text-white bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 rounded-lg hover:border-white/10 transition-all shadow-sm"
+            className="flex items-center gap-2 px-4 py-2 text-sm text-slate-400 hover:text-white bg-white/[0.04] backdrop-blur-sm border border-white/[0.06] rounded-lg hover:border-white/10 transition-all shadow-sm"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" />
@@ -346,11 +346,11 @@ export default function DashboardPage() {
 
         {/* Welcome Header - replaced h1 with AnimatedPageHeader */}
         {isSectionVisible('welcome', sections) && (
-          <div className="bg-gradient-to-r from-slate-800/80 via-slate-800/60 to-slate-800/80 border border-slate-700/50 rounded-2xl p-6 mb-8 animate-fade-in">
+          <div className="bg-gradient-to-r from-white/[0.06] via-white/[0.04] to-white/[0.06] border border-white/[0.06] rounded-2xl p-6 mb-8 animate-fade-in">
             <div className="flex flex-col gap-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-4">
-                  <div className="w-14 h-14 rounded-full bg-gradient-to-br from-white to-purple-500 flex items-center justify-center text-white text-xl font-bold shrink-0">
+                  <div className="w-14 h-14 rounded-full bg-gradient-to-br from-white/80 to-white/40 flex items-center justify-center text-black text-xl font-bold shrink-0">
                     {session.user?.name?.charAt(0)?.toUpperCase() || 'E'}
                   </div>
                   <div>
@@ -365,11 +365,11 @@ export default function DashboardPage() {
                 </div>
                 <div className="hidden md:flex items-center gap-6 text-center">
                   <div>
-                    <p className="text-2xl font-bold text-slate-300">{totalModules}</p>
+                    <p className="text-2xl font-bold text-white/70">{totalModules}</p>
                     <p className="text-xs text-slate-400">Modules</p>
                   </div>
                   <div>
-                    <p className="text-2xl font-bold text-purple-400">4</p>
+                    <p className="text-2xl font-bold text-white/70">4</p>
                     <p className="text-xs text-slate-400">Categories</p>
                   </div>
                 </div>
@@ -386,7 +386,7 @@ export default function DashboardPage() {
               <StaggerItem key={stat.key}>
                 <Link
                   href={stat.href}
-                  className="group card p-4 hover:border-white/10 hover:bg-slate-800/80 block"
+                  className="group card p-4 hover:border-white/10 hover:bg-white/[0.06] block"
                 >
                   <div className="flex items-center gap-2 mb-2">
                     <span className="text-lg">{stat.icon}</span>
@@ -394,7 +394,7 @@ export default function DashboardPage() {
                   </div>
                   <div className="text-2xl font-bold text-white group-hover:text-white transition-colors">
                     {statsLoading ? (
-                      <div className="h-8 w-16 bg-slate-700/50 rounded animate-pulse" />
+                      <div className="h-8 w-16 bg-white/[0.08] rounded animate-pulse" />
                     ) : (
                       <AnimatedCounter target={overviewStats[stat.key] || 0} />
                     )}
@@ -417,7 +417,7 @@ export default function DashboardPage() {
               <Link
                 key={action.href}
                 href={action.href}
-                className={`group flex items-center gap-3 p-3.5 rounded-xl bg-gradient-to-r ${action.color} border transition-all hover:shadow-lg hover:shadow-slate-900/50`}
+                className={`group flex items-center gap-3 p-3.5 rounded-xl bg-gradient-to-r ${action.color} border transition-all hover:shadow-lg hover:shadow-black/50`}
               >
                 <span className="text-2xl group-hover:scale-110 transition-transform">{action.icon}</span>
                 <span className="text-sm font-semibold text-white group-hover:text-white transition-colors">{action.label}</span>
@@ -479,12 +479,12 @@ export default function DashboardPage() {
               onChange={(e) => setModuleSearch(e.target.value)}
               placeholder={`Search across ${totalModules} modules...`}
               aria-label={`Search across ${totalModules} modules`}
-              className="bg-slate-800/50 border border-slate-700/50 rounded-xl pl-11 pr-4 py-3 text-white placeholder-slate-400 focus:border-white/15 focus:outline-none w-full transition-colors"
+              className="bg-white/[0.04] border border-white/[0.06] rounded-xl pl-11 pr-4 py-3 text-white placeholder-slate-400 focus:border-white/15 focus:outline-none w-full transition-colors"
             />
             {moduleSearch && (
               <button
                 onClick={() => setModuleSearch('')}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200 transition-colors"
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white/90 transition-colors"
                 aria-label="Clear search"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -506,7 +506,7 @@ export default function DashboardPage() {
               { label: 'Business', count: filteredBusiness.length, total: BUSINESS_MODULES.length, icon: '💼' },
               { label: 'Tools', count: filteredTools.length, total: TOOLS_MODULES.length, icon: '🛠️' },
             ].map((cat) => (
-              <span key={cat.label} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-800/60 border border-slate-700/40 text-xs text-slate-300">
+              <span key={cat.label} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/[0.06] border border-white/[0.06] text-xs text-slate-300">
                 <span>{cat.icon}</span>
                 <span className="font-medium">{cat.label}</span>
                 <span className="text-slate-500 tabular-nums">{moduleSearch ? cat.count : cat.total}</span>
@@ -600,7 +600,7 @@ function RecentlyViewedInline() {
   }, []);
 
   if (!mounted) {
-    return <div className="h-10 bg-slate-700/30 rounded animate-pulse" />;
+    return <div className="h-10 bg-white/[0.06] rounded animate-pulse" />;
   }
 
   if (items.length === 0) {
@@ -617,7 +617,7 @@ function RecentlyViewedInline() {
         <Link
           key={item.path}
           href={item.path}
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-700/40 border border-slate-600/30 text-xs text-slate-300 hover:text-white hover:border-white/10 hover:bg-slate-700/60 transition-all"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/[0.06] border border-white/[0.06] text-xs text-slate-300 hover:text-white hover:border-white/10 hover:bg-white/[0.08] transition-all"
         >
           <svg className="w-3 h-3 text-slate-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />

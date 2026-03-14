@@ -25,11 +25,11 @@ export default function HorizontalScrollCards<T>({
       {/* Title bar */}
       {title && (
         <div className="flex items-center justify-between px-4 mb-3">
-          <h3 className="text-sm font-semibold text-slate-200">{title}</h3>
+          <h3 className="text-sm font-semibold text-white/90">{title}</h3>
           {showAllHref && (
             <Link
               href={showAllHref}
-              className="text-xs text-slate-300 hover:text-white font-medium transition-colors"
+              className="text-xs text-white/70 hover:text-white font-medium transition-colors"
             >
               See All &rarr;
             </Link>
@@ -40,8 +40,8 @@ export default function HorizontalScrollCards<T>({
       {/* Scroll container */}
       <div className="relative">
         {/* Fade edges */}
-        <div className="absolute left-0 top-0 bottom-0 w-4 bg-gradient-to-r from-slate-900/80 to-transparent z-10 pointer-events-none" />
-        <div className="absolute right-0 top-0 bottom-0 w-4 bg-gradient-to-l from-slate-900/80 to-transparent z-10 pointer-events-none" />
+        <div className="absolute left-0 top-0 bottom-0 w-4 bg-gradient-to-r from-black/80 to-transparent z-10 pointer-events-none" />
+        <div className="absolute right-0 top-0 bottom-0 w-4 bg-gradient-to-l from-black/80 to-transparent z-10 pointer-events-none" />
 
         <div
           className="flex gap-3 overflow-x-auto px-4 pb-2 scroll-snap-x"

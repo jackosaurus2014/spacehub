@@ -41,7 +41,7 @@ export default function MultiLaunchTabs({ launches, activeEventId }: MultiLaunch
   if (launches.length < 2) return null;
 
   return (
-    <div className="bg-slate-900/90 border-b border-slate-700/50 backdrop-blur-sm">
+    <div className="bg-black/90 border-b border-white/[0.06] backdrop-blur-sm">
       <div className="container mx-auto px-4">
         <div className="flex items-center gap-1 overflow-x-auto py-2 scrollbar-hide">
           <span className="text-slate-500 text-xs font-medium mr-2 flex-shrink-0">
@@ -60,7 +60,7 @@ export default function MultiLaunchTabs({ launches, activeEventId }: MultiLaunch
                   className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs transition-all ${
                     isActive
                       ? 'bg-red-500/20 text-white border border-red-500/40'
-                      : 'bg-slate-800/50 text-slate-300 border border-slate-700/30 hover:border-slate-600/50'
+                      : 'bg-white/[0.04] text-white/70 border border-white/[0.04] hover:border-white/[0.08]'
                   }`}
                 >
                   {isActive && (

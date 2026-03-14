@@ -3,22 +3,22 @@ export default function Loading() {
     <div className="min-h-screen py-8">
       <div className="container mx-auto px-4 max-w-7xl">
         {/* Breadcrumb */}
-        <div className="h-4 w-48 bg-slate-800/40 rounded animate-pulse mb-6" />
+        <div className="h-4 w-48 bg-white/[0.04] rounded animate-pulse mb-6" />
 
         {/* Thread title */}
         <div className="mb-6">
-          <div className="h-7 w-3/4 bg-slate-800 rounded animate-pulse mb-3" />
+          <div className="h-7 w-3/4 bg-white/[0.06] rounded animate-pulse mb-3" />
           <div className="flex items-center gap-3">
             <div className="h-8 w-8 bg-slate-700/50 rounded-full" />
-            <div className="h-4 w-32 bg-slate-800/60 rounded animate-pulse" />
-            <div className="h-4 w-24 bg-slate-800/40 rounded animate-pulse" />
+            <div className="h-4 w-32 bg-white/[0.05] rounded animate-pulse" />
+            <div className="h-4 w-24 bg-white/[0.04] rounded animate-pulse" />
           </div>
         </div>
 
         {/* Posts */}
         <div className="space-y-4">
           {Array.from({ length: 5 }).map((_, i) => (
-            <div key={i} className="bg-slate-800/40 rounded-xl animate-pulse p-5 space-y-3">
+            <div key={i} className="bg-white/[0.04] rounded-xl animate-pulse p-5 space-y-3">
               <div className="flex items-center gap-3">
                 <div className="h-10 w-10 bg-slate-700/50 rounded-full shrink-0" />
                 <div className="space-y-1">

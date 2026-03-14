@@ -662,12 +662,12 @@ const ROUND_TYPE_COLORS: Record<string, string> = {
   'Series C': 'bg-amber-500/20 text-amber-400 border-amber-500/30',
   'Series N': 'bg-red-500/20 text-red-400 border-red-500/30',
   'Series E': 'bg-red-500/20 text-red-400 border-red-500/30',
-  'SPAC': 'bg-white/10 text-slate-300 border-white/10',
+  'SPAC': 'bg-white/10 text-white/70 border-white/10',
   'IPO': 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30',
 };
 
 function getRoundColor(roundType: string): string {
-  return ROUND_TYPE_COLORS[roundType] || 'bg-slate-700/50 text-slate-300 border-slate-600';
+  return ROUND_TYPE_COLORS[roundType] || 'bg-slate-700/50 text-white/70 border-white/[0.1]';
 }
 
 // ────────────────────────────────────────
@@ -720,7 +720,7 @@ export default function InvestmentTrackerPage() {
   const hasFilters = yearFilter || categoryFilter || roundTypeFilter;
 
   return (
-    <div className="min-h-screen bg-slate-900">
+    <div className="min-h-screen bg-black">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <AnimatedPageHeader
           title="Space Investment Tracker"
@@ -734,7 +734,7 @@ export default function InvestmentTrackerPage() {
         <ScrollReveal>
           <StaggerContainer className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
             <StaggerItem>
-              <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-5 text-center hover:border-white/10 transition-colors">
+              <div className="bg-white/[0.04] rounded-xl border border-white/[0.06] p-5 text-center hover:border-white/10 transition-colors">
                 <div className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-slate-300 to-blue-400 bg-clip-text text-transparent">
                   {formatAmount(metrics.totalInvestment)}
                 </div>
@@ -744,7 +744,7 @@ export default function InvestmentTrackerPage() {
               </div>
             </StaggerItem>
             <StaggerItem>
-              <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-5 text-center hover:border-purple-500/30 transition-colors">
+              <div className="bg-white/[0.04] rounded-xl border border-white/[0.06] p-5 text-center hover:border-purple-500/30 transition-colors">
                 <div className="text-2xl md:text-3xl font-bold text-purple-400">
                   {metrics.dealCount}
                 </div>
@@ -754,7 +754,7 @@ export default function InvestmentTrackerPage() {
               </div>
             </StaggerItem>
             <StaggerItem>
-              <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-5 text-center hover:border-emerald-500/30 transition-colors">
+              <div className="bg-white/[0.04] rounded-xl border border-white/[0.06] p-5 text-center hover:border-emerald-500/30 transition-colors">
                 <div className="text-2xl md:text-3xl font-bold text-emerald-400">
                   {metrics.avgDealSize >= 1000
                     ? `$${(metrics.avgDealSize / 1000).toFixed(2)}B`
@@ -766,7 +766,7 @@ export default function InvestmentTrackerPage() {
               </div>
             </StaggerItem>
             <StaggerItem>
-              <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-5 text-center hover:border-amber-500/30 transition-colors">
+              <div className="bg-white/[0.04] rounded-xl border border-white/[0.06] p-5 text-center hover:border-amber-500/30 transition-colors">
                 <div className="text-2xl md:text-3xl font-bold text-amber-400">
                   {formatAmount(metrics.largestRound)}
                 </div>
@@ -780,14 +780,14 @@ export default function InvestmentTrackerPage() {
 
         {/* ── Filter Bar ── */}
         <ScrollReveal>
-          <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-4 mb-8">
+          <div className="bg-white/[0.04] rounded-xl border border-white/[0.06] p-4 mb-8">
             <div className="flex flex-wrap gap-4 items-end">
               <div>
                 <label className="block text-slate-400 text-xs mb-1 uppercase tracking-wider">Year</label>
                 <select
                   value={yearFilter}
                   onChange={(e) => setYearFilter(e.target.value as YearFilter)}
-                  className="bg-slate-900 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+                  className="bg-black border border-white/[0.08] text-white rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                 >
                   {YEAR_OPTIONS.map((o) => (
                     <option key={o.value} value={o.value}>{o.label}</option>
@@ -799,7 +799,7 @@ export default function InvestmentTrackerPage() {
                 <select
                   value={categoryFilter}
                   onChange={(e) => setCategoryFilter(e.target.value as Category | '')}
-                  className="bg-slate-900 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+                  className="bg-black border border-white/[0.08] text-white rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                 >
                   {CATEGORY_OPTIONS.map((o) => (
                     <option key={o.value} value={o.value}>{o.label}</option>
@@ -811,7 +811,7 @@ export default function InvestmentTrackerPage() {
                 <select
                   value={roundTypeFilter}
                   onChange={(e) => setRoundTypeFilter(e.target.value as RoundTypeFilter)}
-                  className="bg-slate-900 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+                  className="bg-black border border-white/[0.08] text-white rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                 >
                   {ROUND_TYPE_OPTIONS.map((o) => (
                     <option key={o.value} value={o.value}>{o.label}</option>
@@ -838,7 +838,7 @@ export default function InvestmentTrackerPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
           {/* Category Breakdown */}
           <ScrollReveal>
-            <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-6 h-full">
+            <div className="bg-white/[0.04] rounded-xl border border-white/[0.06] p-6 h-full">
               <h2 className="text-lg font-semibold text-white mb-1 flex items-center gap-2">
                 <span className="w-8 h-8 rounded-lg bg-blue-500/20 flex items-center justify-center text-sm">
                   <svg className="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -872,7 +872,7 @@ export default function InvestmentTrackerPage() {
                   );
                 })}
               </div>
-              <div className="mt-4 pt-3 border-t border-slate-700/30">
+              <div className="mt-4 pt-3 border-t border-white/[0.04]">
                 <div className="flex justify-between text-sm">
                   <span className="text-slate-400">Total Tracked</span>
                   <span className="text-white font-bold font-mono">
@@ -885,7 +885,7 @@ export default function InvestmentTrackerPage() {
 
           {/* Geographic Distribution */}
           <ScrollReveal>
-            <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-6 h-full">
+            <div className="bg-white/[0.04] rounded-xl border border-white/[0.06] p-6 h-full">
               <h2 className="text-lg font-semibold text-white mb-1 flex items-center gap-2">
                 <span className="w-8 h-8 rounded-lg bg-purple-500/20 flex items-center justify-center text-sm">
                   <svg className="w-4 h-4 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -919,7 +919,7 @@ export default function InvestmentTrackerPage() {
                   </div>
                 ))}
               </div>
-              <div className="mt-6 p-3 bg-slate-900/50 rounded-lg border border-slate-700/30">
+              <div className="mt-6 p-3 bg-black/50 rounded-lg border border-white/[0.04]">
                 <p className="text-slate-400 text-xs">
                   The US continues to dominate space venture investment, driven by SpaceX, launch startups, and defense-adjacent ventures.
                   Europe is growing through ESA-backed programs and UK-based companies.
@@ -932,7 +932,7 @@ export default function InvestmentTrackerPage() {
 
         {/* ── Investment Trends by Quarter (CSS Bar Chart) ── */}
         <ScrollReveal>
-          <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-6 mb-8">
+          <div className="bg-white/[0.04] rounded-xl border border-white/[0.06] p-6 mb-8">
             <h2 className="text-lg font-semibold text-white mb-1 flex items-center gap-2">
               <span className="w-8 h-8 rounded-lg bg-emerald-500/20 flex items-center justify-center text-sm">
                 <svg className="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -953,8 +953,8 @@ export default function InvestmentTrackerPage() {
                   onClick={() => setYearFilter(yearFilter === String(y.year) ? '' : String(y.year) as YearFilter)}
                   className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all border ${
                     yearFilter === String(y.year)
-                      ? 'bg-white/10 text-slate-300 border-white/15'
-                      : 'bg-slate-800 text-slate-400 border-slate-700 hover:border-slate-600'
+                      ? 'bg-white/10 text-white/70 border-white/15'
+                      : 'bg-white/[0.06] text-slate-400 border-white/[0.08] hover:border-white/[0.1]'
                   }`}
                 >
                   {y.year}: {formatBillions(y.totalBillions)} / {y.deals} deals
@@ -980,7 +980,7 @@ export default function InvestmentTrackerPage() {
                     >
                       {/* Tooltip */}
                       {isHovered && (
-                        <div className="absolute -top-16 left-1/2 -translate-x-1/2 bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 shadow-xl z-10 whitespace-nowrap">
+                        <div className="absolute -top-16 left-1/2 -translate-x-1/2 bg-slate-700 border border-white/[0.1] rounded-lg px-3 py-2 shadow-xl z-10 whitespace-nowrap">
                           <div className="text-white text-xs font-bold">{formatBillions(q.totalBillions)}</div>
                           <div className="text-slate-400 text-xs">{q.dealCount} deals</div>
                           <div className="text-slate-500 text-xs">{q.quarter} {q.year}</div>
@@ -1011,7 +1011,7 @@ export default function InvestmentTrackerPage() {
 
                       {/* Year label (only on Q1) */}
                       {q.quarter === 'Q1' && (
-                        <div className="text-xs text-slate-300 font-semibold">{q.year}</div>
+                        <div className="text-xs text-white/70 font-semibold">{q.year}</div>
                       )}
                       {q.quarter !== 'Q1' && (
                         <div className="text-xs text-transparent select-none">&nbsp;</div>
@@ -1022,7 +1022,7 @@ export default function InvestmentTrackerPage() {
               </div>
 
               {/* Baseline */}
-              <div className="border-t border-slate-700/50 mt-1" />
+              <div className="border-t border-white/[0.06] mt-1" />
             </div>
 
             {/* Peak annotation */}
@@ -1045,7 +1045,7 @@ export default function InvestmentTrackerPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
           {/* Top 10 Recent Funding Rounds */}
           <ScrollReveal>
-            <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-6 h-full">
+            <div className="bg-white/[0.04] rounded-xl border border-white/[0.06] p-6 h-full">
               <h2 className="text-lg font-semibold text-white mb-1 flex items-center gap-2">
                 <span className="w-8 h-8 rounded-lg bg-amber-500/20 flex items-center justify-center text-sm">
                   <svg className="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1063,7 +1063,7 @@ export default function InvestmentTrackerPage() {
                 {filteredRounds.slice(0, 10).map((round, i) => (
                   <div
                     key={round.id}
-                    className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-slate-700/30 transition-colors group"
+                    className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-white/[0.06] transition-colors group"
                   >
                     <span className="text-lg font-bold text-slate-600 w-6 text-right shrink-0">
                       {i + 1}
@@ -1101,7 +1101,7 @@ export default function InvestmentTrackerPage() {
                         setCategoryFilter('');
                         setRoundTypeFilter('');
                       }}
-                      className="text-slate-300 text-sm mt-2 hover:underline"
+                      className="text-white/70 text-sm mt-2 hover:underline"
                     >
                       Clear filters
                     </button>
@@ -1109,7 +1109,7 @@ export default function InvestmentTrackerPage() {
                 )}
               </div>
               {filteredRounds.length > 10 && (
-                <div className="mt-3 pt-3 border-t border-slate-700/30 text-center">
+                <div className="mt-3 pt-3 border-t border-white/[0.04] text-center">
                   <span className="text-slate-500 text-xs">
                     Showing 10 of {filteredRounds.length} matching rounds
                   </span>
@@ -1120,10 +1120,10 @@ export default function InvestmentTrackerPage() {
 
           {/* Top 10 Space Investors */}
           <ScrollReveal>
-            <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-6 h-full">
+            <div className="bg-white/[0.04] rounded-xl border border-white/[0.06] p-6 h-full">
               <h2 className="text-lg font-semibold text-white mb-1 flex items-center gap-2">
                 <span className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-sm">
-                  <svg className="w-4 h-4 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-4 h-4 text-white/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                   </svg>
                 </span>
@@ -1134,7 +1134,7 @@ export default function InvestmentTrackerPage() {
                 {TOP_INVESTORS.map((inv, i) => (
                   <div
                     key={inv.name}
-                    className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-slate-700/30 transition-colors"
+                    className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-white/[0.06] transition-colors"
                   >
                     <span className="text-lg font-bold text-slate-600 w-6 text-right shrink-0">
                       {i + 1}
@@ -1148,7 +1148,7 @@ export default function InvestmentTrackerPage() {
                       </div>
                     </div>
                     <div className="text-right shrink-0">
-                      <div className="text-slate-300 font-mono text-sm font-bold">
+                      <div className="text-white/70 font-mono text-sm font-bold">
                         {inv.dealCount} deals
                       </div>
                       <div className="text-slate-500 text-xs font-mono">
@@ -1164,7 +1164,7 @@ export default function InvestmentTrackerPage() {
 
         {/* ── Year-over-Year Comparison Table ── */}
         <ScrollReveal>
-          <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-6 mb-8">
+          <div className="bg-white/[0.04] rounded-xl border border-white/[0.06] p-6 mb-8">
             <h2 className="text-lg font-semibold text-white mb-1 flex items-center gap-2">
               <span className="w-8 h-8 rounded-lg bg-indigo-500/20 flex items-center justify-center text-sm">
                 <svg className="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1177,7 +1177,7 @@ export default function InvestmentTrackerPage() {
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-slate-700/50">
+                  <tr className="border-b border-white/[0.06]">
                     <th className="text-left text-slate-400 pb-3 font-medium">Year</th>
                     <th className="text-right text-slate-400 pb-3 font-medium">Total Investment</th>
                     <th className="text-right text-slate-400 pb-3 font-medium">Deals</th>
@@ -1197,7 +1197,7 @@ export default function InvestmentTrackerPage() {
                     return (
                       <tr
                         key={y.year}
-                        className={`border-b border-slate-700/20 hover:bg-slate-700/20 transition-colors cursor-pointer ${
+                        className={`border-b border-white/[0.04] hover:bg-slate-700/20 transition-colors cursor-pointer ${
                           yearFilter === String(y.year) ? 'bg-white/5' : ''
                         }`}
                         onClick={() => setYearFilter(yearFilter === String(y.year) ? '' : String(y.year) as YearFilter)}
@@ -1211,8 +1211,8 @@ export default function InvestmentTrackerPage() {
                         <td className="py-3 text-right text-emerald-400 font-mono font-bold">
                           {formatBillions(y.totalBillions)}
                         </td>
-                        <td className="py-3 text-right text-slate-300 font-mono">{y.deals}</td>
-                        <td className="py-3 text-right text-slate-300 font-mono">${avgDeal.toFixed(0)}M</td>
+                        <td className="py-3 text-right text-white/70 font-mono">{y.deals}</td>
+                        <td className="py-3 text-right text-white/70 font-mono">${avgDeal.toFixed(0)}M</td>
                         <td className="py-3 text-right hidden sm:table-cell">
                           {i === 0 ? (
                             <span className="text-slate-600">--</span>
@@ -1245,14 +1245,14 @@ export default function InvestmentTrackerPage() {
 
         {/* ── Related Pages ── */}
         <ScrollReveal>
-          <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-6 mb-8">
+          <div className="bg-white/[0.04] rounded-xl border border-white/[0.06] p-6 mb-8">
             <h2 className="text-lg font-semibold text-white mb-4">Explore Related Intelligence</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <Link
                 href="/space-capital"
-                className="group p-4 rounded-lg bg-slate-900/50 border border-slate-700/30 hover:border-white/15 transition-all"
+                className="group p-4 rounded-lg bg-black/50 border border-white/[0.04] hover:border-white/15 transition-all"
               >
-                <div className="text-slate-300 text-xl mb-2">
+                <div className="text-white/70 text-xl mb-2">
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
@@ -1262,7 +1262,7 @@ export default function InvestmentTrackerPage() {
               </Link>
               <Link
                 href="/funding-tracker"
-                className="group p-4 rounded-lg bg-slate-900/50 border border-slate-700/30 hover:border-emerald-500/40 transition-all"
+                className="group p-4 rounded-lg bg-black/50 border border-white/[0.04] hover:border-emerald-500/40 transition-all"
               >
                 <div className="text-emerald-400 text-xl mb-2">
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1274,7 +1274,7 @@ export default function InvestmentTrackerPage() {
               </Link>
               <Link
                 href="/space-economy"
-                className="group p-4 rounded-lg bg-slate-900/50 border border-slate-700/30 hover:border-purple-500/40 transition-all"
+                className="group p-4 rounded-lg bg-black/50 border border-white/[0.04] hover:border-purple-500/40 transition-all"
               >
                 <div className="text-purple-400 text-xl mb-2">
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1286,7 +1286,7 @@ export default function InvestmentTrackerPage() {
               </Link>
               <Link
                 href="/company-profiles"
-                className="group p-4 rounded-lg bg-slate-900/50 border border-slate-700/30 hover:border-amber-500/40 transition-all"
+                className="group p-4 rounded-lg bg-black/50 border border-white/[0.04] hover:border-amber-500/40 transition-all"
               >
                 <div className="text-amber-400 text-xl mb-2">
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1302,7 +1302,7 @@ export default function InvestmentTrackerPage() {
 
         {/* ── Data Sources Footer ── */}
         <ScrollReveal>
-          <div className="bg-slate-800/30 rounded-xl border border-slate-700/30 p-6">
+          <div className="bg-white/[0.03] rounded-xl border border-white/[0.04] p-6">
             <h4 className="text-slate-400 font-semibold text-sm mb-3">
               Data Sources & Methodology
             </h4>

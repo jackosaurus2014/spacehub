@@ -160,7 +160,7 @@ export default function SpaceIndustryMarketSizePage() {
               <span className="hidden sm:inline text-star-300/40">|</span>
               <span>By SpaceNexus Research</span>
             </div>
-            <div className="w-24 h-[3px] bg-gradient-to-r from-white to-plasma-400 rounded-full mx-auto mt-8" />
+            <div className="w-24 h-[3px] bg-gradient-to-r from-white/50 to-white/30 rounded-full mx-auto mt-8" />
           </div>
         </header>
 
@@ -468,15 +468,15 @@ export default function SpaceIndustryMarketSizePage() {
                   <div className="card p-6 my-8 border-l-4 border-l-white/30">
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-center">
                       <div>
-                        <div className="text-3xl font-display font-bold text-slate-200">230+</div>
+                        <div className="text-3xl font-display font-bold text-white/90">230+</div>
                         <div className="text-star-300 text-sm mt-1">Orbital Launches (2025)</div>
                       </div>
                       <div>
-                        <div className="text-3xl font-display font-bold text-slate-200">~65%</div>
+                        <div className="text-3xl font-display font-bold text-white/90">~65%</div>
                         <div className="text-star-300 text-sm mt-1">SpaceX Market Share</div>
                       </div>
                       <div>
-                        <div className="text-3xl font-display font-bold text-slate-200">$9B</div>
+                        <div className="text-3xl font-display font-bold text-white/90">$9B</div>
                         <div className="text-star-300 text-sm mt-1">Launch Market Revenue</div>
                       </div>
                     </div>
@@ -791,30 +791,30 @@ export default function SpaceIndustryMarketSizePage() {
                     expected to roughly triple by 2035.
                   </p>
 
-                  <div className="card p-6 my-8 border-l-4 border-l-rocket-500">
+                  <div className="card p-6 my-8 border-l-4 border-l-white/30">
                     <h3 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">
                       Major Space Economy Forecasts
                     </h3>
                     <div className="space-y-4 text-sm">
                       <div className="flex justify-between items-center border-b border-white/10 pb-2">
                         <span className="text-star-300">Morgan Stanley (2023)</span>
-                        <span className="text-rocket-400 font-semibold">$1.8T by 2035</span>
+                        <span className="text-white/70 font-semibold">$1.8T by 2035</span>
                       </div>
                       <div className="flex justify-between items-center border-b border-white/10 pb-2">
                         <span className="text-star-300">Bank of America (2023)</span>
-                        <span className="text-rocket-400 font-semibold">$1.4T by 2030</span>
+                        <span className="text-white/70 font-semibold">$1.4T by 2030</span>
                       </div>
                       <div className="flex justify-between items-center border-b border-white/10 pb-2">
                         <span className="text-star-300">Euroconsult (2024)</span>
-                        <span className="text-rocket-400 font-semibold">$737B core by 2033</span>
+                        <span className="text-white/70 font-semibold">$737B core by 2033</span>
                       </div>
                       <div className="flex justify-between items-center border-b border-white/10 pb-2">
                         <span className="text-star-300">McKinsey &amp; Company (2024)</span>
-                        <span className="text-rocket-400 font-semibold">$1.8T by 2035</span>
+                        <span className="text-white/70 font-semibold">$1.8T by 2035</span>
                       </div>
                       <div className="flex justify-between items-center">
                         <span className="text-star-300">Space Foundation (2025)</span>
-                        <span className="text-rocket-400 font-semibold">$1T+ by 2030</span>
+                        <span className="text-white/70 font-semibold">$1T+ by 2030</span>
                       </div>
                     </div>
                     <p className="text-star-300/60 text-xs mt-4">

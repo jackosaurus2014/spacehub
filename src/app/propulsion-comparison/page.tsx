@@ -675,7 +675,7 @@ function formatThrust(n: number): string {
 
 function trlColor(trl: number): string {
   if (trl >= 9) return 'text-emerald-400 bg-emerald-400/10 border-emerald-400/30';
-  if (trl >= 7) return 'text-slate-300 bg-white/5 border-white/10';
+  if (trl >= 7) return 'text-white/70 bg-white/5 border-white/10';
   if (trl >= 5) return 'text-amber-400 bg-amber-400/10 border-amber-400/30';
   return 'text-red-400 bg-red-400/10 border-red-400/30';
 }
@@ -860,7 +860,7 @@ export default function PropulsionComparisonPage() {
         {/* Stats row */}
         <StaggerContainer className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           {[
-            { label: 'Engine Models', value: stats.totalEngines, color: 'text-slate-300' },
+            { label: 'Engine Models', value: stats.totalEngines, color: 'text-white/70' },
             { label: 'Technology Types', value: stats.categories, color: 'text-amber-400' },
             { label: 'Manufacturers', value: stats.manufacturers, color: 'text-purple-400' },
             { label: 'Operational', value: stats.operational, color: 'text-emerald-400' },
@@ -882,7 +882,7 @@ export default function PropulsionComparisonPage() {
               className={`px-4 py-2.5 rounded-lg text-sm font-medium transition-all ${
                 activeTab === tab.id
                   ? 'bg-white text-slate-900 shadow-lg shadow-black/10'
-                  : 'bg-slate-800/60 text-slate-300 hover:bg-slate-700/60 hover:text-white'
+                  : 'bg-white/[0.05] text-white/70 hover:bg-slate-700/60 hover:text-white'
               }`}
             >
               <span className="mr-1.5">{tab.icon}</span>
@@ -929,15 +929,15 @@ export default function PropulsionComparisonPage() {
 
                     {/* Quick stats */}
                     <div className="grid grid-cols-2 gap-2 mb-3">
-                      <div className="bg-slate-800/50 rounded-lg px-2.5 py-1.5">
+                      <div className="bg-white/[0.04] rounded-lg px-2.5 py-1.5">
                         <p className="text-[10px] text-slate-500 uppercase tracking-wider">Isp Range</p>
-                        <p className="text-sm font-semibold text-slate-300">
+                        <p className="text-sm font-semibold text-white/70">
                           {tech.ispRange[0].toLocaleString()}-{tech.ispRange[1].toLocaleString()}s
                         </p>
                       </div>
-                      <div className="bg-slate-800/50 rounded-lg px-2.5 py-1.5">
+                      <div className="bg-white/[0.04] rounded-lg px-2.5 py-1.5">
                         <p className="text-[10px] text-slate-500 uppercase tracking-wider">Thrust Class</p>
-                        <p className="text-sm font-semibold text-slate-300">{tech.thrustClass.split('(')[0].trim()}</p>
+                        <p className="text-sm font-semibold text-white/70">{tech.thrustClass.split('(')[0].trim()}</p>
                       </div>
                     </div>
 
@@ -947,7 +947,7 @@ export default function PropulsionComparisonPage() {
                         <span>Isp Range (relative)</span>
                         <span>{tech.ispRange[1].toLocaleString()}s max</span>
                       </div>
-                      <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
+                      <div className="h-2 bg-white/[0.06] rounded-full overflow-hidden">
                         <div
                           className={`h-full rounded-full bg-gradient-to-r ${tech.color}`}
                           style={{
@@ -966,8 +966,8 @@ export default function PropulsionComparisonPage() {
 
                     {/* Expanded details */}
                     {isExpanded && (
-                      <div className="mt-4 pt-4 border-t border-slate-700/50 space-y-4">
-                        <p className="text-sm text-slate-300 leading-relaxed">{tech.description}</p>
+                      <div className="mt-4 pt-4 border-t border-white/[0.06] space-y-4">
+                        <p className="text-sm text-white/70 leading-relaxed">{tech.description}</p>
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                           <div>
@@ -982,11 +982,11 @@ export default function PropulsionComparisonPage() {
                             </ul>
                           </div>
                           <div>
-                            <h4 className="text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Advantages</h4>
+                            <h4 className="text-xs font-semibold text-white/70 uppercase tracking-wider mb-2">Advantages</h4>
                             <ul className="space-y-1">
                               {tech.advantages.map((adv, i) => (
                                 <li key={i} className="text-xs text-slate-400 flex items-start gap-1.5">
-                                  <span className="text-slate-300 mt-0.5">+</span>
+                                  <span className="text-white/70 mt-0.5">+</span>
                                   {adv}
                                 </li>
                               ))}
@@ -1014,9 +1014,9 @@ export default function PropulsionComparisonPage() {
                             </h4>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                               {techEngines.map(engine => (
-                                <div key={engine.id} className="bg-slate-800/60 rounded-lg px-3 py-2">
+                                <div key={engine.id} className="bg-white/[0.05] rounded-lg px-3 py-2">
                                   <div className="flex items-center justify-between">
-                                    <span className="text-xs font-medium text-slate-200">{engine.name}</span>
+                                    <span className="text-xs font-medium text-white/90">{engine.name}</span>
                                     <span className={`text-[10px] px-1.5 py-0.5 rounded ${statusColor(engine.status)}`}>
                                       {engine.status}
                                     </span>
@@ -1047,7 +1047,7 @@ export default function PropulsionComparisonPage() {
                                         : level >= 5
                                         ? 'bg-amber-500'
                                         : 'bg-red-500'
-                                      : 'bg-slate-800'
+                                      : 'bg-white/[0.06]'
                                   }`}
                                   title={`TRL ${level}`}
                                 />
@@ -1068,7 +1068,7 @@ export default function PropulsionComparisonPage() {
 
             {/* Legend */}
             <div className="card p-4 mt-6">
-              <h3 className="text-sm font-semibold text-slate-300 mb-3">Technology Readiness Level (TRL) Scale</h3>
+              <h3 className="text-sm font-semibold text-white/70 mb-3">Technology Readiness Level (TRL) Scale</h3>
               <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-9 gap-2">
                 {[
                   { trl: 1, label: 'Basic principles' },
@@ -1087,7 +1087,7 @@ export default function PropulsionComparisonPage() {
                         item.trl >= 7 ? 'bg-emerald-500' : item.trl >= 5 ? 'bg-amber-500' : 'bg-red-500'
                       }`}
                     />
-                    <p className="text-[10px] font-bold text-slate-300">TRL {item.trl}</p>
+                    <p className="text-[10px] font-bold text-white/70">TRL {item.trl}</p>
                     <p className="text-[10px] text-slate-500">{item.label}</p>
                   </div>
                 ))}
@@ -1112,7 +1112,7 @@ export default function PropulsionComparisonPage() {
                     value={searchQuery}
                     onChange={e => setSearchQuery(e.target.value)}
                     placeholder="Engine name, manufacturer, vehicle..."
-                    className="w-full bg-slate-800/80 border border-slate-700/50 rounded-lg px-3 py-2 text-sm text-slate-200 placeholder-slate-500 focus:ring-1 focus:ring-white/20 focus:border-white/15 outline-none"
+                    className="w-full bg-white/[0.06] border border-white/[0.06] rounded-lg px-3 py-2 text-sm text-white/90 placeholder-slate-500 focus:ring-1 focus:ring-white/20 focus:border-white/15 outline-none"
                   />
                 </div>
 
@@ -1122,7 +1122,7 @@ export default function PropulsionComparisonPage() {
                   <select
                     value={filterCategory}
                     onChange={e => setFilterCategory(e.target.value as PropulsionCategory | 'all')}
-                    className="w-full bg-slate-800/80 border border-slate-700/50 rounded-lg px-3 py-2 text-sm text-slate-200 focus:ring-1 focus:ring-white/20 outline-none"
+                    className="w-full bg-white/[0.06] border border-white/[0.06] rounded-lg px-3 py-2 text-sm text-white/90 focus:ring-1 focus:ring-white/20 outline-none"
                   >
                     <option value="all">All Types</option>
                     {Object.entries(CATEGORY_LABELS).map(([key, label]) => (
@@ -1137,7 +1137,7 @@ export default function PropulsionComparisonPage() {
                   <select
                     value={filterManufacturer}
                     onChange={e => setFilterManufacturer(e.target.value)}
-                    className="w-full bg-slate-800/80 border border-slate-700/50 rounded-lg px-3 py-2 text-sm text-slate-200 focus:ring-1 focus:ring-white/20 outline-none"
+                    className="w-full bg-white/[0.06] border border-white/[0.06] rounded-lg px-3 py-2 text-sm text-white/90 focus:ring-1 focus:ring-white/20 outline-none"
                   >
                     <option value="all">All Manufacturers</option>
                     {ALL_MANUFACTURERS.map(m => (
@@ -1152,7 +1152,7 @@ export default function PropulsionComparisonPage() {
                   <select
                     value={filterPropellant}
                     onChange={e => setFilterPropellant(e.target.value)}
-                    className="w-full bg-slate-800/80 border border-slate-700/50 rounded-lg px-3 py-2 text-sm text-slate-200 focus:ring-1 focus:ring-white/20 outline-none"
+                    className="w-full bg-white/[0.06] border border-white/[0.06] rounded-lg px-3 py-2 text-sm text-white/90 focus:ring-1 focus:ring-white/20 outline-none"
                   >
                     <option value="all">All Propellants</option>
                     {ALL_PROPELLANTS.map(p => (
@@ -1170,7 +1170,7 @@ export default function PropulsionComparisonPage() {
                     value={filterThrustMin}
                     onChange={e => setFilterThrustMin(e.target.value)}
                     placeholder="0"
-                    className="w-full bg-slate-800/80 border border-slate-700/50 rounded-lg px-3 py-2 text-sm text-slate-200 placeholder-slate-500 focus:ring-1 focus:ring-white/20 outline-none"
+                    className="w-full bg-white/[0.06] border border-white/[0.06] rounded-lg px-3 py-2 text-sm text-white/90 placeholder-slate-500 focus:ring-1 focus:ring-white/20 outline-none"
                   />
                 </div>
                 <div className="min-w-[120px]">
@@ -1181,7 +1181,7 @@ export default function PropulsionComparisonPage() {
                     value={filterThrustMax}
                     onChange={e => setFilterThrustMax(e.target.value)}
                     placeholder="Any"
-                    className="w-full bg-slate-800/80 border border-slate-700/50 rounded-lg px-3 py-2 text-sm text-slate-200 placeholder-slate-500 focus:ring-1 focus:ring-white/20 outline-none"
+                    className="w-full bg-white/[0.06] border border-white/[0.06] rounded-lg px-3 py-2 text-sm text-white/90 placeholder-slate-500 focus:ring-1 focus:ring-white/20 outline-none"
                   />
                 </div>
 
@@ -1205,7 +1205,7 @@ export default function PropulsionComparisonPage() {
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="bg-slate-800/70 border-b border-slate-700/50">
+                    <tr className="bg-white/[0.05] border-b border-white/[0.06]">
                       {[
                         { field: 'name' as SortField, label: 'Engine', width: 'min-w-[160px]' },
                         { field: null, label: 'Manufacturer', width: 'min-w-[140px]' },
@@ -1238,7 +1238,7 @@ export default function PropulsionComparisonPage() {
                     {filteredEngines.map((engine, idx) => (
                       <tr
                         key={engine.id}
-                        className={`border-b border-slate-700/30 hover:bg-slate-800/40 transition-colors ${
+                        className={`border-b border-white/[0.04] hover:bg-white/[0.04] transition-colors ${
                           idx % 2 === 0 ? 'bg-slate-900/20' : ''
                         }`}
                         title={engine.notes}
@@ -1246,14 +1246,14 @@ export default function PropulsionComparisonPage() {
                         <td className="px-3 py-3">
                           <span className="font-medium text-slate-100">{engine.name}</span>
                         </td>
-                        <td className="px-3 py-3 text-slate-300">{engine.manufacturer}</td>
+                        <td className="px-3 py-3 text-white/70">{engine.manufacturer}</td>
                         <td className="px-3 py-3">
                           <span className="text-xs text-slate-400">{CATEGORY_LABELS[engine.category]}</span>
                         </td>
-                        <td className="px-3 py-3 text-slate-300 text-xs">{engine.propellant}</td>
+                        <td className="px-3 py-3 text-white/70 text-xs">{engine.propellant}</td>
                         <td className="px-3 py-3 font-mono text-xs text-amber-400">{engine.thrustDisplay}</td>
-                        <td className="px-3 py-3 font-mono text-xs text-slate-300">{engine.ispS.toLocaleString()}</td>
-                        <td className="px-3 py-3 font-mono text-xs text-slate-300">
+                        <td className="px-3 py-3 font-mono text-xs text-white/70">{engine.ispS.toLocaleString()}</td>
+                        <td className="px-3 py-3 font-mono text-xs text-white/70">
                           {engine.twr !== null ? engine.twr.toFixed(1) : '--'}
                         </td>
                         <td className="px-3 py-3 font-mono text-xs text-purple-400">
@@ -1292,7 +1292,7 @@ export default function PropulsionComparisonPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                 {filteredEngines.filter(e => e.notes).slice(0, 8).map(engine => (
                   <div key={engine.id} className="text-xs text-slate-500">
-                    <span className="font-medium text-slate-300">{engine.name}:</span>{' '}
+                    <span className="font-medium text-white/70">{engine.name}:</span>{' '}
                     {engine.notes}
                   </div>
                 ))}
@@ -1324,17 +1324,17 @@ export default function PropulsionComparisonPage() {
                     return (
                       <div key={engine.id} className="flex items-center gap-3">
                         <div className="w-28 sm:w-36 text-right shrink-0">
-                          <p className="text-xs font-medium text-slate-200 truncate" title={engine.name}>{engine.name}</p>
+                          <p className="text-xs font-medium text-white/90 truncate" title={engine.name}>{engine.name}</p>
                           <p className="text-[10px] text-slate-500">{engine.manufacturer}</p>
                         </div>
-                        <div className="flex-1 h-5 bg-slate-800/60 rounded-full overflow-hidden relative">
+                        <div className="flex-1 h-5 bg-white/[0.05] rounded-full overflow-hidden relative">
                           <div
                             className={`h-full rounded-full bg-gradient-to-r ${tech?.color || 'from-white to-blue-500'} transition-all duration-700`}
                             style={{ width: `${Math.max(pct, 3)}%` }}
                           />
                         </div>
                         <div className="w-20 text-right shrink-0">
-                          <span className="text-xs font-mono text-slate-300">{engine.ispS.toLocaleString()}s</span>
+                          <span className="text-xs font-mono text-white/70">{engine.ispS.toLocaleString()}s</span>
                         </div>
                       </div>
                     );
@@ -1361,10 +1361,10 @@ export default function PropulsionComparisonPage() {
                     return (
                       <div key={engine.id} className="flex items-center gap-3">
                         <div className="w-28 sm:w-36 text-right shrink-0">
-                          <p className="text-xs font-medium text-slate-200 truncate" title={engine.name}>{engine.name}</p>
+                          <p className="text-xs font-medium text-white/90 truncate" title={engine.name}>{engine.name}</p>
                           <p className="text-[10px] text-slate-500">{engine.manufacturer}</p>
                         </div>
-                        <div className="flex-1 h-5 bg-slate-800/60 rounded-full overflow-hidden relative">
+                        <div className="flex-1 h-5 bg-white/[0.05] rounded-full overflow-hidden relative">
                           <div
                             className={`h-full rounded-full bg-gradient-to-r ${tech?.color || 'from-amber-500 to-orange-500'} transition-all duration-700`}
                             style={{ width: `${Math.max(pct, 3)}%` }}
@@ -1395,10 +1395,10 @@ export default function PropulsionComparisonPage() {
                     return (
                       <div key={engine.id} className="flex items-center gap-3">
                         <div className="w-28 sm:w-36 text-right shrink-0">
-                          <p className="text-xs font-medium text-slate-200 truncate" title={engine.name}>{engine.name}</p>
+                          <p className="text-xs font-medium text-white/90 truncate" title={engine.name}>{engine.name}</p>
                           <p className="text-[10px] text-slate-500">{engine.manufacturer}</p>
                         </div>
-                        <div className="flex-1 h-5 bg-slate-800/60 rounded-full overflow-hidden relative">
+                        <div className="flex-1 h-5 bg-white/[0.05] rounded-full overflow-hidden relative">
                           <div
                             className={`h-full rounded-full bg-gradient-to-r ${tech?.color || 'from-purple-500 to-blue-500'} transition-all duration-700`}
                             style={{ width: `${Math.max(pct, 3)}%` }}
@@ -1433,10 +1433,10 @@ export default function PropulsionComparisonPage() {
                     return (
                       <div key={engine.id} className="flex items-center gap-3">
                         <div className="w-28 sm:w-36 text-right shrink-0">
-                          <p className="text-xs font-medium text-slate-200 truncate" title={engine.name}>{engine.name}</p>
+                          <p className="text-xs font-medium text-white/90 truncate" title={engine.name}>{engine.name}</p>
                           <p className="text-[10px] text-slate-500">{engine.manufacturer}</p>
                         </div>
-                        <div className="flex-1 h-5 bg-slate-800/60 rounded-full overflow-hidden relative">
+                        <div className="flex-1 h-5 bg-white/[0.05] rounded-full overflow-hidden relative">
                           <div
                             className={`h-full rounded-full bg-gradient-to-r ${tech?.color || 'from-emerald-500 to-teal-500'} transition-all duration-700`}
                             style={{ width: `${Math.max(pct, 3)}%` }}
@@ -1463,18 +1463,18 @@ export default function PropulsionComparisonPage() {
                 {TECHNOLOGIES.map(tech => {
                   const techEngines = ENGINES.filter(e => e.category === tech.id);
                   return (
-                    <div key={tech.id} className="bg-slate-800/40 rounded-lg p-4">
+                    <div key={tech.id} className="bg-white/[0.04] rounded-lg p-4">
                       <div className="flex items-center gap-2 mb-3">
                         <span className="text-xl">{tech.icon}</span>
                         <div>
-                          <h4 className="text-sm font-semibold text-slate-200">{tech.name}</h4>
+                          <h4 className="text-sm font-semibold text-white/90">{tech.name}</h4>
                           <p className="text-[10px] text-slate-500">{tech.subtitle}</p>
                         </div>
                       </div>
                       <div className="grid grid-cols-3 gap-2 text-center">
                         <div>
                           <p className="text-[10px] text-slate-500">Isp Range</p>
-                          <p className="text-xs font-mono text-slate-300">{tech.ispRange[0]}-{tech.ispRange[1]}s</p>
+                          <p className="text-xs font-mono text-white/70">{tech.ispRange[0]}-{tech.ispRange[1]}s</p>
                         </div>
                         <div>
                           <p className="text-[10px] text-slate-500">Thrust</p>
@@ -1482,7 +1482,7 @@ export default function PropulsionComparisonPage() {
                         </div>
                         <div>
                           <p className="text-[10px] text-slate-500">Engines</p>
-                          <p className="text-xs font-mono text-slate-300">{techEngines.length}</p>
+                          <p className="text-xs font-mono text-white/70">{techEngines.length}</p>
                         </div>
                       </div>
                       {/* mini Isp bar */}

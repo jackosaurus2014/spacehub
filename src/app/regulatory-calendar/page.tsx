@@ -129,21 +129,21 @@ function StatsBar() {
   const stats = getCalendarStats();
   return (
     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-      <div className="bg-slate-800/40 border border-slate-700/30 rounded-xl p-4">
+      <div className="bg-white/[0.04] border border-white/[0.04] rounded-xl p-4">
         <p className="text-xs text-slate-400 uppercase tracking-wider mb-1">Total Deadlines</p>
         <p className="text-2xl font-bold text-slate-100">{stats.total}</p>
       </div>
-      <div className="bg-slate-800/40 border border-slate-700/30 rounded-xl p-4">
+      <div className="bg-white/[0.04] border border-white/[0.04] rounded-xl p-4">
         <p className="text-xs text-slate-400 uppercase tracking-wider mb-1">Next 30 Days</p>
         <p className="text-2xl font-bold text-yellow-400">{stats.upcoming30Days}</p>
       </div>
-      <div className="bg-slate-800/40 border border-slate-700/30 rounded-xl p-4">
+      <div className="bg-white/[0.04] border border-white/[0.04] rounded-xl p-4">
         <p className="text-xs text-slate-400 uppercase tracking-wider mb-1">High Priority (30d)</p>
         <p className="text-2xl font-bold text-red-400">{stats.highPriorityUpcoming}</p>
       </div>
-      <div className="bg-slate-800/40 border border-slate-700/30 rounded-xl p-4">
+      <div className="bg-white/[0.04] border border-white/[0.04] rounded-xl p-4">
         <p className="text-xs text-slate-400 uppercase tracking-wider mb-1">Agencies Tracked</p>
-        <p className="text-2xl font-bold text-slate-300">{Object.keys(stats.byAgency).length}</p>
+        <p className="text-2xl font-bold text-white/70">{Object.keys(stats.byAgency).length}</p>
       </div>
     </div>
   );
@@ -168,7 +168,7 @@ function UpcomingThisWeek() {
           return (
             <div
               key={deadline.id}
-              className={`bg-slate-800/60 rounded-lg p-3 border ${agencyColor.border} hover:bg-slate-800/80 transition-colors`}
+              className={`bg-white/[0.05] rounded-lg p-3 border ${agencyColor.border} hover:bg-white/[0.06] transition-colors`}
             >
               <div className="flex items-center justify-between mb-2">
                 <span className={`text-xs font-bold px-2 py-0.5 rounded ${agencyColor.bg} ${agencyColor.text}`}>
@@ -178,7 +178,7 @@ function UpcomingThisWeek() {
                   {deadline.priority}
                 </span>
               </div>
-              <p className="text-sm text-slate-200 font-medium line-clamp-2 mb-1">{deadline.title}</p>
+              <p className="text-sm text-white/90 font-medium line-clamp-2 mb-1">{deadline.title}</p>
               <p className="text-xs text-slate-400">{formatDate(deadline.date)}</p>
             </div>
           );
@@ -202,7 +202,7 @@ function DeadlineDetailPanel({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" onClick={onClose}>
       <div
-        className="bg-slate-900 border border-slate-700/50 rounded-2xl max-w-lg w-full max-h-[85vh] overflow-y-auto shadow-2xl"
+        className="bg-blackborder border-white/[0.06] rounded-2xl max-w-lg w-full max-h-[85vh] overflow-y-auto shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="p-6">
@@ -212,7 +212,7 @@ function DeadlineDetailPanel({
               <span className={`text-xs font-bold px-2 py-1 rounded ${agencyColor.bg} ${agencyColor.text}`}>
                 {deadline.agency}
               </span>
-              <span className="text-xs px-2 py-1 rounded bg-slate-700/60 text-slate-300">
+              <span className="text-xs px-2 py-1 rounded bg-white/[0.06] text-white/70">
                 {TYPE_LABELS[deadline.type]}
               </span>
               <span className={`text-xs px-2 py-1 rounded border ${priorityColor.bg} ${priorityColor.text} ${priorityColor.border}`}>
@@ -221,7 +221,7 @@ function DeadlineDetailPanel({
             </div>
             <button
               onClick={onClose}
-              className="text-slate-400 hover:text-slate-200 transition-colors p-1"
+              className="text-slate-400 hover:text-white/90 transition-colors p-1"
               aria-label="Close detail panel"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -238,7 +238,7 @@ function DeadlineDetailPanel({
             <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
-            <span className={`text-sm ${past ? 'text-slate-500 line-through' : 'text-slate-300'}`}>
+            <span className={`text-sm ${past ? 'text-slate-500 line-through' : 'text-white/70'}`}>
               {formatDateRange(deadline.date, deadline.endDate)}
             </span>
             {past && <span className="text-xs text-slate-500 ml-1">(Past)</span>}
@@ -248,8 +248,8 @@ function DeadlineDetailPanel({
           </div>
 
           {/* Description */}
-          <div className="bg-slate-800/60 rounded-lg p-4 mb-4">
-            <p className="text-sm text-slate-300 leading-relaxed">{deadline.description}</p>
+          <div className="bg-white/[0.05] rounded-lg p-4 mb-4">
+            <p className="text-sm text-white/70 leading-relaxed">{deadline.description}</p>
           </div>
 
           {/* Related Policies */}
@@ -258,7 +258,7 @@ function DeadlineDetailPanel({
               <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Related Policies</h4>
               <div className="flex flex-wrap gap-2">
                 {deadline.relatedPolicies.map((policy, i) => (
-                  <span key={i} className="text-xs bg-slate-700/50 text-slate-300 px-2 py-1 rounded">
+                  <span key={i} className="text-xs bg-white/[0.06] text-white/70 px-2 py-1 rounded">
                     {policy}
                   </span>
                 ))}
@@ -267,7 +267,7 @@ function DeadlineDetailPanel({
           )}
 
           {/* Actions */}
-          <div className="flex flex-wrap gap-3 pt-4 border-t border-slate-700/50">
+          <div className="flex flex-wrap gap-3 pt-4 border-t border-white/[0.06]">
             <button
               onClick={() => downloadICS(deadline)}
               className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-white hover:bg-slate-100 text-slate-900 rounded-lg transition-colors"
@@ -282,7 +282,7 @@ function DeadlineDetailPanel({
                 href={deadline.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-slate-700 hover:bg-slate-600 text-slate-200 rounded-lg transition-colors"
+                className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-white/[0.08] hover:bg-white/[0.1] text-white/90 rounded-lg transition-colors"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
@@ -344,9 +344,9 @@ function MonthView({
 
   return (
     <div>
-      <div className="bg-slate-800/30 border border-slate-700/30 rounded-xl overflow-hidden">
+      <div className="bg-white/[0.03] border border-white/[0.04] rounded-xl overflow-hidden">
         {/* Day headers */}
-        <div className="grid grid-cols-7 bg-slate-800/60">
+        <div className="grid grid-cols-7 bg-white/[0.05]">
           {DAY_NAMES.map((name) => (
             <div key={name} className="p-2 text-center text-xs font-semibold text-slate-400 uppercase tracking-wider">
               {name}
@@ -355,10 +355,10 @@ function MonthView({
         </div>
 
         {/* Calendar grid */}
-        <div className="grid grid-cols-7 gap-px bg-slate-700/20">
+        <div className="grid grid-cols-7 gap-px bg-white/[0.04]">
           {cells.map((day, i) => {
             if (day === null) {
-              return <div key={`empty-${i}`} className="h-24 md:h-28 bg-slate-900/40" />;
+              return <div key={`empty-${i}`} className="h-24 md:h-28 bg-black/40" />;
             }
 
             const dayItems = dayDeadlines[day] || [];
@@ -371,16 +371,16 @@ function MonthView({
                 onClick={() => setSelectedDay(isSelected ? null : day)}
                 className={`h-24 md:h-28 p-1.5 md:p-2 text-left transition-colors relative group ${
                   isSelected
-                    ? 'bg-slate-700/60 ring-1 ring-white/20'
-                    : 'bg-slate-900/60 hover:bg-slate-800/60'
+                    ? 'bg-white/[0.06] ring-1 ring-white/20'
+                    : 'bg-black/60 hover:bg-white/[0.05]'
                 }`}
                 aria-label={`${MONTH_NAMES[month]} ${day}, ${year}. ${dayItems.length} deadline${dayItems.length !== 1 ? 's' : ''}.`}
               >
                 <span
                   className={`text-sm font-medium ${
                     isTodayCell
-                      ? 'text-slate-300 bg-white/10 rounded-full w-7 h-7 flex items-center justify-center'
-                      : 'text-slate-300'
+                      ? 'text-white/70 bg-white/10 rounded-full w-7 h-7 flex items-center justify-center'
+                      : 'text-white/70'
                   }`}
                 >
                   {day}
@@ -411,8 +411,8 @@ function MonthView({
 
       {/* Selected day panel */}
       {selectedDay !== null && selectedDayDeadlines.length > 0 && (
-        <div className="mt-4 bg-slate-800/40 border border-slate-700/30 rounded-xl p-5">
-          <h3 className="text-sm font-semibold text-slate-300 mb-4">
+        <div className="mt-4 bg-white/[0.04] border border-white/[0.04] rounded-xl p-5">
+          <h3 className="text-sm font-semibold text-white/70 mb-4">
             {MONTH_NAMES[month]} {selectedDay}, {year} &mdash; {selectedDayDeadlines.length} Deadline{selectedDayDeadlines.length !== 1 ? 's' : ''}
           </h3>
           <div className="space-y-3">
@@ -424,7 +424,7 @@ function MonthView({
       )}
 
       {selectedDay !== null && selectedDayDeadlines.length === 0 && (
-        <div className="mt-4 bg-slate-800/40 border border-slate-700/30 rounded-xl p-5 text-center">
+        <div className="mt-4 bg-white/[0.04] border border-white/[0.04] rounded-xl p-5 text-center">
           <p className="text-sm text-slate-400">No deadlines on {MONTH_NAMES[month]} {selectedDay}, {year}</p>
         </div>
       )}
@@ -483,8 +483,8 @@ function AgendaView({
 
         return (
           <div key={key}>
-            <h3 className="text-lg font-semibold text-slate-200 mb-4 flex items-center gap-3">
-              <span className="bg-slate-800/60 px-3 py-1 rounded-lg">
+            <h3 className="text-lg font-semibold text-white/90 mb-4 flex items-center gap-3">
+              <span className="bg-white/[0.05] px-3 py-1 rounded-lg">
                 {MONTH_NAMES[monthIndex]} {year}
               </span>
               <span className="text-xs text-slate-500 font-normal">
@@ -526,8 +526,8 @@ function DeadlineRow({
       onClick={() => onSelect(deadline)}
       className={`w-full text-left p-4 rounded-lg border transition-all hover:shadow-lg ${
         past
-          ? 'bg-slate-900/40 border-slate-700/20 opacity-60 hover:opacity-80'
-          : 'bg-slate-800/40 border-slate-700/30 hover:border-slate-600/50 hover:bg-slate-800/60'
+          ? 'bg-black/40 border-white/[0.04] opacity-60 hover:opacity-80'
+          : 'bg-white/[0.04] border-white/[0.04] hover:border-white/[0.08] hover:bg-white/[0.05]'
       }`}
     >
       <div className="flex items-start justify-between gap-3">
@@ -544,7 +544,7 @@ function DeadlineRow({
               <span className="text-xs px-1.5 py-0.5 rounded bg-green-500/20 text-green-400 font-semibold">TODAY</span>
             )}
           </div>
-          <p className={`text-sm font-medium mb-1 ${past ? 'text-slate-500' : 'text-slate-200'}`}>
+          <p className={`text-sm font-medium mb-1 ${past ? 'text-slate-500' : 'text-white/90'}`}>
             {deadline.title}
           </p>
           <p className="text-xs text-slate-400 line-clamp-1">{deadline.description}</p>
@@ -620,7 +620,7 @@ export default function RegulatoryCalendarPage() {
     .slice(0, 5);
 
   return (
-    <div className="min-h-screen bg-slate-900 py-8">
+    <div className="min-h-screen bg-blackpy-8">
       {upcomingForSchema.map((deadline) => (
         <EventSchema
           key={`schema-${deadline.id}`}
@@ -639,7 +639,7 @@ export default function RegulatoryCalendarPage() {
           title="Regulatory Deadline Calendar"
           subtitle="Track 100+ space industry regulatory deadlines across FCC, FAA, NASA, DoD, ITU, and international bodies for 2026-2027."
           icon={
-            <svg className="w-9 h-9 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-9 h-9 text-white/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
           }
@@ -648,7 +648,7 @@ export default function RegulatoryCalendarPage() {
         >
           <Link
             href="/compliance"
-            className="inline-flex items-center gap-1 text-sm text-slate-400 hover:text-slate-200 transition-colors"
+            className="inline-flex items-center gap-1 text-sm text-slate-400 hover:text-white/90 transition-colors"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -674,7 +674,7 @@ export default function RegulatoryCalendarPage() {
               className={`flex items-center gap-1.5 text-xs px-2 py-1 rounded transition-colors ${
                 agencyFilter === agency
                   ? `${AGENCY_COLORS[agency].bg} ${AGENCY_COLORS[agency].text} ring-1 ring-current`
-                  : 'text-slate-400 hover:text-slate-300'
+                  : 'text-slate-400 hover:text-white/70'
               }`}
             >
               <span className={`w-2 h-2 rounded-full ${AGENCY_COLORS[agency].dot}`} />
@@ -686,13 +686,13 @@ export default function RegulatoryCalendarPage() {
         {/* Controls Bar */}
         <div className="flex flex-wrap items-center gap-3 mb-6">
           {/* View toggle */}
-          <div className="flex bg-slate-800/60 rounded-lg p-1 border border-slate-700/30">
+          <div className="flex bg-white/[0.05] rounded-lg p-1 border border-white/[0.04]">
             <button
               onClick={() => setViewMode('month')}
               className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
                 viewMode === 'month'
                   ? 'bg-white text-slate-900 shadow-sm'
-                  : 'text-slate-400 hover:text-slate-200'
+                  : 'text-slate-400 hover:text-white/90'
               }`}
             >
               Month
@@ -702,7 +702,7 @@ export default function RegulatoryCalendarPage() {
               className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
                 viewMode === 'agenda'
                   ? 'bg-white text-slate-900 shadow-sm'
-                  : 'text-slate-400 hover:text-slate-200'
+                  : 'text-slate-400 hover:text-white/90'
               }`}
             >
               Agenda
@@ -714,19 +714,19 @@ export default function RegulatoryCalendarPage() {
             <div className="flex items-center gap-2">
               <button
                 onClick={() => navigateMonth(-1)}
-                className="p-2 rounded-lg bg-slate-800/60 border border-slate-700/30 text-slate-400 hover:text-slate-200 hover:bg-slate-700/60 transition-colors"
+                className="p-2 rounded-lg bg-white/[0.05] border border-white/[0.04] text-slate-400 hover:text-white/90 hover:bg-white/[0.08] transition-colors"
                 aria-label="Previous month"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                 </svg>
               </button>
-              <span className="text-sm font-semibold text-slate-200 min-w-[10rem] text-center">
+              <span className="text-sm font-semibold text-white/90 min-w-[10rem] text-center">
                 {MONTH_NAMES[currentMonth]} {currentYear}
               </span>
               <button
                 onClick={() => navigateMonth(1)}
-                className="p-2 rounded-lg bg-slate-800/60 border border-slate-700/30 text-slate-400 hover:text-slate-200 hover:bg-slate-700/60 transition-colors"
+                className="p-2 rounded-lg bg-white/[0.05] border border-white/[0.04] text-slate-400 hover:text-white/90 hover:bg-white/[0.08] transition-colors"
                 aria-label="Next month"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -735,7 +735,7 @@ export default function RegulatoryCalendarPage() {
               </button>
               <button
                 onClick={goToToday}
-                className="ml-1 px-3 py-2 text-xs font-medium rounded-lg bg-slate-800/60 border border-slate-700/30 text-slate-400 hover:text-white hover:border-white/10 transition-colors"
+                className="ml-1 px-3 py-2 text-xs font-medium rounded-lg bg-white/[0.05] border border-white/[0.04] text-slate-400 hover:text-white hover:border-white/10 transition-colors"
               >
                 Today
               </button>
@@ -759,7 +759,7 @@ export default function RegulatoryCalendarPage() {
             <select
               value={typeFilter}
               onChange={(e) => setTypeFilter(e.target.value as DeadlineType | '')}
-              className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+              className="bg-white/[0.06] border border-white/[0.08] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
             >
               <option value="">All Types</option>
               {ALL_TYPES.map((t) => (
@@ -771,7 +771,7 @@ export default function RegulatoryCalendarPage() {
             <select
               value={priorityFilter}
               onChange={(e) => setPriorityFilter(e.target.value as DeadlinePriority | '')}
-              className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+              className="bg-white/[0.06] border border-white/[0.08] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
             >
               <option value="">All Priorities</option>
               {ALL_PRIORITIES.map((p) => (

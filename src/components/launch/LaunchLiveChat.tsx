@@ -120,11 +120,11 @@ export default function LaunchLiveChat({ eventId }: LaunchLiveChatProps) {
   };
 
   return (
-    <div className="bg-slate-900/95 rounded-xl border border-slate-700/50 overflow-hidden flex flex-col h-full min-h-[400px] max-h-[600px]">
+    <div className="bg-black/95 rounded-xl border border-white/[0.06] overflow-hidden flex flex-col h-full min-h-[400px] max-h-[600px]">
       {/* Header */}
-      <div className="px-4 py-3 border-b border-slate-700/50 bg-slate-800/50 flex items-center justify-between flex-shrink-0">
+      <div className="px-4 py-3 border-b border-white/[0.06] bg-white/[0.04] flex items-center justify-between flex-shrink-0">
         <h3 className="text-white font-semibold flex items-center gap-2 text-sm">
-          <svg className="w-4 h-4 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-4 h-4 text-white/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
           </svg>
           Live Chat
@@ -148,12 +148,12 @@ export default function LaunchLiveChat({ eventId }: LaunchLiveChatProps) {
         {messages.map((msg) => (
           <div key={msg.id} className={msg.type === 'system' || msg.type === 'milestone' ? 'text-center' : ''}>
             {msg.type === 'milestone' ? (
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 text-slate-300 text-xs font-medium border border-white/10">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 text-white/70 text-xs font-medium border border-white/10">
                 <span className="w-1.5 h-1.5 bg-white rounded-full" />
                 {msg.message}
               </div>
             ) : msg.type === 'system' ? (
-              <div className="inline-block px-3 py-1.5 rounded-full bg-slate-800/50 text-slate-400 text-xs">
+              <div className="inline-block px-3 py-1.5 rounded-full bg-white/[0.04] text-slate-400 text-xs">
                 {msg.message}
               </div>
             ) : (
@@ -161,7 +161,7 @@ export default function LaunchLiveChat({ eventId }: LaunchLiveChatProps) {
                 <div className={`inline-block max-w-[85%] ${msg.userId === session?.user?.id ? 'text-right' : 'text-left'}`}>
                   <div className="flex items-center gap-2 mb-0.5">
                     <span className={`text-xs font-medium ${
-                      msg.userId === session?.user?.id ? 'text-slate-300' : 'text-purple-400'
+                      msg.userId === session?.user?.id ? 'text-white/70' : 'text-purple-400'
                     }`}>
                       {msg.userName}
                     </span>
@@ -169,8 +169,8 @@ export default function LaunchLiveChat({ eventId }: LaunchLiveChatProps) {
                   </div>
                   <div className={`px-3 py-1.5 rounded-lg text-sm ${
                     msg.userId === session?.user?.id
-                      ? 'bg-white/8 text-slate-200 border border-white/10'
-                      : 'bg-slate-800/50 text-slate-200 border border-slate-700/30'
+                      ? 'bg-white/8 text-white/90 border border-white/10'
+                      : 'bg-white/[0.04] text-white/90 border border-white/[0.04]'
                   }`}>
                     {msg.message}
                   </div>
@@ -183,12 +183,12 @@ export default function LaunchLiveChat({ eventId }: LaunchLiveChatProps) {
       </div>
 
       {/* Input */}
-      <div className="p-3 border-t border-slate-700/50 bg-slate-800/30 flex-shrink-0">
+      <div className="p-3 border-t border-white/[0.06] bg-white/[0.03] flex-shrink-0">
         {!session?.user ? (
           <div className="text-center py-2">
             <a
               href="/login"
-              className="text-slate-300 hover:text-white transition-colors text-sm font-medium"
+              className="text-white/70 hover:text-white transition-colors text-sm font-medium"
             >
               Sign in to join the chat
             </a>
@@ -211,7 +211,7 @@ export default function LaunchLiveChat({ eventId }: LaunchLiveChatProps) {
                 placeholder="Type a message..."
                 maxLength={500}
                 disabled={sending || rateLimited}
-                className="flex-1 bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none disabled:opacity-50"
+                className="flex-1 bg-white/[0.06] border border-white/[0.08] text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none disabled:opacity-50"
               />
               <button
                 type="submit"

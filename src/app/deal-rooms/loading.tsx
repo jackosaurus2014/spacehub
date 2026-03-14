@@ -4,21 +4,21 @@ export default function Loading() {
       <div className="container mx-auto px-4">
         {/* Header skeleton */}
         <div className="mb-8">
-          <div className="h-8 w-72 bg-slate-800 rounded animate-pulse mb-3" />
-          <div className="h-4 w-96 bg-slate-800/60 rounded animate-pulse" />
+          <div className="h-8 w-72 bg-white/[0.06] rounded animate-pulse mb-3" />
+          <div className="h-4 w-96 bg-white/[0.05] rounded animate-pulse" />
         </div>
 
         {/* Status filter skeleton */}
         <div className="flex gap-3 mb-8">
           {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="h-10 w-28 bg-slate-800/40 rounded-lg animate-pulse" />
+            <div key={i} className="h-10 w-28 bg-white/[0.04] rounded-lg animate-pulse" />
           ))}
         </div>
 
         {/* Deal room cards skeleton */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[1, 2, 3, 4, 5, 6].map((i) => (
-            <div key={i} className="bg-slate-800/40 rounded-xl p-6 animate-pulse">
+            <div key={i} className="bg-white/[0.04] rounded-xl p-6 animate-pulse">
               <div className="flex justify-between items-start mb-4">
                 <div className="h-6 w-48 bg-slate-700/50 rounded" />
                 <div className="h-6 w-20 bg-slate-700/50 rounded" />

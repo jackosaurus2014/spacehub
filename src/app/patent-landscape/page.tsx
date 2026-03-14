@@ -233,7 +233,7 @@ export default function PatentLandscapePage() {
               <div className="text-xs uppercase tracking-widest text-slate-400 font-medium mb-1">
                 Most Active Category
               </div>
-              <div className="text-base md:text-lg font-bold font-display tracking-tight text-slate-300">
+              <div className="text-base md:text-lg font-bold font-display tracking-tight text-white/70">
                 {MOST_ACTIVE_CATEGORY}
               </div>
               <div className="text-xs text-slate-500 mt-1">{MAX_CATEGORY_COUNT.toLocaleString()} patents</div>
@@ -253,7 +253,7 @@ export default function PatentLandscapePage() {
                   placeholder="Search by company or specialty..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none placeholder-slate-500"
+                  className="w-full bg-white/[0.06] border border-white/[0.08] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none placeholder-slate-500"
                 />
               </div>
 
@@ -263,7 +263,7 @@ export default function PatentLandscapePage() {
                 <select
                   value={selectedCategory}
                   onChange={(e) => setSelectedCategory(e.target.value)}
-                  className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none"
+                  className="bg-white/[0.06] border border-white/[0.08] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none"
                 >
                   <option value="">All Categories</option>
                   {allCategories.map((cat) => (
@@ -278,7 +278,7 @@ export default function PatentLandscapePage() {
                 <select
                   value={selectedYear}
                   onChange={(e) => setSelectedYear(e.target.value)}
-                  className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none"
+                  className="bg-white/[0.06] border border-white/[0.08] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none"
                 >
                   <option value="2024">2024</option>
                   <option value="2023">2023</option>
@@ -297,7 +297,7 @@ export default function PatentLandscapePage() {
                     setSortField(f);
                     setSortDirection(d);
                   }}
-                  className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none"
+                  className="bg-white/[0.06] border border-white/[0.08] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none"
                 >
                   <option value="rank-asc">Rank (ascending)</option>
                   <option value="patents-desc">Patents (most first)</option>
@@ -344,7 +344,7 @@ export default function PatentLandscapePage() {
               <div className="hidden md:block overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="border-b border-slate-700/50">
+                    <tr className="border-b border-white/[0.06]">
                       <th
                         className="text-left py-2 px-2 text-slate-400 font-medium cursor-pointer hover:text-white transition-colors select-none"
                         onClick={() => handleSort('rank')}
@@ -376,7 +376,7 @@ export default function PatentLandscapePage() {
                     {filteredHolders.map((holder) => (
                       <tr
                         key={holder.company}
-                        className="border-b border-slate-700/30 hover:bg-slate-800/40 transition-colors cursor-pointer"
+                        className="border-b border-white/[0.04] hover:bg-white/[0.04] transition-colors cursor-pointer"
                         onClick={() => setExpandedHolder(expandedHolder === holder.company ? null : holder.company)}
                       >
                         <td className="py-3 px-2 text-slate-500 font-mono">{holder.rank}</td>
@@ -396,7 +396,7 @@ export default function PatentLandscapePage() {
                         <td className="py-3 px-2">
                           <div className="flex flex-wrap gap-1">
                             {holder.specialties.slice(0, 2).map((s) => (
-                              <span key={s} className="text-xs bg-slate-700/40 text-slate-300 px-2 py-0.5 rounded">
+                              <span key={s} className="text-xs bg-slate-700/40 text-white/70 px-2 py-0.5 rounded">
                                 {s}
                               </span>
                             ))}
@@ -413,7 +413,7 @@ export default function PatentLandscapePage() {
                 {filteredHolders.map((holder) => (
                   <div
                     key={holder.company}
-                    className="bg-slate-800/30 rounded-lg p-3 border border-slate-700/30 cursor-pointer hover:border-purple-500/30 transition-colors"
+                    className="bg-white/[0.03] rounded-lg p-3 border border-white/[0.04] cursor-pointer hover:border-purple-500/30 transition-colors"
                     onClick={() => setExpandedHolder(expandedHolder === holder.company ? null : holder.company)}
                   >
                     <div className="flex items-center justify-between mb-1">
@@ -428,7 +428,7 @@ export default function PatentLandscapePage() {
                     <div className="flex items-center justify-between">
                       <div className="flex flex-wrap gap-1">
                         {holder.specialties.slice(0, 1).map((s) => (
-                          <span key={s} className="text-xs bg-slate-700/40 text-slate-300 px-2 py-0.5 rounded">
+                          <span key={s} className="text-xs bg-slate-700/40 text-white/70 px-2 py-0.5 rounded">
                             {s}
                           </span>
                         ))}
@@ -436,13 +436,13 @@ export default function PatentLandscapePage() {
                       <span className="text-green-400 text-xs font-medium">+{holder.yoyGrowth}%</span>
                     </div>
                     {expandedHolder === holder.company && (
-                      <div className="mt-2 pt-2 border-t border-slate-700/30 space-y-1">
+                      <div className="mt-2 pt-2 border-t border-white/[0.04] space-y-1">
                         <div className="text-xs text-slate-400">
-                          <span className="font-medium text-slate-300">Categories:</span>{' '}
+                          <span className="font-medium text-white/70">Categories:</span>{' '}
                           {holder.categories.join(', ')}
                         </div>
                         <div className="text-xs text-slate-400">
-                          <span className="font-medium text-slate-300">Specialties:</span>{' '}
+                          <span className="font-medium text-white/70">Specialties:</span>{' '}
                           {holder.specialties.join(', ')}
                         </div>
                       </div>
@@ -459,7 +459,7 @@ export default function PatentLandscapePage() {
 
               {/* Expanded detail (desktop) */}
               {expandedHolder && (
-                <div className="hidden md:block mt-4 p-4 bg-slate-800/40 rounded-lg border border-purple-500/20">
+                <div className="hidden md:block mt-4 p-4 bg-white/[0.04] rounded-lg border border-purple-500/20">
                   {(() => {
                     const holder = PATENT_HOLDERS.find((h) => h.company === expandedHolder);
                     if (!holder) return null;
@@ -504,7 +504,7 @@ export default function PatentLandscapePage() {
                           <div className="text-slate-400 text-xs mb-1">Active Categories</div>
                           <div className="flex flex-wrap gap-1">
                             {holder.categories.map((c) => (
-                              <span key={c} className="text-xs bg-slate-700/50 text-slate-300 px-2 py-1 rounded">
+                              <span key={c} className="text-xs bg-slate-700/50 text-white/70 px-2 py-1 rounded">
                                 {c}
                               </span>
                             ))}
@@ -539,12 +539,12 @@ export default function PatentLandscapePage() {
                       className={`w-full text-left transition-all rounded-lg p-3 ${
                         isSelected
                           ? 'bg-purple-500/10 border border-purple-500/30'
-                          : 'hover:bg-slate-800/40 border border-transparent'
+                          : 'hover:bg-white/[0.04] border border-transparent'
                       }`}
                       onClick={() => setSelectedCategory(isSelected ? '' : cat.name)}
                     >
                       <div className="flex items-center justify-between mb-1.5">
-                        <span className={`text-sm font-medium ${isSelected ? 'text-purple-300' : 'text-slate-200'}`}>
+                        <span className={`text-sm font-medium ${isSelected ? 'text-purple-300' : 'text-white/90'}`}>
                           {cat.name}
                         </span>
                         <span className="text-sm font-mono text-slate-400">
@@ -564,7 +564,7 @@ export default function PatentLandscapePage() {
               </div>
 
               {/* Total bar */}
-              <div className="mt-6 pt-4 border-t border-slate-700/50">
+              <div className="mt-6 pt-4 border-t border-white/[0.06]">
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-semibold text-white">Total</span>
                   <span className="text-sm font-mono text-white font-bold">
@@ -591,7 +591,7 @@ export default function PatentLandscapePage() {
               {EMERGING_AREAS.map((area) => (
                 <div
                   key={area.title}
-                  className="bg-slate-800/40 rounded-xl p-5 border border-slate-700/30 hover:border-purple-500/30 transition-all group"
+                  className="bg-white/[0.04] rounded-xl p-5 border border-white/[0.04] hover:border-purple-500/30 transition-all group"
                 >
                   <div className="flex items-start justify-between mb-3">
                     <h3 className="text-white font-semibold text-sm group-hover:text-purple-300 transition-colors">
@@ -622,7 +622,7 @@ export default function PatentLandscapePage() {
                       {area.keyPlayers.map((player) => (
                         <span
                           key={player}
-                          className="text-xs bg-slate-700/50 text-slate-300 px-2 py-0.5 rounded"
+                          className="text-xs bg-slate-700/50 text-white/70 px-2 py-0.5 rounded"
                         >
                           {player}
                         </span>
@@ -645,7 +645,7 @@ export default function PatentLandscapePage() {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {[
                 { year: '2021', count: 8125, color: 'text-slate-400' },
-                { year: '2022', count: 9500, color: 'text-slate-300' },
+                { year: '2022', count: 9500, color: 'text-white/70' },
                 { year: '2023', count: 10875, color: 'text-purple-300' },
                 { year: '2024', count: 12500, color: 'text-purple-400' },
               ].map((item) => (
@@ -654,7 +654,7 @@ export default function PatentLandscapePage() {
                   className={`text-center p-4 rounded-lg border transition-colors ${
                     selectedYear === item.year
                       ? 'bg-purple-500/10 border-purple-500/30'
-                      : 'bg-slate-800/30 border-slate-700/30 hover:border-slate-600/50'
+                      : 'bg-white/[0.03] border-white/[0.04] hover:border-white/[0.08]'
                   }`}
                 >
                   <div className="text-sm text-slate-400 mb-1">{item.year}</div>

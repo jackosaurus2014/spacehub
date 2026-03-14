@@ -95,7 +95,7 @@ export default function Footer() {
 
   return (
     <>
-      <footer className="bg-[#050a15] border-t border-white/[0.06] mt-auto relative">
+      <footer className="bg-black border-t border-white/[0.06] mt-auto relative">
         {/* Subtle gradient glow at top */}
         <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/[0.08] to-transparent" />
 
@@ -272,7 +272,7 @@ export default function Footer() {
                 aria-label="Open keyboard shortcuts help"
               >
                 Press
-                <kbd className="inline-flex items-center justify-center min-w-[18px] h-4 bg-slate-800 border border-slate-700 rounded px-1 font-mono text-[10px] text-slate-400">
+                <kbd className="inline-flex items-center justify-center min-w-[18px] h-4 bg-white/[0.08] border border-white/[0.08] rounded px-1 font-mono text-[10px] text-slate-400">
                   ?
                 </kbd>
                 for keyboard shortcuts

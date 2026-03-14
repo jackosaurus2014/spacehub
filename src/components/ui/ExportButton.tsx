@@ -120,7 +120,7 @@ export default function ExportButton({
         disabled={isDisabled}
         aria-haspopup="true"
         aria-expanded={open}
-        className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg bg-slate-700 text-slate-200 hover:bg-slate-600 hover:text-white transition-all border border-white/[0.06] disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px]"
+        className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg bg-white/[0.08] text-white/90 hover:bg-white/[0.1] hover:text-white transition-all border border-white/[0.06] disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px]"
       >
         {/* Download icon (inline SVG) */}
         {loading ? (
@@ -175,12 +175,12 @@ export default function ExportButton({
 
       {/* Dropdown menu */}
       {open && !isExporting && (
-        <div className="absolute right-0 mt-1 z-50 bg-slate-800 border border-white/[0.1] rounded-lg shadow-lg overflow-hidden min-w-[120px]">
+        <div className="absolute right-0 mt-1 z-50 bg-white/[0.06] border border-white/[0.1] rounded-lg shadow-lg overflow-hidden min-w-[120px]">
           {formats.map((fmt, idx) => (
             <button
               key={fmt}
               onClick={() => handleExport(fmt)}
-              className={`w-full px-4 py-2 text-left text-xs text-slate-300 hover:bg-slate-700 hover:text-white transition-colors min-h-[44px] ${
+              className={`w-full px-4 py-2 text-left text-xs text-white/70 hover:bg-white/[0.08] hover:text-white transition-colors min-h-[44px] ${
                 idx > 0 ? 'border-t border-white/[0.06]' : ''
               }`}
             >

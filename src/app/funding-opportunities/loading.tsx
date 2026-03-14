@@ -4,14 +4,14 @@ export default function Loading() {
       <div className="container mx-auto px-4">
         {/* Header skeleton */}
         <div className="mb-8">
-          <div className="h-8 w-72 bg-slate-800 rounded animate-pulse mb-3" />
-          <div className="h-4 w-96 bg-slate-800/60 rounded animate-pulse" />
+          <div className="h-8 w-72 bg-white/[0.06] rounded animate-pulse mb-3" />
+          <div className="h-4 w-96 bg-white/[0.05] rounded animate-pulse" />
         </div>
 
         <div className="flex gap-6">
           {/* Filter sidebar skeleton */}
           <div className="w-64 flex-shrink-0">
-            <div className="bg-slate-800/40 rounded-xl p-6 animate-pulse">
+            <div className="bg-white/[0.04] rounded-xl p-6 animate-pulse">
               <div className="h-6 w-24 bg-slate-700/50 rounded mb-4" />
               <div className="space-y-3">
                 {[1, 2, 3, 4, 5].map((i) => (
@@ -24,7 +24,7 @@ export default function Loading() {
           {/* Funding list skeleton */}
           <div className="flex-1 space-y-4">
             {[1, 2, 3, 4, 5].map((i) => (
-              <div key={i} className="bg-slate-800/40 rounded-xl p-6 animate-pulse">
+              <div key={i} className="bg-white/[0.04] rounded-xl p-6 animate-pulse">
                 <div className="h-6 w-64 bg-slate-700/50 rounded mb-3" />
                 <div className="h-4 w-full bg-slate-700/50 rounded mb-2" />
                 <div className="h-4 w-5/6 bg-slate-700/50 rounded mb-4" />

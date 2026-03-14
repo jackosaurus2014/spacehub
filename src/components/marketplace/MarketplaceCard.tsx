@@ -53,7 +53,7 @@ export default function MarketplaceCard({ listing, index = 0 }: MarketplaceCardP
         >
           <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
             <div className="absolute inset-[-1px] rounded-xl bg-gradient-to-r from-white/30 via-purple-500/30 to-slate-200/30" />
-            <div className="absolute inset-[1px] rounded-xl bg-slate-900/95" />
+            <div className="absolute inset-[1px] rounded-xl bg-[#0a0a0a]/95" />
           </div>
 
           <div className="relative z-10">
@@ -86,14 +86,14 @@ export default function MarketplaceCard({ listing, index = 0 }: MarketplaceCardP
 
             {/* Provider */}
             <div className="flex items-center gap-2 mb-3">
-              <div className="w-6 h-6 rounded bg-slate-700 flex items-center justify-center text-xs flex-shrink-0">
+              <div className="w-6 h-6 rounded bg-white/[0.08] flex items-center justify-center text-xs flex-shrink-0">
                 {listing.company.logoUrl ? (
                   <Image src={listing.company.logoUrl} alt={`${listing.company.name} logo`} width={20} height={20} className="w-5 h-5 rounded object-contain" unoptimized />
                 ) : (
                   listing.company.name.charAt(0)
                 )}
               </div>
-              <span className="text-xs text-slate-300 truncate">{listing.company.name}</span>
+              <span className="text-xs text-white/70 truncate">{listing.company.name}</span>
               <VerificationBadge level={listing.company.verificationLevel} />
             </div>
 
@@ -108,12 +108,12 @@ export default function MarketplaceCard({ listing, index = 0 }: MarketplaceCardP
               {listing.certifications.length > 0 && (
                 <div className="flex flex-wrap gap-1 justify-end max-w-[50%]">
                   {listing.certifications.slice(0, 3).map((cert) => (
-                    <span key={cert} className="text-[9px] px-1.5 py-0.5 bg-slate-700/50 text-slate-400 rounded">
+                    <span key={cert} className="text-[9px] px-1.5 py-0.5 bg-white/[0.04] text-slate-400 rounded">
                       {cert}
                     </span>
                   ))}
                   {listing.certifications.length > 3 && (
-                    <span className="text-[9px] px-1.5 py-0.5 bg-slate-700/50 text-slate-500 rounded">
+                    <span className="text-[9px] px-1.5 py-0.5 bg-white/[0.04] text-slate-500 rounded">
                       +{listing.certifications.length - 3}
                     </span>
                   )}

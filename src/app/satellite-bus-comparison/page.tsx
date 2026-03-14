@@ -769,7 +769,7 @@ export default function SatelliteBusComparisonPage() {
         </ScrollReveal>
 
         {/* Tab Navigation */}
-        <div className="flex flex-wrap gap-2 mb-6 border-b border-slate-700/50 pb-3">
+        <div className="flex flex-wrap gap-2 mb-6 border-b border-white/[0.06] pb-3">
           {TABS.map(tab => (
             <button
               key={tab.id}
@@ -777,12 +777,12 @@ export default function SatelliteBusComparisonPage() {
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                 activeTab === tab.id
                   ? 'bg-white text-slate-900 shadow-lg shadow-black/10'
-                  : 'bg-slate-800/60 text-slate-400 hover:bg-slate-700/60 hover:text-slate-200'
+                  : 'bg-white/[0.05] text-slate-400 hover:bg-white/[0.06] hover:text-white/90'
               }`}
             >
               {tab.label}
               {tab.id === 'compare' && compareSelection.length > 0 && (
-                <span className="ml-1.5 px-1.5 py-0.5 bg-white/10 text-slate-200 rounded text-xs">
+                <span className="ml-1.5 px-1.5 py-0.5 bg-white/10 text-white/90 rounded text-xs">
                   {compareSelection.length}
                 </span>
               )}
@@ -806,7 +806,7 @@ export default function SatelliteBusComparisonPage() {
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Bus name, manufacturer..."
-                    className="w-full px-3 py-2 bg-slate-800/60 border border-slate-600/50 rounded-lg text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-white/15"
+                    className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.08] rounded-lg text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-white/15"
                   />
                 </div>
                 {/* Mass Class */}
@@ -815,7 +815,7 @@ export default function SatelliteBusComparisonPage() {
                   <select
                     value={massClassFilter}
                     onChange={(e) => setMassClassFilter(e.target.value as MassClass | '')}
-                    className="w-full px-3 py-2 bg-slate-800/60 border border-slate-600/50 rounded-lg text-sm text-white focus:outline-none focus:border-white/15"
+                    className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.08] rounded-lg text-sm text-white focus:outline-none focus:border-white/15"
                   >
                     <option value="">All Classes</option>
                     <option value="Small">Small / Micro (50-300 kg)</option>
@@ -829,7 +829,7 @@ export default function SatelliteBusComparisonPage() {
                   <select
                     value={orbitFilter}
                     onChange={(e) => setOrbitFilter(e.target.value as OrbitType | '')}
-                    className="w-full px-3 py-2 bg-slate-800/60 border border-slate-600/50 rounded-lg text-sm text-white focus:outline-none focus:border-white/15"
+                    className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.08] rounded-lg text-sm text-white focus:outline-none focus:border-white/15"
                   >
                     <option value="">All Orbits</option>
                     {allOrbits.map(o => (
@@ -843,7 +843,7 @@ export default function SatelliteBusComparisonPage() {
                   <select
                     value={manufacturerFilter}
                     onChange={(e) => setManufacturerFilter(e.target.value)}
-                    className="w-full px-3 py-2 bg-slate-800/60 border border-slate-600/50 rounded-lg text-sm text-white focus:outline-none focus:border-white/15"
+                    className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.08] rounded-lg text-sm text-white focus:outline-none focus:border-white/15"
                   >
                     <option value="">All Manufacturers</option>
                     {allManufacturers.map(m => (
@@ -857,7 +857,7 @@ export default function SatelliteBusComparisonPage() {
                   <select
                     value={sortBy}
                     onChange={(e) => setSortBy(e.target.value as SortKey)}
-                    className="w-full px-3 py-2 bg-slate-800/60 border border-slate-600/50 rounded-lg text-sm text-white focus:outline-none focus:border-white/15"
+                    className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.08] rounded-lg text-sm text-white focus:outline-none focus:border-white/15"
                   >
                     <option value="name">Name</option>
                     <option value="mass">Mass (low to high)</option>
@@ -880,7 +880,7 @@ export default function SatelliteBusComparisonPage() {
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="border-b border-slate-700/50">
+                    <tr className="border-b border-white/[0.06]">
                       <th className="text-left p-3 text-slate-400 font-medium text-xs uppercase tracking-wider">Manufacturer</th>
                       <th className="text-left p-3 text-slate-400 font-medium text-xs uppercase tracking-wider">Bus Name</th>
                       <th className="text-left p-3 text-slate-400 font-medium text-xs uppercase tracking-wider">Class</th>
@@ -897,30 +897,30 @@ export default function SatelliteBusComparisonPage() {
                     {filteredBuses.map((bus, i) => (
                       <tr
                         key={bus.id}
-                        className={`border-b border-slate-700/30 hover:bg-slate-800/40 transition-colors ${
-                          i % 2 === 0 ? 'bg-slate-800/10' : ''
+                        className={`border-b border-white/[0.04] hover:bg-white/[0.04] transition-colors ${
+                          i % 2 === 0 ? 'bg-white/[0.02]' : ''
                         }`}
                       >
-                        <td className="p-3 text-slate-300 whitespace-nowrap">{bus.manufacturer}</td>
+                        <td className="p-3 text-white/70 whitespace-nowrap">{bus.manufacturer}</td>
                         <td className="p-3 text-white font-semibold whitespace-nowrap">{bus.name}</td>
                         <td className="p-3">
                           <span className={`px-2 py-0.5 rounded text-xs font-medium border ${massClassColor(bus.massClass)}`}>
                             {bus.massClass}
                           </span>
                         </td>
-                        <td className="p-3 text-slate-300 whitespace-nowrap font-mono text-xs">{formatMass(bus.dryMassKg, bus.dryMassMaxKg)}</td>
-                        <td className="p-3 text-slate-300 whitespace-nowrap font-mono text-xs">{formatPower(bus.powerW, bus.powerMaxW)}</td>
-                        <td className="p-3 text-center text-slate-300 font-mono text-xs">{bus.designLifeYears}</td>
+                        <td className="p-3 text-white/70 whitespace-nowrap font-mono text-xs">{formatMass(bus.dryMassKg, bus.dryMassMaxKg)}</td>
+                        <td className="p-3 text-white/70 whitespace-nowrap font-mono text-xs">{formatPower(bus.powerW, bus.powerMaxW)}</td>
+                        <td className="p-3 text-center text-white/70 font-mono text-xs">{bus.designLifeYears}</td>
                         <td className="p-3">
                           <div className="flex flex-wrap gap-1">
                             {bus.orbits.map(o => (
-                              <span key={o} className="px-1.5 py-0.5 rounded text-[10px] bg-slate-800/40 text-slate-300 border border-white/10">
+                              <span key={o} className="px-1.5 py-0.5 rounded text-[10px] bg-white/[0.04] text-white/70 border border-white/10">
                                 {o}
                               </span>
                             ))}
                           </div>
                         </td>
-                        <td className="p-3 text-slate-300 whitespace-nowrap font-mono text-xs">{formatMass(bus.payloadMassKg, bus.payloadMassMaxKg)}</td>
+                        <td className="p-3 text-white/70 whitespace-nowrap font-mono text-xs">{formatMass(bus.payloadMassKg, bus.payloadMassMaxKg)}</td>
                         <td className="p-3 text-emerald-400 whitespace-nowrap font-mono text-xs font-semibold">{formatCost(bus.costMillionsMin, bus.costMillionsMax)}</td>
                         <td className="p-3 text-center">
                           <button
@@ -931,7 +931,7 @@ export default function SatelliteBusComparisonPage() {
                                 ? 'bg-white text-slate-900'
                                 : compareSelection.length >= 3
                                   ? 'bg-slate-700/30 text-slate-600 cursor-not-allowed'
-                                  : 'bg-slate-700 text-slate-300 hover:bg-slate-600 hover:text-white'
+                                  : 'bg-slate-700 text-white/70 hover:bg-slate-600 hover:text-white'
                             }`}
                           >
                             {compareSelection.includes(bus.id) ? 'Selected' : 'Add'}
@@ -960,30 +960,30 @@ export default function SatelliteBusComparisonPage() {
                       </span>
                     </div>
 
-                    <p className="text-sm text-slate-300 mb-4 leading-relaxed">{bus.description}</p>
+                    <p className="text-sm text-white/70 mb-4 leading-relaxed">{bus.description}</p>
 
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-4">
-                      <div className="bg-slate-800/40 rounded-lg p-2.5">
+                      <div className="bg-white/[0.04] rounded-lg p-2.5">
                         <span className="text-[10px] text-slate-500 uppercase tracking-wider block">Dry Mass</span>
                         <span className="text-sm text-white font-semibold">{formatMass(bus.dryMassKg, bus.dryMassMaxKg)}</span>
                       </div>
-                      <div className="bg-slate-800/40 rounded-lg p-2.5">
+                      <div className="bg-white/[0.04] rounded-lg p-2.5">
                         <span className="text-[10px] text-slate-500 uppercase tracking-wider block">Power</span>
                         <span className="text-sm text-white font-semibold">{formatPower(bus.powerW, bus.powerMaxW)}</span>
                       </div>
-                      <div className="bg-slate-800/40 rounded-lg p-2.5">
+                      <div className="bg-white/[0.04] rounded-lg p-2.5">
                         <span className="text-[10px] text-slate-500 uppercase tracking-wider block">Design Life</span>
                         <span className="text-sm text-white font-semibold">{bus.designLifeYears} years</span>
                       </div>
-                      <div className="bg-slate-800/40 rounded-lg p-2.5">
+                      <div className="bg-white/[0.04] rounded-lg p-2.5">
                         <span className="text-[10px] text-slate-500 uppercase tracking-wider block">Payload</span>
                         <span className="text-sm text-white font-semibold">{formatMass(bus.payloadMassKg, bus.payloadMassMaxKg)}</span>
                       </div>
-                      <div className="bg-slate-800/40 rounded-lg p-2.5">
+                      <div className="bg-white/[0.04] rounded-lg p-2.5">
                         <span className="text-[10px] text-slate-500 uppercase tracking-wider block">Cost</span>
                         <span className="text-sm text-emerald-400 font-semibold">{formatCost(bus.costMillionsMin, bus.costMillionsMax)}</span>
                       </div>
-                      <div className="bg-slate-800/40 rounded-lg p-2.5">
+                      <div className="bg-white/[0.04] rounded-lg p-2.5">
                         <span className="text-[10px] text-slate-500 uppercase tracking-wider block">Data Rate</span>
                         <span className="text-sm text-white font-semibold">{bus.dataRate}</span>
                       </div>
@@ -993,26 +993,26 @@ export default function SatelliteBusComparisonPage() {
                     <div className="space-y-1.5 mb-4 text-xs">
                       <div className="flex gap-2">
                         <span className="text-slate-500 min-w-[80px]">Propulsion:</span>
-                        <span className="text-slate-300">{bus.propulsion}</span>
+                        <span className="text-white/70">{bus.propulsion}</span>
                       </div>
                       <div className="flex gap-2">
                         <span className="text-slate-500 min-w-[80px]">ADCS:</span>
-                        <span className="text-slate-300">{bus.attitude}</span>
+                        <span className="text-white/70">{bus.attitude}</span>
                       </div>
                       <div className="flex gap-2">
                         <span className="text-slate-500 min-w-[80px]">Thermal:</span>
-                        <span className="text-slate-300">{bus.thermalControl}</span>
+                        <span className="text-white/70">{bus.thermalControl}</span>
                       </div>
                       <div className="flex gap-2">
                         <span className="text-slate-500 min-w-[80px]">Heritage:</span>
-                        <span className="text-slate-300">{bus.heritage}</span>
+                        <span className="text-white/70">{bus.heritage}</span>
                       </div>
                     </div>
 
                     {/* Orbits + Missions */}
                     <div className="flex flex-wrap gap-1.5 mb-3">
                       {bus.orbits.map(o => (
-                        <span key={o} className="px-2 py-0.5 rounded text-[10px] bg-slate-800/40 text-slate-300 border border-white/10">
+                        <span key={o} className="px-2 py-0.5 rounded text-[10px] bg-white/[0.04] text-white/70 border border-white/10">
                           {o}
                         </span>
                       ))}
@@ -1059,12 +1059,12 @@ export default function SatelliteBusComparisonPage() {
                   {selectedBuses.map(bus => (
                     <span
                       key={bus.id}
-                      className="inline-flex items-center gap-2 px-3 py-1.5 bg-slate-800/40 border border-white/10 rounded-lg text-sm text-slate-200"
+                      className="inline-flex items-center gap-2 px-3 py-1.5 bg-white/[0.04] border border-white/10 rounded-lg text-sm text-white/90"
                     >
                       {bus.name} ({bus.manufacturer})
                       <button
                         onClick={() => toggleCompare(bus)}
-                        className="text-slate-300 hover:text-red-400 transition-colors font-bold"
+                        className="text-white/70 hover:text-red-400 transition-colors font-bold"
                         aria-label={`Remove ${bus.name} from comparison`}
                       >
                         x
@@ -1074,7 +1074,7 @@ export default function SatelliteBusComparisonPage() {
                   {selectedBuses.length < 3 && (
                     <button
                       onClick={() => setActiveTab('database')}
-                      className="px-3 py-1.5 bg-slate-800/60 border border-dashed border-slate-600/50 rounded-lg text-sm text-slate-400 hover:text-white hover:border-white/10 transition-colors"
+                      className="px-3 py-1.5 bg-white/[0.05] border border-dashed border-white/[0.08] rounded-lg text-sm text-slate-400 hover:text-white hover:border-white/10 transition-colors"
                     >
                       + Add Bus
                     </button>
@@ -1086,7 +1086,7 @@ export default function SatelliteBusComparisonPage() {
                   <div className="overflow-x-auto">
                     <table className="w-full text-sm">
                       <thead>
-                        <tr className="border-b border-slate-700/50">
+                        <tr className="border-b border-white/[0.06]">
                           <th className="text-left p-4 text-slate-400 font-medium text-xs uppercase tracking-wider w-48">Attribute</th>
                           {selectedBuses.map(bus => (
                             <th key={bus.id} className="text-left p-4 min-w-[220px]">
@@ -1105,7 +1105,7 @@ export default function SatelliteBusComparisonPage() {
                           { label: 'Orbits', render: (b: SatelliteBus) => (
                             <div className="flex flex-wrap gap-1">
                               {b.orbits.map(o => (
-                                <span key={o} className="px-1.5 py-0.5 rounded text-[10px] bg-slate-800/40 text-slate-300 border border-white/10">{o}</span>
+                                <span key={o} className="px-1.5 py-0.5 rounded text-[10px] bg-white/[0.04] text-white/70 border border-white/10">{o}</span>
                               ))}
                             </div>
                           )},
@@ -1124,10 +1124,10 @@ export default function SatelliteBusComparisonPage() {
                             </div>
                           )},
                         ].map((row, i) => (
-                          <tr key={row.label} className={`border-b border-slate-700/20 ${i % 2 === 0 ? 'bg-slate-800/10' : ''}`}>
+                          <tr key={row.label} className={`border-b border-slate-700/20 ${i % 2 === 0 ? 'bg-white/[0.02]' : ''}`}>
                             <td className="p-4 text-slate-400 font-medium text-xs uppercase tracking-wider">{row.label}</td>
                             {selectedBuses.map(bus => (
-                              <td key={bus.id} className="p-4 text-slate-300 text-sm">{row.render(bus)}</td>
+                              <td key={bus.id} className="p-4 text-white/70 text-sm">{row.render(bus)}</td>
                             ))}
                           </tr>
                         ))}
@@ -1148,7 +1148,7 @@ export default function SatelliteBusComparisonPage() {
                         return (
                           <div key={bus.id}>
                             <div className="flex justify-between text-xs mb-1">
-                              <span className="text-slate-300">{bus.name}</span>
+                              <span className="text-white/70">{bus.name}</span>
                               <span className="text-white font-mono">{formatPower(bus.powerW, bus.powerMaxW)}</span>
                             </div>
                             <div className="h-3 bg-slate-700 rounded-full overflow-hidden">
@@ -1173,7 +1173,7 @@ export default function SatelliteBusComparisonPage() {
                         return (
                           <div key={bus.id}>
                             <div className="flex justify-between text-xs mb-1">
-                              <span className="text-slate-300">{bus.name}</span>
+                              <span className="text-white/70">{bus.name}</span>
                               <span className="text-white font-mono">{formatMass(bus.dryMassKg, bus.dryMassMaxKg)}</span>
                             </div>
                             <div className="h-3 bg-slate-700 rounded-full overflow-hidden">
@@ -1199,7 +1199,7 @@ export default function SatelliteBusComparisonPage() {
                         return (
                           <div key={bus.id}>
                             <div className="flex justify-between text-xs mb-1">
-                              <span className="text-slate-300">{bus.name}</span>
+                              <span className="text-white/70">{bus.name}</span>
                               <span className="text-emerald-400 font-mono">{formatCost(bus.costMillionsMin, bus.costMillionsMax)}</span>
                             </div>
                             <div className="h-3 bg-slate-700 rounded-full overflow-hidden relative">
@@ -1224,7 +1224,7 @@ export default function SatelliteBusComparisonPage() {
                         return (
                           <div key={bus.id}>
                             <div className="flex justify-between text-xs mb-1">
-                              <span className="text-slate-300">{bus.name}</span>
+                              <span className="text-white/70">{bus.name}</span>
                               <span className="text-white font-mono">{bus.designLifeYears} years</span>
                             </div>
                             <div className="h-3 bg-slate-700 rounded-full overflow-hidden">
@@ -1257,21 +1257,21 @@ export default function SatelliteBusComparisonPage() {
                       <h4 className="text-lg font-bold text-white">{mfr.name}</h4>
                       <p className="text-xs text-slate-400">{mfr.headquarters} | Founded {mfr.founded}</p>
                     </div>
-                    <span className="px-2 py-0.5 rounded text-xs bg-slate-700/50 text-slate-300 border border-slate-600/30">
+                    <span className="px-2 py-0.5 rounded text-xs bg-white/[0.06] text-white/70 border border-slate-600/30">
                       {mfr.country}
                     </span>
                   </div>
 
-                  <p className="text-sm text-slate-300 mb-4 leading-relaxed">{mfr.description}</p>
+                  <p className="text-sm text-white/70 mb-4 leading-relaxed">{mfr.description}</p>
 
                   <div className="grid grid-cols-2 gap-3 mb-4">
-                    <div className="bg-slate-800/40 rounded-lg p-2.5">
+                    <div className="bg-white/[0.04] rounded-lg p-2.5">
                       <span className="text-[10px] text-slate-500 uppercase tracking-wider block">Employees</span>
                       <span className="text-sm text-white font-semibold">{mfr.employees}</span>
                     </div>
-                    <div className="bg-slate-800/40 rounded-lg p-2.5">
+                    <div className="bg-white/[0.04] rounded-lg p-2.5">
                       <span className="text-[10px] text-slate-500 uppercase tracking-wider block">Bus Platforms</span>
-                      <span className="text-sm text-slate-300 font-semibold">{mfr.busCount} in database</span>
+                      <span className="text-sm text-white/70 font-semibold">{mfr.busCount} in database</span>
                     </div>
                   </div>
 
@@ -1279,7 +1279,7 @@ export default function SatelliteBusComparisonPage() {
                     <span className="text-[10px] text-slate-500 uppercase tracking-wider block mb-1.5">Specialties</span>
                     <div className="flex flex-wrap gap-1.5">
                       {mfr.specialties.map(s => (
-                        <span key={s} className="px-2 py-0.5 rounded text-[10px] bg-slate-800/30 text-slate-300 border border-white/10">
+                        <span key={s} className="px-2 py-0.5 rounded text-[10px] bg-white/[0.03] text-white/70 border border-white/10">
                           {s}
                         </span>
                       ))}
@@ -1319,7 +1319,7 @@ export default function SatelliteBusComparisonPage() {
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm">
                     <thead>
-                      <tr className="border-b border-slate-700/50">
+                      <tr className="border-b border-white/[0.06]">
                         <th className="text-left p-3 text-slate-400 font-medium text-xs uppercase tracking-wider">Requirement</th>
                         <th className="text-left p-3 text-slate-400 font-medium text-xs uppercase tracking-wider">Small Bus</th>
                         <th className="text-left p-3 text-slate-400 font-medium text-xs uppercase tracking-wider">Medium Bus</th>
@@ -1383,7 +1383,7 @@ export default function SatelliteBusComparisonPage() {
                           large: 'Dedicated heavy-lift',
                         },
                       ].map((row, i) => (
-                        <tr key={row.req} className={`border-b border-slate-700/20 ${i % 2 === 0 ? 'bg-slate-800/10' : ''}`}>
+                        <tr key={row.req} className={`border-b border-slate-700/20 ${i % 2 === 0 ? 'bg-white/[0.02]' : ''}`}>
                           <td className="p-3 text-white font-medium">{row.req}</td>
                           <td className="p-3 text-green-400 text-xs">{row.small}</td>
                           <td className="p-3 text-amber-400 text-xs">{row.medium}</td>
@@ -1445,14 +1445,14 @@ export default function SatelliteBusComparisonPage() {
                   ].map(section => (
                     <div key={section.title}>
                       <h4 className={`text-sm font-bold mb-3 ${
-                        section.color === 'cyan' ? 'text-slate-300' :
+                        section.color === 'cyan' ? 'text-white/70' :
                         section.color === 'purple' ? 'text-purple-400' :
                         section.color === 'emerald' ? 'text-emerald-400' :
                         'text-amber-400'
                       }`}>{section.title}</h4>
                       <ul className="space-y-2">
                         {section.items.map(item => (
-                          <li key={item} className="text-sm text-slate-300 flex items-start gap-2">
+                          <li key={item} className="text-sm text-white/70 flex items-start gap-2">
                             <span className={`mt-1.5 h-1.5 w-1.5 rounded-full flex-shrink-0 ${
                               section.color === 'cyan' ? 'bg-white' :
                               section.color === 'purple' ? 'bg-purple-400' :
@@ -1512,7 +1512,7 @@ export default function SatelliteBusComparisonPage() {
                       rationale: 'In-orbit reconfigurability, digital payload processing, ability to redirect capacity based on changing market demands.',
                     },
                   ].map(rec => (
-                    <div key={rec.mission} className={`bg-slate-800/40 rounded-xl p-4 border ${
+                    <div key={rec.mission} className={`bg-white/[0.04] rounded-xl p-4 border ${
                       rec.color === 'green' ? 'border-green-500/20' :
                       rec.color === 'amber' ? 'border-amber-500/20' :
                       rec.color === 'red' ? 'border-red-500/20' :
@@ -1525,12 +1525,12 @@ export default function SatelliteBusComparisonPage() {
                         rec.color === 'amber' ? 'text-amber-400' :
                         rec.color === 'red' ? 'text-red-400' :
                         rec.color === 'purple' ? 'text-purple-400' :
-                        rec.color === 'cyan' ? 'text-slate-300' :
+                        rec.color === 'cyan' ? 'text-white/70' :
                         'text-emerald-400'
                       }`}>{rec.mission}</h5>
                       <div className="flex flex-wrap gap-1 mb-3">
                         {rec.recommended.map(name => (
-                          <span key={name} className="px-2 py-0.5 rounded text-[10px] bg-slate-700/50 text-white border border-slate-600/30 font-medium">
+                          <span key={name} className="px-2 py-0.5 rounded text-[10px] bg-white/[0.06] text-white border border-slate-600/30 font-medium">
                             {name}
                           </span>
                         ))}
@@ -1569,7 +1569,7 @@ export default function SatelliteBusComparisonPage() {
                       desc: 'Negotiate fixed-price or cost-plus contract. Bus build typically 18-48 months through CDR, integration, and environmental testing.',
                     },
                   ].map(step => (
-                    <div key={step.step} className="bg-slate-800/40 rounded-xl p-4 relative">
+                    <div key={step.step} className="bg-white/[0.04] rounded-xl p-4 relative">
                       <div className="absolute -top-3 -left-1 w-7 h-7 bg-white rounded-full flex items-center justify-center text-slate-900 text-xs font-bold">
                         {step.step}
                       </div>
@@ -1599,7 +1599,7 @@ export default function SatelliteBusComparisonPage() {
                     { term: 'Delta-V Budget', def: 'Total velocity change capacity of the propulsion system. Determines orbit transfer capability and on-orbit maneuvering lifetime.' },
                   ].map(item => (
                     <div key={item.term} className="py-2">
-                      <dt className="text-sm font-semibold text-slate-300">{item.term}</dt>
+                      <dt className="text-sm font-semibold text-white/70">{item.term}</dt>
                       <dd className="text-xs text-slate-400 mt-0.5 leading-relaxed">{item.def}</dd>
                     </div>
                   ))}

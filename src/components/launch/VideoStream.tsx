@@ -12,7 +12,7 @@ export default function VideoStream({ streamUrl, eventName }: VideoStreamProps) 
 
   return (
     <div className="relative w-full">
-      <div className="relative aspect-video bg-slate-900 rounded-xl overflow-hidden border border-slate-700/50">
+      <div className="relative aspect-video bg-black rounded-xl overflow-hidden border border-white/[0.06]">
         {videoId ? (
           <>
             <iframe
@@ -53,14 +53,14 @@ export default function VideoStream({ streamUrl, eventName }: VideoStreamProps) 
             </div>
 
             <div className="relative">
-              <div className="w-20 h-20 rounded-full bg-slate-800/80 flex items-center justify-center mx-auto mb-4 border border-slate-700/50">
+              <div className="w-20 h-20 rounded-full bg-white/[0.06] flex items-center justify-center mx-auto mb-4 border border-white/[0.06]">
                 <svg className="w-10 h-10 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
                 </svg>
               </div>
               <h3 className="text-white font-semibold text-lg mb-2">Waiting for Stream...</h3>
               <p className="text-slate-400 text-sm max-w-sm">
-                The live stream for <span className="text-slate-300">{eventName}</span> will appear here when available.
+                The live stream for <span className="text-white/70">{eventName}</span> will appear here when available.
               </p>
             </div>
           </div>

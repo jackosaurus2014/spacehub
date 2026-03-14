@@ -135,7 +135,7 @@ function BandAllocationRow({ allocation }: { allocation: SpectrumAllocation }) {
     <div className="card p-5 hover:border-white/15 transition-all">
       <div className="flex items-start justify-between mb-4">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg bg-slate-700/50 flex items-center justify-center text-lg shrink-0">
+          <div className="w-10 h-10 rounded-lg bg-white/[0.08] flex items-center justify-center text-lg shrink-0">
             {allocation.filingStatus === 'congested' ? '!' : '~'}
           </div>
           <div>
@@ -184,7 +184,7 @@ function BandAllocationRow({ allocation }: { allocation: SpectrumAllocation }) {
             congestion.percent > 70 ? 'text-red-400' : congestion.percent > 40 ? 'text-yellow-400' : 'text-green-400'
           }`}>{congestion.label}</span>
         </div>
-        <div className="h-2 bg-slate-700/50 rounded-full overflow-hidden">
+        <div className="h-2 bg-white/[0.08] rounded-full overflow-hidden">
           <div
             className={`h-full ${congestion.color} rounded-full transition-all duration-500`}
             style={{ width: `${congestion.percent}%`, opacity: 0.8 }}
@@ -193,7 +193,7 @@ function BandAllocationRow({ allocation }: { allocation: SpectrumAllocation }) {
       </div>
 
       {/* Footer */}
-      <div className="flex items-center justify-between flex-wrap gap-2 pt-3 border-t border-slate-700/50">
+      <div className="flex items-center justify-between flex-wrap gap-2 pt-3 border-t border-white/[0.06]">
         <div className="flex items-center gap-3 text-xs text-slate-400">
           {allocation.assignedTo && (
             <span>Assigned: <span className="text-slate-400">{allocation.assignedTo}</span></span>
@@ -201,10 +201,10 @@ function BandAllocationRow({ allocation }: { allocation: SpectrumAllocation }) {
         </div>
         <div className="flex items-center gap-3 text-xs">
           {allocation.ituReference && (
-            <span className="text-slate-400">ITU: <span className="text-slate-200 font-mono">{allocation.ituReference}</span></span>
+            <span className="text-slate-400">ITU: <span className="text-white/90 font-mono">{allocation.ituReference}</span></span>
           )}
           {allocation.fccReference && (
-            <span className="text-slate-400">FCC: <span className="text-slate-200 font-mono">{allocation.fccReference}</span></span>
+            <span className="text-slate-400">FCC: <span className="text-white/90 font-mono">{allocation.fccReference}</span></span>
           )}
           {allocation.coordinationRequired && (
             <span className="text-yellow-400 flex items-center gap-1">Coordination Required</span>
@@ -213,10 +213,10 @@ function BandAllocationRow({ allocation }: { allocation: SpectrumAllocation }) {
       </div>
 
       {/* Cross-module link: View regulatory framework */}
-      <div className="flex items-center gap-3 mt-3 pt-3 border-t border-slate-700/50">
+      <div className="flex items-center gap-3 mt-3 pt-3 border-t border-white/[0.06]">
         <Link
           href="/compliance"
-          className="text-xs text-slate-200 hover:text-white underline underline-offset-2 transition-colors"
+          className="text-xs text-white/90 hover:text-white underline underline-offset-2 transition-colors"
         >
           View regulatory framework
         </Link>
@@ -236,7 +236,7 @@ function BandAllocationRow({ allocation }: { allocation: SpectrumAllocation }) {
 
 function FilingCard({ filing }: { filing: SpectrumFiling }) {
   const statusEntry = OPERATOR_FILING_STATUSES.find((s) => s.value === filing.status);
-  const statusClass = statusEntry?.color || 'bg-slate-700/50 text-slate-500';
+  const statusClass = statusEntry?.color || 'bg-white/[0.08] text-slate-500';
   const statusLabel = statusEntry?.label || filing.status;
 
   return (
@@ -284,19 +284,19 @@ function FilingCard({ filing }: { filing: SpectrumFiling }) {
         )}
       </div>
 
-      <div className="flex items-center justify-between pt-3 border-t border-slate-700/50">
+      <div className="flex items-center justify-between pt-3 border-t border-white/[0.06]">
         <span className="text-xs text-slate-400">
-          Agency: <span className="text-slate-200 font-medium">{filing.agency}</span>
+          Agency: <span className="text-white/90 font-medium">{filing.agency}</span>
         </span>
         <span className="text-xs font-mono text-slate-400">{filing.filingId}</span>
       </div>
 
       {/* Cross-module link: operator -> orbital slots */}
       {isKnownSatelliteOperator(filing.operator) && (
-        <div className="mt-3 pt-3 border-t border-slate-700/50">
+        <div className="mt-3 pt-3 border-t border-white/[0.06]">
           <Link
             href="/orbital-slots?tab=operators"
-            className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-md bg-white/10 text-slate-200 hover:bg-white/10 transition-colors"
+            className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-md bg-white/10 text-white/90 hover:bg-white/10 transition-colors"
           >
             <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
@@ -356,7 +356,7 @@ function AuctionCard({ auction }: { auction: Auction }) {
 
       <div className="mb-3">
         <span className="text-star-300 text-xs block mb-0.5">Satellite Relevance</span>
-        <span className="text-slate-200 text-sm font-medium">{auction.relevance}</span>
+        <span className="text-white/90 text-sm font-medium">{auction.relevance}</span>
       </div>
 
       <button
@@ -698,7 +698,7 @@ function SpectrumContent() {
               className={`flex items-center gap-2 px-5 py-2.5 min-h-[44px] rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
                 activeTab === tab.id
                   ? 'bg-white text-slate-900'
-                  : 'bg-slate-700/50 text-slate-500 hover:bg-slate-700/50'
+                  : 'bg-white/[0.08] text-slate-500 hover:bg-white/[0.08]'
               }`}
             >
               {tab.label}
@@ -707,7 +707,7 @@ function SpectrumContent() {
                   className={`text-xs px-1.5 py-0.5 rounded-full ${
                     activeTab === tab.id
                       ? 'bg-white/20 text-slate-900'
-                      : 'bg-slate-700/50 text-slate-500'
+                      : 'bg-white/[0.08] text-slate-500'
                   }`}
                 >
                   {tab.count}
@@ -717,7 +717,7 @@ function SpectrumContent() {
           ))}
 
           {/* Divider */}
-          <div className="w-px bg-slate-600 mx-1 self-stretch hidden md:block" />
+          <div className="w-px bg-white/[0.1] mx-1 self-stretch hidden md:block" />
           <span className="text-xs text-slate-400 uppercase tracking-widest font-medium self-center px-1 hidden md:inline">Analysis</span>
 
           {([
@@ -736,7 +736,7 @@ function SpectrumContent() {
               className={`flex items-center gap-2 px-5 py-2.5 min-h-[44px] rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
                 activeTab === tab.id
                   ? 'bg-white text-slate-900'
-                  : 'bg-slate-700/50 text-slate-500 hover:bg-slate-700/50'
+                  : 'bg-white/[0.08] text-slate-500 hover:bg-white/[0.08]'
               }`}
             >
               {tab.label}
@@ -745,7 +745,7 @@ function SpectrumContent() {
                   className={`text-xs px-1.5 py-0.5 rounded-full ${
                     activeTab === tab.id
                       ? 'bg-white/20 text-slate-900'
-                      : 'bg-slate-700/50 text-slate-500'
+                      : 'bg-white/[0.08] text-slate-500'
                   }`}
                 >
                   {tab.count}
@@ -754,7 +754,7 @@ function SpectrumContent() {
             </button>
           ))}
         </div>
-        <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-slate-950 to-transparent pointer-events-none md:hidden" />
+        <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-black to-transparent pointer-events-none md:hidden" />
         </div>
 
         {/* ──────────────── BAND ALLOCATIONS TAB ──────────────── */}
@@ -819,7 +819,7 @@ function SpectrumContent() {
                 <select
                   value={statusFilter}
                   onChange={(e) => handleStatusFilterChange(e.target.value)}
-                  className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+                  className="bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                 >
                   <option value="">All Statuses</option>
                   {OPERATOR_FILING_STATUSES.map((s) => (
@@ -830,7 +830,7 @@ function SpectrumContent() {
                 <select
                   value={bandFilter}
                   onChange={(e) => handleBandFilterChange(e.target.value)}
-                  className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+                  className="bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                 >
                   <option value="">All Bands</option>
                   {filingBands.map((band) => {
@@ -912,7 +912,7 @@ function SpectrumContent() {
                   { step: '4', title: 'Registration', desc: 'Once coordinated, the assignment is recorded in the Master International Frequency Register.' },
                 ].map((item) => (
                   <div key={item.step} className="card p-4 text-center">
-                    <div className="w-8 h-8 rounded-full bg-white/10 text-slate-200 font-bold text-sm flex items-center justify-center mx-auto mb-3">
+                    <div className="w-8 h-8 rounded-full bg-white/10 text-white/90 font-bold text-sm flex items-center justify-center mx-auto mb-3">
                       {item.step}
                     </div>
                     <h4 className="text-white font-semibold text-sm mb-1">{item.title}</h4>
@@ -959,10 +959,10 @@ function SpectrumContent() {
                   </div>
                 </div>
                 {/* Cross-module link to compliance */}
-                <div className="mt-4 pt-3 border-t border-slate-700/50">
+                <div className="mt-4 pt-3 border-t border-white/[0.06]">
                   <Link
                     href="/compliance?tab=regulations"
-                    className="inline-flex items-center gap-1.5 text-xs text-slate-200 hover:text-white transition-colors"
+                    className="inline-flex items-center gap-1.5 text-xs text-white/90 hover:text-white transition-colors"
                   >
                     <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
@@ -1007,10 +1007,10 @@ function SpectrumContent() {
                   </div>
                 </div>
                 {/* Cross-module link to compliance */}
-                <div className="mt-4 pt-3 border-t border-slate-700/50">
+                <div className="mt-4 pt-3 border-t border-white/[0.06]">
                   <Link
                     href="/compliance?tab=regulations"
-                    className="inline-flex items-center gap-1.5 text-xs text-slate-200 hover:text-white transition-colors"
+                    className="inline-flex items-center gap-1.5 text-xs text-white/90 hover:text-white transition-colors"
                   >
                     <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
@@ -1027,7 +1027,7 @@ function SpectrumContent() {
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="border-b border-slate-700/50">
+                    <tr className="border-b border-white/[0.06]">
                       <th className="text-left text-slate-400 text-xs uppercase tracking-widest font-medium py-3 pr-4">Band</th>
                       <th className="text-left text-slate-400 text-xs uppercase tracking-widest font-medium py-3 pr-4">Range</th>
                       <th className="text-left text-slate-400 text-xs uppercase tracking-widest font-medium py-3 pr-4">Service</th>
@@ -1042,7 +1042,7 @@ function SpectrumContent() {
                       .map((alloc) => {
                         const statusInfo = FILING_STATUS_INFO[alloc.filingStatus] || FILING_STATUS_INFO.available;
                         return (
-                          <tr key={alloc.id} className="border-b border-slate-700/50 last:border-0">
+                          <tr key={alloc.id} className="border-b border-white/[0.06] last:border-0">
                             <td className="py-3 pr-4 text-white font-medium">{alloc.bandName}</td>
                             <td className="py-3 pr-4 text-slate-400">
                               {formatFrequency(alloc.frequencyMin)} - {formatFrequency(alloc.frequencyMax)}
@@ -1068,7 +1068,7 @@ function SpectrumContent() {
               <h3 className="text-white font-semibold mb-3">Key Considerations</h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div>
-                  <h4 className="text-slate-200 text-sm font-medium mb-2">NGSO/GSO Sharing</h4>
+                  <h4 className="text-white/90 text-sm font-medium mb-2">NGSO/GSO Sharing</h4>
                   <p className="text-slate-400 text-xs leading-relaxed">
                     Non-geostationary (NGSO) constellations like Starlink and Kuiper must demonstrate
                     that they will not cause harmful interference to existing geostationary (GSO) satellite
@@ -1076,7 +1076,7 @@ function SpectrumContent() {
                   </p>
                 </div>
                 <div>
-                  <h4 className="text-slate-200 text-sm font-medium mb-2">Milestone Requirements</h4>
+                  <h4 className="text-white/90 text-sm font-medium mb-2">Milestone Requirements</h4>
                   <p className="text-slate-400 text-xs leading-relaxed">
                     The FCC requires NGSO licensees to deploy a portion of their constellation within specific
                     timeframes. Failure to meet deployment milestones can result in license modification or
@@ -1084,7 +1084,7 @@ function SpectrumContent() {
                   </p>
                 </div>
                 <div>
-                  <h4 className="text-slate-200 text-sm font-medium mb-2">Spectrum Auctions</h4>
+                  <h4 className="text-white/90 text-sm font-medium mb-2">Spectrum Auctions</h4>
                   <p className="text-slate-400 text-xs leading-relaxed">
                     Some bands, particularly C-band (3.7-3.98 GHz), have undergone spectrum auctions
                     to reallocate frequencies from satellite to terrestrial 5G use. This process involves
@@ -1100,7 +1100,7 @@ function SpectrumContent() {
               <div className="flex flex-wrap gap-3">
                 <Link
                   href="/compliance?tab=regulations"
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-white/10 text-slate-200 hover:bg-white/10 transition-colors"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-white/10 text-white/90 hover:bg-white/10 transition-colors"
                 >
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -1109,7 +1109,7 @@ function SpectrumContent() {
                 </Link>
                 <Link
                   href="/orbital-slots?tab=operators"
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-white/10 text-slate-200 hover:bg-white/10 transition-colors"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-white/10 text-white/90 hover:bg-white/10 transition-colors"
                 >
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064" />
@@ -1118,7 +1118,7 @@ function SpectrumContent() {
                 </Link>
                 <Link
                   href="/compliance"
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-white/10 text-slate-200 hover:bg-white/10 transition-colors"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-white/10 text-white/90 hover:bg-white/10 transition-colors"
                 >
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
@@ -1143,7 +1143,7 @@ function SpectrumContent() {
                     onClick={() => setAuctionStatusFilter(status)}
                     className={`text-xs px-3 py-1.5 rounded-lg font-medium transition-all ${
                       auctionStatusFilter === status
-                        ? 'bg-white/15 text-slate-200'
+                        ? 'bg-white/15 text-white/90'
                         : 'bg-white/5 text-star-300 hover:bg-white/10'
                     }`}
                   >
@@ -1280,7 +1280,7 @@ function SpectrumContent() {
                     </div>
                     <div>
                       <span className="text-star-300 text-xs block mb-0.5">Space Relevance</span>
-                      <span className="text-slate-200 text-sm">{band.spaceRelevance}</span>
+                      <span className="text-white/90 text-sm">{band.spaceRelevance}</span>
                     </div>
                   </div>
 
@@ -1395,7 +1395,7 @@ function SpectrumContent() {
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="border-b border-white/10">
-                      <th className="text-left text-star-300 text-xs uppercase tracking-widest font-medium py-3 pr-4 sticky left-0 bg-slate-900/95">Operator</th>
+                      <th className="text-left text-star-300 text-xs uppercase tracking-widest font-medium py-3 pr-4 sticky left-0 bg-[#0a0a0a]/95">Operator</th>
                       {['UHF', 'L', 'S', 'C', 'X', 'Ku', 'Ka', 'Q', 'V', 'E', 'Optical'].map((b) => (
                         <th key={b} className="text-center text-star-300 text-[10px] uppercase tracking-wider font-medium py-3 px-2 min-w-[48px]">{b}</th>
                       ))}
@@ -1404,7 +1404,7 @@ function SpectrumContent() {
                   <tbody>
                     {SATELLITE_OPERATORS.map((op) => (
                       <tr key={op.name} className="border-b border-white/5 last:border-0">
-                        <td className="py-3 pr-4 sticky left-0 bg-slate-900/95">
+                        <td className="py-3 pr-4 sticky left-0 bg-[#0a0a0a]/95">
                           <span className="text-white font-medium text-xs">{op.name}</span>
                           <span className="text-star-300 text-[10px] block">{op.orbitType}</span>
                         </td>
@@ -1464,7 +1464,7 @@ function SpectrumContent() {
                       </div>
                       <div className="col-span-2">
                         <span className="text-star-300 text-xs block mb-0.5">Key System</span>
-                        <span className="text-slate-200 text-sm font-medium">{op.keySystem}</span>
+                        <span className="text-white/90 text-sm font-medium">{op.keySystem}</span>
                       </div>
                     </div>
 
@@ -1475,7 +1475,7 @@ function SpectrumContent() {
                         {op.spectrumBands.map((band) => (
                           <span
                             key={band}
-                            className="text-[11px] px-2 py-0.5 rounded bg-white/10 text-slate-200 border border-white/15"
+                            className="text-[11px] px-2 py-0.5 rounded bg-white/10 text-white/90 border border-white/15"
                           >
                             {band}
                           </span>
@@ -1489,7 +1489,7 @@ function SpectrumContent() {
                     <div className="mt-3 pt-3 border-t border-white/10">
                       <Link
                         href={`/company-profiles`}
-                        className="text-xs text-slate-200 hover:text-white underline underline-offset-2 transition-colors"
+                        className="text-xs text-white/90 hover:text-white underline underline-offset-2 transition-colors"
                       >
                         View company profile
                       </Link>
@@ -1570,7 +1570,7 @@ function SpectrumContent() {
 
                   {/* Outlook */}
                   <div className="p-3 rounded-lg bg-white/[0.02] border border-white/5">
-                    <span className="text-slate-200 text-xs font-medium block mb-1">Outlook</span>
+                    <span className="text-white/90 text-xs font-medium block mb-1">Outlook</span>
                     <p className="text-star-300 text-xs leading-relaxed">{challenge.outlook}</p>
                   </div>
                 </div>
@@ -1583,7 +1583,7 @@ function SpectrumContent() {
               <div className="flex flex-wrap gap-3">
                 <Link
                   href="/compliance?tab=regulations"
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-white/10 text-slate-200 hover:bg-white/10 transition-colors"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-white/10 text-white/90 hover:bg-white/10 transition-colors"
                 >
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -1592,7 +1592,7 @@ function SpectrumContent() {
                 </Link>
                 <Link
                   href="/space-environment?tab=debris"
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-white/10 text-slate-200 hover:bg-white/10 transition-colors"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-white/10 text-white/90 hover:bg-white/10 transition-colors"
                 >
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
@@ -1601,7 +1601,7 @@ function SpectrumContent() {
                 </Link>
                 <Link
                   href="/market-intel"
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-white/10 text-slate-200 hover:bg-white/10 transition-colors"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-white/10 text-white/90 hover:bg-white/10 transition-colors"
                 >
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
@@ -1671,12 +1671,12 @@ function SpectrumContent() {
                 ].map((item) => (
                   <div key={item.step} className="card p-4">
                     <div className="flex items-center gap-2 mb-3">
-                      <div className="w-7 h-7 rounded-full bg-white/10 text-slate-200 font-bold text-xs flex items-center justify-center shrink-0">
+                      <div className="w-7 h-7 rounded-full bg-white/10 text-white/90 font-bold text-xs flex items-center justify-center shrink-0">
                         {item.step}
                       </div>
                       <div>
                         <h4 className="text-white font-semibold text-xs">{item.title}</h4>
-                        <span className="text-slate-200 text-[10px]">{item.subtitle}</span>
+                        <span className="text-white/90 text-[10px]">{item.subtitle}</span>
                       </div>
                     </div>
                     <p className="text-star-300 text-[11px] leading-relaxed mb-2">{item.desc}</p>
@@ -1785,7 +1785,7 @@ function SpectrumContent() {
                   },
                 ].map((item) => (
                   <div key={item.title} className="card p-4">
-                    <div className="w-8 h-8 rounded-full bg-white/10 text-slate-200 font-bold text-[10px] flex items-center justify-center mb-3">
+                    <div className="w-8 h-8 rounded-full bg-white/10 text-white/90 font-bold text-[10px] flex items-center justify-center mb-3">
                       {item.icon}
                     </div>
                     <h4 className="text-white font-semibold text-sm mb-1">{item.title}</h4>
@@ -1842,7 +1842,7 @@ function SpectrumContent() {
               <div className="flex flex-wrap gap-3">
                 <Link
                   href="/compliance?tab=treaties"
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-white/10 text-slate-200 hover:bg-white/10 transition-colors"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-white/10 text-white/90 hover:bg-white/10 transition-colors"
                 >
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -1851,7 +1851,7 @@ function SpectrumContent() {
                 </Link>
                 <Link
                   href="/orbital-slots"
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-white/10 text-slate-200 hover:bg-white/10 transition-colors"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-white/10 text-white/90 hover:bg-white/10 transition-colors"
                 >
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064" />
@@ -1880,7 +1880,7 @@ function SpectrumContent() {
                 <div key={proc.id} className="card p-5 hover:border-white/15 transition-all">
                   <div className="flex items-start justify-between mb-3 gap-3">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center text-xs font-bold text-slate-200 shrink-0">
+                      <div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center text-xs font-bold text-white/90 shrink-0">
                         {proc.body}
                       </div>
                       <div>
@@ -1912,7 +1912,7 @@ function SpectrumContent() {
               <div className="flex flex-wrap gap-3">
                 <Link
                   href="/compliance?tab=regulations"
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-white/10 text-slate-200 hover:bg-white/10 transition-colors"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-white/10 text-white/90 hover:bg-white/10 transition-colors"
                 >
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -1921,7 +1921,7 @@ function SpectrumContent() {
                 </Link>
                 <Link
                   href="/orbital-slots?tab=operators"
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-white/10 text-slate-200 hover:bg-white/10 transition-colors"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-white/10 text-white/90 hover:bg-white/10 transition-colors"
                 >
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064" />
@@ -1969,7 +1969,7 @@ function SpectrumContent() {
                   },
                 ].map((item) => (
                   <div key={item.step} className="card p-4 text-center">
-                    <div className="w-8 h-8 rounded-full bg-white/10 text-slate-200 font-bold text-sm flex items-center justify-center mx-auto mb-3">
+                    <div className="w-8 h-8 rounded-full bg-white/10 text-white/90 font-bold text-sm flex items-center justify-center mx-auto mb-3">
                       {item.step}
                     </div>
                     <h4 className="text-white font-semibold text-sm mb-1">{item.title}</h4>
@@ -2164,7 +2164,7 @@ function SpectrumContent() {
               </div>
               <div className="space-y-4">
                 <div>
-                  <h5 className="text-slate-200 text-sm font-medium mb-1">Legal Framework</h5>
+                  <h5 className="text-white/90 text-sm font-medium mb-1">Legal Framework</h5>
                   <p className="text-star-300 text-sm leading-relaxed">
                     FCC Order 20-22 mandated the clearing of 280 MHz of C-band spectrum from satellite downlink use.
                     Incumbent satellite operators (SES, Intelsat, Eutelsat) received accelerated relocation payments
@@ -2173,7 +2173,7 @@ function SpectrumContent() {
                   </p>
                 </div>
                 <div>
-                  <h5 className="text-slate-200 text-sm font-medium mb-1">Impact on Existing Rights</h5>
+                  <h5 className="text-white/90 text-sm font-medium mb-1">Impact on Existing Rights</h5>
                   <ul className="space-y-1 text-star-300 text-sm">
                     <li>-- Loss of primary allocation in 3.7-3.98 GHz for satellite downlinks in the US</li>
                     <li>-- Required migration of thousands of earth stations to alternative frequencies</li>
@@ -2182,7 +2182,7 @@ function SpectrumContent() {
                   </ul>
                 </div>
                 <div>
-                  <h5 className="text-slate-200 text-sm font-medium mb-1">Key Legal Considerations</h5>
+                  <h5 className="text-white/90 text-sm font-medium mb-1">Key Legal Considerations</h5>
                   <ul className="space-y-1 text-star-300 text-sm">
                     <li>-- Relocation compensation adequacy and timeline disputes</li>
                     <li>-- Interference protection for remaining C-band satellite operations</li>
@@ -2206,7 +2206,7 @@ function SpectrumContent() {
               </div>
               <div className="space-y-4">
                 <div>
-                  <h5 className="text-slate-200 text-sm font-medium mb-1">Dispute Summary</h5>
+                  <h5 className="text-white/90 text-sm font-medium mb-1">Dispute Summary</h5>
                   <p className="text-star-300 text-sm leading-relaxed">
                     The MVDDS Coalition (led by RS Access) petitioned the FCC to allow two-way terrestrial
                     broadband in the 12 GHz band, which is currently used by NGSO satellite systems (primarily
@@ -2215,7 +2215,7 @@ function SpectrumContent() {
                   </p>
                 </div>
                 <div>
-                  <h5 className="text-slate-200 text-sm font-medium mb-1">Legal Stakes</h5>
+                  <h5 className="text-white/90 text-sm font-medium mb-1">Legal Stakes</h5>
                   <ul className="space-y-1 text-star-300 text-sm">
                     <li>-- Starlink relies on 12 GHz for approximately 75% of its downlink capacity</li>
                     <li>-- Existing MVDDS licenses are secondary to satellite services</li>
@@ -2240,7 +2240,7 @@ function SpectrumContent() {
               </div>
               <div className="space-y-4">
                 <div>
-                  <h5 className="text-slate-200 text-sm font-medium mb-1">Framework Overview</h5>
+                  <h5 className="text-white/90 text-sm font-medium mb-1">Framework Overview</h5>
                   <p className="text-star-300 text-sm leading-relaxed">
                     ITU Article 22 establishes EPFD (equivalent power flux density) limits that NGSO systems must
                     meet to protect GSO systems from aggregate interference. As mega-constellations like Starlink
@@ -2249,7 +2249,7 @@ function SpectrumContent() {
                   </p>
                 </div>
                 <div>
-                  <h5 className="text-slate-200 text-sm font-medium mb-1">Legal Implications</h5>
+                  <h5 className="text-white/90 text-sm font-medium mb-1">Legal Implications</h5>
                   <ul className="space-y-1 text-star-300 text-sm">
                     <li>-- GSO operators (SES, Intelsat, Eutelsat) argue EPFD limits are too lenient for mega-constellations</li>
                     <li>-- NGSO operators argue existing limits are technically sound and commercially necessary</li>
@@ -2274,7 +2274,7 @@ function SpectrumContent() {
               </div>
               <div className="space-y-4">
                 <div>
-                  <h5 className="text-slate-200 text-sm font-medium mb-1">Regulatory Landscape</h5>
+                  <h5 className="text-white/90 text-sm font-medium mb-1">Regulatory Landscape</h5>
                   <p className="text-star-300 text-sm leading-relaxed">
                     Direct-to-device satellite services (e.g., SpaceX/T-Mobile, AST SpaceMobile) use terrestrial
                     mobile spectrum from space, creating a new category of spectrum sharing. National regulators are
@@ -2283,7 +2283,7 @@ function SpectrumContent() {
                   </p>
                 </div>
                 <div>
-                  <h5 className="text-slate-200 text-sm font-medium mb-1">Key Issues</h5>
+                  <h5 className="text-white/90 text-sm font-medium mb-1">Key Issues</h5>
                   <ul className="space-y-1 text-star-300 text-sm">
                     <li>-- Whether MNO spectrum licenses extend to satellite-based transmission</li>
                     <li>-- Cross-border interference concerns from satellite beams covering multiple countries</li>
@@ -2301,7 +2301,7 @@ function SpectrumContent() {
               <div className="flex flex-wrap gap-3">
                 <Link
                   href="/compliance?tab=regulations"
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-white/10 text-slate-200 hover:bg-white/10 transition-colors"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-white/10 text-white/90 hover:bg-white/10 transition-colors"
                 >
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -2310,7 +2310,7 @@ function SpectrumContent() {
                 </Link>
                 <Link
                   href="/space-insurance"
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-white/10 text-slate-200 hover:bg-white/10 transition-colors"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-white/10 text-white/90 hover:bg-white/10 transition-colors"
                 >
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />

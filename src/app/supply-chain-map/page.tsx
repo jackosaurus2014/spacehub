@@ -584,7 +584,7 @@ function DetailPanel({ node, edges, allNodes, onClose }: DetailPanelProps) {
       {node.slug && (
         <Link
           href={`/company-profiles/${node.slug}`}
-          className="block text-sm text-slate-200 hover:text-white transition-colors"
+          className="block text-sm text-white/90 hover:text-white transition-colors"
         >
           View full company profile &rarr;
         </Link>
@@ -592,7 +592,7 @@ function DetailPanel({ node, edges, allNodes, onClose }: DetailPanelProps) {
 
       {/* Connections by type */}
       <div className="space-y-3">
-        <h4 className="text-sm font-semibold text-slate-300 border-b border-space-700 pb-1">
+        <h4 className="text-sm font-semibold text-white/70 border-b border-space-700 pb-1">
           Connections ({edges.length})
         </h4>
         {Object.entries(grouped).map(([type, items]) => (
@@ -617,7 +617,7 @@ function DetailPanel({ node, edges, allNodes, onClose }: DetailPanelProps) {
                   key={idx}
                   className="flex items-center justify-between text-sm"
                 >
-                  <span className="text-slate-300">
+                  <span className="text-white/70">
                     {otherNode?.name || 'Unknown'}
                   </span>
                   {edge.label && (
@@ -683,7 +683,7 @@ function PathFinder({ nodes, onPathFound, onClear }: PathFinderProps) {
 
   return (
     <div className="bg-space-800 border border-space-700 rounded-xl p-4 space-y-3">
-      <h4 className="text-sm font-semibold text-slate-300 flex items-center gap-2">
+      <h4 className="text-sm font-semibold text-white/70 flex items-center gap-2">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="14"
@@ -707,7 +707,7 @@ function PathFinder({ nodes, onPathFound, onClear }: PathFinderProps) {
             setResult(null);
             onClear();
           }}
-          className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+          className="w-full bg-white/[0.06] border border-white/[0.08] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
         >
           <option value="">From company...</option>
           {sorted.map((n) => (
@@ -723,7 +723,7 @@ function PathFinder({ nodes, onPathFound, onClear }: PathFinderProps) {
             setResult(null);
             onClear();
           }}
-          className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+          className="w-full bg-white/[0.06] border border-white/[0.08] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
         >
           <option value="">To company...</option>
           {sorted.map((n) => (
@@ -774,7 +774,7 @@ function PathFinder({ nodes, onPathFound, onClear }: PathFinderProps) {
                             : '#64748b',
                         }}
                       />
-                      <span className="text-slate-300">
+                      <span className="text-white/70">
                         {n?.name || id}
                       </span>
                       {idx < result.path.length - 1 && (
@@ -986,7 +986,7 @@ function SupplyChainMapContent() {
               placeholder="Search companies..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-space-800 border border-space-700 text-slate-300 rounded-lg pl-9 pr-3 py-2 text-sm focus:border-white/15 focus:outline-none"
+              className="w-full bg-space-800 border border-space-700 text-white/70 rounded-lg pl-9 pr-3 py-2 text-sm focus:border-white/15 focus:outline-none"
             />
           </div>
 
@@ -995,7 +995,7 @@ function SupplyChainMapContent() {
             onClick={() => setShowFilters(!showFilters)}
             className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
               showFilters || sectorFilters.size > 0 || typeFilters.size > 0
-                ? 'bg-white/10 text-slate-200 border border-white/15'
+                ? 'bg-white/10 text-white/90 border border-white/15'
                 : 'bg-space-800 text-slate-400 border border-space-700 hover:border-space-600'
             }`}
           >
@@ -1110,7 +1110,7 @@ function SupplyChainMapContent() {
                 {sectorFilters.size > 0 && (
                   <button
                     onClick={() => setSectorFilters(new Set())}
-                    className="text-xs text-slate-500 hover:text-slate-300 transition-colors"
+                    className="text-xs text-slate-500 hover:text-white/70 transition-colors"
                   >
                     Clear all
                   </button>
@@ -1154,7 +1154,7 @@ function SupplyChainMapContent() {
                 {typeFilters.size > 0 && (
                   <button
                     onClick={() => setTypeFilters(new Set())}
-                    className="text-xs text-slate-500 hover:text-slate-300 transition-colors"
+                    className="text-xs text-slate-500 hover:text-white/70 transition-colors"
                   >
                     Clear all
                   </button>
@@ -1225,11 +1225,11 @@ function SupplyChainMapContent() {
                 Tier 1
               </div>
               <div className="flex items-center gap-1.5 text-xs text-slate-400">
-                <div className="w-3 h-3 rounded-full border border-slate-600" />
+                <div className="w-3 h-3 rounded-full border border-white/[0.1]" />
                 Tier 2
               </div>
               <div className="flex items-center gap-1.5 text-xs text-slate-400">
-                <div className="w-2.5 h-2.5 rounded-full border border-slate-600" />
+                <div className="w-2.5 h-2.5 rounded-full border border-white/[0.1]" />
                 Startup
               </div>
             </div>

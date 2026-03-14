@@ -743,7 +743,7 @@ function getStringencyColor(stringency: string): string {
 function getOutgassingColor(level: string): string {
   switch (level) {
     case 'Very Low': return 'text-emerald-400 bg-emerald-400/10 border-emerald-400/30';
-    case 'Low': return 'text-slate-300 bg-white/5 border-white/10';
+    case 'Low': return 'text-white/70 bg-white/5 border-white/10';
     case 'Moderate': return 'text-amber-400 bg-amber-400/10 border-amber-400/30';
     case 'High': return 'text-orange-400 bg-orange-400/10 border-orange-400/30';
     case 'Restricted': return 'text-red-400 bg-red-400/10 border-red-400/30';
@@ -819,7 +819,7 @@ export default function CleanRoomReferencePage() {
           subtitle="Comprehensive reference for spacecraft manufacturing clean room requirements, ISO classifications, outgassing data, and contamination control procedures"
           accentColor="cyan"
           icon={
-            <svg className="w-8 h-8 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-8 h-8 text-white/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0112 15a9.065 9.065 0 00-6.23.693L5 14.5m14.8.8l1.402 1.402c1.232 1.232.65 3.318-1.067 3.611A48.309 48.309 0 0112 21c-2.773 0-5.491-.235-8.135-.687-1.718-.293-2.3-2.379-1.067-3.61L5 14.5" />
             </svg>
           }
@@ -831,23 +831,23 @@ export default function CleanRoomReferencePage() {
           <div className="flex flex-wrap gap-4 justify-center text-xs sm:text-sm">
             <div className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-white"></span>
-              <span className="text-slate-300">ISO 14644-1:2015</span>
+              <span className="text-white/70">ISO 14644-1:2015</span>
             </div>
             <div className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-amber-400"></span>
-              <span className="text-slate-300">ASTM E595</span>
+              <span className="text-white/70">ASTM E595</span>
             </div>
             <div className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
-              <span className="text-slate-300">MIL-STD-1246C</span>
+              <span className="text-white/70">MIL-STD-1246C</span>
             </div>
             <div className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-purple-400"></span>
-              <span className="text-slate-300">COSPAR Planetary Protection</span>
+              <span className="text-white/70">COSPAR Planetary Protection</span>
             </div>
             <div className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-red-400"></span>
-              <span className="text-slate-300">NASA-STD-5009</span>
+              <span className="text-white/70">NASA-STD-5009</span>
             </div>
           </div>
         </div>
@@ -862,8 +862,8 @@ export default function CleanRoomReferencePage() {
               onClick={() => setActiveSection(section.id)}
               className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${
                 activeSection === section.id
-                  ? 'bg-white/10 text-slate-200 border border-white/10 shadow-lg shadow-black/5'
-                  : 'bg-slate-800/50 text-slate-400 border border-slate-700/50 hover:bg-slate-700/50 hover:text-slate-300'
+                  ? 'bg-white/10 text-white/90 border border-white/10 shadow-lg shadow-black/5'
+                  : 'bg-white/[0.04] text-slate-400 border border-white/[0.06] hover:bg-white/[0.08] hover:text-white/70'
               }`}
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -890,7 +890,7 @@ export default function CleanRoomReferencePage() {
                 placeholder="Search by ISO class, Federal Standard name, or application..."
                 value={isoSearch}
                 onChange={e => setIsoSearch(e.target.value)}
-                className="w-full sm:w-96 px-4 py-2.5 bg-slate-800/60 border border-slate-600/50 rounded-xl text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-white/15"
+                className="w-full sm:w-96 px-4 py-2.5 bg-white/[0.05] border border-white/[0.08] rounded-xl text-sm text-white/90 placeholder-slate-500 focus:outline-none focus:border-white/15"
               />
             </div>
 
@@ -898,7 +898,7 @@ export default function CleanRoomReferencePage() {
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="border-b border-slate-700/50">
+                    <tr className="border-b border-white/[0.06]">
                       <th className="text-left px-4 py-3 text-slate-400 font-medium">ISO Class</th>
                       <th className="text-left px-4 py-3 text-slate-400 font-medium">Fed Std 209E</th>
                       <th className="text-right px-4 py-3 text-slate-400 font-medium">{'\u22650.1\u03BCm'}</th>
@@ -915,8 +915,8 @@ export default function CleanRoomReferencePage() {
                         <tr
                           key={iso.isoClass}
                           onClick={() => setExpandedISO(expandedISO === idx ? null : idx)}
-                          className={`border-b border-slate-700/30 cursor-pointer transition-colors ${
-                            expandedISO === idx ? 'bg-slate-800/60' : 'hover:bg-slate-800/40'
+                          className={`border-b border-white/[0.04] cursor-pointer transition-colors ${
+                            expandedISO === idx ? 'bg-white/[0.05]' : 'hover:bg-white/[0.04]'
                           } ${iso.isoClass === 5 || iso.isoClass === 7 || iso.isoClass === 8 ? 'ring-1 ring-inset ring-white/10' : ''}`}
                         >
                           <td className="px-4 py-3">
@@ -924,29 +924,29 @@ export default function CleanRoomReferencePage() {
                               <span className="w-3 h-3 rounded-full" style={{ backgroundColor: iso.color }}></span>
                               <span className="font-bold text-slate-100">ISO {iso.isoClass}</span>
                               {(iso.isoClass === 5 || iso.isoClass === 7 || iso.isoClass === 8) && (
-                                <span className="text-xs px-1.5 py-0.5 rounded-full bg-white/5 text-slate-300 border border-white/10">
+                                <span className="text-xs px-1.5 py-0.5 rounded-full bg-white/5 text-white/70 border border-white/10">
                                   Common
                                 </span>
                               )}
                             </div>
                           </td>
-                          <td className="px-4 py-3 text-slate-300 text-xs">{iso.fedStdName}</td>
-                          <td className="px-4 py-3 text-right text-slate-300 font-mono text-xs">{formatParticleCount(iso.particles_0_1)}</td>
-                          <td className="px-4 py-3 text-right text-slate-300 font-mono text-xs">{formatParticleCount(iso.particles_0_2)}</td>
-                          <td className="px-4 py-3 text-right text-slate-300 font-mono text-xs">{formatParticleCount(iso.particles_0_3)}</td>
-                          <td className="px-4 py-3 text-right text-slate-300 font-mono text-xs">{formatParticleCount(iso.particles_0_5)}</td>
-                          <td className="px-4 py-3 text-right text-slate-300 font-mono text-xs">{formatParticleCount(iso.particles_1_0)}</td>
-                          <td className="px-4 py-3 text-right text-slate-300 font-mono text-xs">{formatParticleCount(iso.particles_5_0)}</td>
+                          <td className="px-4 py-3 text-white/70 text-xs">{iso.fedStdName}</td>
+                          <td className="px-4 py-3 text-right text-white/70 font-mono text-xs">{formatParticleCount(iso.particles_0_1)}</td>
+                          <td className="px-4 py-3 text-right text-white/70 font-mono text-xs">{formatParticleCount(iso.particles_0_2)}</td>
+                          <td className="px-4 py-3 text-right text-white/70 font-mono text-xs">{formatParticleCount(iso.particles_0_3)}</td>
+                          <td className="px-4 py-3 text-right text-white/70 font-mono text-xs">{formatParticleCount(iso.particles_0_5)}</td>
+                          <td className="px-4 py-3 text-right text-white/70 font-mono text-xs">{formatParticleCount(iso.particles_1_0)}</td>
+                          <td className="px-4 py-3 text-right text-white/70 font-mono text-xs">{formatParticleCount(iso.particles_5_0)}</td>
                         </tr>
                         {expandedISO === idx && (
-                          <tr key={`${iso.isoClass}-detail`} className="bg-slate-800/40">
+                          <tr key={`${iso.isoClass}-detail`} className="bg-white/[0.04]">
                             <td colSpan={8} className="px-6 py-4">
                               <div className="text-sm">
-                                <h4 className="text-slate-300 font-semibold mb-2">Space Industry Applications</h4>
+                                <h4 className="text-white/70 font-semibold mb-2">Space Industry Applications</h4>
                                 <ul className="space-y-1">
                                   {iso.spaceApplications.map((app, appIdx) => (
-                                    <li key={appIdx} className="flex items-start gap-2 text-slate-300">
-                                      <span className="text-slate-300 mt-1">&#8226;</span>
+                                    <li key={appIdx} className="flex items-start gap-2 text-white/70">
+                                      <span className="text-white/70 mt-1">&#8226;</span>
                                       {app}
                                     </li>
                                   ))}
@@ -970,7 +970,7 @@ export default function CleanRoomReferencePage() {
                   <h3 className="font-bold text-slate-100">ISO 5 (Class 100)</h3>
                 </div>
                 <p className="text-sm text-slate-400 mb-2">Max 3,520 particles per m\u00B3 at 0.5\u03BCm</p>
-                <p className="text-sm text-slate-300">Optics, detectors, focal plane assembly, solar cell fabrication</p>
+                <p className="text-sm text-white/70">Optics, detectors, focal plane assembly, solar cell fabrication</p>
               </div>
               <div className="card p-5">
                 <div className="flex items-center gap-2 mb-3">
@@ -978,7 +978,7 @@ export default function CleanRoomReferencePage() {
                   <h3 className="font-bold text-slate-100">ISO 7 (Class 10,000)</h3>
                 </div>
                 <p className="text-sm text-slate-400 mb-2">Max 352,000 particles per m\u00B3 at 0.5\u03BCm</p>
-                <p className="text-sm text-slate-300">General spacecraft assembly, bus integration, harness work</p>
+                <p className="text-sm text-white/70">General spacecraft assembly, bus integration, harness work</p>
               </div>
               <div className="card p-5">
                 <div className="flex items-center gap-2 mb-3">
@@ -986,7 +986,7 @@ export default function CleanRoomReferencePage() {
                   <h3 className="font-bold text-slate-100">ISO 8 (Class 100,000)</h3>
                 </div>
                 <p className="text-sm text-slate-400 mb-2">Max 3,520,000 particles per m\u00B3 at 0.5\u03BCm</p>
-                <p className="text-sm text-slate-300">Large structure assembly, solar arrays, antenna reflectors, CubeSats</p>
+                <p className="text-sm text-white/70">Large structure assembly, solar arrays, antenna reflectors, CubeSats</p>
               </div>
 
         <RelatedModules modules={PAGE_RELATIONS['clean-room-reference']} />
@@ -1010,8 +1010,8 @@ export default function CleanRoomReferencePage() {
                     onClick={() => setContaminationFilter(cat)}
                     className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                       contaminationFilter === cat
-                        ? 'bg-white/10 text-slate-200 border border-white/10'
-                        : 'bg-slate-800/50 text-slate-400 border border-slate-700/50 hover:bg-slate-700/50'
+                        ? 'bg-white/10 text-white/90 border border-white/10'
+                        : 'bg-white/[0.04] text-slate-400 border border-white/[0.06] hover:bg-white/[0.08]'
                     }`}
                   >
                     {cat}
@@ -1047,16 +1047,16 @@ export default function CleanRoomReferencePage() {
                       </svg>
                     </button>
                     {expandedContamination === globalIdx && (
-                      <div className="px-5 pb-5 space-y-4 border-t border-slate-700/30 pt-4">
-                        <p className="text-sm text-slate-300">{contam.description}</p>
+                      <div className="px-5 pb-5 space-y-4 border-t border-white/[0.04] pt-4">
+                        <p className="text-sm text-white/70">{contam.description}</p>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <div>
                             <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Measurement Standard</h4>
-                            <p className="text-sm text-slate-300">{contam.measurementStandard}</p>
+                            <p className="text-sm text-white/70">{contam.measurementStandard}</p>
                           </div>
                           <div>
                             <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Measurement Method</h4>
-                            <p className="text-sm text-slate-300">{contam.measurementMethod}</p>
+                            <p className="text-sm text-white/70">{contam.measurementMethod}</p>
                           </div>
                         </div>
                         <div>
@@ -1067,7 +1067,7 @@ export default function CleanRoomReferencePage() {
                           <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Mitigation Strategies</h4>
                           <ul className="space-y-1">
                             {contam.mitigationStrategies.map((strat, sIdx) => (
-                              <li key={sIdx} className="flex items-start gap-2 text-sm text-slate-300">
+                              <li key={sIdx} className="flex items-start gap-2 text-sm text-white/70">
                                 <span className="text-emerald-400 mt-0.5">&#10003;</span>
                                 {strat}
                               </li>
@@ -1113,38 +1113,38 @@ export default function CleanRoomReferencePage() {
                     </svg>
                   </button>
                   {expandedRequirement === idx && (
-                    <div className="px-5 pb-5 space-y-4 border-t border-slate-700/30 pt-4">
+                    <div className="px-5 pb-5 space-y-4 border-t border-white/[0.04] pt-4">
                       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                        <div className="bg-slate-800/40 rounded-xl p-3">
+                        <div className="bg-white/[0.04] rounded-xl p-3">
                           <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">ISO Class</h4>
-                          <p className="text-sm text-slate-300 font-bold">{req.isoClass}</p>
+                          <p className="text-sm text-white/70 font-bold">{req.isoClass}</p>
                         </div>
-                        <div className="bg-slate-800/40 rounded-xl p-3">
+                        <div className="bg-white/[0.04] rounded-xl p-3">
                           <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Particle Level</h4>
-                          <p className="text-sm text-slate-200">{req.particleLevel}</p>
+                          <p className="text-sm text-white/90">{req.particleLevel}</p>
                         </div>
-                        <div className="bg-slate-800/40 rounded-xl p-3">
+                        <div className="bg-white/[0.04] rounded-xl p-3">
                           <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Molecular</h4>
-                          <p className="text-sm text-slate-200">{req.molecularReq}</p>
+                          <p className="text-sm text-white/90">{req.molecularReq}</p>
                         </div>
-                        <div className="bg-slate-800/40 rounded-xl p-3">
+                        <div className="bg-white/[0.04] rounded-xl p-3">
                           <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Biological</h4>
-                          <p className="text-sm text-slate-200">{req.biologicalReq}</p>
+                          <p className="text-sm text-white/90">{req.biologicalReq}</p>
                         </div>
                       </div>
                       <div>
                         <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Example Missions</h4>
                         <div className="flex flex-wrap gap-2">
                           {req.examples.map((ex, exIdx) => (
-                            <span key={exIdx} className="px-3 py-1 rounded-full bg-slate-700/50 text-slate-300 text-xs border border-slate-600/30">
+                            <span key={exIdx} className="px-3 py-1 rounded-full bg-white/[0.06] text-white/70 text-xs border border-white/[0.06]">
                               {ex}
                             </span>
                           ))}
                         </div>
                       </div>
-                      <div className="bg-slate-800/30 rounded-xl p-4 border border-slate-700/30">
+                      <div className="bg-white/[0.03] rounded-xl p-4 border border-white/[0.04]">
                         <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Notes</h4>
-                        <p className="text-sm text-slate-300">{req.notes}</p>
+                        <p className="text-sm text-white/70">{req.notes}</p>
                       </div>
                     </div>
                   )}
@@ -1163,10 +1163,10 @@ export default function CleanRoomReferencePage() {
                 Outgassing data per NASA ASTM E595 testing (125{'\u00B0'}C, 24 hours, vacuum). Materials must meet:
               </p>
               <div className="flex flex-wrap gap-3 my-3">
-                <span className="px-3 py-1.5 rounded-lg bg-white/5 text-slate-300 text-sm font-mono border border-white/10">
+                <span className="px-3 py-1.5 rounded-lg bg-white/5 text-white/70 text-sm font-mono border border-white/10">
                   TML {'<'} 1.0%
                 </span>
-                <span className="px-3 py-1.5 rounded-lg bg-white/5 text-slate-300 text-sm font-mono border border-white/10">
+                <span className="px-3 py-1.5 rounded-lg bg-white/5 text-white/70 text-sm font-mono border border-white/10">
                   CVCM {'<'} 0.1%
                 </span>
               </div>
@@ -1179,12 +1179,12 @@ export default function CleanRoomReferencePage() {
                   placeholder="Search materials..."
                   value={outgassingSearch}
                   onChange={e => setOutgassingSearch(e.target.value)}
-                  className="flex-1 px-4 py-2.5 bg-slate-800/60 border border-slate-600/50 rounded-xl text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-white/15"
+                  className="flex-1 px-4 py-2.5 bg-white/[0.05] border border-white/[0.08] rounded-xl text-sm text-white/90 placeholder-slate-500 focus:outline-none focus:border-white/15"
                 />
                 <select
                   value={outgassingFilter}
                   onChange={e => setOutgassingFilter(e.target.value)}
-                  className="px-4 py-2.5 bg-slate-800/60 border border-slate-600/50 rounded-xl text-sm text-slate-200 focus:outline-none focus:border-white/15"
+                  className="px-4 py-2.5 bg-white/[0.05] border border-white/[0.08] rounded-xl text-sm text-white/90 focus:outline-none focus:border-white/15"
                 >
                   {outgassingCategories.map(cat => (
                     <option key={cat} value={cat}>{cat === 'All' ? 'All Categories' : cat}</option>
@@ -1232,46 +1232,46 @@ export default function CleanRoomReferencePage() {
                       </div>
                     </button>
                     {expandedOutgassing === globalIdx && (
-                      <div className="px-5 pb-5 space-y-4 border-t border-slate-700/30 pt-4">
+                      <div className="px-5 pb-5 space-y-4 border-t border-white/[0.04] pt-4">
                         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                          <div className="bg-slate-800/40 rounded-xl p-3 text-center">
+                          <div className="bg-white/[0.04] rounded-xl p-3 text-center">
                             <h4 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">TML</h4>
                             <p className={`text-lg font-mono font-bold ${mat.tml >= 1.0 ? 'text-red-400' : 'text-emerald-400'}`}>
                               {mat.tml.toFixed(2)}%
                             </p>
                             <p className="text-xs text-slate-500">Limit: {'<'}1.0%</p>
                           </div>
-                          <div className="bg-slate-800/40 rounded-xl p-3 text-center">
+                          <div className="bg-white/[0.04] rounded-xl p-3 text-center">
                             <h4 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">CVCM</h4>
                             <p className={`text-lg font-mono font-bold ${mat.cvcm >= 0.1 ? 'text-red-400' : 'text-emerald-400'}`}>
                               {mat.cvcm.toFixed(2)}%
                             </p>
                             <p className="text-xs text-slate-500">Limit: {'<'}0.1%</p>
                           </div>
-                          <div className="bg-slate-800/40 rounded-xl p-3 text-center">
+                          <div className="bg-white/[0.04] rounded-xl p-3 text-center">
                             <h4 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">WVR</h4>
-                            <p className="text-lg font-mono font-bold text-slate-300">
+                            <p className="text-lg font-mono font-bold text-white/70">
                               {mat.wvr !== null ? `${mat.wvr.toFixed(2)}%` : '\u2014'}
                             </p>
                             <p className="text-xs text-slate-500">Water Vapor Regained</p>
                           </div>
-                          <div className="bg-slate-800/40 rounded-xl p-3 text-center">
+                          <div className="bg-white/[0.04] rounded-xl p-3 text-center">
                             <h4 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Category</h4>
-                            <p className="text-sm font-medium text-slate-300">{mat.category}</p>
+                            <p className="text-sm font-medium text-white/70">{mat.category}</p>
                           </div>
                         </div>
                         <div>
                           <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Common Uses</h4>
                           <div className="flex flex-wrap gap-2">
                             {mat.commonUses.map((use, uIdx) => (
-                              <span key={uIdx} className="px-3 py-1 rounded-full bg-slate-700/50 text-slate-300 text-xs border border-slate-600/30">
+                              <span key={uIdx} className="px-3 py-1 rounded-full bg-white/[0.06] text-white/70 text-xs border border-white/[0.06]">
                                 {use}
                               </span>
                             ))}
                           </div>
                         </div>
-                        <div className="bg-slate-800/30 rounded-xl p-3 border border-slate-700/30">
-                          <p className="text-sm text-slate-300">{mat.notes}</p>
+                        <div className="bg-white/[0.03] rounded-xl p-3 border border-white/[0.04]">
+                          <p className="text-sm text-white/70">{mat.notes}</p>
                         </div>
                       </div>
                     )}
@@ -1316,21 +1316,21 @@ export default function CleanRoomReferencePage() {
                     </svg>
                   </button>
                   {expandedCleaning === idx && (
-                    <div className="px-5 pb-5 space-y-4 border-t border-slate-700/30 pt-4">
-                      <p className="text-sm text-slate-300">{proc.description}</p>
+                    <div className="px-5 pb-5 space-y-4 border-t border-white/[0.04] pt-4">
+                      <p className="text-sm text-white/70">{proc.description}</p>
 
                       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                        <div className="bg-slate-800/40 rounded-xl p-3">
+                        <div className="bg-white/[0.04] rounded-xl p-3">
                           <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Temperature</h4>
-                          <p className="text-sm text-slate-200">{proc.temperatureRange}</p>
+                          <p className="text-sm text-white/90">{proc.temperatureRange}</p>
                         </div>
-                        <div className="bg-slate-800/40 rounded-xl p-3">
+                        <div className="bg-white/[0.04] rounded-xl p-3">
                           <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Duration</h4>
-                          <p className="text-sm text-slate-200">{proc.duration}</p>
+                          <p className="text-sm text-white/90">{proc.duration}</p>
                         </div>
-                        <div className="bg-slate-800/40 rounded-xl p-3">
+                        <div className="bg-white/[0.04] rounded-xl p-3">
                           <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Reference Standard</h4>
-                          <p className="text-sm text-slate-300">{proc.standard}</p>
+                          <p className="text-sm text-white/70">{proc.standard}</p>
                         </div>
                       </div>
 
@@ -1338,7 +1338,7 @@ export default function CleanRoomReferencePage() {
                         <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Solvents / Agents</h4>
                         <div className="flex flex-wrap gap-2">
                           {proc.solventsOrAgents.map((agent, aIdx) => (
-                            <span key={aIdx} className="px-3 py-1 rounded-full bg-white/5 text-slate-300 text-xs border border-white/10">
+                            <span key={aIdx} className="px-3 py-1 rounded-full bg-white/5 text-white/70 text-xs border border-white/10">
                               {agent}
                             </span>
                           ))}
@@ -1355,8 +1355,8 @@ export default function CleanRoomReferencePage() {
                           <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Applicable Surfaces</h4>
                           <ul className="space-y-1">
                             {proc.applicableSurfaces.map((surf, sIdx) => (
-                              <li key={sIdx} className="flex items-start gap-2 text-sm text-slate-300">
-                                <span className="text-slate-300 mt-0.5">&#10003;</span>
+                              <li key={sIdx} className="flex items-start gap-2 text-sm text-white/70">
+                                <span className="text-white/70 mt-0.5">&#10003;</span>
                                 {surf}
                               </li>
                             ))}
@@ -1397,47 +1397,47 @@ export default function CleanRoomReferencePage() {
               {HVAC_REQUIREMENTS.map((hvac, idx) => (
                 <div key={idx} className="card p-6">
                   <div className="flex items-center gap-3 mb-4">
-                    <span className="px-3 py-1.5 rounded-lg bg-white/5 text-slate-300 font-bold border border-white/10">
+                    <span className="px-3 py-1.5 rounded-lg bg-white/5 text-white/70 font-bold border border-white/10">
                       ISO {hvac.isoClass}
                     </span>
                     <span className="text-sm text-slate-400">Air Handling Specifications</span>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-                    <div className="bg-slate-800/40 rounded-xl p-3">
+                    <div className="bg-white/[0.04] rounded-xl p-3">
                       <h4 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Air Changes/Hour</h4>
                       <p className="text-sm text-slate-100 font-bold">{hvac.airChangesPerHour}</p>
                     </div>
-                    <div className="bg-slate-800/40 rounded-xl p-3">
+                    <div className="bg-white/[0.04] rounded-xl p-3">
                       <h4 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Air Velocity</h4>
-                      <p className="text-sm text-slate-200">{hvac.airVelocity}</p>
+                      <p className="text-sm text-white/90">{hvac.airVelocity}</p>
                     </div>
-                    <div className="bg-slate-800/40 rounded-xl p-3">
+                    <div className="bg-white/[0.04] rounded-xl p-3">
                       <h4 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Pressure Differential</h4>
-                      <p className="text-sm text-slate-200">{hvac.pressureDifferential}</p>
+                      <p className="text-sm text-white/90">{hvac.pressureDifferential}</p>
                     </div>
-                    <div className="bg-slate-800/40 rounded-xl p-3">
+                    <div className="bg-white/[0.04] rounded-xl p-3">
                       <h4 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Monitoring</h4>
-                      <p className="text-sm text-slate-200">{hvac.monitoringFrequency}</p>
+                      <p className="text-sm text-white/90">{hvac.monitoringFrequency}</p>
                     </div>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <div className="bg-slate-800/40 rounded-xl p-3">
+                    <div className="bg-white/[0.04] rounded-xl p-3">
                       <h4 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Filter Type</h4>
-                      <p className="text-sm text-slate-300">{hvac.filterType}</p>
+                      <p className="text-sm text-white/70">{hvac.filterType}</p>
                     </div>
-                    <div className="bg-slate-800/40 rounded-xl p-3">
+                    <div className="bg-white/[0.04] rounded-xl p-3">
                       <h4 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Filter Efficiency</h4>
-                      <p className="text-sm text-slate-200">{hvac.filterEfficiency}</p>
+                      <p className="text-sm text-white/90">{hvac.filterEfficiency}</p>
                     </div>
-                    <div className="bg-slate-800/40 rounded-xl p-3">
+                    <div className="bg-white/[0.04] rounded-xl p-3">
                       <h4 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Temperature</h4>
-                      <p className="text-sm text-slate-200">{hvac.tempRange}</p>
+                      <p className="text-sm text-white/90">{hvac.tempRange}</p>
                     </div>
-                    <div className="bg-slate-800/40 rounded-xl p-3">
+                    <div className="bg-white/[0.04] rounded-xl p-3">
                       <h4 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Humidity</h4>
-                      <p className="text-sm text-slate-200">{hvac.humidityRange}</p>
+                      <p className="text-sm text-white/90">{hvac.humidityRange}</p>
                     </div>
                   </div>
                 </div>
@@ -1448,34 +1448,34 @@ export default function CleanRoomReferencePage() {
 
         {/* Footer reference */}
         <div className="card p-6 mt-8">
-          <h3 className="text-sm font-bold text-slate-300 mb-3">Reference Standards</h3>
+          <h3 className="text-sm font-bold text-white/70 mb-3">Reference Standards</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 text-xs text-slate-400">
             <div>
-              <span className="text-slate-300 font-medium">ISO 14644-1:2015</span> - Clean room air cleanliness classification
+              <span className="text-white/70 font-medium">ISO 14644-1:2015</span> - Clean room air cleanliness classification
             </div>
             <div>
-              <span className="text-slate-300 font-medium">ASTM E595</span> - Outgassing testing (TML & CVCM)
+              <span className="text-white/70 font-medium">ASTM E595</span> - Outgassing testing (TML & CVCM)
             </div>
             <div>
-              <span className="text-slate-300 font-medium">MIL-STD-1246C</span> - Product cleanliness levels (particulate)
+              <span className="text-white/70 font-medium">MIL-STD-1246C</span> - Product cleanliness levels (particulate)
             </div>
             <div>
-              <span className="text-slate-300 font-medium">IEST-STD-CC1246E</span> - Updated product cleanliness standard
+              <span className="text-white/70 font-medium">IEST-STD-CC1246E</span> - Updated product cleanliness standard
             </div>
             <div>
-              <span className="text-slate-300 font-medium">NASA-STD-5009</span> - Nondestructive evaluation
+              <span className="text-white/70 font-medium">NASA-STD-5009</span> - Nondestructive evaluation
             </div>
             <div>
-              <span className="text-slate-300 font-medium">GSFC-STD-7000A</span> - Goddard contamination control
+              <span className="text-white/70 font-medium">GSFC-STD-7000A</span> - Goddard contamination control
             </div>
             <div>
-              <span className="text-slate-300 font-medium">NASA-HDBK-6007</span> - Contamination control handbook
+              <span className="text-white/70 font-medium">NASA-HDBK-6007</span> - Contamination control handbook
             </div>
             <div>
-              <span className="text-slate-300 font-medium">COSPAR Planetary Protection</span> - Biological controls
+              <span className="text-white/70 font-medium">COSPAR Planetary Protection</span> - Biological controls
             </div>
             <div>
-              <span className="text-slate-300 font-medium">NPR 8020.12D</span> - NASA planetary protection provisions
+              <span className="text-white/70 font-medium">NPR 8020.12D</span> - NASA planetary protection provisions
             </div>
           </div>
         </div>

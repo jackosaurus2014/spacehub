@@ -109,13 +109,13 @@ const CATEGORY_COLORS: Record<string, { bg: string; text: string }> = {
   communications: { bg: 'bg-blue-500/20', text: 'text-blue-400' },
   launch: { bg: 'bg-red-500/20', text: 'text-red-400' },
   in_space: { bg: 'bg-purple-500/20', text: 'text-purple-400' },
-  defense: { bg: 'bg-slate-500/20', text: 'text-slate-300' },
+  defense: { bg: 'bg-slate-500/20', text: 'text-white/70' },
   lunar: { bg: 'bg-yellow-500/20', text: 'text-yellow-400' },
   debris: { bg: 'bg-amber-500/20', text: 'text-amber-400' },
   exploration: { bg: 'bg-indigo-500/20', text: 'text-indigo-400' },
   navigation: { bg: 'bg-teal-500/20', text: 'text-teal-400' },
   earth_science: { bg: 'bg-emerald-500/20', text: 'text-emerald-400' },
-  general: { bg: 'bg-white/10', text: 'text-slate-300' },
+  general: { bg: 'bg-white/10', text: 'text-white/70' },
 };
 
 const AGENCY_ICONS: Record<string, string> = {
@@ -169,7 +169,7 @@ function getStatusBadge(status: string) {
   const styles: Record<string, { bg: string; text: string; label: string }> = {
     open: { bg: 'bg-emerald-500/20', text: 'text-emerald-400', label: 'OPEN' },
     upcoming: { bg: 'bg-blue-500/20', text: 'text-blue-400', label: 'UPCOMING' },
-    rolling: { bg: 'bg-white/10', text: 'text-slate-300', label: 'ROLLING' },
+    rolling: { bg: 'bg-white/10', text: 'text-white/70', label: 'ROLLING' },
     closed: { bg: 'bg-slate-500/20', text: 'text-slate-400', label: 'CLOSED' },
   };
   const style = styles[status] || styles.closed;
@@ -252,7 +252,7 @@ function OpportunityCard({ opp, index }: { opp: FundingOpportunity; index: numbe
       {/* Header */}
       <div className="flex items-start justify-between mb-3">
         <div className="flex items-center gap-3 min-w-0 flex-1">
-          <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-slate-700 to-slate-800 flex items-center justify-center text-lg flex-shrink-0 border border-slate-600/50">
+          <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-white/[0.08] to-white/[0.04] flex items-center justify-center text-lg flex-shrink-0 border border-white/[0.08]">
             {getAgencyIcon(opp.agency)}
           </div>
           <div className="min-w-0 flex-1">
@@ -260,7 +260,7 @@ function OpportunityCard({ opp, index }: { opp: FundingOpportunity; index: numbe
               {opp.title}
             </h3>
             <div className="flex items-center gap-2 text-xs text-slate-400 mt-0.5">
-              <span className="font-medium text-slate-300">{opp.agency}</span>
+              <span className="font-medium text-white/70">{opp.agency}</span>
               {opp.program && (
                 <>
                   <span className="text-slate-600">|</span>
@@ -282,7 +282,7 @@ function OpportunityCard({ opp, index }: { opp: FundingOpportunity; index: numbe
       {opp.description && opp.description.length > 150 && (
         <button
           onClick={() => setExpanded(!expanded)}
-          className="text-xs text-slate-300 hover:text-white mb-3 transition-colors"
+          className="text-xs text-white/70 hover:text-white mb-3 transition-colors"
         >
           {expanded ? 'Show less' : 'Read more'}
         </button>
@@ -290,18 +290,18 @@ function OpportunityCard({ opp, index }: { opp: FundingOpportunity; index: numbe
 
       {/* Key Info Row */}
       <div className="grid grid-cols-2 gap-2 mb-3">
-        <div className="bg-slate-800/50 rounded-lg p-2">
+        <div className="bg-white/[0.04] rounded-lg p-2">
           <div className="text-xs text-slate-500 uppercase tracking-wider">Award Range</div>
           <div className="text-sm font-semibold text-emerald-400">
             {formatAmountRange(opp.amountMin, opp.amountMax)}
           </div>
         </div>
-        <div className="bg-slate-800/50 rounded-lg p-2">
+        <div className="bg-white/[0.04] rounded-lg p-2">
           <div className="text-xs text-slate-500 uppercase tracking-wider">Deadline</div>
           <div className={`text-sm font-semibold ${
             deadlineInfo.urgency === 'critical' ? 'text-red-400' :
             deadlineInfo.urgency === 'warning' ? 'text-yellow-400' :
-            'text-slate-300'
+            'text-white/70'
           }`}>
             {deadlineInfo.text}
           </div>
@@ -313,12 +313,12 @@ function OpportunityCard({ opp, index }: { opp: FundingOpportunity; index: numbe
         {opp.categories.slice(0, 4).map(cat => {
           const colors = CATEGORY_COLORS[cat] || CATEGORY_COLORS.general;
           return (
-            <span key={cat} className={`text-xs px-2 py-0.5 rounded-full ${colors.bg} ${colors.text} border border-slate-600/30`}>
+            <span key={cat} className={`text-xs px-2 py-0.5 rounded-full ${colors.bg} ${colors.text} border border-white/[0.06]`}>
               {getCategoryLabel(cat)}
             </span>
           );
         })}
-        <span className="text-xs px-2 py-0.5 rounded-full bg-slate-700/50 text-slate-400 border border-slate-600/30">
+        <span className="text-xs px-2 py-0.5 rounded-full bg-white/[0.04] text-slate-400 border border-white/[0.06]">
           {getTypeLabel(opp.fundingType)}
         </span>
         {opp.stateIncentive && opp.state && (
@@ -331,18 +331,18 @@ function OpportunityCard({ opp, index }: { opp: FundingOpportunity; index: numbe
       {/* Eligibility */}
       <div className="flex flex-wrap gap-1 mb-3">
         {opp.eligibility.slice(0, 3).map(elig => (
-          <span key={elig} className="text-xs px-2 py-0.5 rounded-full bg-slate-700/50 text-slate-300 border border-slate-600/30">
+          <span key={elig} className="text-xs px-2 py-0.5 rounded-full bg-white/[0.04] text-white/70 border border-white/[0.06]">
             {getEligibilityLabel(elig)}
           </span>
         ))}
       </div>
 
       {/* Footer */}
-      <div className="flex items-center justify-between pt-3 border-t border-slate-700/50">
+      <div className="flex items-center justify-between pt-3 border-t border-white/[0.06]">
         <div className="flex items-center gap-3 text-xs text-slate-500">
           <span>Source: {opp.source}</span>
           {opp.recurring && (
-            <span className="text-slate-300 font-medium">Recurring</span>
+            <span className="text-white/70 font-medium">Recurring</span>
           )}
           {opp.solicitationNumber && (
             <span className="font-mono">{opp.solicitationNumber}</span>
@@ -353,7 +353,7 @@ function OpportunityCard({ opp, index }: { opp: FundingOpportunity; index: numbe
             href={opp.applicationUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/10 text-slate-300 text-xs font-medium hover:bg-slate-100/30 transition-colors border border-white/10"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/10 text-white/70 text-xs font-medium hover:bg-slate-100/30 transition-colors border border-white/10"
           >
             Apply Now
             <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -437,8 +437,8 @@ export default function FundingOpportunitiesPage() {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="relative overflow-hidden border-b border-slate-700/50">
-        <div className="absolute inset-0 bg-gradient-to-br from-emerald-900/20 via-slate-900 to-slate-800/20" />
+      <section className="relative overflow-hidden border-b border-white/[0.06]">
+        <div className="absolute inset-0 bg-gradient-to-br from-emerald-900/20 via-black to-white/[0.04]" />
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-5" />
         <div className="relative max-w-7xl mx-auto px-4 py-12 sm:py-16">
           <motion.div
@@ -460,25 +460,25 @@ export default function FundingOpportunitiesPage() {
 
             {/* Stats Cards */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-3xl mx-auto">
-              <div className="bg-slate-800/60 backdrop-blur rounded-xl p-4 border border-slate-700/50">
+              <div className="bg-white/[0.05] backdrop-blur rounded-xl p-4 border border-white/[0.06]">
                 <div className="text-2xl font-bold text-emerald-400">
                   {stats?.open ?? '--'}
                 </div>
                 <div className="text-xs text-slate-400 mt-1">Open Opportunities</div>
               </div>
-              <div className="bg-slate-800/60 backdrop-blur rounded-xl p-4 border border-slate-700/50">
-                <div className="text-2xl font-bold text-slate-300">
+              <div className="bg-white/[0.05] backdrop-blur rounded-xl p-4 border border-white/[0.06]">
+                <div className="text-2xl font-bold text-white/70">
                   {stats?.total ?? '--'}
                 </div>
                 <div className="text-xs text-slate-400 mt-1">Total Tracked</div>
               </div>
-              <div className="bg-slate-800/60 backdrop-blur rounded-xl p-4 border border-slate-700/50">
+              <div className="bg-white/[0.05] backdrop-blur rounded-xl p-4 border border-white/[0.06]">
                 <div className="text-2xl font-bold text-purple-400">
                   {stats?.byAgency?.length ?? '--'}
                 </div>
                 <div className="text-xs text-slate-400 mt-1">Agencies</div>
               </div>
-              <div className="bg-slate-800/60 backdrop-blur rounded-xl p-4 border border-slate-700/50">
+              <div className="bg-white/[0.05] backdrop-blur rounded-xl p-4 border border-white/[0.06]">
                 <div className="text-2xl font-bold text-amber-400">
                   {stats?.totalAvailableFunding ? formatMoney(stats.totalAvailableFunding) : '--'}
                 </div>
@@ -490,7 +490,7 @@ export default function FundingOpportunitiesPage() {
       </section>
 
       {/* Filters Section */}
-      <section className="sticky top-[72px] z-30 border-b border-slate-700/50 bg-slate-900/95 backdrop-blur-xl">
+      <section className="sticky top-[72px] z-30 border-b border-white/[0.06] bg-black/95 backdrop-blur-xl">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex flex-wrap gap-3 items-center">
             {/* Search */}
@@ -503,7 +503,7 @@ export default function FundingOpportunitiesPage() {
                 placeholder="Search opportunities..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 rounded-lg bg-slate-800/80 border border-slate-700/50 text-white text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-white/30 focus:border-white/15"
+                className="w-full pl-10 pr-4 py-2 rounded-lg bg-white/[0.06] border border-white/[0.06] text-white text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-white/30 focus:border-white/15"
               />
             </div>
 
@@ -511,7 +511,7 @@ export default function FundingOpportunitiesPage() {
             <select
               value={status}
               onChange={(e) => setStatus(e.target.value)}
-              className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+              className="bg-white/[0.06] border border-white/[0.08] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
             >
               {STATUS_OPTIONS.map(opt => (
                 <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -522,7 +522,7 @@ export default function FundingOpportunitiesPage() {
             <select
               value={agency}
               onChange={(e) => setAgency(e.target.value)}
-              className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+              className="bg-white/[0.06] border border-white/[0.08] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
             >
               {AGENCY_OPTIONS.map(opt => (
                 <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -533,7 +533,7 @@ export default function FundingOpportunitiesPage() {
             <select
               value={category}
               onChange={(e) => setCategory(e.target.value)}
-              className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none hidden sm:block"
+              className="bg-white/[0.06] border border-white/[0.08] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none hidden sm:block"
             >
               {CATEGORY_OPTIONS.map(opt => (
                 <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -544,7 +544,7 @@ export default function FundingOpportunitiesPage() {
             <select
               value={fundingType}
               onChange={(e) => setFundingType(e.target.value)}
-              className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none hidden sm:block"
+              className="bg-white/[0.06] border border-white/[0.08] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none hidden sm:block"
             >
               {TYPE_OPTIONS.map(opt => (
                 <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -557,7 +557,7 @@ export default function FundingOpportunitiesPage() {
               className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${
                 stateOnly
                   ? 'bg-amber-500/20 text-amber-400 border border-amber-500/40'
-                  : 'bg-slate-800/80 text-slate-400 border border-slate-700/50 hover:text-white'
+                  : 'bg-white/[0.06] text-slate-400 border border-white/[0.06] hover:text-white'
               }`}
             >
               State Incentives
@@ -612,7 +612,7 @@ export default function FundingOpportunitiesPage() {
                 <button
                   onClick={() => setOffset(Math.max(0, offset - limit))}
                   disabled={offset === 0}
-                  className="px-4 py-2 rounded-lg bg-slate-800 text-slate-300 text-sm border border-slate-700/50 hover:border-white/15 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                  className="px-4 py-2 rounded-lg bg-white/[0.06] text-white/70 text-sm border border-white/[0.06] hover:border-white/15 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                 >
                   Previous
                 </button>
@@ -633,8 +633,8 @@ export default function FundingOpportunitiesPage() {
                       onClick={() => setOffset((pageNum - 1) * limit)}
                       className={`w-9 h-9 rounded-lg text-sm font-medium transition-colors ${
                         currentPage === pageNum
-                          ? 'bg-white/10 text-slate-300 border border-white/15'
-                          : 'bg-slate-800 text-slate-400 border border-slate-700/50 hover:border-white/15'
+                          ? 'bg-white/10 text-white/70 border border-white/15'
+                          : 'bg-white/[0.06] text-slate-400 border border-white/[0.06] hover:border-white/15'
                       }`}
                     >
                       {pageNum}
@@ -644,7 +644,7 @@ export default function FundingOpportunitiesPage() {
                 <button
                   onClick={() => setOffset(Math.min((totalPages - 1) * limit, offset + limit))}
                   disabled={currentPage >= totalPages}
-                  className="px-4 py-2 rounded-lg bg-slate-800 text-slate-300 text-sm border border-slate-700/50 hover:border-white/15 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                  className="px-4 py-2 rounded-lg bg-white/[0.06] text-white/70 text-sm border border-white/[0.06] hover:border-white/15 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                 >
                   Next
                 </button>
@@ -666,7 +666,7 @@ export default function FundingOpportunitiesPage() {
               <button
                 key={agencyName}
                 onClick={() => { setAgency(agencyName); setOffset(0); }}
-                className="bg-slate-800/60 rounded-xl p-4 border border-slate-700/50 hover:border-white/10 transition-colors text-left group"
+                className="bg-white/[0.05] rounded-xl p-4 border border-white/[0.06] hover:border-white/10 transition-colors text-left group"
               >
                 <div className="text-lg mb-1">{getAgencyIcon(agencyName)}</div>
                 <div className="text-sm font-medium text-white group-hover:text-white transition-colors truncate">{agencyName}</div>
@@ -686,10 +686,10 @@ export default function FundingOpportunitiesPage() {
               <button
                 key={type}
                 onClick={() => { setFundingType(type); setOffset(0); }}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-800/60 border border-slate-700/50 hover:border-white/10 transition-colors"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white/[0.05] border border-white/[0.06] hover:border-white/10 transition-colors"
               >
                 <span className="text-sm text-white">{getTypeLabel(type)}</span>
-                <span className="text-xs text-slate-400 bg-slate-700/50 px-2 py-0.5 rounded-full">{count}</span>
+                <span className="text-xs text-slate-400 bg-white/[0.04] px-2 py-0.5 rounded-full">{count}</span>
               </button>
             ))}
           </div>

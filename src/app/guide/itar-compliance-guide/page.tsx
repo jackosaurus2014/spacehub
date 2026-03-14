@@ -160,7 +160,7 @@ export default function ItarComplianceGuidePage() {
               <span className="hidden sm:inline text-star-300/40">|</span>
               <span>By SpaceNexus Research</span>
             </div>
-            <div className="w-24 h-[3px] bg-gradient-to-r from-white to-plasma-400 rounded-full mx-auto mt-8" />
+            <div className="w-24 h-[3px] bg-gradient-to-r from-white/50 to-white/30 rounded-full mx-auto mt-8" />
 
             {/* Disclaimer */}
             <div className="mt-8 card p-4 text-left text-sm text-star-300 max-w-2xl mx-auto border-l-4 border-l-yellow-500/50">
@@ -698,18 +698,18 @@ export default function ItarComplianceGuidePage() {
                   Penalties &amp; Enforcement
                 </h2>
                 <div className="space-y-4 text-star-200 leading-relaxed text-lg">
-                  <div className="card p-6 my-8 border-l-4 border-l-rocket-500">
+                  <div className="card p-6 my-8 border-l-4 border-l-white/30">
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-center">
                       <div>
-                        <div className="text-3xl font-display font-bold text-rocket-400">$1M</div>
+                        <div className="text-3xl font-display font-bold text-white/70">$1M</div>
                         <div className="text-star-300 text-sm mt-1">Max Criminal Fine per Violation</div>
                       </div>
                       <div>
-                        <div className="text-3xl font-display font-bold text-rocket-400">20 yrs</div>
+                        <div className="text-3xl font-display font-bold text-white/70">20 yrs</div>
                         <div className="text-star-300 text-sm mt-1">Max Criminal Imprisonment</div>
                       </div>
                       <div>
-                        <div className="text-3xl font-display font-bold text-rocket-400">$1.2M</div>
+                        <div className="text-3xl font-display font-bold text-white/70">$1.2M</div>
                         <div className="text-star-300 text-sm mt-1">Max Civil Penalty per Violation</div>
                       </div>
                     </div>

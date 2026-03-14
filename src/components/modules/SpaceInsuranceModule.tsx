@@ -144,7 +144,7 @@ export default function SpaceInsuranceModule() {
     return (
       <div className="card p-8 text-center">
         <span className="text-5xl block mb-4">🛡️</span>
-        <h3 className="text-xl font-semibold text-slate-200 mb-2">
+        <h3 className="text-xl font-semibold text-white/90 mb-2">
           Space Insurance & Risk Calculator
         </h3>
         <p className="text-slate-400 mb-4">
@@ -175,7 +175,7 @@ export default function SpaceInsuranceModule() {
         <div className="flex items-center gap-3">
           <span className="text-3xl">🛡️</span>
           <div>
-            <h2 className="text-2xl font-display font-bold text-slate-200">
+            <h2 className="text-2xl font-display font-bold text-white/90">
               Space Insurance & Risk Calculator
             </h2>
             <p className="text-slate-400 text-sm">
@@ -191,7 +191,7 @@ export default function SpaceInsuranceModule() {
       {/* Quick Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         <div className="card p-3 text-center">
-          <div className="text-2xl font-bold text-slate-200">
+          <div className="text-2xl font-bold text-white/90">
             {formatCurrency(stats.totalPremiums)}
           </div>
           <div className="text-slate-400 text-xs">Total Premiums</div>
@@ -220,7 +220,7 @@ export default function SpaceInsuranceModule() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Market History */}
         <div className="lg:col-span-2 card p-4">
-          <h3 className="text-lg font-semibold text-slate-200 mb-4 flex items-center gap-2">
+          <h3 className="text-lg font-semibold text-white/90 mb-4 flex items-center gap-2">
             <span>📈</span> Market History
           </h3>
           <div className="space-y-2">
@@ -238,9 +238,9 @@ export default function SpaceInsuranceModule() {
                   : 0;
 
               return (
-                <div key={year.id} className="p-3 bg-slate-800/50 rounded-lg">
+                <div key={year.id} className="p-3 bg-white/[0.04] rounded-lg">
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-slate-200 font-medium text-sm">
+                    <span className="text-white/90 font-medium text-sm">
                       {year.year}
                     </span>
                     <div className="flex items-center gap-4 text-xs">
@@ -270,7 +270,7 @@ export default function SpaceInsuranceModule() {
                         style={{ width: `${Math.min(premiumWidth, 100)}%` }}
                       />
                     </div>
-                    <span className="text-xs text-slate-200 w-16 text-right">
+                    <span className="text-xs text-white/90 w-16 text-right">
                       {formatCurrency(year.totalPremiums)}
                     </span>
                   </div>
@@ -297,7 +297,7 @@ export default function SpaceInsuranceModule() {
         {/* Premium Calculator */}
         <div className="space-y-6">
           <div className="card p-4">
-            <h3 className="text-lg font-semibold text-slate-200 mb-4 flex items-center gap-2">
+            <h3 className="text-lg font-semibold text-white/90 mb-4 flex items-center gap-2">
               <span>🧮</span> Premium Calculator
             </h3>
             <div className="space-y-3">
@@ -310,7 +310,7 @@ export default function SpaceInsuranceModule() {
                   inputMode="decimal"
                   value={calcValue}
                   onChange={(e) => setCalcValue(e.target.value)}
-                  className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+                  className="w-full bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                   placeholder="100"
                   min="1"
                 />
@@ -324,7 +324,7 @@ export default function SpaceInsuranceModule() {
                   onChange={(e) =>
                     setCalcMissionType(e.target.value as InsuranceMissionType)
                   }
-                  className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+                  className="w-full bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                 >
                   {INSURANCE_MISSION_TYPES.map((type) => (
                     <option key={type.value} value={type.value}>
@@ -349,16 +349,16 @@ export default function SpaceInsuranceModule() {
               </button>
 
               {premiumEstimate && (
-                <div className="mt-3 p-3 bg-slate-800/50 rounded-lg space-y-2">
+                <div className="mt-3 p-3 bg-white/[0.04] rounded-lg space-y-2">
                   <div className="flex justify-between text-sm">
                     <span className="text-slate-400">Est. Rate:</span>
-                    <span className="text-slate-200 font-medium">
+                    <span className="text-white/90 font-medium">
                       {premiumEstimate.premiumRate.toFixed(2)}%
                     </span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-slate-400">Est. Premium:</span>
-                    <span className="text-slate-200 font-bold">
+                    <span className="text-white/90 font-bold">
                       {formatCurrency(premiumEstimate.premiumAmount)}
                     </span>
                   </div>
@@ -387,13 +387,13 @@ export default function SpaceInsuranceModule() {
 
       {/* Recent Policies */}
       <div className="card p-4 mt-6">
-        <h3 className="text-lg font-semibold text-slate-200 mb-4 flex items-center gap-2">
+        <h3 className="text-lg font-semibold text-white/90 mb-4 flex items-center gap-2">
           <span>📋</span> Recent Policies
         </h3>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="text-slate-400 text-xs border-b border-slate-700/50">
+              <tr className="text-slate-400 text-xs border-b border-white/[0.06]">
                 <th className="text-left py-2 pr-4">Insurer</th>
                 <th className="text-left py-2 pr-4">Mission</th>
                 <th className="text-left py-2 pr-4">Type</th>
@@ -408,20 +408,20 @@ export default function SpaceInsuranceModule() {
                 return (
                   <tr
                     key={policy.id}
-                    className="border-b border-slate-700/50 hover:bg-slate-700/50"
+                    className="border-b border-white/[0.06] hover:bg-white/[0.08]"
                   >
-                    <td className="py-2 pr-4 text-slate-200 font-medium">
+                    <td className="py-2 pr-4 text-white/90 font-medium">
                       {policy.insurer}
                     </td>
                     <td className="py-2 pr-4 text-slate-400">
                       {policy.missionName || 'N/A'}
                     </td>
                     <td className="py-2 pr-4">
-                      <span className="text-xs bg-slate-800 text-slate-400 px-2 py-0.5 rounded">
+                      <span className="text-xs bg-white/[0.06] text-slate-400 px-2 py-0.5 rounded">
                         {missionInfo?.icon} {missionInfo?.label || policy.missionType}
                       </span>
                     </td>
-                    <td className="py-2 pr-4 text-right text-slate-200 font-mono">
+                    <td className="py-2 pr-4 text-right text-white/90 font-mono">
                       {policy.premiumRate.toFixed(2)}%
                     </td>
                     <td className="py-2 pr-4 text-right text-slate-400 font-mono">

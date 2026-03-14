@@ -204,9 +204,9 @@ export default function AppRatingPrompt() {
         ].join(' ')}
         style={{
           background:
-            'linear-gradient(135deg, rgba(15, 23, 42, 0.98) 0%, rgba(22, 33, 56, 0.98) 50%, rgba(15, 23, 42, 0.98) 100%)',
+            'linear-gradient(135deg, rgba(10, 10, 10, 0.98) 0%, rgba(10, 10, 10, 0.98) 50%, rgba(10, 10, 10, 0.98) 100%)',
           boxShadow:
-            '0 -8px 32px -4px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(6, 182, 212, 0.1)',
+            '0 -8px 32px -4px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.06)',
           backdropFilter: 'blur(16px)',
           paddingBottom: 'env(safe-area-inset-bottom, 0px)',
         }}
@@ -224,7 +224,7 @@ export default function AppRatingPrompt() {
         <button
           type="button"
           onClick={handleDismiss}
-          className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center rounded-lg text-slate-500 hover:text-slate-300 hover:bg-slate-800/60 transition-colors z-10"
+          className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center rounded-lg text-slate-500 hover:text-white/70 hover:bg-white/[0.06] transition-colors z-10"
           aria-label="Dismiss"
         >
           <svg
@@ -301,7 +301,7 @@ export default function AppRatingPrompt() {
             <button
               type="button"
               onClick={handleDismiss}
-              className="w-full py-2.5 text-sm font-medium text-slate-500 hover:text-slate-300 rounded-xl hover:bg-slate-800/40 transition-colors"
+              className="w-full py-2.5 text-sm font-medium text-slate-500 hover:text-white/70 rounded-xl hover:bg-white/[0.06] transition-colors"
             >
               Not now
             </button>

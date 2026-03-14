@@ -30,7 +30,7 @@ export default function ReadMore({ text, lines = 3, className = '' }: ReadMorePr
       {isTruncated && (
         <button
           onClick={() => setExpanded(!expanded)}
-          className="text-sm text-slate-300 hover:text-white mt-1 transition-colors"
+          className="text-sm text-white/70 hover:text-white mt-1 transition-colors"
         >
           {expanded ? 'Show less' : 'Read more'}
         </button>

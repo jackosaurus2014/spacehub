@@ -78,8 +78,8 @@ function CompactBadge({ streak, className }: { streak: number; className: string
     <span
       className={`
         inline-flex items-center gap-1 rounded-full
-        bg-slate-800/50 px-2.5 py-0.5
-        text-sm font-semibold text-slate-300
+        bg-white/[0.04] px-2.5 py-0.5
+        text-sm font-semibold text-white/70
         backdrop-blur-sm border border-white/10
         ${className}
       `}
@@ -145,14 +145,14 @@ function FullBadge({
       />
 
       {/* Card body */}
-      <div className="relative rounded-xl bg-slate-900/95 backdrop-blur-sm p-4">
+      <div className="relative rounded-xl bg-black/95 backdrop-blur-sm p-4">
         {/* Header row: flame + streak number */}
         <div className="flex items-center gap-3 mb-3">
           <span className="streak-flame-full text-3xl" aria-hidden="true">
             {'\u{1F525}'}
           </span>
           <div>
-            <div className="text-2xl font-bold text-slate-300">
+            <div className="text-2xl font-bold text-white/70">
               {streakData.currentStreak}
               <span className="text-sm font-normal text-slate-400 ml-1">
                 {streakData.currentStreak === 1 ? 'day' : 'days'}
@@ -164,15 +164,15 @@ function FullBadge({
 
         {/* Stats row */}
         <div className="grid grid-cols-2 gap-3 mb-3">
-          <div className="rounded-lg bg-slate-800/60 px-3 py-2">
+          <div className="rounded-lg bg-white/[0.05] px-3 py-2">
             <div className="text-xs text-slate-500">Longest streak</div>
-            <div className="text-sm font-semibold text-slate-200">
+            <div className="text-sm font-semibold text-white/90">
               {streakData.longestStreak} {streakData.longestStreak === 1 ? 'day' : 'days'}
             </div>
           </div>
-          <div className="rounded-lg bg-slate-800/60 px-3 py-2">
+          <div className="rounded-lg bg-white/[0.05] px-3 py-2">
             <div className="text-xs text-slate-500">Total visits</div>
-            <div className="text-sm font-semibold text-slate-200">
+            <div className="text-sm font-semibold text-white/90">
               {streakData.totalVisits}
             </div>
           </div>
@@ -192,7 +192,7 @@ function FullBadge({
               <div className="text-sm font-semibold text-white">
                 {milestone.label}
               </div>
-              <div className="text-xs text-slate-300">
+              <div className="text-xs text-white/70">
                 {milestone.threshold}-day milestone
               </div>
             </div>
@@ -201,7 +201,7 @@ function FullBadge({
 
         {/* No milestone yet */}
         {!milestone && streakData.currentStreak > 0 && (
-          <div className="flex items-center gap-2 rounded-lg bg-slate-800/40 px-3 py-2">
+          <div className="flex items-center gap-2 rounded-lg bg-white/[0.04] px-3 py-2">
             <span className="text-lg">{'\u{1F331}'}</span>
             <div className="text-xs text-slate-400">
               {3 - streakData.currentStreak > 0

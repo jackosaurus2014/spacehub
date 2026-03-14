@@ -6,13 +6,13 @@ export default function Loading() {
       <div className="container mx-auto px-4">
         {/* Header skeleton */}
         <div className="mb-8">
-          <div className="h-8 w-56 bg-slate-800 rounded animate-pulse mb-3" />
-          <div className="h-4 w-80 bg-slate-800/60 rounded animate-pulse" />
+          <div className="h-8 w-56 bg-white/[0.06] rounded animate-pulse mb-3" />
+          <div className="h-4 w-80 bg-white/[0.05] rounded animate-pulse" />
         </div>
 
         {/* Search bar skeleton */}
         <div className="mb-8">
-          <div className="h-12 w-full max-w-lg bg-slate-800/50 rounded-xl animate-pulse" />
+          <div className="h-12 w-full max-w-lg bg-white/[0.04] rounded-xl animate-pulse" />
         </div>
 
         {/* Glossary term cards */}

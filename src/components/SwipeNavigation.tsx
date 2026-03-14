@@ -104,7 +104,7 @@ export default function SwipeNavigation() {
         opacity: 0,
         transform: 'translateX(0)',
         transition: swiping ? 'none' : 'opacity 0.25s ease-out, transform 0.25s ease-out',
-        background: 'linear-gradient(to right, rgba(6, 182, 212, 0.15), transparent)',
+        background: 'linear-gradient(to right, rgba(255, 255, 255, 0.08), transparent)',
       }}
     >
       {/* Chevron arrow */}
@@ -115,7 +115,7 @@ export default function SwipeNavigation() {
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
-          className="text-slate-300/60"
+          className="text-white/70/60"
           strokeWidth={2.5}
           strokeLinecap="round"
           strokeLinejoin="round"

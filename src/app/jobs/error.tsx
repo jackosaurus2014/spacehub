@@ -15,7 +15,7 @@ export default function Error({
   }, [error]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 flex items-center justify-center px-4">
+    <div className="min-h-screen bg-gradient-to-b from-black via-[#0a0a0a] to-black flex items-center justify-center px-4">
       <div className="text-center max-w-md">
         <div className="text-5xl mb-4" aria-hidden="true">
           &#x1F680;
@@ -36,7 +36,7 @@ export default function Error({
           </button>
           <Link
             href="/"
-            className="px-5 py-2.5 bg-slate-700 hover:bg-slate-600 text-white text-sm rounded-lg font-medium transition-colors"
+            className="px-5 py-2.5 bg-white/[0.08] hover:bg-white/[0.1] text-white text-sm rounded-lg font-medium transition-colors"
           >
             Go Home
           </Link>

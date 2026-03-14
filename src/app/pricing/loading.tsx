@@ -1,16 +1,16 @@
 export default function Loading() {
   return (
-    <div className="min-h-screen bg-slate-950 p-4 sm:p-6 lg:p-8">
+    <div className="min-h-screen p-4 sm:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto">
         {/* Title skeleton */}
         <div className="text-center mb-10">
-          <div className="h-8 w-40 sm:w-56 bg-slate-800 rounded-lg animate-pulse mx-auto mb-3" />
-          <div className="h-4 w-64 sm:w-96 bg-slate-800/60 rounded animate-pulse mx-auto" />
+          <div className="h-8 w-40 sm:w-56 bg-white/[0.06] rounded-lg animate-pulse mx-auto mb-3" />
+          <div className="h-4 w-64 sm:w-96 bg-white/[0.05] rounded animate-pulse mx-auto" />
         </div>
 
         {/* Billing toggle */}
         <div className="flex justify-center mb-8">
-          <div className="h-10 w-52 bg-slate-800/50 rounded-full animate-pulse" />
+          <div className="h-10 w-52 bg-white/[0.04] rounded-full animate-pulse" />
         </div>
 
         {/* Pricing tiers - stack on mobile, row on desktop */}
@@ -18,7 +18,7 @@ export default function Loading() {
           {[...Array(3)].map((_, i) => (
             <div
               key={i}
-              className={`bg-slate-800/50 rounded-xl p-6 sm:p-8 animate-pulse ${
+              className={`bg-white/[0.04] rounded-xl p-6 sm:p-8 animate-pulse ${
                 i === 1 ? 'ring-2 ring-white/10' : ''
               }`}
             >

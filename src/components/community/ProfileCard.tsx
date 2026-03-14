@@ -79,13 +79,13 @@ export default function ProfileCard({ profile, isFollowing = false, onFollowTogg
         {/* Hover glow */}
         <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
           <div className="absolute inset-[-1px] rounded-xl bg-gradient-to-r from-white/30 via-purple-500/30 to-slate-200/30" />
-          <div className="absolute inset-[1px] rounded-xl bg-slate-900/95" />
+          <div className="absolute inset-[1px] rounded-xl bg-black/95" />
         </div>
 
         <div className="relative z-10">
           {/* Avatar + Name */}
           <div className="flex items-start gap-3 mb-3">
-            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-white/5 to-purple-500/20 border border-white/10 flex items-center justify-center text-sm font-bold text-slate-200 flex-shrink-0">
+            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-white/5 to-purple-500/20 border border-white/10 flex items-center justify-center text-sm font-bold text-white/90 flex-shrink-0">
               {getInitials(profile.user.name)}
             </div>
             <div className="min-w-0 flex-1">
@@ -113,13 +113,13 @@ export default function ProfileCard({ profile, isFollowing = false, onFollowTogg
               {profile.expertise.slice(0, 4).map((tag) => (
                 <span
                   key={tag}
-                  className="text-xs px-1.5 py-0.5 bg-white/5 text-slate-300 border border-white/10 rounded"
+                  className="text-xs px-1.5 py-0.5 bg-white/5 text-white/70 border border-white/10 rounded"
                 >
                   {tag}
                 </span>
               ))}
               {profile.expertise.length > 4 && (
-                <span className="text-xs px-1.5 py-0.5 bg-slate-700/50 text-slate-500 rounded">
+                <span className="text-xs px-1.5 py-0.5 bg-white/[0.05] text-slate-500 rounded">
                   +{profile.expertise.length - 4}
                 </span>
               )}
@@ -127,13 +127,13 @@ export default function ProfileCard({ profile, isFollowing = false, onFollowTogg
           )}
 
           {/* Actions */}
-          <div className="flex items-center gap-2 pt-3 border-t border-slate-700/50">
+          <div className="flex items-center gap-2 pt-3 border-t border-white/[0.06]">
             <button
               onClick={handleFollow}
               disabled={loading}
               className={`flex-1 px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${
                 following
-                  ? 'bg-slate-700 text-slate-300 hover:bg-slate-600'
+                  ? 'bg-white/[0.08] text-white/70 hover:bg-white/[0.08]'
                   : 'bg-white text-slate-900 hover:bg-slate-100'
               } disabled:opacity-50`}
             >
@@ -141,7 +141,7 @@ export default function ProfileCard({ profile, isFollowing = false, onFollowTogg
             </button>
             <Link
               href={`/messages?to=${profile.userId}`}
-              className="flex-1 px-3 py-1.5 text-xs font-medium rounded-lg bg-slate-700 text-slate-300 hover:bg-slate-600 transition-colors text-center"
+              className="flex-1 px-3 py-1.5 text-xs font-medium rounded-lg bg-white/[0.08] text-white/70 hover:bg-white/[0.08] transition-colors text-center"
               onClick={(e) => e.stopPropagation()}
             >
               Message
@@ -152,7 +152,7 @@ export default function ProfileCard({ profile, isFollowing = false, onFollowTogg
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={(e) => e.stopPropagation()}
-                className="p-1.5 rounded-lg bg-slate-700 text-slate-400 hover:text-blue-400 hover:bg-slate-600 transition-colors"
+                className="p-1.5 rounded-lg bg-white/[0.08] text-slate-400 hover:text-blue-400 hover:bg-white/[0.08] transition-colors"
                 aria-label="LinkedIn"
               >
                 <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">

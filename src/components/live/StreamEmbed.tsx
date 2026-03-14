@@ -78,7 +78,7 @@ export default function StreamEmbed({
 
   // Placeholder when no stream is live
   return (
-    <div className="relative w-full aspect-video bg-gradient-to-br from-space-900 via-space-800 to-space-900 rounded-xl overflow-hidden border border-slate-700/50">
+    <div className="relative w-full aspect-video bg-gradient-to-br from-space-900 via-space-800 to-space-900 rounded-xl overflow-hidden border border-white/[0.06]">
       {/* Animated background */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-white/5 rounded-full blur-3xl animate-pulse" />
@@ -103,7 +103,7 @@ export default function StreamEmbed({
         <div className="relative mb-6">
           <div className="w-24 h-24 rounded-full bg-gradient-to-br from-white/5 to-purple-500/20 flex items-center justify-center border border-white/10">
             <svg
-              className="w-12 h-12 text-slate-300"
+              className="w-12 h-12 text-white/70"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -125,12 +125,12 @@ export default function StreamEmbed({
         </div>
 
         <h3 className="text-xl md:text-2xl font-bold text-white mb-2">{title}</h3>
-        <p className="text-slate-300 font-medium mb-4">{provider}</p>
+        <p className="text-white/70 font-medium mb-4">{provider}</p>
 
         {/* Countdown */}
         <div className="flex flex-col items-center">
           <p className="text-slate-400 text-sm mb-2">Stream starts in</p>
-          <div className="text-3xl md:text-4xl font-display font-bold text-transparent bg-clip-text bg-gradient-to-r from-slate-300 via-purple-400 to-pink-400">
+          <div className="text-3xl md:text-4xl font-display font-bold text-transparent bg-clip-text bg-gradient-to-r from-white/70 via-purple-400 to-pink-400">
             {countdown}
           </div>
         </div>

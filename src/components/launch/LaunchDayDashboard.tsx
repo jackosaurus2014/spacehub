@@ -22,7 +22,7 @@ const TrajectoryVisualization = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="bg-slate-900/95 rounded-xl border border-slate-700/50 h-[300px] flex items-center justify-center">
+      <div className="bg-black/95 rounded-xl border border-white/[0.06] h-[300px] flex items-center justify-center">
         <div className="text-slate-400 text-sm">Loading 3D visualization...</div>
       </div>
     ),
@@ -140,12 +140,12 @@ export default function LaunchDayDashboard({ event }: LaunchDayDashboardProps) {
   const streamUrl = event.streamUrl || event.videoUrl;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
+    <div className="min-h-screen bg-gradient-to-b from-black via-black to-black">
       {/* Top Bar: Mission Name + Countdown */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="border-b border-slate-700/50 bg-slate-900/90 backdrop-blur-sm sticky top-0 z-20"
+        className="border-b border-white/[0.06] bg-black/90 backdrop-blur-sm sticky top-0 z-20"
       >
         <div className="container mx-auto px-4 py-3">
           <div className="flex items-center justify-between gap-4">
@@ -163,7 +163,7 @@ export default function LaunchDayDashboard({ event }: LaunchDayDashboardProps) {
                 <h1 className="text-white font-bold text-lg truncate">{event.name}</h1>
                 <div className="flex items-center gap-2 text-xs text-slate-400">
                   {event.agency && <span>{event.agency}</span>}
-                  {event.rocket && <span className="text-slate-300">{event.rocket}</span>}
+                  {event.rocket && <span className="text-white/70">{event.rocket}</span>}
                 </div>
               </div>
             </div>
@@ -177,7 +177,7 @@ export default function LaunchDayDashboard({ event }: LaunchDayDashboardProps) {
                 className={`font-mono text-xl font-bold ${
                   missionTime !== null && missionTime >= 0
                     ? 'text-green-400'
-                    : 'text-slate-300'
+                    : 'text-white/70'
                 }`}
                 style={{
                   textShadow: `0 0 12px ${missionTime !== null && missionTime >= 0 ? 'rgba(74,222,128,0.4)' : 'rgba(34,211,238,0.4)'}`,
@@ -217,37 +217,37 @@ export default function LaunchDayDashboard({ event }: LaunchDayDashboardProps) {
               className="grid grid-cols-2 sm:grid-cols-4 gap-3"
             >
               {event.location && (
-                <div className="bg-slate-800/50 rounded-lg p-3 border border-slate-700/30">
+                <div className="bg-white/[0.04] rounded-lg p-3 border border-white/[0.04]">
                   <div className="text-slate-400 text-xs mb-1">Location</div>
                   <div className="text-white text-sm font-medium truncate">{event.location}</div>
                 </div>
               )}
               {event.rocket && (
-                <div className="bg-slate-800/50 rounded-lg p-3 border border-slate-700/30">
+                <div className="bg-white/[0.04] rounded-lg p-3 border border-white/[0.04]">
                   <div className="text-slate-400 text-xs mb-1">Vehicle</div>
                   <div className="text-white text-sm font-medium truncate">{event.rocket}</div>
                 </div>
               )}
               {event.mission && (
-                <div className="bg-slate-800/50 rounded-lg p-3 border border-slate-700/30">
+                <div className="bg-white/[0.04] rounded-lg p-3 border border-white/[0.04]">
                   <div className="text-slate-400 text-xs mb-1">Mission</div>
                   <div className="text-white text-sm font-medium truncate">{event.mission}</div>
                 </div>
               )}
               {event.country && (
-                <div className="bg-slate-800/50 rounded-lg p-3 border border-slate-700/30">
+                <div className="bg-white/[0.04] rounded-lg p-3 border border-white/[0.04]">
                   <div className="text-slate-400 text-xs mb-1">Country</div>
                   <div className="text-white text-sm font-medium truncate">{event.country}</div>
                 </div>
               )}
               {event.orbitType && (
-                <div className="bg-slate-800/50 rounded-lg p-3 border border-white/10">
+                <div className="bg-white/[0.04] rounded-lg p-3 border border-white/10">
                   <div className="text-slate-400 text-xs mb-1">Target Orbit</div>
-                  <div className="text-slate-300 text-sm font-medium truncate">{event.orbitType}</div>
+                  <div className="text-white/70 text-sm font-medium truncate">{event.orbitType}</div>
                 </div>
               )}
               {event.crewCount && event.crewCount > 0 && (
-                <div className="bg-slate-800/50 rounded-lg p-3 border border-purple-500/20">
+                <div className="bg-white/[0.04] rounded-lg p-3 border border-purple-500/20">
                   <div className="text-slate-400 text-xs mb-1">Crew</div>
                   <div className="text-purple-400 text-sm font-medium">{event.crewCount} astronaut{event.crewCount > 1 ? 's' : ''}</div>
                 </div>

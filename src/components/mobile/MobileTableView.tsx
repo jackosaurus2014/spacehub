@@ -65,7 +65,7 @@ export default function MobileTableView<T>({
     <div className={`overflow-x-auto ${className}`}>
       <table className="w-full text-sm text-left">
         <thead>
-          <tr className="border-b border-slate-700/50">
+          <tr className="border-b border-white/[0.06]">
             {columns.map((col) => (
               <th
                 key={col.header}
@@ -80,10 +80,10 @@ export default function MobileTableView<T>({
           {data.map((item) => (
             <tr
               key={keyExtractor(item)}
-              className="border-b border-slate-800/50 hover:bg-slate-800/30 transition-colors"
+              className="border-b border-white/[0.04] hover:bg-white/[0.03] transition-colors"
             >
               {columns.map((col) => (
-                <td key={col.header} className={`px-4 py-3 text-slate-300 ${col.className || ''}`}>
+                <td key={col.header} className={`px-4 py-3 text-white/70 ${col.className || ''}`}>
                   {typeof col.accessor === 'function'
                     ? col.accessor(item)
                     : (item[col.accessor] as ReactNode)}

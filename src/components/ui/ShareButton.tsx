@@ -108,7 +108,7 @@ export default function ShareButton({ title, url, description, className = '' }:
           }
           setIsOpen((prev) => !prev);
         }}
-        className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-800 border border-slate-700 rounded-lg text-xs font-medium text-slate-300 hover:text-white hover:border-white/15 transition-all"
+        className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white/[0.06] border border-white/[0.08] rounded-lg text-xs font-medium text-white/70 hover:text-white hover:border-white/15 transition-all"
         aria-label="Share"
         aria-expanded={isOpen}
         aria-haspopup="true"
@@ -131,7 +131,7 @@ export default function ShareButton({ title, url, description, className = '' }:
 
       {/* Dropdown */}
       {isOpen && (
-        <div className="absolute right-0 sm:right-auto sm:left-0 top-full mt-2 w-52 bg-slate-800 border border-slate-700 rounded-xl shadow-xl z-50 py-1.5 animate-in fade-in slide-in-from-top-2 duration-150">
+        <div className="absolute right-0 sm:right-auto sm:left-0 top-full mt-2 w-52 bg-white/[0.06] border border-white/[0.08] rounded-xl shadow-xl z-50 py-1.5 animate-in fade-in slide-in-from-top-2 duration-150">
           {/* Copy Link */}
           <button
             onClick={handleCopyLink}
@@ -148,7 +148,7 @@ export default function ShareButton({ title, url, description, className = '' }:
             Copy Link
           </button>
 
-          <div className="mx-3 my-1 border-t border-slate-700/50" />
+          <div className="mx-3 my-1 border-t border-white/[0.06]" />
 
           {/* Share on X/Twitter */}
           <button

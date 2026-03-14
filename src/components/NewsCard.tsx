@@ -18,7 +18,7 @@ function CompanyBadges({ companies }: { companies: NewsArticleCompanyTag[] }) {
   const tierColors: Record<number, string> = {
     1: 'bg-amber-500/20 text-amber-300 border-amber-500/30 hover:bg-amber-500/30',
     2: 'bg-blue-500/20 text-blue-300 border-blue-500/30 hover:bg-blue-500/30',
-    3: 'bg-slate-500/20 text-slate-300 border-slate-500/30 hover:bg-slate-500/30',
+    3: 'bg-slate-500/20 text-white/70 border-slate-500/30 hover:bg-slate-500/30',
   };
 
   return (
@@ -59,8 +59,8 @@ const categoryColors: Record<string, string> = {
   launches: 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30',
   missions: 'bg-violet-500/20 text-violet-300 border border-violet-500/30',
   companies: 'bg-blue-500/20 text-blue-300 border border-blue-500/30',
-  satellites: 'bg-white/10 text-slate-200 border border-white/10',
-  defense: 'bg-slate-500/20 text-slate-300 border border-slate-500/30',
+  satellites: 'bg-white/10 text-white/90 border border-white/10',
+  defense: 'bg-slate-500/20 text-white/70 border border-slate-500/30',
   earnings: 'bg-green-500/20 text-green-300 border border-green-500/30',
   mergers: 'bg-purple-500/20 text-purple-300 border border-purple-500/30',
   development: 'bg-amber-500/20 text-amber-300 border border-amber-500/30',
@@ -122,14 +122,14 @@ export default function NewsCard({ article, featured = false, priority = false }
             />
           ) : (
             <div className="w-full h-full bg-gradient-to-br from-space-800 to-slate-300/30 flex items-center justify-center">
-              <div className="w-16 h-16 rounded-full bg-slate-700/50 flex items-center justify-center">
-                <svg className="w-8 h-8 text-slate-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="w-16 h-16 rounded-full bg-white/[0.06] flex items-center justify-center">
+                <svg className="w-8 h-8 text-white/90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707" />
                 </svg>
               </div>
             </div>
           )}
-          <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/60 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent" />
           <div className="absolute bottom-0 left-0 right-0 p-6">
             <span
               className={`${categoryColor} text-xs font-semibold px-2.5 py-1 rounded-full uppercase tracking-wide inline-flex items-center gap-1.5`}
@@ -168,7 +168,7 @@ export default function NewsCard({ article, featured = false, priority = false }
                 ))}
               </div>
             )}
-            <div className="flex items-center space-x-4 mt-3 text-slate-300 text-sm">
+            <div className="flex items-center space-x-4 mt-3 text-white/70 text-sm">
               <span>{article.source}</span>
               <span className="text-slate-400/50">·</span>
               <span>{formatDate(article.publishedAt)}</span>

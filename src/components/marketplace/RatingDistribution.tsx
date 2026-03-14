@@ -59,7 +59,7 @@ export default function RatingDistribution({ reviews, avgRating }: RatingDistrib
               <div key={star} className="flex items-center gap-2">
                 <span className="text-xs text-slate-400 w-3 text-right">{star}</span>
                 <span className="text-xs text-yellow-400">★</span>
-                <div className="flex-1 h-2 bg-slate-700 rounded-full overflow-hidden">
+                <div className="flex-1 h-2 bg-white/[0.08] rounded-full overflow-hidden">
                   <div
                     className="h-full bg-yellow-400 rounded-full transition-all duration-500"
                     style={{ width: `${pct}%` }}
@@ -74,7 +74,7 @@ export default function RatingDistribution({ reviews, avgRating }: RatingDistrib
 
       {/* Sub-rating Averages */}
       {subRatings.some((s) => s.avg !== null) && (
-        <div className="mt-4 pt-4 border-t border-slate-700/50 grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div className="mt-4 pt-4 border-t border-white/[0.06] grid grid-cols-2 sm:grid-cols-4 gap-3">
           {subRatings.map((sub) => sub.avg !== null && (
             <div key={sub.key} className="text-center">
               <div className="text-xs text-slate-500 uppercase">{sub.label}</div>

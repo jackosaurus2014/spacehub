@@ -64,7 +64,7 @@ export default function ChangelogPage() {
       <ScrollReveal delay={0.1}>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
           <div className="card p-4 text-center">
-            <div className="text-2xl font-bold text-slate-300">{stats.totalVersions}</div>
+            <div className="text-2xl font-bold text-white/70">{stats.totalVersions}</div>
             <div className="text-xs text-slate-400 mt-1">Releases</div>
           </div>
           <div className="card p-4 text-center">
@@ -97,7 +97,7 @@ export default function ChangelogPage() {
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                 filter === key
                   ? `bg-${color}-500/20 text-${color}-400 border border-${color}-500/40`
-                  : 'bg-slate-800/50 text-slate-400 border border-slate-700/50 hover:text-slate-200 hover:border-slate-600'
+                  : 'bg-white/[0.04] text-slate-400 border border-white/[0.06] hover:text-white/90 hover:border-white/[0.1]'
               }`}
               style={
                 filter === key
@@ -149,7 +149,7 @@ export default function ChangelogPage() {
             <ScrollReveal key={entry.version} delay={index * 0.05}>
               <article
                 className={`card p-6 relative overflow-hidden transition-all ${
-                  isLatest ? 'ring-1 ring-white/10 bg-slate-800/80' : ''
+                  isLatest ? 'ring-1 ring-white/10 bg-white/[0.06]' : ''
                 }`}
               >
                 {/* Latest badge */}
@@ -164,7 +164,7 @@ export default function ChangelogPage() {
                 {/* Version header */}
                 <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mb-3">
                   <div className="flex items-center gap-3">
-                    <span className="text-sm font-mono font-bold text-slate-300 bg-white/5 px-3 py-1 rounded-md border border-white/10">
+                    <span className="text-sm font-mono font-bold text-white/70 bg-white/5 px-3 py-1 rounded-md border border-white/10">
                       v{entry.version}
                     </span>
                     <time
@@ -220,7 +220,7 @@ export default function ChangelogPage() {
                         {typeIcons[change.type]}
                         {typeLabels[change.type]}
                       </span>
-                      <span className="text-sm text-slate-300 leading-relaxed group-hover:text-slate-100 transition-colors">
+                      <span className="text-sm text-white/70 leading-relaxed group-hover:text-slate-100 transition-colors">
                         {change.text}
                       </span>
                     </li>
@@ -233,7 +233,7 @@ export default function ChangelogPage() {
                     onClick={() =>
                       setExpandedVersion(isExpanded ? null : entry.version)
                     }
-                    className="mt-4 text-sm text-slate-300 hover:text-white transition-colors flex items-center gap-1"
+                    className="mt-4 text-sm text-white/70 hover:text-white transition-colors flex items-center gap-1"
                   >
                     <svg
                       className={`w-4 h-4 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
@@ -266,7 +266,7 @@ export default function ChangelogPage() {
           </div>
           <p className="text-xs text-slate-600 mt-2">
             Have a feature request?{' '}
-            <a href="/contact" className="text-slate-300 hover:text-white transition-colors underline underline-offset-2">
+            <a href="/contact" className="text-white/70 hover:text-white transition-colors underline underline-offset-2">
               Let us know
             </a>
           </p>

@@ -140,7 +140,7 @@ const FAQ_ITEMS = [
 
 export default function SpaceEconomyInvestmentPage() {
   return (
-    <div className="min-h-screen bg-space-900">
+    <div className="min-h-screen bg-black">
       <div className="container mx-auto px-4 pb-16">
         {/* Breadcrumbs */}
         <nav className="pt-6 mb-4" aria-label="Breadcrumb">
@@ -175,7 +175,7 @@ export default function SpaceEconomyInvestmentPage() {
           </header>
 
           {/* Table of Contents */}
-          <nav className="bg-slate-800/60 border border-slate-700/50 rounded-xl p-6 mb-10">
+          <nav className="bg-white/[0.06] border border-white/[0.06] rounded-xl p-6 mb-10">
             <h2 className="text-lg font-bold text-white mb-3">Table of Contents</h2>
             <ol className="grid grid-cols-1 md:grid-cols-2 gap-2">
               {TOC.map((item, i) => (
@@ -192,7 +192,7 @@ export default function SpaceEconomyInvestmentPage() {
           </nav>
 
           {/* Disclaimer */}
-          <div className="bg-slate-800/60 border border-amber-700/50 rounded-xl p-4 mb-10">
+          <div className="bg-white/[0.06] border border-amber-700/50 rounded-xl p-4 mb-10">
             <p className="text-amber-400 text-sm leading-relaxed">
               <strong>Disclaimer:</strong> This guide is for educational purposes only and does not constitute
               investment advice. All investments carry risk, including the potential loss of principal. Past
@@ -203,7 +203,7 @@ export default function SpaceEconomyInvestmentPage() {
 
           {/* Content */}
           <ScrollReveal delay={0.1}>
-          <article className="bg-slate-800/60 border border-slate-700/50 rounded-xl p-8 space-y-10">
+          <article className="bg-white/[0.06] border border-white/[0.06] rounded-xl p-8 space-y-10">
             {/* Space Economy Overview */}
             <section id="space-economy-overview">
               <h2 className="text-2xl font-bold text-white mb-4">Space Economy Overview</h2>
@@ -249,7 +249,7 @@ export default function SpaceEconomyInvestmentPage() {
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="border-b border-slate-700/50">
+                    <tr className="border-b border-white/[0.06]">
                       <th className="py-3 pr-4 text-left text-white font-semibold">Company</th>
                       <th className="py-3 pr-4 text-left text-white font-semibold">Ticker</th>
                       <th className="py-3 pr-4 text-left text-white font-semibold">Market Cap</th>
@@ -258,7 +258,7 @@ export default function SpaceEconomyInvestmentPage() {
                   </thead>
                   <tbody>
                     {SPACE_STOCKS.map((stock) => (
-                      <tr key={stock.company} className="bg-slate-800/60 border-b border-slate-700/50">
+                      <tr key={stock.company} className="bg-white/[0.06] border-b border-white/[0.06]">
                         <td className="py-3 pr-4 text-white font-medium">{stock.company}</td>
                         <td className="py-3 pr-4 text-slate-300 font-semibold">{stock.ticker}</td>
                         <td className="py-3 pr-4 text-slate-300">{stock.marketCap}</td>
@@ -291,7 +291,7 @@ export default function SpaceEconomyInvestmentPage() {
                 stocks, several exchange-traded funds (ETFs) provide basket access to space-related companies:
               </p>
               <div className="space-y-4 mb-4">
-                <div className="bg-slate-800/60 border border-slate-700/50 rounded-xl p-4">
+                <div className="bg-white/[0.06] border border-white/[0.06] rounded-xl p-4">
                   <h3 className="font-semibold text-white text-sm">ARK Space Exploration & Innovation ETF (ARKX)</h3>
                   <p className="text-slate-300 text-sm mt-1 leading-relaxed">
                     Actively managed by ARK Invest. Holds 35-55 companies across space exploration,
@@ -299,7 +299,7 @@ export default function SpaceEconomyInvestmentPage() {
                     include Rocket Lab, Iridium, Kratos, and Trimble. Expense ratio: 0.75%.
                   </p>
                 </div>
-                <div className="bg-slate-800/60 border border-slate-700/50 rounded-xl p-4">
+                <div className="bg-white/[0.06] border border-white/[0.06] rounded-xl p-4">
                   <h3 className="font-semibold text-white text-sm">Procure Space ETF (UFO)</h3>
                   <p className="text-slate-300 text-sm mt-1 leading-relaxed">
                     Tracks the S-Network Space Index. More concentrated exposure to pure-play space companies
@@ -307,7 +307,7 @@ export default function SpaceEconomyInvestmentPage() {
                     Expense ratio: 0.75%.
                   </p>
                 </div>
-                <div className="bg-slate-800/60 border border-slate-700/50 rounded-xl p-4">
+                <div className="bg-white/[0.06] border border-white/[0.06] rounded-xl p-4">
                   <h3 className="font-semibold text-white text-sm">SPDR S&P Kensho Final Frontiers ETF (ROKT)</h3>
                   <p className="text-slate-300 text-sm mt-1 leading-relaxed">
                     AI-selected portfolio of companies involved in space exploration and deep-sea exploration.
@@ -315,7 +315,7 @@ export default function SpaceEconomyInvestmentPage() {
                     Expense ratio: 0.45%.
                   </p>
                 </div>
-                <div className="bg-slate-800/60 border border-slate-700/50 rounded-xl p-4">
+                <div className="bg-white/[0.06] border border-white/[0.06] rounded-xl p-4">
                   <h3 className="font-semibold text-white text-sm">iShares U.S. Aerospace & Defense ETF (ITA)</h3>
                   <p className="text-slate-300 text-sm mt-1 leading-relaxed">
                     Not space-specific, but provides heavy exposure to companies with significant space
@@ -421,7 +421,7 @@ export default function SpaceEconomyInvestmentPage() {
                 Here are the key factors to analyze:
               </p>
               <div className="space-y-4 mb-4">
-                <div className="bg-slate-800/60 border border-slate-700/50 rounded-xl p-4">
+                <div className="bg-white/[0.06] border border-white/[0.06] rounded-xl p-4">
                   <h3 className="font-semibold text-white text-sm">Revenue Quality and Backlog</h3>
                   <p className="text-slate-300 text-sm mt-1 leading-relaxed">
                     Look at the mix of government vs. commercial revenue, recurring vs. one-time contracts,
@@ -430,7 +430,7 @@ export default function SpaceEconomyInvestmentPage() {
                     services) commands higher valuation multiples than one-time hardware sales.
                   </p>
                 </div>
-                <div className="bg-slate-800/60 border border-slate-700/50 rounded-xl p-4">
+                <div className="bg-white/[0.06] border border-white/[0.06] rounded-xl p-4">
                   <h3 className="font-semibold text-white text-sm">Technology Readiness Level (TRL)</h3>
                   <p className="text-slate-300 text-sm mt-1 leading-relaxed">
                     NASA&apos;s TRL scale (1-9) measures technology maturity. Companies with TRL 7+ (system
@@ -439,7 +439,7 @@ export default function SpaceEconomyInvestmentPage() {
                     on-orbit demonstration can destroy shareholder value.
                   </p>
                 </div>
-                <div className="bg-slate-800/60 border border-slate-700/50 rounded-xl p-4">
+                <div className="bg-white/[0.06] border border-white/[0.06] rounded-xl p-4">
                   <h3 className="font-semibold text-white text-sm">Cash Runway and Capital Needs</h3>
                   <p className="text-slate-300 text-sm mt-1 leading-relaxed">
                     Space hardware businesses are capital-intensive. Analyze the cash runway (months of
@@ -448,7 +448,7 @@ export default function SpaceEconomyInvestmentPage() {
                     early-stage space companies that require multiple funding rounds.
                   </p>
                 </div>
-                <div className="bg-slate-800/60 border border-slate-700/50 rounded-xl p-4">
+                <div className="bg-white/[0.06] border border-white/[0.06] rounded-xl p-4">
                   <h3 className="font-semibold text-white text-sm">Competitive Moat</h3>
                   <p className="text-slate-300 text-sm mt-1 leading-relaxed">
                     Assess what prevents competitors from replicating the company&apos;s position. Moats in
@@ -457,7 +457,7 @@ export default function SpaceEconomyInvestmentPage() {
                     proprietary data assets, and network effects (for platforms and services).
                   </p>
                 </div>
-                <div className="bg-slate-800/60 border border-slate-700/50 rounded-xl p-4">
+                <div className="bg-white/[0.06] border border-white/[0.06] rounded-xl p-4">
                   <h3 className="font-semibold text-white text-sm">Management and Execution Track Record</h3>
                   <p className="text-slate-300 text-sm mt-1 leading-relaxed">
                     Space is unforgiving of execution failures. Evaluate the management team&apos;s track
@@ -512,7 +512,7 @@ export default function SpaceEconomyInvestmentPage() {
                 growth:
               </p>
               <div className="space-y-4 mb-4">
-                <div className="bg-slate-800/60 border border-slate-700/50 rounded-xl p-4">
+                <div className="bg-white/[0.06] border border-white/[0.06] rounded-xl p-4">
                   <h3 className="font-semibold text-white text-sm">Direct-to-Device Satellite Connectivity</h3>
                   <p className="text-slate-300 text-sm mt-1 leading-relaxed">
                     Eliminating the &quot;dead zones&quot; that affect billions of people. T-Mobile/SpaceX, AST
@@ -521,7 +521,7 @@ export default function SpaceEconomyInvestmentPage() {
                     landscape. Watch for carrier partnership announcements and coverage expansion milestones.
                   </p>
                 </div>
-                <div className="bg-slate-800/60 border border-slate-700/50 rounded-xl p-4">
+                <div className="bg-white/[0.06] border border-white/[0.06] rounded-xl p-4">
                   <h3 className="font-semibold text-white text-sm">Commercial Space Stations</h3>
                   <p className="text-slate-300 text-sm mt-1 leading-relaxed">
                     With the ISS scheduled for retirement around 2030, NASA is funding commercial replacements
@@ -530,7 +530,7 @@ export default function SpaceEconomyInvestmentPage() {
                     potentially tourism. First free-flying commercial stations are expected by 2028-2030.
                   </p>
                 </div>
-                <div className="bg-slate-800/60 border border-slate-700/50 rounded-xl p-4">
+                <div className="bg-white/[0.06] border border-white/[0.06] rounded-xl p-4">
                   <h3 className="font-semibold text-white text-sm">In-Space Manufacturing and Services</h3>
                   <p className="text-slate-300 text-sm mt-1 leading-relaxed">
                     Manufacturing in microgravity enables products impossible to make on Earth, including
@@ -540,7 +540,7 @@ export default function SpaceEconomyInvestmentPage() {
                     by companies like Orbit Fab and Astroscale.
                   </p>
                 </div>
-                <div className="bg-slate-800/60 border border-slate-700/50 rounded-xl p-4">
+                <div className="bg-white/[0.06] border border-white/[0.06] rounded-xl p-4">
                   <h3 className="font-semibold text-white text-sm">Cislunar Economy</h3>
                   <p className="text-slate-300 text-sm mt-1 leading-relaxed">
                     Artemis program lunar missions, commercial lunar landers (Intuitive Machines, Astrobotic,
@@ -549,7 +549,7 @@ export default function SpaceEconomyInvestmentPage() {
                     represent a long-term investment theme that could grow dramatically in the 2030s.
                   </p>
                 </div>
-                <div className="bg-slate-800/60 border border-slate-700/50 rounded-xl p-4">
+                <div className="bg-white/[0.06] border border-white/[0.06] rounded-xl p-4">
                   <h3 className="font-semibold text-white text-sm">Space Cybersecurity and Resilience</h3>
                   <p className="text-slate-300 text-sm mt-1 leading-relaxed">
                     As space systems become critical infrastructure, protecting them from cyber and physical
@@ -613,7 +613,7 @@ export default function SpaceEconomyInvestmentPage() {
               <h2 className="text-2xl font-bold text-white mb-4">Frequently Asked Questions</h2>
               <div className="space-y-4">
                 {FAQ_ITEMS.map((faq) => (
-                  <div key={faq.question} className="bg-slate-800/60 border border-slate-700/50 rounded-xl p-4">
+                  <div key={faq.question} className="bg-white/[0.06] border border-white/[0.06] rounded-xl p-4">
                     <h3 className="font-semibold text-white text-sm mb-2">{faq.question}</h3>
                     <p className="text-slate-300 text-sm leading-relaxed">{faq.answer}</p>
                   </div>
@@ -622,7 +622,7 @@ export default function SpaceEconomyInvestmentPage() {
             </section>
 
             {/* Related Content */}
-            <section className="pt-6 border-t border-slate-700/50">
+            <section className="pt-6 border-t border-white/[0.06]">
               <h3 className="text-lg font-bold text-white mb-4">Related Guides</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <Link href="/guide/space-industry-market-size" className="text-slate-300 hover:underline text-sm transition-colors">

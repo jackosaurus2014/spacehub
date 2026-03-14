@@ -4,21 +4,21 @@ export default function Loading() {
       <div className="container mx-auto px-4">
         {/* Header skeleton */}
         <div className="mb-8">
-          <div className="h-8 w-72 bg-slate-800 rounded animate-pulse mb-3" />
-          <div className="h-4 w-96 bg-slate-800/60 rounded animate-pulse" />
+          <div className="h-8 w-72 bg-white/[0.06] rounded animate-pulse mb-3" />
+          <div className="h-4 w-96 bg-white/[0.05] rounded animate-pulse" />
         </div>
 
         {/* Tab bar */}
-        <div className="flex gap-1 mb-8 border-b border-slate-700/50 pb-px">
+        <div className="flex gap-1 mb-8 border-b border-white/[0.06] pb-px">
           {Array.from({ length: 3 }).map((_, i) => (
-            <div key={i} className="h-10 w-32 bg-slate-800/50 rounded-t-lg animate-pulse" />
+            <div key={i} className="h-10 w-32 bg-white/[0.04] rounded-t-lg animate-pulse" />
           ))}
         </div>
 
         {/* Table skeleton */}
-        <div className="bg-slate-800/40 rounded-xl animate-pulse overflow-hidden">
+        <div className="bg-white/[0.04] rounded-xl animate-pulse overflow-hidden">
           {/* Table header */}
-          <div className="grid grid-cols-4 gap-4 p-4 border-b border-slate-700/30">
+          <div className="grid grid-cols-4 gap-4 p-4 border-b border-white/[0.04]">
             <div className="h-4 w-24 bg-slate-700/50 rounded" />
             <div className="h-4 w-20 bg-slate-700/50 rounded" />
             <div className="h-4 w-28 bg-slate-700/50 rounded" />
@@ -26,7 +26,7 @@ export default function Loading() {
           </div>
           {/* Table rows */}
           {Array.from({ length: 8 }).map((_, i) => (
-            <div key={i} className="grid grid-cols-4 gap-4 p-4 border-b border-slate-700/10">
+            <div key={i} className="grid grid-cols-4 gap-4 p-4 border-b border-white/[0.02]">
               <div className="h-4 w-3/4 bg-slate-700/30 rounded" />
               <div className="h-4 w-2/3 bg-slate-700/30 rounded" />
               <div className="h-4 w-5/6 bg-slate-700/30 rounded" />

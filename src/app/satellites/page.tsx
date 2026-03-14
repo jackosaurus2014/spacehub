@@ -55,7 +55,7 @@ const STATUS_OPTIONS: { value: SatelliteStatus; label: string; color: string }[]
 // ISS Position Card
 function ISSHighlight({ iss }: { iss: Satellite }) {
   return (
-    <div className="card p-6 border border-white/15 bg-gradient-to-br from-slate-800/20 to-transparent">
+    <div className="card p-6 border border-white/15 bg-gradient-to-br from-white/[0.04] to-transparent">
       <div className="flex items-start justify-between flex-wrap gap-4">
         <div className="flex items-center gap-4">
           <div className="w-16 h-16 rounded-xl bg-white/10 flex items-center justify-center text-4xl border border-white/10">
@@ -77,7 +77,7 @@ function ISSHighlight({ iss }: { iss: Satellite }) {
             <div className="text-slate-400 text-xs uppercase tracking-widest">Altitude</div>
           </div>
           <div className="text-center">
-            <div className="text-2xl font-bold text-slate-200">{iss.velocity.toFixed(2)} km/s</div>
+            <div className="text-2xl font-bold text-white/90">{iss.velocity.toFixed(2)} km/s</div>
             <div className="text-slate-400 text-xs uppercase tracking-widest">Velocity</div>
           </div>
           <div className="text-center">
@@ -87,7 +87,7 @@ function ISSHighlight({ iss }: { iss: Satellite }) {
         </div>
       </div>
       <p className="text-slate-400 text-sm mt-4">{iss.description}</p>
-      <div className="flex items-center gap-3 mt-4 pt-4 border-t border-slate-700">
+      <div className="flex items-center gap-3 mt-4 pt-4 border-t border-white/[0.06]">
         <a
           href={`https://www.n2yo.com/satellite/?s=${iss.noradId}`}
           target="_blank"
@@ -279,7 +279,7 @@ function SatelliteTrackerContent() {
                 </div>
               </div>
               <div className="card-elevated p-4 text-center">
-                <div className="text-2xl font-bold font-display text-slate-200">
+                <div className="text-2xl font-bold font-display text-white/90">
                   {stats?.topOperators?.length || 0}
                 </div>
                 <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">
@@ -303,14 +303,14 @@ function SatelliteTrackerContent() {
                     className={`flex items-center gap-2 px-5 py-2.5 min-h-[44px] rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
                       activeTab === tab.id
                         ? 'bg-white text-slate-900'
-                        : 'bg-slate-800/50 text-slate-500 hover:bg-slate-700'
+                        : 'bg-white/[0.04] text-slate-500 hover:bg-white/[0.08]'
                     }`}
                   >
                     {tab.label}
                     {tab.count !== undefined && tab.count > 0 && (
                       <span
                         className={`text-xs px-1.5 py-0.5 rounded-full ${
-                          activeTab === tab.id ? 'bg-slate-600 text-white' : 'bg-slate-700 text-slate-400'
+                          activeTab === tab.id ? 'bg-white/[0.1] text-white' : 'bg-white/[0.08] text-slate-400'
                         }`}
                       >
                         {tab.count}
@@ -319,7 +319,7 @@ function SatelliteTrackerContent() {
                   </button>
                 ))}
               </div>
-              <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-slate-950 to-transparent pointer-events-none md:hidden" />
+              <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-black to-transparent pointer-events-none md:hidden" />
             </div>
 
             {/* ──────────────── OVERVIEW TAB ──────────────── */}
@@ -353,7 +353,7 @@ function SatelliteTrackerContent() {
                                 {count} ({pct.toFixed(1)}%)
                               </span>
                             </div>
-                            <div className="h-3 bg-slate-700 rounded-full overflow-hidden">
+                            <div className="h-3 bg-white/[0.08] rounded-full overflow-hidden">
                               <div
                                 className="h-full bg-gradient-to-r from-white to-slate-400 rounded-full transition-all"
                                 style={{ width: `${Math.min(pct, 100)}%` }}
@@ -393,7 +393,7 @@ function SatelliteTrackerContent() {
                                   {count} ({pct.toFixed(1)}%)
                                 </span>
                               </div>
-                              <div className="h-3 bg-slate-700 rounded-full overflow-hidden">
+                              <div className="h-3 bg-white/[0.08] rounded-full overflow-hidden">
                                 <div
                                   className={`h-full bg-gradient-to-r ${purposeColors[purpose] || 'from-slate-500 to-slate-400'} rounded-full transition-all`}
                                   style={{ width: `${Math.min(pct, 100)}%` }}
@@ -420,7 +420,7 @@ function SatelliteTrackerContent() {
                     </h3>
                     <button
                       onClick={() => handleTabChange('satellites')}
-                      className="text-slate-200 hover:text-white text-sm transition-colors"
+                      className="text-white/90 hover:text-white text-sm transition-colors"
                     >
                       View All &rarr;
                     </button>
@@ -498,7 +498,7 @@ function SatelliteTrackerContent() {
                         placeholder="Search by name, NORAD ID, or operator..."
                         value={searchQuery}
                         onChange={(e) => handleSearch(e.target.value)}
-                        className="w-full px-4 py-2 h-11 rounded-lg bg-slate-800 border border-slate-700 text-white placeholder-slate-400 focus:outline-none focus:border-white/15 focus:ring-1 focus:ring-white/15 text-sm"
+                        className="w-full px-4 py-2 h-11 rounded-lg bg-white/[0.06] border border-white/[0.06] text-white placeholder-slate-400 focus:outline-none focus:border-white/15 focus:ring-1 focus:ring-white/15 text-sm"
                       />
                     </div>
 
@@ -509,7 +509,7 @@ function SatelliteTrackerContent() {
                         id="satellite-orbit-filter"
                         value={orbitFilter}
                         onChange={(e) => handleOrbitFilterChange(e.target.value as OrbitType | '')}
-                        className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+                        className="bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                       >
                         <option value="">All Orbits</option>
                         {ORBIT_TYPES.map((orbit) => (
@@ -527,7 +527,7 @@ function SatelliteTrackerContent() {
                         id="satellite-status-filter"
                         value={statusFilter}
                         onChange={(e) => handleStatusFilterChange(e.target.value as SatelliteStatus | '')}
-                        className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+                        className="bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                       >
                         <option value="">All Status</option>
                         {STATUS_OPTIONS.map((status) => (
@@ -551,7 +551,7 @@ function SatelliteTrackerContent() {
                         setSearchQuery('');
                         updateUrl({ orbit: '', status: '', search: '' });
                       }}
-                      className="ml-2 text-slate-200 hover:text-white"
+                      className="ml-2 text-white/90 hover:text-white"
                     >
                       Clear filters
                     </button>
@@ -600,7 +600,7 @@ function SatelliteTrackerContent() {
                               {operator.count} satellites ({pct.toFixed(1)}%)
                             </span>
                           </div>
-                          <div className="h-3 bg-slate-700 rounded-full overflow-hidden">
+                          <div className="h-3 bg-white/[0.08] rounded-full overflow-hidden">
                             <div
                               className="h-full bg-gradient-to-r from-white to-plasma-400 rounded-full transition-all"
                               style={{ width: `${Math.min(pct * 3, 100)}%` }}
@@ -613,7 +613,7 @@ function SatelliteTrackerContent() {
                 </div>
 
                 {/* Link to Orbital Slots */}
-                <div className="card p-5 border border-white/10 bg-gradient-to-br from-slate-800/10 to-transparent">
+                <div className="card p-5 border border-white/10 bg-gradient-to-br from-white/[0.04] to-transparent">
                   <div className="flex items-center justify-between flex-wrap gap-4">
                     <div>
                       <h3 className="text-lg font-semibold text-white mb-1">

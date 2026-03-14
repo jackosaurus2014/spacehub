@@ -63,7 +63,7 @@ export default function WidgetContent({ moduleId, widgetType }: WidgetContentPro
         <p className="text-slate-400 text-sm">{error}</p>
         <Link
           href={MODULE_ROUTES[moduleId] || '#'}
-          className="text-slate-300 hover:text-white text-sm mt-2 underline"
+          className="text-white/70 hover:text-white text-sm mt-2 underline"
         >
           Open full module
         </Link>
@@ -80,7 +80,7 @@ export default function WidgetContent({ moduleId, widgetType }: WidgetContentPro
           {stats.map((stat, i) => (
             <div
               key={i}
-              className="bg-slate-800/50 border border-slate-700/50 rounded-lg p-3 text-center"
+              className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-3 text-center"
             >
               <p className="text-xs text-slate-400 truncate">{stat.label}</p>
               <p className="text-lg font-bold text-slate-100">{stat.value}</p>
@@ -104,7 +104,7 @@ export default function WidgetContent({ moduleId, widgetType }: WidgetContentPro
               <Link
                 key={item.id}
                 href={item.url || moduleRoute}
-                className="block p-2.5 rounded-lg bg-slate-800/50 border border-slate-700/50 hover:border-white/10 transition-colors"
+                className="block p-2.5 rounded-lg bg-white/[0.04] border border-white/[0.06] hover:border-white/10 transition-colors"
               >
                 <p className="text-sm font-medium text-slate-100 line-clamp-2">{item.title}</p>
                 {item.subtitle && (
@@ -121,7 +121,7 @@ export default function WidgetContent({ moduleId, widgetType }: WidgetContentPro
 
     case 'chart':
       return (
-        <div className="flex flex-col items-center justify-center h-full min-h-[160px] bg-slate-800/50 border border-slate-700/50 rounded-lg p-4">
+        <div className="flex flex-col items-center justify-center h-full min-h-[160px] bg-white/[0.04] border border-white/[0.06] rounded-lg p-4">
           <div className="w-full h-24 flex items-end justify-between gap-1 px-2">
             {[40, 65, 50, 80, 45, 70, 55, 90, 60, 75, 85, 50].map((h, i) => (
               <div
@@ -133,7 +133,7 @@ export default function WidgetContent({ moduleId, widgetType }: WidgetContentPro
           </div>
           <p className="text-xs text-slate-400 mt-3">
             View full chart in{' '}
-            <Link href={moduleRoute} className="text-slate-300 hover:underline">
+            <Link href={moduleRoute} className="text-white/70 hover:underline">
               module
             </Link>
           </p>
@@ -146,7 +146,7 @@ export default function WidgetContent({ moduleId, widgetType }: WidgetContentPro
           {stats.length > 0 && (
             <div className="flex gap-3">
               {stats.slice(0, 2).map((stat, i) => (
-                <div key={i} className="flex-1 bg-slate-800/50 border border-slate-700/50 rounded-lg p-2 text-center">
+                <div key={i} className="flex-1 bg-white/[0.04] border border-white/[0.06] rounded-lg p-2 text-center">
                   <p className="text-xs text-slate-400">{stat.label}</p>
                   <p className="text-sm font-bold text-slate-100">{stat.value}</p>
                 </div>
@@ -158,14 +158,14 @@ export default function WidgetContent({ moduleId, widgetType }: WidgetContentPro
               {items.slice(0, 3).map((item) => (
                 <div key={item.id} className="flex items-center gap-2 text-sm">
                   <span className="w-1.5 h-1.5 rounded-full bg-white flex-shrink-0" />
-                  <span className="text-slate-300 truncate">{item.title}</span>
+                  <span className="text-white/70 truncate">{item.title}</span>
                 </div>
               ))}
             </div>
           )}
           <Link
             href={moduleRoute}
-            className="block text-xs text-slate-300 hover:text-white text-center"
+            className="block text-xs text-white/70 hover:text-white text-center"
           >
             View more
           </Link>
@@ -179,7 +179,7 @@ export default function WidgetContent({ moduleId, widgetType }: WidgetContentPro
           {stats.length > 0 && (
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
               {stats.map((stat, i) => (
-                <div key={i} className="bg-slate-800/50 border border-slate-700/50 rounded-lg p-2 text-center">
+                <div key={i} className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-2 text-center">
                   <p className="text-xs text-slate-400">{stat.label}</p>
                   <p className="text-sm font-bold text-slate-100">{stat.value}</p>
                 </div>
@@ -190,7 +190,7 @@ export default function WidgetContent({ moduleId, widgetType }: WidgetContentPro
             <Link
               key={item.id}
               href={item.url || moduleRoute}
-              className="block p-3 rounded-lg bg-slate-800/50 border border-slate-700/50 hover:border-white/10 transition-colors"
+              className="block p-3 rounded-lg bg-white/[0.04] border border-white/[0.06] hover:border-white/10 transition-colors"
             >
               <p className="text-sm font-medium text-slate-100 line-clamp-2">{item.title}</p>
               {item.subtitle && (
@@ -201,7 +201,7 @@ export default function WidgetContent({ moduleId, widgetType }: WidgetContentPro
           {items.length === 0 && stats.length === 0 && (
             <div className="text-center py-8">
               <p className="text-slate-400 text-sm">No data available</p>
-              <Link href={moduleRoute} className="text-slate-300 hover:underline text-sm mt-1 inline-block">
+              <Link href={moduleRoute} className="text-white/70 hover:underline text-sm mt-1 inline-block">
                 Open module
               </Link>
             </div>
@@ -364,7 +364,7 @@ function WidgetSkeleton({ type }: { type: string }) {
     return (
       <div className="grid grid-cols-2 gap-3 p-1">
         {[1, 2, 3, 4].map((i) => (
-          <div key={i} className="bg-slate-800/50 rounded-lg p-3">
+          <div key={i} className="bg-white/[0.04] rounded-lg p-3">
             <Skeleton className="h-3 w-16 mx-auto mb-2" />
             <Skeleton className="h-5 w-10 mx-auto" />
           </div>

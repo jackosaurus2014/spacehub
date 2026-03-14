@@ -69,7 +69,7 @@ export default function CookiePolicyPage() {
               <div className="mb-6 p-6 card">
                 <div className="flex items-center gap-3 mb-3">
                   <span className="w-3 h-3 rounded-full bg-green-500"></span>
-                  <h3 className="text-lg font-medium text-slate-200">Essential Cookies</h3>
+                  <h3 className="text-lg font-medium text-white/90">Essential Cookies</h3>
                   <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded">Required</span>
                 </div>
                 <p className="text-slate-400 leading-relaxed mb-3">
@@ -91,7 +91,7 @@ export default function CookiePolicyPage() {
               <div className="mb-6 p-6 card">
                 <div className="flex items-center gap-3 mb-3">
                   <span className="w-3 h-3 rounded-full bg-blue-500"></span>
-                  <h3 className="text-lg font-medium text-slate-200">Functional Cookies</h3>
+                  <h3 className="text-lg font-medium text-white/90">Functional Cookies</h3>
                   <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">Preferences</span>
                 </div>
                 <p className="text-slate-400 leading-relaxed mb-3">
@@ -113,7 +113,7 @@ export default function CookiePolicyPage() {
               <div className="mb-6 p-6 card">
                 <div className="flex items-center gap-3 mb-3">
                   <span className="w-3 h-3 rounded-full bg-yellow-500"></span>
-                  <h3 className="text-lg font-medium text-slate-200">Analytics Cookies</h3>
+                  <h3 className="text-lg font-medium text-white/90">Analytics Cookies</h3>
                   <span className="text-xs bg-yellow-100 text-yellow-700 px-2 py-1 rounded">Performance</span>
                 </div>
                 <p className="text-slate-400 leading-relaxed mb-3">
@@ -135,7 +135,7 @@ export default function CookiePolicyPage() {
               <div className="p-6 card">
                 <div className="flex items-center gap-3 mb-3">
                   <span className="w-3 h-3 rounded-full bg-purple-500"></span>
-                  <h3 className="text-lg font-medium text-slate-200">Marketing Cookies</h3>
+                  <h3 className="text-lg font-medium text-white/90">Marketing Cookies</h3>
                   <span className="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded">Advertising</span>
                 </div>
                 <p className="text-slate-400 leading-relaxed mb-3">
@@ -162,14 +162,14 @@ export default function CookiePolicyPage() {
               </p>
               <div className="grid md:grid-cols-2 gap-4">
                 <div className="p-4 card">
-                  <h4 className="font-medium text-slate-200 mb-2">Session Cookies</h4>
+                  <h4 className="font-medium text-white/90 mb-2">Session Cookies</h4>
                   <p className="text-sm text-slate-400">
                     These are temporary cookies that expire when you close your browser. They are used
                     to maintain your session while you navigate the site.
                   </p>
                 </div>
                 <div className="p-4 card">
-                  <h4 className="font-medium text-slate-200 mb-2">Persistent Cookies</h4>
+                  <h4 className="font-medium text-white/90 mb-2">Persistent Cookies</h4>
                   <p className="text-sm text-slate-400">
                     These cookies remain on your device for a set period or until you delete them. They
                     are used to remember your preferences across visits.
@@ -206,7 +206,7 @@ export default function CookiePolicyPage() {
                 You have several options to control or limit how cookies are used:
               </p>
 
-              <h3 className="text-lg font-medium text-slate-200 mb-3">Browser Settings</h3>
+              <h3 className="text-lg font-medium text-white/90 mb-3">Browser Settings</h3>
               <p className="text-slate-400 leading-relaxed mb-4">
                 Most web browsers allow you to control cookies through their settings. You can typically
                 find these settings in the &quot;Options&quot; or &quot;Preferences&quot; menu of your browser. The following
@@ -217,7 +217,7 @@ export default function CookiePolicyPage() {
                   <a href="https://support.google.com/chrome/answer/95647"
                      target="_blank"
                      rel="noopener noreferrer"
-                     className="text-slate-200 hover:text-white underline">
+                     className="text-white/90 hover:text-white underline">
                     Google Chrome
                   </a>
                 </li>
@@ -225,7 +225,7 @@ export default function CookiePolicyPage() {
                   <a href="https://support.mozilla.org/en-US/kb/cookies-information-websites-store-on-your-computer"
                      target="_blank"
                      rel="noopener noreferrer"
-                     className="text-slate-200 hover:text-white underline">
+                     className="text-white/90 hover:text-white underline">
                     Mozilla Firefox
                   </a>
                 </li>
@@ -233,7 +233,7 @@ export default function CookiePolicyPage() {
                   <a href="https://support.apple.com/guide/safari/manage-cookies-sfri11471/mac"
                      target="_blank"
                      rel="noopener noreferrer"
-                     className="text-slate-200 hover:text-white underline">
+                     className="text-white/90 hover:text-white underline">
                     Safari
                   </a>
                 </li>
@@ -241,13 +241,13 @@ export default function CookiePolicyPage() {
                   <a href="https://support.microsoft.com/en-us/microsoft-edge/delete-cookies-in-microsoft-edge-63947406-40ac-c3b8-57b9-2a946a29ae09"
                      target="_blank"
                      rel="noopener noreferrer"
-                     className="text-slate-200 hover:text-white underline">
+                     className="text-white/90 hover:text-white underline">
                     Microsoft Edge
                   </a>
                 </li>
               </ul>
 
-              <h3 className="text-lg font-medium text-slate-200 mb-3">Opt-Out Tools</h3>
+              <h3 className="text-lg font-medium text-white/90 mb-3">Opt-Out Tools</h3>
               <p className="text-slate-400 leading-relaxed mb-4">
                 You can opt out of certain third-party cookies using these tools:
               </p>
@@ -256,7 +256,7 @@ export default function CookiePolicyPage() {
                   <a href="https://optout.networkadvertising.org/"
                      target="_blank"
                      rel="noopener noreferrer"
-                     className="text-slate-200 hover:text-white underline">
+                     className="text-white/90 hover:text-white underline">
                     Network Advertising Initiative Opt-Out
                   </a>
                 </li>
@@ -264,7 +264,7 @@ export default function CookiePolicyPage() {
                   <a href="https://optout.aboutads.info/"
                      target="_blank"
                      rel="noopener noreferrer"
-                     className="text-slate-200 hover:text-white underline">
+                     className="text-white/90 hover:text-white underline">
                     Digital Advertising Alliance Opt-Out
                   </a>
                 </li>
@@ -272,7 +272,7 @@ export default function CookiePolicyPage() {
                   <a href="https://www.youronlinechoices.eu/"
                      target="_blank"
                      rel="noopener noreferrer"
-                     className="text-slate-200 hover:text-white underline">
+                     className="text-white/90 hover:text-white underline">
                     European Interactive Digital Advertising Alliance
                   </a>
                 </li>
@@ -315,25 +315,25 @@ export default function CookiePolicyPage() {
                 If you have any questions about our use of cookies or this Cookie Policy, please contact us:
               </p>
               <div className="card p-6">
-                <p className="text-slate-300 font-medium">SpaceNexus Privacy Team</p>
+                <p className="text-white/70 font-medium">SpaceNexus Privacy Team</p>
                 <p className="text-slate-400 mt-2">Email: privacy@spacenexus.us</p>
                 <p className="text-slate-400">Address: 1234 Orbit Drive, Suite 500, Houston, TX 77058</p>
               </div>
             </section>
 
             {/* Related Links */}
-            <section className="pt-6 border-t border-slate-700">
-              <h3 className="text-lg font-medium text-slate-200 mb-4">Related Documents</h3>
+            <section className="pt-6 border-t border-white/[0.08]">
+              <h3 className="text-lg font-medium text-white/90 mb-4">Related Documents</h3>
               <div className="flex flex-wrap gap-4">
                 <Link
                   href="/privacy"
-                  className="text-slate-200 hover:text-white underline"
+                  className="text-white/90 hover:text-white underline"
                 >
                   Privacy Policy
                 </Link>
                 <Link
                   href="/terms"
-                  className="text-slate-200 hover:text-white underline"
+                  className="text-white/90 hover:text-white underline"
                 >
                   Terms of Service
                 </Link>

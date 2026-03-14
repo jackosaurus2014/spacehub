@@ -239,17 +239,17 @@ export default function HeroStats() {
       <Link href="/mission-control" className="card-glass p-4 group">
         <div className="flex items-center gap-2 mb-2">
           <span className="text-xl">🚀</span>
-          <span className="text-xs uppercase tracking-wider text-slate-300 font-medium">Next Launch</span>
+          <span className="text-xs uppercase tracking-wider text-white/70 font-medium">Next Launch</span>
         </div>
         {launch ? (
           <>
-            <div className="text-2xl font-bold text-slate-300 font-mono mb-1">
+            <div className="text-2xl font-bold text-white/70 font-mono mb-1">
               {launch.timeUntil}
             </div>
             <p className="text-sm text-white truncate">
               {launch.name}
             </p>
-            <p className="text-xs text-slate-200">{launch.provider}</p>
+            <p className="text-xs text-white/90">{launch.provider}</p>
           </>
         ) : (
           <p className="text-slate-400">No upcoming launches</p>
@@ -260,7 +260,7 @@ export default function HeroStats() {
       <Link href="/market-intel" className="card-glass p-4 group">
         <div className="flex items-center gap-2 mb-2">
           <span className="text-xl">{market?.type === 'ipo' ? '🔔' : '📈'}</span>
-          <span className="text-xs uppercase tracking-wider text-slate-300 font-medium">
+          <span className="text-xs uppercase tracking-wider text-white/70 font-medium">
             {market?.type === 'ipo' ? 'Upcoming IPO' : 'Top Performer'}
           </span>
         </div>
@@ -273,7 +273,7 @@ export default function HeroStats() {
               <p className="text-sm text-white truncate">
                 {market.ipoCompany.name}
               </p>
-              <p className="text-xs text-slate-200">IPO Date: {market.ipoCompany.expectedDate}</p>
+              <p className="text-xs text-white/90">IPO Date: {market.ipoCompany.expectedDate}</p>
             </>
           ) : market.topGainer ? (
             <>
@@ -285,7 +285,7 @@ export default function HeroStats() {
               <p className="text-sm text-white truncate">
                 {market.topGainer.name}
               </p>
-              <p className="text-xs text-slate-200">{market.topGainer.ticker}</p>
+              <p className="text-xs text-white/90">{market.topGainer.ticker}</p>
             </>
           ) : (
             <p className="text-slate-400">No market data</p>
@@ -296,17 +296,17 @@ export default function HeroStats() {
       </Link>
 
       {/* Breaking News */}
-      <Link href="/news" className="card p-4 hover:border-white/15 transition-all group col-span-1 lg:col-span-1 !bg-slate-900/95">
+      <Link href="/news" className="card p-4 hover:border-white/15 transition-all group col-span-1 lg:col-span-1 !bg-black/95">
         <div className="flex items-center gap-2 mb-2">
           <span className="text-xl">📰</span>
-          <span className="text-xs uppercase tracking-wider text-slate-300 font-medium">Latest News</span>
+          <span className="text-xs uppercase tracking-wider text-white/70 font-medium">Latest News</span>
         </div>
         {news ? (
           <>
             <p className="text-sm text-white line-clamp-2">
               {news.headline}
             </p>
-            <p className="text-xs text-slate-200 mt-1">{news.source}</p>
+            <p className="text-xs text-white/90 mt-1">{news.source}</p>
           </>
         ) : (
           <p className="text-slate-400">No recent news</p>
@@ -317,14 +317,14 @@ export default function HeroStats() {
       <Link href="/space-environment" className="card-glass p-4 group">
         <div className="flex items-center gap-2 mb-2">
           <span className="text-xl">☀️</span>
-          <span className="text-xs uppercase tracking-wider text-slate-300 font-medium">Space Weather</span>
+          <span className="text-xs uppercase tracking-wider text-white/70 font-medium">Space Weather</span>
         </div>
         {solar ? (
           <>
             <div className={`text-xl font-bold ${solarStatusColors[solar.status]} mb-1`}>
               {solarStatusLabels[solar.status]}
             </div>
-            <div className="flex items-center gap-3 text-xs text-slate-200">
+            <div className="flex items-center gap-3 text-xs text-white/90">
               {solar.flareClass && (
                 <span>Latest: {solar.flareClass}</span>
               )}

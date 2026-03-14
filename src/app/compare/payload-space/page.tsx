@@ -58,7 +58,7 @@ export default function PayloadComparisonPage() {
             <li>/</li>
             <li><Link href="/compare" className="hover:text-white transition-colors">Compare</Link></li>
             <li>/</li>
-            <li className="text-slate-300">Payload Space</li>
+            <li className="text-white/70">Payload Space</li>
           </ol>
         </nav>
 
@@ -68,7 +68,7 @@ export default function PayloadComparisonPage() {
             <h1 className="text-3xl md:text-4xl font-bold text-white mb-4 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
               SpaceNexus vs Payload Space
             </h1>
-            <p className="text-lg text-slate-300 leading-relaxed drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]">
+            <p className="text-lg text-white/70 leading-relaxed drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]">
               Payload Space is one of the most recognized media brands in the space industry, delivering
               a widely-read daily newsletter with curated news and analysis. SpaceNexus is an interactive
               intelligence platform with satellite tracking, company profiles, procurement data, and more.
@@ -87,8 +87,8 @@ export default function PayloadComparisonPage() {
           <div className="card p-6 mb-10 border-l-4 border-white/15">
             <h2 className="text-lg font-bold text-white mb-2">TL;DR</h2>
             <p className="text-slate-400 text-sm leading-relaxed">
-              <strong className="text-slate-300">Payload Space</strong> is an excellent curated newsletter
-              for staying current on space industry news. <strong className="text-slate-300">SpaceNexus</strong> is
+              <strong className="text-white/70">Payload Space</strong> is an excellent curated newsletter
+              for staying current on space industry news. <strong className="text-white/70">SpaceNexus</strong> is
               an interactive intelligence platform for doing work &mdash; tracking satellites, researching companies,
               finding procurement opportunities, and analyzing markets. They are complementary, not competitive:
               read Payload for your daily briefing, then use SpaceNexus to dig deeper and take action.
@@ -102,7 +102,7 @@ export default function PayloadComparisonPage() {
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="card p-6 ring-2 ring-white/15">
-                <div className="text-xs font-semibold text-slate-300 uppercase tracking-wider mb-3">SpaceNexus</div>
+                <div className="text-xs font-semibold text-white/70 uppercase tracking-wider mb-3">SpaceNexus</div>
                 <h3 className="text-lg font-bold text-white mb-3">Interactive Intelligence Platform</h3>
                 <p className="text-slate-400 text-sm mb-4">
                   A full-featured platform where you explore data, track assets, research companies,
@@ -142,16 +142,16 @@ export default function PayloadComparisonPage() {
             <div className="card overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-slate-700">
-                    <th className="py-4 px-4 text-left text-slate-300 font-semibold">Feature</th>
-                    <th className="py-4 px-4 text-left text-slate-300 font-semibold">SpaceNexus</th>
-                    <th className="py-4 px-4 text-left text-slate-300 font-semibold">Payload Space</th>
+                  <tr className="border-b border-white/[0.08]">
+                    <th className="py-4 px-4 text-left text-white/70 font-semibold">Feature</th>
+                    <th className="py-4 px-4 text-left text-white/70 font-semibold">SpaceNexus</th>
+                    <th className="py-4 px-4 text-left text-white/70 font-semibold">Payload Space</th>
                   </tr>
                 </thead>
                 <tbody>
                   {FEATURE_COMPARISON.map((row) => (
                     <tr key={row.feature} className="border-b border-slate-100">
-                      <td className="py-3 px-4 text-slate-300 font-medium">{row.feature}</td>
+                      <td className="py-3 px-4 text-white/70 font-medium">{row.feature}</td>
                       <td className="py-3 px-4 text-slate-500">
                         <div className="flex items-start gap-2">
                           {row.winner === 'spacenexus' && (
@@ -196,9 +196,9 @@ export default function PayloadComparisonPage() {
                   { title: 'Regulatory tracking', desc: 'Monitor FCC filings, ITU spectrum allocations, space law developments, and export control changes in real time.' },
                 ].map((item) => (
                   <li key={item.title} className="flex items-start gap-3">
-                    <span className="text-slate-300 mt-1 flex-shrink-0 font-bold">&#10003;</span>
+                    <span className="text-white/70 mt-1 flex-shrink-0 font-bold">&#10003;</span>
                     <div>
-                      <strong className="text-slate-300">{item.title}:</strong>{' '}
+                      <strong className="text-white/70">{item.title}:</strong>{' '}
                       <span className="text-slate-400 text-sm">{item.desc}</span>
                     </div>
                   </li>
@@ -227,7 +227,7 @@ export default function PayloadComparisonPage() {
                   <li key={item.title} className="flex items-start gap-3">
                     <span className="text-slate-500 mt-1 flex-shrink-0 font-bold">&#10003;</span>
                     <div>
-                      <strong className="text-slate-300">{item.title}:</strong>{' '}
+                      <strong className="text-white/70">{item.title}:</strong>{' '}
                       <span className="text-slate-400 text-sm">{item.desc}</span>
                     </div>
                   </li>
@@ -247,7 +247,7 @@ export default function PayloadComparisonPage() {
                 industry professionals will use both:
               </p>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-4 text-center">
+                <div className="bg-white/[0.04] border border-white/[0.08] rounded-lg p-4 text-center">
                   <div className="text-2xl mb-2">&#9728;&#65039;</div>
                   <h4 className="font-semibold text-white text-sm mb-1">Morning</h4>
                   <p className="text-slate-400 text-xs">
@@ -255,7 +255,7 @@ export default function PayloadComparisonPage() {
                     matters today.
                   </p>
                 </div>
-                <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-4 text-center">
+                <div className="bg-white/[0.04] border border-white/[0.08] rounded-lg p-4 text-center">
                   <div className="text-2xl mb-2">&#9881;&#65039;</div>
                   <h4 className="font-semibold text-white text-sm mb-1">Workday</h4>
                   <p className="text-slate-400 text-xs">
@@ -263,7 +263,7 @@ export default function PayloadComparisonPage() {
                     and monitor your satellite constellation.
                   </p>
                 </div>
-                <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-4 text-center">
+                <div className="bg-white/[0.04] border border-white/[0.08] rounded-lg p-4 text-center">
                   <div className="text-2xl mb-2">&#128202;</div>
                   <h4 className="font-semibold text-white text-sm mb-1">Strategic</h4>
                   <p className="text-slate-400 text-xs">
@@ -293,9 +293,9 @@ export default function PayloadComparisonPage() {
                   { title: 'Free to start', desc: 'Like Payload, SpaceNexus has a free tier. Unlike Payload, that free tier includes satellite tracking, launch monitoring, and company research tools.' },
                 ].map((item) => (
                   <li key={item.title} className="flex items-start gap-3">
-                    <span className="text-slate-300 mt-1 flex-shrink-0 font-bold">&#10003;</span>
+                    <span className="text-white/70 mt-1 flex-shrink-0 font-bold">&#10003;</span>
                     <div>
-                      <strong className="text-slate-300">{item.title}:</strong>{' '}
+                      <strong className="text-white/70">{item.title}:</strong>{' '}
                       <span className="text-slate-400 text-sm">{item.desc}</span>
                     </div>
                   </li>
@@ -327,7 +327,7 @@ export default function PayloadComparisonPage() {
 
           {/* Back Link */}
           <div className="text-center">
-            <Link href="/compare" className="text-slate-300 hover:text-white text-sm transition-colors">
+            <Link href="/compare" className="text-white/70 hover:text-white text-sm transition-colors">
               &larr; Back to all comparisons
             </Link>
           </div>

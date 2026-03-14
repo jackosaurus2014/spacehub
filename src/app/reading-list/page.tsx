@@ -22,7 +22,7 @@ interface ReadingListItem {
 }
 
 const categoryColors: Record<string, string> = {
-  launches: 'bg-rocket-500/20 text-rocket-400',
+  launches: 'bg-white/[0.08] text-white/70',
   missions: 'bg-white/10 text-slate-300',
   companies: 'bg-blue-500/20 text-blue-400',
   satellites: 'bg-white/10 text-slate-300',
@@ -140,7 +140,7 @@ export default function ReadingListPage() {
 
   if (status === 'loading' || loading) {
     return (
-      <main className="min-h-screen bg-space-950 py-8 px-4">
+      <main className="min-h-screen bg-black py-8 px-4">
         <div className="container mx-auto max-w-7xl">
           <AnimatedPageHeader
             title="Reading List"
@@ -166,7 +166,7 @@ export default function ReadingListPage() {
             {[...Array(5)].map((_, i) => (
               <div
                 key={i}
-                className="h-20 rounded-xl bg-slate-800/50 animate-pulse"
+                className="h-20 rounded-xl bg-white/[0.04] animate-pulse"
               />
             ))}
           </div>
@@ -177,7 +177,7 @@ export default function ReadingListPage() {
 
   if (!session?.user?.id) {
     return (
-      <main className="min-h-screen bg-space-950 py-8 px-4">
+      <main className="min-h-screen bg-black py-8 px-4">
         <div className="container mx-auto max-w-7xl">
           <AnimatedPageHeader
             title="Reading List"
@@ -204,7 +204,7 @@ export default function ReadingListPage() {
             animate={{ opacity: 1, y: 0 }}
             className="text-center py-16"
           >
-            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-slate-800/50 flex items-center justify-center">
+            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-white/[0.04] flex items-center justify-center">
               <svg
                 className="w-8 h-8 text-slate-500"
                 fill="none"
@@ -219,7 +219,7 @@ export default function ReadingListPage() {
                 />
               </svg>
             </div>
-            <h2 className="text-xl font-semibold text-slate-200 mb-2">
+            <h2 className="text-xl font-semibold text-white/90 mb-2">
               Sign in to use your reading list
             </h2>
             <p className="text-slate-400 mb-6">
@@ -238,7 +238,7 @@ export default function ReadingListPage() {
   }
 
   return (
-    <main className="min-h-screen bg-space-950 py-8 px-4">
+    <main className="min-h-screen bg-black py-8 px-4">
       <div className="container mx-auto max-w-7xl">
         <AnimatedPageHeader
           title="Reading List"
@@ -296,8 +296,8 @@ export default function ReadingListPage() {
               onClick={() => setFilter('all')}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                 filter === 'all'
-                  ? 'bg-white/10 text-slate-200 border border-white/10'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/50'
+                  ? 'bg-white/10 text-white/90 border border-white/10'
+                  : 'text-slate-400 hover:text-white/90 hover:bg-white/[0.08]'
               }`}
             >
               All ({items.length})
@@ -306,8 +306,8 @@ export default function ReadingListPage() {
               onClick={() => setFilter('unread')}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                 filter === 'unread'
-                  ? 'bg-white/10 text-slate-200 border border-white/10'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/50'
+                  ? 'bg-white/10 text-white/90 border border-white/10'
+                  : 'text-slate-400 hover:text-white/90 hover:bg-white/[0.08]'
               }`}
             >
               Unread ({unreadCount})
@@ -316,8 +316,8 @@ export default function ReadingListPage() {
               onClick={() => setFilter('read')}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                 filter === 'read'
-                  ? 'bg-white/10 text-slate-200 border border-white/10'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/50'
+                  ? 'bg-white/10 text-white/90 border border-white/10'
+                  : 'text-slate-400 hover:text-white/90 hover:bg-white/[0.08]'
               }`}
             >
               Read ({readCount})
@@ -377,8 +377,8 @@ export default function ReadingListPage() {
                 variants={fadeInUp}
                 className={`group relative rounded-xl border transition-all duration-200 ${
                   item.read
-                    ? 'bg-slate-800/30 border-slate-700/30'
-                    : 'bg-slate-800/60 border-slate-700/50 hover:border-white/10'
+                    ? 'bg-white/[0.04] border-white/[0.06]'
+                    : 'bg-white/[0.04] border-white/[0.06] hover:border-white/10'
                 }`}
               >
                 <div className="flex items-start gap-4 p-4">
@@ -388,7 +388,7 @@ export default function ReadingListPage() {
                     className={`mt-1 flex-shrink-0 w-5 h-5 rounded border-2 transition-colors flex items-center justify-center ${
                       item.read
                         ? 'bg-white/10 border-white/15 text-slate-300'
-                        : 'border-slate-600 hover:border-white/15'
+                        : 'border-white/[0.1] hover:border-white/15'
                     }`}
                     aria-label={
                       item.read ? 'Mark as unread' : 'Mark as read'
@@ -420,8 +420,8 @@ export default function ReadingListPage() {
                       rel="noopener noreferrer"
                       className={`block font-medium leading-snug transition-colors ${
                         item.read
-                          ? 'text-slate-400 hover:text-slate-200'
-                          : 'text-slate-100 hover:text-white'
+                          ? 'text-slate-400 hover:text-white/90'
+                          : 'text-white hover:text-white'
                       }`}
                     >
                       {item.title}
@@ -441,7 +441,7 @@ export default function ReadingListPage() {
                         <span
                           className={`text-xs font-medium px-1.5 py-0.5 rounded uppercase tracking-wide ${
                             categoryColors[item.category] ||
-                            'bg-slate-700/50 text-slate-400'
+                            'bg-white/[0.08] text-slate-400'
                           }`}
                         >
                           {item.category}
@@ -462,7 +462,7 @@ export default function ReadingListPage() {
                       href={item.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="p-1.5 rounded-lg text-slate-500 hover:text-white hover:bg-slate-700/50 transition-colors"
+                      className="p-1.5 rounded-lg text-slate-500 hover:text-white hover:bg-white/[0.08] transition-colors"
                       aria-label="Open article"
                     >
                       <svg

@@ -93,7 +93,7 @@ function getAwardTypeBadge(awardType: string) {
     },
     Contract: {
       bg: 'bg-white/10',
-      text: 'text-slate-300',
+      text: 'text-white/70',
       label: 'Contract',
     },
   };
@@ -240,7 +240,7 @@ export default function ContractAwardsPage() {
             className="card p-4"
           >
             <div className="text-xs text-slate-400 mb-1">Date Range</div>
-            <div className="text-xl font-bold text-slate-300">
+            <div className="text-xl font-bold text-white/70">
               {dateRange} days
             </div>
           </motion.div>
@@ -248,7 +248,7 @@ export default function ContractAwardsPage() {
       )}
 
       {/* Search and Filters */}
-      <div className="bg-slate-800/30 border border-slate-700/50 rounded-xl p-4 mb-6">
+      <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-4 mb-6">
         <div className="flex flex-col lg:flex-row gap-3">
           {/* Search */}
           <div className="flex-1 relative">
@@ -258,7 +258,7 @@ export default function ContractAwardsPage() {
               placeholder="Search by recipient, description, or agency..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-10 pr-4 bg-slate-800 border border-slate-700 text-white rounded-lg py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+              className="w-full pl-10 pr-4 bg-white/[0.06] border border-white/[0.08] text-white rounded-lg py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
             />
             <svg
               className="absolute left-3 top-3 w-4 h-4 text-slate-500"
@@ -280,7 +280,7 @@ export default function ContractAwardsPage() {
             aria-label="Filter by agency"
             value={agency}
             onChange={(e) => setAgency(e.target.value)}
-            className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+            className="bg-white/[0.06] border border-white/[0.08] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
           >
             {AGENCY_OPTIONS.map((opt) => (
               <option key={opt.value} value={opt.value}>
@@ -294,7 +294,7 @@ export default function ContractAwardsPage() {
             aria-label="Filter by date range"
             value={dateRange}
             onChange={(e) => setDateRange(Number(e.target.value))}
-            className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+            className="bg-white/[0.06] border border-white/[0.08] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
           >
             {DATE_RANGE_OPTIONS.map((opt) => (
               <option key={opt.value} value={opt.value}>
@@ -316,7 +316,7 @@ export default function ContractAwardsPage() {
               value={minAmount}
               onChange={(e) => setMinAmount(e.target.value)}
               min="0"
-              className="w-full lg:w-40 pl-7 pr-3 bg-slate-800 border border-slate-700 text-white rounded-lg py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+              className="w-full lg:w-40 pl-7 pr-3 bg-white/[0.06] border border-white/[0.08] text-white rounded-lg py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
             />
           </div>
         </div>
@@ -367,9 +367,9 @@ export default function ContractAwardsPage() {
       ) : (
         <>
           {/* Desktop Table */}
-          <div className="hidden lg:block bg-slate-800/30 border border-slate-700/50 rounded-xl overflow-hidden">
+          <div className="hidden lg:block bg-white/[0.03] border border-white/[0.06] rounded-xl overflow-hidden">
             {/* Table Header */}
-            <div className="grid grid-cols-12 gap-2 px-4 py-3 border-b border-slate-700/50 text-xs font-semibold text-slate-400 uppercase tracking-wider">
+            <div className="grid grid-cols-12 gap-2 px-4 py-3 border-b border-white/[0.06] text-xs font-semibold text-slate-400 uppercase tracking-wider">
               <div className="col-span-4">Award / Description</div>
               <div className="col-span-2">Recipient</div>
               <div className="col-span-2">Agency</div>
@@ -388,7 +388,7 @@ export default function ContractAwardsPage() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0 }}
                   transition={{ delay: i * 0.02 }}
-                  className="border-b border-slate-700/20 hover:bg-slate-700/20 transition-colors"
+                  className="border-b border-white/[0.08]/20 hover:bg-slate-700/20 transition-colors"
                 >
                   <button
                     onClick={() =>
@@ -416,12 +416,12 @@ export default function ContractAwardsPage() {
                         <Link
                           href={`/company-profiles/${award.companySlug}`}
                           onClick={(e) => e.stopPropagation()}
-                          className="text-sm text-slate-300 hover:text-white truncate block transition-colors"
+                          className="text-sm text-white/70 hover:text-white truncate block transition-colors"
                         >
                           {award.recipientName}
                         </Link>
                       ) : (
-                        <span className="text-sm text-slate-300 truncate block">
+                        <span className="text-sm text-white/70 truncate block">
                           {award.recipientName}
                         </span>
                       )}
@@ -429,7 +429,7 @@ export default function ContractAwardsPage() {
 
                     {/* Agency */}
                     <div className="col-span-2 min-w-0">
-                      <span className="text-sm text-slate-300 truncate block">
+                      <span className="text-sm text-white/70 truncate block">
                         {award.awardingAgency}
                       </span>
                     </div>
@@ -442,7 +442,7 @@ export default function ContractAwardsPage() {
                             ? 'text-emerald-400'
                             : award.totalObligation >= 1e5
                               ? 'text-amber-400'
-                              : 'text-slate-300'
+                              : 'text-white/70'
                         }`}
                       >
                         {formatCompactCurrency(award.totalObligation)}
@@ -483,7 +483,7 @@ export default function ContractAwardsPage() {
                         transition={{ duration: 0.2 }}
                         className="overflow-hidden"
                       >
-                        <div className="px-4 py-4 bg-slate-800/40 border-t border-slate-700/30">
+                        <div className="px-4 py-4 bg-white/[0.04] border-t border-white/[0.04]">
                           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-3">
                             <div>
                               <div className="text-xs text-slate-500 uppercase tracking-wider mb-1">
@@ -498,7 +498,7 @@ export default function ContractAwardsPage() {
                                 <div className="text-xs text-slate-500 uppercase tracking-wider mb-1">
                                   Funding Agency
                                 </div>
-                                <div className="text-sm text-slate-300">
+                                <div className="text-sm text-white/70">
                                   {award.fundingAgency}
                                 </div>
                               </div>
@@ -508,7 +508,7 @@ export default function ContractAwardsPage() {
                                 <div className="text-xs text-slate-500 uppercase tracking-wider mb-1">
                                   Place of Performance
                                 </div>
-                                <div className="text-sm text-slate-300">
+                                <div className="text-sm text-white/70">
                                   {award.placeOfPerformance}
                                 </div>
                               </div>
@@ -518,7 +518,7 @@ export default function ContractAwardsPage() {
                                 <div className="text-xs text-slate-500 uppercase tracking-wider mb-1">
                                   End Date
                                 </div>
-                                <div className="text-sm text-slate-300">
+                                <div className="text-sm text-white/70">
                                   {formatDate(award.endDate)}
                                 </div>
                               </div>
@@ -528,7 +528,7 @@ export default function ContractAwardsPage() {
                                 <div className="text-xs text-slate-500 uppercase tracking-wider mb-1">
                                   NAICS Description
                                 </div>
-                                <div className="text-sm text-slate-300">
+                                <div className="text-sm text-white/70">
                                   {award.naicsCode} -{' '}
                                   {award.naicsDescription}
                                 </div>
@@ -550,7 +550,7 @@ export default function ContractAwardsPage() {
                               <div className="text-xs text-slate-500 uppercase tracking-wider mb-1">
                                 Description
                               </div>
-                              <p className="text-sm text-slate-300 leading-relaxed">
+                              <p className="text-sm text-white/70 leading-relaxed">
                                 {award.description}
                               </p>
                             </div>
@@ -574,7 +574,7 @@ export default function ContractAwardsPage() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0 }}
                   transition={{ delay: i * 0.03 }}
-                  className="bg-slate-800/30 border border-slate-700/50 rounded-xl p-4"
+                  className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-4"
                 >
                   <div className="flex items-start justify-between mb-2">
                     <div className="flex-1 min-w-0 mr-3">
@@ -595,12 +595,12 @@ export default function ContractAwardsPage() {
                       {award.companySlug ? (
                         <Link
                           href={`/company-profiles/${award.companySlug}`}
-                          className="text-sm text-slate-300 hover:text-white truncate max-w-[200px] transition-colors"
+                          className="text-sm text-white/70 hover:text-white truncate max-w-[200px] transition-colors"
                         >
                           {award.recipientName}
                         </Link>
                       ) : (
-                        <span className="text-sm text-slate-300 truncate max-w-[200px]">
+                        <span className="text-sm text-white/70 truncate max-w-[200px]">
                           {award.recipientName}
                         </span>
                       )}
@@ -609,7 +609,7 @@ export default function ContractAwardsPage() {
                     {/* Agency */}
                     <div className="flex items-center justify-between">
                       <span className="text-xs text-slate-500">Agency</span>
-                      <span className="text-sm text-slate-300 truncate max-w-[200px]">
+                      <span className="text-sm text-white/70 truncate max-w-[200px]">
                         {award.awardingAgency}
                       </span>
                     </div>
@@ -623,7 +623,7 @@ export default function ContractAwardsPage() {
                             ? 'text-emerald-400'
                             : award.totalObligation >= 1e5
                               ? 'text-amber-400'
-                              : 'text-slate-300'
+                              : 'text-white/70'
                         }`}
                       >
                         {formatCurrency.format(award.totalObligation)}
@@ -661,7 +661,7 @@ export default function ContractAwardsPage() {
                             : award.awardId
                         )
                       }
-                      className="mt-3 text-xs text-slate-300 hover:text-white transition-colors"
+                      className="mt-3 text-xs text-white/70 hover:text-white transition-colors"
                     >
                       {expandedAward === award.awardId
                         ? 'Hide details'
@@ -678,7 +678,7 @@ export default function ContractAwardsPage() {
                         transition={{ duration: 0.2 }}
                         className="overflow-hidden"
                       >
-                        <div className="mt-3 pt-3 border-t border-slate-700/30">
+                        <div className="mt-3 pt-3 border-t border-white/[0.04]">
                           <p className="text-xs text-slate-400 leading-relaxed">
                             {award.description}
                           </p>
@@ -707,7 +707,7 @@ export default function ContractAwardsPage() {
             <button
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={page <= 1}
-              className="px-4 py-2 text-sm rounded-lg bg-slate-800/50 border border-slate-700/50 text-slate-300 hover:bg-slate-700/50 hover:text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              className="px-4 py-2 text-sm rounded-lg bg-white/[0.04] border border-white/[0.06] text-white/70 hover:bg-white/[0.08] hover:text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
             >
               Previous
             </button>
@@ -717,7 +717,7 @@ export default function ContractAwardsPage() {
             <button
               onClick={() => setPage((p) => p + 1)}
               disabled={!hasMore}
-              className="px-4 py-2 text-sm rounded-lg bg-slate-800/50 border border-slate-700/50 text-slate-300 hover:bg-slate-700/50 hover:text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              className="px-4 py-2 text-sm rounded-lg bg-white/[0.04] border border-white/[0.06] text-white/70 hover:bg-white/[0.08] hover:text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
             >
               Next
             </button>

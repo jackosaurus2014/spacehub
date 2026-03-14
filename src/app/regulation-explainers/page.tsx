@@ -87,7 +87,7 @@ function ExplainersContent() {
           <select
             value={agency}
             onChange={(e) => { setAgency(e.target.value); setPage(1); }}
-            className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+            className="bg-white/[0.06] border border-white/[0.08] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
           >
             <option value="">All Agencies</option>
             {AGENCIES.map((a) => (
@@ -98,7 +98,7 @@ function ExplainersContent() {
           <select
             value={category}
             onChange={(e) => { setCategory(e.target.value); setPage(1); }}
-            className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+            className="bg-white/[0.06] border border-white/[0.08] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
           >
             <option value="">All Categories</option>
             {CATEGORIES.map((c) => (
@@ -109,7 +109,7 @@ function ExplainersContent() {
           <select
             value={impactLevel}
             onChange={(e) => { setImpactLevel(e.target.value); setPage(1); }}
-            className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+            className="bg-white/[0.06] border border-white/[0.08] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
           >
             <option value="">All Impact Levels</option>
             {IMPACT_LEVELS.map((l) => (
@@ -122,7 +122,7 @@ function ExplainersContent() {
             placeholder="Search regulations..."
             value={search}
             onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-            className="bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm text-white flex-1 min-w-[200px]"
+            className="bg-white/[0.06] border border-white/[0.1] rounded-lg px-3 py-2 text-sm text-white flex-1 min-w-[200px]"
           />
 
           <div className="text-sm text-slate-400">
@@ -141,15 +141,15 @@ function ExplainersContent() {
               return (
                 <StaggerItem key={exp.id}>
                   <Link href={`/regulation-explainers/${exp.slug}`}>
-                    <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-5 hover:border-white/10 transition-all cursor-pointer h-full flex flex-col">
+                    <div className="bg-white/[0.04] border border-white/[0.08] rounded-xl p-5 hover:border-white/10 transition-all cursor-pointer h-full flex flex-col">
                       <div className="flex items-center gap-2 mb-3">
                         <span className={`px-2 py-0.5 rounded text-xs font-medium border ${impact.color}`}>
                           {impact.label}
                         </span>
-                        <span className="px-2 py-0.5 bg-slate-700 rounded text-xs text-slate-300 font-medium">
+                        <span className="px-2 py-0.5 bg-white/[0.08] rounded text-xs text-white/70 font-medium">
                           {exp.agency}
                         </span>
-                        <span className="px-2 py-0.5 bg-slate-700/50 rounded text-xs text-slate-400">
+                        <span className="px-2 py-0.5 bg-white/[0.08]/50 rounded text-xs text-slate-400">
                           {exp.category}
                         </span>
                       </div>
@@ -159,7 +159,7 @@ function ExplainersContent() {
                       <p className="text-slate-400 text-xs mb-3 line-clamp-3 flex-1">
                         {exp.summary}
                       </p>
-                      <div className="flex items-center justify-between text-xs text-slate-500 mt-auto pt-2 border-t border-slate-700/50">
+                      <div className="flex items-center justify-between text-xs text-slate-500 mt-auto pt-2 border-t border-white/[0.06]">
                         <span>
                           {new Date(exp.generatedAt).toLocaleDateString()}
                         </span>
@@ -190,7 +190,7 @@ function ExplainersContent() {
             <button
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={page <= 1}
-              className="px-3 py-1.5 bg-slate-700 hover:bg-slate-600 disabled:opacity-50 text-white text-sm rounded"
+              className="px-3 py-1.5 bg-white/[0.08] hover:bg-white/[0.1] disabled:opacity-50 text-white text-sm rounded"
             >
               Previous
             </button>
@@ -200,7 +200,7 @@ function ExplainersContent() {
             <button
               onClick={() => setPage((p) => p + 1)}
               disabled={page * 20 >= total}
-              className="px-3 py-1.5 bg-slate-700 hover:bg-slate-600 disabled:opacity-50 text-white text-sm rounded"
+              className="px-3 py-1.5 bg-white/[0.08] hover:bg-white/[0.1] disabled:opacity-50 text-white text-sm rounded"
             >
               Next
             </button>

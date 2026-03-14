@@ -38,7 +38,7 @@ const PROVIDER_TYPES: { id: ProviderType; icon: string; color: string; descripti
   { id: 'SAR', icon: '📡', color: 'text-orange-400', description: 'Synthetic aperture radar — all-weather, day/night' },
   { id: 'Hyperspectral', icon: '🌈', color: 'text-purple-400', description: 'Hundreds of narrow spectral bands for material ID' },
   { id: 'RF/Signals', icon: '📻', color: 'text-red-400', description: 'Radio-frequency signal detection & geolocation' },
-  { id: 'Analytics', icon: '🧠', color: 'text-slate-300', description: 'AI-powered geospatial analytics platforms' },
+  { id: 'Analytics', icon: '🧠', color: 'text-white/70', description: 'AI-powered geospatial analytics platforms' },
 ];
 
 function getTypeColor(type: ProviderType): string {
@@ -69,7 +69,7 @@ function getTypeTextColor(type: ProviderType): string {
     SAR: 'text-orange-400',
     Hyperspectral: 'text-purple-400',
     'RF/Signals': 'text-red-400',
-    Analytics: 'text-slate-300',
+    Analytics: 'text-white/70',
   };
   return colors[type] || 'text-slate-400';
 }
@@ -506,7 +506,7 @@ export default function ImageryProvidersPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100">
+    <div className="min-h-screen bg-black text-white/90">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <AnimatedPageHeader
@@ -519,7 +519,7 @@ export default function ImageryProvidersPage() {
         {/* Type Summary Cards */}
         <ScrollReveal delay={0.1}>
           <div className="mb-8">
-            <h2 className="text-lg font-semibold text-slate-100 mb-4">
+            <h2 className="text-lg font-semibold text-white/90 mb-4">
               Provider Categories
             </h2>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
@@ -530,7 +530,7 @@ export default function ImageryProvidersPage() {
                   className={`p-4 rounded-lg border text-left transition-all ${
                     typeFilter === ts.id
                       ? 'bg-emerald-900/30 border-emerald-500/60 ring-1 ring-emerald-500/30'
-                      : 'bg-slate-900/60 border-slate-700/50 hover:border-slate-600'
+                      : 'bg-black/60 border-white/[0.06] hover:border-white/[0.1]'
                   }`}
                 >
                   <div className="flex items-center gap-2 mb-2">
@@ -539,7 +539,7 @@ export default function ImageryProvidersPage() {
                   </div>
                   <p className="text-[11px] text-slate-500 leading-tight mb-2">{ts.description}</p>
                   <div className="flex items-end gap-2">
-                    <span className="text-xl font-bold text-slate-100">{ts.count}</span>
+                    <span className="text-xl font-bold text-white/90">{ts.count}</span>
                     <span className="text-[10px] text-slate-500 mb-0.5">provider{ts.count !== 1 ? 's' : ''}</span>
                   </div>
                 </button>
@@ -550,8 +550,8 @@ export default function ImageryProvidersPage() {
 
         {/* Resolution Comparison Chart */}
         <ScrollReveal delay={0.15}>
-          <div className="mb-8 bg-slate-900/80 border border-slate-700/50 rounded-xl p-6">
-            <h2 className="text-lg font-semibold text-slate-100 mb-4">
+          <div className="mb-8 bg-black/80 border border-white/[0.06] rounded-xl p-6">
+            <h2 className="text-lg font-semibold text-white/90 mb-4">
               Resolution Distribution
             </h2>
             <div className="space-y-3">
@@ -565,7 +565,7 @@ export default function ImageryProvidersPage() {
                       <span className={`text-xs font-medium ${tier.textColor}`}>{tier.label}</span>
                       <span className="text-[10px] text-slate-500 ml-2">({tier.range})</span>
                     </div>
-                    <div className="flex-1 bg-slate-800 rounded-full h-6 overflow-hidden">
+                    <div className="flex-1 bg-white/[0.06] rounded-full h-6 overflow-hidden">
                       <div
                         className={`h-full rounded-full ${tier.color} transition-all duration-700 flex items-center justify-end pr-2`}
                         style={{ width: `${Math.max(pct, 8)}%` }}
@@ -579,7 +579,7 @@ export default function ImageryProvidersPage() {
                 );
               })}
             </div>
-            <div className="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4 border-t border-slate-700/50">
+            <div className="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4 border-t border-white/[0.06]">
               <div className="text-center">
                 <div className="text-xl font-bold text-emerald-400">{PROVIDERS.length}</div>
                 <div className="text-[11px] text-slate-400">Total Providers</div>
@@ -608,7 +608,7 @@ export default function ImageryProvidersPage() {
 
         {/* Filters & Sort */}
         <ScrollReveal delay={0.2}>
-          <div className="mb-6 bg-slate-900/60 border border-slate-700/50 rounded-xl p-4">
+          <div className="mb-6 bg-black/60 border border-white/[0.06] rounded-xl p-4">
             <div className="flex flex-col md:flex-row md:items-center gap-4">
               {/* Type Filter */}
               <div className="flex-1">
@@ -616,7 +616,7 @@ export default function ImageryProvidersPage() {
                 <select
                   value={typeFilter}
                   onChange={(e) => setTypeFilter(e.target.value)}
-                  className="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
+                  className="w-full bg-white/[0.06] border border-white/[0.1] rounded-lg px-3 py-2 text-sm text-white/90 focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
                 >
                   <option value="All">All Types</option>
                   {PROVIDER_TYPES.map((pt) => (
@@ -633,7 +633,7 @@ export default function ImageryProvidersPage() {
                 <select
                   value={resolutionFilter}
                   onChange={(e) => setResolutionFilter(e.target.value)}
-                  className="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
+                  className="w-full bg-white/[0.06] border border-white/[0.1] rounded-lg px-3 py-2 text-sm text-white/90 focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
                 >
                   <option value="All">All Resolutions</option>
                   {RESOLUTION_TIERS.map((tier, idx) => (
@@ -659,7 +659,7 @@ export default function ImageryProvidersPage() {
                       className={`px-3 py-2 text-xs font-medium rounded-lg transition-colors ${
                         sortField === field
                           ? 'bg-emerald-600 text-white'
-                          : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+                          : 'bg-white/[0.06] text-white/70 hover:bg-white/[0.06]'
                       }`}
                     >
                       {label}
@@ -685,14 +685,14 @@ export default function ImageryProvidersPage() {
             return (
               <ScrollReveal key={provider.name} delay={Math.min(idx * 0.04, 0.4)}>
                 <div
-                  className={`bg-slate-900/70 border rounded-xl overflow-hidden transition-all ${getTypeBorderColor(provider.type)} ${
+                  className={`bg-black/70 border rounded-xl overflow-hidden transition-all ${getTypeBorderColor(provider.type)} ${
                     isExpanded ? 'ring-1 ring-emerald-500/20' : ''
                   }`}
                 >
                   {/* Card Header */}
                   <button
                     onClick={() => setExpandedProvider(isExpanded ? null : provider.name)}
-                    className="w-full text-left p-4 sm:p-5 flex items-start gap-4 hover:bg-slate-800/30 transition-colors"
+                    className="w-full text-left p-4 sm:p-5 flex items-start gap-4 hover:bg-white/[0.03] transition-colors"
                   >
                     {/* Type Badge */}
                     <div className="flex-shrink-0 flex flex-col items-center">
@@ -709,10 +709,10 @@ export default function ImageryProvidersPage() {
                     {/* Info */}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <h3 className="text-sm sm:text-base font-semibold text-slate-100">
+                        <h3 className="text-sm sm:text-base font-semibold text-white/90">
                           {provider.name}
                         </h3>
-                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 border border-slate-700">
+                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/[0.06] text-slate-400 border border-white/[0.08]">
                           Est. {provider.founded}
                         </span>
                       </div>
@@ -756,11 +756,11 @@ export default function ImageryProvidersPage() {
 
                   {/* Expanded Content */}
                   {isExpanded && (
-                    <div className="px-4 sm:px-5 pb-5 border-t border-slate-700/50">
+                    <div className="px-4 sm:px-5 pb-5 border-t border-white/[0.06]">
                       <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-5">
                         {/* Constellation Details */}
                         <div>
-                          <h4 className="text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
+                          <h4 className="text-xs font-semibold text-white/70 uppercase tracking-wider mb-2">
                             Constellation
                           </h4>
                           <p className="text-sm text-slate-400 leading-relaxed">
@@ -770,7 +770,7 @@ export default function ImageryProvidersPage() {
 
                         {/* Spectral Bands */}
                         <div>
-                          <h4 className="text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
+                          <h4 className="text-xs font-semibold text-white/70 uppercase tracking-wider mb-2">
                             Spectral Bands
                           </h4>
                           <p className="text-sm text-emerald-300/90 leading-relaxed">
@@ -780,7 +780,7 @@ export default function ImageryProvidersPage() {
 
                         {/* Pricing */}
                         <div>
-                          <h4 className="text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
+                          <h4 className="text-xs font-semibold text-white/70 uppercase tracking-wider mb-2">
                             Pricing
                           </h4>
                           <p className="text-sm text-slate-400 leading-relaxed">
@@ -790,35 +790,35 @@ export default function ImageryProvidersPage() {
 
                         {/* Resolution & Revisit */}
                         <div>
-                          <h4 className="text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
+                          <h4 className="text-xs font-semibold text-white/70 uppercase tracking-wider mb-2">
                             Performance
                           </h4>
                           <div className="space-y-2">
                             <div className="flex items-center justify-between text-sm">
                               <span className="text-slate-500">Resolution</span>
-                              <span className="text-slate-200 font-medium">{provider.resolution}</span>
+                              <span className="text-white/90 font-medium">{provider.resolution}</span>
                             </div>
                             <div className="flex items-center justify-between text-sm">
                               <span className="text-slate-500">Revisit Rate</span>
-                              <span className="text-slate-200 font-medium">{provider.revisitRate}</span>
+                              <span className="text-white/90 font-medium">{provider.revisitRate}</span>
                             </div>
                             <div className="flex items-center justify-between text-sm">
                               <span className="text-slate-500">Coverage</span>
-                              <span className="text-slate-200 font-medium">{provider.coverage}</span>
+                              <span className="text-white/90 font-medium">{provider.coverage}</span>
                             </div>
                           </div>
                         </div>
 
                         {/* Applications */}
                         <div className="md:col-span-2">
-                          <h4 className="text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
+                          <h4 className="text-xs font-semibold text-white/70 uppercase tracking-wider mb-2">
                             Key Applications
                           </h4>
                           <div className="flex flex-wrap gap-1.5">
                             {provider.applications.map((app) => (
                               <span
                                 key={app}
-                                className="px-2.5 py-1 text-xs rounded-md bg-slate-800/80 text-slate-300 border border-slate-700/50"
+                                className="px-2.5 py-1 text-xs rounded-md bg-white/[0.06] text-white/70 border border-white/[0.06]"
                               >
                                 {app}
                               </span>
@@ -828,7 +828,7 @@ export default function ImageryProvidersPage() {
                       </div>
 
                       {/* Website Link */}
-                      <div className="mt-4 pt-4 border-t border-slate-700/50">
+                      <div className="mt-4 pt-4 border-t border-white/[0.06]">
                         <a
                           href={provider.website}
                           target="_blank"
@@ -859,19 +859,19 @@ export default function ImageryProvidersPage() {
         {/* Overall Stats */}
         <ScrollReveal delay={0.1}>
           <div className="mb-8 grid grid-cols-2 sm:grid-cols-4 gap-4">
-            <div className="bg-slate-900/70 border border-slate-700/50 rounded-xl p-4 text-center">
+            <div className="bg-black/70 border border-white/[0.06] rounded-xl p-4 text-center">
               <div className="text-2xl font-bold text-emerald-400">{PROVIDERS.length}</div>
               <div className="text-xs text-slate-400 mt-1">Providers Cataloged</div>
             </div>
-            <div className="bg-slate-900/70 border border-slate-700/50 rounded-xl p-4 text-center">
+            <div className="bg-black/70 border border-white/[0.06] rounded-xl p-4 text-center">
               <div className="text-2xl font-bold text-blue-400">5</div>
               <div className="text-xs text-slate-400 mt-1">Sensor Categories</div>
             </div>
-            <div className="bg-slate-900/70 border border-slate-700/50 rounded-xl p-4 text-center">
+            <div className="bg-black/70 border border-white/[0.06] rounded-xl p-4 text-center">
               <div className="text-2xl font-bold text-amber-400">10 cm</div>
               <div className="text-xs text-slate-400 mt-1">Best Resolution (Albedo)</div>
             </div>
-            <div className="bg-slate-900/70 border border-slate-700/50 rounded-xl p-4 text-center">
+            <div className="bg-black/70 border border-white/[0.06] rounded-xl p-4 text-center">
               <div className="text-2xl font-bold text-purple-400">200+</div>
               <div className="text-xs text-slate-400 mt-1">Combined Satellites</div>
             </div>
@@ -880,8 +880,8 @@ export default function ImageryProvidersPage() {
 
         {/* Related Pages */}
         <ScrollReveal delay={0.15}>
-          <div className="bg-slate-900/60 border border-slate-700/50 rounded-xl p-6">
-            <h2 className="text-lg font-semibold text-slate-100 mb-4">Related Resources</h2>
+          <div className="bg-black/60 border border-white/[0.06] rounded-xl p-6">
+            <h2 className="text-lg font-semibold text-white/90 mb-4">Related Resources</h2>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               {[
                 { href: '/space-manufacturing', label: 'Space Manufacturing', icon: '🏭', desc: 'In-space manufacturing and imagery' },
@@ -892,10 +892,10 @@ export default function ImageryProvidersPage() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="group p-4 rounded-lg bg-slate-800/50 border border-slate-700/50 hover:border-emerald-500/40 hover:bg-slate-800/80 transition-all"
+                  className="group p-4 rounded-lg bg-white/[0.04] border border-white/[0.06] hover:border-emerald-500/40 hover:bg-white/[0.06] transition-all"
                 >
                   <span className="text-2xl">{link.icon}</span>
-                  <h3 className="text-sm font-medium text-slate-200 mt-2 group-hover:text-emerald-300 transition-colors">
+                  <h3 className="text-sm font-medium text-white/90 mt-2 group-hover:text-emerald-300 transition-colors">
                     {link.label}
                   </h3>
                   <p className="text-[11px] text-slate-500 mt-0.5">{link.desc}</p>

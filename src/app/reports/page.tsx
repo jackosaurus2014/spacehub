@@ -283,17 +283,17 @@ function renderMarkdown(md: string): string {
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
     // Headers
-    .replace(/^### (.+)$/gm, '<h4 class="text-lg font-semibold text-slate-100 mt-6 mb-2">$1</h4>')
-    .replace(/^## (.+)$/gm, '<h3 class="text-xl font-semibold text-slate-100 mt-6 mb-3">$1</h3>')
-    .replace(/^# (.+)$/gm, '<h2 class="text-2xl font-bold text-slate-100 mt-8 mb-4">$1</h2>')
+    .replace(/^### (.+)$/gm, '<h4 class="text-lg font-semibold text-white mt-6 mb-2">$1</h4>')
+    .replace(/^## (.+)$/gm, '<h3 class="text-xl font-semibold text-white mt-6 mb-3">$1</h3>')
+    .replace(/^# (.+)$/gm, '<h2 class="text-2xl font-bold text-white mt-8 mb-4">$1</h2>')
     // Bold and italic
     .replace(/\*\*\*(.+?)\*\*\*/g, '<strong><em>$1</em></strong>')
-    .replace(/\*\*(.+?)\*\*/g, '<strong class="text-slate-100">$1</strong>')
+    .replace(/\*\*(.+?)\*\*/g, '<strong class="text-white">$1</strong>')
     .replace(/\*(.+?)\*/g, '<em>$1</em>')
     // Blockquotes
     .replace(/^&gt; (.+)$/gm, '<blockquote class="border-l-4 border-white/10 pl-4 my-3 text-slate-400 italic">$1</blockquote>')
     // Horizontal rules
-    .replace(/^---$/gm, '<hr class="border-slate-700 my-6" />')
+    .replace(/^---$/gm, '<hr class="border-white/[0.06] my-6" />')
     // Unordered lists
     .replace(/^- (.+)$/gm, '<li class="ml-4 text-slate-300">$1</li>')
     // Ordered lists
@@ -319,12 +319,12 @@ function renderMarkdown(md: string): string {
       );
 
       const headerHtml = headers
-        .map((h: string) => `<th class="px-4 py-2 text-left text-sm font-semibold text-slate-200 border-b border-slate-600">${h}</th>`)
+        .map((h: string) => `<th class="px-4 py-2 text-left text-sm font-semibold text-white/90 border-b border-white/[0.1]">${h}</th>`)
         .join('');
       const bodyHtml = rows
         .map(
           (row: string[]) =>
-            `<tr class="border-b border-slate-700/50">${row.map((c: string) => `<td class="px-4 py-2 text-sm text-slate-300">${c}</td>`).join('')}</tr>`
+            `<tr class="border-b border-white/[0.06]">${row.map((c: string) => `<td class="px-4 py-2 text-sm text-slate-300">${c}</td>`).join('')}</tr>`
         )
         .join('');
 
@@ -664,7 +664,7 @@ function ReportsPageInner() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 * idx + 0.2 }}
-                className="group relative bg-slate-800/50 border border-slate-700/50 rounded-xl p-6 hover:border-white/10 hover:bg-slate-800/70 transition-all duration-300"
+                className="group relative bg-white/[0.04] border border-white/[0.06] rounded-xl p-6 hover:border-white/10 hover:bg-white/[0.06] transition-all duration-300"
               >
                 {rt.isSample && (
                   <div className="absolute top-4 right-4 bg-emerald-500/20 text-emerald-400 text-xs font-semibold px-2.5 py-1 rounded-full border border-emerald-500/30">
@@ -677,7 +677,7 @@ function ReportsPageInner() {
                     <ReportIcon icon={rt.icon} className="w-6 h-6 text-slate-300" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h3 className="text-lg font-semibold text-slate-100 mb-1">{rt.name}</h3>
+                    <h3 className="text-lg font-semibold text-white mb-1">{rt.name}</h3>
                     <p className="text-sm text-slate-400 leading-relaxed">{rt.description}</p>
                   </div>
                 </div>
@@ -691,7 +691,7 @@ function ReportsPageInner() {
                     {rt.sections.slice(0, 5).map((s) => (
                       <span
                         key={s.id}
-                        className="text-xs bg-slate-700/50 text-slate-400 px-2 py-0.5 rounded"
+                        className="text-xs bg-white/[0.06] text-slate-400 px-2 py-0.5 rounded"
                       >
                         {s.title}
                       </span>
@@ -705,7 +705,7 @@ function ReportsPageInner() {
                 </div>
 
                 {/* Footer */}
-                <div className="flex items-center justify-between pt-3 border-t border-slate-700/30">
+                <div className="flex items-center justify-between pt-3 border-t border-white/[0.06]">
                   <div className="flex items-center gap-4 text-xs text-slate-500">
                     <span>~{rt.estimatedPages} pages</span>
                     <span>{rt.generationTime}</span>
@@ -735,9 +735,9 @@ function ReportsPageInner() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.7 }}
-            className="mt-12 bg-slate-800/30 border border-slate-700/30 rounded-xl p-8"
+            className="mt-12 bg-white/[0.04] border border-white/[0.06] rounded-xl p-8"
           >
-            <h2 className="text-xl font-semibold text-slate-100 mb-6 text-center">
+            <h2 className="text-xl font-semibold text-white mb-6 text-center">
               How Intelligence Reports Work
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
@@ -767,7 +767,7 @@ function ReportsPageInner() {
                   <div className="w-10 h-10 rounded-full bg-white/10 border border-white/10 text-slate-300 font-bold text-lg flex items-center justify-center mx-auto mb-3">
                     {item.step}
                   </div>
-                  <h3 className="text-sm font-semibold text-slate-200 mb-1">{item.title}</h3>
+                  <h3 className="text-sm font-semibold text-white/90 mb-1">{item.title}</h3>
                   <p className="text-xs text-slate-400">{item.desc}</p>
                 </div>
               ))}
@@ -790,7 +790,7 @@ function ReportsPageInner() {
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mb-6">
           <button
             onClick={handleBackToCatalog}
-            className="flex items-center gap-2 text-sm text-slate-400 hover:text-slate-200 transition-colors mb-4"
+            className="flex items-center gap-2 text-sm text-slate-400 hover:text-white/90 transition-colors mb-4"
           >
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
@@ -803,7 +803,7 @@ function ReportsPageInner() {
               <ReportIcon icon={selectedType.icon} className="w-6 h-6 text-slate-300" />
             </div>
             <div>
-              <h1 className="text-2xl md:text-3xl font-bold text-slate-100">{selectedType.name}</h1>
+              <h1 className="text-2xl md:text-3xl font-bold text-white">{selectedType.name}</h1>
               <p className="text-slate-400 text-sm mt-0.5">{selectedType.description}</p>
             </div>
           </div>
@@ -819,8 +819,8 @@ function ReportsPageInner() {
               exit={{ opacity: 0, y: -20 }}
               className="max-w-2xl"
             >
-              <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-6">
-                <h2 className="text-lg font-semibold text-slate-100 mb-6">Configure Your Report</h2>
+              <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-6">
+                <h2 className="text-lg font-semibold text-white mb-6">Configure Your Report</h2>
 
                 {/* Sector select */}
                 {selectedType.id === 'sector-overview' && (
@@ -832,7 +832,7 @@ function ReportsPageInner() {
                       id="sector"
                       value={sector}
                       onChange={(e) => setSector(e.target.value)}
-                      className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+                      className="w-full bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                     >
                       <option value="">Choose a sector to analyze...</option>
                       {SPACE_SECTORS.map((s) => (
@@ -851,10 +851,10 @@ function ReportsPageInner() {
                       Select Company
                     </label>
                     {selectedCompany ? (
-                      <div className="flex items-center gap-3 px-4 py-3 bg-slate-900/50 border border-white/10 rounded-lg">
-                        <span className="text-slate-200 font-medium">{selectedCompany.name}</span>
+                      <div className="flex items-center gap-3 px-4 py-3 bg-black/50 border border-white/10 rounded-lg">
+                        <span className="text-white/90 font-medium">{selectedCompany.name}</span>
                         {selectedCompany.sector && (
-                          <span className="text-xs bg-slate-700/50 text-slate-400 px-2 py-0.5 rounded">
+                          <span className="text-xs bg-white/[0.06] text-slate-400 px-2 py-0.5 rounded">
                             {selectedCompany.sector}
                           </span>
                         )}
@@ -875,7 +875,7 @@ function ReportsPageInner() {
                           value={companySearch.query}
                           onChange={(e) => companySearch.search(e.target.value)}
                           placeholder="Search for a company..."
-                          className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+                          className="w-full bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                         />
                         {companySearch.loading && (
                           <div className="absolute right-3 top-1/2 -translate-y-1/2">
@@ -883,7 +883,7 @@ function ReportsPageInner() {
                           </div>
                         )}
                         {companySearch.results.length > 0 && (
-                          <div className="absolute z-20 w-full mt-1 bg-slate-800 border border-slate-600/50 rounded-lg shadow-xl max-h-60 overflow-y-auto">
+                          <div className="absolute z-20 w-full mt-1 bg-white/[0.06] border border-white/[0.1] rounded-lg shadow-xl max-h-60 overflow-y-auto">
                             {companySearch.results.map((c) => (
                               <button
                                 key={c.slug}
@@ -891,11 +891,11 @@ function ReportsPageInner() {
                                   setSelectedCompany(c);
                                   companySearch.setQuery('');
                                 }}
-                                className="w-full text-left px-4 py-3 hover:bg-slate-700/50 transition-colors flex items-center gap-3"
+                                className="w-full text-left px-4 py-3 hover:bg-white/[0.06] transition-colors flex items-center gap-3"
                               >
-                                <span className="text-slate-200">{c.name}</span>
+                                <span className="text-white/90">{c.name}</span>
                                 {c.sector && (
-                                  <span className="text-xs bg-slate-700/50 text-slate-400 px-2 py-0.5 rounded">
+                                  <span className="text-xs bg-white/[0.06] text-slate-400 px-2 py-0.5 rounded">
                                     {c.sector}
                                   </span>
                                 )}
@@ -922,7 +922,7 @@ function ReportsPageInner() {
                         {selectedCompanies.map((c) => (
                           <span
                             key={c.slug}
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white/5 border border-white/10 text-slate-200 rounded-lg text-sm"
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white/5 border border-white/10 text-white/90 rounded-lg text-sm"
                           >
                             {c.name}
                             <button
@@ -950,7 +950,7 @@ function ReportsPageInner() {
                               ? 'Search and select 2-5 companies...'
                               : `Add another company (${selectedCompanies.length}/5)...`
                           }
-                          className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+                          className="w-full bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                         />
                         {multiSearch.loading && (
                           <div className="absolute right-3 top-1/2 -translate-y-1/2">
@@ -958,18 +958,18 @@ function ReportsPageInner() {
                           </div>
                         )}
                         {multiSearch.results.length > 0 && (
-                          <div className="absolute z-20 w-full mt-1 bg-slate-800 border border-slate-600/50 rounded-lg shadow-xl max-h-60 overflow-y-auto">
+                          <div className="absolute z-20 w-full mt-1 bg-white/[0.06] border border-white/[0.1] rounded-lg shadow-xl max-h-60 overflow-y-auto">
                             {multiSearch.results
                               .filter((c) => !selectedCompanies.find((sc) => sc.slug === c.slug))
                               .map((c) => (
                                 <button
                                   key={c.slug}
                                   onClick={() => addCompanyToComparison(c)}
-                                  className="w-full text-left px-4 py-3 hover:bg-slate-700/50 transition-colors flex items-center gap-3"
+                                  className="w-full text-left px-4 py-3 hover:bg-white/[0.06] transition-colors flex items-center gap-3"
                                 >
-                                  <span className="text-slate-200">{c.name}</span>
+                                  <span className="text-white/90">{c.name}</span>
                                   {c.sector && (
-                                    <span className="text-xs bg-slate-700/50 text-slate-400 px-2 py-0.5 rounded">
+                                    <span className="text-xs bg-white/[0.06] text-slate-400 px-2 py-0.5 rounded">
                                       {c.sector}
                                     </span>
                                   )}
@@ -996,7 +996,7 @@ function ReportsPageInner() {
                       placeholder='Describe the market or opportunity you want to enter (e.g., "LEO broadband constellation for maritime customers" or "On-orbit servicing for GEO satellites")'
                       rows={4}
                       maxLength={2000}
-                      className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none resize-y"
+                      className="w-full bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none resize-y"
                     />
                     <p className="text-xs text-slate-500 text-right">
                       {topic.length}/2000 characters
@@ -1005,7 +1005,7 @@ function ReportsPageInner() {
                 )}
 
                 {/* Report info */}
-                <div className="mt-6 pt-4 border-t border-slate-700/30 flex flex-wrap gap-4 text-xs text-slate-500">
+                <div className="mt-6 pt-4 border-t border-white/[0.06] flex flex-wrap gap-4 text-xs text-slate-500">
                   <span>~{selectedType.estimatedPages} pages</span>
                   <span>{selectedType.sections.length} sections</span>
                   <span>Estimated time: {selectedType.generationTime}</span>
@@ -1024,7 +1024,7 @@ function ReportsPageInner() {
               </div>
 
               {/* Sections preview */}
-              <div className="mt-6 bg-slate-800/30 border border-slate-700/30 rounded-xl p-6">
+              <div className="mt-6 bg-white/[0.04] border border-white/[0.06] rounded-xl p-6">
                 <h3 className="text-sm font-semibold text-slate-300 mb-4 uppercase tracking-wider">
                   Report Sections
                 </h3>
@@ -1035,7 +1035,7 @@ function ReportsPageInner() {
                         {idx + 1}.
                       </span>
                       <div>
-                        <p className="text-sm text-slate-200 font-medium">{s.title}</p>
+                        <p className="text-sm text-white/90 font-medium">{s.title}</p>
                         <p className="text-xs text-slate-500">{s.description}</p>
                       </div>
                     </div>
@@ -1056,7 +1056,7 @@ function ReportsPageInner() {
             >
               {/* Animated spinner */}
               <div className="relative w-24 h-24 mx-auto mb-8">
-                <div className="absolute inset-0 rounded-full border-4 border-slate-700/30" />
+                <div className="absolute inset-0 rounded-full border-4 border-white/[0.06]" />
                 <div
                   className="absolute inset-0 rounded-full border-4 border-transparent border-t-white animate-spin"
                   style={{ animationDuration: '1.5s' }}
@@ -1070,7 +1070,7 @@ function ReportsPageInner() {
                 </div>
               </div>
 
-              <h2 className="text-xl font-semibold text-slate-100 mb-3">
+              <h2 className="text-xl font-semibold text-white mb-3">
                 Generating Your Report
               </h2>
 
@@ -1089,7 +1089,7 @@ function ReportsPageInner() {
 
               {/* Progress bar */}
               <div className="w-full max-w-sm mx-auto">
-                <div className="h-1.5 bg-slate-700/50 rounded-full overflow-hidden">
+                <div className="h-1.5 bg-white/[0.06] rounded-full overflow-hidden">
                   <motion.div
                     className="h-full bg-gradient-to-r from-slate-300 to-blue-500 rounded-full"
                     initial={{ width: '5%' }}
@@ -1118,13 +1118,13 @@ function ReportsPageInner() {
               <div className="flex flex-wrap items-center gap-3 mb-6 print:hidden">
                 <button
                   onClick={handleNewReport}
-                  className="px-4 py-2 bg-slate-700/50 border border-slate-600/50 text-slate-300 rounded-lg text-sm hover:bg-slate-700 transition-colors"
+                  className="px-4 py-2 bg-white/[0.06] border border-white/[0.1] text-slate-300 rounded-lg text-sm hover:bg-white/[0.08] transition-colors"
                 >
                   New Report
                 </button>
                 <button
                   onClick={handlePrint}
-                  className="px-4 py-2 bg-slate-700/50 border border-slate-600/50 text-slate-300 rounded-lg text-sm hover:bg-slate-700 transition-colors flex items-center gap-2"
+                  className="px-4 py-2 bg-white/[0.06] border border-white/[0.1] text-slate-300 rounded-lg text-sm hover:bg-white/[0.08] transition-colors flex items-center gap-2"
                 >
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M6.72 13.829c-.24.03-.48.062-.72.096m.72-.096a42.415 42.415 0 0110.56 0m-10.56 0L6.34 18m10.94-4.171c.24.03.48.062.72.096m-.72-.096L17.66 18m0 0l.229 2.523a1.125 1.125 0 01-1.12 1.227H7.231c-.662 0-1.18-.568-1.12-1.227L6.34 18m11.318 0h1.091A2.25 2.25 0 0021 15.75V9.456c0-1.081-.768-2.015-1.837-2.175a48.055 48.055 0 00-1.913-.247M6.34 18H5.25A2.25 2.25 0 013 15.75V9.456c0-1.081.768-2.015 1.837-2.175a48.041 48.041 0 011.913-.247m10.5 0a48.536 48.536 0 00-10.5 0m10.5 0V3.375c0-.621-.504-1.125-1.125-1.125h-8.25c-.621 0-1.125.504-1.125 1.125v3.659M18.75 12h.008v.008h-.008V12zm-2.25 0h.008v.008H16.5V12z" />
@@ -1133,7 +1133,7 @@ function ReportsPageInner() {
                 </button>
                 <button
                   onClick={handleShare}
-                  className="px-4 py-2 bg-slate-700/50 border border-slate-600/50 text-slate-300 rounded-lg text-sm hover:bg-slate-700 transition-colors flex items-center gap-2"
+                  className="px-4 py-2 bg-white/[0.06] border border-white/[0.1] text-slate-300 rounded-lg text-sm hover:bg-white/[0.08] transition-colors flex items-center gap-2"
                 >
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m9.86-3.572a4.5 4.5 0 00-1.242-7.244l-4.5-4.5a4.5 4.5 0 00-6.364 6.364L4.343 8.69" />
@@ -1158,7 +1158,7 @@ function ReportsPageInner() {
                           className={`w-full text-left text-sm px-3 py-1.5 rounded transition-colors ${
                             activeTocSection === section.id
                               ? 'bg-white/5 text-slate-300 border-l-2 border-white/10'
-                              : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
+                              : 'text-slate-400 hover:text-white/90 hover:bg-white/[0.04]'
                           }`}
                         >
                           {section.title}
@@ -1171,13 +1171,13 @@ function ReportsPageInner() {
                 {/* Report content */}
                 <div ref={reportRef} className="flex-1 min-w-0">
                   {/* Report header */}
-                  <div className="bg-gradient-to-br from-slate-800/80 to-slate-900/80 border border-slate-700/50 rounded-xl p-8 mb-8 print:border-none print:bg-white print:text-black">
+                  <div className="bg-gradient-to-br from-white/[0.06] to-black/80 border border-white/[0.06] rounded-xl p-8 mb-8 print:border-none print:bg-white print:text-black">
                     <div className="flex items-start gap-4 mb-4">
                       <div className="w-14 h-14 rounded-lg bg-gradient-to-br from-white/5 to-blue-500/20 border border-white/10 flex items-center justify-center flex-shrink-0 print:hidden">
                         <ReportIcon icon={selectedType.icon} className="w-7 h-7 text-slate-300" />
                       </div>
                       <div>
-                        <h1 className="text-2xl md:text-3xl font-bold text-slate-100 print:text-black">
+                        <h1 className="text-2xl md:text-3xl font-bold text-white print:text-black">
                           {generatedReport.title}
                         </h1>
                         {generatedReport.subtitle && (
@@ -1223,13 +1223,13 @@ function ReportsPageInner() {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: idx * 0.05 }}
-                        className="bg-slate-800/40 border border-slate-700/30 rounded-xl p-6 md:p-8 print:border-none print:bg-white print:shadow-none"
+                        className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-6 md:p-8 print:border-none print:bg-white print:shadow-none"
                       >
                         <div className="flex items-center gap-3 mb-4">
                           <span className="text-xs font-mono text-slate-300/50 bg-white/5 border border-white/15 px-2 py-0.5 rounded print:hidden">
                             {String(idx + 1).padStart(2, '0')}
                           </span>
-                          <h2 className="text-xl font-semibold text-slate-100 print:text-black">
+                          <h2 className="text-xl font-semibold text-white print:text-black">
                             {section.title}
                           </h2>
                         </div>
@@ -1243,7 +1243,7 @@ function ReportsPageInner() {
 
                   {/* Methodology footer */}
                   {generatedReport.methodology && (
-                    <div className="mt-8 p-6 bg-slate-800/20 border border-slate-700/20 rounded-xl print:border-none">
+                    <div className="mt-8 p-6 bg-white/[0.03] border border-white/[0.06] rounded-xl print:border-none">
                       <h3 className="text-sm font-semibold text-slate-400 mb-2">Methodology</h3>
                       <p className="text-xs text-slate-500 leading-relaxed print:text-gray-500">
                         {generatedReport.methodology}

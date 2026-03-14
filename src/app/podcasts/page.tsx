@@ -365,7 +365,7 @@ const PODCASTS: Podcast[] = [
 // ---------------------------------------------------------------------------
 
 const CATEGORY_CONFIG: Record<PodcastCategory, { label: string; color: string; bg: string; icon: string }> = {
-  news: { label: 'News & Analysis', color: 'text-slate-300', bg: 'bg-white/8 border-white/10', icon: 'N' },
+  news: { label: 'News & Analysis', color: 'text-white/70', bg: 'bg-white/8 border-white/10', icon: 'N' },
   technical: { label: 'Technical', color: 'text-purple-400', bg: 'bg-purple-500/15 border-purple-500/30', icon: 'T' },
   business: { label: 'Business & Finance', color: 'text-emerald-400', bg: 'bg-emerald-500/15 border-emerald-500/30', icon: 'B' },
   educational: { label: 'Educational & Science', color: 'text-amber-400', bg: 'bg-amber-500/15 border-amber-500/30', icon: 'E' },
@@ -451,7 +451,7 @@ function PodcastCard({ podcast, index }: { podcast: Podcast; index: number }) {
         {/* Hover gradient border */}
         <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
           <div className="absolute inset-[-1px] rounded-xl bg-gradient-to-r from-white/30 via-purple-500/30 to-slate-200/30 animate-pulse" />
-          <div className="absolute inset-[1px] rounded-xl bg-slate-900/95" />
+          <div className="absolute inset-[1px] rounded-xl bg-black/95" />
         </div>
 
         <div className="relative z-10">
@@ -495,13 +495,13 @@ function PodcastCard({ podcast, index }: { podcast: Podcast; index: number }) {
 
           {/* Stats Row */}
           <div className="grid grid-cols-2 gap-2 mb-3">
-            <div className="bg-slate-800/50 rounded-lg p-2">
+            <div className="bg-white/[0.04] rounded-lg p-2">
               <div className="text-xs text-slate-500 uppercase tracking-wider">Episodes</div>
-              <div className="text-sm font-semibold text-slate-300">
+              <div className="text-sm font-semibold text-white/70">
                 {podcast.episodeCount.toLocaleString()}+
               </div>
             </div>
-            <div className="bg-slate-800/50 rounded-lg p-2">
+            <div className="bg-white/[0.04] rounded-lg p-2">
               <div className="text-xs text-slate-500 uppercase tracking-wider">Frequency</div>
               <div className="text-sm font-semibold text-purple-400">
                 {FREQUENCY_LABELS[podcast.frequency]}
@@ -531,11 +531,11 @@ function PodcastCard({ podcast, index }: { podcast: Podcast; index: number }) {
           </div>
 
           {/* Platform Availability */}
-          <div className="flex items-center gap-3 pt-2 border-t border-slate-700/50">
+          <div className="flex items-center gap-3 pt-2 border-t border-white/[0.06]">
             <span className="text-xs text-slate-500">Available on:</span>
             <div className="flex items-center gap-2">
               {podcast.platforms.applePodcasts && (
-                <span className="text-xs px-2 py-0.5 rounded bg-slate-700/60 text-slate-300 flex items-center gap-1">
+                <span className="text-xs px-2 py-0.5 rounded bg-slate-700/60 text-white/70 flex items-center gap-1">
                   <svg className="w-3 h-3" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm0 3a2.5 2.5 0 110 5 2.5 2.5 0 010-5zm0 14c-2.5 0-4-1.5-4-4 0-.5.5-1.5 1-2s1.5-1 1.5-1l.5 3h2l.5-3s1 .5 1.5 1 1 1.5 1 2c0 2.5-1.5 4-4 4z"/>
                   </svg>
@@ -543,7 +543,7 @@ function PodcastCard({ podcast, index }: { podcast: Podcast; index: number }) {
                 </span>
               )}
               {podcast.platforms.spotify && (
-                <span className="text-xs px-2 py-0.5 rounded bg-slate-700/60 text-slate-300 flex items-center gap-1">
+                <span className="text-xs px-2 py-0.5 rounded bg-slate-700/60 text-white/70 flex items-center gap-1">
                   <svg className="w-3 h-3" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.586 14.424a.622.622 0 01-.857.207c-2.348-1.435-5.304-1.76-8.785-.964a.622.622 0 11-.277-1.215c3.808-.87 7.076-.496 9.712 1.115a.622.622 0 01.207.857zm1.224-2.719a.78.78 0 01-1.072.257c-2.687-1.652-6.785-2.131-9.965-1.166a.78.78 0 01-.453-1.494c3.632-1.102 8.147-.568 11.233 1.331a.78.78 0 01.257 1.072zm.105-2.835C14.692 8.95 9.375 8.775 6.297 9.71a.935.935 0 11-.543-1.79c3.533-1.072 9.404-.865 13.115 1.338a.935.935 0 01-.954 1.611z"/>
                   </svg>
@@ -697,7 +697,7 @@ export default function PodcastsPage() {
                 placeholder="Search podcasts by name, host, or topic..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-10 pr-4 bg-slate-800 border border-slate-700 text-white rounded-lg py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none"
+                className="w-full pl-10 pr-4 bg-white/[0.06] border border-white/[0.08] text-white rounded-lg py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none"
               />
               <svg className="absolute left-3 top-3 w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -709,7 +709,7 @@ export default function PodcastsPage() {
               aria-label="Filter by category"
               value={categoryFilter}
               onChange={(e) => setCategoryFilter(e.target.value as PodcastCategory | '')}
-              className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none"
+              className="bg-white/[0.06] border border-white/[0.08] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none"
             >
               <option value="">All Categories</option>
               {(Object.keys(CATEGORY_CONFIG) as PodcastCategory[]).map(cat => (
@@ -724,7 +724,7 @@ export default function PodcastsPage() {
               aria-label="Sort podcasts"
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none"
+              className="bg-white/[0.06] border border-white/[0.08] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none"
             >
               {SORT_OPTIONS.map(opt => (
                 <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -739,7 +739,7 @@ export default function PodcastsPage() {
               className={`px-3 py-1.5 min-h-[36px] rounded-lg text-xs font-medium transition-colors border ${
                 categoryFilter === ''
                   ? 'bg-purple-500/20 text-purple-300 border-purple-500/40'
-                  : 'bg-slate-800/50 text-slate-400 border-slate-700/50 hover:bg-slate-700/50 hover:text-slate-300'
+                  : 'bg-white/[0.04] text-slate-400 border-white/[0.06] hover:bg-white/[0.08] hover:text-white/70'
               }`}
             >
               All ({PODCASTS.length})
@@ -753,7 +753,7 @@ export default function PodcastsPage() {
                   className={`px-3 py-1.5 min-h-[36px] rounded-lg text-xs font-medium transition-colors border ${
                     categoryFilter === cat
                       ? `${config.bg} ${config.color}`
-                      : 'bg-slate-800/50 text-slate-400 border-slate-700/50 hover:bg-slate-700/50 hover:text-slate-300'
+                      : 'bg-white/[0.04] text-slate-400 border-white/[0.06] hover:bg-white/[0.08] hover:text-white/70'
                   }`}
                 >
                   {config.label} ({categoryCounts[cat] || 0})
@@ -803,21 +803,21 @@ export default function PodcastsPage() {
             are approximate and ratings are based on aggregated listener feedback across platforms.
           </p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="bg-slate-800/40 rounded-lg p-4">
-              <h3 className="text-sm font-semibold text-slate-300 mb-1">For Professionals</h3>
+            <div className="bg-white/[0.04] rounded-lg p-4">
+              <h3 className="text-sm font-semibold text-white/70 mb-1">For Professionals</h3>
               <p className="text-xs text-slate-400">
                 Stay current with daily and weekly news shows like T-Minus Space Daily, Main Engine
                 Cut Off, and This Week in Space.
               </p>
             </div>
-            <div className="bg-slate-800/40 rounded-lg p-4">
+            <div className="bg-white/[0.04] rounded-lg p-4">
               <h3 className="text-sm font-semibold text-emerald-400 mb-1">For Investors</h3>
               <p className="text-xs text-slate-400">
                 Track the space economy with business-focused shows like Payload Space, The Space
                 Economy, and Space Business Podcast.
               </p>
             </div>
-            <div className="bg-slate-800/40 rounded-lg p-4">
+            <div className="bg-white/[0.04] rounded-lg p-4">
               <h3 className="text-sm font-semibold text-amber-400 mb-1">For Enthusiasts</h3>
               <p className="text-xs text-slate-400">
                 Explore the cosmos with educational shows like StarTalk Radio, Planetary Radio, and

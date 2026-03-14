@@ -71,7 +71,7 @@ const ECOSYSTEM_SEGMENTS: EcosystemSegment[] = [
     color: '#22d3ee',
     bgColor: 'bg-white/5',
     borderColor: 'border-white/10',
-    textColor: 'text-slate-300',
+    textColor: 'text-white/70',
     iconPath: 'M12 19l9 2-9-18-9 18 9-2zm0 0v-8',
     subsegments: ['Launch Providers', 'Satellite Manufacturers', 'Ground Equipment', 'Space Station Builders'],
     companies: [
@@ -166,7 +166,7 @@ function EcoCompanyCard({
 
   return (
     <div
-      className="relative bg-slate-800/60 border border-slate-700/50 rounded-xl p-4 hover:border-slate-600/70 transition-all cursor-pointer group"
+      className="relative bg-white/[0.05] border border-white/[0.06] rounded-xl p-4 hover:border-white/[0.1] transition-all cursor-pointer group"
       onMouseEnter={() => setShowDetails(true)}
       onMouseLeave={() => setShowDetails(false)}
       onClick={() => setShowDetails(!showDetails)}
@@ -196,14 +196,14 @@ function EcoCompanyCard({
 
       {/* Hover tooltip */}
       {showDetails && (
-        <div className="absolute z-20 left-0 right-0 top-full mt-1 bg-slate-900/95 border border-slate-600/50 rounded-lg p-3 shadow-xl backdrop-blur-sm">
-          <p className="text-slate-300 text-xs leading-relaxed mb-2">{company.description}</p>
+        <div className="absolute z-20 left-0 right-0 top-full mt-1 bg-black/95 border border-white/[0.08] rounded-lg p-3 shadow-xl backdrop-blur-sm">
+          <p className="text-white/70 text-xs leading-relaxed mb-2">{company.description}</p>
           {company.hq && (
             <div className="text-xs text-slate-500">HQ: {company.hq}</div>
           )}
           <Link
             href={`/company-profiles/${company.slug}`}
-            className="text-xs text-slate-300 hover:text-white mt-1 inline-block"
+            className="text-xs text-white/70 hover:text-white mt-1 inline-block"
           >
             View full profile
           </Link>
@@ -301,7 +301,7 @@ function SegmentSection({
           className={`px-3 py-1 rounded-lg text-xs font-medium transition-all ${
             activeSubsegment === 'all'
               ? `text-white`
-              : 'bg-slate-700/50 text-slate-400 hover:text-white'
+              : 'bg-white/[0.04] text-slate-400 hover:text-white'
           }`}
           style={activeSubsegment === 'all' ? { backgroundColor: segment.color } : undefined}
         >
@@ -316,7 +316,7 @@ function SegmentSection({
               className={`px-3 py-1 rounded-lg text-xs font-medium transition-all ${
                 activeSubsegment === sub
                   ? 'text-white'
-                  : 'bg-slate-700/50 text-slate-400 hover:text-white'
+                  : 'bg-white/[0.04] text-slate-400 hover:text-white'
               }`}
               style={activeSubsegment === sub ? { backgroundColor: segment.color } : undefined}
             >
@@ -394,10 +394,10 @@ export default function EcosystemMapPage() {
         {/* Overview */}
         <ScrollReveal>
           <div className="bg-gradient-to-r from-purple-500/10 to-white/5 border border-purple-500/20 rounded-xl p-5 mb-8">
-            <p className="text-slate-300 text-sm leading-relaxed">
+            <p className="text-white/70 text-sm leading-relaxed">
               The space industry operates as a <strong className="text-purple-400">multi-layered value chain</strong>.{' '}
               <strong className="text-amber-400">Upstream</strong> companies provide raw materials and components that flow to{' '}
-              <strong className="text-slate-300">midstream</strong> manufacturers and launch providers. These enable{' '}
+              <strong className="text-white/70">midstream</strong> manufacturers and launch providers. These enable{' '}
               <strong className="text-purple-400">downstream</strong> operators and data companies to deliver services to
               end users. <strong className="text-emerald-400">Cross-cutting</strong> services like insurance, regulatory,
               and finance support the entire chain. Click any company to view their full profile.
@@ -428,7 +428,7 @@ export default function EcosystemMapPage() {
             placeholder="Search companies by name, segment, or capability..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+            className="w-full bg-white/[0.06] border border-white/[0.08] text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
           />
         </div>
 
@@ -441,7 +441,7 @@ export default function EcosystemMapPage() {
               </h3>
               <button
                 onClick={() => setSearchQuery('')}
-                className="text-xs text-slate-300 hover:text-white"
+                className="text-xs text-white/70 hover:text-white"
               >
                 Clear search
               </button>
@@ -499,7 +499,7 @@ export default function EcosystemMapPage() {
         )}
 
         {/* ──── HOW THE VALUE CHAIN WORKS ──── */}
-        <div className="mt-12 pt-8 border-t border-slate-700/50">
+        <div className="mt-12 pt-8 border-t border-white/[0.06]">
           <h2 className="text-xl font-bold text-white mb-6">How the Space Value Chain Works</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="card p-5">
@@ -512,7 +512,7 @@ export default function EcosystemMapPage() {
               </p>
             </div>
             <div className="card p-5">
-              <h3 className="text-slate-300 font-semibold mb-2">Midstream to Downstream</h3>
+              <h3 className="text-white/70 font-semibold mb-2">Midstream to Downstream</h3>
               <p className="text-slate-400 text-sm leading-relaxed">
                 Launch providers deliver satellites to orbit for operators like SES and Planet Labs. Ground
                 equipment manufacturers (L3Harris, KSAT) provide the infrastructure to communicate with and
@@ -540,11 +540,11 @@ export default function EcosystemMapPage() {
 
         {/* ──── MARKET SIZE ──── */}
         <ScrollReveal>
-          <div className="mt-8 bg-gradient-to-r from-slate-800/80 to-slate-700/80 border border-slate-600/50 rounded-xl p-6">
+          <div className="mt-8 bg-gradient-to-r from-white/[0.06] to-white/[0.05] border border-white/[0.08] rounded-xl p-6">
             <h3 className="text-white font-semibold mb-3">Space Economy by the Numbers (2025)</h3>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div className="text-center">
-                <div className="text-2xl font-bold text-slate-300">$546B</div>
+                <div className="text-2xl font-bold text-white/70">$546B</div>
                 <div className="text-slate-400 text-xs mt-1">Global Space Economy</div>
               </div>
               <div className="text-center">
@@ -564,36 +564,36 @@ export default function EcosystemMapPage() {
         </ScrollReveal>
 
         {/* ──── RELATED RESOURCES ──── */}
-        <div className="mt-8 pt-8 border-t border-slate-700/50">
+        <div className="mt-8 pt-8 border-t border-white/[0.06]">
           <h3 className="text-slate-400 text-sm font-medium mb-4">Related Resources</h3>
           <div className="flex flex-wrap gap-3">
             <Link
               href="/company-profiles"
-              className="px-4 py-2 bg-slate-800/50 border border-slate-700/50 rounded-lg text-sm text-slate-300 hover:text-white hover:border-purple-500/50 transition-all"
+              className="px-4 py-2 bg-white/[0.04] border border-white/[0.06] rounded-lg text-sm text-white/70 hover:text-white hover:border-purple-500/50 transition-all"
             >
               Company Profiles
             </Link>
             <Link
               href="/salary-benchmarks"
-              className="px-4 py-2 bg-slate-800/50 border border-slate-700/50 rounded-lg text-sm text-slate-300 hover:text-white hover:border-purple-500/50 transition-all"
+              className="px-4 py-2 bg-white/[0.04] border border-white/[0.06] rounded-lg text-sm text-white/70 hover:text-white hover:border-purple-500/50 transition-all"
             >
               Salary Benchmarks
             </Link>
             <Link
               href="/market-intel"
-              className="px-4 py-2 bg-slate-800/50 border border-slate-700/50 rounded-lg text-sm text-slate-300 hover:text-white hover:border-purple-500/50 transition-all"
+              className="px-4 py-2 bg-white/[0.04] border border-white/[0.06] rounded-lg text-sm text-white/70 hover:text-white hover:border-purple-500/50 transition-all"
             >
               Market Intelligence
             </Link>
             <Link
               href="/marketplace"
-              className="px-4 py-2 bg-slate-800/50 border border-slate-700/50 rounded-lg text-sm text-slate-300 hover:text-white hover:border-purple-500/50 transition-all"
+              className="px-4 py-2 bg-white/[0.04] border border-white/[0.06] rounded-lg text-sm text-white/70 hover:text-white hover:border-purple-500/50 transition-all"
             >
               Marketplace
             </Link>
             <Link
               href="/business-opportunities"
-              className="px-4 py-2 bg-slate-800/50 border border-slate-700/50 rounded-lg text-sm text-slate-300 hover:text-white hover:border-purple-500/50 transition-all"
+              className="px-4 py-2 bg-white/[0.04] border border-white/[0.06] rounded-lg text-sm text-white/70 hover:text-white hover:border-purple-500/50 transition-all"
             >
               Business Opportunities
             </Link>

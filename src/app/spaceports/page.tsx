@@ -13,9 +13,9 @@ const SpaceportsCommunicationsTab = dynamic(() => import('./SpaceportsCommunicat
   ssr: false,
   loading: () => (
     <div className="animate-pulse space-y-4">
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">{[1,2,3,4].map(i => <div key={i} className="h-20 bg-slate-800 rounded-lg"></div>)}</div>
-      <div className="h-32 bg-slate-800 rounded-xl"></div>
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">{[1,2].map(i => <div key={i} className="h-64 bg-slate-800 rounded-lg"></div>)}</div>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">{[1,2,3,4].map(i => <div key={i} className="h-20 bg-white/[0.06] rounded-lg"></div>)}</div>
+      <div className="h-32 bg-white/[0.06] rounded-xl"></div>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">{[1,2].map(i => <div key={i} className="h-64 bg-white/[0.06] rounded-lg"></div>)}</div>
     </div>
   ),
 });
@@ -187,7 +187,7 @@ interface EstrackStation {
 // Status & Capability Configs
 // ────────────────────────────────────────
 
-const DEFAULT_STATUS_STYLE = { label: 'Unknown', bg: 'bg-slate-900/30', text: 'text-slate-400', border: 'border-slate-500/40' };
+const DEFAULT_STATUS_STYLE = { label: 'Unknown', bg: 'bg-black/30', text: 'text-slate-400', border: 'border-slate-500/40' };
 
 const STATUS_CONFIG: Record<SpaceportStatus, { label: string; bg: string; text: string; border: string }> = {
   operational: { label: 'Operational', bg: 'bg-green-900/30', text: 'text-green-400', border: 'border-green-500/40' },
@@ -2354,13 +2354,13 @@ function SpaceportDirectoryPage() {
       <div className="min-h-screen bg-[#0B0F1A] text-white p-6">
         <div className="max-w-7xl mx-auto">
           <div className="animate-pulse space-y-4">
-            <div className="h-8 bg-slate-800 rounded w-1/3"></div>
-            <div className="h-4 bg-slate-800 rounded w-2/3"></div>
+            <div className="h-8 bg-white/[0.06] rounded w-1/3"></div>
+            <div className="h-4 bg-white/[0.06] rounded w-2/3"></div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8">
-              {[1,2,3,4].map(i => <div key={i} className="h-24 bg-slate-800 rounded-lg"></div>)}
+              {[1,2,3,4].map(i => <div key={i} className="h-24 bg-white/[0.06] rounded-lg"></div>)}
             </div>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-6">
-              {[1,2,3,4].map(i => <div key={i} className="h-64 bg-slate-800 rounded-lg"></div>)}
+              {[1,2,3,4].map(i => <div key={i} className="h-64 bg-white/[0.06] rounded-lg"></div>)}
             </div>
           </div>
         </div>

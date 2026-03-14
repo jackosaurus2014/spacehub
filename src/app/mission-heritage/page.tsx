@@ -598,8 +598,8 @@ function categoryColor(cat: MissionCategory): string {
     case 'Earth Observation': return 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30';
     case 'Human Spaceflight': return 'bg-blue-500/20 text-blue-300 border-blue-500/30';
     case 'Astronomy': return 'bg-purple-500/20 text-purple-300 border-purple-500/30';
-    case 'Communications & Navigation': return 'bg-white/10 text-slate-200 border-white/10';
-    default: return 'bg-slate-500/20 text-slate-300 border-slate-500/30';
+    case 'Communications & Navigation': return 'bg-white/10 text-white/90 border-white/10';
+    default: return 'bg-slate-500/20 text-white/70 border-slate-500/30';
   }
 }
 
@@ -609,7 +609,7 @@ function categoryAccent(cat: MissionCategory): string {
     case 'Earth Observation': return 'text-emerald-400';
     case 'Human Spaceflight': return 'text-blue-400';
     case 'Astronomy': return 'text-purple-400';
-    case 'Communications & Navigation': return 'text-slate-300';
+    case 'Communications & Navigation': return 'text-white/70';
     default: return 'text-slate-400';
   }
 }
@@ -796,7 +796,7 @@ export default function MissionHeritagePage() {
               <div className="text-xs text-slate-400 mt-1">Longest Running ({formatDuration(longestRunning.durationDays)})</div>
             </div>
             <div className="card p-4 text-center">
-              <div className="text-lg font-bold text-slate-300 truncate" title={mostRecent.name}>{mostRecent.name}</div>
+              <div className="text-lg font-bold text-white/70 truncate" title={mostRecent.name}>{mostRecent.name}</div>
               <div className="text-xs text-slate-400 mt-1">Most Recent Launch ({mostRecent.launchYear})</div>
             </div>
           </div>
@@ -832,10 +832,10 @@ export default function MissionHeritagePage() {
                       <span className={`shrink-0 w-3 h-3 rounded-full ${categoryDot(cat)}`} />
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between">
-                          <span className="text-sm text-slate-200 truncate">{cat}</span>
+                          <span className="text-sm text-white/90 truncate">{cat}</span>
                           <span className="text-sm font-mono text-slate-400 ml-2">{count}</span>
                         </div>
-                        <div className="w-full bg-slate-800 rounded-full h-1.5 mt-1">
+                        <div className="w-full bg-white/[0.06] rounded-full h-1.5 mt-1">
                           <div
                             className={`h-1.5 rounded-full ${categoryDot(cat)}`}
                             style={{ width: `${pct}%`, opacity: 0.7 }}
@@ -874,7 +874,7 @@ export default function MissionHeritagePage() {
                 placeholder="Search by mission name, agency, destination, or description..."
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
-                className="w-full bg-slate-800/60 border border-slate-600/50 rounded-lg pl-10 pr-4 py-2.5 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50"
+                className="w-full bg-white/[0.05] border border-white/[0.08] rounded-lg pl-10 pr-4 py-2.5 text-sm text-white/90 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50"
               />
             </div>
 
@@ -884,7 +884,7 @@ export default function MissionHeritagePage() {
               <select
                 value={categoryFilter}
                 onChange={e => setCategoryFilter(e.target.value as MissionCategory | 'All')}
-                className="bg-slate-800/60 border border-slate-600/50 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500/50"
+                className="bg-white/[0.05] border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-white/90 focus:outline-none focus:ring-2 focus:ring-purple-500/50"
               >
                 {CATEGORY_FILTERS.map(f => (
                   <option key={f.value} value={f.value}>{f.label}</option>
@@ -895,7 +895,7 @@ export default function MissionHeritagePage() {
               <select
                 value={agencyFilter}
                 onChange={e => setAgencyFilter(e.target.value)}
-                className="bg-slate-800/60 border border-slate-600/50 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500/50"
+                className="bg-white/[0.05] border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-white/90 focus:outline-none focus:ring-2 focus:ring-purple-500/50"
               >
                 {AGENCY_OPTIONS.map(a => (
                   <option key={a} value={a}>{a === 'All' ? 'All Agencies' : a}</option>
@@ -906,7 +906,7 @@ export default function MissionHeritagePage() {
               <select
                 value={statusFilter}
                 onChange={e => setStatusFilter(e.target.value as MissionStatus | 'All')}
-                className="bg-slate-800/60 border border-slate-600/50 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500/50"
+                className="bg-white/[0.05] border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-white/90 focus:outline-none focus:ring-2 focus:ring-purple-500/50"
               >
                 {STATUS_FILTERS.map(f => (
                   <option key={f.value} value={f.value}>{f.label}</option>
@@ -917,7 +917,7 @@ export default function MissionHeritagePage() {
               <select
                 value={decadeFilter}
                 onChange={e => setDecadeFilter(e.target.value)}
-                className="bg-slate-800/60 border border-slate-600/50 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500/50"
+                className="bg-white/[0.05] border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-white/90 focus:outline-none focus:ring-2 focus:ring-purple-500/50"
               >
                 {DECADE_OPTIONS.map(d => (
                   <option key={d} value={d}>{d === 'All' ? 'All Decades' : d}</option>
@@ -928,7 +928,7 @@ export default function MissionHeritagePage() {
               <select
                 value={sortBy}
                 onChange={e => setSortBy(e.target.value as SortKey)}
-                className="bg-slate-800/60 border border-slate-600/50 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500/50"
+                className="bg-white/[0.05] border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-white/90 focus:outline-none focus:ring-2 focus:ring-purple-500/50"
               >
                 {SORT_OPTIONS.map(s => (
                   <option key={s.value} value={s.value}>Sort: {s.label}</option>
@@ -989,11 +989,11 @@ export default function MissionHeritagePage() {
                     {/* Key info (desktop) */}
                     <div className="hidden md:flex items-center gap-6 text-sm shrink-0">
                       <div className="text-right">
-                        <div className="text-slate-300 font-mono">{mission.launchYear}</div>
+                        <div className="text-white/70 font-mono">{mission.launchYear}</div>
                         <div className="text-xs text-slate-500">Launch</div>
                       </div>
                       <div className="text-right max-w-[150px]">
-                        <div className="text-slate-300 text-xs truncate">{mission.orbitDestination}</div>
+                        <div className="text-white/70 text-xs truncate">{mission.orbitDestination}</div>
                         <div className="text-xs text-slate-500">Destination</div>
                       </div>
                       <div className="flex items-center gap-1.5">
@@ -1020,7 +1020,7 @@ export default function MissionHeritagePage() {
 
                   {/* Mobile info row */}
                   <div className="md:hidden px-5 pb-3 flex flex-wrap items-center gap-3 text-sm">
-                    <span className="text-slate-400">Launch: <span className="text-slate-200 font-mono">{mission.launchYear}</span></span>
+                    <span className="text-slate-400">Launch: <span className="text-white/90 font-mono">{mission.launchYear}</span></span>
                     <span className="flex items-center gap-1.5">
                       <span className={`w-2 h-2 rounded-full ${statusDot(mission.status)}`} />
                       <span className={`text-xs ${statusColor(mission.status)}`}>{mission.status}</span>
@@ -1034,18 +1034,18 @@ export default function MissionHeritagePage() {
 
                   {/* Expanded Detail Panel */}
                   {isExpanded && (
-                    <div className="border-t border-slate-700/50 px-5 py-4 bg-slate-800/30">
+                    <div className="border-t border-white/[0.06] px-5 py-4 bg-white/[0.03]">
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
                         {/* Agency */}
-                        <div className="bg-slate-900/50 rounded-lg p-3">
+                        <div className="bg-black/50 rounded-lg p-3">
                           <div className="text-xs text-slate-500 uppercase tracking-wider mb-1">Agency</div>
-                          <div className="text-sm text-slate-200">{mission.agency}</div>
+                          <div className="text-sm text-white/90">{mission.agency}</div>
                         </div>
 
                         {/* Launch Date */}
-                        <div className="bg-slate-900/50 rounded-lg p-3">
+                        <div className="bg-black/50 rounded-lg p-3">
                           <div className="text-xs text-slate-500 uppercase tracking-wider mb-1">Launch Date</div>
-                          <div className="text-sm font-mono text-slate-200">
+                          <div className="text-sm font-mono text-white/90">
                             {new Date(mission.launchDate).toLocaleDateString('en-US', {
                               year: 'numeric',
                               month: 'long',
@@ -1055,7 +1055,7 @@ export default function MissionHeritagePage() {
                         </div>
 
                         {/* Status */}
-                        <div className="bg-slate-900/50 rounded-lg p-3">
+                        <div className="bg-black/50 rounded-lg p-3">
                           <div className="text-xs text-slate-500 uppercase tracking-wider mb-1">Status</div>
                           <div className={`text-sm font-medium flex items-center gap-2 ${statusColor(mission.status)}`}>
                             <span className={`w-2.5 h-2.5 rounded-full ${statusDot(mission.status)}`} />
@@ -1064,13 +1064,13 @@ export default function MissionHeritagePage() {
                         </div>
 
                         {/* Orbit / Destination */}
-                        <div className="bg-slate-900/50 rounded-lg p-3">
+                        <div className="bg-black/50 rounded-lg p-3">
                           <div className="text-xs text-slate-500 uppercase tracking-wider mb-1">Orbit / Destination</div>
-                          <div className="text-sm text-slate-200">{mission.orbitDestination}</div>
+                          <div className="text-sm text-white/90">{mission.orbitDestination}</div>
                         </div>
 
                         {/* Mission Duration */}
-                        <div className="bg-slate-900/50 rounded-lg p-3">
+                        <div className="bg-black/50 rounded-lg p-3">
                           <div className="text-xs text-slate-500 uppercase tracking-wider mb-1">Mission Duration</div>
                           <div className={`text-sm font-mono ${categoryAccent(mission.category)}`}>
                             {mission.durationDesc}
@@ -1078,7 +1078,7 @@ export default function MissionHeritagePage() {
                         </div>
 
                         {/* Category */}
-                        <div className="bg-slate-900/50 rounded-lg p-3">
+                        <div className="bg-black/50 rounded-lg p-3">
                           <div className="text-xs text-slate-500 uppercase tracking-wider mb-1">Category</div>
                           <span className={`text-xs font-medium px-2.5 py-1 rounded-full border ${categoryColor(mission.category)}`}>
                             {categoryIcon(mission.category)} {mission.category}
@@ -1089,7 +1089,7 @@ export default function MissionHeritagePage() {
                       {/* Key Achievement */}
                       <div>
                         <div className="text-xs text-slate-500 uppercase tracking-wider mb-2">Key Achievement</div>
-                        <p className="text-sm text-slate-300 leading-relaxed">{mission.keyAchievement}</p>
+                        <p className="text-sm text-white/70 leading-relaxed">{mission.keyAchievement}</p>
 
         <RelatedModules modules={PAGE_RELATIONS['mission-heritage']} />
                       </div>
@@ -1137,7 +1137,7 @@ export default function MissionHeritagePage() {
               <div className="flex gap-3">
                 <span className="shrink-0 mt-0.5 w-3 h-3 rounded-full bg-white/60" />
                 <div>
-                  <div className="font-medium text-slate-200">Communications &amp; Navigation</div>
+                  <div className="font-medium text-white/90">Communications &amp; Navigation</div>
                   <div className="text-slate-400">Satellite constellations providing global navigation, broadband internet, voice communications, and data relay services.</div>
                 </div>
               </div>
@@ -1179,11 +1179,11 @@ export default function MissionHeritagePage() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="group card p-4 hover:border-purple-500/40 hover:bg-slate-800/60 transition-all"
+                  className="group card p-4 hover:border-purple-500/40 hover:bg-white/[0.05] transition-all"
                 >
                   <div className="flex items-center gap-3 mb-2">
                     <span className="text-2xl">{link.icon}</span>
-                    <h3 className="font-medium text-slate-200 group-hover:text-purple-300 transition-colors">
+                    <h3 className="font-medium text-white/90 group-hover:text-purple-300 transition-colors">
                       {link.title}
                     </h3>
                   </div>

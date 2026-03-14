@@ -45,10 +45,10 @@ export default function TrajectoryFallback({
   const cy = scaleY(currentAlt);
 
   return (
-    <div className="bg-slate-900/95 rounded-xl border border-slate-700/50 overflow-hidden">
-      <div className="px-4 py-3 border-b border-slate-700/50 bg-slate-800/50 flex items-center justify-between">
+    <div className="bg-black/95 rounded-xl border border-white/[0.06] overflow-hidden">
+      <div className="px-4 py-3 border-b border-white/[0.06] bg-white/[0.04] flex items-center justify-between">
         <h3 className="text-white font-semibold flex items-center gap-2 text-sm">
-          <svg className="w-4 h-4 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-4 h-4 text-white/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
           </svg>
           Trajectory

@@ -147,7 +147,7 @@ const TOOLS = [
     ),
     color: 'from-white/5 to-blue-500/20',
     borderColor: 'border-white/10',
-    iconColor: 'text-slate-300',
+    iconColor: 'text-white/70',
     hoverRing: 'hover:ring-white/15',
   },
   {
@@ -206,7 +206,7 @@ export default function ToolsHubPage() {
                 <div className="relative flex items-start gap-4">
                   {/* Icon */}
                   <div
-                    className={`flex-shrink-0 p-3 rounded-xl bg-slate-800/80 border ${tool.borderColor} ${tool.iconColor} group-hover:scale-110 transition-transform duration-300`}
+                    className={`flex-shrink-0 p-3 rounded-xl bg-white/[0.06] border ${tool.borderColor} ${tool.iconColor} group-hover:scale-110 transition-transform duration-300`}
                   >
                     {tool.icon}
                   </div>
@@ -245,7 +245,7 @@ export default function ToolsHubPage() {
             >
               <div className="flex flex-col md:flex-row md:items-center gap-6">
                 <div className="flex-shrink-0 p-4 rounded-xl bg-gradient-to-br from-white/5 to-blue-500/20 border border-white/10">
-                  <svg className="w-10 h-10 text-slate-300" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24" aria-hidden="true">
+                  <svg className="w-10 h-10 text-white/70" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24" aria-hidden="true">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 15.75V18m-7.5-6.75h.008v.008H8.25v-.008zm0 2.25h.008v.008H8.25v-.008zm0 2.25h.008v.008H8.25v-.008zm0 2.25h.008v.008H8.25v-.008zm2.25-4.5h.008v.008H10.5v-.008zm0 2.25h.008v.008H10.5v-.008zm0 2.25h.008v.008H10.5v-.008zm2.25-4.5h.008v.008H12.75v-.008zm0 2.25h.008v.008H12.75v-.008zm2.25-4.5h.008v.008H15v-.008zm0 2.25h.008v.008H15v-.008zM15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9h8.25m-8.25 0l3 3m-3-3l3-3" />
                   </svg>
                 </div>
@@ -260,7 +260,7 @@ export default function ToolsHubPage() {
                   </p>
                 </div>
                 <div className="flex-shrink-0 self-center">
-                  <span className="text-slate-300 group-hover:translate-x-1 transition-transform inline-block text-2xl">
+                  <span className="text-white/70 group-hover:translate-x-1 transition-transform inline-block text-2xl">
                     &rarr;
                   </span>
                 </div>

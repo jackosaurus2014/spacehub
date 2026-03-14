@@ -19,7 +19,7 @@ export default function ExportPDFButton({ className = '' }: { className?: string
     <button
       onClick={handleExport}
       disabled={isPrinting}
-      className={`inline-flex items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded-lg text-sm text-slate-200 transition-colors ${className}`}
+      className={`inline-flex items-center gap-2 px-4 py-2 bg-white/[0.06] hover:bg-white/[0.08] border border-white/[0.1] rounded-lg text-sm text-white/90 transition-colors ${className}`}
       aria-label="Export page as PDF"
     >
       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

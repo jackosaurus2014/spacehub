@@ -59,7 +59,7 @@ export default function LeadCaptureForm({ companySlug, companyName }: LeadCaptur
   }
 
   return (
-    <div className="bg-slate-800/60 border border-slate-700/50 rounded-xl p-6">
+    <div className="bg-white/[0.05] border border-white/[0.06] rounded-xl p-6">
       <h3 className="text-lg font-semibold text-slate-100 mb-1">Contact {companyName}</h3>
       <p className="text-sm text-slate-400 mb-4">
         Send an inquiry directly to this company. They will respond via email.
@@ -77,7 +77,7 @@ export default function LeadCaptureForm({ companySlug, companyName }: LeadCaptur
               onChange={(e) => setFormData((f) => ({ ...f, name: e.target.value }))}
               autoComplete="name"
               enterKeyHint="next"
-              className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+              className="w-full bg-white/[0.06] border border-white/[0.08] text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
               placeholder="Jane Smith"
             />
           </div>
@@ -92,7 +92,7 @@ export default function LeadCaptureForm({ companySlug, companyName }: LeadCaptur
               enterKeyHint="next"
               value={formData.email}
               onChange={(e) => setFormData((f) => ({ ...f, email: e.target.value }))}
-              className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+              className="w-full bg-white/[0.06] border border-white/[0.08] text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
               placeholder="jane@company.com"
             />
           </div>
@@ -108,7 +108,7 @@ export default function LeadCaptureForm({ companySlug, companyName }: LeadCaptur
               enterKeyHint="next"
               value={formData.company}
               onChange={(e) => setFormData((f) => ({ ...f, company: e.target.value }))}
-              className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+              className="w-full bg-white/[0.06] border border-white/[0.08] text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
               placeholder="Acme Corp"
             />
           </div>
@@ -121,7 +121,7 @@ export default function LeadCaptureForm({ companySlug, companyName }: LeadCaptur
               enterKeyHint="next"
               value={formData.phone}
               onChange={(e) => setFormData((f) => ({ ...f, phone: e.target.value }))}
-              className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+              className="w-full bg-white/[0.06] border border-white/[0.08] text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
               placeholder="+1 (555) 123-4567"
             />
           </div>
@@ -136,7 +136,7 @@ export default function LeadCaptureForm({ companySlug, companyName }: LeadCaptur
             maxLength={5000}
             value={formData.message}
             onChange={(e) => setFormData((f) => ({ ...f, message: e.target.value }))}
-            className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none resize-none"
+            className="w-full bg-white/[0.06] border border-white/[0.08] text-white rounded-lg px-3 py-2 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none resize-none"
             placeholder="Tell them about your interest or requirements..."
           />
         </div>

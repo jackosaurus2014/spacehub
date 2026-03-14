@@ -50,12 +50,12 @@ function AllocationCard({ allocation }: { allocation: SpectrumAllocation }) {
   };
 
   return (
-    <div className="p-3 bg-slate-800/50 rounded-lg">
+    <div className="p-3 bg-white/[0.04] rounded-lg">
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2">
           <span className="text-lg">📡</span>
           <div>
-            <span className="text-slate-200 font-medium text-sm">
+            <span className="text-white/90 font-medium text-sm">
               {bandInfo?.label || allocation.bandName}
             </span>
             <span className="text-slate-400 text-xs ml-2">
@@ -115,17 +115,17 @@ function FilingRow({ filing }: { filing: SpectrumFiling }) {
     pending: 'bg-yellow-500/20 text-yellow-400',
     coordinating: 'bg-blue-500/20 text-blue-400',
     denied: 'bg-red-500/20 text-red-400',
-    expired: 'bg-slate-800/30 text-slate-400',
+    expired: 'bg-white/[0.04] text-slate-400',
   };
 
   const statusClass = statusColors[filing.status] || 'bg-space-600 text-star-300';
   const filingDate = new Date(filing.filingDate);
 
   return (
-    <div className="p-3 bg-slate-800/50 rounded-lg flex items-center justify-between gap-3">
+    <div className="p-3 bg-white/[0.04] rounded-lg flex items-center justify-between gap-3">
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 mb-1">
-          <span className="text-slate-200 text-sm font-medium truncate">{filing.operator}</span>
+          <span className="text-white/90 text-sm font-medium truncate">{filing.operator}</span>
           <span className={`text-xs px-2 py-0.5 rounded whitespace-nowrap ${statusClass}`}>
             {filing.status}
           </span>
@@ -199,7 +199,7 @@ export default function SpectrumTrackerModule() {
     return (
       <div className="card p-8 text-center">
         <span className="text-5xl block mb-4">📡</span>
-        <h3 className="text-xl font-semibold text-slate-200 mb-2">Spectrum & Frequency Tracker</h3>
+        <h3 className="text-xl font-semibold text-white/90 mb-2">Spectrum & Frequency Tracker</h3>
         <p className="text-slate-400 mb-4">
           Satellite frequency allocations, filings, and spectrum availability.
         </p>
@@ -228,7 +228,7 @@ export default function SpectrumTrackerModule() {
         <div className="flex items-center gap-3">
           <span className="text-3xl">📡</span>
           <div>
-            <h2 className="text-2xl font-display font-bold text-slate-200">Spectrum & Frequency Tracker</h2>
+            <h2 className="text-2xl font-display font-bold text-white/90">Spectrum & Frequency Tracker</h2>
             <p className="text-slate-400 text-sm">Frequency allocations, filings & availability</p>
           </div>
         </div>
@@ -243,7 +243,7 @@ export default function SpectrumTrackerModule() {
           {`Spectrum overview: ${data.stats.totalBands} total bands, ${data.stats.congestedBands} congested, ${data.stats.totalFilings} total filings, ${data.stats.pendingFilings} pending filings`}
         </span>
         <div className="card p-3 text-center">
-          <div className="text-2xl font-bold text-slate-200">{data.stats.totalBands}</div>
+          <div className="text-2xl font-bold text-white/90">{data.stats.totalBands}</div>
           <div className="text-slate-400 text-xs">Total Bands</div>
         </div>
         <div className="card p-3 text-center">
@@ -264,7 +264,7 @@ export default function SpectrumTrackerModule() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Spectrum Bands */}
         <div className="lg:col-span-2 card p-4">
-          <h3 className="text-lg font-semibold text-slate-200 mb-4 flex items-center gap-2">
+          <h3 className="text-lg font-semibold text-white/90 mb-4 flex items-center gap-2">
             <span>📊</span> Spectrum Bands
           </h3>
           <div className="space-y-3">
@@ -276,7 +276,7 @@ export default function SpectrumTrackerModule() {
 
         {/* Recent Filings */}
         <div className="card p-4">
-          <h3 className="text-lg font-semibold text-slate-200 mb-4 flex items-center gap-2">
+          <h3 className="text-lg font-semibold text-white/90 mb-4 flex items-center gap-2">
             <span>📋</span> Recent Filings
           </h3>
           <div className="space-y-3">
@@ -292,7 +292,7 @@ export default function SpectrumTrackerModule() {
 
       {/* Band Legend */}
       <div className="card p-4 mt-6">
-        <h3 className="text-sm font-semibold text-slate-200 mb-3 flex items-center gap-2">
+        <h3 className="text-sm font-semibold text-white/90 mb-3 flex items-center gap-2">
           <span>🔑</span> Filing Status Legend
         </h3>
         <div className="flex flex-wrap gap-4">

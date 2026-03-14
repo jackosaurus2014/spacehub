@@ -619,7 +619,7 @@ function getStatusColor(status: DealStatus): string {
   switch (status) {
     case 'Completed': return 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30';
     case 'Pending': return 'bg-amber-500/20 text-amber-400 border-amber-500/30';
-    case 'Announced': return 'bg-white/10 text-slate-300 border-white/10';
+    case 'Announced': return 'bg-white/10 text-white/70 border-white/10';
     case 'Failed': return 'bg-red-500/20 text-red-400 border-red-500/30';
   }
 }
@@ -903,7 +903,7 @@ export default function MATrackerPage() {
 
   const SortIcon = ({ field }: { field: SortField }) => {
     if (sortField !== field) return <span className="text-slate-600 ml-1">&#x2195;</span>;
-    return <span className="text-slate-300 ml-1">{sortDir === 'desc' ? '\u2193' : '\u2191'}</span>;
+    return <span className="text-white/70 ml-1">{sortDir === 'desc' ? '\u2193' : '\u2191'}</span>;
   };
 
   // ─── Render ────────────────────────────────────────────────────────
@@ -944,7 +944,7 @@ export default function MATrackerPage() {
               <p className="text-xs text-slate-400 uppercase tracking-wider mb-1">Most Acquisitive</p>
               <div>
                 {summaryStats.topAcquirers.map(([name, count], i) => (
-                  <p key={name} className={`text-sm ${i === 0 ? 'text-slate-300 font-semibold' : 'text-slate-400'}`}>
+                  <p key={name} className={`text-sm ${i === 0 ? 'text-white/70 font-semibold' : 'text-slate-400'}`}>
                     {name} ({count} deals)
                   </p>
                 ))}
@@ -954,7 +954,7 @@ export default function MATrackerPage() {
         </ScrollReveal>
 
         {/* ── Tab Navigation ──────────────────────────────────────── */}
-        <div className="flex gap-1 mb-6 bg-slate-800/50 rounded-xl p-1 w-fit">
+        <div className="flex gap-1 mb-6 bg-white/[0.04] rounded-xl p-1 w-fit">
           {([
             { key: 'deals' as ViewTab, label: 'Deal Database', icon: '\uD83D\uDCCA' },
             { key: 'trends' as ViewTab, label: 'Trend Analysis', icon: '\uD83D\uDCC8' },
@@ -966,7 +966,7 @@ export default function MATrackerPage() {
               className={`px-4 py-2.5 rounded-lg text-sm font-medium transition-all min-h-[44px] ${
                 activeTab === key
                   ? 'bg-white text-slate-900 shadow-lg shadow-black/10'
-                  : 'text-slate-400 hover:text-white hover:bg-slate-700/50'
+                  : 'text-slate-400 hover:text-white hover:bg-white/[0.08]'
               }`}
             >
               <span className="mr-1.5">{icon}</span>
@@ -993,7 +993,7 @@ export default function MATrackerPage() {
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Search acquirer, target, sector..."
-                    className="w-full px-3 py-2 bg-slate-800/80 border border-slate-700 rounded-lg text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-white/15 transition-colors min-h-[44px]"
+                    className="w-full px-3 py-2 bg-white/[0.06] border border-white/[0.08] rounded-lg text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-white/15 transition-colors min-h-[44px]"
                   />
                 </div>
 
@@ -1003,7 +1003,7 @@ export default function MATrackerPage() {
                   <select
                     value={filterYear ?? ''}
                     onChange={(e) => setFilterYear(e.target.value ? Number(e.target.value) : null)}
-                    className="px-3 py-2 bg-slate-800/80 border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-white/15 transition-colors min-h-[44px]"
+                    className="px-3 py-2 bg-white/[0.06] border border-white/[0.08] rounded-lg text-sm text-white focus:outline-none focus:border-white/15 transition-colors min-h-[44px]"
                   >
                     <option value="">All Years</option>
                     {ALL_YEARS.map((y) => (
@@ -1018,7 +1018,7 @@ export default function MATrackerPage() {
                   <select
                     value={filterSizeIdx}
                     onChange={(e) => setFilterSizeIdx(Number(e.target.value))}
-                    className="px-3 py-2 bg-slate-800/80 border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-white/15 transition-colors min-h-[44px]"
+                    className="px-3 py-2 bg-white/[0.06] border border-white/[0.08] rounded-lg text-sm text-white focus:outline-none focus:border-white/15 transition-colors min-h-[44px]"
                   >
                     {DEAL_SIZE_RANGES.map((r, i) => (
                       <option key={i} value={i}>{r.label}</option>
@@ -1032,7 +1032,7 @@ export default function MATrackerPage() {
                   <select
                     value={filterSector}
                     onChange={(e) => setFilterSector(e.target.value as DealSector | '')}
-                    className="px-3 py-2 bg-slate-800/80 border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-white/15 transition-colors min-h-[44px]"
+                    className="px-3 py-2 bg-white/[0.06] border border-white/[0.08] rounded-lg text-sm text-white focus:outline-none focus:border-white/15 transition-colors min-h-[44px]"
                   >
                     <option value="">All Sectors</option>
                     {ALL_SECTORS.map((s) => (
@@ -1047,7 +1047,7 @@ export default function MATrackerPage() {
                   <select
                     value={filterType}
                     onChange={(e) => setFilterType(e.target.value as DealType | '')}
-                    className="px-3 py-2 bg-slate-800/80 border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-white/15 transition-colors min-h-[44px]"
+                    className="px-3 py-2 bg-white/[0.06] border border-white/[0.08] rounded-lg text-sm text-white focus:outline-none focus:border-white/15 transition-colors min-h-[44px]"
                   >
                     <option value="">All Types</option>
                     {ALL_DEAL_TYPES.map((t) => (
@@ -1062,7 +1062,7 @@ export default function MATrackerPage() {
                   <select
                     value={filterStatus}
                     onChange={(e) => setFilterStatus(e.target.value as DealStatus | '')}
-                    className="px-3 py-2 bg-slate-800/80 border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-white/15 transition-colors min-h-[44px]"
+                    className="px-3 py-2 bg-white/[0.06] border border-white/[0.08] rounded-lg text-sm text-white focus:outline-none focus:border-white/15 transition-colors min-h-[44px]"
                   >
                     <option value="">All Status</option>
                     {ALL_STATUSES.map((s) => (
@@ -1075,7 +1075,7 @@ export default function MATrackerPage() {
                 {hasActiveFilters && (
                   <button
                     onClick={resetFilters}
-                    className="px-3 py-2 text-sm text-slate-400 hover:text-white border border-slate-700 rounded-lg hover:border-slate-500 transition-colors min-h-[44px]"
+                    className="px-3 py-2 text-sm text-slate-400 hover:text-white border border-white/[0.08] rounded-lg hover:border-slate-500 transition-colors min-h-[44px]"
                   >
                     Clear Filters
                   </button>
@@ -1101,7 +1101,7 @@ export default function MATrackerPage() {
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="border-b border-slate-700/50">
+                    <tr className="border-b border-white/[0.06]">
                       <th className="text-left p-4 text-slate-400 font-medium">
                         <button onClick={() => handleSort('date')} className="flex items-center hover:text-white transition-colors">
                           Date <SortIcon field="date" />
@@ -1134,11 +1134,11 @@ export default function MATrackerPage() {
                             exit={{ opacity: 0 }}
                             transition={{ duration: 0.2 }}
                             onClick={() => setExpandedDealId(expandedDealId === deal.id ? null : deal.id)}
-                            className="border-b border-slate-800/50 hover:bg-slate-800/30 cursor-pointer transition-colors"
+                            className="border-b border-white/[0.06] hover:bg-white/[0.03] cursor-pointer transition-colors"
                           >
-                            <td className="p-4 text-slate-300 whitespace-nowrap">{formatDate(deal.date)}</td>
+                            <td className="p-4 text-white/70 whitespace-nowrap">{formatDate(deal.date)}</td>
                             <td className="p-4 text-white font-medium">{deal.acquirer}</td>
-                            <td className="p-4 text-slate-300">{deal.target}</td>
+                            <td className="p-4 text-white/70">{deal.target}</td>
                             <td className="p-4 text-emerald-400 font-mono font-medium whitespace-nowrap">
                               {formatDealValue(deal.dealValue)}
                             </td>
@@ -1164,13 +1164,13 @@ export default function MATrackerPage() {
                               transition={{ duration: 0.25 }}
                             >
                               <td colSpan={7} className="p-0">
-                                <div className="px-6 py-4 bg-slate-800/40 border-t border-slate-700/30">
+                                <div className="px-6 py-4 bg-white/[0.04] border-t border-white/[0.04]">
                                   <p className="text-xs text-slate-400 uppercase tracking-wider mb-2">Strategic Rationale</p>
-                                  <p className="text-slate-300 text-sm leading-relaxed">{deal.rationale}</p>
+                                  <p className="text-white/70 text-sm leading-relaxed">{deal.rationale}</p>
                                   <div className="flex gap-6 mt-3 text-xs text-slate-500">
-                                    <span>Sector: <span className="text-slate-300">{deal.sector}</span></span>
-                                    <span>Type: <span className="text-slate-300">{deal.dealType}</span></span>
-                                    <span>Year: <span className="text-slate-300">{deal.year}</span></span>
+                                    <span>Sector: <span className="text-white/70">{deal.sector}</span></span>
+                                    <span>Type: <span className="text-white/70">{deal.dealType}</span></span>
+                                    <span>Year: <span className="text-white/70">{deal.year}</span></span>
                                   </div>
                                 </div>
                               </td>
@@ -1185,7 +1185,7 @@ export default function MATrackerPage() {
                 {filteredDeals.length === 0 && (
                   <div className="text-center py-12">
                     <p className="text-slate-400 text-lg mb-2">No deals match your filters</p>
-                    <button onClick={resetFilters} className="text-slate-300 hover:text-white text-sm transition-colors">
+                    <button onClick={resetFilters} className="text-white/70 hover:text-white text-sm transition-colors">
                       Clear all filters
                     </button>
                   </div>
@@ -1204,7 +1204,7 @@ export default function MATrackerPage() {
                     return (
                       <div key={year} className="flex items-center gap-4">
                         <span className="text-slate-400 text-sm font-mono w-12">{year}</span>
-                        <div className="flex-1 bg-slate-800/60 rounded-full h-6 overflow-hidden">
+                        <div className="flex-1 bg-white/[0.05] rounded-full h-6 overflow-hidden">
                           <motion.div
                             initial={{ width: 0 }}
                             whileInView={{ width: `${pct}%` }}
@@ -1243,13 +1243,13 @@ export default function MATrackerPage() {
                 <StaggerItem key={trend.title}>
                   <div className={`card p-6 border bg-gradient-to-br ${trend.color} h-full`}>
                     <h3 className="text-lg font-semibold text-white mb-3">{trend.title}</h3>
-                    <p className="text-sm text-slate-300 leading-relaxed mb-4">{trend.description}</p>
+                    <p className="text-sm text-white/70 leading-relaxed mb-4">{trend.description}</p>
                     <div className="space-y-2">
                       <p className="text-xs text-slate-400 uppercase tracking-wider">Key Deals</p>
                       {trend.examples.map((ex, i) => (
                         <div key={i} className="flex items-start gap-2 text-sm">
-                          <span className="text-slate-300 mt-0.5 shrink-0">&bull;</span>
-                          <span className="text-slate-300">{ex}</span>
+                          <span className="text-white/70 mt-0.5 shrink-0">&bull;</span>
+                          <span className="text-white/70">{ex}</span>
                         </div>
                       ))}
                     </div>
@@ -1276,8 +1276,8 @@ export default function MATrackerPage() {
 
                     return sorted.map(([sector, data]) => (
                       <div key={sector} className="flex items-center gap-4">
-                        <span className="text-slate-300 text-sm w-44 truncate" title={sector}>{sector}</span>
-                        <div className="flex-1 bg-slate-800/60 rounded-full h-5 overflow-hidden">
+                        <span className="text-white/70 text-sm w-44 truncate" title={sector}>{sector}</span>
+                        <div className="flex-1 bg-white/[0.05] rounded-full h-5 overflow-hidden">
                           <motion.div
                             initial={{ width: 0 }}
                             whileInView={{ width: `${(data.count / maxCount) * 100}%` }}
@@ -1312,7 +1312,7 @@ export default function MATrackerPage() {
                       const count = typeCounts.get(type) || 0;
                       const pct = ((count / MA_DEALS.length) * 100).toFixed(0);
                       return (
-                        <div key={type} className="bg-slate-800/40 rounded-xl p-4 text-center">
+                        <div key={type} className="bg-white/[0.04] rounded-xl p-4 text-center">
                           <p className={`text-xs font-medium mb-2 ${getDealTypeColor(type)} inline-block px-2 py-0.5 rounded`}>
                             {type}
                           </p>
@@ -1339,7 +1339,7 @@ export default function MATrackerPage() {
                     return ALL_STATUSES.map((status) => {
                       const count = statusCounts.get(status) || 0;
                       return (
-                        <div key={status} className="bg-slate-800/40 rounded-xl p-4 text-center">
+                        <div key={status} className="bg-white/[0.04] rounded-xl p-4 text-center">
                           <span className={`inline-block px-2 py-0.5 rounded border text-xs font-medium mb-2 ${getStatusColor(status)}`}>
                             {status}
                           </span>
@@ -1391,14 +1391,14 @@ function AcquirerCard({ profile }: { profile: AcquirerProfile }) {
         <div className="flex-1">
           <div className="flex items-center gap-3 mb-2">
             <h3 className="text-xl font-bold text-white">{profile.name}</h3>
-            <span className="px-2 py-0.5 bg-white/10 text-slate-300 rounded text-xs font-medium">
+            <span className="px-2 py-0.5 bg-white/10 text-white/70 rounded text-xs font-medium">
               {profile.totalDeals} deals
             </span>
           </div>
           <p className="text-sm text-slate-400 mb-3">{profile.strategy}</p>
           <div className="flex flex-wrap gap-2">
             {profile.sectors.map((s) => (
-              <span key={s} className="px-2 py-0.5 bg-slate-800/60 text-slate-300 rounded text-xs">
+              <span key={s} className="px-2 py-0.5 bg-white/[0.05] text-white/70 rounded text-xs">
                 {s}
               </span>
             ))}
@@ -1417,7 +1417,7 @@ function AcquirerCard({ profile }: { profile: AcquirerProfile }) {
       {/* Toggle deal history */}
       <button
         onClick={() => setExpanded(!expanded)}
-        className="mt-4 text-sm text-slate-300 hover:text-white transition-colors flex items-center gap-1"
+        className="mt-4 text-sm text-white/70 hover:text-white transition-colors flex items-center gap-1"
       >
         {expanded ? 'Hide' : 'Show'} deal history
         <span className={`transition-transform ${expanded ? 'rotate-180' : ''}`}>&#x25BC;</span>
@@ -1432,11 +1432,11 @@ function AcquirerCard({ profile }: { profile: AcquirerProfile }) {
             transition={{ duration: 0.3 }}
             className="overflow-hidden"
           >
-            <div className="mt-4 border-t border-slate-700/50 pt-4 space-y-3">
+            <div className="mt-4 border-t border-white/[0.06] pt-4 space-y-3">
               {profile.deals
                 .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
                 .map((deal) => (
-                  <div key={deal.id} className="flex items-center justify-between bg-slate-800/30 rounded-lg px-4 py-3">
+                  <div key={deal.id} className="flex items-center justify-between bg-white/[0.03] rounded-lg px-4 py-3">
                     <div>
                       <p className="text-sm text-white font-medium">{deal.target}</p>
                       <p className="text-xs text-slate-400">{deal.sector} &middot; {deal.dealType}</p>

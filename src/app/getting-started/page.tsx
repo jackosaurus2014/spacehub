@@ -193,7 +193,7 @@ export default function GettingStartedPage() {
         <div className="container mx-auto px-4 relative z-10">
           <ScrollReveal>
             <div className="max-w-3xl mx-auto text-center">
-              <span className="inline-block px-4 py-1.5 rounded-full text-xs font-semibold tracking-wide uppercase bg-white/5 text-slate-200 border border-white/10 mb-6">
+              <span className="inline-block px-4 py-1.5 rounded-full text-xs font-semibold tracking-wide uppercase bg-white/5 text-white/90 border border-white/10 mb-6">
                 Quick Start Guide
               </span>
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
@@ -225,7 +225,7 @@ export default function GettingStartedPage() {
           <div className="max-w-4xl mx-auto space-y-8">
             {QUICK_START_STEPS.map((step, index) => (
               <ScrollReveal key={step.step} delay={index * 0.1}>
-                <div className="relative flex items-start gap-6 rounded-2xl border border-slate-700/50 bg-slate-900/50 backdrop-blur-sm p-6 md:p-8">
+                <div className="relative flex items-start gap-6 rounded-2xl border border-white/[0.06] bg-white/[0.04] backdrop-blur-sm p-6 md:p-8">
                   {/* Step number */}
                   <div className="shrink-0 w-14 h-14 rounded-full bg-gradient-to-br from-white to-blue-600 flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-black/15">
                     {step.step}
@@ -353,7 +353,7 @@ export default function GettingStartedPage() {
                 </Link>
                 <Link
                   href="/pricing"
-                  className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-xl border border-slate-600 text-slate-200 font-semibold hover:bg-slate-800/50 transition-colors"
+                  className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-xl border border-white/[0.1] text-white/90 font-semibold hover:bg-white/[0.04] transition-colors"
                 >
                   View Pricing
                 </Link>

@@ -91,7 +91,7 @@ export default function NotificationBell() {
       {/* Bell button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="relative p-2 text-slate-400 hover:text-white transition-colors rounded-lg hover:bg-slate-800/50"
+        className="relative p-2 text-slate-400 hover:text-white transition-colors rounded-lg hover:bg-white/[0.04]"
         aria-label={`Notifications${unreadCount > 0 ? ` (${unreadCount} unread)` : ''}`}
       >
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -106,14 +106,14 @@ export default function NotificationBell() {
 
       {/* Dropdown */}
       {isOpen && (
-        <div className="absolute right-0 top-full mt-2 w-80 bg-slate-800 border border-slate-700/50 rounded-xl shadow-xl shadow-black/20 z-50 overflow-hidden">
+        <div className="absolute right-0 top-full mt-2 w-80 bg-white/[0.06] border border-white/[0.06] rounded-xl shadow-xl shadow-black/20 z-50 overflow-hidden">
           {/* Header */}
-          <div className="flex items-center justify-between px-4 py-3 border-b border-slate-700/50">
+          <div className="flex items-center justify-between px-4 py-3 border-b border-white/[0.06]">
             <h3 className="text-sm font-semibold text-white">Notifications</h3>
             {unreadCount > 0 && (
               <button
                 onClick={markAllRead}
-                className="text-xs text-slate-300 hover:text-white transition-colors"
+                className="text-xs text-white/70 hover:text-white transition-colors"
               >
                 Mark all read
               </button>
@@ -134,7 +134,7 @@ export default function NotificationBell() {
               notifications.map((notification) => (
                 <div
                   key={notification.id}
-                  className={`px-4 py-3 border-b border-slate-700/30 hover:bg-slate-700/30 transition-colors cursor-pointer ${
+                  className={`px-4 py-3 border-b border-white/[0.04] hover:bg-white/[0.06] transition-colors cursor-pointer ${
                     !notification.read ? 'bg-white/5' : ''
                   }`}
                   onClick={() => {
@@ -161,10 +161,10 @@ export default function NotificationBell() {
           </div>
 
           {/* Footer */}
-          <div className="px-4 py-2.5 border-t border-slate-700/50">
+          <div className="px-4 py-2.5 border-t border-white/[0.06]">
             <Link
               href="/notifications"
-              className="text-xs text-slate-300 hover:text-white transition-colors font-medium"
+              className="text-xs text-white/70 hover:text-white transition-colors font-medium"
               onClick={() => setIsOpen(false)}
             >
               View all notifications &rarr;

@@ -57,7 +57,7 @@ export default function StickyMobileCTA({
       className={[
         'fixed bottom-16 left-0 right-0 z-40 md:hidden',
         'px-4 pb-[env(safe-area-inset-bottom)]',
-        'bg-gradient-to-t from-slate-900/95 via-slate-900/80 to-transparent',
+        'bg-gradient-to-t from-black/95 via-black/80 to-transparent',
         'backdrop-blur-sm',
         'transition-all duration-300 ease-out',
         visible

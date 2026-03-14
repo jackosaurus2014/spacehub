@@ -27,7 +27,7 @@ const COLOR_CLASSES: Record<string, { bg: string; text: string; ring: string }> 
   blue:    { bg: 'bg-blue-500/20',    text: 'text-blue-400',    ring: 'ring-blue-500/30' },
   purple:  { bg: 'bg-purple-500/20',  text: 'text-purple-400',  ring: 'ring-purple-500/30' },
   amber:   { bg: 'bg-amber-500/20',   text: 'text-amber-400',   ring: 'ring-amber-500/30' },
-  cyan:    { bg: 'bg-white/10',    text: 'text-slate-300',    ring: 'ring-white/10' },
+  cyan:    { bg: 'bg-white/10',    text: 'text-white/70',    ring: 'ring-white/10' },
   green:   { bg: 'bg-green-500/20',   text: 'text-green-400',   ring: 'ring-green-500/30' },
   red:     { bg: 'bg-red-500/20',     text: 'text-red-400',     ring: 'ring-red-500/30' },
   orange:  { bg: 'bg-orange-500/20',  text: 'text-orange-400',  ring: 'ring-orange-500/30' },
@@ -135,7 +135,7 @@ export default function ThreadTags({
         <div className="relative" ref={dropdownRef}>
           <button
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-            className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-slate-700/50 text-slate-400 border border-dashed border-slate-600 hover:border-slate-500 hover:text-slate-300 transition-colors"
+            className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-white/[0.05] text-slate-400 border border-dashed border-white/[0.1] hover:border-slate-500 hover:text-white/70 transition-colors"
             type="button"
             aria-label="Add tag"
           >
@@ -156,7 +156,7 @@ export default function ThreadTags({
           </button>
 
           {isDropdownOpen && (
-            <div className="absolute top-full left-0 mt-1 z-50 w-44 max-h-52 overflow-y-auto rounded-lg bg-slate-800 border border-slate-700 shadow-xl shadow-black/30">
+            <div className="absolute top-full left-0 mt-1 z-50 w-44 max-h-52 overflow-y-auto rounded-lg bg-white/[0.06] border border-white/[0.08] shadow-xl shadow-black/30">
               <div className="p-1">
                 {remainingTags.map((tag) => {
                   const classes = getTagClasses(tag);
@@ -164,7 +164,7 @@ export default function ThreadTags({
                     <button
                       key={tag}
                       onClick={() => handleAdd(tag)}
-                      className="w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-left text-sm hover:bg-slate-700/70 transition-colors"
+                      className="w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-left text-sm hover:bg-white/[0.08] transition-colors"
                       type="button"
                     >
                       <span

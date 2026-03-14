@@ -32,7 +32,7 @@ function TooltipCard({
 
   return (
     <div
-      className="fixed z-50 w-64 bg-slate-800 border border-slate-700/70 rounded-lg shadow-xl shadow-black/40 p-3 pointer-events-auto"
+      className="fixed z-50 w-64 bg-white/[0.06] border border-white/[0.08] rounded-lg shadow-xl shadow-black/40 p-3 pointer-events-auto"
       style={{
         top: position.top,
         left: position.left,
@@ -40,7 +40,7 @@ function TooltipCard({
       }}
     >
       {/* Header */}
-      <div className="mb-2 pb-2 border-b border-slate-700/50">
+      <div className="mb-2 pb-2 border-b border-white/[0.06]">
         <p className="text-sm font-semibold text-slate-100 truncate">{name}</p>
         <p className="text-xs text-slate-500 truncate">/company-profiles/{slug}</p>
       </div>
@@ -49,31 +49,31 @@ function TooltipCard({
       <div className="flex flex-wrap gap-1.5">
         <Link
           href={links.companyProfile}
-          className="text-[11px] px-2 py-1 rounded bg-white/20 text-slate-300 hover:bg-slate-700/30 transition-colors font-medium"
+          className="text-[11px] px-2 py-1 rounded bg-white/20 text-white/70 hover:bg-white/[0.06] transition-colors font-medium"
         >
           View Profile
         </Link>
         <Link
           href={links.relatedNews}
-          className="text-[11px] px-2 py-1 rounded bg-slate-700/50 text-slate-300 hover:bg-slate-700 transition-colors"
+          className="text-[11px] px-2 py-1 rounded bg-white/[0.08] text-white/70 hover:bg-white/[0.08] transition-colors"
         >
           News
         </Link>
         <Link
           href={links.relatedContracts}
-          className="text-[11px] px-2 py-1 rounded bg-slate-700/50 text-slate-300 hover:bg-slate-700 transition-colors"
+          className="text-[11px] px-2 py-1 rounded bg-white/[0.08] text-white/70 hover:bg-white/[0.08] transition-colors"
         >
           Contracts
         </Link>
         <Link
           href={links.relatedJobs}
-          className="text-[11px] px-2 py-1 rounded bg-slate-700/50 text-slate-300 hover:bg-slate-700 transition-colors"
+          className="text-[11px] px-2 py-1 rounded bg-white/[0.08] text-white/70 hover:bg-white/[0.08] transition-colors"
         >
           Jobs
         </Link>
         <Link
           href={links.relatedLaunches}
-          className="text-[11px] px-2 py-1 rounded bg-slate-700/50 text-slate-300 hover:bg-slate-700 transition-colors"
+          className="text-[11px] px-2 py-1 rounded bg-white/[0.08] text-white/70 hover:bg-white/[0.08] transition-colors"
         >
           Launches
         </Link>
@@ -128,7 +128,7 @@ export default function EntityLink({
       <Link
         ref={linkRef}
         href={`/company-profiles/${slug}`}
-        className={`text-slate-300 hover:text-white underline decoration-slate-500/30 hover:decoration-white/40 underline-offset-2 transition-colors duration-150 ${className}`}
+        className={`text-white/70 hover:text-white underline decoration-slate-500/30 hover:decoration-white/40 underline-offset-2 transition-colors duration-150 ${className}`}
         onMouseEnter={showTip}
         onMouseLeave={hideTip}
         onFocus={showTip}
@@ -173,7 +173,7 @@ export function EntityLinkInline({
   return (
     <Link
       href={`/company-profiles/${slug}`}
-      className={`text-slate-300 hover:text-white underline decoration-slate-500/30 hover:decoration-white/40 underline-offset-2 transition-colors duration-150 ${className}`}
+      className={`text-white/70 hover:text-white underline decoration-slate-500/30 hover:decoration-white/40 underline-offset-2 transition-colors duration-150 ${className}`}
     >
       {name}
     </Link>

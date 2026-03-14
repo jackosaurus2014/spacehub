@@ -75,7 +75,7 @@ const TYPE_STYLES: Record<DealType, { bg: string; text: string; label: string }>
   funding_round: { bg: 'bg-emerald-500/15', text: 'text-emerald-400', label: 'FUNDING' },
   acquisition: { bg: 'bg-pink-500/15', text: 'text-pink-400', label: 'M&A' },
   ipo: { bg: 'bg-yellow-500/15', text: 'text-yellow-400', label: 'IPO' },
-  spac: { bg: 'bg-white/8', text: 'text-slate-300', label: 'SPAC' },
+  spac: { bg: 'bg-white/8', text: 'text-white/70', label: 'SPAC' },
   contract_win: { bg: 'bg-blue-500/15', text: 'text-blue-400', label: 'CONTRACT' },
 };
 
@@ -215,7 +215,7 @@ function DealCard({ deal, index }: { deal: Deal; index: number }) {
                     {p.companySlug ? (
                       <Link
                         href={`/company-profiles/${p.companySlug}`}
-                        className="text-slate-300/80 hover:text-white transition-colors"
+                        className="text-white/70/80 hover:text-white transition-colors"
                         onClick={(e) => e.stopPropagation()}
                       >
                         {p.company}
@@ -237,7 +237,7 @@ function DealCard({ deal, index }: { deal: Deal; index: number }) {
                     from {a.companySlug ? (
                       <Link
                         href={`/company-profiles/${a.companySlug}`}
-                        className="text-slate-300/80 hover:text-white transition-colors"
+                        className="text-white/70/80 hover:text-white transition-colors"
                         onClick={(e) => e.stopPropagation()}
                       >
                         {a.company}
@@ -248,7 +248,7 @@ function DealCard({ deal, index }: { deal: Deal; index: number }) {
                   </span>
                 ))}
                 {deal.stage && (
-                  <span className="text-xs px-1.5 py-0.5 rounded bg-slate-700/50 text-slate-400 border border-slate-600/30">
+                  <span className="text-xs px-1.5 py-0.5 rounded bg-slate-700/50 text-slate-400 border border-white/[0.06]">
                     {deal.stage}
                   </span>
                 )}
@@ -286,8 +286,8 @@ function DealCard({ deal, index }: { deal: Deal; index: number }) {
               transition={{ duration: 0.2 }}
               className="overflow-hidden"
             >
-              <div className="px-4 sm:px-5 pb-4 sm:pb-5 border-t border-slate-700/30 pt-4">
-                <p className="text-sm text-slate-300 leading-relaxed mb-3">
+              <div className="px-4 sm:px-5 pb-4 sm:pb-5 border-t border-white/[0.04] pt-4">
+                <p className="text-sm text-white/70 leading-relaxed mb-3">
                   {deal.description}
                 </p>
 
@@ -302,7 +302,7 @@ function DealCard({ deal, index }: { deal: Deal; index: number }) {
                           {inv.companySlug ? (
                             <Link
                               href={`/company-profiles/${inv.companySlug}`}
-                              className="text-slate-300/80 hover:text-white transition-colors"
+                              className="text-white/70/80 hover:text-white transition-colors"
                               onClick={(e) => e.stopPropagation()}
                             >
                               {inv.company}
@@ -324,7 +324,7 @@ function DealCard({ deal, index }: { deal: Deal; index: number }) {
                       href={deal.sourceUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-slate-300/70 hover:text-white transition-colors"
+                      className="text-white/70/70 hover:text-white transition-colors"
                       onClick={(e) => e.stopPropagation()}
                     >
                       View Source
@@ -436,7 +436,7 @@ function DealsPageContent() {
   const hasFilters = activeTab || search || company || dateFrom || dateTo || amountRange;
 
   return (
-    <div className="min-h-screen bg-slate-900">
+    <div className="min-h-screen bg-black">
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <AnimatedPageHeader
@@ -508,13 +508,13 @@ function DealsPageContent() {
                   onClick={() => setActiveTab(tab.value as DealType | '')}
                   className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
                     isActive
-                      ? 'bg-white/10 text-slate-300 border border-white/10'
-                      : 'bg-slate-800/50 text-slate-400 border border-slate-700/50 hover:bg-slate-700/50 hover:text-white'
+                      ? 'bg-white/10 text-white/70 border border-white/10'
+                      : 'bg-white/[0.04] text-slate-400 border border-white/[0.06] hover:bg-white/[0.08] hover:text-white'
                   }`}
                 >
                   {tab.label}
                   {tab.value && typeCount !== undefined && (
-                    <span className={`ml-1.5 text-xs ${isActive ? 'text-slate-300/70' : 'text-slate-500'}`}>
+                    <span className={`ml-1.5 text-xs ${isActive ? 'text-white/70/70' : 'text-slate-500'}`}>
                       ({typeCount})
                     </span>
                   )}
@@ -536,7 +536,7 @@ function DealsPageContent() {
                   placeholder="Search deals by company, title, or description..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  className="w-full pl-10 pr-4 bg-slate-800 border border-slate-700 text-white rounded-lg py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+                  className="w-full pl-10 pr-4 bg-white/[0.06] border border-white/[0.08] text-white rounded-lg py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                 />
                 <svg className="absolute left-3 top-3 w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -548,7 +548,7 @@ function DealsPageContent() {
                 aria-label="Filter by deal amount"
                 value={amountRange}
                 onChange={(e) => setAmountRange(e.target.value)}
-                className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+                className="bg-white/[0.06] border border-white/[0.08] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
               >
                 {AMOUNT_RANGES.map((opt) => (
                   <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -561,7 +561,7 @@ function DealsPageContent() {
                 aria-label="Date from"
                 value={dateFrom}
                 onChange={(e) => setDateFrom(e.target.value)}
-                className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+                className="bg-white/[0.06] border border-white/[0.08] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
               />
 
               {/* Date to */}
@@ -570,7 +570,7 @@ function DealsPageContent() {
                 aria-label="Date to"
                 value={dateTo}
                 onChange={(e) => setDateTo(e.target.value)}
-                className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+                className="bg-white/[0.06] border border-white/[0.08] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
               />
 
               {hasFilters && (
@@ -583,7 +583,7 @@ function DealsPageContent() {
                     setDateTo('');
                     setCompany('');
                   }}
-                  className="px-3 py-2.5 text-sm text-slate-400 hover:text-white transition-colors border border-slate-700/50 rounded-lg hover:bg-slate-700/30"
+                  className="px-3 py-2.5 text-sm text-slate-400 hover:text-white transition-colors border border-white/[0.06] rounded-lg hover:bg-slate-700/30"
                 >
                   Clear All
                 </button>
@@ -594,7 +594,7 @@ function DealsPageContent() {
               <span>{total} deal{total !== 1 ? 's' : ''} found</span>
               <button
                 onClick={() => setChartsVisible(!chartsVisible)}
-                className="text-slate-300/70 hover:text-white transition-colors flex items-center gap-1"
+                className="text-white/70/70 hover:text-white transition-colors flex items-center gap-1"
               >
                 <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
@@ -697,7 +697,7 @@ function DealsPageContent() {
                           <div className="flex justify-between text-sm mb-1">
                             <div className="flex items-center gap-2">
                               <div className={`w-3 h-3 rounded-full flex-shrink-0 ${TYPE_COLORS[entry.name] || 'bg-slate-500'}`} />
-                              <span className="text-slate-300">{entry.name}</span>
+                              <span className="text-white/70">{entry.name}</span>
                             </div>
                             <span className="text-slate-400">
                               {entry.count} deals ({pct.toFixed(0)}%) -- {formatChartVolume(entry.volume)}
@@ -740,7 +740,7 @@ function DealsPageContent() {
                     setDateTo('');
                     setCompany('');
                   }}
-                  className="text-sm text-slate-300 hover:text-white transition-colors"
+                  className="text-sm text-white/70 hover:text-white transition-colors"
                 >
                   Clear all filters
                 </button>
@@ -771,7 +771,7 @@ function DealsPageContent() {
               <button
                 onClick={() => setPage(Math.max(1, page - 1))}
                 disabled={page === 1}
-                className="px-4 py-2 bg-slate-800/50 border border-slate-700/50 rounded-lg text-sm text-slate-300 hover:bg-slate-700/50 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                className="px-4 py-2 bg-white/[0.04] border border-white/[0.06] rounded-lg text-sm text-white/70 hover:bg-white/[0.08] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 Previous
               </button>
@@ -793,8 +793,8 @@ function DealsPageContent() {
                       onClick={() => setPage(pageNum)}
                       className={`w-10 h-10 rounded-lg text-sm font-medium transition-colors ${
                         page === pageNum
-                          ? 'bg-white/10 text-slate-300 border border-white/10'
-                          : 'bg-slate-800/50 text-slate-400 border border-slate-700/50 hover:bg-slate-700/50'
+                          ? 'bg-white/10 text-white/70 border border-white/10'
+                          : 'bg-white/[0.04] text-slate-400 border border-white/[0.06] hover:bg-white/[0.08]'
                       }`}
                     >
                       {pageNum}
@@ -805,7 +805,7 @@ function DealsPageContent() {
               <button
                 onClick={() => setPage(Math.min(totalPages, page + 1))}
                 disabled={page === totalPages}
-                className="px-4 py-2 bg-slate-800/50 border border-slate-700/50 rounded-lg text-sm text-slate-300 hover:bg-slate-700/50 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                className="px-4 py-2 bg-white/[0.04] border border-white/[0.06] rounded-lg text-sm text-white/70 hover:bg-white/[0.08] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 Next
               </button>
@@ -848,7 +848,7 @@ export default function DealsPage() {
   return (
     <PremiumGate requiredTier="pro" context="deal-flow" showPreview={true}>
       <Suspense fallback={
-        <div className="min-h-screen bg-slate-900 flex justify-center items-center">
+        <div className="min-h-screen bg-black flex justify-center items-center">
           <LoadingSpinner />
         </div>
       }>

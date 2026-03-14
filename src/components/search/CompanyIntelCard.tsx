@@ -129,7 +129,7 @@ export default function CompanyIntelCard({ item }: { item: CompanyIntelResult })
           {/* Data completeness bar */}
           {item.dataCompleteness > 0 && (
             <div className="mt-2.5 flex items-center gap-2">
-              <div className="flex-1 h-1 bg-slate-700/50 rounded-full overflow-hidden max-w-[120px]">
+              <div className="flex-1 h-1 bg-white/[0.06] rounded-full overflow-hidden max-w-[120px]">
                 <div
                   className="h-full rounded-full bg-gradient-to-r from-white to-emerald-500 transition-all"
                   style={{ width: `${Math.min(item.dataCompleteness, 100)}%` }}

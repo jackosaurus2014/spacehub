@@ -97,7 +97,7 @@ export default function AcceptedAnswerBadge({
       className={`group inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md border transition-colors duration-150 disabled:opacity-50 ${
         isAccepted
           ? 'bg-green-500/10 border-green-500/20 hover:bg-green-500/20'
-          : 'bg-slate-800/50 border-slate-700 hover:bg-green-500/10 hover:border-green-500/20'
+          : 'bg-white/[0.04] border-white/[0.08] hover:bg-green-500/10 hover:border-green-500/20'
       }`}
       title={isAccepted ? 'Unmark as accepted answer' : 'Mark as accepted answer'}
     >

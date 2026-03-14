@@ -73,10 +73,10 @@ export default function ContractCard({ contract, onClose }: ContractCardProps) {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
       <div
         ref={modalRef}
-        className="bg-slate-900 border border-slate-700 rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+        className="bg-black border border-white/[0.08] rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
       >
         {/* Header */}
-        <div className="sticky top-0 bg-slate-900 border-b border-slate-700 p-4 flex items-start justify-between">
+        <div className="sticky top-0 bg-black border-b border-white/[0.08] p-4 flex items-start justify-between">
           <div className="flex items-center gap-3">
             {/* Agency Badge */}
             <div className={`px-3 py-1.5 rounded-lg ${agencyInfo?.bgColor || 'bg-slate-600'}`}>
@@ -92,7 +92,7 @@ export default function ContractCard({ contract, onClose }: ContractCardProps) {
           </div>
           <button
             onClick={onClose}
-            className="text-slate-400 hover:text-white p-1 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg hover:bg-slate-800 transition-colors"
+            className="text-slate-400 hover:text-white p-1 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg hover:bg-white/[0.06] transition-colors"
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -114,28 +114,28 @@ export default function ContractCard({ contract, onClose }: ContractCardProps) {
               <span className="text-green-400 font-bold text-lg">{contract.value}</span>
             )}
             {categoryInfo && (
-              <span className="text-slate-400 text-sm bg-slate-800 px-2 py-1 rounded">
+              <span className="text-slate-400 text-sm bg-white/[0.06] px-2 py-1 rounded">
                 {categoryInfo.label}
               </span>
             )}
           </div>
 
           {/* Description */}
-          <p className="text-slate-300 mb-6 leading-relaxed">{contract.description}</p>
+          <p className="text-white/70 mb-6 leading-relaxed">{contract.description}</p>
 
           {/* Timeline */}
-          <div className="bg-slate-800/50 rounded-lg p-4 mb-6">
-            <h3 className="text-slate-200 font-semibold mb-3 flex items-center gap-2">
+          <div className="bg-white/[0.04] rounded-lg p-4 mb-6">
+            <h3 className="text-white/90 font-semibold mb-3 flex items-center gap-2">
               <span>📅</span> Timeline
             </h3>
             <div className="grid grid-cols-3 gap-4">
               <div className="text-center">
                 <div className="text-slate-400 text-xs uppercase tracking-wider mb-1">Posted</div>
-                <div className="text-slate-200 font-medium">{formatDate(contract.postedDate)}</div>
+                <div className="text-white/90 font-medium">{formatDate(contract.postedDate)}</div>
               </div>
               <div className="text-center">
                 <div className="text-slate-400 text-xs uppercase tracking-wider mb-1">Due Date</div>
-                <div className={`font-medium ${daysUntilDue !== null && daysUntilDue <= 14 ? 'text-yellow-400' : 'text-slate-200'}`}>
+                <div className={`font-medium ${daysUntilDue !== null && daysUntilDue <= 14 ? 'text-yellow-400' : 'text-white/90'}`}>
                   {formatDate(contract.dueDate)}
                   {daysUntilDue !== null && daysUntilDue > 0 && (
                     <span className={`block text-xs ${daysUntilDue <= 14 ? 'text-yellow-400' : 'text-slate-400'}`}>
@@ -146,7 +146,7 @@ export default function ContractCard({ contract, onClose }: ContractCardProps) {
               </div>
               <div className="text-center">
                 <div className="text-slate-400 text-xs uppercase tracking-wider mb-1">Award Date</div>
-                <div className="text-slate-200 font-medium">{formatDate(contract.awardDate)}</div>
+                <div className="text-white/90 font-medium">{formatDate(contract.awardDate)}</div>
               </div>
             </div>
 
@@ -157,7 +157,7 @@ export default function ContractCard({ contract, onClose }: ContractCardProps) {
                   <span>Posted</span>
                   <span>Due</span>
                 </div>
-                <div className="h-2 bg-slate-700 rounded-full overflow-hidden">
+                <div className="h-2 bg-white/[0.08] rounded-full overflow-hidden">
                   <div
                     className="h-full bg-gradient-to-r from-green-500 to-yellow-500 transition-all"
                     style={{
@@ -180,19 +180,19 @@ export default function ContractCard({ contract, onClose }: ContractCardProps) {
           {/* Details Grid */}
           <div className="grid grid-cols-2 gap-4 mb-6">
             {contract.solicitationNumber && (
-              <div className="bg-slate-800/30 rounded-lg p-3">
+              <div className="bg-white/[0.03] rounded-lg p-3">
                 <div className="text-slate-400 text-xs uppercase tracking-wider mb-1">Solicitation #</div>
-                <div className="text-slate-200 font-mono text-sm">{contract.solicitationNumber}</div>
+                <div className="text-white/90 font-mono text-sm">{contract.solicitationNumber}</div>
               </div>
             )}
             {contract.naicsCode && (
-              <div className="bg-slate-800/30 rounded-lg p-3">
+              <div className="bg-white/[0.03] rounded-lg p-3">
                 <div className="text-slate-400 text-xs uppercase tracking-wider mb-1">NAICS Code</div>
-                <div className="text-slate-200 font-mono text-sm">{contract.naicsCode}</div>
+                <div className="text-white/90 font-mono text-sm">{contract.naicsCode}</div>
               </div>
             )}
             {contract.awardee && (
-              <div className="bg-slate-800/30 rounded-lg p-3 col-span-2">
+              <div className="bg-white/[0.03] rounded-lg p-3 col-span-2">
                 <div className="text-slate-400 text-xs uppercase tracking-wider mb-1">Awardee</div>
                 <div className="text-purple-400 font-medium">{contract.awardee}</div>
               </div>
@@ -214,7 +214,7 @@ export default function ContractCard({ contract, onClose }: ContractCardProps) {
             </a>
             <button
               onClick={onClose}
-              className="px-6 py-3 bg-slate-700 hover:bg-slate-600 text-slate-200 font-medium rounded-lg transition-colors"
+              className="px-6 py-3 bg-white/[0.08] hover:bg-white/[0.08] text-white/90 font-medium rounded-lg transition-colors"
             >
               Close
             </button>

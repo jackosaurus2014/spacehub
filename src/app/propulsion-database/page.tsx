@@ -489,9 +489,9 @@ function typeColor(type: PropulsionType): string {
     case 'Electric': return 'bg-blue-500/20 text-blue-300 border-blue-500/30';
     case 'Green': return 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30';
     case 'Nuclear': return 'bg-purple-500/20 text-purple-300 border-purple-500/30';
-    case 'Cold Gas': return 'bg-slate-500/20 text-slate-300 border-slate-500/30';
-    case 'Electrospray': return 'bg-white/10 text-slate-200 border-white/10';
-    default: return 'bg-slate-500/20 text-slate-300 border-slate-500/30';
+    case 'Cold Gas': return 'bg-slate-500/20 text-white/70 border-slate-500/30';
+    case 'Electrospray': return 'bg-white/10 text-white/90 border-white/10';
+    default: return 'bg-slate-500/20 text-white/70 border-slate-500/30';
   }
 }
 
@@ -602,7 +602,7 @@ export default function PropulsionDatabasePage() {
             ].map(stat => (
               <div
                 key={stat.label}
-                className="bg-slate-900/60 border border-slate-700/50 rounded-lg p-4 text-center"
+                className="bg-slate-900/60 border border-white/[0.06] rounded-lg p-4 text-center"
               >
                 <div className={`text-2xl font-bold ${stat.color}`}>{stat.value}</div>
                 <div className="text-xs text-slate-400 mt-1">{stat.label}</div>
@@ -613,7 +613,7 @@ export default function PropulsionDatabasePage() {
 
         {/* Filters & Controls */}
         <ScrollReveal delay={0.1}>
-          <div className="bg-slate-900/60 border border-slate-700/50 rounded-xl p-4 mb-8 space-y-4">
+          <div className="bg-slate-900/60 border border-white/[0.06] rounded-xl p-4 mb-8 space-y-4">
             {/* Search */}
             <div className="relative">
               <svg
@@ -634,7 +634,7 @@ export default function PropulsionDatabasePage() {
                 placeholder="Search by name, manufacturer, propellant, or application..."
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
-                className="w-full bg-slate-800/60 border border-slate-600/50 rounded-lg pl-10 pr-4 py-2.5 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-orange-500/50 focus:border-orange-500/50"
+                className="w-full bg-white/[0.05] border border-white/[0.08] rounded-lg pl-10 pr-4 py-2.5 text-sm text-white/90 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-orange-500/50 focus:border-orange-500/50"
               />
             </div>
 
@@ -644,7 +644,7 @@ export default function PropulsionDatabasePage() {
               <select
                 value={typeFilter}
                 onChange={e => setTypeFilter(e.target.value as PropulsionType | 'All')}
-                className="bg-slate-800/60 border border-slate-600/50 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-orange-500/50"
+                className="bg-white/[0.05] border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-white/90 focus:outline-none focus:ring-2 focus:ring-orange-500/50"
               >
                 {TYPE_FILTERS.map(f => (
                   <option key={f.value} value={f.value}>{f.label}</option>
@@ -655,7 +655,7 @@ export default function PropulsionDatabasePage() {
               <select
                 value={statusFilter}
                 onChange={e => setStatusFilter(e.target.value as PropulsionStatus | 'All')}
-                className="bg-slate-800/60 border border-slate-600/50 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-orange-500/50"
+                className="bg-white/[0.05] border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-white/90 focus:outline-none focus:ring-2 focus:ring-orange-500/50"
               >
                 {STATUS_FILTERS.map(f => (
                   <option key={f.value} value={f.value}>{f.label}</option>
@@ -666,7 +666,7 @@ export default function PropulsionDatabasePage() {
               <select
                 value={sortBy}
                 onChange={e => setSortBy(e.target.value as SortKey)}
-                className="bg-slate-800/60 border border-slate-600/50 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-orange-500/50"
+                className="bg-white/[0.05] border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-white/90 focus:outline-none focus:ring-2 focus:ring-orange-500/50"
               >
                 {SORT_OPTIONS.map(s => (
                   <option key={s.value} value={s.value}>Sort: {s.label}</option>
@@ -703,7 +703,7 @@ export default function PropulsionDatabasePage() {
             const isExpanded = expandedCards.has(system.name);
             return (
               <ScrollReveal key={system.name} delay={Math.min(idx * 0.04, 0.4)}>
-                <div className="bg-slate-900/60 border border-slate-700/50 rounded-xl overflow-hidden hover:border-slate-600/70 transition-colors">
+                <div className="bg-slate-900/60 border border-white/[0.06] rounded-xl overflow-hidden hover:border-slate-600/70 transition-colors">
                   {/* Card Header -- always visible */}
                   <button
                     onClick={() => toggleCard(system.name)}
@@ -727,12 +727,12 @@ export default function PropulsionDatabasePage() {
                     {/* Key specs */}
                     <div className="hidden sm:flex items-center gap-6 text-sm shrink-0">
                       <div className="text-right">
-                        <div className="text-slate-300 font-mono">{system.thrust}</div>
+                        <div className="text-white/70 font-mono">{system.thrust}</div>
                         <div className="text-xs text-slate-500">Thrust</div>
                       </div>
                       {system.isp > 0 && (
                         <div className="text-right">
-                          <div className="text-slate-300 font-mono">{system.isp.toLocaleString()} s</div>
+                          <div className="text-white/70 font-mono">{system.isp.toLocaleString()} s</div>
                           <div className="text-xs text-slate-500">Isp</div>
                         </div>
                       )}
@@ -757,12 +757,12 @@ export default function PropulsionDatabasePage() {
                   <div className="sm:hidden px-5 pb-3 flex items-center gap-4 text-sm">
                     <div>
                       <span className="text-slate-400">Thrust:</span>{' '}
-                      <span className="text-slate-200 font-mono">{system.thrust}</span>
+                      <span className="text-white/90 font-mono">{system.thrust}</span>
                     </div>
                     {system.isp > 0 && (
                       <div>
                         <span className="text-slate-400">Isp:</span>{' '}
-                        <span className="text-slate-200 font-mono">{system.isp.toLocaleString()} s</span>
+                        <span className="text-white/90 font-mono">{system.isp.toLocaleString()} s</span>
                       </div>
                     )}
                     <div className="flex items-center gap-1.5">
@@ -773,7 +773,7 @@ export default function PropulsionDatabasePage() {
 
                   {/* Expanded Detail Panel */}
                   {isExpanded && (
-                    <div className="border-t border-slate-700/50 px-5 py-4 bg-slate-800/30">
+                    <div className="border-t border-white/[0.06] px-5 py-4 bg-white/[0.03]">
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
                         {/* Thrust */}
                         <div className="bg-slate-900/50 rounded-lg p-3">
@@ -792,7 +792,7 @@ export default function PropulsionDatabasePage() {
                         {/* Mass */}
                         <div className="bg-slate-900/50 rounded-lg p-3">
                           <div className="text-xs text-slate-500 uppercase tracking-wider mb-1">Dry Mass</div>
-                          <div className="text-lg font-mono text-slate-300">
+                          <div className="text-lg font-mono text-white/70">
                             {system.massKg !== null
                               ? system.massKg >= 1000
                                 ? `${(system.massKg / 1000).toFixed(1)} t`
@@ -804,7 +804,7 @@ export default function PropulsionDatabasePage() {
                         {/* Propellant */}
                         <div className="bg-slate-900/50 rounded-lg p-3">
                           <div className="text-xs text-slate-500 uppercase tracking-wider mb-1">Propellant</div>
-                          <div className="text-sm text-slate-200">{system.propellant}</div>
+                          <div className="text-sm text-white/90">{system.propellant}</div>
                         </div>
 
                         {/* Status */}
@@ -832,7 +832,7 @@ export default function PropulsionDatabasePage() {
                           {system.applications.map(app => (
                             <span
                               key={app}
-                              className="text-xs bg-slate-700/50 text-slate-300 px-2.5 py-1 rounded-full"
+                              className="text-xs bg-slate-700/50 text-white/70 px-2.5 py-1 rounded-full"
                             >
                               {app}
                             </span>
@@ -843,7 +843,7 @@ export default function PropulsionDatabasePage() {
                       {/* Heritage */}
                       <div>
                         <div className="text-xs text-slate-500 uppercase tracking-wider mb-2">Heritage &amp; Notes</div>
-                        <p className="text-sm text-slate-300 leading-relaxed">{system.heritage}</p>
+                        <p className="text-sm text-white/70 leading-relaxed">{system.heritage}</p>
 
         <RelatedModules modules={PAGE_RELATIONS['propulsion-database']} />
                       </div>
@@ -857,7 +857,7 @@ export default function PropulsionDatabasePage() {
 
         {/* Type Legend */}
         <ScrollReveal delay={0.15}>
-          <div className="mt-10 bg-slate-900/60 border border-slate-700/50 rounded-xl p-5">
+          <div className="mt-10 bg-slate-900/60 border border-white/[0.06] rounded-xl p-5">
             <h2 className="text-lg font-semibold text-slate-100 mb-4">Propulsion Type Overview</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-sm">
               <div className="flex gap-3">
@@ -898,7 +898,7 @@ export default function PropulsionDatabasePage() {
               <div className="flex gap-3">
                 <span className="shrink-0 mt-0.5 w-3 h-3 rounded-full bg-white/60" />
                 <div>
-                  <div className="font-medium text-slate-200">Cold Gas / Electrospray</div>
+                  <div className="font-medium text-white/90">Cold Gas / Electrospray</div>
                   <div className="text-slate-400">Miniaturized systems for CubeSats and nanosats. Low thrust, high precision or simplicity.</div>
                 </div>
               </div>
@@ -940,11 +940,11 @@ export default function PropulsionDatabasePage() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="group bg-slate-900/60 border border-slate-700/50 rounded-xl p-4 hover:border-orange-500/40 hover:bg-slate-800/60 transition-all"
+                  className="group bg-slate-900/60 border border-white/[0.06] rounded-xl p-4 hover:border-orange-500/40 hover:bg-white/[0.05] transition-all"
                 >
                   <div className="flex items-center gap-3 mb-2">
                     <span className="text-2xl">{link.icon}</span>
-                    <h3 className="font-medium text-slate-200 group-hover:text-orange-300 transition-colors">
+                    <h3 className="font-medium text-white/90 group-hover:text-orange-300 transition-colors">
                       {link.title}
                     </h3>
                   </div>

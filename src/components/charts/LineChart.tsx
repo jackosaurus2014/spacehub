@@ -250,7 +250,7 @@ export default function LineChart({
   if (!series.length) {
     return (
       <div
-        className={`bg-slate-900/50 rounded-xl flex items-center justify-center text-slate-400 ${className}`}
+        className={`bg-black/50 rounded-xl flex items-center justify-center text-slate-400 ${className}`}
         style={{ height }}
       >
         No data available
@@ -275,12 +275,12 @@ export default function LineChart({
       {/* Zoom controls */}
       {isZoomed && (
         <div className="absolute top-2 right-2 z-10 flex items-center gap-2">
-          <span className="text-xs text-slate-300 bg-slate-800/80 px-2 py-1 rounded border border-slate-600">
+          <span className="text-xs text-white/70 bg-white/[0.06] px-2 py-1 rounded border border-white/[0.1]">
             {transform.scale.toFixed(1)}x
           </span>
           <button
             onClick={resetZoom}
-            className="text-xs text-slate-300 bg-slate-800/80 hover:bg-slate-700/80 px-2 py-1 rounded border border-slate-600 transition-colors"
+            className="text-xs text-white/70 bg-white/[0.06] hover:bg-white/[0.08] px-2 py-1 rounded border border-white/[0.1] transition-colors"
           >
             Reset zoom
           </button>
@@ -398,7 +398,7 @@ export default function LineChart({
                   cy={pointY}
                   r={4}
                   fill={colors.stroke}
-                  stroke="rgba(15, 23, 42, 0.8)"
+                  stroke="rgba(10, 10, 10, 0.8)"
                   strokeWidth="2"
                   className="transition-all duration-150"
                   style={{
@@ -528,8 +528,8 @@ export default function LineChart({
         content={
           activeTooltip ? (
             <>
-              <div className="text-slate-300 text-xs">{activeTooltip.label}</div>
-              <div className="text-slate-300 font-semibold">
+              <div className="text-white/70 text-xs">{activeTooltip.label}</div>
+              <div className="text-white/70 font-semibold">
                 {activeTooltip.seriesName}: {activeTooltip.value.toLocaleString()}
               </div>
             </>
@@ -549,7 +549,7 @@ export default function LineChart({
                   className="w-3 h-3 rounded-full"
                   style={{ backgroundColor: colors.stroke }}
                 />
-                <span className="text-sm text-slate-300">{s.name}</span>
+                <span className="text-sm text-white/70">{s.name}</span>
               </div>
             );
           })}

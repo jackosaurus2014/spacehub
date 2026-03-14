@@ -148,14 +148,14 @@ function CompanyCardComponent({ company, index }: { company: CompanyCard; index:
           {/* Animated gradient border on hover */}
           <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
             <div className="absolute inset-[-1px] rounded-xl bg-gradient-to-r from-white/30 via-purple-500/30 to-slate-200/30 animate-pulse" />
-            <div className="absolute inset-[1px] rounded-xl bg-slate-900/95" />
+            <div className="absolute inset-[1px] rounded-xl bg-black/95" />
           </div>
 
           <div className="relative z-10">
             {/* Header */}
             <div className="flex items-start justify-between mb-3">
               <div className="flex items-center gap-3 min-w-0">
-                <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-slate-700 to-slate-800 flex items-center justify-center text-lg flex-shrink-0 border border-slate-600/50">
+                <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-white/[0.08] to-white/[0.06] flex items-center justify-center text-lg flex-shrink-0 border border-white/[0.1]">
                   {company.logoUrl ? (
                     <Image src={company.logoUrl} alt={`${company.name} logo`} width={28} height={28} sizes="28px" className="w-7 h-7 rounded object-contain" unoptimized />
                   ) : (
@@ -189,13 +189,13 @@ function CompanyCardComponent({ company, index }: { company: CompanyCard; index:
             </p>
 
             {company.sponsorTagline && (
-              <p className="text-xs text-slate-200/80 italic mb-2">{company.sponsorTagline}</p>
+              <p className="text-xs text-white/70 italic mb-2">{company.sponsorTagline}</p>
             )}
 
             {/* Key Metrics Row */}
             <div className="grid grid-cols-2 gap-2 mb-3">
               {company.totalFunding && (
-                <div className="bg-slate-800/50 rounded-lg p-2">
+                <div className="bg-white/[0.04] rounded-lg p-2">
                   <div className="text-xs text-slate-500 uppercase tracking-wider">Funding</div>
                   <div className="text-sm font-semibold text-emerald-400">
                     {formatMoney(company.totalFunding)}
@@ -203,21 +203,21 @@ function CompanyCardComponent({ company, index }: { company: CompanyCard; index:
                 </div>
               )}
               {company.isPublic && company.marketCap ? (
-                <div className="bg-slate-800/50 rounded-lg p-2">
+                <div className="bg-white/[0.04] rounded-lg p-2">
                   <div className="text-xs text-slate-500 uppercase tracking-wider">Market Cap</div>
                   <div className="text-sm font-semibold text-blue-400">
                     {formatMoney(company.marketCap)}
                   </div>
                 </div>
               ) : company.revenueEstimate ? (
-                <div className="bg-slate-800/50 rounded-lg p-2">
+                <div className="bg-white/[0.04] rounded-lg p-2">
                   <div className="text-xs text-slate-500 uppercase tracking-wider">Revenue</div>
                   <div className="text-sm font-semibold text-blue-400">
                     {formatMoney(company.revenueEstimate)}
                   </div>
                 </div>
               ) : company.valuation ? (
-                <div className="bg-slate-800/50 rounded-lg p-2">
+                <div className="bg-white/[0.04] rounded-lg p-2">
                   <div className="text-xs text-slate-500 uppercase tracking-wider">Valuation</div>
                   <div className="text-sm font-semibold text-purple-400">
                     {formatMoney(company.valuation)}
@@ -229,19 +229,19 @@ function CompanyCardComponent({ company, index }: { company: CompanyCard; index:
             {/* Tags */}
             <div className="flex flex-wrap gap-1 mb-3">
               {company.sector && (
-                <span className="text-xs px-2 py-0.5 rounded-full bg-slate-700/50 text-slate-300 border border-slate-600/30">
+                <span className="text-xs px-2 py-0.5 rounded-full bg-white/[0.04] text-slate-300 border border-white/[0.06]">
                   {getSectorIcon(company.sector)} {company.sector}
                 </span>
               )}
               {company.tags?.slice(0, 2).map(tag => (
-                <span key={tag} className="text-xs px-2 py-0.5 rounded-full bg-slate-700/50 text-slate-400 border border-slate-600/30">
+                <span key={tag} className="text-xs px-2 py-0.5 rounded-full bg-white/[0.04] text-slate-400 border border-white/[0.06]">
                   {tag}
                 </span>
               ))}
             </div>
 
             {/* Bottom Stats */}
-            <div className="flex items-center justify-between text-xs text-slate-500 pt-2 border-t border-slate-700/50">
+            <div className="flex items-center justify-between text-xs text-slate-500 pt-2 border-t border-white/[0.06]">
               <div className="flex gap-3">
                 {company._count.products > 0 && (
                   <span>{company._count.products} products</span>
@@ -263,7 +263,7 @@ function CompanyCardComponent({ company, index }: { company: CompanyCard; index:
 
             {/* Completeness indicator */}
             <div className="mt-2">
-              <div className="w-full h-1 bg-slate-800 rounded-full overflow-hidden">
+              <div className="w-full h-1 bg-white/[0.06] rounded-full overflow-hidden">
                 <motion.div
                   initial={{ width: 0 }}
                   animate={{ width: `${company.dataCompleteness}%` }}
@@ -433,7 +433,7 @@ export default function CompanyProfilesPage() {
                 placeholder="Search companies by name, ticker, or location..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-10 pr-4 bg-slate-800 border border-slate-700 text-white rounded-lg py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+                className="w-full pl-10 pr-4 bg-white/[0.06] border border-white/[0.06] text-white rounded-lg py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
               />
               <svg className="absolute left-3 top-3 w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -445,7 +445,7 @@ export default function CompanyProfilesPage() {
               aria-label="Filter by sector"
               value={sector}
               onChange={(e) => setSector(e.target.value)}
-              className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+              className="bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
             >
               {SECTOR_OPTIONS.map(opt => (
                 <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -456,7 +456,7 @@ export default function CompanyProfilesPage() {
               aria-label="Filter by tier"
               value={tier}
               onChange={(e) => setTier(e.target.value)}
-              className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+              className="bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
             >
               {TIER_OPTIONS.map(opt => (
                 <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -467,7 +467,7 @@ export default function CompanyProfilesPage() {
               aria-label="Filter by status"
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+              className="bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
             >
               {STATUS_OPTIONS.map(opt => (
                 <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -483,7 +483,7 @@ export default function CompanyProfilesPage() {
                 setSortBy(field);
                 setSortOrder(order);
               }}
-              className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+              className="bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
             >
               <option value="tier-asc">Sort: Tier (1→3)</option>
               <option value="name-asc">Sort: Name (A→Z)</option>
@@ -495,7 +495,7 @@ export default function CompanyProfilesPage() {
             </select>
 
             {/* View Toggle */}
-            <div className="flex bg-slate-800/50 border border-slate-700/50 rounded-lg overflow-hidden">
+            <div className="flex bg-white/[0.04] border border-white/[0.06] rounded-lg overflow-hidden">
               <button
                 onClick={() => setViewMode('grid')}
                 aria-label="Grid view"
@@ -539,13 +539,13 @@ export default function CompanyProfilesPage() {
                     <button
                       key={s.sector}
                       onClick={() => setSector(s.sector || '')}
-                      className="px-3 py-1.5 min-h-[44px] rounded bg-slate-800/50 hover:bg-slate-700/50 transition-colors whitespace-nowrap flex-shrink-0 text-xs focus:outline-none focus:ring-2 focus:ring-white/20"
+                      className="px-3 py-1.5 min-h-[44px] rounded bg-white/[0.04] hover:bg-white/[0.08] transition-colors whitespace-nowrap flex-shrink-0 text-xs focus:outline-none focus:ring-2 focus:ring-white/20"
                     >
                       {getSectorIcon(s.sector)} {s.sector} ({s.count})
                     </button>
                   ))}
                 </div>
-                <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-slate-900 to-transparent pointer-events-none sm:hidden" />
+                <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-black to-transparent pointer-events-none sm:hidden" />
               </div>
             )}
           </div>
@@ -565,23 +565,23 @@ export default function CompanyProfilesPage() {
           {Array.from({ length: 9 }).map((_, i) => (
             <div key={i} className="card p-5 animate-pulse">
               <div className="flex items-center gap-3 mb-3">
-                <div className="w-10 h-10 rounded-lg bg-slate-800" />
+                <div className="w-10 h-10 rounded-lg bg-white/[0.06]" />
                 <div className="flex-1 space-y-2">
-                  <div className="h-4 bg-slate-800 rounded w-3/4" />
-                  <div className="h-3 bg-slate-800 rounded w-1/2" />
+                  <div className="h-4 bg-white/[0.06] rounded w-3/4" />
+                  <div className="h-3 bg-white/[0.06] rounded w-1/2" />
                 </div>
               </div>
               <div className="space-y-2 mb-3">
-                <div className="h-3 bg-slate-800 rounded" />
-                <div className="h-3 bg-slate-800 rounded w-5/6" />
+                <div className="h-3 bg-white/[0.06] rounded" />
+                <div className="h-3 bg-white/[0.06] rounded w-5/6" />
               </div>
               <div className="grid grid-cols-2 gap-2 mb-3">
-                <div className="h-12 bg-slate-800 rounded-lg" />
-                <div className="h-12 bg-slate-800 rounded-lg" />
+                <div className="h-12 bg-white/[0.06] rounded-lg" />
+                <div className="h-12 bg-white/[0.06] rounded-lg" />
               </div>
               <div className="flex gap-1">
-                <div className="h-5 w-20 bg-slate-800 rounded-full" />
-                <div className="h-5 w-16 bg-slate-800 rounded-full" />
+                <div className="h-5 w-20 bg-white/[0.06] rounded-full" />
+                <div className="h-5 w-16 bg-white/[0.06] rounded-full" />
               </div>
             </div>
           ))}
@@ -610,7 +610,7 @@ export default function CompanyProfilesPage() {
       ) : (
         <div className="space-y-2">
           {/* Sticky column header */}
-          <div className="sticky top-0 z-10 hidden md:flex items-center gap-4 px-4 py-2.5 bg-slate-900/95 backdrop-blur-md border border-slate-700/40 rounded-xl text-xs font-semibold uppercase tracking-wider text-slate-400">
+          <div className="sticky top-0 z-10 hidden md:flex items-center gap-4 px-4 py-2.5 bg-black/95 backdrop-blur-md border border-white/[0.06] rounded-xl text-xs font-semibold uppercase tracking-wider text-slate-400">
             <div className="w-10 flex-shrink-0" />
             <div className="flex-1 min-w-0">Company</div>
             <div className="flex items-center gap-6">
@@ -633,7 +633,7 @@ export default function CompanyProfilesPage() {
                     whileHover={{ x: 4 }}
                     className="card p-4 flex items-center gap-4 group cursor-pointer"
                   >
-                    <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-slate-700 to-slate-800 flex items-center justify-center text-lg flex-shrink-0 border border-slate-600/50">
+                    <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-white/[0.08] to-white/[0.06] flex items-center justify-center text-lg flex-shrink-0 border border-white/[0.1]">
                       {company.logoUrl ? (
                         <Image src={company.logoUrl} alt={`${company.name} logo`} width={28} height={28} sizes="28px" className="w-7 h-7 rounded object-contain" unoptimized />
                       ) : (
@@ -692,7 +692,7 @@ export default function CompanyProfilesPage() {
           <button
             onClick={loadMore}
             disabled={loadingMore}
-            className="px-8 py-3 bg-slate-800/80 hover:bg-slate-700/80 border border-slate-600/50 hover:border-white/10 text-slate-300 hover:text-white rounded-xl transition-all duration-200 font-medium text-sm flex items-center gap-2 disabled:opacity-50"
+            className="px-8 py-3 bg-white/[0.06] hover:bg-white/[0.08] border border-white/[0.06] hover:border-white/10 text-slate-300 hover:text-white rounded-xl transition-all duration-200 font-medium text-sm flex items-center gap-2 disabled:opacity-50"
           >
             {loadingMore ? (
               <>

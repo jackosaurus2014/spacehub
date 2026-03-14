@@ -10,11 +10,11 @@ function CubeSatCard({ standard }: { standard: CubeSatStandard }) {
   const [expanded, setExpanded] = useState(false);
 
   return (
-    <div className="card p-5 border border-slate-700/50 hover:border-white/10 transition-all">
+    <div className="card p-5 border border-white/[0.06] hover:border-white/10 transition-all">
       <div className="flex items-start justify-between mb-3">
         <div className="flex items-center gap-3">
           <div className="w-14 h-14 rounded-lg bg-gradient-to-br from-white/5 to-blue-500/20 flex items-center justify-center">
-            <span className="text-slate-200 font-bold text-lg">{standard.formFactor}</span>
+            <span className="text-white/90 font-bold text-lg">{standard.formFactor}</span>
           </div>
           <div>
             <h3 className="text-white font-semibold text-lg">{standard.name}</h3>
@@ -22,7 +22,7 @@ function CubeSatCard({ standard }: { standard: CubeSatStandard }) {
           </div>
         </div>
         <div className="text-right">
-          <span className="text-xs text-slate-300 block">Max Mass</span>
+          <span className="text-xs text-white/70 block">Max Mass</span>
           <span className="text-lg font-bold text-white">{standard.maxMass} kg</span>
         </div>
       </div>
@@ -33,32 +33,32 @@ function CubeSatCard({ standard }: { standard: CubeSatStandard }) {
 
       {/* Key Specs */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-4">
-        <div className="bg-slate-800/50 px-3 py-2 rounded-lg">
-          <span className="text-xs text-slate-300 block">Cost Range</span>
+        <div className="bg-white/[0.04] px-3 py-2 rounded-lg">
+          <span className="text-xs text-white/70 block">Cost Range</span>
           <span className="text-sm font-semibold text-green-400">
             ${standard.typicalCostMin}K-${standard.typicalCostMax}K
           </span>
         </div>
-        <div className="bg-slate-800/50 px-3 py-2 rounded-lg">
-          <span className="text-xs text-slate-300 block">Power</span>
+        <div className="bg-white/[0.04] px-3 py-2 rounded-lg">
+          <span className="text-xs text-white/70 block">Power</span>
           <span className="text-sm font-semibold text-yellow-400">{standard.typicalPower}</span>
         </div>
-        <div className="bg-slate-800/50 px-3 py-2 rounded-lg">
-          <span className="text-xs text-slate-300 block">Structure Mass</span>
+        <div className="bg-white/[0.04] px-3 py-2 rounded-lg">
+          <span className="text-xs text-white/70 block">Structure Mass</span>
           <span className="text-sm font-semibold text-white">{standard.structureMass} kg</span>
         </div>
-        <div className="bg-slate-800/50 px-3 py-2 rounded-lg">
-          <span className="text-xs text-slate-300 block">Volume</span>
+        <div className="bg-white/[0.04] px-3 py-2 rounded-lg">
+          <span className="text-xs text-white/70 block">Volume</span>
           <span className="text-sm font-semibold text-white">{standard.availableVolume}</span>
         </div>
       </div>
 
       {/* Common Missions */}
       <div className="mb-3">
-        <span className="text-xs text-slate-300 font-medium block mb-2">Common Missions</span>
+        <span className="text-xs text-white/70 font-medium block mb-2">Common Missions</span>
         <div className="flex flex-wrap gap-1.5">
           {standard.commonMissions.map((mission, i) => (
-            <span key={i} className="text-xs bg-slate-700/50 text-slate-300 px-2 py-1 rounded">
+            <span key={i} className="text-xs bg-white/[0.05] text-white/70 px-2 py-1 rounded">
               {mission}
             </span>
           ))}
@@ -68,7 +68,7 @@ function CubeSatCard({ standard }: { standard: CubeSatStandard }) {
       {/* Expandable Details */}
       <button
         onClick={() => setExpanded(!expanded)}
-        className="text-sm text-slate-300 hover:text-white transition-colors flex items-center gap-1 mt-2"
+        className="text-sm text-white/70 hover:text-white transition-colors flex items-center gap-1 mt-2"
       >
         <svg className={`w-4 h-4 transition-transform ${expanded ? 'rotate-90' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -77,9 +77,9 @@ function CubeSatCard({ standard }: { standard: CubeSatStandard }) {
       </button>
 
       {expanded && (
-        <div className="mt-4 pt-4 border-t border-slate-700/50 space-y-3">
+        <div className="mt-4 pt-4 border-t border-white/[0.06] space-y-3">
           <div>
-            <span className="text-xs text-slate-300 font-medium block mb-1.5">Compatible Deployers</span>
+            <span className="text-xs text-white/70 font-medium block mb-1.5">Compatible Deployers</span>
             <div className="flex flex-wrap gap-1.5">
               {standard.deployers.map((d, i) => (
                 <span key={i} className="text-xs bg-blue-900/30 text-blue-300 px-2 py-1 rounded">
@@ -89,7 +89,7 @@ function CubeSatCard({ standard }: { standard: CubeSatStandard }) {
             </div>
           </div>
           <div>
-            <span className="text-xs text-slate-300 font-medium block mb-1.5">References</span>
+            <span className="text-xs text-white/70 font-medium block mb-1.5">References</span>
             <div className="space-y-1">
               {standard.references.map((ref, i) => (
                 <a
@@ -97,7 +97,7 @@ function CubeSatCard({ standard }: { standard: CubeSatStandard }) {
                   href={ref.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-1.5 text-xs text-slate-300 hover:text-white transition-colors"
+                  className="flex items-center gap-1.5 text-xs text-white/70 hover:text-white transition-colors"
                 >
                   <svg className="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
@@ -119,7 +119,7 @@ function SmallSatCard({ platform }: { platform: SmallSatPlatform }) {
   const [expanded, setExpanded] = useState(false);
 
   return (
-    <div className="card p-5 border border-slate-700/50 hover:border-purple-500/30 transition-all">
+    <div className="card p-5 border border-white/[0.06] hover:border-purple-500/30 transition-all">
       <div className="flex items-start justify-between mb-3">
         <div className="flex items-center gap-3">
           <div className="w-14 h-14 rounded-lg bg-gradient-to-br from-purple-500/20 to-pink-500/20 flex items-center justify-center">
@@ -133,7 +133,7 @@ function SmallSatCard({ platform }: { platform: SmallSatPlatform }) {
           </div>
         </div>
         <div className="text-right">
-          <span className="text-xs text-slate-300 block">Cost Range</span>
+          <span className="text-xs text-white/70 block">Cost Range</span>
           <span className="text-sm font-semibold text-green-400">
             ${(platform.typicalCostMin / 1000).toFixed(0)}M-${(platform.typicalCostMax / 1000).toFixed(0)}M
           </span>
@@ -146,7 +146,7 @@ function SmallSatCard({ platform }: { platform: SmallSatPlatform }) {
 
       {/* Capabilities */}
       <div className="mb-3">
-        <span className="text-xs text-slate-300 font-medium block mb-2">Capabilities</span>
+        <span className="text-xs text-white/70 font-medium block mb-2">Capabilities</span>
         <ul className="space-y-1">
           {platform.capabilities.slice(0, expanded ? undefined : 3).map((cap, i) => (
             <li key={i} className="text-xs text-slate-400 flex items-start gap-2">
@@ -168,9 +168,9 @@ function SmallSatCard({ platform }: { platform: SmallSatPlatform }) {
       </button>
 
       {expanded && (
-        <div className="mt-4 pt-4 border-t border-slate-700/50 space-y-3">
+        <div className="mt-4 pt-4 border-t border-white/[0.06] space-y-3">
           <div>
-            <span className="text-xs text-slate-300 font-medium block mb-1.5">Example Missions</span>
+            <span className="text-xs text-white/70 font-medium block mb-1.5">Example Missions</span>
             <div className="flex flex-wrap gap-1.5">
               {platform.exampleMissions.map((m, i) => (
                 <span key={i} className="text-xs bg-purple-900/30 text-purple-300 px-2 py-1 rounded">
@@ -180,7 +180,7 @@ function SmallSatCard({ platform }: { platform: SmallSatPlatform }) {
             </div>
           </div>
           <div>
-            <span className="text-xs text-slate-300 font-medium block mb-1.5">References</span>
+            <span className="text-xs text-white/70 font-medium block mb-1.5">References</span>
             <div className="space-y-1">
               {platform.references.map((ref, i) => (
                 <a
@@ -226,7 +226,7 @@ function SubsystemBrowser() {
             className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
               activeCategory === cat.id
                 ? 'bg-white text-slate-900 shadow-lg shadow-black/15'
-                : 'bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white'
+                : 'bg-white/[0.06] text-white/70 hover:bg-white/[0.08] hover:text-white'
             }`}
           >
             {cat.abbreviation}
@@ -241,18 +241,18 @@ function SubsystemBrowser() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-slate-700/50">
-                  <th className="text-left py-2 px-3 text-slate-300 font-medium">Option</th>
-                  <th className="text-right py-2 px-3 text-slate-300 font-medium">Mass (kg)</th>
-                  <th className="text-right py-2 px-3 text-slate-300 font-medium">Power (W)</th>
-                  <th className="text-right py-2 px-3 text-slate-300 font-medium">Cost ($K)</th>
-                  <th className="text-center py-2 px-3 text-slate-300 font-medium">TRL</th>
-                  <th className="text-left py-2 px-3 text-slate-300 font-medium hidden lg:table-cell">Vendors</th>
+                <tr className="border-b border-white/[0.06]">
+                  <th className="text-left py-2 px-3 text-white/70 font-medium">Option</th>
+                  <th className="text-right py-2 px-3 text-white/70 font-medium">Mass (kg)</th>
+                  <th className="text-right py-2 px-3 text-white/70 font-medium">Power (W)</th>
+                  <th className="text-right py-2 px-3 text-white/70 font-medium">Cost ($K)</th>
+                  <th className="text-center py-2 px-3 text-white/70 font-medium">TRL</th>
+                  <th className="text-left py-2 px-3 text-white/70 font-medium hidden lg:table-cell">Vendors</th>
                 </tr>
               </thead>
               <tbody>
                 {category.options.map(opt => (
-                  <tr key={opt.id} className="border-b border-slate-800/50 hover:bg-slate-800/30">
+                  <tr key={opt.id} className="border-b border-white/[0.06] hover:bg-white/[0.03]">
                     <td className="py-3 px-3">
                       <div className="font-medium text-white">{opt.name}</div>
                       <div className="text-xs text-slate-400 mt-0.5 max-w-xs">{opt.description}</div>
@@ -261,7 +261,7 @@ function SubsystemBrowser() {
                           href={opt.referenceUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-xs text-slate-300 hover:text-white mt-1 inline-flex items-center gap-1"
+                          className="text-xs text-white/70 hover:text-white mt-1 inline-flex items-center gap-1"
                         >
                           <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
@@ -285,7 +285,7 @@ function SubsystemBrowser() {
                     <td className="py-3 px-3 hidden lg:table-cell">
                       <div className="flex flex-wrap gap-1">
                         {opt.vendors.slice(0, 3).map((v, i) => (
-                          <span key={i} className="text-xs bg-slate-700/50 text-slate-300 px-1.5 py-0.5 rounded">
+                          <span key={i} className="text-xs bg-white/[0.05] text-white/70 px-1.5 py-0.5 rounded">
                             {v}
                           </span>
                         ))}

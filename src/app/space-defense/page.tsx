@@ -94,7 +94,7 @@ const PROGRAM_STATUS_STYLES: Record<DefenseProgram['status'], { label: string; c
   concept: { label: 'Concept', color: 'text-purple-400', bg: 'bg-purple-900/20' },
 };
 
-const DEFAULT_PROGRAM_STATUS_STYLE = { label: 'Unknown', color: 'text-slate-400', bg: 'bg-slate-900/20' };
+const DEFAULT_PROGRAM_STATUS_STYLE = { label: 'Unknown', color: 'text-slate-400', bg: 'bg-black/20' };
 
 const CATEGORY_STYLES: Record<DefenseProgram['category'], { label: string; color: string }> = {
   communications: { label: 'Communications', color: 'text-blue-300' },
@@ -102,7 +102,7 @@ const CATEGORY_STYLES: Record<DefenseProgram['category'], { label: string; color
   navigation: { label: 'Navigation', color: 'text-green-300' },
   launch: { label: 'Launch', color: 'text-orange-300' },
   surveillance: { label: 'Surveillance', color: 'text-purple-300' },
-  sda: { label: 'SDA Architecture', color: 'text-slate-200' },
+  sda: { label: 'SDA Architecture', color: 'text-white/90' },
   ground: { label: 'Ground Systems', color: 'text-yellow-300' },
   classified: { label: 'Classified', color: 'text-slate-300' },
 };
@@ -114,11 +114,11 @@ const EVENT_TYPE_STYLES: Record<CounterspaceEvent['type'], { label: string; colo
   co_orbital: { label: 'Co-Orbital / RPO', color: 'text-orange-400', bg: 'bg-orange-900/20' },
   electronic_warfare: { label: 'Electronic Warfare', color: 'text-yellow-400', bg: 'bg-yellow-900/20' },
   cyber: { label: 'Cyber Attack', color: 'text-purple-400', bg: 'bg-purple-900/20' },
-  directed_energy: { label: 'Directed Energy', color: 'text-slate-300', bg: 'bg-slate-800/30' },
+  directed_energy: { label: 'Directed Energy', color: 'text-slate-300', bg: 'bg-white/[0.04]' },
   rpo: { label: 'RPO', color: 'text-orange-400', bg: 'bg-orange-900/20' },
 };
 
-const DEFAULT_EVENT_TYPE_STYLE = { label: 'Unknown', color: 'text-slate-400', bg: 'bg-slate-900/20' };
+const DEFAULT_EVENT_TYPE_STYLE = { label: 'Unknown', color: 'text-slate-400', bg: 'bg-black/20' };
 
 // ────────────────────────────────────────
 // Fallback Data (from seed script)
@@ -1174,7 +1174,7 @@ function SpaceForceCard({ force }: { force: SpaceForce }) {
     <div className="card p-5 hover:border-white/15">
       <div className="flex items-start justify-between mb-3">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-slate-700/50 flex items-center justify-center text-xs font-bold text-white">
+          <div className="w-10 h-10 rounded-full bg-white/[0.08] flex items-center justify-center text-xs font-bold text-white">
             {force.flag}
           </div>
           <div>
@@ -1251,7 +1251,7 @@ function SpaceForceCard({ force }: { force: SpaceForce }) {
         {expanded ? 'Show less' : 'Read more'}
       </button>
       {expanded && (
-        <p className="text-star-300 text-sm mt-3 leading-relaxed border-t border-slate-700/50 pt-3">
+        <p className="text-star-300 text-sm mt-3 leading-relaxed border-t border-white/[0.06] pt-3">
           {force.description}
         </p>
       )}
@@ -1285,13 +1285,13 @@ function ProgramCard({ program }: { program: DefenseProgram }) {
       {/* Quick stats row */}
       <div className="grid grid-cols-2 gap-2 mb-3">
         {program.constellation && (
-          <div className="bg-slate-900/50 rounded p-2">
+          <div className="bg-white/[0.04] rounded p-2">
             <span className="text-star-500 text-xs block">Assets</span>
             <span className="text-star-200 text-sm">{program.constellation}</span>
           </div>
         )}
         {program.nextMilestone && (
-          <div className="bg-slate-900/50 rounded p-2">
+          <div className="bg-white/[0.04] rounded p-2">
             <span className="text-star-500 text-xs block">Next Milestone</span>
             <span className="text-yellow-400 text-sm">{program.nextMilestone}</span>
           </div>
@@ -1385,7 +1385,7 @@ function ThreatEventCard({ event }: { event: CounterspaceEvent }) {
     <div className="card p-5">
       <div className="flex items-start justify-between mb-3">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-full bg-slate-700/50 flex items-center justify-center text-xs font-bold text-white">
+          <div className="w-9 h-9 rounded-full bg-white/[0.08] flex items-center justify-center text-xs font-bold text-white">
             {event.flag}
           </div>
           <div>
@@ -1404,19 +1404,19 @@ function ThreatEventCard({ event }: { event: CounterspaceEvent }) {
       {(event.altitude || event.target || event.debrisGenerated) && (
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 mb-3">
           {event.altitude && (
-            <div className="bg-slate-900/50 rounded p-2">
+            <div className="bg-white/[0.04] rounded p-2">
               <span className="text-star-400 text-xs block">Altitude</span>
               <span className="text-star-200 text-sm font-medium">{event.altitude}</span>
             </div>
           )}
           {event.target && (
-            <div className="bg-slate-900/50 rounded p-2">
+            <div className="bg-white/[0.04] rounded p-2">
               <span className="text-star-400 text-xs block">Target</span>
               <span className="text-star-200 text-sm font-medium">{event.target}</span>
             </div>
           )}
           {event.debrisGenerated && (
-            <div className="bg-slate-900/50 rounded p-2">
+            <div className="bg-white/[0.04] rounded p-2">
               <span className="text-star-400 text-xs block">Debris Generated</span>
               <span className="text-red-400 text-sm font-medium">{event.debrisGenerated}</span>
             </div>
@@ -1453,7 +1453,7 @@ function AllianceCard({ alliance }: { alliance: Alliance }) {
         <span className="text-star-400 text-xs uppercase tracking-widest">Members</span>
         <div className="flex flex-wrap gap-1.5 mt-1">
           {alliance.members.map((member) => (
-            <span key={member} className="px-2 py-0.5 bg-slate-700/50 text-star-200 rounded text-xs">
+            <span key={member} className="px-2 py-0.5 bg-white/[0.08] text-star-200 rounded text-xs">
               {member}
             </span>
           ))}
@@ -1487,7 +1487,7 @@ function AllianceCard({ alliance }: { alliance: Alliance }) {
         {expanded ? 'Show less' : 'Read more'}
       </button>
       {expanded && (
-        <p className="text-star-300 text-sm mt-3 leading-relaxed border-t border-slate-700/50 pt-3">
+        <p className="text-star-300 text-sm mt-3 leading-relaxed border-t border-white/[0.06] pt-3">
           {alliance.description}
         </p>
       )}
@@ -1572,7 +1572,7 @@ function ThreatCategoryCard({ cat, style }: {
   const [expanded, setExpanded] = useState(false);
 
   return (
-    <div className={`rounded-lg border border-slate-700/50 ${style.bg} p-4`}>
+    <div className={`rounded-lg border border-white/[0.06] ${style.bg} p-4`}>
       <div className="flex items-center justify-between mb-2">
         <h4 className="text-white font-semibold">{cat.name}</h4>
         <span className={`text-xs font-bold px-2.5 py-1 rounded ${style.bg} ${style.color}`}>
@@ -1583,7 +1583,7 @@ function ThreatCategoryCard({ cat, style }: {
       <div className="flex flex-wrap gap-1.5 mb-3">
         <span className="text-star-400 text-xs mr-1">Known capable:</span>
         {cat.nations.map((nation) => (
-          <span key={nation} className="px-2 py-0.5 bg-slate-700/50 text-star-200 rounded text-xs">
+          <span key={nation} className="px-2 py-0.5 bg-white/[0.08] text-star-200 rounded text-xs">
             {nation}
           </span>
         ))}
@@ -1605,7 +1605,7 @@ function ThreatCategoryCard({ cat, style }: {
       </button>
 
       {expanded && (
-        <div className="mt-3 space-y-4 border-t border-slate-700/50 pt-3">
+        <div className="mt-3 space-y-4 border-t border-white/[0.06] pt-3">
           {/* Rationale */}
           <div>
             <h5 className="text-white text-sm font-semibold mb-1 flex items-center gap-2">
@@ -1844,10 +1844,10 @@ export default function SpaceDefensePage() {
       <div className="min-h-screen bg-[#0B0F1A] text-white p-6">
         <div className="max-w-7xl mx-auto">
           <div className="animate-pulse space-y-4">
-            <div className="h-8 bg-slate-800 rounded w-1/3"></div>
-            <div className="h-4 bg-slate-800 rounded w-2/3"></div>
+            <div className="h-8 bg-white/[0.06] rounded w-1/3"></div>
+            <div className="h-4 bg-white/[0.06] rounded w-2/3"></div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8">
-              {[1,2,3,4].map(i => <div key={i} className="h-48 bg-slate-800 rounded-lg"></div>)}
+              {[1,2,3,4].map(i => <div key={i} className="h-48 bg-white/[0.06] rounded-lg"></div>)}
             </div>
           </div>
         </div>
@@ -1898,7 +1898,7 @@ export default function SpaceDefensePage() {
         </div>
 
         {/* Tab Navigation */}
-        <div className="border-b border-slate-700/50 mb-8">
+        <div className="border-b border-white/[0.06] mb-8">
           <div className="flex gap-1 overflow-x-auto">
             {TABS.map((tab) => (
               <button
@@ -1910,8 +1910,8 @@ export default function SpaceDefensePage() {
                 }}
                 className={`px-4 py-2.5 text-sm font-medium whitespace-nowrap border-b-2 transition-colors ${
                   activeTab === tab.id
-                    ? 'border-white/15 text-slate-200'
-                    : 'border-transparent text-star-300 hover:text-white hover:border-slate-500'
+                    ? 'border-white/15 text-white/90'
+                    : 'border-transparent text-star-300 hover:text-white hover:border-white/[0.1]'
                 }`}
               >
                 {tab.label}
@@ -1949,7 +1949,7 @@ export default function SpaceDefensePage() {
                 Command (STARCOM) oversees training, testing, and doctrine development.
               </p>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="rounded-lg border border-slate-700/50 bg-slate-900/40 p-4">
+                <div className="rounded-lg border border-white/[0.06] bg-white/[0.04] p-4">
                   <h4 className="text-slate-300 font-semibold mb-2">Space Operations Command (SpOC)</h4>
                   <p className="text-star-400 text-sm">
                     Peterson SFB, CO. Operates the nation&apos;s military space forces including GPS, missile warning,
@@ -1957,14 +1957,14 @@ export default function SpaceDefensePage() {
                     Center (CSpOC).
                   </p>
                 </div>
-                <div className="rounded-lg border border-slate-700/50 bg-slate-900/40 p-4">
+                <div className="rounded-lg border border-white/[0.06] bg-white/[0.04] p-4">
                   <h4 className="text-slate-300 font-semibold mb-2">Space Systems Command (SSC)</h4>
                   <p className="text-star-400 text-sm">
                     Los Angeles AFB, CA. Responsible for developing, acquiring, and sustaining lethal and resilient
                     space capabilities. Manages NSSL, GPS, SBIRS/Next-Gen OPIR, WGS, AEHF/ESS, and other programs.
                   </p>
                 </div>
-                <div className="rounded-lg border border-slate-700/50 bg-slate-900/40 p-4">
+                <div className="rounded-lg border border-white/[0.06] bg-white/[0.04] p-4">
                   <h4 className="text-slate-300 font-semibold mb-2">Space Training & Readiness Command (STARCOM)</h4>
                   <p className="text-star-400 text-sm">
                     Peterson SFB, CO. Responsible for training, testing, and developing tactics, techniques, and
@@ -1993,7 +1993,7 @@ export default function SpaceDefensePage() {
                   const count = defensePrograms.filter((p) => p.status === status).length;
                   if (count === 0) return null;
                   return (
-                    <div key={status} className={`rounded-lg border border-slate-700/50 ${style.bg} p-3 text-center`}>
+                    <div key={status} className={`rounded-lg border border-white/[0.06] ${style.bg} p-3 text-center`}>
                       <span className={`text-2xl font-bold ${style.color}`}>{count}</span>
                       <span className="text-star-400 text-xs block">{style.label}</span>
                     </div>
@@ -2010,7 +2010,7 @@ export default function SpaceDefensePage() {
                     className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
                       programCategoryFilter === ''
                         ? 'bg-white text-slate-900'
-                        : 'bg-slate-700 text-star-400 hover:bg-slate-600'
+                        : 'bg-white/[0.08] text-star-400 hover:bg-white/[0.1]'
                     }`}
                   >
                     All ({defensePrograms.length})
@@ -2025,7 +2025,7 @@ export default function SpaceDefensePage() {
                         className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
                           programCategoryFilter === cat
                             ? `bg-white/10 ${style.color} border border-white/15`
-                            : 'bg-slate-700 text-star-400 hover:bg-slate-600'
+                            : 'bg-white/[0.08] text-star-400 hover:bg-white/[0.1]'
                         }`}
                       >
                         {style.label} ({count})
@@ -2061,7 +2061,7 @@ export default function SpaceDefensePage() {
                   { layer: 'Custody Layer', purpose: 'Target custody for beyond-LOS fires', icon: '\u{1F3AF}' },
                   { layer: 'Deterrence Layer', purpose: 'Demonstration of capabilities', icon: '\u{1F6E1}' },
                 ].map((layer) => (
-                  <div key={layer.layer} className="rounded-lg border border-slate-700/50 bg-slate-900/40 p-4 text-center">
+                  <div key={layer.layer} className="rounded-lg border border-white/[0.06] bg-white/[0.04] p-4 text-center">
                     <span className="text-2xl block mb-2">{layer.icon}</span>
                     <h4 className="text-slate-300 font-semibold text-sm">{layer.layer}</h4>
                     <p className="text-star-400 text-xs mt-1">{layer.purpose}</p>
@@ -2230,7 +2230,7 @@ export default function SpaceDefensePage() {
                       presolicitation: { label: 'Pre-Solicitation', color: 'text-yellow-400', bg: 'bg-yellow-900/20' },
                       award: { label: 'Award', color: 'text-green-400', bg: 'bg-green-900/20' },
                       sources_sought: { label: 'Sources Sought', color: 'text-purple-400', bg: 'bg-purple-900/20' },
-                      special_notice: { label: 'Special Notice', color: 'text-slate-300', bg: 'bg-slate-800/30' },
+                      special_notice: { label: 'Special Notice', color: 'text-slate-300', bg: 'bg-white/[0.04]' },
                     };
                     const typeStyle = typeStyles[opp.type || 'solicitation'] || typeStyles.solicitation;
 
@@ -2299,7 +2299,7 @@ export default function SpaceDefensePage() {
                 </div>
                 <a
                   href="/news?category=space-defense"
-                  className="flex-shrink-0 ml-4 px-4 py-2 bg-white/10 hover:bg-white/15 text-slate-200 rounded-lg text-sm font-medium transition-colors flex items-center gap-2"
+                  className="flex-shrink-0 ml-4 px-4 py-2 bg-white/10 hover:bg-white/15 text-white/90 rounded-lg text-sm font-medium transition-colors flex items-center gap-2"
                 >
                   View Defense News
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -2367,7 +2367,7 @@ export default function SpaceDefensePage() {
                     className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
                       threatTypeFilter === ''
                         ? 'bg-white text-slate-900'
-                        : 'bg-slate-700 text-star-400 hover:bg-slate-600'
+                        : 'bg-white/[0.08] text-star-400 hover:bg-white/[0.1]'
                     }`}
                   >
                     All ({counterspaceEvents.length})
@@ -2381,8 +2381,8 @@ export default function SpaceDefensePage() {
                         onClick={() => setThreatTypeFilter(type)}
                         className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
                           threatTypeFilter === type
-                            ? `${style.bg} ${style.color} border border-slate-600`
-                            : 'bg-slate-700 text-star-400 hover:bg-slate-600'
+                            ? `${style.bg} ${style.color} border border-white/[0.1]`
+                            : 'bg-white/[0.08] text-star-400 hover:bg-white/[0.1]'
                         }`}
                       >
                         {style.label} ({count})
@@ -2402,7 +2402,7 @@ export default function SpaceDefensePage() {
             </div>
 
             {/* Source Note */}
-            <div className="card p-6 border-dashed border border-slate-700/50">
+            <div className="card p-6 border-dashed border border-white/[0.06]">
               <h3 className="text-white font-semibold mb-2">Sources & Methodology</h3>
               <p className="text-star-400 text-sm mb-3">
                 This threat assessment is compiled exclusively from open-source materials:
@@ -2473,7 +2473,7 @@ export default function SpaceDefensePage() {
                     partners: 'Open to registered users globally',
                   },
                 ].map((framework) => (
-                  <div key={framework.name} className="rounded-lg border border-slate-700/50 bg-slate-900/40 p-4">
+                  <div key={framework.name} className="rounded-lg border border-white/[0.06] bg-white/[0.04] p-4">
                     <h4 className="text-slate-300 font-semibold mb-2">{framework.name}</h4>
                     <p className="text-star-400 text-sm mb-2">{framework.description}</p>
                     <span className="text-star-500 text-xs">Partners: {framework.partners}</span>
@@ -2489,7 +2489,7 @@ export default function SpaceDefensePage() {
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="border-b border-slate-700">
+                    <tr className="border-b border-white/[0.06]">
                       <th className="text-left py-3 px-3 text-star-400 font-medium">Nation</th>
                       <th className="text-center py-3 px-3 text-star-400 font-medium">ISR</th>
                       <th className="text-center py-3 px-3 text-star-400 font-medium">SATCOM</th>
@@ -2522,7 +2522,7 @@ export default function SpaceDefensePage() {
                         none: 'text-slate-600',
                       };
                       return (
-                        <tr key={row.nation} className="border-b border-slate-700/50 hover:bg-slate-800/30">
+                        <tr key={row.nation} className="border-b border-white/[0.06] hover:bg-white/[0.04]">
                           <td className="py-2.5 px-3 text-white font-medium">{row.nation}</td>
                           <td className={`py-2.5 px-3 text-center capitalize ${capStyles[row.isr]}`}>{row.isr}</td>
                           <td className={`py-2.5 px-3 text-center capitalize ${capStyles[row.satcom]}`}>{row.satcom}</td>
@@ -2556,7 +2556,7 @@ export default function SpaceDefensePage() {
 
         {/* Footer Disclaimer */}
         <ScrollReveal>
-        <div className="card p-6 mt-8 border-dashed border border-slate-700/50">
+        <div className="card p-6 mt-8 border-dashed border border-white/[0.06]">
           <div className="text-center">
             <h3 className="text-lg font-semibold text-white mb-2">About This Module</h3>
             <p className="text-star-400 text-sm max-w-3xl mx-auto">

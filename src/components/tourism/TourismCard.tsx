@@ -23,10 +23,10 @@ export default function TourismCard({
       className={`relative backdrop-blur-xl rounded-xl border transition-all duration-300 overflow-hidden ${
         isSelected
           ? 'border-white/10 shadow-lg shadow-black/10'
-          : 'border-slate-700/50 hover:border-slate-600/50'
+          : 'border-white/[0.08] hover:border-white/[0.1]'
       }`}
       style={{
-        background: 'linear-gradient(145deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.9) 100%)'
+        background: 'linear-gradient(145deg, rgba(10, 10, 10, 0.95) 0%, rgba(20, 20, 20, 0.9) 100%)'
       }}
     >
       {/* Top gradient accent */}
@@ -52,7 +52,7 @@ export default function TourismCard({
               </svg>
             )}
           </div>
-          <span className="text-xs text-slate-400 group-hover:text-slate-300">Compare</span>
+          <span className="text-xs text-slate-400 group-hover:text-white/70">Compare</span>
         </label>
       </div>
 
@@ -60,11 +60,11 @@ export default function TourismCard({
         {/* Provider Logo/Icon & Status */}
         <div className="flex items-start justify-between mb-4">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-slate-700 to-slate-800 flex items-center justify-center text-lg font-bold text-slate-300 border border-slate-600/50">
+            <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-white/[0.08] to-white/[0.06] flex items-center justify-center text-lg font-bold text-white/70 border border-white/[0.1]">
               {offering.logoIcon}
             </div>
             <div>
-              <p className="text-slate-300 text-sm font-medium">{offering.provider}</p>
+              <p className="text-white/70 text-sm font-medium">{offering.provider}</p>
               <h3 className="text-white font-display font-bold text-lg">{offering.name}</h3>
             </div>
           </div>
@@ -72,7 +72,7 @@ export default function TourismCard({
 
         {/* Experience Type & Status Badge */}
         <div className="flex flex-wrap items-center gap-2 mb-4">
-          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-800/80 text-slate-300 text-xs font-medium">
+          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white/[0.06] text-white/70 text-xs font-medium">
             <span>{experienceInfo?.icon}</span>
             {experienceInfo?.label || offering.experienceType}
           </span>
@@ -91,11 +91,11 @@ export default function TourismCard({
 
         {/* Key Stats */}
         <div className="grid grid-cols-2 gap-3 mb-4">
-          <div className="bg-slate-800/50 rounded-lg p-3">
+          <div className="bg-white/[0.06] rounded-lg p-3">
             <p className="text-slate-400 text-xs mb-1">Duration</p>
             <p className="text-white font-semibold text-sm">{offering.duration}</p>
           </div>
-          <div className="bg-slate-800/50 rounded-lg p-3">
+          <div className="bg-white/[0.06] rounded-lg p-3">
             <p className="text-slate-400 text-xs mb-1">Altitude</p>
             <p className="text-white font-semibold text-sm">{offering.altitudeDisplay}</p>
           </div>
@@ -103,11 +103,11 @@ export default function TourismCard({
 
         {/* G-Forces & Weightlessness */}
         <div className="grid grid-cols-2 gap-3 mb-4">
-          <div className="bg-slate-800/50 rounded-lg p-3">
+          <div className="bg-white/[0.06] rounded-lg p-3">
             <p className="text-slate-400 text-xs mb-1">G-Forces</p>
             <p className="text-amber-400 font-semibold text-sm">{offering.gForces.split(',')[0].split('(')[0].trim()}</p>
           </div>
-          <div className="bg-slate-800/50 rounded-lg p-3">
+          <div className="bg-white/[0.06] rounded-lg p-3">
             <p className="text-slate-400 text-xs mb-1">Weightlessness</p>
             <p className="text-purple-400 font-semibold text-sm">{offering.weightlessDuration.split('(')[0].trim()}</p>
           </div>
@@ -115,7 +115,7 @@ export default function TourismCard({
 
         {/* Quick features preview */}
         <div className="mb-5">
-          <p className="text-slate-300 text-sm line-clamp-2">
+          <p className="text-white/70 text-sm line-clamp-2">
             {offering.description.substring(0, 120)}...
           </p>
         </div>

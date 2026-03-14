@@ -254,7 +254,7 @@ export function WhatsNewModal({ open, onClose }: WhatsNewModalProps) {
         {/* Bottom sheet */}
         <div
           ref={modalRef}
-          className={`absolute bottom-0 left-0 right-0 bg-slate-900 border-t border-slate-700/50 rounded-t-2xl shadow-2xl transition-transform duration-250 ease-out ${
+          className={`absolute bottom-0 left-0 right-0 bg-black border-t border-white/[0.06] rounded-t-2xl shadow-2xl transition-transform duration-250 ease-out ${
             animateIn ? 'translate-y-0' : 'translate-y-full'
           }`}
           style={{
@@ -264,13 +264,13 @@ export function WhatsNewModal({ open, onClose }: WhatsNewModalProps) {
         >
           {/* Drag handle */}
           <div className="flex justify-center pt-3 pb-1">
-            <div className="w-10 h-1 rounded-full bg-slate-600" />
+            <div className="w-10 h-1 rounded-full bg-white/[0.1]" />
           </div>
 
           {/* Header */}
-          <div className="flex items-center justify-between px-5 py-3 border-b border-slate-700/50">
+          <div className="flex items-center justify-between px-5 py-3 border-b border-white/[0.06]">
             <div className="flex items-center gap-2.5">
-              <SparkleIcon className="w-5 h-5 text-slate-300" />
+              <SparkleIcon className="w-5 h-5 text-white/70" />
               <div>
                 <h2 className="text-base font-bold text-white">What&apos;s New</h2>
                 {unseenCount > 0 && (
@@ -282,7 +282,7 @@ export function WhatsNewModal({ open, onClose }: WhatsNewModalProps) {
             </div>
             <button
               onClick={handleClose}
-              className="text-slate-400 hover:text-white transition-colors p-1.5 rounded-lg hover:bg-slate-800/60"
+              className="text-slate-400 hover:text-white transition-colors p-1.5 rounded-lg hover:bg-white/[0.05]"
               aria-label="Close what's new panel"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -303,7 +303,7 @@ export function WhatsNewModal({ open, onClose }: WhatsNewModalProps) {
                   <div
                     key={announcement.id}
                     className={`relative flex items-start gap-3.5 py-3 ${
-                      idx < ANNOUNCEMENTS.length - 1 ? 'border-b border-slate-800/60' : ''
+                      idx < ANNOUNCEMENTS.length - 1 ? 'border-b border-white/[0.05]' : ''
                     }`}
                   >
                     {/* Unseen indicator bar */}
@@ -319,7 +319,7 @@ export function WhatsNewModal({ open, onClose }: WhatsNewModalProps) {
                       className={`flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center text-lg ${
                         unseen
                           ? 'bg-white/5 border border-white/10'
-                          : 'bg-slate-800/60 border border-slate-700/40'
+                          : 'bg-white/[0.05] border border-white/[0.05]'
                       }`}
                       aria-hidden="true"
                     >
@@ -331,13 +331,13 @@ export function WhatsNewModal({ open, onClose }: WhatsNewModalProps) {
                       <div className="flex items-center gap-2 mb-0.5">
                         <h3
                           className={`text-sm font-semibold truncate ${
-                            unseen ? 'text-white' : 'text-slate-300'
+                            unseen ? 'text-white' : 'text-white/70'
                           }`}
                         >
                           {announcement.title}
                         </h3>
                         {unseen && (
-                          <span className="flex-shrink-0 text-[10px] font-bold uppercase tracking-wider text-slate-300 bg-white/5 px-1.5 py-0.5 rounded">
+                          <span className="flex-shrink-0 text-[10px] font-bold uppercase tracking-wider text-white/70 bg-white/5 px-1.5 py-0.5 rounded">
                             New
                           </span>
                         )}
@@ -356,7 +356,7 @@ export function WhatsNewModal({ open, onClose }: WhatsNewModalProps) {
           </div>
 
           {/* Footer */}
-          <div className="px-5 py-3 border-t border-slate-700/50">
+          <div className="px-5 py-3 border-t border-white/[0.06]">
             {unseenCount > 0 ? (
               <button
                 onClick={handleMarkAllRead}
@@ -402,7 +402,7 @@ export default function WhatsNew() {
       {/* Trigger button */}
       <button
         onClick={() => setIsOpen(true)}
-        className="relative p-2 text-slate-400 hover:text-white transition-colors rounded-lg hover:bg-slate-800/50"
+        className="relative p-2 text-slate-400 hover:text-white transition-colors rounded-lg hover:bg-white/[0.04]"
         aria-label={`What's new${unseenCount > 0 ? ` (${unseenCount} unseen updates)` : ''}`}
       >
         <SparkleIcon className="w-5 h-5" />

@@ -130,20 +130,20 @@ export default function SwipeModuleNavigation() {
           opacity: 0,
           transform: 'translateX(0)',
           transition: swiping ? 'none' : 'opacity 0.25s ease-out, transform 0.25s ease-out',
-          background: 'linear-gradient(to right, rgba(6, 182, 212, 0.15), transparent)',
+          background: 'linear-gradient(to right, rgba(255, 255, 255, 0.08), transparent)',
         }}
       >
         <div className="ml-1 flex flex-col items-center gap-1">
           <svg
             width="16" height="16" viewBox="0 0 24 24"
             fill="none" stroke="currentColor"
-            className="text-slate-300/70"
+            className="text-white/70/70"
             strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round"
           >
             <path d="M15 18l-6-6 6-6" />
           </svg>
           {isModulePage && prevModule && (
-            <span className="text-[9px] text-slate-300/70 font-medium whitespace-nowrap max-w-[60px] truncate writing-mode-vertical">
+            <span className="text-[9px] text-white/70/70 font-medium whitespace-nowrap max-w-[60px] truncate writing-mode-vertical">
               {prevModule.icon}
             </span>
           )}
@@ -159,20 +159,20 @@ export default function SwipeModuleNavigation() {
           opacity: 0,
           transform: 'translateX(0)',
           transition: swiping ? 'none' : 'opacity 0.25s ease-out, transform 0.25s ease-out',
-          background: 'linear-gradient(to left, rgba(6, 182, 212, 0.15), transparent)',
+          background: 'linear-gradient(to left, rgba(255, 255, 255, 0.08), transparent)',
         }}
       >
         <div className="mr-1 flex flex-col items-center gap-1">
           <svg
             width="16" height="16" viewBox="0 0 24 24"
             fill="none" stroke="currentColor"
-            className="text-slate-300/70"
+            className="text-white/70/70"
             strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round"
           >
             <path d="M9 18l6-6-6-6" />
           </svg>
           {nextModule && (
-            <span className="text-[9px] text-slate-300/70 font-medium">
+            <span className="text-[9px] text-white/70/70 font-medium">
               {nextModule.icon}
             </span>
           )}

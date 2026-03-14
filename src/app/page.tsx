@@ -11,19 +11,19 @@ import { logger } from '@/lib/logger';
 // Lazy-load below-the-fold components to reduce initial JS bundle
 const LandingValueProp = nextDynamic(() => import('@/components/LandingValueProp'), {
   ssr: false,
-  loading: () => <div className="py-16"><div className="container mx-auto px-4"><div className="animate-pulse space-y-6"><div className="h-8 bg-slate-800 rounded w-1/3 mx-auto"></div><div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">{[1,2,3].map(i => <div key={i} className="h-48 bg-slate-800 rounded-xl"></div>)}</div></div></div></div>,
+  loading: () => <div className="py-16"><div className="container mx-auto px-4"><div className="animate-pulse space-y-6"><div className="h-8 bg-white/[0.06] rounded w-1/3 mx-auto"></div><div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">{[1,2,3].map(i => <div key={i} className="h-48 bg-white/[0.06] rounded-xl"></div>)}</div></div></div></div>,
 });
 const TrustSignals = nextDynamic(() => import('@/components/TrustSignals'), {
   ssr: false,
-  loading: () => <div className="py-12"><div className="container mx-auto px-4"><div className="animate-pulse h-24 bg-slate-800 rounded-xl"></div></div></div>,
+  loading: () => <div className="py-12"><div className="container mx-auto px-4"><div className="animate-pulse h-24 bg-white/[0.06] rounded-xl"></div></div></div>,
 });
 const HeroStats = nextDynamic(() => import('@/components/HeroStats'), {
   ssr: false,
-  loading: () => <div className="animate-pulse"><div className="grid grid-cols-2 md:grid-cols-4 gap-4">{[1,2,3,4].map(i => <div key={i} className="h-20 bg-slate-800 rounded-xl"></div>)}</div></div>,
+  loading: () => <div className="animate-pulse"><div className="grid grid-cols-2 md:grid-cols-4 gap-4">{[1,2,3,4].map(i => <div key={i} className="h-20 bg-white/[0.06] rounded-xl"></div>)}</div></div>,
 });
 const NewsletterSignup = nextDynamic(() => import('@/components/NewsletterSignup'), {
   ssr: false,
-  loading: () => <div className="relative card p-10 md:p-16 text-center rounded-3xl overflow-hidden"><div className="animate-pulse"><div className="h-8 bg-slate-700/50 rounded w-3/4 mx-auto mb-4"></div><div className="h-4 bg-slate-700/50 rounded w-2/3 mx-auto mb-8"></div><div className="h-12 bg-white/50 rounded-xl w-48 mx-auto"></div></div></div>,
+  loading: () => <div className="relative card p-10 md:p-16 text-center rounded-3xl overflow-hidden"><div className="animate-pulse"><div className="h-8 bg-white/[0.08] rounded w-3/4 mx-auto mb-4"></div><div className="h-4 bg-white/[0.08] rounded w-2/3 mx-auto mb-8"></div><div className="h-12 bg-white/50 rounded-xl w-48 mx-auto"></div></div></div>,
 });
 const AdBanner = nextDynamic(() => import('@/components/ads').then(mod => ({ default: mod.AdBanner })), {
   ssr: false,
@@ -31,39 +31,39 @@ const AdBanner = nextDynamic(() => import('@/components/ads').then(mod => ({ def
 });
 const CompetitiveComparison = nextDynamic(() => import('@/components/landing/CompetitiveComparison'), {
   ssr: false,
-  loading: () => <div className="py-16"><div className="container mx-auto px-4"><div className="animate-pulse h-96 bg-slate-800 rounded-xl"></div></div></div>,
+  loading: () => <div className="py-16"><div className="container mx-auto px-4"><div className="animate-pulse h-96 bg-white/[0.06] rounded-xl"></div></div></div>,
 });
 const IndustrySnapshot = nextDynamic(() => import('@/components/landing/IndustrySnapshot'), {
   ssr: false,
-  loading: () => <div className="py-16"><div className="container mx-auto px-4"><div className="animate-pulse"><div className="h-8 bg-slate-800 rounded w-1/3 mx-auto mb-8"></div><div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 max-w-5xl mx-auto">{[1,2,3,4,5,6].map(i => <div key={i} className="h-28 bg-slate-800 rounded-xl"></div>)}</div></div></div></div>,
+  loading: () => <div className="py-16"><div className="container mx-auto px-4"><div className="animate-pulse"><div className="h-8 bg-white/[0.06] rounded w-1/3 mx-auto mb-8"></div><div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 max-w-5xl mx-auto">{[1,2,3,4,5,6].map(i => <div key={i} className="h-28 bg-white/[0.06] rounded-xl"></div>)}</div></div></div></div>,
 });
 const SocialProof = nextDynamic(() => import('@/components/landing/SocialProof'), {
   ssr: false,
-  loading: () => <div className="py-16"><div className="container mx-auto px-4 max-w-7xl"><div className="animate-pulse space-y-6"><div className="h-8 bg-slate-800 rounded w-1/3 mx-auto"></div><div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">{[1,2,3].map(i => <div key={i} className="h-48 bg-slate-800 rounded-xl"></div>)}</div></div></div></div>,
+  loading: () => <div className="py-16"><div className="container mx-auto px-4 max-w-7xl"><div className="animate-pulse space-y-6"><div className="h-8 bg-white/[0.06] rounded w-1/3 mx-auto"></div><div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">{[1,2,3].map(i => <div key={i} className="h-48 bg-white/[0.06] rounded-xl"></div>)}</div></div></div></div>,
 });
 const HowItWorks = nextDynamic(() => import('@/components/landing/HowItWorks'), {
   ssr: false,
-  loading: () => <div className="py-16"><div className="container mx-auto px-4 max-w-5xl"><div className="animate-pulse space-y-6"><div className="h-8 bg-slate-800 rounded w-1/4 mx-auto"></div><div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-8">{[1,2,3].map(i => <div key={i} className="h-40 bg-slate-800 rounded-xl"></div>)}</div></div></div></div>,
+  loading: () => <div className="py-16"><div className="container mx-auto px-4 max-w-5xl"><div className="animate-pulse space-y-6"><div className="h-8 bg-white/[0.06] rounded w-1/4 mx-auto"></div><div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-8">{[1,2,3].map(i => <div key={i} className="h-40 bg-white/[0.06] rounded-xl"></div>)}</div></div></div></div>,
 });
 const PersonaDashboard = nextDynamic(() => import('@/components/PersonaDashboard'), {
   ssr: false,
-  loading: () => <div className="py-8"><div className="container mx-auto px-4"><div className="animate-pulse h-40 bg-slate-800 rounded-xl"></div></div></div>,
+  loading: () => <div className="py-8"><div className="container mx-auto px-4"><div className="animate-pulse h-40 bg-white/[0.06] rounded-xl"></div></div></div>,
 });
 const NewsTicker = nextDynamic(() => import('@/components/widgets/NewsTicker'), {
   ssr: false,
-  loading: () => <div className="h-10 bg-slate-900/80 border-y border-slate-700/40" />,
+  loading: () => <div className="h-10 bg-black/80 border-y border-white/[0.06]" />,
 });
 const BentoFeatures = nextDynamic(() => import('@/components/landing/BentoFeatures'), {
   ssr: false,
-  loading: () => <div className="py-16"><div className="container mx-auto px-4"><div className="animate-pulse"><div className="h-8 bg-slate-800 rounded w-1/3 mx-auto mb-8"></div><div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-5xl mx-auto">{[1,2,3,4,5,6,7].map(i => <div key={i} className="h-[180px] bg-slate-800 rounded-2xl"></div>)}</div></div></div></div>,
+  loading: () => <div className="py-16"><div className="container mx-auto px-4"><div className="animate-pulse"><div className="h-8 bg-white/[0.06] rounded w-1/3 mx-auto mb-8"></div><div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-5xl mx-auto">{[1,2,3,4,5,6,7].map(i => <div key={i} className="h-[180px] bg-white/[0.06] rounded-2xl"></div>)}</div></div></div></div>,
 });
 const KPIStrip = nextDynamic(() => import('@/components/landing/KPIStrip'), {
   ssr: false,
-  loading: () => <div className="py-6"><div className="container mx-auto px-4"><div className="animate-pulse h-24 bg-slate-800/50 rounded-2xl"></div></div></div>,
+  loading: () => <div className="py-6"><div className="container mx-auto px-4"><div className="animate-pulse h-24 bg-white/[0.04] rounded-2xl"></div></div></div>,
 });
 const RecentUpdates = nextDynamic(() => import('@/components/landing/RecentUpdates'), {
   ssr: false,
-  loading: () => <div className="py-16"><div className="container mx-auto px-4"><div className="animate-pulse"><div className="h-8 bg-slate-800 rounded w-1/3 mx-auto mb-8"></div><div className="space-y-4 max-w-3xl mx-auto">{[1,2,3,4].map(i => <div key={i} className="h-24 bg-slate-800 rounded-xl"></div>)}</div></div></div></div>,
+  loading: () => <div className="py-16"><div className="container mx-auto px-4"><div className="animate-pulse"><div className="h-8 bg-white/[0.06] rounded w-1/3 mx-auto mb-8"></div><div className="space-y-4 max-w-3xl mx-auto">{[1,2,3,4].map(i => <div key={i} className="h-24 bg-white/[0.06] rounded-xl"></div>)}</div></div></div></div>,
 });
 
 // Force dynamic rendering - no static generation at build time
@@ -165,7 +165,7 @@ export default async function HomePage() {
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75" />
                   <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-white" />
                 </span>
-                <span className="text-sm font-semibold text-slate-200 uppercase tracking-wider">Coming Soon</span>
+                <span className="text-sm font-semibold text-white/90 uppercase tracking-wider">Coming Soon</span>
               </div>
               <p className="text-sm text-slate-300 text-center sm:text-left">
                 SpaceNexus is coming to the <span className="font-semibold text-white">App Store</span> and <span className="font-semibold text-white">Google Play</span> &mdash; space intelligence in your pocket.

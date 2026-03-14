@@ -135,10 +135,10 @@ export default function IOSInstallPrompt() {
       aria-label="Install SpaceNexus on your device"
       style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
     >
-      <div className="bg-slate-900 border-t border-slate-700 px-5 pt-5 pb-4">
+      <div className="bg-black border-t border-white/[0.08] px-5 pt-5 pb-4">
         {/* Drag handle indicator */}
         <div className="flex justify-center mb-4">
-          <div className="w-10 h-1 rounded-full bg-slate-600" />
+          <div className="w-10 h-1 rounded-full bg-white/[0.1]" />
         </div>
 
         {/* Header with icon and title */}
@@ -150,7 +150,7 @@ export default function IOSInstallPrompt() {
             }}
           >
             <svg
-              className="w-7 h-7 text-slate-300"
+              className="w-7 h-7 text-white/70"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -179,14 +179,14 @@ export default function IOSInstallPrompt() {
         <div className="space-y-3 mb-5">
           {/* Step 1 */}
           <div className="flex items-start gap-3">
-            <span className="flex-shrink-0 w-6 h-6 rounded-full bg-white/8 text-slate-300 text-xs font-bold flex items-center justify-center mt-0.5">
+            <span className="flex-shrink-0 w-6 h-6 rounded-full bg-white/8 text-white/70 text-xs font-bold flex items-center justify-center mt-0.5">
               1
             </span>
-            <div className="flex items-center gap-2 text-sm text-slate-300">
+            <div className="flex items-center gap-2 text-sm text-white/70">
               <span>Tap the</span>
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-slate-800 border border-slate-700">
-                <ShareIcon className="w-4 h-4 text-slate-300" />
-                <span className="text-slate-300 font-medium text-xs">Share</span>
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-white/[0.06] border border-white/[0.08]">
+                <ShareIcon className="w-4 h-4 text-white/70" />
+                <span className="text-white/70 font-medium text-xs">Share</span>
               </span>
               <span>button</span>
             </div>
@@ -194,14 +194,14 @@ export default function IOSInstallPrompt() {
 
           {/* Step 2 */}
           <div className="flex items-start gap-3">
-            <span className="flex-shrink-0 w-6 h-6 rounded-full bg-white/8 text-slate-300 text-xs font-bold flex items-center justify-center mt-0.5">
+            <span className="flex-shrink-0 w-6 h-6 rounded-full bg-white/8 text-white/70 text-xs font-bold flex items-center justify-center mt-0.5">
               2
             </span>
-            <div className="flex items-center gap-2 text-sm text-slate-300">
+            <div className="flex items-center gap-2 text-sm text-white/70">
               <span>Scroll down and tap</span>
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-slate-800 border border-slate-700">
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-white/[0.06] border border-white/[0.08]">
                 <svg
-                  className="w-4 h-4 text-slate-300"
+                  className="w-4 h-4 text-white/70"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -210,7 +210,7 @@ export default function IOSInstallPrompt() {
                 >
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m-8-8h16" />
                 </svg>
-                <span className="text-slate-300 font-medium text-xs">Add to Home Screen</span>
+                <span className="text-white/70 font-medium text-xs">Add to Home Screen</span>
               </span>
             </div>
           </div>
@@ -219,7 +219,7 @@ export default function IOSInstallPrompt() {
         {/* Dismiss button */}
         <button
           onClick={handleDismiss}
-          className="w-full py-2.5 text-sm font-medium text-slate-400 hover:text-slate-200 rounded-xl hover:bg-slate-800/60 transition-colors"
+          className="w-full py-2.5 text-sm font-medium text-slate-400 hover:text-slate-200 rounded-xl hover:bg-white/[0.05] transition-colors"
         >
           Not now
         </button>

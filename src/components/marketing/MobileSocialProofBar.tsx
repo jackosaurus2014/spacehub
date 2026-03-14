@@ -51,36 +51,36 @@ export default function MobileSocialProofBar() {
       aria-label="Social proof"
       style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}
     >
-      <div className="bg-slate-900/85 backdrop-blur-md border-b border-slate-700/50">
+      <div className="bg-black/85 backdrop-blur-md border-b border-white/[0.06]">
         <div className="flex items-center justify-between gap-2 px-3 py-2">
           {/* Social proof text + CTA */}
           <div className="flex items-center gap-2 min-w-0 flex-1">
             {/* Avatars cluster */}
             <div className="flex -space-x-1.5 shrink-0" aria-hidden="true">
-              <div className="w-5 h-5 rounded-full bg-gradient-to-br from-slate-300 to-slate-400 border border-slate-900 flex items-center justify-center">
+              <div className="w-5 h-5 rounded-full bg-gradient-to-br from-slate-300 to-slate-400 border border-black flex items-center justify-center">
                 <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" />
                 </svg>
               </div>
-              <div className="w-5 h-5 rounded-full bg-gradient-to-br from-purple-400 to-pink-500 border border-slate-900 flex items-center justify-center">
+              <div className="w-5 h-5 rounded-full bg-gradient-to-br from-purple-400 to-pink-500 border border-black flex items-center justify-center">
                 <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" />
                 </svg>
               </div>
-              <div className="w-5 h-5 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 border border-slate-900 flex items-center justify-center">
+              <div className="w-5 h-5 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 border border-black flex items-center justify-center">
                 <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" />
                 </svg>
               </div>
             </div>
 
-            <p className="text-xs text-slate-300 truncate">
+            <p className="text-xs text-white/70 truncate">
               Start exploring space intelligence
             </p>
 
             <Link
               href="/register"
-              className="shrink-0 inline-flex items-center gap-0.5 text-xs font-semibold text-slate-300 hover:text-white transition-colors"
+              className="shrink-0 inline-flex items-center gap-0.5 text-xs font-semibold text-white/70 hover:text-white transition-colors"
             >
               Start Free
               <svg
@@ -99,7 +99,7 @@ export default function MobileSocialProofBar() {
           {/* Dismiss button */}
           <button
             onClick={handleDismiss}
-            className="shrink-0 w-6 h-6 flex items-center justify-center rounded-full text-slate-500 hover:text-slate-300 hover:bg-slate-800/60 transition-colors"
+            className="shrink-0 w-6 h-6 flex items-center justify-center rounded-full text-slate-500 hover:text-white/70 hover:bg-white/[0.05] transition-colors"
             aria-label="Dismiss social proof bar"
           >
             <svg

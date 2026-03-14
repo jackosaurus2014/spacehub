@@ -48,7 +48,7 @@ function getGradeColor(grade: Grade): string {
   const letter = grade.charAt(0);
   switch (letter) {
     case 'A': return 'text-emerald-400';
-    case 'B': return 'text-slate-300';
+    case 'B': return 'text-white/70';
     case 'C': return 'text-amber-400';
     case 'D': return 'text-orange-400';
     case 'F': return 'text-red-400';
@@ -687,15 +687,15 @@ export default function ReportCardsPage() {
               <div className="flex items-center gap-3 mt-2">
                 <div className="flex items-center gap-1">
                   <span className="text-emerald-400 text-sm">▲</span>
-                  <span className="text-sm font-semibold text-slate-200">{stats.outlookCounts.bullish}</span>
+                  <span className="text-sm font-semibold text-white/90">{stats.outlookCounts.bullish}</span>
                 </div>
                 <div className="flex items-center gap-1">
                   <span className="text-amber-400 text-sm">◆</span>
-                  <span className="text-sm font-semibold text-slate-200">{stats.outlookCounts.neutral}</span>
+                  <span className="text-sm font-semibold text-white/90">{stats.outlookCounts.neutral}</span>
                 </div>
                 <div className="flex items-center gap-1">
                   <span className="text-red-400 text-sm">▼</span>
-                  <span className="text-sm font-semibold text-slate-200">{stats.outlookCounts.bearish}</span>
+                  <span className="text-sm font-semibold text-white/90">{stats.outlookCounts.bearish}</span>
                 </div>
               </div>
               <div className="text-xs text-slate-500 mt-1">Bullish / Neutral / Bearish</div>
@@ -724,7 +724,7 @@ export default function ReportCardsPage() {
             <div className="text-xs text-slate-400 uppercase tracking-wider mb-3">Sector Leaders</div>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
               {stats.sectorLeaders.map(leader => (
-                <div key={leader.sector} className="flex items-center gap-2 p-2 rounded-lg bg-slate-800/50">
+                <div key={leader.sector} className="flex items-center gap-2 p-2 rounded-lg bg-white/[0.04]">
                   <span className="text-lg">{getSectorIcon(leader.sector)}</span>
                   <div className="min-w-0">
                     <div className="text-xs text-slate-400 truncate">{leader.sector}</div>
@@ -745,7 +745,7 @@ export default function ReportCardsPage() {
             <select
               value={gradeFilter}
               onChange={e => setGradeFilter(e.target.value as GradeRange)}
-              className="bg-slate-800 border border-slate-700 text-slate-200 text-sm rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-white/20"
+              className="bg-white/[0.06] border border-white/[0.08] text-white/90 text-sm rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-white/20"
             >
               {GRADE_RANGES.map(opt => (
                 <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -755,7 +755,7 @@ export default function ReportCardsPage() {
             <select
               value={sectorFilter}
               onChange={e => setSectorFilter(e.target.value as Sector | '')}
-              className="bg-slate-800 border border-slate-700 text-slate-200 text-sm rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-white/20"
+              className="bg-white/[0.06] border border-white/[0.08] text-white/90 text-sm rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-white/20"
             >
               <option value="">All Sectors</option>
               {SECTORS.map(s => (
@@ -766,7 +766,7 @@ export default function ReportCardsPage() {
             <select
               value={outlookFilter}
               onChange={e => setOutlookFilter(e.target.value as Outlook | '')}
-              className="bg-slate-800 border border-slate-700 text-slate-200 text-sm rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-white/20"
+              className="bg-white/[0.06] border border-white/[0.08] text-white/90 text-sm rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-white/20"
             >
               {OUTLOOK_OPTIONS.map(opt => (
                 <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -776,7 +776,7 @@ export default function ReportCardsPage() {
             <select
               value={sortBy}
               onChange={e => setSortBy(e.target.value as SortKey)}
-              className="bg-slate-800 border border-slate-700 text-slate-200 text-sm rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-white/20"
+              className="bg-white/[0.06] border border-white/[0.08] text-white/90 text-sm rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-white/20"
             >
               {SORT_OPTIONS.map(opt => (
                 <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -802,7 +802,7 @@ export default function ReportCardsPage() {
                   {/* ── Collapsed Header Row ──────────────────────────────── */}
                   <button
                     onClick={() => toggleCard(card.company)}
-                    className="w-full text-left p-4 sm:p-5 flex items-center gap-4 hover:bg-slate-800/30 transition-colors"
+                    className="w-full text-left p-4 sm:p-5 flex items-center gap-4 hover:bg-white/[0.03] transition-colors"
                     aria-expanded={isExpanded}
                     aria-controls={`card-${card.company.replace(/\s+/g, '-')}`}
                   >
@@ -834,11 +834,11 @@ export default function ReportCardsPage() {
                     <div className="hidden md:flex items-center gap-6">
                       <div className="text-right">
                         <div className="text-xs text-slate-500">Revenue</div>
-                        <div className="text-sm font-semibold text-slate-200">{card.metrics.revenue}</div>
+                        <div className="text-sm font-semibold text-white/90">{card.metrics.revenue}</div>
                       </div>
                       <div className="text-right">
                         <div className="text-xs text-slate-500">Backlog</div>
-                        <div className="text-sm font-semibold text-slate-200">{card.metrics.backlog}</div>
+                        <div className="text-sm font-semibold text-white/90">{card.metrics.backlog}</div>
                       </div>
                     </div>
 
@@ -857,25 +857,25 @@ export default function ReportCardsPage() {
                   {isExpanded && (
                     <div
                       id={`card-${card.company.replace(/\s+/g, '-')}`}
-                      className="border-t border-slate-700/50 p-4 sm:p-5 space-y-5"
+                      className="border-t border-white/[0.06] p-4 sm:p-5 space-y-5"
                     >
                       {/* Metrics Grid */}
                       <div>
                         <h4 className="text-xs text-slate-400 uppercase tracking-wider mb-3">Key Metrics</h4>
                         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                          <div className="bg-slate-800/50 rounded-lg p-3">
+                          <div className="bg-white/[0.04] rounded-lg p-3">
                             <div className="text-xs text-slate-500 mb-1">Annual Revenue</div>
                             <div className="text-lg font-bold text-white">{card.metrics.revenue}</div>
                           </div>
-                          <div className="bg-slate-800/50 rounded-lg p-3">
+                          <div className="bg-white/[0.04] rounded-lg p-3">
                             <div className="text-xs text-slate-500 mb-1">Order Backlog</div>
                             <div className="text-lg font-bold text-white">{card.metrics.backlog}</div>
                           </div>
-                          <div className="bg-slate-800/50 rounded-lg p-3">
+                          <div className="bg-white/[0.04] rounded-lg p-3">
                             <div className="text-xs text-slate-500 mb-1">Launches (2025)</div>
                             <div className="text-lg font-bold text-white">{card.metrics.launches}</div>
                           </div>
-                          <div className="bg-slate-800/50 rounded-lg p-3">
+                          <div className="bg-white/[0.04] rounded-lg p-3">
                             <div className="text-xs text-slate-500 mb-1">Employees</div>
                             <div className="text-lg font-bold text-white">{card.metrics.employees}</div>
                           </div>
@@ -890,7 +890,7 @@ export default function ReportCardsPage() {
                           </h4>
                           <ul className="space-y-2">
                             {card.strengths.map((s, i) => (
-                              <li key={i} className="flex items-start gap-2 text-sm text-slate-300">
+                              <li key={i} className="flex items-start gap-2 text-sm text-white/70">
                                 <span className="text-emerald-400 mt-0.5 flex-shrink-0">&#10003;</span>
                                 <span>{s}</span>
                               </li>
@@ -903,7 +903,7 @@ export default function ReportCardsPage() {
                           </h4>
                           <ul className="space-y-2">
                             {card.weaknesses.map((w, i) => (
-                              <li key={i} className="flex items-start gap-2 text-sm text-slate-300">
+                              <li key={i} className="flex items-start gap-2 text-sm text-white/70">
                                 <span className="text-red-400 mt-0.5 flex-shrink-0">&#10007;</span>
                                 <span>{w}</span>
                               </li>
@@ -923,7 +923,7 @@ export default function ReportCardsPage() {
                       {/* Analyst Summary */}
                       <div>
                         <h4 className="text-xs text-slate-400 uppercase tracking-wider mb-2">Analyst Summary</h4>
-                        <p className="text-sm text-slate-300 leading-relaxed bg-slate-800/30 rounded-lg p-4 border-l-4 border-white/15">
+                        <p className="text-sm text-white/70 leading-relaxed bg-white/[0.03] rounded-lg p-4 border-l-4 border-white/15">
                           {card.summary}
                         </p>
                       </div>
@@ -937,7 +937,7 @@ export default function ReportCardsPage() {
           {filteredAndSorted.length === 0 && (
             <div className="card p-12 text-center">
               <div className="text-4xl mb-3">🔍</div>
-              <div className="text-lg text-slate-300">No companies match the selected filters.</div>
+              <div className="text-lg text-white/70">No companies match the selected filters.</div>
               <button
                 onClick={() => { setGradeFilter(''); setSectorFilter(''); setOutlookFilter(''); }}
                 className="mt-4 px-4 py-2 text-sm bg-white hover:bg-slate-100 text-slate-900 rounded-lg transition-colors"
@@ -954,17 +954,17 @@ export default function ReportCardsPage() {
             <h3 className="text-lg font-bold text-white mb-3">Methodology</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-slate-400">
               <div>
-                <h4 className="text-slate-300 font-semibold mb-1">Grading Criteria</h4>
+                <h4 className="text-white/70 font-semibold mb-1">Grading Criteria</h4>
                 <ul className="space-y-1">
                   <li><span className="text-emerald-400 font-bold">A Range</span> &mdash; Industry leaders with strong execution, growth, and market position</li>
-                  <li><span className="text-slate-300 font-bold">B Range</span> &mdash; Solid performers with clear competitive advantages and growth trajectory</li>
+                  <li><span className="text-white/70 font-bold">B Range</span> &mdash; Solid performers with clear competitive advantages and growth trajectory</li>
                   <li><span className="text-amber-400 font-bold">C Range</span> &mdash; Mixed results with notable challenges alongside some strengths</li>
                   <li><span className="text-orange-400 font-bold">D Range</span> &mdash; Significant concerns around execution, viability, or market fit</li>
                   <li><span className="text-red-400 font-bold">F</span> &mdash; Fundamental business model or survival risk</li>
                 </ul>
               </div>
               <div>
-                <h4 className="text-slate-300 font-semibold mb-1">Assessment Factors</h4>
+                <h4 className="text-white/70 font-semibold mb-1">Assessment Factors</h4>
                 <ul className="space-y-1">
                   <li>Financial performance (revenue growth, margins, cash flow)</li>
                   <li>Technical execution (mission success, development milestones)</li>
@@ -992,7 +992,7 @@ export default function ReportCardsPage() {
                 className="card p-4 hover:border-white/10 transition-colors group text-center"
               >
                 <div className="text-2xl mb-1">🏢</div>
-                <div className="text-sm font-semibold text-slate-200 group-hover:text-white transition-colors">Company Profiles</div>
+                <div className="text-sm font-semibold text-white/90 group-hover:text-white transition-colors">Company Profiles</div>
                 <div className="text-xs text-slate-500">Detailed company intelligence</div>
               </Link>
 
@@ -1001,7 +1001,7 @@ export default function ReportCardsPage() {
                 className="card p-4 hover:border-white/10 transition-colors group text-center"
               >
                 <div className="text-2xl mb-1">🏆</div>
-                <div className="text-sm font-semibold text-slate-200 group-hover:text-white transition-colors">Space Score</div>
+                <div className="text-sm font-semibold text-white/90 group-hover:text-white transition-colors">Space Score</div>
                 <div className="text-xs text-slate-500">Quantitative scoring system</div>
               </Link>
 
@@ -1010,7 +1010,7 @@ export default function ReportCardsPage() {
                 className="card p-4 hover:border-white/10 transition-colors group text-center"
               >
                 <div className="text-2xl mb-1">📈</div>
-                <div className="text-sm font-semibold text-slate-200 group-hover:text-white transition-colors">Market Intel</div>
+                <div className="text-sm font-semibold text-white/90 group-hover:text-white transition-colors">Market Intel</div>
                 <div className="text-xs text-slate-500">Space market intelligence</div>
               </Link>
 
@@ -1019,7 +1019,7 @@ export default function ReportCardsPage() {
                 className="card p-4 hover:border-white/10 transition-colors group text-center"
               >
                 <div className="text-2xl mb-1">💰</div>
-                <div className="text-sm font-semibold text-slate-200 group-hover:text-white transition-colors">Investment Tracker</div>
+                <div className="text-sm font-semibold text-white/90 group-hover:text-white transition-colors">Investment Tracker</div>
                 <div className="text-xs text-slate-500">Funding rounds and deals</div>
               </Link>
             </div>

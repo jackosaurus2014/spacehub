@@ -184,11 +184,11 @@ export default function ExitIntentPopup() {
       />
 
       {/* Modal */}
-      <div className="relative bg-slate-900 border border-slate-700 rounded-2xl max-w-md w-full p-8 shadow-2xl shadow-black/50 animate-in slide-in-from-bottom-4 duration-300">
+      <div className="relative bg-black border border-white/[0.08] rounded-2xl max-w-md w-full p-8 shadow-2xl shadow-black/50 animate-in slide-in-from-bottom-4 duration-300">
         {/* Close button */}
         <button
           onClick={handleDismiss}
-          className="absolute top-3 right-3 p-2.5 rounded-lg text-slate-500 hover:text-slate-300 hover:bg-slate-800 transition-colors"
+          className="absolute top-3 right-3 p-2.5 rounded-lg text-slate-500 hover:text-white/70 hover:bg-white/[0.06] transition-colors"
           aria-label="Close popup"
         >
           <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -213,7 +213,7 @@ export default function ExitIntentPopup() {
             </p>
             <button
               onClick={handleDismiss}
-              className="text-sm text-slate-300 hover:text-white transition-colors"
+              className="text-sm text-white/70 hover:text-white transition-colors"
             >
               Close
             </button>
@@ -223,7 +223,7 @@ export default function ExitIntentPopup() {
           <div className="relative">
             {/* Rocket icon */}
             <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-white/5 to-white/10 border border-white/10 flex items-center justify-center mx-auto mb-5">
-              <svg className="w-6 h-6 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+              <svg className="w-6 h-6 text-white/70" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15.59 14.37a6 6 0 01-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 006.16-12.12A14.98 14.98 0 009.631 8.41m5.96 5.96a14.926 14.926 0 01-5.841 2.58m-.119-8.54a6 6 0 00-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 00-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 01-2.448-2.448 14.9 14.9 0 01.06-.312m-2.24 2.39a4.493 4.493 0 00-1.757 4.306 4.493 4.493 0 004.306-1.758M16.5 9a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z" />
               </svg>
             </div>
@@ -232,7 +232,7 @@ export default function ExitIntentPopup() {
               Wait — here&apos;s an exclusive offer
             </h3>
             <p className="text-sm text-slate-400 text-center mb-3">
-              Subscribe now and get a <span className="text-slate-300 font-semibold">free extended 30-day trial</span> of SpaceNexus Pro
+              Subscribe now and get a <span className="text-white/70 font-semibold">free extended 30-day trial</span> of SpaceNexus Pro
             </p>
 
             {/* Countdown timer */}
@@ -243,8 +243,8 @@ export default function ExitIntentPopup() {
                 { value: countdown.seconds, label: 'SEC' },
               ].map((unit) => (
                 <div key={unit.label} className="text-center">
-                  <div className="w-12 h-12 rounded-lg bg-slate-800 border border-slate-600 flex items-center justify-center">
-                    <span className="text-lg font-bold text-slate-300 tabular-nums">
+                  <div className="w-12 h-12 rounded-lg bg-white/[0.06] border border-white/[0.1] flex items-center justify-center">
+                    <span className="text-lg font-bold text-white/70 tabular-nums">
                       {String(unit.value).padStart(2, '0')}
                     </span>
                   </div>
@@ -256,8 +256,8 @@ export default function ExitIntentPopup() {
             {/* Benefits */}
             <ul className="space-y-2.5 mb-6">
               {BENEFITS.map((b) => (
-                <li key={b} className="flex items-start gap-2.5 text-sm text-slate-300">
-                  <svg className="w-4 h-4 text-slate-300 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <li key={b} className="flex items-start gap-2.5 text-sm text-white/70">
+                  <svg className="w-4 h-4 text-white/70 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                   </svg>
                   {b}
@@ -276,7 +276,7 @@ export default function ExitIntentPopup() {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Enter your email address"
                 aria-label="Email address"
-                className="w-full px-4 py-3 bg-slate-800/80 border border-slate-600 rounded-xl text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-white/15 transition-colors text-sm"
+                className="w-full px-4 py-3 bg-white/[0.06] border border-white/[0.1] rounded-xl text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-white/15 transition-colors text-sm"
                 required
                 disabled={status === 'loading'}
                 autoFocus

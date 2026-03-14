@@ -203,7 +203,7 @@ export default function ModuleContainer({ initialModules }: ModuleContainerProps
     return (
       <div className="card p-12 text-center">
         <span className="text-6xl block mb-6">🛸</span>
-        <h3 className="text-2xl font-semibold text-slate-200 mb-3">No Modules Available</h3>
+        <h3 className="text-2xl font-semibold text-white/90 mb-3">No Modules Available</h3>
         <p className="text-slate-400 max-w-md mx-auto">
           Please check back later for available modules.
         </p>
@@ -218,7 +218,7 @@ export default function ModuleContainer({ initialModules }: ModuleContainerProps
     <div className="space-y-8">
       {/* Navigation Header - Sticky */}
       <div className="sticky top-2 z-40">
-        <div className="rounded-2xl border border-white/10 backdrop-blur-xl" style={{ background: 'linear-gradient(145deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.92) 25%, rgba(51, 65, 85, 0.9) 50%, rgba(30, 41, 59, 0.92) 75%, rgba(15, 23, 42, 0.95) 100%)', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 10px 25px -5px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(6, 182, 212, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.05)' }}>
+        <div className="rounded-2xl border border-white/10 backdrop-blur-xl" style={{ background: 'linear-gradient(145deg, rgba(0, 0, 0, 0.95) 0%, rgba(10, 10, 10, 0.92) 25%, rgba(20, 20, 20, 0.9) 50%, rgba(10, 10, 10, 0.92) 75%, rgba(0, 0, 0, 0.95) 100%)', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 10px 25px -5px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.05)' }}>
           {/* Main Navigation Bar */}
           <div className="p-4">
             <div className="flex items-center gap-3">
@@ -226,7 +226,7 @@ export default function ModuleContainer({ initialModules }: ModuleContainerProps
               <button
                 onClick={goToPrevious}
                 disabled={isTransitioning}
-                className="group flex items-center gap-2 px-3 py-2 sm:px-4 sm:py-3 rounded-xl bg-gradient-to-r from-slate-800/60 to-slate-700/60 hover:from-slate-700/70 hover:to-slate-600/70 border border-white/10 hover:border-white/10 text-slate-200 hover:text-white transition-all duration-300 disabled:opacity-50 shadow-lg shadow-black/10 hover:shadow-black/15 hover:scale-[1.03] active:scale-95"
+                className="group flex items-center gap-2 px-3 py-2 sm:px-4 sm:py-3 rounded-xl bg-gradient-to-r from-white/[0.04] to-white/[0.06] hover:from-white/[0.08] hover:to-white/[0.1] border border-white/10 hover:border-white/10 text-white/90 hover:text-white transition-all duration-300 disabled:opacity-50 shadow-lg shadow-black/10 hover:shadow-black/15 hover:scale-[1.03] active:scale-95"
                 aria-label={`Previous module: ${enabledModules[currentIndex > 0 ? currentIndex - 1 : enabledModules.length - 1]?.name} (Left Arrow)`}
                 title={`Previous: ${enabledModules[currentIndex > 0 ? currentIndex - 1 : enabledModules.length - 1]?.name}`}
               >
@@ -238,7 +238,7 @@ export default function ModuleContainer({ initialModules }: ModuleContainerProps
                     <span className="hidden sm:inline">Previous</span>
                     <span className="sm:hidden">Prev</span>
                   </span>
-                  <span className="text-[11px] sm:text-xs text-slate-300/80 truncate max-w-[80px] sm:max-w-[140px]">
+                  <span className="text-[11px] sm:text-xs text-white/70/80 truncate max-w-[80px] sm:max-w-[140px]">
                     {enabledModules[currentIndex > 0 ? currentIndex - 1 : enabledModules.length - 1]?.name || 'Module'}
                   </span>
                 </div>
@@ -248,15 +248,15 @@ export default function ModuleContainer({ initialModules }: ModuleContainerProps
               <div className="relative flex-1">
                 <button
                   onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                  className="w-full flex items-center gap-4 px-5 py-3 rounded-xl bg-slate-700/40 hover:bg-slate-600/50 border border-white/10 hover:border-white/10 transition-all duration-200"
+                  className="w-full flex items-center gap-4 px-5 py-3 rounded-xl bg-white/[0.06] hover:bg-white/[0.08] border border-white/10 hover:border-white/10 transition-all duration-200"
                 >
                   {/* Module Icon & Info */}
                   <div className="flex items-center gap-4 flex-1 min-w-0">
-                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-slate-800/50 to-slate-700/50 border border-white/10 flex items-center justify-center text-2xl flex-shrink-0">
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-white/[0.04] to-white/[0.06] border border-white/10 flex items-center justify-center text-2xl flex-shrink-0">
                       {currentModule?.icon}
                     </div>
                     <div className="text-left min-w-0">
-                      <div className="font-semibold text-slate-100 text-lg truncate">{currentModule?.name}</div>
+                      <div className="font-semibold text-white text-lg truncate">{currentModule?.name}</div>
                       <div className="text-sm text-slate-400">{currentSection?.label}</div>
                     </div>
                   </div>
@@ -266,7 +266,7 @@ export default function ModuleContainer({ initialModules }: ModuleContainerProps
                     <span className={`text-xs font-medium px-3 py-1.5 rounded-lg border ${tierInfo.bgColor} ${tierInfo.color}`}>
                       {tierInfo.label}
                     </span>
-                    <div className={`w-8 h-8 rounded-lg bg-slate-700/50 flex items-center justify-center transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`}>
+                    <div className={`w-8 h-8 rounded-lg bg-white/[0.06] flex items-center justify-center transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`}>
                       <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                       </svg>
@@ -278,12 +278,12 @@ export default function ModuleContainer({ initialModules }: ModuleContainerProps
                 {isDropdownOpen && (
                   <>
                     <div className="fixed inset-0 z-40" onClick={() => setIsDropdownOpen(false)} />
-                    <div className="absolute top-full left-0 right-0 mt-2 z-50 rounded-xl border border-white/10 backdrop-blur-xl max-h-[70vh] overflow-hidden" style={{ background: 'linear-gradient(145deg, rgba(15, 23, 42, 0.98) 0%, rgba(30, 41, 59, 0.96) 25%, rgba(51, 65, 85, 0.95) 50%, rgba(30, 41, 59, 0.96) 75%, rgba(15, 23, 42, 0.98) 100%)', boxShadow: '0 8px 16px -4px rgba(0, 0, 0, 0.4), 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(6, 182, 212, 0.15)' }}>
+                    <div className="absolute top-full left-0 right-0 mt-2 z-50 rounded-xl border border-white/10 backdrop-blur-xl max-h-[70vh] overflow-hidden" style={{ background: 'linear-gradient(145deg, rgba(0, 0, 0, 0.98) 0%, rgba(10, 10, 10, 0.96) 25%, rgba(20, 20, 20, 0.95) 50%, rgba(10, 10, 10, 0.96) 75%, rgba(0, 0, 0, 0.98) 100%)', boxShadow: '0 8px 16px -4px rgba(0, 0, 0, 0.4), 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.1)' }}>
                       <div className="overflow-y-auto max-h-[70vh]">
                         {groupedModules.map((section, sectionIdx) => (
                           <div key={section.value}>
                             {/* Section Header */}
-                            <div className={`px-5 py-3 text-xs font-semibold uppercase tracking-wider text-slate-300 bg-slate-800/50 ${sectionIdx > 0 ? 'border-t border-slate-700/50' : ''}`}>
+                            <div className={`px-5 py-3 text-xs font-semibold uppercase tracking-wider text-white/70 bg-white/[0.04] ${sectionIdx > 0 ? 'border-t border-white/[0.06]' : ''}`}>
                               {section.label}
                             </div>
                             {/* Section Modules */}
@@ -297,12 +297,12 @@ export default function ModuleContainer({ initialModules }: ModuleContainerProps
                                     onClick={() => jumpToModule(module.globalIndex)}
                                     className={`w-full flex items-center gap-4 px-5 py-3 text-left transition-all duration-150 ${
                                       isActive
-                                        ? 'bg-slate-800/40 border-l-2 border-l-white/50'
-                                        : 'hover:bg-slate-700/50 border-l-2 border-l-transparent'
+                                        ? 'bg-white/[0.04] border-l-2 border-l-white/50'
+                                        : 'hover:bg-white/[0.06] border-l-2 border-l-transparent'
                                     }`}
                                   >
                                     <span className="text-xl w-8 text-center">{module.icon}</span>
-                                    <span className={`flex-1 truncate ${isActive ? 'text-slate-200 font-medium' : 'text-slate-300'}`}>
+                                    <span className={`flex-1 truncate ${isActive ? 'text-white/90 font-medium' : 'text-white/70'}`}>
                                       {module.name}
                                     </span>
                                     <span className={`text-xs font-medium px-2 py-1 rounded border ${moduleTier.bgColor} ${moduleTier.color}`}>
@@ -324,7 +324,7 @@ export default function ModuleContainer({ initialModules }: ModuleContainerProps
               <button
                 onClick={goToNext}
                 disabled={isTransitioning}
-                className="group flex items-center gap-2 px-3 py-2 sm:px-4 sm:py-3 rounded-xl bg-gradient-to-r from-slate-700/60 to-slate-800/60 hover:from-slate-600/70 hover:to-slate-700/70 border border-white/10 hover:border-white/10 text-slate-200 hover:text-white transition-all duration-300 disabled:opacity-50 shadow-lg shadow-black/10 hover:shadow-black/15 hover:scale-[1.03] active:scale-95"
+                className="group flex items-center gap-2 px-3 py-2 sm:px-4 sm:py-3 rounded-xl bg-gradient-to-r from-white/[0.06] to-white/[0.04] hover:from-white/[0.1] hover:to-white/[0.08] border border-white/10 hover:border-white/10 text-white/90 hover:text-white transition-all duration-300 disabled:opacity-50 shadow-lg shadow-black/10 hover:shadow-black/15 hover:scale-[1.03] active:scale-95"
                 aria-label={`Next module: ${enabledModules[currentIndex < enabledModules.length - 1 ? currentIndex + 1 : 0]?.name} (Right Arrow)`}
                 title={`Next: ${enabledModules[currentIndex < enabledModules.length - 1 ? currentIndex + 1 : 0]?.name}`}
               >
@@ -333,7 +333,7 @@ export default function ModuleContainer({ initialModules }: ModuleContainerProps
                     <span className="hidden sm:inline">Next</span>
                     <span className="sm:hidden">Next</span>
                   </span>
-                  <span className="text-[11px] sm:text-xs text-slate-300/80 truncate max-w-[80px] sm:max-w-[140px]">
+                  <span className="text-[11px] sm:text-xs text-white/70/80 truncate max-w-[80px] sm:max-w-[140px]">
                     {enabledModules[currentIndex < enabledModules.length - 1 ? currentIndex + 1 : 0]?.name || 'Module'}
                   </span>
                 </div>
@@ -358,7 +358,7 @@ export default function ModuleContainer({ initialModules }: ModuleContainerProps
                       className={`rounded-full transition-all duration-300 ${
                         idx === currentIndex
                           ? `w-8 h-2 ${dotTier.dotColor}`
-                          : 'w-2 h-2 bg-slate-600 hover:bg-slate-500'
+                          : 'w-2 h-2 bg-white/[0.1] hover:bg-white/[0.15]'
                       }`}
                       aria-label={`Go to ${module.name}`}
                       title={module.name}
@@ -370,7 +370,7 @@ export default function ModuleContainer({ initialModules }: ModuleContainerProps
           </div>
 
           {/* Counter & Legend */}
-          <div className="px-4 pb-3 flex items-center justify-between text-xs border-t border-slate-700/50 pt-3">
+          <div className="px-4 pb-3 flex items-center justify-between text-xs border-t border-white/[0.06] pt-3">
             <span className="text-slate-400">
               {currentIndex + 1} of {enabledModules.length} modules
             </span>
@@ -394,7 +394,7 @@ export default function ModuleContainer({ initialModules }: ModuleContainerProps
         {/* Keyboard Hint */}
         <div className="text-center mt-2">
           <span className="text-xs text-slate-400">
-            Use <kbd className="px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700 font-mono text-xs">←</kbd> <kbd className="px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700 font-mono text-xs">→</kbd> arrow keys to navigate
+            Use <kbd className="px-1.5 py-0.5 rounded bg-white/[0.06] text-white/70 border border-white/[0.06] font-mono text-xs">←</kbd> <kbd className="px-1.5 py-0.5 rounded bg-white/[0.06] text-white/70 border border-white/[0.06] font-mono text-xs">→</kbd> arrow keys to navigate
           </span>
         </div>
       </div>

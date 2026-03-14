@@ -57,14 +57,14 @@ function JobPostingCard({ job }: { job: SpaceJobPosting }) {
   const seniorityLabel = SENIORITY_LABELS[job.seniorityLevel as SeniorityLevel] || job.seniorityLevel;
 
   return (
-    <div className="bg-slate-800/50 rounded-lg p-4 hover:bg-slate-700/50 transition-all">
+    <div className="bg-white/[0.04] rounded-lg p-4 hover:bg-white/[0.08] transition-all">
       <div className="flex items-start justify-between mb-2">
         <div className="flex-1 min-w-0">
-          <h4 className="font-semibold text-slate-200 text-sm truncate">{job.title}</h4>
+          <h4 className="font-semibold text-white/90 text-sm truncate">{job.title}</h4>
           <p className="text-slate-400 text-xs">{job.company}</p>
         </div>
         {job.remoteOk && (
-          <span className="text-xs bg-white/10 text-slate-200 px-2 py-0.5 rounded ml-2 whitespace-nowrap">
+          <span className="text-xs bg-white/10 text-white/90 px-2 py-0.5 rounded ml-2 whitespace-nowrap">
             Remote
           </span>
         )}
@@ -72,16 +72,16 @@ function JobPostingCard({ job }: { job: SpaceJobPosting }) {
 
       <div className="flex items-center gap-2 mb-2 text-xs">
         <span className="text-slate-400">{job.location}</span>
-        <span className="text-slate-300">|</span>
+        <span className="text-white/70">|</span>
         <span className={`px-1.5 py-0.5 rounded ${categoryInfo?.color || 'text-slate-500 bg-slate-200'}`}>
           {categoryInfo?.label || job.category}
         </span>
-        <span className="text-slate-300">|</span>
+        <span className="text-white/70">|</span>
         <span className="text-slate-400">{seniorityLabel}</span>
       </div>
 
       <div className="flex items-center justify-between">
-        <span className="text-sm font-medium text-slate-200">
+        <span className="text-sm font-medium text-white/90">
           {formatSalary(job.salaryMin ?? 0)} - {formatSalary(job.salaryMax ?? 0)}
         </span>
         {job.clearanceRequired && (
@@ -99,9 +99,9 @@ function TrendCard({ trend }: { trend: WorkforceTrend }) {
   const isGrowthPositive = yoyGrowth >= 0;
 
   return (
-    <div className="bg-slate-800/50 rounded-lg p-4">
+    <div className="bg-white/[0.04] rounded-lg p-4">
       <div className="flex items-center justify-between mb-3">
-        <span className="text-sm font-semibold text-slate-200">
+        <span className="text-sm font-semibold text-white/90">
           Q{trend.quarter} {trend.year}
         </span>
         <span
@@ -118,19 +118,19 @@ function TrendCard({ trend }: { trend: WorkforceTrend }) {
       <div className="grid grid-cols-2 gap-3 text-xs">
         <div>
           <span className="text-slate-400">Openings</span>
-          <div className="text-slate-200 font-medium text-sm">{trend.totalOpenings.toLocaleString()}</div>
+          <div className="text-white/90 font-medium text-sm">{trend.totalOpenings.toLocaleString()}</div>
         </div>
         <div>
           <span className="text-slate-400">Avg Salary</span>
-          <div className="text-slate-200 font-medium text-sm">{formatSalary(trend.avgSalary ?? 0)}</div>
+          <div className="text-white/90 font-medium text-sm">{formatSalary(trend.avgSalary ?? 0)}</div>
         </div>
         <div>
           <span className="text-slate-400">Hires</span>
-          <div className="text-slate-200 font-medium text-sm">{(trend.totalHires ?? 0).toLocaleString()}</div>
+          <div className="text-white/90 font-medium text-sm">{(trend.totalHires ?? 0).toLocaleString()}</div>
         </div>
         <div>
           <span className="text-slate-400">Median Salary</span>
-          <div className="text-slate-200 font-medium text-sm">{formatSalary(trend.medianSalary ?? 0)}</div>
+          <div className="text-white/90 font-medium text-sm">{formatSalary(trend.medianSalary ?? 0)}</div>
         </div>
       </div>
 
@@ -164,7 +164,7 @@ function SalaryBenchmarkBar({ benchmark }: { benchmark: SalaryBenchmark }) {
   const maxPct = (benchmark.avgMax / maxRange) * 100;
 
   return (
-    <div className="bg-slate-800/50 rounded-lg p-3">
+    <div className="bg-white/[0.04] rounded-lg p-3">
       <div className="flex items-center justify-between mb-2">
         <span className={`text-xs font-medium px-2 py-0.5 rounded ${categoryInfo?.color || 'text-slate-500 bg-slate-200'}`}>
           {categoryInfo?.label || benchmark.category}
@@ -185,7 +185,7 @@ function SalaryBenchmarkBar({ benchmark }: { benchmark: SalaryBenchmark }) {
 
       <div className="flex justify-between text-xs text-slate-400">
         <span>{formatSalary(benchmark.avgMin)}</span>
-        <span className="text-slate-200 font-medium">Median: {formatSalary(benchmark.avgMedian)}</span>
+        <span className="text-white/90 font-medium">Median: {formatSalary(benchmark.avgMedian)}</span>
         <span>{formatSalary(benchmark.avgMax)}</span>
       </div>
     </div>
@@ -245,7 +245,7 @@ export default function SpaceWorkforceModule() {
     return (
       <div className="card p-8 text-center">
         <span className="text-5xl block mb-4">{'\uD83D\uDC54'}</span>
-        <h3 className="text-xl font-semibold text-slate-200 mb-2">Space Workforce & Talent Analytics</h3>
+        <h3 className="text-xl font-semibold text-white/90 mb-2">Space Workforce & Talent Analytics</h3>
         <p className="text-slate-400 mb-4">
           Track job postings, salary benchmarks, and workforce trends across the space industry.
         </p>
@@ -273,7 +273,7 @@ export default function SpaceWorkforceModule() {
         <div className="flex items-center gap-3">
           <span className="text-3xl">{'\uD83D\uDC54'}</span>
           <div>
-            <h2 className="text-2xl font-display font-bold text-slate-200">
+            <h2 className="text-2xl font-display font-bold text-white/90">
               Space Workforce & Talent Analytics
             </h2>
             <p className="text-slate-400 text-sm">Jobs, salaries & workforce trends</p>
@@ -281,7 +281,7 @@ export default function SpaceWorkforceModule() {
         </div>
         <Link
           href="/space-talent?tab=workforce"
-          className="text-slate-200 hover:text-white transition-colors text-sm"
+          className="text-white/90 hover:text-white transition-colors text-sm"
         >
           Full Dashboard →
         </Link>
@@ -290,7 +290,7 @@ export default function SpaceWorkforceModule() {
       {/* Quick Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         <div className="card p-3 text-center">
-          <div className="text-2xl font-bold text-slate-200">
+          <div className="text-2xl font-bold text-white/90">
             {stats.totalOpenings.toLocaleString()}
           </div>
           <div className="text-slate-400 text-xs">Total Openings</div>
@@ -302,7 +302,7 @@ export default function SpaceWorkforceModule() {
           <div className="text-slate-400 text-xs">Avg Salary ($K)</div>
         </div>
         <div className="card p-3 text-center">
-          <div className="text-2xl font-bold text-slate-200">
+          <div className="text-2xl font-bold text-white/90">
             {CATEGORY_LABELS[stats.topCategory as JobCategory]?.label || stats.topCategory}
           </div>
           <div className="text-slate-400 text-xs">Top Category</div>
@@ -332,7 +332,7 @@ export default function SpaceWorkforceModule() {
             className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
               activeTab === tab.id
                 ? 'bg-white text-slate-900'
-                : 'bg-slate-800 text-slate-400 hover:bg-slate-700'
+                : 'bg-white/[0.06] text-slate-400 hover:bg-white/[0.08]'
             }`}
           >
             <span>{tab.icon}</span>

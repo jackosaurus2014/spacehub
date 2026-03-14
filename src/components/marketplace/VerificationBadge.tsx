@@ -37,12 +37,12 @@ export default function VerificationBadge({ level, size = 'sm', showTooltip = tr
       <span>{info.label}</span>
 
       {showTooltip && tooltipVisible && (
-        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-56 p-2.5 bg-slate-800 border border-slate-600 rounded-lg shadow-xl z-50 pointer-events-none">
+        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-56 p-2.5 bg-white/[0.06] border border-white/[0.1] rounded-lg shadow-xl z-50 pointer-events-none">
           <div className="text-xs font-bold text-white mb-1">{info.label}</div>
           <div className="text-xs text-slate-400 leading-relaxed">
             {CRITERIA_DESCRIPTIONS[key] || info.description}
           </div>
-          <div className="absolute top-full left-1/2 -translate-x-1/2 w-2 h-2 bg-slate-800 border-r border-b border-slate-600 rotate-45 -mt-1" />
+          <div className="absolute top-full left-1/2 -translate-x-1/2 w-2 h-2 bg-white/[0.06] border-r border-b border-white/[0.1] rotate-45 -mt-1" />
         </div>
       )}
     </span>

@@ -23,7 +23,7 @@ const TRANSFER_TYPE_COLORS: Record<TransferType, { bg: string; text: string; lab
   hohmann: { bg: 'bg-blue-500/20', text: 'text-blue-400', label: 'Hohmann' },
   direct: { bg: 'bg-green-500/20', text: 'text-green-400', label: 'Direct' },
   gravity_assist: { bg: 'bg-purple-500/20', text: 'text-purple-400', label: 'Gravity Assist' },
-  low_energy: { bg: 'bg-white/10', text: 'text-slate-300', label: 'Low Energy' },
+  low_energy: { bg: 'bg-white/10', text: 'text-white/70', label: 'Low Energy' },
 };
 
 function formatTravelTime(days: number): string {
@@ -99,7 +99,7 @@ export default function LaunchWindowsModule() {
     return (
       <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-display font-bold text-slate-200 flex items-center">
+          <h2 className="text-2xl font-display font-bold text-white/90 flex items-center">
             <span className="text-3xl mr-3">🚀</span>
             Launch Windows & Mission Planner
           </h2>
@@ -115,7 +115,7 @@ export default function LaunchWindowsModule() {
     return (
       <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-display font-bold text-slate-200 flex items-center">
+          <h2 className="text-2xl font-display font-bold text-white/90 flex items-center">
             <span className="text-3xl mr-3">🚀</span>
             Launch Windows & Mission Planner
           </h2>
@@ -134,7 +134,7 @@ export default function LaunchWindowsModule() {
     return (
       <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-display font-bold text-slate-200 flex items-center">
+          <h2 className="text-2xl font-display font-bold text-white/90 flex items-center">
             <span className="text-3xl mr-3">🚀</span>
             Launch Windows & Mission Planner
           </h2>
@@ -145,7 +145,7 @@ export default function LaunchWindowsModule() {
           <button
             onClick={handleLoadData}
             disabled={initializing}
-            className="px-6 py-3 bg-white hover:bg-slate-100 disabled:bg-slate-700 disabled:cursor-not-allowed text-slate-900 font-medium rounded-lg transition-colors"
+            className="px-6 py-3 bg-white hover:bg-slate-100 disabled:bg-white/[0.08] disabled:cursor-not-allowed text-slate-900 font-medium rounded-lg transition-colors"
           >
             {initializing ? (
               <span className="flex items-center gap-2">
@@ -171,7 +171,7 @@ export default function LaunchWindowsModule() {
         </h2>
         <Link
           href="/launch-windows"
-          className="text-slate-200 hover:text-white transition-colors text-sm"
+          className="text-white/90 hover:text-white transition-colors text-sm"
         >
           Full Planner →
         </Link>
@@ -180,13 +180,13 @@ export default function LaunchWindowsModule() {
       {/* Quick Stats */}
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
         <div className="card p-4 text-center">
-          <div className="text-3xl font-bold text-slate-200">
+          <div className="text-3xl font-bold text-white/90">
             {data.stats.totalDestinations}
           </div>
           <div className="text-slate-400 text-sm">Total Destinations</div>
         </div>
         <div className="card p-4 text-center">
-          <div className="text-3xl font-bold text-slate-200">
+          <div className="text-3xl font-bold text-white/90">
             {data.stats.upcomingWindows}
           </div>
           <div className="text-slate-400 text-sm">Upcoming Windows</div>
@@ -194,7 +194,7 @@ export default function LaunchWindowsModule() {
         <div className="card p-4 text-center col-span-2 md:col-span-1">
           {data.stats.nextWindow ? (
             <>
-              <div className="text-2xl font-bold text-rocket-400">
+              <div className="text-2xl font-bold text-white/70">
                 {data.stats.nextWindow.daysUntilOpen}d
               </div>
               <div className="text-slate-400 text-sm">
@@ -214,7 +214,7 @@ export default function LaunchWindowsModule() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Upcoming Launch Windows Timeline */}
         <div className="card p-4">
-          <h3 className="text-lg font-semibold text-slate-200 mb-4 flex items-center gap-2">
+          <h3 className="text-lg font-semibold text-white/90 mb-4 flex items-center gap-2">
             <span>🗓️</span> Upcoming Launch Windows
           </h3>
           <div className="space-y-3">
@@ -229,10 +229,10 @@ export default function LaunchWindowsModule() {
                 const isOpen = daysUntil <= 0;
 
                 return (
-                  <div key={window.id} className="p-3 bg-slate-800/50 rounded-lg">
+                  <div key={window.id} className="p-3 bg-white/[0.04] rounded-lg">
                     <div className="flex items-start justify-between mb-2">
                       <div>
-                        <div className="text-slate-200 font-medium">{window.destination}</div>
+                        <div className="text-white/90 font-medium">{window.destination}</div>
                         <div className="text-slate-400 text-xs mt-0.5">
                           {formatDate(window.windowOpen)} - {formatDate(window.windowClose)}
                         </div>
@@ -253,8 +253,8 @@ export default function LaunchWindowsModule() {
                       </div>
                     </div>
                     <div className="flex gap-4 text-xs text-slate-400">
-                      <span>Delta-V: <span className="text-slate-200">{window.deltaV.toFixed(2)} km/s</span></span>
-                      <span>Travel: <span className="text-slate-200">{formatTravelTime(window.travelTime)}</span></span>
+                      <span>Delta-V: <span className="text-white/90">{window.deltaV.toFixed(2)} km/s</span></span>
+                      <span>Travel: <span className="text-white/90">{formatTravelTime(window.travelTime)}</span></span>
                     </div>
                   </div>
                 );
@@ -265,7 +265,7 @@ export default function LaunchWindowsModule() {
 
         {/* Celestial Destinations Grid */}
         <div className="card p-4">
-          <h3 className="text-lg font-semibold text-slate-200 mb-4 flex items-center gap-2">
+          <h3 className="text-lg font-semibold text-white/90 mb-4 flex items-center gap-2">
             <span>🪐</span> Celestial Destinations
           </h3>
           <div className="space-y-3">
@@ -278,10 +278,10 @@ export default function LaunchWindowsModule() {
                   : '--';
 
                 return (
-                  <div key={dest.id} className="p-3 bg-slate-800/50 rounded-lg">
+                  <div key={dest.id} className="p-3 bg-white/[0.04] rounded-lg">
                     <div className="flex items-center justify-between mb-2">
                       <div>
-                        <span className="text-slate-200 font-medium">{dest.name}</span>
+                        <span className="text-white/90 font-medium">{dest.name}</span>
                         <span className="text-slate-400 text-xs ml-2 capitalize">({dest.type})</span>
                       </div>
                       <div className="text-right">
@@ -296,7 +296,7 @@ export default function LaunchWindowsModule() {
                     <div className="flex gap-4 text-xs text-slate-400">
                       <span>
                         Delta-V to orbit:{' '}
-                        <span className="text-slate-200">
+                        <span className="text-white/90">
                           {dest.deltaVToOrbit !== null && dest.deltaVToOrbit !== undefined
                             ? `${dest.deltaVToOrbit.toFixed(1)} km/s`
                             : 'N/A'
@@ -305,7 +305,7 @@ export default function LaunchWindowsModule() {
                       </span>
                       <span>
                         Missions:{' '}
-                        <span className="text-slate-200">{dest.totalMissions}</span>
+                        <span className="text-white/90">{dest.totalMissions}</span>
                       </span>
                       <span>
                         Success:{' '}

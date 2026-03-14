@@ -161,7 +161,7 @@ export default function HowSatelliteTrackingWorksPage() {
               <span className="hidden sm:inline text-star-300/40">|</span>
               <span>By SpaceNexus Research</span>
             </div>
-            <div className="w-24 h-[3px] bg-gradient-to-r from-white to-plasma-400 rounded-full mx-auto mt-8" />
+            <div className="w-24 h-[3px] bg-gradient-to-r from-white/50 to-white/30 rounded-full mx-auto mt-8" />
           </div>
         </header>
 
@@ -536,9 +536,9 @@ export default function HowSatelliteTrackingWorksPage() {
                     preceded by a title line.
                   </p>
 
-                  <div className="card p-6 my-8 bg-slate-800/50 font-mono text-sm overflow-x-auto">
+                  <div className="card p-6 my-8 bg-white/[0.04] font-mono text-sm overflow-x-auto">
                     <div className="text-star-300 text-xs mb-2 font-sans">Example TLE (ISS):</div>
-                    <pre className="text-slate-200 whitespace-pre">
+                    <pre className="text-white/90 whitespace-pre">
 {`ISS (ZARYA)
 1 25544U 98067A   26038.51234567  .00016717  00000-0  10270-3 0  9993
 2 25544  51.6416 247.4627 0006703 130.5360 229.6100 15.50000000123456`}

@@ -52,7 +52,7 @@ export default function StateOfSpace2026Page() {
         <div className="relative max-w-5xl mx-auto px-4 sm:px-6 pt-16 pb-12 md:pt-24 md:pb-16">
           <ScrollReveal>
             <div className="text-center">
-              <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-slate-800/40 border border-white/10 rounded-full text-slate-300 text-sm font-medium mb-6">
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-white/[0.04] border border-white/10 rounded-full text-white/70 text-sm font-medium mb-6">
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
@@ -108,13 +108,13 @@ export default function StateOfSpace2026Page() {
             {KEY_STATS.map((stat) => (
               <div
                 key={stat.label}
-                className="bg-slate-900/60 border border-slate-800 rounded-xl p-5 text-center hover:border-white/10 transition-colors"
+                className="bg-black/60 border border-white/[0.06] rounded-xl p-5 text-center hover:border-white/10 transition-colors"
               >
                 <div className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-slate-300 to-blue-400 bg-clip-text text-transparent mb-1">
                   {stat.value}
                 </div>
                 <div className="text-sm text-slate-400 mb-2">{stat.label}</div>
-                <div className="text-xs text-slate-300/80 font-medium">{stat.trend}</div>
+                <div className="text-xs text-white/70/80 font-medium">{stat.trend}</div>
               </div>
             ))}
           </div>
@@ -136,15 +136,15 @@ export default function StateOfSpace2026Page() {
                     key={item.chapter}
                     className={`flex items-center gap-4 p-3.5 rounded-xl border transition-colors ${
                       item.unlocked
-                        ? 'bg-slate-900/40 border-slate-800 hover:border-white/10'
-                        : 'bg-slate-900/20 border-slate-800/50'
+                        ? 'bg-black/40 border-white/[0.06] hover:border-white/10'
+                        : 'bg-black/20 border-white/[0.06]'
                     }`}
                   >
                     <div
                       className={`flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold ${
                         item.unlocked
-                          ? 'bg-slate-800/60 text-slate-300'
-                          : 'bg-slate-800/60 text-slate-600'
+                          ? 'bg-white/[0.05] text-white/70'
+                          : 'bg-white/[0.05] text-slate-600'
                       }`}
                     >
                       {item.chapter}
@@ -152,7 +152,7 @@ export default function StateOfSpace2026Page() {
                     <div className="flex-1 min-w-0">
                       <div
                         className={`text-sm font-medium truncate ${
-                          item.unlocked ? 'text-slate-200' : 'text-slate-500'
+                          item.unlocked ? 'text-white/90' : 'text-slate-500'
                         }`}
                       >
                         {item.title}
@@ -181,18 +181,18 @@ export default function StateOfSpace2026Page() {
 
               {/* Blurred preview teaser */}
               <div className="mt-6 relative">
-                <div className="bg-slate-900/40 border border-slate-800 rounded-xl p-6 select-none" style={{ filter: 'blur(4px)' }}>
-                  <div className="h-3 bg-slate-700/40 rounded w-3/4 mb-3" />
-                  <div className="h-2 bg-slate-700/30 rounded w-full mb-2" />
-                  <div className="h-2 bg-slate-700/30 rounded w-5/6 mb-2" />
-                  <div className="h-2 bg-slate-700/30 rounded w-4/6 mb-4" />
-                  <div className="h-3 bg-slate-700/40 rounded w-2/3 mb-3" />
-                  <div className="h-2 bg-slate-700/30 rounded w-full mb-2" />
-                  <div className="h-2 bg-slate-700/30 rounded w-3/4" />
+                <div className="bg-black/40 border border-white/[0.06] rounded-xl p-6 select-none" style={{ filter: 'blur(4px)' }}>
+                  <div className="h-3 bg-white/[0.06] rounded w-3/4 mb-3" />
+                  <div className="h-2 bg-white/[0.04] rounded w-full mb-2" />
+                  <div className="h-2 bg-white/[0.04] rounded w-5/6 mb-2" />
+                  <div className="h-2 bg-white/[0.04] rounded w-4/6 mb-4" />
+                  <div className="h-3 bg-white/[0.06] rounded w-2/3 mb-3" />
+                  <div className="h-2 bg-white/[0.04] rounded w-full mb-2" />
+                  <div className="h-2 bg-white/[0.04] rounded w-3/4" />
                 </div>
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="bg-slate-900/90 border border-slate-700 rounded-lg px-5 py-2.5 flex items-center gap-2">
-                    <svg className="w-4 h-4 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <div className="bg-black/90 border border-white/[0.08] rounded-lg px-5 py-2.5 flex items-center gap-2">
+                    <svg className="w-4 h-4 text-white/70" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path
                         strokeLinecap="round"
                         strokeLinejoin="round"
@@ -200,7 +200,7 @@ export default function StateOfSpace2026Page() {
                         d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
                       />
                     </svg>
-                    <span className="text-sm text-slate-300 font-medium">
+                    <span className="text-sm text-white/70 font-medium">
                       Unlock full report below
                     </span>
                   </div>
@@ -219,7 +219,7 @@ export default function StateOfSpace2026Page() {
       {/* What You'll Learn Section */}
       <section className="max-w-5xl mx-auto px-4 sm:px-6 pb-16">
         <ScrollReveal delay={0.1}>
-          <div className="bg-slate-900/40 border border-slate-800 rounded-2xl p-8 md:p-12">
+          <div className="bg-black/40 border border-white/[0.06] rounded-2xl p-8 md:p-12">
             <h2 className="text-2xl font-bold text-white text-center mb-8">
               What&apos;s Inside the Report
             </h2>
@@ -269,8 +269,8 @@ export default function StateOfSpace2026Page() {
                 },
               ].map((item) => (
                 <div key={item.title} className="flex gap-4">
-                  <div className="flex-shrink-0 w-10 h-10 bg-slate-800/40 border border-white/10 rounded-lg flex items-center justify-center">
-                    <svg className="w-5 h-5 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <div className="flex-shrink-0 w-10 h-10 bg-white/[0.04] border border-white/10 rounded-lg flex items-center justify-center">
+                    <svg className="w-5 h-5 text-white/70" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       {item.icon}
                     </svg>
                   </div>

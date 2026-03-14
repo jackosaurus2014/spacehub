@@ -22,7 +22,7 @@ interface MissionStats {
 
 function StatCard({ label, value, unit, color }: { label: string; value: string; unit: string; color: string }) {
   return (
-    <div className="bg-slate-800/50 rounded-lg p-3 border border-slate-700/30 text-center">
+    <div className="bg-white/[0.04] rounded-lg p-3 border border-white/[0.04] text-center">
       <div className="text-slate-400 text-xs uppercase tracking-wider mb-1">{label}</div>
       <div className={`font-mono text-lg font-bold ${color}`}>
         {value}
@@ -86,7 +86,7 @@ export default function PostLaunchSummary({ eventId, missionTimeSeconds }: PostL
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="bg-slate-900/95 rounded-xl border border-green-500/30 overflow-hidden"
+      className="bg-black/95 rounded-xl border border-green-500/30 overflow-hidden"
     >
       {/* Header */}
       <div className="px-4 py-3 border-b border-green-500/20 bg-green-500/5 flex items-center justify-between">
@@ -105,7 +105,7 @@ export default function PostLaunchSummary({ eventId, missionTimeSeconds }: PostL
         {/* Stats Grid */}
         <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
           <StatCard label="Max Altitude" value={stats.maxAltitude.toFixed(1)} unit="km" color="text-purple-400" />
-          <StatCard label="Max Velocity" value={stats.maxVelocity.toFixed(3)} unit="km/s" color="text-slate-300" />
+          <StatCard label="Max Velocity" value={stats.maxVelocity.toFixed(3)} unit="km/s" color="text-white/70" />
           <StatCard label="Peak G-Force" value={stats.maxGForce.toFixed(2)} unit="G" color="text-orange-400" />
           <StatCard label="Peak Q" value={stats.maxDynamicPressure.toFixed(1)} unit="kPa" color="text-rose-400" />
           <StatCard
@@ -129,7 +129,7 @@ export default function PostLaunchSummary({ eventId, missionTimeSeconds }: PostL
                       className={`w-6 h-6 rounded-full flex items-center justify-center text-xs border ${
                         isCompleted
                           ? 'bg-green-500/20 border-green-500/40 text-green-400'
-                          : 'bg-slate-800/50 border-slate-700/30 text-slate-600'
+                          : 'bg-white/[0.04] border-white/[0.04] text-slate-600'
                       }`}
                     >
                       {phase.icon}
@@ -144,7 +144,7 @@ export default function PostLaunchSummary({ eventId, missionTimeSeconds }: PostL
                     <div className={`w-4 h-0.5 mx-0.5 mt-[-12px] ${
                       isCompleted && sortedPhases[i + 1].typicalTPlus <= missionTimeSeconds
                         ? 'bg-green-500/40'
-                        : 'bg-slate-700/30'
+                        : 'bg-white/[0.04]'
                     }`} />
                   )}
                 </div>

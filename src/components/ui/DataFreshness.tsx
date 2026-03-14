@@ -33,7 +33,7 @@ function getFreshnessColor(date: Date): {
     return { text: 'text-emerald-400', dot: 'bg-emerald-400', label: 'Fresh' };
   }
   if (ageHours < 24) {
-    return { text: 'text-slate-300', dot: 'bg-white', label: 'Recent' };
+    return { text: 'text-white/70', dot: 'bg-white', label: 'Recent' };
   }
   if (ageHours < 168) {
     return { text: 'text-amber-400', dot: 'bg-amber-400', label: 'Aging' };

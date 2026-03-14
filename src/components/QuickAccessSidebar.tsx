@@ -143,7 +143,7 @@ export default function QuickAccessSidebar() {
           isExpanded ? 'w-80' : 'w-16'
         }`}
         style={{
-          background: 'rgba(15, 23, 42, 0.98)',
+          background: 'rgba(0, 0, 0, 0.98)',
           boxShadow: 'inset -1px 0 0 rgba(255, 255, 255, 0.06)',
         }}
         onMouseEnter={() => setIsExpanded(true)}
@@ -152,7 +152,7 @@ export default function QuickAccessSidebar() {
         {/* Toggle Button */}
         <button
           onClick={() => setIsExpanded(!isExpanded)}
-          className="absolute -right-3 top-4 w-6 h-6 rounded-full bg-slate-800 border border-white/10 flex items-center justify-center text-slate-400 hover:text-white hover:border-white/20 transition-colors shadow-lg"
+          className="absolute -right-3 top-4 w-6 h-6 rounded-full bg-white/[0.08] border border-white/[0.08] flex items-center justify-center text-slate-400 hover:text-white hover:border-white/20 transition-colors shadow-lg"
           aria-label={isExpanded ? 'Collapse sidebar' : 'Expand sidebar'}
         >
           <svg
@@ -166,7 +166,7 @@ export default function QuickAccessSidebar() {
         </button>
 
         {/* Modules List */}
-        <nav aria-label="Quick access modules" className="flex-1 overflow-y-auto py-4 scrollbar-thin scrollbar-thumb-slate-600 scrollbar-track-transparent">
+        <nav aria-label="Quick access modules" className="flex-1 overflow-y-auto py-4 scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent">
           {/* Pinned Section Header */}
           {pinnedModules.length > 0 && isExpanded && (
             <div className="px-4 mb-2">
@@ -189,7 +189,7 @@ export default function QuickAccessSidebar() {
               return (
                 <li key={module.moduleId}>
                   {showDivider && (
-                    <div className="my-3 border-t border-slate-700/50" />
+                    <div className="my-3 border-t border-white/[0.06]" />
                   )}
                   <div className="relative group">
                     {/* Parent / standalone module row */}
@@ -200,8 +200,8 @@ export default function QuickAccessSidebar() {
                           onClick={() => toggleParent(module.moduleId)}
                           className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 w-full text-left ${
                             active
-                              ? 'bg-white/10 text-slate-900'
-                              : 'text-slate-300 hover:bg-slate-700/50 hover:text-white'
+                              ? 'bg-white/[0.08] text-white'
+                              : 'text-white/70 hover:bg-white/[0.05] hover:text-white'
                           }`}
                         >
                           {/* Icon */}
@@ -238,8 +238,8 @@ export default function QuickAccessSidebar() {
                           href={getModuleRoute(module.moduleId)}
                           className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 w-full ${
                             active
-                              ? 'bg-white/10 text-slate-900'
-                              : 'text-slate-300 hover:bg-slate-700/50 hover:text-white'
+                              ? 'bg-white/[0.08] text-white'
+                              : 'text-white/70 hover:bg-white/[0.05] hover:text-white'
                           }`}
                         >
                           {/* Icon */}
@@ -258,7 +258,7 @@ export default function QuickAccessSidebar() {
 
                           {/* Premium Badge */}
                           {module.isPremium && isExpanded && (
-                            <span className="ml-auto text-xs font-semibold px-1.5 py-0.5 rounded bg-white/10 text-slate-300 border border-white/10 flex-shrink-0">
+                            <span className="ml-auto text-xs font-semibold px-1.5 py-0.5 rounded bg-white/10 text-white/70 border border-white/10 flex-shrink-0">
                               PRO
                             </span>
                           )}
@@ -275,8 +275,8 @@ export default function QuickAccessSidebar() {
                           }}
                           className={`absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded transition-all duration-200 ${
                             isPinned
-                              ? 'text-white hover:text-slate-300'
-                              : 'text-slate-400 hover:text-slate-300 opacity-0 group-hover:opacity-100'
+                              ? 'text-white hover:text-white/70'
+                              : 'text-slate-400 hover:text-white/70 opacity-0 group-hover:opacity-100'
                           }`}
                           aria-label={isPinned ? 'Unpin module' : 'Pin module'}
                           style={{ right: module.isPremium ? '48px' : '8px' }}
@@ -300,15 +300,15 @@ export default function QuickAccessSidebar() {
 
                     {/* Tooltip (only when collapsed) */}
                     {!isExpanded && (
-                      <div className="absolute left-full top-1/2 -translate-y-1/2 ml-2 px-3 py-2 rounded-lg bg-slate-800 border border-white/10 shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 whitespace-nowrap">
+                      <div className="absolute left-full top-1/2 -translate-y-1/2 ml-2 px-3 py-2 rounded-lg bg-white/[0.08] border border-white/[0.08] shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 whitespace-nowrap">
                         <span className="text-sm text-slate-200 font-medium">{module.name}</span>
                         {module.isPremium && (
-                          <span className="ml-2 text-xs font-semibold px-1.5 py-0.5 rounded bg-white/10 text-slate-300 border border-white/10">
+                          <span className="ml-2 text-xs font-semibold px-1.5 py-0.5 rounded bg-white/10 text-white/70 border border-white/10">
                             PRO
                           </span>
                         )}
                         {hasChildren && (
-                          <div className="mt-1.5 pt-1.5 border-t border-slate-700/50">
+                          <div className="mt-1.5 pt-1.5 border-t border-white/[0.06]">
                             {children.filter(c => c.defaultEnabled).map(child => (
                               <Link
                                 key={child.moduleId}
@@ -321,14 +321,14 @@ export default function QuickAccessSidebar() {
                           </div>
                         )}
                         {/* Tooltip arrow */}
-                        <div className="absolute left-0 top-1/2 -translate-x-1 -translate-y-1/2 w-2 h-2 bg-slate-800 border-l border-b border-white/10 rotate-45" />
+                        <div className="absolute left-0 top-1/2 -translate-x-1 -translate-y-1/2 w-2 h-2 bg-white/[0.06] border-l border-b border-white/10 rotate-45" />
                       </div>
                     )}
                   </div>
 
                   {/* Children (expanded sub-modules) */}
                   {hasChildren && isExpanded && isParentExpanded && (
-                    <ul className="ml-5 pl-4 border-l border-slate-700/40 mt-0.5 mb-1 space-y-0.5">
+                    <ul className="ml-5 pl-4 border-l border-white/[0.06] mt-0.5 mb-1 space-y-0.5">
                       {children.filter(c => c.defaultEnabled).map(child => {
                         const childActive = isActive(child.moduleId);
                         return (
@@ -337,8 +337,8 @@ export default function QuickAccessSidebar() {
                               href={getModuleRoute(child.moduleId)}
                               className={`flex items-center gap-2.5 px-2.5 py-2 rounded-lg transition-all duration-200 text-sm ${
                                 childActive
-                                  ? 'bg-white/10 text-slate-900'
-                                  : 'text-slate-400 hover:bg-slate-700/40 hover:text-white'
+                                  ? 'bg-white/[0.08] text-white'
+                                  : 'text-slate-400 hover:bg-white/[0.04] hover:text-white'
                               }`}
                             >
                               <span className="text-sm flex-shrink-0 w-5 text-center" role="img" aria-label={child.name}>
@@ -365,13 +365,13 @@ export default function QuickAccessSidebar() {
         </nav>
 
         {/* Bottom Section */}
-        <div className="p-2 border-t border-slate-700/50 space-y-0.5">
+        <div className="p-2 border-t border-white/[0.06] space-y-0.5">
           <Link
             href="/blog"
             className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 ${
               pathname?.startsWith('/blog')
-                ? 'bg-white/10 text-slate-900'
-                : 'text-slate-300 hover:bg-slate-700/50 hover:text-white'
+                ? 'bg-white/[0.08] text-white'
+                : 'text-white/70 hover:bg-white/[0.05] hover:text-white'
             }`}
           >
             <span className="text-lg flex-shrink-0 w-6 text-center">
@@ -391,8 +391,8 @@ export default function QuickAccessSidebar() {
             href="/ai-insights"
             className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 ${
               pathname?.startsWith('/ai-insights')
-                ? 'bg-white/10 text-slate-900'
-                : 'text-slate-300 hover:bg-slate-700/50 hover:text-white'
+                ? 'bg-white/[0.08] text-white'
+                : 'text-white/70 hover:bg-white/[0.05] hover:text-white'
             }`}
           >
             <span className="text-lg flex-shrink-0 w-6 text-center">
@@ -412,8 +412,8 @@ export default function QuickAccessSidebar() {
             href="/marketplace"
             className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 ${
               pathname?.startsWith('/marketplace') || pathname?.startsWith('/provider-dashboard')
-                ? 'bg-white/10 text-slate-900'
-                : 'text-slate-300 hover:bg-slate-700/50 hover:text-white'
+                ? 'bg-white/[0.08] text-white'
+                : 'text-white/70 hover:bg-white/[0.05] hover:text-white'
             }`}
           >
             <span className="text-lg flex-shrink-0 w-6 text-center">🏪</span>
@@ -429,8 +429,8 @@ export default function QuickAccessSidebar() {
             href="/community/forums"
             className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 ${
               pathname?.startsWith('/community')
-                ? 'bg-white/10 text-slate-900'
-                : 'text-slate-300 hover:bg-slate-700/50 hover:text-white'
+                ? 'bg-white/[0.08] text-white'
+                : 'text-white/70 hover:bg-white/[0.05] hover:text-white'
             }`}
           >
             <span className="text-lg flex-shrink-0 w-6 text-center">
@@ -450,8 +450,8 @@ export default function QuickAccessSidebar() {
             href="/deal-rooms"
             className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 ${
               pathname?.startsWith('/deal-rooms')
-                ? 'bg-white/10 text-slate-900'
-                : 'text-slate-300 hover:bg-slate-700/50 hover:text-white'
+                ? 'bg-white/[0.08] text-white'
+                : 'text-white/70 hover:bg-white/[0.05] hover:text-white'
             }`}
           >
             <span className="text-lg flex-shrink-0 w-6 text-center">
@@ -471,8 +471,8 @@ export default function QuickAccessSidebar() {
             href="/funding-opportunities"
             className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 ${
               pathname?.startsWith('/funding-opportunities')
-                ? 'bg-white/10 text-slate-900'
-                : 'text-slate-300 hover:bg-slate-700/50 hover:text-white'
+                ? 'bg-white/[0.08] text-white'
+                : 'text-white/70 hover:bg-white/[0.05] hover:text-white'
             }`}
           >
             <span className="text-lg flex-shrink-0 w-6 text-center">💰</span>
@@ -488,8 +488,8 @@ export default function QuickAccessSidebar() {
             href="/customer-discovery"
             className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 ${
               pathname?.startsWith('/customer-discovery')
-                ? 'bg-white/10 text-slate-900'
-                : 'text-slate-300 hover:bg-slate-700/50 hover:text-white'
+                ? 'bg-white/[0.08] text-white'
+                : 'text-white/70 hover:bg-white/[0.05] hover:text-white'
             }`}
           >
             <span className="text-lg flex-shrink-0 w-6 text-center">
@@ -509,8 +509,8 @@ export default function QuickAccessSidebar() {
             href="/my-watchlists"
             className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 ${
               pathname === '/my-watchlists'
-                ? 'bg-white/10 text-slate-900'
-                : 'text-slate-300 hover:bg-slate-700/50 hover:text-white'
+                ? 'bg-white/[0.08] text-white'
+                : 'text-white/70 hover:bg-white/[0.05] hover:text-white'
             }`}
           >
             <span className="text-lg flex-shrink-0 w-6 text-center">&#x2605;</span>
@@ -526,8 +526,8 @@ export default function QuickAccessSidebar() {
             href="/dashboard"
             className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 ${
               pathname === '/dashboard'
-                ? 'bg-white/10 text-slate-900'
-                : 'text-slate-300 hover:bg-slate-700/50 hover:text-white'
+                ? 'bg-white/[0.08] text-white'
+                : 'text-white/70 hover:bg-white/[0.05] hover:text-white'
             }`}
           >
             <span className="text-lg flex-shrink-0 w-6 text-center">

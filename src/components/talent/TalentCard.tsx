@@ -29,13 +29,13 @@ export default function TalentCard({ talent, compact = false }: TalentCardProps)
 
   if (compact) {
     return (
-      <div className="bg-slate-800/50 border border-slate-700/50 rounded-lg p-4 hover:border-white/15 transition-all">
+      <div className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-4 hover:border-white/15 transition-all">
         <div className="flex items-start justify-between gap-3">
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1">
               <h4 className="font-semibold text-white text-sm truncate">{talent.name}</h4>
               {talent.featured && (
-                <span className="text-xs bg-white/10 text-slate-300 px-1.5 py-0.5 rounded">
+                <span className="text-xs bg-white/10 text-white/70 px-1.5 py-0.5 rounded">
                   Featured
                 </span>
               )}
@@ -52,45 +52,45 @@ export default function TalentCard({ talent, compact = false }: TalentCardProps)
             {talent.expertise.slice(0, 2).map(exp => {
               const { label, icon } = getExpertiseLabel(exp);
               return (
-                <span key={exp} className="text-xs bg-slate-700/50 text-slate-300 px-1.5 py-0.5 rounded">
+                <span key={exp} className="text-xs bg-white/[0.05] text-white/70 px-1.5 py-0.5 rounded">
                   {icon} {label}
                 </span>
               );
             })}
           </div>
-          <span className="text-slate-300 font-medium text-sm">{formatRate(talent.consultingRate)}</span>
+          <span className="text-white/70 font-medium text-sm">{formatRate(talent.consultingRate)}</span>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="bg-slate-800/50 border border-slate-700/50 rounded-lg p-5 hover:border-white/15 transition-all">
+    <div className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-5 hover:border-white/15 transition-all">
       {/* Header */}
       <div className="flex items-start justify-between mb-4">
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-1">
             <h3 className="font-semibold text-white text-lg">{talent.name}</h3>
             {talent.featured && (
-              <span className="text-xs bg-white/10 text-slate-300 px-2 py-0.5 rounded">
+              <span className="text-xs bg-white/10 text-white/70 px-2 py-0.5 rounded">
                 Featured Expert
               </span>
             )}
           </div>
-          <p className="text-slate-300 text-sm">{talent.title}</p>
+          <p className="text-white/70 text-sm">{talent.title}</p>
           <p className="text-slate-400 text-sm">{talent.organization}</p>
         </div>
         <div className="text-right">
           <span className={`inline-block text-xs px-2 py-1 rounded ${availabilityInfo.bgColor}/20 ${availabilityInfo.color} mb-1`}>
             {availabilityInfo.label}
           </span>
-          <div className="text-slate-300 font-bold text-lg">{formatRate(talent.consultingRate)}</div>
+          <div className="text-white/70 font-bold text-lg">{formatRate(talent.consultingRate)}</div>
         </div>
       </div>
 
       {/* Category Badge */}
       <div className="mb-3">
-        <span className="text-xs bg-slate-700/50 text-slate-400 px-2 py-1 rounded">
+        <span className="text-xs bg-white/[0.05] text-slate-400 px-2 py-1 rounded">
           {getExpertiseCategory()}
         </span>
       </div>
@@ -113,7 +113,7 @@ export default function TalentCard({ talent, compact = false }: TalentCardProps)
       {/* Actions */}
       <div className="flex items-center gap-3">
         <button
-          className="flex-1 bg-white hover:bg-slate-700 text-slate-900 text-sm font-medium py-2 px-4 rounded-lg transition-colors"
+          className="flex-1 bg-white hover:bg-white/[0.08] text-slate-900 text-sm font-medium py-2 px-4 rounded-lg transition-colors"
           onClick={() => window.location.href = `mailto:${talent.contactEmail}?subject=Consultation Request`}
         >
           Book Consultation
@@ -123,7 +123,7 @@ export default function TalentCard({ talent, compact = false }: TalentCardProps)
             href={talent.linkedIn}
             target="_blank"
             rel="noopener noreferrer"
-            className="bg-slate-700 hover:bg-slate-600 text-white text-sm font-medium py-2 px-4 rounded-lg transition-colors"
+            className="bg-white/[0.08] hover:bg-white/[0.08] text-white text-sm font-medium py-2 px-4 rounded-lg transition-colors"
           >
             LinkedIn
           </a>

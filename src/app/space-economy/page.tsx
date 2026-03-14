@@ -102,7 +102,7 @@ function HBar({ width, color, delay = 0 }: { width: number; color: string; delay
     return () => clearTimeout(t);
   }, [width, delay]);
   return (
-    <div className="h-5 bg-slate-700/40 rounded-full overflow-hidden flex-1">
+    <div className="h-5 bg-white/[0.08] rounded-full overflow-hidden flex-1">
       <div
         className={`h-full rounded-full transition-all duration-700 ease-out ${color}`}
         style={{ width: `${w}%` }}
@@ -124,7 +124,7 @@ export default function SpaceEconomyPage() {
   );
 
   return (
-    <div className="min-h-screen bg-slate-900">
+    <div className="min-h-screen bg-black">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <AnimatedPageHeader
           title="Space Economy Dashboard"
@@ -142,7 +142,7 @@ export default function SpaceEconomyPage() {
             placeholder="Filter segments, countries..."
             value={search}
             onChange={e => setSearch(e.target.value)}
-            className="w-full max-w-md bg-slate-800/60 border border-slate-700/50 rounded-lg px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-white/15"
+            className="w-full max-w-md bg-white/[0.04] border border-white/[0.06] rounded-lg px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-white/15"
           />
         </div>
 
@@ -247,7 +247,7 @@ export default function SpaceEconomyPage() {
               );
             })}
           </div>
-          <div className="mt-4 bg-slate-700/30 rounded-lg p-3">
+          <div className="mt-4 bg-white/[0.06] rounded-lg p-3">
             <div className="flex flex-wrap gap-x-6 gap-y-1 text-xs text-slate-400">
               <span>Morgan Stanley: <strong className="text-white">$1.1T by 2040</strong></span>
               <span>Goldman Sachs: <strong className="text-white">$1T+ by 2040</strong></span>

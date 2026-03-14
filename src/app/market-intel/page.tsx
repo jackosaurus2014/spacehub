@@ -116,7 +116,7 @@ function CompanyRow({ company }: { company: SpaceCompany }) {
   };
 
   return (
-    <tr className="border-b border-slate-700/50 hover:bg-slate-800/30 transition-colors">
+    <tr className="border-b border-white/[0.06] hover:bg-white/[0.04] transition-colors">
       <td className="py-4 px-4">
         <div className="flex items-center gap-3">
           <span className="text-lg">{countryInfo?.flag || '🌐'}</span>
@@ -127,7 +127,7 @@ function CompanyRow({ company }: { company: SpaceCompany }) {
               ) : company.name}
             </div>
             {company.ticker ? (
-              <div className="text-xs text-slate-200 font-mono">
+              <div className="text-xs text-white/90 font-mono">
                 {company.exchange}:{company.ticker}
               </div>
             ) : (
@@ -146,7 +146,7 @@ function CompanyRow({ company }: { company: SpaceCompany }) {
             Pre-IPO
           </span>
         ) : (
-          <span className="text-xs bg-slate-700/50 text-slate-400 px-2 py-1 rounded">
+          <span className="text-xs bg-white/[0.08] text-slate-400 px-2 py-1 rounded">
             Private
           </span>
         )}
@@ -187,7 +187,7 @@ function CompanyRow({ company }: { company: SpaceCompany }) {
             return (
               <span
                 key={area}
-                className="text-xs bg-slate-700/30 text-slate-300 px-2 py-0.5 rounded whitespace-nowrap"
+                className="text-xs bg-white/[0.04] text-slate-300 px-2 py-0.5 rounded whitespace-nowrap"
               >
                 {focusInfo?.icon} {focusInfo?.label || area}
               </span>
@@ -207,7 +207,7 @@ function CompanyRow({ company }: { company: SpaceCompany }) {
               href={company.website}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-slate-200 hover:text-white text-sm"
+              className="text-white/90 hover:text-white text-sm"
             >
               Visit →
             </a>
@@ -221,7 +221,7 @@ function CompanyRow({ company }: { company: SpaceCompany }) {
           {(company.focusAreas as string[]).some((a) =>
             ['spectrum', 'communications', 'satellite_communications'].includes(a)
           ) && (
-            <Link href="/spectrum" className="text-xs text-rocket-400 hover:text-rocket-300">
+            <Link href="/spectrum" className="text-xs text-white/70 hover:text-white">
               Spectrum →
             </Link>
           )}
@@ -234,7 +234,7 @@ function CompanyRow({ company }: { company: SpaceCompany }) {
           )}
           <Link
             href={`/orbital-slots?tab=operators`}
-            className="text-xs text-slate-200 hover:text-white"
+            className="text-xs text-white/90 hover:text-white"
           >
             Satellites →
           </Link>
@@ -457,7 +457,7 @@ function MarketIntelContent() {
               </StaggerItem>
               <StaggerItem>
                 <div className="card-elevated p-6 text-center">
-                  <div className="text-4xl font-bold font-display tracking-tight text-slate-200">
+                  <div className="text-4xl font-bold font-display tracking-tight text-white/90">
                     ${stats.totalMarketCap >= 1000
                       ? `${(stats.totalMarketCap / 1000).toFixed(1)}T`
                       : `${stats.totalMarketCap.toFixed(0)}B`}
@@ -476,7 +476,7 @@ function MarketIntelContent() {
                   return (
                     <div
                       key={country}
-                      className="flex items-center gap-2 bg-slate-700/30 px-3 py-2 rounded-lg"
+                      className="flex items-center gap-2 bg-white/[0.04] px-3 py-2 rounded-lg"
                     >
                       <span>{info?.flag || '🌐'}</span>
                       <span className="text-slate-400">{info?.name || country}</span>
@@ -530,7 +530,7 @@ function MarketIntelContent() {
                                   <Link href={getCompanyProfileUrl(company.name)!} className="hover:underline">{company.name}</Link>
                                 ) : company.name}
                               </div>
-                              <div className="text-xs text-slate-200 font-mono">
+                              <div className="text-xs text-white/90 font-mono">
                                 {company.exchange}:{company.ticker}
                               </div>
                             </div>
@@ -624,7 +624,7 @@ function MarketIntelContent() {
                       className={`px-4 py-2 min-h-[44px] rounded-lg text-sm font-medium transition-colors ${
                         etfFilter === tab.value
                           ? 'bg-white text-slate-900'
-                          : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+                          : 'bg-white/[0.06] text-slate-300 hover:bg-white/[0.08]'
                       }`}
                     >
                       {tab.label}
@@ -661,7 +661,7 @@ function MarketIntelContent() {
                             </div>
 
                             <div className="flex items-center justify-between mb-1">
-                              <div className="font-mono text-sm font-bold text-slate-200">{etf.ticker}</div>
+                              <div className="font-mono text-sm font-bold text-white/90">{etf.ticker}</div>
                               <span
                                 className={`text-xs font-medium px-2 py-0.5 rounded ${
                                   isPositive
@@ -729,7 +729,7 @@ function MarketIntelContent() {
                   <select
                     value={selectedCountry}
                     onChange={(e) => setSelectedCountry(e.target.value)}
-                    className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+                    className="bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                   >
                     {COUNTRY_FILTERS.map((option) => (
                       <option key={option.value} value={option.value}>
@@ -744,7 +744,7 @@ function MarketIntelContent() {
                   <select
                     value={selectedType}
                     onChange={(e) => setSelectedType(e.target.value as '' | 'public' | 'private')}
-                    className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+                    className="bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                   >
                     <option value="">All Types</option>
                     <option value="public">Public</option>
@@ -757,7 +757,7 @@ function MarketIntelContent() {
                   <select
                     value={selectedFocus}
                     onChange={(e) => setSelectedFocus(e.target.value as CompanyFocusArea | '')}
-                    className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+                    className="bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                   >
                     <option value="">All Focus Areas</option>
                     {FOCUS_AREAS.map((focus) => (
@@ -776,7 +776,7 @@ function MarketIntelContent() {
                         setSelectedType('');
                         setSelectedFocus('');
                       }}
-                      className="text-sm text-slate-200 hover:text-white py-2 min-h-[44px]"
+                      className="text-sm text-white/90 hover:text-white py-2 min-h-[44px]"
                     >
                       Clear Filters
                     </button>
@@ -823,19 +823,19 @@ function MarketIntelContent() {
             {Array.from({ length: 9 }).map((_, i) => (
               <div key={i} className="card p-5 animate-pulse">
                 <div className="flex items-center gap-3 mb-3">
-                  <div className="w-8 h-8 rounded bg-slate-800" />
+                  <div className="w-8 h-8 rounded bg-white/[0.06]" />
                   <div className="flex-1 space-y-2">
-                    <div className="h-4 bg-slate-800 rounded w-2/3" />
-                    <div className="h-3 bg-slate-800 rounded w-1/3" />
+                    <div className="h-4 bg-white/[0.06] rounded w-2/3" />
+                    <div className="h-3 bg-white/[0.06] rounded w-1/3" />
                   </div>
                 </div>
                 <div className="flex items-center gap-4 mb-3">
-                  <div className="h-8 bg-slate-800 rounded flex-1" />
-                  <div className="h-8 w-20 bg-slate-800 rounded" />
+                  <div className="h-8 bg-white/[0.06] rounded flex-1" />
+                  <div className="h-8 w-20 bg-white/[0.06] rounded" />
                 </div>
                 <div className="flex gap-1">
-                  <div className="h-5 w-16 bg-slate-800 rounded-full" />
-                  <div className="h-5 w-20 bg-slate-800 rounded-full" />
+                  <div className="h-5 w-16 bg-white/[0.06] rounded-full" />
+                  <div className="h-5 w-20 bg-white/[0.06] rounded-full" />
                 </div>
               </div>
             ))}
@@ -889,7 +889,7 @@ function MarketIntelContent() {
                         className={`px-3 py-1.5 min-h-[44px] rounded-full text-xs font-medium transition-colors ${
                           publicSectorFilter === sector.value
                             ? 'bg-green-500/20 text-green-400 ring-1 ring-green-500/40'
-                            : 'bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-slate-300'
+                            : 'bg-white/[0.06] text-slate-400 hover:bg-white/[0.08] hover:text-slate-300'
                         }`}
                       >
                         {sector.label}
@@ -902,7 +902,7 @@ function MarketIntelContent() {
                   <div className="max-h-[500px] overflow-y-auto overflow-x-auto data-scroll-mobile">
                     <table className="w-full min-w-[640px]">
                       <thead className="sticky top-0 z-10">
-                        <tr className="bg-slate-800/80 border-b border-slate-700/50">
+                        <tr className="bg-white/[0.06] border-b border-white/[0.06]">
                           <th className="text-left py-3 px-4 text-slate-400 font-medium text-sm">Company</th>
                           <th className="text-right py-3 px-4 text-slate-400 font-medium text-sm">Stock Price</th>
                           <th className="text-right py-3 px-4 text-slate-400 font-medium text-sm">Today</th>
@@ -918,7 +918,7 @@ function MarketIntelContent() {
                           const isPositive = stock ? stock.changePercent >= 0 : true;
 
                           return (
-                            <tr key={company.id} className="border-b border-slate-700/50 hover:bg-slate-800/30 transition-colors">
+                            <tr key={company.id} className="border-b border-white/[0.06] hover:bg-white/[0.04] transition-colors">
                               <td className="py-4 px-4">
                                 <div className="flex items-center gap-3">
                                   <span className="text-lg">{countryInfo?.flag || '🌐'}</span>
@@ -928,7 +928,7 @@ function MarketIntelContent() {
                                         <Link href={getCompanyProfileUrl(company.name)!} className="hover:underline">{company.name}</Link>
                                       ) : company.name}
                                     </div>
-                                    <div className="text-xs text-slate-200 font-mono">
+                                    <div className="text-xs text-white/90 font-mono">
                                       {company.exchange}:{company.ticker}
                                     </div>
                                   </div>
@@ -938,7 +938,7 @@ function MarketIntelContent() {
                                 {stock ? (
                                   <span className="font-mono font-medium text-white">${stock.price.toFixed(2)}</span>
                                 ) : (
-                                  <div className="h-4 w-16 bg-slate-700/50 rounded animate-pulse ml-auto" />
+                                  <div className="h-4 w-16 bg-white/[0.08] rounded animate-pulse ml-auto" />
                                 )}
                               </td>
                               <td className="py-4 px-4 text-right">
@@ -949,7 +949,7 @@ function MarketIntelContent() {
                                     {isPositive ? '+' : ''}{stock.changePercent.toFixed(2)}%
                                   </span>
                                 ) : (
-                                  <div className="h-4 w-14 bg-slate-700/50 rounded animate-pulse ml-auto" />
+                                  <div className="h-4 w-14 bg-white/[0.08] rounded animate-pulse ml-auto" />
                                 )}
                               </td>
                               <td className="py-4 px-4 text-right text-slate-400">
@@ -962,7 +962,7 @@ function MarketIntelContent() {
                                   {(company.focusAreas as string[]).slice(0, 2).map((area) => {
                                     const focusInfo = FOCUS_AREAS.find(f => f.value === area);
                                     return (
-                                      <span key={area} className="text-xs bg-slate-700/30 text-slate-300 px-2 py-0.5 rounded whitespace-nowrap">
+                                      <span key={area} className="text-xs bg-white/[0.04] text-slate-300 px-2 py-0.5 rounded whitespace-nowrap">
                                         {focusInfo?.icon} {focusInfo?.label || area}
                                       </span>
                                     );
@@ -971,7 +971,7 @@ function MarketIntelContent() {
                               </td>
                               <td className="py-4 px-4">
                                 {company.website && (
-                                  <a href={company.website} target="_blank" rel="noopener noreferrer" className="text-slate-200 hover:text-white text-sm">
+                                  <a href={company.website} target="_blank" rel="noopener noreferrer" className="text-white/90 hover:text-white text-sm">
                                     Visit →
                                   </a>
                                 )}
@@ -1002,7 +1002,7 @@ function MarketIntelContent() {
                                   <Link href={getCompanyProfileUrl(company.name)!} className="hover:underline">{company.name}</Link>
                                 ) : company.name}
                               </div>
-                              <div className="text-xs text-slate-200 font-mono">
+                              <div className="text-xs text-white/90 font-mono">
                                 {company.exchange}:{company.ticker}
                               </div>
                             </div>
@@ -1019,7 +1019,7 @@ function MarketIntelContent() {
                           {stock ? (
                             <span className="font-mono font-medium text-white">${stock.price.toFixed(2)}</span>
                           ) : (
-                            <div className="h-4 w-16 bg-slate-700/50 rounded animate-pulse" />
+                            <div className="h-4 w-16 bg-white/[0.08] rounded animate-pulse" />
                           )}
                           <span className="text-slate-400 text-xs">
                             {company.marketCap ? (
@@ -1031,14 +1031,14 @@ function MarketIntelContent() {
                           {(company.focusAreas as string[]).slice(0, 2).map((area) => {
                             const focusInfo = FOCUS_AREAS.find(f => f.value === area);
                             return (
-                              <span key={area} className="text-xs bg-slate-700/30 text-slate-300 px-2 py-0.5 rounded">
+                              <span key={area} className="text-xs bg-white/[0.04] text-slate-300 px-2 py-0.5 rounded">
                                 {focusInfo?.icon} {focusInfo?.label || area}
                               </span>
                             );
                           })}
                         </div>
                         {company.website && (
-                          <a href={company.website} target="_blank" rel="noopener noreferrer" className="text-slate-200 hover:text-white text-xs">
+                          <a href={company.website} target="_blank" rel="noopener noreferrer" className="text-white/90 hover:text-white text-xs">
                             Visit →
                           </a>
                         )}
@@ -1068,7 +1068,7 @@ function MarketIntelContent() {
                         className={`px-3 py-1.5 min-h-[44px] rounded-full text-xs font-medium transition-colors ${
                           privateSectorFilter === sector.value
                             ? 'bg-yellow-500/20 text-yellow-400 ring-1 ring-yellow-500/40'
-                            : 'bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-slate-300'
+                            : 'bg-white/[0.06] text-slate-400 hover:bg-white/[0.08] hover:text-slate-300'
                         }`}
                       >
                         {sector.label}
@@ -1081,7 +1081,7 @@ function MarketIntelContent() {
                   <div className="max-h-[500px] overflow-y-auto overflow-x-auto data-scroll-mobile">
                     <table className="w-full min-w-[720px]">
                       <thead className="sticky top-0 z-10">
-                        <tr className="bg-slate-800/80 border-b border-slate-700/50">
+                        <tr className="bg-white/[0.06] border-b border-white/[0.06]">
                           <th className="text-left py-3 px-4 text-slate-400 font-medium text-sm">Company</th>
                           <th className="text-left py-3 px-4 text-slate-400 font-medium text-sm">Status</th>
                           <th className="text-right py-3 px-4 text-slate-400 font-medium text-sm">Valuation</th>
@@ -1096,7 +1096,7 @@ function MarketIntelContent() {
                           const countryInfo = COUNTRY_INFO[company.country as CompanyCountry];
 
                           return (
-                            <tr key={company.id} className="border-b border-slate-700/50 hover:bg-slate-800/30 transition-colors">
+                            <tr key={company.id} className="border-b border-white/[0.06] hover:bg-white/[0.04] transition-colors">
                               <td className="py-4 px-4">
                                 <div className="flex items-center gap-3">
                                   <span className="text-lg">{countryInfo?.flag || '🌐'}</span>
@@ -1114,7 +1114,7 @@ function MarketIntelContent() {
                                 {company.isPreIPO ? (
                                   <span className="text-xs bg-yellow-500/20 text-yellow-500 px-2 py-1 rounded font-medium">Pre-IPO</span>
                                 ) : (
-                                  <span className="text-xs bg-slate-700/50 text-slate-400 px-2 py-1 rounded">Private</span>
+                                  <span className="text-xs bg-white/[0.08] text-slate-400 px-2 py-1 rounded">Private</span>
                                 )}
                               </td>
                               <td className="py-4 px-4 text-right text-slate-400">
@@ -1144,7 +1144,7 @@ function MarketIntelContent() {
                                   {(company.focusAreas as string[]).slice(0, 2).map((area) => {
                                     const focusInfo = FOCUS_AREAS.find(f => f.value === area);
                                     return (
-                                      <span key={area} className="text-xs bg-slate-700/30 text-slate-300 px-2 py-0.5 rounded whitespace-nowrap">
+                                      <span key={area} className="text-xs bg-white/[0.04] text-slate-300 px-2 py-0.5 rounded whitespace-nowrap">
                                         {focusInfo?.icon} {focusInfo?.label || area}
                                       </span>
                                     );
@@ -1153,7 +1153,7 @@ function MarketIntelContent() {
                               </td>
                               <td className="py-4 px-4">
                                 {company.website && (
-                                  <a href={company.website} target="_blank" rel="noopener noreferrer" className="text-slate-200 hover:text-white text-sm">
+                                  <a href={company.website} target="_blank" rel="noopener noreferrer" className="text-white/90 hover:text-white text-sm">
                                     Visit →
                                   </a>
                                 )}
@@ -1188,7 +1188,7 @@ function MarketIntelContent() {
                           {company.isPreIPO ? (
                             <span className="text-xs bg-yellow-500/20 text-yellow-500 px-2 py-0.5 rounded font-medium flex-shrink-0">Pre-IPO</span>
                           ) : (
-                            <span className="text-xs bg-slate-700/50 text-slate-400 px-2 py-0.5 rounded flex-shrink-0">Private</span>
+                            <span className="text-xs bg-white/[0.08] text-slate-400 px-2 py-0.5 rounded flex-shrink-0">Private</span>
                           )}
                         </div>
                         <div className="space-y-1.5 text-sm">
@@ -1217,14 +1217,14 @@ function MarketIntelContent() {
                           {(company.focusAreas as string[]).slice(0, 2).map((area) => {
                             const focusInfo = FOCUS_AREAS.find(f => f.value === area);
                             return (
-                              <span key={area} className="text-xs bg-slate-700/30 text-slate-300 px-2 py-0.5 rounded">
+                              <span key={area} className="text-xs bg-white/[0.04] text-slate-300 px-2 py-0.5 rounded">
                                 {focusInfo?.icon} {focusInfo?.label || area}
                               </span>
                             );
                           })}
                         </div>
                         {company.website && (
-                          <a href={company.website} target="_blank" rel="noopener noreferrer" className="text-slate-200 hover:text-white text-xs mt-2 inline-block">
+                          <a href={company.website} target="_blank" rel="noopener noreferrer" className="text-white/90 hover:text-white text-xs mt-2 inline-block">
                             Visit →
                           </a>
                         )}
@@ -1288,15 +1288,15 @@ export default function MarketIntelPage() {
     <Suspense
       fallback={
         <div className="min-h-screen container mx-auto px-4 py-12">
-          <div className="h-10 w-48 bg-slate-800 rounded mb-6 animate-pulse" />
+          <div className="h-10 w-48 bg-white/[0.06] rounded mb-6 animate-pulse" />
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
             {Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="card p-6 animate-pulse"><div className="h-10 bg-slate-800 rounded mb-2" /><div className="h-3 bg-slate-800 rounded w-2/3 mx-auto" /></div>
+              <div key={i} className="card p-6 animate-pulse"><div className="h-10 bg-white/[0.06] rounded mb-2" /><div className="h-3 bg-white/[0.06] rounded w-2/3 mx-auto" /></div>
             ))}
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
             {Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="card p-5 animate-pulse"><div className="h-4 bg-slate-800 rounded w-3/4 mb-3" /><div className="h-8 bg-slate-800 rounded mb-2" /><div className="flex gap-1"><div className="h-5 w-16 bg-slate-800 rounded-full" /><div className="h-5 w-20 bg-slate-800 rounded-full" /></div></div>
+              <div key={i} className="card p-5 animate-pulse"><div className="h-4 bg-white/[0.06] rounded w-3/4 mb-3" /><div className="h-8 bg-white/[0.06] rounded mb-2" /><div className="flex gap-1"><div className="h-5 w-16 bg-white/[0.06] rounded-full" /><div className="h-5 w-20 bg-white/[0.06] rounded-full" /></div></div>
             ))}
           </div>
         </div>

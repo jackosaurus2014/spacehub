@@ -186,7 +186,7 @@ export default function AdSlot({ position, module, className = '', adsenseSlot, 
     <div ref={containerRef} className={`relative ${className}`}>
       {/* Ad label */}
       <div className="absolute top-1 right-1 z-10">
-        <span className="bg-slate-900/80 backdrop-blur-sm text-slate-400 text-xs font-medium px-1.5 py-0.5 rounded uppercase tracking-wider">
+        <span className="bg-black/80 backdrop-blur-sm text-slate-400 text-xs font-medium px-1.5 py-0.5 rounded uppercase tracking-wider">
           Ad
         </span>
       </div>
@@ -196,7 +196,7 @@ export default function AdSlot({ position, module, className = '', adsenseSlot, 
         target="_blank"
         rel="sponsored noopener noreferrer"
         onClick={handleClick}
-        className="block overflow-hidden rounded-lg border border-slate-700/50 bg-slate-900/50 backdrop-blur-sm hover:border-slate-600/50 transition-all duration-200 group"
+        className="block overflow-hidden rounded-lg border border-white/[0.06] bg-black/50 backdrop-blur-sm hover:border-white/[0.08] transition-all duration-200 group"
       >
         {ad.imageUrl ? (
           <div className="relative">
@@ -210,8 +210,8 @@ export default function AdSlot({ position, module, className = '', adsenseSlot, 
               }}
             />
             {ad.title && (
-              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-slate-900/90 to-transparent p-3">
-                <p className="text-slate-200 text-sm font-medium">{ad.title}</p>
+              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 to-transparent p-3">
+                <p className="text-white/90 text-sm font-medium">{ad.title}</p>
               </div>
             )}
           </div>
@@ -223,7 +223,7 @@ export default function AdSlot({ position, module, className = '', adsenseSlot, 
             }}
           >
             {ad.title && (
-              <p className="text-slate-200 text-sm font-medium text-center mb-1">
+              <p className="text-white/90 text-sm font-medium text-center mb-1">
                 {ad.title}
               </p>
             )}
@@ -233,7 +233,7 @@ export default function AdSlot({ position, module, className = '', adsenseSlot, 
               </p>
             )}
             {ad.ctaText && (
-              <span className="text-slate-300 text-xs font-medium flex items-center gap-1 group-hover:gap-2 transition-all">
+              <span className="text-white/70 text-xs font-medium flex items-center gap-1 group-hover:gap-2 transition-all">
                 {ad.ctaText}
                 <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -244,7 +244,7 @@ export default function AdSlot({ position, module, className = '', adsenseSlot, 
         )}
 
         {/* Sponsor attribution */}
-        <div className="flex items-center justify-between px-3 py-2 border-t border-slate-700/50 bg-slate-900/80">
+        <div className="flex items-center justify-between px-3 py-2 border-t border-white/[0.06] bg-black/80">
           <div className="flex items-center gap-2">
             {ad.advertiserLogo && (
               /* eslint-disable-next-line @next/next/no-img-element */
@@ -255,11 +255,11 @@ export default function AdSlot({ position, module, className = '', adsenseSlot, 
               />
             )}
             <span className="text-slate-400 text-xs">
-              Sponsored by <span className="text-slate-300 font-medium">{ad.advertiserName}</span>
+              Sponsored by <span className="text-white/70 font-medium">{ad.advertiserName}</span>
             </span>
           </div>
           {ad.ctaText && (
-            <span className="text-slate-300 text-xs font-medium">
+            <span className="text-white/70 text-xs font-medium">
               {ad.ctaText}
             </span>
           )}

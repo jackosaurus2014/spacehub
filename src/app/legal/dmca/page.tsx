@@ -55,11 +55,11 @@ export default function DMCAPage() {
                 Our designated agent for receiving notifications of claimed copyright infringement
                 is:
               </p>
-              <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-6">
-                <p className="text-slate-300 font-medium">SpaceNexus DMCA Agent</p>
+              <div className="bg-white/[0.04] border border-white/[0.08] rounded-lg p-6">
+                <p className="text-white/70 font-medium">SpaceNexus DMCA Agent</p>
                 <p className="text-slate-400 mt-2">
                   Email:{' '}
-                  <a href="mailto:dmca@spacenexus.us" className="text-slate-200 hover:text-white underline">
+                  <a href="mailto:dmca@spacenexus.us" className="text-white/90 hover:text-white underline">
                     dmca@spacenexus.us
                   </a>
                 </p>
@@ -118,7 +118,7 @@ export default function DMCAPage() {
               </ol>
               <p className="text-slate-400 leading-relaxed mt-4">
                 Send your completed takedown notice to{' '}
-                <a href="mailto:dmca@spacenexus.us" className="text-slate-200 hover:text-white underline">
+                <a href="mailto:dmca@spacenexus.us" className="text-white/90 hover:text-white underline">
                   dmca@spacenexus.us
                 </a>. Notices that do not substantially comply with all six requirements above may
                 not receive a response.
@@ -160,12 +160,12 @@ export default function DMCAPage() {
               </ol>
               <p className="text-slate-400 leading-relaxed mt-4">
                 Send your counter-notice to{' '}
-                <a href="mailto:dmca@spacenexus.us" className="text-slate-200 hover:text-white underline">
+                <a href="mailto:dmca@spacenexus.us" className="text-white/90 hover:text-white underline">
                   dmca@spacenexus.us
                 </a>.
               </p>
-              <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-4 mt-4">
-                <p className="text-slate-300 font-medium mb-2">Restoration Timeline</p>
+              <div className="bg-white/[0.04] border border-white/[0.08] rounded-lg p-4 mt-4">
+                <p className="text-white/70 font-medium mb-2">Restoration Timeline</p>
                 <p className="text-slate-400 text-sm">
                   Upon receipt of a valid counter-notice, SpaceNexus will forward it to the
                   original complaining party. If the copyright holder does not file a court action
@@ -198,15 +198,15 @@ export default function DMCAPage() {
                 which establishes federal requirements for the removal of non-consensual intimate
                 images (NCII), including AI-generated deepfakes.
               </p>
-              <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-6 space-y-3">
-                <h3 className="text-lg font-medium text-slate-200">
+              <div className="bg-white/[0.04] border border-white/[0.08] rounded-lg p-6 space-y-3">
+                <h3 className="text-lg font-medium text-white/90">
                   Reporting Non-Consensual Intimate Images
                 </h3>
                 <ul className="list-disc list-inside text-slate-400 space-y-2 ml-2">
                   <li>
                     If you are a victim or an authorized representative, you may request the
                     removal of non-consensual intimate images by contacting{' '}
-                    <a href="mailto:takedown@spacenexus.us" className="text-slate-200 hover:text-white underline">
+                    <a href="mailto:takedown@spacenexus.us" className="text-white/90 hover:text-white underline">
                       takedown@spacenexus.us
                     </a>
                   </li>
@@ -251,24 +251,24 @@ export default function DMCAPage() {
             </section>
 
             {/* Related Documents */}
-            <section className="pt-6 border-t border-slate-700">
-              <h3 className="text-lg font-medium text-slate-200 mb-4">Related Documents</h3>
+            <section className="pt-6 border-t border-white/[0.08]">
+              <h3 className="text-lg font-medium text-white/90 mb-4">Related Documents</h3>
               <div className="flex flex-wrap gap-4">
                 <Link
                   href="/terms"
-                  className="text-slate-200 hover:text-white underline"
+                  className="text-white/90 hover:text-white underline"
                 >
                   Terms of Service
                 </Link>
                 <Link
                   href="/privacy"
-                  className="text-slate-200 hover:text-white underline"
+                  className="text-white/90 hover:text-white underline"
                 >
                   Privacy Policy
                 </Link>
                 <Link
                   href="/community/guidelines"
-                  className="text-slate-200 hover:text-white underline"
+                  className="text-white/90 hover:text-white underline"
                 >
                   Community Guidelines
                 </Link>

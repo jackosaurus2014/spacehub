@@ -182,7 +182,7 @@ function ProviderCard({
           </div>
         </div>
         <div className="text-right">
-          <div className={`text-xl font-bold font-display ${isViable ? 'text-slate-200' : 'text-slate-400'}`}>
+          <div className={`text-xl font-bold font-display ${isViable ? 'text-white/90' : 'text-slate-400'}`}>
             {formatCurrency(provider.typicalCost, true)}
           </div>
           <div className="text-slate-400 text-xs">typical cost</div>
@@ -230,7 +230,7 @@ function ProviderCard({
 
       {/* Notes */}
       {provider.notes.length > 0 && (
-        <div className="text-xs text-slate-400 border-t border-slate-700/50 pt-3 space-y-1">
+        <div className="text-xs text-slate-400 border-t border-white/[0.06] pt-3 space-y-1">
           {provider.notes.map((note, idx) => (
             <p key={idx}>{note}</p>
           ))}
@@ -264,7 +264,7 @@ function CostSummaryCard({ data }: { data: CostEstimateResponse }) {
       <div className="bg-gradient-to-r from-white/10 to-plasma-500/10 rounded-xl p-6 mb-6">
         <div className="text-center">
           <div className="text-slate-400 text-sm mb-2">Estimated Total Mission Cost</div>
-          <div className="text-4xl font-display font-bold text-slate-200 mb-2">
+          <div className="text-4xl font-display font-bold text-white/90 mb-2">
             {formatCurrency(summary.totalCost.typical, true)}
           </div>
           <div className="text-slate-400 text-sm">
@@ -275,7 +275,7 @@ function CostSummaryCard({ data }: { data: CostEstimateResponse }) {
 
       {/* Cost breakdown */}
       <div className="space-y-4">
-        <div className="flex items-center justify-between py-3 border-b border-slate-700/50">
+        <div className="flex items-center justify-between py-3 border-b border-white/[0.06]">
           <div className="flex items-center gap-3">
             <span className="text-xl">🚀</span>
             <div>
@@ -292,7 +292,7 @@ function CostSummaryCard({ data }: { data: CostEstimateResponse }) {
         </div>
 
         {summary.insurance && (
-          <div className="flex items-center justify-between py-3 border-b border-slate-700/50">
+          <div className="flex items-center justify-between py-3 border-b border-white/[0.06]">
             <div className="flex items-center gap-3">
               <span className="text-xl">🛡️</span>
               <div>
@@ -312,7 +312,7 @@ function CostSummaryCard({ data }: { data: CostEstimateResponse }) {
         )}
 
         {summary.regulatoryFees && (
-          <div className="flex items-center justify-between py-3 border-b border-slate-700/50">
+          <div className="flex items-center justify-between py-3 border-b border-white/[0.06]">
             <div className="flex items-center gap-3">
               <span className="text-xl">📋</span>
               <div>
@@ -328,7 +328,7 @@ function CostSummaryCard({ data }: { data: CostEstimateResponse }) {
       </div>
 
       {/* Disclaimer */}
-      <div className="mt-6 p-4 bg-slate-700/50 rounded-lg text-xs text-slate-500">
+      <div className="mt-6 p-4 bg-white/[0.06] rounded-lg text-xs text-slate-500">
         <p className="font-medium text-slate-400 mb-1">Important Notes:</p>
         <ul className="space-y-1">
           <li>Estimates based on publicly available pricing and industry benchmarks</li>
@@ -388,7 +388,7 @@ function InsuranceDetails({ insurance, payloadValue }: { insurance: InsuranceEst
                 <span className="text-lg">{coverage.icon}</span>
                 <span className="text-white font-medium">{coverage.name}</span>
               </div>
-              <div className="text-2xl font-bold text-slate-200 mb-1">
+              <div className="text-2xl font-bold text-white/90 mb-1">
                 {formatCurrency(coverage.data.typical, true)}
               </div>
               <div className="text-slate-400 text-xs mb-2">
@@ -400,11 +400,11 @@ function InsuranceDetails({ insurance, payloadValue }: { insurance: InsuranceEst
           ))}
         </div>
 
-        <div className="mt-4 p-4 bg-slate-700/50 rounded-lg">
+        <div className="mt-4 p-4 bg-white/[0.06] rounded-lg">
           <div className="flex items-center justify-between">
             <span className="text-white font-medium">Total Insurance Premium</span>
             <div className="text-right">
-              <div className="text-xl font-bold text-slate-200">
+              <div className="text-xl font-bold text-white/90">
                 {formatCurrency(insurance.totalInsurance.typical, true)}
               </div>
               <div className="text-slate-400 text-xs">
@@ -428,7 +428,7 @@ function InsuranceDetails({ insurance, payloadValue }: { insurance: InsuranceEst
             { name: 'Global Aerospace', share: '6%' },
             { name: 'Other', share: '10%' },
           ].map((provider) => (
-            <div key={provider.name} className="p-3 bg-slate-700/30 rounded-lg">
+            <div key={provider.name} className="p-3 bg-white/[0.04] rounded-lg">
               <div className="text-white font-medium truncate">{provider.name}</div>
               <div className="text-slate-400 text-xs">{provider.share} market share</div>
             </div>
@@ -465,7 +465,7 @@ function RegulatoryDetails({ fees }: { fees: RegulatoryFeesEstimate }) {
 
         <div className="space-y-3">
           {feeItems.map((item) => (
-            <div key={item.name} className="flex items-center justify-between py-3 border-b border-slate-700/50 last:border-0">
+            <div key={item.name} className="flex items-center justify-between py-3 border-b border-white/[0.06] last:border-0">
               <div className="flex items-center gap-3">
                 <span className="text-lg">{item.icon}</span>
                 <div>
@@ -483,7 +483,7 @@ function RegulatoryDetails({ fees }: { fees: RegulatoryFeesEstimate }) {
         <div className="mt-4 p-4 bg-gradient-to-r from-white/10 to-plasma-500/10 rounded-lg">
           <div className="flex items-center justify-between">
             <span className="text-white font-semibold">Total Regulatory Fees</span>
-            <div className="text-xl font-bold text-slate-200">{formatCurrency(fees.totalFees)}</div>
+            <div className="text-xl font-bold text-white/90">{formatCurrency(fees.totalFees)}</div>
           </div>
         </div>
       </div>
@@ -494,7 +494,7 @@ function RegulatoryDetails({ fees }: { fees: RegulatoryFeesEstimate }) {
           <ul className="space-y-2">
             {fees.notes.map((note, idx) => (
               <li key={idx} className="flex items-start gap-2 text-sm text-slate-400">
-                <span className="text-slate-200 mt-0.5">*</span>
+                <span className="text-white/90 mt-0.5">*</span>
                 {note}
               </li>
             ))}
@@ -670,7 +670,7 @@ function MissionCostContent() {
                 inputMode="decimal"
                 value={payloadMass}
                 onChange={(e) => setPayloadMass(Math.max(1, parseInt(e.target.value) || 0))}
-                className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+                className="w-full bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                 min={1}
                 max={150000}
               />
@@ -682,7 +682,7 @@ function MissionCostContent() {
                     className={`px-2 py-1 text-xs rounded ${
                       payloadMass === mass
                         ? 'bg-white text-slate-900'
-                        : 'bg-slate-700/50 text-slate-300 hover:bg-slate-600/50'
+                        : 'bg-white/[0.06] text-slate-300 hover:bg-white/[0.08]'
                     }`}
                   >
                     {formatMass(mass)}
@@ -699,7 +699,7 @@ function MissionCostContent() {
               <select
                 value={orbitType}
                 onChange={(e) => setOrbitType(e.target.value as OrbitType)}
-                className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+                className="w-full bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
               >
                 {ORBIT_OPTIONS.map((option) => (
                   <option key={option.value} value={option.value}>
@@ -717,7 +717,7 @@ function MissionCostContent() {
               <select
                 value={payloadType}
                 onChange={(e) => setPayloadType(e.target.value as PayloadType)}
-                className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+                className="w-full bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
               >
                 {PAYLOAD_OPTIONS.map((option) => (
                   <option key={option.value} value={option.value}>
@@ -737,7 +737,7 @@ function MissionCostContent() {
                 inputMode="decimal"
                 value={payloadValue}
                 onChange={(e) => setPayloadValue(Math.max(0, parseInt(e.target.value) || 0))}
-                className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+                className="w-full bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                 min={0}
               />
               <div className="mt-2 flex flex-wrap gap-1">
@@ -748,7 +748,7 @@ function MissionCostContent() {
                     className={`px-2 py-1 text-xs rounded ${
                       payloadValue === val
                         ? 'bg-white text-slate-900'
-                        : 'bg-slate-700/50 text-slate-300 hover:bg-slate-600/50'
+                        : 'bg-white/[0.06] text-slate-300 hover:bg-white/[0.08]'
                     }`}
                   >
                     {formatCurrency(val, true)}
@@ -759,13 +759,13 @@ function MissionCostContent() {
           </div>
 
           {/* Options */}
-          <div className="flex flex-wrap items-center gap-6 mt-6 pt-6 border-t border-slate-700/50">
+          <div className="flex flex-wrap items-center gap-6 mt-6 pt-6 border-t border-white/[0.06]">
             <label className="flex items-center gap-2 cursor-pointer">
               <input
                 type="checkbox"
                 checked={includeInsurance}
                 onChange={(e) => setIncludeInsurance(e.target.checked)}
-                className="w-4 h-4 rounded border-slate-300 text-slate-200 focus:ring-white/15"
+                className="w-4 h-4 rounded border-white/[0.06] text-white/90 focus:ring-white/15"
               />
               <span className="text-sm text-slate-400">Include Insurance Estimate</span>
             </label>
@@ -775,7 +775,7 @@ function MissionCostContent() {
                 type="checkbox"
                 checked={includeRegulatory}
                 onChange={(e) => setIncludeRegulatory(e.target.checked)}
-                className="w-4 h-4 rounded border-slate-300 text-slate-200 focus:ring-white/15"
+                className="w-4 h-4 rounded border-white/[0.06] text-white/90 focus:ring-white/15"
               />
               <span className="text-sm text-slate-400">Include Regulatory Fees</span>
             </label>
@@ -827,7 +827,7 @@ function MissionCostContent() {
                   className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
                     activeTab === tab.id
                       ? 'bg-white text-slate-900'
-                      : 'bg-slate-800/60 text-slate-200 hover:bg-slate-700/70 hover:text-white border border-slate-600/30'
+                      : 'bg-white/[0.04] text-white/90 hover:bg-white/[0.08] hover:text-white border border-white/[0.08]'
                   }`}
                 >
                   {tab.icon && <span>{tab.icon}</span>}
@@ -837,7 +837,7 @@ function MissionCostContent() {
                       className={`text-xs px-1.5 py-0.5 rounded-full ${
                         activeTab === tab.id
                           ? 'bg-white/20 text-slate-900'
-                          : 'bg-slate-600/50 text-slate-200'
+                          : 'bg-white/[0.06] text-white/90'
                       }`}
                     >
                       {tab.count}
@@ -864,7 +864,7 @@ function MissionCostContent() {
                   {bestValueProvider && (
                     <div className="text-right">
                       <span className="text-slate-400 text-sm">Best value:</span>
-                      <span className="ml-2 text-slate-200 font-bold">
+                      <span className="ml-2 text-white/90 font-bold">
                         {bestValueProvider.providerName} {bestValueProvider.vehicleName}
                       </span>
                     </div>
@@ -950,7 +950,7 @@ function MissionCostContent() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
             <Link
               href="/space-insurance"
-              className="p-3 rounded-lg bg-slate-700/30 hover:bg-slate-700/50 transition-colors group"
+              className="p-3 rounded-lg bg-white/[0.04] hover:bg-white/[0.06] transition-colors group"
             >
               <div className="text-sm font-medium text-white group-hover:text-white">
                 🛡️ Space Insurance
@@ -959,7 +959,7 @@ function MissionCostContent() {
             </Link>
             <Link
               href="/resource-exchange"
-              className="p-3 rounded-lg bg-slate-700/30 hover:bg-slate-700/50 transition-colors group"
+              className="p-3 rounded-lg bg-white/[0.04] hover:bg-white/[0.06] transition-colors group"
             >
               <div className="text-sm font-medium text-white group-hover:text-white">
                 💰 Resource Exchange
@@ -968,7 +968,7 @@ function MissionCostContent() {
             </Link>
             <Link
               href="/compliance"
-              className="p-3 rounded-lg bg-slate-700/30 hover:bg-slate-700/50 transition-colors group"
+              className="p-3 rounded-lg bg-white/[0.04] hover:bg-white/[0.06] transition-colors group"
             >
               <div className="text-sm font-medium text-white group-hover:text-white">
                 ⚖️ Compliance
@@ -977,7 +977,7 @@ function MissionCostContent() {
             </Link>
             <Link
               href="/launch-windows"
-              className="p-3 rounded-lg bg-slate-700/30 hover:bg-slate-700/50 transition-colors group"
+              className="p-3 rounded-lg bg-white/[0.04] hover:bg-white/[0.06] transition-colors group"
             >
               <div className="text-sm font-medium text-white group-hover:text-white">
                 🪟 Launch Windows
@@ -986,7 +986,7 @@ function MissionCostContent() {
             </Link>
             <Link
               href="/orbital-calculator"
-              className="p-3 rounded-lg bg-slate-700/30 hover:bg-slate-700/50 transition-colors group"
+              className="p-3 rounded-lg bg-white/[0.04] hover:bg-white/[0.06] transition-colors group"
             >
               <div className="text-sm font-medium text-white group-hover:text-white">
                 🌐 Orbital Calculator

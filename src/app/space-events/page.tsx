@@ -105,7 +105,7 @@ function AddToCalendarDropdown({ event }: { event: SpaceEvent }) {
     <div className="relative">
       <button
         onClick={() => setOpen(!open)}
-        className="flex items-center gap-1.5 text-xs px-2 py-1 rounded bg-slate-800 text-slate-300 border border-slate-700 hover:border-white/10 transition-all whitespace-nowrap"
+        className="flex items-center gap-1.5 text-xs px-2 py-1 rounded bg-white/[0.06] text-slate-300 border border-white/[0.06] hover:border-white/10 transition-all whitespace-nowrap"
       >
         <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -118,13 +118,13 @@ function AddToCalendarDropdown({ event }: { event: SpaceEvent }) {
       {open && (
         <>
           <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
-          <div className="absolute top-full mt-1 right-0 z-50 bg-slate-800 border border-slate-700 rounded-lg shadow-xl py-1 min-w-[160px]">
+          <div className="absolute top-full mt-1 right-0 z-50 bg-white/[0.06] border border-white/[0.06] rounded-lg shadow-xl py-1 min-w-[160px]">
             <button
               onClick={() => {
                 downloadICS(generateICS(event), `${event.id}.ics`);
                 setOpen(false);
               }}
-              className="w-full text-left px-3 py-1.5 text-xs text-slate-300 hover:bg-slate-700/50 transition-colors flex items-center gap-2"
+              className="w-full text-left px-3 py-1.5 text-xs text-slate-300 hover:bg-white/[0.06] transition-colors flex items-center gap-2"
             >
               <svg className="w-3.5 h-3.5 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
@@ -136,7 +136,7 @@ function AddToCalendarDropdown({ event }: { event: SpaceEvent }) {
               target="_blank"
               rel="noopener noreferrer"
               onClick={() => setOpen(false)}
-              className="w-full text-left px-3 py-1.5 text-xs text-slate-300 hover:bg-slate-700/50 transition-colors flex items-center gap-2"
+              className="w-full text-left px-3 py-1.5 text-xs text-slate-300 hover:bg-white/[0.06] transition-colors flex items-center gap-2"
             >
               <svg className="w-3.5 h-3.5 text-slate-300" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M18.316 5.684H24v12.632h-5.684V5.684zM5.684 24h12.632v-5.684H5.684V24zM0 5.684v12.632h5.684V5.684H0zM5.684 0v5.684h12.632V0H5.684z" />
@@ -210,7 +210,7 @@ function HighlightedEvents({ events }: { events: SpaceEvent[] }) {
                     href={event.website}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-xs px-2 py-1 rounded bg-slate-800 text-slate-400 border border-slate-700 hover:border-slate-600 transition-all"
+                    className="text-xs px-2 py-1 rounded bg-white/[0.06] text-slate-400 border border-white/[0.06] hover:border-white/[0.1] transition-all"
                   >
                     Website
                   </a>
@@ -242,7 +242,7 @@ function EventListCard({ event, onSelect }: { event: SpaceEvent; onSelect: (e: S
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      className={`card p-4 transition-all hover:border-slate-600/50 cursor-pointer ${isPast ? 'opacity-50' : ''}`}
+      className={`card p-4 transition-all hover:border-white/[0.1] cursor-pointer ${isPast ? 'opacity-50' : ''}`}
       onClick={() => onSelect(event)}
     >
       <div className="flex flex-col sm:flex-row sm:items-start gap-4">
@@ -269,7 +269,7 @@ function EventListCard({ event, onSelect }: { event: SpaceEvent; onSelect: (e: S
               </span>
             )}
             {isPast && (
-              <span className="text-xs px-1.5 py-0.5 rounded bg-slate-700 text-slate-400">
+              <span className="text-xs px-1.5 py-0.5 rounded bg-white/[0.08] text-slate-400">
                 Past
               </span>
             )}
@@ -305,7 +305,7 @@ function EventListCard({ event, onSelect }: { event: SpaceEvent; onSelect: (e: S
 
           <div className="flex items-center gap-2 mt-2 flex-wrap">
             {event.tags.slice(0, 4).map((tag) => (
-              <span key={tag} className="text-xs px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 border border-slate-700/50">
+              <span key={tag} className="text-xs px-2 py-0.5 rounded-full bg-white/[0.06] text-slate-400 border border-white/[0.06]">
                 {tag}
               </span>
             ))}
@@ -323,7 +323,7 @@ function EventListCard({ event, onSelect }: { event: SpaceEvent; onSelect: (e: S
               href={event.website}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-xs px-2 py-1 rounded bg-slate-800 text-slate-400 border border-slate-700 hover:border-slate-600 transition-all whitespace-nowrap"
+              className="text-xs px-2 py-1 rounded bg-white/[0.06] text-slate-400 border border-white/[0.06] hover:border-white/[0.1] transition-all whitespace-nowrap"
             >
               Website
             </a>
@@ -411,7 +411,7 @@ function CalendarMonth({
                 isToday(day)
                   ? 'bg-white/10 ring-1 ring-white/15'
                   : hasEvents
-                    ? 'bg-slate-800/50 hover:bg-slate-700/50'
+                    ? 'bg-white/[0.04] hover:bg-white/[0.06]'
                     : ''
               }`}
               title={dayEvents.map((e) => e.name).join(', ')}
@@ -447,7 +447,7 @@ function CalendarMonth({
             <button
               key={e.id}
               onClick={() => onEventClick(e)}
-              className="w-full text-left flex items-center gap-2 px-2 py-1 rounded hover:bg-slate-800/50 transition-colors"
+              className="w-full text-left flex items-center gap-2 px-2 py-1 rounded hover:bg-white/[0.04] transition-colors"
             >
               <div className={`w-2 h-2 rounded-full flex-shrink-0 ${getEventTypeColor(e.type)}`} />
               <span className="text-xs text-slate-300 truncate">{e.name}</span>
@@ -581,13 +581,13 @@ function EventDetailModal({
 
         <div className="flex flex-wrap gap-1.5 mb-4">
           {event.tags.map((tag) => (
-            <span key={tag} className="text-xs px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 border border-slate-700/50">
+            <span key={tag} className="text-xs px-2 py-0.5 rounded-full bg-white/[0.06] text-slate-400 border border-white/[0.06]">
               {tag}
             </span>
           ))}
         </div>
 
-        <div className="flex items-center gap-3 pt-3 border-t border-slate-700/50 flex-wrap">
+        <div className="flex items-center gap-3 pt-3 border-t border-white/[0.06] flex-wrap">
           <button
             onClick={() => downloadICS(generateICS(event), `${event.id}.ics`)}
             className="flex items-center gap-1.5 text-xs px-3 py-2 rounded-lg bg-white/10 text-slate-300 border border-white/10 hover:bg-slate-100/30 transition-all"
@@ -601,7 +601,7 @@ function EventDetailModal({
             href={generateGoogleCalendarUrl(event)}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-1.5 text-xs px-3 py-2 rounded-lg bg-slate-800 text-slate-300 border border-slate-700 hover:border-slate-600 transition-all"
+            className="flex items-center gap-1.5 text-xs px-3 py-2 rounded-lg bg-white/[0.06] text-slate-300 border border-white/[0.06] hover:border-white/[0.1] transition-all"
           >
             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -613,7 +613,7 @@ function EventDetailModal({
               href={event.website}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-1.5 text-xs px-3 py-2 rounded-lg bg-slate-800 text-slate-300 border border-slate-700 hover:border-slate-600 transition-all"
+              className="flex items-center gap-1.5 text-xs px-3 py-2 rounded-lg bg-white/[0.06] text-slate-300 border border-white/[0.06] hover:border-white/[0.1] transition-all"
             >
               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
@@ -626,7 +626,7 @@ function EventDetailModal({
               href={event.registrationUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-1.5 text-xs px-3 py-2 rounded-lg bg-white/30 text-slate-200 border border-white/15 hover:bg-slate-700/40 transition-all"
+              className="flex items-center gap-1.5 text-xs px-3 py-2 rounded-lg bg-white/30 text-slate-200 border border-white/15 hover:bg-white/[0.08]/40 transition-all"
             >
               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" />
@@ -854,14 +854,14 @@ function SpaceEventsPageInner() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
-        className="flex items-center gap-1 mb-6 bg-slate-800/50 rounded-lg p-1 w-fit border border-slate-700/50"
+        className="flex items-center gap-1 mb-6 bg-white/[0.04] rounded-lg p-1 w-fit border border-white/[0.06]"
       >
         <button
           onClick={() => handleTabChange('upcoming')}
           className={`text-xs px-4 py-2 rounded-md transition-all font-medium ${
             activeTab === 'upcoming'
               ? 'bg-white/10 text-slate-300 shadow-sm'
-              : 'text-slate-400 hover:text-white hover:bg-slate-700/50'
+              : 'text-slate-400 hover:text-white hover:bg-white/[0.06]'
           }`}
         >
           Upcoming ({upcomingCount})
@@ -871,7 +871,7 @@ function SpaceEventsPageInner() {
           className={`text-xs px-4 py-2 rounded-md transition-all font-medium ${
             activeTab === 'calendar'
               ? 'bg-white/10 text-slate-300 shadow-sm'
-              : 'text-slate-400 hover:text-white hover:bg-slate-700/50'
+              : 'text-slate-400 hover:text-white hover:bg-white/[0.06]'
           }`}
         >
           Calendar
@@ -881,7 +881,7 @@ function SpaceEventsPageInner() {
           className={`text-xs px-4 py-2 rounded-md transition-all font-medium ${
             activeTab === 'past'
               ? 'bg-white/10 text-slate-300 shadow-sm'
-              : 'text-slate-400 hover:text-white hover:bg-slate-700/50'
+              : 'text-slate-400 hover:text-white hover:bg-white/[0.06]'
           }`}
         >
           Past ({pastCount})
@@ -909,7 +909,7 @@ function SpaceEventsPageInner() {
               placeholder="Search events by name, location, organizer, or tag..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 text-xs rounded-lg bg-slate-800 text-slate-300 border border-slate-700 focus:border-white/15 outline-none placeholder:text-slate-600"
+              className="w-full pl-10 pr-4 py-2 text-xs rounded-lg bg-white/[0.06] text-slate-300 border border-white/[0.06] focus:border-white/15 outline-none placeholder:text-slate-600"
             />
             {searchQuery && (
               <button
@@ -930,7 +930,7 @@ function SpaceEventsPageInner() {
               <select
                 value={typeFilter}
                 onChange={(e) => setTypeFilter(e.target.value)}
-                className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+                className="bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
               >
                 <option value="all">All Types</option>
                 {EVENT_TYPES.map((t) => (
@@ -942,7 +942,7 @@ function SpaceEventsPageInner() {
               <select
                 value={countryFilter}
                 onChange={(e) => setCountryFilter(e.target.value)}
-                className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+                className="bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
               >
                 <option value="all">All Countries</option>
                 {countries.map((c) => (
@@ -954,7 +954,7 @@ function SpaceEventsPageInner() {
               <select
                 value={monthFilter}
                 onChange={(e) => setMonthFilter(e.target.value)}
-                className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+                className="bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
               >
                 <option value="all">All Months</option>
                 {MONTHS.map((m, i) => (
@@ -966,7 +966,7 @@ function SpaceEventsPageInner() {
               <select
                 value={formatFilter}
                 onChange={(e) => setFormatFilter(e.target.value)}
-                className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+                className="bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
               >
                 <option value="all">All Formats</option>
                 <option value="in-person">In-Person</option>
@@ -977,7 +977,7 @@ function SpaceEventsPageInner() {
               <select
                 value={costFilter}
                 onChange={(e) => setCostFilter(e.target.value)}
-                className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+                className="bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
               >
                 <option value="all">Any Cost</option>
                 <option value="free">Free</option>
@@ -999,7 +999,7 @@ function SpaceEventsPageInner() {
             <button
               onClick={handleExportFiltered}
               disabled={filteredEvents.length === 0}
-              className="flex items-center gap-2 text-xs px-4 py-2 rounded-lg bg-slate-800 text-slate-300 border border-slate-700 hover:border-white/10 transition-all flex-shrink-0 disabled:opacity-40 disabled:cursor-not-allowed"
+              className="flex items-center gap-2 text-xs px-4 py-2 rounded-lg bg-white/[0.06] text-slate-300 border border-white/[0.06] hover:border-white/10 transition-all flex-shrink-0 disabled:opacity-40 disabled:cursor-not-allowed"
             >
               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
@@ -1029,7 +1029,7 @@ function SpaceEventsPageInner() {
               <button
                 onClick={() => setCalendarYear((y) => y - 1)}
                 disabled={calendarYear <= 2026}
-                className="text-xs px-3 py-1.5 rounded-lg bg-slate-800 text-slate-400 border border-slate-700 hover:border-slate-600 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                className="text-xs px-3 py-1.5 rounded-lg bg-white/[0.06] text-slate-400 border border-white/[0.06] hover:border-white/[0.1] disabled:opacity-30 disabled:cursor-not-allowed transition-all"
               >
                 Previous Year
               </button>
@@ -1037,7 +1037,7 @@ function SpaceEventsPageInner() {
               <button
                 onClick={() => setCalendarYear((y) => y + 1)}
                 disabled={calendarYear >= 2027}
-                className="text-xs px-3 py-1.5 rounded-lg bg-slate-800 text-slate-400 border border-slate-700 hover:border-slate-600 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                className="text-xs px-3 py-1.5 rounded-lg bg-white/[0.06] text-slate-400 border border-white/[0.06] hover:border-white/[0.1] disabled:opacity-30 disabled:cursor-not-allowed transition-all"
               >
                 Next Year
               </button>
@@ -1110,14 +1110,14 @@ function SpaceEventsPageInner() {
 
       {/* Quick tag reference */}
       <ScrollReveal>
-        <div className="card p-4 mt-6 border-slate-700/30">
+        <div className="card p-4 mt-6 border-white/[0.06]/30">
           <div className="text-xs text-slate-500 font-medium mb-2">Popular Tags</div>
           <div className="flex flex-wrap gap-1.5">
             {allTags.slice(0, 30).map((tag) => (
               <button
                 key={tag}
                 onClick={() => setSearchQuery(tag)}
-                className="text-xs px-2 py-0.5 rounded-full bg-slate-800/50 text-slate-400 border border-slate-700/30 hover:border-white/10 hover:text-white transition-all cursor-pointer"
+                className="text-xs px-2 py-0.5 rounded-full bg-white/[0.04] text-slate-400 border border-white/[0.06]/30 hover:border-white/10 hover:text-white transition-all cursor-pointer"
               >
                 {tag}
               </button>
@@ -1146,8 +1146,8 @@ export default function SpaceEventsPage() {
     <Suspense fallback={
       <div className="min-h-screen p-4 lg:p-8 max-w-[1600px] mx-auto">
         <div className="mb-8">
-          <div className="h-8 w-72 bg-slate-800 rounded animate-pulse mb-3" />
-          <div className="h-4 w-96 bg-slate-800/60 rounded animate-pulse" />
+          <div className="h-8 w-72 bg-white/[0.06] rounded animate-pulse mb-3" />
+          <div className="h-4 w-96 bg-white/[0.04] rounded animate-pulse" />
         </div>
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
           {[1, 2, 3, 4, 5].map((i) => (

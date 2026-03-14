@@ -321,7 +321,7 @@ export default function DependencyChart({
                               : 'bg-space-700'
                           }`}
                         >
-                          <span className="text-slate-300">{rel.supplierName}</span>
+                          <span className="text-white/70">{rel.supplierName}</span>
                           {rel.geopoliticalRisk === 'high' && (
                             <span className="text-xs text-red-400">⚠️</span>
                           )}
@@ -344,7 +344,7 @@ export default function DependencyChart({
                           key={rel.id}
                           className="flex items-center justify-between p-2 rounded text-sm bg-space-700"
                         >
-                          <span className="text-slate-300">{rel.customerName}</span>
+                          <span className="text-white/70">{rel.customerName}</span>
                           {rel.annualValue && (
                             <span className="text-xs text-green-400">
                               ${(rel.annualValue / 1000000).toFixed(0)}M

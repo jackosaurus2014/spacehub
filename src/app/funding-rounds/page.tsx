@@ -62,8 +62,8 @@ const ROUND_TYPE_COLORS: Record<string, string> = {
   'Series F': 'bg-red-500/20 text-red-200 border border-red-500/30',
   'Series K': 'bg-rose-500/20 text-rose-300 border border-rose-500/30',
   'IPO': 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30',
-  'SPAC': 'bg-white/10 text-slate-300 border border-white/10',
-  'Debt': 'bg-slate-500/20 text-slate-300 border border-slate-500/30',
+  'SPAC': 'bg-white/10 text-white/70 border border-white/10',
+  'Debt': 'bg-slate-500/20 text-white/70 border border-slate-500/30',
   'Acquisition': 'bg-pink-500/20 text-pink-400 border border-pink-500/30',
   'Secondary': 'bg-indigo-500/20 text-indigo-400 border border-indigo-500/30',
   'Grant': 'bg-teal-500/20 text-teal-400 border border-teal-500/30',
@@ -74,12 +74,12 @@ const SECTOR_COLORS: Record<string, string> = {
   'Satellite': 'bg-blue-500/15 text-blue-400',
   'Earth Observation': 'bg-green-500/15 text-green-400',
   'Communications': 'bg-violet-500/15 text-violet-400',
-  'In-Space Services': 'bg-white/8 text-slate-300',
+  'In-Space Services': 'bg-white/8 text-white/70',
   'Defense': 'bg-red-500/15 text-red-400',
   'Analytics': 'bg-amber-500/15 text-amber-400',
   'Propulsion': 'bg-rose-500/15 text-rose-400',
   'Space Stations': 'bg-indigo-500/15 text-indigo-400',
-  'Manufacturing': 'bg-slate-500/15 text-slate-300',
+  'Manufacturing': 'bg-slate-500/15 text-white/70',
   'Lunar': 'bg-purple-500/15 text-purple-400',
   'Navigation': 'bg-teal-500/15 text-teal-400',
 };
@@ -379,11 +379,11 @@ function formatDate(dateStr: string): string {
 }
 
 function getRoundColor(roundType: string): string {
-  return ROUND_TYPE_COLORS[roundType] || 'bg-slate-500/20 text-slate-300 border border-slate-500/30';
+  return ROUND_TYPE_COLORS[roundType] || 'bg-slate-500/20 text-white/70 border border-slate-500/30';
 }
 
 function getSectorColor(sector: string): string {
-  return SECTOR_COLORS[sector] || 'bg-slate-500/15 text-slate-300';
+  return SECTOR_COLORS[sector] || 'bg-slate-500/15 text-white/70';
 }
 
 // ────────────────────────────────────────
@@ -543,8 +543,8 @@ export default function FundingRoundsPage() {
   const SortIcon = ({ field }: { field: SortField }) => {
     if (sortField !== field) return <span className="text-slate-600 ml-1">&#x25B4;&#x25BE;</span>;
     return sortDirection === 'asc'
-      ? <span className="text-slate-300 ml-1">&#x25B4;</span>
-      : <span className="text-slate-300 ml-1">&#x25BE;</span>;
+      ? <span className="text-white/70 ml-1">&#x25B4;</span>
+      : <span className="text-white/70 ml-1">&#x25BE;</span>;
   };
 
   return (
@@ -563,7 +563,7 @@ export default function FundingRoundsPage() {
         <StaggerContainer className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           <StaggerItem><div className="card p-5">
             <p className="text-xs uppercase tracking-wider text-slate-400 mb-1">Total Raised (2025)</p>
-            <p className="text-2xl md:text-3xl font-bold text-slate-300">${(summaryStats.total2025 / 1000).toFixed(1)}B</p>
+            <p className="text-2xl md:text-3xl font-bold text-white/70">${(summaryStats.total2025 / 1000).toFixed(1)}B</p>
             <p className="text-sm text-slate-400 mt-1">{summaryStats.deals2025} deals</p>
           </div></StaggerItem>
           <StaggerItem><div className="card p-5">
@@ -578,7 +578,7 @@ export default function FundingRoundsPage() {
           </div></StaggerItem>
           <StaggerItem><div className="card p-5">
             <p className="text-xs uppercase tracking-wider text-slate-400 mb-1">Most Active Investors</p>
-            <p className="text-sm text-slate-200 font-medium leading-relaxed mt-1">
+            <p className="text-sm text-white/90 font-medium leading-relaxed mt-1">
               Founders Fund, a16z, Google Ventures, Lux Capital
             </p>
           </div></StaggerItem>
@@ -586,7 +586,7 @@ export default function FundingRoundsPage() {
 
         {/* ── Tab Navigation ── */}
         <ScrollReveal delay={0.1}>
-        <div className="flex gap-1 mb-6 p-1 bg-slate-800/60 rounded-xl w-fit">
+        <div className="flex gap-1 mb-6 p-1 bg-white/[0.05] rounded-xl w-fit">
           {([
             { key: 'table' as const, label: 'Funding Rounds' },
             { key: 'investors' as const, label: 'Investor Leaderboard' },
@@ -598,7 +598,7 @@ export default function FundingRoundsPage() {
               className={`px-4 py-2 text-sm font-medium rounded-lg transition-all min-h-[44px] ${
                 activeTab === tab.key
                   ? 'bg-white text-slate-900 shadow-lg shadow-black/10'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/50'
+                  : 'text-slate-400 hover:text-white/90 hover:bg-white/[0.04]'
               }`}
             >
               {tab.label}
@@ -621,7 +621,7 @@ export default function FundingRoundsPage() {
                     placeholder="Company or investor..."
                     value={searchQuery}
                     onChange={e => setSearchQuery(e.target.value)}
-                    className="w-full bg-slate-800/80 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-white/15 focus:ring-1 focus:ring-white/30 min-h-[44px]"
+                    className="w-full bg-white/[0.06] border border-white/[0.1] rounded-lg px-3 py-2 text-sm text-white/90 placeholder-slate-500 focus:outline-none focus:border-white/15 focus:ring-1 focus:ring-white/30 min-h-[44px]"
                   />
                 </div>
 
@@ -631,7 +631,7 @@ export default function FundingRoundsPage() {
                   <select
                     value={selectedRoundType}
                     onChange={e => setSelectedRoundType(e.target.value)}
-                    className="w-full bg-slate-800/80 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-white/15 focus:ring-1 focus:ring-white/30 min-h-[44px]"
+                    className="w-full bg-white/[0.06] border border-white/[0.1] rounded-lg px-3 py-2 text-sm text-white/90 focus:outline-none focus:border-white/15 focus:ring-1 focus:ring-white/30 min-h-[44px]"
                   >
                     {ROUND_TYPES.map(t => (
                       <option key={t} value={t}>{t}</option>
@@ -645,7 +645,7 @@ export default function FundingRoundsPage() {
                   <select
                     value={selectedSector}
                     onChange={e => setSelectedSector(e.target.value)}
-                    className="w-full bg-slate-800/80 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-white/15 focus:ring-1 focus:ring-white/30 min-h-[44px]"
+                    className="w-full bg-white/[0.06] border border-white/[0.1] rounded-lg px-3 py-2 text-sm text-white/90 focus:outline-none focus:border-white/15 focus:ring-1 focus:ring-white/30 min-h-[44px]"
                   >
                     {SECTORS.map(s => (
                       <option key={s} value={s}>{s}</option>
@@ -659,7 +659,7 @@ export default function FundingRoundsPage() {
                   <select
                     value={selectedAmountRange}
                     onChange={e => setSelectedAmountRange(Number(e.target.value))}
-                    className="w-full bg-slate-800/80 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-white/15 focus:ring-1 focus:ring-white/30 min-h-[44px]"
+                    className="w-full bg-white/[0.06] border border-white/[0.1] rounded-lg px-3 py-2 text-sm text-white/90 focus:outline-none focus:border-white/15 focus:ring-1 focus:ring-white/30 min-h-[44px]"
                   >
                     {AMOUNT_RANGES.map((r, i) => (
                       <option key={i} value={i}>{r.label}</option>
@@ -673,7 +673,7 @@ export default function FundingRoundsPage() {
                   <select
                     value={selectedYear}
                     onChange={e => setSelectedYear(e.target.value)}
-                    className="w-full bg-slate-800/80 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-white/15 focus:ring-1 focus:ring-white/30 min-h-[44px]"
+                    className="w-full bg-white/[0.06] border border-white/[0.1] rounded-lg px-3 py-2 text-sm text-white/90 focus:outline-none focus:border-white/15 focus:ring-1 focus:ring-white/30 min-h-[44px]"
                   >
                     {YEARS.map(y => (
                       <option key={y} value={y}>{y}</option>
@@ -696,7 +696,7 @@ export default function FundingRoundsPage() {
                       setSelectedAmountRange(0);
                       setSelectedYear('All');
                     }}
-                    className="text-xs text-slate-300 hover:text-white underline"
+                    className="text-xs text-white/70 hover:text-white underline"
                   >
                     Clear all filters
                   </button>
@@ -709,7 +709,7 @@ export default function FundingRoundsPage() {
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="border-b border-slate-700/50">
+                    <tr className="border-b border-white/[0.06]">
                       <th
                         className="text-left px-4 py-3 text-xs uppercase tracking-wider text-slate-400 cursor-pointer hover:text-white transition-colors"
                         onClick={() => handleSort('company')}
@@ -749,10 +749,10 @@ export default function FundingRoundsPage() {
                     {filteredRounds.map((round) => (
                       <tr
                         key={round.id}
-                        className="border-b border-slate-800/50 hover:bg-slate-800/30 transition-colors"
+                        className="border-b border-white/[0.04] hover:bg-white/[0.03] transition-colors"
                       >
                         <td className="px-4 py-3">
-                          <div className="font-medium text-slate-200">{round.company}</div>
+                          <div className="font-medium text-white/90">{round.company}</div>
                           {round.notes && (
                             <div className="text-xs text-slate-500 mt-0.5 max-w-[200px] truncate">{round.notes}</div>
                           )}
@@ -764,17 +764,17 @@ export default function FundingRoundsPage() {
                             {round.roundType}
                           </span>
                         </td>
-                        <td className="px-4 py-3 text-right font-mono text-slate-200 font-medium">
+                        <td className="px-4 py-3 text-right font-mono text-white/90 font-medium">
                           {formatAmount(round.amount)}
                         </td>
                         <td className="px-4 py-3 text-slate-400 hidden md:table-cell">
                           {formatDate(round.date)}
                         </td>
-                        <td className="px-4 py-3 text-slate-300 hidden lg:table-cell">
+                        <td className="px-4 py-3 text-white/70 hidden lg:table-cell">
                           {round.leadInvestor}
                         </td>
                         <td className="px-4 py-3 text-right hidden lg:table-cell">
-                          <span className={round.valuation ? 'text-slate-200 font-mono' : 'text-slate-600 italic'}>
+                          <span className={round.valuation ? 'text-white/90 font-mono' : 'text-slate-600 italic'}>
                             {formatValuation(round.valuation)}
                           </span>
                         </td>
@@ -797,7 +797,7 @@ export default function FundingRoundsPage() {
               </div>
 
               {/* Table footer */}
-              <div className="px-4 py-3 border-t border-slate-700/50 bg-slate-900/30">
+              <div className="px-4 py-3 border-t border-white/[0.06] bg-black/30">
                 <div className="flex items-center justify-between text-xs text-slate-500">
                   <span>
                     Total: {formatAmount(filteredRounds.reduce((sum, r) => sum + r.amount, 0))} across {filteredRounds.length} rounds
@@ -815,39 +815,39 @@ export default function FundingRoundsPage() {
             {/* Main leaderboard */}
             <div className="lg:col-span-2">
               <div className="card overflow-hidden">
-                <div className="px-5 py-4 border-b border-slate-700/50">
-                  <h2 className="text-lg font-semibold text-slate-100">Top 10 Most Active Space Investors</h2>
+                <div className="px-5 py-4 border-b border-white/[0.06]">
+                  <h2 className="text-lg font-semibold text-white/90">Top 10 Most Active Space Investors</h2>
                   <p className="text-xs text-slate-400 mt-1">Ranked by number of deals (2024-2026)</p>
                 </div>
-                <div className="divide-y divide-slate-800/50">
+                <div className="divide-y divide-white/[0.04]">
                   {investorLeaderboard.map((investor, index) => (
-                    <div key={investor.name} className="px-5 py-4 flex items-center gap-4 hover:bg-slate-800/30 transition-colors">
+                    <div key={investor.name} className="px-5 py-4 flex items-center gap-4 hover:bg-white/[0.03] transition-colors">
                       {/* Rank */}
                       <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0 ${
                         index === 0 ? 'bg-yellow-500/20 text-yellow-400 ring-1 ring-yellow-500/30' :
-                        index === 1 ? 'bg-slate-300/20 text-slate-300 ring-1 ring-slate-400/30' :
+                        index === 1 ? 'bg-slate-300/20 text-white/70 ring-1 ring-slate-400/30' :
                         index === 2 ? 'bg-amber-700/20 text-amber-600 ring-1 ring-amber-600/30' :
-                        'bg-slate-800 text-slate-500'
+                        'bg-white/[0.06] text-slate-500'
                       }`}>
                         {index + 1}
                       </div>
 
                       {/* Info */}
                       <div className="flex-1 min-w-0">
-                        <p className="text-slate-200 font-medium">{investor.name}</p>
+                        <p className="text-white/90 font-medium">{investor.name}</p>
                         <div className="flex flex-wrap gap-1 mt-1">
                           {investor.sectors.slice(0, 4).map(s => (
                             <span key={s} className={`px-1.5 py-0.5 rounded text-xs ${getSectorColor(s)}`}>{s}</span>
                           ))}
                           {investor.sectors.length > 4 && (
-                            <span className="px-1.5 py-0.5 rounded text-xs bg-slate-700 text-slate-400">+{investor.sectors.length - 4}</span>
+                            <span className="px-1.5 py-0.5 rounded text-xs bg-white/[0.06] text-slate-400">+{investor.sectors.length - 4}</span>
                           )}
                         </div>
                       </div>
 
                       {/* Stats */}
                       <div className="text-right flex-shrink-0">
-                        <p className="text-slate-300 font-bold">{investor.deals} deals</p>
+                        <p className="text-white/70 font-bold">{investor.deals} deals</p>
                         <p className="text-xs text-slate-500">{formatAmount(investor.totalAmount)} total</p>
 
         <RelatedModules modules={PAGE_RELATIONS['funding-rounds']} />
@@ -861,33 +861,33 @@ export default function FundingRoundsPage() {
             {/* Sidebar stats */}
             <div className="space-y-4">
               <div className="card p-5">
-                <h3 className="text-sm font-semibold text-slate-300 uppercase tracking-wider mb-3">Investor Highlights</h3>
+                <h3 className="text-sm font-semibold text-white/70 uppercase tracking-wider mb-3">Investor Highlights</h3>
                 <div className="space-y-4">
                   <div>
                     <p className="text-xs text-slate-500">Largest Single Investment</p>
-                    <p className="text-slate-200 font-medium">Founders Fund</p>
+                    <p className="text-white/90 font-medium">Founders Fund</p>
                     <p className="text-xs text-slate-400">$1.5B into Anduril Series F</p>
                   </div>
                   <div>
                     <p className="text-xs text-slate-500">Most Diverse Portfolio</p>
-                    <p className="text-slate-200 font-medium">a16z</p>
+                    <p className="text-white/90 font-medium">a16z</p>
                     <p className="text-xs text-slate-400">Active across 6+ sectors</p>
                   </div>
                   <div>
                     <p className="text-xs text-slate-500">Rising Space-Focused VC</p>
-                    <p className="text-slate-200 font-medium">Space Capital</p>
+                    <p className="text-white/90 font-medium">Space Capital</p>
                     <p className="text-xs text-slate-400">Dedicated space fund, early-stage focus</p>
                   </div>
                   <div>
                     <p className="text-xs text-slate-500">Strategic Investor of the Year</p>
-                    <p className="text-slate-200 font-medium">Lockheed Martin</p>
+                    <p className="text-white/90 font-medium">Lockheed Martin</p>
                     <p className="text-xs text-slate-400">$450M Terran Orbital acquisition</p>
                   </div>
                 </div>
               </div>
 
               <div className="card p-5">
-                <h3 className="text-sm font-semibold text-slate-300 uppercase tracking-wider mb-3">Investment Types</h3>
+                <h3 className="text-sm font-semibold text-white/70 uppercase tracking-wider mb-3">Investment Types</h3>
                 <div className="space-y-2.5">
                   {[
                     { label: 'Venture Capital', pct: 62, color: 'bg-white' },
@@ -899,9 +899,9 @@ export default function FundingRoundsPage() {
                     <div key={item.label}>
                       <div className="flex justify-between text-xs mb-1">
                         <span className="text-slate-400">{item.label}</span>
-                        <span className="text-slate-300 font-medium">{item.pct}%</span>
+                        <span className="text-white/70 font-medium">{item.pct}%</span>
                       </div>
-                      <div className="h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                      <div className="h-1.5 bg-white/[0.06] rounded-full overflow-hidden">
                         <div
                           className={`h-full ${item.color} rounded-full transition-all duration-500`}
                           style={{ width: `${item.pct}%` }}
@@ -954,7 +954,7 @@ export default function FundingRoundsPage() {
 
               <div className="card p-5">
                 <p className="text-xs uppercase tracking-wider text-slate-400 mb-2">2026 Pace (YTD)</p>
-                <p className="text-3xl font-bold text-slate-300">
+                <p className="text-3xl font-bold text-white/70">
                   {formatAmount(trendAnalysis.total2026)}
                 </p>
                 <p className="text-xs text-slate-500 mt-1">
@@ -965,21 +965,21 @@ export default function FundingRoundsPage() {
 
             {/* Hot Sectors */}
             <div className="card p-5">
-              <h3 className="text-lg font-semibold text-slate-100 mb-4">Hot Sectors in 2025</h3>
+              <h3 className="text-lg font-semibold text-white/90 mb-4">Hot Sectors in 2025</h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 {trendAnalysis.hotSectors.map(([sector, deals], i) => {
                   const sectorAmount = FUNDING_ROUNDS
                     .filter(r => r.sector === sector && r.date.startsWith('2025'))
                     .reduce((s, r) => s + r.amount, 0);
                   return (
-                    <div key={sector} className="bg-slate-800/40 rounded-xl p-4 border border-slate-700/30">
+                    <div key={sector} className="bg-white/[0.04] rounded-xl p-4 border border-white/[0.04]">
                       <div className="flex items-center gap-2 mb-2">
                         <span className={`w-2 h-2 rounded-full ${
                           i === 0 ? 'bg-white' : i === 1 ? 'bg-purple-400' : i === 2 ? 'bg-amber-400' : 'bg-emerald-400'
                         }`} />
                         <span className={`text-sm font-medium px-2 py-0.5 rounded ${getSectorColor(sector)}`}>{sector}</span>
                       </div>
-                      <p className="text-2xl font-bold text-slate-200">{deals} deals</p>
+                      <p className="text-2xl font-bold text-white/90">{deals} deals</p>
                       <p className="text-xs text-slate-500 mt-1">{formatAmount(sectorAmount)} total funding</p>
                     </div>
                   );
@@ -991,7 +991,7 @@ export default function FundingRoundsPage() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Funding by Year */}
               <div className="card p-5">
-                <h3 className="text-lg font-semibold text-slate-100 mb-4">Funding by Year</h3>
+                <h3 className="text-lg font-semibold text-white/90 mb-4">Funding by Year</h3>
                 <div className="space-y-4">
                   {[
                     { year: '2024', amount: trendAnalysis.total2024, deals: FUNDING_ROUNDS.filter(r => r.date.startsWith('2024')).length, color: 'bg-blue-500' },
@@ -1003,10 +1003,10 @@ export default function FundingRoundsPage() {
                     return (
                       <div key={item.year}>
                         <div className="flex justify-between text-sm mb-1.5">
-                          <span className="text-slate-300 font-medium">{item.year}</span>
-                          <span className="text-slate-200 font-mono">{formatAmount(item.amount)} ({item.deals} deals)</span>
+                          <span className="text-white/70 font-medium">{item.year}</span>
+                          <span className="text-white/90 font-mono">{formatAmount(item.amount)} ({item.deals} deals)</span>
                         </div>
-                        <div className="h-3 bg-slate-800 rounded-full overflow-hidden">
+                        <div className="h-3 bg-white/[0.06] rounded-full overflow-hidden">
                           <div
                             className={`h-full ${item.color} rounded-full transition-all duration-700`}
                             style={{ width: `${pct}%` }}
@@ -1020,7 +1020,7 @@ export default function FundingRoundsPage() {
 
               {/* Funding by Sector (all time) */}
               <div className="card p-5">
-                <h3 className="text-lg font-semibold text-slate-100 mb-4">Funding by Sector (All Time)</h3>
+                <h3 className="text-lg font-semibold text-white/90 mb-4">Funding by Sector (All Time)</h3>
                 <div className="space-y-3">
                   {trendAnalysis.sortedSectors.slice(0, 8).map(([sector, amount]) => {
                     const maxSectorAmount = trendAnalysis.sortedSectors[0]?.[1] || 1;
@@ -1030,9 +1030,9 @@ export default function FundingRoundsPage() {
                       <div key={sector}>
                         <div className="flex justify-between text-sm mb-1">
                           <span className={`px-2 py-0.5 rounded text-xs font-medium ${getSectorColor(sector)}`}>{sector}</span>
-                          <span className="text-slate-300 text-xs font-mono">{formatAmount(amount)} / {dealCount} deals</span>
+                          <span className="text-white/70 text-xs font-mono">{formatAmount(amount)} / {dealCount} deals</span>
                         </div>
-                        <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
+                        <div className="h-2 bg-white/[0.06] rounded-full overflow-hidden">
                           <div
                             className="h-full bg-gradient-to-r from-white to-blue-500 rounded-full transition-all duration-700"
                             style={{ width: `${pct}%` }}
@@ -1047,9 +1047,9 @@ export default function FundingRoundsPage() {
 
             {/* Key Trends Cards */}
             <div className="card p-5">
-              <h3 className="text-lg font-semibold text-slate-100 mb-4">Key Trends</h3>
+              <h3 className="text-lg font-semibold text-white/90 mb-4">Key Trends</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                <div className="bg-slate-800/40 rounded-xl p-4 border border-emerald-500/20">
+                <div className="bg-white/[0.04] rounded-xl p-4 border border-emerald-500/20">
                   <div className="flex items-start gap-3">
                     <span className="text-2xl flex-shrink-0 mt-0.5" aria-hidden="true">&#9650;</span>
                     <div>
@@ -1062,7 +1062,7 @@ export default function FundingRoundsPage() {
                   </div>
                 </div>
 
-                <div className="bg-slate-800/40 rounded-xl p-4 border border-purple-500/20">
+                <div className="bg-white/[0.04] rounded-xl p-4 border border-purple-500/20">
                   <div className="flex items-start gap-3">
                     <span className="text-2xl flex-shrink-0 mt-0.5" aria-hidden="true">&#9650;</span>
                     <div>
@@ -1075,7 +1075,7 @@ export default function FundingRoundsPage() {
                   </div>
                 </div>
 
-                <div className="bg-slate-800/40 rounded-xl p-4 border border-amber-500/20">
+                <div className="bg-white/[0.04] rounded-xl p-4 border border-amber-500/20">
                   <div className="flex items-start gap-3">
                     <span className="text-2xl flex-shrink-0 mt-0.5" aria-hidden="true">&#9650;</span>
                     <div>
@@ -1088,11 +1088,11 @@ export default function FundingRoundsPage() {
                   </div>
                 </div>
 
-                <div className="bg-slate-800/40 rounded-xl p-4 border border-white/10">
+                <div className="bg-white/[0.04] rounded-xl p-4 border border-white/10">
                   <div className="flex items-start gap-3">
                     <span className="text-2xl flex-shrink-0 mt-0.5" aria-hidden="true">&#9650;</span>
                     <div>
-                      <p className="text-sm font-semibold text-slate-300">Space Station Race</p>
+                      <p className="text-sm font-semibold text-white/70">Space Station Race</p>
                       <p className="text-xs text-slate-400 mt-1">
                         With ISS decommissioning approaching, commercial station developers Sierra Space, Axiom, Vast,
                         and Voyager raised a combined $1B+ in 2025. NASA contracts anchoring market confidence.
@@ -1101,7 +1101,7 @@ export default function FundingRoundsPage() {
                   </div>
                 </div>
 
-                <div className="bg-slate-800/40 rounded-xl p-4 border border-blue-500/20">
+                <div className="bg-white/[0.04] rounded-xl p-4 border border-blue-500/20">
                   <div className="flex items-start gap-3">
                     <span className="text-2xl flex-shrink-0 mt-0.5" aria-hidden="true">&#9650;</span>
                     <div>
@@ -1114,7 +1114,7 @@ export default function FundingRoundsPage() {
                   </div>
                 </div>
 
-                <div className="bg-slate-800/40 rounded-xl p-4 border border-rose-500/20">
+                <div className="bg-white/[0.04] rounded-xl p-4 border border-rose-500/20">
                   <div className="flex items-start gap-3">
                     <span className="text-2xl flex-shrink-0 mt-0.5" aria-hidden="true">&#9650;</span>
                     <div>

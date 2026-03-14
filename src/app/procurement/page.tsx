@@ -130,7 +130,7 @@ const OPP_TYPES = [
   { value: 'presolicitation', label: 'Pre-Solicitation', color: 'bg-blue-500/20 text-blue-400' },
   { value: 'award', label: 'Award', color: 'bg-purple-500/20 text-purple-400' },
   { value: 'sources_sought', label: 'Sources Sought', color: 'bg-yellow-500/20 text-yellow-400' },
-  { value: 'special_notice', label: 'Special Notice', color: 'bg-white/10 text-slate-300' },
+  { value: 'special_notice', label: 'Special Notice', color: 'bg-white/10 text-white/70' },
 ];
 const SET_ASIDES = [
   'Total Small Business',
@@ -201,7 +201,7 @@ function StatsOverview({ stats }: { stats: ProcurementStats | null }) {
         <StaggerItem key={i}>
           <div className="card p-4 text-center">
             <div className="text-2xl mb-1">{card.icon}</div>
-            <div className="text-2xl font-bold text-slate-300">{card.value}</div>
+            <div className="text-2xl font-bold text-white/70">{card.value}</div>
             <div className="text-xs text-slate-400 mt-1">{card.label}</div>
           </div>
         </StaggerItem>
@@ -225,7 +225,7 @@ function OpportunityCard({ opp }: { opp: ProcurementOpportunity }) {
             <span className={`text-xs px-2 py-0.5 rounded ${typeInfo.color}`}>
               {typeInfo.label}
             </span>
-            <span className="text-xs bg-slate-700 text-slate-300 px-2 py-0.5 rounded">
+            <span className="text-xs bg-slate-700 text-white/70 px-2 py-0.5 rounded">
               {opp.agency}
             </span>
             {opp.setAside && opp.setAside !== 'None' && (
@@ -268,7 +268,7 @@ function OpportunityCard({ opp }: { opp: ProcurementOpportunity }) {
           </div>
 
           {expanded && (
-            <div className="mt-3 space-y-2 text-sm text-slate-300 border-t border-slate-700 pt-3">
+            <div className="mt-3 space-y-2 text-sm text-white/70 border-t border-white/[0.08] pt-3">
               {opp.description && (
                 <p className="text-slate-400 text-xs leading-relaxed">{opp.description}</p>
               )}
@@ -277,21 +277,21 @@ function OpportunityCard({ opp }: { opp: ProcurementOpportunity }) {
                 {opp.office && <div><span className="text-slate-500">Office:</span> {opp.office}</div>}
                 {opp.placeOfPerformance && <div><span className="text-slate-500">Location:</span> {opp.placeOfPerformance}</div>}
                 {opp.pointOfContact && <div><span className="text-slate-500">Contact:</span> {opp.pointOfContact}</div>}
-                {opp.contactEmail && <div><span className="text-slate-500">Email:</span> <a href={`mailto:${opp.contactEmail}`} className="text-slate-300 hover:underline">{opp.contactEmail}</a></div>}
+                {opp.contactEmail && <div><span className="text-slate-500">Email:</span> <a href={`mailto:${opp.contactEmail}`} className="text-white/70 hover:underline">{opp.contactEmail}</a></div>}
                 {opp.naicsDescription && <div><span className="text-slate-500">NAICS:</span> {opp.naicsCode} - {opp.naicsDescription}</div>}
                 {opp.postedDate && <div><span className="text-slate-500">Posted:</span> {formatDate(opp.postedDate)}</div>}
               </div>
               {opp.tags.length > 0 && (
                 <div className="flex flex-wrap gap-1 mt-2">
                   {opp.tags.map(tag => (
-                    <span key={tag} className="text-xs bg-slate-800 text-slate-400 px-2 py-0.5 rounded">
+                    <span key={tag} className="text-xs bg-white/[0.06] text-slate-400 px-2 py-0.5 rounded">
                       {tag}
                     </span>
                   ))}
                 </div>
               )}
               {opp.samUrl && (
-                <a href={opp.samUrl} target="_blank" rel="noopener noreferrer" className="text-slate-300 hover:underline text-xs inline-block mt-2">
+                <a href={opp.samUrl} target="_blank" rel="noopener noreferrer" className="text-white/70 hover:underline text-xs inline-block mt-2">
                   View on SAM.gov
                 </a>
               )}
@@ -318,7 +318,7 @@ function SBIRCard({ solicitation }: { solicitation: SBIRSolicitation }) {
             <span className={`text-xs px-2 py-0.5 rounded ${solicitation.program === 'SBIR' ? 'bg-blue-500/20 text-blue-400' : 'bg-purple-500/20 text-purple-400'}`}>
               {solicitation.program}
             </span>
-            <span className="text-xs bg-slate-700 text-slate-300 px-2 py-0.5 rounded">
+            <span className="text-xs bg-slate-700 text-white/70 px-2 py-0.5 rounded">
               {solicitation.agency}
             </span>
             {solicitation.phase && (
@@ -341,7 +341,7 @@ function SBIRCard({ solicitation }: { solicitation: SBIRSolicitation }) {
             className="font-semibold text-white text-sm md:text-base mb-1 cursor-pointer hover:text-white transition-colors"
             onClick={() => setExpanded(!expanded)}
           >
-            {solicitation.topicNumber && <span className="text-slate-300 mr-2">{solicitation.topicNumber}</span>}
+            {solicitation.topicNumber && <span className="text-white/70 mr-2">{solicitation.topicNumber}</span>}
             {solicitation.topicTitle}
           </h3>
 
@@ -357,19 +357,19 @@ function SBIRCard({ solicitation }: { solicitation: SBIRSolicitation }) {
           </div>
 
           {expanded && (
-            <div className="mt-3 space-y-2 text-sm border-t border-slate-700 pt-3">
+            <div className="mt-3 space-y-2 text-sm border-t border-white/[0.08] pt-3">
               {solicitation.description && (
                 <p className="text-slate-400 text-xs leading-relaxed">{solicitation.description}</p>
               )}
               {solicitation.keywords.length > 0 && (
                 <div className="flex flex-wrap gap-1">
                   {solicitation.keywords.map(kw => (
-                    <span key={kw} className="text-xs bg-slate-800 text-slate-400 px-2 py-0.5 rounded">{kw}</span>
+                    <span key={kw} className="text-xs bg-white/[0.06] text-slate-400 px-2 py-0.5 rounded">{kw}</span>
                   ))}
                 </div>
               )}
               {solicitation.url && (
-                <a href={solicitation.url} target="_blank" rel="noopener noreferrer" className="text-slate-300 hover:underline text-xs inline-block mt-2">
+                <a href={solicitation.url} target="_blank" rel="noopener noreferrer" className="text-white/70 hover:underline text-xs inline-block mt-2">
                   View Full Solicitation
                 </a>
               )}
@@ -398,8 +398,8 @@ function BudgetTable({ items, agency }: { items: BudgetItem[]; agency: string })
 
         return (
           <div key={year} className="card mb-3 overflow-hidden">
-            <div className="p-3 bg-slate-800/50 border-b border-slate-700 flex items-center justify-between">
-              <span className="font-semibold text-slate-300">FY{year}</span>
+            <div className="p-3 bg-white/[0.04] border-b border-white/[0.08] flex items-center justify-between">
+              <span className="font-semibold text-white/70">FY{year}</span>
               <div className="flex gap-4 text-xs text-slate-400">
                 <span>Request: <span className="text-white font-semibold">${totalRequest.toLocaleString()}M</span></span>
                 {totalEnacted > 0 && (
@@ -410,7 +410,7 @@ function BudgetTable({ items, agency }: { items: BudgetItem[]; agency: string })
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-slate-700 text-xs text-slate-400">
+                  <tr className="border-b border-white/[0.08] text-xs text-slate-400">
                     <th className="text-left p-2 pl-3">Category / Program</th>
                     <th className="text-right p-2">Request</th>
                     <th className="text-right p-2">Enacted</th>
@@ -420,7 +420,7 @@ function BudgetTable({ items, agency }: { items: BudgetItem[]; agency: string })
                 </thead>
                 <tbody>
                   {yearItems.map(item => (
-                    <tr key={item.id} className="border-b border-slate-800 hover:bg-slate-800/30">
+                    <tr key={item.id} className="border-b border-white/[0.06] hover:bg-white/[0.03]">
                       <td className="p-2 pl-3">
                         <div className="text-white text-xs">{item.program || item.category}</div>
                         {item.program && <div className="text-slate-500 text-xs">{item.category}</div>}
@@ -441,7 +441,7 @@ function BudgetTable({ items, agency }: { items: BudgetItem[]; agency: string })
               </table>
             </div>
             {yearItems[0]?.source && (
-              <div className="p-2 px-3 text-xs text-slate-500 border-t border-slate-800">
+              <div className="p-2 px-3 text-xs text-slate-500 border-t border-white/[0.06]">
                 Source: {yearItems[0].source}
               </div>
             )}
@@ -464,8 +464,8 @@ function CongressionalCard({ activity }: { activity: CongressionalActivity }) {
         <div className="text-2xl flex-shrink-0">{typeInfo.icon}</div>
         <div className="flex-1 min-w-0">
           <div className="flex flex-wrap items-center gap-2 mb-2">
-            <span className="text-xs bg-slate-700 text-slate-300 px-2 py-0.5 rounded">{typeInfo.label}</span>
-            <span className="text-xs bg-white/10 text-slate-300 px-2 py-0.5 rounded">{activity.committee}</span>
+            <span className="text-xs bg-slate-700 text-white/70 px-2 py-0.5 rounded">{typeInfo.label}</span>
+            <span className="text-xs bg-white/10 text-white/70 px-2 py-0.5 rounded">{activity.committee}</span>
             {activity.status && (
               <span className={`text-xs px-2 py-0.5 rounded ${
                 activity.status === 'completed' ? 'bg-green-500/20 text-green-400' :
@@ -489,25 +489,25 @@ function CongressionalCard({ activity }: { activity: CongressionalActivity }) {
 
           <div className="flex flex-wrap items-center gap-3 text-xs text-slate-400">
             {activity.date && <span>{formatDate(activity.date)}</span>}
-            {activity.billNumber && <span className="text-slate-300">{activity.billNumber}</span>}
+            {activity.billNumber && <span className="text-white/70">{activity.billNumber}</span>}
             {activity.subcommittee && <span>{activity.subcommittee}</span>}
           </div>
 
           {expanded && (
-            <div className="mt-3 space-y-2 text-sm border-t border-slate-700 pt-3">
+            <div className="mt-3 space-y-2 text-sm border-t border-white/[0.08] pt-3">
               {activity.description && (
                 <p className="text-slate-400 text-xs leading-relaxed">{activity.description}</p>
               )}
               {activity.witnesses.length > 0 && (
                 <div>
                   <span className="text-slate-500 text-xs">Witnesses: </span>
-                  <span className="text-xs text-slate-300">{activity.witnesses.join(', ')}</span>
+                  <span className="text-xs text-white/70">{activity.witnesses.join(', ')}</span>
                 </div>
               )}
               {activity.relevance && (
-                <div className="bg-slate-800/50 p-2 rounded text-xs">
-                  <span className="text-slate-300 font-semibold">Industry Impact: </span>
-                  <span className="text-slate-300">{activity.relevance}</span>
+                <div className="bg-white/[0.04] p-2 rounded text-xs">
+                  <span className="text-white/70 font-semibold">Industry Impact: </span>
+                  <span className="text-white/70">{activity.relevance}</span>
                 </div>
               )}
             </div>
@@ -718,21 +718,21 @@ function ProcurementContent() {
 
         {/* Tabs */}
         <ScrollReveal delay={0.1}>
-        <div className="flex flex-wrap gap-1 mb-6 bg-slate-900 p-1 rounded-lg">
+        <div className="flex flex-wrap gap-1 mb-6 bg-black p-1 rounded-lg">
           {tabs.map(tab => (
             <button
               key={tab.id}
               onClick={() => setTab(tab.id)}
               className={`flex items-center gap-1.5 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                 currentTab === tab.id
-                  ? 'bg-white/10 text-slate-300'
-                  : 'text-slate-400 hover:text-white hover:bg-slate-800'
+                  ? 'bg-white/10 text-white/70'
+                  : 'text-slate-400 hover:text-white hover:bg-white/[0.06]'
               }`}
             >
               <span>{tab.icon}</span>
               <span className="hidden sm:inline">{tab.label}</span>
               {tab.count != null && tab.count > 0 && (
-                <span className="text-xs bg-slate-700 text-slate-300 px-1.5 py-0.5 rounded-full ml-1">
+                <span className="text-xs bg-slate-700 text-white/70 px-1.5 py-0.5 rounded-full ml-1">
                   {tab.count}
                 </span>
               )}
@@ -753,13 +753,13 @@ function ProcurementContent() {
                   placeholder="Search opportunities..."
                   value={searchQuery}
                   onChange={e => { setSearchQuery(e.target.value); setOppOffset(0); }}
-                  className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+                  className="bg-white/[0.06] border border-white/[0.08] text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                 />
                 <select
                   aria-label="Filter by agency"
                   value={agencyFilter}
                   onChange={e => { setAgencyFilter(e.target.value); setOppOffset(0); }}
-                  className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+                  className="bg-white/[0.06] border border-white/[0.08] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                 >
                   <option value="">All Agencies</option>
                   {AGENCIES.map(a => <option key={a} value={a}>{a}</option>)}
@@ -768,7 +768,7 @@ function ProcurementContent() {
                   aria-label="Filter by type"
                   value={typeFilter}
                   onChange={e => { setTypeFilter(e.target.value); setOppOffset(0); }}
-                  className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+                  className="bg-white/[0.06] border border-white/[0.08] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                 >
                   <option value="">All Types</option>
                   {OPP_TYPES.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
@@ -777,7 +777,7 @@ function ProcurementContent() {
                   aria-label="Filter by set-aside"
                   value={setAsideFilter}
                   onChange={e => { setSetAsideFilter(e.target.value); setOppOffset(0); }}
-                  className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+                  className="bg-white/[0.06] border border-white/[0.08] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                 >
                   <option value="">All Set-Asides</option>
                   {SET_ASIDES.map(s => <option key={s} value={s}>{s}</option>)}
@@ -820,7 +820,7 @@ function ProcurementContent() {
                     <button
                       onClick={() => setOppOffset(Math.max(0, oppOffset - 25))}
                       disabled={oppOffset === 0}
-                      className="px-4 py-2 bg-slate-800 text-white rounded disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-700 text-sm"
+                      className="px-4 py-2 bg-white/[0.06] text-white rounded disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-700 text-sm"
                     >
                       Previous
                     </button>
@@ -830,7 +830,7 @@ function ProcurementContent() {
                     <button
                       onClick={() => setOppOffset(oppOffset + 25)}
                       disabled={oppOffset + 25 >= oppTotal}
-                      className="px-4 py-2 bg-slate-800 text-white rounded disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-700 text-sm"
+                      className="px-4 py-2 bg-white/[0.06] text-white rounded disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-700 text-sm"
                     >
                       Next
                     </button>
@@ -850,7 +850,7 @@ function ProcurementContent() {
                   aria-label="Filter SBIR by agency"
                   value={sbirAgencyFilter}
                   onChange={e => setSBIRAgencyFilter(e.target.value)}
-                  className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+                  className="bg-white/[0.06] border border-white/[0.08] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                 >
                   <option value="">All Agencies</option>
                   <option value="NASA">NASA</option>
@@ -861,7 +861,7 @@ function ProcurementContent() {
                   aria-label="Filter by program"
                   value={sbirProgramFilter}
                   onChange={e => setSBIRProgramFilter(e.target.value)}
-                  className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+                  className="bg-white/[0.06] border border-white/[0.08] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                 >
                   <option value="">All Programs</option>
                   <option value="SBIR">SBIR</option>
@@ -902,7 +902,7 @@ function ProcurementContent() {
                   aria-label="Filter budget by agency"
                   value={budgetAgencyFilter}
                   onChange={e => setBudgetAgencyFilter(e.target.value)}
-                  className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+                  className="bg-white/[0.06] border border-white/[0.08] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                 >
                   <option value="">All Agencies</option>
                   <option value="NASA">NASA</option>
@@ -914,7 +914,7 @@ function ProcurementContent() {
                   aria-label="Filter by fiscal year"
                   value={budgetYearFilter}
                   onChange={e => setBudgetYearFilter(e.target.value)}
-                  className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+                  className="bg-white/[0.06] border border-white/[0.08] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                 >
                   <option value="">All Years</option>
                   <option value="2026">FY2026</option>
@@ -961,7 +961,7 @@ function ProcurementContent() {
                   aria-label="Filter congressional activity by type"
                   value={congressionalTypeFilter}
                   onChange={e => setCongressionalTypeFilter(e.target.value)}
-                  className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+                  className="bg-white/[0.06] border border-white/[0.08] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                 >
                   <option value="">All Types</option>
                   {CONGRESSIONAL_TYPES.map(t => <option key={t.value} value={t.value}>{t.icon} {t.label}</option>)}
@@ -970,7 +970,7 @@ function ProcurementContent() {
                   aria-label="Filter by committee"
                   value={congressionalCommitteeFilter}
                   onChange={e => setCongressionalCommitteeFilter(e.target.value)}
-                  className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+                  className="bg-white/[0.06] border border-white/[0.08] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                 >
                   <option value="">All Committees</option>
                   {COMMITTEES.map(c => <option key={c} value={c}>{c}</option>)}
@@ -1034,7 +1034,7 @@ function ProcurementContent() {
                       </div>
                       <div className="flex items-center gap-3">
                         {search.newMatchCount > 0 && (
-                          <span className="bg-white/10 text-slate-300 text-xs px-2 py-1 rounded-full font-semibold">
+                          <span className="bg-white/10 text-white/70 text-xs px-2 py-1 rounded-full font-semibold">
                             {search.newMatchCount} new
                           </span>
                         )}

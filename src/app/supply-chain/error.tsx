@@ -20,7 +20,7 @@ export default function Error({ error, reset }: { error: Error & { digest?: stri
           </button>
           <Link
             href="/"
-            className="px-6 py-3 bg-slate-700 hover:bg-slate-600 text-white rounded-lg font-medium transition-colors text-center min-h-[44px] flex items-center justify-center"
+            className="px-6 py-3 bg-white/[0.08] hover:bg-white/[0.1] text-white rounded-lg font-medium transition-colors text-center min-h-[44px] flex items-center justify-center"
           >
             Go Home
           </Link>

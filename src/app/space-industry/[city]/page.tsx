@@ -94,9 +94,9 @@ export default function CityPage({ params }: Props) {
       <div className="container mx-auto px-4 max-w-7xl">
         {/* Breadcrumb */}
         <nav className="flex items-center gap-2 text-sm text-slate-500 pt-8 mb-8">
-          <Link href="/" className="hover:text-slate-300 transition-colors">Home</Link>
+          <Link href="/" className="hover:text-white transition-colors">Home</Link>
           <span>/</span>
-          <Link href="/space-talent" className="hover:text-slate-300 transition-colors">Space Industry</Link>
+          <Link href="/space-talent" className="hover:text-white transition-colors">Space Industry</Link>
           <span>/</span>
           <span className="text-slate-400">{city.name}</span>
         </nav>
@@ -106,14 +106,14 @@ export default function CityPage({ params }: Props) {
           <h1 className="text-3xl md:text-4xl font-bold text-white leading-tight mb-4">
             Space Industry in {city.name}, {city.state}
           </h1>
-          <p className="text-lg text-slate-300 leading-relaxed">{city.heroText}</p>
+          <p className="text-lg text-white/90 leading-relaxed">{city.heroText}</p>
         </header>
 
         {/* Key Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
           {city.stats.map((stat) => (
-            <div key={stat.label} className="bg-slate-800/60 border border-slate-700/50 rounded-xl p-4 text-center">
-              <div className="text-2xl font-bold text-slate-300 mb-1">{stat.value}</div>
+            <div key={stat.label} className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-4 text-center">
+              <div className="text-2xl font-bold text-white/90 mb-1">{stat.value}</div>
               <div className="text-xs text-slate-400">{stat.label}</div>
             </div>
           ))}
@@ -124,10 +124,10 @@ export default function CityPage({ params }: Props) {
           <h2 className="text-2xl font-bold text-white mb-6">Key Space Facilities</h2>
           <div className="space-y-4">
             {city.keyFacilities.map((facility) => (
-              <div key={facility.name} className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-4">
+              <div key={facility.name} className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-4">
                 <div className="flex items-center gap-3 mb-2">
                   <h3 className="text-white font-semibold">{facility.name}</h3>
-                  <span className="text-xs px-2 py-0.5 rounded-full bg-slate-700/50 text-slate-400">
+                  <span className="text-xs px-2 py-0.5 rounded-full bg-white/[0.04] text-slate-400">
                     {facility.type}
                   </span>
                 </div>
@@ -143,7 +143,7 @@ export default function CityPage({ params }: Props) {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-slate-700/50">
+                <tr className="border-b border-white/[0.06]">
                   <th className="text-left text-slate-400 font-medium py-3 pr-4">Company</th>
                   <th className="text-left text-slate-400 font-medium py-3 pr-4">Focus Area</th>
                   <th className="text-left text-slate-400 font-medium py-3">Profile</th>
@@ -151,13 +151,13 @@ export default function CityPage({ params }: Props) {
               </thead>
               <tbody>
                 {city.majorCompanies.map((company) => (
-                  <tr key={company.slug} className="border-b border-slate-700/30">
+                  <tr key={company.slug} className="border-b border-white/[0.04]">
                     <td className="py-3 pr-4 text-white font-medium">{company.name}</td>
                     <td className="py-3 pr-4 text-slate-400">{company.focus}</td>
                     <td className="py-3">
                       <Link
                         href={`/company-profiles/${company.slug}`}
-                        className="text-slate-300 hover:underline text-sm"
+                        className="text-white/90 hover:underline text-sm"
                       >
                         View profile
                       </Link>
@@ -168,7 +168,7 @@ export default function CityPage({ params }: Props) {
             </table>
           </div>
           <p className="text-slate-500 text-sm mt-4">
-            <Link href="/company-profiles" className="text-slate-300 hover:underline">
+            <Link href="/company-profiles" className="text-white/90 hover:underline">
               Browse all 200+ space company profiles
             </Link>
           </p>
@@ -177,7 +177,7 @@ export default function CityPage({ params }: Props) {
         {/* Job Market */}
         <section className="mb-12">
           <h2 className="text-2xl font-bold text-white mb-6">Space Industry Job Market</h2>
-          <div className="bg-slate-800/60 border border-slate-700/50 rounded-xl p-6">
+          <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
               <div>
                 <div className="text-sm text-slate-400 mb-1">Average Salary</div>
@@ -192,7 +192,7 @@ export default function CityPage({ params }: Props) {
               <div className="text-sm text-slate-400 mb-3">Top Roles</div>
               <div className="flex flex-wrap gap-2">
                 {city.jobMarket.topRoles.map((role) => (
-                  <span key={role} className="text-xs px-3 py-1.5 rounded-full bg-slate-700/50 text-slate-300">
+                  <span key={role} className="text-xs px-3 py-1.5 rounded-full bg-white/[0.04] text-slate-300">
                     {role}
                   </span>
                 ))}
@@ -200,7 +200,7 @@ export default function CityPage({ params }: Props) {
             </div>
           </div>
           <p className="text-slate-500 text-sm mt-4">
-            <Link href="/space-talent" className="text-slate-300 hover:underline">
+            <Link href="/space-talent" className="text-white/90 hover:underline">
               Browse all space industry jobs
             </Link>
           </p>
@@ -223,7 +223,7 @@ export default function CityPage({ params }: Props) {
         {city.nearbyLaunchSites && city.nearbyLaunchSites.length > 0 && (
           <section className="mb-12">
             <h2 className="text-2xl font-bold text-white mb-6">Nearby Launch Sites</h2>
-            <div className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-4">
+            <div className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-4">
               <ul className="space-y-2">
                 {city.nearbyLaunchSites.map((site) => (
                   <li key={site} className="text-slate-300">{site}</li>
@@ -231,7 +231,7 @@ export default function CityPage({ params }: Props) {
               </ul>
             </div>
             <p className="text-slate-500 text-sm mt-4">
-              <Link href="/spaceports" className="text-slate-300 hover:underline">
+              <Link href="/spaceports" className="text-white/90 hover:underline">
                 View all global launch sites
               </Link>
             </p>
@@ -243,7 +243,7 @@ export default function CityPage({ params }: Props) {
           <h2 className="text-2xl font-bold text-white mb-6">Frequently Asked Questions</h2>
           <div className="space-y-4">
             {faqItems.map((item, i) => (
-              <div key={i} className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-4">
+              <div key={i} className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-4">
                 <h3 className="text-white font-semibold mb-2">{item.question}</h3>
                 <p className="text-slate-400 text-sm">{item.answer}</p>
               </div>
@@ -252,7 +252,7 @@ export default function CityPage({ params }: Props) {
         </section>
 
         {/* CTA */}
-        <div className="bg-slate-800/60 border border-slate-700/50 rounded-xl p-6 text-center mb-12">
+        <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-6 text-center mb-12">
           <h3 className="text-lg font-bold text-white mb-2">
             Track the {city.name} space ecosystem with SpaceNexus
           </h3>
@@ -268,14 +268,14 @@ export default function CityPage({ params }: Props) {
         </div>
 
         {/* Other Cities */}
-        <section className="border-t border-slate-700/50 pt-8">
+        <section className="border-t border-white/[0.06] pt-8">
           <h3 className="text-lg font-bold text-white mb-4">Explore Other Space Industry Hubs</h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {otherCities.map((c) => (
               <Link
                 key={c.slug}
                 href={`/space-industry/${c.slug}`}
-                className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 text-center hover:border-white/15 transition-colors"
+                className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-3 text-center hover:border-white/15 transition-colors"
               >
                 <div className="text-white text-sm font-medium">{c.name}</div>
                 <div className="text-slate-500 text-xs">{c.state}</div>

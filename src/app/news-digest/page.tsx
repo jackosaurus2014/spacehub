@@ -312,7 +312,7 @@ export default function NewsDigestPage() {
   const filteredTotal = DIGESTS.reduce((sum, d) => sum + filterItems(d.items).length, 0);
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100">
+    <div className="min-h-screen bg-black text-white">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
         <div className="flex items-start justify-between gap-4">
           <div className="flex-1">
@@ -333,7 +333,7 @@ export default function NewsDigestPage() {
 
         {/* Filters */}
         <ScrollReveal delay={0.1}>
-          <div className="mt-8 bg-slate-900/60 border border-slate-800 rounded-xl p-5">
+          <div className="mt-8 bg-black/60 border border-white/[0.06] rounded-xl p-5">
             <div className="flex flex-col sm:flex-row gap-5">
               {/* Category Filter */}
               <div className="flex-1">
@@ -346,7 +346,7 @@ export default function NewsDigestPage() {
                     className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${
                       selectedCategory === 'All'
                         ? 'bg-white/10 text-slate-300 border-white/15'
-                        : 'bg-slate-800/50 text-slate-400 border-slate-700 hover:border-slate-600'
+                        : 'bg-white/[0.04] text-slate-400 border-white/[0.06] hover:border-white/[0.1]'
                     }`}
                   >
                     All
@@ -358,7 +358,7 @@ export default function NewsDigestPage() {
                       className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${
                         selectedCategory === cat
                           ? CATEGORY_COLORS[cat]
-                          : 'bg-slate-800/50 text-slate-400 border-slate-700 hover:border-slate-600'
+                          : 'bg-white/[0.04] text-slate-400 border-white/[0.06] hover:border-white/[0.1]'
                       }`}
                     >
                       {CATEGORY_ICONS[cat]} {cat}
@@ -378,7 +378,7 @@ export default function NewsDigestPage() {
                     className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${
                       selectedSignificance === 'All'
                         ? 'bg-white/10 text-slate-300 border-white/15'
-                        : 'bg-slate-800/50 text-slate-400 border-slate-700 hover:border-slate-600'
+                        : 'bg-white/[0.04] text-slate-400 border-white/[0.06] hover:border-white/[0.1]'
                     }`}
                   >
                     All
@@ -390,7 +390,7 @@ export default function NewsDigestPage() {
                       className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${
                         selectedSignificance === sig
                           ? SIGNIFICANCE_STYLES[sig].badge
-                          : 'bg-slate-800/50 text-slate-400 border-slate-700 hover:border-slate-600'
+                          : 'bg-white/[0.04] text-slate-400 border-white/[0.06] hover:border-white/[0.1]'
                       }`}
                     >
                       {SIGNIFICANCE_STYLES[sig].label}
@@ -427,8 +427,8 @@ export default function NewsDigestPage() {
                     <span className="text-lg font-bold text-white">{digest.label}</span>
                     <span className="text-sm text-slate-500">{digest.date}</span>
                   </div>
-                  <div className="flex-1 h-px bg-slate-800" />
-                  <span className="text-xs text-slate-500 bg-slate-900 px-2 py-1 rounded-full border border-slate-800">
+                  <div className="flex-1 h-px bg-white/[0.06]" />
+                  <span className="text-xs text-slate-500 bg-black px-2 py-1 rounded-full border border-white/[0.06]">
                     {filtered.length} {filtered.length === 1 ? 'item' : 'items'}
                   </span>
                 </div>
@@ -439,7 +439,7 @@ export default function NewsDigestPage() {
                     <a
                       key={`${digest.date}-${idx}`}
                       href={item.url}
-                      className="group flex items-start gap-3 bg-slate-900/40 hover:bg-slate-900/70 border border-slate-800/60 hover:border-slate-700 rounded-lg px-4 py-3 transition-all duration-200"
+                      className="group flex items-start gap-3 bg-black/40 hover:bg-black/70 border border-white/[0.06]/60 hover:border-white/[0.06] rounded-lg px-4 py-3 transition-all duration-200"
                     >
                       {/* Category Icon */}
                       <span className="text-base mt-0.5 flex-shrink-0" title={item.category}>
@@ -449,7 +449,7 @@ export default function NewsDigestPage() {
                       {/* Content */}
                       <div className="flex-1 min-w-0">
                         <div className="flex items-start justify-between gap-3">
-                          <h3 className="text-sm font-medium text-slate-200 group-hover:text-white transition-colors leading-snug">
+                          <h3 className="text-sm font-medium text-white/90 group-hover:text-white transition-colors leading-snug">
                             {item.headline}
                           </h3>
                           <span
@@ -537,7 +537,7 @@ export default function NewsDigestPage() {
             ].map((stat) => (
               <div
                 key={stat.label}
-                className="bg-slate-900/50 border border-slate-800 rounded-lg p-4 text-center"
+                className="bg-black/50 border border-white/[0.06] rounded-lg p-4 text-center"
               >
                 <div className={`text-2xl font-bold ${stat.color}`}>{stat.value}</div>
                 <div className="text-xs text-slate-500 mt-1">{stat.label}</div>
@@ -548,7 +548,7 @@ export default function NewsDigestPage() {
 
         {/* Related Links */}
         <ScrollReveal delay={0.35}>
-          <div className="mt-10 bg-slate-900/40 border border-slate-800 rounded-xl p-6">
+          <div className="mt-10 bg-black/40 border border-white/[0.06] rounded-xl p-6">
             <h2 className="text-sm font-semibold text-slate-300 uppercase tracking-wider mb-4">
               Related Resources
             </h2>
@@ -582,11 +582,11 @@ export default function NewsDigestPage() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="group flex items-start gap-3 p-3 rounded-lg border border-slate-800/60 hover:border-white/10 hover:bg-slate-100/5 transition-all duration-200"
+                  className="group flex items-start gap-3 p-3 rounded-lg border border-white/[0.06]/60 hover:border-white/10 hover:bg-slate-100/5 transition-all duration-200"
                 >
                   <span className="text-xl">{link.icon}</span>
                   <div>
-                    <div className="text-sm font-medium text-slate-200 group-hover:text-white transition-colors">
+                    <div className="text-sm font-medium text-white/90 group-hover:text-white transition-colors">
                       {link.title}
                     </div>
                     <div className="text-xs text-slate-500 mt-0.5">{link.desc}</div>

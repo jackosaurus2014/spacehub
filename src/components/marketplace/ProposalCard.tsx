@@ -61,7 +61,7 @@ export default function ProposalCard({ proposal, isBuyer, onAction }: ProposalCa
             </>
           ) : proposal.company ? (
             <>
-              <div className="w-8 h-8 rounded bg-slate-700 flex items-center justify-center text-sm flex-shrink-0">
+              <div className="w-8 h-8 rounded bg-white/[0.08] flex items-center justify-center text-sm flex-shrink-0">
                 {proposal.company.logoUrl ? (
                   <Image src={proposal.company.logoUrl} alt={`${proposal.company.name} logo`} width={24} height={24} className="w-6 h-6 rounded object-contain" unoptimized />
                 ) : (
@@ -89,7 +89,7 @@ export default function ProposalCard({ proposal, isBuyer, onAction }: ProposalCa
       {/* Details */}
       <div className="grid grid-cols-2 gap-3">
         {proposal.price && (
-          <div className="bg-slate-800/50 rounded p-2">
+          <div className="bg-white/[0.04] rounded p-2">
             <div className="text-xs text-slate-500 uppercase">Proposed Price</div>
             <div className="text-sm font-semibold text-emerald-400">
               ${proposal.price.toLocaleString()}
@@ -97,9 +97,9 @@ export default function ProposalCard({ proposal, isBuyer, onAction }: ProposalCa
           </div>
         )}
         {proposal.timeline && (
-          <div className="bg-slate-800/50 rounded p-2">
+          <div className="bg-white/[0.04] rounded p-2">
             <div className="text-xs text-slate-500 uppercase">Timeline</div>
-            <div className="text-sm font-semibold text-slate-300">{proposal.timeline}</div>
+            <div className="text-sm font-semibold text-white/70">{proposal.timeline}</div>
           </div>
         )}
       </div>
@@ -109,7 +109,7 @@ export default function ProposalCard({ proposal, isBuyer, onAction }: ProposalCa
       )}
 
       {proposal.matchScore && (
-        <div className="pt-2 border-t border-slate-700/50">
+        <div className="pt-2 border-t border-white/[0.06]">
           <div className="text-xs text-slate-500 mb-1">Match Score</div>
           <MatchScore score={proposal.matchScore} />
         </div>
@@ -117,7 +117,7 @@ export default function ProposalCard({ proposal, isBuyer, onAction }: ProposalCa
 
       {/* Actions (buyer only) */}
       {isBuyer && proposal.status === 'submitted' && onAction && (
-        <div className="flex gap-2 pt-2 border-t border-slate-700/50">
+        <div className="flex gap-2 pt-2 border-t border-white/[0.06]">
           <button
             onClick={() => onAction(proposal.id, 'shortlisted')}
             className="flex-1 text-xs py-1.5 bg-yellow-500/20 text-yellow-400 rounded hover:bg-yellow-500/30 transition-colors"
@@ -126,14 +126,14 @@ export default function ProposalCard({ proposal, isBuyer, onAction }: ProposalCa
           </button>
           <button
             onClick={() => onAction(proposal.id, 'rejected')}
-            className="flex-1 text-xs py-1.5 bg-slate-700/50 text-slate-400 rounded hover:bg-slate-700 transition-colors"
+            className="flex-1 text-xs py-1.5 bg-white/[0.04] text-slate-400 rounded hover:bg-white/[0.08] transition-colors"
           >
             Decline
           </button>
         </div>
       )}
       {isBuyer && proposal.status === 'shortlisted' && (
-        <div className="flex gap-2 pt-2 border-t border-slate-700/50">
+        <div className="flex gap-2 pt-2 border-t border-white/[0.06]">
           <button
             disabled
             title="Secure contract awarding with escrow payments is coming soon"

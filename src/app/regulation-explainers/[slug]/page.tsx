@@ -53,7 +53,7 @@ export default function RegulationExplainerDetailPage() {
       <div className="min-h-screen flex flex-col items-center justify-center gap-4">
         <div className="text-4xl">📜</div>
         <p className="text-slate-400">{error || 'Not found'}</p>
-        <Link href="/regulation-explainers" className="text-slate-300 hover:underline text-sm">
+        <Link href="/regulation-explainers" className="text-white/70 hover:underline text-sm">
           Back to Regulation Explainers
         </Link>
       </div>
@@ -67,9 +67,9 @@ export default function RegulationExplainerDetailPage() {
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Breadcrumb Navigation */}
         <nav className="flex items-center gap-2 text-sm text-slate-500 mb-6">
-          <Link href="/" className="hover:text-slate-300 transition-colors">Home</Link>
+          <Link href="/" className="hover:text-white/70 transition-colors">Home</Link>
           <span>/</span>
-          <Link href="/compliance" className="hover:text-slate-300 transition-colors">Compliance</Link>
+          <Link href="/compliance" className="hover:text-white/70 transition-colors">Compliance</Link>
           <span>/</span>
           <span className="text-slate-400 truncate">{explainer.title}</span>
         </nav>
@@ -84,20 +84,20 @@ export default function RegulationExplainerDetailPage() {
               <span className={`px-2.5 py-1 rounded text-xs font-semibold border ${impactColor}`}>
                 {explainer.impactLevel.toUpperCase()} IMPACT
               </span>
-              <span className="px-2.5 py-1 bg-slate-700 rounded text-xs text-slate-300 font-medium">
+              <span className="px-2.5 py-1 bg-white/[0.08] rounded text-xs text-white/70 font-medium">
                 {explainer.agency}
               </span>
-              <span className="px-2.5 py-1 bg-slate-700/50 rounded text-xs text-slate-400">
+              <span className="px-2.5 py-1 bg-white/[0.08]/50 rounded text-xs text-slate-400">
                 {explainer.category}
               </span>
               {explainer.regulationDocketNumber && (
-                <span className="px-2.5 py-1 bg-slate-700/50 rounded text-xs text-slate-500">
+                <span className="px-2.5 py-1 bg-white/[0.08]/50 rounded text-xs text-slate-500">
                   Docket: {explainer.regulationDocketNumber}
                 </span>
               )}
             </div>
             <h1 className="text-2xl sm:text-3xl font-bold text-white mb-3">{explainer.title}</h1>
-            <p className="text-slate-300 text-base leading-relaxed">{explainer.summary}</p>
+            <p className="text-white/70 text-base leading-relaxed">{explainer.summary}</p>
             <div className="flex items-center gap-4 text-xs text-slate-500 mt-3">
               <span>Generated {new Date(explainer.generatedAt).toLocaleDateString()}</span>
               <span>{explainer.viewCount} views</span>
@@ -105,8 +105,8 @@ export default function RegulationExplainerDetailPage() {
           </div>
 
           {/* Main Content */}
-          <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-6 mb-6">
-            <div className="prose prose-invert prose-sm max-w-none text-slate-300 leading-relaxed whitespace-pre-line">
+          <div className="bg-white/[0.04] border border-white/[0.08] rounded-xl p-6 mb-6">
+            <div className="prose prose-invert prose-sm max-w-none text-white/70 leading-relaxed whitespace-pre-line">
               {explainer.content}
             </div>
           </div>
@@ -114,33 +114,33 @@ export default function RegulationExplainerDetailPage() {
           {/* Structured Sections */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
             {explainer.whatItMeans && (
-              <div className="bg-slate-800/50 border border-blue-500/20 rounded-xl p-5">
+              <div className="bg-white/[0.04] border border-blue-500/20 rounded-xl p-5">
                 <h3 className="text-blue-400 font-semibold text-sm mb-3 flex items-center gap-2">
                   <span className="text-lg">💡</span> What It Means
                 </h3>
-                <div className="text-slate-300 text-xs leading-relaxed whitespace-pre-line">
+                <div className="text-white/70 text-xs leading-relaxed whitespace-pre-line">
                   {explainer.whatItMeans}
                 </div>
               </div>
             )}
 
             {explainer.whoItAffects && (
-              <div className="bg-slate-800/50 border border-purple-500/20 rounded-xl p-5">
+              <div className="bg-white/[0.04] border border-purple-500/20 rounded-xl p-5">
                 <h3 className="text-purple-400 font-semibold text-sm mb-3 flex items-center gap-2">
                   <span className="text-lg">👥</span> Who It Affects
                 </h3>
-                <div className="text-slate-300 text-xs leading-relaxed whitespace-pre-line">
+                <div className="text-white/70 text-xs leading-relaxed whitespace-pre-line">
                   {explainer.whoItAffects}
                 </div>
               </div>
             )}
 
             {explainer.whatToDoNext && (
-              <div className="bg-slate-800/50 border border-green-500/20 rounded-xl p-5">
+              <div className="bg-white/[0.04] border border-green-500/20 rounded-xl p-5">
                 <h3 className="text-green-400 font-semibold text-sm mb-3 flex items-center gap-2">
                   <span className="text-lg">✅</span> What To Do Next
                 </h3>
-                <div className="text-slate-300 text-xs leading-relaxed whitespace-pre-line">
+                <div className="text-white/70 text-xs leading-relaxed whitespace-pre-line">
                   {explainer.whatToDoNext}
                 </div>
               </div>
@@ -149,11 +149,11 @@ export default function RegulationExplainerDetailPage() {
 
           {/* Affected Company Types */}
           {explainer.affectedCompanyTypes && explainer.affectedCompanyTypes.length > 0 && (
-            <div className="bg-slate-800/30 border border-slate-700 rounded-xl p-5 mb-6">
-              <h3 className="text-slate-300 font-semibold text-sm mb-3">Affected Company Types</h3>
+            <div className="bg-white/[0.03] border border-white/[0.08] rounded-xl p-5 mb-6">
+              <h3 className="text-white/70 font-semibold text-sm mb-3">Affected Company Types</h3>
               <div className="flex flex-wrap gap-2">
                 {explainer.affectedCompanyTypes.map((type: string) => (
-                  <span key={type} className="px-2.5 py-1 bg-slate-700 rounded-full text-xs text-slate-300">
+                  <span key={type} className="px-2.5 py-1 bg-white/[0.08] rounded-full text-xs text-white/70">
                     {type.replace(/_/g, ' ')}
                   </span>
                 ))}
@@ -163,8 +163,8 @@ export default function RegulationExplainerDetailPage() {
 
           {/* Sources */}
           {explainer.sourceUrls && explainer.sourceUrls.length > 0 && (
-            <div className="bg-slate-800/30 border border-slate-700 rounded-xl p-5">
-              <h3 className="text-slate-300 font-semibold text-sm mb-3">Sources</h3>
+            <div className="bg-white/[0.03] border border-white/[0.08] rounded-xl p-5">
+              <h3 className="text-white/70 font-semibold text-sm mb-3">Sources</h3>
               <ul className="space-y-1">
                 {explainer.sourceUrls.map((url: string, i: number) => (
                   <li key={i}>
@@ -172,7 +172,7 @@ export default function RegulationExplainerDetailPage() {
                       href={url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-slate-300 hover:underline text-xs break-all"
+                      className="text-white/70 hover:underline text-xs break-all"
                     >
                       {url}
                     </a>

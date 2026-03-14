@@ -158,8 +158,8 @@ export default function AdvertiserDashboard() {
         <div className="space-y-4">
           {[1, 2, 3].map((i) => (
             <div key={i} className="card p-6 animate-pulse">
-              <div className="h-4 bg-slate-700 rounded w-1/3 mb-2" />
-              <div className="h-3 bg-slate-700/50 rounded w-1/2" />
+              <div className="h-4 bg-white/[0.08] rounded w-1/3 mb-2" />
+              <div className="h-3 bg-white/[0.06] rounded w-1/2" />
             </div>
           ))}
         </div>
@@ -332,7 +332,7 @@ export default function AdvertiserDashboard() {
                   {campaign.status === 'draft' && (
                     <button
                       onClick={() => handleStatusChange(campaign.id, 'pending_review')}
-                      className="text-xs px-3 py-1.5 rounded bg-white/10 text-slate-200 hover:bg-white/15 transition-colors"
+                      className="text-xs px-3 py-1.5 rounded bg-white/10 text-white/90 hover:bg-white/15 transition-colors"
                     >
                       Submit for Review
                     </button>
@@ -377,7 +377,7 @@ export default function AdvertiserDashboard() {
                 <div>
                   <p className="text-star-300 text-xs mb-1">Budget Used</p>
                   <div className="flex items-center gap-2">
-                    <div className="flex-1 h-2 bg-slate-700 rounded-full overflow-hidden">
+                    <div className="flex-1 h-2 bg-white/[0.08] rounded-full overflow-hidden">
                       <div
                         className="h-full bg-white rounded-full transition-all"
                         style={{ width: `${Math.min(100, (campaign.spent / campaign.budget) * 100)}%` }}
@@ -392,13 +392,13 @@ export default function AdvertiserDashboard() {
 
               {/* Target Modules */}
               {campaign.targetModules.length > 0 && (
-                <div className="mt-4 pt-4 border-t border-slate-700/50">
+                <div className="mt-4 pt-4 border-t border-white/[0.06]">
                   <p className="text-star-300 text-xs mb-2">Target Modules:</p>
                   <div className="flex flex-wrap gap-2">
                     {campaign.targetModules.map((mod) => (
                       <span
                         key={mod}
-                        className="px-2 py-0.5 rounded bg-slate-800/50 text-slate-300 text-xs"
+                        className="px-2 py-0.5 rounded bg-white/[0.04] text-white/70 text-xs"
                       >
                         {mod}
                       </span>

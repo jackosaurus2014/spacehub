@@ -64,7 +64,7 @@ export default function ProposalForm({ rfqId, onSuccess }: ProposalFormProps) {
             value={form.price}
             onChange={(e) => updateField('price', e.target.value)}
             placeholder="e.g., 50000"
-            className="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm text-white"
+            className="w-full bg-white/[0.06] border border-white/[0.1] rounded-lg px-3 py-2 text-sm text-white"
           />
         </div>
         <div>
@@ -74,7 +74,7 @@ export default function ProposalForm({ rfqId, onSuccess }: ProposalFormProps) {
             value={form.timeline}
             onChange={(e) => updateField('timeline', e.target.value)}
             placeholder="e.g., 6-8 weeks"
-            className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+            className="w-full bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
           />
         </div>
       </div>
@@ -89,14 +89,14 @@ export default function ProposalForm({ rfqId, onSuccess }: ProposalFormProps) {
           minLength={50}
           maxLength={10000}
           placeholder="Describe your approach, qualifications, relevant experience, and why you're the right provider for this RFQ..."
-          className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+          className="w-full bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
         />
       </div>
 
       <button
         type="submit"
         disabled={submitting || !form.approach}
-        className="w-full py-2.5 bg-gradient-to-r from-slate-200 to-blue-600 hover:from-white hover:to-blue-500 disabled:from-slate-700 disabled:to-slate-700 text-white rounded-lg font-semibold transition-all"
+        className="w-full py-2.5 bg-gradient-to-r from-slate-200 to-blue-600 hover:from-white hover:to-blue-500 disabled:from-white/[0.08] disabled:to-white/[0.08] text-white rounded-lg font-semibold transition-all"
       >
         {submitting ? 'Submitting...' : 'Submit Proposal'}
       </button>

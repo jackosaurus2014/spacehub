@@ -30,9 +30,9 @@ const BOMRiskAnalysisTab = dynamic(() => import('./BOMRiskAnalysisTab'), {
   ssr: false,
   loading: () => (
     <div className="animate-pulse space-y-4">
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">{[1,2,3,4,5].map(i => <div key={i} className="h-24 bg-slate-800 rounded-lg"></div>)}</div>
-      <div className="h-64 bg-slate-800 rounded-xl"></div>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">{[1,2,3].map(i => <div key={i} className="h-48 bg-slate-800 rounded-lg"></div>)}</div>
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">{[1,2,3,4,5].map(i => <div key={i} className="h-24 bg-white/[0.06] rounded-lg"></div>)}</div>
+      <div className="h-64 bg-white/[0.06] rounded-xl"></div>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">{[1,2,3].map(i => <div key={i} className="h-48 bg-white/[0.06] rounded-lg"></div>)}</div>
     </div>
   ),
 });
@@ -853,7 +853,7 @@ function SupplyChainContent() {
             }}
             className={`flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium transition-all text-sm ${
               activeTab === tab.id
-                ? 'bg-white/10 text-slate-200 border border-white/15'
+                ? 'bg-white/10 text-white/90 border border-white/15'
                 : 'bg-space-800 text-slate-400 border border-space-700 hover:border-space-600 hover:text-white'
             }`}
           >
@@ -877,7 +877,7 @@ function SupplyChainContent() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder={activeTab === 'companies' ? 'Search companies, products, locations...' : activeTab === 'shortages' ? 'Search materials, categories...' : 'Search...'}
-                className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg pl-10 pr-4 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none placeholder:text-slate-500"
+                className="w-full bg-white/[0.06] border border-white/[0.06] text-white rounded-lg pl-10 pr-4 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none placeholder:text-slate-500"
               />
               {searchQuery && (
                 <button
@@ -897,7 +897,7 @@ function SupplyChainContent() {
               <select
                 value={tierFilter}
                 onChange={(e) => setTierFilter(e.target.value)}
-                className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+                className="bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
               >
                 <option value="">All Tiers</option>
                 {SUPPLY_CHAIN_TIERS.map((t) => (
@@ -907,7 +907,7 @@ function SupplyChainContent() {
               <select
                 value={countryFilter}
                 onChange={(e) => setCountryFilter(e.target.value)}
-                className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+                className="bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
               >
                 <option value="">All Countries</option>
                 {Object.entries(SUPPLY_CHAIN_COUNTRIES).map(([code, info]) => (
@@ -917,7 +917,7 @@ function SupplyChainContent() {
               <select
                 value={categoryFilter}
                 onChange={(e) => setCategoryFilter(e.target.value)}
-                className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+                className="bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
               >
                 <option value="">All Product Categories</option>
                 {SUPPLY_CHAIN_PRODUCT_CATEGORIES.map((c) => (
@@ -931,7 +931,7 @@ function SupplyChainContent() {
               <select
                 value={severityFilter}
                 onChange={(e) => setSeverityFilter(e.target.value)}
-                className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+                className="bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
               >
                 <option value="">All Severities</option>
                 {Object.entries(SHORTAGE_SEVERITY_INFO).map(([key, info]) => (
@@ -941,7 +941,7 @@ function SupplyChainContent() {
               <select
                 value={categoryFilter}
                 onChange={(e) => setCategoryFilter(e.target.value)}
-                className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+                className="bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
               >
                 <option value="">All Categories</option>
                 {SUPPLY_CHAIN_PRODUCT_CATEGORIES.map((c) => (
@@ -957,7 +957,7 @@ function SupplyChainContent() {
                 type="checkbox"
                 checked={showHighRiskOnly}
                 onChange={(e) => setShowHighRiskOnly(e.target.checked)}
-                className="rounded bg-space-700 border-space-600 text-slate-200 focus:ring-white/15"
+                className="rounded bg-space-700 border-space-600 text-white/90 focus:ring-white/15"
               />
               Show high-risk only
             </label>
@@ -1006,7 +1006,7 @@ function SupplyChainContent() {
           <div className="text-red-400 text-sm font-medium">{error}</div>
           <button
             onClick={() => fetchTabData()}
-            className="mt-3 px-4 py-2 min-h-[44px] bg-white/10 text-slate-300 rounded-lg hover:bg-slate-100/30 transition-colors text-sm font-medium"
+            className="mt-3 px-4 py-2 min-h-[44px] bg-white/10 text-slate-300 rounded-lg hover:bg-white/15 transition-colors text-sm font-medium"
           >
             Try Again
           </button>
@@ -1044,7 +1044,7 @@ function SupplyChainContent() {
                 </div>
                 <button
                   onClick={() => setActiveTab('shortages')}
-                  className="mt-4 text-sm text-slate-200 hover:text-white"
+                  className="mt-4 text-sm text-white/90 hover:text-white"
                 >
                   View all shortages &rarr;
                 </button>
@@ -1126,7 +1126,7 @@ function SupplyChainContent() {
                                 {/* Supplier Header */}
                                 <div className={`${cat.bgColor}/10 p-4 border-b border-space-700`}>
                                   <div className="flex items-center justify-between mb-2">
-                                    <h4 className="font-semibold text-white group-hover:text-slate-200 transition-colors">{supplier.name}</h4>
+                                    <h4 className="font-semibold text-white group-hover:text-white/90 transition-colors">{supplier.name}</h4>
                                     {tierInfo && (
                                       <span className={`text-xs font-medium px-2 py-0.5 rounded ${tierInfo.bgColor}/20 ${tierInfo.color}`}>
                                         {tierInfo.label}

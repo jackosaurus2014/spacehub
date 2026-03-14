@@ -41,7 +41,7 @@ export default function CommunityGuidelinesPage() {
                 together. These guidelines establish the standards of behavior we expect from every
                 participant. By using any community feature on SpaceNexus, you agree to abide by
                 these guidelines and our{' '}
-                <Link href="/terms" className="text-slate-200 hover:text-white underline">
+                <Link href="/terms" className="text-white/90 hover:text-white underline">
                   Terms of Service
                 </Link>.
               </p>
@@ -192,7 +192,7 @@ export default function CommunityGuidelinesPage() {
                 <li>
                   If you believe your copyrighted work has been used without authorization on
                   SpaceNexus, please review our{' '}
-                  <Link href="/legal/dmca" className="text-slate-200 hover:text-white underline">
+                  <Link href="/legal/dmca" className="text-white/90 hover:text-white underline">
                     DMCA &amp; Copyright Policy
                   </Link>{' '}
                   and file a takedown notice
@@ -212,16 +212,16 @@ export default function CommunityGuidelinesPage() {
               </p>
 
               <div className="space-y-3">
-                <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-4">
-                  <p className="text-slate-300 font-medium">First Violation: Written Warning</p>
+                <div className="bg-white/[0.04] border border-white/[0.08] rounded-lg p-4">
+                  <p className="text-white/70 font-medium">First Violation: Written Warning</p>
                   <p className="text-slate-400 text-sm mt-1">
                     A private written warning identifying the violation and the relevant guideline.
                     The offending content may be edited or removed.
                   </p>
                 </div>
 
-                <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-4">
-                  <p className="text-slate-300 font-medium">
+                <div className="bg-white/[0.04] border border-white/[0.08] rounded-lg p-4">
+                  <p className="text-white/70 font-medium">
                     Second Violation: Temporary Mute (24 hours to 30 days)
                   </p>
                   <p className="text-slate-400 text-sm mt-1">
@@ -230,8 +230,8 @@ export default function CommunityGuidelinesPage() {
                   </p>
                 </div>
 
-                <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-4">
-                  <p className="text-slate-300 font-medium">
+                <div className="bg-white/[0.04] border border-white/[0.08] rounded-lg p-4">
+                  <p className="text-white/70 font-medium">
                     Third Violation: Temporary Ban (7 to 90 days)
                   </p>
                   <p className="text-slate-400 text-sm mt-1">
@@ -271,7 +271,7 @@ export default function CommunityGuidelinesPage() {
               <ul className="list-disc list-inside text-slate-400 space-y-2 ml-4">
                 <li>
                   Send your appeal to{' '}
-                  <a href="mailto:community@spacenexus.us" className="text-slate-200 hover:text-white underline">
+                  <a href="mailto:community@spacenexus.us" className="text-white/90 hover:text-white underline">
                     community@spacenexus.us
                   </a>{' '}
                   within 30 days of the enforcement action
@@ -304,7 +304,7 @@ export default function CommunityGuidelinesPage() {
                 </li>
                 <li>
                   For urgent matters or issues not covered by the report button, email{' '}
-                  <a href="mailto:community@spacenexus.us" className="text-slate-200 hover:text-white underline">
+                  <a href="mailto:community@spacenexus.us" className="text-white/90 hover:text-white underline">
                     community@spacenexus.us
                   </a>
                 </li>
@@ -320,24 +320,24 @@ export default function CommunityGuidelinesPage() {
             </section>
 
             {/* Related Documents */}
-            <section className="pt-6 border-t border-slate-700">
-              <h3 className="text-lg font-medium text-slate-200 mb-4">Related Documents</h3>
+            <section className="pt-6 border-t border-white/[0.08]">
+              <h3 className="text-lg font-medium text-white/90 mb-4">Related Documents</h3>
               <div className="flex flex-wrap gap-4">
                 <Link
                   href="/terms"
-                  className="text-slate-200 hover:text-white underline"
+                  className="text-white/90 hover:text-white underline"
                 >
                   Terms of Service
                 </Link>
                 <Link
                   href="/privacy"
-                  className="text-slate-200 hover:text-white underline"
+                  className="text-white/90 hover:text-white underline"
                 >
                   Privacy Policy
                 </Link>
                 <Link
                   href="/legal/dmca"
-                  className="text-slate-200 hover:text-white underline"
+                  className="text-white/90 hover:text-white underline"
                 >
                   DMCA &amp; Copyright Policy
                 </Link>

@@ -47,7 +47,7 @@ function CopyButton({ text, className = '' }: { text: string; className?: string
   return (
     <button
       onClick={handleCopy}
-      className={`text-xs px-2 py-1 rounded bg-slate-700 hover:bg-slate-600 text-slate-300 transition-colors ${className}`}
+      className={`text-xs px-2 py-1 rounded bg-white/[0.06] hover:bg-white/[0.08] text-white/70 transition-colors ${className}`}
       aria-label="Copy to clipboard"
     >
       <svg className="w-3.5 h-3.5 inline mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -96,7 +96,7 @@ function ParameterTable({ parameters }: { parameters: EndpointParameter[] }) {
     <div className="overflow-x-auto">
       <table className="w-full text-sm">
         <thead>
-          <tr className="border-b border-slate-700">
+          <tr className="border-b border-white/[0.08]">
             <th className="text-left py-2 pr-4 text-slate-400 font-medium">Name</th>
             <th className="text-left py-2 pr-4 text-slate-400 font-medium">Type</th>
             <th className="text-left py-2 pr-4 text-slate-400 font-medium">Required</th>
@@ -105,16 +105,16 @@ function ParameterTable({ parameters }: { parameters: EndpointParameter[] }) {
         </thead>
         <tbody>
           {parameters.map((param) => (
-            <tr key={param.name} className="border-b border-slate-700/50">
+            <tr key={param.name} className="border-b border-white/[0.06]">
               <td className="py-2.5 pr-4">
-                <code className="text-slate-300 font-mono text-xs">{param.name}</code>
+                <code className="text-white/70 font-mono text-xs">{param.name}</code>
               </td>
               <td className="py-2.5 pr-4">
-                <span className="text-slate-300">{param.type}</span>
+                <span className="text-white/70">{param.type}</span>
                 {param.enum && (
                   <div className="mt-1 flex flex-wrap gap-1">
                     {param.enum.map((v) => (
-                      <code key={v} className="text-xs bg-slate-700/50 text-slate-400 px-1.5 py-0.5 rounded">
+                      <code key={v} className="text-xs bg-white/[0.04] text-slate-400 px-1.5 py-0.5 rounded">
                         {v}
                       </code>
                     ))}
@@ -128,7 +128,7 @@ function ParameterTable({ parameters }: { parameters: EndpointParameter[] }) {
                   <span className="text-slate-500 text-xs">Optional</span>
                 )}
               </td>
-              <td className="py-2.5 text-slate-300">
+              <td className="py-2.5 text-white/70">
                 {param.description}
                 {param.default !== undefined && (
                   <span className="text-slate-500 ml-1">
@@ -156,8 +156,8 @@ function CodeExamples({ endpoint }: { endpoint: OpenAPIEndpoint }) {
             onClick={() => setActiveLang(lang)}
             className={`px-3 py-1.5 text-xs rounded-t font-medium transition-colors ${
               activeLang === lang
-                ? 'bg-slate-800 text-slate-300 border border-b-0 border-slate-600'
-                : 'bg-slate-800/50 text-slate-400 hover:text-slate-300 border border-b-0 border-transparent'
+                ? 'bg-white/[0.06] text-white/70 border border-b-0 border-white/[0.1]'
+                : 'bg-white/[0.04] text-slate-400 hover:text-white/70 border border-b-0 border-transparent'
             }`}
           >
             {CODE_LABELS[lang]}
@@ -165,7 +165,7 @@ function CodeExamples({ endpoint }: { endpoint: OpenAPIEndpoint }) {
         ))}
       </div>
       <div className="relative">
-        <pre className="bg-slate-800 rounded-b rounded-tr p-4 text-sm overflow-x-auto border border-slate-600">
+        <pre className="bg-white/[0.06] rounded-b rounded-tr p-4 text-sm overflow-x-auto border border-white/[0.1]">
           <code className="text-green-400 whitespace-pre">{endpoint.codeExamples[activeLang]}</code>
         </pre>
         <div className="absolute top-2 right-2">
@@ -182,7 +182,7 @@ function JsonBlock({ data, label }: { data: unknown; label?: string }) {
     <div>
       {label && <p className="text-sm text-slate-400 mb-2">{label}</p>}
       <div className="relative">
-        <pre className="bg-slate-800 rounded p-4 text-sm overflow-x-auto border border-slate-600 max-h-96">
+        <pre className="bg-white/[0.06] rounded p-4 text-sm overflow-x-auto border border-white/[0.1] max-h-96">
           <code className="text-green-400 whitespace-pre">{jsonString}</code>
         </pre>
         <div className="absolute top-2 right-2">
@@ -200,7 +200,7 @@ function EndpointSection({ endpoint }: { endpoint: OpenAPIEndpoint }) {
     <section id={sectionId} className="scroll-mt-24">
       <div className="card overflow-hidden">
         {/* Header */}
-        <div className="px-6 py-4 border-b border-slate-700 flex flex-wrap items-center gap-3">
+        <div className="px-6 py-4 border-b border-white/[0.08] flex flex-wrap items-center gap-3">
           <MethodBadge method={endpoint.method} />
           <code className="text-lg font-mono text-white">/api/v1{endpoint.path}</code>
           <TierBadge tier={endpoint.tier} />
@@ -210,15 +210,15 @@ function EndpointSection({ endpoint }: { endpoint: OpenAPIEndpoint }) {
           {/* Description */}
           <div>
             <h4 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-2">Description</h4>
-            <p className="text-slate-300 leading-relaxed">{endpoint.description}</p>
+            <p className="text-white/70 leading-relaxed">{endpoint.description}</p>
           </div>
 
           {/* Authentication */}
           <div>
             <h4 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-2">Authentication</h4>
-            <p className="text-slate-300 text-sm">
-              Requires API key via <code className="text-slate-300">X-API-Key</code> header or{' '}
-              <code className="text-slate-300">Authorization: Bearer snx_...</code> header.
+            <p className="text-white/70 text-sm">
+              Requires API key via <code className="text-white/70">X-API-Key</code> header or{' '}
+              <code className="text-white/70">Authorization: Bearer snx_...</code> header.
               {endpoint.tier === 'Enterprise' && (
                 <span className="text-purple-400 ml-1 font-medium">Enterprise API tier required.</span>
               )}
@@ -286,7 +286,7 @@ function Sidebar({
             placeholder="Search endpoints..."
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
-            className="w-full pl-10 pr-3 bg-slate-800 border border-slate-700 text-white rounded-lg py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+            className="w-full pl-10 pr-3 bg-white/[0.06] border border-white/[0.08] text-white rounded-lg py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
           />
         </div>
       </div>
@@ -297,8 +297,8 @@ function Sidebar({
         onClick={onNavigate}
         className={`block px-3 py-2 text-sm rounded-lg transition-colors ${
           activeSection === 'overview'
-            ? 'bg-white/5 text-slate-300'
-            : 'text-slate-400 hover:text-white hover:bg-slate-800'
+            ? 'bg-white/5 text-white/70'
+            : 'text-slate-400 hover:text-white hover:bg-white/[0.06]'
         }`}
       >
         Overview
@@ -308,8 +308,8 @@ function Sidebar({
         onClick={onNavigate}
         className={`block px-3 py-2 text-sm rounded-lg transition-colors ${
           activeSection === 'authentication'
-            ? 'bg-white/5 text-slate-300'
-            : 'text-slate-400 hover:text-white hover:bg-slate-800'
+            ? 'bg-white/5 text-white/70'
+            : 'text-slate-400 hover:text-white hover:bg-white/[0.06]'
         }`}
       >
         Authentication
@@ -319,8 +319,8 @@ function Sidebar({
         onClick={onNavigate}
         className={`block px-3 py-2 text-sm rounded-lg transition-colors ${
           activeSection === 'rate-limits'
-            ? 'bg-white/5 text-slate-300'
-            : 'text-slate-400 hover:text-white hover:bg-slate-800'
+            ? 'bg-white/5 text-white/70'
+            : 'text-slate-400 hover:text-white hover:bg-white/[0.06]'
         }`}
       >
         Rate Limits
@@ -330,15 +330,15 @@ function Sidebar({
         onClick={onNavigate}
         className={`block px-3 py-2 text-sm rounded-lg transition-colors ${
           activeSection === 'errors'
-            ? 'bg-white/5 text-slate-300'
-            : 'text-slate-400 hover:text-white hover:bg-slate-800'
+            ? 'bg-white/5 text-white/70'
+            : 'text-slate-400 hover:text-white hover:bg-white/[0.06]'
         }`}
       >
         Error Codes
       </a>
 
       {/* Divider */}
-      <div className="border-t border-slate-700 my-3" />
+      <div className="border-t border-white/[0.08] my-3" />
       <p className="px-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Endpoints</p>
 
       {/* Endpoint categories */}
@@ -349,8 +349,8 @@ function Sidebar({
           onClick={onNavigate}
           className={`block px-3 py-2 text-sm rounded-lg transition-colors ${
             activeSection === `category-${cat.slug}`
-              ? 'bg-white/5 text-slate-300'
-              : 'text-slate-400 hover:text-white hover:bg-slate-800'
+              ? 'bg-white/5 text-white/70'
+              : 'text-slate-400 hover:text-white hover:bg-white/[0.06]'
           }`}
         >
           <span className="flex items-center justify-between">
@@ -416,15 +416,15 @@ function ApiDocsPageInner() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white">
+    <div className="min-h-screen bg-black text-white">
       {/* Top Bar */}
-      <div className="sticky top-0 z-30 bg-slate-950/95 backdrop-blur border-b border-slate-800">
+      <div className="sticky top-0 z-30 bg-black/95 backdrop-blur border-b border-white/[0.06]">
         <div className="max-w-[1400px] mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
             {/* Mobile sidebar toggle */}
             <button
               onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="lg:hidden p-2 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition-colors"
+              className="lg:hidden p-2 text-slate-400 hover:text-white rounded-lg hover:bg-white/[0.06] transition-colors"
               aria-label="Toggle sidebar"
             >
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -445,7 +445,7 @@ function ApiDocsPageInner() {
           <div className="flex items-center gap-3">
             <Link
               href="/developer/explorer"
-              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 text-sm border border-slate-700 hover:border-white/15 text-slate-300 hover:text-white rounded-lg transition-colors"
+              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 text-sm border border-white/[0.08] hover:border-white/15 text-white/70 hover:text-white rounded-lg transition-colors"
             >
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
@@ -456,7 +456,7 @@ function ApiDocsPageInner() {
               href="/api/v1/openapi.json"
               target="_blank"
               rel="noopener noreferrer"
-              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 text-sm border border-slate-700 hover:border-white/15 text-slate-300 hover:text-white rounded-lg transition-colors"
+              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 text-sm border border-white/[0.08] hover:border-white/15 text-white/70 hover:text-white rounded-lg transition-colors"
             >
               OpenAPI Spec
             </a>
@@ -472,7 +472,7 @@ function ApiDocsPageInner() {
 
         {/* Sidebar */}
         <aside
-          className={`fixed lg:sticky top-[57px] left-0 z-20 h-[calc(100dvh-57px)] w-72 bg-slate-950 border-r border-slate-800 overflow-y-auto p-4 transition-transform lg:transition-none lg:translate-x-0 ${
+          className={`fixed lg:sticky top-[57px] left-0 z-20 h-[calc(100dvh-57px)] w-72 bg-black border-r border-white/[0.06] overflow-y-auto p-4 transition-transform lg:transition-none lg:translate-x-0 ${
             sidebarOpen ? 'translate-x-0' : '-translate-x-full'
           }`}
         >
@@ -497,9 +497,9 @@ function ApiDocsPageInner() {
             </p>
 
             <div className="card p-4 mb-6">
-              <p className="text-sm text-slate-300">
+              <p className="text-sm text-white/70">
                 <span className="font-semibold text-white">Base URL:</span>{' '}
-                <code className="text-slate-300 font-mono">https://spacenexus.us/api/v1</code>
+                <code className="text-white/70 font-mono">https://spacenexus.us/api/v1</code>
               </p>
             </div>
 
@@ -509,7 +509,7 @@ function ApiDocsPageInner() {
                 <a
                   key={cat.slug}
                   href={`#category-${cat.slug}`}
-                  className="block bg-slate-800/30 border border-slate-700/50 rounded-lg p-4 hover:border-white/15 transition-colors group"
+                  className="block bg-white/[0.03] border border-white/[0.06] rounded-lg p-4 hover:border-white/15 transition-colors group"
                 >
                   <h3 className="font-semibold text-white group-hover:text-white transition-colors mb-1">
                     {cat.name}
@@ -533,7 +533,7 @@ function ApiDocsPageInner() {
           <section id="authentication" data-section="authentication" className="scroll-mt-24">
             <h2 className="text-2xl font-bold mb-4">Authentication</h2>
             <div className="card p-6 space-y-4">
-              <p className="text-slate-300">
+              <p className="text-white/70">
                 All API requests must include a valid API key. You can pass it using either of these methods:
               </p>
 
@@ -541,7 +541,7 @@ function ApiDocsPageInner() {
                 <div>
                   <p className="text-sm text-slate-400 mb-1.5">Option 1: X-API-Key Header (recommended)</p>
                   <div className="relative">
-                    <pre className="bg-slate-800 rounded p-3 border border-slate-600 overflow-x-auto">
+                    <pre className="bg-white/[0.06] rounded p-3 border border-white/[0.1] overflow-x-auto">
                       <code className="text-green-400 text-sm">X-API-Key: snx_YOUR_API_KEY</code>
                     </pre>
                     <div className="absolute top-1.5 right-1.5">
@@ -553,7 +553,7 @@ function ApiDocsPageInner() {
                 <div>
                   <p className="text-sm text-slate-400 mb-1.5">Option 2: Bearer Token</p>
                   <div className="relative">
-                    <pre className="bg-slate-800 rounded p-3 border border-slate-600 overflow-x-auto">
+                    <pre className="bg-white/[0.06] rounded p-3 border border-white/[0.1] overflow-x-auto">
                       <code className="text-green-400 text-sm">Authorization: Bearer snx_YOUR_API_KEY</code>
                     </pre>
                     <div className="absolute top-1.5 right-1.5">
@@ -564,9 +564,9 @@ function ApiDocsPageInner() {
               </div>
 
               <p className="text-sm text-slate-400">
-                API keys use the prefix <code className="text-slate-300">snx_</code> and can be generated from
+                API keys use the prefix <code className="text-white/70">snx_</code> and can be generated from
                 the{' '}
-                <Link href="/developer" className="text-slate-300 hover:text-white">
+                <Link href="/developer" className="text-white/70 hover:text-white">
                   Developer Portal
                 </Link>
                 . Keys are hashed before storage and shown only once at creation time.
@@ -578,7 +578,7 @@ function ApiDocsPageInner() {
           <section data-section="authentication" className="scroll-mt-24">
             <h2 className="text-2xl font-bold mb-4">Response Format</h2>
             <div className="card p-6 space-y-4">
-              <p className="text-slate-300">All responses follow a consistent JSON structure:</p>
+              <p className="text-white/70">All responses follow a consistent JSON structure:</p>
 
               <div className="grid md:grid-cols-2 gap-4">
                 <div>
@@ -611,28 +611,28 @@ function ApiDocsPageInner() {
           <section id="rate-limits" data-section="rate-limits" className="scroll-mt-24">
             <h2 className="text-2xl font-bold mb-4">Rate Limits</h2>
             <div className="card p-6 space-y-4">
-              <p className="text-slate-300">
+              <p className="text-white/70">
                 Rate limits are enforced per API key. Every response includes rate limit headers:
               </p>
 
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="border-b border-slate-700">
+                    <tr className="border-b border-white/[0.08]">
                       <th className="text-left py-2 pr-4 text-slate-400 font-medium">Header</th>
                       <th className="text-left py-2 text-slate-400 font-medium">Description</th>
                     </tr>
                   </thead>
-                  <tbody className="text-slate-300">
-                    <tr className="border-b border-slate-700/50">
+                  <tbody className="text-white/70">
+                    <tr className="border-b border-white/[0.06]">
                       <td className="py-2 pr-4"><code className="text-yellow-400">X-Request-Id</code></td>
                       <td className="py-2">Unique request identifier for debugging</td>
                     </tr>
-                    <tr className="border-b border-slate-700/50">
+                    <tr className="border-b border-white/[0.06]">
                       <td className="py-2 pr-4"><code className="text-yellow-400">X-RateLimit-Limit</code></td>
                       <td className="py-2">Your per-minute rate limit</td>
                     </tr>
-                    <tr className="border-b border-slate-700/50">
+                    <tr className="border-b border-white/[0.06]">
                       <td className="py-2 pr-4"><code className="text-yellow-400">X-RateLimit-Remaining</code></td>
                       <td className="py-2">Remaining calls in current window (on 429 responses)</td>
                     </tr>
@@ -648,7 +648,7 @@ function ApiDocsPageInner() {
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="border-b border-slate-700">
+                    <tr className="border-b border-white/[0.08]">
                       <th className="text-left py-2 pr-4 text-slate-400 font-medium">Tier</th>
                       <th className="text-left py-2 pr-4 text-slate-400 font-medium">Monthly Limit</th>
                       <th className="text-left py-2 pr-4 text-slate-400 font-medium">Per-Minute Limit</th>
@@ -656,14 +656,14 @@ function ApiDocsPageInner() {
                       <th className="text-left py-2 text-slate-400 font-medium">Price</th>
                     </tr>
                   </thead>
-                  <tbody className="text-slate-300">
+                  <tbody className="text-white/70">
                     {RATE_LIMIT_TIERS.map((tier) => (
-                      <tr key={tier.tier} className="border-b border-slate-700/50">
+                      <tr key={tier.tier} className="border-b border-white/[0.06]">
                         <td className="py-2 pr-4 font-medium text-white">{tier.tier}</td>
                         <td className="py-2 pr-4">{tier.monthlyLimit}</td>
                         <td className="py-2 pr-4">{tier.perMinuteLimit}</td>
                         <td className="py-2 pr-4">{tier.maxKeys}</td>
-                        <td className="py-2 text-slate-300">{tier.price}</td>
+                        <td className="py-2 text-white/70">{tier.price}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -694,8 +694,8 @@ function ApiDocsPageInner() {
                     </span>
                     <code className="text-white font-mono text-sm">{err.code}</code>
                   </div>
-                  <p className="text-sm text-slate-300 mb-1">{err.description}</p>
-                  <pre className="bg-slate-800 rounded p-2 text-xs border border-slate-600 overflow-x-auto">
+                  <p className="text-sm text-white/70 mb-1">{err.description}</p>
+                  <pre className="bg-white/[0.06] rounded p-2 text-xs border border-white/[0.1] overflow-x-auto">
                     <code className="text-slate-400">
                       {JSON.stringify({ success: false, error: { code: err.code, message: err.message } }, null, 2)}
                     </code>
@@ -706,7 +706,7 @@ function ApiDocsPageInner() {
           </section>
 
           {/* Divider */}
-          <div className="border-t border-slate-700" />
+          <div className="border-t border-white/[0.08]" />
 
           {/* Endpoint Categories */}
           {filteredCategories.map((category) => (
@@ -735,7 +735,7 @@ function ApiDocsPageInner() {
               <p className="text-slate-400 text-lg">No endpoints match &quot;{searchQuery}&quot;</p>
               <button
                 onClick={() => setSearchQuery('')}
-                className="mt-3 text-slate-300 hover:text-white text-sm"
+                className="mt-3 text-white/70 hover:text-white text-sm"
               >
                 Clear search
               </button>
@@ -743,18 +743,18 @@ function ApiDocsPageInner() {
           )}
 
           {/* Footer */}
-          <div className="border-t border-slate-700 pt-8 pb-4 text-center">
+          <div className="border-t border-white/[0.08] pt-8 pb-4 text-center">
             <p className="text-sm text-slate-500">
               Need help?{' '}
-              <Link href="/contact" className="text-slate-300 hover:text-white">
+              <Link href="/contact" className="text-white/70 hover:text-white">
                 Contact Support
               </Link>
               {' | '}
-              <Link href="/developer" className="text-slate-300 hover:text-white">
+              <Link href="/developer" className="text-white/70 hover:text-white">
                 Developer Portal
               </Link>
               {' | '}
-              <Link href="/developer/explorer" className="text-slate-300 hover:text-white">
+              <Link href="/developer/explorer" className="text-white/70 hover:text-white">
                 API Explorer
               </Link>
             </p>

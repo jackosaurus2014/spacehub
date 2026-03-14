@@ -31,7 +31,7 @@ const RECENT_UPDATES = [
       'Deep-dive profiles covering financials, satellite assets, facility locations, and competitive scoring for top space companies.',
     href: '/company-profiles',
     badge: 'Expanded',
-    badgeColor: 'bg-white/10 text-slate-300 border-white/10',
+    badgeColor: 'bg-white/10 text-white/70 border-white/10',
     icon: '\uD83C\uDFE2',
   },
   {

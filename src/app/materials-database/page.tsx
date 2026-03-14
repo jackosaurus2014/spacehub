@@ -91,8 +91,8 @@ function categoryColor(cat: MaterialCategory): string {
     case 'Polymer': return 'bg-violet-500/20 text-violet-300 border-violet-500/30';
     case 'Thermal': return 'bg-amber-500/20 text-amber-300 border-amber-500/30';
     case 'Shielding': return 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30';
-    case 'Coating': return 'bg-white/10 text-slate-200 border-white/10';
-    default: return 'bg-slate-500/20 text-slate-300 border-slate-500/30';
+    case 'Coating': return 'bg-white/10 text-white/90 border-white/10';
+    default: return 'bg-slate-500/20 text-white/70 border-slate-500/30';
   }
 }
 
@@ -566,7 +566,7 @@ export default function MaterialsDatabasePage() {
             ].map(stat => (
               <div
                 key={stat.label}
-                className="bg-slate-900/60 border border-slate-700/50 rounded-lg p-4 text-center"
+                className="bg-black/60 border border-white/[0.06] rounded-lg p-4 text-center"
               >
                 <div className={`text-2xl font-bold ${stat.color}`}>{stat.value}</div>
                 <div className="text-xs text-slate-400 mt-1">{stat.label}</div>
@@ -577,7 +577,7 @@ export default function MaterialsDatabasePage() {
 
         {/* Filters & Controls */}
         <ScrollReveal delay={0.1}>
-          <div className="bg-slate-900/60 border border-slate-700/50 rounded-xl p-4 mb-8 space-y-4">
+          <div className="bg-black/60 border border-white/[0.06] rounded-xl p-4 mb-8 space-y-4">
             {/* Search */}
             <div className="relative">
               <svg
@@ -598,7 +598,7 @@ export default function MaterialsDatabasePage() {
                 placeholder="Search by name, property, application, or manufacturer..."
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
-                className="w-full bg-slate-800/60 border border-slate-600/50 rounded-lg pl-10 pr-4 py-2.5 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50"
+                className="w-full bg-white/[0.05] border border-white/[0.08] rounded-lg pl-10 pr-4 py-2.5 text-sm text-white/90 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50"
               />
             </div>
 
@@ -607,7 +607,7 @@ export default function MaterialsDatabasePage() {
               <select
                 value={categoryFilter}
                 onChange={e => setCategoryFilter(e.target.value as MaterialCategory | 'All')}
-                className="bg-slate-800/60 border border-slate-600/50 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
+                className="bg-white/[0.05] border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-white/90 focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
               >
                 {CATEGORY_FILTERS.map(f => (
                   <option key={f.value} value={f.value}>{f.label}</option>
@@ -617,7 +617,7 @@ export default function MaterialsDatabasePage() {
               <select
                 value={applicationFilter}
                 onChange={e => setApplicationFilter(e.target.value)}
-                className="bg-slate-800/60 border border-slate-600/50 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
+                className="bg-white/[0.05] border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-white/90 focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
               >
                 {APPLICATION_FILTERS.map(f => (
                   <option key={f.value} value={f.value}>{f.label}</option>
@@ -627,7 +627,7 @@ export default function MaterialsDatabasePage() {
               <select
                 value={tempRangeFilter}
                 onChange={e => setTempRangeFilter(e.target.value)}
-                className="bg-slate-800/60 border border-slate-600/50 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
+                className="bg-white/[0.05] border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-white/90 focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
               >
                 {TEMP_RANGE_FILTERS.map(f => (
                   <option key={f.value} value={f.value}>{f.label}</option>
@@ -637,7 +637,7 @@ export default function MaterialsDatabasePage() {
               <select
                 value={sortBy}
                 onChange={e => setSortBy(e.target.value as SortKey)}
-                className="bg-slate-800/60 border border-slate-600/50 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
+                className="bg-white/[0.05] border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-white/90 focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
               >
                 {SORT_OPTIONS.map(s => (
                   <option key={s.value} value={s.value}>Sort: {s.label}</option>
@@ -650,7 +650,7 @@ export default function MaterialsDatabasePage() {
                 className={`px-3 py-2 rounded-lg text-sm font-medium border transition-colors ${
                   compareMode
                     ? 'bg-emerald-500/20 border-emerald-500/50 text-emerald-300'
-                    : 'bg-slate-800/60 border-slate-600/50 text-slate-300 hover:border-slate-500'
+                    : 'bg-white/[0.05] border-white/[0.08] text-white/70 hover:border-slate-500'
                 }`}
               >
                 {compareMode ? `Comparing (${compareSet.size}/4)` : 'Compare'}
@@ -666,14 +666,14 @@ export default function MaterialsDatabasePage() {
         {/* Comparison Panel */}
         {compareMode && comparedMaterials.length >= 2 && (
           <ScrollReveal>
-            <div className="bg-slate-900/60 border border-emerald-500/30 rounded-xl p-5 mb-8 overflow-x-auto">
+            <div className="bg-black/60 border border-emerald-500/30 rounded-xl p-5 mb-8 overflow-x-auto">
               <h2 className="text-lg font-semibold text-emerald-300 mb-4">Material Comparison</h2>
               <table className="w-full text-sm min-w-[600px]">
                 <thead>
-                  <tr className="border-b border-slate-700/50">
+                  <tr className="border-b border-white/[0.06]">
                     <th className="text-left py-2 pr-4 text-slate-400 font-medium">Property</th>
                     {comparedMaterials.map(m => (
-                      <th key={m.name} className="text-left py-2 px-3 text-slate-200 font-medium">{m.name}</th>
+                      <th key={m.name} className="text-left py-2 px-3 text-white/90 font-medium">{m.name}</th>
                     ))}
                   </tr>
                 </thead>
@@ -691,7 +691,7 @@ export default function MaterialsDatabasePage() {
                     {comparedMaterials.map(m => {
                       const isWidest = comparedMaterials.every(o => (m.tempRange.max - m.tempRange.min) >= (o.tempRange.max - o.tempRange.min));
                       return (
-                        <td key={m.name} className={`py-2.5 px-3 font-mono text-xs ${isWidest ? 'text-emerald-400' : 'text-slate-300'}`}>
+                        <td key={m.name} className={`py-2.5 px-3 font-mono text-xs ${isWidest ? 'text-emerald-400' : 'text-white/70'}`}>
                           {m.tempRange.min} C to {m.tempRange.max} C
                         </td>
                       );
@@ -711,7 +711,7 @@ export default function MaterialsDatabasePage() {
                   <tr>
                     <td className="py-2.5 pr-4 text-slate-400">Advantages</td>
                     {comparedMaterials.map(m => (
-                      <td key={m.name} className="py-2.5 px-3 text-xs text-slate-300">{m.advantages.slice(0, 2).join('; ')}</td>
+                      <td key={m.name} className="py-2.5 px-3 text-xs text-white/70">{m.advantages.slice(0, 2).join('; ')}</td>
                     ))}
                   </tr>
                   <tr>
@@ -750,8 +750,8 @@ export default function MaterialsDatabasePage() {
             const isCompared = compareSet.has(mat.name);
             return (
               <ScrollReveal key={mat.name} delay={Math.min(idx * 0.04, 0.4)}>
-                <div className={`bg-slate-900/60 border rounded-xl overflow-hidden transition-colors ${
-                  isCompared ? 'border-emerald-500/50' : 'border-slate-700/50 hover:border-slate-600/70'
+                <div className={`bg-black/60 border rounded-xl overflow-hidden transition-colors ${
+                  isCompared ? 'border-emerald-500/50' : 'border-white/[0.06] hover:border-white/[0.1]'
                 }`}>
                   {/* Card Header */}
                   <div className="flex items-center">
@@ -790,7 +790,7 @@ export default function MaterialsDatabasePage() {
                       {/* Key specs (desktop) */}
                       <div className="hidden sm:flex items-center gap-6 text-sm shrink-0">
                         <div className="text-right">
-                          <div className="text-slate-300 font-mono text-xs">{mat.tempRange.min} to {mat.tempRange.max} C</div>
+                          <div className="text-white/70 font-mono text-xs">{mat.tempRange.min} to {mat.tempRange.max} C</div>
                           <div className="text-xs text-slate-500">Temp Range</div>
                         </div>
                         <div className="flex items-center gap-1.5">
@@ -815,7 +815,7 @@ export default function MaterialsDatabasePage() {
                   <div className="sm:hidden px-5 pb-3 flex items-center gap-4 text-sm">
                     <div>
                       <span className="text-slate-400">Temp:</span>{' '}
-                      <span className="text-slate-200 font-mono text-xs">{mat.tempRange.min} to {mat.tempRange.max} C</span>
+                      <span className="text-white/90 font-mono text-xs">{mat.tempRange.min} to {mat.tempRange.max} C</span>
                     </div>
                     <div className="flex items-center gap-1.5">
                       <span className={`w-2 h-2 rounded-full ${radiationBg(mat.radiationResistance)}`} />
@@ -825,10 +825,10 @@ export default function MaterialsDatabasePage() {
 
                   {/* Expanded Detail Panel */}
                   {isExpanded && (
-                    <div className="border-t border-slate-700/50 px-5 py-4 bg-slate-800/30">
+                    <div className="border-t border-white/[0.06] px-5 py-4 bg-white/[0.03]">
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
                         {/* Temperature Range */}
-                        <div className="bg-slate-900/50 rounded-lg p-3">
+                        <div className="bg-black/50 rounded-lg p-3">
                           <div className="text-xs text-slate-500 uppercase tracking-wider mb-1">Temperature Range</div>
                           <div className="text-lg font-mono text-amber-400">{mat.tempRange.min} C to {mat.tempRange.max} C</div>
                           <div className="mt-2 h-2 bg-slate-700/50 rounded-full overflow-hidden">
@@ -843,7 +843,7 @@ export default function MaterialsDatabasePage() {
                         </div>
 
                         {/* Radiation Resistance */}
-                        <div className="bg-slate-900/50 rounded-lg p-3">
+                        <div className="bg-black/50 rounded-lg p-3">
                           <div className="text-xs text-slate-500 uppercase tracking-wider mb-1">Radiation Resistance</div>
                           <div className={`text-lg font-medium flex items-center gap-2 ${radiationColor(mat.radiationResistance)}`}>
                             <span className={`w-2.5 h-2.5 rounded-full ${radiationBg(mat.radiationResistance)}`} />
@@ -852,7 +852,7 @@ export default function MaterialsDatabasePage() {
                         </div>
 
                         {/* Category */}
-                        <div className="bg-slate-900/50 rounded-lg p-3">
+                        <div className="bg-black/50 rounded-lg p-3">
                           <div className="text-xs text-slate-500 uppercase tracking-wider mb-1">Category</div>
                           <span className={`text-xs font-medium px-2.5 py-1 rounded-full border ${categoryColor(mat.category)}`}>
                             {mat.category}
@@ -863,7 +863,7 @@ export default function MaterialsDatabasePage() {
                       {/* Properties */}
                       <div className="mb-4">
                         <div className="text-xs text-slate-500 uppercase tracking-wider mb-2">Key Properties</div>
-                        <p className="text-sm text-slate-300 leading-relaxed">{mat.properties}</p>
+                        <p className="text-sm text-white/70 leading-relaxed">{mat.properties}</p>
                       </div>
 
                       {/* Applications */}
@@ -871,7 +871,7 @@ export default function MaterialsDatabasePage() {
                         <div className="text-xs text-slate-500 uppercase tracking-wider mb-2">Applications</div>
                         <div className="flex flex-wrap gap-2">
                           {mat.applications.map(app => (
-                            <span key={app} className="text-xs bg-slate-700/50 text-slate-300 px-2.5 py-1 rounded-full">
+                            <span key={app} className="text-xs bg-slate-700/50 text-white/70 px-2.5 py-1 rounded-full">
                               {app}
                             </span>
                           ))}
@@ -909,7 +909,7 @@ export default function MaterialsDatabasePage() {
                         <div className="text-xs text-slate-500 uppercase tracking-wider mb-2">Manufacturers</div>
                         <div className="flex flex-wrap gap-2">
                           {mat.manufacturers.map(mfr => (
-                            <span key={mfr} className="text-xs bg-slate-700/30 text-slate-300 px-2.5 py-1 rounded-full border border-slate-600/30">
+                            <span key={mfr} className="text-xs bg-slate-700/30 text-white/70 px-2.5 py-1 rounded-full border border-white/[0.06]">
                               {mfr}
                             </span>
                           ))}
@@ -927,7 +927,7 @@ export default function MaterialsDatabasePage() {
 
         {/* Category Legend */}
         <ScrollReveal delay={0.15}>
-          <div className="mt-10 bg-slate-900/60 border border-slate-700/50 rounded-xl p-5">
+          <div className="mt-10 bg-black/60 border border-white/[0.06] rounded-xl p-5">
             <h2 className="text-lg font-semibold text-slate-100 mb-4">Material Category Overview</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-sm">
               <div className="flex gap-3">
@@ -975,7 +975,7 @@ export default function MaterialsDatabasePage() {
               <div className="flex gap-3 sm:col-span-2 lg:col-span-1">
                 <span className="shrink-0 mt-0.5 w-3 h-3 rounded-full bg-white/60" />
                 <div>
-                  <div className="font-medium text-slate-200">Coatings</div>
+                  <div className="font-medium text-white/90">Coatings</div>
                   <div className="text-slate-400">Surface treatments for thermal control, optical performance, and environmental protection.</div>
                 </div>
               </div>
@@ -1017,11 +1017,11 @@ export default function MaterialsDatabasePage() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="group bg-slate-900/60 border border-slate-700/50 rounded-xl p-4 hover:border-emerald-500/40 hover:bg-slate-800/60 transition-all"
+                  className="group bg-black/60 border border-white/[0.06] rounded-xl p-4 hover:border-emerald-500/40 hover:bg-white/[0.05] transition-all"
                 >
                   <div className="flex items-center gap-3 mb-2">
                     <span className="text-2xl">{link.icon}</span>
-                    <h3 className="font-medium text-slate-200 group-hover:text-emerald-300 transition-colors">
+                    <h3 className="font-medium text-white/90 group-hover:text-emerald-300 transition-colors">
                       {link.title}
                     </h3>
                   </div>

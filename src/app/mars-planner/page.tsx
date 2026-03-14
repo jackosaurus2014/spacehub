@@ -165,7 +165,7 @@ function getStatusStyle(status: ActiveMission['status']): { label: string; color
     case 'dormant': return { label: 'Dormant', color: 'text-yellow-400', bg: 'bg-yellow-900/30 border-yellow-500/30' };
     case 'ended': return { label: 'Ended', color: 'text-red-400', bg: 'bg-red-900/30 border-red-500/30' };
     case 'planned': return { label: 'Planning', color: 'text-blue-400', bg: 'bg-blue-900/30 border-blue-500/30' };
-    default: return { label: status || 'Unknown', color: 'text-slate-400', bg: 'bg-slate-900/30 border-slate-500/30' };
+    default: return { label: status || 'Unknown', color: 'text-slate-400', bg: 'bg-white/[0.04] border-white/[0.08]' };
   }
 }
 
@@ -184,7 +184,7 @@ function getReadinessStyle(readiness: CommercialOpportunity['readiness']): { lab
     case 'near-term': return { label: 'Near-Term (2025-2030)', color: 'text-green-400', bg: 'bg-green-900/20' };
     case 'mid-term': return { label: 'Mid-Term (2030-2040)', color: 'text-yellow-400', bg: 'bg-yellow-900/20' };
     case 'long-term': return { label: 'Long-Term (2040+)', color: 'text-orange-400', bg: 'bg-orange-900/20' };
-    default: return { label: readiness || 'Unknown', color: 'text-slate-400', bg: 'bg-slate-900/20' };
+    default: return { label: readiness || 'Unknown', color: 'text-slate-400', bg: 'bg-white/[0.04]' };
   }
 }
 
@@ -199,7 +199,7 @@ function HeroStats({ activeMissions: ACTIVE_MISSIONS, upcomingMissions: UPCOMING
 
   return (
     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-      <div className="card p-5 border border-slate-700/50 bg-gradient-to-br from-slate-800/80 to-slate-900/80">
+      <div className="card p-5 border border-white/[0.06] bg-gradient-to-br from-white/[0.06] to-white/[0.04]">
         <div className="flex items-center gap-3">
           <span className="text-3xl">🛰️</span>
           <div>
@@ -209,7 +209,7 @@ function HeroStats({ activeMissions: ACTIVE_MISSIONS, upcomingMissions: UPCOMING
           </div>
         </div>
       </div>
-      <div className="card p-5 border border-slate-700/50 bg-gradient-to-br from-slate-800/80 to-slate-900/80">
+      <div className="card p-5 border border-white/[0.06] bg-gradient-to-br from-white/[0.06] to-white/[0.04]">
         <div className="flex items-center gap-3">
           <span className="text-3xl">🚀</span>
           <div>
@@ -219,7 +219,7 @@ function HeroStats({ activeMissions: ACTIVE_MISSIONS, upcomingMissions: UPCOMING
           </div>
         </div>
       </div>
-      <div className="card p-5 border border-slate-700/50 bg-gradient-to-br from-slate-800/80 to-slate-900/80">
+      <div className="card p-5 border border-white/[0.06] bg-gradient-to-br from-white/[0.06] to-white/[0.04]">
         <div className="flex items-center gap-3">
           <span className="text-3xl">🪟</span>
           <div>
@@ -229,7 +229,7 @@ function HeroStats({ activeMissions: ACTIVE_MISSIONS, upcomingMissions: UPCOMING
           </div>
         </div>
       </div>
-      <div className="card p-5 border border-slate-700/50 bg-gradient-to-br from-slate-800/80 to-slate-900/80">
+      <div className="card p-5 border border-white/[0.06] bg-gradient-to-br from-white/[0.06] to-white/[0.04]">
         <div className="flex items-center gap-3">
           <span className="text-3xl">🌍</span>
           <div>
@@ -252,7 +252,7 @@ function MissionCard({ mission }: { mission: ActiveMission }) {
   const typeIcon = getMissionTypeIcon(mission.type);
 
   return (
-    <div className="card p-5 border border-slate-700/50 hover:border-red-500/30 transition-all bg-gradient-to-br from-slate-800/60 to-slate-900/60">
+    <div className="card p-5 border border-white/[0.06] hover:border-red-500/30 transition-all bg-gradient-to-br from-white/[0.04] to-white/[0.02]">
       <div className="flex items-start justify-between mb-3">
         <div className="flex items-center gap-3">
           <span className="text-3xl">{typeIcon}</span>
@@ -267,24 +267,24 @@ function MissionCard({ mission }: { mission: ActiveMission }) {
       </div>
 
       <div className="grid grid-cols-2 gap-3 mb-3">
-        <div className="bg-slate-800/50 rounded-lg p-2.5 text-center">
+        <div className="bg-white/[0.04] rounded-lg p-2.5 text-center">
           <div className="text-slate-500 text-xs uppercase tracking-widest mb-1">Arrived</div>
           <div className="text-white font-semibold text-sm">{mission.arrived}</div>
         </div>
         {mission.location && (
-          <div className="bg-slate-800/50 rounded-lg p-2.5 text-center">
+          <div className="bg-white/[0.04] rounded-lg p-2.5 text-center">
             <div className="text-slate-500 text-xs uppercase tracking-widest mb-1">Location</div>
             <div className="text-white font-semibold text-sm">{mission.location}</div>
           </div>
         )}
         {!mission.location && mission.years && (
-          <div className="bg-slate-800/50 rounded-lg p-2.5 text-center">
+          <div className="bg-white/[0.04] rounded-lg p-2.5 text-center">
             <div className="text-slate-500 text-xs uppercase tracking-widest mb-1">Active</div>
             <div className="text-white font-semibold text-sm">{mission.years} years</div>
           </div>
         )}
         {!mission.location && !mission.years && (
-          <div className="bg-slate-800/50 rounded-lg p-2.5 text-center">
+          <div className="bg-white/[0.04] rounded-lg p-2.5 text-center">
             <div className="text-slate-500 text-xs uppercase tracking-widest mb-1">Type</div>
             <div className="text-white font-semibold text-sm capitalize">{mission.type}</div>
           </div>
@@ -295,7 +295,7 @@ function MissionCard({ mission }: { mission: ActiveMission }) {
         <p className="text-yellow-400/80 text-xs mb-2 italic">{mission.statusDetail}</p>
       )}
 
-      <div className="border-t border-slate-700/50 pt-3">
+      <div className="border-t border-white/[0.06] pt-3">
         <div className="text-slate-400 text-xs uppercase tracking-widest mb-1">Key Achievement</div>
         <p className="text-slate-300 text-sm leading-relaxed">{mission.highlight}</p>
       </div>
@@ -321,7 +321,7 @@ function UpcomingMissionCard({ mission, index, totalCount }: { mission: Upcoming
       </div>
 
       {/* Card */}
-      <div className="card p-5 border border-slate-700/50 hover:border-orange-500/30 transition-all bg-gradient-to-br from-slate-800/60 to-slate-900/60 flex-1 mb-4">
+      <div className="card p-5 border border-white/[0.06] hover:border-orange-500/30 transition-all bg-gradient-to-br from-white/[0.04] to-white/[0.02] flex-1 mb-4">
         <div className="flex items-start justify-between mb-2">
           <div>
             <h3 className="text-white font-semibold text-lg">{mission.name}</h3>
@@ -355,7 +355,7 @@ function LaunchWindowsSection({ launchWindows: LAUNCH_WINDOWS, transferTypes: TR
   return (
     <div className="space-y-6">
       {/* Explanation */}
-      <div className="card p-6 border border-slate-700/50 bg-gradient-to-br from-blue-900/20 to-slate-900/60">
+      <div className="card p-6 border border-white/[0.06] bg-gradient-to-br from-blue-900/20 to-white/[0.02]">
         <h3 className="text-white font-semibold text-lg mb-3 flex items-center gap-2">
           <span>🌌</span> Orbital Mechanics
         </h3>
@@ -367,7 +367,7 @@ function LaunchWindowsSection({ launchWindows: LAUNCH_WINDOWS, transferTypes: TR
       </div>
 
       {/* Upcoming Windows */}
-      <div className="card p-6 border border-slate-700/50 bg-gradient-to-br from-slate-800/60 to-slate-900/60">
+      <div className="card p-6 border border-white/[0.06] bg-gradient-to-br from-white/[0.04] to-white/[0.02]">
         <h3 className="text-white font-semibold text-lg mb-4">Upcoming Launch Windows</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {LAUNCH_WINDOWS.map((w, i) => (
@@ -376,7 +376,7 @@ function LaunchWindowsSection({ launchWindows: LAUNCH_WINDOWS, transferTypes: TR
               className={`rounded-xl p-4 border text-center ${
                 i === 0
                   ? 'bg-red-900/20 border-red-500/40'
-                  : 'bg-slate-800/50 border-slate-700/50'
+                  : 'bg-white/[0.04] border-white/[0.06]'
               }`}
             >
               {i === 0 && (
@@ -390,11 +390,11 @@ function LaunchWindowsSection({ launchWindows: LAUNCH_WINDOWS, transferTypes: TR
       </div>
 
       {/* Transfer Types */}
-      <div className="card p-6 border border-slate-700/50 bg-gradient-to-br from-slate-800/60 to-slate-900/60">
+      <div className="card p-6 border border-white/[0.06] bg-gradient-to-br from-white/[0.04] to-white/[0.02]">
         <h3 className="text-white font-semibold text-lg mb-4">Transfer Trajectory Types</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {TRANSFER_TYPES.map((t) => (
-            <div key={t.name} className="bg-slate-800/50 rounded-xl p-4 border border-slate-700/50">
+            <div key={t.name} className="bg-white/[0.04] rounded-xl p-4 border border-white/[0.06]">
               <div className="text-white font-semibold mb-1">{t.name}</div>
               <div className="text-slate-300 text-sm font-bold mb-2">{t.duration}</div>
               <p className="text-slate-400 text-xs leading-relaxed">{t.description}</p>
@@ -426,13 +426,13 @@ function MarsFactsSection({ marsFacts: MARS_FACTS, costEstimates: COST_ESTIMATES
   return (
     <div className="space-y-6">
       {/* Mars by the Numbers */}
-      <div className="card p-6 border border-slate-700/50 bg-gradient-to-br from-red-900/10 to-slate-900/60">
+      <div className="card p-6 border border-white/[0.06] bg-gradient-to-br from-red-900/10 to-white/[0.02]">
         <h3 className="text-white font-semibold text-lg mb-4 flex items-center gap-2">
           <span>🔴</span> Mars by the Numbers
         </h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {factEntries.map((fact) => (
-            <div key={fact.label} className="flex items-start gap-3 bg-slate-800/50 rounded-lg p-3 border border-slate-700/30">
+            <div key={fact.label} className="flex items-start gap-3 bg-white/[0.04] rounded-lg p-3 border border-white/[0.06]">
               <span className="text-xl flex-shrink-0 mt-0.5">{fact.icon}</span>
               <div>
                 <div className="text-slate-400 text-xs uppercase tracking-widest">{fact.label}</div>
@@ -444,13 +444,13 @@ function MarsFactsSection({ marsFacts: MARS_FACTS, costEstimates: COST_ESTIMATES
       </div>
 
       {/* Mission Cost Estimates */}
-      <div className="card p-6 border border-slate-700/50 bg-gradient-to-br from-slate-800/60 to-slate-900/60">
+      <div className="card p-6 border border-white/[0.06] bg-gradient-to-br from-white/[0.04] to-white/[0.02]">
         <h3 className="text-white font-semibold text-lg mb-4 flex items-center gap-2">
           <span>💰</span> Mission Cost Estimates
         </h3>
         <div className="space-y-3">
           {COST_ESTIMATES.map((cost) => (
-            <div key={cost.type} className="flex items-center justify-between bg-slate-800/50 rounded-lg p-4 border border-slate-700/30">
+            <div key={cost.type} className="flex items-center justify-between bg-white/[0.04] rounded-lg p-4 border border-white/[0.06]">
               <div className="flex items-center gap-3">
                 <span className="text-2xl">{cost.icon}</span>
                 <span className="text-white font-medium text-sm">{cost.type}</span>
@@ -474,7 +474,7 @@ function MarsFactsSection({ marsFacts: MARS_FACTS, costEstimates: COST_ESTIMATES
 function CommercialSection({ commercialOpportunities: COMMERCIAL_OPPORTUNITIES }: { commercialOpportunities: CommercialOpportunity[] }) {
   return (
     <div className="space-y-6">
-      <div className="card p-6 border border-slate-700/50 bg-gradient-to-br from-purple-900/10 to-slate-900/60">
+      <div className="card p-6 border border-white/[0.06] bg-gradient-to-br from-purple-900/10 to-white/[0.02]">
         <h3 className="text-white font-semibold text-lg mb-2 flex items-center gap-2">
           <span>🏢</span> Commercial Mars Opportunities
         </h3>
@@ -485,7 +485,7 @@ function CommercialSection({ commercialOpportunities: COMMERCIAL_OPPORTUNITIES }
           {COMMERCIAL_OPPORTUNITIES.map((opp) => {
             const readinessStyle = getReadinessStyle(opp.readiness);
             return (
-              <div key={opp.title} className="bg-slate-800/50 rounded-xl p-5 border border-slate-700/50 hover:border-purple-500/30 transition-all">
+              <div key={opp.title} className="bg-white/[0.04] rounded-xl p-5 border border-white/[0.06] hover:border-purple-500/30 transition-all">
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex items-center gap-3">
                     <span className="text-3xl">{opp.icon}</span>
@@ -503,7 +503,7 @@ function CommercialSection({ commercialOpportunities: COMMERCIAL_OPPORTUNITIES }
       </div>
 
       {/* Key Enablers */}
-      <div className="card p-6 border border-slate-700/50 bg-gradient-to-br from-slate-800/60 to-slate-900/60">
+      <div className="card p-6 border border-white/[0.06] bg-gradient-to-br from-white/[0.04] to-white/[0.02]">
         <h3 className="text-white font-semibold text-lg mb-4 flex items-center gap-2">
           <span>🔑</span> Key Technology Enablers
         </h3>
@@ -516,7 +516,7 @@ function CommercialSection({ commercialOpportunities: COMMERCIAL_OPPORTUNITIES }
             { tech: 'Radiation Shielding', maturity: 'TRL 4-6', color: 'text-yellow-400' },
             { tech: 'Closed-Loop Life Support', maturity: 'TRL 5-7', color: 'text-yellow-400' },
           ].map((item) => (
-            <div key={item.tech} className="flex items-center justify-between bg-slate-800/30 rounded-lg p-3 border border-slate-700/30">
+            <div key={item.tech} className="flex items-center justify-between bg-white/[0.04] rounded-lg p-3 border border-white/[0.06]">
               <span className="text-white text-sm">{item.tech}</span>
               <span className={`text-xs font-bold ${item.color}`}>{item.maturity}</span>
             </div>
@@ -607,13 +607,13 @@ export default function MarsPlannerPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0B0F1A] text-white p-6">
+      <div className="min-h-screen bg-black text-white p-6">
         <div className="max-w-7xl mx-auto">
           <div className="animate-pulse space-y-4">
-            <div className="h-8 bg-slate-800 rounded w-1/3"></div>
-            <div className="h-4 bg-slate-800 rounded w-2/3"></div>
+            <div className="h-8 bg-white/[0.06] rounded w-1/3"></div>
+            <div className="h-4 bg-white/[0.06] rounded w-2/3"></div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8">
-              {[1,2,3,4].map(i => <div key={i} className="h-48 bg-slate-800 rounded-lg"></div>)}
+              {[1,2,3,4].map(i => <div key={i} className="h-48 bg-white/[0.06] rounded-lg"></div>)}
             </div>
           </div>
         </div>
@@ -643,7 +643,7 @@ export default function MarsPlannerPage() {
         <ScrollReveal><HeroStats activeMissions={ACTIVE_MISSIONS} upcomingMissions={UPCOMING_MISSIONS} /></ScrollReveal>
 
         {/* Tabs */}
-        <ScrollReveal delay={0.1}><div className="border-b border-slate-700/50 mb-6">
+        <ScrollReveal delay={0.1}><div className="border-b border-white/[0.06] mb-6">
           <div className="flex gap-1 overflow-x-auto">
             {TABS.map((tab) => (
               <button
@@ -652,7 +652,7 @@ export default function MarsPlannerPage() {
                 className={`px-4 py-2.5 text-sm font-medium whitespace-nowrap border-b-2 transition-colors ${
                   activeTab === tab.id
                     ? 'border-red-500 text-red-300 drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]'
-                    : 'border-transparent text-slate-400 hover:text-white hover:border-slate-500 drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]'
+                    : 'border-transparent text-slate-400 hover:text-white hover:border-white/[0.1] drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]'
                 }`}
               >
                 <span className="mr-1.5">{tab.icon}</span>
@@ -672,7 +672,7 @@ export default function MarsPlannerPage() {
                 className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                   agencyFilter === 'all'
                     ? 'bg-red-500/20 text-red-300 border border-red-500/40'
-                    : 'bg-slate-800/50 text-slate-400 border border-slate-700/50 hover:text-white'
+                    : 'bg-white/[0.04] text-slate-400 border border-white/[0.06] hover:text-white'
                 }`}
               >
                 All Agencies
@@ -684,7 +684,7 @@ export default function MarsPlannerPage() {
                   className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                     agencyFilter === agency
                       ? 'bg-red-500/20 text-red-300 border border-red-500/40'
-                      : 'bg-slate-800/50 text-slate-400 border border-slate-700/50 hover:text-white'
+                      : 'bg-white/[0.04] text-slate-400 border border-white/[0.06] hover:text-white'
                   }`}
                 >
                   {agency}
@@ -727,7 +727,7 @@ export default function MarsPlannerPage() {
 
         {activeTab === 'rover-photos' && (
           <div className="space-y-6">
-            <div className="card p-6 border border-slate-700/50 bg-gradient-to-br from-red-900/10 to-slate-900/60">
+            <div className="card p-6 border border-white/[0.06] bg-gradient-to-br from-red-900/10 to-white/[0.02]">
               <h3 className="text-white font-semibold text-lg mb-2 flex items-center gap-2">
                 <span>📷</span> Mars Rover Photos
               </h3>
@@ -743,8 +743,8 @@ export default function MarsPlannerPage() {
                 <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                   {ROVER_PHOTOS.map((photo) => (
                     <StaggerItem key={photo.id}>
-                      <div className="card p-3 border border-slate-700/50 hover:border-red-500/30 transition-all bg-gradient-to-br from-slate-800/60 to-slate-900/60">
-                        <div className="aspect-square rounded-lg overflow-hidden mb-3 bg-slate-800">
+                      <div className="card p-3 border border-white/[0.06] hover:border-red-500/30 transition-all bg-gradient-to-br from-white/[0.04] to-white/[0.02]">
+                        <div className="aspect-square rounded-lg overflow-hidden mb-3 bg-white/[0.06]">
                           <Image
                             src={photo.img_src}
                             alt={`Mars photo from ${photo.rover_name} - ${photo.camera_full_name}`}
@@ -774,7 +774,7 @@ export default function MarsPlannerPage() {
         )}
 
         {/* Cross-links */}
-        <ScrollReveal><div className="card p-5 border border-slate-700/50 bg-gradient-to-br from-slate-800/60 to-slate-900/60 mt-8">
+        <ScrollReveal><div className="card p-5 border border-white/[0.06] bg-gradient-to-br from-white/[0.04] to-white/[0.02] mt-8">
           <h3 className="text-sm font-semibold text-white mb-3">Related Modules</h3>
           <div className="flex flex-wrap gap-3">
             <Link href="/solar-exploration" className="btn-secondary text-sm">

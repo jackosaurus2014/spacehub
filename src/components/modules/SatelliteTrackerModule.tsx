@@ -92,7 +92,7 @@ export default function SatelliteTrackerModule() {
     return (
       <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-display font-bold text-slate-200 flex items-center">
+          <h2 className="text-2xl font-display font-bold text-white/90 flex items-center">
             <span className="text-3xl mr-3">🛰️</span>
             Satellite Tracker
           </h2>
@@ -108,7 +108,7 @@ export default function SatelliteTrackerModule() {
     return (
       <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-display font-bold text-slate-200 flex items-center">
+          <h2 className="text-2xl font-display font-bold text-white/90 flex items-center">
             <span className="text-3xl mr-3">🛰️</span>
             Satellite Tracker
           </h2>
@@ -133,7 +133,7 @@ export default function SatelliteTrackerModule() {
         </h2>
         <Link
           href="/satellites"
-          className="text-slate-200 hover:text-white transition-colors text-sm"
+          className="text-white/90 hover:text-white transition-colors text-sm"
         >
           Full Tracker &rarr;
         </Link>
@@ -145,7 +145,7 @@ export default function SatelliteTrackerModule() {
           {`Satellite statistics: ${stats.total.toLocaleString()} total satellites, ${stats.byStatus.active.toLocaleString()} active, ${stats.byOrbitType.LEO.toLocaleString()} in low Earth orbit, ${stats.byOrbitType.GEO.toLocaleString()} in geostationary orbit`}
         </span>
         <div className="card p-4 text-center">
-          <div className="text-3xl font-bold text-slate-200">
+          <div className="text-3xl font-bold text-white/90">
             {stats.total.toLocaleString()}
           </div>
           <div className="text-slate-400 text-sm">Total Satellites</div>
@@ -172,7 +172,7 @@ export default function SatelliteTrackerModule() {
 
       {/* ISS Highlight */}
       {iss && (
-        <div className="card p-5 border border-white/15 bg-gradient-to-br from-slate-800/20 to-transparent">
+        <div className="card p-5 border border-white/15 bg-gradient-to-br from-white/[0.04] to-transparent">
           <div className="flex items-start justify-between flex-wrap gap-4">
             <div className="flex items-center gap-3">
               <div className="w-12 h-12 rounded-lg bg-white/10 flex items-center justify-center text-2xl border border-white/10">
@@ -194,12 +194,12 @@ export default function SatelliteTrackerModule() {
                 <div className="text-slate-400 text-xs">Altitude</div>
               </div>
               <div className="text-center">
-                <div className="text-lg font-bold text-slate-200">{iss.velocity.toFixed(2)} km/s</div>
+                <div className="text-lg font-bold text-white/90">{iss.velocity.toFixed(2)} km/s</div>
                 <div className="text-slate-400 text-xs">Velocity</div>
               </div>
             </div>
           </div>
-          <div className="flex items-center gap-3 mt-4 pt-3 border-t border-slate-700">
+          <div className="flex items-center gap-3 mt-4 pt-3 border-t border-white/[0.06]">
             <a
               href={`https://www.n2yo.com/satellite/?s=${iss.noradId}`}
               target="_blank"
@@ -228,7 +228,7 @@ export default function SatelliteTrackerModule() {
 
       {/* Notable Satellites */}
       <div className="card p-4">
-        <h3 className="text-lg font-semibold text-slate-200 mb-4 flex items-center gap-2">
+        <h3 className="text-lg font-semibold text-white/90 mb-4 flex items-center gap-2">
           <span>⭐</span> Notable Satellites
         </h3>
         <div className="space-y-3">
@@ -238,16 +238,16 @@ export default function SatelliteTrackerModule() {
             return (
               <div
                 key={sat.id}
-                className="p-3 rounded-lg border border-slate-700/50 bg-slate-800/50 hover:bg-slate-700/50 transition-colors"
+                className="p-3 rounded-lg border border-white/[0.06] bg-white/[0.04] hover:bg-white/[0.08] transition-colors"
               >
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-2 min-w-0">
                     <span className="text-xl flex-shrink-0">{purposeIcon}</span>
                     <div className="min-w-0">
-                      <h4 className="font-medium text-slate-200 text-sm truncate">{sat.name}</h4>
+                      <h4 className="font-medium text-white/90 text-sm truncate">{sat.name}</h4>
                       <div className="flex items-center gap-2 text-xs text-slate-400">
                         <span>{sat.operator}</span>
-                        <span className="text-slate-300">|</span>
+                        <span className="text-white/70">|</span>
                         <span>{sat.orbitType}</span>
                       </div>
                     </div>
@@ -268,7 +268,7 @@ export default function SatelliteTrackerModule() {
 
       {/* Top Operators */}
       <div className="card p-4">
-        <h3 className="text-lg font-semibold text-slate-200 mb-4 flex items-center gap-2">
+        <h3 className="text-lg font-semibold text-white/90 mb-4 flex items-center gap-2">
           <span>🏢</span> Top Operators
         </h3>
         <span className="sr-only">
@@ -287,7 +287,7 @@ export default function SatelliteTrackerModule() {
                   </div>
                   <div className="h-1.5 bg-slate-200 rounded-full overflow-hidden">
                     <div
-                      className="h-full bg-gradient-to-r from-white to-plasma-400 rounded-full"
+                      className="h-full bg-gradient-to-r from-white to-white/70 rounded-full"
                       style={{ width: `${Math.min(pct * 4, 100)}%` }}
                     />
                   </div>
@@ -302,7 +302,7 @@ export default function SatelliteTrackerModule() {
       <div className="flex flex-wrap gap-2">
         <Link
           href="/orbital-slots"
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-medium bg-white/10 text-slate-200 hover:bg-white/15 transition-colors border border-white/10"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-medium bg-white/10 text-white/90 hover:bg-white/15 transition-colors border border-white/10"
         >
           View Orbital Slots &rarr;
         </Link>

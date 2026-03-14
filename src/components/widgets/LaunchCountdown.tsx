@@ -94,10 +94,10 @@ export default function LaunchCountdown() {
   return (
     <div className="card p-6">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-sm font-semibold text-slate-300 uppercase tracking-wider flex items-center gap-2">
+        <h2 className="text-sm font-semibold text-white/70 uppercase tracking-wider flex items-center gap-2">
           <span className="text-lg">🚀</span> Launch Countdown
         </h2>
-        <Link href="/launch" className="text-xs text-slate-300 hover:text-white transition-colors">
+        <Link href="/launch" className="text-xs text-white/70 hover:text-white transition-colors">
           Full Schedule &rarr;
         </Link>
       </div>
@@ -130,17 +130,17 @@ export default function LaunchCountdown() {
 
       {/* Upcoming list */}
       {upcoming.length > 0 && (
-        <div className="border-t border-slate-700/50 pt-3 space-y-2.5">
+        <div className="border-t border-white/[0.06] pt-3 space-y-2.5">
           {upcoming.map((l) => {
             const t = getCountdown(l.date);
             return (
               <div key={l.mission} className="flex items-center justify-between gap-2">
                 <div className="min-w-0 flex-1">
-                  <p className="text-sm text-slate-200 truncate">{l.mission}</p>
+                  <p className="text-sm text-white/90 truncate">{l.mission}</p>
                   <p className="text-[11px] text-slate-500">{l.provider}</p>
                 </div>
                 <div className="flex items-center gap-2 flex-shrink-0">
-                  <span className="text-xs font-mono text-slate-300">
+                  <span className="text-xs font-mono text-white/70">
                     {t.days}d {pad(t.hours)}h
                   </span>
                   <StatusBadge status={l.status} />

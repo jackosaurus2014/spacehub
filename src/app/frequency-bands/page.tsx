@@ -283,7 +283,7 @@ export default function FrequencyBandsPage() {
   const activeBand = FREQUENCY_BANDS.find(b => b.name === selectedBand) || null;
 
   return (
-    <main className="min-h-screen bg-slate-950 text-slate-100">
+    <main className="min-h-screen bg-black text-white/90">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <AnimatedPageHeader
@@ -297,14 +297,14 @@ export default function FrequencyBandsPage() {
         {/* ── Visual Spectrum Chart ── */}
         <ScrollReveal>
           <section className="mb-10">
-            <h2 className="text-xl font-semibold text-slate-100 mb-4">
+            <h2 className="text-xl font-semibold text-white/90 mb-4">
               RF Spectrum Overview
             </h2>
             <p className="text-sm text-slate-400 mb-4">
               Click any band segment to view details. Widths are shown on a logarithmic scale.
             </p>
 
-            <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-4 sm:p-6 overflow-x-auto">
+            <div className="bg-black/60 border border-white/[0.06] rounded-xl p-4 sm:p-6 overflow-x-auto">
               {/* Frequency axis labels */}
               <div className="flex items-end gap-0 min-w-[800px] mb-1">
                 {SPECTRUM_CHART_BANDS.map((band) => {
@@ -344,7 +344,7 @@ export default function FrequencyBandsPage() {
                     <button
                       key={band.name}
                       onClick={() => setSelectedBand(isActive ? null : band.name)}
-                      className={`relative flex-shrink-0 flex items-center justify-center transition-all duration-200 cursor-pointer border-r border-slate-950/50 group ${
+                      className={`relative flex-shrink-0 flex items-center justify-center transition-all duration-200 cursor-pointer border-r border-black/50 group ${
                         isActive
                           ? 'ring-2 ring-white/60 z-10 scale-y-110'
                           : 'hover:brightness-125'
@@ -374,7 +374,7 @@ export default function FrequencyBandsPage() {
               </div>
 
               {/* Optical note */}
-              <div className="mt-4 pt-3 border-t border-slate-800 flex items-center gap-3 min-w-[800px]">
+              <div className="mt-4 pt-3 border-t border-white/[0.06] flex items-center gap-3 min-w-[800px]">
                 <button
                   onClick={() =>
                     setSelectedBand(selectedBand === 'Optical / Laser' ? null : 'Optical / Laser')
@@ -408,7 +408,7 @@ export default function FrequencyBandsPage() {
               >
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
                   <div>
-                    <h3 className="text-2xl font-bold text-slate-100">
+                    <h3 className="text-2xl font-bold text-white/90">
                       <span
                         className="inline-block w-3 h-3 rounded-full mr-2 align-middle"
                         style={{ backgroundColor: activeBand.color }}
@@ -419,7 +419,7 @@ export default function FrequencyBandsPage() {
                   </div>
                   <button
                     onClick={() => setSelectedBand(null)}
-                    className="text-sm text-slate-400 hover:text-slate-200 transition-colors self-start"
+                    className="text-sm text-slate-400 hover:text-white/90 transition-colors self-start"
                   >
                     Close
                   </button>
@@ -430,21 +430,21 @@ export default function FrequencyBandsPage() {
                   <div className="space-y-4">
                     <div>
                       <h4 className="text-xs uppercase tracking-wider text-slate-500 mb-1">Primary Use</h4>
-                      <p className="text-slate-200">{activeBand.primaryUse}</p>
+                      <p className="text-white/90">{activeBand.primaryUse}</p>
                     </div>
                     <div>
                       <h4 className="text-xs uppercase tracking-wider text-slate-500 mb-1">ITU Allocation</h4>
-                      <p className="text-sm text-slate-300">{activeBand.allocation}</p>
+                      <p className="text-sm text-white/70">{activeBand.allocation}</p>
                     </div>
                     <div>
                       <h4 className="text-xs uppercase tracking-wider text-slate-500 mb-1">Regulatory Body</h4>
-                      <p className="text-sm text-slate-300">{activeBand.regulatoryBody}</p>
+                      <p className="text-sm text-white/70">{activeBand.regulatoryBody}</p>
                     </div>
                     <div>
                       <h4 className="text-xs uppercase tracking-wider text-slate-500 mb-2">Services</h4>
                       <ul className="space-y-1">
                         {activeBand.services.map((s) => (
-                          <li key={s} className="flex items-start gap-2 text-sm text-slate-300">
+                          <li key={s} className="flex items-start gap-2 text-sm text-white/70">
                             <span className="mt-1.5 w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: activeBand.color }} />
                             {s}
                           </li>
@@ -459,7 +459,7 @@ export default function FrequencyBandsPage() {
                       <h4 className="text-xs uppercase tracking-wider text-emerald-400 mb-2">Advantages</h4>
                       <ul className="space-y-1">
                         {activeBand.advantages.map((a) => (
-                          <li key={a} className="flex items-start gap-2 text-sm text-slate-300">
+                          <li key={a} className="flex items-start gap-2 text-sm text-white/70">
                             <span className="text-emerald-400 mt-0.5 flex-shrink-0">+</span>
                             {a}
                           </li>
@@ -470,7 +470,7 @@ export default function FrequencyBandsPage() {
                       <h4 className="text-xs uppercase tracking-wider text-red-400 mb-2">Disadvantages</h4>
                       <ul className="space-y-1">
                         {activeBand.disadvantages.map((d) => (
-                          <li key={d} className="flex items-start gap-2 text-sm text-slate-300">
+                          <li key={d} className="flex items-start gap-2 text-sm text-white/70">
                             <span className="text-red-400 mt-0.5 flex-shrink-0">-</span>
                             {d}
                           </li>
@@ -483,7 +483,7 @@ export default function FrequencyBandsPage() {
                         {activeBand.keyUsers.map((u) => (
                           <span
                             key={u}
-                            className="text-xs px-2 py-1 rounded-full border border-slate-700 bg-slate-800/60 text-slate-300"
+                            className="text-xs px-2 py-1 rounded-full border border-white/[0.08] bg-white/[0.05] text-white/70"
                           >
                             {u}
                           </span>
@@ -508,7 +508,7 @@ export default function FrequencyBandsPage() {
                   placeholder="Search bands, services, users..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 pl-9 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500"
+                  className="w-full bg-black border border-white/[0.08] rounded-lg px-4 py-2 pl-9 text-sm text-white/90 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500"
                 />
                 <svg className="absolute left-3 top-2.5 w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -519,7 +519,7 @@ export default function FrequencyBandsPage() {
               <select
                 value={filterUse}
                 onChange={(e) => setFilterUse(e.target.value)}
-                className="bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500/50"
+                className="bg-black border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-white/90 focus:outline-none focus:ring-2 focus:ring-purple-500/50"
               >
                 <option value="all">All Uses</option>
                 {PRIMARY_USES.map((use) => (
@@ -531,7 +531,7 @@ export default function FrequencyBandsPage() {
               <select
                 value={filterRegulator}
                 onChange={(e) => setFilterRegulator(e.target.value)}
-                className="bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500/50"
+                className="bg-black border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-white/90 focus:outline-none focus:ring-2 focus:ring-purple-500/50"
               >
                 <option value="all">All Regulators</option>
                 {REGULATORY_BODIES.map((body) => (
@@ -550,7 +550,7 @@ export default function FrequencyBandsPage() {
         {/* ── Band Comparison Grid ── */}
         <ScrollReveal delay={0.15}>
           <section className="mb-10">
-            <h2 className="text-xl font-semibold text-slate-100 mb-4">
+            <h2 className="text-xl font-semibold text-white/90 mb-4">
               Band Directory
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
@@ -560,8 +560,8 @@ export default function FrequencyBandsPage() {
                   onClick={() => setSelectedBand(selectedBand === band.name ? null : band.name)}
                   className={`text-left p-4 rounded-xl border transition-all duration-200 ${
                     selectedBand === band.name
-                      ? 'ring-2 ring-purple-400 border-purple-500/40 bg-slate-900/80'
-                      : 'border-slate-800 bg-slate-900/40 hover:bg-slate-900/70 hover:border-slate-700'
+                      ? 'ring-2 ring-purple-400 border-purple-500/40 bg-black/80'
+                      : 'border-white/[0.06] bg-black/40 hover:bg-black/70 hover:border-white/[0.08]'
                   }`}
                 >
                   <div className="flex items-center gap-3 mb-2">
@@ -569,7 +569,7 @@ export default function FrequencyBandsPage() {
                       className="w-3 h-3 rounded-full flex-shrink-0"
                       style={{ backgroundColor: band.color }}
                     />
-                    <h3 className="font-semibold text-slate-100">{band.name}</h3>
+                    <h3 className="font-semibold text-white/90">{band.name}</h3>
                     <span className="text-xs text-slate-500 ml-auto">{band.range}</span>
                   </div>
                   <p className="text-sm text-purple-300 mb-2">{band.primaryUse}</p>
@@ -577,13 +577,13 @@ export default function FrequencyBandsPage() {
                     {band.services.slice(0, 2).map((s) => (
                       <span
                         key={s}
-                        className="text-xs px-2 py-0.5 rounded bg-slate-800 text-slate-400"
+                        className="text-xs px-2 py-0.5 rounded bg-white/[0.06] text-slate-400"
                       >
                         {s}
                       </span>
                     ))}
                     {band.services.length > 2 && (
-                      <span className="text-xs px-2 py-0.5 rounded bg-slate-800 text-slate-500">
+                      <span className="text-xs px-2 py-0.5 rounded bg-white/[0.06] text-slate-500">
                         +{band.services.length - 2} more
                       </span>
                     )}
@@ -604,7 +604,7 @@ export default function FrequencyBandsPage() {
         {/* ── Band Comparison Highlights ── */}
         <ScrollReveal delay={0.2}>
           <section className="mb-10">
-            <h2 className="text-xl font-semibold text-slate-100 mb-4">
+            <h2 className="text-xl font-semibold text-white/90 mb-4">
               Band Comparison Highlights
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -642,7 +642,7 @@ export default function FrequencyBandsPage() {
             <div className="mt-6 overflow-x-auto data-scroll-mobile">
               <table className="w-full text-sm border-collapse min-w-[700px]">
                 <thead>
-                  <tr className="border-b border-slate-800">
+                  <tr className="border-b border-white/[0.06]">
                     <th className="text-left py-3 px-3 text-slate-400 font-medium">Band</th>
                     <th className="text-left py-3 px-3 text-slate-400 font-medium">Frequency</th>
                     <th className="text-left py-3 px-3 text-slate-400 font-medium">Typical Use</th>
@@ -663,8 +663,8 @@ export default function FrequencyBandsPage() {
                     { name: 'V-band', freq: '40-75 GHz', use: 'LEO Mega', rain: 'Very High', bw: 'Very High', maturity: 'Low' },
                     { name: 'Optical', freq: '100-800 THz', use: 'ISL/Relay', rain: 'N/A (clouds)', bw: 'Extreme', maturity: 'Med' },
                   ].map((row) => (
-                    <tr key={row.name} className="border-b border-slate-800/50 hover:bg-slate-900/40 transition-colors">
-                      <td className="py-2.5 px-3 font-medium text-slate-200">{row.name}</td>
+                    <tr key={row.name} className="border-b border-white/[0.04] hover:bg-black/40 transition-colors">
+                      <td className="py-2.5 px-3 font-medium text-white/90">{row.name}</td>
                       <td className="py-2.5 px-3 text-slate-400">{row.freq}</td>
                       <td className="py-2.5 px-3 text-slate-400">{row.use}</td>
                       <td className="py-2.5 px-3 text-center">
@@ -687,12 +687,12 @@ export default function FrequencyBandsPage() {
         {/* ── Key Regulatory Notes ── */}
         <ScrollReveal delay={0.25}>
           <section className="mb-10">
-            <h2 className="text-xl font-semibold text-slate-100 mb-4">
+            <h2 className="text-xl font-semibold text-white/90 mb-4">
               Regulatory Context
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-5">
-                <h3 className="font-semibold text-slate-200 mb-2">ITU World Radiocommunication Conference (WRC)</h3>
+              <div className="bg-black/60 border border-white/[0.06] rounded-xl p-5">
+                <h3 className="font-semibold text-white/90 mb-2">ITU World Radiocommunication Conference (WRC)</h3>
                 <p className="text-sm text-slate-400 leading-relaxed">
                   The ITU-R allocates spectrum globally through the Radio Regulations, updated at WRC every 3-4 years.
                   WRC-23 addressed Ka/V-band non-GSO constellation sharing rules, EESS allocations, and IMT identification
@@ -700,8 +700,8 @@ export default function FrequencyBandsPage() {
                   communication frameworks.
                 </p>
               </div>
-              <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-5">
-                <h3 className="font-semibold text-slate-200 mb-2">C-band 5G Transition</h3>
+              <div className="bg-black/60 border border-white/[0.06] rounded-xl p-5">
+                <h3 className="font-semibold text-white/90 mb-2">C-band 5G Transition</h3>
                 <p className="text-sm text-slate-400 leading-relaxed">
                   The FCC&apos;s C-band Order reallocated 3.7-3.98 GHz from satellite to 5G terrestrial use, generating
                   $81B in auction revenue. Satellite operators were relocated to 4.0-4.2 GHz with compressed transponder
@@ -709,16 +709,16 @@ export default function FrequencyBandsPage() {
                   terrestrial 5G/6G demand grows.
                 </p>
               </div>
-              <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-5">
-                <h3 className="font-semibold text-slate-200 mb-2">EPFD Limits for NGSO</h3>
+              <div className="bg-black/60 border border-white/[0.06] rounded-xl p-5">
+                <h3 className="font-semibold text-white/90 mb-2">EPFD Limits for NGSO</h3>
                 <p className="text-sm text-slate-400 leading-relaxed">
                   Non-geostationary (NGSO) mega-constellations must comply with Equivalent Power Flux Density (EPFD) limits
                   to protect GSO satellite networks. ITU Article 22 defines these limits per band. Starlink, Kuiper, and OneWeb
                   must demonstrate compliance through complex orbital simulations before operations commence.
                 </p>
               </div>
-              <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-5">
-                <h3 className="font-semibold text-slate-200 mb-2">Optical Comms: Unregulated Frontier</h3>
+              <div className="bg-black/60 border border-white/[0.06] rounded-xl p-5">
+                <h3 className="font-semibold text-white/90 mb-2">Optical Comms: Unregulated Frontier</h3>
                 <p className="text-sm text-slate-400 leading-relaxed">
                   Free-space optical links currently require no spectrum license since they operate above 3 THz and fall outside
                   ITU Radio Regulations. However, as optical inter-satellite links proliferate (Starlink has 9,000+ laser
@@ -733,7 +733,7 @@ export default function FrequencyBandsPage() {
         {/* ── Related Links ── */}
         <ScrollReveal delay={0.3}>
           <section className="mb-12">
-            <h2 className="text-xl font-semibold text-slate-100 mb-4">
+            <h2 className="text-xl font-semibold text-white/90 mb-4">
               Related Tools & References
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -804,11 +804,11 @@ function ComparisonCard({
 }) {
   return (
     <div
-      className="rounded-xl border border-slate-800 bg-slate-900/50 p-4 hover:bg-slate-900/70 transition-colors"
+      className="rounded-xl border border-white/[0.06] bg-black/50 p-4 hover:bg-black/70 transition-colors"
     >
       <div className="flex items-center gap-2 mb-2">
         <span className="text-xl" aria-hidden="true">{icon}</span>
-        <h3 className="text-sm font-semibold text-slate-300">{title}</h3>
+        <h3 className="text-sm font-semibold text-white/70">{title}</h3>
       </div>
       <p className="text-lg font-bold mb-1" style={{ color: accent }}>
         {bandName}
@@ -830,7 +830,7 @@ function RatingPill({ value }: { value: string }) {
   };
 
   return (
-    <span className={`inline-block text-xs px-2 py-0.5 rounded-full ${colors[value] || 'bg-slate-700 text-slate-400'}`}>
+    <span className={`inline-block text-xs px-2 py-0.5 rounded-full ${colors[value] || 'bg-white/[0.06] text-slate-400'}`}>
       {value}
     </span>
   );
@@ -850,11 +850,11 @@ function RelatedLink({
   return (
     <Link
       href={href}
-      className="group block rounded-xl border border-slate-800 bg-slate-900/40 p-4 hover:bg-slate-900/70 hover:border-purple-500/30 transition-all"
+      className="group block rounded-xl border border-white/[0.06] bg-black/40 p-4 hover:bg-black/70 hover:border-purple-500/30 transition-all"
     >
       <div className="flex items-center gap-2 mb-1.5">
         <span className="text-lg" aria-hidden="true">{icon}</span>
-        <h3 className="text-sm font-semibold text-slate-200 group-hover:text-purple-300 transition-colors">
+        <h3 className="text-sm font-semibold text-white/90 group-hover:text-purple-300 transition-colors">
           {title}
         </h3>
         <svg

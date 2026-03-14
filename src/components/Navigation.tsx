@@ -290,7 +290,7 @@ function DropdownMenu({
         onKeyDown={handleTriggerKeyDown}
         aria-expanded={isOpen}
         aria-haspopup="menu"
-        className="text-slate-200 hover:text-white transition-colors text-sm font-medium flex items-center gap-1"
+        className="text-white/90 hover:text-white transition-colors text-sm font-medium flex items-center gap-1"
       >
         {label}
         <svg
@@ -310,7 +310,7 @@ function DropdownMenu({
           aria-label={`${label} submenu`}
           onKeyDown={handleMenuKeyDown}
           className={`absolute top-full left-0 mt-3 backdrop-blur-xl border border-white/[0.06] rounded-2xl overflow-hidden animate-fade-in-down z-50 ${items.length > 12 ? 'w-[32rem]' : 'w-72'}`}
-          style={{ background: 'rgba(5, 10, 21, 0.95)', boxShadow: '0 8px 32px -4px rgba(0, 0, 0, 0.5)' }}
+          style={{ background: 'rgba(0, 0, 0, 0.95)', boxShadow: '0 8px 32px -4px rgba(0, 0, 0, 0.5)' }}
         >
           <div className={`p-2 max-h-[70vh] overflow-y-auto scrollbar-hide ${items.length > 12 ? 'grid grid-cols-2 gap-x-1' : ''}`}>
             {items.map((item, index) => (
@@ -325,11 +325,11 @@ function DropdownMenu({
                 onMouseEnter={() => setFocusedIndex(index)}
               >
                 <div className="flex items-center justify-between">
-                  <span className="text-slate-200 text-sm font-medium group-hover:text-white transition-colors">
+                  <span className="text-white/90 text-sm font-medium group-hover:text-white transition-colors">
                     {item.label}
                   </span>
                   {item.href === '/compliance' && !isPro && (
-                    <span className="text-xs font-semibold px-1.5 py-0.5 rounded bg-white/10 text-slate-300 border border-white/10">
+                    <span className="text-xs font-semibold px-1.5 py-0.5 rounded bg-white/10 text-white/70 border border-white/10">
                       PRO
                     </span>
                   )}
@@ -478,8 +478,8 @@ export default function Navigation() {
       className={`nav-persistent sticky top-0 z-50 transition-all duration-300 backdrop-blur-xl safe-area-pt ${navHidden ? '-translate-y-full' : 'translate-y-0'}`}
       style={{
         background: scrolled
-          ? 'rgba(5, 10, 21, 0.95)'
-          : 'rgba(5, 10, 21, 0.8)',
+          ? 'rgba(0, 0, 0, 0.95)'
+          : 'rgba(0, 0, 0, 0.85)',
         boxShadow: scrolled
           ? '0 4px 24px -4px rgba(0, 0, 0, 0.4)'
           : 'none'
@@ -500,7 +500,7 @@ export default function Navigation() {
               className="h-5 w-auto"
               priority
             />
-            <span className="text-slate-200 hover:text-white text-sm font-medium transition-colors">Home</span>
+            <span className="text-white/90 hover:text-white text-sm font-medium transition-colors">Home</span>
           </Link>
 
           {/* Desktop Navigation */}
@@ -535,7 +535,7 @@ export default function Navigation() {
             />
             <Link
               href="/pricing"
-              className="text-slate-200 hover:text-white transition-colors text-sm font-medium"
+              className="text-white/90 hover:text-white transition-colors text-sm font-medium"
             >
               Pricing
             </Link>
@@ -554,7 +554,7 @@ export default function Navigation() {
             {!isPro && (
               <Link
                 href="/pricing"
-                className="text-slate-300 hover:text-white text-sm font-medium transition-colors"
+                className="text-white/70 hover:text-white text-sm font-medium transition-colors"
               >
                 Upgrade
               </Link>
@@ -613,8 +613,8 @@ export default function Navigation() {
               onClick={toggleHighContrast}
               className={`relative p-2 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg transition-colors group ${
                 isHighContrast
-                  ? 'text-slate-200 bg-white/[0.06]'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-white/[0.05]'
+                  ? 'text-white/90 bg-white/[0.06]'
+                  : 'text-slate-400 hover:text-white/90 hover:bg-white/[0.05]'
               }`}
               aria-label="Toggle high contrast mode"
               aria-pressed={isHighContrast}
@@ -664,23 +664,23 @@ export default function Navigation() {
             ) : session ? (
               <div className="flex items-center space-x-3">
                 {isPro && (
-                  <span className="text-xs font-semibold px-2 py-0.5 rounded bg-white/10 text-slate-300 border border-white/10">
+                  <span className="text-xs font-semibold px-2 py-0.5 rounded bg-white/10 text-white/70 border border-white/10">
                     PRO
                   </span>
                 )}
-                <span className="text-slate-300 text-sm">
+                <span className="text-white/70 text-sm">
                   {session.user?.name || session.user?.email}
                 </span>
                 <button
                   onClick={() => signOut()}
-                  className="text-slate-300 hover:text-white text-sm font-medium px-3 py-1.5 rounded-lg hover:bg-white/[0.05] transition-colors ease-smooth"
+                  className="text-white/70 hover:text-white text-sm font-medium px-3 py-1.5 rounded-lg hover:bg-white/[0.05] transition-colors ease-smooth"
                 >
                   Sign Out
                 </button>
               </div>
             ) : (
               <>
-                <Link href="/login" className="text-slate-300 hover:text-white text-sm font-medium px-3 py-1.5 rounded-lg hover:bg-white/[0.05] transition-colors ease-smooth">
+                <Link href="/login" className="text-white/70 hover:text-white text-sm font-medium px-3 py-1.5 rounded-lg hover:bg-white/[0.05] transition-colors ease-smooth">
                   Sign In
                 </Link>
                 <Link href="/register" className="bg-white text-slate-900 font-medium text-xs py-2 px-5 rounded-lg hover:bg-slate-100 transition-all duration-200 ease-smooth">
@@ -699,7 +699,7 @@ export default function Navigation() {
                 const opener = (window as unknown as Record<string, unknown>).__openSearchPalette;
                 if (typeof opener === 'function') opener();
               }}
-              className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center text-slate-300 hover:text-white transition-colors"
+              className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center text-white/70 hover:text-white transition-colors"
               aria-label="Search"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -709,7 +709,7 @@ export default function Navigation() {
             <NotificationBell />
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center text-slate-300 hover:text-white"
+              className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center text-white/70 hover:text-white"
               aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
               aria-expanded={isMenuOpen}
             >
@@ -744,7 +744,7 @@ export default function Navigation() {
         {isMenuOpen && createPortal(
           <div className="lg:hidden fixed inset-0 top-[72px] z-[60] animate-fade-in">
             <div className="absolute inset-0 bg-black/50" onClick={() => setIsMenuOpen(false)} role="presentation" aria-hidden="true" />
-            <div className="absolute right-0 top-0 h-full w-80 max-w-[85vw] backdrop-blur-xl border-l border-white/[0.06] overflow-y-auto animate-slide-in-right" style={{ background: 'rgba(5, 10, 21, 0.97)', boxShadow: '-8px 0 32px -4px rgba(0, 0, 0, 0.5)' }}>
+            <div className="absolute right-0 top-0 h-full w-80 max-w-[85vw] backdrop-blur-xl border-l border-white/[0.06] overflow-y-auto animate-slide-in-right" style={{ background: 'rgba(0, 0, 0, 0.97)', boxShadow: '-8px 0 32px -4px rgba(0, 0, 0, 0.5)' }}>
               <div className="p-6 space-y-4">
                 {/* Mobile Search Input */}
                 <div className="relative">
@@ -770,7 +770,7 @@ export default function Navigation() {
                   {mobileSearchQuery && (
                     <button
                       onClick={() => setMobileSearchQuery('')}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-colors"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white/70 transition-colors"
                       aria-label="Clear search"
                     >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
@@ -794,7 +794,7 @@ export default function Navigation() {
                         <Link
                           key={mod.href}
                           href={mod.href}
-                          className="block px-3 py-2 rounded-lg text-slate-300 hover:bg-white/[0.05] hover:text-white active:bg-white/[0.08] transition-colors text-sm font-medium"
+                          className="block px-3 py-2 rounded-lg text-white/70 hover:bg-white/[0.05] hover:text-white active:bg-white/[0.08] transition-colors text-sm font-medium"
                           onClick={() => setIsMenuOpen(false)}
                         >
                           {mod.label}
@@ -825,8 +825,8 @@ export default function Navigation() {
                           }}
                           className={`w-full flex items-center justify-between px-3 py-3 rounded-lg transition-colors touch-target ${
                             isExpanded
-                              ? 'bg-slate-700/30 text-slate-300'
-                              : 'text-slate-300 hover:bg-slate-700/20'
+                              ? 'bg-white/[0.04] text-white/70'
+                              : 'text-white/70 hover:bg-white/[0.03]'
                           }`}
                           aria-expanded={isExpanded}
                         >
@@ -857,13 +857,13 @@ export default function Navigation() {
                               <Link
                                 key={item.href}
                                 href={item.href}
-                                className="block px-3 py-3 rounded-lg text-slate-200 hover:bg-white/[0.05] hover:text-white active:bg-white/[0.08] transition-colors touch-target"
+                                className="block px-3 py-3 rounded-lg text-white/90 hover:bg-white/[0.05] hover:text-white active:bg-white/[0.08] transition-colors touch-target"
                                 onClick={() => setIsMenuOpen(false)}
                               >
                                 <div className="flex items-center justify-between">
                                   <span className="text-sm font-medium">{item.label}</span>
                                   {item.href === '/compliance' && !isPro && (
-                                    <span className="text-xs font-semibold px-1.5 py-0.5 rounded bg-white/10 text-slate-300 border border-white/10">
+                                    <span className="text-xs font-semibold px-1.5 py-0.5 rounded bg-white/10 text-white/70 border border-white/10">
                                       PRO
                                     </span>
                                   )}
@@ -876,7 +876,7 @@ export default function Navigation() {
                             {!mobileSearchQuery && hiddenCount > 0 && (
                               <button
                                 onClick={() => toggleShowAll(category.key)}
-                                className="w-full px-3 py-2.5 text-sm text-slate-300 hover:text-white font-medium transition-colors flex items-center gap-1.5 justify-center"
+                                className="w-full px-3 py-2.5 text-sm text-white/70 hover:text-white font-medium transition-colors flex items-center gap-1.5 justify-center"
                               >
                                 {isShowingAll ? (
                                   <>
@@ -911,7 +911,7 @@ export default function Navigation() {
 
                 {session?.user?.isAdmin && (
                   <div>
-                    <h3 className="text-slate-300 text-xs uppercase tracking-widest font-medium mb-3">Admin</h3>
+                    <h3 className="text-white/70 text-xs uppercase tracking-widest font-medium mb-3">Admin</h3>
                     <Link
                       href="/admin"
                       className="block px-3 py-2.5 rounded-lg text-amber-400 hover:bg-white/[0.05] hover:text-amber-300 transition-colors text-sm font-medium"
@@ -925,7 +925,7 @@ export default function Navigation() {
                 {/* Global Search link (mobile) */}
                 <div className="pt-4 border-t border-white/[0.06]">
                   <button
-                    className="w-full flex items-center gap-3 px-3 py-3 rounded-lg text-slate-200 hover:bg-white/[0.05] hover:text-white active:bg-white/[0.08] transition-colors text-sm font-medium touch-target"
+                    className="w-full flex items-center gap-3 px-3 py-3 rounded-lg text-white/90 hover:bg-white/[0.05] hover:text-white active:bg-white/[0.08] transition-colors text-sm font-medium touch-target"
                     onClick={() => {
                       setIsMenuOpen(false);
                       setTimeout(() => {
@@ -957,7 +957,7 @@ export default function Navigation() {
                 <div className="pt-4 border-t border-white/[0.06]">
                   <Link
                     href="/reading-list"
-                    className="flex items-center gap-3 px-3 py-3 rounded-lg text-slate-200 hover:bg-white/[0.05] hover:text-white active:bg-white/[0.08] transition-colors text-sm font-medium touch-target"
+                    className="flex items-center gap-3 px-3 py-3 rounded-lg text-white/90 hover:bg-white/[0.05] hover:text-white active:bg-white/[0.08] transition-colors text-sm font-medium touch-target"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     <svg
@@ -984,8 +984,8 @@ export default function Navigation() {
                     onClick={toggleHighContrast}
                     className={`w-full flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium transition-colors touch-target ${
                       isHighContrast
-                        ? 'text-slate-200 bg-slate-700/50'
-                        : 'text-slate-200 hover:bg-white/[0.05] hover:text-white'
+                        ? 'text-white/90 bg-white/[0.06]'
+                        : 'text-white/90 hover:bg-white/[0.05] hover:text-white'
                     }`}
                     aria-pressed={isHighContrast}
                   >
@@ -1009,7 +1009,7 @@ export default function Navigation() {
                   {!isPro && (
                     <Link
                       href="/pricing"
-                      className="block text-slate-300 hover:text-white active:text-white font-medium text-center py-3 text-sm touch-target"
+                      className="block text-white/70 hover:text-white active:text-white font-medium text-center py-3 text-sm touch-target"
                       onClick={() => setIsMenuOpen(false)}
                     >
                       Upgrade to Pro
@@ -1021,7 +1021,7 @@ export default function Navigation() {
                         signOut();
                         setIsMenuOpen(false);
                       }}
-                      className="w-full text-sm py-3 px-4 rounded-lg border border-white/[0.08] text-slate-200 hover:bg-white/[0.05] hover:text-white active:bg-white/[0.08] transition-colors touch-target"
+                      className="w-full text-sm py-3 px-4 rounded-lg border border-white/[0.08] text-white/90 hover:bg-white/[0.05] hover:text-white active:bg-white/[0.08] transition-colors touch-target"
                     >
                       Sign Out
                     </button>
@@ -1029,7 +1029,7 @@ export default function Navigation() {
                     <>
                       <Link
                         href="/login"
-                        className="block text-sm py-3 px-4 text-center rounded-lg text-slate-200 hover:bg-white/[0.05] hover:text-white active:bg-white/[0.08] transition-colors touch-target"
+                        className="block text-sm py-3 px-4 text-center rounded-lg text-white/90 hover:bg-white/[0.05] hover:text-white active:bg-white/[0.08] transition-colors touch-target"
                         onClick={() => setIsMenuOpen(false)}
                       >
                         Sign In

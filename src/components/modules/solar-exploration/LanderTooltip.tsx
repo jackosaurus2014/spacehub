@@ -176,7 +176,7 @@ export default function LanderTooltip({ lander, position }: LanderTooltipProps) 
             <ul className="mt-1 space-y-0.5">
               {lander.objectives.slice(0, 3).map((obj, i) => (
                 <li key={i} className="text-star-200 text-xs flex items-start gap-1">
-                  <span className="text-slate-200 shrink-0">•</span>
+                  <span className="text-white/90 shrink-0">•</span>
                   <span className="line-clamp-2">{obj}</span>
                 </li>
               ))}

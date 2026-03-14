@@ -258,22 +258,22 @@ function StatsSummary({ launches }: { launches: Launch[] }) {
 
   return (
     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-      <div className="bg-slate-800/40 border border-slate-700/30 rounded-xl p-4">
+      <div className="bg-white/[0.04] border border-white/[0.04] rounded-xl p-4">
         <p className="text-xs text-slate-400 uppercase tracking-wider mb-1">This Month</p>
-        <p className="text-2xl font-bold text-slate-300">{thisMonthLaunches.length}</p>
+        <p className="text-2xl font-bold text-white/70">{thisMonthLaunches.length}</p>
         <p className="text-xs text-slate-500 mt-1">launches scheduled</p>
       </div>
-      <div className="bg-slate-800/40 border border-slate-700/30 rounded-xl p-4">
+      <div className="bg-white/[0.04] border border-white/[0.04] rounded-xl p-4">
         <p className="text-xs text-slate-400 uppercase tracking-wider mb-1">This Year</p>
         <p className="text-2xl font-bold text-blue-400">{thisYearLaunches.length}</p>
         <p className="text-xs text-slate-500 mt-1">total launches</p>
       </div>
-      <div className="bg-slate-800/40 border border-slate-700/30 rounded-xl p-4">
+      <div className="bg-white/[0.04] border border-white/[0.04] rounded-xl p-4">
         <p className="text-xs text-slate-400 uppercase tracking-wider mb-1">Top Vehicle</p>
         <p className="text-2xl font-bold text-emerald-400">{topVehicle?.[0] || 'N/A'}</p>
         <p className="text-xs text-slate-500 mt-1">{topVehicle?.[1] || 0} launches</p>
       </div>
-      <div className="bg-slate-800/40 border border-slate-700/30 rounded-xl p-4">
+      <div className="bg-white/[0.04] border border-white/[0.04] rounded-xl p-4">
         <p className="text-xs text-slate-400 uppercase tracking-wider mb-1">Top Site</p>
         <p className="text-2xl font-bold text-amber-400 text-lg">{topSite?.[0] || 'N/A'}</p>
         <p className="text-xs text-slate-500 mt-1">{topSite?.[1] || 0} launches</p>
@@ -316,10 +316,10 @@ function FilterPanel({
   return (
     <div className="card p-5 mb-6">
       <div className="flex items-center gap-2 mb-4">
-        <svg className="w-5 h-5 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className="w-5 h-5 text-white/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
         </svg>
-        <h3 className="text-sm font-semibold text-slate-200 uppercase tracking-wider">Filters</h3>
+        <h3 className="text-sm font-semibold text-white/90 uppercase tracking-wider">Filters</h3>
       </div>
 
       {/* Search */}
@@ -330,7 +330,7 @@ function FilterPanel({
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder="e.g. Starlink, GPS, Dragon..."
-          className="w-full bg-slate-800/60 border border-slate-700/50 rounded-lg px-3 py-2 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-white/15 transition-colors"
+          className="w-full bg-white/[0.05] border border-white/[0.06] rounded-lg px-3 py-2 text-sm text-white/90 placeholder-slate-500 focus:outline-none focus:border-white/15 transition-colors"
         />
       </div>
 
@@ -341,7 +341,7 @@ function FilterPanel({
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="w-full bg-slate-800/60 border border-slate-700/50 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-white/15 transition-colors"
+            className="w-full bg-white/[0.05] border border-white/[0.06] rounded-lg px-3 py-2 text-sm text-white/90 focus:outline-none focus:border-white/15 transition-colors"
           >
             {STATUS_OPTIONS.map((opt) => (
               <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -353,7 +353,7 @@ function FilterPanel({
           <select
             value={siteFilter}
             onChange={(e) => setSiteFilter(e.target.value)}
-            className="w-full bg-slate-800/60 border border-slate-700/50 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-white/15 transition-colors"
+            className="w-full bg-white/[0.05] border border-white/[0.06] rounded-lg px-3 py-2 text-sm text-white/90 focus:outline-none focus:border-white/15 transition-colors"
           >
             <option value="all">All Sites</option>
             {LAUNCH_SITES.map((site) => (
@@ -376,8 +376,8 @@ function FilterPanel({
                 onClick={() => toggleVehicle(family)}
                 className={`px-3 py-1.5 text-xs rounded-lg border transition-colors ${
                   isActive
-                    ? 'bg-white/10 border-white/15 text-slate-200'
-                    : 'bg-slate-800/40 border-slate-700/30 text-slate-500'
+                    ? 'bg-white/10 border-white/15 text-white/90'
+                    : 'bg-white/[0.04] border-white/[0.04] text-slate-500'
                 }`}
               >
                 {shortName}
@@ -402,7 +402,7 @@ function LaunchDetailModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" onClick={onClose}>
       <div
-        className="bg-slate-900 border border-slate-700/50 rounded-2xl max-w-lg w-full max-h-[85vh] overflow-y-auto shadow-2xl"
+        className="bg-black border border-white/[0.06] rounded-2xl max-w-lg w-full max-h-[85vh] overflow-y-auto shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="p-6">
@@ -412,13 +412,13 @@ function LaunchDetailModal({
               <span className={`text-xs font-bold px-2 py-1 rounded ${colors.bg} ${colors.text}`}>
                 {launch.status.toUpperCase()}
               </span>
-              <span className="text-xs px-2 py-1 rounded bg-slate-700/60 text-slate-300">
+              <span className="text-xs px-2 py-1 rounded bg-slate-700/60 text-white/70">
                 {launch.orbit}
               </span>
             </div>
             <button
               onClick={onClose}
-              className="text-slate-400 hover:text-slate-200 transition-colors p-2 min-h-[44px] min-w-[44px] flex items-center justify-center"
+              className="text-slate-400 hover:text-white/90 transition-colors p-2 min-h-[44px] min-w-[44px] flex items-center justify-center"
               aria-label="Close detail panel"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -429,32 +429,32 @@ function LaunchDetailModal({
 
           {/* Title */}
           <h3 className="text-lg font-semibold text-slate-100 mb-1">{launch.payload}</h3>
-          <p className="text-sm text-slate-300 mb-4">{launch.vehicle}</p>
+          <p className="text-sm text-white/70 mb-4">{launch.vehicle}</p>
 
           {/* Details grid */}
           <div className="grid grid-cols-2 gap-4 mb-4">
             <div>
               <p className="text-xs text-slate-500 uppercase tracking-wider mb-0.5">Date</p>
-              <p className="text-sm text-slate-200">{formatFullDate(launch.date)}</p>
+              <p className="text-sm text-white/90">{formatFullDate(launch.date)}</p>
             </div>
             <div>
               <p className="text-xs text-slate-500 uppercase tracking-wider mb-0.5">Time (UTC)</p>
-              <p className="text-sm text-slate-200 font-mono">{launch.time} UTC</p>
+              <p className="text-sm text-white/90 font-mono">{launch.time} UTC</p>
             </div>
             <div>
               <p className="text-xs text-slate-500 uppercase tracking-wider mb-0.5">Launch Site</p>
-              <p className="text-sm text-slate-200">{launch.site}</p>
+              <p className="text-sm text-white/90">{launch.site}</p>
             </div>
             <div>
               <p className="text-xs text-slate-500 uppercase tracking-wider mb-0.5">Customer</p>
-              <p className="text-sm text-slate-200">{launch.customer}</p>
+              <p className="text-sm text-white/90">{launch.customer}</p>
             </div>
           </div>
 
           {/* Description */}
-          <div className="border-t border-slate-700/40 pt-4">
+          <div className="border-t border-white/[0.06] pt-4">
             <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Mission Description</p>
-            <p className="text-sm text-slate-300 leading-relaxed">{launch.description}</p>
+            <p className="text-sm text-white/70 leading-relaxed">{launch.description}</p>
           </div>
         </div>
       </div>
@@ -520,7 +520,7 @@ function CalendarView({
       <div className="flex items-center justify-between mb-5">
         <button
           onClick={onPrevMonth}
-          className="p-2 rounded-lg bg-slate-800/60 border border-slate-700/40 hover:border-white/15 text-slate-300 hover:text-white transition-colors"
+          className="p-2 rounded-lg bg-white/[0.05] border border-white/[0.06] hover:border-white/15 text-white/70 hover:text-white transition-colors"
           aria-label="Previous month"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -532,7 +532,7 @@ function CalendarView({
         </h2>
         <button
           onClick={onNextMonth}
-          className="p-2 rounded-lg bg-slate-800/60 border border-slate-700/40 hover:border-white/15 text-slate-300 hover:text-white transition-colors"
+          className="p-2 rounded-lg bg-white/[0.05] border border-white/[0.06] hover:border-white/15 text-white/70 hover:text-white transition-colors"
           aria-label="Next month"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -572,17 +572,17 @@ function CalendarView({
                   ? 'border-white/10 bg-white/8 ring-1 ring-white/10'
                   : hasLaunches
                     ? `${getDayColor(dayLaunches)} hover:scale-[1.03] cursor-pointer`
-                    : 'border-slate-800/30 bg-slate-800/10'
+                    : 'border-white/[0.04] bg-white/[0.03]'
               } ${isTodayCell ? 'ring-2 ring-white/15' : ''}`}
             >
               <span className={`text-xs font-medium ${
-                isTodayCell ? 'text-slate-300 font-bold' : hasLaunches ? 'text-slate-200' : 'text-slate-600'
+                isTodayCell ? 'text-white/70 font-bold' : hasLaunches ? 'text-white/90' : 'text-slate-600'
               }`}>
                 {day}
               </span>
               {hasLaunches && (
                 <div className="mt-0.5">
-                  <span className="text-[10px] text-slate-300 font-medium">
+                  <span className="text-[10px] text-white/70 font-medium">
                     {dayLaunches.length} launch{dayLaunches.length > 1 ? 'es' : ''}
                   </span>
                   <div className="flex gap-0.5 mt-0.5 flex-wrap">
@@ -600,7 +600,7 @@ function CalendarView({
                 </div>
               )}
               {isTodayCell && (
-                <span className="absolute bottom-1 right-1 text-[8px] text-slate-300 font-bold uppercase">Today</span>
+                <span className="absolute bottom-1 right-1 text-[8px] text-white/70 font-bold uppercase">Today</span>
               )}
             </button>
           );
@@ -608,7 +608,7 @@ function CalendarView({
       </div>
 
       {/* Legend */}
-      <div className="flex flex-wrap gap-4 mt-4 pt-4 border-t border-slate-700/30">
+      <div className="flex flex-wrap gap-4 mt-4 pt-4 border-t border-white/[0.04]">
         <div className="flex items-center gap-1.5">
           <span className="w-3 h-3 rounded-full bg-emerald-400" />
           <span className="text-xs text-slate-400">Successful</span>
@@ -670,11 +670,11 @@ function DayDetailPanel({
                     <span className={`w-2 h-2 rounded-full ${colors.dot}`} />
                     <span className="text-sm font-semibold text-slate-100">{launch.payload}</span>
                   </div>
-                  <p className="text-xs text-slate-300 mb-1">{launch.vehicle}</p>
+                  <p className="text-xs text-white/70 mb-1">{launch.vehicle}</p>
                   <p className="text-xs text-slate-400">{launch.site}</p>
                 </div>
                 <div className="text-right shrink-0">
-                  <p className="text-sm font-mono text-slate-200">{launch.time} UTC</p>
+                  <p className="text-sm font-mono text-white/90">{launch.time} UTC</p>
                   <span className={`text-[10px] px-2 py-0.5 rounded ${colors.bg} ${colors.text} font-semibold uppercase`}>
                     {launch.status}
                   </span>
@@ -718,7 +718,7 @@ function ListView({
         return (
           <div key={key}>
             <h3 className="text-lg font-bold text-slate-100 mb-3 flex items-center gap-2">
-              <svg className="w-5 h-5 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5 text-white/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
               {monthLabel}
@@ -738,7 +738,7 @@ function ListView({
                       <div className="flex items-center gap-3">
                         <div className="shrink-0 text-center min-w-[56px]">
                           <p className="text-xs text-slate-400">{formatDateShort(launch.date)}</p>
-                          <p className="text-sm font-mono text-slate-200">{launch.time}</p>
+                          <p className="text-sm font-mono text-white/90">{launch.time}</p>
                         </div>
                         <span className={`w-2 h-2 rounded-full shrink-0 ${colors.dot}`} />
                         <div className="min-w-0 flex-1">
@@ -762,26 +762,26 @@ function ListView({
                     </button>
 
                     {isExpanded && (
-                      <div className="px-4 pb-4 pt-2 bg-slate-800/20 border-t border-slate-700/20">
+                      <div className="px-4 pb-4 pt-2 bg-white/[0.03] border-t border-white/[0.04]">
                         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-3">
                           <div>
                             <p className="text-[10px] text-slate-500 uppercase tracking-wider">Date</p>
-                            <p className="text-xs text-slate-200">{formatFullDate(launch.date)}</p>
+                            <p className="text-xs text-white/90">{formatFullDate(launch.date)}</p>
                           </div>
                           <div>
                             <p className="text-[10px] text-slate-500 uppercase tracking-wider">Time (UTC)</p>
-                            <p className="text-xs text-slate-200 font-mono">{launch.time} UTC</p>
+                            <p className="text-xs text-white/90 font-mono">{launch.time} UTC</p>
                           </div>
                           <div>
                             <p className="text-[10px] text-slate-500 uppercase tracking-wider">Orbit</p>
-                            <p className="text-xs text-slate-200">{launch.orbit}</p>
+                            <p className="text-xs text-white/90">{launch.orbit}</p>
                           </div>
                           <div>
                             <p className="text-[10px] text-slate-500 uppercase tracking-wider">Customer</p>
-                            <p className="text-xs text-slate-200">{launch.customer}</p>
+                            <p className="text-xs text-white/90">{launch.customer}</p>
                           </div>
                         </div>
-                        <p className="text-xs text-slate-300 leading-relaxed mb-3">{launch.description}</p>
+                        <p className="text-xs text-white/70 leading-relaxed mb-3">{launch.description}</p>
                         <p className="text-xs text-slate-500">Launch site: {launch.site}</p>
                       </div>
                     )}
@@ -810,8 +810,8 @@ function LaunchSitesMap({ launches }: { launches: Launch[] }) {
 
   return (
     <div className="card p-5 mb-6">
-      <h3 className="text-sm font-semibold text-slate-200 uppercase tracking-wider mb-4 flex items-center gap-2">
-        <svg className="w-5 h-5 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <h3 className="text-sm font-semibold text-white/90 uppercase tracking-wider mb-4 flex items-center gap-2">
+        <svg className="w-5 h-5 text-white/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
         </svg>
@@ -832,17 +832,17 @@ function LaunchSitesMap({ launches }: { launches: Launch[] }) {
               className={`p-3 rounded-lg border transition-colors ${
                 count > 0
                   ? 'border-white/10 bg-white/5'
-                  : 'border-slate-700/20 bg-slate-800/20'
+                  : 'border-white/[0.04] bg-white/[0.03]'
               }`}
             >
               <div className="flex items-start justify-between">
                 <div>
-                  <p className="text-sm font-medium text-slate-200">{site.name}</p>
+                  <p className="text-sm font-medium text-white/90">{site.name}</p>
                   <p className="text-xs text-slate-400">{site.location}</p>
                   <p className="text-[10px] text-slate-500 mt-1 font-mono">{site.latitude}, {site.longitude}</p>
                 </div>
                 {count > 0 && (
-                  <span className="text-lg font-bold text-slate-300">{count}</span>
+                  <span className="text-lg font-bold text-white/70">{count}</span>
                 )}
               </div>
             </div>
@@ -969,8 +969,8 @@ export default function LaunchManifestPage() {
               onClick={() => { setViewMode('calendar'); setSelectedDay(null); }}
               className={`px-4 py-2 text-sm rounded-lg border transition-colors ${
                 viewMode === 'calendar'
-                  ? 'bg-white/10 border-white/15 text-slate-200'
-                  : 'bg-slate-800/40 border-slate-700/30 text-slate-400 hover:text-slate-200'
+                  ? 'bg-white/10 border-white/15 text-white/90'
+                  : 'bg-white/[0.04] border-white/[0.04] text-slate-400 hover:text-white/90'
               }`}
             >
               <span className="flex items-center gap-1.5">
@@ -984,8 +984,8 @@ export default function LaunchManifestPage() {
               onClick={() => { setViewMode('list'); setSelectedDay(null); }}
               className={`px-4 py-2 text-sm rounded-lg border transition-colors ${
                 viewMode === 'list'
-                  ? 'bg-white/10 border-white/15 text-slate-200'
-                  : 'bg-slate-800/40 border-slate-700/30 text-slate-400 hover:text-slate-200'
+                  ? 'bg-white/10 border-white/15 text-white/90'
+                  : 'bg-white/[0.04] border-white/[0.04] text-slate-400 hover:text-white/90'
               }`}
             >
               <span className="flex items-center gap-1.5">
@@ -1000,8 +1000,8 @@ export default function LaunchManifestPage() {
             onClick={() => setShowFilters(!showFilters)}
             className={`px-4 py-2 text-sm rounded-lg border transition-colors ${
               showFilters
-                ? 'bg-white/10 border-white/15 text-slate-200'
-                : 'bg-slate-800/40 border-slate-700/30 text-slate-400 hover:text-slate-200'
+                ? 'bg-white/10 border-white/15 text-white/90'
+                : 'bg-white/[0.04] border-white/[0.04] text-slate-400 hover:text-white/90'
             }`}
           >
             <span className="flex items-center gap-1.5">

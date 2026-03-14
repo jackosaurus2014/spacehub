@@ -714,7 +714,7 @@ function RegulationCard({ regulation, index }: { regulation: Regulation; index: 
 
   return (
     <ScrollReveal delay={Math.min(index * 0.04, 0.3)}>
-      <div className="bg-slate-800/60 border border-slate-700/50 rounded-xl p-5 hover:border-amber-500/30 transition-all duration-300">
+      <div className="bg-white/[0.05] border border-white/[0.06] rounded-xl p-5 hover:border-amber-500/30 transition-all duration-300">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 mb-3">
           <div className="flex-1 min-w-0">
@@ -731,19 +731,19 @@ function RegulationCard({ regulation, index }: { regulation: Regulation; index: 
 
         {/* Meta Row */}
         <div className="flex flex-wrap gap-2 mb-3">
-          <span className="text-xs px-2 py-0.5 rounded bg-slate-700/60 text-slate-300">
+          <span className="text-xs px-2 py-0.5 rounded bg-white/[0.06] text-white/70">
             {TYPE_LABELS[regulation.type] || regulation.type}
           </span>
-          <span className="text-xs px-2 py-0.5 rounded bg-slate-700/60 text-slate-300">
+          <span className="text-xs px-2 py-0.5 rounded bg-white/[0.06] text-white/70">
             {JURISDICTION_LABELS[regulation.jurisdiction] || regulation.jurisdiction}
           </span>
-          <span className="text-xs px-2 py-0.5 rounded bg-slate-700/60 text-slate-300">
+          <span className="text-xs px-2 py-0.5 rounded bg-white/[0.06] text-white/70">
             Effective: {new Date(regulation.effectiveDate).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
           </span>
         </div>
 
         {/* Summary */}
-        <p className="text-sm text-slate-300 leading-relaxed mb-3">{regulation.summary}</p>
+        <p className="text-sm text-white/70 leading-relaxed mb-3">{regulation.summary}</p>
 
         {/* Affected Activities */}
         <div className="flex flex-wrap gap-1.5 mb-3">
@@ -776,7 +776,7 @@ function RegulationCard({ regulation, index }: { regulation: Regulation; index: 
         {expanded && (
           <ul className="mt-3 space-y-1.5 pl-4 border-l-2 border-amber-500/30">
             {regulation.keyProvisions.map((provision, i) => (
-              <li key={i} className="text-sm text-slate-300 relative before:content-[''] before:absolute before:-left-[17px] before:top-2 before:w-2 before:h-2 before:rounded-full before:bg-amber-500/40">
+              <li key={i} className="text-sm text-white/70 relative before:content-[''] before:absolute before:-left-[17px] before:top-2 before:w-2 before:h-2 before:rounded-full before:bg-amber-500/40">
                 {provision}
               </li>
             ))}
@@ -809,7 +809,7 @@ function StatsBar({ regulations }: { regulations: Regulation[] }) {
     <ScrollReveal>
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mb-8">
         {stats.map((stat) => (
-          <div key={stat.label} className="bg-slate-800/60 border border-slate-700/50 rounded-lg p-4 text-center">
+          <div key={stat.label} className="bg-white/[0.05] border border-white/[0.06] rounded-lg p-4 text-center">
             <p className={`text-2xl font-bold ${stat.color}`}>{stat.value}</p>
             <p className="text-xs text-slate-400 mt-1">{stat.label}</p>
           </div>
@@ -887,7 +887,7 @@ export default function SpaceRegulationsExplorerPage() {
 
         {/* Search & Filters */}
         <ScrollReveal>
-          <div className="bg-slate-800/40 border border-slate-700/50 rounded-xl p-5 mb-8">
+          <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-5 mb-8">
             {/* Search Bar */}
             <div className="relative mb-4">
               <svg
@@ -908,7 +908,7 @@ export default function SpaceRegulationsExplorerPage() {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search regulations by keyword, authority, activity..."
-                className="w-full pl-10 pr-4 py-3 bg-slate-900/60 border border-slate-600/50 rounded-lg text-slate-100 placeholder-slate-500 focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/30 transition-colors"
+                className="w-full pl-10 pr-4 py-3 bg-black/60 border border-white/[0.08] rounded-lg text-slate-100 placeholder-slate-500 focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/30 transition-colors"
               />
             </div>
 
@@ -920,7 +920,7 @@ export default function SpaceRegulationsExplorerPage() {
                 <select
                   value={jurisdictionFilter}
                   onChange={(e) => setJurisdictionFilter(e.target.value)}
-                  className="w-full px-3 py-2 bg-slate-900/60 border border-slate-600/50 rounded-lg text-sm text-slate-200 focus:outline-none focus:border-amber-500/50 transition-colors"
+                  className="w-full px-3 py-2 bg-black/60 border border-white/[0.08] rounded-lg text-sm text-white/90 focus:outline-none focus:border-amber-500/50 transition-colors"
                 >
                   <option value="all">All Jurisdictions</option>
                   {jurisdictions.map((j) => (
@@ -937,7 +937,7 @@ export default function SpaceRegulationsExplorerPage() {
                 <select
                   value={typeFilter}
                   onChange={(e) => setTypeFilter(e.target.value)}
-                  className="w-full px-3 py-2 bg-slate-900/60 border border-slate-600/50 rounded-lg text-sm text-slate-200 focus:outline-none focus:border-amber-500/50 transition-colors"
+                  className="w-full px-3 py-2 bg-black/60 border border-white/[0.08] rounded-lg text-sm text-white/90 focus:outline-none focus:border-amber-500/50 transition-colors"
                 >
                   <option value="all">All Types</option>
                   {types.map((t) => (
@@ -954,7 +954,7 @@ export default function SpaceRegulationsExplorerPage() {
                 <select
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value)}
-                  className="w-full px-3 py-2 bg-slate-900/60 border border-slate-600/50 rounded-lg text-sm text-slate-200 focus:outline-none focus:border-amber-500/50 transition-colors"
+                  className="w-full px-3 py-2 bg-black/60 border border-white/[0.08] rounded-lg text-sm text-white/90 focus:outline-none focus:border-amber-500/50 transition-colors"
                 >
                   <option value="all">All Statuses</option>
                   <option value="active">Active</option>
@@ -969,7 +969,7 @@ export default function SpaceRegulationsExplorerPage() {
                 <select
                   value={burdenFilter}
                   onChange={(e) => setBurdenFilter(e.target.value)}
-                  className="w-full px-3 py-2 bg-slate-900/60 border border-slate-600/50 rounded-lg text-sm text-slate-200 focus:outline-none focus:border-amber-500/50 transition-colors"
+                  className="w-full px-3 py-2 bg-black/60 border border-white/[0.08] rounded-lg text-sm text-white/90 focus:outline-none focus:border-amber-500/50 transition-colors"
                 >
                   <option value="all">All Levels</option>
                   <option value="low">Low</option>
@@ -982,10 +982,10 @@ export default function SpaceRegulationsExplorerPage() {
 
             {/* Active Filters / Clear */}
             {hasActiveFilters && (
-              <div className="flex items-center justify-between mt-4 pt-3 border-t border-slate-700/50">
+              <div className="flex items-center justify-between mt-4 pt-3 border-t border-white/[0.06]">
                 <p className="text-sm text-slate-400">
                   Showing <span className="text-amber-400 font-medium">{filtered.length}</span> of{' '}
-                  <span className="text-slate-300">{REGULATIONS.length}</span> regulations
+                  <span className="text-white/70">{REGULATIONS.length}</span> regulations
                 </p>
                 <button
                   onClick={clearFilters}
@@ -1028,16 +1028,16 @@ export default function SpaceRegulationsExplorerPage() {
 
         {/* Related Pages */}
         <ScrollReveal delay={0.2}>
-          <div className="mt-12 bg-slate-800/40 border border-slate-700/50 rounded-xl p-6">
+          <div className="mt-12 bg-white/[0.04] border border-white/[0.06] rounded-xl p-6">
             <h2 className="text-lg font-semibold text-slate-100 mb-4">Related Resources</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 stagger-grid">
               <Link
                 href="/compliance"
-                className="flex items-center gap-3 p-3 bg-slate-900/50 border border-slate-700/40 rounded-lg hover:border-amber-500/30 hover:bg-slate-800/50 transition-all group"
+                className="flex items-center gap-3 p-3 bg-black/50 border border-white/[0.06] rounded-lg hover:border-amber-500/30 hover:bg-white/[0.04] transition-all group"
               >
                 <span className="text-2xl">&#128203;</span>
                 <div>
-                  <p className="text-sm font-medium text-slate-200 group-hover:text-amber-400 transition-colors">
+                  <p className="text-sm font-medium text-white/90 group-hover:text-amber-400 transition-colors">
                     Compliance Hub
                   </p>
                   <p className="text-xs text-slate-500">Treaties, filings & compliance tracking</p>
@@ -1046,11 +1046,11 @@ export default function SpaceRegulationsExplorerPage() {
 
               <Link
                 href="/regulatory-risk"
-                className="flex items-center gap-3 p-3 bg-slate-900/50 border border-slate-700/40 rounded-lg hover:border-amber-500/30 hover:bg-slate-800/50 transition-all group"
+                className="flex items-center gap-3 p-3 bg-black/50 border border-white/[0.06] rounded-lg hover:border-amber-500/30 hover:bg-white/[0.04] transition-all group"
               >
                 <span className="text-2xl">&#9888;&#65039;</span>
                 <div>
-                  <p className="text-sm font-medium text-slate-200 group-hover:text-amber-400 transition-colors">
+                  <p className="text-sm font-medium text-white/90 group-hover:text-amber-400 transition-colors">
                     Regulatory Risk
                   </p>
                   <p className="text-xs text-slate-500">Risk assessment & impact analysis</p>
@@ -1059,11 +1059,11 @@ export default function SpaceRegulationsExplorerPage() {
 
               <Link
                 href="/regulatory-calendar"
-                className="flex items-center gap-3 p-3 bg-slate-900/50 border border-slate-700/40 rounded-lg hover:border-amber-500/30 hover:bg-slate-800/50 transition-all group"
+                className="flex items-center gap-3 p-3 bg-black/50 border border-white/[0.06] rounded-lg hover:border-amber-500/30 hover:bg-white/[0.04] transition-all group"
               >
                 <span className="text-2xl">&#128197;</span>
                 <div>
-                  <p className="text-sm font-medium text-slate-200 group-hover:text-amber-400 transition-colors">
+                  <p className="text-sm font-medium text-white/90 group-hover:text-amber-400 transition-colors">
                     Regulatory Calendar
                   </p>
                   <p className="text-xs text-slate-500">Deadlines & upcoming changes</p>
@@ -1072,11 +1072,11 @@ export default function SpaceRegulationsExplorerPage() {
 
               <Link
                 href="/regulation-explainers"
-                className="flex items-center gap-3 p-3 bg-slate-900/50 border border-slate-700/40 rounded-lg hover:border-amber-500/30 hover:bg-slate-800/50 transition-all group"
+                className="flex items-center gap-3 p-3 bg-black/50 border border-white/[0.06] rounded-lg hover:border-amber-500/30 hover:bg-white/[0.04] transition-all group"
               >
                 <span className="text-2xl">&#128218;</span>
                 <div>
-                  <p className="text-sm font-medium text-slate-200 group-hover:text-amber-400 transition-colors">
+                  <p className="text-sm font-medium text-white/90 group-hover:text-amber-400 transition-colors">
                     Regulation Explainers
                   </p>
                   <p className="text-xs text-slate-500">Plain-language guides & summaries</p>
@@ -1088,7 +1088,7 @@ export default function SpaceRegulationsExplorerPage() {
 
         {/* Disclaimer */}
         <ScrollReveal delay={0.3}>
-          <div className="mt-8 p-4 bg-slate-800/30 border border-slate-700/40 rounded-lg">
+          <div className="mt-8 p-4 bg-white/[0.03] border border-white/[0.06] rounded-lg">
             <p className="text-xs text-slate-500 leading-relaxed">
               <span className="text-slate-400 font-medium">Disclaimer:</span> This database is provided
               for informational purposes only and does not constitute legal advice. Regulations may have

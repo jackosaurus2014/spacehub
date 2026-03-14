@@ -32,13 +32,13 @@ export default function SourceCitation({ sources }: SourceCitationProps) {
   if (sources.length === 0) return null;
 
   return (
-    <div className="mt-3 pt-3 border-t border-slate-700/50">
+    <div className="mt-3 pt-3 border-t border-white/[0.06]">
       <p className="text-xs text-slate-500 mb-1">Sources:</p>
       <div className="flex flex-wrap gap-2">
         {sources.map((source, i) => (
           <span
             key={i}
-            className="inline-flex items-center gap-1 text-xs text-slate-400 bg-slate-800/50 px-2 py-0.5 rounded"
+            className="inline-flex items-center gap-1 text-xs text-slate-400 bg-white/[0.04] px-2 py-0.5 rounded"
             title={`Source type: ${typeLabels[source.type] || 'Unknown'}`}
           >
             <span aria-hidden="true">{typeIcons[source.type] || '\uD83D\uDCC4'}</span>

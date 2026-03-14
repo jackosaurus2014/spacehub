@@ -355,16 +355,16 @@ export default function MissionPipelinePage() {
         {/* Stats Bar */}
         <ScrollReveal delay={0.1}>
           <div className="grid grid-cols-3 gap-4 mb-8">
-            <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-4 text-center">
-              <p className="text-2xl md:text-3xl font-bold text-slate-300">{MISSIONS.length}+</p>
+            <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-4 text-center">
+              <p className="text-2xl md:text-3xl font-bold text-white/70">{MISSIONS.length}+</p>
               <p className="text-sm text-slate-400 mt-1">Planned Missions</p>
             </div>
-            <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-4 text-center">
-              <p className="text-2xl md:text-3xl font-bold text-slate-300">{uniqueAgencies}+</p>
+            <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-4 text-center">
+              <p className="text-2xl md:text-3xl font-bold text-white/70">{uniqueAgencies}+</p>
               <p className="text-sm text-slate-400 mt-1">Agencies &amp; Operators</p>
             </div>
-            <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-4 text-center">
-              <p className="text-2xl md:text-3xl font-bold text-slate-300">6</p>
+            <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-4 text-center">
+              <p className="text-2xl md:text-3xl font-bold text-white/70">6</p>
               <p className="text-sm text-slate-400 mt-1">Year Range</p>
             </div>
           </div>
@@ -385,8 +385,8 @@ export default function MissionPipelinePage() {
                     onClick={() => setSelectedYear(year)}
                     className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
                       selectedYear === year
-                        ? 'bg-white/10 text-slate-300 border border-white/15 shadow-lg shadow-black/5'
-                        : 'bg-slate-800/50 text-slate-400 border border-slate-700/50 hover:bg-slate-700/50 hover:text-slate-300'
+                        ? 'bg-white/10 text-white/70 border border-white/15 shadow-lg shadow-black/5'
+                        : 'bg-white/[0.04] text-slate-400 border border-white/[0.06] hover:bg-white/[0.08] hover:text-white/70'
                     }`}
                   >
                     {year}
@@ -405,8 +405,8 @@ export default function MissionPipelinePage() {
                   onClick={() => setSelectedCategory('All')}
                   className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
                     selectedCategory === 'All'
-                      ? 'bg-white/10 text-slate-300 border border-white/15 shadow-lg shadow-black/5'
-                      : 'bg-slate-800/50 text-slate-400 border border-slate-700/50 hover:bg-slate-700/50 hover:text-slate-300'
+                      ? 'bg-white/10 text-white/70 border border-white/15 shadow-lg shadow-black/5'
+                      : 'bg-white/[0.04] text-slate-400 border border-white/[0.06] hover:bg-white/[0.08] hover:text-white/70'
                   }`}
                 >
                   All Categories
@@ -417,8 +417,8 @@ export default function MissionPipelinePage() {
                     onClick={() => setSelectedCategory(cat)}
                     className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
                       selectedCategory === cat
-                        ? 'bg-white/10 text-slate-300 border border-white/15 shadow-lg shadow-black/5'
-                        : 'bg-slate-800/50 text-slate-400 border border-slate-700/50 hover:bg-slate-700/50 hover:text-slate-300'
+                        ? 'bg-white/10 text-white/70 border border-white/15 shadow-lg shadow-black/5'
+                        : 'bg-white/[0.04] text-slate-400 border border-white/[0.06] hover:bg-white/[0.08] hover:text-white/70'
                     }`}
                   >
                     <span className="mr-1.5">{CATEGORY_ICONS[cat]}</span>
@@ -434,11 +434,11 @@ export default function MissionPipelinePage() {
         <ScrollReveal delay={0.2}>
           <p className="text-sm text-slate-500 mb-6">
             Showing {filteredMissions.length} of {MISSIONS.length} missions
-            {selectedYear !== 'All' && <span> in <span className="text-slate-300">{selectedYear}</span></span>}
+            {selectedYear !== 'All' && <span> in <span className="text-white/70">{selectedYear}</span></span>}
             {selectedCategory !== 'All' && (
               <span>
                 {' '}
-                &middot; <span className="text-slate-300">{selectedCategory}</span>
+                &middot; <span className="text-white/70">{selectedCategory}</span>
               </span>
             )}
           </p>
@@ -447,7 +447,7 @@ export default function MissionPipelinePage() {
         {/* Mission Cards */}
         {filteredMissions.length === 0 ? (
           <ScrollReveal>
-            <div className="text-center py-16 bg-slate-800/30 rounded-2xl border border-slate-700/30">
+            <div className="text-center py-16 bg-white/[0.03] rounded-2xl border border-white/[0.04]">
               <p className="text-4xl mb-3">{'\u{1F52D}'}</p>
               <p className="text-slate-400 text-lg">No missions match your current filters.</p>
               <p className="text-slate-500 text-sm mt-1">Try adjusting the year or category filters above.</p>
@@ -459,13 +459,13 @@ export default function MissionPipelinePage() {
               const conf = CONFIDENCE_STYLES[mission.confidence];
               return (
                 <StaggerItem key={`${mission.year}-${mission.name}`}>
-                  <div className="group bg-slate-800/50 border border-slate-700/50 rounded-2xl p-6 h-full flex flex-col hover:border-white/10 hover:bg-slate-800/70 transition-all duration-300 hover:shadow-lg hover:shadow-black/20">
+                  <div className="group bg-white/[0.04] border border-white/[0.06] rounded-2xl p-6 h-full flex flex-col hover:border-white/10 hover:bg-white/[0.05] transition-all duration-300 hover:shadow-lg hover:shadow-black/20">
                     {/* Top Row: Icon + Year Badge */}
                     <div className="flex items-start justify-between mb-3">
                       <span className="text-3xl" role="img" aria-label={mission.name}>
                         {mission.icon}
                       </span>
-                      <span className="text-xs font-mono text-slate-500 bg-slate-900/50 px-2 py-1 rounded">
+                      <span className="text-xs font-mono text-slate-500 bg-black/50 px-2 py-1 rounded">
                         {mission.year}
                       </span>
                     </div>
@@ -476,7 +476,7 @@ export default function MissionPipelinePage() {
                     </h3>
 
                     {/* Operator */}
-                    <p className="text-sm text-slate-300/80 mb-3">{mission.operator}</p>
+                    <p className="text-sm text-white/70/80 mb-3">{mission.operator}</p>
 
                     {/* Badges Row */}
                     <div className="flex flex-wrap gap-2 mb-3">
@@ -487,7 +487,7 @@ export default function MissionPipelinePage() {
                         {mission.confidence}
                       </span>
                       {/* Category Badge */}
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-700/50 text-slate-300 border border-slate-600/50">
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-700/50 text-white/70 border border-white/[0.08]">
                         {CATEGORY_ICONS[mission.category]}{' '}
                         {mission.category}
                       </span>
@@ -497,11 +497,11 @@ export default function MissionPipelinePage() {
                     <div className="space-y-1.5 mb-4 text-sm">
                       <div className="flex items-start gap-2">
                         <span className="text-slate-500 shrink-0 w-20">Destination</span>
-                        <span className="text-slate-300">{mission.destination}</span>
+                        <span className="text-white/70">{mission.destination}</span>
                       </div>
                       <div className="flex items-start gap-2">
                         <span className="text-slate-500 shrink-0 w-20">Vehicle</span>
-                        <span className="text-slate-300">{mission.vehicle}</span>
+                        <span className="text-white/70">{mission.vehicle}</span>
                       </div>
                     </div>
 
@@ -518,8 +518,8 @@ export default function MissionPipelinePage() {
 
         {/* Confidence Legend */}
         <ScrollReveal delay={0.2} className="mt-12">
-          <div className="bg-slate-800/30 border border-slate-700/30 rounded-2xl p-6">
-            <h2 className="text-lg font-semibold text-slate-200 mb-4">Confidence Level Guide</h2>
+          <div className="bg-white/[0.03] border border-white/[0.04] rounded-2xl p-6">
+            <h2 className="text-lg font-semibold text-white/90 mb-4">Confidence Level Guide</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {(Object.keys(CONFIDENCE_STYLES) as ConfidenceLevel[]).map((level) => {
                 const style = CONFIDENCE_STYLES[level];

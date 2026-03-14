@@ -4,9 +4,9 @@ export default function Loading() {
       <div className="container mx-auto px-4">
         {/* Header skeleton */}
         <div className="mb-8">
-          <div className="h-8 w-80 bg-slate-800 rounded animate-pulse mb-3" />
-          <div className="h-1 w-16 bg-slate-800/60 rounded-full mb-3 animate-pulse" />
-          <div className="h-5 w-[32rem] bg-slate-800/50 rounded animate-pulse" />
+          <div className="h-8 w-80 bg-white/[0.06] rounded animate-pulse mb-3" />
+          <div className="h-1 w-16 bg-white/[0.05] rounded-full mb-3 animate-pulse" />
+          <div className="h-5 w-[32rem] bg-white/[0.04] rounded animate-pulse" />
         </div>
 
         {/* Report type cards — 2x2 grid */}
@@ -14,7 +14,7 @@ export default function Loading() {
           {Array.from({ length: 4 }).map((_, i) => (
             <div
               key={i}
-              className="bg-slate-800/40 rounded-xl animate-pulse p-6 space-y-4 border border-slate-700/30"
+              className="bg-white/[0.04] rounded-xl animate-pulse p-6 space-y-4 border border-white/[0.04]"
             >
               <div className="flex items-start gap-4">
                 <div className="h-12 w-12 bg-slate-700/50 rounded-lg flex-shrink-0" />

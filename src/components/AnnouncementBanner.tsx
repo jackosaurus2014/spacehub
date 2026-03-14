@@ -33,7 +33,7 @@ export default function AnnouncementBanner() {
   if (dismissed) return null;
 
   return (
-    <div className="relative z-50 bg-gradient-to-r from-slate-800/95 via-slate-900/95 to-purple-600/90 backdrop-blur-sm border-b border-white/10">
+    <div className="relative z-50 bg-white/[0.04] border-b border-white/[0.06]">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-center gap-3 py-2.5 text-sm">
           <span className="hidden sm:inline" aria-hidden="true">{ANNOUNCEMENT.emoji}</span>
@@ -42,7 +42,7 @@ export default function AnnouncementBanner() {
           </p>
           <Link
             href={ANNOUNCEMENT.href}
-            className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-white/15 text-slate-900 text-xs font-semibold hover:bg-white/25 transition-colors whitespace-nowrap border border-white/20"
+            className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-white text-black text-xs font-semibold hover:bg-white/90 transition-colors whitespace-nowrap"
           >
             {ANNOUNCEMENT.cta}
             <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">

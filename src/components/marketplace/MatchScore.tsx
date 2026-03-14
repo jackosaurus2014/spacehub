@@ -24,7 +24,7 @@ export default function MatchScore({ score, reasons, showDetails = false }: Matc
   return (
     <div className="space-y-1">
       <div className="flex items-center gap-2">
-        <div className="w-16 h-2 bg-slate-700 rounded-full overflow-hidden">
+        <div className="w-16 h-2 bg-white/[0.08] rounded-full overflow-hidden">
           <div
             className={`h-full rounded-full ${getBgColor(score)}`}
             style={{ width: `${Math.min(score, 100)}%` }}

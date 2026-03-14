@@ -11,7 +11,7 @@ export default function GuideNavigation({ currentSlug }: GuideNavigationProps) {
   if (!prev && !next) return null;
 
   return (
-    <nav aria-label="Guide navigation" className="mt-12 pt-8 border-t border-slate-700/50">
+    <nav aria-label="Guide navigation" className="mt-12 pt-8 border-t border-white/[0.06]">
       {/* Progress indicator */}
       <div className="flex items-center justify-center gap-3 mb-6">
         <span className="text-xs text-slate-500">
@@ -26,7 +26,7 @@ export default function GuideNavigation({ currentSlug }: GuideNavigationProps) {
                   ? 'w-4 bg-slate-400'
                   : i < currentIndex
                     ? 'w-2 bg-white/40'
-                    : 'w-2 bg-slate-700'
+                    : 'w-2 bg-white/[0.08]'
               }`}
             />
           ))}
@@ -38,12 +38,12 @@ export default function GuideNavigation({ currentSlug }: GuideNavigationProps) {
         {prev ? (
           <Link
             href={`/guide/${prev.slug}`}
-            className="group flex flex-col bg-slate-800/50 border border-slate-700/50 rounded-xl p-5 hover:border-white/15 hover:bg-slate-800/70 transition-all"
+            className="group flex flex-col bg-white/[0.04] border border-white/[0.06] rounded-xl p-5 hover:border-white/15 hover:bg-white/[0.05] transition-all"
           >
             <span className="text-[11px] font-medium text-slate-500 uppercase tracking-wider mb-2">
               &larr; Previous Guide
             </span>
-            <span className="text-sm font-semibold text-white group-hover:text-slate-300 transition-colors line-clamp-2">
+            <span className="text-sm font-semibold text-white group-hover:text-white/70 transition-colors line-clamp-2">
               {prev.shortTitle}
             </span>
           </Link>
@@ -54,12 +54,12 @@ export default function GuideNavigation({ currentSlug }: GuideNavigationProps) {
         {next ? (
           <Link
             href={`/guide/${next.slug}`}
-            className="group flex flex-col items-end text-right bg-slate-800/50 border border-slate-700/50 rounded-xl p-5 hover:border-white/15 hover:bg-slate-800/70 transition-all"
+            className="group flex flex-col items-end text-right bg-white/[0.04] border border-white/[0.06] rounded-xl p-5 hover:border-white/15 hover:bg-white/[0.05] transition-all"
           >
             <span className="text-[11px] font-medium text-slate-500 uppercase tracking-wider mb-2">
               Next Guide &rarr;
             </span>
-            <span className="text-sm font-semibold text-white group-hover:text-slate-300 transition-colors line-clamp-2">
+            <span className="text-sm font-semibold text-white group-hover:text-white/70 transition-colors line-clamp-2">
               {next.shortTitle}
             </span>
           </Link>
@@ -72,7 +72,7 @@ export default function GuideNavigation({ currentSlug }: GuideNavigationProps) {
       <div className="mt-4 text-center">
         <Link
           href="/getting-started"
-          className="text-xs text-slate-500 hover:text-slate-300 transition-colors"
+          className="text-xs text-slate-500 hover:text-white/70 transition-colors"
         >
           View all guides
         </Link>

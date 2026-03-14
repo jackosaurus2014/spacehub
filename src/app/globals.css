@@ -31,9 +31,23 @@ html {
 }
 
 :root {
-  --foreground-rgb: 226, 232, 240;
-  --background-start-rgb: 5, 10, 21;
-  --background-end-rgb: 3, 7, 18;
+  --foreground-rgb: 250, 250, 250;
+  --background-start-rgb: 0, 0, 0;
+  --background-end-rgb: 0, 0, 0;
+
+  /* ——— V2 Redesign: True Black palette ——— */
+  --v2-bg-void: #000000;
+  --v2-bg-surface: #0a0a0a;
+  --v2-bg-elevated: #141414;
+  --v2-bg-hover: #1a1a1a;
+  --v2-bg-active: #222222;
+  --v2-text-primary: #fafafa;
+  --v2-text-secondary: #a1a1a1;
+  --v2-text-tertiary: #666666;
+  --v2-border-subtle: rgba(255, 255, 255, 0.06);
+  --v2-border-default: rgba(255, 255, 255, 0.10);
+  --v2-border-hover: rgba(255, 255, 255, 0.15);
+  --v2-border-focus: rgba(255, 255, 255, 0.25);
 
   /* ——— Fluid typography scale (320px → 1200px viewport) ——— */
   --fs-display: clamp(2.25rem, 1.818vw + 1.636rem, 3.25rem);
@@ -161,7 +175,8 @@ html.oled .card-elevated {
   background: var(--oled-surface-elevated);
 }
 
-html.oled .glass-panel {
+html.oled .glass-panel,
+html.oled .card-glass {
   background: var(--oled-surface);
   border-color: var(--oled-border);
 }
@@ -175,46 +190,16 @@ html {
 }
 
 ::selection {
-  background: rgba(139, 92, 246, 0.3);
-  color: #f1f5f9;
+  background: rgba(255, 255, 255, 0.2);
+  color: #fafafa;
 }
 
 body {
   color: rgb(var(--foreground-rgb));
-  background: #0a0f1a;
+  background: var(--v2-bg-void, #000000);
   min-height: 100dvh;
   font-family: 'Inter', sans-serif;
   position: relative;
-}
-
-/* Background texture — barely visible, just adds depth */
-body::before {
-  content: '';
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-image: url('/SpaceNexus%20background.jpg');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
-  z-index: -2;
-  opacity: 0.06;
-}
-
-/* No overlay needed — flat dark bg is cleaner */
-body::after {
-  content: '';
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: transparent;
-  z-index: -1;
-  pointer-events: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -297,11 +282,11 @@ body::after {
 
 /* Glow Effects — restrained */
 .glow-border {
-  box-shadow: 0 0 0 1px rgba(139, 92, 246, 0.1);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.06);
 }
 
 .glow-border:hover {
-  box-shadow: 0 0 0 1px rgba(139, 92, 246, 0.2);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.12);
 }
 
 /* .glow-text removed — unused */
@@ -330,30 +315,30 @@ body::after {
 /* Card Styles — Clean, minimal, professional */
 .card {
   @apply rounded-xl transition-all duration-200;
-  background: rgba(15, 23, 42, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: var(--v2-bg-surface, #0a0a0a);
+  border: 1px solid var(--v2-border-subtle, rgba(255, 255, 255, 0.06));
 }
 
 .card:hover {
-  border-color: rgba(255, 255, 255, 0.1);
+  border-color: var(--v2-border-default, rgba(255, 255, 255, 0.1));
 }
 
 .card-elevated {
   @apply rounded-xl transition-all duration-200;
-  background: rgba(15, 23, 42, 0.75);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--v2-bg-elevated, #141414);
+  border: 1px solid var(--v2-border-default, rgba(255, 255, 255, 0.08));
 }
 
 .card-interactive {
   @apply rounded-xl transition-all duration-200 cursor-pointer;
-  background: rgba(15, 23, 42, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: var(--v2-bg-surface, #0a0a0a);
+  border: 1px solid var(--v2-border-subtle, rgba(255, 255, 255, 0.06));
 }
 
 .card-interactive:hover {
-  background: rgba(20, 30, 52, 0.7);
-  border-color: rgba(255, 255, 255, 0.12);
-  box-shadow: 0 8px 32px -8px rgba(0, 0, 0, 0.3);
+  background: var(--v2-bg-elevated, #141414);
+  border-color: var(--v2-border-hover, rgba(255, 255, 255, 0.12));
+  box-shadow: 0 8px 32px -8px rgba(0, 0, 0, 0.4);
 }
 
 /* Keyboard focus ring — visible on focus-visible only */
@@ -510,9 +495,9 @@ body::after {
   @apply w-full rounded-lg px-4 py-3
          focus:outline-none
          transition-all duration-200;
-  background: rgba(30, 41, 59, 0.5);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: #e2e8f0;
+  background: var(--v2-bg-surface, #0a0a0a);
+  border: 1px solid var(--v2-border-default, rgba(255, 255, 255, 0.1));
+  color: var(--v2-text-primary, #fafafa);
   /* Prevent iOS zoom on focus — inputs must be >= 16px */
   font-size: 16px;
 }
@@ -562,18 +547,18 @@ body::after {
   @apply py-8 md:py-12;
 }
 
-/* Glass Panel — frosted, minimal */
+/* Glass Panel — opaque V2 surfaces */
 .glass-panel {
-  @apply backdrop-blur-md rounded-xl;
-  background: rgba(15, 23, 42, 0.5);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  @apply rounded-xl;
+  background: var(--v2-bg-surface, #0a0a0a);
+  border: 1px solid var(--v2-border-subtle, rgba(255, 255, 255, 0.06));
 }
 
 /* Elevated glass panel */
 .glass-panel-elevated {
-  @apply backdrop-blur-xl rounded-xl;
-  background: rgba(15, 23, 42, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  @apply rounded-xl;
+  background: var(--v2-bg-elevated, #141414);
+  border: 1px solid var(--v2-border-default, rgba(255, 255, 255, 0.08));
 }
 
 /* Tabular numerics — ensures fixed-width digits for data-heavy displays */
@@ -680,7 +665,7 @@ body::after {
 .skeleton-shimmer {
   position: relative;
   overflow: hidden;
-  background: rgba(51, 65, 85, 0.5);
+  background: var(--v2-bg-elevated, #141414);
 }
 
 .skeleton-shimmer::after {
@@ -717,10 +702,10 @@ body::after {
   .table-cards tbody tr {
     display: block;
     margin-bottom: 1rem;
-    border: 1px solid rgba(255, 255, 255, 0.06);
+    border: 1px solid var(--v2-border-subtle, rgba(255, 255, 255, 0.06));
     border-radius: 0.75rem;
     padding: 0.75rem;
-    background: rgba(15, 23, 42, 0.6);
+    background: var(--v2-bg-surface, #0a0a0a);
   }
 
   .table-cards tbody td {
@@ -972,18 +957,18 @@ button, a, [role="button"] {
   :root {
     --hc-text-primary: #cbd5e1;
     --hc-text-secondary: #64748b;
-    --hc-border-default: rgba(6, 182, 212, 0.15);
-    --hc-border-strong: rgba(6, 182, 212, 0.25);
+    --hc-border-default: rgba(255, 255, 255, 0.08);
+    --hc-border-strong: rgba(255, 255, 255, 0.15);
     --hc-card-bg-alpha: 0.8;
     --hc-btn-border: rgba(148, 163, 184, 0.15);
   }
 
   .glow-border {
-    box-shadow: 0 0 8px rgba(139, 92, 246, 0.1) !important;
+    box-shadow: 0 0 8px rgba(255, 255, 255, 0.05) !important;
   }
 
   .glow-border:hover {
-    box-shadow: 0 0 12px rgba(139, 92, 246, 0.15) !important;
+    box-shadow: 0 0 12px rgba(255, 255, 255, 0.08) !important;
   }
 
   .card, .card-elevated, .card-interactive {
@@ -1080,13 +1065,13 @@ pre {
 }
 
 ::selection {
-  background: rgba(148, 163, 184, 0.2);
-  color: #f1f5f9;
+  background: rgba(255, 255, 255, 0.2);
+  color: #fafafa;
 }
 
 ::-moz-selection {
-  background: rgba(148, 163, 184, 0.2);
-  color: #f1f5f9;
+  background: rgba(255, 255, 255, 0.2);
+  color: #fafafa;
 }
 
 /* ——— Scrollbar-hide utility ——— */
@@ -1103,10 +1088,10 @@ pre {
   position: sticky;
   top: 64px;
   z-index: 10;
-  background: rgba(3, 7, 18, 0.92);
+  background: rgba(0, 0, 0, 0.92);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  border-bottom: 1px solid rgba(51, 65, 85, 0.4);
+  border-bottom: 1px solid var(--v2-border-subtle, rgba(255, 255, 255, 0.06));
   padding: 0.75rem 1rem;
 }
 
@@ -1218,10 +1203,10 @@ pre {
 
 .hero-gradient-mesh {
   background:
-    radial-gradient(ellipse 80% 50% at 20% 40%, rgba(59, 130, 246, 0.08) 0%, transparent 60%),
-    radial-gradient(ellipse 60% 40% at 80% 30%, rgba(139, 92, 246, 0.06) 0%, transparent 50%),
-    radial-gradient(ellipse 70% 50% at 50% 80%, rgba(59, 130, 246, 0.04) 0%, transparent 60%),
-    linear-gradient(180deg, #050a15 0%, #0a1628 50%, #050a15 100%);
+    radial-gradient(ellipse 80% 50% at 20% 40%, rgba(59, 130, 246, 0.06) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 80% 30%, rgba(255, 255, 255, 0.02) 0%, transparent 50%),
+    radial-gradient(ellipse 70% 50% at 50% 80%, rgba(59, 130, 246, 0.03) 0%, transparent 60%),
+    #000000;
   background-size: 200% 200%;
   animation: gradient-shift 20s ease-in-out infinite;
 }
@@ -1236,28 +1221,26 @@ pre {
   z-index: 1;
 }
 
-/* ——— 2026 Redesign: Glassmorphism Card ——— */
+/* ——— 2026 Redesign: Card Glass (V2: opaque surfaces on true black) ——— */
 .card-glass {
-  background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: var(--v2-bg-surface, #0a0a0a);
+  border: 1px solid var(--v2-border-default, rgba(255, 255, 255, 0.08));
   border-radius: 16px;
   transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 .card-glass:hover {
-  background: rgba(255, 255, 255, 0.05);
-  border-color: rgba(255, 255, 255, 0.12);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  background: var(--v2-bg-elevated, #111111);
+  border-color: var(--v2-border-hover, rgba(255, 255, 255, 0.12));
+  transform: translateY(-1px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
 }
 
 /* ——— 2026 Redesign: Typography Refinements ——— */
 .text-display {
-  letter-spacing: -0.025em;
+  letter-spacing: -0.03em;
   line-height: 1.08;
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .text-heading {
@@ -1369,11 +1352,11 @@ pre {
 }
 .scroll-fade-x::before {
   left: 0;
-  background: linear-gradient(to right, rgba(5, 10, 21, 0.9), transparent);
+  background: linear-gradient(to right, rgba(0, 0, 0, 0.9), transparent);
 }
 .scroll-fade-x::after {
   right: 0;
-  background: linear-gradient(to left, rgba(5, 10, 21, 0.9), transparent);
+  background: linear-gradient(to left, rgba(0, 0, 0, 0.9), transparent);
 }
 .scroll-fade-x.has-scroll-left::before { opacity: 1; }
 .scroll-fade-x.has-scroll-right::after { opacity: 1; }

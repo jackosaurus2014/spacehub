@@ -802,9 +802,9 @@ function getStatusColor(status: VehicleStatus): { bg: string; text: string; bord
     case 'Operational':
       return { bg: 'bg-green-900/30', text: 'text-green-400', border: 'border-green-500/30' };
     case 'In Development':
-      return { bg: 'bg-slate-800/40', text: 'text-slate-300', border: 'border-white/10' };
+      return { bg: 'bg-white/[0.04]', text: 'text-slate-300', border: 'border-white/10' };
     case 'Retired':
-      return { bg: 'bg-slate-800/30', text: 'text-slate-400', border: 'border-slate-500/30' };
+      return { bg: 'bg-white/[0.04]', text: 'text-slate-400', border: 'border-white/[0.08]' };
   }
 }
 
@@ -890,7 +890,7 @@ function VehicleCard({ vehicle, onSelect, isSelected }: { vehicle: LaunchVehicle
               {vehicle.successRate.toFixed(1)}% ({vehicle.successes}/{vehicle.totalLaunches})
             </span>
           </div>
-          <div className="h-1.5 bg-slate-700 rounded-full overflow-hidden">
+          <div className="h-1.5 bg-white/[0.08] rounded-full overflow-hidden">
             <div
               className={`h-full rounded-full transition-all ${
                 vehicle.successRate >= 97 ? 'bg-green-500' :
@@ -906,14 +906,14 @@ function VehicleCard({ vehicle, onSelect, isSelected }: { vehicle: LaunchVehicle
       {/* Tags */}
       <div className="flex flex-wrap gap-1.5 mb-3">
         {vehicle.reusable && (
-          <span className="px-2 py-0.5 rounded text-xs bg-slate-800/40 text-slate-300 border border-white/10">
+          <span className="px-2 py-0.5 rounded text-xs bg-white/[0.04] text-slate-300 border border-white/10">
             Reusable
           </span>
         )}
-        <span className="px-2 py-0.5 rounded text-xs bg-slate-700/50 text-star-300 border border-slate-600/30">
+        <span className="px-2 py-0.5 rounded text-xs bg-white/[0.06] text-star-300 border border-white/[0.08]">
           {vehicle.stages}-Stage
         </span>
-        <span className="px-2 py-0.5 rounded text-xs bg-slate-700/50 text-star-300 border border-slate-600/30">
+        <span className="px-2 py-0.5 rounded text-xs bg-white/[0.06] text-star-300 border border-white/[0.08]">
           {vehicle.propellant.split(' / ')[0].split(' ')[0]}
         </span>
       </div>
@@ -926,7 +926,7 @@ function VehicleCard({ vehicle, onSelect, isSelected }: { vehicle: LaunchVehicle
           className={`w-full py-1.5 rounded text-xs font-medium transition-all ${
             isSelected
               ? 'bg-white text-slate-900'
-              : 'bg-slate-700 text-star-300 hover:bg-slate-600 hover:text-white'
+              : 'bg-white/[0.08] text-star-300 hover:bg-white/[0.12] hover:text-white'
           }`}
         >
           {isSelected ? 'Selected for Comparison' : 'Add to Comparison'}
@@ -1066,13 +1066,13 @@ export default function LaunchVehiclesPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0B0F1A] text-white p-6">
+      <div className="min-h-screen bg-black text-white p-6">
         <div className="max-w-7xl mx-auto">
           <div className="animate-pulse space-y-4">
-            <div className="h-8 bg-slate-800 rounded w-1/3"></div>
-            <div className="h-4 bg-slate-800 rounded w-2/3"></div>
+            <div className="h-8 bg-white/[0.06] rounded w-1/3"></div>
+            <div className="h-4 bg-white/[0.06] rounded w-2/3"></div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8">
-              {[1,2,3,4].map(i => <div key={i} className="h-48 bg-slate-800 rounded-lg"></div>)}
+              {[1,2,3,4].map(i => <div key={i} className="h-48 bg-white/[0.06] rounded-lg"></div>)}
             </div>
           </div>
         </div>
@@ -1175,7 +1175,7 @@ export default function LaunchVehiclesPage() {
               className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
                 activeTab === tab.id
                   ? 'bg-white text-slate-900'
-                  : 'bg-slate-800/50 text-star-300 hover:bg-slate-700/50 hover:text-white'
+                  : 'bg-white/[0.04] text-star-300 hover:bg-white/[0.06] hover:text-white'
               }`}
             >
               {tab.label}
@@ -1202,7 +1202,7 @@ export default function LaunchVehiclesPage() {
                     placeholder="Search by name, manufacturer, country, or propellant..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full px-4 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white placeholder-star-300 focus:outline-none focus:border-white/15 focus:ring-1 focus:ring-white/30 text-sm"
+                    className="w-full px-4 py-2 rounded-lg bg-white/[0.06] border border-white/[0.06] text-white placeholder-star-300 focus:outline-none focus:border-white/15 focus:ring-1 focus:ring-white/30 text-sm"
                   />
                 </div>
                 <div className="flex items-center gap-2">
@@ -1210,7 +1210,7 @@ export default function LaunchVehiclesPage() {
                   <select
                     value={statusFilter}
                     onChange={(e) => setStatusFilter(e.target.value as VehicleStatus | '')}
-                    className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+                    className="bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                   >
                     <option value="">All</option>
                     <option value="Operational">Operational</option>
@@ -1223,7 +1223,7 @@ export default function LaunchVehiclesPage() {
                   <select
                     value={countryFilter}
                     onChange={(e) => setCountryFilter(e.target.value)}
-                    className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+                    className="bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                   >
                     <option value="">All</option>
                     {countries.map(c => (
@@ -1236,7 +1236,7 @@ export default function LaunchVehiclesPage() {
                   <select
                     value={sortBy}
                     onChange={(e) => setSortBy(e.target.value)}
-                    className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+                    className="bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                   >
                     <option value="payloadLeo">Payload LEO</option>
                     <option value="payloadGto">Payload GTO</option>
@@ -1300,7 +1300,7 @@ export default function LaunchVehiclesPage() {
             <div className="mb-4 flex items-center gap-3">
               <Link
                 href="/compare/launch-vehicles"
-                className="inline-flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-sm text-slate-300 hover:bg-slate-100/20 hover:border-white/15 transition-all"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-sm text-slate-300 hover:bg-white/[0.1] hover:border-white/15 transition-all"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
                 Open Dedicated Comparison Tool
@@ -1320,7 +1320,7 @@ export default function LaunchVehiclesPage() {
                     className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all border ${
                       compareSelection.includes(v.id)
                         ? 'bg-white/10 text-slate-300 border-white/15'
-                        : 'bg-slate-800 text-star-300 border-slate-700 hover:border-slate-500'
+                        : 'bg-white/[0.06] text-star-300 border-white/[0.06] hover:border-white/[0.1]'
                     } ${compareSelection.length >= 4 && !compareSelection.includes(v.id) ? 'opacity-40 cursor-not-allowed' : ''}`}
                     disabled={compareSelection.length >= 4 && !compareSelection.includes(v.id)}
                   >
@@ -1350,8 +1350,8 @@ export default function LaunchVehiclesPage() {
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="border-b border-slate-700">
-                      <th className="text-left py-3 px-4 text-star-300 font-medium text-xs uppercase tracking-widest sticky left-0 bg-slate-900 z-10 min-w-[160px]">Specification</th>
+                    <tr className="border-b border-white/[0.06]">
+                      <th className="text-left py-3 px-4 text-star-300 font-medium text-xs uppercase tracking-widest sticky left-0 bg-black z-10 min-w-[160px]">Specification</th>
                       {selectedVehicles.map(v => (
                         <th key={v.id} className="text-center py-3 px-4 min-w-[180px]">
                           <div className="text-white font-bold">{v.name}</div>
@@ -1364,109 +1364,109 @@ export default function LaunchVehiclesPage() {
                       ))}
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-800">
+                  <tbody className="divide-y divide-white/[0.06]">
                     {/* General */}
-                    <tr className="bg-slate-800/30">
+                    <tr className="bg-white/[0.04]">
                       <td colSpan={selectedVehicles.length + 1} className="py-2 px-4 text-xs font-bold text-slate-300 uppercase tracking-widest">General</td>
                     </tr>
                     <tr>
-                      <td className="py-2 px-4 text-star-300 sticky left-0 bg-slate-900">Status</td>
+                      <td className="py-2 px-4 text-star-300 sticky left-0 bg-black">Status</td>
                       {selectedVehicles.map(v => {
                         const s = getStatusColor(v.status);
                         return <td key={v.id} className="py-2 px-4 text-center"><span className={`px-2 py-0.5 rounded text-xs font-medium ${s.bg} ${s.text}`}>{v.status}</span></td>;
                       })}
                     </tr>
                     <tr>
-                      <td className="py-2 px-4 text-star-300 sticky left-0 bg-slate-900">Country</td>
+                      <td className="py-2 px-4 text-star-300 sticky left-0 bg-black">Country</td>
                       {selectedVehicles.map(v => <td key={v.id} className="py-2 px-4 text-center text-white">{v.country}</td>)}
                     </tr>
                     <tr>
-                      <td className="py-2 px-4 text-star-300 sticky left-0 bg-slate-900">First Flight</td>
+                      <td className="py-2 px-4 text-star-300 sticky left-0 bg-black">First Flight</td>
                       {selectedVehicles.map(v => <td key={v.id} className="py-2 px-4 text-center text-white">{v.firstFlight}</td>)}
                     </tr>
                     <tr>
-                      <td className="py-2 px-4 text-star-300 sticky left-0 bg-slate-900">Reusable</td>
+                      <td className="py-2 px-4 text-star-300 sticky left-0 bg-black">Reusable</td>
                       {selectedVehicles.map(v => <td key={v.id} className={`py-2 px-4 text-center font-medium ${v.reusable ? 'text-green-400' : 'text-star-300'}`}>{v.reusable ? 'Yes' : 'No'}</td>)}
                     </tr>
                     <tr>
-                      <td className="py-2 px-4 text-star-300 sticky left-0 bg-slate-900">Stages</td>
+                      <td className="py-2 px-4 text-star-300 sticky left-0 bg-black">Stages</td>
                       {selectedVehicles.map(v => <td key={v.id} className="py-2 px-4 text-center text-white">{v.stages}</td>)}
                     </tr>
 
                     {/* Dimensions */}
-                    <tr className="bg-slate-800/30">
+                    <tr className="bg-white/[0.04]">
                       <td colSpan={selectedVehicles.length + 1} className="py-2 px-4 text-xs font-bold text-slate-300 uppercase tracking-widest">Dimensions</td>
                     </tr>
                     <tr>
-                      <td className="py-2 px-4 text-star-300 sticky left-0 bg-slate-900">Height</td>
+                      <td className="py-2 px-4 text-star-300 sticky left-0 bg-black">Height</td>
                       {selectedVehicles.map(v => <td key={v.id} className="py-2 px-4 text-center text-white">{v.heightM} m</td>)}
                     </tr>
                     <tr>
-                      <td className="py-2 px-4 text-star-300 sticky left-0 bg-slate-900">Diameter</td>
+                      <td className="py-2 px-4 text-star-300 sticky left-0 bg-black">Diameter</td>
                       {selectedVehicles.map(v => <td key={v.id} className="py-2 px-4 text-center text-white">{v.diameterM} m</td>)}
                     </tr>
                     <tr>
-                      <td className="py-2 px-4 text-star-300 sticky left-0 bg-slate-900">Launch Mass</td>
+                      <td className="py-2 px-4 text-star-300 sticky left-0 bg-black">Launch Mass</td>
                       {selectedVehicles.map(v => <td key={v.id} className="py-2 px-4 text-center text-white">{(v.massKg / 1000).toLocaleString()} t</td>)}
                     </tr>
                     <tr>
-                      <td className="py-2 px-4 text-star-300 sticky left-0 bg-slate-900">Fairing Diameter</td>
+                      <td className="py-2 px-4 text-star-300 sticky left-0 bg-black">Fairing Diameter</td>
                       {selectedVehicles.map(v => <td key={v.id} className="py-2 px-4 text-center text-white">{v.fairingDiameterM} m</td>)}
                     </tr>
 
                     {/* Payload */}
-                    <tr className="bg-slate-800/30">
+                    <tr className="bg-white/[0.04]">
                       <td colSpan={selectedVehicles.length + 1} className="py-2 px-4 text-xs font-bold text-slate-300 uppercase tracking-widest">Payload Capacity</td>
                     </tr>
                     <tr>
-                      <td className="py-2 px-4 text-star-300 sticky left-0 bg-slate-900">LEO</td>
+                      <td className="py-2 px-4 text-star-300 sticky left-0 bg-black">LEO</td>
                       {selectedVehicles.map(v => {
                         const max = Math.max(...selectedVehicles.map(sv => sv.payloadLeoKg));
                         return <td key={v.id} className={`py-2 px-4 text-center font-semibold ${v.payloadLeoKg === max ? 'text-slate-300' : 'text-white'}`}>{formatNumber(v.payloadLeoKg)} kg</td>;
                       })}
                     </tr>
                     <tr>
-                      <td className="py-2 px-4 text-star-300 sticky left-0 bg-slate-900">GTO</td>
+                      <td className="py-2 px-4 text-star-300 sticky left-0 bg-black">GTO</td>
                       {selectedVehicles.map(v => {
                         const max = Math.max(...selectedVehicles.map(sv => sv.payloadGtoKg ?? 0));
                         return <td key={v.id} className={`py-2 px-4 text-center font-semibold ${v.payloadGtoKg === max && max > 0 ? 'text-slate-300' : 'text-white'}`}>{v.payloadGtoKg ? `${formatNumber(v.payloadGtoKg)} kg` : '--'}</td>;
                       })}
                     </tr>
                     <tr>
-                      <td className="py-2 px-4 text-star-300 sticky left-0 bg-slate-900">SSO</td>
+                      <td className="py-2 px-4 text-star-300 sticky left-0 bg-black">SSO</td>
                       {selectedVehicles.map(v => <td key={v.id} className="py-2 px-4 text-center text-white">{v.payloadSsoKg ? `${formatNumber(v.payloadSsoKg)} kg` : '--'}</td>)}
                     </tr>
                     <tr>
-                      <td className="py-2 px-4 text-star-300 sticky left-0 bg-slate-900">TLI</td>
+                      <td className="py-2 px-4 text-star-300 sticky left-0 bg-black">TLI</td>
                       {selectedVehicles.map(v => <td key={v.id} className="py-2 px-4 text-center text-white">{v.payloadTliKg ? `${formatNumber(v.payloadTliKg)} kg` : '--'}</td>)}
                     </tr>
 
                     {/* Propulsion */}
-                    <tr className="bg-slate-800/30">
+                    <tr className="bg-white/[0.04]">
                       <td colSpan={selectedVehicles.length + 1} className="py-2 px-4 text-xs font-bold text-slate-300 uppercase tracking-widest">Propulsion</td>
                     </tr>
                     <tr>
-                      <td className="py-2 px-4 text-star-300 sticky left-0 bg-slate-900">Engines</td>
+                      <td className="py-2 px-4 text-star-300 sticky left-0 bg-black">Engines</td>
                       {selectedVehicles.map(v => <td key={v.id} className="py-2 px-4 text-center text-white text-xs">{v.engines}</td>)}
                     </tr>
                     <tr>
-                      <td className="py-2 px-4 text-star-300 sticky left-0 bg-slate-900">Propellant</td>
+                      <td className="py-2 px-4 text-star-300 sticky left-0 bg-black">Propellant</td>
                       {selectedVehicles.map(v => <td key={v.id} className="py-2 px-4 text-center text-white text-xs">{v.propellant}</td>)}
                     </tr>
 
                     {/* Cost */}
-                    <tr className="bg-slate-800/30">
+                    <tr className="bg-white/[0.04]">
                       <td colSpan={selectedVehicles.length + 1} className="py-2 px-4 text-xs font-bold text-slate-300 uppercase tracking-widest">Cost</td>
                     </tr>
                     <tr>
-                      <td className="py-2 px-4 text-star-300 sticky left-0 bg-slate-900">Launch Price</td>
+                      <td className="py-2 px-4 text-star-300 sticky left-0 bg-black">Launch Price</td>
                       {selectedVehicles.map(v => {
                         const min = Math.min(...selectedVehicles.filter(sv => sv.costMillions !== null).map(sv => sv.costMillions!));
                         return <td key={v.id} className={`py-2 px-4 text-center font-semibold ${v.costMillions === min ? 'text-green-400' : 'text-white'}`}>{formatCost(v.costMillions)}</td>;
                       })}
                     </tr>
                     <tr>
-                      <td className="py-2 px-4 text-star-300 sticky left-0 bg-slate-900">Cost per kg LEO</td>
+                      <td className="py-2 px-4 text-star-300 sticky left-0 bg-black">Cost per kg LEO</td>
                       {selectedVehicles.map(v => {
                         const costs = selectedVehicles.filter(sv => sv.costPerKgLeo !== null).map(sv => sv.costPerKgLeo!);
                         const min = costs.length > 0 ? Math.min(...costs) : 0;
@@ -1475,23 +1475,23 @@ export default function LaunchVehiclesPage() {
                     </tr>
 
                     {/* Reliability */}
-                    <tr className="bg-slate-800/30">
+                    <tr className="bg-white/[0.04]">
                       <td colSpan={selectedVehicles.length + 1} className="py-2 px-4 text-xs font-bold text-slate-300 uppercase tracking-widest">Reliability</td>
                     </tr>
                     <tr>
-                      <td className="py-2 px-4 text-star-300 sticky left-0 bg-slate-900">Total Launches</td>
+                      <td className="py-2 px-4 text-star-300 sticky left-0 bg-black">Total Launches</td>
                       {selectedVehicles.map(v => <td key={v.id} className="py-2 px-4 text-center text-white font-semibold">{v.totalLaunches}</td>)}
                     </tr>
                     <tr>
-                      <td className="py-2 px-4 text-star-300 sticky left-0 bg-slate-900">Success Rate</td>
+                      <td className="py-2 px-4 text-star-300 sticky left-0 bg-black">Success Rate</td>
                       {selectedVehicles.map(v => <td key={v.id} className={`py-2 px-4 text-center font-bold ${v.totalLaunches > 0 ? getReliabilityColor(v.successRate) : 'text-star-300'}`}>{v.totalLaunches > 0 ? `${v.successRate.toFixed(1)}%` : 'N/A'}</td>)}
                     </tr>
                     <tr>
-                      <td className="py-2 px-4 text-star-300 sticky left-0 bg-slate-900">Consecutive Successes</td>
+                      <td className="py-2 px-4 text-star-300 sticky left-0 bg-black">Consecutive Successes</td>
                       {selectedVehicles.map(v => <td key={v.id} className="py-2 px-4 text-center text-white">{v.consecutiveSuccesses}</td>)}
                     </tr>
                     <tr>
-                      <td className="py-2 px-4 text-star-300 sticky left-0 bg-slate-900">Cadence (launches)</td>
+                      <td className="py-2 px-4 text-star-300 sticky left-0 bg-black">Cadence (launches)</td>
                       {selectedVehicles.map(v => <td key={v.id} className="py-2 px-4 text-center text-white">{v.totalLaunches > 0 ? v.totalLaunches : '--'}</td>)}
                     </tr>
                   </tbody>
@@ -1553,7 +1553,7 @@ export default function LaunchVehiclesPage() {
                             <Link href={getCompanyProfileUrl(v.manufacturer)!} className="hover:underline">{v.manufacturer}</Link>
                           ) : v.manufacturer})</span>
                           {v.reusable && (
-                            <span className="px-1.5 py-0.5 rounded text-xs bg-slate-800/40 text-slate-300 border border-white/10 hidden md:inline">
+                            <span className="px-1.5 py-0.5 rounded text-xs bg-white/[0.04] text-slate-300 border border-white/10 hidden md:inline">
                               Reusable
                             </span>
                           )}
@@ -1567,7 +1567,7 @@ export default function LaunchVehiclesPage() {
                           </span>
                         </div>
                       </div>
-                      <div className="h-2 bg-slate-700 rounded-full overflow-hidden">
+                      <div className="h-2 bg-white/[0.08] rounded-full overflow-hidden">
                         <div
                           className={`h-full rounded-full transition-all ${
                             v.successRate >= 97 ? 'bg-gradient-to-r from-green-600 to-green-400' :
@@ -1606,7 +1606,7 @@ export default function LaunchVehiclesPage() {
                           <span className="text-white text-sm font-medium">{v.name}</span>
                           <span className="text-slate-300 text-sm font-bold">{v.consecutiveSuccesses}</span>
                         </div>
-                        <div className="h-2 bg-slate-700 rounded-full overflow-hidden">
+                        <div className="h-2 bg-white/[0.08] rounded-full overflow-hidden">
                           <div
                             className="h-full bg-gradient-to-r from-slate-200 to-slate-400 rounded-full transition-all"
                             style={{ width: `${pct}%` }}
@@ -1619,7 +1619,7 @@ export default function LaunchVehiclesPage() {
             </div>
 
             {/* Data Sources */}
-            <div className="card p-5 border-dashed border-slate-700">
+            <div className="card p-5 border-dashed border-white/[0.06]">
               <h3 className="text-lg font-semibold text-white mb-3">Data Sources</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-star-300">
                 <div>
@@ -1697,7 +1697,7 @@ export default function LaunchVehiclesPage() {
                             <Link href={getCompanyProfileUrl(v.manufacturer)!} className="hover:underline">{v.manufacturer}</Link>
                           ) : v.manufacturer})</span>
                           {v.reusable && (
-                            <span className="px-1.5 py-0.5 rounded text-xs bg-slate-800/40 text-slate-300 border border-white/10">
+                            <span className="px-1.5 py-0.5 rounded text-xs bg-white/[0.04] text-slate-300 border border-white/10">
                               Reusable
                             </span>
                           )}
@@ -1708,7 +1708,7 @@ export default function LaunchVehiclesPage() {
                           </span>
                         </div>
                       </div>
-                      <div className="h-2 bg-slate-700 rounded-full overflow-hidden">
+                      <div className="h-2 bg-white/[0.08] rounded-full overflow-hidden">
                         <div
                           className={`h-full rounded-full transition-all ${
                             v.reusable ? 'bg-gradient-to-r from-slate-200 to-slate-400' : 'bg-gradient-to-r from-slate-500 to-slate-400'
@@ -1733,7 +1733,7 @@ export default function LaunchVehiclesPage() {
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="border-b border-slate-700">
+                    <tr className="border-b border-white/[0.06]">
                       <th className="text-left py-2 px-3 text-star-300 text-xs uppercase tracking-widest">Vehicle</th>
                       <th className="text-left py-2 px-3 text-star-300 text-xs uppercase tracking-widest">Manufacturer</th>
                       <th className="text-right py-2 px-3 text-star-300 text-xs uppercase tracking-widest">Price</th>
@@ -1742,12 +1742,12 @@ export default function LaunchVehiclesPage() {
                       <th className="text-center py-2 px-3 text-star-300 text-xs uppercase tracking-widest">Reusable</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-800">
+                  <tbody className="divide-y divide-white/[0.06]">
                     {[...ACTIVE_VEHICLES]
                       .filter(v => v.costMillions !== null)
                       .sort((a, b) => (a.costMillions ?? 0) - (b.costMillions ?? 0))
                       .map(v => (
-                        <tr key={v.id} className="hover:bg-slate-800/50 transition-colors">
+                        <tr key={v.id} className="hover:bg-white/[0.04] transition-colors">
                           <td className="py-2.5 px-3 text-white font-medium">{v.name}</td>
                           <td className="py-2.5 px-3 text-star-300">
                             {getCompanyProfileUrl(v.manufacturer) ? (
@@ -1792,7 +1792,7 @@ export default function LaunchVehiclesPage() {
                         <span className="text-slate-300 font-bold text-sm">{formatCostPerKg(v.costPerKgLeo)}</span>
                       </div>
                     ))}
-                    <div className="pt-2 border-t border-slate-700">
+                    <div className="pt-2 border-t border-white/[0.06]">
                       <div className="flex items-center justify-between">
                         <span className="text-star-300 text-sm">Average $/kg</span>
                         <span className="text-slate-300 font-bold text-sm">
@@ -1821,7 +1821,7 @@ export default function LaunchVehiclesPage() {
                         <span className="text-white font-bold text-sm">{formatCostPerKg(v.costPerKgLeo)}</span>
                       </div>
                     ))}
-                    <div className="pt-2 border-t border-slate-700">
+                    <div className="pt-2 border-t border-white/[0.06]">
                       <div className="flex items-center justify-between">
                         <span className="text-star-300 text-sm">Average $/kg</span>
                         <span className="text-white font-bold text-sm">
@@ -1838,7 +1838,7 @@ export default function LaunchVehiclesPage() {
             </div>
 
             {/* Cost Trends Note */}
-            <div className="card p-5 border-dashed border-slate-700">
+            <div className="card p-5 border-dashed border-white/[0.06]">
               <h3 className="text-lg font-semibold text-white mb-3">Notes on Pricing</h3>
               <div className="text-sm text-star-300 space-y-2">
                 <p>Published prices are approximate and may not reflect actual contract values. Government, military, and rideshare pricing differs significantly from commercial list prices.</p>

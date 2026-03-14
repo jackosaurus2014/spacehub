@@ -33,7 +33,7 @@ const USE_CASES = [
     company: 'Orbital Ventures',
     companyType: 'Venture Capital',
     avatarColor: 'from-white to-blue-500',
-    badgeClass: 'bg-white/5 text-slate-200 border-white/10',
+    badgeClass: 'bg-white/5 text-white/90 border-white/10',
     problem:
       'Sarah evaluates 50+ space startups per quarter. Her team was drowning in fragmented data across pitch decks, SEC filings, and industry reports. Initial screening took two analysts a full week per deal.',
     modules: [
@@ -120,7 +120,7 @@ export default function UseCasesPage() {
         <div className="container mx-auto px-4 relative z-10">
           <ScrollReveal>
             <div className="max-w-3xl mx-auto text-center">
-              <span className="inline-block px-4 py-1.5 rounded-full text-xs font-semibold tracking-wide uppercase bg-white/5 text-slate-200 border border-white/10 mb-6">
+              <span className="inline-block px-4 py-1.5 rounded-full text-xs font-semibold tracking-wide uppercase bg-white/5 text-white/90 border border-white/10 mb-6">
                 Use Cases
               </span>
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
@@ -143,9 +143,9 @@ export default function UseCasesPage() {
           <div className="space-y-12 max-w-4xl mx-auto">
             {USE_CASES.map((uc, index) => (
               <ScrollReveal key={uc.name} delay={index * 0.08}>
-                <article className="rounded-2xl border border-slate-700/50 bg-slate-900/50 backdrop-blur-sm overflow-hidden">
+                <article className="rounded-2xl border border-white/[0.06] bg-white/[0.04] backdrop-blur-sm overflow-hidden">
                   {/* Header */}
-                  <div className="p-6 md:p-8 border-b border-slate-700/50">
+                  <div className="p-6 md:p-8 border-b border-white/[0.06]">
                     <div className="flex items-start gap-4">
                       <PersonaAvatar name={uc.name} gradient={uc.avatarColor} />
                       <div>
@@ -173,7 +173,7 @@ export default function UseCasesPage() {
                           <Link
                             key={mod.name}
                             href={mod.href}
-                            className="block rounded-xl border border-slate-700/50 bg-slate-800/50 p-3 hover:border-white/10 transition-colors group"
+                            className="block rounded-xl border border-white/[0.06] bg-white/[0.04] p-3 hover:border-white/10 transition-colors group"
                           >
                             <p className="text-white text-sm font-medium group-hover:text-white transition-colors">{mod.name}</p>
                             <p className="text-slate-400 text-xs mt-0.5 leading-relaxed">{mod.desc}</p>
@@ -185,11 +185,11 @@ export default function UseCasesPage() {
                     {/* Result */}
                     <div className="rounded-xl bg-gradient-to-r from-white/5 to-blue-500/5 border border-white/15 p-4">
                       <h3 className="text-sm font-semibold uppercase tracking-wider text-slate-300 mb-2">The Result</h3>
-                      <p className="text-slate-200 text-sm leading-relaxed">{uc.result}</p>
+                      <p className="text-white/90 text-sm leading-relaxed">{uc.result}</p>
                     </div>
 
                     {/* Quote */}
-                    <blockquote className="border-l-2 border-slate-600 pl-4">
+                    <blockquote className="border-l-2 border-white/[0.1] pl-4">
                       <p className="text-slate-300 text-sm italic leading-relaxed">&ldquo;{uc.quote}&rdquo;</p>
                       <cite className="text-slate-500 text-xs mt-1 block not-italic">&mdash; {uc.name}, {uc.role}</cite>
                     </blockquote>
@@ -222,7 +222,7 @@ export default function UseCasesPage() {
                 </Link>
                 <Link
                   href="/solutions/investors"
-                  className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-xl border border-slate-600 text-slate-200 font-semibold hover:bg-slate-800/50 transition-colors"
+                  className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-xl border border-white/[0.1] text-white/90 font-semibold hover:bg-white/[0.04] transition-colors"
                 >
                   Explore Solutions
                 </Link>

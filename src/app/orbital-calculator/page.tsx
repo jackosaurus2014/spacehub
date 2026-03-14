@@ -101,7 +101,7 @@ function SliderInput({
 
   return (
     <div className="mb-4">
-      <label className="block text-sm font-medium text-slate-300 mb-1.5">{label}</label>
+      <label className="block text-sm font-medium text-white/70 mb-1.5">{label}</label>
       <div className="flex items-center gap-3 mb-1.5">
         <input
           type="number"
@@ -111,7 +111,7 @@ function SliderInput({
           step={step}
           value={value}
           onChange={handleInput}
-          className="w-28 bg-slate-900/70 border border-slate-700/50 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20"
+          className="w-28 bg-black/70 border border-white/[0.06] rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20"
         />
         <span className="text-sm text-slate-400">{unit}</span>
       </div>
@@ -141,7 +141,7 @@ function ResultCard({ label, value, unit, accent = 'purple' }: {
 }) {
   const colors = {
     purple: 'text-purple-400',
-    cyan: 'text-slate-300',
+    cyan: 'text-white/70',
     emerald: 'text-emerald-400',
     amber: 'text-amber-400',
   };
@@ -239,7 +239,7 @@ function DeltaVCalculator() {
 
           {/* SVG Orbit Diagram */}
           <div className="flex items-center justify-center">
-            <svg width={svgSize} height={svgSize} viewBox={`0 0 ${svgSize} ${svgSize}`} className="bg-slate-900/50 rounded-xl border border-slate-700/30">
+            <svg width={svgSize} height={svgSize} viewBox={`0 0 ${svgSize} ${svgSize}`} className="bg-black/50 rounded-xl border border-white/[0.04]">
               {/* Grid lines */}
               <circle cx={cx} cy={cy} r={maxR} fill="none" stroke="rgba(148,163,184,0.08)" strokeWidth="0.5" />
               <circle cx={cx} cy={cy} r={maxR * 0.66} fill="none" stroke="rgba(148,163,184,0.05)" strokeWidth="0.5" />
@@ -302,7 +302,7 @@ function DeltaVCalculator() {
       </div>
 
       <div className="card p-4 mt-4">
-        <h4 className="text-sm font-semibold text-slate-300 mb-2">How it works</h4>
+        <h4 className="text-sm font-semibold text-white/70 mb-2">How it works</h4>
         <p className="text-xs text-slate-500 leading-relaxed">
           A Hohmann transfer uses two engine burns to move between circular orbits. The first burn at perigee
           raises the apogee to the target orbit altitude. The spacecraft coasts along the transfer ellipse for
@@ -388,21 +388,21 @@ function PeriodVelocityCalculator() {
             />
           </div>
           <div className="space-y-3">
-            <div className="card p-3 bg-slate-800/30">
+            <div className="card p-3 bg-white/[0.03]">
               <div className="text-xs text-slate-500 mb-1">Semi-major axis</div>
-              <div className="text-sm text-slate-200">{fmtNum(results.a, 1)} km</div>
+              <div className="text-sm text-white/90">{fmtNum(results.a, 1)} km</div>
             </div>
-            <div className="card p-3 bg-slate-800/30">
+            <div className="card p-3 bg-white/[0.03]">
               <div className="text-xs text-slate-500 mb-1">Apogee altitude</div>
-              <div className="text-sm text-slate-200">{fmtNum(results.apogeeAlt, 1)} km</div>
+              <div className="text-sm text-white/90">{fmtNum(results.apogeeAlt, 1)} km</div>
             </div>
-            <div className="card p-3 bg-slate-800/30">
+            <div className="card p-3 bg-white/[0.03]">
               <div className="text-xs text-slate-500 mb-1">Specific orbital energy</div>
-              <div className="text-sm text-slate-200">{fmtNum(results.energy, 2)} km²/s²</div>
+              <div className="text-sm text-white/90">{fmtNum(results.energy, 2)} km²/s²</div>
             </div>
-            <div className="card p-3 bg-slate-800/30">
+            <div className="card p-3 bg-white/[0.03]">
               <div className="text-xs text-slate-500 mb-1">Circular velocity at perigee</div>
-              <div className="text-sm text-slate-200">{fmtNum(results.vCircular)} km/s</div>
+              <div className="text-sm text-white/90">{fmtNum(results.vCircular)} km/s</div>
             </div>
           </div>
         </div>
@@ -417,17 +417,17 @@ function PeriodVelocityCalculator() {
       </div>
 
       <div className="card p-4 mt-4">
-        <h4 className="text-sm font-semibold text-slate-300 mb-2">Reference Orbits</h4>
+        <h4 className="text-sm font-semibold text-white/70 mb-2">Reference Orbits</h4>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs text-slate-400">
-          <div><span className="text-slate-300 font-medium">ISS:</span> ~408 km, e=0.0001, T=92.7 min</div>
-          <div><span className="text-slate-300 font-medium">GPS:</span> ~20,200 km, e=0.01, T=11.97 h</div>
-          <div><span className="text-slate-300 font-medium">GEO:</span> ~35,786 km, e=0, T=23.93 h</div>
-          <div><span className="text-slate-300 font-medium">Molniya:</span> ~500 km perigee, e=0.74, T=12 h</div>
+          <div><span className="text-white/70 font-medium">ISS:</span> ~408 km, e=0.0001, T=92.7 min</div>
+          <div><span className="text-white/70 font-medium">GPS:</span> ~20,200 km, e=0.01, T=11.97 h</div>
+          <div><span className="text-white/70 font-medium">GEO:</span> ~35,786 km, e=0, T=23.93 h</div>
+          <div><span className="text-white/70 font-medium">Molniya:</span> ~500 km perigee, e=0.74, T=12 h</div>
         </div>
       </div>
 
       <div className="card p-4 mt-4">
-        <h4 className="text-sm font-semibold text-slate-300 mb-2">Formulas</h4>
+        <h4 className="text-sm font-semibold text-white/70 mb-2">Formulas</h4>
         <p className="text-xs text-slate-500 leading-relaxed">
           Period: T = 2 pi sqrt(a³/mu). Velocity: v = sqrt(mu * (2/r - 1/a)), where a is the semi-major axis, r is the
           radial distance, and mu = 398,600.4418 km³/s² is the Earth gravitational parameter. For an orbit defined by
@@ -484,7 +484,7 @@ function EscapeVelocityCalculator() {
           <div>
             {/* Body selector */}
             <div className="mb-4">
-              <label className="block text-sm font-medium text-slate-300 mb-2">Celestial Body</label>
+              <label className="block text-sm font-medium text-white/70 mb-2">Celestial Body</label>
               <div className="grid grid-cols-3 gap-2">
                 {(Object.keys(BODY_DATA) as CelestialBody[]).map((key) => (
                   <button
@@ -493,7 +493,7 @@ function EscapeVelocityCalculator() {
                     className={`py-2.5 px-3 rounded-lg text-sm font-medium transition-all border ${
                       body === key
                         ? 'bg-purple-500/15 border-purple-500/40 text-purple-400'
-                        : 'bg-slate-900/50 border-slate-700/50 text-slate-400 hover:border-slate-600/50'
+                        : 'bg-black/50 border-white/[0.06] text-slate-400 hover:border-white/[0.08]'
                     }`}
                   >
                     {BODY_DATA[key].label}
@@ -514,21 +514,21 @@ function EscapeVelocityCalculator() {
             />
           </div>
           <div className="space-y-3">
-            <div className="card p-3 bg-slate-800/30">
+            <div className="card p-3 bg-white/[0.03]">
               <div className="text-xs text-slate-500 mb-1">Body radius</div>
-              <div className="text-sm text-slate-200">{BODY_DATA[body].radius.toLocaleString()} km</div>
+              <div className="text-sm text-white/90">{BODY_DATA[body].radius.toLocaleString()} km</div>
             </div>
-            <div className="card p-3 bg-slate-800/30">
+            <div className="card p-3 bg-white/[0.03]">
               <div className="text-xs text-slate-500 mb-1">Radial distance from center</div>
-              <div className="text-sm text-slate-200">{fmtNum(results.r, 1)} km</div>
+              <div className="text-sm text-white/90">{fmtNum(results.r, 1)} km</div>
             </div>
-            <div className="card p-3 bg-slate-800/30">
+            <div className="card p-3 bg-white/[0.03]">
               <div className="text-xs text-slate-500 mb-1">Gravitational parameter (mu)</div>
-              <div className="text-sm text-slate-200">{BODY_DATA[body].mu.toLocaleString()} km³/s²</div>
+              <div className="text-sm text-white/90">{BODY_DATA[body].mu.toLocaleString()} km³/s²</div>
             </div>
-            <div className="card p-3 bg-slate-800/30">
+            <div className="card p-3 bg-white/[0.03]">
               <div className="text-xs text-slate-500 mb-1">Surface escape velocity</div>
-              <div className="text-sm text-slate-200">{fmtNum(results.vEscSurface)} km/s</div>
+              <div className="text-sm text-white/90">{fmtNum(results.vEscSurface)} km/s</div>
             </div>
           </div>
         </div>
@@ -543,7 +543,7 @@ function EscapeVelocityCalculator() {
       </div>
 
       <div className="card p-4 mt-4">
-        <h4 className="text-sm font-semibold text-slate-300 mb-2">About C3 Energy</h4>
+        <h4 className="text-sm font-semibold text-white/70 mb-2">About C3 Energy</h4>
         <p className="text-xs text-slate-500 leading-relaxed">
           C3 (characteristic energy) is the square of the hyperbolic excess velocity: C3 = v² - v_escape².
           At exactly escape velocity, C3 = 0. For interplanetary missions, launch providers specify C3 capacity
@@ -722,17 +722,17 @@ function OrbitalDecayCalculator() {
             />
           </div>
           <div className="space-y-3">
-            <div className="card p-3 bg-slate-800/30">
+            <div className="card p-3 bg-white/[0.03]">
               <div className="text-xs text-slate-500 mb-1">Atmospheric Density</div>
-              <div className="text-sm text-slate-200">{results.rho.toExponential(3)} kg/m³</div>
+              <div className="text-sm text-white/90">{results.rho.toExponential(3)} kg/m³</div>
             </div>
-            <div className="card p-3 bg-slate-800/30">
+            <div className="card p-3 bg-white/[0.03]">
               <div className="text-xs text-slate-500 mb-1">Drag Acceleration</div>
-              <div className="text-sm text-slate-200">{results.dragAccel.toExponential(3)} m/s²</div>
+              <div className="text-sm text-white/90">{results.dragAccel.toExponential(3)} m/s²</div>
             </div>
-            <div className="card p-3 bg-slate-800/30">
+            <div className="card p-3 bg-white/[0.03]">
               <div className="text-xs text-slate-500 mb-1">Ballistic Coefficient (m/CdA)</div>
-              <div className="text-sm text-slate-200">{fmtNum(results.ballisticCoeff, 1)} kg/m²</div>
+              <div className="text-sm text-white/90">{fmtNum(results.ballisticCoeff, 1)} kg/m²</div>
             </div>
             <div className="card p-4 bg-purple-500/5 border-purple-500/20">
               <div className="text-xs text-purple-400 mb-1 font-medium">Tip</div>
@@ -754,7 +754,7 @@ function OrbitalDecayCalculator() {
       </div>
 
       <div className="card p-4 mt-4">
-        <h4 className="text-sm font-semibold text-slate-300 mb-2">Limitations</h4>
+        <h4 className="text-sm font-semibold text-white/70 mb-2">Limitations</h4>
         <p className="text-xs text-slate-500 leading-relaxed">
           This model uses a static exponential atmosphere approximation. Real atmospheric density varies by a
           factor of 10x or more with the 11-year solar cycle (solar maximum heats the thermosphere, increasing
@@ -831,7 +831,7 @@ function OrbitalCalculatorContent() {
   return (
     <div>
       {/* Tab Navigation */}
-      <div className="flex flex-wrap gap-2 mb-8 border-b border-slate-700/50 pb-4">
+      <div className="flex flex-wrap gap-2 mb-8 border-b border-white/[0.06] pb-4">
         {TABS.map((tab) => (
           <button
             key={tab.id}
@@ -839,7 +839,7 @@ function OrbitalCalculatorContent() {
             className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all border ${
               activeTab === tab.id
                 ? 'bg-purple-500/15 border-purple-500/40 text-purple-400'
-                : 'bg-slate-800/50 border-slate-700/50 text-slate-400 hover:border-slate-600/50 hover:text-slate-300'
+                : 'bg-white/[0.04] border-white/[0.06] text-slate-400 hover:border-white/[0.08] hover:text-white/70'
             }`}
           >
             <TabIcon type={tab.icon} />
@@ -921,9 +921,9 @@ export default function OrbitalCalculatorPage() {
         {/* Breadcrumb */}
         <ScrollReveal>
         <nav className="text-sm text-slate-500 mb-4">
-          <Link href="/" className="hover:text-slate-300 transition-colors">Home</Link>
+          <Link href="/" className="hover:text-white/70 transition-colors">Home</Link>
           <span className="mx-2">/</span>
-          <Link href="/mission-cost" className="hover:text-slate-300 transition-colors">Mission Planning</Link>
+          <Link href="/mission-cost" className="hover:text-white/70 transition-colors">Mission Planning</Link>
           <span className="mx-2">/</span>
           <span className="text-slate-400">Orbital Calculator</span>
         </nav>

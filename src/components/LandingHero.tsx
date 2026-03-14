@@ -181,7 +181,7 @@ export default function LandingHero() {
       </div>
 
       {/* Bottom gradient divider */}
-      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#050a15] to-transparent z-[2]" />
+      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-black to-transparent z-[2]" />
     </section>
   );
 }

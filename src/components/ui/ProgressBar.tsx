@@ -22,13 +22,13 @@ const sizeClasses: Record<'sm' | 'md' | 'lg', string> = {
 };
 
 const variantGradients: Record<'default' | 'success' | 'warning', string> = {
-  default: 'from-white via-plasma-400 to-plasma-300',
+  default: 'from-white via-white/70 to-white/40',
   success: 'from-emerald-600 via-emerald-500 to-emerald-400',
   warning: 'from-amber-600 via-amber-500 to-rocket-400',
 };
 
 const variantGlows: Record<'default' | 'success' | 'warning', string> = {
-  default: '0 0 8px rgba(6, 182, 212, 0.4), 0 0 16px rgba(139, 92, 246, 0.2)',
+  default: '0 0 8px rgba(255, 255, 255, 0.15), 0 0 16px rgba(255, 255, 255, 0.08)',
   success: '0 0 8px rgba(16, 185, 129, 0.4), 0 0 16px rgba(16, 185, 129, 0.2)',
   warning: '0 0 8px rgba(245, 158, 11, 0.4), 0 0 16px rgba(249, 115, 22, 0.2)',
 };
@@ -66,7 +66,7 @@ export default function ProgressBar({
 
       {/* Track */}
       <div
-        className={`w-full ${heightClass} rounded-full bg-slate-800 border border-white/[0.06] overflow-hidden`}
+        className={`w-full ${heightClass} rounded-full bg-white/[0.06] border border-white/[0.06] overflow-hidden`}
         role="progressbar"
         aria-valuenow={indeterminate ? undefined : clampedValue}
         aria-valuemin={0}

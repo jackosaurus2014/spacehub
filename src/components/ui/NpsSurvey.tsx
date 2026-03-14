@@ -70,7 +70,7 @@ export default function NpsSurvey() {
 
   return (
     <div className="fixed bottom-4 right-4 z-[9998] w-full max-w-sm animate-in slide-in-from-bottom-4 duration-300">
-      <div className="bg-slate-900 border border-slate-700/50 rounded-xl shadow-2xl overflow-hidden">
+      <div className="bg-black border border-white/[0.06] rounded-xl shadow-2xl overflow-hidden">
         {submitted ? (
           <div className="p-6 text-center">
             <p className="text-white font-medium mb-1">Thank you!</p>
@@ -79,11 +79,11 @@ export default function NpsSurvey() {
         ) : (
           <>
             {/* Header */}
-            <div className="flex items-center justify-between px-4 py-3 border-b border-slate-700/50">
+            <div className="flex items-center justify-between px-4 py-3 border-b border-white/[0.06]">
               <p className="text-sm font-medium text-white">Quick feedback</p>
               <button
                 onClick={handleDismiss}
-                className="text-slate-500 hover:text-slate-300 transition-colors"
+                className="text-slate-500 hover:text-white/70 transition-colors"
                 aria-label="Dismiss"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -94,7 +94,7 @@ export default function NpsSurvey() {
 
             {/* Body */}
             <div className="p-4">
-              <p className="text-sm text-slate-300 mb-3">
+              <p className="text-sm text-white/70 mb-3">
                 How likely are you to recommend SpaceNexus to a colleague?
               </p>
 
@@ -138,7 +138,7 @@ export default function NpsSurvey() {
                         ? 'What would make it a 10?'
                         : 'What do you like most?'
                     }
-                    className="w-full bg-slate-800/60 border border-slate-700/50 rounded-lg px-3 py-2 text-sm text-white placeholder-slate-500 resize-none focus:outline-none focus:border-white/15"
+                    className="w-full bg-white/[0.05] border border-white/[0.06] rounded-lg px-3 py-2 text-sm text-white placeholder-slate-500 resize-none focus:outline-none focus:border-white/15"
                     rows={2}
                   />
                 </div>

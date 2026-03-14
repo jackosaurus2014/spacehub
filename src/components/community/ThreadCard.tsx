@@ -82,7 +82,7 @@ export default function ThreadCard({ thread, categorySlug, index = 0 }: ThreadCa
               <div className="flex items-center gap-2 mb-1 flex-wrap">
                 {/* Indicators */}
                 {thread.isPinned && (
-                  <span className="text-xs px-1.5 py-0.5 bg-white/5 text-slate-300 rounded font-medium flex-shrink-0 flex items-center gap-1">
+                  <span className="text-xs px-1.5 py-0.5 bg-white/5 text-white/70 rounded font-medium flex-shrink-0 flex items-center gap-1">
                     <span aria-hidden="true" className="text-[10px]">{String.fromCodePoint(0x1F4CC)}</span>
                     Pinned
                   </span>
@@ -95,7 +95,7 @@ export default function ThreadCard({ thread, categorySlug, index = 0 }: ThreadCa
                     Locked
                   </span>
                 )}
-                <span className="text-xs px-1.5 py-0.5 bg-white/5 text-slate-300 border border-white/10 rounded flex-shrink-0">
+                <span className="text-xs px-1.5 py-0.5 bg-white/5 text-white/70 border border-white/10 rounded flex-shrink-0">
                   {thread.category}
                 </span>
                 {thread.acceptedPostId && (

@@ -154,7 +154,7 @@ export default function BentoFeatures() {
                 </div>
 
                 {/* Arrow indicator */}
-                <div className="relative flex items-center gap-1 text-xs text-slate-500 group-hover:text-slate-300 transition-colors duration-200 font-medium mt-auto pt-4">
+                <div className="relative flex items-center gap-1 text-xs text-slate-500 group-hover:text-white/70 transition-colors duration-200 font-medium mt-auto pt-4">
                   Explore
                   <svg className="w-3.5 h-3.5 transition-transform duration-200 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
@@ -175,7 +175,7 @@ export default function BentoFeatures() {
         >
           <Link
             href="/mission-control"
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-white/[0.08] bg-white/[0.03] text-slate-300 hover:text-white hover:border-white/15 hover:bg-white/[0.05] transition-all duration-200 text-sm font-medium"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-white/[0.08] bg-white/[0.03] text-white/70 hover:text-white hover:border-white/15 hover:bg-white/[0.05] transition-all duration-200 text-sm font-medium"
           >
             Browse All 236+ Tools & Modules
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

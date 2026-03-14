@@ -121,14 +121,14 @@ export default function SolutionsPage() {
                   <h2 className="text-xl font-bold text-white mb-2 group-hover:text-white transition-colors">
                     {persona.title}
                   </h2>
-                  <p className="text-sm text-slate-300 leading-relaxed mb-4">
+                  <p className="text-sm text-white/70 leading-relaxed mb-4">
                     {persona.description}
                   </p>
                   <div className="flex items-center justify-between">
-                    <span className="text-xs text-slate-400 bg-slate-800/60 px-3 py-1 rounded-full">
+                    <span className="text-xs text-slate-400 bg-white/[0.05] px-3 py-1 rounded-full">
                       {persona.featureCount} features
                     </span>
-                    <span className="text-sm text-slate-300 font-medium flex items-center gap-1 group-hover:gap-2 transition-all">
+                    <span className="text-sm text-white/70 font-medium flex items-center gap-1 group-hover:gap-2 transition-all">
                       Learn More
                       <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
@@ -144,7 +144,7 @@ export default function SolutionsPage() {
         {/* CTA Section */}
         <section className="container mx-auto px-4 pb-20">
           <ScrollReveal>
-            <div className="max-w-3xl mx-auto text-center bg-slate-800/40 border border-slate-700/50 rounded-2xl p-8 sm:p-12">
+            <div className="max-w-3xl mx-auto text-center bg-white/[0.04] border border-white/[0.06] rounded-2xl p-8 sm:p-12">
               <h2 className="text-2xl font-bold text-white mb-3">
                 Not sure which plan is right for you?
               </h2>
@@ -164,7 +164,7 @@ export default function SolutionsPage() {
                 </Link>
                 <Link
                   href="/contact"
-                  className="inline-flex items-center gap-2 px-6 py-3 border border-slate-600 hover:border-slate-500 text-slate-300 hover:text-white font-medium rounded-lg transition-colors"
+                  className="inline-flex items-center gap-2 px-6 py-3 border border-white/[0.1] hover:border-slate-500 text-white/70 hover:text-white font-medium rounded-lg transition-colors"
                 >
                   Contact Sales
                 </Link>

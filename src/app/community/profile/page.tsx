@@ -113,7 +113,7 @@ export default function EditProfilePage() {
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Headline */}
           <div className="card p-6">
-            <h3 className="text-lg font-semibold text-slate-200 mb-4">Professional Info</h3>
+            <h3 className="text-lg font-semibold text-white/90 mb-4">Professional Info</h3>
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-slate-400 mb-1">Headline</label>
@@ -124,7 +124,7 @@ export default function EditProfilePage() {
                   onChange={(e) => setForm((f) => ({ ...f, headline: e.target.value }))}
                   placeholder="e.g., Propulsion Engineer at SpaceX"
                   maxLength={150}
-                  className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+                  className="w-full bg-white/[0.06] border border-white/[0.08] text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                 />
                 <p className="text-xs text-slate-500 mt-1">A short tagline for your profile card</p>
               </div>
@@ -137,7 +137,7 @@ export default function EditProfilePage() {
                   placeholder="Tell the community about your experience and interests in the space industry..."
                   rows={3}
                   maxLength={1000}
-                  className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none resize-none"
+                  className="w-full bg-white/[0.06] border border-white/[0.08] text-white rounded-lg px-3 py-2 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none resize-none"
                 />
                 <p className="text-xs text-slate-500 mt-1">{form.bio.length}/1000 characters</p>
               </div>
@@ -149,7 +149,7 @@ export default function EditProfilePage() {
                   value={form.expertise}
                   onChange={(e) => setForm((f) => ({ ...f, expertise: e.target.value }))}
                   placeholder="e.g., Propulsion Engineering, Mission Operations, RF Systems"
-                  className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+                  className="w-full bg-white/[0.06] border border-white/[0.08] text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                 />
                 <p className="text-xs text-slate-500 mt-1">Comma-separated list of your areas of expertise</p>
               </div>
@@ -158,7 +158,7 @@ export default function EditProfilePage() {
 
           {/* Location & Links */}
           <div className="card p-6">
-            <h3 className="text-lg font-semibold text-slate-200 mb-4">Location & Links</h3>
+            <h3 className="text-lg font-semibold text-white/90 mb-4">Location & Links</h3>
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-slate-400 mb-1">Location</label>
@@ -168,7 +168,7 @@ export default function EditProfilePage() {
                   value={form.location}
                   onChange={(e) => setForm((f) => ({ ...f, location: e.target.value }))}
                   placeholder="e.g., Los Angeles, CA"
-                  className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+                  className="w-full bg-white/[0.06] border border-white/[0.08] text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                 />
               </div>
 
@@ -180,7 +180,7 @@ export default function EditProfilePage() {
                   value={form.linkedinUrl}
                   onChange={(e) => setForm((f) => ({ ...f, linkedinUrl: e.target.value }))}
                   placeholder="https://linkedin.com/in/yourname"
-                  className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+                  className="w-full bg-white/[0.06] border border-white/[0.08] text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                 />
               </div>
             </div>
@@ -188,10 +188,10 @@ export default function EditProfilePage() {
 
           {/* Privacy */}
           <div className="card p-6">
-            <h3 className="text-lg font-semibold text-slate-200 mb-4">Privacy</h3>
+            <h3 className="text-lg font-semibold text-white/90 mb-4">Privacy</h3>
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-slate-300">Public Profile</p>
+                <p className="text-sm text-white/70">Public Profile</p>
                 <p className="text-xs text-slate-500 mt-0.5">
                   When enabled, your profile appears in the professional directory
                 </p>
@@ -203,7 +203,7 @@ export default function EditProfilePage() {
                   onChange={(e) => setForm((f) => ({ ...f, isPublic: e.target.checked }))}
                   className="sr-only peer"
                 />
-                <div className="w-11 h-6 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-white" />
+                <div className="w-11 h-6 bg-white/[0.08] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-white" />
               </label>
             </div>
           </div>
@@ -227,7 +227,7 @@ export default function EditProfilePage() {
             {hasProfile && (
               <a
                 href="/community/directory"
-                className="px-6 py-2.5 bg-slate-700 hover:bg-slate-600 text-slate-300 font-medium rounded-lg transition-colors"
+                className="px-6 py-2.5 bg-white/[0.08] hover:bg-white/[0.1] text-white/70 font-medium rounded-lg transition-colors"
               >
                 View in Directory
               </a>

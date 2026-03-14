@@ -158,7 +158,7 @@ export default function SpaceLaunchCostComparisonPage() {
               <span className="hidden sm:inline text-star-300/40">|</span>
               <span>By SpaceNexus Research</span>
             </div>
-            <div className="w-24 h-[3px] bg-gradient-to-r from-white to-plasma-400 rounded-full mx-auto mt-8" />
+            <div className="w-24 h-[3px] bg-gradient-to-r from-white/50 to-white/30 rounded-full mx-auto mt-8" />
           </div>
         </header>
 
@@ -599,19 +599,19 @@ export default function SpaceLaunchCostComparisonPage() {
                     <div className="space-y-3 text-sm">
                       <div className="flex justify-between items-center border-b border-white/10 pb-2">
                         <span className="text-star-300">NSSL Phase 2 (SpaceX, avg.)</span>
-                        <span className="text-slate-200 font-semibold">~$95M-$110M</span>
+                        <span className="text-white/90 font-semibold">~$95M-$110M</span>
                       </div>
                       <div className="flex justify-between items-center border-b border-white/10 pb-2">
                         <span className="text-star-300">NSSL Phase 2 (ULA, avg.)</span>
-                        <span className="text-slate-200 font-semibold">~$130M-$180M</span>
+                        <span className="text-white/90 font-semibold">~$130M-$180M</span>
                       </div>
                       <div className="flex justify-between items-center border-b border-white/10 pb-2">
                         <span className="text-star-300">NASA CRS-2 (SpaceX, per mission)</span>
-                        <span className="text-slate-200 font-semibold">~$150M-$170M</span>
+                        <span className="text-white/90 font-semibold">~$150M-$170M</span>
                       </div>
                       <div className="flex justify-between items-center">
                         <span className="text-star-300">SDA Tranche missions (various)</span>
-                        <span className="text-slate-200 font-semibold">$30M-$60M</span>
+                        <span className="text-white/90 font-semibold">$30M-$60M</span>
                       </div>
                     </div>
                     <p className="text-star-300/60 text-xs mt-4">

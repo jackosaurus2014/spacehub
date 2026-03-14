@@ -204,7 +204,7 @@ function LoginContent() {
             >
               Password
             </label>
-            <Link href="/forgot-password" className="text-sm text-plasma-400 hover:text-plasma-300 transition-colors py-1 px-2 -mr-2 rounded">
+            <Link href="/forgot-password" className="text-sm text-white/70 hover:text-white transition-colors py-1 px-2 -mr-2 rounded">
               Forgot password?
             </Link>
           </div>
@@ -248,7 +248,7 @@ function LoginContent() {
           Don&apos;t have an account?{' '}
           <Link
             href="/register"
-            className="text-slate-200 hover:text-white transition-colors"
+            className="text-white/90 hover:text-white transition-colors"
           >
             Create one
           </Link>
@@ -262,7 +262,7 @@ export default function LoginPage() {
   return (
     <div className="relative min-h-[calc(100dvh-200px)] flex items-center justify-center py-12 px-4">
       <div className="absolute top-1/3 -left-32 w-96 h-96 bg-white/10 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-1/3 -right-32 w-80 h-80 bg-plasma-500/10 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-1/3 -right-32 w-80 h-80 bg-white/10 rounded-full blur-[120px] pointer-events-none" />
       <div className="w-full max-w-md relative">
         <Suspense fallback={<div className="card p-8 glow-border animate-pulse h-96" />}>
           <LoginContent />

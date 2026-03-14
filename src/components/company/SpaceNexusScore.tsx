@@ -123,7 +123,7 @@ function DimensionBar({
         </span>
         <span className="text-xs text-slate-400 tabular-nums ml-2">{score}</span>
       </div>
-      <div className="h-1.5 rounded-full bg-slate-800/60 overflow-hidden" style={{ minWidth: compact ? 80 : undefined }}>
+      <div className="h-1.5 rounded-full bg-white/[0.05] overflow-hidden" style={{ minWidth: compact ? 80 : undefined }}>
         <div
           className={`h-full rounded-full ${meta.bgColor} transition-all duration-1000 ease-out`}
           style={{ width: `${animatedWidth}%` }}
@@ -181,13 +181,13 @@ export default function SpaceNexusScore({ company, compact = false }: SpaceNexus
   // ── Compact Layout ──────────────────────────────────────────────────────
   if (compact) {
     return (
-      <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-4">
+      <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-4">
         <div className="flex items-center gap-4">
           <ScoreRing score={result.overall} grade={result.grade} size={72} strokeWidth={4} />
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1">
               <h4 className="text-sm font-semibold text-slate-100">SpaceNexus Score</h4>
-              <span className={`text-xs font-bold px-1.5 py-0.5 rounded ${getScoreColor(result.overall)} bg-slate-700/50`}>
+              <span className={`text-xs font-bold px-1.5 py-0.5 rounded ${getScoreColor(result.overall)} bg-white/[0.05]`}>
                 {result.label}
               </span>
             </div>
@@ -213,7 +213,7 @@ export default function SpaceNexusScore({ company, compact = false }: SpaceNexus
 
   // ── Full Layout ─────────────────────────────────────────────────────────
   return (
-    <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-6">
+    <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-6">
       {/* Header */}
       <div className="flex items-start gap-2 mb-6">
         <h3 className="text-lg font-bold text-slate-100">SpaceNexus Score</h3>
@@ -228,7 +228,7 @@ export default function SpaceNexusScore({ company, compact = false }: SpaceNexus
             {result.label}
           </p>
           <p className="text-sm text-slate-400 mt-1">
-            Overall score: <span className="text-slate-200 font-semibold">{result.overall}</span> / 100
+            Overall score: <span className="text-white/90 font-semibold">{result.overall}</span> / 100
           </p>
           <p className="text-sm text-slate-500 mt-0.5">
             Grade: <span className={`font-bold ${getGradeColor(result.grade)}`}>{result.grade}</span>
@@ -238,7 +238,7 @@ export default function SpaceNexusScore({ company, compact = false }: SpaceNexus
 
       {/* Dimension Breakdown */}
       <div className="mb-6">
-        <h4 className="text-sm font-semibold text-slate-300 mb-3 uppercase tracking-wider">
+        <h4 className="text-sm font-semibold text-white/70 mb-3 uppercase tracking-wider">
           Dimension Breakdown
         </h4>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3">
@@ -250,7 +250,7 @@ export default function SpaceNexusScore({ company, compact = false }: SpaceNexus
 
       {/* Weighted Contribution Visual */}
       <div className="mb-6">
-        <h4 className="text-sm font-semibold text-slate-300 mb-2 uppercase tracking-wider">
+        <h4 className="text-sm font-semibold text-white/70 mb-2 uppercase tracking-wider">
           Score Composition
         </h4>
         <div className="flex rounded-full overflow-hidden h-2.5">
@@ -265,7 +265,7 @@ export default function SpaceNexusScore({ company, compact = false }: SpaceNexus
                 style={{ width: `${width}%` }}
                 title={`${d.label}: ${d.score}/100 (${Math.round(d.weight * 100)}% weight)`}
               >
-                <div className="absolute inset-0 bg-slate-800/60" />
+                <div className="absolute inset-0 bg-white/[0.05]" />
                 <div
                   className={`absolute inset-y-0 left-0 ${meta?.bgColor || 'bg-slate-500'} transition-all duration-1000`}
                   style={{ width: `${fillPct * 100}%` }}
@@ -289,13 +289,13 @@ export default function SpaceNexusScore({ company, compact = false }: SpaceNexus
       {/* Insights */}
       {result.insights.length > 0 && (
         <div>
-          <h4 className="text-sm font-semibold text-slate-300 mb-2 uppercase tracking-wider">
+          <h4 className="text-sm font-semibold text-white/70 mb-2 uppercase tracking-wider">
             Key Insights
           </h4>
           <ul className="space-y-1.5">
             {result.insights.map((insight, i) => (
               <li key={i} className="flex items-start gap-2 text-sm text-slate-400">
-                <span className="text-slate-300 mt-0.5 shrink-0">-</span>
+                <span className="text-white/70 mt-0.5 shrink-0">-</span>
                 <span>{insight}</span>
               </li>
             ))}

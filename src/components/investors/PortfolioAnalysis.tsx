@@ -88,7 +88,7 @@ function SectorStageHeatmap({ investors }: { investors: Investor[] }) {
   }, [investors]);
 
   function getCellColor(count: number): string {
-    if (count === 0) return 'bg-slate-800/30';
+    if (count === 0) return 'bg-white/[0.03]';
     const intensity = count / maxCount;
     if (intensity >= 0.8) return 'bg-white/70';
     if (intensity >= 0.6) return 'bg-white/50';
@@ -98,7 +98,7 @@ function SectorStageHeatmap({ investors }: { investors: Investor[] }) {
   }
 
   return (
-    <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-6">
+    <div className="bg-white/[0.04] rounded-xl border border-white/[0.06] p-6">
       <h3 className="text-lg font-semibold text-white mb-1 flex items-center gap-2">
         <span className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-sm">
           {'#'}
@@ -129,7 +129,7 @@ function SectorStageHeatmap({ investors }: { investors: Investor[] }) {
           <tbody>
             {SECTORS.map((sector) => (
               <tr key={sector}>
-                <td className="text-sm text-slate-300 font-medium pr-3 py-1">
+                <td className="text-sm text-white/70 font-medium pr-3 py-1">
                   {SECTOR_LABELS[sector]}
                 </td>
                 {STAGES.map((stage) => {
@@ -144,7 +144,7 @@ function SectorStageHeatmap({ investors }: { investors: Investor[] }) {
                         } ${
                           isHovered
                             ? 'border-white/10 ring-1 ring-white/10'
-                            : 'border-slate-700/30'
+                            : 'border-white/[0.04]'
                         }`}
                         onMouseEnter={() => setHoveredCell({ sector, stage })}
                         onMouseLeave={() => setHoveredCell(null)}
@@ -157,7 +157,7 @@ function SectorStageHeatmap({ investors }: { investors: Investor[] }) {
                           {count}
                         </span>
                         {isHovered && count > 0 && (
-                          <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-slate-900 border border-slate-600 text-white text-xs px-3 py-1.5 rounded-lg whitespace-nowrap z-20 shadow-lg pointer-events-none">
+                          <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-black border border-white/[0.1] text-white text-xs px-3 py-1.5 rounded-lg whitespace-nowrap z-20 shadow-lg pointer-events-none">
                             {count} investor{count !== 1 ? 's' : ''} in {SECTOR_LABELS[sector]} / {STAGE_LABELS[stage]}
                           </div>
                         )}
@@ -223,7 +223,7 @@ function GeographicDistribution({ investors }: { investors: Investor[] }) {
   const maxCount = Math.max(...regionData.map((r) => r.count), 1);
 
   return (
-    <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-6">
+    <div className="bg-white/[0.04] rounded-xl border border-white/[0.06] p-6">
       <h3 className="text-lg font-semibold text-white mb-1 flex items-center gap-2">
         <span className="w-8 h-8 rounded-lg bg-purple-500/20 flex items-center justify-center text-sm">
           {'G'}
@@ -240,13 +240,13 @@ function GeographicDistribution({ investors }: { investors: Investor[] }) {
           return (
             <div key={item.region}>
               <div className="flex justify-between text-sm mb-1">
-                <span className="text-slate-300">{item.region}</span>
+                <span className="text-white/70">{item.region}</span>
                 <span className="text-slate-400">
                   {item.count} investor{item.count !== 1 ? 's' : ''}
                   {item.totalAUM > 0 ? ` -- ${formatAUM(item.totalAUM)} AUM` : ''}
                 </span>
               </div>
-              <div className="w-full bg-slate-700/30 rounded-full h-2.5">
+              <div className="w-full bg-white/[0.03] rounded-full h-2.5">
                 <div
                   className="bg-gradient-to-r from-purple-500 to-slate-400 h-2.5 rounded-full transition-all duration-500"
                   style={{ width: `${Math.max(widthPct, 2)}%` }}
@@ -293,7 +293,7 @@ export default function PortfolioAnalysis({ investors }: PortfolioAnalysisProps)
             d="M19 9l-7 7-7-7"
           />
         </svg>
-        <span className="text-xs text-slate-500 bg-slate-800/50 px-2 py-0.5 rounded">
+        <span className="text-xs text-slate-500 bg-white/[0.04] px-2 py-0.5 rounded">
           {isExpanded ? 'Collapse' : 'Expand'}
         </span>
       </button>

@@ -162,7 +162,7 @@ export default function NotificationsPage() {
       : notifications.filter(n => n.type === filter);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
+    <div className="min-h-screen bg-gradient-to-b from-black via-black to-black">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <AnimatedPageHeader
           title="Notifications"
@@ -191,8 +191,8 @@ export default function NotificationsPage() {
                   onClick={() => setFilter(tab.key)}
                   className={`text-xs font-medium px-3 py-1.5 rounded-full whitespace-nowrap transition-colors ${
                     filter === tab.key
-                      ? 'bg-white/10 text-slate-200 border border-white/10'
-                      : 'text-slate-400 hover:text-slate-200 border border-slate-700/50 hover:border-slate-600'
+                      ? 'bg-white/10 text-white/90 border border-white/10'
+                      : 'text-slate-400 hover:text-white/90 border border-white/[0.06] hover:border-white/[0.1]'
                   }`}
                 >
                   {tab.label}{count > 0 ? ` (${count})` : ''}
@@ -253,7 +253,7 @@ export default function NotificationsPage() {
                 </Link>
                 <Link
                   href="/community"
-                  className="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg text-sm font-medium transition-colors"
+                  className="px-4 py-2 bg-white/[0.08] hover:bg-white/[0.1] text-white rounded-lg text-sm font-medium transition-colors"
                 >
                   Join Community
                 </Link>

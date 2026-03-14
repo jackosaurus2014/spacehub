@@ -41,7 +41,7 @@ export default function RecentlyViewed() {
         aria-haspopup="true"
         aria-label="Recently viewed pages"
         title="Recently viewed"
-        className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center text-slate-400 hover:text-white transition-colors rounded-lg hover:bg-slate-700/50"
+        className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center text-slate-400 hover:text-white transition-colors rounded-lg hover:bg-white/[0.08]"
       >
         {/* Clock/history icon */}
         <svg
@@ -64,11 +64,11 @@ export default function RecentlyViewed() {
 
       {isOpen && (
         <div
-          className="absolute top-full right-0 mt-2 w-72 rounded-xl border border-slate-700 bg-slate-800 shadow-xl shadow-black/40 overflow-hidden z-50 animate-fade-in-down"
+          className="absolute top-full right-0 mt-2 w-72 rounded-xl border border-white/[0.08] bg-white/[0.06] backdrop-blur-xl shadow-xl shadow-black/40 overflow-hidden z-50 animate-fade-in-down"
         >
           {/* Header */}
-          <div className="px-4 py-3 border-b border-slate-700">
-            <h3 className="text-sm font-medium text-slate-200">Recently Viewed</h3>
+          <div className="px-4 py-3 border-b border-white/[0.08]">
+            <h3 className="text-sm font-medium text-white/90">Recently Viewed</h3>
           </div>
 
           {/* Items */}
@@ -84,7 +84,7 @@ export default function RecentlyViewed() {
                     key={item.path}
                     href={item.path}
                     onClick={() => setIsOpen(false)}
-                    className="flex items-center justify-between px-4 py-2.5 hover:bg-slate-700/50 transition-colors group"
+                    className="flex items-center justify-between px-4 py-2.5 hover:bg-white/[0.08] transition-colors group"
                   >
                     <span className="text-sm text-slate-300 group-hover:text-white transition-colors truncate mr-3">
                       {item.title}
@@ -100,7 +100,7 @@ export default function RecentlyViewed() {
 
           {/* Footer */}
           {items.length > 0 && (
-            <div className="px-4 py-2.5 border-t border-slate-700">
+            <div className="px-4 py-2.5 border-t border-white/[0.08]">
               <button
                 onClick={() => {
                   clearRecent();

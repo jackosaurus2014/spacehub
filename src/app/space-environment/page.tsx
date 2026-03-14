@@ -95,7 +95,7 @@ function SpaceEnvironmentContent() {
         />
 
         {/* Main Tab Navigation */}
-        <div className="flex gap-1 mb-8 p-1 bg-slate-800/50 rounded-xl w-full sm:w-fit overflow-x-auto scrollbar-thin">
+        <div className="flex gap-1 mb-8 p-1 bg-white/[0.04] rounded-xl w-full sm:w-fit overflow-x-auto scrollbar-thin">
           {MAIN_TABS.map((tab) => (
             <button
               key={tab.id}
@@ -103,7 +103,7 @@ function SpaceEnvironmentContent() {
               className={`flex-1 sm:flex-none px-4 sm:px-6 py-3 rounded-lg font-medium transition-all whitespace-nowrap touch-target ${
                 activeTab === tab.id
                   ? 'bg-white text-slate-900'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/50'
+                  : 'text-slate-400 hover:text-white/90 hover:bg-white/[0.08]'
               }`}
             >
               <div className="text-sm font-semibold">{tab.label}</div>

@@ -160,7 +160,7 @@ export default function CommercialSpaceEconomyPage() {
               <span className="hidden sm:inline text-star-300/40">|</span>
               <span>By SpaceNexus Research</span>
             </div>
-            <div className="w-24 h-[3px] bg-gradient-to-r from-white to-plasma-400 rounded-full mx-auto mt-8" />
+            <div className="w-24 h-[3px] bg-gradient-to-r from-white/50 to-white/30 rounded-full mx-auto mt-8" />
           </div>
         </header>
 
@@ -307,15 +307,15 @@ export default function CommercialSpaceEconomyPage() {
                   <div className="card p-6 my-8 border-l-4 border-l-white/30">
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-center">
                       <div>
-                        <div className="text-3xl font-display font-bold text-slate-200">6,000+</div>
+                        <div className="text-3xl font-display font-bold text-white/90">6,000+</div>
                         <div className="text-star-300 text-sm mt-1">Starlink Satellites Deployed</div>
                       </div>
                       <div>
-                        <div className="text-3xl font-display font-bold text-slate-200">$6-8B</div>
+                        <div className="text-3xl font-display font-bold text-white/90">$6-8B</div>
                         <div className="text-star-300 text-sm mt-1">Starlink Annual Revenue (est.)</div>
                       </div>
                       <div>
-                        <div className="text-3xl font-display font-bold text-slate-200">4M+</div>
+                        <div className="text-3xl font-display font-bold text-white/90">4M+</div>
                         <div className="text-star-300 text-sm mt-1">Starlink Subscribers (est.)</div>
                       </div>
                     </div>
@@ -694,18 +694,18 @@ export default function CommercialSpaceEconomyPage() {
                     annual investment remains robust at $8-10 billion.
                   </p>
 
-                  <div className="card p-6 my-8 border-l-4 border-l-rocket-500">
+                  <div className="card p-6 my-8 border-l-4 border-l-white/30">
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-center">
                       <div>
-                        <div className="text-3xl font-display font-bold text-rocket-400">1,700+</div>
+                        <div className="text-3xl font-display font-bold text-white/70">1,700+</div>
                         <div className="text-star-300 text-sm mt-1">Space Startups Funded</div>
                       </div>
                       <div>
-                        <div className="text-3xl font-display font-bold text-rocket-400">$70B+</div>
+                        <div className="text-3xl font-display font-bold text-white/70">$70B+</div>
                         <div className="text-star-300 text-sm mt-1">Cumulative VC Investment</div>
                       </div>
                       <div>
-                        <div className="text-3xl font-display font-bold text-rocket-400">$8-10B</div>
+                        <div className="text-3xl font-display font-bold text-white/70">$8-10B</div>
                         <div className="text-star-300 text-sm mt-1">Annual Investment (2024-25)</div>
                       </div>
                     </div>

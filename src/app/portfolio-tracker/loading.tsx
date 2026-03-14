@@ -4,13 +4,13 @@ export default function Loading() {
       <div className="container mx-auto px-4">
         {/* Header skeleton */}
         <div className="mb-8">
-          <div className="h-4 w-48 bg-slate-800/60 rounded animate-pulse mb-4" />
-          <div className="h-8 w-80 bg-slate-800 rounded animate-pulse mb-3" />
-          <div className="h-4 w-[28rem] bg-slate-800/60 rounded animate-pulse" />
+          <div className="h-4 w-48 bg-white/[0.05] rounded animate-pulse mb-4" />
+          <div className="h-8 w-80 bg-white/[0.06] rounded animate-pulse mb-3" />
+          <div className="h-4 w-[28rem] bg-white/[0.05] rounded animate-pulse" />
         </div>
 
         {/* Market overview skeleton */}
-        <div className="bg-slate-800/40 rounded-xl p-6 mb-8 animate-pulse">
+        <div className="bg-white/[0.04] rounded-xl p-6 mb-8 animate-pulse">
           <div className="h-6 w-48 bg-slate-700/50 rounded mb-4" />
           <div className="flex items-baseline gap-3 mb-6">
             <div className="h-10 w-40 bg-slate-700/50 rounded" />
@@ -27,7 +27,7 @@ export default function Loading() {
         </div>
 
         {/* Table skeleton */}
-        <div className="bg-slate-800/40 rounded-xl p-6 mb-8 animate-pulse">
+        <div className="bg-white/[0.04] rounded-xl p-6 mb-8 animate-pulse">
           <div className="flex justify-between items-center mb-6">
             <div className="h-6 w-56 bg-slate-700/50 rounded" />
             <div className="h-10 w-64 bg-slate-700/50 rounded" />
@@ -42,7 +42,7 @@ export default function Loading() {
         {/* Sector cards skeleton */}
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
           {[1, 2, 3, 4, 5].map((i) => (
-            <div key={i} className="bg-slate-800/40 rounded-xl p-5 animate-pulse">
+            <div key={i} className="bg-white/[0.04] rounded-xl p-5 animate-pulse">
               <div className="h-5 w-32 bg-slate-700/50 rounded mb-3" />
               <div className="h-8 w-16 bg-slate-700/50 rounded mb-2" />
               <div className="space-y-2">

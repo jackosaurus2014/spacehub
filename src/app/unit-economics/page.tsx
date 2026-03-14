@@ -361,7 +361,7 @@ function Slider({
   return (
     <div className="mb-4">
       <div className="flex items-center justify-between mb-1.5">
-        <label className="text-sm text-slate-300 font-medium">{label}</label>
+        <label className="text-sm text-white/70 font-medium">{label}</label>
         <span className="text-sm font-mono text-emerald-400">{displayValue}</span>
       </div>
       <div className="relative">
@@ -407,7 +407,7 @@ function DollarInput({
   return (
     <div className="mb-3">
       <div className="flex items-center justify-between mb-1">
-        <label className="text-sm text-slate-300 font-medium">{label}</label>
+        <label className="text-sm text-white/70 font-medium">{label}</label>
         <span className="text-xs text-slate-500">{formatCurrency(value)}</span>
       </div>
       <div className="relative">
@@ -417,8 +417,8 @@ function DollarInput({
           inputMode="decimal"
           value={value}
           onChange={(e) => onChange(Math.max(0, Number(e.target.value)))}
-          className="w-full bg-slate-800/60 border border-slate-700 rounded-lg pl-7 pr-3 py-2 text-sm
-            text-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50
+          className="w-full bg-white/[0.05] border border-white/[0.08] rounded-lg pl-7 pr-3 py-2 text-sm
+            text-white/90 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50
             [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
           aria-label={label}
         />
@@ -444,7 +444,7 @@ function MetricCard({
   bgClass?: string;
 }) {
   return (
-    <div className={`rounded-xl border p-4 ${bgClass || 'bg-slate-800/40 border-slate-700/50'}`}>
+    <div className={`rounded-xl border p-4 ${bgClass || 'bg-white/[0.04] border-white/[0.06]'}`}>
       <p className="text-xs text-slate-400 uppercase tracking-wider mb-1">{label}</p>
       <p className={`text-xl font-bold font-mono ${colorClass || 'text-white'}`}>{value}</p>
       {subtitle && <p className="text-xs text-slate-500 mt-1">{subtitle}</p>}
@@ -649,7 +649,7 @@ export default function UnitEconomicsPage() {
                   <select
                     value={model}
                     onChange={(e) => handleModelChange(e.target.value as BusinessModel)}
-                    className="w-full bg-slate-800/60 border border-slate-700 rounded-lg px-4 py-3 text-slate-200
+                    className="w-full bg-white/[0.05] border border-white/[0.08] rounded-lg px-4 py-3 text-white/90
                       focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 cursor-pointer"
                     aria-label="Business model preset"
                   >
@@ -659,8 +659,8 @@ export default function UnitEconomicsPage() {
                   </select>
                 </div>
                 <div className="flex items-center">
-                  <div className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-4 w-full">
-                    <p className="text-sm text-slate-300">{preset.description}</p>
+                  <div className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-4 w-full">
+                    <p className="text-sm text-white/70">{preset.description}</p>
                     <p className="text-xs text-slate-500 mt-2">
                       All values are editable defaults. Adjust to match your business.
                     </p>
@@ -714,13 +714,13 @@ export default function UnitEconomicsPage() {
 
                 {/* Auto-calculated revenue */}
                 <div className="mt-6 space-y-3">
-                  <div className="flex items-center justify-between bg-slate-800/60 rounded-lg px-4 py-3 border border-slate-700/50">
+                  <div className="flex items-center justify-between bg-white/[0.05] rounded-lg px-4 py-3 border border-white/[0.06]">
                     <span className="text-sm text-slate-400">Monthly Recurring Revenue</span>
                     <span className="text-lg font-bold font-mono text-emerald-400">
                       {formatCurrency(calculations.monthlyRevenue)}
                     </span>
                   </div>
-                  <div className="flex items-center justify-between bg-slate-800/60 rounded-lg px-4 py-3 border border-slate-700/50">
+                  <div className="flex items-center justify-between bg-white/[0.05] rounded-lg px-4 py-3 border border-white/[0.06]">
                     <span className="text-sm text-slate-400">Annual Revenue</span>
                     <span className="text-lg font-bold font-mono text-emerald-400">
                       {formatCurrency(calculations.annualRevenue)}
@@ -730,7 +730,7 @@ export default function UnitEconomicsPage() {
 
                 {/* 5-Year Revenue Projection */}
                 <div className="mt-6">
-                  <h3 className="text-sm font-semibold text-slate-300 mb-3">5-Year Revenue Projection</h3>
+                  <h3 className="text-sm font-semibold text-white/70 mb-3">5-Year Revenue Projection</h3>
                   <div className="space-y-2">
                     {calculations.yearlyRevenue.map((rev, i) => {
                       const maxRev = calculations.yearlyRevenue[4] || 1;
@@ -738,7 +738,7 @@ export default function UnitEconomicsPage() {
                       return (
                         <div key={i} className="flex items-center gap-3">
                           <span className="text-xs text-slate-500 w-12 shrink-0">Year {i + 1}</span>
-                          <div className="flex-1 bg-slate-800/60 rounded-full h-6 relative overflow-hidden">
+                          <div className="flex-1 bg-white/[0.05] rounded-full h-6 relative overflow-hidden">
                             <div
                               className="absolute inset-y-0 left-0 bg-gradient-to-r from-emerald-600 to-emerald-400 rounded-full transition-all duration-500"
                               style={{ width: `${widthPercent}%` }}
@@ -769,7 +769,7 @@ export default function UnitEconomicsPage() {
 
                 {/* CAPEX */}
                 <div className="mb-6">
-                  <h3 className="text-sm font-semibold text-slate-300 uppercase tracking-wider mb-3 flex items-center gap-2">
+                  <h3 className="text-sm font-semibold text-white/70 uppercase tracking-wider mb-3 flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-white" />
                     CAPEX (One-Time)
                   </h3>
@@ -795,8 +795,8 @@ export default function UnitEconomicsPage() {
                     onChange={setRegulatory}
                   />
                   <div className="flex items-center justify-between bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 mt-2">
-                    <span className="text-sm text-slate-200 font-medium">Total CAPEX</span>
-                    <span className="text-lg font-bold font-mono text-slate-300">
+                    <span className="text-sm text-white/90 font-medium">Total CAPEX</span>
+                    <span className="text-lg font-bold font-mono text-white/70">
                       {formatCurrency(calculations.totalCapex)}
                     </span>
                   </div>
@@ -804,7 +804,7 @@ export default function UnitEconomicsPage() {
 
                 {/* OPEX */}
                 <div>
-                  <h3 className="text-sm font-semibold text-slate-300 uppercase tracking-wider mb-3 flex items-center gap-2">
+                  <h3 className="text-sm font-semibold text-white/70 uppercase tracking-wider mb-3 flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-amber-400" />
                     OPEX (Monthly)
                   </h3>
@@ -832,9 +832,9 @@ export default function UnitEconomicsPage() {
                       />
                     </div>
                   </div>
-                  <div className="flex items-center justify-between bg-slate-800/40 rounded-lg px-3 py-1.5 mb-3 border border-slate-700/30">
+                  <div className="flex items-center justify-between bg-white/[0.04] rounded-lg px-3 py-1.5 mb-3 border border-white/[0.04]">
                     <span className="text-xs text-slate-500">Staff cost</span>
-                    <span className="text-sm font-mono text-slate-300">{formatCurrency(calculations.staffCost)}/mo</span>
+                    <span className="text-sm font-mono text-white/70">{formatCurrency(calculations.staffCost)}/mo</span>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4">
@@ -979,7 +979,7 @@ export default function UnitEconomicsPage() {
                   label="CAC"
                   value={formatCurrency(calculations.cac)}
                   subtitle={`~${calculations.newCustomersPerMonth} new customers/mo`}
-                  colorClass="text-slate-300"
+                  colorClass="text-white/70"
                 />
                 <MetricCard
                   label="Customer LTV"
@@ -1007,37 +1007,37 @@ export default function UnitEconomicsPage() {
 
               {/* Summary table */}
               <div className="card p-5">
-                <h3 className="text-sm font-semibold text-slate-300 uppercase tracking-wider mb-3">Financial Summary</h3>
+                <h3 className="text-sm font-semibold text-white/70 uppercase tracking-wider mb-3">Financial Summary</h3>
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm" role="table">
                     <tbody>
-                      <tr className="border-b border-slate-700/50">
+                      <tr className="border-b border-white/[0.06]">
                         <td className="py-2 text-slate-400">Revenue / Unit</td>
-                        <td className="py-2 text-right font-mono text-slate-200">{formatCurrencyFull(pricePerUnit)}</td>
+                        <td className="py-2 text-right font-mono text-white/90">{formatCurrencyFull(pricePerUnit)}</td>
                       </tr>
-                      <tr className="border-b border-slate-700/50">
+                      <tr className="border-b border-white/[0.06]">
                         <td className="py-2 text-slate-400">Cost / Unit (OPEX)</td>
-                        <td className="py-2 text-right font-mono text-slate-200">{formatCurrencyFull(calculations.costPerUnit)}</td>
+                        <td className="py-2 text-right font-mono text-white/90">{formatCurrencyFull(calculations.costPerUnit)}</td>
                       </tr>
-                      <tr className="border-b border-slate-700/50">
+                      <tr className="border-b border-white/[0.06]">
                         <td className="py-2 text-slate-400">Monthly Revenue</td>
                         <td className="py-2 text-right font-mono text-emerald-400">{formatCurrencyFull(calculations.monthlyRevenue)}</td>
                       </tr>
-                      <tr className="border-b border-slate-700/50">
+                      <tr className="border-b border-white/[0.06]">
                         <td className="py-2 text-slate-400">Monthly OPEX</td>
                         <td className="py-2 text-right font-mono text-amber-400">{formatCurrencyFull(calculations.totalMonthlyOpex)}</td>
                       </tr>
-                      <tr className="border-b border-slate-700/50">
+                      <tr className="border-b border-white/[0.06]">
                         <td className="py-2 text-slate-400">Annual Revenue (Year 1)</td>
                         <td className="py-2 text-right font-mono text-emerald-400">{formatCurrencyFull(calculations.annualRevenue)}</td>
                       </tr>
-                      <tr className="border-b border-slate-700/50">
+                      <tr className="border-b border-white/[0.06]">
                         <td className="py-2 text-slate-400">Annual OPEX</td>
                         <td className="py-2 text-right font-mono text-amber-400">{formatCurrencyFull(calculations.annualOpex)}</td>
                       </tr>
                       <tr>
                         <td className="py-2 text-slate-400">Total CAPEX</td>
-                        <td className="py-2 text-right font-mono text-slate-300">{formatCurrencyFull(calculations.totalCapex)}</td>
+                        <td className="py-2 text-right font-mono text-white/70">{formatCurrencyFull(calculations.totalCapex)}</td>
                       </tr>
                     </tbody>
                   </table>
@@ -1073,8 +1073,8 @@ export default function UnitEconomicsPage() {
                     </p>
                   </div>
                   <div className="flex-1 bg-white/5 border border-white/10 rounded-lg p-4">
-                    <p className="text-xs text-slate-200 uppercase tracking-wider mb-1">Total investment needed</p>
-                    <p className="text-2xl font-bold font-mono text-slate-300">
+                    <p className="text-xs text-white/90 uppercase tracking-wider mb-1">Total investment needed</p>
+                    <p className="text-2xl font-bold font-mono text-white/70">
                       {formatCurrency(calculations.totalInvestmentBeforeBreakEven)}
                     </p>
                     <p className="text-xs text-slate-400 mt-1">Cumulative costs at break-even</p>
@@ -1106,13 +1106,13 @@ export default function UnitEconomicsPage() {
 
               {/* Month-by-month table (first 24 months, sampled) */}
               <details className="mt-6 group">
-                <summary className="text-sm text-slate-400 cursor-pointer hover:text-slate-300 transition-colors">
+                <summary className="text-sm text-slate-400 cursor-pointer hover:text-white/70 transition-colors">
                   View month-by-month details (first 24 months)
                 </summary>
                 <div className="mt-3 overflow-x-auto">
                   <table className="w-full text-xs" role="table">
                     <thead>
-                      <tr className="text-left border-b border-slate-700">
+                      <tr className="text-left border-b border-white/[0.08]">
                         <th className="py-2 text-slate-400 font-medium">Month</th>
                         <th className="py-2 text-right text-slate-400 font-medium">Cum. Revenue</th>
                         <th className="py-2 text-right text-slate-400 font-medium">Cum. Costs</th>
@@ -1125,13 +1125,13 @@ export default function UnitEconomicsPage() {
                         return (
                           <tr
                             key={m}
-                            className={`border-b border-slate-800/50 ${
+                            className={`border-b border-white/[0.04] ${
                               calculations.breakEvenMonth === m + 1
                                 ? 'bg-emerald-500/10'
                                 : ''
                             }`}
                           >
-                            <td className="py-1.5 text-slate-300">
+                            <td className="py-1.5 text-white/70">
                               {m + 1}
                               {calculations.breakEvenMonth === m + 1 && (
                                 <span className="ml-2 text-emerald-400 text-[10px] uppercase font-bold">Break-even</span>

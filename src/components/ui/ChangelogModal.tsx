@@ -47,9 +47,9 @@ export default function ChangelogModal() {
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={handleClose} />
 
       {/* Modal */}
-      <div className="relative bg-slate-900 border border-slate-700/50 rounded-2xl w-full max-w-lg max-h-[80vh] overflow-hidden shadow-2xl">
+      <div className="relative bg-black border border-white/[0.06] rounded-2xl w-full max-w-lg max-h-[80vh] overflow-hidden shadow-2xl">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-700/50">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-white/[0.06]">
           <div>
             <h2 id="changelog-title" className="text-lg font-bold text-white">What&apos;s New</h2>
             <p className="text-sm text-slate-400">Recent updates to SpaceNexus</p>
@@ -70,7 +70,7 @@ export default function ChangelogModal() {
           {newEntries.map((entry) => (
             <div key={entry.version}>
               <div className="flex items-center gap-3 mb-2">
-                <span className="text-xs font-mono font-bold text-slate-300 bg-white/10 px-2 py-0.5 rounded">
+                <span className="text-xs font-mono font-bold text-white/70 bg-white/10 px-2 py-0.5 rounded">
                   v{entry.version}
                 </span>
                 <span className="text-xs text-slate-500">
@@ -92,7 +92,7 @@ export default function ChangelogModal() {
                     >
                       {typeLabels[change.type]}
                     </span>
-                    <span className="text-sm text-slate-300">{change.text}</span>
+                    <span className="text-sm text-white/70">{change.text}</span>
                   </li>
                 ))}
               </ul>
@@ -101,7 +101,7 @@ export default function ChangelogModal() {
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-4 border-t border-slate-700/50">
+        <div className="px-6 py-4 border-t border-white/[0.06]">
           <button
             onClick={handleClose}
             className="w-full bg-white hover:bg-slate-100 text-slate-900 font-medium py-2.5 rounded-lg transition-colors"

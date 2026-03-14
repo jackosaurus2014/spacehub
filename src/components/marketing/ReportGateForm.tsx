@@ -76,13 +76,13 @@ export default function ReportGateForm() {
   }
 
   return (
-    <div className="relative bg-gradient-to-br from-slate-800/80 to-slate-900/80 border border-white/10 rounded-2xl p-8 md:p-12">
+    <div className="relative bg-gradient-to-br from-white/[0.06] to-black/80 border border-white/10 rounded-2xl p-8 md:p-12">
       {/* Decorative glow */}
       <div className="absolute -top-10 -right-10 w-40 h-40 bg-white/10 rounded-full blur-[60px] pointer-events-none" />
 
       <div className="relative">
         <div className="text-center mb-8">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-slate-800/60 border border-white/10 rounded-full text-slate-300 text-sm font-medium mb-4">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-white/[0.05] border border-white/10 rounded-full text-white/70 text-sm font-medium mb-4">
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
             </svg>
@@ -99,7 +99,7 @@ export default function ReportGateForm() {
 
         <form onSubmit={handleSubmit} className="max-w-md mx-auto space-y-4">
           <div>
-            <label htmlFor="report-name" className="block text-sm font-medium text-slate-300 mb-1.5">
+            <label htmlFor="report-name" className="block text-sm font-medium text-white/70 mb-1.5">
               Full Name
             </label>
             <input
@@ -110,13 +110,13 @@ export default function ReportGateForm() {
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Jane Smith"
-              className="w-full px-4 py-3 bg-slate-900/80 border border-slate-600 rounded-xl text-white placeholder:text-slate-500 focus:outline-none focus:border-white/15 focus:ring-1 focus:ring-white/10 transition-all"
+              className="w-full px-4 py-3 bg-black/80 border border-white/[0.1] rounded-xl text-white placeholder:text-slate-500 focus:outline-none focus:border-white/15 focus:ring-1 focus:ring-white/10 transition-all"
               disabled={status === 'loading'}
               required
             />
           </div>
           <div>
-            <label htmlFor="report-email" className="block text-sm font-medium text-slate-300 mb-1.5">
+            <label htmlFor="report-email" className="block text-sm font-medium text-white/70 mb-1.5">
               Work Email
             </label>
             <input
@@ -128,7 +128,7 @@ export default function ReportGateForm() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="jane@company.com"
-              className="w-full px-4 py-3 bg-slate-900/80 border border-slate-600 rounded-xl text-white placeholder:text-slate-500 focus:outline-none focus:border-white/15 focus:ring-1 focus:ring-white/10 transition-all"
+              className="w-full px-4 py-3 bg-black/80 border border-white/[0.1] rounded-xl text-white placeholder:text-slate-500 focus:outline-none focus:border-white/15 focus:ring-1 focus:ring-white/10 transition-all"
               disabled={status === 'loading'}
               required
             />
@@ -182,11 +182,11 @@ export default function ReportGateForm() {
 
           {/* Data source logos / badges */}
           <div className="flex flex-wrap justify-center items-center gap-2 sm:gap-4 mt-2">
-            <span className="px-3 py-1 bg-slate-800/60 border border-slate-700/50 rounded-md text-[10px] uppercase tracking-wider text-slate-500 font-medium">NASA Data</span>
-            <span className="px-3 py-1 bg-slate-800/60 border border-slate-700/50 rounded-md text-[10px] uppercase tracking-wider text-slate-500 font-medium">NOAA</span>
-            <span className="px-3 py-1 bg-slate-800/60 border border-slate-700/50 rounded-md text-[10px] uppercase tracking-wider text-slate-500 font-medium">SEC Filings</span>
-            <span className="px-3 py-1 bg-slate-800/60 border border-slate-700/50 rounded-md text-[10px] uppercase tracking-wider text-slate-500 font-medium">CelesTrak</span>
-            <span className="px-3 py-1 bg-slate-800/60 border border-slate-700/50 rounded-md text-[10px] uppercase tracking-wider text-slate-500 font-medium">SAM.gov</span>
+            <span className="px-3 py-1 bg-white/[0.05] border border-white/[0.06] rounded-md text-[10px] uppercase tracking-wider text-slate-500 font-medium">NASA Data</span>
+            <span className="px-3 py-1 bg-white/[0.05] border border-white/[0.06] rounded-md text-[10px] uppercase tracking-wider text-slate-500 font-medium">NOAA</span>
+            <span className="px-3 py-1 bg-white/[0.05] border border-white/[0.06] rounded-md text-[10px] uppercase tracking-wider text-slate-500 font-medium">SEC Filings</span>
+            <span className="px-3 py-1 bg-white/[0.05] border border-white/[0.06] rounded-md text-[10px] uppercase tracking-wider text-slate-500 font-medium">CelesTrak</span>
+            <span className="px-3 py-1 bg-white/[0.05] border border-white/[0.06] rounded-md text-[10px] uppercase tracking-wider text-slate-500 font-medium">SAM.gov</span>
           </div>
         </div>
       </div>

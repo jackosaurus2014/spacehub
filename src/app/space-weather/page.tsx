@@ -182,7 +182,7 @@ function eventTypeLabel(type: RecentSolarEvent['type']): { label: string; color:
     case 'flare':     return { label: 'Solar Flare',     color: 'bg-orange-500/20 text-orange-300 border-orange-500/40', icon: '\u2600\uFE0F' };
     case 'cme':       return { label: 'CME',             color: 'bg-purple-500/20 text-purple-300 border-purple-500/40', icon: '\uD83C\uDF0A' };
     case 'radiation': return { label: 'Radiation Storm',  color: 'bg-red-500/20 text-red-300 border-red-500/40',         icon: '\u2622\uFE0F' };
-    case 'filament':  return { label: 'Filament Eruption', color: 'bg-white/10 text-slate-200 border-white/15',    icon: '\uD83C\uDF0B' };
+    case 'filament':  return { label: 'Filament Eruption', color: 'bg-white/10 text-white/90 border-white/15',    icon: '\uD83C\uDF0B' };
     case 'proton':    return { label: 'Proton Event',     color: 'bg-pink-500/20 text-pink-300 border-pink-500/40',      icon: '\u26A1' };
   }
 }
@@ -402,7 +402,7 @@ export default function SpaceWeatherDashboard() {
   const lastUpdated = 'Feb 26, 2026 09:47 UTC';
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-slate-100">
+    <div className="min-h-screen bg-gradient-to-b from-black via-black to-black text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
         {/* Header */}
@@ -434,7 +434,7 @@ export default function SpaceWeatherDashboard() {
 
         {/* NOAA data source note */}
         <ScrollReveal delay={0.02}>
-          <div className="mb-6 bg-slate-800/30 border border-slate-700/30 rounded-lg px-4 py-2.5 text-xs text-slate-400">
+          <div className="mb-6 bg-white/[0.04] border border-white/[0.06] rounded-lg px-4 py-2.5 text-xs text-slate-400">
             <span className="font-medium text-slate-300">Data Sources:</span>{' '}
             NOAA Space Weather Prediction Center (SWPC) &bull; NASA DONKI (Space Weather Database) &bull; GOES-16/18 X-ray &amp; Particle Sensors &bull; ACE/DSCOVR Solar Wind (L1 point) &bull; SDO AIA/HMI Solar Imaging
           </div>
@@ -442,7 +442,7 @@ export default function SpaceWeatherDashboard() {
 
         {/* Tab navigation */}
         <ScrollReveal delay={0.05}>
-          <div className="flex gap-1 mb-8 border-b border-slate-700/50 overflow-x-auto">
+          <div className="flex gap-1 mb-8 border-b border-white/[0.06] overflow-x-auto">
             {([
               { key: 'current',  label: 'Current Conditions' },
               { key: 'events',   label: 'Recent Events' },
@@ -456,7 +456,7 @@ export default function SpaceWeatherDashboard() {
                 className={`px-4 py-2.5 text-sm font-medium whitespace-nowrap transition-colors border-b-2 -mb-px ${
                   activeTab === tab.key
                     ? 'border-amber-400 text-amber-300'
-                    : 'border-transparent text-slate-400 hover:text-slate-200 hover:border-slate-600'
+                    : 'border-transparent text-slate-400 hover:text-white/90 hover:border-white/[0.1]'
                 }`}
               >
                 {tab.label}
@@ -476,7 +476,7 @@ export default function SpaceWeatherDashboard() {
                 <div className="flex items-center gap-3">
                   {severityDot('Minor')}
                   <div>
-                    <h2 className="text-lg font-semibold text-slate-100">Overall Space Weather: Minor Activity</h2>
+                    <h2 className="text-lg font-semibold text-white">Overall Space Weather: Minor Activity</h2>
                     <p className="text-sm text-slate-300 mt-1">
                       Coronal hole high-speed stream arriving at Earth. Kp 3-4 expected with isolated Kp 4 intervals. AR 3945 has produced multiple C-class flares with beta-gamma magnetic configuration. Low probability of M-class activity.
                     </p>
@@ -487,7 +487,7 @@ export default function SpaceWeatherDashboard() {
 
             {/* ───────────────────── Solar Activity Dashboard ───────────────────── */}
             <ScrollReveal delay={0.03}>
-              <div className="bg-slate-800/60 border border-slate-700/50 rounded-xl p-5">
+              <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-5">
                 <div className="flex items-center justify-between mb-5">
                   <h3 className="text-sm font-semibold text-slate-300 uppercase tracking-wider">Solar Cycle {solarCycle.cycleNumber} Dashboard</h3>
                   <span className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-500/20 text-amber-300 border border-amber-500/30">
@@ -503,7 +503,7 @@ export default function SpaceWeatherDashboard() {
                 </div>
 
                 {/* Sunspot trend sparkline (text-based bar chart) */}
-                <div className="bg-slate-900/40 rounded-lg p-4">
+                <div className="bg-black/40 rounded-lg p-4">
                   <p className="text-xs text-slate-400 font-medium mb-3">12-Month Sunspot Number Trend (Smoothed)</p>
                   <div className="flex items-end gap-1.5 h-20">
                     {solarCycle.sunspotTrend.map((ssn, i) => {
@@ -529,14 +529,14 @@ export default function SpaceWeatherDashboard() {
 
                 {/* Hemisphere activity */}
                 <div className="grid grid-cols-2 gap-4 mt-4">
-                  <div className="bg-slate-900/30 rounded-lg p-3">
+                  <div className="bg-black/30 rounded-lg p-3">
                     <p className="text-xs text-slate-400 mb-1">Northern Hemisphere</p>
                     <div className="flex items-center gap-2">
                       <span className="text-lg font-bold text-slate-300">{solarCycle.hemisphereActivity.north}</span>
                       <span className="text-xs text-slate-500">sunspot groups</span>
                     </div>
                   </div>
-                  <div className="bg-slate-900/30 rounded-lg p-3">
+                  <div className="bg-black/30 rounded-lg p-3">
                     <p className="text-xs text-slate-400 mb-1">Southern Hemisphere</p>
                     <div className="flex items-center gap-2">
                       <span className="text-lg font-bold text-purple-400">{solarCycle.hemisphereActivity.south}</span>
@@ -556,14 +556,14 @@ export default function SpaceWeatherDashboard() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               {/* Geomagnetic Activity (enhanced) */}
               <ScrollReveal delay={0.05}>
-                <div className="bg-slate-800/60 border border-slate-700/50 rounded-xl p-5 h-full">
+                <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-5 h-full">
                   <h3 className="text-sm font-semibold text-slate-300 uppercase tracking-wider mb-4">Geomagnetic Activity</h3>
 
                   {/* Current Kp */}
                   <div className="flex items-center gap-4 mb-4">
                     <div className={`text-5xl font-bold ${kpTextColor(geomagnetic.kpIndex)}`}>{geomagnetic.kpIndex}</div>
                     <div>
-                      <p className="text-slate-200 font-medium">{geomagnetic.kpLabel}</p>
+                      <p className="text-white/90 font-medium">{geomagnetic.kpLabel}</p>
                       <p className="text-xs text-slate-400 mt-0.5">{geomagnetic.stormLevel}</p>
                     </div>
                   </div>
@@ -576,7 +576,7 @@ export default function SpaceWeatherDashboard() {
                       return (
                         <div
                           key={i}
-                          className={`flex-1 h-3 rounded-sm ${filled ? segColor : 'bg-slate-700'}`}
+                          className={`flex-1 h-3 rounded-sm ${filled ? segColor : 'bg-white/[0.08]'}`}
                           title={`Kp ${i + 1}`}
                         />
                       );
@@ -608,14 +608,14 @@ export default function SpaceWeatherDashboard() {
 
                   {/* Dst and Ap */}
                   <div className="grid grid-cols-2 gap-3">
-                    <div className="bg-slate-900/40 rounded-lg p-3">
+                    <div className="bg-black/40 rounded-lg p-3">
                       <p className="text-[10px] text-slate-500 uppercase tracking-wider">Dst Index</p>
                       <p className={`text-xl font-bold ${geomagnetic.dstIndex < -50 ? 'text-red-400' : geomagnetic.dstIndex < -30 ? 'text-amber-400' : 'text-green-400'}`}>
                         {geomagnetic.dstIndex} nT
                       </p>
                       <p className="text-[9px] text-slate-500 mt-0.5">Storm: &lt; -50 nT</p>
                     </div>
-                    <div className="bg-slate-900/40 rounded-lg p-3">
+                    <div className="bg-black/40 rounded-lg p-3">
                       <p className="text-[10px] text-slate-500 uppercase tracking-wider">Planetary A-index</p>
                       <p className={`text-xl font-bold ${geomagnetic.planetaryAIndex > 30 ? 'text-red-400' : geomagnetic.planetaryAIndex > 15 ? 'text-amber-400' : 'text-green-400'}`}>
                         {geomagnetic.planetaryAIndex}
@@ -628,7 +628,7 @@ export default function SpaceWeatherDashboard() {
 
               {/* Solar Wind Data (enhanced) */}
               <ScrollReveal delay={0.1}>
-                <div className="bg-slate-800/60 border border-slate-700/50 rounded-xl p-5 h-full">
+                <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-5 h-full">
                   <h3 className="text-sm font-semibold text-slate-300 uppercase tracking-wider mb-4">Solar Wind (DSCOVR L1)</h3>
 
                   {/* Speed gauge */}
@@ -639,7 +639,7 @@ export default function SpaceWeatherDashboard() {
                         {solarWind.speed} <span className="text-sm text-slate-400 font-normal">km/s</span>
                       </span>
                     </div>
-                    <div className="h-2 bg-slate-700 rounded-full overflow-hidden">
+                    <div className="h-2 bg-white/[0.08] rounded-full overflow-hidden">
                       <div
                         className={`h-full rounded-full transition-all ${solarWind.speed > 600 ? 'bg-red-500' : solarWind.speed > 500 ? 'bg-amber-500' : 'bg-green-500'}`}
                         style={{ width: `${Math.min((solarWind.speed / 900) * 100, 100)}%` }}
@@ -659,7 +659,7 @@ export default function SpaceWeatherDashboard() {
                     <Metric label="IMF Clock Angle" value={`${solarWind.phi}\u00B0`} note="180-360 = southward" warn={solarWind.phi > 180 && solarWind.phi < 360} />
                   </div>
 
-                  <div className="mt-4 bg-slate-900/40 rounded-lg p-3">
+                  <div className="mt-4 bg-black/40 rounded-lg p-3">
                     <p className="text-[10px] text-slate-400">
                       <span className="font-medium text-slate-300">IMF Bz interpretation:</span>{' '}
                       {solarWind.bz < -10
@@ -676,7 +676,7 @@ export default function SpaceWeatherDashboard() {
 
               {/* Solar Flares */}
               <ScrollReveal delay={0.15}>
-                <div className="bg-slate-800/60 border border-slate-700/50 rounded-xl p-5 h-full">
+                <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-5 h-full">
                   <h3 className="text-sm font-semibold text-slate-300 uppercase tracking-wider mb-4">Solar Flare Activity</h3>
                   <div className="space-y-3 mb-4">
                     <Metric label="X-ray Flux" value={solarFlare.xrayFlux} note="Current background" warn={false} />
@@ -690,7 +690,7 @@ export default function SpaceWeatherDashboard() {
                   </div>
 
                   {/* Flare classification reference */}
-                  <div className="bg-slate-900/40 rounded-lg p-3 mb-4">
+                  <div className="bg-black/40 rounded-lg p-3 mb-4">
                     <p className="text-[10px] text-slate-400 font-medium mb-2">Flare Classification Scale (GOES X-ray)</p>
                     <div className="grid grid-cols-5 gap-1 text-center">
                       {[
@@ -718,9 +718,9 @@ export default function SpaceWeatherDashboard() {
                         { region: 'AR 3944', config: '\u03B2', area: 120, flares: '1C', location: 'S08W35' },
                         { region: 'AR 3943', config: '\u03B2\u03B3\u03B4', area: 520, flares: '2C, 2M', location: 'N20W62' },
                       ].map((ar) => (
-                        <div key={ar.region} className="flex items-center justify-between text-xs bg-slate-900/30 rounded px-2.5 py-1.5">
+                        <div key={ar.region} className="flex items-center justify-between text-xs bg-black/30 rounded px-2.5 py-1.5">
                           <div>
-                            <span className="text-slate-200 font-medium">{ar.region}</span>
+                            <span className="text-white/90 font-medium">{ar.region}</span>
                             <span className="text-slate-500 ml-2">{ar.location}</span>
                           </div>
                           <div className="flex items-center gap-2">
@@ -743,7 +743,7 @@ export default function SpaceWeatherDashboard() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Aurora Forecast (enhanced) */}
               <ScrollReveal delay={0.05}>
-                <div className="bg-slate-800/60 border border-slate-700/50 rounded-xl p-5">
+                <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-5">
                   <h3 className="text-sm font-semibold text-slate-300 uppercase tracking-wider mb-4">Aurora Forecast</h3>
 
                   {/* Auroral oval boundaries */}
@@ -770,13 +770,13 @@ export default function SpaceWeatherDashboard() {
                   <p className="text-xs text-slate-400 font-medium mb-2">Currently Visible From</p>
                   <div className="flex flex-wrap gap-1.5">
                     {auroralOval.visibility.map((loc) => (
-                      <span key={loc} className="px-2 py-0.5 bg-slate-800/40 border border-white/10 rounded text-xs text-slate-200">
+                      <span key={loc} className="px-2 py-0.5 bg-white/[0.04] border border-white/10 rounded text-xs text-white/90">
                         {loc}
                       </span>
                     ))}
                   </div>
 
-                  <div className="mt-4 bg-slate-900/40 rounded-lg p-3">
+                  <div className="mt-4 bg-black/40 rounded-lg p-3">
                     <p className="text-[10px] text-slate-400">
                       <span className="font-medium text-slate-300">Viewing tip:</span>{' '}
                       Best aurora viewing requires dark skies (no moonlight), clear weather, and locations away from city lights. The oval typically expands equatorward during geomagnetic storms (Kp 5+).
@@ -787,7 +787,7 @@ export default function SpaceWeatherDashboard() {
 
               {/* Radiation Belt Status (enhanced) */}
               <ScrollReveal delay={0.1}>
-                <div className="bg-slate-800/60 border border-slate-700/50 rounded-xl p-5">
+                <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-5">
                   <h3 className="text-sm font-semibold text-slate-300 uppercase tracking-wider mb-4">Radiation Environment</h3>
                   <div className="grid grid-cols-2 gap-4 mb-4">
                     <StatusItem label="Inner Belt (Van Allen)" level={radiationBelt.innerBelt} />
@@ -799,12 +799,12 @@ export default function SpaceWeatherDashboard() {
                   {/* Particle flux data */}
                   <p className="text-xs text-slate-400 font-medium mb-2">Particle Flux (GOES-18)</p>
                   <div className="grid grid-cols-2 gap-3 mb-4">
-                    <div className="bg-slate-900/40 rounded-lg p-3">
+                    <div className="bg-black/40 rounded-lg p-3">
                       <p className="text-[10px] text-slate-500 uppercase tracking-wider">Electron Flux (&gt;2 MeV)</p>
                       <p className="text-sm font-bold text-amber-400">{radiationBelt.electronFlux}</p>
                       <p className="text-[9px] text-slate-500 mt-0.5">Alert: &gt;1e+04 pfu</p>
                     </div>
-                    <div className="bg-slate-900/40 rounded-lg p-3">
+                    <div className="bg-black/40 rounded-lg p-3">
                       <p className="text-[10px] text-slate-500 uppercase tracking-wider">Proton Flux (&gt;10 MeV)</p>
                       <p className="text-sm font-bold text-green-400">{radiationBelt.protonFlux}</p>
                       <p className="text-[9px] text-slate-500 mt-0.5">S1 Threshold: 10 pfu</p>
@@ -820,10 +820,10 @@ export default function SpaceWeatherDashboard() {
                       { label: 'Interplanetary', rate: '1.2 mSv/day', status: 'Nominal', color: 'text-green-400' },
                       { label: 'Polar Flight (FL380)', rate: '6.2 \u00B5Sv/hr', status: 'Nominal', color: 'text-green-400' },
                     ].map((d) => (
-                      <div key={d.label} className="flex items-center justify-between text-xs bg-slate-900/30 rounded px-2.5 py-1.5">
+                      <div key={d.label} className="flex items-center justify-between text-xs bg-black/30 rounded px-2.5 py-1.5">
                         <span className="text-slate-400">{d.label}</span>
                         <div className="flex items-center gap-2">
-                          <span className="text-slate-200 font-medium">{d.rate}</span>
+                          <span className="text-white/90 font-medium">{d.rate}</span>
                           <span className={`${d.color} text-[10px]`}>{d.status}</span>
                         </div>
                       </div>
@@ -885,16 +885,16 @@ export default function SpaceWeatherDashboard() {
                               </span>
                             )}
                             {event.region && (
-                              <span className="text-xs text-slate-400 bg-slate-800/50 px-2 py-0.5 rounded">{event.region}</span>
+                              <span className="text-xs text-slate-400 bg-white/[0.04] px-2 py-0.5 rounded">{event.region}</span>
                             )}
                             {event.speed && (
-                              <span className="text-xs text-slate-400 bg-slate-800/50 px-2 py-0.5 rounded">{event.speed} km/s</span>
+                              <span className="text-xs text-slate-400 bg-white/[0.04] px-2 py-0.5 rounded">{event.speed} km/s</span>
                             )}
                             {event.earthDirected !== undefined && (
                               <span className={`text-xs px-2 py-0.5 rounded font-medium ${
                                 event.earthDirected
                                   ? 'bg-red-500/20 text-red-300 border border-red-500/40'
-                                  : 'bg-slate-700/50 text-slate-400'
+                                  : 'bg-white/[0.06] text-slate-400'
                               }`}>
                                 {event.earthDirected ? 'Earth-Directed' : 'Not Earth-Directed'}
                               </span>
@@ -917,8 +917,8 @@ export default function SpaceWeatherDashboard() {
 
             {/* Data source note */}
             <ScrollReveal delay={0.3}>
-              <div className="bg-slate-800/40 border border-slate-700/40 rounded-xl p-5 mt-4">
-                <h3 className="text-sm font-semibold text-slate-200 mb-2">About Solar Events</h3>
+              <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-5 mt-4">
+                <h3 className="text-sm font-semibold text-white/90 mb-2">About Solar Events</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs text-slate-400">
                   <div>
                     <p className="font-medium text-slate-300 mb-1">Solar Flares</p>
@@ -958,7 +958,7 @@ export default function SpaceWeatherDashboard() {
                 <ScrollReveal key={day.date} delay={i * 0.04}>
                   <div className={`rounded-xl border p-4 h-full flex flex-col ${severityColors[day.condition].bg} ${severityColors[day.condition].border}`}>
                     <div className="flex items-center justify-between mb-2">
-                      <span className="font-semibold text-slate-100">{day.day}</span>
+                      <span className="font-semibold text-white">{day.day}</span>
                       <span className="text-xs text-slate-400">{day.date}</span>
                     </div>
                     <div className="flex items-center gap-2 mb-3">
@@ -970,7 +970,7 @@ export default function SpaceWeatherDashboard() {
                       <p>Flare: <span className="text-slate-300">{day.solarFlareProb}%</span></p>
                       <p>Storm: <span className="text-slate-300">{day.geoStormProb}%</span></p>
                     </div>
-                    <p className="mt-3 text-xs text-slate-400 leading-snug border-t border-slate-700/50 pt-2">
+                    <p className="mt-3 text-xs text-slate-400 leading-snug border-t border-white/[0.06] pt-2">
                       {day.summary}
                     </p>
                   </div>
@@ -980,8 +980,8 @@ export default function SpaceWeatherDashboard() {
 
             {/* Forecast notes */}
             <ScrollReveal delay={0.15}>
-              <div className="bg-slate-800/40 border border-slate-700/40 rounded-xl p-5 mt-6">
-                <h3 className="text-sm font-semibold text-slate-200 mb-2">Forecast Notes</h3>
+              <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-5 mt-6">
+                <h3 className="text-sm font-semibold text-white/90 mb-2">Forecast Notes</h3>
                 <ul className="text-sm text-slate-400 space-y-1 list-disc list-inside">
                   <li>A coronal hole high-speed stream (CH HSS) peaked overnight and is currently geo-effective, producing Kp 3-4 conditions.</li>
                   <li>An Earth-directed CME from Feb 23 (associated with M1.7 flare) may deliver a glancing blow this evening, potentially boosting Kp to 4-5.</li>
@@ -1014,11 +1014,11 @@ export default function SpaceWeatherDashboard() {
                       <span className="text-3xl">{impact.icon}</span>
                       <div className="flex-1">
                         <div className="flex items-center gap-3 mb-2">
-                          <h3 className="text-lg font-semibold text-slate-100">{impact.domain}</h3>
+                          <h3 className="text-lg font-semibold text-white">{impact.domain}</h3>
                           <SeverityBadge level={impact.level} />
                         </div>
                         <p className="text-sm text-slate-300 mb-3">{impact.description}</p>
-                        <div className="bg-slate-900/40 border border-slate-700/30 rounded-lg p-3">
+                        <div className="bg-black/40 border border-white/[0.06] rounded-lg p-3">
                           <p className="text-xs text-slate-400">
                             <span className="font-semibold text-slate-300">Recommendation:</span> {impact.recommendation}
                           </p>
@@ -1032,14 +1032,14 @@ export default function SpaceWeatherDashboard() {
 
             {/* ───────────────────── Kp Impact Reference Table ───────────────────── */}
             <ScrollReveal delay={0.15}>
-              <div className="bg-slate-800/40 border border-slate-700/40 rounded-xl p-5 mt-6">
-                <h3 className="text-base font-semibold text-slate-200 mb-1">Space Weather Impact by Kp Level</h3>
+              <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-5 mt-6">
+                <h3 className="text-base font-semibold text-white/90 mb-1">Space Weather Impact by Kp Level</h3>
                 <p className="text-xs text-slate-400 mb-4">How different geomagnetic activity levels affect operations, infrastructure, and navigation systems.</p>
 
                 <div className="overflow-x-auto -mx-2">
                   <table className="w-full text-xs text-left min-w-[900px]">
                     <thead>
-                      <tr className="border-b border-slate-700/60">
+                      <tr className="border-b border-white/[0.06]">
                         <th className="px-3 py-2 text-slate-300 font-semibold">Kp</th>
                         <th className="px-3 py-2 text-slate-300 font-semibold">NOAA Scale</th>
                         <th className="px-3 py-2 text-slate-300 font-semibold">Radio Comms</th>
@@ -1055,7 +1055,7 @@ export default function SpaceWeatherDashboard() {
                         const kpNum = parseInt(row.kpRange);
                         const rowBg = kpNum >= 8 ? 'bg-red-900/15' : kpNum >= 6 ? 'bg-orange-900/15' : kpNum >= 4 ? 'bg-amber-900/10' : '';
                         return (
-                          <tr key={row.kpRange} className={`border-b border-slate-700/30 ${rowBg}`}>
+                          <tr key={row.kpRange} className={`border-b border-white/[0.06] ${rowBg}`}>
                             <td className="px-3 py-2.5">
                               <span className={`font-bold ${kpTextColor(kpNum)}`}>{row.kpRange}</span>
                             </td>
@@ -1086,10 +1086,10 @@ export default function SpaceWeatherDashboard() {
 
             {/* NOAA Scale Reference */}
             <ScrollReveal delay={0.2}>
-              <div className="bg-slate-800/40 border border-slate-700/40 rounded-xl p-5">
-                <h3 className="text-sm font-semibold text-slate-200 mb-3">NOAA Space Weather Scales Reference</h3>
+              <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-5">
+                <h3 className="text-sm font-semibold text-white/90 mb-3">NOAA Space Weather Scales Reference</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs text-slate-400">
-                  <div className="bg-slate-900/30 rounded-lg p-3">
+                  <div className="bg-black/30 rounded-lg p-3">
                     <p className="font-medium text-slate-300 mb-1">Geomagnetic Storms (G)</p>
                     <p className="mb-2">G1 Minor (Kp 5) to G5 Extreme (Kp 9)</p>
                     <div className="space-y-0.5 text-[10px]">
@@ -1100,7 +1100,7 @@ export default function SpaceWeatherDashboard() {
                       <p><span className="text-red-300">G5:</span> Possible grid collapse, satellite damage</p>
                     </div>
                   </div>
-                  <div className="bg-slate-900/30 rounded-lg p-3">
+                  <div className="bg-black/30 rounded-lg p-3">
                     <p className="font-medium text-slate-300 mb-1">Solar Radiation Storms (S)</p>
                     <p className="mb-2">S1 Minor to S5 Extreme (proton flux)</p>
                     <div className="space-y-0.5 text-[10px]">
@@ -1111,7 +1111,7 @@ export default function SpaceWeatherDashboard() {
                       <p><span className="text-red-300">S5:</span> Unavoidable high radiation on polar routes</p>
                     </div>
                   </div>
-                  <div className="bg-slate-900/30 rounded-lg p-3">
+                  <div className="bg-black/30 rounded-lg p-3">
                     <p className="font-medium text-slate-300 mb-1">Radio Blackouts (R)</p>
                     <p className="mb-2">R1 Minor (M1 flare) to R5 Extreme (X20+ flare)</p>
                     <div className="space-y-0.5 text-[10px]">
@@ -1145,7 +1145,7 @@ export default function SpaceWeatherDashboard() {
                   <div className={`rounded-xl border p-5 ${severityColors[event.severity].bg} ${severityColors[event.severity].border}`}>
                     <div className="flex flex-col sm:flex-row sm:items-start gap-4">
                       <div className="text-center sm:text-left shrink-0 w-20">
-                        <p className="text-3xl font-bold text-slate-100">{event.year}</p>
+                        <p className="text-3xl font-bold text-white">{event.year}</p>
                         <div className="mt-1.5 space-y-0.5">
                           <p className="text-[10px] text-slate-400">Kp {event.kpMax}</p>
                           <p className="text-[10px] text-slate-400">Dst {event.dstMin} nT</p>
@@ -1156,13 +1156,13 @@ export default function SpaceWeatherDashboard() {
                       </div>
                       <div className="flex-1">
                         <div className="flex items-center gap-3 mb-2">
-                          <h3 className="text-lg font-semibold text-slate-100">{event.name}</h3>
+                          <h3 className="text-lg font-semibold text-white">{event.name}</h3>
                           <SeverityBadge level={event.severity} />
                         </div>
                         <p className="text-sm text-slate-300 mb-3">{event.description}</p>
 
                         {/* Impact bullets */}
-                        <div className="bg-slate-900/30 border border-slate-700/30 rounded-lg p-3">
+                        <div className="bg-black/30 border border-white/[0.06] rounded-lg p-3">
                           <p className="text-[10px] text-slate-400 font-medium uppercase tracking-wider mb-1.5">Key Impacts</p>
                           <ul className="text-xs text-slate-400 space-y-1">
                             {event.impacts.map((impact, j) => (
@@ -1182,8 +1182,8 @@ export default function SpaceWeatherDashboard() {
 
             {/* Statistics note */}
             <ScrollReveal delay={0.25}>
-              <div className="bg-slate-800/40 border border-slate-700/40 rounded-xl p-5 mt-6">
-                <h3 className="text-sm font-semibold text-slate-200 mb-3">Recurrence Statistics &amp; Risk Assessment</h3>
+              <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-5 mt-6">
+                <h3 className="text-sm font-semibold text-white/90 mb-3">Recurrence Statistics &amp; Risk Assessment</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   <div>
                     <p className="text-xs text-slate-300 font-medium mb-2">Event Probability Estimates</p>
@@ -1209,8 +1209,8 @@ export default function SpaceWeatherDashboard() {
 
             {/* Timeline visualization */}
             <ScrollReveal delay={0.3}>
-              <div className="bg-slate-800/40 border border-slate-700/40 rounded-xl p-5">
-                <h3 className="text-sm font-semibold text-slate-200 mb-4">Solar Cycle Context</h3>
+              <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-5">
+                <h3 className="text-sm font-semibold text-white/90 mb-4">Solar Cycle Context</h3>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                   <div className="text-center">
                     <p className="text-2xl font-bold text-slate-300">25</p>
@@ -1238,14 +1238,14 @@ export default function SpaceWeatherDashboard() {
         {/*  Related Links                                                */}
         {/* ============================================================ */}
         <ScrollReveal delay={0.1}>
-          <div className="mt-12 pt-8 border-t border-slate-700/50">
+          <div className="mt-12 pt-8 border-t border-white/[0.06]">
             <h3 className="text-sm font-semibold text-slate-300 uppercase tracking-wider mb-4">Related Pages</h3>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
               {relatedLinks.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="flex items-center gap-2 px-4 py-3 bg-slate-800/50 border border-slate-700/40 rounded-lg hover:bg-slate-700/50 hover:border-amber-500/30 transition-colors"
+                  className="flex items-center gap-2 px-4 py-3 bg-white/[0.04] border border-white/[0.06] rounded-lg hover:bg-white/[0.06] hover:border-amber-500/30 transition-colors"
                 >
                   <span className="text-lg">{link.icon}</span>
                   <span className="text-sm text-slate-300">{link.label}</span>
@@ -1272,7 +1272,7 @@ function Metric({ label, value, note, warn, highlight }: { label: string; value:
           warn ? 'text-amber-400' :
           highlight === 'negative' ? 'text-red-400' :
           highlight === 'positive' ? 'text-green-400' :
-          'text-slate-100'
+          'text-white'
         }`}>
           {value}
           {highlight === 'negative' && <span className="text-xs ml-1 text-red-400/70">&#9660;</span>}
@@ -1291,7 +1291,7 @@ function ProbBar({ label, percent, color }: { label: string; percent: number; co
         <span className="text-slate-400">{label}</span>
         <span className="text-slate-300 font-medium">{percent}%</span>
       </div>
-      <div className="h-1.5 bg-slate-700 rounded-full overflow-hidden">
+      <div className="h-1.5 bg-white/[0.08] rounded-full overflow-hidden">
         <div className={`h-full ${color} rounded-full transition-all`} style={{ width: `${percent}%` }} />
       </div>
     </div>
@@ -1300,7 +1300,7 @@ function ProbBar({ label, percent, color }: { label: string; percent: number; co
 
 function StatusItem({ label, level }: { label: string; level: Severity }) {
   return (
-    <div className="bg-slate-900/30 rounded-lg p-3">
+    <div className="bg-black/30 rounded-lg p-3">
       <p className="text-xs text-slate-400 mb-1">{label}</p>
       <div className="flex items-center gap-2">
         {severityDot(level)}
@@ -1312,7 +1312,7 @@ function StatusItem({ label, level }: { label: string; level: Severity }) {
 
 function BigStat({ label, sublabel, value, color }: { label: string; sublabel: string; value: string; color: string }) {
   return (
-    <div className="bg-slate-900/40 rounded-lg p-3 text-center">
+    <div className="bg-black/40 rounded-lg p-3 text-center">
       <p className={`text-2xl sm:text-3xl font-bold ${color}`}>{value}</p>
       <p className="text-xs text-slate-300 font-medium mt-1">{label}</p>
       <p className="text-[10px] text-slate-500">{sublabel}</p>
@@ -1330,7 +1330,7 @@ function AuroraProbRow({ label, sublabel, percent, color }: { label: string; sub
         </div>
         <span className={`font-bold ${percent >= 50 ? 'text-green-400' : percent >= 20 ? 'text-yellow-400' : 'text-slate-400'}`}>{percent}%</span>
       </div>
-      <div className="h-2.5 bg-slate-700 rounded-full overflow-hidden">
+      <div className="h-2.5 bg-white/[0.08] rounded-full overflow-hidden">
         <div className={`h-full ${color} rounded-full transition-all`} style={{ width: `${percent}%` }} />
       </div>
     </div>
@@ -1339,7 +1339,7 @@ function AuroraProbRow({ label, sublabel, percent, color }: { label: string; sub
 
 function MiniStatCard({ label, value, sublabel, color }: { label: string; value: string; sublabel: string; color: string }) {
   return (
-    <div className="bg-slate-800/60 border border-slate-700/50 rounded-xl p-4 text-center">
+    <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-4 text-center">
       <p className={`text-3xl font-bold ${color}`}>{value}</p>
       <p className="text-xs text-slate-300 font-medium mt-1">{label}</p>
       <p className="text-[10px] text-slate-500 mt-0.5">{sublabel}</p>

@@ -118,7 +118,7 @@ const TRIGGER_TYPE_ICONS: Record<string, string> = {
 };
 
 const TRIGGER_TYPE_COLORS: Record<string, string> = {
-  keyword: 'text-slate-300',
+  keyword: 'text-white/70',
   price_threshold: 'text-emerald-400',
   regulatory_filing: 'text-amber-400',
   launch_status: 'text-orange-400',
@@ -142,8 +142,8 @@ const CHANNEL_ICONS: Record<string, string> = {
 };
 
 const PRIORITY_COLORS: Record<string, string> = {
-  low: 'bg-slate-700/60 text-slate-300',
-  normal: 'bg-slate-800/50 text-slate-200',
+  low: 'bg-white/[0.06] text-white/70',
+  normal: 'bg-white/[0.04] text-white/90',
   high: 'bg-orange-900/50 text-orange-300',
   critical: 'bg-red-900/50 text-red-300',
 };
@@ -705,7 +705,7 @@ function AlertsPageInner() {
       <div className="min-h-screen bg-slate-950 flex items-center justify-center px-4">
         <div className="text-center max-w-md">
           <svg
-            className="w-16 h-16 text-slate-300 mx-auto mb-4"
+            className="w-16 h-16 text-white/70 mx-auto mb-4"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -739,7 +739,7 @@ function AlertsPageInner() {
   const renderAlertsTab = () => (
     <div className="space-y-4">
       {rules.length === 0 ? (
-        <div className="text-center py-20 bg-slate-900/50 border border-slate-800 rounded-xl">
+        <div className="text-center py-20 bg-black/50 border border-white/[0.06] rounded-xl">
           <div className="mx-auto w-20 h-20 rounded-2xl bg-gradient-to-br from-orange-500/20 to-amber-500/20 border border-orange-500/20 flex items-center justify-center mb-6">
             <svg
               className="w-10 h-10 text-orange-400"
@@ -776,8 +776,8 @@ function AlertsPageInner() {
         rules.map((rule) => (
           <div
             key={rule.id}
-            className={`bg-slate-900/80 border rounded-xl p-5 transition-all hover:border-slate-600 ${
-              rule.isActive ? 'border-slate-700' : 'border-slate-800 opacity-60'
+            className={`bg-black/80 border rounded-xl p-5 transition-all hover:border-white/[0.1] ${
+              rule.isActive ? 'border-white/[0.08]' : 'border-white/[0.06] opacity-60'
             }`}
           >
             <div className="flex items-start justify-between gap-4">
@@ -785,7 +785,7 @@ function AlertsPageInner() {
                 {/* Title Row */}
                 <div className="flex items-center gap-3 mb-1.5">
                   <svg
-                    className={`w-5 h-5 flex-shrink-0 ${TRIGGER_TYPE_COLORS[rule.triggerType] || 'text-slate-300'}`}
+                    className={`w-5 h-5 flex-shrink-0 ${TRIGGER_TYPE_COLORS[rule.triggerType] || 'text-white/70'}`}
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -822,13 +822,13 @@ function AlertsPageInner() {
 
                 {/* Meta Row */}
                 <div className="flex flex-wrap items-center gap-2 text-xs text-slate-500 ml-8">
-                  <span className="inline-flex items-center gap-1 bg-slate-800 px-2 py-1 rounded">
+                  <span className="inline-flex items-center gap-1 bg-white/[0.06] px-2 py-1 rounded">
                     {TRIGGER_TYPE_LABELS[rule.triggerType] || rule.triggerType}
                   </span>
                   {rule.channels.map((ch) => (
                     <span
                       key={ch}
-                      className="inline-flex items-center gap-1 bg-slate-800 px-2 py-1 rounded"
+                      className="inline-flex items-center gap-1 bg-white/[0.06] px-2 py-1 rounded"
                     >
                       <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path
@@ -861,7 +861,7 @@ function AlertsPageInner() {
                   onClick={() => toggleRule(rule.id, rule.isActive)}
                   disabled={togglingRuleId === rule.id}
                   className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                    rule.isActive ? 'bg-white' : 'bg-slate-700'
+                    rule.isActive ? 'bg-white' : 'bg-white/[0.08]'
                   } ${togglingRuleId === rule.id ? 'opacity-50' : ''}`}
                   title={rule.isActive ? 'Pause alert' : 'Activate alert'}
                   aria-label={rule.isActive ? 'Pause alert' : 'Activate alert'}
@@ -924,7 +924,7 @@ function AlertsPageInner() {
           </p>
           <button
             onClick={markAllRead}
-            className="text-sm text-slate-300 hover:text-white transition-colors font-medium"
+            className="text-sm text-white/70 hover:text-white transition-colors font-medium"
           >
             Mark All Read
           </button>
@@ -950,10 +950,10 @@ function AlertsPageInner() {
             return (
               <div
                 key={delivery.id}
-                className={`bg-slate-900/80 border rounded-xl transition-all cursor-pointer ${
+                className={`bg-black/80 border rounded-xl transition-all cursor-pointer ${
                   isUnread
                     ? 'border-white/10 bg-slate-900/10'
-                    : 'border-slate-800 hover:border-slate-700'
+                    : 'border-white/[0.06] hover:border-white/[0.08]'
                 }`}
                 onClick={() => {
                   if (isUnread) markAsRead([delivery.id]);
@@ -967,7 +967,7 @@ function AlertsPageInner() {
                       {isUnread ? (
                         <span className="block w-2.5 h-2.5 bg-white rounded-full ring-2 ring-white/10" />
                       ) : (
-                        <span className="block w-2.5 h-2.5 bg-slate-700 rounded-full" />
+                        <span className="block w-2.5 h-2.5 bg-white/[0.08] rounded-full" />
                       )}
                     </div>
 
@@ -975,7 +975,7 @@ function AlertsPageInner() {
                       <div className="flex items-center gap-2 mb-1">
                         <h4
                           className={`text-sm font-semibold truncate ${
-                            isUnread ? 'text-white' : 'text-slate-300'
+                            isUnread ? 'text-white' : 'text-white/70'
                           }`}
                         >
                           {delivery.title}
@@ -986,13 +986,13 @@ function AlertsPageInner() {
                           </span>
                         )}
                       </div>
-                      <p className={`text-sm ${isUnread ? 'text-slate-300' : 'text-slate-400'} ${isExpanded ? '' : 'line-clamp-2'}`}>
+                      <p className={`text-sm ${isUnread ? 'text-white/70' : 'text-slate-400'} ${isExpanded ? '' : 'line-clamp-2'}`}>
                         {delivery.message}
                       </p>
 
                       {/* Meta row */}
                       <div className="flex flex-wrap items-center gap-2 mt-2 text-xs text-slate-500">
-                        <span className="inline-flex items-center gap-1 bg-slate-800 px-1.5 py-0.5 rounded">
+                        <span className="inline-flex items-center gap-1 bg-white/[0.06] px-1.5 py-0.5 rounded">
                           <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path
                               strokeLinecap="round"
@@ -1011,7 +1011,7 @@ function AlertsPageInner() {
                         <span
                           className={`px-1.5 py-0.5 rounded text-xs font-medium ${
                             delivery.status === 'read'
-                              ? 'bg-slate-800 text-slate-500'
+                              ? 'bg-white/[0.06] text-slate-500'
                               : delivery.status === 'delivered' || delivery.status === 'sent'
                                 ? 'bg-green-900/40 text-green-400'
                                 : delivery.status === 'failed'
@@ -1025,9 +1025,9 @@ function AlertsPageInner() {
 
                       {/* Expanded details */}
                       {isExpanded && delivery.data && (
-                        <div className="mt-3 pt-3 border-t border-slate-800">
+                        <div className="mt-3 pt-3 border-t border-white/[0.06]">
                           <p className="text-xs text-slate-500 uppercase tracking-wider mb-2">Details</p>
-                          <div className="bg-slate-800/60 rounded-lg p-3 text-xs text-slate-400 font-mono overflow-x-auto">
+                          <div className="bg-white/[0.05] rounded-lg p-3 text-xs text-slate-400 font-mono overflow-x-auto">
                             <pre className="whitespace-pre-wrap break-all">
                               {JSON.stringify(delivery.data, null, 2)}
                             </pre>
@@ -1064,7 +1064,7 @@ function AlertsPageInner() {
               <button
                 onClick={loadMoreDeliveries}
                 disabled={loadingMoreDeliveries}
-                className="px-5 py-2 text-sm text-slate-300 hover:text-white border border-slate-700 hover:border-slate-600 rounded-lg transition-colors disabled:opacity-50"
+                className="px-5 py-2 text-sm text-white/70 hover:text-white border border-white/[0.08] hover:border-white/[0.1] rounded-lg transition-colors disabled:opacity-50"
               >
                 {loadingMoreDeliveries ? (
                   <span className="flex items-center gap-2 justify-center">
@@ -1092,7 +1092,7 @@ function AlertsPageInner() {
   const renderSavedSearchesTab = () => (
     <div>
       {savedSearches.length === 0 ? (
-        <div className="text-center py-20 bg-slate-900/50 border border-slate-800 rounded-xl">
+        <div className="text-center py-20 bg-black/50 border border-white/[0.06] rounded-xl">
           <div className="mx-auto w-20 h-20 rounded-2xl bg-gradient-to-br from-purple-500/20 to-indigo-500/20 border border-purple-500/20 flex items-center justify-center mb-6">
             <svg
               className="w-10 h-10 text-purple-400"
@@ -1127,7 +1127,7 @@ function AlertsPageInner() {
             </Link>
             <Link
               href="/marketplace/search"
-              className="inline-flex items-center gap-2 px-4 py-2.5 bg-slate-700 hover:bg-slate-600 text-white text-sm font-medium rounded-lg transition-colors"
+              className="inline-flex items-center gap-2 px-4 py-2.5 bg-slate-700 hover:bg-white/[0.1] text-white text-sm font-medium rounded-lg transition-colors"
             >
               Marketplace Search
             </Link>
@@ -1138,7 +1138,7 @@ function AlertsPageInner() {
           {savedSearches.map((search) => (
             <div
               key={search.id}
-              className="bg-slate-900/80 border border-slate-700 rounded-xl p-4 hover:border-slate-600 transition-all"
+              className="bg-black/80 border border-white/[0.08] rounded-xl p-4 hover:border-white/[0.1] transition-all"
             >
               <div className="flex items-start justify-between gap-4">
                 <div className="flex-1 min-w-0">
@@ -1170,7 +1170,7 @@ function AlertsPageInner() {
                     {/* Re-run link */}
                     <Link
                       href={buildSearchUrl(search)}
-                      className="inline-flex items-center gap-1 text-xs text-slate-300 hover:text-white transition-colors"
+                      className="inline-flex items-center gap-1 text-xs text-white/70 hover:text-white transition-colors"
                     >
                       <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -1192,7 +1192,7 @@ function AlertsPageInner() {
                     <button
                       onClick={() => toggleSavedSearchAlert(search.id, search.alertEnabled)}
                       className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
-                        search.alertEnabled ? 'bg-white' : 'bg-slate-700'
+                        search.alertEnabled ? 'bg-white' : 'bg-white/[0.08]'
                       }`}
                       title={search.alertEnabled ? 'Disable alerts' : 'Enable alerts'}
                       aria-label={search.alertEnabled ? 'Disable alerts' : 'Enable alerts'}
@@ -1279,7 +1279,7 @@ function AlertsPageInner() {
   const renderPreferencesTab = () => (
     <div className="space-y-6 max-w-2xl">
       {/* Delivery Mode */}
-      <div className="bg-slate-900/80 border border-slate-700 rounded-xl p-6">
+      <div className="bg-black/80 border border-white/[0.08] rounded-xl p-6">
         <h3 className="text-lg font-semibold text-white mb-1">Alert Delivery Mode</h3>
         <p className="text-sm text-slate-400 mb-5">
           Choose how you want to receive alert notifications. Digest modes batch multiple alerts into a single summary.
@@ -1291,7 +1291,7 @@ function AlertsPageInner() {
               className={`flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition-all ${
                 prefs.alertDigestMode === option.value
                   ? 'border-white/15 bg-slate-900/20'
-                  : 'border-slate-700 hover:border-slate-600 bg-slate-800/40'
+                  : 'border-white/[0.08] hover:border-white/[0.1] bg-white/[0.04]'
               }`}
             >
               <input
@@ -1312,7 +1312,7 @@ function AlertsPageInner() {
       </div>
 
       {/* Quiet Hours */}
-      <div className="bg-slate-900/80 border border-slate-700 rounded-xl p-6">
+      <div className="bg-black/80 border border-white/[0.08] rounded-xl p-6">
         <div className="flex items-center justify-between mb-1">
           <h3 className="text-lg font-semibold text-white">Quiet Hours</h3>
           <button
@@ -1328,7 +1328,7 @@ function AlertsPageInner() {
               }
             }}
             className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-              quietHoursEnabled ? 'bg-white' : 'bg-slate-700'
+              quietHoursEnabled ? 'bg-white' : 'bg-white/[0.08]'
             }`}
             aria-label={quietHoursEnabled ? 'Disable quiet hours' : 'Enable quiet hours'}
           >
@@ -1344,7 +1344,7 @@ function AlertsPageInner() {
         </p>
 
         {quietHoursEnabled && (
-          <div className="space-y-4 pt-2 border-t border-slate-700">
+          <div className="space-y-4 pt-2 border-t border-white/[0.08]">
             <div className="grid grid-cols-2 gap-4 mt-4">
               <div>
                 <label className="block text-xs font-medium text-slate-400 uppercase tracking-wider mb-1.5">
@@ -1353,7 +1353,7 @@ function AlertsPageInner() {
                 <select
                   value={prefs.quietHoursStart ?? 22}
                   onChange={(e) => setPrefs((p) => ({ ...p, quietHoursStart: parseInt(e.target.value) }))}
-                  className="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-white/30 focus:border-transparent"
+                  className="w-full bg-white/[0.06] border border-white/[0.1] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-white/30 focus:border-transparent"
                 >
                   {Array.from({ length: 24 }, (_, i) => (
                     <option key={i} value={i}>
@@ -1369,7 +1369,7 @@ function AlertsPageInner() {
                 <select
                   value={prefs.quietHoursEnd ?? 7}
                   onChange={(e) => setPrefs((p) => ({ ...p, quietHoursEnd: parseInt(e.target.value) }))}
-                  className="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-white/30 focus:border-transparent"
+                  className="w-full bg-white/[0.06] border border-white/[0.1] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-white/30 focus:border-transparent"
                 >
                   {Array.from({ length: 24 }, (_, i) => (
                     <option key={i} value={i}>
@@ -1381,10 +1381,10 @@ function AlertsPageInner() {
             </div>
 
             {/* Quiet hours visual preview */}
-            <div className="bg-slate-800/60 rounded-lg p-3">
+            <div className="bg-white/[0.05] rounded-lg p-3">
               <p className="text-xs text-slate-500 mb-2">Preview</p>
               <div className="flex items-center gap-2">
-                <div className="flex-1 h-6 bg-slate-700 rounded-full overflow-hidden relative">
+                <div className="flex-1 h-6 bg-white/[0.08] rounded-full overflow-hidden relative">
                   {(() => {
                     const start = prefs.quietHoursStart ?? 22;
                     const end = prefs.quietHoursEnd ?? 7;
@@ -1445,7 +1445,7 @@ function AlertsPageInner() {
               <select
                 value={prefs.quietHoursTimezone}
                 onChange={(e) => setPrefs((p) => ({ ...p, quietHoursTimezone: e.target.value }))}
-                className="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-white/30 focus:border-transparent"
+                className="w-full bg-white/[0.06] border border-white/[0.1] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-white/30 focus:border-transparent"
               >
                 {COMMON_TIMEZONES.map((tz) => (
                   <option key={tz} value={tz}>
@@ -1462,17 +1462,17 @@ function AlertsPageInner() {
       </div>
 
       {/* Info Box */}
-      <div className="bg-slate-900/40 border border-slate-800 rounded-xl p-4 flex gap-3">
-        <svg className="w-5 h-5 text-slate-300 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <div className="bg-black/40 border border-white/[0.06] rounded-xl p-4 flex gap-3">
+        <svg className="w-5 h-5 text-white/70 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
         <div className="text-sm text-slate-400">
-          <p className="font-medium text-slate-300 mb-1">How Smart Batching Works</p>
+          <p className="font-medium text-white/70 mb-1">How Smart Batching Works</p>
           <ul className="space-y-1 text-xs list-disc list-inside">
-            <li><strong className="text-slate-300">Instant:</strong> Alerts are delivered immediately through all configured channels.</li>
-            <li><strong className="text-slate-300">Hourly/Daily/Weekly:</strong> Alerts are queued and sent as a consolidated digest email.</li>
-            <li><strong className="text-slate-300">Quiet Hours:</strong> During quiet hours, all alerts are silently queued regardless of delivery mode.</li>
-            <li><strong className="text-slate-300">In-App:</strong> In-app notifications are always delivered immediately for real-time visibility.</li>
+            <li><strong className="text-white/70">Instant:</strong> Alerts are delivered immediately through all configured channels.</li>
+            <li><strong className="text-white/70">Hourly/Daily/Weekly:</strong> Alerts are queued and sent as a consolidated digest email.</li>
+            <li><strong className="text-white/70">Quiet Hours:</strong> During quiet hours, all alerts are silently queued regardless of delivery mode.</li>
+            <li><strong className="text-white/70">In-App:</strong> In-app notifications are always delivered immediately for real-time visibility.</li>
           </ul>
         </div>
       </div>
@@ -1511,9 +1511,9 @@ function AlertsPageInner() {
 
   const renderWebhooksTab = () => (
     <div className="space-y-6">
-      <div className="bg-slate-900/80 border border-slate-700 rounded-xl p-5">
+      <div className="bg-black/80 border border-white/[0.08] rounded-xl p-5">
         <h3 className="text-base font-semibold text-white mb-4 flex items-center gap-2">
-          <svg className="w-5 h-5 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg className="w-5 h-5 text-white/70" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
           </svg>
           Add Webhook Integration
@@ -1521,16 +1521,16 @@ function AlertsPageInner() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
           <div>
             <label htmlFor="webhook-name" className="block text-sm text-slate-400 mb-1">Integration Name</label>
-            <input id="webhook-name" type="text" value={webhookName} onChange={(e) => setWebhookName(e.target.value)} placeholder="e.g. Launch Alerts Channel" className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-white/30 focus:border-transparent" maxLength={100} />
+            <input id="webhook-name" type="text" value={webhookName} onChange={(e) => setWebhookName(e.target.value)} placeholder="e.g. Launch Alerts Channel" className="w-full px-3 py-2 bg-white/[0.06] border border-white/[0.08] rounded-lg text-white placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-white/30 focus:border-transparent" maxLength={100} />
           </div>
           <div>
             <label className="block text-sm text-slate-400 mb-1">Platform</label>
             <div className="flex gap-2">
-              <button type="button" onClick={() => setWebhookType('slack')} className={`flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-medium border transition-colors ${webhookType === 'slack' ? 'bg-purple-900/20 border-purple-700 text-purple-300' : 'bg-slate-800 border-slate-700 text-slate-400 hover:border-slate-600'}`}>
+              <button type="button" onClick={() => setWebhookType('slack')} className={`flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-medium border transition-colors ${webhookType === 'slack' ? 'bg-purple-900/20 border-purple-700 text-purple-300' : 'bg-slate-800 border-white/[0.08] text-slate-400 hover:border-white/[0.1]'}`}>
                 <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M5.042 15.165a2.528 2.528 0 0 1-2.52 2.523A2.528 2.528 0 0 1 0 15.165a2.527 2.527 0 0 1 2.522-2.52h2.52v2.52zM6.313 15.165a2.527 2.527 0 0 1 2.521-2.52 2.527 2.527 0 0 1 2.521 2.52v6.313A2.528 2.528 0 0 1 8.834 24a2.528 2.528 0 0 1-2.521-2.522v-6.313zM8.834 5.042a2.528 2.528 0 0 1-2.521-2.52A2.528 2.528 0 0 1 8.834 0a2.528 2.528 0 0 1 2.521 2.522v2.52H8.834zM8.834 6.313a2.528 2.528 0 0 1 2.521 2.521 2.528 2.528 0 0 1-2.521 2.521H2.522A2.528 2.528 0 0 1 0 8.834a2.528 2.528 0 0 1 2.522-2.521h6.312zM18.956 8.834a2.528 2.528 0 0 1 2.522-2.521A2.528 2.528 0 0 1 24 8.834a2.528 2.528 0 0 1-2.522 2.521h-2.522V8.834zM17.688 8.834a2.528 2.528 0 0 1-2.523 2.521 2.527 2.527 0 0 1-2.52-2.521V2.522A2.527 2.527 0 0 1 15.165 0a2.528 2.528 0 0 1 2.523 2.522v6.312zM15.165 18.956a2.528 2.528 0 0 1 2.523 2.522A2.528 2.528 0 0 1 15.165 24a2.527 2.527 0 0 1-2.52-2.522v-2.522h2.52zM15.165 17.688a2.527 2.527 0 0 1-2.52-2.523 2.526 2.526 0 0 1 2.52-2.52h6.313A2.527 2.527 0 0 1 24 15.165a2.528 2.528 0 0 1-2.522 2.523h-6.313z" /></svg>
                 Slack
               </button>
-              <button type="button" onClick={() => setWebhookType('discord')} className={`flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-medium border transition-colors ${webhookType === 'discord' ? 'bg-indigo-900/20 border-indigo-700 text-indigo-300' : 'bg-slate-800 border-slate-700 text-slate-400 hover:border-slate-600'}`}>
+              <button type="button" onClick={() => setWebhookType('discord')} className={`flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-medium border transition-colors ${webhookType === 'discord' ? 'bg-indigo-900/20 border-indigo-700 text-indigo-300' : 'bg-slate-800 border-white/[0.08] text-slate-400 hover:border-white/[0.1]'}`}>
                 <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189z" /></svg>
                 Discord
               </button>
@@ -1539,7 +1539,7 @@ function AlertsPageInner() {
         </div>
         <div className="mb-4">
           <label htmlFor="webhook-url" className="block text-sm text-slate-400 mb-1">Webhook URL</label>
-          <input id="webhook-url" type="url" autoComplete="url" inputMode="url" enterKeyHint="done" value={webhookUrl} onChange={(e) => setWebhookUrl(e.target.value)} placeholder={webhookType === 'slack' ? 'https://hooks.slack.com/services/...' : 'https://discord.com/api/webhooks/...'} className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-white/30 focus:border-transparent font-mono" />
+          <input id="webhook-url" type="url" autoComplete="url" inputMode="url" enterKeyHint="done" value={webhookUrl} onChange={(e) => setWebhookUrl(e.target.value)} placeholder={webhookType === 'slack' ? 'https://hooks.slack.com/services/...' : 'https://discord.com/api/webhooks/...'} className="w-full px-3 py-2 bg-white/[0.06] border border-white/[0.08] rounded-lg text-white placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-white/30 focus:border-transparent font-mono" />
           <p className="text-xs text-slate-500 mt-1">{webhookType === 'slack' ? 'Create an Incoming Webhook in your Slack workspace settings.' : 'Create a webhook in your Discord server\'s channel Integrations settings.'}</p>
         </div>
         <button onClick={addWebhook} disabled={addingWebhook || !webhookName.trim() || !webhookUrl.trim()} className="inline-flex items-center gap-2 px-4 py-2 bg-white hover:bg-slate-100 disabled:bg-slate-700 disabled:text-slate-500 text-slate-900 font-medium rounded-lg transition-colors text-sm">
@@ -1547,7 +1547,7 @@ function AlertsPageInner() {
         </button>
       </div>
       {webhooks.length === 0 ? (
-        <div className="text-center py-16 bg-slate-900/50 border border-slate-800 rounded-xl">
+        <div className="text-center py-16 bg-black/50 border border-white/[0.06] rounded-xl">
           <svg className="w-14 h-14 text-slate-600 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg>
           <h3 className="text-lg font-semibold text-white mb-2">No webhooks configured</h3>
           <p className="text-slate-400 max-w-sm mx-auto">Add a Slack or Discord webhook above to receive alert notifications in your team channels.</p>
@@ -1555,7 +1555,7 @@ function AlertsPageInner() {
       ) : (
         <div className="space-y-3">
           {webhooks.map((webhook) => (
-            <div key={webhook.id} className="bg-slate-900/80 border border-slate-700 rounded-xl p-4 hover:border-slate-600 transition-all">
+            <div key={webhook.id} className="bg-black/80 border border-white/[0.08] rounded-xl p-4 hover:border-white/[0.1] transition-all">
               <div className="flex items-start justify-between gap-4">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2.5 mb-1.5">
@@ -1574,7 +1574,7 @@ function AlertsPageInner() {
                   </div>
                 </div>
                 <div className="flex items-center gap-2 flex-shrink-0">
-                  <button onClick={() => testWebhook(webhook.id)} disabled={testingWebhookId === webhook.id} className="inline-flex items-center gap-1 px-3 py-2.5 text-xs font-medium text-slate-300 border border-slate-700 hover:border-white/15 hover:bg-slate-800/30 rounded-lg transition-colors disabled:opacity-50 min-h-[44px]" aria-label="Send a test message">
+                  <button onClick={() => testWebhook(webhook.id)} disabled={testingWebhookId === webhook.id} className="inline-flex items-center gap-1 px-3 py-2.5 text-xs font-medium text-white/70 border border-white/[0.08] hover:border-white/15 hover:bg-white/[0.03] rounded-lg transition-colors disabled:opacity-50 min-h-[44px]" aria-label="Send a test message">
                     {testingWebhookId === webhook.id ? (<span className="flex items-center gap-1"><svg className="w-3.5 h-3.5 animate-spin" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg>Testing...</span>) : (<span className="flex items-center gap-1"><svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>Test</span>)}
                   </button>
                   <button onClick={() => { if (confirm('Remove this webhook integration?')) deleteWebhook(webhook.id); }} disabled={deletingWebhookId === webhook.id} className={`p-1.5 text-slate-500 hover:text-red-400 transition-colors rounded-md hover:bg-red-900/20 ${deletingWebhookId === webhook.id ? 'opacity-50 cursor-not-allowed' : ''}`} aria-label="Remove webhook">
@@ -1604,7 +1604,7 @@ function AlertsPageInner() {
             subtitle="Create custom alert rules and manage notifications for space industry events."
             icon={
               <svg
-                className="w-8 h-8 text-slate-300"
+                className="w-8 h-8 text-white/70"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -1638,25 +1638,25 @@ function AlertsPageInner() {
           <ScrollReveal delay={0.15}>
           <StaggerContainer className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
             <StaggerItem>
-              <div className="bg-slate-900/80 border border-slate-800 rounded-xl p-4">
+              <div className="bg-black/80 border border-white/[0.06] rounded-xl p-4">
                 <p className="text-xs text-slate-400 uppercase tracking-wider">Active Rules</p>
-                <p className="text-2xl font-bold text-slate-300 mt-1">{stats.activeRules}</p>
+                <p className="text-2xl font-bold text-white/70 mt-1">{stats.activeRules}</p>
               </div>
             </StaggerItem>
             <StaggerItem>
-              <div className="bg-slate-900/80 border border-slate-800 rounded-xl p-4">
+              <div className="bg-black/80 border border-white/[0.06] rounded-xl p-4">
                 <p className="text-xs text-slate-400 uppercase tracking-wider">Total Rules</p>
                 <p className="text-2xl font-bold text-white mt-1">{stats.totalRules}</p>
               </div>
             </StaggerItem>
             <StaggerItem>
-              <div className="bg-slate-900/80 border border-slate-800 rounded-xl p-4">
+              <div className="bg-black/80 border border-white/[0.06] rounded-xl p-4">
                 <p className="text-xs text-slate-400 uppercase tracking-wider">Triggered Today</p>
                 <p className="text-2xl font-bold text-orange-400 mt-1">{stats.deliveriesToday}</p>
               </div>
             </StaggerItem>
             <StaggerItem>
-              <div className="bg-slate-900/80 border border-slate-800 rounded-xl p-4">
+              <div className="bg-black/80 border border-white/[0.06] rounded-xl p-4">
                 <p className="text-xs text-slate-400 uppercase tracking-wider">Total Notifications</p>
                 <p className="text-2xl font-bold text-white mt-1">{stats.totalDeliveries}</p>
               </div>
@@ -1667,7 +1667,7 @@ function AlertsPageInner() {
 
         {/* Tab Navigation */}
         <ScrollReveal delay={0.2}>
-        <div className="flex gap-1 mb-6 bg-slate-900/60 rounded-lg p-1 w-fit border border-slate-800">
+        <div className="flex gap-1 mb-6 bg-black/60 rounded-lg p-1 w-fit border border-white/[0.06]">
           <button
             onClick={() => setTab('alerts')}
             className={`flex items-center gap-1.5 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
@@ -1712,7 +1712,7 @@ function AlertsPageInner() {
             </svg>
             Saved Searches
             {savedSearches.length > 0 && (
-              <span className="ml-1 text-xs bg-slate-700 text-slate-300 rounded-full px-1.5 py-0.5">
+              <span className="ml-1 text-xs bg-white/[0.08] text-white/70 rounded-full px-1.5 py-0.5">
                 {savedSearches.length}
               </span>
             )}
@@ -1730,7 +1730,7 @@ function AlertsPageInner() {
             </svg>
             Webhooks
             {webhooks.length > 0 && (
-              <span className="ml-1 text-xs bg-slate-700 text-slate-300 rounded-full px-1.5 py-0.5">
+              <span className="ml-1 text-xs bg-white/[0.08] text-white/70 rounded-full px-1.5 py-0.5">
                 {webhooks.length}
               </span>
             )}

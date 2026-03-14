@@ -1275,7 +1275,7 @@ function getExperienceBadgeColor(level: ExperienceLevel): string {
     case 'Entry':
       return 'bg-green-500/20 text-green-400';
     case 'Mid':
-      return 'bg-white/10 text-slate-300';
+      return 'bg-white/10 text-white/70';
     case 'Senior':
       return 'bg-purple-500/20 text-purple-400';
     case 'Lead':
@@ -1320,7 +1320,7 @@ function JobCard({
               </p>
             </div>
             <div className="text-right shrink-0 hidden sm:block">
-              <p className="text-slate-300 font-semibold text-sm">
+              <p className="text-white/70 font-semibold text-sm">
                 {formatSalary(job.salaryMin)} - {formatSalary(job.salaryMax)}
               </p>
               <p className="text-slate-500 text-xs mt-0.5">
@@ -1331,7 +1331,7 @@ function JobCard({
 
           {/* Mobile salary & date */}
           <div className="flex items-center gap-3 mt-2 sm:hidden">
-            <p className="text-slate-300 font-semibold text-sm">
+            <p className="text-white/70 font-semibold text-sm">
               {formatSalary(job.salaryMin)} - {formatSalary(job.salaryMax)}
             </p>
             <span className="text-slate-600">&middot;</span>
@@ -1350,7 +1350,7 @@ function JobCard({
             >
               {job.experienceLevel}
             </span>
-            <span className="text-xs px-2.5 py-1 rounded-full bg-slate-700/50 text-slate-300">
+            <span className="text-xs px-2.5 py-1 rounded-full bg-slate-700/50 text-white/70">
               {job.jobType}
             </span>
             <span className="text-xs px-2.5 py-1 rounded-full bg-slate-700/50 text-slate-400">
@@ -1363,7 +1363,7 @@ function JobCard({
             {job.skills.slice(0, 4).map((skill) => (
               <span
                 key={skill}
-                className="text-xs px-2 py-0.5 rounded bg-white/5 text-slate-200 border border-white/10"
+                className="text-xs px-2 py-0.5 rounded bg-white/5 text-white/90 border border-white/10"
               >
                 {skill}
               </span>
@@ -1402,10 +1402,10 @@ function JobCard({
           style={{ animationDuration: '0.3s' }}
           onClick={(e) => e.stopPropagation()}
         >
-            <div className="mt-5 pt-5 border-t border-slate-700/50 space-y-4">
+            <div className="mt-5 pt-5 border-t border-white/[0.06] space-y-4">
               {/* Description */}
               <div>
-                <h4 className="text-sm font-semibold text-slate-200 mb-2">
+                <h4 className="text-sm font-semibold text-white/90 mb-2">
                   Description
                 </h4>
                 <p className="text-sm text-slate-400 leading-relaxed">
@@ -1415,14 +1415,14 @@ function JobCard({
 
               {/* All skills */}
               <div>
-                <h4 className="text-sm font-semibold text-slate-200 mb-2">
+                <h4 className="text-sm font-semibold text-white/90 mb-2">
                   Skills
                 </h4>
                 <div className="flex flex-wrap gap-2">
                   {job.skills.map((skill) => (
                     <span
                       key={skill}
-                      className="text-xs px-2.5 py-1 rounded bg-white/5 text-slate-200 border border-white/10"
+                      className="text-xs px-2.5 py-1 rounded bg-white/5 text-white/90 border border-white/10"
                     >
                       {skill}
                     </span>
@@ -1432,7 +1432,7 @@ function JobCard({
 
               {/* Requirements */}
               <div>
-                <h4 className="text-sm font-semibold text-slate-200 mb-2">
+                <h4 className="text-sm font-semibold text-white/90 mb-2">
                   Requirements
                 </h4>
                 <ul className="space-y-1.5">
@@ -1441,7 +1441,7 @@ function JobCard({
                       key={i}
                       className="text-sm text-slate-400 flex items-start gap-2"
                     >
-                      <span className="text-slate-300 mt-1 shrink-0">
+                      <span className="text-white/70 mt-1 shrink-0">
                         &#x2022;
                       </span>
                       {req}
@@ -1636,7 +1636,7 @@ export default function JobsBoardPage() {
               setSearchQuery(e.target.value);
               setVisibleCount(15);
             }}
-            className="w-full pl-10 pr-3 py-2.5 bg-slate-800/60 border border-slate-700 rounded-lg text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-white/15 focus:ring-1 focus:ring-white/30 transition-colors"
+            className="w-full pl-10 pr-3 py-2.5 bg-white/[0.05] border border-white/[0.08] rounded-lg text-sm text-white/90 placeholder-slate-500 focus:outline-none focus:border-white/15 focus:ring-1 focus:ring-white/30 transition-colors"
           />
         </div>
       </div>
@@ -1652,7 +1652,7 @@ export default function JobsBoardPage() {
             setSelectedCategory(e.target.value as JobCategory | '');
             setVisibleCount(15);
           }}
-          className="w-full px-3 py-2.5 bg-slate-800/60 border border-slate-700 rounded-lg text-sm text-slate-200 focus:outline-none focus:border-white/15 focus:ring-1 focus:ring-white/30 transition-colors appearance-none"
+          className="w-full px-3 py-2.5 bg-white/[0.05] border border-white/[0.08] rounded-lg text-sm text-white/90 focus:outline-none focus:border-white/15 focus:ring-1 focus:ring-white/30 transition-colors appearance-none"
         >
           <option value="">All Categories</option>
           {CATEGORIES.map((cat) => (
@@ -1678,8 +1678,8 @@ export default function JobsBoardPage() {
               }}
               className={`text-xs px-3 py-2 rounded-full border transition-colors ${
                 selectedExperience === level
-                  ? 'bg-white/10 border-white/15 text-slate-300'
-                  : 'bg-slate-800/40 border-slate-700 text-slate-400 hover:border-slate-600'
+                  ? 'bg-white/10 border-white/15 text-white/70'
+                  : 'bg-white/[0.04] border-white/[0.08] text-slate-400 hover:border-white/[0.1]'
               }`}
             >
               {level}
@@ -1703,8 +1703,8 @@ export default function JobsBoardPage() {
               }}
               className={`text-xs px-3 py-2 rounded-full border transition-colors ${
                 selectedJobType === type
-                  ? 'bg-white/10 border-white/15 text-slate-300'
-                  : 'bg-slate-800/40 border-slate-700 text-slate-400 hover:border-slate-600'
+                  ? 'bg-white/10 border-white/15 text-white/70'
+                  : 'bg-white/[0.04] border-white/[0.08] text-slate-400 hover:border-white/[0.1]'
               }`}
             >
               {type}
@@ -1728,8 +1728,8 @@ export default function JobsBoardPage() {
               }}
               className={`text-xs px-3 py-2 rounded-full border transition-colors ${
                 selectedLocation === loc
-                  ? 'bg-white/10 border-white/15 text-slate-300'
-                  : 'bg-slate-800/40 border-slate-700 text-slate-400 hover:border-slate-600'
+                  ? 'bg-white/10 border-white/15 text-white/70'
+                  : 'bg-white/[0.04] border-white/[0.08] text-slate-400 hover:border-white/[0.1]'
               }`}
             >
               {loc}
@@ -1758,7 +1758,7 @@ export default function JobsBoardPage() {
                 placeholder="$0"
                 step={10000}
                 min={0}
-                className="w-full px-2.5 py-2 bg-slate-800/60 border border-slate-700 rounded-lg text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-white/15 focus:ring-1 focus:ring-white/30 transition-colors"
+                className="w-full px-2.5 py-2 bg-white/[0.05] border border-white/[0.08] rounded-lg text-sm text-white/90 placeholder-slate-500 focus:outline-none focus:border-white/15 focus:ring-1 focus:ring-white/30 transition-colors"
               />
             </div>
             <span className="text-slate-600 mt-4">-</span>
@@ -1775,7 +1775,7 @@ export default function JobsBoardPage() {
                 placeholder="No max"
                 step={10000}
                 min={0}
-                className="w-full px-2.5 py-2 bg-slate-800/60 border border-slate-700 rounded-lg text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-white/15 focus:ring-1 focus:ring-white/30 transition-colors"
+                className="w-full px-2.5 py-2 bg-white/[0.05] border border-white/[0.08] rounded-lg text-sm text-white/90 placeholder-slate-500 focus:outline-none focus:border-white/15 focus:ring-1 focus:ring-white/30 transition-colors"
               />
             </div>
           </div>
@@ -1802,7 +1802,7 @@ export default function JobsBoardPage() {
       {activeFilterCount > 0 && (
         <button
           onClick={handleClearFilters}
-          className="w-full py-2 text-sm text-slate-400 hover:text-white border border-slate-700 hover:border-white/15 rounded-lg transition-colors"
+          className="w-full py-2 text-sm text-slate-400 hover:text-white border border-white/[0.08] hover:border-white/15 rounded-lg transition-colors"
         >
           Clear all filters ({activeFilterCount})
         </button>
@@ -1840,7 +1840,7 @@ export default function JobsBoardPage() {
           <div className="flex flex-wrap items-center gap-4 mb-8">
             <div className="card px-5 py-3 flex items-center gap-3">
               <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span className="text-sm text-slate-300">
+              <span className="text-sm text-white/70">
                 <span className="text-white font-bold">{JOB_POSTINGS.length}</span>{' '}
                 open positions across{' '}
                 <span className="text-white font-bold">{uniqueCompanies}</span>{' '}
@@ -1850,7 +1850,7 @@ export default function JobsBoardPage() {
 
             {filteredJobs.length !== JOB_POSTINGS.length && (
               <div className="px-4 py-2.5 rounded-xl bg-white/5 border border-white/10">
-                <span className="text-sm text-slate-300">
+                <span className="text-sm text-white/70">
                   Showing{' '}
                   <span className="font-bold">{filteredJobs.length}</span>{' '}
                   matching jobs
@@ -1866,7 +1866,7 @@ export default function JobsBoardPage() {
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as SortOption)}
-                className="px-3 py-2 bg-slate-800/60 border border-slate-700 rounded-lg text-sm text-slate-200 focus:outline-none focus:border-white/15 transition-colors appearance-none"
+                className="px-3 py-2 bg-white/[0.05] border border-white/[0.08] rounded-lg text-sm text-white/90 focus:outline-none focus:border-white/15 transition-colors appearance-none"
               >
                 {SORT_OPTIONS.map((opt) => (
                   <option key={opt.value} value={opt.value}>
@@ -1882,7 +1882,7 @@ export default function JobsBoardPage() {
         <div className="flex items-center gap-3 mb-4 lg:hidden">
           <button
             onClick={() => setMobileFiltersOpen(!mobileFiltersOpen)}
-            className="flex items-center gap-2 px-4 py-2.5 bg-slate-800/60 border border-slate-700 rounded-lg text-sm text-slate-300 hover:border-white/15 transition-colors"
+            className="flex items-center gap-2 px-4 py-2.5 bg-white/[0.05] border border-white/[0.08] rounded-lg text-sm text-white/70 hover:border-white/15 transition-colors"
           >
             <svg
               className="w-4 h-4"
@@ -1907,7 +1907,7 @@ export default function JobsBoardPage() {
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value as SortOption)}
-            className="flex-1 px-3 py-2.5 bg-slate-800/60 border border-slate-700 rounded-lg text-sm text-slate-200 focus:outline-none focus:border-white/15 transition-colors appearance-none"
+            className="flex-1 px-3 py-2.5 bg-white/[0.05] border border-white/[0.08] rounded-lg text-sm text-white/90 focus:outline-none focus:border-white/15 transition-colors appearance-none"
           >
             {SORT_OPTIONS.map((opt) => (
               <option key={opt.value} value={opt.value}>
@@ -1975,7 +1975,7 @@ export default function JobsBoardPage() {
               <div className="mt-8 text-center">
                 <button
                   onClick={handleLoadMore}
-                  className="px-8 py-3 bg-slate-800/60 border border-slate-700 hover:border-white/15 text-slate-300 hover:text-white rounded-lg text-sm font-medium transition-colors"
+                  className="px-8 py-3 bg-white/[0.05] border border-white/[0.08] hover:border-white/15 text-white/70 hover:text-white rounded-lg text-sm font-medium transition-colors"
                 >
                   Load More ({filteredJobs.length - visibleCount} remaining)
                 </button>

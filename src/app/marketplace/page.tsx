@@ -136,7 +136,7 @@ export default function MarketplacePage() {
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="px-6 py-3 min-h-[44px] bg-slate-700 hover:bg-slate-600 text-white rounded-lg font-semibold transition-all"
+                className="px-6 py-3 min-h-[44px] bg-white/[0.08] hover:bg-white/[0.12] text-white rounded-lg font-semibold transition-all"
               >
                 Post an RFQ
               </motion.button>
@@ -161,7 +161,7 @@ export default function MarketplacePage() {
                 { label: 'Active Providers', value: stats.activeProviders, color: 'text-slate-300' },
                 { label: 'Service Listings', value: stats.activeListings, color: 'text-emerald-400' },
                 { label: 'Open RFQs', value: stats.openRFQs, color: 'text-yellow-400' },
-                { label: 'Proposals Submitted', value: stats.totalProposals, color: 'text-purple-400' },
+                { label: 'Proposals Submitted', value: stats.totalProposals, color: 'text-white/70' },
               ].map((stat) => (
                 <StaggerItem key={stat.label}>
                   <div className="card p-4 text-center">
@@ -330,7 +330,7 @@ export default function MarketplacePage() {
 
         {/* CTA */}
         <ScrollReveal>
-        <div className="text-center card p-8 bg-gradient-to-r from-slate-800/30 to-blue-900/30 border-white/10">
+        <div className="text-center card p-8 bg-gradient-to-r from-white/[0.04] to-blue-900/30 border-white/10">
           <h2 className="text-lg font-semibold text-white mb-2">Are you a space service provider?</h2>
           <p className="text-sm text-slate-400 mb-4">
             Claim your company profile, list your services, and start receiving RFQs from buyers worldwide.
@@ -342,7 +342,7 @@ export default function MarketplacePage() {
               </button>
             </Link>
             <Link href="/provider-dashboard">
-              <button className="px-5 py-2.5 min-h-[44px] bg-slate-700 hover:bg-slate-600 text-white rounded-lg text-sm font-medium transition-colors">
+              <button className="px-5 py-2.5 min-h-[44px] bg-white/[0.08] hover:bg-white/[0.12] text-white rounded-lg text-sm font-medium transition-colors">
                 Provider Dashboard
               </button>
             </Link>

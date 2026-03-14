@@ -277,19 +277,19 @@ export default function SpaceIndustryMarketSizePage() {
         {/* Key Stats */}
         <ScrollReveal>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
-          <div className="bg-slate-800/60 border border-slate-700/50 rounded-xl p-4 text-center">
+          <div className="bg-white/[0.06] border border-white/[0.06] rounded-xl p-4 text-center">
             <div className="text-2xl font-bold text-slate-300 mb-1">$546B</div>
             <div className="text-xs text-slate-400">2025 Market Size</div>
           </div>
-          <div className="bg-slate-800/60 border border-slate-700/50 rounded-xl p-4 text-center">
+          <div className="bg-white/[0.06] border border-white/[0.06] rounded-xl p-4 text-center">
             <div className="text-2xl font-bold text-slate-300 mb-1">$1.8T</div>
             <div className="text-xs text-slate-400">2035 Projection</div>
           </div>
-          <div className="bg-slate-800/60 border border-slate-700/50 rounded-xl p-4 text-center">
+          <div className="bg-white/[0.06] border border-white/[0.06] rounded-xl p-4 text-center">
             <div className="text-2xl font-bold text-slate-300 mb-1">12.7%</div>
             <div className="text-xs text-slate-400">10-Year CAGR</div>
           </div>
-          <div className="bg-slate-800/60 border border-slate-700/50 rounded-xl p-4 text-center">
+          <div className="bg-white/[0.06] border border-white/[0.06] rounded-xl p-4 text-center">
             <div className="text-2xl font-bold text-slate-300 mb-1">90+</div>
             <div className="text-xs text-slate-400">Space-faring Nations</div>
           </div>
@@ -306,7 +306,7 @@ export default function SpaceIndustryMarketSizePage() {
           </p>
           <div className="space-y-4">
             {marketSegments.map((seg) => (
-              <div key={seg.segment} className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-5">
+              <div key={seg.segment} className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-5">
                 <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
                   <h3 className="text-white font-semibold text-lg">{seg.segment}</h3>
                   <div className="flex items-center gap-3">
@@ -337,7 +337,7 @@ export default function SpaceIndustryMarketSizePage() {
                   <div className="text-xs text-slate-500 mb-1">Key Growth Drivers</div>
                   <div className="flex flex-wrap gap-2">
                     {seg.drivers.map((driver) => (
-                      <span key={driver} className="text-xs px-2 py-1 rounded-full bg-slate-700/50 text-slate-300">
+                      <span key={driver} className="text-xs px-2 py-1 rounded-full bg-white/[0.08] text-slate-300">
                         {driver}
                       </span>
                     ))}
@@ -360,7 +360,7 @@ export default function SpaceIndustryMarketSizePage() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-slate-700/50">
+                <tr className="border-b border-white/[0.06]">
                   <th className="text-left text-slate-400 font-medium py-3 pr-4">Year</th>
                   <th className="text-left text-slate-400 font-medium py-3 pr-4">Market Size</th>
                   <th className="text-left text-slate-400 font-medium py-3">Milestone</th>
@@ -368,7 +368,7 @@ export default function SpaceIndustryMarketSizePage() {
               </thead>
               <tbody>
                 {projections.map((p) => (
-                  <tr key={p.year} className="border-b border-slate-700/30">
+                  <tr key={p.year} className="border-b border-white/[0.06]">
                     <td className="py-3 pr-4 text-white font-medium">{p.year}</td>
                     <td className="py-3 pr-4 text-slate-300 font-semibold">{p.size}</td>
                     <td className="py-3 text-slate-400 text-sm">{p.label}</td>
@@ -391,7 +391,7 @@ export default function SpaceIndustryMarketSizePage() {
           </p>
           <div className="space-y-4">
             {growthDrivers.map((gd) => (
-              <div key={gd.driver} className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-4">
+              <div key={gd.driver} className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-4">
                 <div className="flex items-center gap-3 mb-2">
                   <h3 className="text-white font-semibold">{gd.driver}</h3>
                   <span className={`text-xs px-2 py-0.5 rounded-full ${
@@ -403,7 +403,7 @@ export default function SpaceIndustryMarketSizePage() {
                       ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
                       : gd.impact === 'Medium'
                       ? 'bg-yellow-500/10 text-yellow-400 border border-yellow-500/20'
-                      : 'bg-slate-700/50 text-slate-400 border border-slate-600/50'
+                      : 'bg-white/[0.08] text-slate-400 border border-white/[0.1]'
                   }`}>
                     {gd.impact} impact
                   </span>
@@ -424,7 +424,7 @@ export default function SpaceIndustryMarketSizePage() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-slate-700/50">
+                <tr className="border-b border-white/[0.06]">
                   <th className="text-left text-slate-400 font-medium py-3 pr-4">Company</th>
                   <th className="text-left text-slate-400 font-medium py-3 pr-4">Space Revenue</th>
                   <th className="text-left text-slate-400 font-medium py-3 pr-4">Segment</th>
@@ -433,7 +433,7 @@ export default function SpaceIndustryMarketSizePage() {
               </thead>
               <tbody>
                 {topCompanies.map((company) => (
-                  <tr key={company.slug} className="border-b border-slate-700/30">
+                  <tr key={company.slug} className="border-b border-white/[0.06]">
                     <td className="py-3 pr-4">
                       <div className="text-white font-medium">{company.name}</div>
                       <div className="text-xs text-slate-500">{company.highlight}</div>
@@ -463,7 +463,7 @@ export default function SpaceIndustryMarketSizePage() {
         {/* Investment Trends */}
         <section className="mb-12">
           <h2 className="text-2xl font-bold text-white mb-6">Space Industry Investment Trends</h2>
-          <div className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-6">
+          <div className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
               <div>
                 <div className="text-sm text-slate-400 mb-1">Private Space Investment (2025)</div>
@@ -508,7 +508,7 @@ export default function SpaceIndustryMarketSizePage() {
         <section className="mb-12">
           <h2 className="text-2xl font-bold text-white mb-6">Regional Market Share</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-5">
+            <div className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-5">
               <h3 className="text-white font-semibold mb-1">United States</h3>
               <div className="text-xl font-bold text-slate-300 mb-2">~55% market share</div>
               <p className="text-slate-400 text-sm">
@@ -516,7 +516,7 @@ export default function SpaceIndustryMarketSizePage() {
                 and a thriving VC ecosystem. Home to most commercial space startups.
               </p>
             </div>
-            <div className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-5">
+            <div className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-5">
               <h3 className="text-white font-semibold mb-1">Europe</h3>
               <div className="text-xl font-bold text-slate-300 mb-2">~15% market share</div>
               <p className="text-slate-400 text-sm">
@@ -524,7 +524,7 @@ export default function SpaceIndustryMarketSizePage() {
                 Strong in Earth observation (Copernicus) and navigation (Galileo).
               </p>
             </div>
-            <div className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-5">
+            <div className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-5">
               <h3 className="text-white font-semibold mb-1">China</h3>
               <div className="text-xl font-bold text-slate-300 mb-2">~12% market share</div>
               <p className="text-slate-400 text-sm">
@@ -532,7 +532,7 @@ export default function SpaceIndustryMarketSizePage() {
                 and an emerging commercial sector. 60+ launches annually. BeiDou navigation fully operational.
               </p>
             </div>
-            <div className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-5">
+            <div className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-5">
               <h3 className="text-white font-semibold mb-1">Rest of World</h3>
               <div className="text-xl font-bold text-slate-300 mb-2">~18% market share</div>
               <p className="text-slate-400 text-sm">
@@ -544,7 +544,7 @@ export default function SpaceIndustryMarketSizePage() {
         </section>
 
         {/* CTA */}
-        <div className="bg-slate-800/60 border border-white/10 rounded-xl p-6 text-center mb-12">
+        <div className="bg-white/[0.06] border border-white/10 rounded-xl p-6 text-center mb-12">
           <h3 className="text-xl font-bold text-white mb-2">Track the Space Economy in Real Time</h3>
           <p className="text-slate-400 text-sm mb-4">
             SpaceNexus Market Intelligence provides live data on space industry deals, company financials,
@@ -559,7 +559,7 @@ export default function SpaceIndustryMarketSizePage() {
             </Link>
             <Link
               href="/space-economy"
-              className="inline-block bg-slate-700/50 hover:bg-slate-700 text-white font-medium px-6 py-2.5 rounded-lg transition-colors border border-slate-600/50"
+              className="inline-block bg-white/[0.08] hover:bg-white/[0.08]text-white font-medium px-6 py-2.5 rounded-lg transition-colors border border-white/[0.1]"
             >
               View Space Economy Dashboard
             </Link>
@@ -571,7 +571,7 @@ export default function SpaceIndustryMarketSizePage() {
           <h2 className="text-2xl font-bold text-white mb-6">Frequently Asked Questions</h2>
           <div className="space-y-4">
             {faqItems.map((item, i) => (
-              <div key={i} className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-4">
+              <div key={i} className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-4">
                 <h3 className="text-white font-semibold mb-2">{item.question}</h3>
                 <p className="text-slate-400 text-sm">{item.answer}</p>
               </div>
@@ -580,33 +580,33 @@ export default function SpaceIndustryMarketSizePage() {
         </section>
 
         {/* Internal Links */}
-        <section className="border-t border-slate-700/50 pt-8 mb-8">
+        <section className="border-t border-white/[0.06] pt-8 mb-8">
           <h3 className="text-lg font-bold text-white mb-4">Related SpaceNexus Tools & Data</h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             <Link
               href="/market-intel"
-              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 text-center hover:border-white/15 transition-colors"
+              className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-3 text-center hover:border-white/15 transition-colors"
             >
               <div className="text-white text-sm font-medium">Market Intel</div>
               <div className="text-slate-500 text-xs">Live data</div>
             </Link>
             <Link
               href="/company-profiles"
-              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 text-center hover:border-white/15 transition-colors"
+              className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-3 text-center hover:border-white/15 transition-colors"
             >
               <div className="text-white text-sm font-medium">Company Profiles</div>
               <div className="text-slate-500 text-xs">200+ companies</div>
             </Link>
             <Link
               href="/space-economy"
-              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 text-center hover:border-white/15 transition-colors"
+              className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-3 text-center hover:border-white/15 transition-colors"
             >
               <div className="text-white text-sm font-medium">Space Economy</div>
               <div className="text-slate-500 text-xs">Trends & data</div>
             </Link>
             <Link
               href="/space-capital"
-              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 text-center hover:border-white/15 transition-colors"
+              className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-3 text-center hover:border-white/15 transition-colors"
             >
               <div className="text-white text-sm font-medium">Space Capital</div>
               <div className="text-slate-500 text-xs">Investment tracking</div>
@@ -615,26 +615,26 @@ export default function SpaceIndustryMarketSizePage() {
         </section>
 
         {/* Other Guides */}
-        <section className="border-t border-slate-700/50 pt-8">
+        <section className="border-t border-white/[0.06] pt-8">
           <h3 className="text-lg font-bold text-white mb-4">More from the Learning Center</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
             <Link
               href="/learn/satellite-launch-cost"
-              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 hover:border-white/15 transition-colors"
+              className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-3 hover:border-white/15 transition-colors"
             >
               <div className="text-white text-sm font-medium">Satellite Launch Costs</div>
               <div className="text-slate-500 text-xs">Complete cost breakdown</div>
             </Link>
             <Link
               href="/learn/how-to-track-satellites"
-              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 hover:border-white/15 transition-colors"
+              className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-3 hover:border-white/15 transition-colors"
             >
               <div className="text-white text-sm font-medium">How to Track Satellites</div>
               <div className="text-slate-500 text-xs">Real-time tracking guide</div>
             </Link>
             <Link
               href="/learn/space-companies-to-watch"
-              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 hover:border-white/15 transition-colors"
+              className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-3 hover:border-white/15 transition-colors"
             >
               <div className="text-white text-sm font-medium">Top Space Companies 2026</div>
               <div className="text-slate-500 text-xs">25 companies to watch</div>

@@ -49,7 +49,7 @@ interface CompanyFundingComparisonProps {
 // ────────────────────────────────────────
 
 const COMPANY_COLORS = [
-  { bg: 'bg-white/10', text: 'text-slate-300', border: 'border-white/15', bar: 'bg-white' },
+  { bg: 'bg-white/10', text: 'text-white/70', border: 'border-white/15', bar: 'bg-white' },
   { bg: 'bg-emerald-500/20', text: 'text-emerald-400', border: 'border-emerald-500/40', bar: 'bg-emerald-500' },
   { bg: 'bg-purple-500/20', text: 'text-purple-400', border: 'border-purple-500/40', bar: 'bg-purple-500' },
   { bg: 'bg-amber-500/20', text: 'text-amber-400', border: 'border-amber-500/40', bar: 'bg-amber-500' },
@@ -198,7 +198,7 @@ export default function CompanyFundingComparison({ allRounds }: CompanyFundingCo
       </button>
 
       {isExpanded && (
-        <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-6 animate-in fade-in duration-300">
+        <div className="bg-white/[0.04] rounded-xl border border-white/[0.06] p-6 animate-in fade-in duration-300">
           {/* Company Selector */}
           <div className="mb-6">
             <label className="block text-slate-400 text-xs mb-2">
@@ -239,17 +239,17 @@ export default function CompanyFundingComparison({ allRounds }: CompanyFundingCo
                   }}
                   onFocus={() => setShowDropdown(true)}
                   placeholder="Search and add a company..."
-                  className="bg-slate-900 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-green-500 w-full max-w-md"
+                  className="bg-black border border-white/[0.08] text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-green-500 w-full max-w-md"
                 />
                 {showDropdown && filteredCompanies.length > 0 && (
-                  <div className="absolute top-full left-0 mt-1 w-full max-w-md bg-slate-900 border border-slate-700 rounded-lg shadow-xl z-30 max-h-60 overflow-y-auto">
+                  <div className="absolute top-full left-0 mt-1 w-full max-w-md bg-black border border-white/[0.08] rounded-lg shadow-xl z-30 max-h-60 overflow-y-auto">
                     {filteredCompanies
                       .filter((c) => !selectedSlugs.includes(c.slug))
                       .map((company) => (
                         <button
                           key={company.slug}
                           onClick={() => toggleCompany(company.slug)}
-                          className="w-full text-left px-3 py-2 text-sm text-slate-300 hover:bg-slate-800 hover:text-white transition-colors flex items-center justify-between"
+                          className="w-full text-left px-3 py-2 text-sm text-white/70 hover:bg-white/[0.06] hover:text-white transition-colors flex items-center justify-between"
                         >
                           <span>{company.name}</span>
                           {company.sector && (
@@ -277,7 +277,7 @@ export default function CompanyFundingComparison({ allRounds }: CompanyFundingCo
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="text-left text-xs text-slate-500 border-b border-slate-700/50">
+                    <tr className="text-left text-xs text-slate-500 border-b border-white/[0.06]">
                       <th className="pb-2 font-medium">Company</th>
                       <th className="pb-2 font-medium text-right">Total Raised</th>
                       <th className="pb-2 font-medium text-right">Rounds</th>
@@ -289,7 +289,7 @@ export default function CompanyFundingComparison({ allRounds }: CompanyFundingCo
                     {comparisonData.map((company, i) => {
                       const colorSet = COMPANY_COLORS[i % COMPANY_COLORS.length];
                       return (
-                        <tr key={company.slug} className="border-b border-slate-800/50">
+                        <tr key={company.slug} className="border-b border-white/[0.04]">
                           <td className="py-3">
                             <div className="flex items-center gap-2">
                               <div className={`w-3 h-3 rounded-full ${colorSet.bar}`} />
@@ -311,10 +311,10 @@ export default function CompanyFundingComparison({ allRounds }: CompanyFundingCo
                               ? formatAmount(company.totalRaised)
                               : '--'}
                           </td>
-                          <td className="py-3 text-right text-slate-300">
+                          <td className="py-3 text-right text-white/70">
                             {company.roundCount}
                           </td>
-                          <td className="py-3 text-slate-300">
+                          <td className="py-3 text-white/70">
                             {company.lastRound ? (
                               <span>
                                 {company.lastRound.seriesLabel || company.lastRound.roundType || 'Unknown'}{' '}
@@ -353,7 +353,7 @@ export default function CompanyFundingComparison({ allRounds }: CompanyFundingCo
                         <span className={`text-xs font-medium w-32 truncate ${colorSet.text}`}>
                           {company.name}
                         </span>
-                        <div className="flex-1 bg-slate-700/30 rounded-full h-4">
+                        <div className="flex-1 bg-white/[0.03] rounded-full h-4">
                           <div
                             className={`${colorSet.bar} h-4 rounded-full transition-all duration-500 flex items-center justify-end pr-2`}
                             style={{ width: `${Math.max(widthPct, 3)}%` }}
@@ -389,7 +389,7 @@ export default function CompanyFundingComparison({ allRounds }: CompanyFundingCo
                     return (
                       <div
                         key={company.slug}
-                        className={`bg-slate-900/50 rounded-lg border p-4 ${colorSet.border}`}
+                        className={`bg-black/50 rounded-lg border p-4 ${colorSet.border}`}
                       >
                         <h5 className={`font-semibold text-sm mb-3 ${colorSet.text}`}>
                           {company.name}
@@ -404,7 +404,7 @@ export default function CompanyFundingComparison({ allRounds }: CompanyFundingCo
                                 className="flex items-center justify-between text-xs"
                               >
                                 <div>
-                                  <span className="text-slate-300">
+                                  <span className="text-white/70">
                                     {round.seriesLabel || round.roundType || 'Round'}
                                   </span>
                                   <span className="text-slate-500 ml-1.5">

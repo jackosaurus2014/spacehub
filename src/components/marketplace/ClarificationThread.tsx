@@ -123,12 +123,12 @@ export default function ClarificationThread({ rfqId, userRole }: ClarificationTh
                       {new Date(c.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' })}
                     </span>
                   </div>
-                  <p className="text-sm text-slate-300">{c.question}</p>
+                  <p className="text-sm text-white/70">{c.question}</p>
                 </div>
               </div>
 
               {c.answer ? (
-                <div className="flex items-start gap-3 ml-4 pl-4 border-l border-slate-700/50">
+                <div className="flex items-start gap-3 ml-4 pl-4 border-l border-white/[0.06]">
                   <div className="w-6 h-6 rounded-full bg-green-500/20 flex items-center justify-center text-xs text-green-400 flex-shrink-0 mt-0.5">
                     A
                   </div>
@@ -139,30 +139,30 @@ export default function ClarificationThread({ rfqId, userRole }: ClarificationTh
                         {c.answeredAt ? new Date(c.answeredAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' }) : ''}
                       </span>
                     </div>
-                    <p className="text-sm text-slate-300">{c.answer}</p>
+                    <p className="text-sm text-white/70">{c.answer}</p>
                   </div>
                 </div>
               ) : userRole === 'buyer' ? (
                 answeringId === c.id ? (
-                  <div className="ml-4 pl-4 border-l border-slate-700/50 space-y-2">
+                  <div className="ml-4 pl-4 border-l border-white/[0.06] space-y-2">
                     <textarea
                       value={answerText}
                       onChange={(e) => setAnswerText(e.target.value)}
                       placeholder="Write your answer..."
                       rows={3}
-                      className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+                      className="w-full bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                     />
                     <div className="flex gap-2">
                       <button
                         onClick={() => handleAnswer(c.id)}
                         disabled={submitting || !answerText.trim()}
-                        className="px-3 py-1.5 bg-white hover:bg-slate-100 disabled:bg-slate-700 text-slate-900 text-xs rounded font-medium"
+                        className="px-3 py-1.5 bg-white hover:bg-slate-100 disabled:bg-white/[0.08] text-slate-900 text-xs rounded font-medium"
                       >
                         {submitting ? 'Submitting...' : 'Submit Answer'}
                       </button>
                       <button
                         onClick={() => { setAnsweringId(null); setAnswerText(''); }}
-                        className="px-3 py-1.5 bg-slate-700 hover:bg-slate-600 text-white text-xs rounded"
+                        className="px-3 py-1.5 bg-white/[0.08] hover:bg-white/[0.1] text-white text-xs rounded"
                       >
                         Cancel
                       </button>
@@ -171,7 +171,7 @@ export default function ClarificationThread({ rfqId, userRole }: ClarificationTh
                 ) : (
                   <button
                     onClick={() => setAnsweringId(c.id)}
-                    className="ml-14 text-xs text-slate-300 hover:text-white"
+                    className="ml-14 text-xs text-white/70 hover:text-white"
                   >
                     Answer this question
                   </button>
@@ -198,7 +198,7 @@ export default function ClarificationThread({ rfqId, userRole }: ClarificationTh
             placeholder="Ask a question about this RFQ..."
             rows={3}
             maxLength={2000}
-            className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+            className="w-full bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
           />
           <div className="flex items-center justify-between">
             <label className="flex items-center gap-2 text-xs text-slate-400">
@@ -206,14 +206,14 @@ export default function ClarificationThread({ rfqId, userRole }: ClarificationTh
                 type="checkbox"
                 checked={isPublicQ}
                 onChange={(e) => setIsPublicQ(e.target.checked)}
-                className="rounded bg-slate-700 border-slate-600"
+                className="rounded bg-white/[0.08] border-white/[0.1]"
               />
               Make question public (visible to all providers)
             </label>
             <button
               type="submit"
               disabled={submitting || !question.trim()}
-              className="px-4 py-1.5 bg-white hover:bg-slate-100 disabled:bg-slate-700 text-slate-900 text-xs rounded-lg font-medium"
+              className="px-4 py-1.5 bg-white hover:bg-slate-100 disabled:bg-white/[0.08] text-slate-900 text-xs rounded-lg font-medium"
             >
               {submitting ? 'Submitting...' : 'Submit Question'}
             </button>

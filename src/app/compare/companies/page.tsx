@@ -157,11 +157,11 @@ function CompareCompaniesContent() {
       {/* Breadcrumb */}
       <ScrollReveal delay={0.1}>
       <nav className="flex items-center gap-2 text-sm text-slate-500 mb-6">
-        <Link href="/" className="hover:text-slate-300 transition-colors">
+        <Link href="/" className="hover:text-white/70 transition-colors">
           Home
         </Link>
         <span>/</span>
-        <Link href="/company-profiles" className="hover:text-slate-300 transition-colors">
+        <Link href="/company-profiles" className="hover:text-white/70 transition-colors">
           Company Profiles
         </Link>
         <span>/</span>
@@ -177,7 +177,7 @@ function CompareCompaniesContent() {
 
       {/* Company Selector Card */}
       <ScrollReveal delay={0.15}>
-      <div className="bg-slate-900/50 border border-slate-700/50 rounded-xl p-5 mb-6">
+      <div className="bg-black/50 border border-white/[0.06] rounded-xl p-5 mb-6">
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-sm font-semibold text-white">Select Companies</h2>
           {slugs.length >= 2 && (
@@ -232,18 +232,18 @@ function CompareCompaniesContent() {
       {loading && (
         <div className="space-y-4">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="bg-slate-900/50 border border-slate-700/50 rounded-xl overflow-hidden">
-              <div className="px-5 py-3 bg-slate-800/30 border-b border-slate-700/50">
-                <div className="h-4 w-32 bg-slate-800 rounded animate-pulse" />
+            <div key={i} className="bg-black/50 border border-white/[0.06] rounded-xl overflow-hidden">
+              <div className="px-5 py-3 bg-white/[0.03] border-b border-white/[0.06]">
+                <div className="h-4 w-32 bg-white/[0.06] rounded animate-pulse" />
               </div>
               {[1, 2, 3].map((j) => (
-                <div key={j} className="flex border-b border-slate-700/30 last:border-0">
+                <div key={j} className="flex border-b border-white/[0.04] last:border-0">
                   <div className="w-[160px] p-4 shrink-0">
-                    <div className="h-4 w-24 bg-slate-800 rounded animate-pulse" />
+                    <div className="h-4 w-24 bg-white/[0.06] rounded animate-pulse" />
                   </div>
                   <div className="flex-1 flex gap-4 p-4">
                     {slugs.map((_, k) => (
-                      <div key={k} className="h-4 flex-1 bg-slate-800 rounded animate-pulse" />
+                      <div key={k} className="h-4 flex-1 bg-white/[0.06] rounded animate-pulse" />
                     ))}
                   </div>
                 </div>
@@ -308,10 +308,10 @@ export default function CompareCompaniesPage() {
         <div className="min-h-screen p-4 lg:p-8 max-w-[1600px] mx-auto">
           <div className="mb-8">
             <div className="flex items-center gap-4">
-              <div className="w-10 h-10 rounded-lg bg-slate-800 animate-pulse" />
+              <div className="w-10 h-10 rounded-lg bg-white/[0.06] animate-pulse" />
               <div>
-                <div className="h-8 w-64 bg-slate-800 rounded animate-pulse" />
-                <div className="h-1 w-16 mt-2 bg-slate-800 rounded-full animate-pulse" />
+                <div className="h-8 w-64 bg-white/[0.06] rounded animate-pulse" />
+                <div className="h-1 w-16 mt-2 bg-white/[0.06] rounded-full animate-pulse" />
               </div>
             </div>
           </div>

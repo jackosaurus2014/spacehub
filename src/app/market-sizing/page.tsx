@@ -71,7 +71,7 @@ function HeroStats({ segments }: { segments: MarketSegment[] }) {
         {
           label: 'Global Space Economy (2024)',
           value: formatBillions(global.currentTAM),
-          color: 'text-slate-300',
+          color: 'text-white/70',
           sub: `${formatCAGR(global.cagr)} CAGR`,
         },
         {
@@ -209,8 +209,8 @@ function TAMTreemap({
               onMouseLeave={() => setHoveredId(null)}
               className={`relative text-left rounded-xl border p-4 transition-all duration-200 overflow-hidden cursor-pointer ${
                 isHovered
-                  ? `bg-slate-800/80 ${cagrStyle.border}`
-                  : 'bg-slate-800/50 border-slate-700/50'
+                  ? `bg-white/[0.06] ${cagrStyle.border}`
+                  : 'bg-white/[0.04] border-white/[0.06]'
               }`}
               style={{ minHeight: h }}
             >
@@ -287,7 +287,7 @@ function SegmentDetailPanel({
       {/* Back button */}
       <button
         onClick={onBack}
-        className="flex items-center gap-2 text-sm text-slate-300 hover:text-white transition-colors"
+        className="flex items-center gap-2 text-sm text-white/70 hover:text-white transition-colors"
       >
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -320,15 +320,15 @@ function SegmentDetailPanel({
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="bg-slate-800/50 rounded-lg p-3">
+            <div className="bg-white/[0.04] rounded-lg p-3">
               <div className="text-xs text-slate-500 uppercase tracking-wider">Current TAM ({segment.tamYear})</div>
               <div className="text-xl font-bold text-white mt-1">{formatBillions(segment.currentTAM)}</div>
             </div>
-            <div className="bg-slate-800/50 rounded-lg p-3">
+            <div className="bg-white/[0.04] rounded-lg p-3">
               <div className="text-xs text-slate-500 uppercase tracking-wider">Projected ({segment.projectedYear})</div>
               <div className="text-xl font-bold text-emerald-400 mt-1">{formatBillions(segment.projectedTAM)}</div>
             </div>
-            <div className="bg-slate-800/50 rounded-lg p-3">
+            <div className="bg-white/[0.04] rounded-lg p-3">
               <div className="text-xs text-slate-500 uppercase tracking-wider">Gov vs Commercial</div>
               <div className="flex items-center gap-2 mt-2">
                 <div className="flex-1 h-2 bg-slate-700 rounded-full overflow-hidden">
@@ -341,7 +341,7 @@ function SegmentDetailPanel({
               </div>
               <div className="text-xs text-slate-500 mt-1">{commPercent}% Commercial</div>
             </div>
-            <div className="bg-slate-800/50 rounded-lg p-3">
+            <div className="bg-white/[0.04] rounded-lg p-3">
               <div className="text-xs text-slate-500 uppercase tracking-wider">Growth Multiple</div>
               <div className="text-xl font-bold text-purple-400 mt-1">
                 {(segment.projectedTAM / segment.currentTAM).toFixed(1)}x
@@ -372,7 +372,7 @@ function SegmentDetailPanel({
           />
           <div className="flex gap-3 mt-3 text-xs text-slate-500">
             {sortedHistory.map(d => (
-              <span key={d.year} className={d.type === 'projected' ? 'text-slate-300/60' : 'text-slate-400'}>
+              <span key={d.year} className={d.type === 'projected' ? 'text-white/70/60' : 'text-slate-400'}>
                 {d.year}: {formatBillions(d.value)}
                 {d.type === 'projected' ? ' (P)' : ''}
               </span>
@@ -392,7 +392,7 @@ function SegmentDetailPanel({
               <Link
                 key={player}
                 href={`/company-profiles?search=${encodeURIComponent(player)}`}
-                className="text-xs px-3 py-1.5 rounded-lg bg-slate-800/50 border border-slate-700/50 text-slate-300 hover:border-white/10 hover:text-white transition-colors"
+                className="text-xs px-3 py-1.5 rounded-lg bg-white/[0.04] border border-white/[0.06] text-white/70 hover:border-white/10 hover:text-white transition-colors"
               >
                 {player}
               </Link>
@@ -405,8 +405,8 @@ function SegmentDetailPanel({
           <h3 className="text-base font-semibold text-white mb-3">Key Trends</h3>
           <ul className="space-y-2">
             {segment.trends.map((trend, i) => (
-              <li key={i} className="flex items-start gap-2 text-sm text-slate-300">
-                <span className="text-slate-300 mt-0.5 flex-shrink-0">&#x2022;</span>
+              <li key={i} className="flex items-start gap-2 text-sm text-white/70">
+                <span className="text-white/70 mt-0.5 flex-shrink-0">&#x2022;</span>
                 {trend}
               </li>
             ))}
@@ -446,7 +446,7 @@ function SegmentDetailPanel({
                   whileHover={{ scale: 1.02, y: -2 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={() => onDrillDown(child.id)}
-                  className="text-left rounded-lg bg-slate-800/50 border border-slate-700/50 p-4 hover:border-slate-600/50 transition-all cursor-pointer"
+                  className="text-left rounded-lg bg-white/[0.04] border border-white/[0.06] p-4 hover:border-slate-600/50 transition-all cursor-pointer"
                 >
                   <div className="text-sm font-medium text-white mb-1">{child.name}</div>
                   <div className="flex items-center gap-2 mb-2">
@@ -535,11 +535,11 @@ function SegmentCards({
 
                 {/* TAM row */}
                 <div className="grid grid-cols-2 gap-2 mb-3">
-                  <div className="bg-slate-800/50 rounded-lg p-2">
+                  <div className="bg-white/[0.04] rounded-lg p-2">
                     <div className="text-xs text-slate-500 uppercase tracking-wider">TAM {segment.tamYear}</div>
                     <div className="text-sm font-semibold text-white">{formatBillions(segment.currentTAM)}</div>
                   </div>
-                  <div className="bg-slate-800/50 rounded-lg p-2">
+                  <div className="bg-white/[0.04] rounded-lg p-2">
                     <div className="text-xs text-slate-500 uppercase tracking-wider">{segment.projectedYear} Est.</div>
                     <div className="text-sm font-semibold text-emerald-400">{formatBillions(segment.projectedTAM)}</div>
                   </div>
@@ -574,7 +574,7 @@ function SegmentCards({
                 </div>
 
                 {/* Source */}
-                <div className="text-xs text-slate-600 pt-2 border-t border-slate-700/50 truncate">
+                <div className="text-xs text-slate-600 pt-2 border-t border-white/[0.06] truncate">
                   {segment.source}
                 </div>
               </motion.button>
@@ -609,7 +609,7 @@ function GrowthLeadersTable({
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-slate-700/50">
+            <tr className="border-b border-white/[0.06]">
               <th className="text-left text-xs text-slate-500 font-medium py-2 pr-4">Rank</th>
               <th className="text-left text-xs text-slate-500 font-medium py-2 pr-4">Segment</th>
               <th className="text-right text-xs text-slate-500 font-medium py-2 pr-4">CAGR</th>
@@ -627,7 +627,7 @@ function GrowthLeadersTable({
                 <tr
                   key={segment.id}
                   onClick={() => onSelect(segment.id)}
-                  className="border-b border-slate-800/50 hover:bg-slate-800/30 cursor-pointer transition-colors"
+                  className="border-b border-slate-800/50 hover:bg-white/[0.03] cursor-pointer transition-colors"
                 >
                   <td className="py-2.5 pr-4">
                     <span className="text-slate-500 font-mono text-xs">#{i + 1}</span>
@@ -648,7 +648,7 @@ function GrowthLeadersTable({
                       {formatCAGR(segment.cagr)}
                     </span>
                   </td>
-                  <td className="py-2.5 pr-4 text-right text-xs text-slate-300">
+                  <td className="py-2.5 pr-4 text-right text-xs text-white/70">
                     {formatBillions(segment.currentTAM)}
                   </td>
                   <td className="py-2.5 pr-4 text-right text-xs text-emerald-400">
@@ -844,7 +844,7 @@ export default function MarketSizingPage() {
 
             {/* Methodology note */}
             <ScrollReveal delay={0.15}>
-              <div className="card p-6 mb-8 border-slate-700/30">
+              <div className="card p-6 mb-8 border-white/[0.04]">
                 <h3 className="text-sm font-semibold text-white mb-2">Data Sources & Methodology</h3>
                 <p className="text-xs text-slate-400 leading-relaxed">
                   Market sizing data is sourced from the Satellite Industry Association (SIA) State of the Satellite Industry Report,
@@ -854,7 +854,7 @@ export default function MarketSizingPage() {
                 </p>
                 <div className="flex flex-wrap gap-2 mt-3">
                   {['SIA', 'Morgan Stanley', 'Euroconsult', 'BryceTech', 'NSR', 'McKinsey', 'FAA'].map(src => (
-                    <span key={src} className="text-xs px-2 py-0.5 rounded bg-slate-800/50 text-slate-500 border border-slate-700/30">
+                    <span key={src} className="text-xs px-2 py-0.5 rounded bg-white/[0.04] text-slate-500 border border-white/[0.04]">
                       {src}
                     </span>
                   ))}

@@ -50,26 +50,26 @@ function ResourceCard({
       <div className="flex items-start justify-between mb-2">
         <div className="flex items-center gap-2">
           <span className="text-lg">{categoryInfo?.icon || '📦'}</span>
-          <h3 className="font-semibold text-slate-200 text-sm">{resource.name}</h3>
+          <h3 className="font-semibold text-white/90 text-sm">{resource.name}</h3>
         </div>
         <span
-          className={`text-xs ${availabilityInfo?.color || 'bg-slate-800/500'} text-white px-2 py-0.5 rounded`}
+          className={`text-xs ${availabilityInfo?.color || 'bg-white/[0.04]0'} text-white px-2 py-0.5 rounded`}
         >
           {availabilityInfo?.label || resource.availability}
         </span>
       </div>
 
       <div className="grid grid-cols-2 gap-3 mt-3">
-        <div className="bg-slate-800/50 rounded p-2">
+        <div className="bg-white/[0.04] rounded p-2">
           <div className="text-xs text-slate-400 mb-1">Earth Price</div>
           <div className="text-green-400 font-semibold text-sm">
             {formatPrice(earthPriceKg)}/kg
           </div>
           <div className="text-slate-400 text-xs">{formatPrice(earthPriceLb)}/lb</div>
         </div>
-        <div className="bg-slate-800/50 rounded p-2">
+        <div className="bg-white/[0.04] rounded p-2">
           <div className="text-xs text-slate-400 mb-1">Space Price (LEO)</div>
-          <div className="text-rocket-400 font-semibold text-sm">
+          <div className="text-white/70 font-semibold text-sm">
             {formatPrice(spacePriceKg)}/kg
           </div>
           <div className="text-slate-400 text-xs">{formatPrice(spacePriceLb)}/lb</div>
@@ -78,7 +78,7 @@ function ResourceCard({
 
       <div className="flex items-center justify-between mt-3 text-xs">
         <span className="text-slate-400">{categoryInfo?.label}</span>
-        <span className="text-slate-200">
+        <span className="text-white/90">
           {launchMultiplier >= 1000
             ? `${(launchMultiplier / 1000).toFixed(1)}K×`
             : `${launchMultiplier.toFixed(1)}×`}{' '}
@@ -163,7 +163,7 @@ export default function ResourceExchangeModule() {
     return (
       <div className="card p-8 text-center">
         <span className="text-5xl block mb-4">💰</span>
-        <h3 className="text-xl font-semibold text-slate-200 mb-2">Resource Exchange</h3>
+        <h3 className="text-xl font-semibold text-white/90 mb-2">Resource Exchange</h3>
         <p className="text-slate-400 mb-4">
           Track space commodity prices and calculate launch costs.
         </p>
@@ -191,7 +191,7 @@ export default function ResourceExchangeModule() {
         <div className="flex items-center gap-3">
           <span className="text-3xl">💰</span>
           <div>
-            <h2 className="text-2xl font-display font-bold text-slate-200">Resource Exchange</h2>
+            <h2 className="text-2xl font-display font-bold text-white/90">Resource Exchange</h2>
             <p className="text-slate-400 text-sm">Earth vs space commodity pricing</p>
           </div>
         </div>
@@ -208,7 +208,7 @@ export default function ResourceExchangeModule() {
             <select
               value={selectedProvider}
               onChange={(e) => handleProviderChange(e.target.value)}
-              className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+              className="bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
             >
               {providers.map((provider) => (
                 <option key={provider.slug} value={provider.slug}>
@@ -219,7 +219,7 @@ export default function ResourceExchangeModule() {
           </div>
           <div className="flex items-center gap-2">
             <span className="text-slate-400 text-sm">Cost to LEO:</span>
-            <span className="text-rocket-400 font-semibold">
+            <span className="text-white/70 font-semibold">
               ${launchCost.toLocaleString()}/kg
             </span>
             <span className="text-slate-400 text-xs">

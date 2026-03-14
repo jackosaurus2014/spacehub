@@ -48,7 +48,7 @@ export default function PrivacyPolicyPage() {
             <section>
               <h2 className="text-xl font-semibold bg-gradient-to-r from-slate-300 to-blue-400 bg-clip-text text-transparent mb-4">Information We Collect</h2>
 
-              <h3 className="text-lg font-medium text-slate-200 mb-3">Personal Data</h3>
+              <h3 className="text-lg font-medium text-white/90 mb-3">Personal Data</h3>
               <p className="text-slate-400 leading-relaxed mb-4">
                 We may collect personally identifiable information that you voluntarily provide to us when you:
               </p>
@@ -64,7 +64,7 @@ export default function PrivacyPolicyPage() {
                 contact or identifying information you choose to provide.
               </p>
 
-              <h3 className="text-lg font-medium text-slate-200 mb-3">Automatically Collected Data</h3>
+              <h3 className="text-lg font-medium text-white/90 mb-3">Automatically Collected Data</h3>
               <p className="text-slate-400 leading-relaxed mb-4">
                 When you access our platform, we automatically collect certain information, including:
               </p>
@@ -75,7 +75,7 @@ export default function PrivacyPolicyPage() {
                 <li>Location data (country/region based on IP address)</li>
               </ul>
 
-              <h3 className="text-lg font-medium text-slate-200 mb-3 mt-6">Mobile App Data</h3>
+              <h3 className="text-lg font-medium text-white/90 mb-3 mt-6">Mobile App Data</h3>
               <p className="text-slate-400 leading-relaxed mb-4">
                 When you use our mobile application (iOS or Android), we may additionally collect:
               </p>
@@ -86,7 +86,7 @@ export default function PrivacyPolicyPage() {
                 <li>App usage analytics and crash reports</li>
               </ul>
 
-              <h3 className="text-lg font-medium text-slate-200 mb-3 mt-6">Community Data</h3>
+              <h3 className="text-lg font-medium text-white/90 mb-3 mt-6">Community Data</h3>
               <p className="text-slate-400 leading-relaxed mb-4">
                 When you use our community features, we collect:
               </p>
@@ -117,7 +117,7 @@ export default function PrivacyPolicyPage() {
                 <li>Detecting, preventing, and addressing technical issues and fraud</li>
                 <li>Complying with legal obligations</li>
                 <li>Moderating community content for compliance with our{' '}
-                  <Link href="/community/guidelines" className="text-slate-200 hover:text-white underline">
+                  <Link href="/community/guidelines" className="text-white/90 hover:text-white underline">
                     Community Guidelines
                   </Link>
                 </li>
@@ -134,25 +134,25 @@ export default function PrivacyPolicyPage() {
                 We may share your information in the following situations:
               </p>
 
-              <h3 className="text-lg font-medium text-slate-200 mb-3">Service Providers</h3>
+              <h3 className="text-lg font-medium text-white/90 mb-3">Service Providers</h3>
               <p className="text-slate-400 leading-relaxed mb-4">
                 We may share your information with third-party service providers who perform services on our
                 behalf, such as hosting, analytics, email delivery, and customer support.
               </p>
 
-              <h3 className="text-lg font-medium text-slate-200 mb-3">Business Transfers</h3>
+              <h3 className="text-lg font-medium text-white/90 mb-3">Business Transfers</h3>
               <p className="text-slate-400 leading-relaxed mb-4">
                 If we are involved in a merger, acquisition, or sale of assets, your information may be
                 transferred as part of that transaction.
               </p>
 
-              <h3 className="text-lg font-medium text-slate-200 mb-3">Legal Requirements</h3>
+              <h3 className="text-lg font-medium text-white/90 mb-3">Legal Requirements</h3>
               <p className="text-slate-400 leading-relaxed mb-4">
                 We may disclose your information if required to do so by law or in response to valid requests
                 by public authorities (e.g., a court or government agency).
               </p>
 
-              <h3 className="text-lg font-medium text-slate-200 mb-3">With Your Consent</h3>
+              <h3 className="text-lg font-medium text-white/90 mb-3">With Your Consent</h3>
               <p className="text-slate-400 leading-relaxed">
                 We may share your information for other purposes with your explicit consent.
               </p>
@@ -172,7 +172,7 @@ export default function PrivacyPolicyPage() {
               </p>
               <p className="text-slate-400 leading-relaxed">
                 For more detailed information about the cookies we use, please see our{' '}
-                <Link href="/cookies" className="text-slate-200 hover:text-white underline">
+                <Link href="/cookies" className="text-white/90 hover:text-white underline">
                   Cookie Policy
                 </Link>.
               </p>
@@ -217,12 +217,12 @@ export default function PrivacyPolicyPage() {
               <p className="text-slate-400 leading-relaxed mt-4">
                 To exercise any of these rights, please contact us using the information provided below.
                 You can also export all of your data at any time from your{' '}
-                <Link href="/account" className="text-slate-200 hover:text-white underline">
+                <Link href="/account" className="text-white/90 hover:text-white underline">
                   Account Settings
                 </Link>{' '}page.
               </p>
 
-              <h3 className="text-lg font-medium text-slate-200 mb-3 mt-6">Global Privacy Control (GPC)</h3>
+              <h3 className="text-lg font-medium text-white/90 mb-3 mt-6">Global Privacy Control (GPC)</h3>
               <p className="text-slate-400 leading-relaxed mb-4">
                 We respect the Global Privacy Control (GPC) signal. When we detect a GPC signal from your
                 browser, we treat it as a valid opt-out request for the sale or sharing of your personal
@@ -235,16 +235,16 @@ export default function PrivacyPolicyPage() {
                   href="https://globalprivacycontrol.org"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-slate-200 hover:text-white underline"
+                  className="text-white/90 hover:text-white underline"
                 >
                   globalprivacycontrol.org
                 </a>.
               </p>
 
-              <h3 className="text-lg font-medium text-slate-200 mb-3 mt-6">Account Deletion</h3>
+              <h3 className="text-lg font-medium text-white/90 mb-3 mt-6">Account Deletion</h3>
               <p className="text-slate-400 leading-relaxed">
                 You can permanently delete your account and all associated data at any time through the{' '}
-                <a href="/account" className="text-slate-300 hover:underline">Account Settings</a> page.
+                <a href="/account" className="text-white/70 hover:underline">Account Settings</a> page.
                 Account deletion is immediate and irreversible. All your personal data, preferences, saved
                 searches, watchlists, API keys, and other account-related information will be permanently
                 removed from our systems.
@@ -312,38 +312,38 @@ export default function PrivacyPolicyPage() {
               <p className="text-slate-400 leading-relaxed mb-4">
                 If you have any questions about this Privacy Policy or our data practices, please contact us:
               </p>
-              <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-6">
-                <p className="text-slate-300 font-medium">SpaceNexus Privacy Team</p>
+              <div className="bg-white/[0.04] border border-white/[0.08] rounded-lg p-6">
+                <p className="text-white/70 font-medium">SpaceNexus Privacy Team</p>
                 <p className="text-slate-400 mt-2">Email: privacy@spacenexus.us</p>
                 <p className="text-slate-400">Address: 1234 Orbit Drive, Suite 500, Houston, TX 77058</p>
               </div>
             </section>
 
             {/* Related Links */}
-            <section className="pt-6 border-t border-slate-700">
-              <h3 className="text-lg font-medium text-slate-200 mb-4">Related Documents</h3>
+            <section className="pt-6 border-t border-white/[0.08]">
+              <h3 className="text-lg font-medium text-white/90 mb-4">Related Documents</h3>
               <div className="flex flex-wrap gap-4">
                 <Link
                   href="/terms"
-                  className="text-slate-200 hover:text-white underline"
+                  className="text-white/90 hover:text-white underline"
                 >
                   Terms of Service
                 </Link>
                 <Link
                   href="/cookies"
-                  className="text-slate-200 hover:text-white underline"
+                  className="text-white/90 hover:text-white underline"
                 >
                   Cookie Policy
                 </Link>
                 <Link
                   href="/community/guidelines"
-                  className="text-slate-200 hover:text-white underline"
+                  className="text-white/90 hover:text-white underline"
                 >
                   Community Guidelines
                 </Link>
                 <Link
                   href="/legal/dmca"
-                  className="text-slate-200 hover:text-white underline"
+                  className="text-white/90 hover:text-white underline"
                 >
                   DMCA Policy
                 </Link>

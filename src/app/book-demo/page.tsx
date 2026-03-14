@@ -176,7 +176,7 @@ export default function BookDemoPage() {
                 </Link>
                 <Link
                   href="/case-studies"
-                  className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-xl border border-slate-600 text-slate-200 font-semibold hover:bg-slate-800/50 transition-colors"
+                  className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-xl border border-white/[0.1] text-white/90 font-semibold hover:bg-white/[0.04] transition-colors"
                 >
                   Read Case Studies
                 </Link>
@@ -189,7 +189,7 @@ export default function BookDemoPage() {
   }
 
   const inputClass =
-    'w-full bg-slate-800/80 border border-slate-600 rounded-xl text-slate-100 placeholder:text-slate-500 focus:border-white/15 focus:outline-none focus:ring-1 focus:ring-white/30 px-4 py-3 text-sm transition-colors';
+    'w-full bg-white/[0.06] border border-white/[0.1] rounded-xl text-white placeholder:text-slate-500 focus:border-white/15 focus:outline-none focus:ring-1 focus:ring-white/30 px-4 py-3 text-sm transition-colors';
   const labelClass = 'block text-sm font-medium text-slate-300 mb-1.5';
 
   return (
@@ -200,7 +200,7 @@ export default function BookDemoPage() {
         <div className="container mx-auto px-4 relative z-10">
           <ScrollReveal>
             <div className="max-w-3xl mx-auto text-center">
-              <span className="inline-block px-4 py-1.5 rounded-full text-xs font-semibold tracking-wide uppercase bg-white/5 text-slate-200 border border-white/10 mb-6">
+              <span className="inline-block px-4 py-1.5 rounded-full text-xs font-semibold tracking-wide uppercase bg-white/5 text-white/90 border border-white/10 mb-6">
                 Request a Demo
               </span>
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
@@ -225,7 +225,7 @@ export default function BookDemoPage() {
             <ScrollReveal className="lg:col-span-3">
               <form
                 onSubmit={handleSubmit}
-                className="rounded-2xl border border-slate-700/50 bg-slate-900/50 backdrop-blur-sm p-6 md:p-8 space-y-5"
+                className="rounded-2xl border border-white/[0.06] bg-white/[0.04] backdrop-blur-sm p-6 md:p-8 space-y-5"
               >
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                   <div>
@@ -414,7 +414,7 @@ export default function BookDemoPage() {
 
             {/* Right: Benefits */}
             <ScrollReveal className="lg:col-span-2" delay={0.1}>
-              <div className="rounded-2xl border border-slate-700/50 bg-slate-900/50 backdrop-blur-sm p-6 md:p-8">
+              <div className="rounded-2xl border border-white/[0.06] bg-white/[0.04] backdrop-blur-sm p-6 md:p-8">
                 <h2 className="text-lg font-semibold text-white mb-6">What to expect</h2>
                 <ul className="space-y-5">
                   {BENEFITS.map((benefit) => (
@@ -425,7 +425,7 @@ export default function BookDemoPage() {
                   ))}
                 </ul>
 
-                <div className="mt-8 pt-6 border-t border-slate-700/50">
+                <div className="mt-8 pt-6 border-t border-white/[0.06]">
                   <p className="text-slate-400 text-sm mb-3">
                     Or start exploring now
                   </p>

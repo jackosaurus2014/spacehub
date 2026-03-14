@@ -197,7 +197,7 @@ const REMEDIATION_PROGRAMS: RemediationProgram[] = [
     name: 'ClearSpace-1',
     organization: 'ESA / ClearSpace SA',
     status: 'In Development',
-    statusColor: 'text-slate-300 bg-white/5 border-white/10',
+    statusColor: 'text-white/70 bg-white/5 border-white/10',
     description: 'Mission to capture and deorbit a Vega Secondary Payload Adapter (VESPA) upper stage using a four-armed robotic capture mechanism.',
     year: '2026 Launch',
     technique: 'Robotic arms capture',
@@ -233,7 +233,7 @@ const REMEDIATION_PROGRAMS: RemediationProgram[] = [
     name: 'CRD2',
     organization: 'JAXA',
     status: 'In Development',
-    statusColor: 'text-slate-300 bg-white/5 border-white/10',
+    statusColor: 'text-white/70 bg-white/5 border-white/10',
     description: 'Commercial Removal of Debris Demonstration Phase 2. Developing technologies for large-scale debris removal targeting spent rocket upper stages in critical orbital regions.',
     year: 'TBD',
     technique: 'Robotic capture & deorbit',
@@ -360,7 +360,7 @@ export default function DebrisCatalogPage() {
                 placeholder="Search events, objects..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 bg-slate-800/60 border border-slate-700/50 rounded-lg text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-white/15 focus:ring-1 focus:ring-white/30 transition-colors"
+                className="w-full pl-10 pr-4 py-2.5 bg-white/[0.05] border border-white/[0.06] rounded-lg text-sm text-white/90 placeholder-slate-500 focus:outline-none focus:border-white/15 focus:ring-1 focus:ring-white/30 transition-colors"
               />
             </div>
 
@@ -368,7 +368,7 @@ export default function DebrisCatalogPage() {
             <select
               value={orbitFilter}
               onChange={(e) => setOrbitFilter(e.target.value as OrbitFilter)}
-              className="px-3 py-2.5 bg-slate-800/60 border border-slate-700/50 rounded-lg text-sm text-slate-200 focus:outline-none focus:border-white/15 transition-colors cursor-pointer"
+              className="px-3 py-2.5 bg-white/[0.05] border border-white/[0.06] rounded-lg text-sm text-white/90 focus:outline-none focus:border-white/15 transition-colors cursor-pointer"
             >
               <option value="all">All Orbits</option>
               <option value="LEO">LEO (200-2,000 km)</option>
@@ -381,7 +381,7 @@ export default function DebrisCatalogPage() {
             <select
               value={originFilter}
               onChange={(e) => setOriginFilter(e.target.value as OriginFilter)}
-              className="px-3 py-2.5 bg-slate-800/60 border border-slate-700/50 rounded-lg text-sm text-slate-200 focus:outline-none focus:border-white/15 transition-colors cursor-pointer"
+              className="px-3 py-2.5 bg-white/[0.05] border border-white/[0.06] rounded-lg text-sm text-white/90 focus:outline-none focus:border-white/15 transition-colors cursor-pointer"
             >
               <option value="all">All Origins</option>
               <option value="Russia/CIS">Russia/CIS</option>
@@ -397,7 +397,7 @@ export default function DebrisCatalogPage() {
             <select
               value={objectTypeFilter}
               onChange={(e) => setObjectTypeFilter(e.target.value as ObjectTypeFilter)}
-              className="px-3 py-2.5 bg-slate-800/60 border border-slate-700/50 rounded-lg text-sm text-slate-200 focus:outline-none focus:border-white/15 transition-colors cursor-pointer"
+              className="px-3 py-2.5 bg-white/[0.05] border border-white/[0.06] rounded-lg text-sm text-white/90 focus:outline-none focus:border-white/15 transition-colors cursor-pointer"
             >
               <option value="all">All Object Types</option>
               <option value="satellite">Satellites</option>
@@ -412,18 +412,18 @@ export default function DebrisCatalogPage() {
         {/* ══════════ Section 1: Debris Overview Stats ══════════ */}
         <section className="mb-10">
           <ScrollReveal>
-          <h2 className="text-xl font-bold text-slate-100 mb-4 flex items-center gap-2">
-            <span className="text-slate-300">{'// '}</span>Orbital Debris Overview
+          <h2 className="text-xl font-bold text-white/90 mb-4 flex items-center gap-2">
+            <span className="text-white/70">{'// '}</span>Orbital Debris Overview
           </h2>
           </ScrollReveal>
           <StaggerContainer className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {OVERVIEW_STATS.map((stat) => (
               <StaggerItem key={stat.label}><div className="card p-5 text-center group">
                 <div className="text-2xl mb-2">{stat.icon}</div>
-                <div className="text-2xl md:text-3xl font-bold text-slate-100 mb-1 group-hover:text-white transition-colors">
+                <div className="text-2xl md:text-3xl font-bold text-white/90 mb-1 group-hover:text-white transition-colors">
                   {stat.value}
                 </div>
-                <div className="text-sm font-medium text-slate-300 mb-0.5">{stat.label}</div>
+                <div className="text-sm font-medium text-white/70 mb-0.5">{stat.label}</div>
                 <div className="text-xs text-slate-500">{stat.detail}</div>
               </div></StaggerItem>
             ))}
@@ -433,8 +433,8 @@ export default function DebrisCatalogPage() {
         {/* ══════════ Section 2: Major Debris Events Timeline ══════════ */}
         <ScrollReveal delay={0.1}>
         <section className="mb-10">
-          <h2 className="text-xl font-bold text-slate-100 mb-4 flex items-center gap-2">
-            <span className="text-slate-300">{'// '}</span>Major Debris Events
+          <h2 className="text-xl font-bold text-white/90 mb-4 flex items-center gap-2">
+            <span className="text-white/70">{'// '}</span>Major Debris Events
           </h2>
 
           {filteredEvents.length === 0 ? (
@@ -444,7 +444,7 @@ export default function DebrisCatalogPage() {
           ) : (
             <div className="relative">
               {/* Timeline line */}
-              <div className="absolute left-[52px] top-0 bottom-0 w-px bg-slate-700/50 hidden md:block" />
+              <div className="absolute left-[52px] top-0 bottom-0 w-px bg-white/[0.04] hidden md:block" />
 
               <div className="space-y-4">
                 {filteredEvents.map((event, index) => {
@@ -459,11 +459,11 @@ export default function DebrisCatalogPage() {
                       {/* Main row */}
                       <button
                         onClick={() => setExpandedEvent(isExpanded ? null : index)}
-                        className="w-full flex items-start gap-4 p-5 text-left hover:bg-slate-800/30 transition-colors"
+                        className="w-full flex items-start gap-4 p-5 text-left hover:bg-white/[0.03] transition-colors"
                       >
                         {/* Year badge */}
                         <div className="flex-shrink-0 w-[52px]">
-                          <span className="inline-block px-2 py-1 bg-slate-800 border border-slate-700/50 rounded-md text-xs font-mono font-bold text-slate-300">
+                          <span className="inline-block px-2 py-1 bg-white/[0.06] border border-white/[0.06] rounded-md text-xs font-mono font-bold text-white/70">
                             {event.year}
                           </span>
                         </div>
@@ -471,7 +471,7 @@ export default function DebrisCatalogPage() {
                         {/* Content */}
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 flex-wrap mb-1">
-                            <h3 className="text-base font-semibold text-slate-100">
+                            <h3 className="text-base font-semibold text-white/90">
                               {event.title}
                             </h3>
                             <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border ${sev.bg} ${sev.text} ${sev.border}`}>
@@ -502,22 +502,22 @@ export default function DebrisCatalogPage() {
 
                       {/* Expanded details */}
                       {isExpanded && (
-                        <div className="px-5 pb-5 border-t border-slate-700/30">
+                        <div className="px-5 pb-5 border-t border-white/[0.04]">
                           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-                            <div className="bg-slate-800/40 rounded-lg p-3">
+                            <div className="bg-white/[0.04] rounded-lg p-3">
                               <div className="text-xs text-slate-500 mb-1 uppercase tracking-wider">Fragment Count</div>
-                              <div className="text-sm font-medium text-slate-200">{event.fragments}</div>
+                              <div className="text-sm font-medium text-white/90">{event.fragments}</div>
                             </div>
-                            <div className="bg-slate-800/40 rounded-lg p-3">
+                            <div className="bg-white/[0.04] rounded-lg p-3">
                               <div className="text-xs text-slate-500 mb-1 uppercase tracking-wider">Orbit Range</div>
-                              <div className="text-sm font-medium text-slate-200">{event.orbitRange}</div>
+                              <div className="text-sm font-medium text-white/90">{event.orbitRange}</div>
                             </div>
-                            <div className="bg-slate-800/40 rounded-lg p-3">
+                            <div className="bg-white/[0.04] rounded-lg p-3">
                               <div className="text-xs text-slate-500 mb-1 uppercase tracking-wider">Decay Timeline</div>
-                              <div className="text-sm font-medium text-slate-200">{event.decayTimeline}</div>
+                              <div className="text-sm font-medium text-white/90">{event.decayTimeline}</div>
                             </div>
                           </div>
-                          <p className="text-sm text-slate-300 mt-4 leading-relaxed">
+                          <p className="text-sm text-white/70 mt-4 leading-relaxed">
                             {event.description}
                           </p>
                         </div>
@@ -538,8 +538,8 @@ export default function DebrisCatalogPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-10">
           {/* Section 3: Debris by Orbit */}
           <section>
-            <h2 className="text-xl font-bold text-slate-100 mb-4 flex items-center gap-2">
-              <span className="text-slate-300">{'// '}</span>Debris by Orbit
+            <h2 className="text-xl font-bold text-white/90 mb-4 flex items-center gap-2">
+              <span className="text-white/70">{'// '}</span>Debris by Orbit
             </h2>
             <div className="card p-6">
               <div className="space-y-5">
@@ -549,14 +549,14 @@ export default function DebrisCatalogPage() {
                     <div key={orbit.orbit}>
                       <div className="flex items-center justify-between mb-1.5">
                         <div>
-                          <span className="text-sm font-semibold text-slate-200">{orbit.orbit}</span>
+                          <span className="text-sm font-semibold text-white/90">{orbit.orbit}</span>
                           <span className="text-xs text-slate-500 ml-2">{orbit.fullName}</span>
                         </div>
-                        <span className="text-sm font-mono font-bold text-slate-300">
+                        <span className="text-sm font-mono font-bold text-white/70">
                           {orbit.tracked.toLocaleString()}
                         </span>
                       </div>
-                      <div className="w-full h-3 bg-slate-800/60 rounded-full overflow-hidden">
+                      <div className="w-full h-3 bg-white/[0.05] rounded-full overflow-hidden">
                         <div
                           className={`h-full rounded-full ${orbit.color} transition-all duration-700 ease-out`}
                           style={{ width: `${pct}%` }}
@@ -567,10 +567,10 @@ export default function DebrisCatalogPage() {
                   );
                 })}
               </div>
-              <div className="mt-6 pt-4 border-t border-slate-700/30">
+              <div className="mt-6 pt-4 border-t border-white/[0.04]">
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-slate-400">Total Tracked</span>
-                  <span className="font-mono font-bold text-slate-300">
+                  <span className="font-mono font-bold text-white/70">
                     {ORBIT_BREAKDOWN.reduce((sum, o) => sum + o.tracked, 0).toLocaleString()}
                   </span>
                 </div>
@@ -580,8 +580,8 @@ export default function DebrisCatalogPage() {
 
           {/* Section 4: Top Contributors */}
           <section>
-            <h2 className="text-xl font-bold text-slate-100 mb-4 flex items-center gap-2">
-              <span className="text-slate-300">{'// '}</span>Top Contributors
+            <h2 className="text-xl font-bold text-white/90 mb-4 flex items-center gap-2">
+              <span className="text-white/70">{'// '}</span>Top Contributors
             </h2>
             <div className="card p-6">
               <div className="space-y-4">
@@ -594,15 +594,15 @@ export default function DebrisCatalogPage() {
                           <span className="text-xs font-mono text-slate-600 w-5">
                             #{index + 1}
                           </span>
-                          <span className="text-sm font-semibold text-slate-200">
+                          <span className="text-sm font-semibold text-white/90">
                             {contributor.name}
                           </span>
                         </div>
-                        <span className="text-sm font-mono font-bold text-slate-300">
+                        <span className="text-sm font-mono font-bold text-white/70">
                           {contributor.objects.toLocaleString()}+
                         </span>
                       </div>
-                      <div className="w-full h-3 bg-slate-800/60 rounded-full overflow-hidden ml-7">
+                      <div className="w-full h-3 bg-white/[0.05] rounded-full overflow-hidden ml-7">
                         <div
                           className={`h-full rounded-full ${contributor.color} transition-all duration-700 ease-out`}
                           style={{ width: `${pct}%` }}
@@ -612,7 +612,7 @@ export default function DebrisCatalogPage() {
                   );
                 })}
               </div>
-              <div className="mt-6 pt-4 border-t border-slate-700/30 text-xs text-slate-500">
+              <div className="mt-6 pt-4 border-t border-white/[0.04] text-xs text-slate-500">
                 Source: ESA Space Debris Office, 18th Space Defense Squadron catalog data
               </div>
             </div>
@@ -621,25 +621,25 @@ export default function DebrisCatalogPage() {
 
         {/* ══════════ Section 5: Active Remediation Programs ══════════ */}
         <section className="mb-10">
-          <h2 className="text-xl font-bold text-slate-100 mb-4 flex items-center gap-2">
-            <span className="text-slate-300">{'// '}</span>Active Remediation Programs
+          <h2 className="text-xl font-bold text-white/90 mb-4 flex items-center gap-2">
+            <span className="text-white/70">{'// '}</span>Active Remediation Programs
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
             {REMEDIATION_PROGRAMS.map((program) => (
               <div key={program.name} className="card p-5 flex flex-col">
                 <div className="flex items-start justify-between gap-2 mb-3">
                   <div>
-                    <h3 className="text-base font-bold text-slate-100">{program.name}</h3>
+                    <h3 className="text-base font-bold text-white/90">{program.name}</h3>
                     <p className="text-xs text-slate-400 mt-0.5">{program.organization}</p>
                   </div>
                   <span className={`flex-shrink-0 inline-flex items-center px-2 py-1 rounded-full text-xs font-medium border ${program.statusColor}`}>
                     {program.status}
                   </span>
                 </div>
-                <p className="text-sm text-slate-300 leading-relaxed flex-1 mb-3">
+                <p className="text-sm text-white/70 leading-relaxed flex-1 mb-3">
                   {program.description}
                 </p>
-                <div className="flex items-center gap-4 text-xs text-slate-500 pt-3 border-t border-slate-700/30">
+                <div className="flex items-center gap-4 text-xs text-slate-500 pt-3 border-t border-white/[0.04]">
                   <span className="flex items-center gap-1">
                     <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -661,8 +661,8 @@ export default function DebrisCatalogPage() {
 
         {/* ══════════ Section 6: Kessler Syndrome Risk Assessment ══════════ */}
         <section className="mb-10">
-          <h2 className="text-xl font-bold text-slate-100 mb-4 flex items-center gap-2">
-            <span className="text-slate-300">{'// '}</span>Kessler Syndrome Risk Assessment
+          <h2 className="text-xl font-bold text-white/90 mb-4 flex items-center gap-2">
+            <span className="text-white/70">{'// '}</span>Kessler Syndrome Risk Assessment
           </h2>
           <div className="card p-6 border-orange-500/30">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -710,16 +710,16 @@ export default function DebrisCatalogPage() {
               <div>
                 <div className="text-xs text-slate-500 uppercase tracking-wider mb-3">Cascade Timeline Estimate</div>
                 <div className="space-y-3">
-                  <div className="bg-slate-800/40 rounded-lg p-3">
-                    <div className="text-sm font-semibold text-slate-200 mb-1">Current Trajectory</div>
+                  <div className="bg-white/[0.04] rounded-lg p-3">
+                    <div className="text-sm font-semibold text-white/90 mb-1">Current Trajectory</div>
                     <p className="text-xs text-slate-400">Without active debris removal, models predict the onset of cascading collisions in the 800-1,000 km band within 50-100 years.</p>
                   </div>
-                  <div className="bg-slate-800/40 rounded-lg p-3">
-                    <div className="text-sm font-semibold text-slate-200 mb-1">With Mitigation</div>
+                  <div className="bg-white/[0.04] rounded-lg p-3">
+                    <div className="text-sm font-semibold text-white/90 mb-1">With Mitigation</div>
                     <p className="text-xs text-slate-400">Removing 5-10 large objects per year from critical bands could stabilize the environment and significantly extend the cascade timeline.</p>
                   </div>
-                  <div className="bg-slate-800/40 rounded-lg p-3">
-                    <div className="text-sm font-semibold text-slate-200 mb-1">Key Metric</div>
+                  <div className="bg-white/[0.04] rounded-lg p-3">
+                    <div className="text-sm font-semibold text-white/90 mb-1">Key Metric</div>
                     <p className="text-xs text-slate-400">
                       The &ldquo;critical density&rdquo; threshold for LEO is estimated at ~1 collision every 5 years generating enough fragments to sustain a chain reaction.
                     </p>
@@ -729,7 +729,7 @@ export default function DebrisCatalogPage() {
             </div>
 
             {/* Bottom disclaimer */}
-            <div className="mt-6 pt-4 border-t border-slate-700/30 text-xs text-slate-500 flex items-start gap-2">
+            <div className="mt-6 pt-4 border-t border-white/[0.04] text-xs text-slate-500 flex items-start gap-2">
               <svg className="w-4 h-4 flex-shrink-0 mt-0.5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
@@ -743,7 +743,7 @@ export default function DebrisCatalogPage() {
         {/* ══════════ Data Sources Footer ══════════ */}
         <section className="mb-4">
           <div className="card p-5">
-            <h3 className="text-sm font-semibold text-slate-300 mb-3">Data Sources &amp; References</h3>
+            <h3 className="text-sm font-semibold text-white/70 mb-3">Data Sources &amp; References</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-1.5 text-xs text-slate-500">
               <div className="flex items-center gap-2">
                 <span className="w-1 h-1 rounded-full bg-white flex-shrink-0" />

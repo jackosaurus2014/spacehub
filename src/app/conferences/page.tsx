@@ -563,7 +563,7 @@ const COST_BRACKETS: CostBracket[] = ['Free', '<$500', '$500-$2000', '$2000+'];
 
 const CATEGORY_COLORS: Record<EventCategory, string> = {
   'Military/Defense': 'bg-red-500/20 text-red-300 border-red-500/30',
-  Commercial: 'bg-white/10 text-slate-200 border-white/10',
+  Commercial: 'bg-white/10 text-white/90 border-white/10',
   Academic: 'bg-purple-500/20 text-purple-300 border-purple-500/30',
   Startup: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30',
   Investment: 'bg-amber-500/20 text-amber-300 border-amber-500/30',
@@ -820,7 +820,7 @@ export default function ConferencesPage() {
             <div className="text-sm text-slate-400 mt-1">Events Listed</div>
           </div></StaggerItem>
           <StaggerItem><div className="card p-5 text-center">
-            <div className="text-3xl font-bold text-slate-300">
+            <div className="text-3xl font-bold text-white/70">
               {formatAttendance(stats.totalAttendance)}
             </div>
             <div className="text-sm text-slate-400 mt-1">Combined Attendance</div>
@@ -866,18 +866,18 @@ export default function ConferencesPage() {
                 placeholder="Search events, topics, locations..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 bg-slate-800/70 border border-slate-700/50 rounded-lg text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-white/15 focus:ring-1 focus:ring-white/30"
+                className="w-full pl-10 pr-4 py-2.5 bg-white/[0.05] border border-white/[0.06] rounded-lg text-sm text-white/90 placeholder-slate-500 focus:outline-none focus:border-white/15 focus:ring-1 focus:ring-white/30"
               />
             </div>
 
             {/* View Toggle */}
-            <div className="flex items-center gap-1 bg-slate-800/70 rounded-lg p-1 border border-slate-700/50 self-start">
+            <div className="flex items-center gap-1 bg-white/[0.05] rounded-lg p-1 border border-white/[0.06] self-start">
               <button
                 onClick={() => setViewMode('grid')}
                 className={`px-3 py-1.5 text-sm rounded-md transition-colors ${
                   viewMode === 'grid'
                     ? 'bg-purple-600 text-white'
-                    : 'text-slate-400 hover:text-slate-200'
+                    : 'text-slate-400 hover:text-white/90'
                 }`}
               >
                 Grid
@@ -887,7 +887,7 @@ export default function ConferencesPage() {
                 className={`px-3 py-1.5 text-sm rounded-md transition-colors ${
                   viewMode === 'calendar'
                     ? 'bg-purple-600 text-white'
-                    : 'text-slate-400 hover:text-slate-200'
+                    : 'text-slate-400 hover:text-white/90'
                 }`}
               >
                 Calendar
@@ -901,7 +901,7 @@ export default function ConferencesPage() {
             <select
               value={categoryFilter}
               onChange={(e) => setCategoryFilter(e.target.value as EventCategory | 'All')}
-              className="bg-slate-800/70 border border-slate-700/50 rounded-lg px-3 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-white/15"
+              className="bg-white/[0.05] border border-white/[0.06] rounded-lg px-3 py-2.5 text-sm text-white/90 focus:outline-none focus:border-white/15"
             >
               <option value="All">All Categories</option>
               {ALL_CATEGORIES.map((c) => (
@@ -915,7 +915,7 @@ export default function ConferencesPage() {
             <select
               value={monthFilter}
               onChange={(e) => setMonthFilter(Number(e.target.value))}
-              className="bg-slate-800/70 border border-slate-700/50 rounded-lg px-3 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-white/15"
+              className="bg-white/[0.05] border border-white/[0.06] rounded-lg px-3 py-2.5 text-sm text-white/90 focus:outline-none focus:border-white/15"
             >
               <option value={0}>All Months</option>
               {MONTH_FULL.map((m, i) => (
@@ -929,7 +929,7 @@ export default function ConferencesPage() {
             <select
               value={regionFilter}
               onChange={(e) => setRegionFilter(e.target.value as EventRegion | 'All')}
-              className="bg-slate-800/70 border border-slate-700/50 rounded-lg px-3 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-white/15"
+              className="bg-white/[0.05] border border-white/[0.06] rounded-lg px-3 py-2.5 text-sm text-white/90 focus:outline-none focus:border-white/15"
             >
               <option value="All">All Regions</option>
               {ALL_REGIONS.map((r) => (
@@ -943,7 +943,7 @@ export default function ConferencesPage() {
             <select
               value={costFilter}
               onChange={(e) => setCostFilter(e.target.value as CostBracket | 'All')}
-              className="bg-slate-800/70 border border-slate-700/50 rounded-lg px-3 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-white/15"
+              className="bg-white/[0.05] border border-white/[0.06] rounded-lg px-3 py-2.5 text-sm text-white/90 focus:outline-none focus:border-white/15"
             >
               <option value="All">All Costs</option>
               {COST_BRACKETS.map((b) => (
@@ -957,7 +957,7 @@ export default function ConferencesPage() {
             <select
               value={sortField}
               onChange={(e) => setSortField(e.target.value as SortField)}
-              className="bg-slate-800/70 border border-slate-700/50 rounded-lg px-3 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-white/15"
+              className="bg-white/[0.05] border border-white/[0.06] rounded-lg px-3 py-2.5 text-sm text-white/90 focus:outline-none focus:border-white/15"
             >
               <option value="date">Sort by Date</option>
               <option value="attendance">Sort by Attendance</option>
@@ -967,12 +967,12 @@ export default function ConferencesPage() {
 
           {/* Active Filters */}
           {activeFilterCount > 0 && (
-            <div className="flex items-center gap-2 mt-3 pt-3 border-t border-slate-700/30">
+            <div className="flex items-center gap-2 mt-3 pt-3 border-t border-white/[0.04]">
               <span className="text-xs text-slate-500">
                 {activeFilterCount} filter{activeFilterCount > 1 ? 's' : ''} active
               </span>
               <span className="text-slate-700">|</span>
-              <span className="text-sm text-slate-300">
+              <span className="text-sm text-white/70">
                 {filteredEvents.length} of {CONFERENCES.length} events shown
               </span>
               <button
@@ -1043,7 +1043,7 @@ export default function ConferencesPage() {
                     {eventsByMonth[month].map((event) => (
                       <div key={event.id} className="relative">
                         {/* Timeline Dot */}
-                        <div className="absolute -left-5 top-5 w-3 h-3 rounded-full bg-purple-500 border-2 border-slate-900 z-10" />
+                        <div className="absolute -left-5 top-5 w-3 h-3 rounded-full bg-purple-500 border-2 border-black z-10" />
                         <CalendarEventCard event={event} />
                       </div>
                     ))}
@@ -1057,7 +1057,7 @@ export default function ConferencesPage() {
 
         {/* Category Legend */}
         <div className="card p-5 mt-10">
-          <h3 className="text-sm font-semibold text-slate-300 uppercase tracking-wider mb-3">
+          <h3 className="text-sm font-semibold text-white/70 uppercase tracking-wider mb-3">
             Category Legend
           </h3>
           <div className="flex flex-wrap gap-4">
@@ -1070,7 +1070,7 @@ export default function ConferencesPage() {
                 }`}
               >
                 <span className={`w-3 h-3 rounded-full ${CATEGORY_DOT_COLORS[cat]}`} />
-                <span className="text-slate-300">{cat}</span>
+                <span className="text-white/70">{cat}</span>
               </button>
             ))}
           </div>
@@ -1164,12 +1164,12 @@ function EventCard({ event }: { event: ConferenceEvent }) {
       )}
 
       {/* Topics */}
-      <div className="mt-auto pt-3 border-t border-slate-700/30">
+      <div className="mt-auto pt-3 border-t border-white/[0.04]">
         <div className="flex flex-wrap gap-1.5">
           {event.topics.slice(0, expanded ? event.topics.length : 3).map((topic) => (
             <span
               key={topic}
-              className="text-xs text-slate-400 bg-slate-800/60 px-2 py-0.5 rounded-full border border-slate-700/40"
+              className="text-xs text-slate-400 bg-white/[0.05] px-2 py-0.5 rounded-full border border-white/[0.06]"
             >
               {topic}
             </span>
@@ -1243,7 +1243,7 @@ function CalendarEventCard({ event }: { event: ConferenceEvent }) {
               {event.topics.slice(0, expanded ? event.topics.length : 3).map((topic) => (
                 <span
                   key={topic}
-                  className="text-xs text-slate-400 bg-slate-800/60 px-2 py-0.5 rounded-full border border-slate-700/40"
+                  className="text-xs text-slate-400 bg-white/[0.05] px-2 py-0.5 rounded-full border border-white/[0.06]"
                 >
                   {topic}
                 </span>

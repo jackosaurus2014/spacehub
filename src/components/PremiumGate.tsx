@@ -391,7 +391,7 @@ export default function PremiumGate({
                 {contextMessage.highlights.map((highlight) => (
                   <li
                     key={highlight}
-                    className="flex items-center gap-2 text-sm text-slate-300"
+                    className="flex items-center gap-2 text-sm text-white/70"
                   >
                     <span className="w-1.5 h-1.5 rounded-full bg-white flex-shrink-0" />
                     {highlight}

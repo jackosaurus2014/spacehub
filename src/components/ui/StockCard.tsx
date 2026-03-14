@@ -114,7 +114,7 @@ export default function StockCard({
       </span>
       {/* Header */}
       <div className="flex items-center justify-between mb-2">
-        <span className="text-xs font-mono text-slate-200">
+        <span className="text-xs font-mono text-white/90">
           {exchange}:{ticker}
         </span>
         <span

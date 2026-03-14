@@ -408,18 +408,18 @@ export default function MissionSimulatorPage() {
 
         {/* ── Pre-built Mission Templates ── */}
         <ScrollReveal className="mb-8">
-          <h2 className="text-lg font-semibold text-slate-200 mb-3">Quick Templates</h2>
+          <h2 className="text-lg font-semibold text-white/90 mb-3">Quick Templates</h2>
           <div className="flex flex-wrap gap-3">
             {MISSION_TEMPLATES.map((t) => (
               <button
                 key={t.label}
                 onClick={() => applyTemplate(t)}
-                className="group flex items-center gap-2 px-4 py-2.5 rounded-lg border border-slate-700 hover:border-white/15 bg-slate-800/60 hover:bg-slate-800 transition-all text-sm"
+                className="group flex items-center gap-2 px-4 py-2.5 rounded-lg border border-white/[0.08] hover:border-white/15 bg-white/[0.05] hover:bg-white/[0.06] transition-all text-sm"
                 title={t.description}
               >
                 <span className="text-lg">{t.icon}</span>
                 <div className="text-left">
-                  <div className="text-slate-200 font-medium group-hover:text-white transition-colors">{t.label}</div>
+                  <div className="text-white/90 font-medium group-hover:text-white transition-colors">{t.label}</div>
                   <div className="text-xs text-slate-500">{t.description}</div>
                 </div>
               </button>
@@ -433,7 +433,7 @@ export default function MissionSimulatorPage() {
           <ScrollReveal className="lg:col-span-1">
             <div className="card p-6 sticky top-24">
               <h2 className="text-xl font-bold text-slate-100 mb-6 flex items-center gap-2">
-                <span className="text-slate-300">&#9881;</span> Mission Configuration
+                <span className="text-white/70">&#9881;</span> Mission Configuration
               </h2>
 
               {/* Mission Type */}
@@ -451,7 +451,7 @@ export default function MissionSimulatorPage() {
                       setPayloadMass(info.defaultPayload);
                     }
                   }}
-                  className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2.5 text-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-white/20 focus:border-white/15"
+                  className="w-full bg-white/[0.06] border border-white/[0.08] rounded-lg px-3 py-2.5 text-white/90 text-sm focus:outline-none focus:ring-2 focus:ring-white/20 focus:border-white/15"
                 >
                   {MISSION_TYPES.map((mt) => (
                     <option key={mt.id} value={mt.id}>{mt.label}</option>
@@ -468,7 +468,7 @@ export default function MissionSimulatorPage() {
                 <select
                   value={vehicleId}
                   onChange={(e) => setVehicleId(e.target.value as LaunchVehicleId)}
-                  className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2.5 text-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-white/20 focus:border-white/15"
+                  className="w-full bg-white/[0.06] border border-white/[0.08] rounded-lg px-3 py-2.5 text-white/90 text-sm focus:outline-none focus:ring-2 focus:ring-white/20 focus:border-white/15"
                 >
                   {LAUNCH_VEHICLES.map((v) => (
                     <option key={v.id} value={v.id}>{v.name} ({v.provider})</option>
@@ -489,7 +489,7 @@ export default function MissionSimulatorPage() {
                   max={200000}
                   value={payloadMass}
                   onChange={(e) => setPayloadMass(Math.max(1, parseInt(e.target.value) || 1))}
-                  className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2.5 text-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-white/20 focus:border-white/15"
+                  className="w-full bg-white/[0.06] border border-white/[0.08] rounded-lg px-3 py-2.5 text-white/90 text-sm focus:outline-none focus:ring-2 focus:ring-white/20 focus:border-white/15"
                 />
                 {!results.payloadFeasible && (
                   <p className="text-xs text-red-400 mt-1">
@@ -504,7 +504,7 @@ export default function MissionSimulatorPage() {
                 <select
                   value={targetOrbit}
                   onChange={(e) => setTargetOrbit(e.target.value as TargetOrbit)}
-                  className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2.5 text-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-white/20 focus:border-white/15"
+                  className="w-full bg-white/[0.06] border border-white/[0.08] rounded-lg px-3 py-2.5 text-white/90 text-sm focus:outline-none focus:ring-2 focus:ring-white/20 focus:border-white/15"
                 >
                   {(Object.keys(ORBITS) as TargetOrbit[]).map((o) => (
                     <option key={o} value={o}>{ORBITS[o].label}</option>
@@ -519,7 +519,7 @@ export default function MissionSimulatorPage() {
                 <select
                   value={launchSite}
                   onChange={(e) => setLaunchSite(e.target.value as LaunchSite)}
-                  className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2.5 text-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-white/20 focus:border-white/15"
+                  className="w-full bg-white/[0.06] border border-white/[0.08] rounded-lg px-3 py-2.5 text-white/90 text-sm focus:outline-none focus:ring-2 focus:ring-white/20 focus:border-white/15"
                 >
                   {(Object.keys(LAUNCH_SITES) as LaunchSite[]).map((s) => (
                     <option key={s} value={s}>{LAUNCH_SITES[s].label}</option>
@@ -546,7 +546,7 @@ export default function MissionSimulatorPage() {
               <ScrollReveal>
                 <div className="card p-12 text-center">
                   <div className="text-6xl mb-4">🛰️</div>
-                  <h3 className="text-xl font-bold text-slate-200 mb-2">Configure Your Mission</h3>
+                  <h3 className="text-xl font-bold text-white/90 mb-2">Configure Your Mission</h3>
                   <p className="text-slate-400 max-w-md mx-auto">
                     Select mission parameters on the left panel or choose a quick template above, then click &quot;Run Simulation&quot; to see detailed results.
                   </p>
@@ -558,7 +558,7 @@ export default function MissionSimulatorPage() {
                 <ScrollReveal>
                   <div className="card p-6">
                     <h2 className="text-xl font-bold text-slate-100 mb-5 flex items-center gap-2">
-                      <span className="text-slate-300">&#9672;</span> Simulation Results
+                      <span className="text-white/70">&#9672;</span> Simulation Results
                       {!results.payloadFeasible && (
                         <span className="ml-2 px-2 py-0.5 bg-red-900/50 text-red-400 text-xs rounded-full border border-red-700/50">
                           Payload Exceeds Capacity
@@ -568,15 +568,15 @@ export default function MissionSimulatorPage() {
 
                     <StaggerContainer className="grid grid-cols-2 md:grid-cols-3 gap-4">
                       <StaggerItem>
-                        <div className="bg-slate-800/50 rounded-xl p-4 border border-slate-700/50">
+                        <div className="bg-white/[0.04] rounded-xl p-4 border border-white/[0.06]">
                           <p className="text-xs text-slate-500 uppercase tracking-wide mb-1">Delta-V Required</p>
-                          <p className="text-2xl font-bold text-slate-300">{(results.deltaV / 1000).toFixed(1)} km/s</p>
+                          <p className="text-2xl font-bold text-white/70">{(results.deltaV / 1000).toFixed(1)} km/s</p>
                           <p className="text-xs text-slate-500 mt-1">{results.deltaV.toLocaleString()} m/s</p>
                         </div>
                       </StaggerItem>
 
                       <StaggerItem>
-                        <div className="bg-slate-800/50 rounded-xl p-4 border border-slate-700/50">
+                        <div className="bg-white/[0.04] rounded-xl p-4 border border-white/[0.06]">
                           <p className="text-xs text-slate-500 uppercase tracking-wide mb-1">Flight Duration</p>
                           <p className="text-2xl font-bold text-emerald-400">{results.flightDuration.label}</p>
                           <p className="text-xs text-slate-500 mt-1">To {orbit.label.split(' (')[0]}</p>
@@ -584,7 +584,7 @@ export default function MissionSimulatorPage() {
                       </StaggerItem>
 
                       <StaggerItem>
-                        <div className="bg-slate-800/50 rounded-xl p-4 border border-slate-700/50">
+                        <div className="bg-white/[0.04] rounded-xl p-4 border border-white/[0.06]">
                           <p className="text-xs text-slate-500 uppercase tracking-wide mb-1">Engine Burns</p>
                           <p className="text-2xl font-bold text-amber-400">{results.burns}</p>
                           <p className="text-xs text-slate-500 mt-1">Propulsive maneuvers</p>
@@ -592,7 +592,7 @@ export default function MissionSimulatorPage() {
                       </StaggerItem>
 
                       <StaggerItem>
-                        <div className="bg-slate-800/50 rounded-xl p-4 border border-slate-700/50">
+                        <div className="bg-white/[0.04] rounded-xl p-4 border border-white/[0.06]">
                           <p className="text-xs text-slate-500 uppercase tracking-wide mb-1">Fuel Mass Fraction</p>
                           <p className="text-2xl font-bold text-purple-400">{(results.fuelFraction * 100).toFixed(1)}%</p>
                           <p className="text-xs text-slate-500 mt-1">Of total vehicle mass</p>
@@ -600,7 +600,7 @@ export default function MissionSimulatorPage() {
                       </StaggerItem>
 
                       <StaggerItem>
-                        <div className="bg-slate-800/50 rounded-xl p-4 border border-slate-700/50">
+                        <div className="bg-white/[0.04] rounded-xl p-4 border border-white/[0.06]">
                           <p className="text-xs text-slate-500 uppercase tracking-wide mb-1">Success Probability</p>
                           <p className={`text-2xl font-bold ${results.successProb >= 0.95 ? 'text-emerald-400' : results.successProb >= 0.9 ? 'text-amber-400' : 'text-red-400'}`}>
                             {(results.successProb * 100).toFixed(1)}%
@@ -610,7 +610,7 @@ export default function MissionSimulatorPage() {
                       </StaggerItem>
 
                       <StaggerItem>
-                        <div className="bg-slate-800/50 rounded-xl p-4 border border-slate-700/50">
+                        <div className="bg-white/[0.04] rounded-xl p-4 border border-white/[0.06]">
                           <p className="text-xs text-slate-500 uppercase tracking-wide mb-1">Payload Margin</p>
                           <p className={`text-2xl font-bold ${results.payloadFeasible ? 'text-emerald-400' : 'text-red-400'}`}>
                             {results.payloadFeasible ? `${results.payloadMarginPct.toFixed(0)}%` : 'N/A'}
@@ -628,7 +628,7 @@ export default function MissionSimulatorPage() {
                 <ScrollReveal>
                   <div className="card p-6">
                     <h2 className="text-xl font-bold text-slate-100 mb-5 flex items-center gap-2">
-                      <span className="text-slate-300">&#9202;</span> Mission Timeline
+                      <span className="text-white/70">&#9202;</span> Mission Timeline
                     </h2>
 
                     <div className="relative">
@@ -639,14 +639,14 @@ export default function MissionSimulatorPage() {
                         {results.phases.map((phase, idx) => (
                           <div key={idx} className="relative flex gap-4 pl-2">
                             {/* Timeline dot */}
-                            <div className="relative z-10 flex-shrink-0 w-9 h-9 rounded-full bg-slate-800 border-2 border-white/15 flex items-center justify-center text-lg">
+                            <div className="relative z-10 flex-shrink-0 w-9 h-9 rounded-full bg-white/[0.06] border-2 border-white/15 flex items-center justify-center text-lg">
                               {phase.icon}
                             </div>
                             {/* Phase card */}
-                            <div className="flex-1 bg-slate-800/40 rounded-lg border border-slate-700/50 p-3 hover:border-white/10 transition-colors">
+                            <div className="flex-1 bg-white/[0.04] rounded-lg border border-white/[0.06] p-3 hover:border-white/10 transition-colors">
                               <div className="flex items-center gap-3 mb-1">
-                                <span className="text-xs font-mono text-slate-300 bg-slate-900/50 px-2 py-0.5 rounded">{phase.time}</span>
-                                <h4 className="text-sm font-semibold text-slate-200">{phase.label}</h4>
+                                <span className="text-xs font-mono text-white/70 bg-black/50 px-2 py-0.5 rounded">{phase.time}</span>
+                                <h4 className="text-sm font-semibold text-white/90">{phase.label}</h4>
                               </div>
                               <p className="text-xs text-slate-400">{phase.description}</p>
 
@@ -663,7 +663,7 @@ export default function MissionSimulatorPage() {
                 <ScrollReveal>
                   <div className="card p-6">
                     <h2 className="text-xl font-bold text-slate-100 mb-5 flex items-center gap-2">
-                      <span className="text-slate-300">&#128176;</span> Cost Breakdown
+                      <span className="text-white/70">&#128176;</span> Cost Breakdown
                     </h2>
 
                     <div className="space-y-3">
@@ -674,12 +674,12 @@ export default function MissionSimulatorPage() {
                         { label: 'Ground Operations', value: results.costs.groundOps, description: 'Launch site ops, range fees, logistics' },
                         { label: 'Mission Control', value: results.costs.missionControl, description: 'Flight operations, tracking, telemetry' },
                       ].map((item) => (
-                        <div key={item.label} className="flex items-center justify-between bg-slate-800/30 rounded-lg px-4 py-3 border border-slate-700/30">
+                        <div key={item.label} className="flex items-center justify-between bg-white/[0.03] rounded-lg px-4 py-3 border border-white/[0.04]">
                           <div>
-                            <p className="text-sm text-slate-300 font-medium">{item.label}</p>
+                            <p className="text-sm text-white/70 font-medium">{item.label}</p>
                             <p className="text-xs text-slate-500">{item.description}</p>
                           </div>
-                          <p className="text-sm font-semibold text-slate-200 tabular-nums">{formatCurrency(item.value)}</p>
+                          <p className="text-sm font-semibold text-white/90 tabular-nums">{formatCurrency(item.value)}</p>
                         </div>
                       ))}
 
@@ -689,14 +689,14 @@ export default function MissionSimulatorPage() {
                           <p className="text-base font-bold text-slate-100">Total Mission Cost</p>
                           <p className="text-xs text-slate-400">All-inclusive estimate</p>
                         </div>
-                        <p className="text-xl font-bold text-slate-300 tabular-nums">{formatCurrency(results.costs.total)}</p>
+                        <p className="text-xl font-bold text-white/70 tabular-nums">{formatCurrency(results.costs.total)}</p>
                       </div>
 
                       {/* Cost per kg */}
                       <div className="text-center pt-2">
                         <p className="text-xs text-slate-500">
                           Cost per kg to {orbit.label.split(' (')[0]}:{' '}
-                          <span className="text-slate-300 font-semibold">
+                          <span className="text-white/70 font-semibold">
                             {formatCurrency(results.costs.total / payloadMass)}/kg
                           </span>
                         </p>
@@ -709,15 +709,15 @@ export default function MissionSimulatorPage() {
                 <ScrollReveal>
                   <div className="card p-6">
                     <h2 className="text-xl font-bold text-slate-100 mb-5 flex items-center gap-2">
-                      <span className="text-slate-300">&#128218;</span> Similar Historical Missions
+                      <span className="text-white/70">&#128218;</span> Similar Historical Missions
                     </h2>
 
                     <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {historicalMissions.map((mission) => (
                         <StaggerItem key={mission.name}>
-                          <div className="bg-slate-800/40 rounded-xl border border-slate-700/50 p-4 hover:border-slate-600/60 transition-colors h-full">
+                          <div className="bg-white/[0.04] rounded-xl border border-white/[0.06] p-4 hover:border-slate-600/60 transition-colors h-full">
                             <div className="flex items-start justify-between mb-2">
-                              <h4 className="text-sm font-semibold text-slate-200">{mission.name}</h4>
+                              <h4 className="text-sm font-semibold text-white/90">{mission.name}</h4>
                               <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
                                 mission.outcome === 'success'
                                   ? 'bg-emerald-900/50 text-emerald-400 border border-emerald-700/40'
@@ -748,7 +748,7 @@ export default function MissionSimulatorPage() {
                 <ScrollReveal>
                   <div className="card p-6">
                     <h2 className="text-xl font-bold text-slate-100 mb-5 flex items-center gap-2">
-                      <span className="text-slate-300">&#128640;</span> {vehicle.name} Specifications
+                      <span className="text-white/70">&#128640;</span> {vehicle.name} Specifications
                     </h2>
 
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -762,9 +762,9 @@ export default function MissionSimulatorPage() {
                         { label: 'Reusable', value: vehicle.reusable ? 'Yes' : 'No' },
                         { label: 'Reliability', value: `${(vehicle.reliability * 100).toFixed(0)}%` },
                       ].map((spec) => (
-                        <div key={spec.label} className="bg-slate-800/30 rounded-lg p-3 border border-slate-700/30">
+                        <div key={spec.label} className="bg-white/[0.03] rounded-lg p-3 border border-white/[0.04]">
                           <p className="text-xs text-slate-500 mb-1">{spec.label}</p>
-                          <p className="text-sm font-semibold text-slate-200">{spec.value}</p>
+                          <p className="text-sm font-semibold text-white/90">{spec.value}</p>
                         </div>
                       ))}
                     </div>
@@ -772,7 +772,7 @@ export default function MissionSimulatorPage() {
                     {/* Delta-V bar visualization */}
                     <div className="mt-5">
                       <p className="text-xs text-slate-500 uppercase tracking-wide mb-2">Delta-V Budget Utilization</p>
-                      <div className="h-4 w-full bg-slate-800 rounded-full overflow-hidden border border-slate-700/50">
+                      <div className="h-4 w-full bg-white/[0.06] rounded-full overflow-hidden border border-white/[0.06]">
                         <div
                           className={`h-full rounded-full transition-all duration-700 ${
                             results.fuelFraction > 0.95 ? 'bg-gradient-to-r from-red-500 to-red-400' :
@@ -797,7 +797,7 @@ export default function MissionSimulatorPage() {
 
         {/* ── Explore More ── */}
         <ScrollReveal className="mt-12">
-          <section className="mt-16 border-t border-slate-800 pt-8">
+          <section className="mt-16 border-t border-white/[0.06] pt-8">
             <h2 className="text-xl font-bold text-white mb-6">Explore More</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <a href="/orbital-calculator" className="card p-4 hover:border-white/15 transition-colors group">

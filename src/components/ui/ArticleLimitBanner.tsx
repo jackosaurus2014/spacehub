@@ -81,7 +81,7 @@ export default function ArticleLimitBanner({
             </div>
 
             <div>
-              <p className="text-slate-200 text-sm font-medium">
+              <p className="text-white/90 text-sm font-medium">
                 You have{' '}
                 <span className="text-amber-300 font-semibold">
                   {remaining} article{remaining !== 1 ? 's' : ''}

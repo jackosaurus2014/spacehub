@@ -66,7 +66,7 @@ function CopyButton({ text, className = '' }: { text: string; className?: string
   return (
     <button
       onClick={handleCopy}
-      className={`text-xs px-2 py-1 rounded bg-slate-700 hover:bg-slate-600 text-slate-300 transition-colors ${className}`}
+      className={`text-xs px-2 py-1 rounded bg-white/[0.06] hover:bg-white/[0.08] text-white/70 transition-colors ${className}`}
       aria-label="Copy to clipboard"
     >
       <svg className="w-3.5 h-3.5 inline mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -304,9 +304,9 @@ function ApiExplorerPageInner() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white">
+    <div className="min-h-screen bg-black text-white">
       {/* Top Bar */}
-      <div className="sticky top-0 z-30 bg-slate-950/95 backdrop-blur border-b border-slate-800">
+      <div className="sticky top-0 z-30 bg-black/95 backdrop-blur border-b border-white/[0.06]">
         <div className="max-w-[1400px] mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Link href="/developer" className="text-slate-400 hover:text-white transition-colors text-sm">
@@ -318,7 +318,7 @@ function ApiExplorerPageInner() {
           <div className="flex items-center gap-3">
             <Link
               href="/developer/docs"
-              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 text-sm border border-slate-700 hover:border-white/15 text-slate-300 hover:text-white rounded-lg transition-colors"
+              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 text-sm border border-white/[0.08] hover:border-white/15 text-white/70 hover:text-white rounded-lg transition-colors"
             >
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -336,14 +336,14 @@ function ApiExplorerPageInner() {
           <div className="space-y-4">
             <h2 className="text-xl font-bold">Request</h2>
 
-            <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-5 space-y-5">
+            <div className="bg-white/[0.04] border border-white/[0.08] rounded-lg p-5 space-y-5">
               {/* Base URL + Endpoint selection */}
               <div>
                 <label className="block text-sm font-medium text-slate-400 mb-1.5">Server</label>
                 <select
                   value={baseUrl}
                   onChange={(e) => setBaseUrl(e.target.value)}
-                  className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+                  className="w-full bg-white/[0.06] border border-white/[0.08] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                 >
                   {BASE_URL_OPTIONS.map((opt) => (
                     <option key={opt.value} value={opt.value}>
@@ -361,7 +361,7 @@ function ApiExplorerPageInner() {
                     const ep = ALL_ENDPOINTS.find((ep) => ep.operationId === e.target.value);
                     if (ep) setSelectedEndpoint(ep);
                   }}
-                  className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+                  className="w-full bg-white/[0.06] border border-white/[0.08] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                 >
                   {endpointOptions.map((group) => (
                     <optgroup key={group.label} label={group.label}>
@@ -379,11 +379,11 @@ function ApiExplorerPageInner() {
               <div>
                 <label className="block text-sm font-medium text-slate-400 mb-1.5">Request URL</label>
                 <div className="relative">
-                  <div className="flex items-center gap-2 bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 overflow-x-auto">
+                  <div className="flex items-center gap-2 bg-white/[0.06] border border-white/[0.1] rounded-lg px-3 py-2 overflow-x-auto">
                     <span className={`text-sm font-bold font-mono flex-shrink-0 ${METHOD_COLORS[selectedEndpoint.method] || 'text-white'}`}>
                       {selectedEndpoint.method}
                     </span>
-                    <code className="text-sm text-slate-300 font-mono whitespace-nowrap">{requestUrl}</code>
+                    <code className="text-sm text-white/70 font-mono whitespace-nowrap">{requestUrl}</code>
                   </div>
                   <div className="absolute top-1.5 right-1.5">
                     <CopyButton text={requestUrl} />
@@ -403,11 +403,11 @@ function ApiExplorerPageInner() {
                     value={apiKey}
                     onChange={(e) => setApiKey(e.target.value)}
                     placeholder="snx_YOUR_API_KEY"
-                    className="w-full pr-20 bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 font-mono focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+                    className="w-full pr-20 bg-white/[0.06] border border-white/[0.08] text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 font-mono focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                   />
                   <button
                     onClick={() => setShowApiKey(!showApiKey)}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 text-xs px-2 py-1 rounded bg-slate-700 hover:bg-slate-600 text-slate-300 transition-colors"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 text-xs px-2 py-1 rounded bg-white/[0.06] hover:bg-white/[0.08] text-white/70 transition-colors"
                   >
                     {showApiKey ? 'Hide' : 'Show'}
                   </button>
@@ -425,7 +425,7 @@ function ApiExplorerPageInner() {
                     {selectedEndpoint.parameters.map((param) => (
                       <div key={param.name}>
                         <div className="flex items-center gap-2 mb-1">
-                          <code className="text-xs text-slate-300 font-mono">{param.name}</code>
+                          <code className="text-xs text-white/70 font-mono">{param.name}</code>
                           <span className="text-xs text-slate-500">{param.type}</span>
                           {param.required && (
                             <span className="text-xs text-red-400">required</span>
@@ -437,7 +437,7 @@ function ApiExplorerPageInner() {
                             onChange={(e) =>
                               setParamValues((prev) => ({ ...prev, [param.name]: e.target.value }))
                             }
-                            className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+                            className="w-full bg-white/[0.06] border border-white/[0.08] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                           >
                             <option value="">-- any --</option>
                             {param.enum.map((v) => (
@@ -454,7 +454,7 @@ function ApiExplorerPageInner() {
                               setParamValues((prev) => ({ ...prev, [param.name]: e.target.value }))
                             }
                             placeholder={param.description}
-                            className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+                            className="w-full bg-white/[0.06] border border-white/[0.08] text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                           />
                         )}
                       </div>
@@ -504,7 +504,7 @@ function ApiExplorerPageInner() {
                 {history.length > 0 && (
                   <button
                     onClick={handleClearHistory}
-                    className="text-xs text-slate-500 hover:text-slate-300 transition-colors"
+                    className="text-xs text-slate-500 hover:text-white/70 transition-colors"
                   >
                     Clear
                   </button>
@@ -519,7 +519,7 @@ function ApiExplorerPageInner() {
                     <button
                       key={item.id}
                       onClick={() => handleReplayHistory(item)}
-                      className="w-full text-left px-3 py-2 bg-slate-800/30 border border-slate-700/50 rounded-lg hover:border-white/10 transition-colors group"
+                      className="w-full text-left px-3 py-2 bg-white/[0.03] border border-white/[0.06] rounded-lg hover:border-white/10 transition-colors group"
                     >
                       <div className="flex items-center gap-2 text-xs">
                         <span className={`font-bold font-mono ${METHOD_COLORS[item.method] || 'text-white'}`}>
@@ -549,7 +549,7 @@ function ApiExplorerPageInner() {
             <h2 className="text-xl font-bold">Response</h2>
 
             {!response && !loading ? (
-              <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-12 text-center">
+              <div className="bg-white/[0.04] border border-white/[0.08] rounded-lg p-12 text-center">
                 <svg
                   className="w-12 h-12 mx-auto text-slate-600 mb-3"
                   fill="none"
@@ -566,14 +566,14 @@ function ApiExplorerPageInner() {
                 <p className="text-slate-500">Select an endpoint, enter your API key, and click Send Request.</p>
                 <p className="text-sm text-slate-600 mt-2">
                   Need an API key?{' '}
-                  <Link href="/developer" className="text-slate-300 hover:text-white">
+                  <Link href="/developer" className="text-white/70 hover:text-white">
                     Get one from the Developer Portal
                   </Link>
                 </p>
               </div>
             ) : loading ? (
-              <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-12 text-center">
-                <svg className="animate-spin w-8 h-8 mx-auto text-slate-300 mb-3" viewBox="0 0 24 24" fill="none">
+              <div className="bg-white/[0.04] border border-white/[0.08] rounded-lg p-12 text-center">
+                <svg className="animate-spin w-8 h-8 mx-auto text-white/70 mb-3" viewBox="0 0 24 24" fill="none">
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                   <path
                     className="opacity-75"
@@ -584,12 +584,12 @@ function ApiExplorerPageInner() {
                 <p className="text-slate-400">Sending request...</p>
               </div>
             ) : response ? (
-              <div className="bg-slate-800/50 border border-slate-700 rounded-lg overflow-hidden">
+              <div className="bg-white/[0.04] border border-white/[0.08] rounded-lg overflow-hidden">
                 {/* Response status bar */}
-                <div className="px-4 py-3 border-b border-slate-700 flex items-center justify-between">
+                <div className="px-4 py-3 border-b border-white/[0.08] flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <StatusBadge code={response.statusCode} />
-                    <span className="text-sm text-slate-300">
+                    <span className="text-sm text-white/70">
                       {response.statusCode === 0 ? 'Network Error' : response.statusText}
                     </span>
                   </div>
@@ -597,13 +597,13 @@ function ApiExplorerPageInner() {
                 </div>
 
                 {/* Response tabs */}
-                <div className="flex border-b border-slate-700">
+                <div className="flex border-b border-white/[0.08]">
                   <button
                     onClick={() => setActiveResponseTab('body')}
                     className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
                       activeResponseTab === 'body'
-                        ? 'text-slate-300 border-white/10'
-                        : 'text-slate-400 border-transparent hover:text-slate-300'
+                        ? 'text-white/70 border-white/10'
+                        : 'text-slate-400 border-transparent hover:text-white/70'
                     }`}
                   >
                     Body
@@ -612,8 +612,8 @@ function ApiExplorerPageInner() {
                     onClick={() => setActiveResponseTab('headers')}
                     className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
                       activeResponseTab === 'headers'
-                        ? 'text-slate-300 border-white/10'
-                        : 'text-slate-400 border-transparent hover:text-slate-300'
+                        ? 'text-white/70 border-white/10'
+                        : 'text-slate-400 border-transparent hover:text-white/70'
                     }`}
                   >
                     Headers
@@ -626,7 +626,7 @@ function ApiExplorerPageInner() {
                 {/* Response body */}
                 {activeResponseTab === 'body' && (
                   <div className="relative">
-                    <pre className="p-4 text-sm overflow-auto max-h-[600px] bg-slate-800">
+                    <pre className="p-4 text-sm overflow-auto max-h-[600px] bg-white/[0.06]">
                       <code
                         className={`whitespace-pre ${
                           response.statusCode >= 200 && response.statusCode < 300
@@ -654,11 +654,11 @@ function ApiExplorerPageInner() {
                       <table className="w-full text-sm">
                         <tbody>
                           {Object.entries(response.headers).map(([key, value]) => (
-                            <tr key={key} className="border-b border-slate-700/50">
-                              <td className="py-1.5 pr-4 text-slate-300 font-mono whitespace-nowrap">
+                            <tr key={key} className="border-b border-white/[0.06]">
+                              <td className="py-1.5 pr-4 text-white/70 font-mono whitespace-nowrap">
                                 {key}
                               </td>
-                              <td className="py-1.5 text-slate-300 font-mono break-all">{value}</td>
+                              <td className="py-1.5 text-white/70 font-mono break-all">{value}</td>
                             </tr>
                           ))}
                         </tbody>
@@ -674,7 +674,7 @@ function ApiExplorerPageInner() {
               <div>
                 <h3 className="text-sm font-semibold text-slate-400 mb-2">cURL Equivalent</h3>
                 <div className="relative">
-                  <pre className="bg-slate-800 rounded-lg p-3 text-xs overflow-x-auto border border-slate-600">
+                  <pre className="bg-white/[0.06] rounded-lg p-3 text-xs overflow-x-auto border border-white/[0.1]">
                     <code className="text-green-400 whitespace-pre">
                       {`curl -X ${selectedEndpoint.method} "${requestUrl}" \\\n  -H "X-API-Key: ${showApiKey ? apiKey : 'snx_****'}"${selectedEndpoint.method !== 'GET' ? ' \\\n  -H "Content-Type: application/json"' : ''}`}
                     </code>

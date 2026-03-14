@@ -4,12 +4,12 @@ export default function Loading() {
       <div className="container mx-auto px-4">
         {/* Header skeleton */}
         <div className="mb-8">
-          <div className="h-8 w-56 bg-slate-800 rounded animate-pulse mb-3" />
-          <div className="h-4 w-80 bg-slate-800/60 rounded animate-pulse" />
+          <div className="h-8 w-56 bg-white/[0.06] rounded animate-pulse mb-3" />
+          <div className="h-4 w-80 bg-white/[0.05] rounded animate-pulse" />
         </div>
 
         {/* Countdown placeholder */}
-        <div className="bg-slate-800/40 rounded-xl animate-pulse p-8 mb-10">
+        <div className="bg-white/[0.04] rounded-xl animate-pulse p-8 mb-10">
           <div className="text-center space-y-4">
             <div className="h-5 w-40 bg-slate-700/50 rounded mx-auto" />
             <div className="flex justify-center gap-6">
@@ -25,10 +25,10 @@ export default function Loading() {
         </div>
 
         {/* Upcoming launch cards */}
-        <div className="h-6 w-48 bg-slate-800 rounded animate-pulse mb-6" />
+        <div className="h-6 w-48 bg-white/[0.06] rounded animate-pulse mb-6" />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="bg-slate-800/40 rounded-xl animate-pulse p-5 space-y-3">
+            <div key={i} className="bg-white/[0.04] rounded-xl animate-pulse p-5 space-y-3">
               {/* Provider badge */}
               <div className="h-5 w-24 bg-blue-500/20 rounded-full" />
               {/* Mission name */}

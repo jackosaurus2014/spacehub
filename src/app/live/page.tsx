@@ -142,7 +142,7 @@ function LiveHubContent() {
                       LIVE NOW
                     </span>
                   ) : (
-                    <span className="px-3 py-1.5 rounded-full bg-white/10 text-slate-300 text-sm font-medium border border-white/10">
+                    <span className="px-3 py-1.5 rounded-full bg-white/10 text-white/70 text-sm font-medium border border-white/10">
                       Next Launch
                     </span>
                   )}
@@ -172,7 +172,7 @@ function LiveHubContent() {
                 provider={selectedStream.provider}
               />
             ) : (
-              <div className="aspect-video bg-space-900 rounded-xl flex items-center justify-center border border-slate-700/50">
+              <div className="aspect-video bg-space-900 rounded-xl flex items-center justify-center border border-white/[0.06]">
                 <div className="text-center">
                   <svg className="w-16 h-16 text-slate-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
@@ -186,7 +186,7 @@ function LiveHubContent() {
             {selectedStream && (
               <div className="card p-6">
                 <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-                  <svg className="w-5 h-5 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-5 h-5 text-white/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                   Mission Details
@@ -209,7 +209,7 @@ function LiveHubContent() {
                     <div className="text-white font-medium">{selectedStream.provider}</div>
                   </div>
                 </div>
-                <p className="text-slate-300 mt-4 text-sm leading-relaxed">
+                <p className="text-white/70 mt-4 text-sm leading-relaxed">
                   {selectedStream.description}
                 </p>
               </div>
@@ -238,14 +238,14 @@ function LiveHubContent() {
         <div className="mb-8">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-display font-bold text-white flex items-center gap-2">
-              <svg className="w-6 h-6 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-6 h-6 text-white/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
               Upcoming Launch Streams
             </h2>
             <Link
               href="/mission-control"
-              className="text-slate-300 hover:text-white text-sm font-medium transition-colors flex items-center gap-1"
+              className="text-white/70 hover:text-white text-sm font-medium transition-colors flex items-center gap-1"
             >
               View All Missions
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -274,11 +274,11 @@ function LiveHubContent() {
                   }`}
                 >
                   <div className="flex items-start justify-between mb-3">
-                    <span className="px-2 py-1 rounded bg-slate-800 text-slate-300 text-xs font-medium">
+                    <span className="px-2 py-1 rounded bg-white/[0.06] text-white/70 text-xs font-medium">
                       {stream.provider}
                     </span>
                     {selectedStream?.id === stream.id && (
-                      <span className="text-slate-300 text-xs font-medium">Selected</span>
+                      <span className="text-white/70 text-xs font-medium">Selected</span>
                     )}
                   </div>
                   <h3 className="text-white font-semibold mb-1 line-clamp-1">{stream.launchName}</h3>
@@ -313,7 +313,7 @@ function LiveHubContent() {
         <ScrollReveal delay={0.2}>
         <div className="card p-6 mb-8">
           <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-            <svg className="w-5 h-5 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5 text-white/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
             </svg>
             Related Resources
@@ -321,28 +321,28 @@ function LiveHubContent() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
             <Link
               href="/mission-control"
-              className="p-3 rounded-lg bg-slate-800/30 hover:bg-slate-800/50 transition-colors group"
+              className="p-3 rounded-lg bg-white/[0.03] hover:bg-white/[0.04] transition-colors group"
             >
               <div className="text-sm font-medium text-white group-hover:text-white">Mission Control</div>
               <p className="text-xs text-slate-400 mt-1">All upcoming launches</p>
             </Link>
             <Link
               href="/space-environment?tab=weather"
-              className="p-3 rounded-lg bg-slate-800/30 hover:bg-slate-800/50 transition-colors group"
+              className="p-3 rounded-lg bg-white/[0.03] hover:bg-white/[0.04] transition-colors group"
             >
               <div className="text-sm font-medium text-white group-hover:text-white">Solar Activity</div>
               <p className="text-xs text-slate-400 mt-1">Space weather impacts</p>
             </Link>
             <Link
               href="/space-environment?tab=debris"
-              className="p-3 rounded-lg bg-slate-800/30 hover:bg-slate-800/50 transition-colors group"
+              className="p-3 rounded-lg bg-white/[0.03] hover:bg-white/[0.04] transition-colors group"
             >
               <div className="text-sm font-medium text-white group-hover:text-white">Debris Monitor</div>
               <p className="text-xs text-slate-400 mt-1">Orbital safety tracking</p>
             </Link>
             <Link
               href="/news"
-              className="p-3 rounded-lg bg-slate-800/30 hover:bg-slate-800/50 transition-colors group"
+              className="p-3 rounded-lg bg-white/[0.03] hover:bg-white/[0.04] transition-colors group"
             >
               <div className="text-sm font-medium text-white group-hover:text-white">Space News</div>
               <p className="text-xs text-slate-400 mt-1">Latest industry updates</p>

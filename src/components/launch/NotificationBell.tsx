@@ -50,8 +50,8 @@ export default function NotificationBell({ eventId, eventName, launchDate, size 
       onClick={handleToggle}
       className={`${btnSize} rounded-lg transition-all ${
         watching
-          ? 'bg-white/10 text-slate-300 border border-white/10'
-          : 'bg-slate-800/50 text-slate-400 border border-slate-700/30 hover:text-white hover:border-slate-600/50'
+          ? 'bg-white/10 text-white/70 border border-white/10'
+          : 'bg-white/[0.04] text-slate-400 border border-white/[0.04] hover:text-white hover:border-white/[0.08]'
       }`}
       title={watching ? 'Cancel launch alerts' : 'Get launch alerts'}
     >

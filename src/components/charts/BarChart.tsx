@@ -127,7 +127,7 @@ export default function BarChart({
   if (!data.length) {
     return (
       <div
-        className={`bg-slate-900/50 rounded-xl flex items-center justify-center text-slate-400 ${className}`}
+        className={`bg-black/50 rounded-xl flex items-center justify-center text-slate-400 ${className}`}
         style={{ height }}
       >
         No data available
@@ -169,12 +169,12 @@ export default function BarChart({
       {/* Zoom controls */}
       {isZoomed && (
         <div className="absolute top-2 right-2 z-10 flex items-center gap-2">
-          <span className="text-xs text-slate-300 bg-slate-800/80 px-2 py-1 rounded border border-slate-600">
+          <span className="text-xs text-white/70 bg-white/[0.06] px-2 py-1 rounded border border-white/[0.1]">
             {transform.scale.toFixed(1)}x
           </span>
           <button
             onClick={resetZoom}
-            className="text-xs text-slate-300 bg-slate-800/80 hover:bg-slate-700/80 px-2 py-1 rounded border border-slate-600 transition-colors"
+            className="text-xs text-white/70 bg-white/[0.06] hover:bg-white/[0.08] px-2 py-1 rounded border border-white/[0.1] transition-colors"
           >
             Reset zoom
           </button>
@@ -485,8 +485,8 @@ export default function BarChart({
         content={
           activeIndex !== null ? (
             <>
-              <div className="text-slate-300 text-xs">{data[activeIndex].label}</div>
-              <div className="text-slate-300 font-semibold">
+              <div className="text-white/70 text-xs">{data[activeIndex].label}</div>
+              <div className="text-white/70 font-semibold">
                 {valueFormatter(data[activeIndex].value)}
               </div>
             </>

@@ -642,7 +642,7 @@ function EntryCard({ entry }: { entry: SpaceLawEntry }) {
       <p className="text-slate-400 text-sm mb-3 leading-relaxed line-clamp-3">{entry.description}</p>
 
       {/* Significance */}
-      <div className="bg-slate-800/50 rounded-lg p-3 mb-3">
+      <div className="bg-white/[0.04] rounded-lg p-3 mb-3">
         <h5 className="text-xs font-semibold text-slate-300 mb-1">Significance</h5>
         <p className="text-xs text-slate-400 leading-relaxed line-clamp-3">{entry.significance}</p>
       </div>
@@ -650,7 +650,7 @@ function EntryCard({ entry }: { entry: SpaceLawEntry }) {
       {/* Expand button */}
       <button
         onClick={() => setExpanded(!expanded)}
-        className="text-sm text-slate-200 hover:text-white transition-colors"
+        className="text-sm text-white/90 hover:text-white transition-colors"
       >
         {expanded ? 'Hide Key Provisions \u25B2' : 'View Key Provisions \u25BC'}
       </button>
@@ -758,13 +758,13 @@ function TabContent({ entries, tabId }: { entries: SpaceLawEntry[]; tabId: TabId
             aria-label={`Search ${tabId} entries`}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="flex-1 min-w-[200px] bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+            className="flex-1 min-w-[200px] bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
           />
           {uniqueTypes.length > 1 && (
             <select
               value={typeFilter}
               onChange={(e) => setTypeFilter(e.target.value)}
-              className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+              className="bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
             >
               <option value="">All Types</option>
               {uniqueTypes.map((t) => (
@@ -775,7 +775,7 @@ function TabContent({ entries, tabId }: { entries: SpaceLawEntry[]; tabId: TabId
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+            className="bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
           >
             <option value="">All Statuses</option>
             {uniqueStatuses.map((s) => (
@@ -785,7 +785,7 @@ function TabContent({ entries, tabId }: { entries: SpaceLawEntry[]; tabId: TabId
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
-            className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+            className="bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
           >
             <option value="year-desc">Newest First</option>
             <option value="year-asc">Oldest First</option>
@@ -827,7 +827,7 @@ function TabContent({ entries, tabId }: { entries: SpaceLawEntry[]; tabId: TabId
           <p className="text-slate-400 text-sm mb-4">Try adjusting your filters or search terms</p>
           <button
             onClick={handleClearFilters}
-            className="text-slate-200 hover:text-white text-sm transition-colors"
+            className="text-white/90 hover:text-white text-sm transition-colors"
           >
             Clear All Filters
           </button>
@@ -942,7 +942,7 @@ function SpaceLawContent() {
         <div className="card p-5 mb-8 border border-white/15 bg-white/5">
           <h3 className="text-white font-semibold mb-3">Evolution of Space Law</h3>
           <div className="relative">
-            <div className="absolute left-4 top-0 bottom-0 w-px bg-slate-700" />
+            <div className="absolute left-4 top-0 bottom-0 w-px bg-white/[0.08]" />
             <div className="space-y-4 pl-10">
               {[
                 { year: '1967', event: 'Outer Space Treaty signed - foundation of space law', color: 'bg-purple-400' },
@@ -976,7 +976,7 @@ function SpaceLawContent() {
               className={`flex items-center gap-2 px-4 sm:px-5 py-3 min-h-[44px] rounded-lg font-semibold text-sm transition-all whitespace-nowrap touch-target ${
                 activeTab === tab.id
                   ? 'bg-white text-slate-900'
-                  : 'bg-slate-800/60 text-slate-300 hover:bg-slate-700/60 border border-slate-600/50'
+                  : 'bg-white/[0.04] text-slate-300 hover:bg-white/[0.08] border border-white/[0.1]'
               }`}
             >
               <span>{tab.icon}</span>
@@ -993,7 +993,7 @@ function SpaceLawContent() {
             </button>
           ))}
         </div>
-        <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-slate-950 to-transparent pointer-events-none md:hidden" />
+        <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-black to-transparent pointer-events-none md:hidden" />
       </div>
 
       {/* Tab Description Banner */}

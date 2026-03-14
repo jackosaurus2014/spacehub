@@ -391,7 +391,7 @@ function getStatusColor(status: string): string {
     case 'settled':
       return 'bg-blue-500/20 text-blue-400 border border-blue-500/30';
     default:
-      return 'bg-slate-700/50 text-slate-500';
+      return 'bg-white/[0.08] text-slate-500';
   }
 }
 
@@ -446,7 +446,7 @@ function MarketYearCard({
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
         <div>
           <span className="text-slate-400 text-xs block">Total Premiums</span>
-          <span className="text-slate-200 font-bold text-sm">
+          <span className="text-white/90 font-bold text-sm">
             {formatCurrency(year.totalPremiums)}
           </span>
         </div>
@@ -474,19 +474,19 @@ function MarketYearCard({
       <div className="space-y-2">
         <div className="flex items-center gap-2">
           <span className="text-xs text-slate-400 w-16">Premiums</span>
-          <div className="flex-1 h-3 bg-slate-700/50 rounded-full overflow-hidden">
+          <div className="flex-1 h-3 bg-white/[0.08] rounded-full overflow-hidden">
             <div
               className="h-full bg-gradient-to-r from-white to-slate-400 rounded-full transition-all"
               style={{ width: `${Math.min(premiumWidth, 100)}%` }}
             />
           </div>
-          <span className="text-xs text-slate-200 w-16 text-right font-mono">
+          <span className="text-xs text-white/90 w-16 text-right font-mono">
             {formatCurrency(year.totalPremiums)}
           </span>
         </div>
         <div className="flex items-center gap-2">
           <span className="text-xs text-slate-400 w-16">Claims</span>
-          <div className="flex-1 h-3 bg-slate-700/50 rounded-full overflow-hidden">
+          <div className="flex-1 h-3 bg-white/[0.08] rounded-full overflow-hidden">
             <div
               className="h-full bg-gradient-to-r from-red-500 to-red-400 rounded-full transition-all"
               style={{ width: `${Math.min(claimsWidth, 100)}%` }}
@@ -499,7 +499,7 @@ function MarketYearCard({
       </div>
 
       {/* Premium breakdown */}
-      <div className="flex flex-wrap gap-3 mt-4 pt-3 border-t border-slate-700/50 text-xs">
+      <div className="flex flex-wrap gap-3 mt-4 pt-3 border-t border-white/[0.06] text-xs">
         {year.launchPremiums !== null && (
           <span className="text-slate-400">
             Launch: <span className="text-slate-400 font-medium">{formatCurrency(year.launchPremiums)}</span>
@@ -543,7 +543,7 @@ function PolicyCard({ policy }: { policy: InsurancePolicy }) {
             </h4>
           </div>
           <div className="flex flex-wrap items-center gap-2 text-xs">
-            <span className="px-2 py-0.5 rounded bg-slate-700/50 text-slate-300">
+            <span className="px-2 py-0.5 rounded bg-white/[0.08] text-slate-300">
               {missionInfo?.label || policy.missionType}
             </span>
             <span className="text-slate-400">{policy.insurer}</span>
@@ -565,7 +565,7 @@ function PolicyCard({ policy }: { policy: InsurancePolicy }) {
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
         <div>
           <span className="text-slate-400 block">Premium</span>
-          <span className="text-slate-200 font-bold">
+          <span className="text-white/90 font-bold">
             {formatCurrency(policy.premiumAmount)}
           </span>
         </div>
@@ -588,14 +588,14 @@ function PolicyCard({ policy }: { policy: InsurancePolicy }) {
       </div>
 
       {/* Additional details + cross-module links */}
-      <div className="flex flex-wrap gap-4 mt-3 pt-3 border-t border-slate-700/50 text-xs text-slate-400">
+      <div className="flex flex-wrap gap-4 mt-3 pt-3 border-t border-white/[0.06] text-xs text-slate-400">
         {policy.operator && (
           <span>
             Operator:{' '}
             {isKnownOperator(policy.operator) ? (
               <Link
                 href={`/market-intel?search=${encodeURIComponent(policy.operator)}`}
-                className="text-slate-200 hover:text-white underline underline-offset-2 font-medium transition-colors"
+                className="text-white/90 hover:text-white underline underline-offset-2 font-medium transition-colors"
               >
                 {policy.operator}
               </Link>
@@ -609,7 +609,7 @@ function PolicyCard({ policy }: { policy: InsurancePolicy }) {
             Vehicle:{' '}
             <Link
               href="/resource-exchange"
-              className="text-slate-200 hover:text-white underline underline-offset-2 font-medium transition-colors"
+              className="text-white/90 hover:text-white underline underline-offset-2 font-medium transition-colors"
               aria-label="View launch providers in Resource Exchange"
             >
               {policy.launchVehicle}
@@ -842,7 +842,7 @@ function InsuranceContent() {
             {/* ──────────── Quick Stats ──────────── */}
             <ScrollReveal><div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
               <div className="card-elevated p-4 text-center">
-                <div className="text-2xl font-bold font-display text-slate-200">
+                <div className="text-2xl font-bold font-display text-white/90">
                   {stats ? formatCurrency(stats.totalPremiums) : '--'}
                 </div>
                 <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">
@@ -898,7 +898,7 @@ function InsuranceContent() {
                   className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
                     activeTab === tab.id
                       ? 'bg-white text-slate-900'
-                      : 'bg-slate-700/50 text-slate-500 hover:bg-slate-700/50'
+                      : 'bg-white/[0.08] text-slate-500 hover:bg-white/[0.08]'
                   }`}
                 >
                   {tab.label}
@@ -907,7 +907,7 @@ function InsuranceContent() {
                       className={`text-xs px-1.5 py-0.5 rounded-full ${
                         activeTab === tab.id
                           ? 'bg-white/20 text-slate-900'
-                          : 'bg-slate-700/50 text-slate-500'
+                          : 'bg-white/[0.08] text-slate-500'
                       }`}
                     >
                       {tab.count}
@@ -945,7 +945,7 @@ function InsuranceContent() {
                     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
                       <div>
                         <span className="text-slate-400 text-xs block mb-1">Total Premiums</span>
-                        <span className="text-slate-200 font-bold text-lg">
+                        <span className="text-white/90 font-bold text-lg">
                           {formatCurrency(latestYear.totalPremiums)}
                         </span>
                       </div>
@@ -1008,15 +1008,15 @@ function InsuranceContent() {
                     Active Risk Factors
                   </h3>
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    <Link href="/space-environment?tab=debris" className="p-3 rounded-lg bg-slate-700/30 hover:bg-slate-700/50 transition-colors group">
+                    <Link href="/space-environment?tab=debris" className="p-3 rounded-lg bg-white/[0.06] hover:bg-white/[0.08] transition-colors group">
                       <div className="text-sm font-medium text-white group-hover:text-white">🛰️ Debris Monitor</div>
                       <p className="text-xs text-slate-400 mt-1">Orbital debris increases collision risk and claims</p>
                     </Link>
-                    <Link href="/space-environment?tab=weather" className="p-3 rounded-lg bg-slate-700/30 hover:bg-slate-700/50 transition-colors group">
+                    <Link href="/space-environment?tab=weather" className="p-3 rounded-lg bg-white/[0.06] hover:bg-white/[0.08] transition-colors group">
                       <div className="text-sm font-medium text-white group-hover:text-white">☀️ Solar Activity</div>
                       <p className="text-xs text-slate-400 mt-1">Solar storms affect satellite operations</p>
                     </Link>
-                    <Link href="/compliance?tab=regulations" className="p-3 rounded-lg bg-slate-700/30 hover:bg-slate-700/50 transition-colors group">
+                    <Link href="/compliance?tab=regulations" className="p-3 rounded-lg bg-white/[0.06] hover:bg-white/[0.08] transition-colors group">
                       <div className="text-sm font-medium text-white group-hover:text-white">📋 Compliance</div>
                       <p className="text-xs text-slate-400 mt-1">Liability regulations and requirements</p>
                     </Link>
@@ -1037,7 +1037,7 @@ function InsuranceContent() {
                           {marketHistory[0].year} to{' '}
                           {formatCurrency(marketHistory[marketHistory.length - 1].totalPremiums)} in{' '}
                           {marketHistory[marketHistory.length - 1].year}, representing a{' '}
-                          <span className="text-slate-200 font-medium">
+                          <span className="text-white/90 font-medium">
                             {(
                               ((marketHistory[marketHistory.length - 1].totalPremiums -
                                 marketHistory[0].totalPremiums) /
@@ -1083,8 +1083,8 @@ function InsuranceContent() {
                       onClick={() => handleTypeFilterChange('')}
                       className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
                         policyTypeFilter === ''
-                          ? 'bg-slate-700/50 text-white border border-slate-700/50'
-                          : 'bg-transparent text-slate-400 border border-slate-700/50 hover:border-slate-300'
+                          ? 'bg-white/[0.08] text-white border border-white/[0.06]'
+                          : 'bg-transparent text-slate-400 border border-white/[0.06] hover:border-white/20'
                       }`}
                     >
                       All ({policies.length})
@@ -1100,8 +1100,8 @@ function InsuranceContent() {
                           onClick={() => handleTypeFilterChange(type)}
                           className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all flex items-center gap-1 ${
                             policyTypeFilter === type
-                              ? 'bg-slate-700/50 text-white border border-slate-700/50'
-                              : 'bg-transparent text-slate-400 border border-slate-700/50 hover:border-slate-300'
+                              ? 'bg-white/[0.08] text-white border border-white/[0.06]'
+                              : 'bg-transparent text-slate-400 border border-white/[0.06] hover:border-white/20'
                           }`}
                         >
                           <span>{info?.icon}</span>
@@ -1127,7 +1127,7 @@ function InsuranceContent() {
                     <div className="text-slate-400 text-xs">Policies Shown</div>
                   </div>
                   <div className="card p-3 text-center">
-                    <div className="text-lg font-bold text-slate-200">
+                    <div className="text-lg font-bold text-white/90">
                       {formatCurrency(totalCoverage)}
                     </div>
                     <div className="text-slate-400 text-xs">Total Coverage</div>
@@ -1202,7 +1202,7 @@ function InsuranceContent() {
                                 className={`p-3 rounded-lg text-left text-sm transition-all ${
                                   calcInputs.orbitType === key
                                     ? 'bg-white/10 border border-white/15 text-slate-900'
-                                    : 'bg-slate-700/30 border border-slate-700/50 text-slate-400 hover:border-slate-500'
+                                    : 'bg-white/[0.06] border border-white/[0.06] text-slate-400 hover:border-white/[0.1]'
                                 }`}
                               >
                                 <div className="font-medium">{key === 'deep_space' ? 'Deep Space' : key}</div>
@@ -1215,7 +1215,7 @@ function InsuranceContent() {
                         {/* Satellite Value Slider */}
                         <div>
                           <label className="block text-sm font-medium text-slate-300 mb-2">
-                            Satellite / Payload Value: <span className="text-slate-200 font-bold">{formatCurrency(calcInputs.satelliteValue)}</span>
+                            Satellite / Payload Value: <span className="text-white/90 font-bold">{formatCurrency(calcInputs.satelliteValue)}</span>
                           </label>
                           <input
                             type="range"
@@ -1224,7 +1224,7 @@ function InsuranceContent() {
                             step={1}
                             value={calcInputs.satelliteValue}
                             onChange={(e) => setCalcInputs((prev) => ({ ...prev, satelliteValue: Number(e.target.value) }))}
-                            className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-slate-400"
+                            className="w-full h-2 bg-white/[0.08] rounded-lg appearance-none cursor-pointer accent-slate-400"
                           />
                           <div className="flex justify-between text-xs text-slate-500 mt-1">
                             <span>$1M</span>
@@ -1241,7 +1241,7 @@ function InsuranceContent() {
                           <select
                             value={calcInputs.launchVehicle}
                             onChange={(e) => setCalcInputs((prev) => ({ ...prev, launchVehicle: e.target.value }))}
-                            className="w-full bg-slate-700/50 border border-slate-600 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-white/15 transition-colors"
+                            className="w-full bg-white/[0.08] border border-white/[0.1] rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-white/15 transition-colors"
                           >
                             {LAUNCH_VEHICLES.map((v) => (
                               <option key={v.name} value={v.name}>
@@ -1254,7 +1254,7 @@ function InsuranceContent() {
                         {/* Mission Duration */}
                         <div>
                           <label className="block text-sm font-medium text-slate-300 mb-2">
-                            Mission Duration: <span className="text-slate-200 font-bold">{calcInputs.missionDuration} years</span>
+                            Mission Duration: <span className="text-white/90 font-bold">{calcInputs.missionDuration} years</span>
                           </label>
                           <input
                             type="range"
@@ -1263,7 +1263,7 @@ function InsuranceContent() {
                             step={1}
                             value={calcInputs.missionDuration}
                             onChange={(e) => setCalcInputs((prev) => ({ ...prev, missionDuration: Number(e.target.value) }))}
-                            className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-slate-400"
+                            className="w-full h-2 bg-white/[0.08] rounded-lg appearance-none cursor-pointer accent-slate-400"
                           />
                           <div className="flex justify-between text-xs text-slate-500 mt-1">
                             <span>1 yr</span>
@@ -1282,7 +1282,7 @@ function InsuranceContent() {
                             className={`p-3 rounded-lg text-sm text-left transition-all ${
                               calcInputs.isNewDesign
                                 ? 'bg-amber-500/20 border border-amber-500/40 text-amber-300'
-                                : 'bg-slate-700/30 border border-slate-700/50 text-slate-400'
+                                : 'bg-white/[0.06] border border-white/[0.06] text-slate-400'
                             }`}
                           >
                             <div className="font-medium">New Design</div>
@@ -1293,7 +1293,7 @@ function InsuranceContent() {
                             className={`p-3 rounded-lg text-sm text-left transition-all ${
                               calcInputs.hasHeritage
                                 ? 'bg-green-500/20 border border-green-500/40 text-green-300'
-                                : 'bg-slate-700/30 border border-slate-700/50 text-slate-400'
+                                : 'bg-white/[0.06] border border-white/[0.06] text-slate-400'
                             }`}
                           >
                             <div className="font-medium">Heritage Platform</div>
@@ -1336,7 +1336,7 @@ function InsuranceContent() {
                                   </span>
                                   <span className="text-white font-mono font-bold">{formatCurrency(item.value)}</span>
                                 </div>
-                                <div className="h-2.5 bg-slate-700/50 rounded-full overflow-hidden">
+                                <div className="h-2.5 bg-white/[0.08] rounded-full overflow-hidden">
                                   <div
                                     className={`h-full bg-gradient-to-r ${item.color} rounded-full transition-all duration-500`}
                                     style={{ width: `${Math.min(pct, 100)}%` }}
@@ -1353,23 +1353,23 @@ function InsuranceContent() {
                       <div className="card p-5">
                         <h4 className="text-sm font-semibold text-white mb-3">Risk Factors Applied</h4>
                         <div className="grid grid-cols-2 gap-3 text-xs">
-                          <div className="p-2 rounded bg-slate-700/30">
+                          <div className="p-2 rounded bg-white/[0.06]">
                             <span className="text-slate-400">Orbit</span>
                             <div className="text-white font-medium">{ORBIT_RISK_FACTORS[calcInputs.orbitType].label}</div>
                           </div>
-                          <div className="p-2 rounded bg-slate-700/30">
+                          <div className="p-2 rounded bg-white/[0.06]">
                             <span className="text-slate-400">Vehicle Multiplier</span>
                             <div className="text-white font-medium font-mono">
                               {(LAUNCH_VEHICLES.find((v) => v.name === calcInputs.launchVehicle)?.riskMultiplier || 1.0).toFixed(2)}x
                             </div>
                           </div>
-                          <div className="p-2 rounded bg-slate-700/30">
+                          <div className="p-2 rounded bg-white/[0.06]">
                             <span className="text-slate-400">Duration Adj.</span>
                             <div className="text-white font-medium">
                               {calcInputs.missionDuration > 15 ? '+30%' : calcInputs.missionDuration > 10 ? '+15%' : calcInputs.missionDuration < 3 ? '-20%' : 'Standard'}
                             </div>
                           </div>
-                          <div className="p-2 rounded bg-slate-700/30">
+                          <div className="p-2 rounded bg-white/[0.06]">
                             <span className="text-slate-400">Design Premium</span>
                             <div className="text-white font-medium">
                               {calcInputs.isNewDesign ? '+25% new design' : 'None'}{calcInputs.hasHeritage ? ', -10% heritage' : ''}
@@ -1381,7 +1381,7 @@ function InsuranceContent() {
                       {/* Toggle Insurer Comparison */}
                       <button
                         onClick={() => setShowInsurerComparison(!showInsurerComparison)}
-                        className="w-full py-3 px-4 rounded-lg text-sm font-medium bg-white/10 text-slate-200 hover:bg-white/15 transition-colors flex items-center justify-center gap-2"
+                        className="w-full py-3 px-4 rounded-lg text-sm font-medium bg-white/10 text-white/90 hover:bg-white/15 transition-colors flex items-center justify-center gap-2"
                       >
                         {showInsurerComparison ? 'Hide' : 'Show'} Insurer Comparison Estimates
                         <svg className={`w-4 h-4 transition-transform ${showInsurerComparison ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -1401,7 +1401,7 @@ function InsuranceContent() {
                       <div className="overflow-x-auto">
                         <table className="w-full text-sm">
                           <thead>
-                            <tr className="text-slate-400 text-xs border-b border-slate-700">
+                            <tr className="text-slate-400 text-xs border-b border-white/[0.06]">
                               <th className="text-left py-2 pr-4">Insurer</th>
                               <th className="text-right py-2 pr-4">Est. Premium</th>
                               <th className="text-right py-2 pr-4">Eff. Rate</th>
@@ -1410,9 +1410,9 @@ function InsuranceContent() {
                           </thead>
                           <tbody>
                             {insurerEstimates.sort((a, b) => a.premium - b.premium).map((est) => (
-                              <tr key={est.insurer} className="border-b border-slate-700/50 hover:bg-slate-700/20">
+                              <tr key={est.insurer} className="border-b border-white/[0.06] hover:bg-white/[0.08]/20">
                                 <td className="py-2.5 pr-4 text-white font-medium">{est.insurer}</td>
-                                <td className="py-2.5 pr-4 text-right text-slate-200 font-mono font-bold">{formatCurrency(est.premium)}</td>
+                                <td className="py-2.5 pr-4 text-right text-white/90 font-mono font-bold">{formatCurrency(est.premium)}</td>
                                 <td className="py-2.5 pr-4 text-right text-slate-400 font-mono">{est.rate.toFixed(2)}%</td>
                                 <td className="py-2.5 text-slate-400 text-xs">{est.notes}</td>
                               </tr>
@@ -1431,7 +1431,7 @@ function InsuranceContent() {
                     <div className="overflow-x-auto">
                       <table className="w-full text-sm">
                         <thead>
-                          <tr className="text-slate-400 text-xs border-b border-slate-700">
+                          <tr className="text-slate-400 text-xs border-b border-white/[0.06]">
                             <th className="text-left py-2 pr-4">Coverage Type</th>
                             <th className="text-right py-2 pr-4">Base Rate</th>
                             <th className="text-right py-2 pr-4">Risk Multiplier</th>
@@ -1441,13 +1441,13 @@ function InsuranceContent() {
                         </thead>
                         <tbody>
                           {PREMIUM_RATE_BENCHMARKS.map((b) => (
-                            <tr key={b.type} className="border-b border-slate-700/50 hover:bg-slate-700/20">
+                            <tr key={b.type} className="border-b border-white/[0.06] hover:bg-white/[0.08]/20">
                               <td className="py-2.5 pr-4 text-white font-medium">
                                 <span className="mr-2">{b.icon}</span>{b.label}
                               </td>
                               <td className="py-2.5 pr-4 text-right text-slate-400 font-mono">{b.baseRate.toFixed(1)}%</td>
                               <td className="py-2.5 pr-4 text-right text-slate-400 font-mono">{b.riskMultiplier.toFixed(1)}x</td>
-                              <td className="py-2.5 pr-4 text-right text-slate-200 font-mono font-bold">{b.effectiveRate.toFixed(2)}%</td>
+                              <td className="py-2.5 pr-4 text-right text-white/90 font-mono font-bold">{b.effectiveRate.toFixed(2)}%</td>
                               <td className="py-2.5 text-slate-400 text-xs max-w-xs">{b.description}</td>
                             </tr>
                           ))}
@@ -1500,14 +1500,14 @@ function InsuranceContent() {
                         <div className="card overflow-hidden">
                           <button
                             onClick={() => setExpandedInsuranceType(isExpanded ? null : type.id)}
-                            className="w-full p-5 text-left flex items-start justify-between gap-4 hover:bg-slate-700/10 transition-colors"
+                            className="w-full p-5 text-left flex items-start justify-between gap-4 hover:bg-white/[0.08]/10 transition-colors"
                           >
                             <div className="flex items-start gap-3 flex-1">
                               <span className="text-2xl mt-0.5">{type.icon}</span>
                               <div className="flex-1">
                                 <div className="flex items-center gap-3 mb-1">
                                   <h4 className="text-white font-semibold">{type.name}</h4>
-                                  <span className="text-xs px-2 py-0.5 rounded bg-white/10 text-slate-200">{type.typicalRate}</span>
+                                  <span className="text-xs px-2 py-0.5 rounded bg-white/10 text-white/90">{type.typicalRate}</span>
                                 </div>
                                 <p className="text-slate-400 text-sm">{type.description}</p>
                                 <div className="mt-2 text-xs text-slate-500">Phase: {type.phase}</div>
@@ -1522,7 +1522,7 @@ function InsuranceContent() {
                           </button>
 
                           {isExpanded && (
-                            <div className="px-5 pb-5 border-t border-slate-700/50">
+                            <div className="px-5 pb-5 border-t border-white/[0.06]">
                               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                                 <div>
                                   <h5 className="text-sm font-semibold text-green-400 mb-2 flex items-center gap-1.5">
@@ -1570,15 +1570,15 @@ function InsuranceContent() {
                   <div className="card p-5 border border-white/15">
                     <h3 className="text-white font-semibold mb-3">Related Regulatory Framework</h3>
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                      <Link href="/compliance?tab=treaties" className="p-3 rounded-lg bg-slate-700/30 hover:bg-slate-700/50 transition-colors group">
+                      <Link href="/compliance?tab=treaties" className="p-3 rounded-lg bg-white/[0.06] hover:bg-white/[0.08] transition-colors group">
                         <div className="text-sm font-medium text-white group-hover:text-white">🏛️ UN Space Treaties</div>
                         <p className="text-xs text-slate-400 mt-1">1967 Outer Space Treaty & 1972 Liability Convention</p>
                       </Link>
-                      <Link href="/compliance?tab=filings" className="p-3 rounded-lg bg-slate-700/30 hover:bg-slate-700/50 transition-colors group">
+                      <Link href="/compliance?tab=filings" className="p-3 rounded-lg bg-white/[0.06] hover:bg-white/[0.08] transition-colors group">
                         <div className="text-sm font-medium text-white group-hover:text-white">📄 Regulatory Filings</div>
                         <p className="text-xs text-slate-400 mt-1">National licensing requirements for launches</p>
                       </Link>
-                      <Link href="/space-talent?tab=jobs&category=legal" className="p-3 rounded-lg bg-slate-700/30 hover:bg-slate-700/50 transition-colors group">
+                      <Link href="/space-talent?tab=jobs&category=legal" className="p-3 rounded-lg bg-white/[0.06] hover:bg-white/[0.08] transition-colors group">
                         <div className="text-sm font-medium text-white group-hover:text-white">👤 Insurance Professionals</div>
                         <p className="text-xs text-slate-400 mt-1">Find brokers and underwriting specialists</p>
                       </Link>
@@ -1603,14 +1603,14 @@ function InsuranceContent() {
                     </div>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                       {KEY_STATISTICS.map((stat) => (
-                        <div key={stat.label} className="p-4 rounded-lg bg-slate-700/30 border border-slate-700/50">
+                        <div key={stat.label} className="p-4 rounded-lg bg-white/[0.06] border border-white/[0.06]">
                           <div className="flex items-center justify-between mb-1">
                             <span className="text-slate-400 text-xs">{stat.label}</span>
                             {stat.trend && (
                               <span className={`text-xs px-1.5 py-0.5 rounded ${
                                 stat.trend === 'up' ? 'bg-green-500/20 text-green-400' :
                                 stat.trend === 'down' ? 'bg-red-500/20 text-red-400' :
-                                'bg-slate-600/50 text-slate-400'
+                                'bg-white/[0.08] text-slate-400'
                               }`}>
                                 {stat.trend === 'up' ? '^ Up' : stat.trend === 'down' ? 'v Down' : '- Stable'}
                               </span>
@@ -1632,7 +1632,7 @@ function InsuranceContent() {
                     <div className="overflow-x-auto">
                       <table className="w-full text-sm">
                         <thead>
-                          <tr className="text-slate-400 text-xs border-b border-slate-700">
+                          <tr className="text-slate-400 text-xs border-b border-white/[0.06]">
                             <th className="text-left py-2 pr-4">Insurer</th>
                             <th className="text-right py-2 pr-4">Market Share</th>
                             <th className="text-right py-2 pr-4">Est. Capacity</th>
@@ -1643,14 +1643,14 @@ function InsuranceContent() {
                         </thead>
                         <tbody>
                           {TOP_INSURERS.map((ins) => (
-                            <tr key={ins.name} className="border-b border-slate-700/50 hover:bg-slate-700/20">
+                            <tr key={ins.name} className="border-b border-white/[0.06] hover:bg-white/[0.08]/20">
                               <td className="py-2.5 pr-4 text-white font-medium whitespace-nowrap">{ins.name}</td>
                               <td className="py-2.5 pr-4 text-right">
                                 <div className="flex items-center gap-2 justify-end">
-                                  <div className="w-16 h-2 bg-slate-700/50 rounded-full overflow-hidden">
+                                  <div className="w-16 h-2 bg-white/[0.08] rounded-full overflow-hidden">
                                     <div className="h-full bg-gradient-to-r from-white to-slate-400 rounded-full" style={{ width: `${(ins.marketShare / 22) * 100}%` }} />
                                   </div>
-                                  <span className="text-slate-200 font-mono text-xs">{ins.marketShare}%</span>
+                                  <span className="text-white/90 font-mono text-xs">{ins.marketShare}%</span>
                                 </div>
                               </td>
                               <td className="py-2.5 pr-4 text-right text-slate-400 font-mono text-xs">{ins.estPremiumCapacity}</td>
@@ -1714,7 +1714,7 @@ function InsuranceContent() {
                         );
                       })}
                     </div>
-                    <div className="flex items-center gap-4 mt-4 pt-3 border-t border-slate-700/50 text-xs text-slate-400">
+                    <div className="flex items-center gap-4 mt-4 pt-3 border-t border-white/[0.06] text-xs text-slate-400">
                       <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-sm bg-gradient-to-r from-red-500/80 to-orange-500/80" /> Launch</span>
                       <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-sm bg-gradient-to-r from-blue-500/80 to-slate-200/80" /> In-Orbit</span>
                       <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-sm bg-gradient-to-r from-purple-500/80 to-pink-500/80" /> Liability</span>
@@ -1735,13 +1735,13 @@ function InsuranceContent() {
                         return (
                           <div key={yr.year} className="grid grid-cols-[60px_1fr_70px] gap-3 items-center">
                             <span className="text-xs text-slate-400 font-mono text-right">{yr.year}</span>
-                            <div className="h-5 bg-slate-700/50 rounded-full overflow-hidden">
+                            <div className="h-5 bg-white/[0.08] rounded-full overflow-hidden">
                               <div
                                 className="h-full bg-gradient-to-r from-white to-slate-400 rounded-full transition-all duration-500"
                                 style={{ width: `${width}%` }}
                               />
                             </div>
-                            <span className="text-xs text-slate-200 font-mono">${yr.marketSize}M</span>
+                            <span className="text-xs text-white/90 font-mono">${yr.marketSize}M</span>
                           </div>
                         );
                       })}
@@ -1757,7 +1757,7 @@ function InsuranceContent() {
                     <div className="overflow-x-auto">
                       <table className="w-full text-sm">
                         <thead>
-                          <tr className="text-slate-400 text-xs border-b border-slate-700">
+                          <tr className="text-slate-400 text-xs border-b border-white/[0.06]">
                             <th className="text-left py-2 pr-3">Year</th>
                             <th className="text-left py-2 pr-3">Mission</th>
                             <th className="text-left py-2 pr-3">Operator</th>
@@ -1768,7 +1768,7 @@ function InsuranceContent() {
                         </thead>
                         <tbody>
                           {NOTABLE_CLAIMS.sort((a, b) => b.year - a.year).map((claim) => (
-                            <tr key={claim.mission} className="border-b border-slate-700/50 hover:bg-slate-700/20 align-top">
+                            <tr key={claim.mission} className="border-b border-white/[0.06] hover:bg-white/[0.08]/20 align-top">
                               <td className="py-2.5 pr-3 text-white font-mono text-xs">{claim.year}</td>
                               <td className="py-2.5 pr-3 text-white font-medium text-xs whitespace-nowrap">{claim.mission}</td>
                               <td className="py-2.5 pr-3 text-slate-400 text-xs whitespace-nowrap">{claim.operator}</td>
@@ -1794,7 +1794,7 @@ function InsuranceContent() {
                     <h3 className="text-lg font-semibold text-white mb-4">Average Premium Rates by Orbit Type</h3>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                       {(Object.entries(ORBIT_RISK_FACTORS) as [string, typeof ORBIT_RISK_FACTORS[string]][]).map(([key, orbit]) => (
-                        <div key={key} className="p-4 rounded-lg bg-slate-700/30 border border-slate-700/50">
+                        <div key={key} className="p-4 rounded-lg bg-white/[0.06] border border-white/[0.06]">
                           <h4 className="text-white font-semibold text-sm mb-3">{key === 'deep_space' ? 'Deep Space' : key}</h4>
                           <div className="space-y-2">
                             <div className="flex justify-between text-xs">
@@ -1809,10 +1809,10 @@ function InsuranceContent() {
                               <span className="text-slate-400">Liability</span>
                               <span className="text-purple-400 font-mono font-bold">{orbit.liabilityRate}%</span>
                             </div>
-                            <div className="pt-2 mt-2 border-t border-slate-700/50">
+                            <div className="pt-2 mt-2 border-t border-white/[0.06]">
                               <div className="flex justify-between text-xs">
                                 <span className="text-slate-400">Combined</span>
-                                <span className="text-slate-200 font-mono font-bold">
+                                <span className="text-white/90 font-mono font-bold">
                                   {(orbit.launchRate + orbit.inOrbitRate + orbit.liabilityRate).toFixed(1)}%
                                 </span>
                               </div>
@@ -1843,7 +1843,7 @@ function InsuranceContent() {
                               <span className="text-slate-300">{item.type}</span>
                               <span className="text-white font-mono font-bold">{item.frequency}%</span>
                             </div>
-                            <div className="h-2 bg-slate-700/50 rounded-full overflow-hidden">
+                            <div className="h-2 bg-white/[0.08] rounded-full overflow-hidden">
                               <div
                                 className={`h-full bg-gradient-to-r ${item.color} rounded-full`}
                                 style={{ width: `${(item.frequency / 15) * 100}%` }}
@@ -1868,7 +1868,7 @@ function InsuranceContent() {
                         ].map((yr) => (
                           <div key={yr.year} className="grid grid-cols-[50px_1fr_60px] gap-3 items-center">
                             <span className="text-xs text-slate-400 font-mono">{yr.year}</span>
-                            <div className="h-4 bg-slate-700/50 rounded-full overflow-hidden">
+                            <div className="h-4 bg-white/[0.08] rounded-full overflow-hidden">
                               <div
                                 className="h-full bg-gradient-to-r from-green-500 to-emerald-400 rounded-full"
                                 style={{ width: `${(yr.capacity / 3.0) * 100}%` }}
@@ -1971,11 +1971,11 @@ function DynamicInsuranceContent() {
 
             {commentary.keyTakeaways.length > 0 && (
               <div className="mb-4 p-4 bg-white/5 rounded-lg border border-white/15">
-                <h4 className="text-sm font-semibold text-slate-200 mb-2">Key Takeaways</h4>
+                <h4 className="text-sm font-semibold text-white/90 mb-2">Key Takeaways</h4>
                 <ul className="space-y-1">
                   {commentary.keyTakeaways.map((t, i) => (
                     <li key={i} className="text-sm text-slate-300 flex items-start gap-2">
-                      <span className="text-slate-200 mt-0.5">•</span>
+                      <span className="text-white/90 mt-0.5">•</span>
                       {t}
                     </li>
                   ))}
@@ -1991,7 +1991,7 @@ function DynamicInsuranceContent() {
 
             <button
               onClick={() => setShowFullCommentary(!showFullCommentary)}
-              className="text-sm text-slate-200 hover:text-white font-medium transition-colors"
+              className="text-sm text-white/90 hover:text-white font-medium transition-colors"
             >
               {showFullCommentary ? 'Show Less' : 'Read Full Analysis →'}
             </button>
@@ -2017,9 +2017,9 @@ function DynamicInsuranceContent() {
                   href={article.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="block p-3 rounded-lg border border-slate-700/50 hover:border-white/10 hover:bg-white/5 transition-all group"
+                  className="block p-3 rounded-lg border border-white/[0.06] hover:border-white/10 hover:bg-white/5 transition-all group"
                 >
-                  <h4 className="text-sm font-medium text-white group-hover:text-slate-200 line-clamp-2 mb-1">
+                  <h4 className="text-sm font-medium text-white group-hover:text-white/90 line-clamp-2 mb-1">
                     {article.title}
                   </h4>
                   <p className="text-xs text-slate-400 line-clamp-2 mb-2">
@@ -2051,15 +2051,15 @@ function DynamicInsuranceContent() {
                   href={post.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="block p-3 rounded-lg border border-slate-700/50 hover:border-white/10 hover:bg-white/5 transition-all group"
+                  className="block p-3 rounded-lg border border-white/[0.06] hover:border-white/10 hover:bg-white/5 transition-all group"
                 >
-                  <h4 className="text-sm font-medium text-white group-hover:text-slate-200 mb-1">
+                  <h4 className="text-sm font-medium text-white group-hover:text-white/90 mb-1">
                     {post.title}
                   </h4>
                   <div className="flex items-center gap-3 text-xs text-slate-400">
                     <span>{post.sourceName}</span>
                     <span>{new Date(post.publishedAt).toLocaleDateString()}</span>
-                    <span className="px-1.5 py-0.5 rounded bg-slate-700/50 text-slate-500">{post.topic}</span>
+                    <span className="px-1.5 py-0.5 rounded bg-white/[0.08] text-slate-500">{post.topic}</span>
                   </div>
                 </a>
               ))}

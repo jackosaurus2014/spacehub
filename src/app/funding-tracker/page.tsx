@@ -106,18 +106,18 @@ const ROUND_TYPE_COLORS: Record<string, string> = {
   'Series D': 'bg-red-500/20 text-red-400 border-red-500/30',
   'Series E': 'bg-red-500/20 text-red-400 border-red-500/30',
   'Series F': 'bg-red-500/20 text-red-400 border-red-500/30',
-  'SPAC Merger': 'bg-white/10 text-slate-300 border-white/10',
+  'SPAC Merger': 'bg-white/10 text-white/70 border-white/10',
   'IPO': 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30',
   'Acquisition': 'bg-pink-500/20 text-pink-400 border-pink-500/30',
-  'Follow-on': 'bg-slate-500/20 text-slate-300 border-slate-500/30',
+  'Follow-on': 'bg-slate-500/20 text-white/70 border-slate-500/30',
 };
 
 function getRoundColor(label: string | null): string {
-  if (!label) return 'bg-slate-700/50 text-slate-300 border-slate-600';
+  if (!label) return 'bg-white/[0.04] text-white/70 border-white/[0.1]';
   for (const [key, color] of Object.entries(ROUND_TYPE_COLORS)) {
     if (label.toLowerCase().includes(key.toLowerCase())) return color;
   }
-  return 'bg-slate-700/50 text-slate-300 border-slate-600';
+  return 'bg-white/[0.04] text-white/70 border-white/[0.1]';
 }
 
 // ────────────────────────────────────────
@@ -224,7 +224,7 @@ function FundingTrackerPageInner() {
 
   return (
     <PullToRefresh onRefresh={async () => { await fetchRounds(); }}>
-    <div className="min-h-screen bg-slate-900">
+    <div className="min-h-screen bg-black">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <AnimatedPageHeader
           title="Space Startup & Funding Tracker"
@@ -244,7 +244,7 @@ function FundingTrackerPageInner() {
           <ScrollReveal>
             <StaggerContainer className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
               <StaggerItem>
-                <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-5 text-center">
+                <div className="bg-white/[0.04] rounded-xl border border-white/[0.06] p-5 text-center">
                   <div className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent">
                     {formatAmount(stats.summary.last12MonthsTotal)}
                   </div>
@@ -254,8 +254,8 @@ function FundingTrackerPageInner() {
                 </div>
               </StaggerItem>
               <StaggerItem>
-                <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-5 text-center">
-                  <div className="text-2xl md:text-3xl font-bold text-slate-300">
+                <div className="bg-white/[0.04] rounded-xl border border-white/[0.06] p-5 text-center">
+                  <div className="text-2xl md:text-3xl font-bold text-white/70">
                     {stats.summary.last12MonthsDealCount}
                   </div>
                   <div className="text-slate-400 text-xs uppercase tracking-widest mt-1">
@@ -264,7 +264,7 @@ function FundingTrackerPageInner() {
                 </div>
               </StaggerItem>
               <StaggerItem>
-                <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-5 text-center">
+                <div className="bg-white/[0.04] rounded-xl border border-white/[0.06] p-5 text-center">
                   <div className="text-2xl md:text-3xl font-bold text-purple-400">
                     {formatAmount(stats.summary.avgRoundSize)}
                   </div>
@@ -274,7 +274,7 @@ function FundingTrackerPageInner() {
                 </div>
               </StaggerItem>
               <StaggerItem>
-                <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-5 text-center">
+                <div className="bg-white/[0.04] rounded-xl border border-white/[0.06] p-5 text-center">
                   <div className="text-2xl md:text-3xl font-bold text-amber-400">
                     {formatAmount(stats.summary.largestRound)}
                   </div>
@@ -292,7 +292,7 @@ function FundingTrackerPageInner() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
             {/* Quarterly Funding Chart */}
             <ScrollReveal>
-              <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-6">
+              <div className="bg-white/[0.04] rounded-xl border border-white/[0.06] p-6">
                 <h3 className="text-lg font-semibold text-white mb-1 flex items-center gap-2">
                   <span className="w-8 h-8 rounded-lg bg-green-500/20 flex items-center justify-center text-sm">
                     📊
@@ -336,7 +336,7 @@ function FundingTrackerPageInner() {
 
             {/* Sector Breakdown */}
             <ScrollReveal>
-              <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-6">
+              <div className="bg-white/[0.04] rounded-xl border border-white/[0.06] p-6">
                 <h3 className="text-lg font-semibold text-white mb-1 flex items-center gap-2">
                   <span className="w-8 h-8 rounded-lg bg-purple-500/20 flex items-center justify-center text-sm">
                     🔬
@@ -355,14 +355,14 @@ function FundingTrackerPageInner() {
                     return (
                       <div key={s.sector}>
                         <div className="flex justify-between text-sm mb-1">
-                          <span className="text-slate-300 capitalize">
+                          <span className="text-white/70 capitalize">
                             {s.sector}
                           </span>
                           <span className="text-slate-400">
                             {formatAmount(s.total)} ({s.deals} deals)
                           </span>
                         </div>
-                        <div className="w-full bg-slate-700/30 rounded-full h-2.5">
+                        <div className="w-full bg-white/[0.03] rounded-full h-2.5">
                           <div
                             className="bg-gradient-to-r from-purple-500 to-slate-400 h-2.5 rounded-full transition-all duration-500"
                             style={{ width: `${Math.max(widthPct, 2)}%` }}
@@ -382,7 +382,7 @@ function FundingTrackerPageInner() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
             {/* Largest Rounds */}
             <ScrollReveal>
-              <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-6">
+              <div className="bg-white/[0.04] rounded-xl border border-white/[0.06] p-6">
                 <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
                   <span className="w-8 h-8 rounded-lg bg-amber-500/20 flex items-center justify-center text-sm">
                     🏆
@@ -393,7 +393,7 @@ function FundingTrackerPageInner() {
                   {stats.largestRounds.map((r, i) => (
                     <div
                       key={r.id}
-                      className="flex items-center gap-3 p-2 rounded-lg hover:bg-slate-700/30 transition-colors"
+                      className="flex items-center gap-3 p-2 rounded-lg hover:bg-white/[0.06] transition-colors"
                     >
                       <span className="text-lg font-bold text-slate-500 w-6 text-right">
                         {i + 1}
@@ -447,7 +447,7 @@ function FundingTrackerPageInner() {
 
             {/* Top Investors */}
             <ScrollReveal>
-              <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-6">
+              <div className="bg-white/[0.04] rounded-xl border border-white/[0.06] p-6">
                 <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
                   <span className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-sm">
                     🏦
@@ -458,7 +458,7 @@ function FundingTrackerPageInner() {
                   {stats.topInvestors.slice(0, 15).map((inv, i) => (
                     <div
                       key={inv.name}
-                      className="flex items-center gap-3 p-2 rounded-lg hover:bg-slate-700/30 transition-colors"
+                      className="flex items-center gap-3 p-2 rounded-lg hover:bg-white/[0.06] transition-colors"
                     >
                       <span className="text-lg font-bold text-slate-500 w-6 text-right">
                         {i + 1}
@@ -474,7 +474,7 @@ function FundingTrackerPageInner() {
                         </Link>
                       </div>
                       <div className="text-right">
-                        <div className="text-slate-300 font-mono text-sm">
+                        <div className="text-white/70 font-mono text-sm">
                           {inv.deals} deals
                         </div>
                         <div className="text-slate-500 text-xs">
@@ -486,7 +486,7 @@ function FundingTrackerPageInner() {
                 </div>
                 <Link
                   href="/investors"
-                  className="block mt-4 text-center text-sm text-slate-300 hover:text-white transition-colors"
+                  className="block mt-4 text-center text-sm text-white/70 hover:text-white transition-colors"
                 >
                   View All Investors &rarr;
                 </Link>
@@ -498,7 +498,7 @@ function FundingTrackerPageInner() {
         {/* ── Round Size by Stage ── */}
         {stats && (
           <ScrollReveal>
-            <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-6 mb-8">
+            <div className="bg-white/[0.04] rounded-xl border border-white/[0.06] p-6 mb-8">
               <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
                 <span className="w-8 h-8 rounded-lg bg-indigo-500/20 flex items-center justify-center text-sm">
                   📈
@@ -511,7 +511,7 @@ function FundingTrackerPageInner() {
                   .map((s) => (
                     <div
                       key={s.stage}
-                      className="bg-slate-900/50 rounded-lg border border-slate-700/30 p-4 text-center"
+                      className="bg-black/50 rounded-lg border border-white/[0.04] p-4 text-center"
                     >
                       <div className="text-white font-semibold text-sm mb-1">
                         {s.stage}
@@ -532,7 +532,7 @@ function FundingTrackerPageInner() {
 
         {/* ── Filter Bar ── */}
         <ScrollReveal>
-          <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-4 mb-6">
+          <div className="bg-white/[0.04] rounded-xl border border-white/[0.06] p-4 mb-6">
             <div className="flex flex-wrap gap-4 items-end">
               <div>
                 <label className="block text-slate-400 text-xs mb-1">
@@ -541,7 +541,7 @@ function FundingTrackerPageInner() {
                 <select
                   value={timeRange}
                   onChange={(e) => setTimeRange(e.target.value)}
-                  className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+                  className="bg-white/[0.06] border border-white/[0.08] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                 >
                   {TIME_RANGES.map((t) => (
                     <option key={t.value} value={t.value}>
@@ -557,7 +557,7 @@ function FundingTrackerPageInner() {
                 <select
                   value={roundType}
                   onChange={(e) => setRoundType(e.target.value)}
-                  className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+                  className="bg-white/[0.06] border border-white/[0.08] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                 >
                   {ROUND_TYPES.map((t) => (
                     <option key={t.value} value={t.value}>
@@ -573,7 +573,7 @@ function FundingTrackerPageInner() {
                 <select
                   value={sector}
                   onChange={(e) => setSector(e.target.value)}
-                  className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+                  className="bg-white/[0.06] border border-white/[0.08] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                 >
                   {SECTOR_OPTIONS.map((s) => (
                     <option key={s.value} value={s.value}>
@@ -591,7 +591,7 @@ function FundingTrackerPageInner() {
                   value={investorSearch}
                   onChange={(e) => setInvestorSearch(e.target.value)}
                   placeholder="Search investor..."
-                  className="bg-slate-900 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-white/15 w-48"
+                  className="bg-black border border-white/[0.08] text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-white/15 w-48"
                 />
               </div>
               {(timeRange || roundType || sector || investorSearch) && (
@@ -621,7 +621,7 @@ function FundingTrackerPageInner() {
           </h3>
 
           {rounds.length === 0 && !roundsLoading ? (
-            <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-8 text-center">
+            <div className="bg-white/[0.04] rounded-xl border border-white/[0.06] p-8 text-center">
               <p className="text-slate-400">
                 No funding rounds match your filters.
               </p>
@@ -630,7 +630,7 @@ function FundingTrackerPageInner() {
             <StaggerContainer className="space-y-3">
               {rounds.map((round) => (
                 <StaggerItem key={round.id}>
-                  <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-4 hover:border-green-500/30 transition-colors">
+                  <div className="bg-white/[0.04] rounded-xl border border-white/[0.06] p-4 hover:border-green-500/30 transition-colors">
                     <div className="flex flex-col sm:flex-row sm:items-center gap-3">
                       {/* Company info */}
                       <div className="flex-1 min-w-0">
@@ -651,7 +651,7 @@ function FundingTrackerPageInner() {
                             </span>
                           )}
                           {round.company.sector && (
-                            <span className="text-xs bg-slate-700/50 text-slate-400 px-2 py-0.5 rounded capitalize">
+                            <span className="text-xs bg-white/[0.04] text-slate-400 px-2 py-0.5 rounded capitalize">
                               {round.company.sector}
                             </span>
                           )}
@@ -682,12 +682,12 @@ function FundingTrackerPageInner() {
                     {/* Investors */}
                     {(round.leadInvestor ||
                       round.investors.length > 0) && (
-                      <div className="mt-2 pt-2 border-t border-slate-700/30">
+                      <div className="mt-2 pt-2 border-t border-white/[0.04]">
                         <span className="text-slate-500 text-xs">
                           Investors:{' '}
                         </span>
                         {round.leadInvestor && (
-                          <span className="text-slate-300 text-xs font-medium">
+                          <span className="text-white/70 text-xs font-medium">
                             {round.leadInvestor} (lead)
                           </span>
                         )}
@@ -725,7 +725,7 @@ function FundingTrackerPageInner() {
 
         {/* ── Data Sources Footer ── */}
         <ScrollReveal>
-          <div className="bg-slate-800/30 rounded-xl border border-slate-700/30 p-6">
+          <div className="bg-white/[0.03] rounded-xl border border-white/[0.04] p-6">
             <h4 className="text-slate-400 font-semibold text-sm mb-3">
               Data Sources
             </h4>

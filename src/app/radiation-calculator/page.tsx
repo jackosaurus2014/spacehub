@@ -221,7 +221,7 @@ function ResultCard({ label, value, unit, accent = 'cyan' }: {
   accent?: 'cyan' | 'purple' | 'emerald' | 'amber' | 'red';
 }) {
   const colors = {
-    cyan: 'text-slate-300',
+    cyan: 'text-white/70',
     purple: 'text-purple-400',
     emerald: 'text-emerald-400',
     amber: 'text-amber-400',
@@ -247,13 +247,13 @@ function DoseBar({ label, dose, maxDose, color, isCalculated = false }: {
   return (
     <div className={`mb-3 ${isCalculated ? 'ring-1 ring-white/10 rounded-lg p-2 bg-white/5' : ''}`}>
       <div className="flex justify-between text-xs mb-1">
-        <span className={`${isCalculated ? 'text-slate-200 font-semibold' : 'text-slate-300'}`}>
+        <span className={`${isCalculated ? 'text-white/90 font-semibold' : 'text-white/70'}`}>
           {label}
-          {isCalculated && <span className="ml-2 text-[10px] uppercase tracking-wider text-slate-300/70">(Your Mission)</span>}
+          {isCalculated && <span className="ml-2 text-[10px] uppercase tracking-wider text-white/70/70">(Your Mission)</span>}
         </span>
         <span className="text-slate-400">{dose < 1 ? dose.toFixed(2) : dose.toFixed(1)} mSv</span>
       </div>
-      <div className="h-3 bg-slate-800/80 rounded-full overflow-hidden">
+      <div className="h-3 bg-white/[0.06] rounded-full overflow-hidden">
         <div
           className={`h-full rounded-full transition-all duration-700 ease-out ${isCalculated ? 'bg-gradient-to-r from-white to-slate-400' : color}`}
           style={{ width: `${width}%` }}
@@ -309,7 +309,7 @@ function OrbitSelectionPanel({
   return (
     <div className="card p-5">
       <h3 className="text-lg font-semibold text-slate-100 mb-4 flex items-center gap-2">
-        <svg className="w-5 h-5 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+        <svg className="w-5 h-5 text-white/70" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418" />
         </svg>
         Orbit Selection
@@ -323,8 +323,8 @@ function OrbitSelectionPanel({
             onClick={() => onOrbitChange(key)}
             className={`py-2.5 px-3 rounded-lg text-sm font-medium transition-all border text-left ${
               selectedOrbit === key
-                ? 'bg-white/8 border-white/15 text-slate-300'
-                : 'bg-slate-900/50 border-slate-700/50 text-slate-400 hover:border-slate-600/50 hover:text-slate-300'
+                ? 'bg-white/8 border-white/15 text-white/70'
+                : 'bg-slate-900/50 border-white/[0.06] text-slate-400 hover:border-slate-600/50 hover:text-white/70'
             }`}
           >
             <div className="text-xs font-semibold">{ORBITS[key].label}</div>
@@ -334,16 +334,16 @@ function OrbitSelectionPanel({
       </div>
 
       {/* Orbit Description */}
-      <div className="card p-3 bg-slate-800/30 mb-5">
+      <div className="card p-3 bg-white/[0.03] mb-5">
         <p className="text-xs text-slate-400 leading-relaxed">{orbitConfig.description}</p>
         <div className="mt-2 text-xs text-slate-500">
-          Base dose rate: <span className="text-slate-300 font-medium">{orbitConfig.baseDoseRate} mSv/day</span> (behind 10mm Al)
+          Base dose rate: <span className="text-white/70 font-medium">{orbitConfig.baseDoseRate} mSv/day</span> (behind 10mm Al)
         </div>
       </div>
 
       {/* Inclination Slider */}
       <div className="mb-4">
-        <label className="block text-sm font-medium text-slate-300 mb-1.5">
+        <label className="block text-sm font-medium text-white/70 mb-1.5">
           Orbital Inclination
           {!isEarthOrbit && <span className="text-xs text-slate-500 ml-2">(not applicable)</span>}
         </label>
@@ -360,7 +360,7 @@ function OrbitSelectionPanel({
               const val = parseFloat(e.target.value);
               if (!isNaN(val) && val >= 0 && val <= 90) onInclinationChange(val);
             }}
-            className="w-24 bg-slate-900/70 border border-slate-700/50 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-white/15 focus:ring-1 focus:ring-white/10 disabled:opacity-40 disabled:cursor-not-allowed"
+            className="w-24 bg-slate-900/70 border border-white/[0.06] rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-white/15 focus:ring-1 focus:ring-white/10 disabled:opacity-40 disabled:cursor-not-allowed"
           />
           <span className="text-sm text-slate-400">degrees</span>
         </div>
@@ -381,7 +381,7 @@ function OrbitSelectionPanel({
 
       {/* Mission Duration */}
       <div className="mb-4">
-        <label className="block text-sm font-medium text-slate-300 mb-1.5">Mission Duration</label>
+        <label className="block text-sm font-medium text-white/70 mb-1.5">Mission Duration</label>
         <div className="flex items-center gap-3 mb-1.5">
           <input
             type="number"
@@ -394,7 +394,7 @@ function OrbitSelectionPanel({
               const val = parseInt(e.target.value);
               if (!isNaN(val) && val >= 1 && val <= 1095) onDurationChange(val);
             }}
-            className="w-24 bg-slate-900/70 border border-slate-700/50 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-white/15 focus:ring-1 focus:ring-white/10"
+            className="w-24 bg-slate-900/70 border border-white/[0.06] rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-white/15 focus:ring-1 focus:ring-white/10"
           />
           <span className="text-sm text-slate-400">days</span>
           <span className="text-xs text-slate-500">({(duration / 30.44).toFixed(1)} months)</span>
@@ -418,7 +418,7 @@ function OrbitSelectionPanel({
 
       {/* Shielding Thickness */}
       <div className="mb-2">
-        <label className="block text-sm font-medium text-slate-300 mb-1.5">Shielding Thickness (Al equivalent)</label>
+        <label className="block text-sm font-medium text-white/70 mb-1.5">Shielding Thickness (Al equivalent)</label>
         <div className="flex items-center gap-3 mb-1.5">
           <input
             type="number"
@@ -431,7 +431,7 @@ function OrbitSelectionPanel({
               const val = parseFloat(e.target.value);
               if (!isNaN(val) && val >= 0 && val <= 50) onShieldingChange(val);
             }}
-            className="w-24 bg-slate-900/70 border border-slate-700/50 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-white/15 focus:ring-1 focus:ring-white/10"
+            className="w-24 bg-slate-900/70 border border-white/[0.06] rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-white/15 focus:ring-1 focus:ring-white/10"
           />
           <span className="text-sm text-slate-400">mm Al</span>
         </div>
@@ -481,7 +481,7 @@ function RadiationSourcesPanel({ orbit, results }: {
       name: 'Galactic Cosmic Rays (GCR)',
       fraction: orbit.gcrFraction,
       dose: results.gcrDose,
-      color: 'text-slate-300',
+      color: 'text-white/70',
       barColor: 'bg-white',
       icon: (
         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
@@ -532,10 +532,10 @@ function RadiationSourcesPanel({ orbit, results }: {
 
       <div className="space-y-4">
         {sources.map((source) => (
-          <div key={source.name} className="card p-3 bg-slate-800/30">
+          <div key={source.name} className="card p-3 bg-white/[0.03]">
             <div className="flex items-center gap-2 mb-1.5">
               <span className={source.color}>{source.icon}</span>
-              <span className="text-sm font-medium text-slate-200">{source.name}</span>
+              <span className="text-sm font-medium text-white/90">{source.name}</span>
               <span className={`text-xs ${source.color} ml-auto font-semibold`}>
                 {(source.fraction * 100).toFixed(0)}%
               </span>
@@ -639,17 +639,17 @@ function CalculatedResultsPanel({ results, duration }: {
 
       {/* Comparison Metrics */}
       <div className="card p-5">
-        <h4 className="text-sm font-semibold text-slate-200 mb-4">Exposure Comparisons</h4>
+        <h4 className="text-sm font-semibold text-white/90 mb-4">Exposure Comparisons</h4>
         <div className="space-y-3">
           {/* NASA Career Limit */}
           <div>
             <div className="flex justify-between text-xs mb-1">
-              <span className="text-slate-300">NASA Career Limit (600 mSv)</span>
+              <span className="text-white/70">NASA Career Limit (600 mSv)</span>
               <span className={`font-semibold ${careerPercent > 100 ? 'text-red-400' : careerPercent > 50 ? 'text-amber-400' : 'text-emerald-400'}`}>
                 {careerPercent.toFixed(1)}%
               </span>
             </div>
-            <div className="h-3 bg-slate-800/80 rounded-full overflow-hidden">
+            <div className="h-3 bg-white/[0.06] rounded-full overflow-hidden">
               <div
                 className={`h-full rounded-full transition-all duration-700 ${
                   careerPercent > 100 ? 'bg-red-500' : careerPercent > 50 ? 'bg-amber-500' : 'bg-emerald-500'
@@ -662,10 +662,10 @@ function CalculatedResultsPanel({ results, duration }: {
           {/* ISS Comparison */}
           <div>
             <div className="flex justify-between text-xs mb-1">
-              <span className="text-slate-300">vs. ISS Annual Rate ({issAnnualLow}-{issAnnualHigh} mSv/yr)</span>
+              <span className="text-white/70">vs. ISS Annual Rate ({issAnnualLow}-{issAnnualHigh} mSv/yr)</span>
               <span className="text-slate-400 font-medium">{issComparison.toFixed(0)}%</span>
             </div>
-            <div className="h-3 bg-slate-800/80 rounded-full overflow-hidden">
+            <div className="h-3 bg-white/[0.06] rounded-full overflow-hidden">
               <div
                 className="h-full rounded-full transition-all duration-700 bg-purple-500"
                 style={{ width: `${Math.min(issComparison, 100)}%` }}
@@ -676,10 +676,10 @@ function CalculatedResultsPanel({ results, duration }: {
           {/* Earth Background */}
           <div>
             <div className="flex justify-between text-xs mb-1">
-              <span className="text-slate-300">vs. Earth Background ({earthBackground} mSv/yr)</span>
+              <span className="text-white/70">vs. Earth Background ({earthBackground} mSv/yr)</span>
               <span className="text-slate-400 font-medium">{(results.annualRate / earthBackground).toFixed(1)}x</span>
             </div>
-            <div className="h-3 bg-slate-800/80 rounded-full overflow-hidden">
+            <div className="h-3 bg-white/[0.06] rounded-full overflow-hidden">
               <div
                 className="h-full rounded-full transition-all duration-700 bg-white"
                 style={{ width: `${Math.min((results.annualRate / earthBackground) * 5, 100)}%` }}
@@ -688,7 +688,7 @@ function CalculatedResultsPanel({ results, duration }: {
           </div>
         </div>
 
-        <div className="mt-4 p-3 bg-slate-800/30 rounded-lg">
+        <div className="mt-4 p-3 bg-white/[0.03] rounded-lg">
           <p className="text-xs text-slate-500 leading-relaxed">
             <span className="text-slate-400 font-medium">Note:</span> NASA limits vary by age and gender.
             The 600 mSv career limit represents the approximate upper bound. NCRP recommendations
@@ -767,7 +767,7 @@ function RadiationEffectsTable({ currentDose }: { currentDose: number }) {
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-slate-700/50">
+            <tr className="border-b border-white/[0.06]">
               <th className="text-left py-2 px-3 text-xs text-slate-400 font-semibold uppercase tracking-wider">Dose Range</th>
               <th className="text-left py-2 px-3 text-xs text-slate-400 font-semibold uppercase tracking-wider">Severity</th>
               <th className="text-left py-2 px-3 text-xs text-slate-400 font-semibold uppercase tracking-wider">Effects</th>
@@ -779,16 +779,16 @@ function RadiationEffectsTable({ currentDose }: { currentDose: number }) {
               return (
                 <tr
                   key={effect.range}
-                  className={`border-b border-slate-800/50 ${
+                  className={`border-b border-white/[0.04] ${
                     isCurrent ? 'bg-white/5 ring-1 ring-inset ring-white/15' : ''
                   }`}
                 >
                   <td className="py-3 px-3">
-                    <span className={`text-sm font-medium ${isCurrent ? 'text-slate-200' : 'text-slate-200'}`}>
+                    <span className={`text-sm font-medium ${isCurrent ? 'text-white/90' : 'text-white/90'}`}>
                       {effect.dose}
                     </span>
                     {isCurrent && (
-                      <div className="text-[10px] text-slate-300 mt-0.5 uppercase tracking-wider font-semibold">
+                      <div className="text-[10px] text-white/70 mt-0.5 uppercase tracking-wider font-semibold">
                         Your mission
                       </div>
                     )}
@@ -830,7 +830,7 @@ function ShieldingMaterialsPanel({ shieldingMm, orbitDecayLength }: {
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-slate-700/50">
+            <tr className="border-b border-white/[0.06]">
               <th className="text-left py-2 px-3 text-xs text-slate-400 font-semibold uppercase tracking-wider">Material</th>
               <th className="text-left py-2 px-3 text-xs text-slate-400 font-semibold uppercase tracking-wider">Mass Eff.</th>
               <th className="text-left py-2 px-3 text-xs text-slate-400 font-semibold uppercase tracking-wider">Density</th>
@@ -846,16 +846,16 @@ function ShieldingMaterialsPanel({ shieldingMm, orbitDecayLength }: {
               return (
                 <tr
                   key={material.name}
-                  className={`border-b border-slate-800/50 ${isBaseline ? 'bg-slate-800/20' : ''}`}
+                  className={`border-b border-white/[0.04] ${isBaseline ? 'bg-slate-800/20' : ''}`}
                 >
                   <td className="py-3 px-3">
-                    <span className="text-sm font-medium text-slate-200">{material.name}</span>
+                    <span className="text-sm font-medium text-white/90">{material.name}</span>
                     {isBaseline && <span className="text-[10px] text-slate-500 ml-1.5">(baseline)</span>}
                   </td>
                   <td className="py-3 px-3">
                     <span className={`text-sm font-semibold ${
                       material.effectivenessMultiplier > 1 ? 'text-emerald-400' :
-                      material.effectivenessMultiplier < 1 ? 'text-red-400' : 'text-slate-300'
+                      material.effectivenessMultiplier < 1 ? 'text-red-400' : 'text-white/70'
                     }`}>
                       {material.effectivenessMultiplier.toFixed(1)}x
                     </span>
@@ -871,7 +871,7 @@ function ShieldingMaterialsPanel({ shieldingMm, orbitDecayLength }: {
                           style={{ width: `${Math.min(reduction, 100)}%` }}
                         />
                       </div>
-                      <span className="text-xs text-slate-300 font-medium">{reduction.toFixed(1)}%</span>
+                      <span className="text-xs text-white/70 font-medium">{reduction.toFixed(1)}%</span>
                     </div>
                   </td>
                   <td className="py-3 px-3 text-xs text-slate-500">{material.notes}</td>
@@ -967,7 +967,7 @@ export default function RadiationCalculatorPage() {
           <h3 className="text-lg font-semibold text-slate-100 mb-3">Methodology & Limitations</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs text-slate-500 leading-relaxed">
             <div>
-              <h4 className="text-sm font-medium text-slate-300 mb-2">Dose Model</h4>
+              <h4 className="text-sm font-medium text-white/70 mb-2">Dose Model</h4>
               <p className="mb-2">
                 This calculator uses simplified dose rate models based on published measurements from
                 ISS crew dosimeters, the RAD instrument on MSL/Curiosity, and AP-8/AE-8 trapped particle
@@ -980,7 +980,7 @@ export default function RadiationCalculatorPage() {
               </p>
             </div>
             <div>
-              <h4 className="text-sm font-medium text-slate-300 mb-2">Important Caveats</h4>
+              <h4 className="text-sm font-medium text-white/70 mb-2">Important Caveats</h4>
               <ul className="space-y-1 list-disc list-inside">
                 <li>Solar cycle effects are not modeled (GCR is ~2x higher at solar minimum)</li>
                 <li>SPE dose is averaged; individual events can deliver 100+ mSv in hours</li>
@@ -1002,36 +1002,36 @@ export default function RadiationCalculatorPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
             <Link
               href="/orbital-calculator"
-              className="p-3 rounded-lg bg-slate-700/30 hover:bg-slate-700/50 transition-colors group"
+              className="p-3 rounded-lg bg-slate-700/30 hover:bg-white/[0.08] transition-colors group"
             >
-              <div className="text-sm font-medium text-white group-hover:text-slate-200">
+              <div className="text-sm font-medium text-white group-hover:text-white/90">
                 Orbital Mechanics Calculator
               </div>
               <p className="text-xs text-slate-400 mt-1">Delta-V, periods, decay analysis</p>
             </Link>
             <Link
               href="/space-environment"
-              className="p-3 rounded-lg bg-slate-700/30 hover:bg-slate-700/50 transition-colors group"
+              className="p-3 rounded-lg bg-slate-700/30 hover:bg-white/[0.08] transition-colors group"
             >
-              <div className="text-sm font-medium text-white group-hover:text-slate-200">
+              <div className="text-sm font-medium text-white group-hover:text-white/90">
                 Space Environment
               </div>
               <p className="text-xs text-slate-400 mt-1">Solar weather, debris tracking</p>
             </Link>
             <Link
               href="/mars-planner"
-              className="p-3 rounded-lg bg-slate-700/30 hover:bg-slate-700/50 transition-colors group"
+              className="p-3 rounded-lg bg-slate-700/30 hover:bg-white/[0.08] transition-colors group"
             >
-              <div className="text-sm font-medium text-white group-hover:text-slate-200">
+              <div className="text-sm font-medium text-white group-hover:text-white/90">
                 Mars Mission Planner
               </div>
               <p className="text-xs text-slate-400 mt-1">Plan interplanetary missions</p>
             </Link>
             <Link
               href="/materials-database"
-              className="p-3 rounded-lg bg-slate-700/30 hover:bg-slate-700/50 transition-colors group"
+              className="p-3 rounded-lg bg-slate-700/30 hover:bg-white/[0.08] transition-colors group"
             >
-              <div className="text-sm font-medium text-white group-hover:text-slate-200">
+              <div className="text-sm font-medium text-white group-hover:text-white/90">
                 Materials Database
               </div>
               <p className="text-xs text-slate-400 mt-1">Spacecraft materials & properties</p>

@@ -126,7 +126,7 @@ function PricingCard({
       {isCurrentPlan && !isTrialing ? (
         <button
           disabled
-          className="w-full py-3 px-4 rounded-lg bg-slate-600/50 text-slate-300 cursor-not-allowed border border-slate-500/30"
+          className="w-full py-3 px-4 rounded-lg bg-white/[0.06] text-slate-300 cursor-not-allowed border border-white/[0.06]"
         >
           Current Plan
         </button>
@@ -144,7 +144,7 @@ function PricingCard({
             className={`w-full py-2 px-4 rounded-lg text-sm font-medium transition-colors ${
               plan.highlighted
                 ? 'bg-white text-slate-900 hover:bg-white'
-                : 'bg-slate-600/50 text-slate-100 hover:bg-slate-500/50 border border-slate-500/30'
+                : 'bg-white/[0.06] text-white hover:bg-white/[0.08] border border-white/[0.06]'
             } ${isCheckingOut ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
             {isCheckingOut ? 'Redirecting...' : 'Subscribe Now'}
@@ -153,7 +153,7 @@ function PricingCard({
       ) : plan.id === 'free' ? (
         <Link
           href="/register"
-          className="block w-full py-3 px-4 rounded-lg bg-slate-600/50 text-slate-100 text-center hover:bg-slate-500/50 border border-slate-500/30 transition-colors"
+          className="block w-full py-3 px-4 rounded-lg bg-white/[0.06] text-white text-center hover:bg-white/[0.08] border border-white/[0.06] transition-colors"
         >
           Get Started Free
         </Link>
@@ -165,7 +165,7 @@ function PricingCard({
             className={`w-full py-3 px-4 rounded-lg font-medium transition-colors ${
               plan.highlighted
                 ? 'bg-white text-slate-900 hover:bg-slate-100'
-                : 'bg-white/10 text-slate-100 hover:bg-white/15 border border-white/10'
+                : 'bg-white/10 text-white hover:bg-white/15 border border-white/10'
             } ${isStartingTrial ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
             {isStartingTrial ? 'Starting Trial...' : `Start ${plan.trialDays}-Day Free Trial`}
@@ -173,7 +173,7 @@ function PricingCard({
           <button
             onClick={() => onSubscribe(plan.id, isYearly ? 'year' : 'month')}
             disabled={isCheckingOut}
-            className={`w-full py-2 px-4 rounded-lg text-sm font-medium transition-colors bg-slate-600/50 text-slate-200 hover:bg-slate-500/50 border border-slate-500/30 ${
+            className={`w-full py-2 px-4 rounded-lg text-sm font-medium transition-colors bg-white/[0.06] text-white/90 hover:bg-white/[0.08] border border-white/[0.06] ${
               isCheckingOut ? 'opacity-50 cursor-not-allowed' : ''
             }`}
           >
@@ -193,7 +193,7 @@ function PricingCard({
           className={`w-full py-3 px-4 rounded-lg font-medium transition-colors ${
             plan.highlighted
               ? 'bg-white text-slate-900 hover:bg-slate-100'
-              : 'bg-white/10 text-slate-100 hover:bg-white/15 border border-white/10'
+              : 'bg-white/10 text-white hover:bg-white/15 border border-white/10'
           } ${isCheckingOut ? 'opacity-50 cursor-not-allowed' : ''}`}
         >
           {isCheckingOut ? 'Redirecting...' : 'Subscribe Now'}
@@ -273,23 +273,23 @@ function FeatureComparisonTable() {
       <p className="text-xs text-slate-500 text-center mb-3 md:hidden">
         Swipe left/right to compare all plans
       </p>
-      <div className="overflow-x-auto rounded-xl border border-slate-700 bg-slate-900/50 scroll-smooth">
+      <div className="overflow-x-auto rounded-xl border border-white/[0.06] bg-black/50 scroll-smooth">
         <table className="w-full min-w-[520px] text-left">
-          <thead className="sticky top-0 z-10 bg-slate-900/95 backdrop-blur-sm">
-            <tr className="border-b border-slate-700">
+          <thead className="sticky top-0 z-10 bg-[#0a0a0a]/95 backdrop-blur-sm">
+            <tr className="border-b border-white/[0.06]">
               <th className="py-3 px-3 sm:py-4 sm:px-5 text-sm font-semibold text-slate-300 w-[40%]">Feature</th>
-              <th className="py-3 px-2 sm:py-4 sm:px-4 text-center text-sm font-semibold text-slate-100 w-[20%]">
+              <th className="py-3 px-2 sm:py-4 sm:px-4 text-center text-sm font-semibold text-white w-[20%]">
                 <div>Explorer</div>
                 <div className="text-xs font-normal text-slate-400 mt-0.5">Free</div>
               </th>
-              <th className="py-3 px-2 sm:py-4 sm:px-4 text-center text-sm font-semibold text-slate-200 w-[20%] border-x border-white/10 bg-white/5">
+              <th className="py-3 px-2 sm:py-4 sm:px-4 text-center text-sm font-semibold text-white/90 w-[20%] border-x border-white/10 bg-white/5">
                 <div className="flex items-center justify-center gap-1.5">
                   Professional
-                  <span className="text-[10px] bg-white/10 text-slate-200 px-1.5 py-0.5 rounded-full font-medium">Popular</span>
+                  <span className="text-[10px] bg-white/10 text-white/90 px-1.5 py-0.5 rounded-full font-medium">Popular</span>
                 </div>
                 <div className="text-xs font-normal text-slate-400 mt-0.5">$19.99/mo</div>
               </th>
-              <th className="py-3 px-2 sm:py-4 sm:px-4 text-center text-sm font-semibold text-slate-100 w-[20%]">
+              <th className="py-3 px-2 sm:py-4 sm:px-4 text-center text-sm font-semibold text-white w-[20%]">
                 <div>Enterprise</div>
                 <div className="text-xs font-normal text-slate-400 mt-0.5">$49.99/mo</div>
               </th>
@@ -299,14 +299,14 @@ function FeatureComparisonTable() {
             {FEATURE_CATEGORIES.map((category) => (
               <Fragment key={category.name}>
                 {/* Category header */}
-                <tr className="bg-slate-800/50">
+                <tr className="bg-white/[0.04]">
                   <td colSpan={4} className="py-2.5 px-5 text-xs font-semibold uppercase tracking-wider text-slate-300">
                     {category.name}
                   </td>
                 </tr>
                 {/* Feature rows */}
                 {category.features.map((feature) => (
-                  <tr key={feature.label} className="border-b border-slate-800/50 hover:bg-slate-800/30 transition-colors">
+                  <tr key={feature.label} className="border-b border-white/[0.04] hover:bg-white/[0.04] transition-colors">
                     <td className="py-2.5 px-3 sm:py-3 sm:px-5 text-sm text-slate-300">{feature.label}</td>
                     <td className="py-2.5 px-2 sm:py-3 sm:px-4 text-center">{renderCellValue(feature.free)}</td>
                     <td className="py-2.5 px-2 sm:py-3 sm:px-4 text-center border-x border-white/10 bg-white/[0.02]">{renderCellValue(feature.pro)}</td>
@@ -354,7 +354,7 @@ function SocialProofSection() {
         </p>
         <div className="flex flex-wrap justify-center gap-4">
           {TRUST_AUDIENCES.map((a) => (
-            <div key={a.label} className="flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-800/60 border border-slate-700/50">
+            <div key={a.label} className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/[0.06] border border-white/[0.06]">
               <span className="text-base" role="img" aria-label={a.label}>{a.icon}</span>
               <span className="text-sm text-slate-300">{a.label}</span>
             </div>
@@ -365,7 +365,7 @@ function SocialProofSection() {
       {/* Testimonials */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {PRICING_TESTIMONIALS.map((t) => (
-          <div key={t.name} className="p-5 rounded-xl bg-slate-800/40 border border-slate-700/50">
+          <div key={t.name} className="p-5 rounded-xl bg-white/[0.04] border border-white/[0.06]">
             <svg className="w-6 h-6 text-slate-300/40 mb-3" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
               <path d="M4.583 17.321C3.553 16.227 3 15 3 13.011c0-3.5 2.457-6.637 6.03-8.188l.893 1.378c-3.335 1.804-3.987 4.145-4.247 5.621.537-.278 1.24-.375 1.929-.311 1.804.167 3.226 1.648 3.226 3.489a3.5 3.5 0 01-3.5 3.5c-1.073 0-2.099-.49-2.748-1.179zm10 0C13.553 16.227 13 15 13 13.011c0-3.5 2.457-6.637 6.03-8.188l.893 1.378c-3.335 1.804-3.987 4.145-4.247 5.621.537-.278 1.24-.375 1.929-.311 1.804.167 3.226 1.648 3.226 3.489a3.5 3.5 0 01-3.5 3.5c-1.073 0-2.099-.49-2.748-1.179z" />
             </svg>
@@ -527,7 +527,7 @@ function PricingPageContent() {
             {['Entrepreneurs', 'Executives', 'Mission Planners', 'Lawyers', 'Investors', 'Enthusiasts'].map((audience) => (
               <span
                 key={audience}
-                className="px-3 py-1 rounded-full text-xs font-medium border border-white/10 text-slate-200 bg-white/5"
+                className="px-3 py-1 rounded-full text-xs font-medium border border-white/10 text-white/90 bg-white/5"
               >
                 {audience}
               </span>
@@ -661,7 +661,7 @@ function PricingPageContent() {
         {/* CTA */}
         <ScrollReveal className="mt-12">
           <div className="text-center">
-            <p className="text-slate-200 mb-4 drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]">
+            <p className="text-white/90 mb-4 drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]">
               Have questions? We&apos;re here to help.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
@@ -673,7 +673,7 @@ function PricingPageContent() {
               </Link>
               <Link
                 href="mailto:support@spacenexus.us"
-                className="text-slate-200 hover:text-white transition-colors"
+                className="text-white/90 hover:text-white transition-colors"
               >
                 Contact Support &rarr;
               </Link>

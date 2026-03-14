@@ -23,7 +23,7 @@ const SECTOR_LABELS: Record<string, string> = {
 };
 
 const SECTOR_COLORS: Record<string, string> = {
-  launch: 'bg-white/10 text-slate-300 border-white/10',
+  launch: 'bg-white/10 text-white/70 border-white/10',
   earth_observation: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30',
   communications: 'bg-purple-500/20 text-purple-400 border-purple-500/30',
   ground_segment: 'bg-amber-500/20 text-amber-400 border-amber-500/30',
@@ -99,17 +99,17 @@ function ModelCard({
         {model.description}
       </p>
 
-      <div className="bg-slate-800/50 rounded-lg p-3 mb-3">
+      <div className="bg-white/[0.04] rounded-lg p-3 mb-3">
         <div className="text-xs text-slate-500 uppercase tracking-wider mb-1">Revenue Model</div>
-        <p className="text-xs text-slate-300 line-clamp-2">{model.revenueModel}</p>
+        <p className="text-xs text-white/70 line-clamp-2">{model.revenueModel}</p>
       </div>
 
-      <div className="flex items-center justify-between pt-2 border-t border-slate-700/50">
+      <div className="flex items-center justify-between pt-2 border-t border-white/[0.06]">
         <div>
           <div className="text-xs text-slate-500 uppercase tracking-wider">Break-even</div>
           <div className="text-xs text-amber-400 font-medium mt-0.5 line-clamp-1">{model.breakEvenEstimate.split('.')[0]}</div>
         </div>
-        <div className="text-xs text-slate-300 opacity-0 group-hover:opacity-100 transition-opacity">
+        <div className="text-xs text-white/70 opacity-0 group-hover:opacity-100 transition-opacity">
           Click to expand &rarr;
         </div>
       </div>
@@ -122,7 +122,7 @@ function MetricsTable({ metrics }: { metrics: { label: string; benchmark: string
     <div className="overflow-x-auto">
       <table className="w-full text-sm">
         <thead>
-          <tr className="border-b border-slate-700/50">
+          <tr className="border-b border-white/[0.06]">
             <th className="text-left text-xs text-slate-500 font-medium py-2 pr-4">Metric</th>
             <th className="text-left text-xs text-slate-500 font-medium py-2 pr-4">Benchmark</th>
             <th className="text-left text-xs text-slate-500 font-medium py-2">Description</th>
@@ -130,9 +130,9 @@ function MetricsTable({ metrics }: { metrics: { label: string; benchmark: string
         </thead>
         <tbody>
           {metrics.map((m, i) => (
-            <tr key={i} className="border-b border-slate-800/50">
+            <tr key={i} className="border-b border-white/[0.04]">
               <td className="py-2.5 pr-4 text-xs font-medium text-white whitespace-nowrap">{m.label}</td>
-              <td className="py-2.5 pr-4 text-xs text-slate-300 font-semibold whitespace-nowrap">{m.benchmark}</td>
+              <td className="py-2.5 pr-4 text-xs text-white/70 font-semibold whitespace-nowrap">{m.benchmark}</td>
               <td className="py-2.5 text-xs text-slate-400">{m.description}</td>
             </tr>
           ))}
@@ -150,7 +150,7 @@ function UnitEconomicsTable({ data }: { data: { metric: string; value: string; n
     <div className="overflow-x-auto">
       <table className="w-full text-sm">
         <thead>
-          <tr className="border-b border-slate-700/50">
+          <tr className="border-b border-white/[0.06]">
             <th className="text-left text-xs text-slate-500 font-medium py-2 pr-4">Metric</th>
             <th className="text-left text-xs text-slate-500 font-medium py-2 pr-4">Value</th>
             <th className="text-left text-xs text-slate-500 font-medium py-2">Notes</th>
@@ -158,7 +158,7 @@ function UnitEconomicsTable({ data }: { data: { metric: string; value: string; n
         </thead>
         <tbody>
           {data.map((d, i) => (
-            <tr key={i} className="border-b border-slate-800/50">
+            <tr key={i} className="border-b border-white/[0.04]">
               <td className="py-2.5 pr-4 text-xs font-medium text-white">{d.metric}</td>
               <td className="py-2.5 pr-4 text-xs text-emerald-400 font-semibold whitespace-nowrap">{d.value}</td>
               <td className="py-2.5 text-xs text-slate-400">{d.notes}</td>
@@ -174,7 +174,7 @@ function FundingTable({ data }: { data: { stage: string; typical: string }[] }) 
   return (
     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
       {data.map((d, i) => (
-        <div key={i} className="bg-slate-800/50 rounded-lg p-3 text-center">
+        <div key={i} className="bg-white/[0.04] rounded-lg p-3 text-center">
           <div className="text-xs text-slate-500 uppercase tracking-wider">{d.stage}</div>
           <div className="text-sm font-bold text-purple-400 mt-1">{d.typical}</div>
         </div>
@@ -222,7 +222,7 @@ function ExpandedModelView({
       {/* Back button */}
       <button
         onClick={onClose}
-        className="flex items-center gap-2 text-sm text-slate-300 hover:text-white transition-colors"
+        className="flex items-center gap-2 text-sm text-white/70 hover:text-white transition-colors"
       >
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -241,13 +241,13 @@ function ExpandedModelView({
             </span>
           </div>
         </div>
-        <p className="text-sm text-slate-300 leading-relaxed">{model.description}</p>
+        <p className="text-sm text-white/70 leading-relaxed">{model.description}</p>
       </div>
 
       {/* Revenue Model */}
       <div className="card p-6">
         <h3 className="text-base font-semibold text-white mb-3">Revenue Model</h3>
-        <p className="text-sm text-slate-300 leading-relaxed">{model.revenueModel}</p>
+        <p className="text-sm text-white/70 leading-relaxed">{model.revenueModel}</p>
       </div>
 
       {/* Key Metrics */}
@@ -265,7 +265,7 @@ function ExpandedModelView({
             {model.costStructure.map((c, i) => (
               <div key={i} className="flex items-start gap-2 text-xs">
                 <span className="text-slate-500 font-mono w-8 flex-shrink-0">{c.percentage}%</span>
-                <span className="text-slate-300">
+                <span className="text-white/70">
                   <span className="font-medium text-white">{c.category}</span> &mdash; {c.description}
                 </span>
               </div>
@@ -314,7 +314,7 @@ function CompareView({
       {/* Back button */}
       <button
         onClick={onClose}
-        className="flex items-center gap-2 text-sm text-slate-300 hover:text-white transition-colors"
+        className="flex items-center gap-2 text-sm text-white/70 hover:text-white transition-colors"
       >
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -350,9 +350,9 @@ function CompareView({
         <h3 className="text-base font-semibold text-white mb-4">Revenue Model</h3>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {[a, b].map((model) => (
-            <div key={model.id} className="bg-slate-800/50 rounded-lg p-4">
-              <div className="text-xs text-slate-300 font-medium mb-1">{model.name}</div>
-              <p className="text-xs text-slate-300 leading-relaxed">{model.revenueModel}</p>
+            <div key={model.id} className="bg-white/[0.04] rounded-lg p-4">
+              <div className="text-xs text-white/70 font-medium mb-1">{model.name}</div>
+              <p className="text-xs text-white/70 leading-relaxed">{model.revenueModel}</p>
             </div>
           ))}
         </div>
@@ -364,7 +364,7 @@ function CompareView({
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {[a, b].map((model) => (
             <div key={model.id}>
-              <div className="text-xs text-slate-300 font-medium mb-2">{model.name}</div>
+              <div className="text-xs text-white/70 font-medium mb-2">{model.name}</div>
               <MetricsTable metrics={model.keyMetrics} />
             </div>
           ))}
@@ -377,7 +377,7 @@ function CompareView({
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {[a, b].map((model) => (
             <div key={model.id}>
-              <div className="text-xs text-slate-300 font-medium mb-3">{model.name}</div>
+              <div className="text-xs text-white/70 font-medium mb-3">{model.name}</div>
               <CostStructureChart data={model.costStructure} />
             </div>
           ))}
@@ -390,7 +390,7 @@ function CompareView({
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {[a, b].map((model) => (
             <div key={model.id}>
-              <div className="text-xs text-slate-300 font-medium mb-2">{model.name}</div>
+              <div className="text-xs text-white/70 font-medium mb-2">{model.name}</div>
               <UnitEconomicsTable data={model.unitEconomics} />
             </div>
           ))}
@@ -403,7 +403,7 @@ function CompareView({
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {[a, b].map((model) => (
             <div key={model.id}>
-              <div className="text-xs text-slate-300 font-medium mb-2">{model.name}</div>
+              <div className="text-xs text-white/70 font-medium mb-2">{model.name}</div>
               <FundingTable data={model.fundingBenchmarks} />
             </div>
           ))}
@@ -416,7 +416,7 @@ function CompareView({
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {[a, b].map((model) => (
             <div key={model.id} className="bg-amber-500/5 border border-amber-500/20 rounded-lg p-4">
-              <div className="text-xs text-slate-300 font-medium mb-1">{model.name}</div>
+              <div className="text-xs text-white/70 font-medium mb-1">{model.name}</div>
               <p className="text-sm text-amber-300 leading-relaxed">{model.breakEvenEstimate}</p>
             </div>
           ))}
@@ -528,7 +528,7 @@ export default function BusinessModelsPage() {
               className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8"
             >
               <div className="card p-4 text-center">
-                <div className="text-2xl font-bold text-slate-300">{BUSINESS_MODELS.length}</div>
+                <div className="text-2xl font-bold text-white/70">{BUSINESS_MODELS.length}</div>
                 <div className="text-xs text-slate-400 mt-1">Model Templates</div>
               </div>
               <div className="card p-4 text-center">
@@ -557,8 +557,8 @@ export default function BusinessModelsPage() {
                   onClick={() => setSectorFilter('all')}
                   className={`text-xs px-3 py-1.5 rounded-lg border transition-all ${
                     sectorFilter === 'all'
-                      ? 'bg-white/10 text-slate-300 border-white/10'
-                      : 'bg-slate-800/50 text-slate-400 border-slate-700/50 hover:border-slate-600'
+                      ? 'bg-white/10 text-white/70 border-white/10'
+                      : 'bg-white/[0.04] text-slate-400 border-white/[0.06] hover:border-white/[0.1]'
                   }`}
                 >
                   All Sectors
@@ -569,8 +569,8 @@ export default function BusinessModelsPage() {
                     onClick={() => setSectorFilter(s)}
                     className={`text-xs px-3 py-1.5 rounded-lg border transition-all ${
                       sectorFilter === s
-                        ? SECTOR_COLORS[s] || 'bg-white/10 text-slate-300 border-white/10'
-                        : 'bg-slate-800/50 text-slate-400 border-slate-700/50 hover:border-slate-600'
+                        ? SECTOR_COLORS[s] || 'bg-white/10 text-white/70 border-white/10'
+                        : 'bg-white/[0.04] text-slate-400 border-white/[0.06] hover:border-white/[0.1]'
                     }`}
                   >
                     {SECTOR_LABELS[s] || s}
@@ -584,8 +584,8 @@ export default function BusinessModelsPage() {
                 disabled={compareIds.length !== 2}
                 className={`flex items-center gap-2 text-xs px-4 py-2 rounded-lg border transition-all flex-shrink-0 ${
                   compareIds.length === 2
-                    ? 'bg-white/10 text-slate-300 border-white/10 hover:bg-slate-100/30 cursor-pointer'
-                    : 'bg-slate-800/30 text-slate-500 border-slate-700/30 cursor-not-allowed'
+                    ? 'bg-white/10 text-white/70 border-white/10 hover:bg-slate-100/30 cursor-pointer'
+                    : 'bg-white/[0.03] text-slate-500 border-white/[0.04] cursor-not-allowed'
                 }`}
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -609,7 +609,7 @@ export default function BusinessModelsPage() {
             </div>
 
             {/* Methodology */}
-            <div className="card p-6 border-slate-700/30">
+            <div className="card p-6 border-white/[0.04]">
               <h3 className="text-sm font-semibold text-white mb-2">About These Templates</h3>
               <p className="text-xs text-slate-400 leading-relaxed">
                 Business model templates are based on publicly available data from industry reports, SEC filings,
@@ -619,7 +619,7 @@ export default function BusinessModelsPage() {
               </p>
               <div className="flex flex-wrap gap-2 mt-3">
                 {['Industry Reports', 'SEC Filings', 'Investor Decks', 'Analyst Research', 'Public Data'].map((src) => (
-                  <span key={src} className="text-xs px-2 py-0.5 rounded bg-slate-800/50 text-slate-500 border border-slate-700/30">
+                  <span key={src} className="text-xs px-2 py-0.5 rounded bg-white/[0.04] text-slate-500 border border-white/[0.04]">
                     {src}
                   </span>
                 ))}

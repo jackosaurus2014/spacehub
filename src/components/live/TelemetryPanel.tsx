@@ -186,19 +186,19 @@ export default function TelemetryPanel({ isLive, scheduledTime }: TelemetryPanel
     if (missionPhase === 'complete' || missionPhase === 'orbit') return 'text-green-400';
     if (missionPhase === 'max-q') return 'text-orange-400';
     if (missionPhase === 'stage-sep') return 'text-yellow-400';
-    return 'text-slate-300';
+    return 'text-white/70';
   };
 
   return (
-    <div className="bg-gradient-to-br from-space-900/95 via-space-800/95 to-space-900/95 rounded-xl border border-slate-700/50 overflow-hidden" role="region" aria-label="Live telemetry data">
+    <div className="bg-gradient-to-br from-space-900/95 via-space-800/95 to-space-900/95 rounded-xl border border-white/[0.06] overflow-hidden" role="region" aria-label="Live telemetry data">
       <span className="sr-only">
         {`Telemetry: ${telemetry.status}, mission elapsed time ${formatMET(telemetry.missionElapsedTime)}, altitude ${telemetry.altitude.toFixed(1)} km, velocity ${telemetry.velocity.toFixed(0)} m/s, acceleration ${telemetry.acceleration.toFixed(1)} m/s squared, stage ${telemetry.stage}. Milestones: Max-Q ${telemetry.maxQ ? 'complete' : 'pending'}, MECO ${telemetry.mecoComplete ? 'complete' : 'pending'}, stage separation ${telemetry.stageSeparation ? 'complete' : 'pending'}, fairing separation ${telemetry.fairingSeparation ? 'complete' : 'pending'}, SECO ${telemetry.secondEngineCutoff ? 'complete' : 'pending'}, orbit insertion ${telemetry.orbitInsertion ? 'complete' : 'pending'}.`}
       </span>
       {/* Header */}
-      <div className="px-4 py-3 border-b border-slate-700/50 bg-space-800/50">
+      <div className="px-4 py-3 border-b border-white/[0.06] bg-space-800/50">
         <div className="flex items-center justify-between">
           <h3 className="text-white font-semibold flex items-center gap-2">
-            <svg className="w-5 h-5 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5 text-white/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
             </svg>
             Live Telemetry
@@ -213,7 +213,7 @@ export default function TelemetryPanel({ isLive, scheduledTime }: TelemetryPanel
       </div>
 
       {/* Status Bar */}
-      <div className="px-4 py-3 border-b border-slate-700/30 bg-space-800/30">
+      <div className="px-4 py-3 border-b border-white/[0.04] bg-space-800/30">
         <div className="flex items-center justify-between">
           <div>
             <div className="text-slate-400 text-xs uppercase tracking-wider mb-1">Mission Status</div>
@@ -231,7 +231,7 @@ export default function TelemetryPanel({ isLive, scheduledTime }: TelemetryPanel
       {/* Main Telemetry Grid */}
       <div className="p-4 grid grid-cols-2 gap-4">
         {/* Altitude */}
-        <div className="bg-space-800/50 rounded-lg p-3 border border-slate-700/30">
+        <div className="bg-space-800/50 rounded-lg p-3 border border-white/[0.04]">
           <div className="flex items-center gap-2 mb-2">
             <svg className="w-4 h-4 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 11l5-5m0 0l5 5m-5-5v12" />
@@ -245,9 +245,9 @@ export default function TelemetryPanel({ isLive, scheduledTime }: TelemetryPanel
         </div>
 
         {/* Velocity */}
-        <div className="bg-space-800/50 rounded-lg p-3 border border-slate-700/30">
+        <div className="bg-space-800/50 rounded-lg p-3 border border-white/[0.04]">
           <div className="flex items-center gap-2 mb-2">
-            <svg className="w-4 h-4 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-4 h-4 text-white/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
             </svg>
             <span className="text-slate-400 text-xs uppercase tracking-wider">Velocity</span>
@@ -259,7 +259,7 @@ export default function TelemetryPanel({ isLive, scheduledTime }: TelemetryPanel
         </div>
 
         {/* Acceleration */}
-        <div className="bg-space-800/50 rounded-lg p-3 border border-slate-700/30">
+        <div className="bg-space-800/50 rounded-lg p-3 border border-white/[0.04]">
           <div className="flex items-center gap-2 mb-2">
             <svg className="w-4 h-4 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
@@ -273,7 +273,7 @@ export default function TelemetryPanel({ isLive, scheduledTime }: TelemetryPanel
         </div>
 
         {/* Active Stage */}
-        <div className="bg-space-800/50 rounded-lg p-3 border border-slate-700/30">
+        <div className="bg-space-800/50 rounded-lg p-3 border border-white/[0.04]">
           <div className="flex items-center gap-2 mb-2">
             <svg className="w-4 h-4 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
@@ -293,42 +293,42 @@ export default function TelemetryPanel({ isLive, scheduledTime }: TelemetryPanel
           <div className={`p-2 rounded-lg text-center text-xs font-medium transition-colors ${
             telemetry.maxQ
               ? 'bg-green-500/20 text-green-400 border border-green-500/30'
-              : 'bg-slate-800/50 text-slate-400 border border-slate-700/30'
+              : 'bg-white/[0.04] text-slate-400 border border-white/[0.04]'
           }`}>
             Max-Q
           </div>
           <div className={`p-2 rounded-lg text-center text-xs font-medium transition-colors ${
             telemetry.mecoComplete
               ? 'bg-green-500/20 text-green-400 border border-green-500/30'
-              : 'bg-slate-800/50 text-slate-400 border border-slate-700/30'
+              : 'bg-white/[0.04] text-slate-400 border border-white/[0.04]'
           }`}>
             MECO
           </div>
           <div className={`p-2 rounded-lg text-center text-xs font-medium transition-colors ${
             telemetry.stageSeparation
               ? 'bg-green-500/20 text-green-400 border border-green-500/30'
-              : 'bg-slate-800/50 text-slate-400 border border-slate-700/30'
+              : 'bg-white/[0.04] text-slate-400 border border-white/[0.04]'
           }`}>
             Stage Sep
           </div>
           <div className={`p-2 rounded-lg text-center text-xs font-medium transition-colors ${
             telemetry.fairingSeparation
               ? 'bg-green-500/20 text-green-400 border border-green-500/30'
-              : 'bg-slate-800/50 text-slate-400 border border-slate-700/30'
+              : 'bg-white/[0.04] text-slate-400 border border-white/[0.04]'
           }`}>
             Fairing Sep
           </div>
           <div className={`p-2 rounded-lg text-center text-xs font-medium transition-colors ${
             telemetry.secondEngineCutoff
               ? 'bg-green-500/20 text-green-400 border border-green-500/30'
-              : 'bg-slate-800/50 text-slate-400 border border-slate-700/30'
+              : 'bg-white/[0.04] text-slate-400 border border-white/[0.04]'
           }`}>
             SECO
           </div>
           <div className={`p-2 rounded-lg text-center text-xs font-medium transition-colors ${
             telemetry.orbitInsertion
               ? 'bg-green-500/20 text-green-400 border border-green-500/30'
-              : 'bg-slate-800/50 text-slate-400 border border-slate-700/30'
+              : 'bg-white/[0.04] text-slate-400 border border-white/[0.04]'
           }`}>
             Orbit
           </div>
@@ -338,7 +338,7 @@ export default function TelemetryPanel({ isLive, scheduledTime }: TelemetryPanel
       {/* Data disclaimer */}
       {!isLive && (
         <div className="px-4 pb-4">
-          <div className="text-slate-400 text-xs text-center bg-slate-800/30 rounded-lg p-2">
+          <div className="text-slate-400 text-xs text-center bg-white/[0.03] rounded-lg p-2">
             Telemetry will display when stream goes live
           </div>
         </div>

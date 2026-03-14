@@ -50,9 +50,9 @@ export default function SupplyChainNode({
       case 'tier2':
         return 'border-green-500/50 hover:border-green-400';
       case 'tier3':
-        return 'border-slate-500/50 hover:border-slate-400';
+        return 'border-white/[0.08] hover:border-slate-400';
       default:
-        return 'border-slate-600 hover:border-slate-500';
+        return 'border-white/[0.1] hover:border-slate-500';
     }
   };
 
@@ -148,7 +148,7 @@ export default function SupplyChainNode({
           {(company.products || []).slice(0, 4).map((product) => (
             <span
               key={product}
-              className="text-xs bg-space-700 text-slate-300 px-2 py-0.5 rounded"
+              className="text-xs bg-space-700 text-white/70 px-2 py-0.5 rounded"
             >
               {product.replace(/_/g, ' ')}
             </span>
@@ -172,13 +172,13 @@ export default function SupplyChainNode({
             {company.headquarters && (
               <div>
                 <span className="text-slate-400">HQ:</span>
-                <span className="text-slate-300 ml-2">{company.headquarters}</span>
+                <span className="text-white/70 ml-2">{company.headquarters}</span>
               </div>
             )}
             {company.employeeCount && (
               <div>
                 <span className="text-slate-400">Employees:</span>
-                <span className="text-slate-300 ml-2">{company.employeeCount.toLocaleString()}</span>
+                <span className="text-white/70 ml-2">{company.employeeCount.toLocaleString()}</span>
               </div>
             )}
           </div>
@@ -257,7 +257,7 @@ export default function SupplyChainNode({
               {(company.products || []).map((product) => (
                 <span
                   key={product}
-                  className="text-xs bg-space-700 text-slate-300 px-2 py-1 rounded"
+                  className="text-xs bg-space-700 text-white/70 px-2 py-1 rounded"
                 >
                   {product.replace(/_/g, ' ')}
                 </span>
@@ -273,7 +273,7 @@ export default function SupplyChainNode({
                   e.stopPropagation();
                   onSelectCompany(company.id);
                 }}
-                className="text-sm text-slate-200 hover:text-white transition-colors"
+                className="text-sm text-white/90 hover:text-white transition-colors"
               >
                 View Full Supply Chain →
               </button>

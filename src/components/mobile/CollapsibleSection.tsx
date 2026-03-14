@@ -42,18 +42,18 @@ export default function CollapsibleSection({
   };
 
   return (
-    <div className={`border border-slate-700/40 rounded-xl overflow-hidden ${className}`}
-      style={{ background: 'linear-gradient(145deg, rgba(15, 23, 42, 0.6), rgba(30, 41, 59, 0.5))' }}
+    <div className={`border border-white/[0.08] rounded-xl overflow-hidden ${className}`}
+      style={{ background: 'linear-gradient(145deg, rgba(10, 10, 10, 0.6), rgba(20, 20, 20, 0.5))' }}
     >
       <button
         onClick={toggle}
-        className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-slate-800/30 transition-colors min-h-[44px]"
+        className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-white/[0.06] transition-colors min-h-[44px]"
         aria-expanded={isExpanded}
       >
         <div className="flex items-center gap-2">
-          <h3 className="text-sm font-semibold text-slate-200">{title}</h3>
+          <h3 className="text-sm font-semibold text-white/90">{title}</h3>
           {badge !== undefined && (
-            <span className="text-xs font-medium px-1.5 py-0.5 rounded-full bg-white/8 text-slate-300 border border-white/10">
+            <span className="text-xs font-medium px-1.5 py-0.5 rounded-full bg-white/8 text-white/70 border border-white/10">
               {badge}
             </span>
           )}

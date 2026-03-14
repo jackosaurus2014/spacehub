@@ -346,7 +346,7 @@ function SeverityBadge({ severity }: { severity: 'Critical' | 'High' | 'Medium' 
 
 function ImpactBadge({ impact }: { impact: 'Critical' | 'High' | 'Medium' }) {
   const colors = {
-    Critical: 'bg-white/10 text-slate-200 border-white/10',
+    Critical: 'bg-white/10 text-white/90 border-white/10',
     High: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30',
     Medium: 'bg-purple-500/20 text-purple-300 border-purple-500/30',
   };
@@ -393,7 +393,7 @@ function MarketOverview() {
   return (
     <section className="mb-12">
       <ScrollReveal>
-        <h2 className="text-2xl font-bold text-slate-100 mb-6 flex items-center gap-3">
+        <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-3">
           <svg className="w-6 h-6 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
           </svg>
@@ -428,13 +428,13 @@ function MarketOverview() {
 
       {/* Key drivers */}
       <ScrollReveal>
-        <h3 className="text-lg font-semibold text-slate-200 mb-4">Key Market Drivers</h3>
+        <h3 className="text-lg font-semibold text-white/90 mb-4">Key Market Drivers</h3>
       </ScrollReveal>
       <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {KEY_DRIVERS.map((driver) => (
           <StaggerItem key={driver.title}>
             <div className="card p-5">
-              <h4 className="font-semibold text-slate-100 mb-2 flex items-center gap-2">
+              <h4 className="font-semibold text-white mb-2 flex items-center gap-2">
                 <svg className="w-4 h-4 text-slate-300 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
                 </svg>
@@ -464,7 +464,7 @@ function CompanyProfiles() {
   return (
     <section className="mb-12">
       <ScrollReveal>
-        <h2 className="text-2xl font-bold text-slate-100 mb-2 flex items-center gap-3">
+        <h2 className="text-2xl font-bold text-white mb-2 flex items-center gap-3">
           <svg className="w-6 h-6 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 3h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008z" />
           </svg>
@@ -483,7 +483,7 @@ function CompanyProfiles() {
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                 filter === btn.value
                   ? 'bg-white text-slate-900'
-                  : 'bg-slate-800/60 text-slate-300 hover:bg-slate-700/60 hover:text-white'
+                  : 'bg-white/[0.04] text-slate-300 hover:bg-white/[0.08] hover:text-white'
               }`}
             >
               {btn.label}
@@ -498,17 +498,17 @@ function CompanyProfiles() {
             <div className="card p-6 h-full flex flex-col">
               <div className="flex items-start justify-between mb-3">
                 <div>
-                  <h3 className="text-lg font-bold text-slate-100">{company.name}</h3>
+                  <h3 className="text-lg font-bold text-white">{company.name}</h3>
                   <p className="text-sm text-slate-300 font-medium">{company.focus}</p>
                 </div>
                 <StatusDot status={company.status} />
               </div>
               <p className="text-sm text-slate-300 leading-relaxed mb-4 flex-1">{company.description}</p>
-              <div className="bg-slate-800/40 rounded-lg p-3 mb-4">
+              <div className="bg-white/[0.04] rounded-lg p-3 mb-4">
                 <p className="text-xs text-slate-400 uppercase tracking-wide mb-1">Key Highlight</p>
-                <p className="text-sm text-slate-200">{company.highlight}</p>
+                <p className="text-sm text-white/90">{company.highlight}</p>
               </div>
-              <div className="flex items-center justify-between pt-3 border-t border-slate-700/50">
+              <div className="flex items-center justify-between pt-3 border-t border-white/[0.06]">
                 <div className="flex items-center gap-3">
                   <CategoryBadge category={company.category} />
                   <span className="text-xs text-slate-400">{company.funding}</span>
@@ -537,7 +537,7 @@ function UseCases() {
   return (
     <section className="mb-12">
       <ScrollReveal>
-        <h2 className="text-2xl font-bold text-slate-100 mb-2 flex items-center gap-3">
+        <h2 className="text-2xl font-bold text-white mb-2 flex items-center gap-3">
           <svg className="w-6 h-6 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
           </svg>
@@ -551,7 +551,7 @@ function UseCases() {
           <StaggerItem key={uc.title}>
             <div className="card p-6">
               <div className="flex items-start justify-between mb-3">
-                <h3 className="text-lg font-semibold text-slate-100">{uc.title}</h3>
+                <h3 className="text-lg font-semibold text-white">{uc.title}</h3>
                 <ImpactBadge impact={uc.impact} />
               </div>
               <p className="text-sm text-slate-300 leading-relaxed mb-4">{uc.description}</p>
@@ -559,7 +559,7 @@ function UseCases() {
                 {uc.examples.map((ex) => (
                   <span
                     key={ex}
-                    className="inline-flex items-center px-3 py-1 rounded-full text-xs bg-slate-800/60 text-slate-300 border border-slate-700/50"
+                    className="inline-flex items-center px-3 py-1 rounded-full text-xs bg-white/[0.04] text-slate-300 border border-white/[0.06]"
                   >
                     {ex}
                   </span>
@@ -577,7 +577,7 @@ function TechnologyComparison() {
   return (
     <section className="mb-12">
       <ScrollReveal>
-        <h2 className="text-2xl font-bold text-slate-100 mb-2 flex items-center gap-3">
+        <h2 className="text-2xl font-bold text-white mb-2 flex items-center gap-3">
           <svg className="w-6 h-6 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 3v1.5M4.5 8.25H3m18 0h-1.5M4.5 12H3m18 0h-1.5m-15 3.75H3m18 0h-1.5M8.25 19.5V21M12 3v1.5m0 15V21m3.75-18v1.5m0 15V21m-9-1.5h9a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0015.75 4.5h-9A2.25 2.25 0 004.5 6.75v10.5A2.25 2.25 0 006.75 19.5z" />
           </svg>
@@ -592,7 +592,7 @@ function TechnologyComparison() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-slate-700/50">
+                <tr className="border-b border-white/[0.06]">
                   <th className="text-left p-4 text-slate-400 font-medium uppercase tracking-wider text-xs">Category</th>
                   <th className="text-left p-4 text-slate-300 font-medium uppercase tracking-wider text-xs">Option A</th>
                   <th className="text-left p-4 text-slate-400 font-medium text-xs">Pros</th>
@@ -604,9 +604,9 @@ function TechnologyComparison() {
               </thead>
               <tbody>
                 {TECH_COMPARISON.map((row, i) => (
-                  <tr key={row.category} className={`border-b border-slate-700/30 ${i % 2 === 0 ? 'bg-slate-800/20' : ''}`}>
-                    <td className="p-4 font-semibold text-slate-200 whitespace-nowrap">{row.category}</td>
-                    <td className="p-4 text-slate-200 font-medium">{row.option1}</td>
+                  <tr key={row.category} className={`border-b border-white/[0.06] ${i % 2 === 0 ? 'bg-white/[0.03]' : ''}`}>
+                    <td className="p-4 font-semibold text-white/90 whitespace-nowrap">{row.category}</td>
+                    <td className="p-4 text-white/90 font-medium">{row.option1}</td>
                     <td className="p-4 text-emerald-300/80 text-xs">{row.option1Pros}</td>
                     <td className="p-4 text-red-300/80 text-xs">{row.option1Cons}</td>
                     <td className="p-4 text-purple-300 font-medium">{row.option2}</td>
@@ -625,10 +625,10 @@ function TechnologyComparison() {
         {TECH_COMPARISON.map((row) => (
           <ScrollReveal key={row.category}>
             <div className="card p-5">
-              <h4 className="font-semibold text-slate-100 mb-4 text-base">{row.category}</h4>
+              <h4 className="font-semibold text-white mb-4 text-base">{row.category}</h4>
               <div className="space-y-4">
                 <div className="bg-white/5 border border-white/10 rounded-lg p-3">
-                  <p className="text-sm font-medium text-slate-200 mb-2">{row.option1}</p>
+                  <p className="text-sm font-medium text-white/90 mb-2">{row.option1}</p>
                   <p className="text-xs text-emerald-300/80 mb-1">+ {row.option1Pros}</p>
                   <p className="text-xs text-red-300/80">- {row.option1Cons}</p>
                 </div>
@@ -650,7 +650,7 @@ function Challenges() {
   return (
     <section className="mb-12">
       <ScrollReveal>
-        <h2 className="text-2xl font-bold text-slate-100 mb-2 flex items-center gap-3">
+        <h2 className="text-2xl font-bold text-white mb-2 flex items-center gap-3">
           <svg className="w-6 h-6 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
           </svg>
@@ -664,11 +664,11 @@ function Challenges() {
           <StaggerItem key={challenge.title}>
             <div className="card p-6">
               <div className="flex items-start justify-between mb-3">
-                <h3 className="text-lg font-semibold text-slate-100">{challenge.title}</h3>
+                <h3 className="text-lg font-semibold text-white">{challenge.title}</h3>
                 <SeverityBadge severity={challenge.severity} />
               </div>
               <p className="text-sm text-slate-300 leading-relaxed mb-3">{challenge.description}</p>
-              <div className="bg-slate-800/40 rounded-lg px-4 py-2 inline-flex items-center gap-2">
+              <div className="bg-white/[0.04] rounded-lg px-4 py-2 inline-flex items-center gap-2">
                 <svg className="w-4 h-4 text-amber-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 005.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 009.568 3z" />
                   <path strokeLinecap="round" strokeLinejoin="round" d="M6 6h.008v.008H6V6z" />
@@ -687,7 +687,7 @@ function InvestmentTracker() {
   return (
     <section className="mb-12">
       <ScrollReveal>
-        <h2 className="text-2xl font-bold text-slate-100 mb-2 flex items-center gap-3">
+        <h2 className="text-2xl font-bold text-white mb-2 flex items-center gap-3">
           <svg className="w-6 h-6 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
@@ -702,7 +702,7 @@ function InvestmentTracker() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-slate-700/50">
+                <tr className="border-b border-white/[0.06]">
                   <th className="text-left p-4 text-slate-400 font-medium uppercase tracking-wider text-xs">Company</th>
                   <th className="text-left p-4 text-slate-400 font-medium uppercase tracking-wider text-xs">Amount</th>
                   <th className="text-left p-4 text-slate-400 font-medium uppercase tracking-wider text-xs">Round</th>
@@ -712,8 +712,8 @@ function InvestmentTracker() {
               </thead>
               <tbody>
                 {FUNDING_ROUNDS.map((round, i) => (
-                  <tr key={`${round.company}-${round.round}`} className={`border-b border-slate-700/30 ${i % 2 === 0 ? 'bg-slate-800/20' : ''}`}>
-                    <td className="p-4 font-semibold text-slate-200">{round.company}</td>
+                  <tr key={`${round.company}-${round.round}`} className={`border-b border-white/[0.06] ${i % 2 === 0 ? 'bg-white/[0.03]' : ''}`}>
+                    <td className="p-4 font-semibold text-white/90">{round.company}</td>
                     <td className="p-4 text-emerald-400 font-bold">{round.amount}</td>
                     <td className="p-4 text-slate-300">{round.round}</td>
                     <td className="p-4 text-slate-400">{round.date}</td>
@@ -732,7 +732,7 @@ function InvestmentTracker() {
           <ScrollReveal key={`${round.company}-${round.round}-mobile`}>
             <div className="card p-4">
               <div className="flex items-center justify-between mb-2">
-                <h4 className="font-semibold text-slate-100">{round.company}</h4>
+                <h4 className="font-semibold text-white">{round.company}</h4>
                 <span className="text-emerald-400 font-bold text-sm">{round.amount}</span>
               </div>
               <div className="flex items-center gap-3 text-xs text-slate-400">
@@ -755,7 +755,7 @@ function InvestmentTracker() {
 
 export default function SpaceEdgeComputingPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
+    <div className="min-h-screen bg-gradient-to-b from-black via-black to-black">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
 
         <AnimatedPageHeader
@@ -778,10 +778,10 @@ export default function SpaceEdgeComputingPage() {
 
         {/* Back to modules */}
         <ScrollReveal>
-          <div className="text-center pt-8 pb-4 border-t border-slate-700/50">
+          <div className="text-center pt-8 pb-4 border-t border-white/[0.06]">
             <Link
               href="/business-opportunities"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-slate-800/60 hover:bg-slate-700/60 text-slate-300 hover:text-white rounded-lg transition-all text-sm font-medium"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-white/[0.04] hover:bg-white/[0.08] text-slate-300 hover:text-white rounded-lg transition-all text-sm font-medium"
             >
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />

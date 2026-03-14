@@ -113,7 +113,7 @@ export default function DirectoryPage() {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search by name, headline, or expertise..."
-                className="w-full pl-10 pr-4 bg-slate-800 border border-slate-700 text-white rounded-lg py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+                className="w-full pl-10 pr-4 bg-white/[0.06] border border-white/[0.08] text-white rounded-lg py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
               />
             </div>
 
@@ -121,7 +121,7 @@ export default function DirectoryPage() {
             <select
               value={expertise}
               onChange={(e) => setExpertise(e.target.value)}
-              className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none min-w-[180px]"
+              className="bg-white/[0.06] border border-white/[0.08] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none min-w-[180px]"
             >
               {EXPERTISE_OPTIONS.map((opt) => (
                 <option key={opt} value={opt === 'All Expertise' ? '' : opt}>
@@ -136,7 +136,7 @@ export default function DirectoryPage() {
               value={location}
               onChange={(e) => setLocation(e.target.value)}
               placeholder="Location..."
-              className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none sm:w-[160px]"
+              className="bg-white/[0.06] border border-white/[0.08] text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none sm:w-[160px]"
             />
           </div>
         </div>
@@ -152,7 +152,7 @@ export default function DirectoryPage() {
         {/* Empty state */}
         {!loading && profiles.length === 0 && (
           <div className="text-center py-20">
-            <div className="mx-auto w-20 h-20 rounded-2xl bg-slate-800/60 border border-slate-700/50 flex items-center justify-center mb-6">
+            <div className="mx-auto w-20 h-20 rounded-2xl bg-white/[0.05] border border-white/[0.06] flex items-center justify-center mb-6">
               <svg className="w-10 h-10 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
               </svg>
@@ -183,7 +183,7 @@ export default function DirectoryPage() {
                 <button
                   onClick={handleLoadMore}
                   disabled={loadingMore}
-                  className="px-6 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium rounded-lg transition-colors border border-slate-700/50 disabled:opacity-50 flex items-center gap-2"
+                  className="px-6 py-2.5 bg-white/[0.06] hover:bg-white/[0.08] text-white/70 font-medium rounded-lg transition-colors border border-white/[0.06] disabled:opacity-50 flex items-center gap-2"
                 >
                   {loadingMore ? (
                     <>

@@ -123,15 +123,15 @@ export default function MissionStream({ mission, isLive: propIsLive, onClose }: 
   const isLive = propIsLive || missionStatus === 'live' || missionStatus === 'in_progress';
 
   return (
-    <div className="relative bg-slate-900 rounded-xl overflow-hidden border border-slate-700/50">
+    <div className="relative bg-black rounded-xl overflow-hidden border border-white/[0.06]">
       {/* Glow effect for live missions */}
       {isLive && (
         <div className="absolute -inset-0.5 bg-gradient-to-r from-red-500 via-orange-500 to-red-500 rounded-xl opacity-75 blur animate-pulse" />
       )}
 
-      <div className="relative bg-slate-900 rounded-xl overflow-hidden">
+      <div className="relative bg-black rounded-xl overflow-hidden">
         {/* Video Player Section */}
-        <div className="relative aspect-video bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+        <div className="relative aspect-video bg-gradient-to-br from-black via-white/[0.06] to-black">
           {videoId ? (
             <>
               <iframe
@@ -179,7 +179,7 @@ export default function MissionStream({ mission, isLive: propIsLive, onClose }: 
 
               <div className="relative">
                 {mission.imageUrl && !imgError ? (
-                  <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-slate-700/50 mb-4 mx-auto">
+                  <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-white/[0.06] mb-4 mx-auto">
                     <Image
                       src={mission.imageUrl}
                       alt=""
@@ -206,7 +206,7 @@ export default function MissionStream({ mission, isLive: propIsLive, onClose }: 
           {onClose && (
             <button
               onClick={onClose}
-              className="absolute top-4 right-4 z-10 w-8 h-8 rounded-full bg-slate-900/80 text-white flex items-center justify-center hover:bg-slate-800 transition-colors"
+              className="absolute top-4 right-4 z-10 w-8 h-8 rounded-full bg-black/80 text-white flex items-center justify-center hover:bg-white/[0.06] transition-colors"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -216,7 +216,7 @@ export default function MissionStream({ mission, isLive: propIsLive, onClose }: 
         </div>
 
         {/* Mission Info Section */}
-        <div className="p-4 bg-gradient-to-b from-slate-800/50 to-slate-900">
+        <div className="p-4 bg-gradient-to-b from-white/[0.04] to-black">
           {/* Header with mission name and agency */}
           <div className="flex items-start justify-between gap-4 mb-3">
             <div className="flex-1 min-w-0">
@@ -230,7 +230,7 @@ export default function MissionStream({ mission, isLive: propIsLive, onClose }: 
               </div>
               <h3 className="text-white font-bold text-lg line-clamp-2">{mission.name}</h3>
               {mission.agency && (
-                <p className="text-slate-300 text-sm font-medium">{mission.agency}</p>
+                <p className="text-white/70 text-sm font-medium">{mission.agency}</p>
               )}
             </div>
 
@@ -249,7 +249,7 @@ export default function MissionStream({ mission, isLive: propIsLive, onClose }: 
                   <span className="text-green-400 font-mono font-bold text-lg">{countdown}</span>
                 </div>
               ) : (
-                <div className="px-3 py-1.5 rounded-lg bg-slate-700/50 border border-slate-600/30">
+                <div className="px-3 py-1.5 rounded-lg bg-white/[0.06] border border-white/[0.04]">
                   <span className="text-slate-400 text-sm">Completed</span>
                 </div>
               )}
@@ -259,19 +259,19 @@ export default function MissionStream({ mission, isLive: propIsLive, onClose }: 
           {/* Mission details grid */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-3">
             {mission.rocket && (
-              <div className="bg-slate-800/50 rounded-lg p-2 border border-slate-700/30">
+              <div className="bg-white/[0.04] rounded-lg p-2 border border-white/[0.04]">
                 <div className="text-slate-400 text-xs mb-1">Vehicle</div>
                 <div className="text-white text-sm font-medium truncate">{mission.rocket}</div>
               </div>
             )}
             {mission.location && (
-              <div className="bg-slate-800/50 rounded-lg p-2 border border-slate-700/30">
+              <div className="bg-white/[0.04] rounded-lg p-2 border border-white/[0.04]">
                 <div className="text-slate-400 text-xs mb-1">Location</div>
                 <div className="text-white text-sm font-medium truncate">{mission.location}</div>
               </div>
             )}
             {mission.launchDate && (
-              <div className="bg-slate-800/50 rounded-lg p-2 border border-slate-700/30">
+              <div className="bg-white/[0.04] rounded-lg p-2 border border-white/[0.04]">
                 <div className="text-slate-400 text-xs mb-1">Launch Time</div>
                 <div className="text-white text-sm font-medium">
                   {new Date(mission.launchDate).toLocaleTimeString('en-US', {
@@ -284,7 +284,7 @@ export default function MissionStream({ mission, isLive: propIsLive, onClose }: 
               </div>
             )}
             {phaseInfo && (
-              <div className="bg-slate-800/50 rounded-lg p-2 border border-slate-700/30">
+              <div className="bg-white/[0.04] rounded-lg p-2 border border-white/[0.04]">
                 <div className="text-slate-400 text-xs mb-1">Phase</div>
                 <div className={`text-sm font-medium flex items-center gap-1 ${phaseInfo.color}`}>
                   <span>{phaseInfo.icon}</span>
@@ -296,7 +296,7 @@ export default function MissionStream({ mission, isLive: propIsLive, onClose }: 
 
           {/* Telemetry-style display */}
           {isLive && phaseInfo && (
-            <div className="mt-3 pt-3 border-t border-slate-700/50">
+            <div className="mt-3 pt-3 border-t border-white/[0.06]">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <span className="text-slate-400 text-xs uppercase tracking-wider">Mission Phase:</span>
@@ -337,7 +337,7 @@ export default function MissionStream({ mission, isLive: propIsLive, onClose }: 
                 href={mission.xUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex-1 min-w-[140px] px-4 py-2 rounded-lg bg-black text-white font-medium text-center hover:bg-slate-900 transition-all flex items-center justify-center gap-2 border border-slate-700"
+                className="flex-1 min-w-[140px] px-4 py-2 rounded-lg bg-black text-white font-medium text-center hover:bg-black transition-all flex items-center justify-center gap-2 border border-white/[0.08]"
               >
                 <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
@@ -351,7 +351,7 @@ export default function MissionStream({ mission, isLive: propIsLive, onClose }: 
                 href={mission.infoUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="px-4 py-2 rounded-lg bg-slate-700 text-white font-medium hover:bg-slate-600 transition-colors flex items-center justify-center gap-2"
+                className="px-4 py-2 rounded-lg bg-white/[0.08] text-white font-medium hover:bg-white/[0.1] transition-colors flex items-center justify-center gap-2"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />

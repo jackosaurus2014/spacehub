@@ -420,10 +420,10 @@ const AGENCY_COLORS: Record<string, string> = {
   NASA: 'bg-blue-500/20 text-blue-300 border-blue-500/40',
   DoD: 'bg-red-500/20 text-red-300 border-red-500/40',
   USSF: 'bg-purple-500/20 text-purple-300 border-purple-500/40',
-  NRO: 'bg-slate-500/20 text-slate-300 border-slate-500/40',
+  NRO: 'bg-slate-500/20 text-white/70 border-slate-500/40',
   ESA: 'bg-teal-500/20 text-teal-300 border-teal-500/40',
   Commercial: 'bg-green-500/20 text-green-300 border-green-500/40',
-  NOAA: 'bg-white/10 text-slate-200 border-white/15',
+  NOAA: 'bg-white/10 text-white/90 border-white/15',
   JAXA: 'bg-orange-500/20 text-orange-300 border-orange-500/40',
   ISRO: 'bg-amber-500/20 text-amber-300 border-amber-500/40',
   KARI: 'bg-indigo-500/20 text-indigo-300 border-indigo-500/40',
@@ -510,7 +510,7 @@ export default function ContractAwardsPage() {
             </div>
             <div className="card p-4">
               <p className="text-xs text-slate-400 uppercase tracking-wider mb-1">Avg. Size</p>
-              <p className="text-2xl font-bold text-slate-300">{formatCurrency(stats.avgSize)}</p>
+              <p className="text-2xl font-bold text-white/70">{formatCurrency(stats.avgSize)}</p>
               <p className="text-xs text-slate-500 mt-1">Per contract</p>
             </div>
             <div className="card p-4">
@@ -526,11 +526,11 @@ export default function ContractAwardsPage() {
         {/* Top Agencies Breakdown */}
         <ScrollReveal delay={0.1}>
           <div className="card p-5 mb-8">
-            <h2 className="text-sm font-semibold text-slate-300 uppercase tracking-wider mb-4">Agency Breakdown</h2>
+            <h2 className="text-sm font-semibold text-white/70 uppercase tracking-wider mb-4">Agency Breakdown</h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               {stats.topAgencies.map(([agency, data]) => (
                 <div key={agency} className="flex items-center gap-3">
-                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${AGENCY_COLORS[agency] ?? 'bg-slate-600/20 text-slate-300 border-slate-500/40'}`}>
+                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${AGENCY_COLORS[agency] ?? 'bg-slate-600/20 text-white/70 border-slate-500/40'}`}>
                     {agency}
                   </span>
                   <div className="text-sm">
@@ -558,7 +558,7 @@ export default function ContractAwardsPage() {
                   id="agency-filter"
                   value={agencyFilter}
                   onChange={(e) => setAgencyFilter(e.target.value)}
-                  className="w-full bg-slate-900/60 border border-slate-600/50 text-white rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500/50 outline-none"
+                  className="w-full bg-black/60 border border-white/[0.08] text-white rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500/50 outline-none"
                 >
                   {AGENCIES.map((a) => (
                     <option key={a} value={a}>{a}</option>
@@ -575,7 +575,7 @@ export default function ContractAwardsPage() {
                   id="category-filter"
                   value={categoryFilter}
                   onChange={(e) => setCategoryFilter(e.target.value)}
-                  className="w-full bg-slate-900/60 border border-slate-600/50 text-white rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500/50 outline-none"
+                  className="w-full bg-black/60 border border-white/[0.08] text-white rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500/50 outline-none"
                 >
                   {CATEGORIES.map((c) => (
                     <option key={c} value={c}>{c}</option>
@@ -592,7 +592,7 @@ export default function ContractAwardsPage() {
                   id="year-filter"
                   value={yearFilter}
                   onChange={(e) => setYearFilter(e.target.value)}
-                  className="w-full bg-slate-900/60 border border-slate-600/50 text-white rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500/50 outline-none"
+                  className="w-full bg-black/60 border border-white/[0.08] text-white rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500/50 outline-none"
                 >
                   {YEARS.map((y) => (
                     <option key={y} value={y}>{y}</option>
@@ -609,7 +609,7 @@ export default function ContractAwardsPage() {
                   id="sort-by"
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
-                  className="w-full bg-slate-900/60 border border-slate-600/50 text-white rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500/50 outline-none"
+                  className="w-full bg-black/60 border border-white/[0.08] text-white rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500/50 outline-none"
                 >
                   {SORT_OPTIONS.map((o) => (
                     <option key={o.value} value={o.value}>{o.label}</option>
@@ -696,7 +696,7 @@ export default function ContractAwardsPage() {
                         {/* Title & Contractor */}
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-1 flex-wrap">
-                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${AGENCY_COLORS[award.agency] ?? 'bg-slate-600/20 text-slate-300 border-slate-500/40'}`}>
+                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${AGENCY_COLORS[award.agency] ?? 'bg-slate-600/20 text-white/70 border-slate-500/40'}`}>
                               {award.agency}
                             </span>
                             <span className="text-xs text-slate-500 bg-slate-700/40 px-2 py-0.5 rounded-full">
@@ -732,11 +732,11 @@ export default function ContractAwardsPage() {
 
                     {/* Expanded Details */}
                     {isExpanded && (
-                      <div className="px-5 pb-5 border-t border-slate-700/50">
+                      <div className="px-5 pb-5 border-t border-white/[0.06]">
                         <div className="pt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
                           <div className="md:col-span-2">
                             <h4 className="text-xs text-slate-400 uppercase tracking-wider mb-1">Description</h4>
-                            <p className="text-sm text-slate-300 leading-relaxed">{award.description}</p>
+                            <p className="text-sm text-white/70 leading-relaxed">{award.description}</p>
                           </div>
                           <div className="space-y-3">
                             <div>
@@ -773,7 +773,7 @@ export default function ContractAwardsPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <Link
                 href="/procurement"
-                className="flex items-center gap-3 p-3 rounded-lg bg-slate-700/30 hover:bg-slate-700/50 border border-slate-600/30 hover:border-slate-500/50 transition-all group"
+                className="flex items-center gap-3 p-3 rounded-lg bg-slate-700/30 hover:bg-slate-700/50 border border-white/[0.06] hover:border-slate-500/50 transition-all group"
               >
                 <span className="text-2xl">&#x1F4CB;</span>
                 <div>
@@ -783,7 +783,7 @@ export default function ContractAwardsPage() {
               </Link>
               <Link
                 href="/compliance"
-                className="flex items-center gap-3 p-3 rounded-lg bg-slate-700/30 hover:bg-slate-700/50 border border-slate-600/30 hover:border-slate-500/50 transition-all group"
+                className="flex items-center gap-3 p-3 rounded-lg bg-slate-700/30 hover:bg-slate-700/50 border border-white/[0.06] hover:border-slate-500/50 transition-all group"
               >
                 <span className="text-2xl">&#x2696;</span>
                 <div>
@@ -793,7 +793,7 @@ export default function ContractAwardsPage() {
               </Link>
               <Link
                 href="/supply-chain"
-                className="flex items-center gap-3 p-3 rounded-lg bg-slate-700/30 hover:bg-slate-700/50 border border-slate-600/30 hover:border-slate-500/50 transition-all group"
+                className="flex items-center gap-3 p-3 rounded-lg bg-slate-700/30 hover:bg-slate-700/50 border border-white/[0.06] hover:border-slate-500/50 transition-all group"
               >
                 <span className="text-2xl">&#x1F517;</span>
                 <div>
@@ -803,7 +803,7 @@ export default function ContractAwardsPage() {
               </Link>
               <Link
                 href="/business-opportunities"
-                className="flex items-center gap-3 p-3 rounded-lg bg-slate-700/30 hover:bg-slate-700/50 border border-slate-600/30 hover:border-slate-500/50 transition-all group"
+                className="flex items-center gap-3 p-3 rounded-lg bg-slate-700/30 hover:bg-slate-700/50 border border-white/[0.06] hover:border-slate-500/50 transition-all group"
               >
                 <span className="text-2xl">&#x1F4BC;</span>
                 <div>

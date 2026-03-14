@@ -41,8 +41,8 @@ export default function TrustSignals() {
                 key={source.name}
                 className="group relative px-4 py-2 rounded-full border border-white/10 bg-white/5 hover:border-white/10 hover:bg-slate-100/10 transition-all duration-200"
               >
-                <span className="text-slate-200 font-semibold text-sm">{source.name}</span>
-                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 bg-slate-800 text-slate-200 text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none shadow-lg">
+                <span className="text-white/90 font-semibold text-sm">{source.name}</span>
+                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 bg-white/[0.06] text-white/90 text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none shadow-lg">
                   {source.description}
                 </div>
               </div>
@@ -79,10 +79,10 @@ export default function TrustSignals() {
             <span className="px-3 py-1.5 rounded-lg border border-green-400/20 bg-green-400/5 text-green-300 text-xs font-medium">
               iOS (App Store)
             </span>
-            <span className="px-3 py-1.5 rounded-lg border border-slate-400/20 bg-slate-400/5 text-slate-300 text-xs font-medium">
+            <span className="px-3 py-1.5 rounded-lg border border-slate-400/20 bg-slate-400/5 text-white/70 text-xs font-medium">
               Offline Support
             </span>
-            <span className="px-3 py-1.5 rounded-lg border border-slate-400/20 bg-slate-400/5 text-slate-300 text-xs font-medium">
+            <span className="px-3 py-1.5 rounded-lg border border-slate-400/20 bg-slate-400/5 text-white/70 text-xs font-medium">
               REST API
             </span>
           </div>

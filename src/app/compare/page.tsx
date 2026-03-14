@@ -71,17 +71,17 @@ export default function ComparisonHubPage() {
             <ScrollReveal key={tool.href} delay={0.1 + index * 0.1}>
               <Link
                 href={tool.href}
-                className="group block card p-6 hover:border-white/10 hover:bg-slate-800/80 hover:shadow-lg hover:shadow-black/20 hover:-translate-y-1"
+                className="group block card p-6 hover:border-white/10 hover:bg-white/[0.06] hover:shadow-lg hover:shadow-black/20 hover:-translate-y-1"
               >
                 <div className="text-4xl mb-4">{tool.icon}</div>
-                <h2 className="text-lg font-bold text-white group-hover:text-slate-200 transition-colors mb-2">
+                <h2 className="text-lg font-bold text-white group-hover:text-white/90 transition-colors mb-2">
                   {tool.title}
                 </h2>
                 <p className="text-sm text-slate-400 mb-4 line-clamp-3">
                   {tool.description}
                 </p>
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-medium text-slate-300 bg-white/5 px-2.5 py-1 rounded-full">
+                  <span className="text-xs font-medium text-white/70 bg-white/5 px-2.5 py-1 rounded-full">
                     {tool.stats}
                   </span>
                   <span className="text-sm text-slate-400 group-hover:text-white transition-colors">
@@ -106,7 +106,7 @@ export default function ComparisonHubPage() {
               <ScrollReveal key={comp.href} delay={0.2 + index * 0.1}>
                 <Link
                   href={comp.href}
-                  className="group block card p-5 hover:border-white/10 hover:bg-slate-800/70"
+                  className="group block card p-5 hover:border-white/10 hover:bg-white/[0.05]"
                 >
                   <div className="text-2xl mb-3">{comp.icon}</div>
                   <h3 className="text-sm font-bold text-white group-hover:text-white transition-colors mb-2">

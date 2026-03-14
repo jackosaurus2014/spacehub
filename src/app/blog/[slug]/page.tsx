@@ -160,7 +160,7 @@ export default async function BlogPostPage({ params }: Props) {
         {/* Header */}
         <header className="mb-10">
           <div className="flex items-center gap-3 mb-4">
-            <span className="text-xs font-medium px-3 py-1 rounded-full bg-white/10 text-slate-200 border border-white/10">
+            <span className="text-xs font-medium px-3 py-1 rounded-full bg-white/10 text-white/90 border border-white/10">
               {categoryLabel}
             </span>
             <span className="text-slate-500 text-sm">{post.readingTime} min read</span>
@@ -169,7 +169,7 @@ export default async function BlogPostPage({ params }: Props) {
             {post.title}
           </h1>
           <p className="text-lg text-slate-400 leading-relaxed mb-6">{post.excerpt}</p>
-          <div className="flex items-center justify-between gap-4 text-sm text-slate-500 pb-6 border-b border-slate-700/50">
+          <div className="flex items-center justify-between gap-4 text-sm text-slate-500 pb-6 border-b border-white/[0.06]">
             <div className="flex items-center gap-4">
               <span>By {post.author}</span>
               <span>{formatDate(post.publishedAt)}</span>
@@ -191,10 +191,10 @@ export default async function BlogPostPage({ params }: Props) {
             prose-headings:text-white prose-headings:font-bold
             prose-h2:text-2xl prose-h2:mt-10 prose-h2:mb-4
             prose-h3:text-xl prose-h3:mt-8 prose-h3:mb-3
-            prose-p:text-slate-300 prose-p:leading-relaxed
-            prose-li:text-slate-300
+            prose-p:text-white/70 prose-p:leading-relaxed
+            prose-li:text-white/70
             prose-strong:text-white
-            prose-a:text-slate-300 prose-a:no-underline hover:prose-a:underline
+            prose-a:text-white/70 prose-a:no-underline hover:prose-a:underline
             prose-ul:space-y-1 prose-ol:space-y-1"
           dangerouslySetInnerHTML={{ __html: sanitizeHtml(post.content, SAFE_HTML_CONFIG) }}
         />
@@ -202,12 +202,12 @@ export default async function BlogPostPage({ params }: Props) {
         {/* Topic-Aware CTA */}
         {BLOG_CTA_MAP[post.slug] && (
           <div className="mt-12 p-5 bg-white/10 border border-white/10 rounded-xl flex items-center justify-between gap-4">
-            <p className="text-sm text-slate-300">
+            <p className="text-sm text-white/70">
               Explore this topic with our <span className="text-white font-medium">{BLOG_CTA_MAP[post.slug].tool}</span>
             </p>
             <Link
               href={BLOG_CTA_MAP[post.slug].path}
-              className="text-sm font-medium text-slate-300 hover:text-white transition-colors whitespace-nowrap"
+              className="text-sm font-medium text-white/70 hover:text-white transition-colors whitespace-nowrap"
             >
               Try {BLOG_CTA_MAP[post.slug].tool} &rarr;
             </Link>
@@ -215,7 +215,7 @@ export default async function BlogPostPage({ params }: Props) {
         )}
 
         {/* CTA */}
-        <div className="mt-4 p-6 bg-slate-800/60 border border-slate-700/50 rounded-xl text-center">
+        <div className="mt-4 p-6 bg-white/[0.05] border border-white/[0.06] rounded-xl text-center">
           <h2 className="text-lg font-bold text-white mb-2">
             Get space industry intelligence delivered
           </h2>
@@ -243,23 +243,23 @@ export default async function BlogPostPage({ params }: Props) {
                 <Link
                   key={rp.slug}
                   href={`/blog/${rp.slug}`}
-                  className="group flex flex-col bg-slate-800/50 border border-slate-700/50 rounded-xl p-5 hover:border-white/15 hover:bg-slate-800/70 transition-all"
+                  className="group flex flex-col bg-white/[0.04] border border-white/[0.06] rounded-xl p-5 hover:border-white/15 hover:bg-white/[0.05] transition-all"
                 >
                   <div className="flex items-center gap-2 mb-3">
-                    <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-white/15 text-slate-200 border border-white/15">
+                    <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-white/15 text-white/90 border border-white/15">
                       {BLOG_CATEGORIES.find((c) => c.value === rp.category)?.label || rp.category}
                     </span>
                     <span className="text-xs text-slate-500">{rp.readingTime} min</span>
                   </div>
-                  <h4 className="text-sm font-semibold text-white group-hover:text-slate-300 transition-colors line-clamp-2 mb-2">
+                  <h4 className="text-sm font-semibold text-white group-hover:text-white/70 transition-colors line-clamp-2 mb-2">
                     {rp.title}
                   </h4>
                   <p className="text-xs text-slate-400 line-clamp-2 mb-3 flex-1">
                     {rp.excerpt}
                   </p>
-                  <div className="flex items-center justify-between text-xs text-slate-500 pt-2 border-t border-slate-700/30">
+                  <div className="flex items-center justify-between text-xs text-slate-500 pt-2 border-t border-white/[0.04]">
                     <span>{formatDate(rp.publishedAt)}</span>
-                    <span className="text-slate-300 group-hover:text-slate-200 transition-colors font-medium">
+                    <span className="text-white/70 group-hover:text-white/90 transition-colors font-medium">
                       Read more &rarr;
                     </span>
                   </div>
@@ -270,10 +270,10 @@ export default async function BlogPostPage({ params }: Props) {
         )}
 
         {/* Back to Blog */}
-        <div className="mt-8 pt-8 border-t border-slate-700/50">
+        <div className="mt-8 pt-8 border-t border-white/[0.06]">
           <Link
             href="/blog"
-            className="text-sm text-slate-400 hover:text-slate-300 transition-colors"
+            className="text-sm text-slate-400 hover:text-white/70 transition-colors"
           >
             &larr; Back to all posts
           </Link>

@@ -116,7 +116,7 @@ function ToastItem({ toast, onRemove }: ToastItemProps) {
         ${isExiting ? 'animate-fade-out' : 'animate-fade-in-up'}
       `}
       style={{
-        background: 'linear-gradient(145deg, rgba(15, 23, 42, 0.95), rgba(30, 41, 59, 0.92))',
+        background: 'linear-gradient(145deg, rgba(10, 10, 10, 0.95), rgba(20, 20, 20, 0.92))',
       }}
     >
       <div className="flex items-start gap-3 p-4">
@@ -151,7 +151,7 @@ function ToastItem({ toast, onRemove }: ToastItemProps) {
         <button
           onClick={handleDismiss}
           aria-label="Dismiss notification"
-          className="flex-shrink-0 p-1 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg text-slate-400 hover:text-slate-200 hover:bg-white/5 transition-colors"
+          className="flex-shrink-0 p-1 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg text-slate-400 hover:text-white/90 hover:bg-white/5 transition-colors"
         >
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />

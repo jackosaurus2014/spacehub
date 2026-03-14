@@ -18,7 +18,7 @@ export default function HeroActions() {
           </Link>
           <Link
             href="/news"
-            className="text-base py-4 px-10 font-semibold rounded-xl transition-all duration-300 hover:-translate-y-0.5 active:scale-95 tracking-wide uppercase text-sm border-2 border-white/10 text-white bg-slate-900/60 backdrop-blur-sm hover:bg-slate-800/60 hover:border-white/10 shadow-lg shadow-black/10"
+            className="text-base py-4 px-10 font-semibold rounded-xl transition-all duration-300 hover:-translate-y-0.5 active:scale-95 tracking-wide uppercase text-sm border-2 border-white/10 text-white bg-black/60 backdrop-blur-sm hover:bg-white/[0.05] hover:border-white/10 shadow-lg shadow-black/10"
           >
             Explore News
           </Link>
@@ -30,7 +30,7 @@ export default function HeroActions() {
           >
             Request Feature
           </button>
-          <span className="text-slate-300/50">|</span>
+          <span className="text-white/70/50">|</span>
           <button
             onClick={() => setShowHelp(true)}
             className="text-white hover:text-white text-sm font-medium transition-colors drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]"

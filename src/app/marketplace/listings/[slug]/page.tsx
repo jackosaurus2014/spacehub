@@ -67,7 +67,7 @@ export default function ListingDetailPage({ params }: { params: { slug: string }
       />
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
         {/* Back */}
-        <Link href="/marketplace/search" className="text-xs text-slate-300 hover:text-white">
+        <Link href="/marketplace/search" className="text-xs text-white/70 hover:text-white">
           ← Back to Search
         </Link>
 
@@ -112,7 +112,7 @@ export default function ListingDetailPage({ params }: { params: { slug: string }
                   <div className="text-sm font-medium text-purple-300">Editorial Listing</div>
                   <p className="text-xs text-slate-400 mt-1">
                     This listing was curated by SpaceNexus from public data. Are you the provider?{' '}
-                    <Link href={`/company-profiles/${listing.company.slug}`} className="text-slate-300 hover:underline">
+                    <Link href={`/company-profiles/${listing.company.slug}`} className="text-white/70 hover:underline">
                       Claim this profile
                     </Link>{' '}
                     to manage and verify this listing.
@@ -124,7 +124,7 @@ export default function ListingDetailPage({ params }: { params: { slug: string }
             {/* Description */}
             <div className="card p-5">
               <h3 className="text-sm font-semibold text-white mb-2">Description</h3>
-              <p className="text-sm text-slate-300 leading-relaxed whitespace-pre-wrap">
+              <p className="text-sm text-white/70 leading-relaxed whitespace-pre-wrap">
                 {listing.description || 'No description provided.'}
               </p>
             </div>
@@ -135,9 +135,9 @@ export default function ListingDetailPage({ params }: { params: { slug: string }
                 <h3 className="text-sm font-semibold text-white mb-3">Specifications</h3>
                 <div className="grid grid-cols-2 gap-2">
                   {Object.entries(listing.specifications).map(([key, val]) => (
-                    <div key={key} className="bg-slate-800/50 rounded p-2">
+                    <div key={key} className="bg-white/[0.04] rounded p-2">
                       <div className="text-xs text-slate-500 uppercase">{key}</div>
-                      <div className="text-xs text-slate-300">{String(val)}</div>
+                      <div className="text-xs text-white/70">{String(val)}</div>
                     </div>
                   ))}
                 </div>
@@ -150,7 +150,7 @@ export default function ListingDetailPage({ params }: { params: { slug: string }
                 <h3 className="text-sm font-semibold text-white mb-3">Certifications</h3>
                 <div className="flex flex-wrap gap-2">
                   {listing.certifications.map((cert: string) => (
-                    <span key={cert} className="text-xs px-2.5 py-1 bg-slate-700 text-slate-300 rounded">
+                    <span key={cert} className="text-xs px-2.5 py-1 bg-slate-700 text-white/70 rounded">
                       {cert}
                     </span>
                   ))}
@@ -167,7 +167,7 @@ export default function ListingDetailPage({ params }: { params: { slug: string }
                 {!showReviewForm && (
                   <button
                     onClick={() => setShowReviewForm(true)}
-                    className="text-xs text-slate-300 hover:text-white font-medium"
+                    className="text-xs text-white/70 hover:text-white font-medium"
                   >
                     Write a Review
                   </button>
@@ -250,7 +250,7 @@ export default function ListingDetailPage({ params }: { params: { slug: string }
               <button
                 disabled
                 title="Direct hiring with secure payments coming soon"
-                className="w-full py-2 bg-slate-800/50 text-slate-500 text-sm rounded-lg font-medium cursor-not-allowed flex items-center justify-center gap-2 mt-2"
+                className="w-full py-2 bg-white/[0.04] text-slate-500 text-sm rounded-lg font-medium cursor-not-allowed flex items-center justify-center gap-2 mt-2"
               >
                 Hire Directly <ComingSoonBadge />
               </button>

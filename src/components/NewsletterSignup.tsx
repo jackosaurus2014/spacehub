@@ -111,7 +111,7 @@ export default function NewsletterSignup({
             onChange={(e) => setEmail(e.target.value)}
             placeholder="Your email"
             aria-label="Email address"
-            className="w-full px-3 py-2 text-sm bg-slate-800/80 border border-slate-700 rounded-lg text-slate-200 placeholder:text-slate-500 focus:outline-none focus:border-white/20 transition-colors"
+            className="w-full px-3 py-2 text-sm bg-white/[0.04] border border-white/[0.06] rounded-lg text-white/90 placeholder:text-slate-500 focus:outline-none focus:border-white/20 transition-colors"
             required
             disabled={status === 'loading'}
           />
@@ -191,7 +191,7 @@ export default function NewsletterSignup({
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Your name (optional)"
                 aria-label="Your name"
-                className="flex-1 px-4 py-3 bg-white/[0.03] border border-white/[0.08] rounded-xl text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-white/[0.15] transition-colors ease-smooth"
+                className="flex-1 px-4 py-3 bg-white/[0.03] border border-white/[0.08] rounded-xl text-white placeholder:text-slate-500 focus:outline-none focus:border-white/[0.15] transition-colors ease-smooth"
                 disabled={status === 'loading'}
               />
               <input
@@ -203,7 +203,7 @@ export default function NewsletterSignup({
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Your email address"
                 aria-label="Email address"
-                className="flex-1 px-4 py-3 bg-white/[0.03] border border-white/[0.08] rounded-xl text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-white/[0.15] transition-colors ease-smooth"
+                className="flex-1 px-4 py-3 bg-white/[0.03] border border-white/[0.08] rounded-xl text-white placeholder:text-slate-500 focus:outline-none focus:border-white/[0.15] transition-colors ease-smooth"
                 required
                 disabled={status === 'loading'}
               />

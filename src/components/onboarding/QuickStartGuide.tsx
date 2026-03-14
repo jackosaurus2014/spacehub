@@ -148,12 +148,12 @@ export default function QuickStartGuide() {
         w-[min(calc(100vw-2rem),24rem)] sm:w-80 max-h-[70vh] overflow-y-auto
         ${visible ? 'translate-x-0 opacity-100' : 'translate-x-full opacity-0 pointer-events-none'}`}
     >
-      <div className="bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl shadow-black/40 overflow-hidden">
+      <div className="bg-black border border-white/[0.08] rounded-2xl shadow-2xl shadow-black/40 overflow-hidden">
         {/* Header */}
-        <div className="px-4 py-3 border-b border-slate-700/60 flex items-center justify-between">
+        <div className="px-4 py-3 border-b border-white/[0.07] flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="w-7 h-7 rounded-lg bg-white/10 flex items-center justify-center">
-              <svg className="w-4 h-4 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <svg className="w-4 h-4 text-white/70" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15.59 14.37a6 6 0 01-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 006.16-12.12A14.98 14.98 0 009.631 8.41m5.96 5.96a14.926 14.926 0 01-5.841 2.58m-.119-8.54a6 6 0 00-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 00-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 01-2.448-2.448 14.9 14.9 0 01.06-.312m-2.24 2.39a4.493 4.493 0 00-1.757 4.306 4.493 4.493 0 004.306-1.758M16.5 9a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z" />
               </svg>
             </div>
@@ -164,7 +164,7 @@ export default function QuickStartGuide() {
           </div>
           <button
             onClick={handleDismiss}
-            className="text-slate-500 hover:text-slate-300 transition-colors p-1"
+            className="text-slate-500 hover:text-white/70 transition-colors p-1"
             aria-label="Dismiss quick start guide"
           >
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -174,7 +174,7 @@ export default function QuickStartGuide() {
         </div>
 
         {/* Progress bar */}
-        <div className="h-1 bg-slate-800">
+        <div className="h-1 bg-white/[0.06]">
           <div
             className="h-full bg-gradient-to-r from-white to-blue-500 transition-all duration-500"
             style={{ width: `${(completedCount / STEPS.length) * 100}%` }}
@@ -189,7 +189,7 @@ export default function QuickStartGuide() {
               <div
                 key={step.id}
                 className={`group flex items-start gap-3 p-2.5 rounded-xl transition-colors ${
-                  isCompleted ? 'bg-slate-800/30' : 'bg-slate-800/60 hover:bg-slate-800'
+                  isCompleted ? 'bg-white/[0.03]' : 'bg-white/[0.05] hover:bg-white/[0.06]'
                 }`}
               >
                 <button
@@ -197,7 +197,7 @@ export default function QuickStartGuide() {
                   className={`mt-0.5 flex-shrink-0 w-5 h-5 rounded-md border-2 transition-all flex items-center justify-center ${
                     isCompleted
                       ? 'bg-white border-white/15'
-                      : 'border-slate-600 hover:border-white/10'
+                      : 'border-white/[0.1] hover:border-white/10'
                   }`}
                   aria-label={`Mark "${step.title}" as ${isCompleted ? 'incomplete' : 'complete'}`}
                 >
@@ -231,16 +231,16 @@ export default function QuickStartGuide() {
         </div>
 
         {/* Footer */}
-        <div className="px-4 py-2.5 border-t border-slate-700/60 flex items-center justify-between">
+        <div className="px-4 py-2.5 border-t border-white/[0.07] flex items-center justify-between">
           <button
             onClick={handleDontShowAgain}
-            className="text-xs text-slate-500 hover:text-slate-300 transition-colors"
+            className="text-xs text-slate-500 hover:text-white/70 transition-colors"
           >
             Don&apos;t show again
           </button>
           <button
             onClick={handleDismiss}
-            className="text-xs text-slate-300 hover:text-white font-medium transition-colors"
+            className="text-xs text-white/70 hover:text-white font-medium transition-colors"
           >
             Dismiss
           </button>

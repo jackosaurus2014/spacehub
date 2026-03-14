@@ -323,7 +323,7 @@ function StatusBadge({ status }: { status: string }) {
     Coordinating: 'bg-blue-500/20 text-blue-300 border-blue-500/30',
   };
   return (
-    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${styles[status] || 'bg-slate-500/20 text-slate-300 border-slate-500/30'}`}>
+    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${styles[status] || 'bg-slate-500/20 text-white/70 border-slate-500/30'}`}>
       {status}
     </span>
   );
@@ -441,7 +441,7 @@ export default function FrequencyDatabasePage() {
 
   const SortIcon = ({ field }: { field: SortField }) => {
     if (sortField !== field) return <span className="text-slate-600 ml-1">&#x25B4;&#x25BE;</span>;
-    return <span className="text-slate-300 ml-1">{sortDirection === 'asc' ? '\u25B4' : '\u25BE'}</span>;
+    return <span className="text-white/70 ml-1">{sortDirection === 'asc' ? '\u25B4' : '\u25BE'}</span>;
   };
 
   const showOverview = activeSection === 'all' || activeSection === 'overview';
@@ -477,7 +477,7 @@ export default function FrequencyDatabasePage() {
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                 activeSection === section.id
                   ? 'bg-purple-500/30 text-purple-200 border border-purple-400/50'
-                  : 'bg-slate-800/50 text-slate-400 border border-slate-700/50 hover:text-slate-200 hover:border-slate-600'
+                  : 'bg-white/[0.04] text-slate-400 border border-white/[0.06] hover:text-white/90 hover:border-white/[0.1]'
               }`}
             >
               {section.label}
@@ -492,7 +492,7 @@ export default function FrequencyDatabasePage() {
         {showOverview && (
           <ScrollReveal>
           <section className="mb-12">
-            <h2 className="text-2xl font-bold text-slate-100 mb-6 flex items-center gap-3">
+            <h2 className="text-2xl font-bold text-white/90 mb-6 flex items-center gap-3">
               <span className="text-purple-400">&#9632;</span>
               Frequency Band Overview
             </h2>
@@ -504,14 +504,14 @@ export default function FrequencyDatabasePage() {
                       {band.name.charAt(0)}
                     </div>
                     <div>
-                      <h3 className="text-sm font-bold text-slate-100">{band.name}</h3>
+                      <h3 className="text-sm font-bold text-white/90">{band.name}</h3>
                       <p className="text-xs text-slate-400">{band.range}</p>
                     </div>
                   </div>
-                  <p className="text-xs text-slate-300 leading-relaxed mb-3">
+                  <p className="text-xs text-white/70 leading-relaxed mb-3">
                     {band.description}
                   </p>
-                  <div className="border-t border-slate-700/50 pt-3">
+                  <div className="border-t border-white/[0.06] pt-3">
                     <p className="text-xs uppercase tracking-wider text-slate-500 mb-1.5">Applications</p>
                     <ul className="space-y-1">
                       {band.applications.map((app, i) => (
@@ -537,8 +537,8 @@ export default function FrequencyDatabasePage() {
         {showAllocations && (
           <ScrollReveal>
           <section className="mb-12">
-            <h2 className="text-2xl font-bold text-slate-100 mb-6 flex items-center gap-3">
-              <span className="text-slate-300">&#9632;</span>
+            <h2 className="text-2xl font-bold text-white/90 mb-6 flex items-center gap-3">
+              <span className="text-white/70">&#9632;</span>
               Frequency Allocation Table
               <span className="text-sm font-normal text-slate-400 ml-2">
                 ({filteredAllocations.length} of {FREQUENCY_ALLOCATIONS.length} entries)
@@ -556,12 +556,12 @@ export default function FrequencyDatabasePage() {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search by frequency, operator, system, or service type..."
-                  className="w-full pl-10 pr-4 py-2.5 bg-slate-800/60 border border-slate-700/50 rounded-lg text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 transition-colors"
+                  className="w-full pl-10 pr-4 py-2.5 bg-white/[0.05] border border-white/[0.06] rounded-lg text-sm text-white/90 placeholder-slate-500 focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 transition-colors"
                 />
                 {searchQuery && (
                   <button
                     onClick={() => setSearchQuery('')}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-colors"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white/70 transition-colors"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -576,7 +576,7 @@ export default function FrequencyDatabasePage() {
               <select
                 value={bandFilter}
                 onChange={(e) => setBandFilter(e.target.value)}
-                className="px-3 py-2 bg-slate-800/60 border border-slate-700/50 rounded-lg text-sm text-slate-200 focus:outline-none focus:border-purple-500/50 transition-colors"
+                className="px-3 py-2 bg-white/[0.05] border border-white/[0.06] rounded-lg text-sm text-white/90 focus:outline-none focus:border-purple-500/50 transition-colors"
               >
                 <option value="all">All Bands</option>
                 {uniqueBands.map(b => <option key={b} value={b}>{b}</option>)}
@@ -585,7 +585,7 @@ export default function FrequencyDatabasePage() {
               <select
                 value={serviceFilter}
                 onChange={(e) => setServiceFilter(e.target.value)}
-                className="px-3 py-2 bg-slate-800/60 border border-slate-700/50 rounded-lg text-sm text-slate-200 focus:outline-none focus:border-purple-500/50 transition-colors"
+                className="px-3 py-2 bg-white/[0.05] border border-white/[0.06] rounded-lg text-sm text-white/90 focus:outline-none focus:border-purple-500/50 transition-colors"
               >
                 <option value="all">All Service Types</option>
                 {uniqueServices.map(s => <option key={s} value={s}>{s}</option>)}
@@ -594,7 +594,7 @@ export default function FrequencyDatabasePage() {
               <select
                 value={regionFilter}
                 onChange={(e) => setRegionFilter(e.target.value)}
-                className="px-3 py-2 bg-slate-800/60 border border-slate-700/50 rounded-lg text-sm text-slate-200 focus:outline-none focus:border-purple-500/50 transition-colors"
+                className="px-3 py-2 bg-white/[0.05] border border-white/[0.06] rounded-lg text-sm text-white/90 focus:outline-none focus:border-purple-500/50 transition-colors"
               >
                 <option value="all">All Regions</option>
                 {uniqueRegions.map(r => <option key={r} value={r}>{r}</option>)}
@@ -620,27 +620,27 @@ export default function FrequencyDatabasePage() {
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="border-b border-slate-700/50">
+                    <tr className="border-b border-white/[0.06]">
                       <th
-                        className="px-4 py-3 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider cursor-pointer hover:text-slate-200 transition-colors"
+                        className="px-4 py-3 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider cursor-pointer hover:text-white/90 transition-colors"
                         onClick={() => handleSort('frequencyStart')}
                       >
                         Frequency Range <SortIcon field="frequencyStart" />
                       </th>
                       <th
-                        className="px-4 py-3 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider cursor-pointer hover:text-slate-200 transition-colors"
+                        className="px-4 py-3 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider cursor-pointer hover:text-white/90 transition-colors"
                         onClick={() => handleSort('band')}
                       >
                         Band <SortIcon field="band" />
                       </th>
                       <th
-                        className="px-4 py-3 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider cursor-pointer hover:text-slate-200 transition-colors"
+                        className="px-4 py-3 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider cursor-pointer hover:text-white/90 transition-colors"
                         onClick={() => handleSort('serviceCode')}
                       >
                         Service <SortIcon field="serviceCode" />
                       </th>
                       <th
-                        className="px-4 py-3 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider cursor-pointer hover:text-slate-200 transition-colors"
+                        className="px-4 py-3 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider cursor-pointer hover:text-white/90 transition-colors"
                         onClick={() => handleSort('primaryOperator')}
                       >
                         Operator / System <SortIcon field="primaryOperator" />
@@ -649,7 +649,7 @@ export default function FrequencyDatabasePage() {
                         Region
                       </th>
                       <th
-                        className="px-4 py-3 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider cursor-pointer hover:text-slate-200 transition-colors"
+                        className="px-4 py-3 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider cursor-pointer hover:text-white/90 transition-colors"
                         onClick={() => handleSort('status')}
                       >
                         Status <SortIcon field="status" />
@@ -659,7 +659,7 @@ export default function FrequencyDatabasePage() {
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-700/30">
+                  <tbody className="divide-y divide-white/[0.04]">
                     {filteredAllocations.length === 0 ? (
                       <tr>
                         <td colSpan={7} className="px-4 py-12">
@@ -685,9 +685,9 @@ export default function FrequencyDatabasePage() {
                       </tr>
                     ) : (
                       filteredAllocations.map(alloc => (
-                        <tr key={alloc.id} className="hover:bg-slate-800/30 transition-colors group">
+                        <tr key={alloc.id} className="hover:bg-white/[0.03] transition-colors group">
                           <td className="px-4 py-3">
-                            <div className="font-mono text-xs text-slate-200">
+                            <div className="font-mono text-xs text-white/90">
                               {formatFrequencyRange(alloc.frequencyStart, alloc.frequencyEnd)}
                             </div>
                             <div className="font-mono text-xs text-slate-500 mt-0.5">
@@ -695,14 +695,14 @@ export default function FrequencyDatabasePage() {
                             </div>
                           </td>
                           <td className="px-4 py-3">
-                            <span className="text-xs text-slate-300 font-medium">{alloc.band}</span>
+                            <span className="text-xs text-white/70 font-medium">{alloc.band}</span>
                           </td>
                           <td className="px-4 py-3">
                             <div className="text-xs font-medium text-purple-300">{alloc.serviceCode}</div>
                             <div className="text-xs text-slate-500 mt-0.5">{alloc.serviceType}</div>
                           </td>
                           <td className="px-4 py-3">
-                            <div className="text-xs text-slate-200 font-medium">{alloc.primaryOperator}</div>
+                            <div className="text-xs text-white/90 font-medium">{alloc.primaryOperator}</div>
                             <div className="text-xs text-slate-400 mt-0.5">{alloc.satelliteSystem}</div>
                           </td>
                           <td className="px-4 py-3">
@@ -751,7 +751,7 @@ export default function FrequencyDatabasePage() {
         {/* ──────────────────────────────────────── */}
         {showConstellations && (
           <section className="mb-12">
-            <h2 className="text-2xl font-bold text-slate-100 mb-6 flex items-center gap-3">
+            <h2 className="text-2xl font-bold text-white/90 mb-6 flex items-center gap-3">
               <span className="text-amber-400">&#9632;</span>
               Constellation Frequency Summary
             </h2>
@@ -760,13 +760,13 @@ export default function FrequencyDatabasePage() {
                 <div key={constellation.name} className="card p-5">
                   <div className="flex items-start justify-between mb-3">
                     <div>
-                      <h3 className="text-lg font-bold text-slate-100">{constellation.name}</h3>
+                      <h3 className="text-lg font-bold text-white/90">{constellation.name}</h3>
                       <p className="text-sm text-slate-400">{constellation.operator}</p>
                     </div>
                     <StatusBadge status={constellation.status.includes('Operational') ? 'Active' : 'Planned'} />
                   </div>
 
-                  <p className="text-xs text-slate-300 leading-relaxed mb-4">{constellation.description}</p>
+                  <p className="text-xs text-white/70 leading-relaxed mb-4">{constellation.description}</p>
 
                   <div className="grid grid-cols-2 gap-3 mb-3">
                     <div>
@@ -781,18 +781,18 @@ export default function FrequencyDatabasePage() {
                     </div>
                     <div>
                       <p className="text-xs uppercase tracking-wider text-slate-500 mb-1">Satellites</p>
-                      <p className="text-xs text-slate-200 font-medium">{constellation.satellites}</p>
+                      <p className="text-xs text-white/90 font-medium">{constellation.satellites}</p>
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-3 border-t border-slate-700/50 pt-3">
+                  <div className="grid grid-cols-2 gap-3 border-t border-white/[0.06] pt-3">
                     <div>
                       <p className="text-xs uppercase tracking-wider text-slate-500 mb-1">Orbit</p>
-                      <p className="text-xs text-slate-300">{constellation.orbitType}</p>
+                      <p className="text-xs text-white/70">{constellation.orbitType}</p>
                     </div>
                     <div>
                       <p className="text-xs uppercase tracking-wider text-slate-500 mb-1">Licensed By</p>
-                      <p className="text-xs text-slate-300">{constellation.licensedBy}</p>
+                      <p className="text-xs text-white/70">{constellation.licensedBy}</p>
                     </div>
                   </div>
                 </div>
@@ -806,20 +806,20 @@ export default function FrequencyDatabasePage() {
         {/* ──────────────────────────────────────── */}
         {showITU && (
           <section className="mb-12">
-            <h2 className="text-2xl font-bold text-slate-100 mb-6 flex items-center gap-3">
+            <h2 className="text-2xl font-bold text-white/90 mb-6 flex items-center gap-3">
               <span className="text-emerald-400">&#9632;</span>
               ITU Filing Process
             </h2>
 
             <div className="card p-6 mb-6">
-              <p className="text-sm text-slate-300 leading-relaxed mb-6">
-                The International Telecommunication Union (ITU) coordinates satellite frequency assignments globally through the Radiocommunication Bureau. Filing for orbital slots and frequency rights is a multi-year process governed by the ITU Radio Regulations. The typical timeline from initial filing to satellite launch spans <span className="text-slate-200 font-semibold">7+ years</span>.
+              <p className="text-sm text-white/70 leading-relaxed mb-6">
+                The International Telecommunication Union (ITU) coordinates satellite frequency assignments globally through the Radiocommunication Bureau. Filing for orbital slots and frequency rights is a multi-year process governed by the ITU Radio Regulations. The typical timeline from initial filing to satellite launch spans <span className="text-white/90 font-semibold">7+ years</span>.
               </p>
 
               {/* Timeline steps */}
               <div className="relative">
                 {/* Vertical connector line */}
-                <div className="absolute left-6 top-8 bottom-8 w-0.5 bg-gradient-to-b from-emerald-500/50 via-slate-300/50 to-purple-500/50" />
+                <div className="absolute left-6 top-8 bottom-8 w-0.5 bg-gradient-to-b from-emerald-500/50 via-white/30 to-purple-500/50" />
 
                 <div className="space-y-8">
                   {ITU_FILING_STEPS.map((step, idx) => (
@@ -836,8 +836,8 @@ export default function FrequencyDatabasePage() {
                       {/* Step content */}
                       <div className="flex-1 pb-2">
                         <div className="flex items-center gap-3 mb-2">
-                          <h3 className="text-base font-bold text-slate-100">{step.title}</h3>
-                          <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-slate-700/50 text-slate-300 border border-slate-600/50">
+                          <h3 className="text-base font-bold text-white/90">{step.title}</h3>
+                          <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-white/[0.04] text-white/70 border border-white/[0.08]">
                             {step.duration}
                           </span>
                         </div>
@@ -852,19 +852,19 @@ export default function FrequencyDatabasePage() {
             {/* Additional ITU info cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="card p-5">
-                <h4 className="text-sm font-bold text-slate-100 mb-2">Regulatory Deadline</h4>
+                <h4 className="text-sm font-bold text-white/90 mb-2">Regulatory Deadline</h4>
                 <p className="text-xs text-slate-400 leading-relaxed">
-                  Satellites must be brought into use within <span className="text-slate-200 font-medium">7 years</span> of the API filing date. Non-GSO systems have additional milestones requiring deployment progress (e.g., 10% of constellation within 2 years of BIU date).
+                  Satellites must be brought into use within <span className="text-white/90 font-medium">7 years</span> of the API filing date. Non-GSO systems have additional milestones requiring deployment progress (e.g., 10% of constellation within 2 years of BIU date).
                 </p>
               </div>
               <div className="card p-5">
-                <h4 className="text-sm font-bold text-slate-100 mb-2">Coordination Challenges</h4>
+                <h4 className="text-sm font-bold text-white/90 mb-2">Coordination Challenges</h4>
                 <p className="text-xs text-slate-400 leading-relaxed">
                   With the proliferation of mega-constellations, the ITU backlog has grown significantly. Over <span className="text-amber-300 font-medium">300,000+ satellite filings</span> are in the queue, creating coordination bottlenecks between GSO and NGSO systems.
                 </p>
               </div>
               <div className="card p-5">
-                <h4 className="text-sm font-bold text-slate-100 mb-2">MIFR Protection</h4>
+                <h4 className="text-sm font-bold text-white/90 mb-2">MIFR Protection</h4>
                 <p className="text-xs text-slate-400 leading-relaxed">
                   Once recorded in the Master International Frequency Register (MIFR), frequency assignments receive <span className="text-emerald-300 font-medium">international legal protection</span>. Other systems must coordinate to avoid causing harmful interference.
                 </p>
@@ -883,7 +883,7 @@ export default function FrequencyDatabasePage() {
               <p className="text-xs text-slate-400">Frequency Bands</p>
             </div>
             <div>
-              <p className="text-2xl font-bold text-slate-200">{FREQUENCY_ALLOCATIONS.length}</p>
+              <p className="text-2xl font-bold text-white/90">{FREQUENCY_ALLOCATIONS.length}</p>
               <p className="text-xs text-slate-400">Allocations Tracked</p>
             </div>
             <div>

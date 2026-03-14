@@ -16,7 +16,7 @@ export default function EmptyState({ icon, title, description, action }: EmptySt
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-blue-500/3 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '5s', animationDelay: '2s' }} />
       </div>
       <div className="relative p-8 md:p-12 text-center">
-        <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-slate-800/80 flex items-center justify-center mx-auto mb-4 border border-slate-700/50 animate-float shadow-lg shadow-slate-900/50">
+        <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-white/[0.06] flex items-center justify-center mx-auto mb-4 border border-white/[0.06] animate-float shadow-lg shadow-black/50">
           {icon}
         </div>
         <h3 className="text-white font-semibold text-lg mb-2">{title}</h3>

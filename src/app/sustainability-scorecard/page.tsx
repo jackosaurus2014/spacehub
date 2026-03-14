@@ -306,7 +306,7 @@ const REGULATORY_FRAMEWORKS: RegulatoryFramework[] = [
 
 function getGradeColor(grade: ScoreGrade): string {
   if (grade.startsWith('A')) return 'text-emerald-400';
-  if (grade.startsWith('B')) return 'text-slate-300';
+  if (grade.startsWith('B')) return 'text-white/70';
   if (grade.startsWith('C')) return 'text-amber-400';
   return 'text-red-400';
 }
@@ -364,9 +364,9 @@ function getStatusBadge(status: string): string {
     case 'enacted': return 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30';
     case 'proposed': return 'bg-amber-500/20 text-amber-300 border-amber-500/30';
     case 'recommended':
-    case 'guideline': return 'bg-white/10 text-slate-200 border-white/10';
+    case 'guideline': return 'bg-white/10 text-white/90 border-white/10';
     case 'standard': return 'bg-purple-500/20 text-purple-300 border-purple-500/30';
-    default: return 'bg-slate-500/20 text-slate-300 border-slate-500/30';
+    default: return 'bg-slate-500/20 text-white/70 border-slate-500/30';
   }
 }
 
@@ -451,13 +451,13 @@ function CriteriaBreakdown() {
               <span className="text-2xl font-bold text-slate-100">{criteria.score}</span>
               <span className="text-xs text-slate-500">/ {criteria.maxScore}</span>
             </div>
-            <div className="w-full bg-slate-700/50 rounded-full h-2 mb-3">
+            <div className="w-full bg-white/[0.04] rounded-full h-2 mb-3">
               <div
                 className={`h-2 rounded-full transition-all duration-500 ${getScoreBarColor(criteria.score, criteria.maxScore)}`}
                 style={{ width: `${(criteria.score / criteria.maxScore) * 100}%` }}
               />
             </div>
-            <h3 className="text-sm font-medium text-slate-200 mb-1">{criteria.label}</h3>
+            <h3 className="text-sm font-medium text-white/90 mb-1">{criteria.label}</h3>
             <p className="text-xs text-slate-400 leading-relaxed">{criteria.description}</p>
           </div>
         ))}
@@ -502,19 +502,19 @@ function OperatorCard({ operator, rank }: { operator: Operator; rank: number }) 
 
       {/* Score bar */}
       <div className="flex items-center gap-3 mb-3">
-        <div className="flex-1 bg-slate-700/50 rounded-full h-2.5">
+        <div className="flex-1 bg-white/[0.04] rounded-full h-2.5">
           <div
             className={`h-2.5 rounded-full transition-all duration-700 ${getScoreBarColor(operator.score, 100)}`}
             style={{ width: `${operator.score}%` }}
           />
         </div>
-        <span className="text-sm font-bold text-slate-200 w-14 text-right">{operator.score}/100</span>
+        <span className="text-sm font-bold text-white/90 w-14 text-right">{operator.score}/100</span>
       </div>
 
       {/* Expand toggle */}
       <button
         onClick={() => setExpanded(!expanded)}
-        className="text-xs text-slate-300 hover:text-white transition-colors flex items-center gap-1"
+        className="text-xs text-white/70 hover:text-white transition-colors flex items-center gap-1"
         aria-expanded={expanded}
         aria-label={`${expanded ? 'Collapse' : 'Expand'} details for ${operator.name}`}
       >
@@ -536,20 +536,20 @@ function OperatorCard({ operator, rank }: { operator: Operator; rank: number }) 
             transition={{ duration: 0.3, ease: 'easeInOut' }}
             className="overflow-hidden"
           >
-            <div className="mt-4 pt-4 border-t border-slate-700/50">
+            <div className="mt-4 pt-4 border-t border-white/[0.06]">
               {/* Category breakdown */}
-              <h4 className="text-xs font-semibold text-slate-300 uppercase tracking-wider mb-3">Category Scores</h4>
+              <h4 className="text-xs font-semibold text-white/70 uppercase tracking-wider mb-3">Category Scores</h4>
               <div className="space-y-2 mb-4">
                 {(Object.keys(operator.criteria) as (keyof CriteriaScore)[]).map((key) => (
                   <div key={key} className="flex items-center gap-2">
                     <span className="text-xs text-slate-400 w-32 shrink-0">{criteriaLabels[key]}</span>
-                    <div className="flex-1 bg-slate-700/40 rounded-full h-1.5">
+                    <div className="flex-1 bg-white/[0.04] rounded-full h-1.5">
                       <div
                         className={`h-1.5 rounded-full ${getScoreBarColor(operator.criteria[key], 20)}`}
                         style={{ width: `${(operator.criteria[key] / 20) * 100}%` }}
                       />
                     </div>
-                    <span className="text-xs text-slate-300 font-mono w-8 text-right">{operator.criteria[key]}/20</span>
+                    <span className="text-xs text-white/70 font-mono w-8 text-right">{operator.criteria[key]}/20</span>
                   </div>
                 ))}
               </div>
@@ -558,7 +558,7 @@ function OperatorCard({ operator, rank }: { operator: Operator; rank: number }) 
               <h4 className="text-xs font-semibold text-emerald-400 uppercase tracking-wider mb-2">Strengths</h4>
               <ul className="space-y-1 mb-4">
                 {operator.highlights.map((h, i) => (
-                  <li key={i} className="text-xs text-slate-300 flex items-start gap-2">
+                  <li key={i} className="text-xs text-white/70 flex items-start gap-2">
                     <span className="text-emerald-400 mt-0.5 shrink-0">+</span>
                     {h}
                   </li>
@@ -569,7 +569,7 @@ function OperatorCard({ operator, rank }: { operator: Operator; rank: number }) 
               <h4 className="text-xs font-semibold text-amber-400 uppercase tracking-wider mb-2">Challenges</h4>
               <ul className="space-y-1">
                 {operator.challenges.map((c, i) => (
-                  <li key={i} className="text-xs text-slate-300 flex items-start gap-2">
+                  <li key={i} className="text-xs text-white/70 flex items-start gap-2">
                     <span className="text-amber-400 mt-0.5 shrink-0">-</span>
                     {c}
                   </li>
@@ -625,9 +625,9 @@ function RegulatoryFrameworkSection() {
                   {framework.status}
                 </span>
               </div>
-              <p className="text-xs text-slate-300 mb-2">{framework.body}</p>
+              <p className="text-xs text-white/70 mb-2">{framework.body}</p>
               <p className="text-xs text-slate-400 leading-relaxed flex-1">{framework.description}</p>
-              <div className="mt-3 pt-3 border-t border-slate-700/50 flex items-center justify-between">
+              <div className="mt-3 pt-3 border-t border-white/[0.06] flex items-center justify-between">
                 <span className="text-[10px] text-slate-500">Scope: {framework.scope}</span>
                 <span className="text-[10px] text-slate-500">{framework.year}</span>
               </div>
@@ -702,7 +702,7 @@ export default function SustainabilityScorecardPage() {
                   placeholder="Search operators..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2.5 bg-slate-800/60 border border-slate-700/50 rounded-lg text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-white/15 focus:ring-1 focus:ring-white/30 transition-colors"
+                  className="w-full pl-10 pr-4 py-2.5 bg-white/[0.05] border border-white/[0.06] rounded-lg text-sm text-white/90 placeholder-slate-500 focus:outline-none focus:border-white/15 focus:ring-1 focus:ring-white/30 transition-colors"
                   aria-label="Search operators"
                 />
               </div>
@@ -711,7 +711,7 @@ export default function SustainabilityScorecardPage() {
               <select
                 value={scoreRange}
                 onChange={(e) => setScoreRange(e.target.value as ScoreRange)}
-                className="px-4 py-2.5 bg-slate-800/60 border border-slate-700/50 rounded-lg text-sm text-slate-200 focus:outline-none focus:border-white/15 transition-colors cursor-pointer"
+                className="px-4 py-2.5 bg-white/[0.05] border border-white/[0.06] rounded-lg text-sm text-white/90 focus:outline-none focus:border-white/15 transition-colors cursor-pointer"
                 aria-label="Filter by score range"
               >
                 <option value="all">All Scores</option>
@@ -725,7 +725,7 @@ export default function SustainabilityScorecardPage() {
               <select
                 value={operatorType}
                 onChange={(e) => setOperatorType(e.target.value as OperatorType | 'all')}
-                className="px-4 py-2.5 bg-slate-800/60 border border-slate-700/50 rounded-lg text-sm text-slate-200 focus:outline-none focus:border-white/15 transition-colors cursor-pointer"
+                className="px-4 py-2.5 bg-white/[0.05] border border-white/[0.06] rounded-lg text-sm text-white/90 focus:outline-none focus:border-white/15 transition-colors cursor-pointer"
                 aria-label="Filter by operator type"
               >
                 <option value="all">All Types</option>
@@ -757,7 +757,7 @@ export default function SustainabilityScorecardPage() {
                 <p className="text-slate-400 text-sm">No operators match the current filters.</p>
                 <button
                   onClick={() => { setScoreRange('all'); setOperatorType('all'); setSearchQuery(''); }}
-                  className="mt-3 text-xs text-slate-300 hover:text-white transition-colors"
+                  className="mt-3 text-xs text-white/70 hover:text-white transition-colors"
                 >
                   Clear all filters
                 </button>
@@ -779,7 +779,7 @@ export default function SustainabilityScorecardPage() {
         {/* Methodology note */}
         <ScrollReveal delay={0.2}>
           <div className="card p-6 mt-4">
-            <h2 className="text-sm font-semibold text-slate-200 mb-2">Methodology</h2>
+            <h2 className="text-sm font-semibold text-white/90 mb-2">Methodology</h2>
             <p className="text-xs text-slate-400 leading-relaxed">
               Scores are derived from publicly available data including regulatory filings, UN COPUOS reports, published debris mitigation plans,
               conjunction assessment participation records, and third-party analyses from organizations including the Secure World Foundation,
@@ -792,7 +792,7 @@ export default function SustainabilityScorecardPage() {
 
         {/* Explore More */}
         <ScrollReveal delay={0.25}>
-          <section className="mt-16 border-t border-slate-800 pt-8">
+          <section className="mt-16 border-t border-white/[0.06] pt-8">
             <h2 className="text-xl font-bold text-white mb-6">Explore More</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <a href="/debris-catalog" className="card p-4 hover:border-white/15 transition-colors group">

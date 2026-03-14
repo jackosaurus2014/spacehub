@@ -55,7 +55,7 @@ export default function PageHeader({
           ))}
         </div>
       )}
-      <div className="w-12 h-[3px] bg-gradient-to-r from-white to-plasma-400 rounded-full mb-4" />
+      <div className="w-12 h-[3px] bg-gradient-to-r from-white/60 to-white/30 rounded-full mb-4" />
       <div className="flex items-center justify-between flex-wrap gap-4">
         <div>
           <h1 className="text-display-md font-display font-bold text-white">

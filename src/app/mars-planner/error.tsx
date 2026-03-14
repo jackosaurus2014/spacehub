@@ -31,7 +31,7 @@ export default function Error({
           </button>
           <Link
             href="/solar-exploration"
-            className="px-5 py-2.5 bg-slate-700 hover:bg-slate-600 text-white text-sm rounded-lg font-medium transition-colors"
+            className="px-5 py-2.5 bg-white/[0.08] hover:bg-white/[0.1] text-white text-sm rounded-lg font-medium transition-colors"
           >
             Back to Solar System
           </Link>

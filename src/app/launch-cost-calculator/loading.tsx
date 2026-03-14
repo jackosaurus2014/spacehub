@@ -4,9 +4,9 @@ export default function Loading() {
       <div className="container mx-auto px-4 max-w-7xl">
         {/* Header skeleton */}
         <div className="mb-10">
-          <div className="h-4 w-48 bg-slate-800/60 rounded animate-pulse mb-4" />
-          <div className="h-9 w-80 bg-slate-800 rounded animate-pulse mb-3" />
-          <div className="h-4 w-[32rem] max-w-full bg-slate-800/60 rounded animate-pulse" />
+          <div className="h-4 w-48 bg-white/[0.05] rounded animate-pulse mb-4" />
+          <div className="h-9 w-80 bg-white/[0.06] rounded animate-pulse mb-3" />
+          <div className="h-4 w-[32rem] max-w-full bg-white/[0.05] rounded animate-pulse" />
         </div>
 
         {/* Stat cards row */}
@@ -14,7 +14,7 @@ export default function Loading() {
           {Array.from({ length: 4 }).map((_, i) => (
             <div
               key={i}
-              className="bg-slate-800/40 rounded-xl animate-pulse p-4 text-center"
+              className="bg-white/[0.04] rounded-xl animate-pulse p-4 text-center"
             >
               <div className="h-3 w-20 mx-auto bg-slate-700/40 rounded mb-2" />
               <div className="h-7 w-16 mx-auto bg-slate-700/50 rounded" />
@@ -26,7 +26,7 @@ export default function Loading() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Input panel */}
           <div className="lg:col-span-1 space-y-6">
-            <div className="bg-slate-800/40 rounded-xl animate-pulse p-6 space-y-5">
+            <div className="bg-white/[0.04] rounded-xl animate-pulse p-6 space-y-5">
               <div className="h-6 w-40 bg-slate-700/50 rounded" />
 
               {/* Payload mass slider */}
@@ -68,7 +68,7 @@ export default function Loading() {
           {/* Results panel */}
           <div className="lg:col-span-2 space-y-6">
             {/* Chart placeholder */}
-            <div className="bg-slate-800/40 rounded-xl animate-pulse p-6">
+            <div className="bg-white/[0.04] rounded-xl animate-pulse p-6">
               <div className="h-6 w-52 bg-slate-700/50 rounded mb-4" />
               <div className="h-64 w-full bg-slate-700/20 rounded-lg" />
             </div>
@@ -78,7 +78,7 @@ export default function Loading() {
               {Array.from({ length: 4 }).map((_, i) => (
                 <div
                   key={i}
-                  className="bg-slate-800/40 rounded-xl animate-pulse p-6"
+                  className="bg-white/[0.04] rounded-xl animate-pulse p-6"
                 >
                   <div className="flex justify-between items-start mb-4">
                     <div>

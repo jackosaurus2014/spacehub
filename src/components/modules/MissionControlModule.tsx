@@ -68,26 +68,26 @@ function CountdownDisplay({ targetDate }: { targetDate: Date }) {
 
   return (
     <div className="flex gap-2 text-center">
-      <div className="bg-slate-800 rounded-lg px-3 py-2 min-w-[60px]">
-        <div className="text-2xl font-bold text-slate-200 font-mono">
+      <div className="bg-white/[0.06] rounded-lg px-3 py-2 min-w-[60px]">
+        <div className="text-2xl font-bold text-white/90 font-mono">
           {String(countdown.days).padStart(2, '0')}
         </div>
         <div className="text-xs text-slate-400 uppercase">Days</div>
       </div>
-      <div className="bg-slate-800 rounded-lg px-3 py-2 min-w-[60px]">
-        <div className="text-2xl font-bold text-slate-200 font-mono">
+      <div className="bg-white/[0.06] rounded-lg px-3 py-2 min-w-[60px]">
+        <div className="text-2xl font-bold text-white/90 font-mono">
           {String(countdown.hours).padStart(2, '0')}
         </div>
         <div className="text-xs text-slate-400 uppercase">Hours</div>
       </div>
-      <div className="bg-slate-800 rounded-lg px-3 py-2 min-w-[60px]">
-        <div className="text-2xl font-bold text-slate-200 font-mono">
+      <div className="bg-white/[0.06] rounded-lg px-3 py-2 min-w-[60px]">
+        <div className="text-2xl font-bold text-white/90 font-mono">
           {String(countdown.minutes).padStart(2, '0')}
         </div>
         <div className="text-xs text-slate-400 uppercase">Min</div>
       </div>
-      <div className="bg-slate-800 rounded-lg px-3 py-2 min-w-[60px]">
-        <div className="text-2xl font-bold text-rocket-400 font-mono animate-pulse">
+      <div className="bg-white/[0.06] rounded-lg px-3 py-2 min-w-[60px]">
+        <div className="text-2xl font-bold text-white/70 font-mono animate-pulse">
           {String(countdown.seconds).padStart(2, '0')}
         </div>
         <div className="text-xs text-slate-400 uppercase">Sec</div>
@@ -131,7 +131,7 @@ function EventCard({ event, isPrimary = false }: { event: SpaceEvent; isPrimary?
 
   if (isPrimary && launchDate) {
     return (
-      <div className="bg-gradient-to-br from-slate-100 to-slate-200/20 rounded-xl p-6 border border-white/10">
+      <div className="bg-gradient-to-br from-white/[0.06] to-white/[0.04] rounded-xl p-6 border border-white/10">
         <div className="flex items-start justify-between mb-4">
           <div className="flex items-center gap-2">
             <span className={`${typeInfo.color} text-white text-xs font-semibold px-2 py-1 rounded inline-flex items-center gap-1.5`}>
@@ -154,7 +154,7 @@ function EventCard({ event, isPrimary = false }: { event: SpaceEvent; isPrimary?
             )}
           </div>
         </div>
-        <h3 className="text-xl font-bold text-slate-200 mb-2 line-clamp-2">{event.name}</h3>
+        <h3 className="text-xl font-bold text-white/90 mb-2 line-clamp-2">{event.name}</h3>
         {event.agency && (
           <p className="text-slate-400 text-sm mb-4">{event.agency}</p>
         )}
@@ -200,7 +200,7 @@ function EventCard({ event, isPrimary = false }: { event: SpaceEvent; isPrimary?
   }
 
   return (
-    <div className="bg-slate-800/50 rounded-lg p-4 border border-slate-700/50 hover:border-white/10 transition-colors">
+    <div className="bg-white/[0.04] rounded-lg p-4 border border-white/[0.06] hover:border-white/10 transition-colors">
       <div className="flex items-start gap-3">
         {eventLogo ? (
           <Image src={eventLogo} alt={event.name} width={40} height={40} className="rounded-md flex-shrink-0" />
@@ -209,7 +209,7 @@ function EventCard({ event, isPrimary = false }: { event: SpaceEvent; isPrimary?
         )}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
-            <h4 className="font-semibold text-slate-200 text-sm line-clamp-1">{event.name}</h4>
+            <h4 className="font-semibold text-white/90 text-sm line-clamp-1">{event.name}</h4>
             {live && (
               <span className="flex items-center gap-1 text-white text-xs font-semibold px-1.5 py-0.5 bg-red-500 rounded shrink-0">
                 <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" />
@@ -221,7 +221,7 @@ function EventCard({ event, isPrimary = false }: { event: SpaceEvent; isPrimary?
             <p className="text-slate-400 text-xs mt-0.5">{event.agency}</p>
           )}
           {launchDate && !live && (
-            <p className="text-slate-200 text-xs mt-1">
+            <p className="text-white/90 text-xs mt-1">
               {launchDate.toLocaleDateString('en-US', {
                 month: 'short',
                 day: 'numeric',
@@ -287,7 +287,7 @@ export default function MissionControlModule() {
     return (
       <div className="card p-6 glow-border">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-display font-bold text-slate-200 flex items-center gap-2">
+          <h2 className="text-xl font-display font-bold text-white/90 flex items-center gap-2">
             <span>🎯</span> Mission Control
           </h2>
         </div>
@@ -305,7 +305,7 @@ export default function MissionControlModule() {
     <Link href="/mission-control" className="block">
       <div className="card p-6 glow-border hover:border-white/10 transition-all cursor-pointer group">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-display font-bold text-slate-200 flex items-center gap-2">
+          <h2 className="text-xl font-display font-bold text-white/90 flex items-center gap-2">
             <span>🎯</span> Mission Control
           </h2>
           <span className="text-slate-400 text-sm group-hover:text-white transition-colors flex items-center gap-1">
@@ -346,8 +346,8 @@ export default function MissionControlModule() {
           </div>
         )}
 
-        <div className="mt-4 pt-4 border-t border-slate-700/50 text-center">
-          <span className="text-slate-200 text-sm group-hover:text-white transition-colors">
+        <div className="mt-4 pt-4 border-t border-white/[0.06] text-center">
+          <span className="text-white/90 text-sm group-hover:text-white transition-colors">
             Click to explore 5-year mission timeline →
           </span>
         </div>

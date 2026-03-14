@@ -4,15 +4,15 @@ export default function Loading() {
       <div className="container mx-auto px-4">
         {/* Header skeleton */}
         <div className="mb-8">
-          <div className="h-4 w-40 bg-slate-800/60 rounded animate-pulse mb-4" />
-          <div className="h-8 w-72 bg-slate-800 rounded animate-pulse mb-3" />
-          <div className="h-4 w-[32rem] bg-slate-800/60 rounded animate-pulse" />
+          <div className="h-4 w-40 bg-white/[0.05] rounded animate-pulse mb-4" />
+          <div className="h-8 w-72 bg-white/[0.06] rounded animate-pulse mb-3" />
+          <div className="h-4 w-[32rem] bg-white/[0.05] rounded animate-pulse" />
         </div>
 
         {/* Filter bar skeleton */}
         <div className="flex gap-3 mb-8">
-          <div className="h-10 w-36 bg-slate-800/50 rounded-lg animate-pulse" />
-          <div className="h-10 w-36 bg-slate-800/50 rounded-lg animate-pulse" />
+          <div className="h-10 w-36 bg-white/[0.04] rounded-lg animate-pulse" />
+          <div className="h-10 w-36 bg-white/[0.04] rounded-lg animate-pulse" />
         </div>
 
         {/* Cost comparison chart skeleton */}

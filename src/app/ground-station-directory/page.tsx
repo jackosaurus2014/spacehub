@@ -245,7 +245,7 @@ const REGION_MAP: RegionGroup[] = [
 ];
 
 const KEY_METRICS = [
-  { label: 'Total Stations Globally', value: '200+', color: 'text-slate-300', bgColor: 'bg-white/5', borderColor: 'border-white/10' },
+  { label: 'Total Stations Globally', value: '200+', color: 'text-white/70', bgColor: 'bg-white/5', borderColor: 'border-white/10' },
   { label: 'Average Contact Cost', value: '$3\u201315/min', color: 'text-amber-400', bgColor: 'bg-amber-500/10', borderColor: 'border-amber-500/30' },
   { label: 'Bands Available', value: 'S, X, Ka, UHF, L', color: 'text-purple-400', bgColor: 'bg-purple-500/10', borderColor: 'border-purple-500/30' },
   { label: 'LEO Orbit Coverage', value: '95%+', color: 'text-emerald-400', bgColor: 'bg-emerald-500/10', borderColor: 'border-emerald-500/30' },
@@ -269,7 +269,7 @@ const PRICING_MODELS = ['Pay-per-minute', 'Per-pass / subscription', 'Contract /
 
 function BandBadge({ band }: { band: string }) {
   const colors: Record<string, string> = {
-    S: 'bg-white/8 text-slate-200 border-white/10',
+    S: 'bg-white/8 text-white/90 border-white/10',
     X: 'bg-blue-500/15 text-blue-300 border-blue-500/30',
     Ka: 'bg-amber-500/15 text-amber-300 border-amber-500/30',
     UHF: 'bg-green-500/15 text-green-300 border-green-500/30',
@@ -277,7 +277,7 @@ function BandBadge({ band }: { band: string }) {
   };
 
   return (
-    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border ${colors[band] || 'bg-slate-500/15 text-slate-300 border-slate-500/30'}`}>
+    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border ${colors[band] || 'bg-slate-500/15 text-white/70 border-slate-500/30'}`}>
       {band}-band
     </span>
   );
@@ -313,7 +313,7 @@ function ProviderCardComponent({ provider, onToggle, isExpanded }: {
   };
 
   const accentTexts: Record<string, string> = {
-    cyan: 'text-slate-300',
+    cyan: 'text-white/70',
     blue: 'text-blue-400',
     amber: 'text-amber-400',
     emerald: 'text-emerald-400',
@@ -329,7 +329,7 @@ function ProviderCardComponent({ provider, onToggle, isExpanded }: {
           <div>
             <h3 className="text-lg font-bold text-white">{provider.name}</h3>
             <div className="flex items-center gap-2 mt-0.5">
-              <span className={`text-sm font-medium ${accentTexts[provider.accentColor] || 'text-slate-300'}`}>
+              <span className={`text-sm font-medium ${accentTexts[provider.accentColor] || 'text-white/70'}`}>
                 {provider.locations} locations
               </span>
               <span className="text-slate-600">|</span>
@@ -360,12 +360,12 @@ function ProviderCardComponent({ provider, onToggle, isExpanded }: {
                 <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
               </svg>
             </span>
-            <span className="text-slate-300">{h}</span>
+            <span className="text-white/70">{h}</span>
           </div>
         ))}
       </div>
 
-      <div className="flex items-center justify-between pt-3 border-t border-slate-700/50">
+      <div className="flex items-center justify-between pt-3 border-t border-white/[0.06]">
         <button
           onClick={onToggle}
           className="text-xs text-slate-400 hover:text-white transition-colors"
@@ -376,7 +376,7 @@ function ProviderCardComponent({ provider, onToggle, isExpanded }: {
           href={provider.website}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-1 text-xs font-medium text-slate-300 hover:text-white transition-colors"
+          className="inline-flex items-center gap-1 text-xs font-medium text-white/70 hover:text-white transition-colors"
         >
           Visit website
           <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -397,11 +397,11 @@ function SortIcon({ active, direction }: { active: boolean; direction: SortDirec
     );
   }
   return direction === 'asc' ? (
-    <svg className="w-3 h-3 text-slate-300 ml-1 inline-block" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <svg className="w-3 h-3 text-white/70 ml-1 inline-block" fill="none" viewBox="0 0 24 24" stroke="currentColor">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
     </svg>
   ) : (
-    <svg className="w-3 h-3 text-slate-300 ml-1 inline-block" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <svg className="w-3 h-3 text-white/70 ml-1 inline-block" fill="none" viewBox="0 0 24 24" stroke="currentColor">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
     </svg>
   );
@@ -602,7 +602,7 @@ export default function GroundStationDirectoryPage() {
                 placeholder="Search providers, bands, regions..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 bg-slate-800/50 border border-slate-700/50 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-white/15 focus:ring-1 focus:ring-white/30 transition-colors"
+                className="w-full pl-10 pr-4 py-2.5 bg-white/[0.04] border border-white/[0.06] rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-white/15 focus:ring-1 focus:ring-white/30 transition-colors"
               />
             </div>
 
@@ -615,8 +615,8 @@ export default function GroundStationDirectoryPage() {
                   onClick={() => toggleBand(band)}
                   className={`px-2.5 py-1 rounded-full text-xs font-medium border transition-colors ${
                     selectedBands.includes(band)
-                      ? 'bg-white/10 text-slate-200 border-white/15'
-                      : 'bg-slate-800/50 text-slate-400 border-slate-700/50 hover:border-slate-600'
+                      ? 'bg-white/10 text-white/90 border-white/15'
+                      : 'bg-white/[0.04] text-slate-400 border-white/[0.06] hover:border-white/[0.1]'
                   }`}
                 >
                   {band}
@@ -628,7 +628,7 @@ export default function GroundStationDirectoryPage() {
             <select
               value={selectedRegion}
               onChange={(e) => setSelectedRegion(e.target.value)}
-              className="px-3 py-2.5 bg-slate-800/50 border border-slate-700/50 rounded-lg text-sm text-white focus:outline-none focus:border-white/15 transition-colors"
+              className="px-3 py-2.5 bg-white/[0.04] border border-white/[0.06] rounded-lg text-sm text-white focus:outline-none focus:border-white/15 transition-colors"
             >
               <option value="">All Regions</option>
               {ALL_REGIONS.map((region) => (
@@ -640,7 +640,7 @@ export default function GroundStationDirectoryPage() {
             <select
               value={selectedPricing}
               onChange={(e) => setSelectedPricing(e.target.value)}
-              className="px-3 py-2.5 bg-slate-800/50 border border-slate-700/50 rounded-lg text-sm text-white focus:outline-none focus:border-white/15 transition-colors"
+              className="px-3 py-2.5 bg-white/[0.04] border border-white/[0.06] rounded-lg text-sm text-white focus:outline-none focus:border-white/15 transition-colors"
             >
               <option value="">All Pricing</option>
               {PRICING_MODELS.map((model) => (
@@ -650,13 +650,13 @@ export default function GroundStationDirectoryPage() {
           </div>
 
           {hasActiveFilters && (
-            <div className="flex items-center gap-2 mt-3 pt-3 border-t border-slate-700/50">
+            <div className="flex items-center gap-2 mt-3 pt-3 border-t border-white/[0.06]">
               <span className="text-xs text-slate-400">
                 {regionFilteredProviders.length} of {PROVIDERS.length} providers
               </span>
               <button
                 onClick={clearFilters}
-                className="text-xs text-slate-300 hover:text-white transition-colors ml-auto"
+                className="text-xs text-white/70 hover:text-white transition-colors ml-auto"
               >
                 Clear all filters
               </button>
@@ -675,8 +675,8 @@ export default function GroundStationDirectoryPage() {
               onClick={() => setActiveSection(tab.id)}
               className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${
                 activeSection === tab.id
-                  ? 'bg-white/8 text-slate-200 border border-white/10'
-                  : 'bg-slate-800/50 text-slate-400 border border-slate-700/30 hover:text-white hover:border-slate-600'
+                  ? 'bg-white/8 text-white/90 border border-white/10'
+                  : 'bg-white/[0.04] text-slate-400 border border-white/[0.04] hover:text-white hover:border-white/[0.1]'
               }`}
             >
               <span>{tab.icon}</span>
@@ -694,7 +694,7 @@ export default function GroundStationDirectoryPage() {
               <div className="card p-12 text-center">
                 <div className="text-4xl mb-3">{String.fromCodePoint(0x1F50D)}</div>
                 <p className="text-slate-400 mb-2">No providers match your filters.</p>
-                <button onClick={clearFilters} className="text-sm text-slate-300 hover:text-white transition-colors">
+                <button onClick={clearFilters} className="text-sm text-white/70 hover:text-white transition-colors">
                   Clear filters
                 </button>
               </div>
@@ -721,7 +721,7 @@ export default function GroundStationDirectoryPage() {
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="bg-slate-800/60 border-b border-slate-700/50">
+                    <tr className="bg-white/[0.05] border-b border-white/[0.06]">
                       {([
                         { field: 'name' as SortField, label: 'Provider' },
                         { field: 'locations' as SortField, label: '# Stations' },
@@ -734,7 +734,7 @@ export default function GroundStationDirectoryPage() {
                         <th
                           key={col.field}
                           onClick={() => handleSort(col.field)}
-                          className="px-4 py-3 text-left text-xs font-semibold text-slate-300 uppercase tracking-wider cursor-pointer hover:text-white transition-colors select-none whitespace-nowrap"
+                          className="px-4 py-3 text-left text-xs font-semibold text-white/70 uppercase tracking-wider cursor-pointer hover:text-white transition-colors select-none whitespace-nowrap"
                         >
                           {col.label}
                           <SortIcon active={sortField === col.field} direction={sortDirection} />
@@ -742,16 +742,16 @@ export default function GroundStationDirectoryPage() {
                       ))}
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-700/30">
+                  <tbody className="divide-y divide-white/[0.04]">
                     {sortedProviders.map((p) => (
-                      <tr key={p.id} className="hover:bg-slate-800/30 transition-colors">
+                      <tr key={p.id} className="hover:bg-white/[0.03] transition-colors">
                         <td className="px-4 py-3">
                           <div className="flex items-center gap-2">
                             <span className="text-lg">{p.icon}</span>
                             <span className="font-medium text-white">{p.name}</span>
                           </div>
                         </td>
-                        <td className="px-4 py-3 text-slate-300 whitespace-nowrap">{p.locations}</td>
+                        <td className="px-4 py-3 text-white/70 whitespace-nowrap">{p.locations}</td>
                         <td className="px-4 py-3">
                           <div className="flex flex-wrap gap-1">
                             {p.bands.map((b) => (
@@ -759,8 +759,8 @@ export default function GroundStationDirectoryPage() {
                             ))}
                           </div>
                         </td>
-                        <td className="px-4 py-3 text-slate-300 whitespace-nowrap">{p.pricingModel}</td>
-                        <td className="px-4 py-3 text-slate-300 whitespace-nowrap">{p.minContactTime}</td>
+                        <td className="px-4 py-3 text-white/70 whitespace-nowrap">{p.pricingModel}</td>
+                        <td className="px-4 py-3 text-white/70 whitespace-nowrap">{p.minContactTime}</td>
                         <td className="px-4 py-3 text-slate-400 max-w-[200px] truncate">{p.coverageFocus}</td>
                         <td className="px-4 py-3">
                           {p.apiAccess ? (
@@ -808,7 +808,7 @@ export default function GroundStationDirectoryPage() {
                 };
 
                 return (
-                  <div key={region.name} className={`card p-5 border ${regionAccents[region.name] || 'border-slate-700/50'}`}>
+                  <div key={region.name} className={`card p-5 border ${regionAccents[region.name] || 'border-white/[0.06]'}`}>
                     <div className="flex items-center gap-2 mb-4">
                       <span className="text-2xl">{regionIcons[region.name] || String.fromCodePoint(0x1F4CD)}</span>
                       <h3 className="text-lg font-bold text-white">{region.name}</h3>
@@ -816,9 +816,9 @@ export default function GroundStationDirectoryPage() {
                     </div>
                     <div className="space-y-3">
                       {region.locations.map((loc) => (
-                        <div key={loc.name} className="pb-3 border-b border-slate-700/30 last:border-0 last:pb-0">
+                        <div key={loc.name} className="pb-3 border-b border-white/[0.04] last:border-0 last:pb-0">
                           <div className="flex items-center gap-2 mb-1.5">
-                            <svg className="w-3.5 h-3.5 text-slate-300 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                            <svg className="w-3.5 h-3.5 text-white/70 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                               <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
                             </svg>
                             <span className="text-sm font-medium text-white">{loc.name}</span>
@@ -827,7 +827,7 @@ export default function GroundStationDirectoryPage() {
                             {loc.providers.map((prov) => (
                               <span
                                 key={prov}
-                                className="px-2 py-0.5 rounded text-xs bg-slate-800/80 text-slate-300 border border-slate-700/50"
+                                className="px-2 py-0.5 rounded text-xs bg-white/[0.06] text-white/70 border border-white/[0.06]"
                               >
                                 {prov}
                               </span>
@@ -842,12 +842,12 @@ export default function GroundStationDirectoryPage() {
             </div>
 
             {/* Summary Stats */}
-            <div className="card p-5 mt-6 border border-slate-700/30">
+            <div className="card p-5 mt-6 border border-white/[0.04]">
               <h3 className="text-lg font-bold text-white mb-3">Coverage Summary</h3>
               <div className="grid grid-cols-2 md:grid-cols-5 gap-4 text-center">
                 {REGION_MAP.map((region) => (
                   <div key={region.name}>
-                    <div className="text-2xl font-bold text-slate-300">{region.locations.length}</div>
+                    <div className="text-2xl font-bold text-white/70">{region.locations.length}</div>
                     <div className="text-xs text-slate-400">{region.name} sites</div>
                   </div>
                 ))}
@@ -865,15 +865,15 @@ export default function GroundStationDirectoryPage() {
             <h2 className="text-xl font-bold text-white mb-4">Ground Station Pricing Calculator</h2>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Input Panel */}
-              <div className="card p-6 border border-slate-700/30">
+              <div className="card p-6 border border-white/[0.04]">
                 <h3 className="text-lg font-semibold text-white mb-5">Configure Your Usage</h3>
 
                 <div className="space-y-6">
                   {/* Contacts per day */}
                   <div>
-                    <label className="flex items-center justify-between text-sm text-slate-300 mb-2">
+                    <label className="flex items-center justify-between text-sm text-white/70 mb-2">
                       <span>Number of contacts per day</span>
-                      <span className="text-slate-300 font-mono font-bold">{contactsPerDay}</span>
+                      <span className="text-white/70 font-mono font-bold">{contactsPerDay}</span>
                     </label>
                     <input
                       type="range"
@@ -881,7 +881,7 @@ export default function GroundStationDirectoryPage() {
                       max={50}
                       value={contactsPerDay}
                       onChange={(e) => setContactsPerDay(parseInt(e.target.value))}
-                      className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-slate-400"
+                      className="w-full h-2 bg-white/[0.06] rounded-lg appearance-none cursor-pointer accent-slate-400"
                     />
                     <div className="flex justify-between text-xs text-slate-500 mt-1">
                       <span>1</span>
@@ -892,9 +892,9 @@ export default function GroundStationDirectoryPage() {
 
                   {/* Contact duration */}
                   <div>
-                    <label className="flex items-center justify-between text-sm text-slate-300 mb-2">
+                    <label className="flex items-center justify-between text-sm text-white/70 mb-2">
                       <span>Contact duration (minutes)</span>
-                      <span className="text-slate-300 font-mono font-bold">{contactDuration} min</span>
+                      <span className="text-white/70 font-mono font-bold">{contactDuration} min</span>
                     </label>
                     <input
                       type="range"
@@ -902,7 +902,7 @@ export default function GroundStationDirectoryPage() {
                       max={30}
                       value={contactDuration}
                       onChange={(e) => setContactDuration(parseInt(e.target.value))}
-                      className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-slate-400"
+                      className="w-full h-2 bg-white/[0.06] rounded-lg appearance-none cursor-pointer accent-slate-400"
                     />
                     <div className="flex justify-between text-xs text-slate-500 mt-1">
                       <span>1 min</span>
@@ -913,7 +913,7 @@ export default function GroundStationDirectoryPage() {
 
                   {/* Band selection */}
                   <div>
-                    <label className="text-sm text-slate-300 mb-2 block">Frequency band</label>
+                    <label className="text-sm text-white/70 mb-2 block">Frequency band</label>
                     <div className="flex flex-wrap gap-2">
                       {Object.keys(BAND_PRICING).map((band) => (
                         <button
@@ -921,8 +921,8 @@ export default function GroundStationDirectoryPage() {
                           onClick={() => setCalcBand(band)}
                           className={`px-4 py-2 rounded-lg text-sm font-medium border transition-colors ${
                             calcBand === band
-                              ? 'bg-white/10 text-slate-200 border-white/15'
-                              : 'bg-slate-800/50 text-slate-400 border-slate-700/50 hover:border-slate-600'
+                              ? 'bg-white/10 text-white/90 border-white/15'
+                              : 'bg-white/[0.04] text-slate-400 border-white/[0.06] hover:border-white/[0.1]'
                           }`}
                         >
                           {band}-band
@@ -936,7 +936,7 @@ export default function GroundStationDirectoryPage() {
                 </div>
 
                 {/* Usage summary */}
-                <div className="mt-6 p-4 bg-slate-800/50 rounded-lg border border-slate-700/30">
+                <div className="mt-6 p-4 bg-white/[0.04] rounded-lg border border-white/[0.04]">
                   <div className="text-xs text-slate-400 uppercase tracking-wider mb-2">Usage Summary</div>
                   <div className="grid grid-cols-2 gap-3 text-sm">
                     <div>
@@ -960,11 +960,11 @@ export default function GroundStationDirectoryPage() {
               </div>
 
               {/* Result Panel */}
-              <div className="card p-6 border border-white/10 bg-gradient-to-br from-slate-800/10 to-transparent">
+              <div className="card p-6 border border-white/10 bg-gradient-to-br from-white/[0.04] to-transparent">
                 <h3 className="text-lg font-semibold text-white mb-5">Estimated Monthly Cost</h3>
 
                 <div className="text-center mb-6">
-                  <div className="text-4xl md:text-5xl font-bold text-slate-300 mb-1">
+                  <div className="text-4xl md:text-5xl font-bold text-white/70 mb-1">
                     ${estimatedMonthlyCost.min.toLocaleString()} - ${estimatedMonthlyCost.max.toLocaleString()}
                   </div>
                   <div className="text-sm text-slate-400">per month ({calcBand}-band, pay-per-minute model)</div>
@@ -972,20 +972,20 @@ export default function GroundStationDirectoryPage() {
 
                 {/* Cost breakdown */}
                 <div className="space-y-3 mb-6">
-                  <div className="flex justify-between items-center p-3 bg-slate-800/40 rounded-lg">
-                    <span className="text-sm text-slate-300">Cost per contact (low)</span>
+                  <div className="flex justify-between items-center p-3 bg-white/[0.04] rounded-lg">
+                    <span className="text-sm text-white/70">Cost per contact (low)</span>
                     <span className="text-sm font-medium text-emerald-400">
                       ${(contactDuration * BAND_PRICING[calcBand].min).toLocaleString()}
                     </span>
                   </div>
-                  <div className="flex justify-between items-center p-3 bg-slate-800/40 rounded-lg">
-                    <span className="text-sm text-slate-300">Cost per contact (high)</span>
+                  <div className="flex justify-between items-center p-3 bg-white/[0.04] rounded-lg">
+                    <span className="text-sm text-white/70">Cost per contact (high)</span>
                     <span className="text-sm font-medium text-amber-400">
                       ${(contactDuration * BAND_PRICING[calcBand].max).toLocaleString()}
                     </span>
                   </div>
-                  <div className="flex justify-between items-center p-3 bg-slate-800/40 rounded-lg">
-                    <span className="text-sm text-slate-300">Daily cost range</span>
+                  <div className="flex justify-between items-center p-3 bg-white/[0.04] rounded-lg">
+                    <span className="text-sm text-white/70">Daily cost range</span>
                     <span className="text-sm font-medium text-white">
                       ${(contactsPerDay * contactDuration * BAND_PRICING[calcBand].min).toLocaleString()} - ${(contactsPerDay * contactDuration * BAND_PRICING[calcBand].max).toLocaleString()}
                     </span>
@@ -993,11 +993,11 @@ export default function GroundStationDirectoryPage() {
                 </div>
 
                 {/* Pricing tips */}
-                <div className="p-4 bg-slate-800/30 rounded-lg border border-slate-700/30">
+                <div className="p-4 bg-white/[0.03] rounded-lg border border-white/[0.04]">
                   <h4 className="text-sm font-semibold text-white mb-2">Cost Optimization Tips</h4>
                   <ul className="space-y-1.5 text-xs text-slate-400">
                     <li className="flex items-start gap-2">
-                      <span className="text-slate-300 mt-0.5 flex-shrink-0">
+                      <span className="text-white/70 mt-0.5 flex-shrink-0">
                         <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                           <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
                         </svg>
@@ -1005,7 +1005,7 @@ export default function GroundStationDirectoryPage() {
                       <span>Subscription plans become cost-effective at 200+ contacts/month</span>
                     </li>
                     <li className="flex items-start gap-2">
-                      <span className="text-slate-300 mt-0.5 flex-shrink-0">
+                      <span className="text-white/70 mt-0.5 flex-shrink-0">
                         <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                           <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
                         </svg>
@@ -1013,7 +1013,7 @@ export default function GroundStationDirectoryPage() {
                       <span>Multi-year contracts can reduce rates by 20-40%</span>
                     </li>
                     <li className="flex items-start gap-2">
-                      <span className="text-slate-300 mt-0.5 flex-shrink-0">
+                      <span className="text-white/70 mt-0.5 flex-shrink-0">
                         <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                           <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
                         </svg>
@@ -1021,7 +1021,7 @@ export default function GroundStationDirectoryPage() {
                       <span>Off-peak scheduling windows may offer lower rates</span>
                     </li>
                     <li className="flex items-start gap-2">
-                      <span className="text-slate-300 mt-0.5 flex-shrink-0">
+                      <span className="text-white/70 mt-0.5 flex-shrink-0">
                         <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                           <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
                         </svg>
@@ -1042,13 +1042,13 @@ export default function GroundStationDirectoryPage() {
                       const barWidth = Math.min(100, (contactCostMax / maxPossible) * 100);
                       return (
                         <div key={band} className="flex items-center gap-3">
-                          <span className={`text-xs font-medium w-8 ${band === calcBand ? 'text-slate-300' : 'text-slate-400'}`}>{band}</span>
-                          <div className="flex-1 h-5 bg-slate-800/50 rounded-full overflow-hidden relative">
+                          <span className={`text-xs font-medium w-8 ${band === calcBand ? 'text-white/70' : 'text-slate-400'}`}>{band}</span>
+                          <div className="flex-1 h-5 bg-white/[0.04] rounded-full overflow-hidden relative">
                             <div
-                              className={`h-full rounded-full transition-all duration-300 ${band === calcBand ? 'bg-white/40' : 'bg-slate-700/50'}`}
+                              className={`h-full rounded-full transition-all duration-300 ${band === calcBand ? 'bg-white/40' : 'bg-white/[0.04]'}`}
                               style={{ width: `${barWidth}%` }}
                             />
-                            <span className="absolute inset-0 flex items-center justify-center text-xs text-slate-300">
+                            <span className="absolute inset-0 flex items-center justify-center text-xs text-white/70">
                               ${contactCostMin} - ${contactCostMax}
                             </span>
                           </div>
@@ -1061,7 +1061,7 @@ export default function GroundStationDirectoryPage() {
             </div>
 
             {/* Disclaimer */}
-            <div className="card p-4 mt-4 border border-slate-700/30">
+            <div className="card p-4 mt-4 border border-white/[0.04]">
               <p className="text-xs text-slate-500">
                 <span className="font-medium text-slate-400">Disclaimer:</span> Pricing estimates are approximate and based on publicly available pay-per-minute rates. Actual costs vary by provider, contract terms, antenna size, band, data rate, and volume commitments. Contact providers directly for accurate quotes. Some providers offer per-pass pricing which may not directly translate to per-minute rates.
               </p>
@@ -1070,7 +1070,7 @@ export default function GroundStationDirectoryPage() {
         )}
 
         {/* Cross-link to existing ground stations page */}
-        <div className="mt-10 card p-5 border border-slate-700/30">
+        <div className="mt-10 card p-5 border border-white/[0.04]">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div>
               <h3 className="text-lg font-semibold text-white">Looking for our interactive Ground Station Map?</h3>

@@ -75,21 +75,21 @@ export default function TermsOfServicePage() {
             <section>
               <h2 className="text-xl font-semibold bg-gradient-to-r from-slate-300 to-blue-400 bg-clip-text text-transparent mb-4">3. User Accounts</h2>
 
-              <h3 className="text-lg font-medium text-slate-200 mb-3">Account Registration</h3>
+              <h3 className="text-lg font-medium text-white/90 mb-3">Account Registration</h3>
               <p className="text-slate-400 leading-relaxed mb-4">
                 To access certain features of our Services, you may be required to create an account.
                 When registering, you agree to provide accurate, current, and complete information and to
                 update such information to keep it accurate, current, and complete.
               </p>
 
-              <h3 className="text-lg font-medium text-slate-200 mb-3">Account Security</h3>
+              <h3 className="text-lg font-medium text-white/90 mb-3">Account Security</h3>
               <p className="text-slate-400 leading-relaxed mb-4">
                 You are responsible for safeguarding your account credentials and for all activities that
                 occur under your account. You agree to notify us immediately of any unauthorized use of
                 your account or any other breach of security.
               </p>
 
-              <h3 className="text-lg font-medium text-slate-200 mb-3">Account Termination</h3>
+              <h3 className="text-lg font-medium text-white/90 mb-3">Account Termination</h3>
               <p className="text-slate-400 leading-relaxed">
                 We reserve the right to suspend or terminate your account at any time for any reason,
                 including if we reasonably believe that you have violated these Terms.
@@ -127,7 +127,7 @@ export default function TermsOfServicePage() {
               <p className="text-slate-400 leading-relaxed mb-4">
                 SpaceNexus provides community features including forums, direct messaging, and a professional
                 directory. By using these features, you agree to follow our{' '}
-                <Link href="/community/guidelines" className="text-slate-200 hover:text-white underline">
+                <Link href="/community/guidelines" className="text-white/90 hover:text-white underline">
                   Community Guidelines
                 </Link>, which are incorporated into these Terms by reference.
               </p>
@@ -173,7 +173,7 @@ export default function TermsOfServicePage() {
                 SpaceNexus complies with the Digital Millennium Copyright Act (17 U.S.C. Section 512).
                 If you believe that your copyrighted work has been copied in a way that constitutes
                 copyright infringement, please submit a claim in accordance with our{' '}
-                <Link href="/legal/dmca" className="text-slate-200 hover:text-white underline">
+                <Link href="/legal/dmca" className="text-white/90 hover:text-white underline">
                   DMCA Policy
                 </Link>.
               </p>
@@ -188,7 +188,7 @@ export default function TermsOfServicePage() {
               <p className="text-slate-400 leading-relaxed mb-4">
                 SpaceNexus complies with the TAKE IT DOWN Act for the removal of non-consensual intimate
                 images. If you need to report such content, please submit a report to{' '}
-                <a href="mailto:takedown@spacenexus.us" className="text-slate-200 hover:text-white underline">
+                <a href="mailto:takedown@spacenexus.us" className="text-white/90 hover:text-white underline">
                   takedown@spacenexus.us
                 </a>.
               </p>
@@ -201,7 +201,7 @@ export default function TermsOfServicePage() {
             <section>
               <h2 className="text-xl font-semibold bg-gradient-to-r from-slate-300 to-blue-400 bg-clip-text text-transparent mb-4">9. Intellectual Property Rights</h2>
 
-              <h3 className="text-lg font-medium text-slate-200 mb-3">Our Content</h3>
+              <h3 className="text-lg font-medium text-white/90 mb-3">Our Content</h3>
               <p className="text-slate-400 leading-relaxed mb-4">
                 The Services and their entire contents, features, and functionality (including but not
                 limited to all information, software, text, displays, images, video, audio, and the design,
@@ -210,14 +210,14 @@ export default function TermsOfServicePage() {
                 property laws.
               </p>
 
-              <h3 className="text-lg font-medium text-slate-200 mb-3">Limited License</h3>
+              <h3 className="text-lg font-medium text-white/90 mb-3">Limited License</h3>
               <p className="text-slate-400 leading-relaxed mb-4">
                 Subject to your compliance with these Terms, we grant you a limited, non-exclusive,
                 non-transferable, revocable license to access and use the Services for your personal or
                 internal business purposes.
               </p>
 
-              <h3 className="text-lg font-medium text-slate-200 mb-3">User Content</h3>
+              <h3 className="text-lg font-medium text-white/90 mb-3">User Content</h3>
               <p className="text-slate-400 leading-relaxed">
                 By submitting content to our Services (such as feature requests, comments, or feedback),
                 you grant us a worldwide, royalty-free, perpetual, irrevocable license to use, reproduce,
@@ -365,38 +365,38 @@ export default function TermsOfServicePage() {
               <p className="text-slate-400 leading-relaxed mb-4">
                 If you have any questions about these Terms, please contact us:
               </p>
-              <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-6">
-                <p className="text-slate-300 font-medium">SpaceNexus Legal Team</p>
+              <div className="bg-white/[0.04] border border-white/[0.08] rounded-lg p-6">
+                <p className="text-white/70 font-medium">SpaceNexus Legal Team</p>
                 <p className="text-slate-400 mt-2">Email: legal@spacenexus.us</p>
                 <p className="text-slate-400">Address: 1234 Orbit Drive, Suite 500, Houston, TX 77058</p>
               </div>
             </section>
 
             {/* Related Links */}
-            <section className="pt-6 border-t border-slate-700">
-              <h3 className="text-lg font-medium text-slate-200 mb-4">Related Documents</h3>
+            <section className="pt-6 border-t border-white/[0.08]">
+              <h3 className="text-lg font-medium text-white/90 mb-4">Related Documents</h3>
               <div className="flex flex-wrap gap-4">
                 <Link
                   href="/privacy"
-                  className="text-slate-200 hover:text-white underline"
+                  className="text-white/90 hover:text-white underline"
                 >
                   Privacy Policy
                 </Link>
                 <Link
                   href="/cookies"
-                  className="text-slate-200 hover:text-white underline"
+                  className="text-white/90 hover:text-white underline"
                 >
                   Cookie Policy
                 </Link>
                 <Link
                   href="/community/guidelines"
-                  className="text-slate-200 hover:text-white underline"
+                  className="text-white/90 hover:text-white underline"
                 >
                   Community Guidelines
                 </Link>
                 <Link
                   href="/legal/dmca"
-                  className="text-slate-200 hover:text-white underline"
+                  className="text-white/90 hover:text-white underline"
                 >
                   DMCA Policy
                 </Link>

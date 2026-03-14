@@ -71,10 +71,10 @@ function LaunchCard({ event, variant }: { event: LaunchEvent; variant: 'live' | 
       animate={{ opacity: 1, y: 0 }}
       className={`group relative overflow-hidden rounded-xl border transition-all hover:shadow-lg ${
         variant === 'live'
-          ? 'border-red-500/50 bg-slate-900 hover:shadow-red-500/10'
+          ? 'border-red-500/50 bg-black hover:shadow-red-500/10'
           : variant === 'upcoming'
-          ? 'border-white/10 bg-slate-900 hover:shadow-black/5'
-          : 'border-slate-700/50 bg-slate-900/80 hover:shadow-slate-500/5'
+          ? 'border-white/10 bg-black hover:shadow-black/5'
+          : 'border-white/[0.06] bg-black/80 hover:shadow-slate-500/5'
       }`}
     >
       {/* Glow for live */}
@@ -84,7 +84,7 @@ function LaunchCard({ event, variant }: { event: LaunchEvent; variant: 'live' | 
 
       <div className="relative flex flex-col sm:flex-row">
         {/* Image */}
-        <div className="relative w-full sm:w-36 h-32 sm:h-auto flex-shrink-0 bg-slate-800">
+        <div className="relative w-full sm:w-36 h-32 sm:h-auto flex-shrink-0 bg-white/[0.06]">
           {event.imageUrl ? (
             <Image
               src={event.imageUrl}
@@ -109,7 +109,7 @@ function LaunchCard({ event, variant }: { event: LaunchEvent; variant: 'live' | 
             </div>
           )}
           {variant === 'upcoming' && (
-            <div className="absolute top-2 left-2 px-2 py-1 rounded-full bg-white/10 text-slate-300 text-xs font-bold border border-white/10">
+            <div className="absolute top-2 left-2 px-2 py-1 rounded-full bg-white/10 text-white/70 text-xs font-bold border border-white/10">
               UPCOMING
             </div>
           )}
@@ -135,7 +135,7 @@ function LaunchCard({ event, variant }: { event: LaunchEvent; variant: 'live' | 
 
           <div className="flex flex-wrap items-center gap-3 mt-2 text-xs text-slate-400">
             {event.rocket && (
-              <span className="flex items-center gap-1 text-slate-300">
+              <span className="flex items-center gap-1 text-white/70">
                 🚀 {event.rocket}
               </span>
             )}
@@ -147,9 +147,9 @@ function LaunchCard({ event, variant }: { event: LaunchEvent; variant: 'live' | 
           </div>
 
           {/* Countdown + Action */}
-          <div className="flex items-center justify-between mt-3 pt-3 border-t border-slate-700/50">
+          <div className="flex items-center justify-between mt-3 pt-3 border-t border-white/[0.06]">
             {event.launchDate && (
-              <div className={variant === 'live' ? 'text-red-400' : variant === 'upcoming' ? 'text-slate-300' : 'text-slate-400'}>
+              <div className={variant === 'live' ? 'text-red-400' : variant === 'upcoming' ? 'text-white/70' : 'text-slate-400'}>
                 <CountdownTimer launchDate={event.launchDate} />
               </div>
             )}
@@ -168,7 +168,7 @@ function LaunchCard({ event, variant }: { event: LaunchEvent; variant: 'live' | 
                 className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${
                   variant === 'live'
                     ? 'bg-red-500 text-white hover:bg-red-400'
-                    : 'bg-white/10 text-slate-300 hover:bg-slate-100/30 border border-white/10'
+                    : 'bg-white/10 text-white/70 hover:bg-slate-100/30 border border-white/10'
                 }`}
               >
                 {variant === 'live' ? 'Watch Live' : 'View Details'}
@@ -247,7 +247,7 @@ export default function LaunchListPage() {
           </div>
         ) : !hasAny ? (
           <div className="text-center py-20">
-            <div className="w-24 h-24 rounded-full bg-slate-800/50 flex items-center justify-center mx-auto mb-6 border border-slate-700/50">
+            <div className="w-24 h-24 rounded-full bg-white/[0.04] flex items-center justify-center mx-auto mb-6 border border-white/[0.06]">
               <span className="text-5xl">🚀</span>
             </div>
             <h2 className="text-white text-2xl font-bold mb-3">No Active Launches</h2>

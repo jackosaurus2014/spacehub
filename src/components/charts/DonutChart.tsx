@@ -201,7 +201,7 @@ export default function DonutChart({
               cy={center}
               r={radius - thickness / 2}
               fill="none"
-              stroke="rgba(51, 65, 85, 0.5)"
+              stroke="rgba(30, 30, 30, 0.5)"
               strokeWidth={thickness}
             />
 
@@ -238,7 +238,7 @@ export default function DonutChart({
               cx={center}
               cy={center}
               r={innerRadius - 5}
-              fill="rgba(15, 23, 42, 0.9)"
+              fill="rgba(10, 10, 10, 0.9)"
             />
           </svg>
 
@@ -251,13 +251,13 @@ export default function DonutChart({
           >
             {hoveredIndex !== null ? (
               <>
-                <div className="text-slate-300 text-xs text-center truncate max-w-full">
+                <div className="text-white/70 text-xs text-center truncate max-w-full">
                   {segments[hoveredIndex].data.label}
                 </div>
                 <div className="text-xl font-bold text-white">
                   {valueFormatter(segments[hoveredIndex].data.value)}
                 </div>
-                <div className="text-sm text-slate-300">
+                <div className="text-sm text-white/70">
                   {segments[hoveredIndex].percentage.toFixed(1)}%
                 </div>
               </>
@@ -293,7 +293,7 @@ export default function DonutChart({
                 <div
                   key={`legend-${i}`}
                   className={`flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer transition-all duration-200 ${
-                    isHovered ? 'bg-slate-700/50' : 'hover:bg-slate-800/50'
+                    isHovered ? 'bg-white/[0.08]' : 'hover:bg-white/[0.06]'
                   }`}
                   style={{
                     opacity: hoveredIndex !== null && !isHovered ? 0.5 : 1,
@@ -311,7 +311,7 @@ export default function DonutChart({
                   />
                   <div className="flex-1 min-w-0">
                     <div
-                      className="text-sm text-slate-200 truncate"
+                      className="text-sm text-white/90 truncate"
                       style={legendFontSize ? { fontSize: legendFontSize } : undefined}
                       title={segment.data.label}
                     >

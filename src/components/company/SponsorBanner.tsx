@@ -14,11 +14,11 @@ interface SponsorBannerProps {
 
 export default function SponsorBanner({ companyName, companySlug, bannerUrl, tagline, website }: SponsorBannerProps) {
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-amber-500/20 bg-gradient-to-r from-amber-500/5 via-slate-800/50 to-amber-500/5 mb-6">
+    <div className="relative overflow-hidden rounded-2xl border border-amber-500/20 bg-gradient-to-r from-amber-500/5 via-white/[0.04] to-amber-500/5 mb-6">
       {bannerUrl && (
         <div className="absolute inset-0 opacity-20">
           <Image src={bannerUrl} alt={companyName + ' sponsor banner'} className="w-full h-full object-cover" fill sizes="100vw" placeholder="blur" blurDataURL={BLUR_PLACEHOLDER_16_9} unoptimized />
-          <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/80 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/80 to-transparent" />
         </div>
       )}
       <div className="relative px-6 py-4 flex flex-col sm:flex-row items-start sm:items-center gap-3">
@@ -30,7 +30,7 @@ export default function SponsorBanner({ companyName, companySlug, bannerUrl, tag
         </div>
         <div className="flex-1">
           {tagline && (
-            <p className="text-slate-300 text-sm">{tagline}</p>
+            <p className="text-white/70 text-sm">{tagline}</p>
           )}
         </div>
         <div className="flex items-center gap-2">
@@ -46,7 +46,7 @@ export default function SponsorBanner({ companyName, companySlug, bannerUrl, tag
           )}
           <Link
             href={`/company-profiles/${companySlug}`}
-            className="px-3 py-1.5 text-xs font-medium rounded-lg bg-slate-700/50 text-slate-300 hover:bg-slate-600/50 transition-colors"
+            className="px-3 py-1.5 text-xs font-medium rounded-lg bg-white/[0.06] text-white/70 hover:bg-white/[0.08] transition-colors"
           >
             View Profile
           </Link>

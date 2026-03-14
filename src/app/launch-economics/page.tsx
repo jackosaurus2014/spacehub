@@ -498,7 +498,7 @@ export default function LaunchEconomicsPage() {
                 className={`px-3 py-1.5 text-sm rounded-lg font-medium transition-all duration-200 ${
                   filter === f
                     ? 'bg-white text-slate-900'
-                    : 'bg-slate-800/60 text-slate-400 hover:bg-slate-700 hover:text-slate-200'
+                    : 'bg-white/[0.05] text-slate-400 hover:bg-slate-700 hover:text-white/90'
                 }`}
               >
                 {f === 'all' ? 'All Vehicles' : f === 'active' ? 'Currently Active' : 'Historical'}
@@ -521,7 +521,7 @@ export default function LaunchEconomicsPage() {
                 className={`px-3 py-1.5 text-sm rounded-lg font-medium transition-all duration-200 ${
                   sortKey === s.key
                     ? 'bg-white text-slate-900'
-                    : 'bg-slate-800/60 text-slate-400 hover:bg-slate-700 hover:text-slate-200'
+                    : 'bg-white/[0.05] text-slate-400 hover:bg-slate-700 hover:text-white/90'
                 }`}
               >
                 {s.label}
@@ -556,7 +556,7 @@ export default function LaunchEconomicsPage() {
                   <div className="flex items-center gap-3 md:gap-4">
                     {/* Vehicle name */}
                     <div className="w-40 md:w-52 flex-shrink-0 text-right">
-                      <span className="text-sm font-medium text-slate-200 group-hover:text-white transition-colors">
+                      <span className="text-sm font-medium text-white/90 group-hover:text-white transition-colors">
                         {vehicle.name}
                       </span>
                       {vehicle.status === 'historical' && (
@@ -569,7 +569,7 @@ export default function LaunchEconomicsPage() {
 
                     {/* Bar */}
                     <div className="flex-1 relative">
-                      <div className="h-8 bg-slate-800/40 rounded-lg overflow-hidden">
+                      <div className="h-8 bg-white/[0.04] rounded-lg overflow-hidden">
                         <div
                           className={`h-full ${vehicle.barColor} rounded-lg transition-all duration-700 ease-out flex items-center justify-end pr-2`}
                           style={{ width: `${barWidth}%`, minWidth: '60px' }}
@@ -600,7 +600,7 @@ export default function LaunchEconomicsPage() {
           </div>
 
           {/* Legend */}
-          <div className="mt-6 pt-4 border-t border-slate-700/50 flex flex-wrap gap-4 text-xs text-slate-500">
+          <div className="mt-6 pt-4 border-t border-white/[0.06] flex flex-wrap gap-4 text-xs text-slate-500">
             <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-slate-500 inline-block" /> Historical (Retired)</span>
             <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-white inline-block" /> Currently Active</span>
             <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" /> In Development</span>
@@ -627,12 +627,12 @@ export default function LaunchEconomicsPage() {
                     <span className="text-xs text-slate-400">{era.years}</span>
                   </div>
                   <div className="text-right">
-                    <span className="text-lg font-bold text-slate-300">{era.costPerKg}</span>
+                    <span className="text-lg font-bold text-white/70">{era.costPerKg}</span>
                   </div>
                 </div>
-                <p className="text-sm text-slate-300 mb-3">{era.description}</p>
+                <p className="text-sm text-white/70 mb-3">{era.description}</p>
                 {/* Visual relative cost bar */}
-                <div className="relative h-3 bg-slate-800/60 rounded-full overflow-hidden">
+                <div className="relative h-3 bg-white/[0.05] rounded-full overflow-hidden">
                   <div
                     className="h-full rounded-full bg-gradient-to-r from-white/80 to-blue-500/60 transition-all duration-1000"
                     style={{ width: `${Math.max(1, era.widthPct)}%` }}
@@ -692,17 +692,17 @@ export default function LaunchEconomicsPage() {
             {REVENUE_MODELS.map(model => (
               <div
                 key={model.name}
-                className="bg-slate-800/40 border border-slate-700/40 rounded-xl p-4 hover:border-slate-600/60 transition-colors"
+                className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-4 hover:border-white/[0.08] transition-colors"
               >
                 <div className="flex items-center gap-3 mb-2">
                   <div className={`w-3 h-3 rounded-full ${model.color} flex-shrink-0`} />
                   <h3 className="text-sm font-bold text-slate-100">{model.name}</h3>
-                  <span className="ml-auto text-sm font-bold text-slate-300">{model.percentage}%</span>
+                  <span className="ml-auto text-sm font-bold text-white/70">{model.percentage}%</span>
                 </div>
                 <p className="text-xs text-slate-400 mb-2">{model.description}</p>
                 <div className="flex flex-wrap gap-1.5">
                   {model.examples.map(ex => (
-                    <span key={ex} className="text-[10px] px-2 py-0.5 rounded-full bg-slate-700/60 text-slate-300">
+                    <span key={ex} className="text-[10px] px-2 py-0.5 rounded-full bg-slate-700/60 text-white/70">
                       {ex}
                     </span>
                   ))}
@@ -722,8 +722,8 @@ export default function LaunchEconomicsPage() {
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
             {MARKET_STATS.map(stat => (
               <div key={stat.label} className="card p-5 text-center">
-                <p className="text-2xl md:text-3xl font-bold text-slate-300 mb-1">{stat.value}</p>
-                <p className="text-sm font-medium text-slate-200 mb-1">{stat.label}</p>
+                <p className="text-2xl md:text-3xl font-bold text-white/70 mb-1">{stat.value}</p>
+                <p className="text-sm font-medium text-white/90 mb-1">{stat.label}</p>
                 <p className="text-xs text-slate-500">{stat.subtext}</p>
               </div>
             ))}
@@ -736,11 +736,11 @@ export default function LaunchEconomicsPage() {
               {GROWTH_DRIVERS.map((item, i) => (
                 <div
                   key={item.driver}
-                  className="flex items-start gap-3 p-3 bg-slate-800/30 rounded-lg"
+                  className="flex items-start gap-3 p-3 bg-white/[0.03] rounded-lg"
                 >
-                  <span className="text-slate-300 font-bold text-sm mt-0.5">{String(i + 1).padStart(2, '0')}</span>
+                  <span className="text-white/70 font-bold text-sm mt-0.5">{String(i + 1).padStart(2, '0')}</span>
                   <div>
-                    <p className="text-sm font-medium text-slate-200">{item.driver}</p>
+                    <p className="text-sm font-medium text-white/90">{item.driver}</p>
                     <p className="text-xs text-slate-400 mt-0.5">{item.detail}</p>
                   </div>
                 </div>
@@ -748,8 +748,8 @@ export default function LaunchEconomicsPage() {
             </div>
 
             {/* Market projection visual */}
-            <div className="mt-6 pt-4 border-t border-slate-700/50">
-              <h4 className="text-sm font-medium text-slate-300 mb-3">Market Size Projection</h4>
+            <div className="mt-6 pt-4 border-t border-white/[0.06]">
+              <h4 className="text-sm font-medium text-white/70 mb-3">Market Size Projection</h4>
               <div className="flex items-end gap-2 h-32">
                 {[
                   { year: '2020', value: 5.3, color: 'bg-slate-600' },
@@ -796,7 +796,7 @@ export default function LaunchEconomicsPage() {
                   {/* Header (always visible) */}
                   <button
                     onClick={() => toggleVehicle(vehicle.id)}
-                    className="w-full flex items-center justify-between p-4 md:p-5 text-left hover:bg-slate-800/30 transition-colors"
+                    className="w-full flex items-center justify-between p-4 md:p-5 text-left hover:bg-white/[0.03] transition-colors"
                   >
                     <div className="flex items-center gap-4">
                       <div className={`w-3 h-3 rounded-full ${vehicle.barColor} flex-shrink-0`} />
@@ -807,7 +807,7 @@ export default function LaunchEconomicsPage() {
                     </div>
                     <div className="flex items-center gap-4 md:gap-6">
                       <div className="text-right hidden sm:block">
-                        <p className="text-sm font-bold text-slate-300">
+                        <p className="text-sm font-bold text-white/70">
                           {vehicle.costPerKgLeoHigh
                             ? `$${formatNumber(vehicle.costPerKgLeo)}-$${formatNumber(vehicle.costPerKgLeoHigh)}/kg`
                             : `$${formatNumber(vehicle.costPerKgLeo)}/kg`
@@ -828,24 +828,24 @@ export default function LaunchEconomicsPage() {
 
                   {/* Expanded detail */}
                   {isExpanded && (
-                    <div className="border-t border-slate-700/50 p-4 md:p-5 bg-slate-800/20">
+                    <div className="border-t border-white/[0.06] p-4 md:p-5 bg-white/[0.03]">
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
                         {vehicle.manufacturingCostM !== undefined && (
                           <div>
                             <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Mfg. Cost</p>
-                            <p className="text-sm font-bold text-slate-200">${vehicle.manufacturingCostM}M</p>
+                            <p className="text-sm font-bold text-white/90">${vehicle.manufacturingCostM}M</p>
                           </div>
                         )}
                         {vehicle.refurbishmentCostM !== undefined && (
                           <div>
                             <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Refurb Cost</p>
-                            <p className="text-sm font-bold text-slate-200">${vehicle.refurbishmentCostM}M</p>
+                            <p className="text-sm font-bold text-white/90">${vehicle.refurbishmentCostM}M</p>
                           </div>
                         )}
                         {vehicle.launchesPerVehicle !== undefined && (
                           <div>
                             <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Launches / Vehicle</p>
-                            <p className="text-sm font-bold text-slate-200">
+                            <p className="text-sm font-bold text-white/90">
                               {vehicle.launchesPerVehicle === 1 ? '1 (expendable)' : `~${vehicle.launchesPerVehicle}`}
                             </p>
                           </div>
@@ -853,7 +853,7 @@ export default function LaunchEconomicsPage() {
                         {vehicle.revenuePerLaunchM !== undefined && (
                           <div>
                             <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Revenue / Launch</p>
-                            <p className="text-sm font-bold text-slate-200">${vehicle.revenuePerLaunchM}M</p>
+                            <p className="text-sm font-bold text-white/90">${vehicle.revenuePerLaunchM}M</p>
                           </div>
                         )}
                         {vehicle.marginEstimate && (
@@ -865,24 +865,24 @@ export default function LaunchEconomicsPage() {
                         {vehicle.fleetSize !== undefined && (
                           <div>
                             <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Fleet Size</p>
-                            <p className="text-sm font-bold text-slate-200">{vehicle.fleetSize} boosters</p>
+                            <p className="text-sm font-bold text-white/90">{vehicle.fleetSize} boosters</p>
                           </div>
                         )}
                         {vehicle.backlog !== undefined && (
                           <div>
                             <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Backlog</p>
-                            <p className="text-sm font-bold text-slate-200">{vehicle.backlog} missions</p>
+                            <p className="text-sm font-bold text-white/90">{vehicle.backlog} missions</p>
                           </div>
                         )}
                         <div>
                           <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Payload LEO</p>
-                          <p className="text-sm font-bold text-slate-200">{formatNumber(vehicle.payloadLeoKg)} kg</p>
+                          <p className="text-sm font-bold text-white/90">{formatNumber(vehicle.payloadLeoKg)} kg</p>
                         </div>
                       </div>
 
                       {/* Cost breakdown bar for reusable vehicles */}
                       {vehicle.reusable && vehicle.refurbishmentCostM !== undefined && vehicle.launchesPerVehicle && vehicle.launchesPerVehicle > 1 && (
-                        <div className="mb-4 p-3 bg-slate-800/40 rounded-lg">
+                        <div className="mb-4 p-3 bg-white/[0.04] rounded-lg">
                           <p className="text-xs text-slate-400 mb-2 font-medium">Amortized Cost Per Flight</p>
                           <div className="flex items-center gap-2 text-xs">
                             <div className="flex-1">
@@ -916,8 +916,8 @@ export default function LaunchEconomicsPage() {
 
                       {/* Notes */}
                       {vehicle.notes && (
-                        <div className="p-3 bg-slate-800/30 rounded-lg border border-slate-700/30">
-                          <p className="text-xs text-slate-300 leading-relaxed">{vehicle.notes}</p>
+                        <div className="p-3 bg-white/[0.03] rounded-lg border border-white/[0.04]">
+                          <p className="text-xs text-white/70 leading-relaxed">{vehicle.notes}</p>
                         </div>
                       )}
                     </div>
@@ -941,9 +941,9 @@ export default function LaunchEconomicsPage() {
               <a
                 key={link.href}
                 href={link.href}
-                className="block p-4 bg-slate-800/40 border border-slate-700/40 rounded-xl hover:border-white/15 hover:bg-slate-800/60 transition-all group"
+                className="block p-4 bg-white/[0.04] border border-white/[0.06] rounded-xl hover:border-white/15 hover:bg-white/[0.05] transition-all group"
               >
-                <p className="text-sm font-medium text-slate-200 group-hover:text-white transition-colors">{link.label}</p>
+                <p className="text-sm font-medium text-white/90 group-hover:text-white transition-colors">{link.label}</p>
                 <p className="text-xs text-slate-500 mt-1">{link.desc}</p>
               </a>
             ))}
@@ -951,7 +951,7 @@ export default function LaunchEconomicsPage() {
         </section>
 
         {/* ── Explore More ── */}
-        <section className="mt-16 border-t border-slate-800 pt-8">
+        <section className="mt-16 border-t border-white/[0.06] pt-8">
           <h2 className="text-xl font-bold text-white mb-6">Explore More</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <a href="/launch-vehicles" className="card p-4 hover:border-white/15 transition-colors group">

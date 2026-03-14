@@ -897,7 +897,7 @@ const CATEGORY_LABELS: Record<ISRUTechnology['category'], { label: string; color
 };
 
 const BODY_COLORS: Record<string, { bg: string; text: string; border: string }> = {
-  Moon: { bg: 'bg-slate-500/20', text: 'text-slate-300', border: 'border-slate-500/40' },
+  Moon: { bg: 'bg-slate-500/20', text: 'text-white/70', border: 'border-slate-500/40' },
   Mars: { bg: 'bg-red-500/20', text: 'text-red-400', border: 'border-red-500/40' },
   Asteroid: { bg: 'bg-amber-500/20', text: 'text-amber-400', border: 'border-amber-500/40' },
   'Phobos/Deimos': { bg: 'bg-orange-500/20', text: 'text-orange-400', border: 'border-orange-500/40' },
@@ -905,7 +905,7 @@ const BODY_COLORS: Record<string, { bg: string; text: string; border: string }> 
 
 const CONFIDENCE_COLORS: Record<string, string> = {
   confirmed: 'text-emerald-400',
-  high: 'text-slate-300',
+  high: 'text-white/70',
   moderate: 'text-yellow-400',
   speculative: 'text-orange-400',
 };
@@ -918,7 +918,7 @@ const COMPANY_TYPE_COLORS: Record<string, string> = {
 
 const STATUS_COLORS: Record<string, string> = {
   active: 'bg-emerald-500/20 text-emerald-400',
-  funded: 'bg-white/10 text-slate-300',
+  funded: 'bg-white/10 text-white/70',
   concept: 'bg-yellow-500/20 text-yellow-400',
   completed: 'bg-slate-500/20 text-slate-400',
 };
@@ -991,7 +991,7 @@ function TechnologiesTab() {
             <div className="text-xs text-slate-400 mt-1">TRL 6+ (Demonstrated)</div>
           </div>
           <div className="card p-4 text-center">
-            <div className="text-2xl font-bold text-slate-300">
+            <div className="text-2xl font-bold text-white/70">
               {ISRU_TECHNOLOGIES.filter((t) => t.trl >= 4 && t.trl < 6).length}
             </div>
             <div className="text-xs text-slate-400 mt-1">TRL 4-5 (Lab Validated)</div>
@@ -1015,7 +1015,7 @@ function TechnologiesTab() {
               className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
                 categoryFilter === cat
                   ? 'bg-white text-slate-900'
-                  : 'bg-slate-800/50 text-slate-400 hover:text-white hover:bg-slate-700/50 border border-slate-700/30'
+                  : 'bg-white/[0.04] text-slate-400 hover:text-white hover:bg-white/[0.08] border border-white/[0.04]'
               }`}
             >
               {cat === 'all' ? 'All Technologies' : CATEGORY_LABELS[cat as ISRUTechnology['category']].label}
@@ -1036,8 +1036,8 @@ function TechnologiesTab() {
           return (
             <StaggerItem key={tech.id}>
               <div
-                className={`bg-slate-800/50 border rounded-xl overflow-hidden transition-all ${
-                  isExpanded ? 'border-white/15' : 'border-slate-700/50 hover:border-slate-600/50'
+                className={`bg-white/[0.04] border rounded-xl overflow-hidden transition-all ${
+                  isExpanded ? 'border-white/15' : 'border-white/[0.06] hover:border-white/[0.08]'
                 }`}
               >
                 {/* Header */}
@@ -1064,11 +1064,11 @@ function TechnologiesTab() {
 
                 {/* Expanded Details */}
                 {isExpanded && (
-                  <div className="px-5 pb-5 border-t border-slate-700/50 pt-4 space-y-4">
+                  <div className="px-5 pb-5 border-t border-white/[0.06] pt-4 space-y-4">
                     <TRLGauge trl={tech.trl} />
 
                     <div>
-                      <h4 className="text-sm font-semibold text-slate-300 mb-1">How It Works</h4>
+                      <h4 className="text-sm font-semibold text-white/70 mb-1">How It Works</h4>
                       <p className="text-sm text-slate-400">{tech.mechanism}</p>
                     </div>
 
@@ -1085,11 +1085,11 @@ function TechnologiesTab() {
                         </ul>
                       </div>
                       <div>
-                        <h4 className="text-sm font-semibold text-slate-300 mb-1">Outputs</h4>
+                        <h4 className="text-sm font-semibold text-white/70 mb-1">Outputs</h4>
                         <ul className="space-y-1">
                           {tech.outputs.map((output, i) => (
                             <li key={i} className="text-sm text-slate-400 flex items-start gap-2">
-                              <span className="text-slate-300 mt-1 shrink-0">&#9654;</span>
+                              <span className="text-white/70 mt-1 shrink-0">&#9654;</span>
                               {output}
                             </li>
                           ))}
@@ -1098,10 +1098,10 @@ function TechnologiesTab() {
                     </div>
 
                     <div>
-                      <h4 className="text-sm font-semibold text-slate-300 mb-1">Applicable Locations</h4>
+                      <h4 className="text-sm font-semibold text-white/70 mb-1">Applicable Locations</h4>
                       <div className="flex flex-wrap gap-1.5">
                         {tech.applicableLocations.map((loc) => (
-                          <span key={loc} className="px-2 py-0.5 text-xs bg-slate-700/50 text-slate-300 rounded-full">
+                          <span key={loc} className="px-2 py-0.5 text-xs bg-slate-700/50 text-white/70 rounded-full">
                             {loc}
                           </span>
                         ))}
@@ -1109,7 +1109,7 @@ function TechnologiesTab() {
                     </div>
 
                     <div>
-                      <h4 className="text-sm font-semibold text-slate-300 mb-1">Energy Requirement</h4>
+                      <h4 className="text-sm font-semibold text-white/70 mb-1">Energy Requirement</h4>
                       <p className="text-sm text-slate-400 font-mono">{tech.energyRequirement}</p>
                     </div>
 
@@ -1119,7 +1119,7 @@ function TechnologiesTab() {
                     </div>
 
                     <div className="bg-white/5 border border-white/10 rounded-lg p-3">
-                      <h4 className="text-sm font-semibold text-slate-300 mb-1">Current Status</h4>
+                      <h4 className="text-sm font-semibold text-white/70 mb-1">Current Status</h4>
                       <p className="text-sm text-slate-400">{tech.statusNote}</p>
                     </div>
                   </div>
@@ -1158,30 +1158,30 @@ function LocationsTab() {
     <div>
       {/* Resource Overview */}
       <ScrollReveal>
-        <div className="bg-gradient-to-r from-slate-800/80 to-slate-800/40 border border-slate-700/50 rounded-xl p-6 mb-8">
+        <div className="bg-gradient-to-r from-slate-800/80 to-slate-800/40 border border-white/[0.06] rounded-xl p-6 mb-8">
           <h3 className="text-lg font-semibold text-white mb-4">Resource Distribution Across the Solar System</h3>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             <div className="text-center">
               <div className="text-3xl mb-1">&#127761;</div>
-              <div className="text-sm font-semibold text-slate-300">Moon</div>
+              <div className="text-sm font-semibold text-white/70">Moon</div>
               <div className="text-xs text-slate-400 mt-0.5">Water ice, O2, metals</div>
-              <div className="text-xs text-slate-300 font-mono mt-1">~600M tons H2O (poles)</div>
+              <div className="text-xs text-white/70 font-mono mt-1">~600M tons H2O (poles)</div>
             </div>
             <div className="text-center">
               <div className="text-3xl mb-1">&#127752;</div>
-              <div className="text-sm font-semibold text-slate-300">Mars</div>
+              <div className="text-sm font-semibold text-white/70">Mars</div>
               <div className="text-xs text-slate-400 mt-0.5">CO2, water ice, minerals</div>
               <div className="text-xs text-red-400 font-mono mt-1">95% CO2 atmosphere</div>
             </div>
             <div className="text-center">
               <div className="text-3xl mb-1">&#9732;</div>
-              <div className="text-sm font-semibold text-slate-300">Asteroids</div>
+              <div className="text-sm font-semibold text-white/70">Asteroids</div>
               <div className="text-xs text-slate-400 mt-0.5">Water, PGMs, Fe-Ni, C</div>
               <div className="text-xs text-amber-400 font-mono mt-1">34,000+ known NEOs</div>
             </div>
             <div className="text-center">
               <div className="text-3xl mb-1">&#127762;</div>
-              <div className="text-sm font-semibold text-slate-300">Phobos/Deimos</div>
+              <div className="text-sm font-semibold text-white/70">Phobos/Deimos</div>
               <div className="text-xs text-slate-400 mt-0.5">Potential water, regolith</div>
               <div className="text-xs text-orange-400 font-mono mt-1">Ultra-low delta-v</div>
             </div>
@@ -1199,7 +1199,7 @@ function LocationsTab() {
               className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
                 bodyFilter === body
                   ? 'bg-white text-slate-900'
-                  : 'bg-slate-800/50 text-slate-400 hover:text-white hover:bg-slate-700/50 border border-slate-700/30'
+                  : 'bg-white/[0.04] text-slate-400 hover:text-white hover:bg-white/[0.08] border border-white/[0.04]'
               }`}
             >
               {body === 'all' ? 'All Locations' : body}
@@ -1217,8 +1217,8 @@ function LocationsTab() {
           return (
             <StaggerItem key={loc.id}>
               <div
-                className={`bg-slate-800/50 border rounded-xl overflow-hidden transition-all ${
-                  isSelected ? 'border-white/15' : 'border-slate-700/50'
+                className={`bg-white/[0.04] border rounded-xl overflow-hidden transition-all ${
+                  isSelected ? 'border-white/15' : 'border-white/[0.06]'
                 }`}
               >
                 <button
@@ -1250,7 +1250,7 @@ function LocationsTab() {
                 </button>
 
                 {isSelected && (
-                  <div className="px-5 pb-5 border-t border-slate-700/50 pt-4 space-y-4">
+                  <div className="px-5 pb-5 border-t border-white/[0.06] pt-4 space-y-4">
                     {/* Key Advantage */}
                     <div className="bg-emerald-500/5 border border-emerald-500/20 rounded-lg p-3">
                       <h4 className="text-sm font-semibold text-emerald-400 mb-1">Key Advantage</h4>
@@ -1259,7 +1259,7 @@ function LocationsTab() {
 
                     {/* Resources Table */}
                     <div>
-                      <h4 className="text-sm font-semibold text-slate-300 mb-3">Confirmed & Estimated Resources</h4>
+                      <h4 className="text-sm font-semibold text-white/70 mb-3">Confirmed & Estimated Resources</h4>
                       <div className="overflow-x-auto">
                         <table className="w-full text-sm">
                           <thead>
@@ -1270,7 +1270,7 @@ function LocationsTab() {
                               <th className="pb-2">Notes</th>
                             </tr>
                           </thead>
-                          <tbody className="divide-y divide-slate-700/30">
+                          <tbody className="divide-y divide-white/[0.04]">
                             {loc.resources.map((res, i) => (
                               <tr key={i} className="text-slate-400">
                                 <td className="py-2.5 pr-4 font-medium text-white whitespace-nowrap">
@@ -1296,11 +1296,11 @@ function LocationsTab() {
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       {loc.activeMissions.length > 0 && (
                         <div>
-                          <h4 className="text-sm font-semibold text-slate-300 mb-2">Active Missions</h4>
+                          <h4 className="text-sm font-semibold text-white/70 mb-2">Active Missions</h4>
                           <ul className="space-y-1">
                             {loc.activeMissions.map((m, i) => (
                               <li key={i} className="text-sm text-slate-400 flex items-start gap-2">
-                                <span className="text-slate-300 mt-0.5 shrink-0">&#9679;</span>
+                                <span className="text-white/70 mt-0.5 shrink-0">&#9679;</span>
                                 {m}
                               </li>
                             ))}
@@ -1384,7 +1384,7 @@ function CompaniesTab() {
               className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
                 typeFilter === type
                   ? 'bg-white text-slate-900'
-                  : 'bg-slate-800/50 text-slate-400 hover:text-white hover:bg-slate-700/50 border border-slate-700/30'
+                  : 'bg-white/[0.04] text-slate-400 hover:text-white hover:bg-white/[0.08] border border-white/[0.04]'
               }`}
             >
               {type === 'all' ? 'All' : type.charAt(0).toUpperCase() + type.slice(1)}
@@ -1397,7 +1397,7 @@ function CompaniesTab() {
       <StaggerContainer className="grid grid-cols-1 lg:grid-cols-2 gap-4" staggerDelay={0.08}>
         {filtered.map((company) => (
           <StaggerItem key={company.name}>
-            <div className="card p-5 hover:border-slate-600/50 transition-all h-full flex flex-col">
+            <div className="card p-5 hover:border-white/[0.08] transition-all h-full flex flex-col">
               {/* Header */}
               <div className="flex items-start justify-between gap-3 mb-3">
                 <div className="flex-1 min-w-0">
@@ -1423,7 +1423,7 @@ function CompaniesTab() {
                 <ul className="space-y-1">
                   {company.programs.slice(0, 3).map((prog, i) => (
                     <li key={i} className="text-xs text-slate-400 flex items-start gap-1.5">
-                      <span className="text-slate-300 mt-0.5 shrink-0">&#8226;</span>
+                      <span className="text-white/70 mt-0.5 shrink-0">&#8226;</span>
                       {prog}
                     </li>
                   ))}
@@ -1434,7 +1434,7 @@ function CompaniesTab() {
               </div>
 
               {/* Footer */}
-              <div className="flex items-center justify-between pt-3 border-t border-slate-700/30">
+              <div className="flex items-center justify-between pt-3 border-t border-white/[0.04]">
                 {company.fundingStage && (
                   <span className="text-xs text-slate-500">{company.fundingStage}</span>
                 )}
@@ -1443,7 +1443,7 @@ function CompaniesTab() {
                     href={company.website}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-xs text-slate-300 hover:text-white transition-colors"
+                    className="text-xs text-white/70 hover:text-white transition-colors"
                   >
                     Website &#8599;
                   </a>
@@ -1483,7 +1483,7 @@ function EconomicsTab() {
       <ScrollReveal>
         <div className="bg-gradient-to-r from-amber-500/10 to-orange-500/10 border border-amber-500/30 rounded-xl p-6 mb-8">
           <h3 className="text-lg font-semibold text-amber-400 mb-2">The Fundamental ISRU Value Proposition</h3>
-          <p className="text-sm text-slate-300 leading-relaxed">
+          <p className="text-sm text-white/70 leading-relaxed">
             Delivering 1 kg of payload to the lunar surface costs approximately <span className="text-white font-bold">$1,000,000</span> using
             current commercial providers. Every kilogram of water, oxygen, or construction material produced locally eliminates this cost.
             For a permanent lunar base requiring thousands of tons of supplies annually, ISRU is not optional -- it is the only path
@@ -1508,7 +1508,7 @@ function EconomicsTab() {
 
       {/* Scenario Selector */}
       <ScrollReveal delay={0.1}>
-        <h3 className="text-sm font-semibold text-slate-300 mb-3 uppercase tracking-wider">Select Scenario</h3>
+        <h3 className="text-sm font-semibold text-white/70 mb-3 uppercase tracking-wider">Select Scenario</h3>
         <div className="flex flex-wrap gap-2 mb-6">
           {ECONOMIC_SCENARIOS.map((s) => (
             <button
@@ -1517,7 +1517,7 @@ function EconomicsTab() {
               className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
                 selectedScenario === s.id
                   ? 'bg-white text-slate-900'
-                  : 'bg-slate-800/50 text-slate-400 hover:text-white hover:bg-slate-700/50 border border-slate-700/30'
+                  : 'bg-white/[0.04] text-slate-400 hover:text-white hover:bg-white/[0.08] border border-white/[0.04]'
               }`}
             >
               {s.label}
@@ -1535,7 +1535,7 @@ function EconomicsTab() {
 
             {/* Cost Comparison Visual */}
             <div className="mb-6">
-              <h4 className="text-sm font-semibold text-slate-300 mb-3">Cost Comparison (per kg)</h4>
+              <h4 className="text-sm font-semibold text-white/70 mb-3">Cost Comparison (per kg)</h4>
               <div className="space-y-3">
                 {scenario.costPerKgFromEarth > 0 && (
                   <div>
@@ -1568,7 +1568,7 @@ function EconomicsTab() {
                   </div>
                 </div>
                 {scenario.costPerKgFromEarth > 0 && (
-                  <p className="text-sm text-slate-300 font-semibold">
+                  <p className="text-sm text-white/70 font-semibold">
                     {Math.round(scenario.costPerKgFromEarth / scenario.isruTargetCostPerKg)}x cost reduction with ISRU
                   </p>
                 )}
@@ -1577,7 +1577,7 @@ function EconomicsTab() {
 
             {/* Key Metrics Grid */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
-              <div className="bg-slate-900/50 rounded-lg p-3 text-center">
+              <div className="bg-black/50 rounded-lg p-3 text-center">
                 <div className="text-lg font-bold text-white font-mono">
                   {scenario.annualDemandKg >= 1000
                     ? `${(scenario.annualDemandKg / 1000).toLocaleString()}t`
@@ -1585,19 +1585,19 @@ function EconomicsTab() {
                 </div>
                 <div className="text-xs text-slate-400 mt-0.5">Annual Demand</div>
               </div>
-              <div className="bg-slate-900/50 rounded-lg p-3 text-center">
+              <div className="bg-black/50 rounded-lg p-3 text-center">
                 <div className="text-lg font-bold text-white font-mono">
                   {formatLargeMoney(scenario.isruCapexM)}
                 </div>
                 <div className="text-xs text-slate-400 mt-0.5">ISRU CapEx</div>
               </div>
-              <div className="bg-slate-900/50 rounded-lg p-3 text-center">
+              <div className="bg-black/50 rounded-lg p-3 text-center">
                 <div className="text-lg font-bold text-white font-mono">
                   {formatLargeMoney(scenario.isruOpexPerYearM)}
                 </div>
                 <div className="text-xs text-slate-400 mt-0.5">Annual OpEx</div>
               </div>
-              <div className="bg-slate-900/50 rounded-lg p-3 text-center">
+              <div className="bg-black/50 rounded-lg p-3 text-center">
                 <div className="text-lg font-bold text-emerald-400 font-mono">
                   {scenario.breakEvenYears} yr{scenario.breakEvenYears !== 1 ? 's' : ''}
                 </div>
@@ -1607,7 +1607,7 @@ function EconomicsTab() {
 
             {/* Break-Even Timeline Visual */}
             <div className="mb-6">
-              <h4 className="text-sm font-semibold text-slate-300 mb-3">10-Year Financial Timeline</h4>
+              <h4 className="text-sm font-semibold text-white/70 mb-3">10-Year Financial Timeline</h4>
               <div className="flex gap-0.5">
                 {Array.from({ length: 10 }, (_, i) => {
                   const year = i + 1;
@@ -1661,7 +1661,7 @@ function EconomicsTab() {
 
             {/* Assumptions */}
             <div>
-              <h4 className="text-sm font-semibold text-slate-300 mb-2">Key Assumptions</h4>
+              <h4 className="text-sm font-semibold text-white/70 mb-2">Key Assumptions</h4>
               <ul className="space-y-1.5">
                 {scenario.keyAssumptions.map((assumption, i) => (
                   <li key={i} className="text-sm text-slate-400 flex items-start gap-2">
@@ -1687,7 +1687,7 @@ function EconomicsTab() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="text-left text-xs text-slate-500 uppercase tracking-wider border-b border-slate-700/50">
+                <tr className="text-left text-xs text-slate-500 uppercase tracking-wider border-b border-white/[0.06]">
                   <th className="pb-2 pr-4">Source</th>
                   <th className="pb-2 pr-4">Process</th>
                   <th className="pb-2 pr-4">Product</th>
@@ -1695,7 +1695,7 @@ function EconomicsTab() {
                   <th className="pb-2">Energy Cost</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-700/30">
+              <tbody className="divide-y divide-white/[0.04]">
                 <tr className="text-slate-400">
                   <td className="py-2.5 pr-4 text-white">Lunar Water Ice</td>
                   <td className="py-2.5 pr-4">Electrolysis</td>
@@ -1758,7 +1758,7 @@ function EconomicsTab() {
                   {i < 6 && <div className="w-0.5 h-12 bg-slate-700/50" />}
                 </div>
                 <div className="pb-6">
-                  <div className="text-sm font-mono font-bold text-slate-300">{item.year}</div>
+                  <div className="text-sm font-mono font-bold text-white/70">{item.year}</div>
                   <p className="text-sm text-slate-400 mt-0.5">{item.event}</p>
                 </div>
               </div>
@@ -1819,7 +1819,7 @@ function ISRUContent() {
         />
 
         {/* Main Tab Navigation */}
-        <div className="flex gap-1 mb-8 p-1 bg-slate-800/50 rounded-xl w-full sm:w-fit overflow-x-auto scrollbar-thin">
+        <div className="flex gap-1 mb-8 p-1 bg-white/[0.04] rounded-xl w-full sm:w-fit overflow-x-auto scrollbar-thin">
           {MAIN_TABS.map((tab) => (
             <button
               key={tab.id}
@@ -1827,7 +1827,7 @@ function ISRUContent() {
               className={`flex-1 sm:flex-none px-4 sm:px-6 py-3 rounded-lg font-medium transition-all whitespace-nowrap touch-target ${
                 activeTab === tab.id
                   ? 'bg-white text-slate-900'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/50'
+                  : 'text-slate-400 hover:text-white/90 hover:bg-white/[0.08]'
               }`}
             >
               <div className="text-sm font-semibold">{tab.label}</div>

@@ -173,7 +173,7 @@ export default function ForumsPage() {
                           >
                             <div className="flex items-start gap-4">
                               {/* Icon */}
-                              <div className="w-12 h-12 rounded-xl bg-slate-800/60 border border-slate-700/50 flex items-center justify-center text-2xl flex-shrink-0 group-hover:border-slate-600/50 transition-colors">
+                              <div className="w-12 h-12 rounded-xl bg-white/[0.05] border border-white/[0.06] flex items-center justify-center text-2xl flex-shrink-0 group-hover:border-white/[0.08] transition-colors">
                                 {category.icon}
                               </div>
 
@@ -195,7 +195,7 @@ export default function ForumsPage() {
 
                                 {/* Latest thread */}
                                 {category.latestThread && (
-                                  <div className="flex items-center gap-2 text-[11px] text-slate-500 pt-2 border-t border-slate-700/50">
+                                  <div className="flex items-center gap-2 text-[11px] text-slate-500 pt-2 border-t border-white/[0.06]">
                                     <svg className="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                                     </svg>

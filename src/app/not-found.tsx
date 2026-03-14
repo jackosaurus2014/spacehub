@@ -198,10 +198,10 @@ export default function NotFound() {
           <div style={{ animation: 'float 6s ease-in-out infinite' }} className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
             <svg width="72" height="72" viewBox="0 0 64 64" fill="none" className="drop-shadow-[0_0_16px_rgba(148,163,184,0.4)]">
               {/* Main body */}
-              <rect x="24" y="20" width="16" height="24" rx="2" fill="#1e293b" stroke="#94a3b8" strokeWidth="1.5" />
+              <rect x="24" y="20" width="16" height="24" rx="2" fill="#111111" stroke="#94a3b8" strokeWidth="1.5" />
               {/* Solar panels */}
-              <rect x="4" y="26" width="18" height="12" rx="1" fill="#0f172a" stroke="#94a3b8" strokeWidth="1" />
-              <rect x="42" y="26" width="18" height="12" rx="1" fill="#0f172a" stroke="#94a3b8" strokeWidth="1" />
+              <rect x="4" y="26" width="18" height="12" rx="1" fill="#0a0a0a" stroke="#94a3b8" strokeWidth="1" />
+              <rect x="42" y="26" width="18" height="12" rx="1" fill="#0a0a0a" stroke="#94a3b8" strokeWidth="1" />
               {/* Panel lines */}
               <line x1="10" y1="26" x2="10" y2="38" stroke="#94a3b8" strokeWidth="0.5" opacity="0.5" />
               <line x1="16" y1="26" x2="16" y2="38" stroke="#94a3b8" strokeWidth="0.5" opacity="0.5" />
@@ -209,7 +209,7 @@ export default function NotFound() {
               <line x1="54" y1="26" x2="54" y2="38" stroke="#94a3b8" strokeWidth="0.5" opacity="0.5" />
               {/* Antenna */}
               <line x1="32" y1="20" x2="32" y2="12" stroke="#94a3b8" strokeWidth="1.5" />
-              <circle cx="32" cy="10" r="2.5" fill="#0f172a" stroke="#94a3b8" strokeWidth="1" />
+              <circle cx="32" cy="10" r="2.5" fill="#0a0a0a" stroke="#94a3b8" strokeWidth="1" />
               {/* Signal waves (disconnected look) */}
               <path d="M26 8a8 8 0 0 1 12 0" stroke="#94a3b8" strokeWidth="0.8" fill="none" strokeDasharray="2 2">
                 <animate attributeName="opacity" values="0.15;0.5;0.15" dur="2.5s" repeatCount="indefinite" />
@@ -274,7 +274,7 @@ export default function NotFound() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.55 }}
-          className="flex items-center max-w-md mx-auto mb-8 bg-slate-900/80 backdrop-blur-sm border border-slate-700/80 rounded-xl overflow-hidden focus-within:border-white/15 focus-within:shadow-[0_0_20px_rgba(6,182,212,0.1)] transition-all duration-300"
+          className="flex items-center max-w-md mx-auto mb-8 bg-black/80 backdrop-blur-sm border border-white/[0.06] rounded-xl overflow-hidden focus-within:border-white/15 focus-within:shadow-[0_0_20px_rgba(6,182,212,0.1)] transition-all duration-300"
         >
           <svg className="w-4 h-4 text-slate-500 ml-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -285,7 +285,7 @@ export default function NotFound() {
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search SpaceNexus..."
             aria-label="Search SpaceNexus"
-            className="flex-1 px-3 py-3 bg-transparent text-slate-100 placeholder-slate-500 text-sm focus:outline-none"
+            className="flex-1 px-3 py-3 bg-transparent text-white placeholder-slate-500 text-sm focus:outline-none"
           />
           <button
             type="submit"
@@ -304,7 +304,7 @@ export default function NotFound() {
         >
           <button
             onClick={() => router.back()}
-            className="px-5 py-2.5 bg-slate-800/80 hover:bg-slate-700/80 text-slate-200 text-sm rounded-lg font-medium transition-all duration-200 border border-slate-700/80 hover:border-slate-600 backdrop-blur-sm"
+            className="px-5 py-2.5 bg-white/[0.06] hover:bg-white/[0.08] text-white/90 text-sm rounded-lg font-medium transition-all duration-200 border border-white/[0.06] hover:border-white/[0.1] backdrop-blur-sm"
           >
             <span className="flex items-center gap-2">
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -331,7 +331,7 @@ export default function NotFound() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.8 }}
-          className="border-t border-slate-800/60 pt-8"
+          className="border-t border-white/[0.06] pt-8"
         >
           <p className="text-xs text-slate-500 mb-5 uppercase tracking-wider font-medium flex items-center justify-center gap-2">
             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -352,7 +352,7 @@ export default function NotFound() {
                 >
                   <Link
                     href={page.href}
-                    className={`group flex items-start gap-3 px-4 py-3.5 rounded-xl bg-slate-900/60 backdrop-blur-sm border ${colors.border} ${colors.glow} transition-all duration-300 hover:-translate-y-0.5`}
+                    className={`group flex items-start gap-3 px-4 py-3.5 rounded-xl bg-black/60 backdrop-blur-sm border ${colors.border} ${colors.glow} transition-all duration-300 hover:-translate-y-0.5`}
                   >
                     <div className={`w-9 h-9 rounded-lg ${colors.bg} flex items-center justify-center flex-shrink-0 mt-0.5`}>
                       <svg className={`w-4.5 h-4.5 ${colors.text} opacity-80 group-hover:opacity-100 transition-opacity`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -360,7 +360,7 @@ export default function NotFound() {
                       </svg>
                     </div>
                     <div className="text-left min-w-0">
-                      <span className="text-sm font-medium text-slate-200 group-hover:text-white transition-colors block">{page.label}</span>
+                      <span className="text-sm font-medium text-white/90 group-hover:text-white transition-colors block">{page.label}</span>
                       <span className="text-xs text-slate-500 group-hover:text-slate-400 transition-colors block mt-0.5 truncate">{page.description}</span>
                     </div>
                     <svg className={`w-4 h-4 ${colors.text} opacity-0 group-hover:opacity-60 transition-all ml-auto flex-shrink-0 mt-1 -translate-x-1 group-hover:translate-x-0`} fill="none" stroke="currentColor" viewBox="0 0 24 24">

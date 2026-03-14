@@ -312,7 +312,7 @@ function RiskCategoryCard({ category }: { category: RiskCategory }) {
       </div>
 
       {/* Score bar */}
-      <div className="w-full h-2 bg-slate-700/50 rounded-full overflow-hidden">
+      <div className="w-full h-2 bg-white/[0.04] rounded-full overflow-hidden">
         <div
           className="h-full rounded-full transition-all duration-700"
           style={{ width: `${barPct}%`, backgroundColor: color }}
@@ -325,7 +325,7 @@ function RiskCategoryCard({ category }: { category: RiskCategory }) {
         {category.items.map((item) => (
           <span
             key={item}
-            className="text-[11px] px-2.5 py-1 rounded-full bg-slate-700/40 text-slate-300 border border-slate-600/30"
+            className="text-[11px] px-2.5 py-1 rounded-full bg-white/[0.04] text-white/70 border border-white/[0.04]"
           >
             {item}
           </span>
@@ -340,8 +340,8 @@ function WatchListRow({ item, index }: { item: WatchListItem; index: number }) {
   const c = getRiskLevelColor(item.risk);
 
   return (
-    <tr className={`border-b border-slate-700/30 ${index % 2 === 0 ? 'bg-slate-800/20' : ''}`}>
-      <td className="py-3 px-4 text-sm text-slate-200 font-medium">{item.name}</td>
+    <tr className={`border-b border-white/[0.04] ${index % 2 === 0 ? 'bg-white/[0.03]' : ''}`}>
+      <td className="py-3 px-4 text-sm text-white/90 font-medium">{item.name}</td>
       <td className="py-3 px-4 text-xs text-slate-400 hidden md:table-cell">{item.supplier}</td>
       <td className="py-3 px-4">
         <span
@@ -377,9 +377,9 @@ function LeadTimeBar({
   return (
     <div className="flex items-center gap-4">
       <div className="w-44 shrink-0 text-right">
-        <span className="text-xs text-slate-300 leading-tight">{item.component}</span>
+        <span className="text-xs text-white/70 leading-tight">{item.component}</span>
       </div>
-      <div className="flex-1 relative h-7 bg-slate-700/25 rounded">
+      <div className="flex-1 relative h-7 bg-white/[0.03] rounded">
         {/* Range bar */}
         <div
           className="absolute top-0.5 bottom-0.5 rounded transition-all duration-700"
@@ -492,7 +492,7 @@ export default function SupplyChainRiskPage() {
   const maxWeeksGlobal = Math.max(...LEAD_TIMES.map((l) => l.maxWeeks));
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 pt-24 pb-16 px-4">
+    <main className="min-h-screen bg-gradient-to-b from-black via-black to-black pt-24 pb-16 px-4">
       <div className="max-w-7xl mx-auto">
 
         {/* Header */}
@@ -518,15 +518,15 @@ export default function SupplyChainRiskPage() {
               suppliers for essential raw materials and components.
             </p>
             <div className="grid grid-cols-3 gap-4 pt-2">
-              <div className="bg-slate-800/40 rounded-xl p-3 text-center">
+              <div className="bg-white/[0.04] rounded-xl p-3 text-center">
                 <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Categories</p>
                 <p className="text-2xl font-bold text-slate-100">{RISK_CATEGORIES.length}</p>
               </div>
-              <div className="bg-slate-800/40 rounded-xl p-3 text-center">
+              <div className="bg-white/[0.04] rounded-xl p-3 text-center">
                 <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Components Tracked</p>
                 <p className="text-2xl font-bold text-slate-100">{WATCH_LIST.length}</p>
               </div>
-              <div className="bg-slate-800/40 rounded-xl p-3 text-center">
+              <div className="bg-white/[0.04] rounded-xl p-3 text-center">
                 <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Critical Items</p>
                 <p className="text-2xl font-bold text-red-400">
                   {WATCH_LIST.filter((w) => w.risk === 'Critical').length}
@@ -544,7 +544,7 @@ export default function SupplyChainRiskPage() {
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value as SortOption)}
-            className="bg-slate-800/60 border border-slate-700/50 text-slate-200 text-sm rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-white/20"
+            className="bg-white/[0.05] border border-white/[0.06] text-white/90 text-sm rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-white/20"
           >
             <option value="risk-desc">Risk Level (High to Low)</option>
             <option value="risk-asc">Risk Level (Low to High)</option>
@@ -558,7 +558,7 @@ export default function SupplyChainRiskPage() {
           <select
             value={filterCategory}
             onChange={(e) => setFilterCategory(e.target.value)}
-            className="bg-slate-800/60 border border-slate-700/50 text-slate-200 text-sm rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-white/20"
+            className="bg-white/[0.05] border border-white/[0.06] text-white/90 text-sm rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-white/20"
           >
             <option value="all">All Categories</option>
             {RISK_CATEGORIES.map((cat) => (
@@ -599,7 +599,7 @@ export default function SupplyChainRiskPage() {
           <div className="overflow-x-auto -mx-6 px-6">
             <table className="w-full text-left">
               <thead>
-                <tr className="border-b border-slate-700/50">
+                <tr className="border-b border-white/[0.06]">
                   <th className="py-2.5 px-4 text-xs font-semibold text-slate-400 uppercase tracking-wider">
                     Component
                   </th>

@@ -148,14 +148,14 @@ function SliderInput({
 
   return (
     <div className="mb-4">
-      <label className="block text-sm font-medium text-slate-300 mb-1.5">{label}</label>
+      <label className="block text-sm font-medium text-white/70 mb-1.5">{label}</label>
       <div className="flex items-center gap-3 mb-1.5">
         <input
           type="number"
           inputMode="decimal"
           min={min} max={max} step={step} value={value}
           onChange={handleInput}
-          className="w-28 bg-slate-900/70 border border-slate-700/50 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-white/15 focus:ring-1 focus:ring-white/10"
+          className="w-28 bg-slate-900/70 border border-white/[0.06] rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-white/15 focus:ring-1 focus:ring-white/10"
         />
         <span className="text-sm text-slate-400">{unit}</span>
       </div>
@@ -179,7 +179,7 @@ function ResultCard({ label, value, unit, accent = 'cyan' }: {
   accent?: 'cyan' | 'emerald' | 'amber' | 'purple' | 'red' | 'yellow' | 'green';
 }) {
   const colors: Record<string, string> = {
-    cyan: 'text-slate-300', emerald: 'text-emerald-400', amber: 'text-amber-400',
+    cyan: 'text-white/70', emerald: 'text-emerald-400', amber: 'text-amber-400',
     purple: 'text-purple-400', red: 'text-red-400', yellow: 'text-yellow-400', green: 'text-green-400',
   };
   return (
@@ -226,7 +226,7 @@ function MarginIndicator({ margin }: { margin: number }) {
           {label}
         </div>
       </div>
-      <div className="w-full h-3 bg-slate-800 rounded-full overflow-hidden">
+      <div className="w-full h-3 bg-white/[0.06] rounded-full overflow-hidden">
         <div
           className={`h-full rounded-full transition-all duration-500 ${
             margin > 3 ? 'bg-emerald-500' : margin >= 0 ? 'bg-yellow-500' : 'bg-red-500'
@@ -324,9 +324,9 @@ export default function LinkBudgetCalculatorPage() {
         {/* Breadcrumb */}
         <ScrollReveal>
         <nav className="text-sm text-slate-500 mb-4">
-          <Link href="/" className="hover:text-slate-300 transition-colors">Home</Link>
+          <Link href="/" className="hover:text-white/70 transition-colors">Home</Link>
           <span className="mx-2">/</span>
-          <Link href="/satellites" className="hover:text-slate-300 transition-colors">Space Operations</Link>
+          <Link href="/satellites" className="hover:text-white/70 transition-colors">Space Operations</Link>
           <span className="mx-2">/</span>
           <span className="text-slate-400">Link Budget Calculator</span>
         </nav>
@@ -341,15 +341,15 @@ export default function LinkBudgetCalculatorPage() {
         {/* Quick Presets */}
         <ScrollReveal>
         <div className="card p-5 mb-6">
-          <h3 className="text-sm font-semibold text-slate-300 mb-3">Quick Presets</h3>
+          <h3 className="text-sm font-semibold text-white/70 mb-3">Quick Presets</h3>
           <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
             {PRESETS.map((p) => (
               <StaggerItem key={p.label}>
               <button
                 onClick={() => applyPreset(p)}
-                className="w-full text-left p-3 rounded-lg bg-slate-800/50 border border-slate-700/50 hover:border-white/15 hover:bg-slate-100/5 transition-all"
+                className="w-full text-left p-3 rounded-lg bg-white/[0.04] border border-white/[0.06] hover:border-white/15 hover:bg-slate-100/5 transition-all"
               >
-                <div className="text-sm font-medium text-slate-200">{p.label}</div>
+                <div className="text-sm font-medium text-white/90">{p.label}</div>
                 <div className="text-xs text-slate-500 mt-0.5">{p.description}</div>
               </button>
               </StaggerItem>
@@ -367,7 +367,7 @@ export default function LinkBudgetCalculatorPage() {
           {/* ── Transmitter Section ── */}
           <div className="card p-5">
             <h3 className="text-lg font-semibold text-slate-100 mb-1 flex items-center gap-2">
-              <svg className="w-5 h-5 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <svg className="w-5 h-5 text-white/70" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M5.636 18.364a9 9 0 010-12.728m12.728 0a9 9 0 010 12.728m-9.9-2.829a5 5 0 010-7.07m7.072 0a5 5 0 010 7.07M13 12a1 1 0 11-2 0 1 1 0 012 0z" />
               </svg>
               Transmitter
@@ -396,7 +396,7 @@ export default function LinkBudgetCalculatorPage() {
             <div className="card p-3 bg-white/5 border-white/10 mt-2">
               <div className="flex justify-between items-center">
                 <span className="text-xs text-slate-400">EIRP (Effective Isotropic Radiated Power)</span>
-                <span className="text-sm font-bold text-slate-300">{fmtDb(results.eirp)} dBW</span>
+                <span className="text-sm font-bold text-white/70">{fmtDb(results.eirp)} dBW</span>
               </div>
               <div className="text-xs text-slate-600 mt-1">
                 = {fmtDb(wToDbw(txPower))} dBW + {fmtDb(txGain)} dBi - {fmtDb(txLoss)} dB
@@ -416,7 +416,7 @@ export default function LinkBudgetCalculatorPage() {
 
             {/* Frequency band selector */}
             <div className="mb-4">
-              <label className="block text-sm font-medium text-slate-300 mb-2">Frequency Band</label>
+              <label className="block text-sm font-medium text-white/70 mb-2">Frequency Band</label>
               <div className="grid grid-cols-5 gap-1.5">
                 {(Object.keys(BANDS) as FrequencyBand[]).map((key) => (
                   <button
@@ -424,8 +424,8 @@ export default function LinkBudgetCalculatorPage() {
                     onClick={() => setBand(key)}
                     className={`py-2 px-2 rounded-lg text-xs font-medium transition-all border ${
                       band === key
-                        ? 'bg-white/8 border-white/15 text-slate-300'
-                        : 'bg-slate-900/50 border-slate-700/50 text-slate-400 hover:border-slate-600/50'
+                        ? 'bg-white/8 border-white/15 text-white/70'
+                        : 'bg-black/50 border-white/[0.06] text-slate-400 hover:border-white/[0.08]'
                     }`}
                   >
                     {key}
@@ -442,7 +442,7 @@ export default function LinkBudgetCalculatorPage() {
               description="LEO ~500 km, MEO ~20,000 km, GEO ~36,000 km"
             />
 
-            <div className="card p-3 bg-slate-800/30 mb-4">
+            <div className="card p-3 bg-white/[0.03] mb-4">
               <div className="flex justify-between text-xs">
                 <span className="text-slate-500">Free Space Path Loss</span>
                 <span className="text-amber-400 font-medium">{fmtDb(results.freeSpaceLoss)} dB</span>
@@ -465,7 +465,7 @@ export default function LinkBudgetCalculatorPage() {
                   rainEnabled ? 'left-5' : 'left-0.5'
                 }`} />
               </button>
-              <span className="text-sm text-slate-300">Rain Attenuation</span>
+              <span className="text-sm text-white/70">Rain Attenuation</span>
             </div>
             {rainEnabled && (
               <SliderInput
@@ -551,7 +551,7 @@ export default function LinkBudgetCalculatorPage() {
             />
 
             <div className="mb-4">
-              <label className="block text-sm font-medium text-slate-300 mb-2">Modulation Scheme</label>
+              <label className="block text-sm font-medium text-white/70 mb-2">Modulation Scheme</label>
               <div className="grid grid-cols-4 gap-2">
                 {(Object.keys(MODULATIONS) as Modulation[]).map((key) => (
                   <button
@@ -560,7 +560,7 @@ export default function LinkBudgetCalculatorPage() {
                     className={`py-2.5 px-2 rounded-lg text-sm font-medium transition-all border ${
                       modulation === key
                         ? 'bg-purple-500/15 border-purple-500/40 text-purple-400'
-                        : 'bg-slate-900/50 border-slate-700/50 text-slate-400 hover:border-slate-600/50'
+                        : 'bg-black/50 border-white/[0.06] text-slate-400 hover:border-white/[0.08]'
                     }`}
                   >
                     {MODULATIONS[key].label}
@@ -586,10 +586,10 @@ export default function LinkBudgetCalculatorPage() {
                   = C/N&#8320; - 10 log10({(dataRate * 1000).toLocaleString()} bps)
                 </div>
               </div>
-              <div className="card p-3 bg-slate-800/30">
+              <div className="card p-3 bg-white/[0.03]">
                 <div className="flex justify-between items-center">
                   <span className="text-xs text-slate-400">Required Eb/N&#8320; ({modulation})</span>
-                  <span className="text-sm font-medium text-slate-300">{fmtDb(results.requiredEbN0)} dB</span>
+                  <span className="text-sm font-medium text-white/70">{fmtDb(results.requiredEbN0)} dB</span>
                 </div>
               </div>
             </div>
@@ -615,102 +615,102 @@ export default function LinkBudgetCalculatorPage() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="text-xs text-slate-500 uppercase tracking-wider border-b border-slate-700/50">
+                <tr className="text-xs text-slate-500 uppercase tracking-wider border-b border-white/[0.06]">
                   <th className="text-left py-2 pr-4">Parameter</th>
                   <th className="text-right py-2 px-4">Value</th>
                   <th className="text-right py-2 pl-4">Linear</th>
                 </tr>
               </thead>
-              <tbody className="text-slate-300">
-                <tr className="border-b border-slate-800/50">
+              <tbody className="text-white/70">
+                <tr className="border-b border-white/[0.06]">
                   <td className="py-2 pr-4 text-slate-400">Transmit Power</td>
-                  <td className="py-2 px-4 text-right text-slate-300">{fmtDb(wToDbw(txPower))} dBW</td>
+                  <td className="py-2 px-4 text-right text-white/70">{fmtDb(wToDbw(txPower))} dBW</td>
                   <td className="py-2 pl-4 text-right text-slate-500">{txPower} W</td>
                 </tr>
-                <tr className="border-b border-slate-800/50">
+                <tr className="border-b border-white/[0.06]">
                   <td className="py-2 pr-4 text-slate-400">Transmit Antenna Gain</td>
-                  <td className="py-2 px-4 text-right text-slate-300">+{fmtDb(txGain)} dBi</td>
+                  <td className="py-2 px-4 text-right text-white/70">+{fmtDb(txGain)} dBi</td>
                   <td className="py-2 pl-4 text-right text-slate-500">{fmtDb(Math.pow(10, txGain / 10), 1)}x</td>
                 </tr>
-                <tr className="border-b border-slate-800/50">
+                <tr className="border-b border-white/[0.06]">
                   <td className="py-2 pr-4 text-slate-400">Transmit Losses</td>
                   <td className="py-2 px-4 text-right text-red-400">-{fmtDb(txLoss)} dB</td>
                   <td className="py-2 pl-4 text-right text-slate-500"></td>
                 </tr>
-                <tr className="border-b border-slate-700/50 font-medium">
-                  <td className="py-2 pr-4 text-slate-200">EIRP</td>
-                  <td className="py-2 px-4 text-right text-slate-300">{fmtDb(results.eirp)} dBW</td>
+                <tr className="border-b border-white/[0.06] font-medium">
+                  <td className="py-2 pr-4 text-white/90">EIRP</td>
+                  <td className="py-2 px-4 text-right text-white/70">{fmtDb(results.eirp)} dBW</td>
                   <td className="py-2 pl-4 text-right text-slate-500">{fmtDb(Math.pow(10, results.eirp / 10), 2)} W</td>
                 </tr>
 
-                <tr className="border-b border-slate-800/50">
+                <tr className="border-b border-white/[0.06]">
                   <td className="py-2 pr-4 text-slate-400">Free Space Path Loss</td>
                   <td className="py-2 px-4 text-right text-red-400">-{fmtDb(results.freeSpaceLoss)} dB</td>
                   <td className="py-2 pl-4 text-right text-slate-500">{BANDS[band].freqGHz} GHz, {slantRange.toLocaleString()} km</td>
                 </tr>
-                <tr className="border-b border-slate-800/50">
+                <tr className="border-b border-white/[0.06]">
                   <td className="py-2 pr-4 text-slate-400">Atmospheric Loss</td>
                   <td className="py-2 px-4 text-right text-red-400">-{fmtDb(results.atmLoss)} dB</td>
                   <td className="py-2 pl-4 text-right text-slate-500">Clear sky estimate</td>
                 </tr>
                 {rainEnabled && (
-                  <tr className="border-b border-slate-800/50">
+                  <tr className="border-b border-white/[0.06]">
                     <td className="py-2 pr-4 text-slate-400">Rain Attenuation</td>
                     <td className="py-2 px-4 text-right text-red-400">-{fmtDb(results.rainLoss)} dB</td>
                     <td className="py-2 pl-4 text-right text-slate-500">User-specified</td>
                   </tr>
                 )}
-                <tr className="border-b border-slate-800/50">
+                <tr className="border-b border-white/[0.06]">
                   <td className="py-2 pr-4 text-slate-400">Pointing Loss</td>
                   <td className="py-2 px-4 text-right text-red-400">-{fmtDb(pointingLoss)} dB</td>
                   <td className="py-2 pl-4 text-right text-slate-500">Antenna misalignment</td>
                 </tr>
 
-                <tr className="border-b border-slate-800/50">
+                <tr className="border-b border-white/[0.06]">
                   <td className="py-2 pr-4 text-slate-400">Receive Antenna Gain</td>
                   <td className="py-2 px-4 text-right text-emerald-400">+{fmtDb(rxGain)} dBi</td>
                   <td className="py-2 pl-4 text-right text-slate-500">{fmtDb(Math.pow(10, rxGain / 10), 1)}x</td>
                 </tr>
-                <tr className="border-b border-slate-800/50">
+                <tr className="border-b border-white/[0.06]">
                   <td className="py-2 pr-4 text-slate-400">Receive Losses</td>
                   <td className="py-2 px-4 text-right text-red-400">-{fmtDb(rxLoss)} dB</td>
                   <td className="py-2 pl-4 text-right text-slate-500"></td>
                 </tr>
-                <tr className="border-b border-slate-800/50">
+                <tr className="border-b border-white/[0.06]">
                   <td className="py-2 pr-4 text-slate-400">System Noise Temperature</td>
-                  <td className="py-2 px-4 text-right text-slate-300">-{fmtDb(10 * Math.log10(noiseTemp))} dB-K</td>
+                  <td className="py-2 px-4 text-right text-white/70">-{fmtDb(10 * Math.log10(noiseTemp))} dB-K</td>
                   <td className="py-2 pl-4 text-right text-slate-500">{noiseTemp} K</td>
                 </tr>
-                <tr className="border-b border-slate-700/50 font-medium">
-                  <td className="py-2 pr-4 text-slate-200">G/T (Figure of Merit)</td>
+                <tr className="border-b border-white/[0.06] font-medium">
+                  <td className="py-2 pr-4 text-white/90">G/T (Figure of Merit)</td>
                   <td className="py-2 px-4 text-right text-emerald-400">{fmtDb(results.gOverT)} dB/K</td>
                   <td className="py-2 pl-4 text-right text-slate-500"></td>
                 </tr>
 
-                <tr className="border-b border-slate-800/50">
+                <tr className="border-b border-white/[0.06]">
                   <td className="py-2 pr-4 text-slate-400">Boltzmann Constant (k)</td>
                   <td className="py-2 px-4 text-right text-emerald-400">+228.60 dBW/K/Hz</td>
                   <td className="py-2 pl-4 text-right text-slate-500">1.38 x 10&#8315;&#178;&#179; W/K/Hz</td>
                 </tr>
 
-                <tr className="border-b border-slate-700/50 font-medium">
-                  <td className="py-2 pr-4 text-slate-200">C/N&#8320;</td>
+                <tr className="border-b border-white/[0.06] font-medium">
+                  <td className="py-2 pr-4 text-white/90">C/N&#8320;</td>
                   <td className="py-2 px-4 text-right text-purple-400">{fmtDb(results.cn0)} dB-Hz</td>
                   <td className="py-2 pl-4 text-right text-slate-500">Carrier-to-noise density</td>
                 </tr>
-                <tr className="border-b border-slate-800/50">
+                <tr className="border-b border-white/[0.06]">
                   <td className="py-2 pr-4 text-slate-400">Data Rate</td>
-                  <td className="py-2 px-4 text-right text-slate-300">-{fmtDb(10 * Math.log10(dataRate * 1000))} dB-bps</td>
+                  <td className="py-2 px-4 text-right text-white/70">-{fmtDb(10 * Math.log10(dataRate * 1000))} dB-bps</td>
                   <td className="py-2 pl-4 text-right text-slate-500">{formatDataRate(dataRate)}</td>
                 </tr>
-                <tr className="border-b border-slate-700/50 font-medium">
-                  <td className="py-2 pr-4 text-slate-200">Eb/N&#8320; (Actual)</td>
+                <tr className="border-b border-white/[0.06] font-medium">
+                  <td className="py-2 pr-4 text-white/90">Eb/N&#8320; (Actual)</td>
                   <td className="py-2 px-4 text-right text-purple-400">{fmtDb(results.ebN0)} dB</td>
                   <td className="py-2 pl-4 text-right text-slate-500"></td>
                 </tr>
-                <tr className="border-b border-slate-800/50">
+                <tr className="border-b border-white/[0.06]">
                   <td className="py-2 pr-4 text-slate-400">Required Eb/N&#8320; ({modulation})</td>
-                  <td className="py-2 px-4 text-right text-slate-300">{fmtDb(results.requiredEbN0)} dB</td>
+                  <td className="py-2 px-4 text-right text-white/70">{fmtDb(results.requiredEbN0)} dB</td>
                   <td className="py-2 pl-4 text-right text-slate-500">BER = 10&#8315;&#8310;</td>
                 </tr>
                 <tr className="font-semibold">
@@ -732,7 +732,7 @@ export default function LinkBudgetCalculatorPage() {
         {/* ── Formulas Reference ── */}
         <ScrollReveal delay={0.1}>
         <div className="card p-5 mb-6">
-          <h3 className="text-sm font-semibold text-slate-300 mb-3">Link Budget Equations</h3>
+          <h3 className="text-sm font-semibold text-white/70 mb-3">Link Budget Equations</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs text-slate-500 leading-relaxed">
             <div>
               <p className="text-slate-400 font-medium mb-1">EIRP (dBW)</p>
@@ -761,26 +761,26 @@ export default function LinkBudgetCalculatorPage() {
           <h3 className="text-lg font-semibold text-white mb-4">Related Tools</h3>
           <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
             <StaggerItem>
-            <Link href="/orbital-calculator" className="block p-3 rounded-lg bg-slate-700/30 hover:bg-slate-700/50 transition-colors group">
-              <div className="text-sm font-medium text-white group-hover:text-slate-200">Orbital Calculator</div>
+            <Link href="/orbital-calculator" className="block p-3 rounded-lg bg-slate-700/30 hover:bg-white/[0.08] transition-colors group">
+              <div className="text-sm font-medium text-white group-hover:text-white/90">Orbital Calculator</div>
               <p className="text-xs text-slate-400 mt-1">Delta-v, periods, escape velocity</p>
             </Link>
             </StaggerItem>
             <StaggerItem>
-            <Link href="/satellites" className="block p-3 rounded-lg bg-slate-700/30 hover:bg-slate-700/50 transition-colors group">
-              <div className="text-sm font-medium text-white group-hover:text-slate-200">Satellite Tracker</div>
+            <Link href="/satellites" className="block p-3 rounded-lg bg-slate-700/30 hover:bg-white/[0.08] transition-colors group">
+              <div className="text-sm font-medium text-white group-hover:text-white/90">Satellite Tracker</div>
               <p className="text-xs text-slate-400 mt-1">Track objects in orbit</p>
             </Link>
             </StaggerItem>
             <StaggerItem>
-            <Link href="/spectrum" className="block p-3 rounded-lg bg-slate-700/30 hover:bg-slate-700/50 transition-colors group">
-              <div className="text-sm font-medium text-white group-hover:text-slate-200">Spectrum Management</div>
+            <Link href="/spectrum" className="block p-3 rounded-lg bg-slate-700/30 hover:bg-white/[0.08] transition-colors group">
+              <div className="text-sm font-medium text-white group-hover:text-white/90">Spectrum Management</div>
               <p className="text-xs text-slate-400 mt-1">Frequency allocation and planning</p>
             </Link>
             </StaggerItem>
             <StaggerItem>
-            <Link href="/spaceports" className="block p-3 rounded-lg bg-slate-700/30 hover:bg-slate-700/50 transition-colors group">
-              <div className="text-sm font-medium text-white group-hover:text-slate-200">Ground Stations</div>
+            <Link href="/spaceports" className="block p-3 rounded-lg bg-slate-700/30 hover:bg-white/[0.08] transition-colors group">
+              <div className="text-sm font-medium text-white group-hover:text-white/90">Ground Stations</div>
               <p className="text-xs text-slate-400 mt-1">Spaceports and communications</p>
             </Link>
             </StaggerItem>

@@ -86,11 +86,11 @@ export default function Modal({ isOpen, onClose, title, children }: ModalProps) 
         aria-modal="true"
         aria-labelledby="modal-title"
         tabIndex={-1}
-        className="relative w-full max-w-lg max-h-[90vh] overflow-y-auto overscroll-contain bg-slate-900/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl shadow-black/40 p-6 animate-scale-in focus:outline-none"
+        className="relative w-full max-w-lg max-h-[90vh] overflow-y-auto overscroll-contain bg-black/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl shadow-black/40 p-6 animate-scale-in focus:outline-none"
       >
         {/* Mobile drag handle indicator */}
         <div className="md:hidden flex justify-center pt-2 pb-3">
-          <div className="w-10 h-1 rounded-full bg-slate-600" />
+          <div className="w-10 h-1 rounded-full bg-white/[0.1]" />
         </div>
         {/* Top gradient accent */}
         <div className="hidden md:block absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />

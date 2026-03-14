@@ -50,7 +50,7 @@ export default function ContractTicker({ onFilterChange }: ContractTickerProps) 
 
   const getAgencyStyle = (agency: ContractAgency) => {
     const agencyInfo = CONTRACT_AGENCIES.find((a) => a.value === agency);
-    return agencyInfo ? `${agencyInfo.bgColor} ${agencyInfo.color}` : 'bg-slate-600 text-slate-200';
+    return agencyInfo ? `${agencyInfo.bgColor} ${agencyInfo.color}` : 'bg-slate-600 text-white/90';
   };
 
   const getStatusStyle = (status: string) => {
@@ -79,7 +79,7 @@ export default function ContractTicker({ onFilterChange }: ContractTickerProps) 
 
   if (loading) {
     return (
-      <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-4">
+      <div className="bg-white/[0.04] border border-white/[0.08] rounded-lg p-4">
         <div className="flex items-center justify-center h-16">
           <div className="animate-pulse flex items-center gap-2">
             <div className="w-3 h-3 bg-white rounded-full animate-bounce"></div>
@@ -92,9 +92,9 @@ export default function ContractTicker({ onFilterChange }: ContractTickerProps) 
 
   if (contracts.length === 0) {
     return (
-      <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-4">
+      <div className="bg-white/[0.04] border border-white/[0.08] rounded-lg p-4">
         <div className="flex items-center justify-between mb-3">
-          <h3 className="text-slate-200 font-semibold flex items-center gap-2">
+          <h3 className="text-white/90 font-semibold flex items-center gap-2">
             <span className="text-lg">🏛️</span>
             Government Contracts
           </h3>
@@ -107,10 +107,10 @@ export default function ContractTicker({ onFilterChange }: ContractTickerProps) 
   }
 
   return (
-    <div className="bg-slate-800/50 border border-slate-700 rounded-lg overflow-hidden">
+    <div className="bg-white/[0.04] border border-white/[0.08] rounded-lg overflow-hidden">
       {/* Header with filters */}
-      <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-3 border-b border-slate-700">
-        <h3 className="text-slate-200 font-semibold flex items-center gap-2">
+      <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-3 border-b border-white/[0.08]">
+        <h3 className="text-white/90 font-semibold flex items-center gap-2">
           <span className="text-lg">🏛️</span>
           Government Contract Ticker
         </h3>
@@ -122,7 +122,7 @@ export default function ContractTicker({ onFilterChange }: ContractTickerProps) 
             className={`px-3 py-1 text-xs rounded-full transition-colors ${
               selectedAgency === ''
                 ? 'bg-white text-slate-900'
-                : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
+                : 'bg-white/[0.08] text-white/70 hover:bg-white/[0.08]'
             }`}
           >
             All
@@ -134,7 +134,7 @@ export default function ContractTicker({ onFilterChange }: ContractTickerProps) 
               className={`px-3 py-1 text-xs rounded-full transition-colors ${
                 selectedAgency === agency.value
                   ? `${agency.bgColor} text-white`
-                  : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
+                  : 'bg-white/[0.08] text-white/70 hover:bg-white/[0.08]'
               }`}
             >
               {agency.label}
@@ -167,7 +167,7 @@ export default function ContractTicker({ onFilterChange }: ContractTickerProps) 
               <button
                 key={`${contract.id}-${index}`}
                 onClick={() => setSelectedContract(contract)}
-                className="flex items-center gap-3 bg-slate-900/50 border border-slate-700 rounded-lg px-4 py-2 hover:border-white/15 hover:bg-slate-800/50 transition-all cursor-pointer min-w-max"
+                className="flex items-center gap-3 bg-black/50 border border-white/[0.08] rounded-lg px-4 py-2 hover:border-white/15 hover:bg-white/[0.04] transition-all cursor-pointer min-w-max"
               >
                 {/* Agency Badge */}
                 <span className={`px-2 py-0.5 rounded text-xs font-medium ${getAgencyStyle(contract.agency)}`}>
@@ -175,7 +175,7 @@ export default function ContractTicker({ onFilterChange }: ContractTickerProps) 
                 </span>
 
                 {/* Title */}
-                <span className="text-slate-200 text-sm font-medium">
+                <span className="text-white/90 text-sm font-medium">
                   {truncateTitle(contract.title)}
                 </span>
 

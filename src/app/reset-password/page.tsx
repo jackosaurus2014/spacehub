@@ -27,7 +27,7 @@ function ResetPasswordForm() {
         </div>
         <h2 className="text-lg font-semibold text-white mb-2">Invalid Reset Link</h2>
         <p className="text-slate-400 mb-6">This password reset link is invalid or has expired.</p>
-        <Link href="/forgot-password" className="text-plasma-400 hover:text-plasma-300 transition-colors">
+        <Link href="/forgot-password" className="text-white/70 hover:text-white transition-colors">
           Request a new reset link
         </Link>
       </div>
@@ -82,7 +82,7 @@ function ResetPasswordForm() {
         </div>
         <h2 className="text-lg font-semibold text-white mb-2">Password Reset Successfully</h2>
         <p className="text-slate-400 mb-6">Redirecting you to login...</p>
-        <Link href="/login" className="text-plasma-400 hover:text-plasma-300 transition-colors">
+        <Link href="/login" className="text-white/70 hover:text-white transition-colors">
           Go to login now
         </Link>
       </div>
@@ -97,7 +97,7 @@ function ResetPasswordForm() {
         </div>
       )}
       <div className="mb-4">
-        <label htmlFor="password" className="block text-sm font-medium text-slate-300 mb-1">
+        <label htmlFor="password" className="block text-sm font-medium text-white/80 mb-1">
           New Password
         </label>
         <input
@@ -108,12 +108,12 @@ function ResetPasswordForm() {
           onChange={(e) => setPassword(e.target.value)}
           required
           minLength={8}
-          className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-plasma-500 focus:border-transparent"
+          className="w-full px-4 py-3 bg-white/[0.04] border border-white/[0.08] rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-white/20 focus:border-white/30"
           placeholder="At least 8 characters"
         />
       </div>
       <div className="mb-6">
-        <label htmlFor="confirmPassword" className="block text-sm font-medium text-slate-300 mb-1">
+        <label htmlFor="confirmPassword" className="block text-sm font-medium text-white/80 mb-1">
           Confirm Password
         </label>
         <input
@@ -123,14 +123,14 @@ function ResetPasswordForm() {
           value={confirmPassword}
           onChange={(e) => setConfirmPassword(e.target.value)}
           required
-          className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-plasma-500 focus:border-transparent"
+          className="w-full px-4 py-3 bg-white/[0.04] border border-white/[0.08] rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-white/20 focus:border-white/30"
           placeholder="Confirm your new password"
         />
       </div>
       <button
         type="submit"
         disabled={loading}
-        className="w-full py-3 bg-plasma-500 hover:bg-plasma-600 text-white font-semibold rounded-lg transition-colors disabled:opacity-50"
+        className="w-full py-3 bg-white text-black hover:bg-white/90 font-semibold rounded-lg transition-colors disabled:opacity-50"
       >
         {loading ? 'Resetting...' : 'Reset Password'}
       </button>

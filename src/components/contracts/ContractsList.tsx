@@ -100,7 +100,7 @@ export default function ContractsList({ initialAgency = '' }: ContractsListProps
 
   const getAgencyStyle = (agency: ContractAgency) => {
     const agencyInfo = CONTRACT_AGENCIES.find((a) => a.value === agency);
-    return agencyInfo ? `${agencyInfo.bgColor} ${agencyInfo.color}` : 'bg-slate-600 text-slate-200';
+    return agencyInfo ? `${agencyInfo.bgColor} ${agencyInfo.color}` : 'bg-slate-600 text-white/90';
   };
 
   const getStatusStyle = (status: ContractStatus) => {
@@ -137,7 +137,7 @@ export default function ContractsList({ initialAgency = '' }: ContractsListProps
 
   if (contracts.length === 0 && !stats?.total) {
     return (
-      <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-8 text-center">
+      <div className="bg-white/[0.04] border border-white/[0.08] rounded-lg p-8 text-center">
         <span className="text-5xl block mb-4">🏛️</span>
         <h2 className="text-xl font-semibold text-white mb-2">No Government Contracts</h2>
         <p className="text-slate-400 mb-6">
@@ -166,19 +166,19 @@ export default function ContractsList({ initialAgency = '' }: ContractsListProps
       {/* Stats Cards */}
       {stats && (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-4 text-center">
+          <div className="bg-white/[0.04] border border-white/[0.08] rounded-lg p-4 text-center">
             <div className="text-3xl font-bold text-white">{stats.total}</div>
             <div className="text-slate-400 text-xs uppercase tracking-wider">Total Contracts</div>
           </div>
-          <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-4 text-center">
+          <div className="bg-white/[0.04] border border-white/[0.08] rounded-lg p-4 text-center">
             <div className="text-3xl font-bold text-green-400">{stats.openCount}</div>
             <div className="text-slate-400 text-xs uppercase tracking-wider">Open/Active</div>
           </div>
-          <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-4 text-center">
+          <div className="bg-white/[0.04] border border-white/[0.08] rounded-lg p-4 text-center">
             <div className="text-3xl font-bold text-purple-400">{stats.awardedThisMonth}</div>
             <div className="text-slate-400 text-xs uppercase tracking-wider">Awarded (30d)</div>
           </div>
-          <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-4 text-center">
+          <div className="bg-white/[0.04] border border-white/[0.08] rounded-lg p-4 text-center">
             <div className="text-3xl font-bold text-blue-400">{formatValue(stats.totalOpenValue)}</div>
             <div className="text-slate-400 text-xs uppercase tracking-wider">Open Value</div>
           </div>
@@ -186,14 +186,14 @@ export default function ContractsList({ initialAgency = '' }: ContractsListProps
       )}
 
       {/* Filters */}
-      <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-4">
+      <div className="bg-white/[0.04] border border-white/[0.08] rounded-lg p-4">
         <div className="flex flex-wrap items-center gap-4">
           <div>
             <label className="block text-slate-400 text-xs uppercase tracking-wider mb-1">Agency</label>
             <select
               value={agencyFilter}
               onChange={(e) => setAgencyFilter(e.target.value as ContractAgency | '')}
-              className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+              className="bg-white/[0.06] border border-white/[0.08] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
             >
               <option value="">All Agencies</option>
               {CONTRACT_AGENCIES.map((agency) => (
@@ -209,7 +209,7 @@ export default function ContractsList({ initialAgency = '' }: ContractsListProps
             <select
               value={typeFilter}
               onChange={(e) => setTypeFilter(e.target.value as ContractType | '')}
-              className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+              className="bg-white/[0.06] border border-white/[0.08] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
             >
               <option value="">All Types</option>
               {CONTRACT_TYPES.map((type) => (
@@ -225,7 +225,7 @@ export default function ContractsList({ initialAgency = '' }: ContractsListProps
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value as ContractStatus | '')}
-              className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+              className="bg-white/[0.06] border border-white/[0.08] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
             >
               <option value="">All Statuses</option>
               {Object.entries(CONTRACT_STATUS_INFO).map(([value, info]) => (
@@ -241,7 +241,7 @@ export default function ContractsList({ initialAgency = '' }: ContractsListProps
             <select
               value={categoryFilter}
               onChange={(e) => setCategoryFilter(e.target.value as ContractCategory | '')}
-              className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+              className="bg-white/[0.06] border border-white/[0.08] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
             >
               <option value="">All Categories</option>
               {CONTRACT_CATEGORIES.map((cat) => (
@@ -261,7 +261,7 @@ export default function ContractsList({ initialAgency = '' }: ContractsListProps
                   setStatusFilter('');
                   setCategoryFilter('');
                 }}
-                className="text-sm text-slate-200 hover:text-white py-2 transition-colors"
+                className="text-sm text-white/90 hover:text-white py-2 transition-colors"
               >
                 Clear Filters
               </button>
@@ -276,7 +276,7 @@ export default function ContractsList({ initialAgency = '' }: ContractsListProps
           <LoadingSpinner size="lg" />
         </div>
       ) : contracts.length === 0 ? (
-        <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-8 text-center">
+        <div className="bg-white/[0.04] border border-white/[0.08] rounded-lg p-8 text-center">
           <span className="text-4xl block mb-3">🔍</span>
           <h3 className="text-lg font-semibold text-white mb-2">No Results</h3>
           <p className="text-slate-400">No contracts match your filters. Try adjusting your criteria.</p>
@@ -291,7 +291,7 @@ export default function ContractsList({ initialAgency = '' }: ContractsListProps
               <button
                 key={contract.id}
                 onClick={() => setSelectedContract(contract)}
-                className="w-full bg-slate-800/50 border border-slate-700 rounded-lg p-4 hover:border-white/15 hover:bg-slate-800 transition-all text-left"
+                className="w-full bg-white/[0.04] border border-white/[0.08] rounded-lg p-4 hover:border-white/15 hover:bg-white/[0.06] transition-all text-left"
               >
                 <div className="flex flex-wrap items-start gap-3">
                   {/* Agency Badge */}
@@ -310,7 +310,7 @@ export default function ContractsList({ initialAgency = '' }: ContractsListProps
                   </span>
 
                   {/* Category */}
-                  <span className="px-2 py-1 rounded text-xs font-medium bg-slate-700 text-slate-300">
+                  <span className="px-2 py-1 rounded text-xs font-medium bg-white/[0.08] text-white/70">
                     {getCategoryLabel(contract.category)}
                   </span>
                 </div>
@@ -327,7 +327,7 @@ export default function ContractsList({ initialAgency = '' }: ContractsListProps
                   )}
                   <div className="flex items-center gap-1">
                     <span className="text-slate-400">Posted:</span>
-                    <span className="text-slate-300">{formatDate(contract.postedDate)}</span>
+                    <span className="text-white/70">{formatDate(contract.postedDate)}</span>
                   </div>
                   {contract.dueDate && (
                     <div className="flex items-center gap-1">

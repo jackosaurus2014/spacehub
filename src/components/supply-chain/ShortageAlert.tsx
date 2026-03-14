@@ -34,7 +34,7 @@ export default function ShortageAlert({ shortage, isExpanded = false }: Shortage
       case 'low':
         return 'border-green-500/50';
       default:
-        return 'border-slate-600';
+        return 'border-white/[0.1]';
     }
   };
 
@@ -66,7 +66,7 @@ export default function ShortageAlert({ shortage, isExpanded = false }: Shortage
                 {severityInfo.label.toUpperCase()}
               </span>
               {categoryInfo && (
-                <span className="text-xs bg-space-700 text-slate-300 px-2 py-0.5 rounded">
+                <span className="text-xs bg-space-700 text-white/70 px-2 py-0.5 rounded">
                   {categoryInfo.icon} {categoryInfo.label}
                 </span>
               )}
@@ -95,14 +95,14 @@ export default function ShortageAlert({ shortage, isExpanded = false }: Shortage
         {/* Quick stats */}
         <div className="flex flex-wrap items-center gap-3 mt-3 text-xs">
           <span className="text-slate-400">
-            <span className="text-slate-300 font-medium">{affectedProducts.length}</span> affected products
+            <span className="text-white/70 font-medium">{affectedProducts.length}</span> affected products
           </span>
           <span className="text-slate-400">
-            <span className="text-slate-300 font-medium">{impactedCompanies.length}</span> companies impacted
+            <span className="text-white/70 font-medium">{impactedCompanies.length}</span> companies impacted
           </span>
           {shortage.estimatedResolution && (
             <span className="text-slate-400">
-              Est. resolution: <span className="text-slate-200">{shortage.estimatedResolution}</span>
+              Est. resolution: <span className="text-white/90">{shortage.estimatedResolution}</span>
             </span>
           )}
         </div>
@@ -137,7 +137,7 @@ export default function ShortageAlert({ shortage, isExpanded = false }: Shortage
               {impactedCompanies.map((company) => (
                 <span
                   key={company}
-                  className="text-xs bg-space-700 text-slate-300 px-2 py-1 rounded"
+                  className="text-xs bg-space-700 text-white/70 px-2 py-1 rounded"
                 >
                   {company.replace(/-/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase())}
                 </span>
@@ -188,7 +188,7 @@ export default function ShortageAlert({ shortage, isExpanded = false }: Shortage
             <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
               Analysis
             </h4>
-            <p className="text-sm text-slate-300">{shortage.notes}</p>
+            <p className="text-sm text-white/70">{shortage.notes}</p>
           </div>
         </div>
       )}

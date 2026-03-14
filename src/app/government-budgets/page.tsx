@@ -112,7 +112,7 @@ export default function GovernmentBudgetsPage() {
               <div key={stat.label} className="card p-4 text-center">
                 <p className="text-2xl font-bold text-white">{stat.value}</p>
                 <p className="text-xs text-slate-400 mt-1">{stat.label}</p>
-                <p className="text-xs text-slate-300 mt-0.5">{stat.sub}</p>
+                <p className="text-xs text-white/70 mt-0.5">{stat.sub}</p>
               </div>
             ))}
           </div>
@@ -124,7 +124,7 @@ export default function GovernmentBudgetsPage() {
             <span className="text-sm text-slate-400">Region:</span>
             {REGIONS.map(r => (
               <button key={r} onClick={() => setRegionFilter(r)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${regionFilter === r ? 'bg-white/10 text-slate-200 border border-white/10' : 'bg-slate-800/50 text-slate-400 border border-slate-700/50 hover:text-slate-900'}`}>
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${regionFilter === r ? 'bg-white/10 text-white/90 border border-white/10' : 'bg-white/[0.04] text-slate-400 border border-white/[0.06] hover:text-slate-900'}`}>
                 {r}
               </button>
             ))}
@@ -132,7 +132,7 @@ export default function GovernmentBudgetsPage() {
               <span className="text-xs text-slate-500">Sort:</span>
               {([['budget', 'Budget'], ['perCapita', 'Per Capita'], ['pctGdp', '% GDP'], ['trend', 'Growth']] as [SortKey, string][]).map(([key, label]) => (
                 <button key={key} onClick={() => handleSort(key)}
-                  className={`px-2.5 py-1 rounded text-xs font-medium transition-colors ${sortBy === key ? 'bg-purple-500/20 text-purple-300' : 'text-slate-500 hover:text-slate-300'}`}>
+                  className={`px-2.5 py-1 rounded text-xs font-medium transition-colors ${sortBy === key ? 'bg-purple-500/20 text-purple-300' : 'text-slate-500 hover:text-white/70'}`}>
                   {label} {sortBy === key && (sortDir === 'desc' ? '↓' : '↑')}
                 </button>
               ))}
@@ -143,11 +143,11 @@ export default function GovernmentBudgetsPage() {
         {/* Agency Budget Table */}
         <ScrollReveal delay={0.2}>
           {/* Desktop Table */}
-          <div className="hidden md:block bg-slate-800/30 border border-slate-700/50 rounded-2xl overflow-hidden mb-8">
+          <div className="hidden md:block bg-white/[0.03] border border-white/[0.06] rounded-2xl overflow-hidden mb-8">
             <div className="overflow-x-auto">
               <table className="w-full min-w-[700px]">
                 <thead>
-                  <tr className="border-b border-slate-700/50">
+                  <tr className="border-b border-white/[0.06]">
                     <th className="text-left px-4 py-3 text-xs font-semibold text-slate-400 uppercase">Agency</th>
                     <th className="text-right px-4 py-3 text-xs font-semibold text-slate-400 uppercase">Budget</th>
                     <th className="px-4 py-3 text-xs font-semibold text-slate-400 uppercase text-left" style={{ width: '30%' }}>Relative</th>
@@ -161,7 +161,7 @@ export default function GovernmentBudgetsPage() {
                     const perCapita = (agency.budget * 1000) / agency.population;
                     const pctGdp = (agency.budget / agency.gdp) * 100;
                     return (
-                      <tr key={agency.name} className="border-b border-slate-700/20 hover:bg-slate-700/20 transition-colors">
+                      <tr key={agency.name} className="border-b border-white/[0.04] hover:bg-white/[0.04] transition-colors">
                         <td className="px-4 py-3">
                           <div className="flex items-center gap-2.5">
                             <span className="text-lg">{agency.flag}</span>
@@ -175,13 +175,13 @@ export default function GovernmentBudgetsPage() {
                           <span className="text-sm font-bold text-white">${agency.budget.toFixed(1)}B</span>
                         </td>
                         <td className="px-4 py-3">
-                          <div className="w-full bg-slate-700/40 rounded-full h-2.5">
+                          <div className="w-full bg-white/[0.04] rounded-full h-2.5">
                             <div className="h-2.5 rounded-full bg-gradient-to-r from-white to-purple-500 transition-all"
                               style={{ width: `${(agency.budget / maxBudget) * 100}%` }} />
                           </div>
                         </td>
-                        <td className="px-4 py-3 text-right text-sm text-slate-300">${perCapita.toFixed(1)}M/M</td>
-                        <td className="px-4 py-3 text-right text-sm text-slate-300">{pctGdp.toFixed(2)}%</td>
+                        <td className="px-4 py-3 text-right text-sm text-white/70">${perCapita.toFixed(1)}M/M</td>
+                        <td className="px-4 py-3 text-right text-sm text-white/70">{pctGdp.toFixed(2)}%</td>
                         <td className="px-4 py-3 text-right">
                           <span className={`text-sm font-medium ${agency.trend >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
                             {agency.trend >= 0 ? '+' : ''}{agency.trend.toFixed(1)}%
@@ -215,7 +215,7 @@ export default function GovernmentBudgetsPage() {
                   <p className="text-2xl font-bold text-white mb-3">${agency.budget.toFixed(1)}B</p>
 
                   {/* Relative progress bar */}
-                  <div className="w-full bg-slate-700/40 rounded-full h-2 mb-3">
+                  <div className="w-full bg-white/[0.04] rounded-full h-2 mb-3">
                     <div
                       className="h-2 rounded-full bg-gradient-to-r from-white to-purple-500 transition-all"
                       style={{ width: `${(agency.budget / maxBudget) * 100}%` }}
@@ -224,13 +224,13 @@ export default function GovernmentBudgetsPage() {
 
                   {/* Two-column stats */}
                   <div className="grid grid-cols-2 gap-3 mb-3">
-                    <div className="bg-slate-700/30 rounded-lg px-3 py-2">
+                    <div className="bg-white/[0.03] rounded-lg px-3 py-2">
                       <p className="text-xs text-slate-500">Per Capita</p>
-                      <p className="text-sm font-medium text-slate-200">${perCapita.toFixed(1)}M/M</p>
+                      <p className="text-sm font-medium text-white/90">${perCapita.toFixed(1)}M/M</p>
                     </div>
-                    <div className="bg-slate-700/30 rounded-lg px-3 py-2">
+                    <div className="bg-white/[0.03] rounded-lg px-3 py-2">
                       <p className="text-xs text-slate-500">% GDP</p>
-                      <p className="text-sm font-medium text-slate-200">{pctGdp.toFixed(2)}%</p>
+                      <p className="text-sm font-medium text-white/90">{pctGdp.toFixed(2)}%</p>
                     </div>
                   </div>
 
@@ -259,10 +259,10 @@ export default function GovernmentBudgetsPage() {
                 {regionBreakdown.map(r => (
                   <div key={r.region}>
                     <div className="flex justify-between text-sm mb-1">
-                      <span className="text-slate-300">{r.region}</span>
+                      <span className="text-white/70">{r.region}</span>
                       <span className="text-white font-medium">${r.amount.toFixed(1)}B ({r.pct}%)</span>
                     </div>
-                    <div className="w-full bg-slate-700/40 rounded-full h-3">
+                    <div className="w-full bg-white/[0.04] rounded-full h-3">
                       <div className="h-3 rounded-full bg-gradient-to-r from-purple-500 to-slate-200 transition-all"
                         style={{ width: `${parseFloat(r.pct)}%` }} />
 
@@ -285,10 +285,10 @@ export default function GovernmentBudgetsPage() {
                 ].map(cat => (
                   <div key={cat.label}>
                     <div className="flex justify-between text-sm mb-1">
-                      <span className="text-slate-300">{cat.label}</span>
+                      <span className="text-white/70">{cat.label}</span>
                       <span className="text-white font-medium">${cat.amount}B ({cat.pct}%)</span>
                     </div>
-                    <div className="w-full bg-slate-700/40 rounded-full h-3">
+                    <div className="w-full bg-white/[0.04] rounded-full h-3">
                       <div className={`h-3 rounded-full bg-gradient-to-r ${cat.color}`}
                         style={{ width: `${cat.pct}%` }} />
                     </div>
@@ -296,8 +296,8 @@ export default function GovernmentBudgetsPage() {
                 ))}
               </div>
 
-              <div className="mt-6 pt-4 border-t border-slate-700/40">
-                <h4 className="text-sm font-semibold text-slate-300 mb-3">Per Capita Leaders</h4>
+              <div className="mt-6 pt-4 border-t border-white/[0.06]">
+                <h4 className="text-sm font-semibold text-white/70 mb-3">Per Capita Leaders</h4>
                 <div className="grid grid-cols-2 gap-2">
                   {[
                     { country: '🇱🇺 Luxembourg', value: '$320' },
@@ -307,9 +307,9 @@ export default function GovernmentBudgetsPage() {
                     { country: '🇩🇪 Germany', value: '$24' },
                     { country: '🇮🇳 India', value: '$1.40' },
                   ].map(item => (
-                    <div key={item.country} className="flex justify-between text-xs bg-slate-700/30 rounded-lg px-3 py-2">
-                      <span className="text-slate-300">{item.country}</span>
-                      <span className="text-slate-300 font-medium">{item.value}</span>
+                    <div key={item.country} className="flex justify-between text-xs bg-white/[0.03] rounded-lg px-3 py-2">
+                      <span className="text-white/70">{item.country}</span>
+                      <span className="text-white/70 font-medium">{item.value}</span>
                     </div>
                   ))}
                 </div>
@@ -331,7 +331,7 @@ export default function GovernmentBudgetsPage() {
                     <h4 className="text-sm font-bold text-white">{prog.name}</h4>
                     <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
                       prog.status === 'Operational' ? 'bg-emerald-500/20 text-emerald-400' :
-                      prog.status === 'Active' ? 'bg-white/10 text-slate-300' :
+                      prog.status === 'Active' ? 'bg-white/10 text-white/70' :
                       prog.status === 'Deploying' ? 'bg-yellow-500/20 text-yellow-400' :
                       prog.status === 'Testing' ? 'bg-orange-500/20 text-orange-400' :
                       'bg-purple-500/20 text-purple-400'
@@ -350,7 +350,7 @@ export default function GovernmentBudgetsPage() {
 
         {/* Data Note */}
         <ScrollReveal delay={0.4}>
-          <div className="bg-slate-800/30 border border-slate-700/30 rounded-xl p-4 text-center">
+          <div className="bg-white/[0.03] border border-white/[0.04] rounded-xl p-4 text-center">
             <p className="text-xs text-slate-500">
               Budget figures are 2024 estimates based on public budget documents, appropriations bills, and industry analysis.
               Some figures (China, Russia) are estimates due to limited public disclosure. Military space budgets include dedicated space programs only.

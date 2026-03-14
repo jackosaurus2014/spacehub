@@ -129,7 +129,7 @@ function LeaderboardRow({
     >
       <Link href={`/company-profiles/${entry.slug}`}>
         <motion.div
-          whileHover={{ x: 4, backgroundColor: 'rgba(6, 182, 212, 0.05)' }}
+          whileHover={{ x: 4, backgroundColor: 'rgba(255, 255, 255, 0.03)' }}
           className="card p-3 md:p-4 flex items-center gap-3 md:gap-4 group cursor-pointer"
         >
           {/* Rank */}
@@ -334,7 +334,7 @@ function MethodologyTab() {
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.4 + i * 0.05 }}
-              className={`flex items-center gap-4 p-3 rounded-lg border ${tier.borderColor} bg-slate-800/20`}
+              className={`flex items-center gap-4 p-3 rounded-lg border ${tier.borderColor} bg-white/[0.03]`}
             >
               <div className={`px-3 py-1.5 rounded-lg font-bold text-sm ${tier.bgColor} ${tier.color} min-w-[80px] text-center`}>
                 {tier.label}
@@ -355,7 +355,7 @@ function MethodologyTab() {
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="text-left text-xs text-slate-500 border-b border-slate-700/50">
+              <tr className="text-left text-xs text-slate-500 border-b border-white/[0.06]">
                 <th className="pb-3 font-medium">Rating System</th>
                 <th className="pb-3 font-medium">Focus</th>
                 <th className="pb-3 font-medium">Scale</th>
@@ -363,19 +363,19 @@ function MethodologyTab() {
               </tr>
             </thead>
             <tbody className="text-slate-400">
-              <tr className="border-b border-slate-800/50">
+              <tr className="border-b border-white/[0.06]">
                 <td className="py-3 font-semibold text-slate-300">SpaceNexus Space Score</td>
                 <td className="py-3">Holistic space company assessment</td>
                 <td className="py-3">0-1000 (5 dimensions x 200)</td>
                 <td className="py-3">Algorithmic, multi-dimensional, transparent, updated in real-time</td>
               </tr>
-              <tr className="border-b border-slate-800/50">
+              <tr className="border-b border-white/[0.06]">
                 <td className="py-3 font-semibold text-slate-300">CB Insights Mosaic Score</td>
                 <td className="py-3">Private company health across industries</td>
                 <td className="py-3">0-1000</td>
                 <td className="py-3">ML-based; momentum, market, money, and management signals</td>
               </tr>
-              <tr className="border-b border-slate-800/50">
+              <tr className="border-b border-white/[0.06]">
                 <td className="py-3 font-semibold text-slate-300">SpaceFund Reality Rating</td>
                 <td className="py-3">Space startup technology readiness</td>
                 <td className="py-3">1-9 (TRL-based)</td>
@@ -395,7 +395,7 @@ function MethodologyTab() {
 
       {/* Feedback */}
       <ScrollReveal delay={0.1}>
-      <div className="card p-6 text-center border border-dashed border-slate-700">
+      <div className="card p-6 text-center border border-dashed border-white/[0.08]">
         <h3 className="text-lg font-bold text-white mb-2">Suggest a Factor</h3>
         <p className="text-slate-400 text-sm mb-4">
           Think we should incorporate additional data points into the Space Score algorithm?
@@ -555,7 +555,7 @@ function SpaceScoreContent() {
                       placeholder="Search companies by name or sector..."
                       value={search}
                       onChange={(e) => setSearch(e.target.value)}
-                      className="w-full pl-10 pr-4 bg-slate-800 border border-slate-700 text-white rounded-lg py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+                      className="w-full pl-10 pr-4 bg-white/[0.06] border border-white/[0.08] text-white rounded-lg py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                     />
                     <svg className="absolute left-3 top-3 w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -567,7 +567,7 @@ function SpaceScoreContent() {
                     aria-label="Filter by score tier"
                     value={tierFilter}
                     onChange={(e) => setTierFilter(e.target.value)}
-                    className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+                    className="bg-white/[0.06] border border-white/[0.08] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                   >
                     {TIER_FILTER_OPTIONS.map(opt => (
                       <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -579,7 +579,7 @@ function SpaceScoreContent() {
                     aria-label="Filter by sector"
                     value={sectorFilter}
                     onChange={(e) => setSectorFilter(e.target.value)}
-                    className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+                    className="bg-white/[0.06] border border-white/[0.08] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                   >
                     {SECTOR_FILTER_OPTIONS.map(opt => (
                       <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -591,7 +591,7 @@ function SpaceScoreContent() {
                     aria-label="Sort by dimension"
                     value={sortBy}
                     onChange={(e) => setSortBy(e.target.value)}
-                    className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+                    className="bg-white/[0.06] border border-white/[0.08] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                   >
                     {SORT_OPTIONS.map(opt => (
                       <option key={opt.value} value={opt.value}>Sort: {opt.label}</option>
@@ -649,8 +649,8 @@ export default function SpaceScorePage() {
   return (
     <Suspense fallback={
       <div className="min-h-screen p-4 lg:p-8 max-w-[1400px] mx-auto">
-        <div className="h-10 w-64 bg-slate-800 rounded animate-pulse mb-3" />
-        <div className="h-4 w-96 bg-slate-800/60 rounded animate-pulse" />
+        <div className="h-10 w-64 bg-white/[0.06] rounded animate-pulse mb-3" />
+        <div className="h-4 w-96 bg-white/[0.05] rounded animate-pulse" />
       </div>
     }>
       <SpaceScoreContent />

@@ -91,7 +91,7 @@ const FAQ_ITEMS = [
 
 export default function SpaceLaunchSchedule2026Page() {
   return (
-    <div className="min-h-screen bg-space-900">
+    <div className="min-h-screen bg-black">
       <div className="container mx-auto px-4 pb-16">
         <div className="pt-6">
         </div>
@@ -150,8 +150,8 @@ export default function SpaceLaunchSchedule2026Page() {
                 for dedicated rideshare missions. The mega-constellation buildout continues with Starlink,
                 OneWeb, and Amazon&apos;s Project Kuiper all requiring dozens of flights.
               </p>
-              <div className="bg-slate-800/30 border border-white/10 rounded-lg p-4">
-                <p className="text-slate-200 text-sm">
+              <div className="bg-white/[0.04] border border-white/10 rounded-lg p-4">
+                <p className="text-white/90 text-sm">
                   <strong>Live tracking:</strong> SpaceNexus tracks every launch in real time with countdown
                   timers, mission details, and launch vehicle specs.{' '}
                   <Link href="/launch" className="text-slate-300 underline hover:text-slate-300">
@@ -171,7 +171,7 @@ export default function SpaceLaunchSchedule2026Page() {
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="border-b border-slate-700">
+                    <tr className="border-b border-white/[0.06]">
                       <th className="py-3 pr-4 text-left text-slate-300 font-semibold">Provider</th>
                       <th className="py-3 pr-4 text-left text-slate-300 font-semibold">Vehicles</th>
                       <th className="py-3 pr-4 text-left text-slate-300 font-semibold">Est. Missions</th>
@@ -180,7 +180,7 @@ export default function SpaceLaunchSchedule2026Page() {
                   </thead>
                   <tbody>
                     {LAUNCH_PROVIDERS.map((provider) => (
-                      <tr key={provider.name} className="border-b border-slate-700/50">
+                      <tr key={provider.name} className="border-b border-white/[0.06]">
                         <td className="py-3 pr-4 text-white font-medium">{provider.name}</td>
                         <td className="py-3 pr-4 text-slate-400">{provider.vehicle}</td>
                         <td className="py-3 pr-4 text-slate-300 font-semibold">{provider.missions}</td>
@@ -262,7 +262,7 @@ export default function SpaceLaunchSchedule2026Page() {
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="border-b border-slate-700">
+                    <tr className="border-b border-white/[0.06]">
                       <th className="py-3 pr-4 text-left text-slate-300 font-semibold">Site</th>
                       <th className="py-3 pr-4 text-left text-slate-300 font-semibold">Location</th>
                       <th className="py-3 text-left text-slate-300 font-semibold">Active Pads</th>
@@ -270,7 +270,7 @@ export default function SpaceLaunchSchedule2026Page() {
                   </thead>
                   <tbody>
                     {LAUNCH_SITES.map((site) => (
-                      <tr key={site.name} className="border-b border-slate-700/50">
+                      <tr key={site.name} className="border-b border-white/[0.06]">
                         <td className="py-3 pr-4 text-white font-medium">{site.name}</td>
                         <td className="py-3 pr-4 text-slate-400">{site.location}</td>
                         <td className="py-3 text-slate-400">{site.pads}</td>
@@ -357,7 +357,7 @@ export default function SpaceLaunchSchedule2026Page() {
             </section>
 
             {/* Related Content */}
-            <section className="pt-6 border-t border-slate-700">
+            <section className="pt-6 border-t border-white/[0.06]">
               <h3 className="text-lg font-bold text-white mb-4">Related Guides</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <Link href="/guide/space-industry" className="text-slate-300 hover:text-white text-sm transition-colors">

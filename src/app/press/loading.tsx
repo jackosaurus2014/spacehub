@@ -1,15 +1,15 @@
 export default function Loading() {
   return (
-    <div className="min-h-screen bg-slate-950 p-4 sm:p-6 lg:p-8">
+    <div className="min-h-screen p-4 sm:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto">
         {/* Title skeleton */}
-        <div className="h-8 w-48 sm:w-64 bg-slate-800 rounded-lg animate-pulse mb-2" />
-        <div className="h-4 w-64 sm:w-80 bg-slate-800/60 rounded animate-pulse mb-8" />
+        <div className="h-8 w-48 sm:w-64 bg-white/[0.06] rounded-lg animate-pulse mb-2" />
+        <div className="h-4 w-64 sm:w-80 bg-white/[0.05] rounded animate-pulse mb-8" />
 
         {/* Press release list */}
         <div className="space-y-4">
           {[...Array(8)].map((_, i) => (
-            <div key={i} className="bg-slate-800/50 rounded-xl p-5 sm:p-6 animate-pulse">
+            <div key={i} className="bg-white/[0.04] rounded-xl p-5 sm:p-6 animate-pulse">
               <div className="flex flex-col sm:flex-row sm:items-start gap-4">
                 <div className="sm:w-28 shrink-0">
                   <div className="h-4 w-24 bg-slate-700/50 rounded" />

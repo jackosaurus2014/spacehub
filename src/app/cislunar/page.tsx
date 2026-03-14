@@ -134,23 +134,23 @@ let INTERNATIONAL_PARTNERS: InternationalPartner[] = [];
 
 const ARTEMIS_STATUS_STYLES: Record<ArtemisMission['status'], { label: string; color: string; bg: string; border: string }> = {
   'completed': { label: 'Completed', color: 'text-green-400', bg: 'bg-green-900/20', border: 'border-green-500/30' },
-  'in-progress': { label: 'In Progress', color: 'text-slate-300', bg: 'bg-slate-800/30', border: 'border-white/10' },
+  'in-progress': { label: 'In Progress', color: 'text-slate-300', bg: 'bg-white/[0.04]', border: 'border-white/10' },
   'upcoming': { label: 'Upcoming', color: 'text-yellow-400', bg: 'bg-yellow-900/20', border: 'border-yellow-500/30' },
   'planned': { label: 'Planned', color: 'text-blue-400', bg: 'bg-blue-900/20', border: 'border-blue-500/30' },
 };
 
-const DEFAULT_ARTEMIS_STATUS_STYLE = { label: 'Unknown', color: 'text-slate-400', bg: 'bg-slate-900/20', border: 'border-slate-500/30' };
+const DEFAULT_ARTEMIS_STATUS_STYLE = { label: 'Unknown', color: 'text-slate-400', bg: 'bg-white/[0.04]', border: 'border-white/[0.08]' };
 
 const CLPS_STATUS_STYLES: Record<CLPSMission['status'], { label: string; color: string; bg: string }> = {
   'success': { label: 'Success', color: 'text-green-400', bg: 'bg-green-900/20' },
   'partial-success': { label: 'Partial Success', color: 'text-yellow-400', bg: 'bg-yellow-900/20' },
   'failure': { label: 'Failed', color: 'text-red-400', bg: 'bg-red-900/20' },
-  'in-transit': { label: 'In Transit', color: 'text-slate-300', bg: 'bg-slate-800/30' },
+  'in-transit': { label: 'In Transit', color: 'text-slate-300', bg: 'bg-white/[0.04]' },
   'upcoming': { label: 'Upcoming', color: 'text-orange-400', bg: 'bg-orange-900/20' },
   'planned': { label: 'Planned', color: 'text-blue-400', bg: 'bg-blue-900/20' },
 };
 
-const DEFAULT_CLPS_STATUS_STYLE = { label: 'Unknown', color: 'text-slate-400', bg: 'bg-slate-900/20' };
+const DEFAULT_CLPS_STATUS_STYLE = { label: 'Unknown', color: 'text-slate-400', bg: 'bg-white/[0.04]' };
 
 const ISRU_STATUS_STYLES: Record<ISRUProgram['status'], { label: string; color: string; bg: string }> = {
   'active': { label: 'Active', color: 'text-green-400', bg: 'bg-green-900/20' },
@@ -159,17 +159,17 @@ const ISRU_STATUS_STYLES: Record<ISRUProgram['status'], { label: string; color: 
   'planned': { label: 'Planned', color: 'text-yellow-400', bg: 'bg-yellow-900/20' },
 };
 
-const DEFAULT_ISRU_STATUS_STYLE = { label: 'Unknown', color: 'text-slate-400', bg: 'bg-slate-900/20' };
+const DEFAULT_ISRU_STATUS_STYLE = { label: 'Unknown', color: 'text-slate-400', bg: 'bg-white/[0.04]' };
 
 const INFRA_STATUS_STYLES: Record<InfrastructureElement['status'], { label: string; color: string; bg: string }> = {
   'operational': { label: 'Operational', color: 'text-green-400', bg: 'bg-green-900/20' },
-  'under-construction': { label: 'Under Construction', color: 'text-slate-300', bg: 'bg-slate-800/30' },
+  'under-construction': { label: 'Under Construction', color: 'text-slate-300', bg: 'bg-white/[0.04]' },
   'development': { label: 'In Development', color: 'text-yellow-400', bg: 'bg-yellow-900/20' },
   'design': { label: 'Design Phase', color: 'text-orange-400', bg: 'bg-orange-900/20' },
   'concept': { label: 'Concept', color: 'text-purple-400', bg: 'bg-purple-900/20' },
 };
 
-const DEFAULT_INFRA_STATUS_STYLE = { label: 'Unknown', color: 'text-slate-400', bg: 'bg-slate-900/20' };
+const DEFAULT_INFRA_STATUS_STYLE = { label: 'Unknown', color: 'text-slate-400', bg: 'bg-white/[0.04]' };
 
 const ISRU_CATEGORY_STYLES: Record<ISRUProgram['category'], { label: string; icon: string }> = {
   'water-ice': { label: 'Water Ice', icon: '🧊' },
@@ -195,13 +195,13 @@ const DEFAULT_INFRA_CATEGORY_STYLE = { label: 'Unknown', icon: '?' };
 const GATEWAY_MODULE_STATUS_STYLES: Record<GatewayModule['status'], { label: string; color: string; bg: string }> = {
   integration: { label: 'Integration Testing', color: 'text-green-400', bg: 'bg-green-900/30' },
   construction: { label: 'Under Construction', color: 'text-blue-400', bg: 'bg-blue-900/30' },
-  manufacturing: { label: 'Design/Manufacturing', color: 'text-slate-300', bg: 'bg-slate-800/40' },
+  manufacturing: { label: 'Design/Manufacturing', color: 'text-slate-300', bg: 'bg-white/[0.04]' },
   design: { label: 'Design Phase', color: 'text-yellow-400', bg: 'bg-yellow-900/30' },
   development: { label: 'Development', color: 'text-orange-400', bg: 'bg-orange-900/30' },
   study: { label: 'Under Study', color: 'text-purple-400', bg: 'bg-purple-900/30' },
 };
 
-const DEFAULT_GATEWAY_MODULE_STATUS_STYLE = { label: 'Unknown', color: 'text-slate-400', bg: 'bg-slate-900/30' };
+const DEFAULT_GATEWAY_MODULE_STATUS_STYLE = { label: 'Unknown', color: 'text-slate-400', bg: 'bg-white/[0.04]' };
 
 const GATEWAY_MISSION_STATUS_STYLES: Record<GatewayArtemisMission['status'], { label: string; color: string; bg: string; border: string }> = {
   completed: { label: 'Completed', color: 'text-green-400', bg: 'bg-green-900/20', border: 'border-green-500/30' },
@@ -209,7 +209,7 @@ const GATEWAY_MISSION_STATUS_STYLES: Record<GatewayArtemisMission['status'], { l
   planned: { label: 'Planned', color: 'text-blue-400', bg: 'bg-blue-900/20', border: 'border-blue-500/30' },
 };
 
-const DEFAULT_GATEWAY_MISSION_STATUS_STYLE = { label: 'Unknown', color: 'text-slate-400', bg: 'bg-slate-900/20', border: 'border-slate-500/30' };
+const DEFAULT_GATEWAY_MISSION_STATUS_STYLE = { label: 'Unknown', color: 'text-slate-400', bg: 'bg-white/[0.04]', border: 'border-white/[0.08]' };
 
 // ────────────────────────────────────────
 // TRL Bar Component
@@ -230,7 +230,7 @@ function TRLBar({ trl }: { trl: number }) {
         {Array.from({ length: 9 }, (_, i) => (
           <div
             key={i}
-            className={`h-2 flex-1 rounded-sm ${i < trl ? getColor(trl) : 'bg-slate-700/50'}`}
+            className={`h-2 flex-1 rounded-sm ${i < trl ? getColor(trl) : 'bg-white/[0.06]'}`}
           />
         ))}
       </div>
@@ -284,7 +284,7 @@ function ArtemisTab() {
           SLS & Orion Status
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="rounded-lg border border-slate-700/50 bg-slate-900/40 p-4">
+          <div className="rounded-lg border border-white/[0.06] bg-white/[0.04] p-4">
             <h3 className="text-white font-semibold mb-2">Space Launch System (SLS)</h3>
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
@@ -313,7 +313,7 @@ function ArtemisTab() {
               </div>
             </div>
           </div>
-          <div className="rounded-lg border border-slate-700/50 bg-slate-900/40 p-4">
+          <div className="rounded-lg border border-white/[0.06] bg-white/[0.04] p-4">
             <h3 className="text-white font-semibold mb-2">Orion MPCV</h3>
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
@@ -414,12 +414,12 @@ function ArtemisTab() {
                         ? 'bg-yellow-500 border-yellow-400 animate-pulse'
                         : mission.status === 'in-progress'
                           ? 'bg-white border-white/10 animate-pulse'
-                          : 'bg-slate-600 border-slate-500'
+                          : 'bg-white/[0.08] border-white/[0.1]'
                   }`} />
                   <div className={`rounded-lg border ${style.border} ${style.bg} p-4`}>
                     <div className="flex flex-wrap items-center gap-3 mb-2">
                       <h3 className="text-white font-bold text-lg">{mission.name}</h3>
-                      <span className={`text-xs font-medium px-2 py-0.5 rounded ${style.color} bg-slate-800/50`}>
+                      <span className={`text-xs font-medium px-2 py-0.5 rounded ${style.color} bg-white/[0.04]`}>
                         {style.label}
                       </span>
                       <span className="text-star-400 text-sm font-mono">{mission.date}</span>
@@ -472,7 +472,7 @@ function ArtemisTab() {
                       {isExpanded ? 'Show less' : 'Read full details'}
                     </button>
                     {isExpanded && (
-                      <p className="text-star-300 text-sm mt-3 leading-relaxed border-t border-slate-700/50 pt-3">
+                      <p className="text-star-300 text-sm mt-3 leading-relaxed border-t border-white/[0.06] pt-3">
                         {mission.description}
                       </p>
                     )}
@@ -512,7 +512,7 @@ function CommercialLunarTab() {
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
-          className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+          className="bg-white/[0.06]border border-white/[0.06]text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
         >
           <option value="all">All Statuses</option>
           {statuses.map((s) => (
@@ -522,7 +522,7 @@ function CommercialLunarTab() {
         <select
           value={companyFilter}
           onChange={(e) => setCompanyFilter(e.target.value)}
-          className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+          className="bg-white/[0.06]border border-white/[0.06]text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
         >
           <option value="all">All Companies</option>
           {companies.map((c) => (
@@ -598,7 +598,7 @@ function CommercialLunarTab() {
                     </span>
                   ))}
                   {!isExpanded && mission.payloads.length > 4 && (
-                    <span className="px-2 py-0.5 bg-slate-700/50 text-star-400 rounded text-xs">
+                    <span className="px-2 py-0.5 bg-white/[0.06] text-star-400 rounded text-xs">
                       +{mission.payloads.length - 4} more
                     </span>
                   )}
@@ -610,7 +610,7 @@ function CommercialLunarTab() {
                 <div className={`rounded-lg p-3 text-sm mb-3 ${
                   mission.status === 'failure' ? 'bg-red-900/10 border border-red-500/20' :
                   mission.status === 'partial-success' ? 'bg-yellow-900/10 border border-yellow-500/20' :
-                  'bg-slate-900/40 border border-slate-700/50'
+                  'bg-white/[0.04] border border-white/[0.06]'
                 }`}>
                   <div className="text-star-400 text-xs uppercase tracking-widest mb-1">Result</div>
                   <p className="text-star-300 text-sm leading-relaxed">{mission.result}</p>
@@ -630,7 +630,7 @@ function CommercialLunarTab() {
                 {isExpanded ? 'Show less' : 'Show full details'}
               </button>
               {isExpanded && (
-                <p className="text-star-300 text-sm mt-3 leading-relaxed border-t border-slate-700/50 pt-3">
+                <p className="text-star-300 text-sm mt-3 leading-relaxed border-t border-white/[0.06] pt-3">
                   {mission.description}
                 </p>
               )}
@@ -671,17 +671,17 @@ function ISRUTab() {
           could provide drinking water, breathable oxygen, and hydrogen/oxygen rocket propellant.
         </p>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-          <div className="rounded-lg border border-slate-700/50 bg-slate-900/40 p-3 text-center">
+          <div className="rounded-lg border border-white/[0.06] bg-white/[0.04] p-3 text-center">
             <div className="text-2xl mb-1">🧊</div>
             <div className="text-white font-semibold text-sm">Water Ice</div>
             <div className="text-star-400 text-xs">600M+ metric tons (est.)</div>
           </div>
-          <div className="rounded-lg border border-slate-700/50 bg-slate-900/40 p-3 text-center">
+          <div className="rounded-lg border border-white/[0.06] bg-white/[0.04] p-3 text-center">
             <div className="text-2xl mb-1">💨</div>
             <div className="text-white font-semibold text-sm">Oxygen</div>
             <div className="text-star-400 text-xs">43% of regolith by weight</div>
           </div>
-          <div className="rounded-lg border border-slate-700/50 bg-slate-900/40 p-3 text-center">
+          <div className="rounded-lg border border-white/[0.06] bg-white/[0.04] p-3 text-center">
             <div className="text-2xl mb-1">🔩</div>
             <div className="text-white font-semibold text-sm">Metals</div>
             <div className="text-star-400 text-xs">Iron, titanium, aluminum</div>
@@ -694,7 +694,7 @@ function ISRUTab() {
         <select
           value={categoryFilter}
           onChange={(e) => setCategoryFilter(e.target.value)}
-          className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+          className="bg-white/[0.06]border border-white/[0.06]text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
         >
           <option value="all">All Categories</option>
           {categories.map((c) => (
@@ -752,7 +752,7 @@ function ISRUTab() {
               )}
 
               {program.targetDate && (
-                <div className="text-sm mt-2 pt-2 border-t border-slate-700/50">
+                <div className="text-sm mt-2 pt-2 border-t border-white/[0.06]">
                   <span className="text-star-400">Target: </span>
                   <span className="text-star-200 font-mono">{program.targetDate}</span>
                 </div>
@@ -785,7 +785,7 @@ function InfrastructureTab() {
         <select
           value={categoryFilter}
           onChange={(e) => setCategoryFilter(e.target.value)}
-          className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+          className="bg-white/[0.06]border border-white/[0.06]text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
         >
           <option value="all">All Categories</option>
           {categories.map((c) => (
@@ -838,7 +838,7 @@ function InfrastructureTab() {
               </div>
 
               {item.partners && item.partners.length > 0 && (
-                <div className="flex flex-wrap gap-1.5 mt-3 pt-3 border-t border-slate-700/50">
+                <div className="flex flex-wrap gap-1.5 mt-3 pt-3 border-t border-white/[0.06]">
                   {item.partners.map((partner) => (
                     <span key={partner} className="px-2 py-0.5 bg-white/10 text-slate-300 rounded text-xs font-medium">
                       {partner}
@@ -919,7 +919,7 @@ function InvestmentTab() {
         <select
           value={typeFilter}
           onChange={(e) => setTypeFilter(e.target.value)}
-          className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+          className="bg-white/[0.06]border border-white/[0.06]text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
         >
           <option value="all">All Types</option>
           {types.map((t) => (
@@ -951,7 +951,7 @@ function InvestmentTab() {
                   <h3 className="text-white font-semibold text-lg">{investment.program}</h3>
                   <div className="flex flex-wrap gap-3 text-sm text-star-400">
                     <span>{investment.organization}</span>
-                    <span className="px-2 py-0.5 bg-slate-700/50 rounded text-xs">{investment.category}</span>
+                    <span className="px-2 py-0.5 bg-white/[0.06] rounded text-xs">{investment.category}</span>
                   </div>
                 </div>
                 <div className="text-right">
@@ -1082,7 +1082,7 @@ function GatewayModuleCard({ module }: { module: GatewayModule }) {
         {expanded ? 'Show less' : 'Read more'}
       </button>
       {expanded && (
-        <p className="text-star-300 text-sm mt-3 leading-relaxed border-t border-slate-700/50 pt-3">
+        <p className="text-star-300 text-sm mt-3 leading-relaxed border-t border-white/[0.06] pt-3">
           {module.description}
         </p>
       )}
@@ -1179,7 +1179,7 @@ function GatewayTab() {
       </div>
 
       {/* Sub-tab Navigation */}
-      <div className="border-b border-slate-700/50 relative">
+      <div className="border-b border-white/[0.06] relative">
         <div className="flex gap-1 overflow-x-auto scrollbar-hide">
           {subTabs.map((tab) => (
             <button
@@ -1187,8 +1187,8 @@ function GatewayTab() {
               onClick={() => setGatewaySubTab(tab.id)}
               className={`px-4 py-2.5 min-h-[44px] text-xs font-medium whitespace-nowrap border-b-2 transition-colors ${
                 gatewaySubTab === tab.id
-                  ? 'border-white/15 text-slate-200'
-                  : 'border-transparent text-star-300 hover:text-white hover:border-slate-500'
+                  ? 'border-white/15 text-white/90'
+                  : 'border-transparent text-star-300 hover:text-white hover:border-white/[0.1]'
               }`}
             >
               <span className="mr-1">{tab.icon}</span>
@@ -1254,7 +1254,7 @@ function GatewayTab() {
               {commercialOpportunities.map((opp) => (
                 <div
                   key={opp.title}
-                  className="rounded-lg border border-slate-700/50 bg-slate-900/40 p-4 hover:border-white/10 transition-all"
+                  className="rounded-lg border border-white/[0.06] bg-white/[0.04] p-4 hover:border-white/10 transition-all"
                 >
                   <div className="flex items-center gap-2 mb-2">
                     <span className="text-xl">{opp.icon}</span>
@@ -1281,7 +1281,7 @@ function GatewayTab() {
             </p>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
               {orbitFacts.map((fact) => (
-                <div key={fact.label} className="rounded-lg border border-slate-700/50 bg-slate-900/40 p-4 text-center">
+                <div key={fact.label} className="rounded-lg border border-white/[0.06] bg-white/[0.04] p-4 text-center">
                   <div className="text-star-400 text-xs uppercase tracking-widest mb-1">{fact.label}</div>
                   <div className="text-white font-bold text-2xl mb-1">{fact.value}</div>
                   <div className="text-star-400 text-xs">{fact.detail}</div>
@@ -1324,7 +1324,7 @@ function GatewayTab() {
                 const style = GATEWAY_MODULE_STATUS_STYLES[module.status] || DEFAULT_GATEWAY_MODULE_STATUS_STYLE;
                 return (
                   <div key={module.id} className="flex items-center gap-2">
-                    <div className={`px-3 py-1.5 rounded-lg border ${style.bg} border-slate-700/50`}>
+                    <div className={`px-3 py-1.5 rounded-lg border ${style.bg} border-white/[0.06]`}>
                       <span className={`text-xs font-bold ${style.color}`}>{module.abbreviation}</span>
                     </div>
                     {index < GATEWAY_MODULES.length - 1 && (
@@ -1368,13 +1368,13 @@ function GatewayTab() {
                         ? 'bg-green-500 border-green-400'
                         : mission.status === 'upcoming'
                           ? 'bg-yellow-500 border-yellow-400 animate-pulse'
-                          : 'bg-slate-600 border-slate-500'
+                          : 'bg-white/[0.08] border-white/[0.1]'
                     }`} />
 
                     <div className={`rounded-lg border ${style.border} ${style.bg} p-4`}>
                       <div className="flex flex-wrap items-center gap-3 mb-2">
                         <h3 className="text-white font-bold text-lg">{mission.name}</h3>
-                        <span className={`text-xs font-medium px-2 py-0.5 rounded ${style.color} bg-slate-800/50`}>
+                        <span className={`text-xs font-medium px-2 py-0.5 rounded ${style.color} bg-white/[0.04]`}>
                           {style.label}
                         </span>
                         <span className="text-star-400 text-sm font-mono">{mission.date}</span>
@@ -1406,10 +1406,10 @@ function GatewayTab() {
             {INTERNATIONAL_PARTNERS.map((partner) => (
               <div
                 key={partner.agency}
-                className="rounded-lg border border-slate-700/50 bg-slate-900/40 p-4 hover:border-white/10 transition-all"
+                className="rounded-lg border border-white/[0.06] bg-white/[0.04] p-4 hover:border-white/10 transition-all"
               >
                 <div className="flex items-center gap-3 mb-3">
-                  <div className="w-10 h-10 rounded-full bg-slate-700/50 flex items-center justify-center text-xs font-bold text-white">
+                  <div className="w-10 h-10 rounded-full bg-white/[0.06] flex items-center justify-center text-xs font-bold text-white">
                     {partner.flag}
                   </div>
                   <div>
@@ -1455,7 +1455,7 @@ function GatewayTab() {
           {/* Orbit parameters */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
             {orbitFacts.map((fact) => (
-              <div key={fact.label} className="rounded-lg border border-slate-700/50 bg-slate-900/40 p-4 text-center">
+              <div key={fact.label} className="rounded-lg border border-white/[0.06] bg-white/[0.04] p-4 text-center">
                 <div className="text-star-400 text-xs uppercase tracking-widest mb-1">{fact.label}</div>
                 <div className="text-white font-bold text-2xl mb-1">{fact.value}</div>
                 <div className="text-star-400 text-xs">{fact.detail}</div>
@@ -1569,13 +1569,13 @@ function CislunarEcosystemContent() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0B0F1A] text-white p-6">
+      <div className="min-h-screen bg-black text-white p-6">
         <div className="max-w-7xl mx-auto">
           <div className="animate-pulse space-y-4">
-            <div className="h-8 bg-slate-800 rounded w-1/3"></div>
-            <div className="h-4 bg-slate-800 rounded w-2/3"></div>
+            <div className="h-8 bg-white/[0.06]rounded w-1/3"></div>
+            <div className="h-4 bg-white/[0.06]rounded w-2/3"></div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8">
-              {[1,2,3,4].map(i => <div key={i} className="h-48 bg-slate-800 rounded-lg"></div>)}
+              {[1,2,3,4].map(i => <div key={i} className="h-48 bg-white/[0.06]rounded-lg"></div>)}
             </div>
           </div>
         </div>
@@ -1604,7 +1604,7 @@ function CislunarEcosystemContent() {
         <ScrollReveal><HeroStats /></ScrollReveal>
 
         {/* Tab Navigation */}
-        <ScrollReveal delay={0.1}><div className="border-b border-slate-700/50 mb-8">
+        <ScrollReveal delay={0.1}><div className="border-b border-white/[0.06] mb-8">
           <div className="flex gap-1 overflow-x-auto">
             {TABS.map((tab) => (
               <button
@@ -1612,8 +1612,8 @@ function CislunarEcosystemContent() {
                 onClick={() => setActiveTab(tab.id)}
                 className={`px-4 py-2.5 text-sm font-medium whitespace-nowrap border-b-2 transition-colors ${
                   activeTab === tab.id
-                    ? 'border-white/15 text-slate-200'
-                    : 'border-transparent text-star-300 hover:text-white hover:border-slate-500'
+                    ? 'border-white/15 text-white/90'
+                    : 'border-transparent text-star-300 hover:text-white hover:border-white/[0.1]'
                 }`}
               >
                 <span className="mr-1.5">{tab.icon}</span>
@@ -1635,19 +1635,19 @@ function CislunarEcosystemContent() {
         <ScrollReveal><div className="card p-4 mt-8">
           <h3 className="text-sm font-semibold text-white mb-3">Related Modules</h3>
           <div className="flex flex-wrap gap-3">
-            <Link href="/solar-exploration" className="px-3 py-1.5 rounded-lg bg-slate-700/50 text-star-300 hover:text-white hover:bg-slate-600/50 text-sm transition-colors">
+            <Link href="/solar-exploration" className="px-3 py-1.5 rounded-lg bg-white/[0.06] text-star-300 hover:text-white hover:bg-white/[0.08] text-sm transition-colors">
               Solar Exploration
             </Link>
-            <Link href="/space-mining" className="px-3 py-1.5 rounded-lg bg-slate-700/50 text-star-300 hover:text-white hover:bg-slate-600/50 text-sm transition-colors">
+            <Link href="/space-mining" className="px-3 py-1.5 rounded-lg bg-white/[0.06] text-star-300 hover:text-white hover:bg-white/[0.08] text-sm transition-colors">
               Space Mining
             </Link>
-            <Link href="/launch-windows" className="px-3 py-1.5 rounded-lg bg-slate-700/50 text-star-300 hover:text-white hover:bg-slate-600/50 text-sm transition-colors">
+            <Link href="/launch-windows" className="px-3 py-1.5 rounded-lg bg-white/[0.06] text-star-300 hover:text-white hover:bg-white/[0.08] text-sm transition-colors">
               Launch Windows
             </Link>
-            <Link href="/mars-planner" className="px-3 py-1.5 rounded-lg bg-slate-700/50 text-star-300 hover:text-white hover:bg-slate-600/50 text-sm transition-colors">
+            <Link href="/mars-planner" className="px-3 py-1.5 rounded-lg bg-white/[0.06] text-star-300 hover:text-white hover:bg-white/[0.08] text-sm transition-colors">
               Mars Planner
             </Link>
-            <Link href="/market-intel" className="px-3 py-1.5 rounded-lg bg-slate-700/50 text-star-300 hover:text-white hover:bg-slate-600/50 text-sm transition-colors">
+            <Link href="/market-intel" className="px-3 py-1.5 rounded-lg bg-white/[0.06] text-star-300 hover:text-white hover:bg-white/[0.08] text-sm transition-colors">
               Market Intel
             </Link>
           </div>

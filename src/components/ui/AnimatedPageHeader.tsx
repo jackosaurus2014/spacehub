@@ -105,7 +105,7 @@ export default function AnimatedPageHeader({
                   {!isLast && route ? (
                     <Link href={route} className="hover:text-white transition-colors">{label}</Link>
                   ) : (
-                    <span className={isLast ? 'text-slate-300' : ''}>{label}</span>
+                    <span className={isLast ? 'text-white/70' : ''}>{label}</span>
                   )}
                 </li>
               );
@@ -131,7 +131,7 @@ export default function AnimatedPageHeader({
 
       {subtitle && (
         <p
-          className={`mt-3 text-lg text-slate-300 max-w-3xl leading-relaxed ${
+          className={`mt-3 text-lg text-white/70 max-w-3xl leading-relaxed ${
             visible ? `animate-reveal-up-lg ${delayClass(subtitleDelay)}` : 'opacity-0'
           }`}
         >

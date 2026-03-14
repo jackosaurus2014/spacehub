@@ -87,7 +87,7 @@ export default function IndustrySnapshot() {
             >
               <div className="flex items-center gap-2 mb-2">
                 <span className="text-xl" role="img" aria-hidden="true">{metric.icon}</span>
-                <span className="text-sm text-slate-300 font-medium">{metric.label}</span>
+                <span className="text-sm text-white/70 font-medium">{metric.label}</span>
               </div>
               <div className="flex items-baseline gap-3 mb-1">
                 <span className="text-2xl font-bold text-white">{metric.value}</span>

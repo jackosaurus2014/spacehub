@@ -48,8 +48,8 @@ const SECTORS: MarketSector[] = [
     accent: 'slate',
     bgClass: 'bg-white/8',
     borderClass: 'border-white/10',
-    textClass: 'text-slate-300',
-    badgeClass: 'bg-white/10 text-slate-200',
+    textClass: 'text-white/70',
+    badgeClass: 'bg-white/10 text-white/90',
     companies: [
       { name: 'SpaceX', slug: 'spacex', stage: 'Growth', valuation: '$350B', keyProduct: 'Falcon 9 / Starship', founded: 2002, hq: 'Hawthorne, CA' },
       { name: 'Rocket Lab', slug: 'rocket-lab', stage: 'Public', valuation: '$11B', keyProduct: 'Electron / Neutron', founded: 2006, hq: 'Long Beach, CA' },
@@ -200,7 +200,7 @@ const ALL_STAGES: FundingStage[] = ['Pre-Seed', 'Seed', 'Series A-C', 'Growth', 
 
 function getAvatarColor(accent: string): string {
   const colors: Record<string, string> = {
-    cyan: 'bg-white text-slate-200',
+    cyan: 'bg-white text-white/90',
     purple: 'bg-purple-600 text-purple-100',
     emerald: 'bg-emerald-600 text-emerald-100',
     amber: 'bg-amber-600 text-amber-100',
@@ -214,7 +214,7 @@ function getAvatarColor(accent: string): string {
 
 function getStageBadgeClass(stage: FundingStage): string {
   switch (stage) {
-    case 'Pre-Seed': return 'bg-slate-700 text-slate-300 border-slate-600';
+    case 'Pre-Seed': return 'bg-slate-700 text-white/70 border-white/[0.1]';
     case 'Seed': return 'bg-lime-900/50 text-lime-300 border-lime-700/40';
     case 'Series A-C': return 'bg-blue-900/50 text-blue-300 border-blue-700/40';
     case 'Growth': return 'bg-purple-900/50 text-purple-300 border-purple-700/40';
@@ -233,7 +233,7 @@ function StatsBar({ totalCompanies, totalSectors, totalMarketCap }: {
 }) {
   const stats = [
     { label: 'Companies Mapped', value: totalCompanies.toString(), icon: (
-      <svg className="w-5 h-5 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg className="w-5 h-5 text-white/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
       </svg>
     )},
@@ -253,7 +253,7 @@ function StatsBar({ totalCompanies, totalSectors, totalMarketCap }: {
     <ScrollReveal>
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
         {stats.map((stat) => (
-          <div key={stat.label} className="bg-slate-800/60 border border-slate-700/50 rounded-xl p-5 flex items-center gap-4">
+          <div key={stat.label} className="bg-white/[0.05] border border-white/[0.06] rounded-xl p-5 flex items-center gap-4">
             <div className="p-2.5 rounded-lg bg-slate-700/50">{stat.icon}</div>
             <div>
               <p className="text-2xl font-bold text-slate-100">{stat.value}</p>
@@ -285,13 +285,13 @@ function CompanyCard({ company, accent, sectorId }: {
         onFocus={() => setHovered(true)}
         onBlur={() => setHovered(false)}
       >
-        <div className="flex items-center gap-2.5 p-2 rounded-lg bg-slate-800/60 border border-slate-700/40 hover:border-slate-600 hover:bg-slate-800 transition-all duration-200 group-focus-visible:ring-2 group-focus-visible:ring-white/15 group-focus-visible:ring-offset-2 group-focus-visible:ring-offset-slate-900">
+        <div className="flex items-center gap-2.5 p-2 rounded-lg bg-white/[0.05] border border-white/[0.06] hover:border-white/[0.1] hover:bg-white/[0.06] transition-all duration-200 group-focus-visible:ring-2 group-focus-visible:ring-white/15 group-focus-visible:ring-offset-2 group-focus-visible:ring-offset-slate-900">
           {/* First-letter avatar */}
           <div className={`w-8 h-8 rounded-md flex items-center justify-center text-sm font-bold shrink-0 ${getAvatarColor(accent)}`}>
             {company.name.charAt(0)}
           </div>
           <div className="min-w-0 flex-1">
-            <p className="text-sm font-medium text-slate-200 truncate group-hover:text-white transition-colors">
+            <p className="text-sm font-medium text-white/90 truncate group-hover:text-white transition-colors">
               {company.name}
             </p>
             <p className="text-[11px] text-slate-500 truncate">{company.keyProduct}</p>
@@ -307,7 +307,7 @@ function CompanyCard({ company, accent, sectorId }: {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 6, scale: 0.97 }}
             transition={{ duration: 0.15 }}
-            className="absolute z-50 left-0 right-0 top-full mt-1.5 bg-slate-800 border border-slate-600 rounded-xl p-3.5 shadow-2xl shadow-black/40 pointer-events-none"
+            className="absolute z-50 left-0 right-0 top-full mt-1.5 bg-white/[0.06] border border-white/[0.1] rounded-xl p-3.5 shadow-2xl shadow-black/40 pointer-events-none"
           >
             <p className="text-sm font-semibold text-white mb-1.5">{company.name}</p>
             <div className="space-y-1">
@@ -325,18 +325,18 @@ function CompanyCard({ company, accent, sectorId }: {
               </div>
               <div className="flex items-center justify-between text-xs">
                 <span className="text-slate-400">Key Product</span>
-                <span className="text-slate-300 text-right ml-2 max-w-[140px] truncate">{company.keyProduct}</span>
+                <span className="text-white/70 text-right ml-2 max-w-[140px] truncate">{company.keyProduct}</span>
               </div>
               {company.founded && (
                 <div className="flex items-center justify-between text-xs">
                   <span className="text-slate-400">Founded</span>
-                  <span className="text-slate-300">{company.founded}</span>
+                  <span className="text-white/70">{company.founded}</span>
                 </div>
               )}
               {company.hq && (
                 <div className="flex items-center justify-between text-xs">
                   <span className="text-slate-400">HQ</span>
-                  <span className="text-slate-300 text-right ml-2 max-w-[140px] truncate">{company.hq}</span>
+                  <span className="text-white/70 text-right ml-2 max-w-[140px] truncate">{company.hq}</span>
                 </div>
               )}
             </div>
@@ -428,7 +428,7 @@ export default function MarketMapPage() {
           title="Space Industry Market Map"
           subtitle="Visual landscape of the global space economy organized by sector -- inspired by CB Insights market maps. Hover over companies for details, or filter by funding stage and sector."
           icon={
-            <svg className="w-9 h-9 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-9 h-9 text-white/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           }
@@ -445,7 +445,7 @@ export default function MarketMapPage() {
 
         {/* Filters */}
         <ScrollReveal delay={0.1}>
-          <div className="bg-slate-800/40 border border-slate-700/50 rounded-xl p-4 sm:p-5 mb-8 space-y-4">
+          <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-4 sm:p-5 mb-8 space-y-4">
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
               {/* Search */}
               <div className="relative flex-1 w-full sm:max-w-sm">
@@ -457,7 +457,7 @@ export default function MarketMapPage() {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search companies, products, locations..."
-                  className="w-full pl-10 pr-4 py-2.5 bg-slate-900/60 border border-slate-700 rounded-lg text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-white/20 focus:border-white/15 transition-all"
+                  className="w-full pl-10 pr-4 py-2.5 bg-black/60 border border-white/[0.08] rounded-lg text-sm text-white/90 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-white/20 focus:border-white/15 transition-all"
                 />
               </div>
 
@@ -465,7 +465,7 @@ export default function MarketMapPage() {
               {hasFilters && (
                 <button
                   onClick={() => { setSelectedSector(null); setSelectedStage(null); setSearchQuery(''); }}
-                  className="text-xs text-slate-400 hover:text-white border border-slate-700 hover:border-slate-500 rounded-lg px-3 py-2 transition-colors whitespace-nowrap"
+                  className="text-xs text-slate-400 hover:text-white border border-white/[0.08] hover:border-slate-500 rounded-lg px-3 py-2 transition-colors whitespace-nowrap"
                 >
                   Clear all filters
                 </button>
@@ -480,8 +480,8 @@ export default function MarketMapPage() {
                   onClick={() => setSelectedSector(null)}
                   className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all border ${
                     selectedSector === null
-                      ? 'bg-white/10 border-white/15 text-slate-200'
-                      : 'bg-slate-800/60 border-slate-700/50 text-slate-400 hover:text-slate-200 hover:border-slate-600'
+                      ? 'bg-white/10 border-white/15 text-white/90'
+                      : 'bg-white/[0.05] border-white/[0.06] text-slate-400 hover:text-white/90 hover:border-white/[0.1]'
                   }`}
                 >
                   All Sectors
@@ -493,7 +493,7 @@ export default function MarketMapPage() {
                     className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all border ${
                       selectedSector === sector.id
                         ? `${sector.badgeClass} ${sector.borderClass}`
-                        : 'bg-slate-800/60 border-slate-700/50 text-slate-400 hover:text-slate-200 hover:border-slate-600'
+                        : 'bg-white/[0.05] border-white/[0.06] text-slate-400 hover:text-white/90 hover:border-white/[0.1]'
                     }`}
                   >
                     {sector.label}
@@ -510,8 +510,8 @@ export default function MarketMapPage() {
                   onClick={() => setSelectedStage(null)}
                   className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all border ${
                     selectedStage === null
-                      ? 'bg-white/10 border-white/15 text-slate-200'
-                      : 'bg-slate-800/60 border-slate-700/50 text-slate-400 hover:text-slate-200 hover:border-slate-600'
+                      ? 'bg-white/10 border-white/15 text-white/90'
+                      : 'bg-white/[0.05] border-white/[0.06] text-slate-400 hover:text-white/90 hover:border-white/[0.1]'
                   }`}
                 >
                   All Stages
@@ -523,7 +523,7 @@ export default function MarketMapPage() {
                     className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all border ${
                       selectedStage === stage
                         ? getStageBadgeClass(stage)
-                        : 'bg-slate-800/60 border-slate-700/50 text-slate-400 hover:text-slate-200 hover:border-slate-600'
+                        : 'bg-white/[0.05] border-white/[0.06] text-slate-400 hover:text-white/90 hover:border-white/[0.1]'
                     }`}
                   >
                     {stage}
@@ -535,8 +535,8 @@ export default function MarketMapPage() {
             {/* Results summary */}
             {hasFilters && (
               <p className="text-xs text-slate-500">
-                Showing <span className="text-slate-300 font-medium">{totalDisplayed}</span> of{' '}
-                <span className="text-slate-300 font-medium">{allCompaniesCount}</span> companies
+                Showing <span className="text-white/70 font-medium">{totalDisplayed}</span> of{' '}
+                <span className="text-white/70 font-medium">{allCompaniesCount}</span> companies
               </p>
             )}
           </div>
@@ -560,7 +560,7 @@ export default function MarketMapPage() {
               <svg className="w-16 h-16 text-slate-700 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
-              <h3 className="text-xl font-semibold text-slate-300 mb-2">No companies match your filters</h3>
+              <h3 className="text-xl font-semibold text-white/70 mb-2">No companies match your filters</h3>
               <p className="text-sm text-slate-500 mb-6 max-w-md mx-auto">
                 Try adjusting your search query, sector, or funding stage filters to see more results.
               </p>
@@ -576,8 +576,8 @@ export default function MarketMapPage() {
 
         {/* Legend / methodology note */}
         <ScrollReveal delay={0.2}>
-          <div className="mt-12 bg-slate-800/30 border border-slate-700/40 rounded-xl p-6">
-            <h3 className="text-sm font-semibold text-slate-300 mb-3 uppercase tracking-wider">Funding Stage Legend</h3>
+          <div className="mt-12 bg-white/[0.03] border border-white/[0.06] rounded-xl p-6">
+            <h3 className="text-sm font-semibold text-white/70 mb-3 uppercase tracking-wider">Funding Stage Legend</h3>
             <div className="flex flex-wrap gap-3 mb-5">
               {ALL_STAGES.map((stage) => (
                 <span
@@ -589,7 +589,7 @@ export default function MarketMapPage() {
               ))}
             </div>
 
-            <h3 className="text-sm font-semibold text-slate-300 mb-3 uppercase tracking-wider">Sector Color Key</h3>
+            <h3 className="text-sm font-semibold text-white/70 mb-3 uppercase tracking-wider">Sector Color Key</h3>
             <div className="flex flex-wrap gap-3 mb-5">
               {SECTORS.map((sector) => (
                 <div key={sector.id} className="flex items-center gap-1.5">
@@ -599,7 +599,7 @@ export default function MarketMapPage() {
               ))}
             </div>
 
-            <div className="border-t border-slate-700/40 pt-4 mt-4">
+            <div className="border-t border-white/[0.06] pt-4 mt-4">
               <p className="text-xs text-slate-500 leading-relaxed">
                 <strong className="text-slate-400">Methodology:</strong> Companies are categorized by their primary business segment.
                 Valuations reflect publicly available estimates and may include market cap for public companies or last-known
@@ -611,7 +611,7 @@ export default function MarketMapPage() {
             <div className="flex flex-col sm:flex-row gap-3 mt-5">
               <Link
                 href="/ecosystem-map"
-                className="inline-flex items-center gap-2 text-sm text-slate-300 hover:text-white transition-colors"
+                className="inline-flex items-center gap-2 text-sm text-white/70 hover:text-white transition-colors"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />

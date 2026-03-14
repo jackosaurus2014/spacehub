@@ -475,7 +475,7 @@ function subscriberToNumber(est: string): number {
 const CATEGORY_TABS: CategoryFilter[] = ['All', 'Business', 'Technical', 'Policy', 'Investment', 'Defense', 'Science'];
 
 const CATEGORY_COLORS: Record<NewsletterCategory, string> = {
-  Business: 'bg-white/10 text-slate-200 border-white/10',
+  Business: 'bg-white/10 text-white/90 border-white/10',
   Technical: 'bg-purple-500/20 text-purple-300 border-purple-500/30',
   Policy: 'bg-amber-500/20 text-amber-300 border-amber-500/30',
   Investment: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30',
@@ -511,12 +511,12 @@ function NewsletterCard({ newsletter }: { newsletter: Newsletter }) {
           </div>
         </div>
         <div className="flex-shrink-0 ml-3 text-right">
-          <span className="text-sm font-medium text-slate-300">{newsletter.subscriberEstimate}</span>
+          <span className="text-sm font-medium text-white/70">{newsletter.subscriberEstimate}</span>
           <p className="text-[10px] text-slate-500 uppercase tracking-wide">subscribers</p>
         </div>
       </div>
 
-      <p className="text-sm text-slate-300 leading-relaxed flex-1 mb-3">
+      <p className="text-sm text-white/70 leading-relaxed flex-1 mb-3">
         {newsletter.description}
       </p>
 
@@ -528,7 +528,7 @@ function NewsletterCard({ newsletter }: { newsletter: Newsletter }) {
         ))}
       </div>
 
-      <div className="mt-3 pt-3 border-t border-slate-700/50 flex items-center justify-between">
+      <div className="mt-3 pt-3 border-t border-white/[0.06] flex items-center justify-between">
         <span className="text-xs text-slate-500 truncate">{newsletter.url.replace(/^https?:\/\/(www\.)?/, '')}</span>
         <svg className="w-4 h-4 text-slate-500 group-hover:text-white transition-colors flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
@@ -556,7 +556,7 @@ function PodcastCard({ podcast }: { podcast: Podcast }) {
           {podcast.name}
         </h3>
         <p className="text-xs text-slate-400 mt-0.5">{podcast.host} &middot; {podcast.frequency}</p>
-        <p className="text-sm text-slate-300 mt-2 line-clamp-2">{podcast.description}</p>
+        <p className="text-sm text-white/70 mt-2 line-clamp-2">{podcast.description}</p>
         <p className="text-[10px] text-slate-500 mt-2 uppercase tracking-wide">{podcast.platform}</p>
       </div>
     </a>
@@ -579,8 +579,8 @@ function MediaOutletCard({ outlet }: { outlet: MediaOutlet }) {
           {outlet.type}
         </span>
       </div>
-      <p className="text-sm text-slate-300 leading-relaxed mb-3">{outlet.description}</p>
-      <div className="flex items-center justify-between pt-2 border-t border-slate-700/50">
+      <p className="text-sm text-white/70 leading-relaxed mb-3">{outlet.description}</p>
+      <div className="flex items-center justify-between pt-2 border-t border-white/[0.06]">
         <span className="text-xs text-slate-500">Focus: {outlet.focus}</span>
         <svg className="w-4 h-4 text-slate-500 group-hover:text-emerald-400 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
@@ -651,7 +651,7 @@ export default function NewslettersDirectoryPage() {
         <ScrollReveal>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
             <div className="card p-4 text-center">
-              <p className="text-2xl font-bold text-slate-300">{totalCount}</p>
+              <p className="text-2xl font-bold text-white/70">{totalCount}</p>
               <p className="text-xs text-slate-400 mt-1">Newsletters</p>
             </div>
             <div className="card p-4 text-center">
@@ -681,12 +681,12 @@ export default function NewslettersDirectoryPage() {
                 placeholder="Search newsletters by name or topic..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 bg-slate-800/60 border border-slate-700 rounded-xl text-sm text-slate-200 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-white/20 focus:border-white/15 transition-all"
+                className="w-full pl-10 pr-4 py-3 bg-white/[0.05] border border-white/[0.08] rounded-xl text-sm text-white/90 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-white/20 focus:border-white/15 transition-all"
               />
               {searchQuery && (
                 <button
                   onClick={() => setSearchQuery('')}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-colors"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white/70 transition-colors"
                   aria-label="Clear search"
                 >
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -698,7 +698,7 @@ export default function NewslettersDirectoryPage() {
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as SortOption)}
-              className="px-4 py-3 bg-slate-800/60 border border-slate-700 rounded-xl text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-white/20 focus:border-white/15 cursor-pointer"
+              className="px-4 py-3 bg-white/[0.05] border border-white/[0.08] rounded-xl text-sm text-white/90 focus:outline-none focus:ring-2 focus:ring-white/20 focus:border-white/15 cursor-pointer"
               aria-label="Sort newsletters"
             >
               <option value="popularity">Sort by Popularity</option>
@@ -724,12 +724,12 @@ export default function NewslettersDirectoryPage() {
                   onClick={() => setActiveCategory(cat)}
                   className={`flex-shrink-0 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                     isActive
-                      ? 'bg-white/10 text-slate-200 border border-white/15 shadow-lg shadow-black/5'
-                      : 'bg-slate-800/40 text-slate-400 border border-slate-700/50 hover:text-slate-200 hover:border-slate-600'
+                      ? 'bg-white/10 text-white/90 border border-white/15 shadow-lg shadow-black/5'
+                      : 'bg-white/[0.04] text-slate-400 border border-white/[0.06] hover:text-white/90 hover:border-white/[0.1]'
                   }`}
                 >
                   {cat}
-                  <span className={`ml-1.5 text-xs ${isActive ? 'text-slate-300' : 'text-slate-500'}`}>
+                  <span className={`ml-1.5 text-xs ${isActive ? 'text-white/70' : 'text-slate-500'}`}>
                     ({count})
                   </span>
                 </button>
@@ -755,7 +755,7 @@ export default function NewslettersDirectoryPage() {
               <p className="text-slate-400 mb-2">No newsletters match your search criteria.</p>
               <button
                 onClick={() => { setSearchQuery(''); setActiveCategory('All'); }}
-                className="text-sm text-slate-300 hover:text-white transition-colors"
+                className="text-sm text-white/70 hover:text-white transition-colors"
               >
                 Clear filters
               </button>

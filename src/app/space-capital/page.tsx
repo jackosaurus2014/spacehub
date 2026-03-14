@@ -525,7 +525,7 @@ function OverviewTab({ investors, fundingByYear, startups }: {
             );
           })}
         </div>
-        <div className="mt-4 pt-4 border-t border-slate-700/50 flex items-center justify-between">
+        <div className="mt-4 pt-4 border-t border-white/[0.06] flex items-center justify-between">
           <span className="text-xs text-slate-500">Peak: $15.4B in 2021 driven by SPAC mergers and mega-rounds</span>
           <span className="text-xs text-slate-400">Source: Space Capital, Bryce Tech</span>
         </div>
@@ -597,7 +597,7 @@ function InvestorsTab({ investors }: { investors: Investor[] }) {
           <select
             value={typeFilter}
             onChange={(e) => setTypeFilter(e.target.value)}
-            className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+            className="bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
           >
             {INVESTOR_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
           </select>
@@ -607,7 +607,7 @@ function InvestorsTab({ investors }: { investors: Investor[] }) {
           <select
             value={stageFilter}
             onChange={(e) => setStageFilter(e.target.value)}
-            className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+            className="bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
           >
             {STAGE_OPTIONS.map(s => <option key={s} value={s}>{s}</option>)}
           </select>
@@ -626,7 +626,7 @@ function InvestorsTab({ investors }: { investors: Investor[] }) {
                     <span className="text-lg font-bold text-slate-500">#{idx + 1}</span>
                     <h4 className="text-white font-semibold">{inv.name}</h4>
                   </div>
-                  <span className={`text-xs px-2 py-0.5 rounded border ${TYPE_COLORS[inv.type] || 'bg-slate-700/50 text-slate-300 border-slate-600'}`}>
+                  <span className={`text-xs px-2 py-0.5 rounded border ${TYPE_COLORS[inv.type] || 'bg-white/[0.06] text-slate-300 border-white/[0.1]'}`}>
                     {inv.type}
                   </span>
                 </div>
@@ -652,19 +652,19 @@ function InvestorsTab({ investors }: { investors: Investor[] }) {
               {/* Stage pills */}
               <div className="flex flex-wrap gap-1 mb-3">
                 {inv.stagePreference.map(s => (
-                  <span key={s} className="text-xs bg-slate-700/50 text-slate-300 px-2 py-0.5 rounded">{s}</span>
+                  <span key={s} className="text-xs bg-white/[0.06] text-slate-300 px-2 py-0.5 rounded">{s}</span>
                 ))}
               </div>
 
               {/* Sector pills */}
               <div className="flex flex-wrap gap-1 mb-3">
                 {inv.sectorFocus.map(s => (
-                  <span key={s} className="text-xs bg-slate-800/40 text-slate-300 px-2 py-0.5 rounded">{s}</span>
+                  <span key={s} className="text-xs bg-white/[0.04] text-slate-300 px-2 py-0.5 rounded">{s}</span>
                 ))}
               </div>
 
               {/* Notable Portfolio */}
-              <div className="border-t border-slate-700/50 pt-3">
+              <div className="border-t border-white/[0.06] pt-3">
                 <span className="text-slate-500 text-xs">Notable Portfolio: </span>
                 <span className="text-slate-300 text-xs">{inv.notablePortfolio.join(', ')}</span>
               </div>
@@ -716,7 +716,7 @@ function StartupsTab({ startups }: { startups: StartupCompany[] }) {
             className={`px-3 py-1.5 text-sm rounded-lg transition-colors ${
               categoryFilter === cat
                 ? 'bg-white/10 text-slate-300 border border-white/15'
-                : 'bg-slate-800/50 text-slate-400 border border-slate-700/50 hover:text-white'
+                : 'bg-white/[0.04] text-slate-400 border border-white/[0.06] hover:text-white'
             }`}
           >
             {cat}
@@ -767,7 +767,7 @@ function StartupsTab({ startups }: { startups: StartupCompany[] }) {
               {/* Focus areas */}
               <div className="flex flex-wrap gap-1 mt-3">
                 {s.focusAreas.map(fa => (
-                  <span key={fa} className="text-xs bg-slate-700/50 text-slate-300 px-2 py-0.5 rounded">
+                  <span key={fa} className="text-xs bg-white/[0.06] text-slate-300 px-2 py-0.5 rounded">
                     {FOCUS_AREA_LABELS[fa] || fa}
                   </span>
                 ))}
@@ -775,7 +775,7 @@ function StartupsTab({ startups }: { startups: StartupCompany[] }) {
 
               {/* Key investors */}
               {s.keyInvestors && s.keyInvestors.length > 0 && (
-                <div className="mt-3 pt-2 border-t border-slate-700/30">
+                <div className="mt-3 pt-2 border-t border-white/[0.06]">
                   <span className="text-slate-500 text-xs">Key Investors: </span>
                   <span className="text-slate-300 text-xs">{s.keyInvestors.join(', ')}</span>
                 </div>
@@ -861,7 +861,7 @@ function MatchmakerTab({ investors, startups }: { investors: Investor[]; startup
           className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
             mode === 'startup'
               ? 'bg-white/10 text-slate-300 border border-white/15'
-              : 'bg-slate-800/50 text-slate-400 border border-slate-700/50 hover:text-white'
+              : 'bg-white/[0.04] text-slate-400 border border-white/[0.06] hover:text-white'
           }`}
         >
           I&apos;m a Startup
@@ -871,7 +871,7 @@ function MatchmakerTab({ investors, startups }: { investors: Investor[]; startup
           className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
             mode === 'investor'
               ? 'bg-white/10 text-slate-300 border border-white/15'
-              : 'bg-slate-800/50 text-slate-400 border border-slate-700/50 hover:text-white'
+              : 'bg-white/[0.04] text-slate-400 border border-white/[0.06] hover:text-white'
           }`}
         >
           I&apos;m an Investor
@@ -889,7 +889,7 @@ function MatchmakerTab({ investors, startups }: { investors: Investor[]; startup
                 <select
                   value={selectedCategory}
                   onChange={(e) => setSelectedCategory(e.target.value)}
-                  className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+                  className="bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                 >
                   <option value="">Select sector...</option>
                   {sectorOptions.map(s => <option key={s} value={s}>{s}</option>)}
@@ -900,7 +900,7 @@ function MatchmakerTab({ investors, startups }: { investors: Investor[]; startup
                 <select
                   value={selectedStage}
                   onChange={(e) => setSelectedStage(e.target.value)}
-                  className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+                  className="bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                 >
                   <option value="">Select stage...</option>
                   {stageOptions.map(s => <option key={s} value={s}>{s}</option>)}
@@ -919,7 +919,7 @@ function MatchmakerTab({ investors, startups }: { investors: Investor[]; startup
                   <div key={inv.id} className="card border-green-500/30 p-5">
                     <div className="flex items-center gap-2 mb-2">
                       <h4 className="text-white font-semibold">{inv.name}</h4>
-                      <span className={`text-xs px-2 py-0.5 rounded border ${TYPE_COLORS[inv.type] || 'bg-slate-700/50 text-slate-300 border-slate-600'}`}>
+                      <span className={`text-xs px-2 py-0.5 rounded border ${TYPE_COLORS[inv.type] || 'bg-white/[0.06] text-slate-300 border-white/[0.1]'}`}>
                         {inv.type}
                       </span>
                     </div>
@@ -952,7 +952,7 @@ function MatchmakerTab({ investors, startups }: { investors: Investor[]; startup
               <select
                 value={selectedInvestor}
                 onChange={(e) => setSelectedInvestor(e.target.value)}
-                className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none w-full max-w-md"
+                className="bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none w-full max-w-md"
               >
                 <option value="">Choose an investor...</option>
                 {investors.map(i => <option key={i.id} value={i.id}>{i.name} ({i.type})</option>)}
@@ -966,7 +966,7 @@ function MatchmakerTab({ investors, startups }: { investors: Investor[]; startup
               <p className="text-slate-400 text-sm mb-3">{selectedInvestorData.investmentThesis}</p>
               <div className="flex flex-wrap gap-1">
                 {selectedInvestorData.sectorFocus.map(s => (
-                  <span key={s} className="text-xs bg-slate-800/40 text-slate-300 px-2 py-0.5 rounded">{s}</span>
+                  <span key={s} className="text-xs bg-white/[0.04] text-slate-300 px-2 py-0.5 rounded">{s}</span>
                 ))}
               </div>
             </div>
@@ -987,7 +987,7 @@ function MatchmakerTab({ investors, startups }: { investors: Investor[]; startup
                     <p className="text-slate-400 text-xs mb-2 line-clamp-2">{s.description}</p>
                     <div className="flex flex-wrap gap-1">
                       {s.focusAreas.map(fa => (
-                        <span key={fa} className="text-xs bg-slate-700/50 text-slate-300 px-1.5 py-0.5 rounded">
+                        <span key={fa} className="text-xs bg-white/[0.06] text-slate-300 px-1.5 py-0.5 rounded">
                           {FOCUS_AREA_LABELS[fa] || fa}
                         </span>
                       ))}
@@ -1126,10 +1126,10 @@ function SpaceCapitalInner() {
       <div className="min-h-screen bg-[#0B0F1A] text-white p-6">
         <div className="max-w-7xl mx-auto">
           <div className="animate-pulse space-y-4">
-            <div className="h-8 bg-slate-800 rounded w-1/3"></div>
-            <div className="h-4 bg-slate-800 rounded w-2/3"></div>
+            <div className="h-8 bg-white/[0.06] rounded w-1/3"></div>
+            <div className="h-4 bg-white/[0.06] rounded w-2/3"></div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8">
-              {[1, 2, 3, 4].map(i => <div key={i} className="h-24 bg-slate-800 rounded-lg"></div>)}
+              {[1, 2, 3, 4].map(i => <div key={i} className="h-24 bg-white/[0.06] rounded-lg"></div>)}
             </div>
           </div>
         </div>
@@ -1138,7 +1138,7 @@ function SpaceCapitalInner() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-900">
+    <div className="min-h-screen bg-black">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <AnimatedPageHeader
           title="Space Capital"
@@ -1161,7 +1161,7 @@ function SpaceCapitalInner() {
         )}
 
         {/* Tab Navigation */}
-        <div className="border-b border-slate-700/50 mb-8">
+        <div className="border-b border-white/[0.06] mb-8">
           <div className="flex gap-1 overflow-x-auto">
             {TABS.map((tab) => (
               <button
@@ -1225,8 +1225,8 @@ export default function SpaceCapitalPage() {
     <Suspense fallback={
       <div className="min-h-screen bg-[#0B0F1A] text-white p-6">
         <div className="max-w-7xl mx-auto animate-pulse space-y-4">
-          <div className="h-8 bg-slate-800 rounded w-1/3"></div>
-          <div className="h-4 bg-slate-800 rounded w-2/3"></div>
+          <div className="h-8 bg-white/[0.06] rounded w-1/3"></div>
+          <div className="h-4 bg-white/[0.06] rounded w-2/3"></div>
         </div>
       </div>
     }>

@@ -86,7 +86,7 @@ function ExpressInterestButton({ opportunityId }: { opportunityId: string }) {
             enterKeyHint="send"
             aria-label="Contact email"
             placeholder="Contact email"
-            className="bg-slate-800 border border-slate-600 rounded px-2 py-1 text-xs text-white w-44"
+            className="bg-white/[0.06] border border-white/[0.1] rounded px-2 py-1 text-xs text-white w-44"
           />
           <button
             onClick={handleSubmit}
@@ -136,7 +136,7 @@ function OpportunityRow({ opportunity }: { opportunity: BusinessOpportunity }) {
             >
               {typeInfo?.label}
             </span>
-            <span className="text-xs bg-slate-800 text-slate-400 px-2 py-0.5 rounded flex items-center gap-1">
+            <span className="text-xs bg-white/[0.06] text-slate-400 px-2 py-0.5 rounded flex items-center gap-1">
               {categoryInfo?.icon} {categoryInfo?.label}
             </span>
             {opportunity.featured && (
@@ -187,7 +187,7 @@ function OpportunityRow({ opportunity }: { opportunity: BusinessOpportunity }) {
             {opportunity.aiConfidence && (
               <div className="flex items-center gap-1">
                 <span className="text-slate-400">Confidence:</span>
-                <span className="text-slate-200">
+                <span className="text-white/90">
                   {Math.round(opportunity.aiConfidence * 100)}%
                 </span>
               </div>
@@ -204,7 +204,7 @@ function OpportunityRow({ opportunity }: { opportunity: BusinessOpportunity }) {
                   return (
                     <span
                       key={audience}
-                      className="text-xs bg-slate-800/50 text-slate-400 px-2 py-1 rounded flex items-center gap-1"
+                      className="text-xs bg-white/[0.04] text-slate-400 px-2 py-1 rounded flex items-center gap-1"
                     >
                       {info?.icon} {info?.label}
                     </span>
@@ -218,7 +218,7 @@ function OpportunityRow({ opportunity }: { opportunity: BusinessOpportunity }) {
           <div className="flex flex-wrap gap-2 mb-3">
             <Link
               href="/market-intel"
-              className="text-xs text-slate-200 hover:text-white bg-white/10 px-2 py-1 rounded transition-colors"
+              className="text-xs text-white/90 hover:text-white bg-white/10 px-2 py-1 rounded transition-colors"
             >
               View related companies →
             </Link>
@@ -232,7 +232,7 @@ function OpportunityRow({ opportunity }: { opportunity: BusinessOpportunity }) {
             )}
             <Link
               href={`/marketplace/search?category=${opportunity.category === 'launch_services' ? 'launch' : opportunity.category === 'satellites' ? 'satellite' : ''}`}
-              className="text-xs text-slate-300 hover:text-white bg-white/5 px-2 py-1 rounded transition-colors"
+              className="text-xs text-white/70 hover:text-white bg-white/5 px-2 py-1 rounded transition-colors"
             >
               Find providers on Marketplace →
             </Link>
@@ -246,12 +246,12 @@ function OpportunityRow({ opportunity }: { opportunity: BusinessOpportunity }) {
             <div>
               <button
                 onClick={() => setExpanded(!expanded)}
-                className="text-slate-200 hover:text-white text-sm flex items-center gap-1"
+                className="text-white/90 hover:text-white text-sm flex items-center gap-1"
               >
                 {expanded ? '▼ Hide Analysis' : '▶ Show Full Analysis'}
               </button>
               {expanded && (
-                <div className="mt-3 p-4 bg-slate-800/50 rounded-lg">
+                <div className="mt-3 p-4 bg-white/[0.04] rounded-lg">
                   {opportunity.fullAnalysis && (
                     <div className="mb-3">
                       <h4 className="text-white font-medium mb-2">Full Analysis</h4>
@@ -273,7 +273,7 @@ function OpportunityRow({ opportunity }: { opportunity: BusinessOpportunity }) {
                         {(opportunity.relatedTrends as string[]).map((trend) => (
                           <span
                             key={trend}
-                            className="text-xs bg-white/10 text-slate-200 px-2 py-1 rounded"
+                            className="text-xs bg-white/10 text-white/90 px-2 py-1 rounded"
                           >
                             #{trend.replace(/_/g, ' ')}
                           </span>
@@ -408,13 +408,13 @@ function BusinessOpportunitiesContent() {
         )}
 
         {/* Tab Navigation */}
-        <div className="flex gap-1 mb-6 bg-slate-800/50 p-1 rounded-lg w-fit">
+        <div className="flex gap-1 mb-6 bg-white/[0.04] p-1 rounded-lg w-fit">
           <button
             onClick={() => setActiveTab('opportunities')}
             className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
               activeTab === 'opportunities'
                 ? 'bg-white text-slate-900'
-                : 'text-slate-400 hover:text-white hover:bg-slate-700'
+                : 'text-slate-400 hover:text-white hover:bg-white/[0.08]'
             }`}
           >
             AI Opportunities
@@ -424,7 +424,7 @@ function BusinessOpportunitiesContent() {
             className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
               activeTab === 'contracts'
                 ? 'bg-white text-slate-900'
-                : 'text-slate-400 hover:text-white hover:bg-slate-700'
+                : 'text-slate-400 hover:text-white hover:bg-white/[0.08]'
             }`}
           >
             Government Contracts
@@ -471,7 +471,7 @@ function BusinessOpportunitiesContent() {
               </StaggerItem>
               <StaggerItem>
                 <div className="card-elevated p-6 text-center">
-                  <div className="text-4xl font-bold font-display tracking-tight text-slate-200">
+                  <div className="text-4xl font-bold font-display tracking-tight text-white/90">
                     {stats.byType?.ai_insight || 0}
                   </div>
                   <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">AI Insights</div>
@@ -488,7 +488,7 @@ function BusinessOpportunitiesContent() {
                     id="opp-type-filter"
                     value={selectedType}
                     onChange={(e) => setSelectedType(e.target.value as OpportunityType | '')}
-                    className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+                    className="bg-white/[0.06] border border-white/[0.08] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                   >
                     <option value="">All Types</option>
                     {OPPORTUNITY_TYPES.map((type) => (
@@ -507,7 +507,7 @@ function BusinessOpportunitiesContent() {
                     onChange={(e) =>
                       setSelectedCategory(e.target.value as OpportunityCategory | '')
                     }
-                    className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+                    className="bg-white/[0.06] border border-white/[0.08] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                   >
                     <option value="">All Categories</option>
                     {OPPORTUNITY_CATEGORIES.map((cat) => (
@@ -526,7 +526,7 @@ function BusinessOpportunitiesContent() {
                     onChange={(e) =>
                       setSelectedAudience(e.target.value as TargetAudience | '')
                     }
-                    className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+                    className="bg-white/[0.06] border border-white/[0.08] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                   >
                     <option value="">All Audiences</option>
                     <option value="entrepreneurs">💡 Entrepreneurs</option>
@@ -544,7 +544,7 @@ function BusinessOpportunitiesContent() {
                     onChange={(e) =>
                       setSelectedDifficulty(e.target.value as OpportunityDifficulty | '')
                     }
-                    className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+                    className="bg-white/[0.06] border border-white/[0.08] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                   >
                     <option value="">All Difficulties</option>
                     {(Object.entries(DIFFICULTY_INFO) as [OpportunityDifficulty, { label: string; color: string }][]).map(([value, info]) => (
@@ -564,7 +564,7 @@ function BusinessOpportunitiesContent() {
                         setSelectedAudience('');
                         setSelectedDifficulty('');
                       }}
-                      className="text-sm text-slate-200 hover:text-white py-2"
+                      className="text-sm text-white/90 hover:text-white py-2"
                     >
                       Clear Filters
                     </button>

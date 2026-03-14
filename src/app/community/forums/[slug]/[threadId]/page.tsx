@@ -19,7 +19,7 @@ import { useSession } from 'next-auth/react';
 // Lazy-load MarkdownContent (react-markdown + remark-gfm are heavy)
 const MarkdownContent = dynamic(() => import('@/components/community/MarkdownContent'), {
   ssr: false,
-  loading: () => <div className="animate-pulse space-y-2 py-2"><div className="h-4 bg-slate-800 rounded w-full"></div><div className="h-4 bg-slate-800 rounded w-5/6"></div><div className="h-4 bg-slate-800 rounded w-4/6"></div></div>,
+  loading: () => <div className="animate-pulse space-y-2 py-2"><div className="h-4 bg-white/[0.06] rounded w-full"></div><div className="h-4 bg-white/[0.06] rounded w-5/6"></div><div className="h-4 bg-white/[0.06] rounded w-4/6"></div></div>,
 });
 
 interface ForumPost {
@@ -252,7 +252,7 @@ export default function ThreadDetailPage() {
             {thread.categoryName || slug}
           </Link>
           <span className="text-slate-600">/</span>
-          <span className="text-slate-300 whitespace-nowrap">{thread.title}</span>
+          <span className="text-white/70 whitespace-nowrap">{thread.title}</span>
         </nav>
 
         {/* Thread header */}
@@ -280,7 +280,7 @@ export default function ThreadDetailPage() {
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-3 flex-wrap">
                 {thread.isPinned && (
-                  <span className="text-xs px-1.5 py-0.5 bg-white/5 text-slate-300 rounded font-medium flex items-center gap-0.5">
+                  <span className="text-xs px-1.5 py-0.5 bg-white/5 text-white/70 rounded font-medium flex items-center gap-0.5">
                     <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
                     </svg>
@@ -288,14 +288,14 @@ export default function ThreadDetailPage() {
                   </span>
                 )}
                 {thread.isLocked && (
-                  <span className="text-xs px-1.5 py-0.5 bg-slate-600/30 text-slate-400 rounded font-medium flex items-center gap-0.5">
+                  <span className="text-xs px-1.5 py-0.5 bg-white/[0.04] text-slate-400 rounded font-medium flex items-center gap-0.5">
                     <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                     </svg>
                     Locked
                   </span>
                 )}
-                <span className="text-xs px-1.5 py-0.5 bg-white/5 text-slate-300 border border-white/10 rounded">
+                <span className="text-xs px-1.5 py-0.5 bg-white/5 text-white/70 border border-white/10 rounded">
                   {thread.category}
                 </span>
                 {thread.acceptedPostId && (
@@ -318,11 +318,11 @@ export default function ThreadDetailPage() {
               )}
 
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-9 h-9 rounded-full bg-gradient-to-br from-white/5 to-purple-500/20 border border-white/10 flex items-center justify-center text-xs font-bold text-slate-200">
+                <div className="w-9 h-9 rounded-full bg-gradient-to-br from-white/5 to-purple-500/20 border border-white/10 flex items-center justify-center text-xs font-bold text-white/90">
                   {getInitials(thread.authorName)}
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-slate-200">{thread.authorName}</p>
+                  <p className="text-sm font-medium text-white/90">{thread.authorName}</p>
                   <p className="text-xs text-slate-500">{formatDate(thread.createdAt)}</p>
                 </div>
               </div>
@@ -331,7 +331,7 @@ export default function ThreadDetailPage() {
               <MarkdownContent content={thread.content} />
 
               {/* Stats + Actions */}
-              <div className="flex items-center gap-4 mt-4 pt-4 border-t border-slate-700/50 text-xs text-slate-500">
+              <div className="flex items-center gap-4 mt-4 pt-4 border-t border-white/[0.06] text-xs text-slate-500">
                 <span className="flex items-center gap-1">
                   <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
@@ -387,12 +387,12 @@ export default function ThreadDetailPage() {
                       size="sm"
                     />
                   </div>
-                  <div className="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center text-xs font-bold text-slate-400 flex-shrink-0">
+                  <div className="w-8 h-8 rounded-full bg-white/[0.08] flex items-center justify-center text-xs font-bold text-slate-400 flex-shrink-0">
                     {getInitials(reply.authorName)}
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1 flex-wrap">
-                      <span className="text-sm font-medium text-slate-200">{reply.authorName}</span>
+                      <span className="text-sm font-medium text-white/90">{reply.authorName}</span>
                       <span className="text-xs text-slate-500">{timeAgo(reply.createdAt)}</span>
                       {reply.isAccepted && (
                         <span className="text-xs px-1.5 py-0.5 bg-green-500/15 text-green-400 rounded font-medium flex items-center gap-0.5">
@@ -438,14 +438,14 @@ export default function ThreadDetailPage() {
             transition={{ delay: 0.2, duration: 0.4 }}
             className="card p-5"
           >
-            <h3 className="text-sm font-semibold text-slate-300 mb-3">Post a Reply</h3>
+            <h3 className="text-sm font-semibold text-white/70 mb-3">Post a Reply</h3>
             <form onSubmit={handleReply}>
               <textarea
                 value={replyContent}
                 onChange={(e) => setReplyContent(e.target.value)}
                 placeholder="Share your thoughts... (Markdown supported, use @username to mention someone)"
                 rows={4}
-                className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none resize-none mb-1"
+                className="w-full bg-white/[0.06] border border-white/[0.08] text-white rounded-lg px-3 py-2 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none resize-none mb-1"
                 required
               />
               <p className="text-xs text-slate-500 mb-3">Supports **bold**, *italic*, `code`, [links](url), @mentions, and more Markdown formatting</p>

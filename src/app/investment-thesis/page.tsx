@@ -196,15 +196,15 @@ function ThesisSkeleton() {
   return (
     <div className="space-y-6 animate-pulse">
       {/* Loading indicator */}
-      <div className="bg-slate-800/30 border border-white/10 rounded-2xl p-8 text-center">
+      <div className="bg-white/[0.03] border border-white/10 rounded-2xl p-8 text-center">
         <div className="flex justify-center mb-6">
           <div className="relative">
-            <div className="w-16 h-16 border-4 border-slate-700 rounded-full" />
+            <div className="w-16 h-16 border-4 border-white/[0.08] rounded-full" />
             <div className="absolute top-0 left-0 w-16 h-16 border-4 border-t-white rounded-full animate-spin" />
           </div>
         </div>
-        <p className="text-lg font-medium text-slate-200 mb-2">Generating Investment Thesis</p>
-        <p className="text-sm text-slate-300 transition-opacity duration-300">
+        <p className="text-lg font-medium text-white/90 mb-2">Generating Investment Thesis</p>
+        <p className="text-sm text-white/70 transition-opacity duration-300">
           {LOADING_MESSAGES[messageIndex]}
         </p>
         <p className="text-xs text-slate-500 mt-4">This typically takes 10-15 seconds</p>
@@ -213,7 +213,7 @@ function ThesisSkeleton() {
       {/* Skeleton cards */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {[1, 2, 3].map((i) => (
-          <div key={i} className="bg-slate-800/30 border border-slate-700/50 rounded-2xl p-6">
+          <div key={i} className="bg-white/[0.03] border border-white/[0.06] rounded-2xl p-6">
             <div className="h-4 bg-slate-700/50 rounded w-1/3 mb-4" />
             <div className="space-y-2">
               <div className="h-3 bg-slate-700/30 rounded w-full" />
@@ -223,7 +223,7 @@ function ThesisSkeleton() {
           </div>
         ))}
       </div>
-      <div className="bg-slate-800/30 border border-slate-700/50 rounded-2xl p-6">
+      <div className="bg-white/[0.03] border border-white/[0.06] rounded-2xl p-6">
         <div className="h-4 bg-slate-700/50 rounded w-1/4 mb-4" />
         <div className="space-y-2">
           <div className="h-3 bg-slate-700/30 rounded w-full" />
@@ -409,7 +409,7 @@ export default function InvestmentThesisPage() {
 
         {/* ── COMPANY SELECTOR ─────────────────────────────────────────── */}
         <ScrollReveal>
-          <div className="bg-slate-800/30 border border-slate-700/50 rounded-2xl p-6 md:p-8 mb-8">
+          <div className="bg-white/[0.03] border border-white/[0.06] rounded-2xl p-6 md:p-8 mb-8">
             <h2 className="text-xl font-bold text-slate-100 mb-2">Select a Company</h2>
             <p className="text-sm text-slate-400 mb-6">
               Search for any company in our database or select from top-tier companies below.
@@ -437,23 +437,23 @@ export default function InvestmentThesisPage() {
                   onChange={(e) => handleSearch(e.target.value)}
                   onFocus={() => searchResults.length > 0 && setShowDropdown(true)}
                   placeholder="Search companies by name, ticker, or sector..."
-                  className="w-full pl-12 pr-4 py-3 bg-slate-900/50 border border-slate-700/50 rounded-xl text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 transition-all"
+                  className="w-full pl-12 pr-4 py-3 bg-black/50 border border-white/[0.06] rounded-xl text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 transition-all"
                 />
                 {isSearching && (
                   <div className="absolute right-4 top-1/2 -translate-y-1/2">
-                    <div className="w-5 h-5 border-2 border-slate-600 border-t-purple-400 rounded-full animate-spin" />
+                    <div className="w-5 h-5 border-2 border-white/[0.1] border-t-purple-400 rounded-full animate-spin" />
                   </div>
                 )}
               </div>
 
               {/* Search Dropdown */}
               {showDropdown && searchResults.length > 0 && (
-                <div className="absolute z-50 w-full mt-2 bg-slate-800 border border-slate-700/50 rounded-xl shadow-xl shadow-black/30 max-h-72 overflow-y-auto">
+                <div className="absolute z-50 w-full mt-2 bg-white/[0.06] border border-white/[0.06] rounded-xl shadow-xl shadow-black/30 max-h-72 overflow-y-auto">
                   {searchResults.map((company) => (
                     <button
                       key={company.slug}
                       onClick={() => selectCompany(company)}
-                      className="w-full text-left px-4 py-3 flex items-center gap-3 hover:bg-slate-700/50 transition-colors first:rounded-t-xl last:rounded-b-xl"
+                      className="w-full text-left px-4 py-3 flex items-center gap-3 hover:bg-white/[0.08] transition-colors first:rounded-t-xl last:rounded-b-xl"
                     >
                       {company.logoUrl ? (
                         <Image
@@ -472,7 +472,7 @@ export default function InvestmentThesisPage() {
                         </div>
                       )}
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-slate-200 truncate">{company.name}</p>
+                        <p className="text-sm font-medium text-white/90 truncate">{company.name}</p>
                         <p className="text-xs text-slate-500">
                           {company.sector || 'Unknown sector'} &middot; Tier {company.tier}
                         </p>
@@ -510,7 +510,7 @@ export default function InvestmentThesisPage() {
                 </div>
                 <button
                   onClick={reset}
-                  className="text-slate-500 hover:text-slate-300 transition-colors p-1"
+                  className="text-slate-500 hover:text-white/70 transition-colors p-1"
                   aria-label="Clear selection"
                 >
                   <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -531,9 +531,9 @@ export default function InvestmentThesisPage() {
                     <button
                       key={company.slug}
                       onClick={() => selectCompany(company)}
-                      className="px-3 py-2 bg-slate-800/50 border border-slate-700/50 rounded-lg text-left hover:bg-slate-700/50 hover:border-slate-600/50 transition-all group"
+                      className="px-3 py-2 bg-white/[0.04] border border-white/[0.06] rounded-lg text-left hover:bg-white/[0.08] hover:border-white/[0.08] transition-all group"
                     >
-                      <p className="text-xs font-medium text-slate-300 truncate group-hover:text-slate-100">
+                      <p className="text-xs font-medium text-white/70 truncate group-hover:text-slate-100">
                         {company.name}
                       </p>
                       <p className="text-xs text-slate-500 truncate">{company.sector}</p>
@@ -581,7 +581,7 @@ export default function InvestmentThesisPage() {
               {thesisData && (
                 <button
                   onClick={reset}
-                  className="px-4 py-3 rounded-xl text-sm text-slate-400 hover:text-slate-200 transition-colors"
+                  className="px-4 py-3 rounded-xl text-sm text-slate-400 hover:text-white/90 transition-colors"
                 >
                   New Analysis
                 </button>
@@ -606,7 +606,7 @@ export default function InvestmentThesisPage() {
             <StaggerContainer className="space-y-6">
               {/* Header Card */}
               <StaggerItem>
-                <div className="bg-slate-800/30 border border-slate-700/50 rounded-2xl p-6 md:p-8">
+                <div className="bg-white/[0.03] border border-white/[0.06] rounded-2xl p-6 md:p-8">
                   <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
                     <div className="flex items-center gap-4">
                       {thesisData.company.logoUrl ? (
@@ -628,10 +628,10 @@ export default function InvestmentThesisPage() {
                       <div>
                         <h2 className="text-2xl font-bold text-slate-100">{thesisData.company.name}</h2>
                         <div className="flex items-center gap-2 mt-1">
-                          <span className="px-2 py-0.5 rounded-full bg-slate-700/50 text-xs text-slate-300">
+                          <span className="px-2 py-0.5 rounded-full bg-slate-700/50 text-xs text-white/70">
                             {thesisData.company.sector || 'Unknown'}
                           </span>
-                          <span className="px-2 py-0.5 rounded-full bg-slate-700/50 text-xs text-slate-300">
+                          <span className="px-2 py-0.5 rounded-full bg-slate-700/50 text-xs text-white/70">
                             Tier {thesisData.company.tier}
                           </span>
                         </div>
@@ -652,20 +652,20 @@ export default function InvestmentThesisPage() {
                   </div>
 
                   {/* Timestamp + Export */}
-                  <div className="flex items-center justify-between border-t border-slate-700/50 pt-4">
+                  <div className="flex items-center justify-between border-t border-white/[0.06] pt-4">
                     <p className="text-xs text-slate-500">
                       Generated {new Date(thesisData.generatedAt).toLocaleString('en-US', { year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', timeZone: 'UTC' })}
                     </p>
                     <div className="flex items-center gap-2">
                       <Link
                         href={`/company-profiles/${thesisData.company.slug}`}
-                        className="px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800/50 text-slate-300 border border-white/10 hover:bg-slate-100/10 transition-all"
+                        className="px-3 py-1.5 rounded-lg text-xs font-medium bg-white/[0.04] text-white/70 border border-white/10 hover:bg-slate-100/10 transition-all"
                       >
                         View Company Profile
                       </Link>
                       <button
                         onClick={() => window.print()}
-                        className="px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800/50 text-slate-300 border border-slate-700/50 hover:bg-slate-700/50 transition-all"
+                        className="px-3 py-1.5 rounded-lg text-xs font-medium bg-white/[0.04] text-white/70 border border-white/[0.06] hover:bg-white/[0.08] transition-all"
                       >
                         Export PDF
                       </button>
@@ -676,12 +676,12 @@ export default function InvestmentThesisPage() {
 
               {/* Executive Summary */}
               <StaggerItem>
-                <div className="bg-slate-800/30 border border-slate-700/50 rounded-2xl p-6 md:p-8">
+                <div className="bg-white/[0.03] border border-white/[0.06] rounded-2xl p-6 md:p-8">
                   <div className="flex items-center justify-between mb-4">
                     <h3 className="text-lg font-semibold text-slate-100">Executive Summary</h3>
                     <ConfidenceBadge level={thesis.confidenceLevel || 'medium'} />
                   </div>
-                  <p className="text-slate-300 leading-relaxed whitespace-pre-line">
+                  <p className="text-white/70 leading-relaxed whitespace-pre-line">
                     {thesis.executiveSummary}
                   </p>
                   <SourceCitation sources={[
@@ -696,38 +696,38 @@ export default function InvestmentThesisPage() {
               <StaggerItem>
                 <h3 className="text-lg font-semibold text-slate-100 mb-4">Market Opportunity</h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="bg-slate-800/30 border border-slate-700/50 rounded-2xl p-6">
+                  <div className="bg-white/[0.03] border border-white/[0.06] rounded-2xl p-6">
                     <div className="flex items-center gap-2 mb-3">
                       <div className="w-8 h-8 rounded-lg bg-white/8 flex items-center justify-center">
-                        <svg className="w-4 h-4 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg className="w-4 h-4 text-white/70" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064" />
                         </svg>
                       </div>
-                      <h4 className="text-sm font-semibold text-slate-200">TAM</h4>
+                      <h4 className="text-sm font-semibold text-white/90">TAM</h4>
                     </div>
-                    <p className="text-sm text-slate-300 leading-relaxed">{thesis.marketOpportunity.tam}</p>
+                    <p className="text-sm text-white/70 leading-relaxed">{thesis.marketOpportunity.tam}</p>
                   </div>
-                  <div className="bg-slate-800/30 border border-slate-700/50 rounded-2xl p-6">
+                  <div className="bg-white/[0.03] border border-white/[0.06] rounded-2xl p-6">
                     <div className="flex items-center gap-2 mb-3">
                       <div className="w-8 h-8 rounded-lg bg-emerald-500/15 flex items-center justify-center">
                         <svg className="w-4 h-4 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
                         </svg>
                       </div>
-                      <h4 className="text-sm font-semibold text-slate-200">Growth Drivers</h4>
+                      <h4 className="text-sm font-semibold text-white/90">Growth Drivers</h4>
                     </div>
-                    <p className="text-sm text-slate-300 leading-relaxed">{thesis.marketOpportunity.growth}</p>
+                    <p className="text-sm text-white/70 leading-relaxed">{thesis.marketOpportunity.growth}</p>
                   </div>
-                  <div className="bg-slate-800/30 border border-slate-700/50 rounded-2xl p-6">
+                  <div className="bg-white/[0.03] border border-white/[0.06] rounded-2xl p-6">
                     <div className="flex items-center gap-2 mb-3">
                       <div className="w-8 h-8 rounded-lg bg-purple-500/15 flex items-center justify-center">
                         <svg className="w-4 h-4 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                       </div>
-                      <h4 className="text-sm font-semibold text-slate-200">Why Now</h4>
+                      <h4 className="text-sm font-semibold text-white/90">Why Now</h4>
                     </div>
-                    <p className="text-sm text-slate-300 leading-relaxed">{thesis.marketOpportunity.timing}</p>
+                    <p className="text-sm text-white/70 leading-relaxed">{thesis.marketOpportunity.timing}</p>
                   </div>
                 </div>
               </StaggerItem>
@@ -736,7 +736,7 @@ export default function InvestmentThesisPage() {
               <StaggerItem>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {/* Strengths */}
-                  <div className="bg-slate-800/30 border border-emerald-500/20 rounded-2xl p-6">
+                  <div className="bg-white/[0.03] border border-emerald-500/20 rounded-2xl p-6">
                     <h3 className="text-lg font-semibold text-emerald-400 mb-4 flex items-center gap-2">
                       <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
@@ -749,14 +749,14 @@ export default function InvestmentThesisPage() {
                           <div className="w-5 h-5 rounded-full bg-emerald-500/20 flex items-center justify-center shrink-0 mt-0.5">
                             <span className="text-xs font-bold text-emerald-400">{i + 1}</span>
                           </div>
-                          <p className="text-sm text-slate-300">{s}</p>
+                          <p className="text-sm text-white/70">{s}</p>
                         </li>
                       ))}
                     </ul>
                   </div>
 
                   {/* Weaknesses */}
-                  <div className="bg-slate-800/30 border border-red-500/20 rounded-2xl p-6">
+                  <div className="bg-white/[0.03] border border-red-500/20 rounded-2xl p-6">
                     <h3 className="text-lg font-semibold text-red-400 mb-4 flex items-center gap-2">
                       <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
@@ -769,7 +769,7 @@ export default function InvestmentThesisPage() {
                           <div className="w-5 h-5 rounded-full bg-red-500/20 flex items-center justify-center shrink-0 mt-0.5">
                             <span className="text-xs font-bold text-red-400">{i + 1}</span>
                           </div>
-                          <p className="text-sm text-slate-300">{w}</p>
+                          <p className="text-sm text-white/70">{w}</p>
                         </li>
                       ))}
                     </ul>
@@ -779,9 +779,9 @@ export default function InvestmentThesisPage() {
 
               {/* Competitive Position */}
               <StaggerItem>
-                <div className="bg-slate-800/30 border border-slate-700/50 rounded-2xl p-6">
+                <div className="bg-white/[0.03] border border-white/[0.06] rounded-2xl p-6">
                   <h3 className="text-lg font-semibold text-slate-100 mb-4">Competitive Position</h3>
-                  <p className="text-sm text-slate-300 leading-relaxed">{thesis.competitivePosition}</p>
+                  <p className="text-sm text-white/70 leading-relaxed">{thesis.competitivePosition}</p>
                 </div>
               </StaggerItem>
 
@@ -792,17 +792,17 @@ export default function InvestmentThesisPage() {
                   <ConfidenceBadge level={thesis.confidenceLevel === 'high' ? 'high' : 'medium'} />
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="bg-slate-800/30 border border-slate-700/50 rounded-2xl p-6">
+                  <div className="bg-white/[0.03] border border-white/[0.06] rounded-2xl p-6">
                     <h4 className="text-sm font-semibold text-amber-400 mb-3">Funding Efficiency</h4>
-                    <p className="text-sm text-slate-300 leading-relaxed">{thesis.financialAnalysis.fundingEfficiency}</p>
+                    <p className="text-sm text-white/70 leading-relaxed">{thesis.financialAnalysis.fundingEfficiency}</p>
                   </div>
-                  <div className="bg-slate-800/30 border border-slate-700/50 rounded-2xl p-6">
-                    <h4 className="text-sm font-semibold text-slate-300 mb-3">Revenue Trajectory</h4>
-                    <p className="text-sm text-slate-300 leading-relaxed">{thesis.financialAnalysis.revenueTrajectory}</p>
+                  <div className="bg-white/[0.03] border border-white/[0.06] rounded-2xl p-6">
+                    <h4 className="text-sm font-semibold text-white/70 mb-3">Revenue Trajectory</h4>
+                    <p className="text-sm text-white/70 leading-relaxed">{thesis.financialAnalysis.revenueTrajectory}</p>
                   </div>
-                  <div className="bg-slate-800/30 border border-slate-700/50 rounded-2xl p-6">
+                  <div className="bg-white/[0.03] border border-white/[0.06] rounded-2xl p-6">
                     <h4 className="text-sm font-semibold text-purple-400 mb-3">Path to Profitability</h4>
-                    <p className="text-sm text-slate-300 leading-relaxed">{thesis.financialAnalysis.pathToProfitability}</p>
+                    <p className="text-sm text-white/70 leading-relaxed">{thesis.financialAnalysis.pathToProfitability}</p>
                   </div>
                 </div>
                 <div className="mt-4">
@@ -818,37 +818,37 @@ export default function InvestmentThesisPage() {
               <StaggerItem>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {/* Bull Case */}
-                  <div className="bg-slate-800/30 border border-emerald-500/20 rounded-2xl p-6">
+                  <div className="bg-white/[0.03] border border-emerald-500/20 rounded-2xl p-6">
                     <div className="flex items-center gap-2 mb-4">
                       <svg className="w-6 h-6 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
                       </svg>
                       <h3 className="text-lg font-semibold text-emerald-400">Bull Case</h3>
                     </div>
-                    <p className="text-sm text-slate-300 leading-relaxed">{thesis.bullCase}</p>
+                    <p className="text-sm text-white/70 leading-relaxed">{thesis.bullCase}</p>
                   </div>
 
                   {/* Bear Case */}
-                  <div className="bg-slate-800/30 border border-red-500/20 rounded-2xl p-6">
+                  <div className="bg-white/[0.03] border border-red-500/20 rounded-2xl p-6">
                     <div className="flex items-center gap-2 mb-4">
                       <svg className="w-6 h-6 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
                       </svg>
                       <h3 className="text-lg font-semibold text-red-400">Bear Case</h3>
                     </div>
-                    <p className="text-sm text-slate-300 leading-relaxed">{thesis.bearCase}</p>
+                    <p className="text-sm text-white/70 leading-relaxed">{thesis.bearCase}</p>
                   </div>
                 </div>
               </StaggerItem>
 
               {/* Key Risks Table */}
               <StaggerItem>
-                <div className="bg-slate-800/30 border border-slate-700/50 rounded-2xl p-6">
+                <div className="bg-white/[0.03] border border-white/[0.06] rounded-2xl p-6">
                   <h3 className="text-lg font-semibold text-slate-100 mb-4">Key Risks</h3>
                   <div className="overflow-x-auto">
                     <table className="w-full">
                       <thead>
-                        <tr className="border-b border-slate-700/50">
+                        <tr className="border-b border-white/[0.06]">
                           <th className="text-left text-xs font-semibold text-slate-400 uppercase tracking-wider pb-3 pr-4">
                             Risk
                           </th>
@@ -860,13 +860,13 @@ export default function InvestmentThesisPage() {
                           </th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-slate-700/30">
+                      <tbody className="divide-y divide-white/[0.04]">
                         {thesis.keyRisks.map((risk, i) => {
                           const sevConfig = SEVERITY_CONFIG[risk.severity] || SEVERITY_CONFIG.medium;
                           return (
                             <tr key={i} className="hover:bg-slate-700/20 transition-colors">
                               <td className="py-3 pr-4">
-                                <p className="text-sm text-slate-300">{risk.risk}</p>
+                                <p className="text-sm text-white/70">{risk.risk}</p>
                               </td>
                               <td className="py-3 px-4 text-center">
                                 <span
@@ -889,15 +889,15 @@ export default function InvestmentThesisPage() {
 
               {/* Key Milestones */}
               <StaggerItem>
-                <div className="bg-slate-800/30 border border-slate-700/50 rounded-2xl p-6">
+                <div className="bg-white/[0.03] border border-white/[0.06] rounded-2xl p-6">
                   <h3 className="text-lg font-semibold text-slate-100 mb-4">Key Milestones to Watch</h3>
                   <div className="space-y-3">
                     {thesis.keyMilestones.map((milestone, i) => (
-                      <div key={i} className="flex items-start gap-4 p-3 bg-slate-900/50 rounded-lg border border-slate-700/30">
+                      <div key={i} className="flex items-start gap-4 p-3 bg-black/50 rounded-lg border border-white/[0.04]">
                         <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500/20 to-indigo-500/20 border border-purple-500/30 flex items-center justify-center shrink-0">
                           <span className="text-sm font-bold text-purple-400">{i + 1}</span>
                         </div>
-                        <p className="text-sm text-slate-300 leading-relaxed pt-1">{milestone}</p>
+                        <p className="text-sm text-white/70 leading-relaxed pt-1">{milestone}</p>
                       </div>
                     ))}
                   </div>
@@ -906,26 +906,26 @@ export default function InvestmentThesisPage() {
 
               {/* Comparable Transactions */}
               <StaggerItem>
-                <div className="bg-slate-800/30 border border-slate-700/50 rounded-2xl p-6">
+                <div className="bg-white/[0.03] border border-white/[0.06] rounded-2xl p-6">
                   <h3 className="text-lg font-semibold text-slate-100 mb-4">Comparable Transactions</h3>
-                  <p className="text-sm text-slate-300 leading-relaxed">{thesis.comparableTransactions}</p>
+                  <p className="text-sm text-white/70 leading-relaxed">{thesis.comparableTransactions}</p>
                 </div>
               </StaggerItem>
 
               {/* Regulatory Outlook with Risk Gauge */}
               <StaggerItem>
-                <div className="bg-slate-800/30 border border-slate-700/50 rounded-2xl p-6">
+                <div className="bg-white/[0.03] border border-white/[0.06] rounded-2xl p-6">
                   <div className="flex items-center justify-between mb-4">
                     <h3 className="text-lg font-semibold text-slate-100">Regulatory Outlook</h3>
                     <ConfidenceBadge level="medium" />
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div className="md:col-span-2">
-                      <p className="text-sm text-slate-300 leading-relaxed mb-4">{thesis.regulatoryOutlook}</p>
+                      <p className="text-sm text-white/70 leading-relaxed mb-4">{thesis.regulatoryOutlook}</p>
                       <div className="flex items-center gap-4 text-sm">
                         <div className="flex items-center gap-2">
                           <span className="text-slate-500">Timeline:</span>
-                          <span className="text-slate-200 font-medium">{thesisData.riskAssessment.estimatedTimeline}</span>
+                          <span className="text-white/90 font-medium">{thesisData.riskAssessment.estimatedTimeline}</span>
                         </div>
                       </div>
                     </div>
@@ -955,19 +955,19 @@ export default function InvestmentThesisPage() {
                   </button>
                   <button
                     onClick={reset}
-                    className="px-5 py-2.5 rounded-xl text-sm font-medium bg-slate-800/50 text-slate-300 border border-slate-700/50 hover:bg-slate-700/50 hover:text-slate-100 transition-all"
+                    className="px-5 py-2.5 rounded-xl text-sm font-medium bg-white/[0.04] text-white/70 border border-white/[0.06] hover:bg-white/[0.08] hover:text-slate-100 transition-all"
                   >
                     New Analysis
                   </button>
                   <Link
                     href={`/company-profiles/${thesisData.company.slug}`}
-                    className="px-5 py-2.5 rounded-xl text-sm font-medium bg-white/5 text-slate-300 border border-white/10 hover:bg-slate-100/20 transition-all"
+                    className="px-5 py-2.5 rounded-xl text-sm font-medium bg-white/5 text-white/70 border border-white/10 hover:bg-slate-100/20 transition-all"
                   >
                     View Full Company Profile
                   </Link>
                   <Link
                     href="/market-sizing"
-                    className="px-5 py-2.5 rounded-xl text-sm font-medium bg-slate-800/50 text-slate-300 border border-slate-700/50 hover:bg-slate-700/50 hover:text-slate-100 transition-all"
+                    className="px-5 py-2.5 rounded-xl text-sm font-medium bg-white/[0.04] text-white/70 border border-white/[0.06] hover:bg-white/[0.08] hover:text-slate-100 transition-all"
                   >
                     Market Sizing Data
                   </Link>
@@ -981,19 +981,19 @@ export default function InvestmentThesisPage() {
         <div className="mt-12 text-center">
           <p className="text-sm text-slate-500">
             Explore more tools:{' '}
-            <Link href="/company-profiles" className="text-slate-300 hover:text-white transition-colors">
+            <Link href="/company-profiles" className="text-white/70 hover:text-white transition-colors">
               Company Profiles
             </Link>
             {' '}&middot;{' '}
-            <Link href="/market-sizing" className="text-slate-300 hover:text-white transition-colors">
+            <Link href="/market-sizing" className="text-white/70 hover:text-white transition-colors">
               Market Sizing
             </Link>
             {' '}&middot;{' '}
-            <Link href="/regulatory-risk" className="text-slate-300 hover:text-white transition-colors">
+            <Link href="/regulatory-risk" className="text-white/70 hover:text-white transition-colors">
               Regulatory Risk
             </Link>
             {' '}&middot;{' '}
-            <Link href="/funding-tracker" className="text-slate-300 hover:text-white transition-colors">
+            <Link href="/funding-tracker" className="text-white/70 hover:text-white transition-colors">
               Funding Tracker
             </Link>
           </p>
@@ -1011,15 +1011,15 @@ export default function InvestmentThesisPage() {
             padding-top: 0 !important;
             background: white !important;
           }
-          .bg-slate-800\\/30,
-          .bg-slate-800\\/50,
+          .bg-white/[0.06]\\/30,
+          .bg-white/[0.06]\\/50,
           .bg-slate-900\\/50 {
             background: white !important;
             border-color: #e5e7eb !important;
           }
           .text-slate-100,
-          .text-slate-200,
-          .text-slate-300 {
+          .text-white/90,
+          .text-white/70 {
             color: #1f2937 !important;
           }
           .text-slate-400,
@@ -1035,7 +1035,7 @@ export default function InvestmentThesisPage() {
           .text-purple-400 {
             color: #7c3aed !important;
           }
-          .text-slate-300 {
+          .text-white/70 {
             color: #0891b2 !important;
           }
           .text-amber-400 {

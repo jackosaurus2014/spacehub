@@ -152,7 +152,7 @@ const FAQ_ITEMS = [
 
 export default function SatelliteTrackingGuidePage() {
   return (
-    <div className="min-h-screen bg-space-900">
+    <div className="min-h-screen bg-black">
       <div className="container mx-auto px-4 pb-16">
         {/* Breadcrumbs */}
         <nav className="pt-6 mb-4" aria-label="Breadcrumb">
@@ -186,7 +186,7 @@ export default function SatelliteTrackingGuidePage() {
           </header>
 
           {/* Table of Contents */}
-          <nav className="bg-slate-800/60 border border-slate-700/50 rounded-xl p-6 mb-10">
+          <nav className="bg-white/[0.06] border border-white/[0.06] rounded-xl p-6 mb-10">
             <h2 className="text-lg font-bold text-white mb-3">Table of Contents</h2>
             <ol className="grid grid-cols-1 md:grid-cols-2 gap-2">
               {TOC.map((item, i) => (
@@ -204,7 +204,7 @@ export default function SatelliteTrackingGuidePage() {
 
           {/* Content */}
           <ScrollReveal delay={0.1}>
-          <article className="bg-slate-800/60 border border-slate-700/50 rounded-xl p-8 space-y-10">
+          <article className="bg-white/[0.06] border border-white/[0.06] rounded-xl p-8 space-y-10">
             {/* What Is Satellite Tracking */}
             <section id="what-is-satellite-tracking">
               <h2 className="text-2xl font-bold text-white mb-4">What Is Satellite Tracking and Why It Matters</h2>
@@ -306,7 +306,7 @@ export default function SatelliteTrackingGuidePage() {
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="border-b border-slate-700/50">
+                    <tr className="border-b border-white/[0.06]">
                       <th className="py-3 pr-4 text-left text-white font-semibold">Orbit Type</th>
                       <th className="py-3 pr-4 text-left text-white font-semibold">Altitude</th>
                       <th className="py-3 pr-4 text-left text-white font-semibold">Period</th>
@@ -316,7 +316,7 @@ export default function SatelliteTrackingGuidePage() {
                   </thead>
                   <tbody>
                     {ORBIT_TYPES.map((orbit) => (
-                      <tr key={orbit.name} className="bg-slate-800/60 border-b border-slate-700/50">
+                      <tr key={orbit.name} className="bg-white/[0.06] border-b border-white/[0.06]">
                         <td className="py-3 pr-4 text-white font-medium">{orbit.name}</td>
                         <td className="py-3 pr-4 text-slate-300">{orbit.altitude}</td>
                         <td className="py-3 pr-4 text-slate-300">{orbit.period}</td>
@@ -352,7 +352,7 @@ export default function SatelliteTrackingGuidePage() {
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="border-b border-slate-700/50">
+                    <tr className="border-b border-white/[0.06]">
                       <th className="py-3 pr-4 text-left text-white font-semibold">Source</th>
                       <th className="py-3 pr-4 text-left text-white font-semibold">Operator</th>
                       <th className="py-3 pr-4 text-left text-white font-semibold">Data Provided</th>
@@ -362,7 +362,7 @@ export default function SatelliteTrackingGuidePage() {
                   </thead>
                   <tbody>
                     {DATA_SOURCES.map((source) => (
-                      <tr key={source.name} className="bg-slate-800/60 border-b border-slate-700/50">
+                      <tr key={source.name} className="bg-white/[0.06] border-b border-white/[0.06]">
                         <td className="py-3 pr-4 text-white font-medium">{source.name}</td>
                         <td className="py-3 pr-4 text-slate-300">{source.operator}</td>
                         <td className="py-3 pr-4 text-slate-300">{source.data}</td>
@@ -548,7 +548,7 @@ export default function SatelliteTrackingGuidePage() {
               <h2 className="text-2xl font-bold text-white mb-4">Frequently Asked Questions</h2>
               <div className="space-y-4">
                 {FAQ_ITEMS.map((faq) => (
-                  <div key={faq.question} className="bg-slate-800/60 border border-slate-700/50 rounded-xl p-4">
+                  <div key={faq.question} className="bg-white/[0.06] border border-white/[0.06] rounded-xl p-4">
                     <h3 className="font-semibold text-white text-sm mb-2">{faq.question}</h3>
                     <p className="text-slate-300 text-sm leading-relaxed">{faq.answer}</p>
                   </div>
@@ -557,7 +557,7 @@ export default function SatelliteTrackingGuidePage() {
             </section>
 
             {/* Related Content */}
-            <section className="pt-6 border-t border-slate-700/50">
+            <section className="pt-6 border-t border-white/[0.06]">
               <h3 className="text-lg font-bold text-white mb-4">Related Guides</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <Link href="/guide/how-satellite-tracking-works" className="text-slate-300 hover:underline text-sm transition-colors">

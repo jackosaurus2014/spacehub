@@ -70,7 +70,7 @@ export default function TrendingSidebar() {
         </h3>
         <button
           onClick={fetchTrending}
-          className="text-slate-500 hover:text-white transition-colors p-1 rounded hover:bg-slate-800/50"
+          className="text-slate-500 hover:text-white transition-colors p-1 rounded hover:bg-white/[0.04]"
           aria-label="Refresh trending"
           disabled={loading}
         >
@@ -90,8 +90,8 @@ export default function TrendingSidebar() {
         <div className="space-y-3">
           {[...Array(3)].map((_, i) => (
             <div key={i} className="animate-pulse">
-              <div className="h-3 bg-slate-700/50 rounded w-3/4 mb-1.5" />
-              <div className="h-2 bg-slate-700/30 rounded w-1/2" />
+              <div className="h-3 bg-white/[0.05] rounded w-3/4 mb-1.5" />
+              <div className="h-2 bg-white/[0.03] rounded w-1/2" />
             </div>
           ))}
         </div>
@@ -122,9 +122,9 @@ export default function TrendingSidebar() {
               transition={{ delay: idx * 0.05, duration: 0.25 }}
             >
               <Link href={`/community/forums/${thread.slug}/${thread.id}`}>
-                <div className="group px-2.5 py-2 rounded-lg hover:bg-slate-800/40 transition-colors cursor-pointer">
+                <div className="group px-2.5 py-2 rounded-lg hover:bg-white/[0.04] transition-colors cursor-pointer">
                   {/* Title */}
-                  <h4 className="text-xs font-medium text-slate-300 group-hover:text-white transition-colors line-clamp-2 mb-1">
+                  <h4 className="text-xs font-medium text-white/70 group-hover:text-white transition-colors line-clamp-2 mb-1">
                     {thread.title}
                   </h4>
                   {/* Meta */}
@@ -137,7 +137,7 @@ export default function TrendingSidebar() {
                       {thread.score > 0 ? `+${thread.score}` : thread.score}
                     </span>
                     {/* Category */}
-                    <span className="px-1 py-0.5 bg-white/5 text-slate-300 rounded border border-white/10">
+                    <span className="px-1 py-0.5 bg-white/5 text-white/70 rounded border border-white/10">
                       {thread.categoryName}
                     </span>
                     {/* Reply count */}
@@ -159,7 +159,7 @@ export default function TrendingSidebar() {
       {threads.length > 0 && (
         <Link
           href="/community/forums"
-          className="block text-center text-[11px] text-slate-300 hover:text-white transition-colors mt-3 pt-2 border-t border-slate-700/50"
+          className="block text-center text-[11px] text-white/70 hover:text-white transition-colors mt-3 pt-2 border-t border-white/[0.06]"
         >
           View All Trending
         </Link>

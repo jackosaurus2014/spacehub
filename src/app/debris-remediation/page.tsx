@@ -99,7 +99,7 @@ const APPROACH_INFO: Record<ApproachType, { label: string; color: string; icon: 
   'net-capture': { label: 'Net Capture', color: 'bg-teal-500/20 text-teal-400 border-teal-500/30', icon: '\u{1FAA4}' },
   'harpoon': { label: 'Harpoon', color: 'bg-red-500/20 text-red-400 border-red-500/30', icon: '\u{1F531}' },
   'laser-ablation': { label: 'Laser Ablation', color: 'bg-amber-500/20 text-amber-400 border-amber-500/30', icon: '\u{1F4A5}' },
-  'drag-sail': { label: 'Drag Sail', color: 'bg-white/10 text-slate-300 border-white/10', icon: '\u{26F5}' },
+  'drag-sail': { label: 'Drag Sail', color: 'bg-white/10 text-white/70 border-white/10', icon: '\u{26F5}' },
   'ion-beam': { label: 'Ion Beam Deflection', color: 'bg-indigo-500/20 text-indigo-400 border-indigo-500/30', icon: '\u{26A1}' },
   'capture-bag': { label: 'Capture Bag', color: 'bg-orange-500/20 text-orange-400 border-orange-500/30', icon: '\u{1F4E6}' },
   'collision-avoidance': { label: 'Collision Avoidance', color: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30', icon: '\u{1F6E1}\u{FE0F}' },
@@ -108,7 +108,7 @@ const APPROACH_INFO: Record<ApproachType, { label: string; color: string; icon: 
   'tether': { label: 'Electrodynamic Tether', color: 'bg-violet-500/20 text-violet-400 border-violet-500/30', icon: '\u{1FA62}' },
   'eddy-current': { label: 'Eddy Current Brake', color: 'bg-fuchsia-500/20 text-fuchsia-400 border-fuchsia-500/30', icon: '\u{1F300}' },
   'refueling': { label: 'On-Orbit Refueling', color: 'bg-lime-500/20 text-lime-400 border-lime-500/30', icon: '\u{26FD}' },
-  'multi-method': { label: 'Multi-Method', color: 'bg-slate-500/20 text-slate-300 border-slate-500/30', icon: '\u{1F527}' },
+  'multi-method': { label: 'Multi-Method', color: 'bg-slate-500/20 text-white/70 border-slate-500/30', icon: '\u{1F527}' },
 };
 
 const STATUS_INFO: Record<MissionStatus, { label: string; color: string }> = {
@@ -136,7 +136,7 @@ const REGULATION_TYPE_COLORS: Record<string, string> = {
 };
 
 const TECH_CATEGORY_COLORS: Record<string, string> = {
-  capture: 'bg-white/10 text-slate-300 border-white/10',
+  capture: 'bg-white/10 text-white/70 border-white/10',
   deorbit: 'bg-orange-500/20 text-orange-400 border-orange-500/30',
   deflection: 'bg-purple-500/20 text-purple-400 border-purple-500/30',
   servicing: 'bg-green-500/20 text-green-400 border-green-500/30',
@@ -902,7 +902,7 @@ function CompaniesTab() {
       <ScrollReveal>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div className="card p-4 text-center">
-            <div className="text-2xl font-bold text-slate-300">{ADR_COMPANIES.length}</div>
+            <div className="text-2xl font-bold text-white/70">{ADR_COMPANIES.length}</div>
             <div className="text-sm text-slate-400 mt-1">Companies/Missions</div>
           </div>
           <div className="card p-4 text-center">
@@ -922,7 +922,7 @@ function CompaniesTab() {
 
       {/* Search & Filter Controls */}
       <ScrollReveal delay={0.1}>
-        <div className="bg-slate-800/40 border border-slate-700/50 rounded-xl p-4">
+        <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-4">
           <div className="flex flex-col sm:flex-row gap-3">
             <div className="flex-1 relative">
               <input
@@ -930,7 +930,7 @@ function CompaniesTab() {
                 placeholder="Search companies, missions, or approaches..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full bg-slate-900/50 border border-slate-700 rounded-lg px-4 py-2.5 pl-10 text-slate-200 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-white/20 focus:border-white/15"
+                className="w-full bg-black/50 border border-white/[0.08] rounded-lg px-4 py-2.5 pl-10 text-white/90 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-white/20 focus:border-white/15"
               />
               <svg className="absolute left-3 top-3 w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -939,7 +939,7 @@ function CompaniesTab() {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value as MissionStatus | 'all')}
-              className="bg-slate-900/50 border border-slate-700 rounded-lg px-3 py-2.5 text-slate-200 focus:outline-none focus:ring-2 focus:ring-white/20"
+              className="bg-black/50 border border-white/[0.08] rounded-lg px-3 py-2.5 text-white/90 focus:outline-none focus:ring-2 focus:ring-white/20"
             >
               <option value="all">All Statuses</option>
               {uniqueStatuses.map((s) => (
@@ -949,7 +949,7 @@ function CompaniesTab() {
             <select
               value={approachFilter}
               onChange={(e) => setApproachFilter(e.target.value as ApproachType | 'all')}
-              className="bg-slate-900/50 border border-slate-700 rounded-lg px-3 py-2.5 text-slate-200 focus:outline-none focus:ring-2 focus:ring-white/20"
+              className="bg-black/50 border border-white/[0.08] rounded-lg px-3 py-2.5 text-white/90 focus:outline-none focus:ring-2 focus:ring-white/20"
             >
               <option value="all">All Approaches</option>
               {uniqueApproaches.map((a) => (
@@ -962,7 +962,7 @@ function CompaniesTab() {
               <span>Showing {filtered.length} of {ADR_COMPANIES.length} entries</span>
               <button
                 onClick={() => { setSearch(''); setStatusFilter('all'); setApproachFilter('all'); }}
-                className="text-slate-300 hover:text-white underline"
+                className="text-white/70 hover:text-white underline"
               >
                 Clear filters
               </button>
@@ -980,8 +980,8 @@ function CompaniesTab() {
           return (
             <StaggerItem key={company.id}>
               <div
-                className={`bg-slate-800/60 border rounded-xl overflow-hidden transition-all duration-300 ${
-                  isExpanded ? 'border-white/15 shadow-lg shadow-black/5' : 'border-slate-700/50 hover:border-slate-600/50'
+                className={`bg-white/[0.05] border rounded-xl overflow-hidden transition-all duration-300 ${
+                  isExpanded ? 'border-white/15 shadow-lg shadow-black/5' : 'border-white/[0.06] hover:border-white/[0.08]'
                 }`}
               >
                 <button
@@ -991,10 +991,10 @@ function CompaniesTab() {
                   <div className="flex flex-col sm:flex-row sm:items-start gap-3">
                     <div className="flex-1 min-w-0">
                       <div className="flex flex-wrap items-center gap-2 mb-1">
-                        <h3 className="text-lg font-semibold text-slate-100">{company.company}</h3>
+                        <h3 className="text-lg font-semibold text-white/90">{company.company}</h3>
                         <span className="text-xs text-slate-500">{company.country}</span>
                       </div>
-                      <p className="text-sm text-slate-300 font-medium">{company.missionName}</p>
+                      <p className="text-sm text-white/70 font-medium">{company.missionName}</p>
                       <p className="text-sm text-slate-400 mt-1 line-clamp-2">{company.description}</p>
                     </div>
                     <div className="flex flex-wrap gap-2 sm:flex-col sm:items-end shrink-0">
@@ -1014,17 +1014,17 @@ function CompaniesTab() {
                 </button>
 
                 {isExpanded && (
-                  <div className="border-t border-slate-700/50 p-5 bg-slate-900/30 space-y-4">
+                  <div className="border-t border-white/[0.06] p-5 bg-black/30 space-y-4">
                     <div>
-                      <h4 className="text-sm font-semibold text-slate-300 mb-1">Approach</h4>
+                      <h4 className="text-sm font-semibold text-white/70 mb-1">Approach</h4>
                       <p className="text-sm text-slate-400">{company.approachLabel} - {company.description}</p>
                     </div>
                     {company.customers && company.customers.length > 0 && (
                       <div>
-                        <h4 className="text-sm font-semibold text-slate-300 mb-1">Key Customers</h4>
+                        <h4 className="text-sm font-semibold text-white/70 mb-1">Key Customers</h4>
                         <div className="flex flex-wrap gap-2">
                           {company.customers.map((c) => (
-                            <span key={c} className="text-xs px-2 py-1 rounded-full bg-slate-800 text-slate-300 border border-slate-700">{c}</span>
+                            <span key={c} className="text-xs px-2 py-1 rounded-full bg-white/[0.06] text-white/70 border border-white/[0.08]">{c}</span>
                           ))}
                         </div>
                       </div>
@@ -1034,7 +1034,7 @@ function CompaniesTab() {
                         href={company.website}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-sm text-slate-300 hover:text-white underline"
+                        className="text-sm text-white/70 hover:text-white underline"
                       >
                         Visit Website
                       </a>
@@ -1068,18 +1068,18 @@ function StatisticsTab() {
     <div className="space-y-8">
       {/* Key Statistics Grid */}
       <ScrollReveal>
-        <h2 className="text-xl font-semibold text-slate-100 mb-4">Debris Population Overview</h2>
+        <h2 className="text-xl font-semibold text-white/90 mb-4">Debris Population Overview</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {DEBRIS_STATISTICS.map((stat, idx) => (
             <div
               key={stat.label}
-              className="group relative bg-slate-800/60 border border-slate-700/50 rounded-xl p-5 hover:border-slate-600/50 transition-all"
+              className="group relative bg-white/[0.05] border border-white/[0.06] rounded-xl p-5 hover:border-white/[0.08] transition-all"
             >
               <div className={`absolute inset-0 bg-gradient-to-br ${stat.color} opacity-5 rounded-xl`} />
               <div className="relative">
                 <div className="text-2xl mb-2">{stat.icon}</div>
-                <div className="text-2xl font-bold text-slate-100">{stat.value}</div>
-                <div className="text-sm font-medium text-slate-300 mt-1">{stat.label}</div>
+                <div className="text-2xl font-bold text-white/90">{stat.value}</div>
+                <div className="text-sm font-medium text-white/70 mt-1">{stat.label}</div>
                 <p className="text-xs text-slate-500 mt-2 line-clamp-3 group-hover:line-clamp-none transition-all">{stat.detail}</p>
               </div>
             </div>
@@ -1097,17 +1097,17 @@ function StatisticsTab() {
               <p className="text-sm text-slate-400 mt-1">Proposed by Donald Kessler, NASA, 1978</p>
             </div>
           </div>
-          <div className="space-y-4 text-sm text-slate-300">
+          <div className="space-y-4 text-sm text-white/70">
             <p>{KESSLER_SYNDROME.description}</p>
-            <div className="bg-slate-900/40 border border-red-500/10 rounded-lg p-4">
+            <div className="bg-black/40 border border-red-500/10 rounded-lg p-4">
               <h4 className="font-semibold text-orange-400 mb-1">Current Assessment</h4>
               <p className="text-slate-400">{KESSLER_SYNDROME.currentAssessment}</p>
             </div>
-            <div className="bg-slate-900/40 border border-red-500/10 rounded-lg p-4">
+            <div className="bg-black/40 border border-red-500/10 rounded-lg p-4">
               <h4 className="font-semibold text-amber-400 mb-1">Critical Threshold</h4>
               <p className="text-slate-400">{KESSLER_SYNDROME.criticalThreshold}</p>
             </div>
-            <div className="bg-slate-900/40 border border-green-500/10 rounded-lg p-4">
+            <div className="bg-black/40 border border-green-500/10 rounded-lg p-4">
               <h4 className="font-semibold text-green-400 mb-1">Mitigation Required</h4>
               <p className="text-slate-400">{KESSLER_SYNDROME.mitigationRequired}</p>
             </div>
@@ -1117,7 +1117,7 @@ function StatisticsTab() {
 
       {/* Congested Orbits */}
       <ScrollReveal delay={0.15}>
-        <h2 className="text-xl font-semibold text-slate-100 mb-4">Orbital Congestion by Band</h2>
+        <h2 className="text-xl font-semibold text-white/90 mb-4">Orbital Congestion by Band</h2>
         <div className="space-y-3">
           {ORBIT_BANDS.map((band) => {
             const isExpanded = expandedBand === band.name;
@@ -1126,24 +1126,24 @@ function StatisticsTab() {
               <button
                 key={band.name}
                 onClick={() => setExpandedBand(isExpanded ? null : band.name)}
-                className={`w-full text-left bg-slate-800/60 border rounded-xl p-4 transition-all ${
-                  isExpanded ? 'border-white/15' : 'border-slate-700/50 hover:border-slate-600/50'
+                className={`w-full text-left bg-white/[0.05] border rounded-xl p-4 transition-all ${
+                  isExpanded ? 'border-white/15' : 'border-white/[0.06] hover:border-white/[0.08]'
                 }`}
               >
                 <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
                   <div className="flex-1">
-                    <h3 className="font-semibold text-slate-200">{band.name}</h3>
+                    <h3 className="font-semibold text-white/90">{band.name}</h3>
                     <p className="text-xs text-slate-500">{band.altitudeRange} altitude</p>
                   </div>
                   <div className="flex items-center gap-3">
-                    <span className="text-lg font-bold text-slate-100">{band.objectCount}</span>
+                    <span className="text-lg font-bold text-white/90">{band.objectCount}</span>
                     <span className={`text-xs px-2.5 py-1 rounded-full border ${riskColor}`}>
                       {band.riskLevel.charAt(0).toUpperCase() + band.riskLevel.slice(1)} Risk
                     </span>
                   </div>
                 </div>
                 {isExpanded && (
-                  <p className="text-sm text-slate-400 mt-3 border-t border-slate-700/50 pt-3">{band.description}</p>
+                  <p className="text-sm text-slate-400 mt-3 border-t border-white/[0.06] pt-3">{band.description}</p>
                 )}
               </button>
             );
@@ -1153,7 +1153,7 @@ function StatisticsTab() {
 
       {/* Major Debris Events */}
       <ScrollReveal delay={0.2}>
-        <h2 className="text-xl font-semibold text-slate-100 mb-4">Major Debris-Creating Events</h2>
+        <h2 className="text-xl font-semibold text-white/90 mb-4">Major Debris-Creating Events</h2>
         <div className="relative">
           {/* Timeline line */}
           <div className="absolute left-6 top-0 bottom-0 w-px bg-gradient-to-b from-red-500/50 via-orange-500/50 to-amber-500/50 hidden sm:block" />
@@ -1161,13 +1161,13 @@ function StatisticsTab() {
           <StaggerContainer className="space-y-4">
             {MAJOR_DEBRIS_EVENTS.map((event) => (
               <StaggerItem key={event.year + event.event}>
-                <div className="sm:ml-14 bg-slate-800/60 border border-slate-700/50 rounded-xl p-5 relative">
+                <div className="sm:ml-14 bg-white/[0.05] border border-white/[0.06] rounded-xl p-5 relative">
                   {/* Timeline dot */}
-                  <div className="hidden sm:block absolute -left-[3.55rem] top-6 w-3 h-3 rounded-full bg-red-500 border-2 border-slate-900 shadow-lg shadow-red-500/30" />
+                  <div className="hidden sm:block absolute -left-[3.55rem] top-6 w-3 h-3 rounded-full bg-red-500 border-2 border-white/[0.06] shadow-lg shadow-red-500/30" />
                   <div className="flex flex-col sm:flex-row sm:items-start gap-2 sm:gap-4">
                     <span className="text-2xl font-bold text-red-400 shrink-0">{event.year}</span>
                     <div className="flex-1">
-                      <h3 className="font-semibold text-slate-200">{event.event}</h3>
+                      <h3 className="font-semibold text-white/90">{event.event}</h3>
                       <p className="text-sm text-orange-400 font-medium">{event.fragments} fragments</p>
                       <p className="text-sm text-slate-400 mt-1">{event.description}</p>
                     </div>
@@ -1208,7 +1208,7 @@ function RegulationsTab() {
       <ScrollReveal>
         <div className="bg-gradient-to-br from-blue-900/20 to-indigo-900/10 border border-blue-500/20 rounded-xl p-6">
           <h2 className="text-xl font-semibold text-blue-400 mb-2">International Debris Governance</h2>
-          <p className="text-sm text-slate-300">
+          <p className="text-sm text-white/70">
             Space debris mitigation is governed by a layered framework of international guidelines, national regulations,
             and industry standards. While the UN COPUOS guidelines and IADC recommendations provide the global baseline,
             enforcement occurs primarily at the national level through licensing authorities. The FCC&apos;s 2022 adoption of
@@ -1219,7 +1219,7 @@ function RegulationsTab() {
 
       {/* Search & Filter */}
       <ScrollReveal delay={0.1}>
-        <div className="bg-slate-800/40 border border-slate-700/50 rounded-xl p-4">
+        <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-4">
           <div className="flex flex-col sm:flex-row gap-3">
             <div className="flex-1 relative">
               <input
@@ -1227,7 +1227,7 @@ function RegulationsTab() {
                 placeholder="Search regulations, bodies, or provisions..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full bg-slate-900/50 border border-slate-700 rounded-lg px-4 py-2.5 pl-10 text-slate-200 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50"
+                className="w-full bg-black/50 border border-white/[0.08] rounded-lg px-4 py-2.5 pl-10 text-white/90 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50"
               />
               <svg className="absolute left-3 top-3 w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -1236,7 +1236,7 @@ function RegulationsTab() {
             <select
               value={typeFilter}
               onChange={(e) => setTypeFilter(e.target.value)}
-              className="bg-slate-900/50 border border-slate-700 rounded-lg px-3 py-2.5 text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+              className="bg-black/50 border border-white/[0.08] rounded-lg px-3 py-2.5 text-white/90 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
             >
               <option value="all">All Types</option>
               <option value="binding">Binding</option>
@@ -1266,8 +1266,8 @@ function RegulationsTab() {
           const typeColor = REGULATION_TYPE_COLORS[reg.type] || 'bg-slate-500/20 text-slate-400 border-slate-500/30';
           return (
             <StaggerItem key={reg.id}>
-              <div className={`bg-slate-800/60 border rounded-xl overflow-hidden transition-all duration-300 ${
-                isExpanded ? 'border-blue-500/50 shadow-lg shadow-blue-500/10' : 'border-slate-700/50 hover:border-slate-600/50'
+              <div className={`bg-white/[0.05] border rounded-xl overflow-hidden transition-all duration-300 ${
+                isExpanded ? 'border-blue-500/50 shadow-lg shadow-blue-500/10' : 'border-white/[0.06] hover:border-white/[0.08]'
               }`}>
                 <button
                   onClick={() => setExpandedId(isExpanded ? null : reg.id)}
@@ -1275,7 +1275,7 @@ function RegulationsTab() {
                 >
                   <div className="flex flex-col sm:flex-row sm:items-start gap-3">
                     <div className="flex-1 min-w-0">
-                      <h3 className="text-lg font-semibold text-slate-100">{reg.name}</h3>
+                      <h3 className="text-lg font-semibold text-white/90">{reg.name}</h3>
                       <p className="text-sm text-slate-400 mt-0.5">{reg.body}</p>
                       <p className="text-sm text-slate-400 mt-2 line-clamp-2">{reg.summary}</p>
                     </div>
@@ -1297,8 +1297,8 @@ function RegulationsTab() {
                 </button>
 
                 {isExpanded && (
-                  <div className="border-t border-slate-700/50 p-5 bg-slate-900/30">
-                    <h4 className="text-sm font-semibold text-slate-300 mb-3">Key Provisions</h4>
+                  <div className="border-t border-white/[0.06] p-5 bg-black/30">
+                    <h4 className="text-sm font-semibold text-white/70 mb-3">Key Provisions</h4>
                     <ul className="space-y-2">
                       {reg.keyProvisions.map((provision, idx) => (
                         <li key={idx} className="flex items-start gap-2 text-sm text-slate-400">
@@ -1375,10 +1375,10 @@ function TechnologiesTab() {
                 className={`rounded-xl p-3 text-center transition-all border ${
                   categoryFilter === cat
                     ? catColor + ' border-opacity-100'
-                    : 'bg-slate-800/50 border-slate-700/50 hover:border-slate-600/50'
+                    : 'bg-white/[0.04] border-white/[0.06] hover:border-white/[0.08]'
                 }`}
               >
-                <div className={`text-xl font-bold ${categoryFilter === cat ? '' : 'text-slate-200'}`}>{count}</div>
+                <div className={`text-xl font-bold ${categoryFilter === cat ? '' : 'text-white/90'}`}>{count}</div>
                 <div className={`text-xs mt-0.5 capitalize ${categoryFilter === cat ? '' : 'text-slate-400'}`}>{cat}</div>
               </button>
             );
@@ -1388,7 +1388,7 @@ function TechnologiesTab() {
 
       {/* Search */}
       <ScrollReveal delay={0.1}>
-        <div className="bg-slate-800/40 border border-slate-700/50 rounded-xl p-4">
+        <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-4">
           <div className="flex flex-col sm:flex-row gap-3">
             <div className="flex-1 relative">
               <input
@@ -1396,7 +1396,7 @@ function TechnologiesTab() {
                 placeholder="Search technologies or developers..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full bg-slate-900/50 border border-slate-700 rounded-lg px-4 py-2.5 pl-10 text-slate-200 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50"
+                className="w-full bg-black/50 border border-white/[0.08] rounded-lg px-4 py-2.5 pl-10 text-white/90 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50"
               />
               <svg className="absolute left-3 top-3 w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -1405,7 +1405,7 @@ function TechnologiesTab() {
             <select
               value={categoryFilter}
               onChange={(e) => setCategoryFilter(e.target.value)}
-              className="bg-slate-900/50 border border-slate-700 rounded-lg px-3 py-2.5 text-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500/50"
+              className="bg-black/50 border border-white/[0.08] rounded-lg px-3 py-2.5 text-white/90 focus:outline-none focus:ring-2 focus:ring-purple-500/50"
             >
               <option value="all">All Categories</option>
               <option value="capture">Capture</option>
@@ -1437,8 +1437,8 @@ function TechnologiesTab() {
           const trlColor = getTRLColor(tech.trl);
           return (
             <StaggerItem key={tech.id}>
-              <div className={`bg-slate-800/60 border rounded-xl overflow-hidden transition-all duration-300 ${
-                isExpanded ? 'border-purple-500/50 shadow-lg shadow-purple-500/10' : 'border-slate-700/50 hover:border-slate-600/50'
+              <div className={`bg-white/[0.05] border rounded-xl overflow-hidden transition-all duration-300 ${
+                isExpanded ? 'border-purple-500/50 shadow-lg shadow-purple-500/10' : 'border-white/[0.06] hover:border-white/[0.08]'
               }`}>
                 <button
                   onClick={() => setExpandedId(isExpanded ? null : tech.id)}
@@ -1446,7 +1446,7 @@ function TechnologiesTab() {
                 >
                   <div className="flex flex-col sm:flex-row sm:items-start gap-3">
                     <div className="flex-1 min-w-0">
-                      <h3 className="text-lg font-semibold text-slate-100">{tech.name}</h3>
+                      <h3 className="text-lg font-semibold text-white/90">{tech.name}</h3>
                       <p className="text-sm text-slate-400 mt-1 line-clamp-2">{tech.description}</p>
                     </div>
                     <div className="flex flex-wrap gap-2 sm:flex-col sm:items-end shrink-0">
@@ -1467,7 +1467,7 @@ function TechnologiesTab() {
                   <div className="mt-3">
                     <div className="flex items-center gap-2">
                       <span className="text-xs text-slate-500">TRL</span>
-                      <div className="flex-1 h-2 bg-slate-900/50 rounded-full overflow-hidden">
+                      <div className="flex-1 h-2 bg-black/50 rounded-full overflow-hidden">
                         <div
                           className={`h-full rounded-full transition-all ${
                             tech.trl >= 8 ? 'bg-green-500' :
@@ -1483,7 +1483,7 @@ function TechnologiesTab() {
                 </button>
 
                 {isExpanded && (
-                  <div className="border-t border-slate-700/50 p-5 bg-slate-900/30 space-y-4">
+                  <div className="border-t border-white/[0.06] p-5 bg-black/30 space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
                         <h4 className="text-sm font-semibold text-green-400 mb-2">Advantages</h4>
@@ -1509,10 +1509,10 @@ function TechnologiesTab() {
                       </div>
                     </div>
                     <div>
-                      <h4 className="text-sm font-semibold text-slate-300 mb-2">Key Developers</h4>
+                      <h4 className="text-sm font-semibold text-white/70 mb-2">Key Developers</h4>
                       <div className="flex flex-wrap gap-2">
                         {tech.keyDevelopers.map((d) => (
-                          <span key={d} className="text-xs px-2 py-1 rounded-full bg-slate-800 text-slate-300 border border-slate-700">
+                          <span key={d} className="text-xs px-2 py-1 rounded-full bg-white/[0.06] text-white/70 border border-white/[0.08]">
                             {d}
                           </span>
                         ))}
@@ -1583,7 +1583,7 @@ function DebrisRemediationContent() {
           />
 
           {/* Main Tab Navigation */}
-          <div className="flex gap-1 mb-8 p-1 bg-slate-800/50 rounded-xl w-full sm:w-fit overflow-x-auto scrollbar-thin">
+          <div className="flex gap-1 mb-8 p-1 bg-white/[0.04] rounded-xl w-full sm:w-fit overflow-x-auto scrollbar-thin">
             {MAIN_TABS.map((tab) => (
               <button
                 key={tab.id}
@@ -1591,7 +1591,7 @@ function DebrisRemediationContent() {
                 className={`flex-1 sm:flex-none px-4 sm:px-6 py-3 rounded-lg font-medium transition-all whitespace-nowrap touch-target ${
                   activeTab === tab.id
                     ? 'bg-white text-slate-900'
-                    : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/50'
+                    : 'text-slate-400 hover:text-white/90 hover:bg-white/[0.08]'
                 }`}
               >
                 <div className="text-sm font-semibold">{tab.label}</div>

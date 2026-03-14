@@ -332,7 +332,7 @@ const AGENCY_CONFIG: Record<Agency, { label: string; color: string; bgColor: str
   },
   NOAA: {
     label: 'NOAA',
-    color: 'text-slate-300',
+    color: 'text-white/70',
     bgColor: 'bg-white/8',
     borderColor: 'border-white/10',
     focusAreas: ['Remote sensing licenses', 'Weather data policy', 'Commercial imagery'],
@@ -581,7 +581,7 @@ export default function RegulatoryTrackerPage() {
                   key={agency}
                   onClick={() => toggleAgency(agency)}
                   className={`card p-4 text-left transition-all cursor-pointer ${
-                    isSelected ? `ring-2 ring-offset-1 ring-offset-slate-900 ${config.borderColor.replace('/30', '/70')}` : ''
+                    isSelected ? `ring-2 ring-offset-1 ring-offset-black ${config.borderColor.replace('/30', '/70')}` : ''
                   }`}
                   aria-pressed={isSelected}
                 >
@@ -615,9 +615,9 @@ export default function RegulatoryTrackerPage() {
                 {upcomingDeadlines.map(p => {
                   const days = daysUntil(p.commentDeadline!);
                   return (
-                    <div key={p.id} className="flex items-start gap-3 p-3 rounded-lg bg-slate-800/50 border border-slate-700/30">
+                    <div key={p.id} className="flex items-start gap-3 p-3 rounded-lg bg-white/[0.04] border border-white/[0.04]">
                       <div className={`flex-shrink-0 mt-0.5 text-xs font-bold px-2 py-1 rounded ${
-                        days <= 30 ? 'bg-red-500/20 text-red-400' : days <= 60 ? 'bg-amber-500/20 text-amber-400' : 'bg-slate-700/50 text-slate-300'
+                        days <= 30 ? 'bg-red-500/20 text-red-400' : days <= 60 ? 'bg-amber-500/20 text-amber-400' : 'bg-white/[0.06] text-white/70'
                       }`}>
                         {days}d
                       </div>
@@ -649,7 +649,7 @@ export default function RegulatoryTrackerPage() {
                   value={searchQuery}
                   onChange={e => setSearchQuery(e.target.value)}
                   placeholder="Search proceedings, docket numbers..."
-                  className="w-full pl-10 pr-4 py-2.5 bg-slate-800/60 border border-slate-700/50 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-white/15 focus:ring-1 focus:ring-white/30 transition-colors"
+                  className="w-full pl-10 pr-4 py-2.5 bg-white/[0.05] border border-white/[0.06] rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-white/15 focus:ring-1 focus:ring-white/30 transition-colors"
                 />
               </div>
 
@@ -664,9 +664,9 @@ export default function RegulatoryTrackerPage() {
                       className={`px-3 py-1.5 text-xs rounded-lg font-medium transition-all ${
                         impactFilter === level
                           ? level === 'All'
-                            ? 'bg-slate-600 text-white'
+                            ? 'bg-white/[0.1] text-white'
                             : `${IMPACT_CONFIG[level as ImpactLevel].bgColor} ${IMPACT_CONFIG[level as ImpactLevel].color}`
-                          : 'bg-slate-800/50 text-slate-400 hover:text-slate-300 hover:bg-slate-700/50'
+                          : 'bg-white/[0.04] text-slate-400 hover:text-white/70 hover:bg-white/[0.06]'
                       }`}
                     >
                       {level}
@@ -681,7 +681,7 @@ export default function RegulatoryTrackerPage() {
                 <select
                   value={sortField}
                   onChange={e => handleSort(e.target.value as SortField)}
-                  className="bg-slate-800/60 border border-slate-700/50 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-white/15"
+                  className="bg-white/[0.05] border border-white/[0.06] rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-white/15"
                 >
                   <option value="date">Expected Date</option>
                   <option value="impact">Impact Level</option>
@@ -690,7 +690,7 @@ export default function RegulatoryTrackerPage() {
                 </select>
                 <button
                   onClick={() => setSortAsc(a => !a)}
-                  className="p-1.5 rounded-lg bg-slate-800/50 hover:bg-slate-700/50 text-slate-400 hover:text-white transition-colors"
+                  className="p-1.5 rounded-lg bg-white/[0.04] hover:bg-white/[0.06] text-slate-400 hover:text-white transition-colors"
                   title={sortAsc ? 'Sort ascending' : 'Sort descending'}
                 >
                   <svg className={`w-4 h-4 transition-transform ${sortAsc ? '' : 'rotate-180'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -700,7 +700,7 @@ export default function RegulatoryTrackerPage() {
               </div>
 
               {/* View Mode */}
-              <div className="flex items-center gap-1 border-l border-slate-700/50 pl-4">
+              <div className="flex items-center gap-1 border-l border-white/[0.06] pl-4">
                 {([
                   { mode: 'table' as ViewMode, icon: 'M3 10h18M3 14h18M3 18h18M3 6h18' },
                   { mode: 'cards' as ViewMode, icon: 'M4 5a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1V5zm10 0a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zM4 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1v-4zm10 0a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z' },
@@ -710,7 +710,7 @@ export default function RegulatoryTrackerPage() {
                     key={mode}
                     onClick={() => setViewMode(mode)}
                     className={`p-2 rounded-lg transition-colors ${
-                      viewMode === mode ? 'bg-white/10 text-slate-300' : 'text-slate-500 hover:text-slate-300 hover:bg-slate-700/50'
+                      viewMode === mode ? 'bg-white/10 text-white/70' : 'text-slate-500 hover:text-white/70 hover:bg-white/[0.06]'
                     }`}
                     title={`${mode.charAt(0).toUpperCase() + mode.slice(1)} view`}
                   >
@@ -733,8 +733,8 @@ export default function RegulatoryTrackerPage() {
                     onClick={() => toggleSector(sector)}
                     className={`px-2.5 py-1 text-xs rounded-full border transition-all ${
                       isActive
-                        ? 'bg-white/10 border-white/15 text-slate-200'
-                        : 'bg-slate-800/40 border-slate-700/40 text-slate-400 hover:text-slate-300 hover:border-slate-600/60'
+                        ? 'bg-white/10 border-white/15 text-white/90'
+                        : 'bg-white/[0.04] border-white/[0.06] text-slate-400 hover:text-white/70 hover:border-white/[0.08]'
                     }`}
                     aria-pressed={isActive}
                   >
@@ -777,14 +777,14 @@ export default function RegulatoryTrackerPage() {
               ) : (
                 <div className="relative">
                   {/* Horizontal timeline line */}
-                  <div className="absolute top-6 left-0 right-0 h-0.5 bg-slate-700/60" />
-                  <div className="flex overflow-x-auto gap-0 pb-4 scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-transparent">
+                  <div className="absolute top-6 left-0 right-0 h-0.5 bg-white/[0.06]" />
+                  <div className="flex overflow-x-auto gap-0 pb-4 scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent">
                     {timelineMonths.map(([monthKey, items]) => (
                       <div key={monthKey} className="flex-shrink-0 min-w-[200px] px-2 first:pl-0 last:pr-0">
                         {/* Month marker */}
                         <div className="relative flex flex-col items-center mb-4">
-                          <div className="w-3 h-3 rounded-full bg-white border-2 border-slate-900 z-10" />
-                          <span className="text-xs font-medium text-slate-300 mt-2">
+                          <div className="w-3 h-3 rounded-full bg-white border-2 border-black z-10" />
+                          <span className="text-xs font-medium text-white/70 mt-2">
                             {getMonthLabel(monthKey + '-01')}
                           </span>
                           <span className="text-[10px] text-slate-500">{items.length} item{items.length !== 1 ? 's' : ''}</span>
@@ -797,8 +797,8 @@ export default function RegulatoryTrackerPage() {
                               onClick={() => setExpandedId(expandedId === p.id ? null : p.id)}
                               className={`w-full text-left p-2.5 rounded-lg border transition-all ${
                                 expandedId === p.id
-                                  ? 'bg-slate-800/80 border-white/15'
-                                  : 'bg-slate-800/40 border-slate-700/30 hover:border-slate-600/50'
+                                  ? 'bg-white/[0.06] border-white/15'
+                                  : 'bg-white/[0.04] border-white/[0.04] hover:border-white/[0.08]'
                               }`}
                             >
                               <div className="flex items-start gap-2">
@@ -831,7 +831,7 @@ export default function RegulatoryTrackerPage() {
           <ScrollReveal>
             <div className="card overflow-hidden mb-8">
               {/* Table header */}
-              <div className="hidden lg:grid lg:grid-cols-12 gap-4 p-4 bg-slate-800/50 border-b border-slate-700/50 text-xs font-medium uppercase tracking-wider text-slate-400">
+              <div className="hidden lg:grid lg:grid-cols-12 gap-4 p-4 bg-white/[0.04] border-b border-white/[0.06] text-xs font-medium uppercase tracking-wider text-slate-400">
                 <button onClick={() => handleSort('title')} className="col-span-4 text-left hover:text-white transition-colors flex items-center gap-1">
                   Proceeding {sortField === 'title' && <span>{sortAsc ? '\u2191' : '\u2193'}</span>}
                 </button>
@@ -858,7 +858,7 @@ export default function RegulatoryTrackerPage() {
                       setSectorFilters([]);
                       setSearchQuery('');
                     }}
-                    className="mt-3 text-sm text-slate-300 hover:text-white transition-colors"
+                    className="mt-3 text-sm text-white/70 hover:text-white transition-colors"
                   >
                     Clear all filters
                   </button>
@@ -876,7 +876,7 @@ export default function RegulatoryTrackerPage() {
                       <StaggerItem key={p.id}>
                         <button
                           onClick={() => setExpandedId(isExpanded ? null : p.id)}
-                          className="w-full text-left border-b border-slate-700/30 hover:bg-slate-800/30 transition-colors"
+                          className="w-full text-left border-b border-white/[0.04] hover:bg-white/[0.03] transition-colors"
                         >
                           {/* Desktop row */}
                           <div className="hidden lg:grid lg:grid-cols-12 gap-4 p-4 items-center">
@@ -901,19 +901,19 @@ export default function RegulatoryTrackerPage() {
                               </span>
                             </div>
                             <div className="col-span-2">
-                              <div className="text-sm text-slate-300">{formatDate(p.expectedDate)}</div>
+                              <div className="text-sm text-white/70">{formatDate(p.expectedDate)}</div>
                               <div className={`text-[11px] ${days <= 30 ? 'text-amber-400' : days <= 90 ? 'text-slate-400' : 'text-slate-500'}`}>
                                 {days > 0 ? `${days} days remaining` : days === 0 ? 'Today' : 'Past due'}
                               </div>
                             </div>
                             <div className="col-span-2 flex flex-wrap gap-1">
                               {p.sectors.slice(0, 2).map(s => (
-                                <span key={s} className="text-[10px] px-1.5 py-0.5 rounded bg-slate-700/50 text-slate-400">
+                                <span key={s} className="text-[10px] px-1.5 py-0.5 rounded bg-white/[0.06] text-slate-400">
                                   {s}
                                 </span>
                               ))}
                               {p.sectors.length > 2 && (
-                                <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-700/50 text-slate-500">
+                                <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/[0.06] text-slate-500">
                                   +{p.sectors.length - 2}
                                 </span>
                               )}
@@ -939,23 +939,23 @@ export default function RegulatoryTrackerPage() {
 
                         {/* Expanded details */}
                         {isExpanded && (
-                          <div className="px-4 pb-4 pt-2 bg-slate-800/20 border-b border-slate-700/30">
-                            <p className="text-sm text-slate-300 leading-relaxed mb-3">{p.summary}</p>
+                          <div className="px-4 pb-4 pt-2 bg-white/[0.03] border-b border-white/[0.04]">
+                            <p className="text-sm text-white/70 leading-relaxed mb-3">{p.summary}</p>
                             <div className="flex flex-wrap gap-4 text-xs text-slate-400">
                               {p.docketNumber && (
                                 <div>
                                   <span className="text-slate-500">Docket: </span>
-                                  <span className="text-slate-300">{p.docketNumber}</span>
+                                  <span className="text-white/70">{p.docketNumber}</span>
                                 </div>
                               )}
                               <div>
                                 <span className="text-slate-500">Last Updated: </span>
-                                <span className="text-slate-300">{formatDate(p.lastUpdated)}</span>
+                                <span className="text-white/70">{formatDate(p.lastUpdated)}</span>
                               </div>
                               {p.commentDeadline && (
                                 <div>
                                   <span className="text-slate-500">Comment Deadline: </span>
-                                  <span className={daysUntil(p.commentDeadline) <= 30 ? 'text-amber-400 font-medium' : 'text-slate-300'}>
+                                  <span className={daysUntil(p.commentDeadline) <= 30 ? 'text-amber-400 font-medium' : 'text-white/70'}>
                                     {formatDate(p.commentDeadline)}
                                     {daysUntil(p.commentDeadline) > 0 && ` (${daysUntil(p.commentDeadline)}d remaining)`}
                                   </span>
@@ -964,7 +964,7 @@ export default function RegulatoryTrackerPage() {
                             </div>
                             <div className="flex flex-wrap gap-1.5 mt-3">
                               {p.sectors.map(s => (
-                                <span key={s} className="text-[11px] px-2 py-0.5 rounded-full bg-slate-700/50 text-slate-300 border border-slate-600/30">
+                                <span key={s} className="text-[11px] px-2 py-0.5 rounded-full bg-white/[0.06] text-white/70 border border-white/[0.06]">
                                   {s}
                                 </span>
                               ))}
@@ -975,7 +975,7 @@ export default function RegulatoryTrackerPage() {
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 onClick={e => e.stopPropagation()}
-                                className="inline-flex items-center gap-1 mt-3 text-xs text-slate-300 hover:text-white transition-colors"
+                                className="inline-flex items-center gap-1 mt-3 text-xs text-white/70 hover:text-white transition-colors"
                               >
                                 View Official Source
                                 <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -1007,7 +1007,7 @@ export default function RegulatoryTrackerPage() {
                     setSectorFilters([]);
                     setSearchQuery('');
                   }}
-                  className="mt-3 text-sm text-slate-300 hover:text-white transition-colors"
+                  className="mt-3 text-sm text-white/70 hover:text-white transition-colors"
                 >
                   Clear all filters
                 </button>
@@ -1042,13 +1042,13 @@ export default function RegulatoryTrackerPage() {
                       </p>
 
                       {/* Meta */}
-                      <div className="space-y-2 pt-3 border-t border-slate-700/30">
+                      <div className="space-y-2 pt-3 border-t border-white/[0.04]">
                         <div className="flex items-center justify-between">
                           <span className={`inline-flex px-2 py-0.5 rounded-full text-[11px] font-medium ${statusConf.bgColor} ${statusConf.color}`}>
                             {p.status}
                           </span>
                           <div className="text-right">
-                            <div className="text-xs text-slate-300">{formatDate(p.expectedDate)}</div>
+                            <div className="text-xs text-white/70">{formatDate(p.expectedDate)}</div>
                             <div className={`text-[10px] ${days <= 30 ? 'text-amber-400' : 'text-slate-500'}`}>
                               {days > 0 ? `${days}d remaining` : 'Past due'}
                             </div>
@@ -1059,7 +1059,7 @@ export default function RegulatoryTrackerPage() {
                         )}
                         <div className="flex flex-wrap gap-1">
                           {p.sectors.map(s => (
-                            <span key={s} className="text-[10px] px-1.5 py-0.5 rounded bg-slate-700/50 text-slate-400">
+                            <span key={s} className="text-[10px] px-1.5 py-0.5 rounded bg-white/[0.06] text-slate-400">
                               {s}
                             </span>
                           ))}
@@ -1096,7 +1096,7 @@ export default function RegulatoryTrackerPage() {
                     {items.slice(0, 4).map(p => (
                       <div key={p.id} className="flex items-start gap-2 text-xs">
                         <span className={`flex-shrink-0 mt-0.5 ${AGENCY_CONFIG[p.agency].color}`}>{p.agency}</span>
-                        <span className="text-slate-300 leading-tight line-clamp-1">{p.title}</span>
+                        <span className="text-white/70 leading-tight line-clamp-1">{p.title}</span>
                       </div>
                     ))}
                     {items.length > 4 && (
@@ -1121,7 +1121,7 @@ export default function RegulatoryTrackerPage() {
                   key={sector}
                   onClick={() => toggleSector(sector)}
                   className={`card p-4 text-left transition-all cursor-pointer ${
-                    sectorFilters.includes(sector) ? 'ring-2 ring-white/15 ring-offset-1 ring-offset-slate-900' : ''
+                    sectorFilters.includes(sector) ? 'ring-2 ring-white/15 ring-offset-1 ring-offset-black' : ''
                   }`}
                   aria-pressed={sectorFilters.includes(sector)}
                 >
@@ -1143,26 +1143,26 @@ export default function RegulatoryTrackerPage() {
           <div className="card p-6 mb-8">
             <h2 className="text-lg font-semibold text-white mb-4">Key Regulatory Trends</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="p-4 rounded-lg bg-slate-800/40 border border-slate-700/30">
+              <div className="p-4 rounded-lg bg-white/[0.04] border border-white/[0.04]">
                 <h4 className="text-sm font-medium text-purple-400 mb-2">Spectrum Contention Intensifying</h4>
                 <p className="text-xs text-slate-400 leading-relaxed">
                   Multiple proceedings address the growing demand for satellite spectrum, particularly in Ku/Ka-band for mega-constellations and the new D2D (direct-to-device) services. The FCC is balancing terrestrial 5G expansion with protection of satellite downlinks.
                 </p>
               </div>
-              <div className="p-4 rounded-lg bg-slate-800/40 border border-slate-700/30">
+              <div className="p-4 rounded-lg bg-white/[0.04] border border-white/[0.04]">
                 <h4 className="text-sm font-medium text-emerald-400 mb-2">Debris Mitigation Getting Teeth</h4>
                 <p className="text-xs text-slate-400 leading-relaxed">
                   The FCC 5-year deorbit rule and proposed bond requirements signal a shift from voluntary guidelines to enforceable financial mechanisms. International bodies (ESA, UN COPUOS) are following with complementary frameworks for space sustainability.
                 </p>
               </div>
-              <div className="p-4 rounded-lg bg-slate-800/40 border border-slate-700/30">
+              <div className="p-4 rounded-lg bg-white/[0.04] border border-white/[0.04]">
                 <h4 className="text-sm font-medium text-amber-400 mb-2">Launch Regulation Modernization</h4>
                 <p className="text-xs text-slate-400 leading-relaxed">
                   FAA Part 450 reform represents a fundamental shift to performance-based licensing, enabling reusable vehicle operations and higher launch cadence. Environmental review streamlining aims to remove bottlenecks at busy spaceports.
                 </p>
               </div>
-              <div className="p-4 rounded-lg bg-slate-800/40 border border-slate-700/30">
-                <h4 className="text-sm font-medium text-slate-300 mb-2">Export Control Liberalization</h4>
+              <div className="p-4 rounded-lg bg-white/[0.04] border border-white/[0.04]">
+                <h4 className="text-sm font-medium text-white/70 mb-2">Export Control Liberalization</h4>
                 <p className="text-xs text-slate-400 leading-relaxed">
                   Ongoing ITAR reform efforts aim to transfer commercial satellite and launch vehicle components from USML to the CCL, reducing licensing burden for commercial operators while maintaining controls on military-critical technologies.
                 </p>
@@ -1172,7 +1172,7 @@ export default function RegulatoryTrackerPage() {
         </ScrollReveal>
 
         {/* ──── Disclaimer ──── */}
-        <div className="card p-4 mb-8 border-slate-700/40">
+        <div className="card p-4 mb-8 border-white/[0.06]">
           <p className="text-xs text-slate-500 leading-relaxed">
             <span className="font-medium text-slate-400">Disclaimer:</span> This tracker is for informational purposes only and does not constitute legal advice. Proceeding statuses and expected dates are based on publicly available information and may change. Always consult official agency dockets and legal counsel for compliance decisions. Last data review: February 2026.
           </p>

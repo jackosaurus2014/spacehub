@@ -140,7 +140,7 @@ function SearchContent() {
 
         {/* Tab Toggle */}
         <ScrollReveal>
-        <div className="flex items-center gap-1 bg-slate-800 rounded-lg p-1 w-fit mb-6">
+        <div className="flex items-center gap-1 bg-white/[0.06] rounded-lg p-1 w-fit mb-6">
           {[
             { key: 'listings', label: 'Service Listings' },
             { key: 'rfqs', label: 'Open RFQs' },
@@ -160,7 +160,7 @@ function SearchContent() {
         {/* Mobile Filter Toggle */}
         <button
           onClick={() => setShowMobileFilters(!showMobileFilters)}
-          className="lg:hidden mb-4 flex items-center gap-2 px-4 py-2 bg-slate-800 border border-slate-600 rounded-lg text-sm text-slate-300 hover:text-white transition-colors"
+          className="lg:hidden mb-4 flex items-center gap-2 px-4 py-2 bg-white/[0.06] border border-white/[0.1] rounded-lg text-sm text-slate-300 hover:text-white transition-colors"
         >
           <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" /></svg>
           {showMobileFilters ? 'Hide Filters' : 'Show Filters'}
@@ -179,7 +179,7 @@ function SearchContent() {
                 id="marketplace-category"
                 value={category}
                 onChange={(e) => { setCategory(e.target.value); setPage(1); }}
-                className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+                className="w-full bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
               >
                 <option value="">All Categories</option>
                 {MARKETPLACE_CATEGORIES.map((cat) => (
@@ -201,7 +201,7 @@ function SearchContent() {
                       aria-label="Minimum price"
                       value={priceMin}
                       onChange={(e) => { setPriceMin(e.target.value); setPage(1); }}
-                      className="w-full bg-slate-800 border border-slate-600 rounded px-2 py-1.5 text-xs text-white"
+                      className="w-full bg-white/[0.06] border border-white/[0.1] rounded px-2 py-1.5 text-xs text-white"
                     />
                     <input
                       type="number"
@@ -210,7 +210,7 @@ function SearchContent() {
                       aria-label="Maximum price"
                       value={priceMax}
                       onChange={(e) => { setPriceMax(e.target.value); setPage(1); }}
-                      className="w-full bg-slate-800 border border-slate-600 rounded px-2 py-1.5 text-xs text-white"
+                      className="w-full bg-white/[0.06] border border-white/[0.1] rounded px-2 py-1.5 text-xs text-white"
                     />
                   </div>
                 </div>
@@ -222,7 +222,7 @@ function SearchContent() {
                     id="marketplace-verification"
                     value={verFilter}
                     onChange={(e) => { setVerFilter(e.target.value); setPage(1); }}
-                    className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+                    className="w-full bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                   >
                     <option value="">Any Level</option>
                     {Object.entries(VERIFICATION_LEVELS).filter(([k]) => k !== 'none').map(([key, val]) => (
@@ -241,7 +241,7 @@ function SearchContent() {
                           type="checkbox"
                           checked={certFilter.includes(cert.value)}
                           onChange={() => toggleCert(cert.value)}
-                          className="rounded bg-slate-700 border-slate-600 text-slate-300"
+                          className="rounded bg-white/[0.08] border-white/[0.1] text-slate-300"
                         />
                         {cert.label}
                       </label>
@@ -275,14 +275,14 @@ function SearchContent() {
                     aria-label="Sort listings"
                     value={sort}
                     onChange={(e) => { setSort(e.target.value); setPage(1); }}
-                    className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+                    className="bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                   >
                     <option value="newest">Newest First</option>
                     <option value="price_low">Price: Low to High</option>
                     <option value="price_high">Price: High to Low</option>
                   </select>
                 )}
-                <div className="flex bg-slate-800 rounded overflow-hidden">
+                <div className="flex bg-white/[0.06] rounded overflow-hidden">
                   <button
                     onClick={() => setViewMode('grid')}
                     className={`px-2 py-1.5 text-xs ${viewMode === 'grid' ? 'bg-white text-slate-900' : 'text-slate-400'}`}
@@ -353,7 +353,7 @@ function SearchContent() {
                 <button
                   onClick={() => setPage((p) => Math.max(1, p - 1))}
                   disabled={page <= 1}
-                  className="px-3 py-1.5 bg-slate-700 hover:bg-slate-600 disabled:opacity-50 text-white text-sm rounded"
+                  className="px-3 py-1.5 bg-white/[0.08] hover:bg-white/[0.12] disabled:opacity-50 text-white text-sm rounded"
                 >
                   Previous
                 </button>
@@ -363,7 +363,7 @@ function SearchContent() {
                 <button
                   onClick={() => setPage((p) => p + 1)}
                   disabled={page * 20 >= total}
-                  className="px-3 py-1.5 bg-slate-700 hover:bg-slate-600 disabled:opacity-50 text-white text-sm rounded"
+                  className="px-3 py-1.5 bg-white/[0.08] hover:bg-white/[0.12] disabled:opacity-50 text-white text-sm rounded"
                 >
                   Next
                 </button>

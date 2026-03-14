@@ -23,7 +23,7 @@ const PlanetaryScene = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="h-[500px] flex items-center justify-center bg-slate-800/50 rounded-lg">
+      <div className="h-[500px] flex items-center justify-center bg-white/[0.04] rounded-lg">
         <div className="text-center">
           <div
             className="w-10 h-10 border-3 border-white/15 border-t-transparent rounded-full animate-spin mx-auto mb-3"
@@ -386,8 +386,8 @@ function SolarExplorationContent() {
               onClick={() => setSelectedBodySlug(body.slug)}
               className={`px-5 py-3 rounded-lg font-medium transition-all ${
                 selectedBodySlug === body.slug
-                  ? 'bg-slate-700 text-white border-slate-600'
-                  : 'bg-transparent text-slate-400 border border-slate-700 hover:border-slate-500'
+                  ? 'bg-white/[0.08] text-white border-white/[0.1]'
+                  : 'bg-transparent text-slate-400 border border-white/[0.06] hover:border-white/[0.1]'
               }`}
             >
               {body.name}
@@ -460,7 +460,7 @@ function SolarExplorationContent() {
                   <select
                     value={statusFilter || ''}
                     onChange={(e) => setStatusFilter(e.target.value || null)}
-                    className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+                    className="bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                   >
                     <option value="">All Status</option>
                     {Object.entries(LANDER_STATUS_INFO).map(([value, info]) => (
@@ -474,7 +474,7 @@ function SolarExplorationContent() {
                   <select
                     value={typeFilter || ''}
                     onChange={(e) => setTypeFilter(e.target.value || null)}
-                    className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+                    className="bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                   >
                     <option value="">All Types</option>
                     {LANDER_MISSION_TYPES.map((type) => (
@@ -551,7 +551,7 @@ function SolarExplorationContent() {
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm">
                     <thead>
-                      <tr className="border-b border-slate-600/40">
+                      <tr className="border-b border-white/[0.08]">
                         <th className="text-left py-2 px-3 text-slate-400 text-xs uppercase tracking-widest font-medium">Planet</th>
                         <th className="text-left py-2 px-3 text-slate-400 text-xs uppercase tracking-widest font-medium">Host Star</th>
                         <th className="text-left py-2 px-3 text-slate-400 text-xs uppercase tracking-widest font-medium">Year</th>
@@ -566,7 +566,7 @@ function SolarExplorationContent() {
                       {exoplanets.map((planet) => (
                         <tr
                           key={planet.pl_name}
-                          className={`border-b border-slate-700/30 hover:bg-slate-700/30 transition-colors ${
+                          className={`border-b border-white/[0.06] hover:bg-white/[0.06] transition-colors ${
                             planet.habitable_zone ? 'bg-green-500/10' : ''
                           }`}
                         >
@@ -611,19 +611,19 @@ function SolarExplorationContent() {
             <span>🔗</span> Related Modules
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-            <Link href="/mission-control?type=moon_mission" className="p-3 rounded-lg bg-slate-800/30 hover:bg-slate-700/50 transition-colors group">
+            <Link href="/mission-control?type=moon_mission" className="p-3 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] transition-colors group">
               <div className="text-sm font-medium text-white group-hover:text-white">🌙 Moon Missions</div>
               <p className="text-xs text-slate-400 mt-1">Upcoming lunar launch schedule</p>
             </Link>
-            <Link href="/mission-control?type=mars_mission" className="p-3 rounded-lg bg-slate-800/30 hover:bg-slate-700/50 transition-colors group">
+            <Link href="/mission-control?type=mars_mission" className="p-3 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] transition-colors group">
               <div className="text-sm font-medium text-white group-hover:text-white">🔴 Mars Missions</div>
               <p className="text-xs text-slate-400 mt-1">Upcoming Mars launch windows</p>
             </Link>
-            <Link href="/resource-exchange" className="p-3 rounded-lg bg-slate-800/30 hover:bg-slate-700/50 transition-colors group">
+            <Link href="/resource-exchange" className="p-3 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] transition-colors group">
               <div className="text-sm font-medium text-white group-hover:text-white">🚀 Launch Providers</div>
               <p className="text-xs text-slate-400 mt-1">Vehicles and launch services</p>
             </Link>
-            <Link href="/space-insurance?tab=policies" className="p-3 rounded-lg bg-slate-800/30 hover:bg-slate-700/50 transition-colors group">
+            <Link href="/space-insurance?tab=policies" className="p-3 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] transition-colors group">
               <div className="text-sm font-medium text-white group-hover:text-white">🛡️ Mission Insurance</div>
               <p className="text-xs text-slate-400 mt-1">Coverage for exploration missions</p>
             </Link>
@@ -646,7 +646,7 @@ function LanderCard({
   const missionTypeInfo = LANDER_MISSION_TYPES.find((t) => t.value === lander.missionType);
 
   return (
-    <div className="bg-slate-800/30 rounded-lg p-3 border border-slate-700/50 hover:border-space-500 transition-colors">
+    <div className="bg-white/[0.04] rounded-lg p-3 border border-white/[0.06] hover:border-space-500 transition-colors">
       <div className="flex items-start justify-between mb-2">
         <div>
           <h4 className="text-white font-medium">{lander.name}</h4>

@@ -198,7 +198,7 @@ function MarketplaceActions({ companySlug, companyId, companyName, verificationL
   };
 
   return (
-    <div className="mt-4 pt-4 border-t border-slate-700/30 flex flex-wrap items-center gap-3">
+    <div className="mt-4 pt-4 border-t border-white/[0.06] flex flex-wrap items-center gap-3">
       {claimed && verLevel && (
         <span className={`text-xs font-bold px-2 py-1 rounded ${
           verLevel === 'performance' ? 'bg-yellow-500/20 text-yellow-400' :
@@ -218,16 +218,16 @@ function MarketplaceActions({ companySlug, companyId, companyName, verificationL
           Contact Provider
         </a>
       )}
-      <Link href={`/marketplace/search?category=&companyId=${companyId}`} className="text-xs px-3 py-1.5 bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition-colors">
+      <Link href={`/marketplace/search?category=&companyId=${companyId}`} className="text-xs px-3 py-1.5 bg-white/[0.08] hover:bg-white/[0.12] text-white rounded-lg transition-colors">
         View Service Listings
       </Link>
-      <Link href={`/space-talent?tab=jobs&search=${encodeURIComponent(companyName)}`} className="text-xs px-3 py-1.5 bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition-colors">
+      <Link href={`/space-talent?tab=jobs&search=${encodeURIComponent(companyName)}`} className="text-xs px-3 py-1.5 bg-white/[0.08] hover:bg-white/[0.12] text-white rounded-lg transition-colors">
         Jobs at {companyName}
       </Link>
       <WatchButton companyProfileId={companyId} companyName={companyName} size="md" />
       <Link
         href={`/compare/companies?companies=${companySlug}`}
-        className="text-xs px-3 py-1.5 bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition-colors flex items-center gap-1.5"
+        className="text-xs px-3 py-1.5 bg-white/[0.08] hover:bg-white/[0.12] text-white rounded-lg transition-colors flex items-center gap-1.5"
       >
         <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
@@ -249,12 +249,12 @@ function MarketplaceActions({ companySlug, companyId, companyName, verificationL
             value={claimEmail}
             onChange={(e) => setClaimEmail(e.target.value)}
             placeholder="Your business email"
-            className="bg-slate-800 border border-slate-600 rounded-lg px-3 py-1.5 text-xs text-white w-48"
+            className="bg-white/[0.06] border border-white/[0.1] rounded-lg px-3 py-1.5 text-xs text-white w-48"
           />
           <button
             onClick={handleClaim}
             disabled={claiming || !claimEmail}
-            className="text-xs px-3 py-1.5 bg-white hover:bg-slate-100 disabled:bg-slate-700 text-slate-900 rounded-lg font-medium transition-colors"
+            className="text-xs px-3 py-1.5 bg-white hover:bg-slate-100 disabled:bg-white/[0.08] text-slate-900 rounded-lg font-medium transition-colors"
           >
             {claiming ? 'Claiming...' : 'Confirm'}
           </button>
@@ -298,7 +298,7 @@ function MetricCard({ label, value, icon, color = 'text-white' }: {
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      className="bg-slate-800/30 border border-slate-700/30 rounded-xl p-4"
+      className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-4"
     >
       <div className="text-lg mb-1">{icon}</div>
       <div className={`text-xl font-bold ${color}`}>{value}</div>
@@ -342,7 +342,7 @@ function SectionCard({ title, children, count }: { title: string; children: Reac
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-semibold text-white">{title}</h3>
         {count !== undefined && (
-          <span className="text-xs bg-slate-700/50 text-slate-400 px-2 py-0.5 rounded-full">{count}</span>
+          <span className="text-xs bg-white/[0.04] text-slate-400 px-2 py-0.5 rounded-full">{count}</span>
         )}
       </div>
       {children}
@@ -431,7 +431,7 @@ function OverviewTab({ company }: { company: CompanyDetail }) {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.1 }}
-                className="bg-slate-800/30 border border-slate-700/30 rounded-lg p-3"
+                className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-3"
               >
                 <div className="flex items-center gap-2 mb-1">
                   <span className={`text-xs px-1.5 py-0.5 rounded ${
@@ -456,7 +456,7 @@ function OverviewTab({ company }: { company: CompanyDetail }) {
         <SectionCard title="Facilities" count={company.facilities.length}>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
             {company.facilities.map(f => (
-              <div key={f.id} className="bg-slate-800/30 border border-slate-700/30 rounded-lg p-3">
+              <div key={f.id} className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-3">
                 <div className="text-xs text-slate-300 mb-1 capitalize">{f.type.replace(/_/g, ' ')}</div>
                 <div className="text-sm font-medium text-white">{f.name}</div>
                 <div className="text-xs text-slate-400">{[f.city, f.country].filter(Boolean).join(', ')}</div>
@@ -493,7 +493,7 @@ function FinancialsTab({ company }: { company: CompanyDetail }) {
                     className={`${colors[i % colors.length]} rounded-sm relative group cursor-pointer`}
                     title={`${r.seriesLabel || r.roundType}: ${fmt(r.amount)}`}
                   >
-                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 opacity-0 group-hover:opacity-100 transition-opacity bg-slate-900 text-white text-xs px-2 py-1 rounded whitespace-nowrap z-10 pointer-events-none">
+                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 opacity-0 group-hover:opacity-100 transition-opacity bg-black text-white text-xs px-2 py-1 rounded whitespace-nowrap z-10 pointer-events-none">
                       {r.seriesLabel || r.roundType}: {fmt(r.amount)}
                     </div>
                   </motion.div>
@@ -505,7 +505,7 @@ function FinancialsTab({ company }: { company: CompanyDetail }) {
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="text-left text-xs text-slate-500 border-b border-slate-700/50">
+                  <tr className="text-left text-xs text-slate-500 border-b border-white/[0.06]">
                     <th className="pb-2 font-medium">Date</th>
                     <th className="pb-2 font-medium">Round</th>
                     <th className="pb-2 font-medium text-right">Amount</th>
@@ -520,7 +520,7 @@ function FinancialsTab({ company }: { company: CompanyDetail }) {
                       initial={{ opacity: 0, x: -10 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: i * 0.05 }}
-                      className="border-b border-slate-800/50"
+                      className="border-b border-white/[0.04]"
                     >
                       <td className="py-2.5 text-slate-400">{fmtDate(r.date)}</td>
                       <td className="py-2.5">
@@ -546,7 +546,7 @@ function FinancialsTab({ company }: { company: CompanyDetail }) {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="text-left text-xs text-slate-500 border-b border-slate-700/50">
+                <tr className="text-left text-xs text-slate-500 border-b border-white/[0.06]">
                   <th className="pb-2 font-medium">Period</th>
                   <th className="pb-2 font-medium text-right">Revenue</th>
                   <th className="pb-2 font-medium">Confidence</th>
@@ -555,7 +555,7 @@ function FinancialsTab({ company }: { company: CompanyDetail }) {
               </thead>
               <tbody>
                 {company.revenueEstimates.map(r => (
-                  <tr key={r.id} className="border-b border-slate-800/50">
+                  <tr key={r.id} className="border-b border-white/[0.04]">
                     <td className="py-2.5 text-slate-300">{r.year}{r.quarter ? ` Q${r.quarter}` : ''}</td>
                     <td className="py-2.5 text-right font-semibold text-blue-400">
                       {r.revenue ? fmt(r.revenue) : r.revenueRange || '—'}
@@ -624,7 +624,7 @@ function ProductsTab({ company }: { company: CompanyDetail }) {
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.08 }}
-              className="bg-slate-800/30 border border-slate-700/30 rounded-xl p-5 hover:border-white/10 transition-colors"
+              className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-5 hover:border-white/10 transition-colors"
             >
               <div className="flex items-center justify-between mb-2">
                 <h4 className="font-semibold text-white text-lg">{p.name}</h4>
@@ -641,7 +641,7 @@ function ProductsTab({ company }: { company: CompanyDetail }) {
                 <p className="text-sm text-slate-400 leading-relaxed mb-3">{p.description}</p>
               )}
               {p.specs && Object.keys(p.specs).length > 0 && (
-                <div className="mt-3 pt-3 border-t border-slate-700/30">
+                <div className="mt-3 pt-3 border-t border-white/[0.06]">
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-3">
                     {Object.entries(p.specs).map(([key, val]) => (
                       <div key={key}>
@@ -653,7 +653,7 @@ function ProductsTab({ company }: { company: CompanyDetail }) {
                 </div>
               )}
               {p.category === 'launch_vehicle' && (
-                <div className="mt-3 pt-3 border-t border-slate-700/30">
+                <div className="mt-3 pt-3 border-t border-white/[0.06]">
                   <Link
                     href="/launch-vehicles"
                     className="inline-flex items-center gap-1.5 text-xs text-slate-300 hover:text-white transition-colors"
@@ -686,7 +686,7 @@ function PeopleTab({ company }: { company: CompanyDetail }) {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: i * 0.06 }}
-              className="bg-slate-800/30 border border-slate-700/30 rounded-xl p-4"
+              className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-4"
             >
               <div className="flex items-start gap-3">
                 <div className="w-10 h-10 rounded-full bg-gradient-to-br from-white/30 to-purple-500/30 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
@@ -704,7 +704,7 @@ function PeopleTab({ company }: { company: CompanyDetail }) {
               {p.previousCompanies.length > 0 && (
                 <div className="mt-2 flex flex-wrap gap-1">
                   {p.previousCompanies.slice(0, 3).map(c => (
-                    <span key={c} className="text-xs px-1.5 py-0.5 rounded bg-slate-700/50 text-slate-400">{c}</span>
+                    <span key={c} className="text-xs px-1.5 py-0.5 rounded bg-white/[0.04] text-slate-400">{c}</span>
                   ))}
                 </div>
               )}
@@ -734,7 +734,7 @@ function ContractsTab({ company }: { company: CompanyDetail }) {
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: i * 0.05 }}
-              className="bg-slate-800/30 border border-slate-700/30 rounded-lg p-4 hover:border-white/10 transition-colors"
+              className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-4 hover:border-white/10 transition-colors"
             >
               <div className="flex items-start justify-between">
                 <div>
@@ -777,12 +777,12 @@ function SpaceAssetsTab({ company }: { company: CompanyDetail }) {
         <SectionCard title="Orbital Assets Summary">
           <div className="flex flex-wrap gap-4">
             {Object.entries(byOrbit).map(([orbit, count]) => (
-              <div key={orbit} className="bg-slate-800/30 border border-slate-700/30 rounded-lg p-3 text-center min-w-[100px]">
+              <div key={orbit} className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-3 text-center min-w-[100px]">
                 <div className="text-2xl font-bold text-slate-300">{count}</div>
                 <div className="text-xs text-slate-500">{orbit}</div>
               </div>
             ))}
-            <div className="bg-slate-800/30 border border-white/10 rounded-lg p-3 text-center min-w-[100px]">
+            <div className="bg-white/[0.04] border border-white/10 rounded-lg p-3 text-center min-w-[100px]">
               <div className="text-2xl font-bold text-white">{company.summary.totalSatellites}</div>
               <div className="text-xs text-slate-500">Total</div>
             </div>
@@ -797,7 +797,7 @@ function SpaceAssetsTab({ company }: { company: CompanyDetail }) {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="text-left text-xs text-slate-500 border-b border-slate-700/50">
+                <tr className="text-left text-xs text-slate-500 border-b border-white/[0.06]">
                   <th className="pb-2 font-medium">Satellite</th>
                   <th className="pb-2 font-medium">Orbit</th>
                   <th className="pb-2 font-medium">Mission</th>
@@ -808,7 +808,7 @@ function SpaceAssetsTab({ company }: { company: CompanyDetail }) {
               </thead>
               <tbody>
                 {company.satelliteAssets.slice(0, 50).map(s => (
-                  <tr key={s.id} className="border-b border-slate-800/50">
+                  <tr key={s.id} className="border-b border-white/[0.04]">
                     <td className="py-2 text-white">{s.satelliteName}</td>
                     <td className="py-2 text-slate-300 text-xs">{s.orbitType || '—'}</td>
                     <td className="py-2 text-slate-400 text-xs capitalize">{s.missionType?.replace(/-/g, ' ') || '—'}</td>
@@ -854,13 +854,13 @@ function TimelineTab({ company }: { company: CompanyDetail }) {
               className="relative mb-4 last:mb-0"
             >
               {/* Dot */}
-              <div className="absolute -left-6 top-1 w-3.5 h-3.5 rounded-full bg-slate-900 border-2 border-white/15 z-10" />
+              <div className="absolute -left-6 top-1 w-3.5 h-3.5 rounded-full bg-black border-2 border-white/15 z-10" />
 
-              <div className="bg-slate-800/30 border border-slate-700/30 rounded-lg p-3 hover:border-white/10 transition-colors ml-2">
+              <div className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-3 hover:border-white/10 transition-colors ml-2">
                 <div className="flex items-center gap-2 mb-1">
                   <span className="text-sm">{getEventIcon(e.type)}</span>
                   <span className="text-xs text-slate-500">{fmtDate(e.date)}</span>
-                  <span className="text-xs px-1.5 py-0.5 rounded bg-slate-700/50 text-slate-400 capitalize">
+                  <span className="text-xs px-1.5 py-0.5 rounded bg-white/[0.04] text-slate-400 capitalize">
                     {e.type.replace(/_/g, ' ')}
                   </span>
                   {e.importance >= 8 && (
@@ -1042,7 +1042,7 @@ function DigestTab({ companyId, companyName }: { companyId: string; companyName:
               {digest.content}
             </div>
 
-            <div className="flex items-center gap-3 text-xs text-slate-500 mt-3 pt-2 border-t border-slate-700/50">
+            <div className="flex items-center gap-3 text-xs text-slate-500 mt-3 pt-2 border-t border-white/[0.06]">
               <span>{digest.newsCount} articles analyzed</span>
               <span>Generated {new Date(digest.generatedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' })}</span>
             </div>
@@ -1089,12 +1089,12 @@ function CompanyScoreSection({ company }: { company: CompanyDetail }) {
         {Object.entries(scoreResult.dimensions).map(([key, dim]) => {
           const s = dim.score;
           return (
-            <div key={key} className="bg-slate-800/30 rounded-lg p-2.5">
+            <div key={key} className="bg-white/[0.04] rounded-lg p-2.5">
               <div className="flex justify-between items-center mb-1">
                 <span className="text-xs text-slate-400 capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}</span>
                 <span className={`text-xs font-bold ${getScoreColor(s)}`}>{s}</span>
               </div>
-              <div className="h-1.5 bg-slate-700/50 rounded-full overflow-hidden">
+              <div className="h-1.5 bg-white/[0.04] rounded-full overflow-hidden">
                 <div
                   className={`h-full rounded-full transition-all duration-1000 ease-out ${getScoreBarColor(s)}`}
                   style={{ width: `${s}%` }}
@@ -1141,7 +1141,7 @@ function IntelligenceTab({ company }: { company: CompanyDetail }) {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           {links.map(link => (
             <Link key={link.label} href={link.href}>
-              <div className={`bg-slate-800/30 border ${link.color} rounded-lg p-4 transition-all duration-200 hover:bg-slate-800/50`}>
+              <div className={`bg-white/[0.04] border ${link.color} rounded-lg p-4 transition-all duration-200 hover:bg-white/[0.06]`}>
                 <div className="flex items-center gap-3">
                   <span className="text-2xl">{link.icon}</span>
                   <div>
@@ -1172,7 +1172,7 @@ function IntelligenceTab({ company }: { company: CompanyDetail }) {
             { label: 'Company Tier', value: `Tier ${company.tier}`, icon: '⭐' },
             { label: 'Data Quality', value: `${company.dataCompleteness}%`, icon: '📊' },
           ].map(item => (
-            <div key={item.label} className="bg-slate-800/30 border border-slate-700/30 rounded-lg p-3 text-center">
+            <div key={item.label} className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-3 text-center">
               <div className="text-lg mb-1">{item.icon}</div>
               <div className="text-sm font-medium text-white">{item.value}</div>
               <div className="text-xs text-slate-500">{item.label}</div>
@@ -1195,9 +1195,9 @@ function RelationshipsTab({ company }: { company: CompanyDetail }) {
               <Link key={c.id} href={`/company-profiles/${c.slug}`}>
                 <motion.div
                   whileHover={{ scale: 1.02 }}
-                  className="bg-slate-800/30 border border-slate-700/30 rounded-lg p-3 flex items-center gap-3 cursor-pointer hover:border-white/10 transition-colors"
+                  className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-3 flex items-center gap-3 cursor-pointer hover:border-white/10 transition-colors"
                 >
-                  <div className="w-8 h-8 rounded-lg bg-slate-700 flex items-center justify-center text-sm">
+                  <div className="w-8 h-8 rounded-lg bg-white/[0.08] flex items-center justify-center text-sm">
                     {c.logoUrl ? <Image src={c.logoUrl} alt={`${c.name} logo`} width={20} height={20} sizes="20px" className="w-5 h-5 rounded" unoptimized /> : getSectorIcon(c.sector)}
                   </div>
                   <div>
@@ -1216,7 +1216,7 @@ function RelationshipsTab({ company }: { company: CompanyDetail }) {
         <SectionCard title="Acquisitions Made" count={company.acquisitions.length}>
           <div className="space-y-2">
             {company.acquisitions.map(a => (
-              <div key={a.id} className="bg-slate-800/30 border border-slate-700/30 rounded-lg p-3 flex items-center justify-between">
+              <div key={a.id} className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-3 flex items-center justify-between">
                 <div>
                   <div className="text-sm font-medium text-white">{a.targetName}</div>
                   <div className="text-xs text-slate-500">{fmtDate(a.date)} · {a.dealType}</div>
@@ -1233,7 +1233,7 @@ function RelationshipsTab({ company }: { company: CompanyDetail }) {
         <SectionCard title="Partnerships" count={company.partnerships.length}>
           <div className="space-y-2">
             {company.partnerships.map(p => (
-              <div key={p.id} className="bg-slate-800/30 border border-slate-700/30 rounded-lg p-3">
+              <div key={p.id} className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-3">
                 <div className="flex items-center gap-2 mb-1">
                   <span className="text-sm font-medium text-white">{p.partnerName}</span>
                   {p.type && (
@@ -1332,7 +1332,7 @@ function QuickStatsSection({ company }: { company: CompanyDetail }) {
   if (stats.length === 0) return null;
 
   return (
-    <div className="border-t border-b border-slate-700/30 py-5 mb-8">
+    <div className="border-t border-b border-white/[0.06] py-5 mb-8">
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
         {stats.map((stat, i) => (
           <motion.div
@@ -1340,7 +1340,7 @@ function QuickStatsSection({ company }: { company: CompanyDetail }) {
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 + i * 0.06, duration: 0.4, ease: 'easeOut' }}
-            className="bg-slate-800/40 backdrop-blur-sm border border-slate-700/40 rounded-xl p-4 text-center hover:border-white/10 transition-colors"
+            className="bg-white/[0.04] backdrop-blur-sm border border-white/[0.06] rounded-xl p-4 text-center hover:border-white/10 transition-colors"
           >
             <div className="flex justify-center mb-2">{stat.icon}</div>
             <div className="text-white text-lg font-bold leading-tight">{stat.value}</div>
@@ -1382,8 +1382,8 @@ function RecentNewsSnippet({ companySlug, companyName }: { companySlug: string; 
         <div className="space-y-3">
           {[1, 2, 3].map(i => (
             <div key={i} className="animate-pulse flex items-center gap-3">
-              <div className="h-4 bg-slate-700 rounded w-3/4" />
-              <div className="h-3 bg-slate-700/50 rounded w-1/4" />
+              <div className="h-4 bg-white/[0.08] rounded w-3/4" />
+              <div className="h-3 bg-white/[0.04] rounded w-1/4" />
             </div>
           ))}
         </div>
@@ -1419,7 +1419,7 @@ function RecentNewsSnippet({ companySlug, companyName }: { companySlug: string; 
             initial={{ opacity: 0, x: -10 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: i * 0.08 }}
-            className="flex items-center justify-between gap-4 p-3 rounded-lg bg-slate-800/30 border border-slate-700/30 hover:border-white/10 transition-colors group"
+            className="flex items-center justify-between gap-4 p-3 rounded-lg bg-white/[0.04] border border-white/[0.06] hover:border-white/10 transition-colors group"
           >
             <div className="flex-1 min-w-0">
               <h4 className="text-sm font-medium text-white group-hover:text-white transition-colors line-clamp-1">
@@ -1520,7 +1520,7 @@ export default function CompanyProfileDetailPage() {
             </button>
             <Link
               href="/company-profiles"
-              className="px-5 py-2.5 bg-slate-700 hover:bg-slate-600 text-white text-sm rounded-lg font-medium transition-colors"
+              className="px-5 py-2.5 bg-white/[0.08] hover:bg-white/[0.12] text-white text-sm rounded-lg font-medium transition-colors"
             >
               Company Directory
             </Link>
@@ -1584,7 +1584,7 @@ export default function CompanyProfileDetailPage() {
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 transition={{ type: 'spring', stiffness: 200, damping: 15 }}
-                className="w-16 h-16 rounded-2xl bg-gradient-to-br from-slate-700 to-slate-800 flex items-center justify-center text-3xl flex-shrink-0 border border-slate-600/50"
+                className="w-16 h-16 rounded-2xl bg-gradient-to-br from-white/[0.08] to-white/[0.06] flex items-center justify-center text-3xl flex-shrink-0 border border-white/[0.1]"
               >
                 {company.logoUrl ? (
                   <Image src={company.logoUrl} alt={`${company.name} logo`} width={48} height={48} sizes="48px" className="w-12 h-12 rounded-xl object-contain" unoptimized />
@@ -1645,7 +1645,7 @@ export default function CompanyProfileDetailPage() {
                     </span>
                   )}
                   {company.tags?.map(tag => (
-                    <span key={tag} className="text-xs px-2 py-0.5 rounded-full bg-slate-700/50 text-slate-400 border border-slate-600/30">
+                    <span key={tag} className="text-xs px-2 py-0.5 rounded-full bg-white/[0.04] text-slate-400 border border-white/[0.06]">
                       {tag}
                     </span>
                   ))}
@@ -1676,14 +1676,14 @@ export default function CompanyProfileDetailPage() {
           </div>
 
           {/* Data Completeness Bar */}
-          <div className="mt-4 pt-4 border-t border-slate-700/30">
+          <div className="mt-4 pt-4 border-t border-white/[0.06]">
             {(() => {
               const overallScore = company.completenessBreakdown?.total ?? company.dataCompleteness;
               return (
                 <>
                   <div className="flex items-center gap-3">
                     <span className="text-xs text-slate-500">Profile Completeness</span>
-                    <div className="flex-1 h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                    <div className="flex-1 h-1.5 bg-white/[0.06] rounded-full overflow-hidden">
                       <motion.div
                         initial={{ width: 0 }}
                         animate={{ width: `${overallScore}%` }}
@@ -1740,7 +1740,7 @@ export default function CompanyProfileDetailPage() {
                                 return (
                                   <div key={key} className="flex items-center gap-2">
                                     <span className="text-[11px] text-slate-400 w-24 shrink-0">{label}</span>
-                                    <div className="flex-1 h-1 bg-slate-800 rounded-full overflow-hidden">
+                                    <div className="flex-1 h-1 bg-white/[0.06] rounded-full overflow-hidden">
                                       <motion.div
                                         initial={{ width: 0 }}
                                         animate={{ width: `${pct}%` }}

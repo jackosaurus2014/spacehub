@@ -162,7 +162,7 @@ function HeatmapCell({ entry }: { entry: HeatmapEntry }) {
     entry.status === 'fresh' ? 'bg-green-500/15 border-green-500/30 hover:bg-green-500/25' :
     entry.status === 'stale' ? 'bg-yellow-500/15 border-yellow-500/30 hover:bg-yellow-500/25' :
     entry.status === 'expired' ? 'bg-red-500/15 border-red-500/30 hover:bg-red-500/25' :
-    'bg-slate-800/50 border-slate-700/30 hover:bg-slate-700/50';
+    'bg-white/[0.04] border-white/[0.04] hover:bg-white/[0.08]';
 
   const textColor =
     entry.status === 'fresh' ? 'text-green-400' :
@@ -311,9 +311,9 @@ export default function DataFreshnessPage() {
       <div className="min-h-screen bg-slate-950 text-white p-8">
         <div className="max-w-7xl mx-auto">
           <div className="animate-pulse space-y-6">
-            <div className="h-8 bg-slate-800 rounded w-64" />
-            <div className="h-48 bg-slate-800 rounded" />
-            <div className="h-48 bg-slate-800 rounded" />
+            <div className="h-8 bg-white/[0.06] rounded w-64" />
+            <div className="h-48 bg-white/[0.06] rounded" />
+            <div className="h-48 bg-white/[0.06] rounded" />
           </div>
         </div>
       </div>
@@ -328,7 +328,7 @@ export default function DataFreshnessPage() {
           <div className="bg-red-900/20 border border-red-500/30 rounded-lg p-4 text-red-400">
             {error}
           </div>
-          <Link href="/admin" className="text-slate-300 hover:underline mt-4 inline-block text-sm">
+          <Link href="/admin" className="text-white/70 hover:underline mt-4 inline-block text-sm">
             Back to Admin
           </Link>
         </div>
@@ -362,7 +362,7 @@ export default function DataFreshnessPage() {
                 Last updated: {new Date(data.generatedAt).toLocaleString('en-US', { timeZone: 'UTC' })}
               </p>
             </div>
-            <Link href="/admin" className="text-slate-300 hover:underline text-sm">
+            <Link href="/admin" className="text-white/70 hover:underline text-sm">
               Back to Admin
             </Link>
           </div>
@@ -370,8 +370,8 @@ export default function DataFreshnessPage() {
 
         {/* Freshness Heatmap */}
         <ScrollReveal delay={0.1}>
-        <div className="bg-slate-900/80 rounded-xl border border-slate-700/50 overflow-hidden">
-          <div className="px-4 py-3 border-b border-slate-700/50 bg-slate-800/50">
+        <div className="bg-black/80 rounded-xl border border-white/[0.06] overflow-hidden">
+          <div className="px-4 py-3 border-b border-white/[0.06] bg-white/[0.04]">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
               <div>
                 <h2 className="text-white font-semibold text-sm">Freshness Heatmap</h2>
@@ -386,15 +386,15 @@ export default function DataFreshnessPage() {
               </div>
               <div className="flex items-center gap-2">
                 <span className="text-slate-500 text-xs">Sort:</span>
-                <div className="flex rounded-lg border border-slate-700/50 overflow-hidden">
+                <div className="flex rounded-lg border border-white/[0.06] overflow-hidden">
                   {(['priority', 'staleness', 'name'] as SortBy[]).map((s) => (
                     <button
                       key={s}
                       onClick={() => setSortBy(s)}
                       className={`px-2.5 py-1 text-xs font-medium transition-colors capitalize ${
                         sortBy === s
-                          ? 'bg-white/10 text-slate-200'
-                          : 'text-slate-400 hover:text-white hover:bg-slate-700/50'
+                          ? 'bg-white/10 text-white/90'
+                          : 'text-slate-400 hover:text-white hover:bg-white/[0.08]'
                       }`}
                     >
                       {s}
@@ -419,7 +419,7 @@ export default function DataFreshnessPage() {
                 <span className="text-slate-400">Expired (&gt;2x TTL)</span>
               </div>
               <div className="flex items-center gap-1.5">
-                <span className="w-3 h-3 rounded bg-slate-700/50 border border-slate-600/50" />
+                <span className="w-3 h-3 rounded bg-slate-700/50 border border-white/[0.08]" />
                 <span className="text-slate-400">No data</span>
               </div>
             </div>
@@ -436,8 +436,8 @@ export default function DataFreshnessPage() {
 
         {/* Table Timestamps */}
         <ScrollReveal delay={0.15}>
-        <div className="bg-slate-900/80 rounded-xl border border-slate-700/50 overflow-hidden">
-          <div className="px-4 py-3 border-b border-slate-700/50 bg-slate-800/50">
+        <div className="bg-black/80 rounded-xl border border-white/[0.06] overflow-hidden">
+          <div className="px-4 py-3 border-b border-white/[0.06] bg-white/[0.04]">
             <h2 className="text-white font-semibold text-sm">Core Data Sources</h2>
           </div>
           <div className="p-4">
@@ -446,7 +446,7 @@ export default function DataFreshnessPage() {
                 <StaggerItem key={key}>
                   <div className="card p-4">
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-slate-300 font-medium capitalize">{key}</span>
+                      <span className="text-white/70 font-medium capitalize">{key}</span>
                       <AgeLabel minutes={ts.ageMinutes} />
                     </div>
                     <div className="text-slate-500 text-xs">
@@ -464,8 +464,8 @@ export default function DataFreshnessPage() {
 
         {/* Circuit Breakers */}
         <ScrollReveal delay={0.2}>
-        <div className="bg-slate-900/80 rounded-xl border border-slate-700/50 overflow-hidden">
-          <div className="px-4 py-3 border-b border-slate-700/50 bg-slate-800/50">
+        <div className="bg-black/80 rounded-xl border border-white/[0.06] overflow-hidden">
+          <div className="px-4 py-3 border-b border-white/[0.06] bg-white/[0.04]">
             <h2 className="text-white font-semibold text-sm">Circuit Breakers</h2>
           </div>
           <div className="p-4">
@@ -477,7 +477,7 @@ export default function DataFreshnessPage() {
                   <StaggerItem key={cb.name}>
                     <div
                       className={`rounded-lg p-3 border ${
-                        cb.state === 'CLOSED' ? 'bg-slate-800/50 border-slate-700/30' :
+                        cb.state === 'CLOSED' ? 'bg-white/[0.04] border-white/[0.04]' :
                         cb.state === 'HALF_OPEN' ? 'bg-yellow-900/10 border-yellow-500/20' :
                         'bg-red-900/10 border-red-500/20'
                       }`}
@@ -487,10 +487,10 @@ export default function DataFreshnessPage() {
                         <span className="text-white text-sm font-medium">{cb.name}</span>
                       </div>
                       <div className="text-slate-500 text-xs space-y-0.5">
-                        <div>State: <span className="text-slate-300">{cb.state}</span></div>
-                        <div>Failures: <span className="text-slate-300">{cb.failures}</span></div>
+                        <div>State: <span className="text-white/70">{cb.state}</span></div>
+                        <div>Failures: <span className="text-white/70">{cb.failures}</span></div>
                         {cb.lastFailure && (
-                          <div>Last fail: <span className="text-slate-300">{new Date(cb.lastFailure).toLocaleString('en-US', { timeZone: 'UTC' })}</span></div>
+                          <div>Last fail: <span className="text-white/70">{new Date(cb.lastFailure).toLocaleString('en-US', { timeZone: 'UTC' })}</span></div>
                         )}
                       </div>
                     </div>
@@ -504,8 +504,8 @@ export default function DataFreshnessPage() {
 
         {/* Manual Refresh */}
         <ScrollReveal delay={0.25}>
-        <div className="bg-slate-900/80 rounded-xl border border-slate-700/50 overflow-hidden">
-          <div className="px-4 py-3 border-b border-slate-700/50 bg-slate-800/50">
+        <div className="bg-black/80 rounded-xl border border-white/[0.06] overflow-hidden">
+          <div className="px-4 py-3 border-b border-white/[0.06] bg-white/[0.04]">
             <h2 className="text-white font-semibold text-sm">Manual Refresh</h2>
           </div>
           <div className="p-4">
@@ -517,8 +517,8 @@ export default function DataFreshnessPage() {
                     disabled={refreshing !== null}
                     className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${
                       refreshing === mod.key
-                        ? 'bg-white/10 border-white/15 text-slate-200 animate-pulse'
-                        : 'bg-slate-800/50 border-slate-700/30 text-slate-300 hover:bg-slate-700/50 hover:text-white'
+                        ? 'bg-white/10 border-white/15 text-white/90 animate-pulse'
+                        : 'bg-white/[0.04] border-white/[0.04] text-white/70 hover:bg-white/[0.08] hover:text-white'
                     } disabled:opacity-50`}
                   >
                     {refreshing === mod.key ? 'Refreshing...' : mod.label}
@@ -533,8 +533,8 @@ export default function DataFreshnessPage() {
         {/* Dynamic Content Freshness */}
         {data.dynamicContent && Object.keys(data.dynamicContent).length > 0 && (
           <ScrollReveal delay={0.3}>
-          <div className="bg-slate-900/80 rounded-xl border border-slate-700/50 overflow-hidden">
-            <div className="px-4 py-3 border-b border-slate-700/50 bg-slate-800/50">
+          <div className="bg-black/80 rounded-xl border border-white/[0.06] overflow-hidden">
+            <div className="px-4 py-3 border-b border-white/[0.06] bg-white/[0.04]">
               <h2 className="text-white font-semibold text-sm">Dynamic Content Modules</h2>
             </div>
             <div className="p-4">
@@ -548,7 +548,7 @@ export default function DataFreshnessPage() {
                       <th className="text-left px-3 py-2">Status</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-800">
+                  <tbody className="divide-y divide-white/[0.06]">
                     {Object.entries(data.dynamicContent).map(([module, info]) => {
                       const modInfo = info as Record<string, unknown>;
                       const lastRefreshed = (modInfo.lastRefreshedAt ?? modInfo.lastRefreshed) as string | null;
@@ -556,9 +556,9 @@ export default function DataFreshnessPage() {
                         ? Math.round((Date.now() - new Date(lastRefreshed).getTime()) / 60000)
                         : null;
                       return (
-                        <tr key={module} className="hover:bg-slate-800/30">
+                        <tr key={module} className="hover:bg-white/[0.03]">
                           <td className="px-3 py-2 text-white font-medium">{module}</td>
-                          <td className="px-3 py-2 text-slate-300">{(modInfo.itemCount as number) ?? (modInfo.total as number) ?? '-'}</td>
+                          <td className="px-3 py-2 text-white/70">{(modInfo.itemCount as number) ?? (modInfo.total as number) ?? '-'}</td>
                           <td className="px-3 py-2"><AgeLabel minutes={ageMin} /></td>
                           <td className="px-3 py-2">
                             {(modInfo.hasExpired as boolean) || (modInfo.expired as number) > 0
@@ -579,8 +579,8 @@ export default function DataFreshnessPage() {
 
         {/* Recent Refresh Logs */}
         <ScrollReveal delay={0.35}>
-        <div className="bg-slate-900/80 rounded-xl border border-slate-700/50 overflow-hidden">
-          <div className="px-4 py-3 border-b border-slate-700/50 bg-slate-800/50">
+        <div className="bg-black/80 rounded-xl border border-white/[0.06] overflow-hidden">
+          <div className="px-4 py-3 border-b border-white/[0.06] bg-white/[0.04]">
             <h2 className="text-white font-semibold text-sm">Recent Refresh Logs</h2>
           </div>
           <div className="p-4">
@@ -599,16 +599,16 @@ export default function DataFreshnessPage() {
                       <th className="text-left px-3 py-2">Duration</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-800">
+                  <tbody className="divide-y divide-white/[0.06]">
                     {data.recentRefreshLogs.map((log) => (
-                      <tr key={log.id} className="hover:bg-slate-800/30">
+                      <tr key={log.id} className="hover:bg-white/[0.03]">
                         <td className="px-3 py-2 text-slate-400 text-xs whitespace-nowrap">
                           {new Date(log.createdAt).toLocaleString('en-US', { timeZone: 'UTC' })}
                         </td>
                         <td className="px-3 py-2 text-white font-medium">{log.module}</td>
-                        <td className="px-3 py-2 text-slate-300">{log.refreshType}</td>
+                        <td className="px-3 py-2 text-white/70">{log.refreshType}</td>
                         <td className="px-3 py-2"><LogStatusBadge status={log.status} /></td>
-                        <td className="px-3 py-2 text-slate-300">{log.itemsUpdated}</td>
+                        <td className="px-3 py-2 text-white/70">{log.itemsUpdated}</td>
                         <td className="px-3 py-2 text-slate-400">
                           {log.duration ? `${(log.duration / 1000).toFixed(1)}s` : '-'}
                         </td>

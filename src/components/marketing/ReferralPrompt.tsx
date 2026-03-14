@@ -165,11 +165,11 @@ export default function ReferralPrompt() {
           background: 'linear-gradient(135deg, #a855f7, #06b6d4)',
         }}
       >
-        <div className="relative bg-slate-900 rounded-2xl px-4 py-3.5">
+        <div className="relative bg-black rounded-2xl px-4 py-3.5">
           {/* Dismiss button */}
           <button
             onClick={handleDismiss}
-            className="absolute top-2 right-2 w-7 h-7 flex items-center justify-center rounded-full text-slate-500 hover:text-slate-300 hover:bg-slate-800 transition-colors"
+            className="absolute top-2 right-2 w-7 h-7 flex items-center justify-center rounded-full text-slate-500 hover:text-white/70 hover:bg-white/[0.06] transition-colors"
             aria-label="Dismiss referral prompt"
           >
             <svg
@@ -200,7 +200,7 @@ export default function ReferralPrompt() {
             <button
               onClick={handleCopy}
               disabled={copied}
-              className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-xs font-medium bg-slate-800 border border-slate-700 text-slate-200 hover:bg-slate-700 hover:border-slate-600 active:scale-[0.97] transition-all disabled:opacity-60"
+              className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-xs font-medium bg-white/[0.06] border border-white/[0.08] text-white/90 hover:bg-white/[0.08] hover:border-white/[0.1] active:scale-[0.97] transition-all disabled:opacity-60"
             >
               {copied ? (
                 <>

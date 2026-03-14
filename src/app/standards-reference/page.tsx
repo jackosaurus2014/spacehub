@@ -558,7 +558,7 @@ const COMPLIANCE_CHECKLISTS: Record<MissionType, string[]> = {
 // ---------------------------------------------------------------------------
 
 const ORG_COLORS: Record<string, string> = {
-  cyan: 'border-white/10 text-slate-300',
+  cyan: 'border-white/10 text-white/70',
   blue: 'border-blue-400/40 text-blue-400',
   red: 'border-red-400/40 text-red-400',
   green: 'border-green-400/40 text-green-400',
@@ -616,10 +616,10 @@ function OrganizationCard({ org }: { org: StandardsOrg }) {
       <p className="text-xs text-slate-400 leading-relaxed line-clamp-2">
         {org.fullName}
       </p>
-      <p className="text-sm text-slate-300 leading-relaxed">
+      <p className="text-sm text-white/70 leading-relaxed">
         {org.description}
       </p>
-      <span className="text-xs text-slate-300/70 group-hover:text-white transition-colors mt-auto">
+      <span className="text-xs text-white/70/70 group-hover:text-white transition-colors mt-auto">
         Visit website &rarr;
       </span>
     </a>
@@ -629,24 +629,24 @@ function OrganizationCard({ org }: { org: StandardsOrg }) {
 function StandardRow({ standard, isChecked, onToggle }: { standard: Standard; isChecked?: boolean; onToggle?: () => void }) {
   const color = getOrgColor(standard.organization);
   return (
-    <tr className="border-b border-slate-700/30 hover:bg-slate-800/40 transition-colors">
+    <tr className="border-b border-white/[0.04] hover:bg-white/[0.04] transition-colors">
       {onToggle !== undefined && (
         <td className="p-3 text-center">
           <input
             type="checkbox"
             checked={isChecked}
             onChange={onToggle}
-            className="w-4 h-4 rounded border-slate-600 bg-slate-800 text-slate-300 focus:ring-white/30 focus:ring-offset-0 cursor-pointer"
+            className="w-4 h-4 rounded border-white/[0.1] bg-white/[0.06] text-white/70 focus:ring-white/30 focus:ring-offset-0 cursor-pointer"
           />
         </td>
       )}
       <td className="p-3">
-        <span className={`text-sm font-mono font-semibold ${ORG_COLORS[color]?.split(' ')[1] || 'text-slate-300'}`}>
+        <span className={`text-sm font-mono font-semibold ${ORG_COLORS[color]?.split(' ')[1] || 'text-white/70'}`}>
           {standard.id}
         </span>
       </td>
       <td className="p-3">
-        <span className="text-sm text-slate-200">{standard.title}</span>
+        <span className="text-sm text-white/90">{standard.title}</span>
       </td>
       <td className="p-3 hidden md:table-cell">
         <span
@@ -683,10 +683,10 @@ function StandardDetail({ standard }: { standard: Standard }) {
         </span>
         <span className="text-xs text-slate-500">{standard.category}</span>
       </div>
-      <h3 className={`font-mono font-bold text-sm mb-1 ${ORG_COLORS[color]?.split(' ')[1] || 'text-slate-300'}`}>
+      <h3 className={`font-mono font-bold text-sm mb-1 ${ORG_COLORS[color]?.split(' ')[1] || 'text-white/70'}`}>
         {standard.id}
       </h3>
-      <h4 className="text-slate-200 text-sm font-medium mb-2">{standard.title}</h4>
+      <h4 className="text-white/90 text-sm font-medium mb-2">{standard.title}</h4>
       <p className="text-slate-400 text-sm leading-relaxed">{standard.description}</p>
       {standard.lastUpdated && (
         <p className="text-xs text-slate-500 mt-2">Last updated: {standard.lastUpdated}</p>
@@ -791,7 +791,7 @@ export default function StandardsReferencePage() {
         {/* ================================================================ */}
         <ScrollReveal>
         <section className="mb-12">
-          <h2 className="text-xl font-bold text-slate-100 mb-4">Standards Organizations</h2>
+          <h2 className="text-xl font-bold text-white mb-4">Standards Organizations</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {ORGANIZATIONS.map((org) => (
               <OrganizationCard key={org.id} org={org} />
@@ -805,7 +805,7 @@ export default function StandardsReferencePage() {
         {/* TAB NAVIGATION                                                   */}
         {/* ================================================================ */}
         <ScrollReveal delay={0.1}>
-        <div className="flex gap-1 mb-6 border-b border-slate-700/50 pb-px overflow-x-auto">
+        <div className="flex gap-1 mb-6 border-b border-white/[0.06] pb-px overflow-x-auto">
           {([
             { key: 'database' as const, label: 'Standards Database', count: STANDARDS_DATABASE.length },
             { key: 'checklist' as const, label: 'Compliance Checklist', count: undefined as number | undefined },
@@ -816,13 +816,13 @@ export default function StandardsReferencePage() {
               onClick={() => setActiveTab(tab.key)}
               className={`px-4 py-2.5 text-sm font-medium rounded-t-lg transition-colors whitespace-nowrap min-h-[44px] ${
                 activeTab === tab.key
-                  ? 'bg-slate-800/80 text-slate-300 border-b-2 border-white/10'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/40'
+                  ? 'bg-white/[0.06] text-white/70 border-b-2 border-white/10'
+                  : 'text-slate-400 hover:text-white/90 hover:bg-white/[0.04]'
               }`}
             >
               {tab.label}
               {tab.count !== undefined && (
-                <span className="ml-1.5 text-xs bg-slate-700/60 px-1.5 py-0.5 rounded-full">
+                <span className="ml-1.5 text-xs bg-white/[0.06] px-1.5 py-0.5 rounded-full">
                   {tab.count}
                 </span>
               )}
@@ -856,14 +856,14 @@ export default function StandardsReferencePage() {
                   placeholder="Search by ID, title, or description..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2.5 bg-slate-800/60 border border-slate-700/50 rounded-lg text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-white/15 focus:ring-1 focus:ring-white/20 min-h-[44px]"
+                  className="w-full pl-10 pr-4 py-2.5 bg-white/[0.05] border border-white/[0.06] rounded-lg text-sm text-white/90 placeholder-slate-500 focus:outline-none focus:border-white/15 focus:ring-1 focus:ring-white/20 min-h-[44px]"
                 />
               </div>
 
               <select
                 value={selectedOrg}
                 onChange={(e) => setSelectedOrg(e.target.value)}
-                className="px-3 py-2.5 bg-slate-800/60 border border-slate-700/50 rounded-lg text-sm text-slate-200 focus:outline-none focus:border-white/15 min-h-[44px] cursor-pointer"
+                className="px-3 py-2.5 bg-white/[0.05] border border-white/[0.06] rounded-lg text-sm text-white/90 focus:outline-none focus:border-white/15 min-h-[44px] cursor-pointer"
               >
                 <option value="all">All Organizations</option>
                 {ORGANIZATIONS.map((org) => (
@@ -876,7 +876,7 @@ export default function StandardsReferencePage() {
               <select
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
-                className="px-3 py-2.5 bg-slate-800/60 border border-slate-700/50 rounded-lg text-sm text-slate-200 focus:outline-none focus:border-white/15 min-h-[44px] cursor-pointer"
+                className="px-3 py-2.5 bg-white/[0.05] border border-white/[0.06] rounded-lg text-sm text-white/90 focus:outline-none focus:border-white/15 min-h-[44px] cursor-pointer"
               >
                 <option value="all">All Categories</option>
                 {allCategories.map((c) => (
@@ -889,7 +889,7 @@ export default function StandardsReferencePage() {
               <select
                 value={selectedStatus}
                 onChange={(e) => setSelectedStatus(e.target.value)}
-                className="px-3 py-2.5 bg-slate-800/60 border border-slate-700/50 rounded-lg text-sm text-slate-200 focus:outline-none focus:border-white/15 min-h-[44px] cursor-pointer"
+                className="px-3 py-2.5 bg-white/[0.05] border border-white/[0.06] rounded-lg text-sm text-white/90 focus:outline-none focus:border-white/15 min-h-[44px] cursor-pointer"
               >
                 <option value="all">All Statuses</option>
                 <option value="Active">Active</option>
@@ -898,11 +898,11 @@ export default function StandardsReferencePage() {
               </select>
 
               {/* View toggle */}
-              <div className="flex border border-slate-700/50 rounded-lg overflow-hidden">
+              <div className="flex border border-white/[0.06] rounded-lg overflow-hidden">
                 <button
                   onClick={() => setViewMode('table')}
                   className={`px-3 py-2.5 text-sm min-h-[44px] transition-colors ${
-                    viewMode === 'table' ? 'bg-white/30 text-slate-300' : 'bg-slate-800/60 text-slate-400 hover:text-slate-200'
+                    viewMode === 'table' ? 'bg-white/30 text-white/70' : 'bg-white/[0.05] text-slate-400 hover:text-white/90'
                   }`}
                   title="Table view"
                 >
@@ -913,7 +913,7 @@ export default function StandardsReferencePage() {
                 <button
                   onClick={() => setViewMode('cards')}
                   className={`px-3 py-2.5 text-sm min-h-[44px] transition-colors ${
-                    viewMode === 'cards' ? 'bg-white/30 text-slate-300' : 'bg-slate-800/60 text-slate-400 hover:text-slate-200'
+                    viewMode === 'cards' ? 'bg-white/30 text-white/70' : 'bg-white/[0.05] text-slate-400 hover:text-white/90'
                   }`}
                   title="Card view"
                 >
@@ -932,7 +932,7 @@ export default function StandardsReferencePage() {
                 </span>
                 <button
                   onClick={resetFilters}
-                  className="text-slate-300 hover:text-white transition-colors underline underline-offset-2"
+                  className="text-white/70 hover:text-white transition-colors underline underline-offset-2"
                 >
                   Clear filters
                 </button>
@@ -945,7 +945,7 @@ export default function StandardsReferencePage() {
                 <div className="overflow-x-auto">
                   <table className="w-full">
                     <thead>
-                      <tr className="border-b border-slate-700/50 bg-slate-800/30">
+                      <tr className="border-b border-white/[0.06] bg-white/[0.03]">
                         <th className="p-3 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">
                           Standard ID
                         </th>
@@ -975,7 +975,7 @@ export default function StandardsReferencePage() {
                     <p className="text-slate-400 text-sm">No standards match your filters.</p>
                     <button
                       onClick={resetFilters}
-                      className="mt-2 text-slate-300 hover:text-white text-sm underline underline-offset-2"
+                      className="mt-2 text-white/70 hover:text-white text-sm underline underline-offset-2"
                     >
                       Clear all filters
                     </button>
@@ -997,7 +997,7 @@ export default function StandardsReferencePage() {
                     <p className="text-slate-400 text-sm">No standards match your filters.</p>
                     <button
                       onClick={resetFilters}
-                      className="mt-2 text-slate-300 hover:text-white text-sm underline underline-offset-2"
+                      className="mt-2 text-white/70 hover:text-white text-sm underline underline-offset-2"
                     >
                       Clear all filters
                     </button>
@@ -1014,7 +1014,7 @@ export default function StandardsReferencePage() {
         {activeTab === 'checklist' && (
           <section>
             <div className="mb-6">
-              <h2 className="text-lg font-bold text-slate-100 mb-2">
+              <h2 className="text-lg font-bold text-white mb-2">
                 Mission Compliance Checklist
               </h2>
               <p className="text-sm text-slate-400 mb-4">
@@ -1032,8 +1032,8 @@ export default function StandardsReferencePage() {
                     }}
                     className={`px-4 py-2 text-sm rounded-lg font-medium transition-colors min-h-[44px] ${
                       selectedMission === mission
-                        ? 'bg-white/30 text-slate-300 border border-white/15'
-                        : 'bg-slate-800/60 text-slate-400 border border-slate-700/50 hover:text-slate-200 hover:border-slate-600'
+                        ? 'bg-white/30 text-white/70 border border-white/15'
+                        : 'bg-white/[0.05] text-slate-400 border border-white/[0.06] hover:text-white/90 hover:border-white/[0.1]'
                     }`}
                   >
                     {mission}
@@ -1044,14 +1044,14 @@ export default function StandardsReferencePage() {
               {/* Progress bar */}
               <div className="card p-4 mb-6">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-medium text-slate-200">
+                  <span className="text-sm font-medium text-white/90">
                     Compliance Progress: {selectedMission}
                   </span>
-                  <span className="text-sm font-mono text-slate-300">
+                  <span className="text-sm font-mono text-white/70">
                     {checklistProgress.done}/{checklistProgress.total} ({checklistProgress.percent}%)
                   </span>
                 </div>
-                <div className="w-full bg-slate-700/50 rounded-full h-2.5 overflow-hidden">
+                <div className="w-full bg-white/[0.06] rounded-full h-2.5 overflow-hidden">
                   <div
                     className="h-full rounded-full transition-all duration-500 ease-out"
                     style={{
@@ -1076,7 +1076,7 @@ export default function StandardsReferencePage() {
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead>
-                    <tr className="border-b border-slate-700/50 bg-slate-800/30">
+                    <tr className="border-b border-white/[0.06] bg-white/[0.03]">
                       <th className="p-3 text-center text-xs font-semibold text-slate-400 uppercase tracking-wider w-12">
                         Done
                       </th>
@@ -1119,7 +1119,7 @@ export default function StandardsReferencePage() {
         {activeTab === 'recent' && (
           <section>
             <div className="mb-6">
-              <h2 className="text-lg font-bold text-slate-100 mb-2">
+              <h2 className="text-lg font-bold text-white mb-2">
                 Recently Updated Standards (2025-2026)
               </h2>
               <p className="text-sm text-slate-400">
@@ -1144,7 +1144,7 @@ export default function StandardsReferencePage() {
         {/* ================================================================ */}
         {/* Footer note                                                      */}
         {/* ================================================================ */}
-        <div className="mt-12 pt-6 border-t border-slate-700/30">
+        <div className="mt-12 pt-6 border-t border-white/[0.04]">
           <p className="text-xs text-slate-500 leading-relaxed max-w-3xl">
             This reference is provided for informational purposes only and does not constitute legal or compliance advice.
             Standards are subject to revision. Always consult the official issuing organization for the latest version

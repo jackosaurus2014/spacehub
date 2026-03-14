@@ -116,7 +116,7 @@ export default function VoteButton({
         disabled={isSubmitting}
         className={`group p-0.5 rounded transition-colors duration-150 ${
           userVote === 1
-            ? 'text-slate-300'
+            ? 'text-white/70'
             : 'text-slate-500 hover:text-white'
         } disabled:opacity-50`}
         aria-label="Upvote"

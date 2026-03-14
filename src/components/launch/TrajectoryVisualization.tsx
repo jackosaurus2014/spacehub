@@ -191,11 +191,11 @@ export default function TrajectoryVisualization({
   missionTimeSeconds,
 }: TrajectoryVisualizationProps) {
   return (
-    <div className="bg-slate-900/95 rounded-xl border border-slate-700/50 overflow-hidden">
+    <div className="bg-black/95 rounded-xl border border-white/[0.06] overflow-hidden">
       {/* Header */}
-      <div className="px-4 py-3 border-b border-slate-700/50 bg-slate-800/50 flex items-center justify-between">
+      <div className="px-4 py-3 border-b border-white/[0.06] bg-white/[0.04] flex items-center justify-between">
         <h3 className="text-white font-semibold flex items-center gap-2 text-sm">
-          <svg className="w-4 h-4 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-4 h-4 text-white/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
           3D Trajectory

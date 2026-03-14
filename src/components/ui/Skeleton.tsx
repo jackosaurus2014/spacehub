@@ -3,7 +3,7 @@ import type { CSSProperties } from 'react';
 export function Skeleton({ className = '', style, shimmer = true }: { className?: string; style?: CSSProperties; shimmer?: boolean }) {
   return (
     <div
-      className={`${shimmer ? 'skeleton-shimmer' : 'animate-pulse bg-slate-700/50'} rounded ${className}`}
+      className={`${shimmer ? 'skeleton-shimmer' : 'animate-pulse bg-white/[0.08]'} rounded ${className}`}
       style={style}
     />
   );
@@ -99,7 +99,7 @@ export function SkeletonTable({ rows = 5 }: { rows?: number }) {
   return (
     <div className="card overflow-hidden">
       {/* Header row */}
-      <div className="flex gap-4 p-4 bg-slate-800/50 border-b border-slate-700/50">
+      <div className="flex gap-4 p-4 bg-white/[0.04] border-b border-white/[0.06]">
         <Skeleton className="h-4 w-24" />
         <Skeleton className="h-4 w-32" />
         <Skeleton className="h-4 w-20" />
@@ -108,7 +108,7 @@ export function SkeletonTable({ rows = 5 }: { rows?: number }) {
       </div>
       {/* Data rows */}
       {Array.from({ length: rows }).map((_, i) => (
-        <div key={i} className="flex gap-4 p-4 border-b border-slate-700/30">
+        <div key={i} className="flex gap-4 p-4 border-b border-white/[0.06]">
           <Skeleton className="h-4 w-28" />
           <Skeleton className={`h-4 ${i % 2 === 0 ? 'w-36' : 'w-24'}`} />
           <Skeleton className="h-4 w-16" />

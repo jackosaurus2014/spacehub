@@ -225,11 +225,11 @@ export default function MobileTabBar() {
             style={{ bottom: 'calc(4rem + env(safe-area-inset-bottom, 0px))' }}
           >
             <div
-              className="bg-slate-900 border-t border-slate-800 rounded-t-2xl max-h-[70vh] overflow-y-auto overscroll-contain"
-              style={{ boxShadow: '0 -8px 32px -8px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(6, 182, 212, 0.12)' }}
+              className="border-t border-white/[0.06] rounded-t-2xl max-h-[70vh] overflow-y-auto overscroll-contain"
+              style={{ background: 'rgba(0, 0, 0, 0.97)', boxShadow: '0 -8px 32px -8px rgba(0, 0, 0, 0.6)' }}
             >
               {/* Handle / close header */}
-              <div className="sticky top-0 z-10 bg-slate-900/95 backdrop-blur-sm border-b border-slate-800/60 px-4 pt-3 pb-2 flex items-center justify-between">
+              <div className="sticky top-0 z-10 bg-black/95 backdrop-blur-sm border-b border-white/[0.06] px-4 pt-3 pb-2 flex items-center justify-between">
                 <span className="text-sm font-semibold text-slate-300 tracking-wide uppercase">
                   All Modules
                 </span>
@@ -237,7 +237,7 @@ export default function MobileTabBar() {
                   type="button"
                   onClick={() => setMoreOpen(false)}
                   aria-label="Close menu"
-                  className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+                  className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg text-slate-400 hover:text-white hover:bg-white/[0.05] transition-colors"
                 >
                   <NavIcon icon="close" className="w-5 h-5" />
                 </button>
@@ -245,14 +245,14 @@ export default function MobileTabBar() {
 
               {/* Drag handle */}
               <div className="flex justify-center -mt-px">
-                <div className="w-10 h-1 rounded-full bg-slate-700 my-1" />
+                <div className="w-10 h-1 rounded-full bg-white/[0.1] my-1" />
               </div>
 
               {/* Category sections */}
               <div className="px-4 pb-6 pt-2 space-y-5">
                 {MORE_MENU_CATEGORIES.map((category) => (
                   <div key={category.title}>
-                    <h3 className="text-xs font-semibold text-slate-300/80 uppercase tracking-wider mb-2 px-1">
+                    <h3 className="text-xs font-semibold text-white/80 uppercase tracking-wider mb-2 px-1">
                       {category.title}
                     </h3>
                     <div className="grid grid-cols-2 min-[400px]:grid-cols-3 gap-2">
@@ -266,8 +266,8 @@ export default function MobileTabBar() {
                             aria-current={active ? 'page' : undefined}
                             className={`flex flex-col items-center justify-center min-h-[72px] min-w-[44px] px-2 py-3 rounded-xl transition-all duration-200 ${
                               active
-                                ? 'bg-white/8 text-slate-300 ring-1 ring-white/10'
-                                : 'text-slate-400 hover:bg-slate-800/80 hover:text-slate-200 active:bg-slate-800'
+                                ? 'bg-white/[0.08] text-white ring-1 ring-white/[0.1]'
+                                : 'text-slate-400 hover:bg-white/[0.05] hover:text-slate-200 active:bg-white/[0.08]'
                             }`}
                           >
                             <NavIcon icon={item.icon} className="w-6 h-6 mb-1.5" />
@@ -291,8 +291,8 @@ export default function MobileTabBar() {
         aria-label="Mobile navigation"
         className="fixed bottom-0 left-0 right-0 z-50 lg:hidden"
         style={{
-          background: 'linear-gradient(0deg, rgba(15, 23, 42, 0.98) 0%, rgba(30, 41, 59, 0.96) 100%)',
-          boxShadow: '0 -4px 16px -4px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(6, 182, 212, 0.15)',
+          background: 'rgba(0, 0, 0, 0.97)',
+          boxShadow: '0 -4px 16px -4px rgba(0, 0, 0, 0.4)',
         }}
       >
         {/* Top gradient border */}
@@ -308,7 +308,7 @@ export default function MobileTabBar() {
               transition={{ duration: 0.2 }}
               className="overflow-hidden"
             >
-              <div className="flex items-center justify-center gap-2 py-1 text-xs text-slate-300/70 border-b border-slate-800/50">
+              <div className="flex items-center justify-center gap-2 py-1 text-xs text-white/50 border-b border-white/[0.06]">
                 <span>{parentName}</span>
               </div>
             </motion.div>
@@ -349,7 +349,7 @@ export default function MobileTabBar() {
                   onClick={() => handleTabPress(tab.href)}
                   whileTap={{ scale: 0.85 }}
                   className={`relative flex flex-col items-center justify-center flex-1 h-full min-w-[44px] min-h-[44px] px-1 transition-colors duration-200 ${
-                    active ? 'text-slate-300' : 'text-slate-400 hover:text-slate-200'
+                    active ? 'text-white' : 'text-slate-400 hover:text-slate-200'
                   }`}
                   aria-label={tab.name}
                   aria-current={active ? 'page' : undefined}
@@ -359,7 +359,7 @@ export default function MobileTabBar() {
                     <motion.div
                       layoutId="mobile-tab-indicator"
                       className="absolute top-0 w-12 h-0.5 rounded-b-full bg-white"
-                      style={{ boxShadow: '0 2px 8px rgba(6, 182, 212, 0.5)' }}
+                      style={{ boxShadow: '0 2px 8px rgba(255, 255, 255, 0.3)' }}
                       transition={{ type: 'spring', stiffness: 500, damping: 35 }}
                     />
                   )}
@@ -412,14 +412,14 @@ export default function MobileTabBar() {
               aria-expanded={moreOpen}
               aria-haspopup="dialog"
               className={`relative flex flex-col items-center justify-center flex-1 h-full min-w-[44px] min-h-[44px] px-1 transition-colors duration-200 ${
-                moreOpen || moreRouteActive ? 'text-slate-300' : 'text-slate-400 hover:text-slate-200'
+                moreOpen || moreRouteActive ? 'text-white' : 'text-slate-400 hover:text-slate-200'
               }`}
             >
               {moreRouteActive && !moreOpen && (
                 <motion.div
                   layoutId="mobile-tab-indicator"
                   className="absolute top-0 w-12 h-0.5 rounded-b-full bg-white"
-                  style={{ boxShadow: '0 2px 8px rgba(6, 182, 212, 0.5)' }}
+                  style={{ boxShadow: '0 2px 8px rgba(255, 255, 255, 0.3)' }}
                   transition={{ type: 'spring', stiffness: 500, damping: 35 }}
                 />
               )}

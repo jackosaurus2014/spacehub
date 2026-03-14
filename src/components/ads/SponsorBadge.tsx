@@ -22,8 +22,8 @@ export default function SponsorBadge({
       target="_blank"
       rel="noopener noreferrer sponsored"
       className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full
-                  bg-slate-800/50 border border-slate-700/50
-                  hover:bg-slate-700/50 hover:border-slate-600/50
+                  bg-white/[0.04] border border-white/[0.06]
+                  hover:bg-white/[0.08] hover:border-white/[0.08]
                   transition-all duration-200 group ${className}`}
     >
       <span className="text-slate-400 text-xs font-medium">Powered by</span>
@@ -39,7 +39,7 @@ export default function SponsorBadge({
         </div>
       ) : null}
 
-      <span className="text-slate-300 text-xs font-semibold group-hover:text-white transition-colors">
+      <span className="text-white/70 text-xs font-semibold group-hover:text-white transition-colors">
         {sponsorName}
       </span>
 

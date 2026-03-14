@@ -22,7 +22,7 @@ export default function PriceDisplay({ pricingType, priceMin, priceMax, priceUni
 
   return (
     <div>
-      <div className="text-slate-300 font-semibold">
+      <div className="text-white/70 font-semibold">
         {formatPrice(priceMin, priceMax, priceUnit)}
       </div>
       {typeInfo && (

@@ -220,7 +220,7 @@ export default function CustomerDiscoveryPage() {
           ].map((stat) => (
             <div
               key={stat.label}
-              className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-4 text-center"
+              className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-4 text-center"
             >
               <div className="text-2xl font-bold text-emerald-400">{stat.value}</div>
               <div className="text-xs text-slate-400 mt-1">{stat.label}</div>
@@ -229,13 +229,13 @@ export default function CustomerDiscoveryPage() {
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-2 mb-8 border-b border-slate-700/50 pb-4">
+        <div className="flex gap-2 mb-8 border-b border-white/[0.06] pb-4">
           <button
             onClick={() => setActiveTab('search')}
             className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
               activeTab === 'search'
                 ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
-                : 'text-slate-400 hover:text-slate-300 hover:bg-slate-800/50'
+                : 'text-slate-400 hover:text-white/70 hover:bg-white/[0.04]'
             }`}
           >
             Customer Finder
@@ -245,7 +245,7 @@ export default function CustomerDiscoveryPage() {
             className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
               activeTab === 'browse'
                 ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
-                : 'text-slate-400 hover:text-slate-300 hover:bg-slate-800/50'
+                : 'text-slate-400 hover:text-white/70 hover:bg-white/[0.04]'
             }`}
           >
             Procurement Categories
@@ -256,14 +256,14 @@ export default function CustomerDiscoveryPage() {
         {activeTab === 'search' && (
           <div className="space-y-8">
             {/* Search Panel */}
-            <div className="bg-slate-800/60 border border-slate-700/50 rounded-2xl p-6">
+            <div className="bg-white/[0.05] border border-white/[0.06] rounded-2xl p-6">
               <h2 className="text-lg font-semibold text-slate-100 mb-4">
                 What does your company offer?
               </h2>
 
               {/* Procurement Categories */}
               <div className="mb-6">
-                <label className="block text-sm font-medium text-slate-300 mb-3">
+                <label className="block text-sm font-medium text-white/70 mb-3">
                   Select procurement categories that match your product/service:
                 </label>
                 <div className="flex flex-wrap gap-2">
@@ -276,7 +276,7 @@ export default function CustomerDiscoveryPage() {
                         className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all border ${
                           selected
                             ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40'
-                            : 'bg-slate-700/40 text-slate-400 border-slate-600/40 hover:text-slate-300 hover:border-slate-500/50'
+                            : 'bg-slate-700/40 text-slate-400 border-white/[0.06] hover:text-white/70 hover:border-slate-500/50'
                         }`}
                         title={cat.description}
                       >
@@ -292,7 +292,7 @@ export default function CustomerDiscoveryPage() {
 
               {/* Tech Keywords */}
               <div className="mb-6">
-                <label className="block text-sm font-medium text-slate-300 mb-3">
+                <label className="block text-sm font-medium text-white/70 mb-3">
                   Technology keywords (describe your capabilities):
                 </label>
                 <div className="flex gap-2 mb-3">
@@ -302,7 +302,7 @@ export default function CustomerDiscoveryPage() {
                     onChange={(e) => setKeywordInput(e.target.value)}
                     onKeyDown={handleKeyDown}
                     placeholder="e.g., electric propulsion, AI, composite structures..."
-                    className="flex-1 bg-slate-700/50 border border-slate-600/50 rounded-lg px-4 py-2.5 text-slate-200 placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50"
+                    className="flex-1 bg-slate-700/50 border border-slate-600/50 rounded-lg px-4 py-2.5 text-white/90 placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50"
                   />
                   <button
                     onClick={addKeyword}
@@ -317,7 +317,7 @@ export default function CustomerDiscoveryPage() {
                     {keywords.map(kw => (
                       <span
                         key={kw}
-                        className="inline-flex items-center gap-1.5 px-3 py-1 bg-white/8 text-slate-300 rounded-full text-sm border border-white/10"
+                        className="inline-flex items-center gap-1.5 px-3 py-1 bg-white/8 text-white/70 rounded-full text-sm border border-white/10"
                       >
                         {kw}
                         <button
@@ -335,7 +335,7 @@ export default function CustomerDiscoveryPage() {
 
               {/* Type Filter */}
               <div className="mb-6">
-                <label className="block text-sm font-medium text-slate-300 mb-3">
+                <label className="block text-sm font-medium text-white/70 mb-3">
                   Filter by customer type:
                 </label>
                 <div className="flex flex-wrap gap-2">
@@ -346,7 +346,7 @@ export default function CustomerDiscoveryPage() {
                       className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all border ${
                         typeFilter === ct.value
                           ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40'
-                          : 'bg-slate-700/40 text-slate-400 border-slate-600/40 hover:text-slate-300 hover:border-slate-500/50'
+                          : 'bg-slate-700/40 text-slate-400 border-white/[0.06] hover:text-white/70 hover:border-slate-500/50'
                       }`}
                     >
                       {ct.label}
@@ -366,7 +366,7 @@ export default function CustomerDiscoveryPage() {
                 </button>
                 <button
                   onClick={clearFilters}
-                  className="px-4 py-2.5 text-slate-400 hover:text-slate-300 rounded-lg text-sm transition-colors"
+                  className="px-4 py-2.5 text-slate-400 hover:text-white/70 rounded-lg text-sm transition-colors"
                 >
                   Clear All
                 </button>
@@ -407,7 +407,7 @@ export default function CustomerDiscoveryPage() {
                 </div>
 
                 {results.totalMatches === 0 && (
-                  <div className="bg-slate-800/40 border border-slate-700/40 rounded-xl p-8 text-center">
+                  <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-8 text-center">
                     <p className="text-slate-400 mb-2">
                       No customers match your current criteria.
                     </p>
@@ -425,7 +425,7 @@ export default function CustomerDiscoveryPage() {
 
                     return (
                       <StaggerItem key={segment.id}>
-                        <div className="bg-slate-800/60 border border-slate-700/50 rounded-xl overflow-hidden hover:border-slate-600/50 transition-all">
+                        <div className="bg-white/[0.05] border border-white/[0.06] rounded-xl overflow-hidden hover:border-slate-600/50 transition-all">
                           {/* Segment Header */}
                           <div className="p-5">
                             <div className="flex items-start gap-4">
@@ -466,7 +466,7 @@ export default function CustomerDiscoveryPage() {
                                     </span>
                                   )}
                                   <span className="flex items-center gap-1.5">
-                                    <svg className="w-3.5 h-3.5 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg className="w-3.5 h-3.5 text-white/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                                     </svg>
                                     <span className="text-slate-400">Decision cycle: {segment.decisionCycle}</span>
@@ -495,12 +495,12 @@ export default function CustomerDiscoveryPage() {
                                 {/* Matching tech needs */}
                                 {segment.matchingTechNeeds.length > 0 && (
                                   <div className="mb-3">
-                                    <span className="text-xs font-medium text-slate-300 mr-2">Matching tech needs:</span>
+                                    <span className="text-xs font-medium text-white/70 mr-2">Matching tech needs:</span>
                                     <div className="inline-flex flex-wrap gap-1.5 mt-1">
                                       {segment.matchingTechNeeds.map(need => (
                                         <span
                                           key={need}
-                                          className="text-xs px-2 py-0.5 rounded bg-white/8 text-slate-200 border border-white/15"
+                                          className="text-xs px-2 py-0.5 rounded bg-white/8 text-white/90 border border-white/15"
                                         >
                                           {need}
                                         </span>
@@ -549,8 +549,8 @@ export default function CustomerDiscoveryPage() {
 
                           {/* Expanded companies panel */}
                           {isExpanded && companies.length > 0 && (
-                            <div className="border-t border-slate-700/50 bg-slate-900/40 p-5">
-                              <h4 className="text-sm font-semibold text-slate-300 mb-3">
+                            <div className="border-t border-white/[0.06] bg-black/40 p-5">
+                              <h4 className="text-sm font-semibold text-white/70 mb-3">
                                 Related Companies in Database
                               </h4>
                               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -558,7 +558,7 @@ export default function CustomerDiscoveryPage() {
                                   <Link
                                     key={company.id}
                                     href={`/company-profiles/${company.slug}`}
-                                    className="bg-slate-800/60 border border-slate-700/40 rounded-lg p-3 hover:border-emerald-500/30 hover:bg-slate-800/80 transition-all group"
+                                    className="bg-white/[0.05] border border-white/[0.06] rounded-lg p-3 hover:border-emerald-500/30 hover:bg-white/[0.06] transition-all group"
                                   >
                                     <div className="flex items-center gap-2 mb-1.5">
                                       {company.logoUrl ? (
@@ -575,7 +575,7 @@ export default function CustomerDiscoveryPage() {
                                           {company.name.charAt(0)}
                                         </div>
                                       )}
-                                      <span className="text-sm font-medium text-slate-200 group-hover:text-emerald-400 transition-colors truncate">
+                                      <span className="text-sm font-medium text-white/90 group-hover:text-emerald-400 transition-colors truncate">
                                         {company.name}
                                       </span>
                                     </div>
@@ -616,9 +616,9 @@ export default function CustomerDiscoveryPage() {
 
             {/* Initial state — show prompt */}
             {!results && !loading && (
-              <div className="bg-slate-800/40 border border-slate-700/40 rounded-xl p-10 text-center">
+              <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-10 text-center">
                 <div className="text-4xl mb-4">&#x1F50E;</div>
-                <h3 className="text-lg font-semibold text-slate-200 mb-2">
+                <h3 className="text-lg font-semibold text-white/90 mb-2">
                   Discover Your Space Industry Customers
                 </h3>
                 <p className="text-sm text-slate-400 max-w-lg mx-auto">
@@ -647,7 +647,7 @@ export default function CustomerDiscoveryPage() {
             <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {PROCUREMENT_CATEGORIES.map(cat => (
                 <StaggerItem key={cat.id}>
-                  <div className="bg-slate-800/60 border border-slate-700/50 rounded-xl p-5 hover:border-emerald-500/30 transition-all h-full flex flex-col">
+                  <div className="bg-white/[0.05] border border-white/[0.06] rounded-xl p-5 hover:border-emerald-500/30 transition-all h-full flex flex-col">
                     <h3 className="text-base font-semibold text-slate-100 mb-2">
                       {cat.name}
                     </h3>
@@ -683,7 +683,7 @@ export default function CustomerDiscoveryPage() {
                         {cat.keyBuyers.map(buyer => (
                           <span
                             key={buyer}
-                            className="text-xs px-2 py-0.5 rounded bg-slate-700/60 text-slate-300"
+                            className="text-xs px-2 py-0.5 rounded bg-slate-700/60 text-white/70"
                           >
                             {buyer}
                           </span>
@@ -728,7 +728,7 @@ export default function CustomerDiscoveryPage() {
 
             return (
               <div key={type} className="mb-8">
-                <h3 className="text-sm font-semibold text-slate-300 mb-3 flex items-center gap-2">
+                <h3 className="text-sm font-semibold text-white/70 mb-3 flex items-center gap-2">
                   <span className={`inline-block w-2 h-2 rounded-full ${typeColor.split(' ')[0]}`} />
                   {CUSTOMER_TYPE_LABELS[type]} ({segmentsOfType.length})
                 </h3>
@@ -736,11 +736,11 @@ export default function CustomerDiscoveryPage() {
                   {segmentsOfType.map(seg => (
                     <div
                       key={seg.id}
-                      className="bg-slate-800/40 border border-slate-700/40 rounded-lg p-4 hover:border-slate-600/50 transition-all"
+                      className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-4 hover:border-slate-600/50 transition-all"
                     >
                       <div className="flex items-center gap-2 mb-2">
                         <span className="text-xl" role="img" aria-hidden="true">{seg.icon}</span>
-                        <span className="text-sm font-medium text-slate-200">{seg.name}</span>
+                        <span className="text-sm font-medium text-white/90">{seg.name}</span>
                       </div>
                       {seg.annualBudgetRange && (
                         <div className="text-xs text-emerald-400 mb-1">{seg.annualBudgetRange}</div>

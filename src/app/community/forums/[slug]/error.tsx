@@ -15,7 +15,7 @@ export default function Error({
   }, [error]);
 
   return (
-    <div className="min-h-screen bg-slate-950 flex items-center justify-center px-4">
+    <div className="min-h-screen bg-black flex items-center justify-center px-4">
       <div className="text-center max-w-md">
         <div className="text-5xl mb-4">💬</div>
         <h2 className="text-xl font-bold text-white mb-2">Forum Error</h2>
@@ -31,7 +31,7 @@ export default function Error({
           </button>
           <Link
             href="/community"
-            className="px-5 py-2.5 bg-slate-700 hover:bg-slate-600 text-white text-sm rounded-lg font-medium transition-colors"
+            className="px-5 py-2.5 bg-white/[0.08] hover:bg-white/[0.1] text-white text-sm rounded-lg font-medium transition-colors"
           >
             All Forums
           </Link>

@@ -444,7 +444,7 @@ const CATEGORY_COLORS: Record<Category, { bg: string; text: string; border: stri
     bg: 'bg-white/5',
     text: 'text-slate-300',
     border: 'border-white/10',
-    chip: 'bg-white/10 text-slate-200 border-white/15',
+    chip: 'bg-white/10 text-white/90 border-white/15',
   },
   'Space Environment': {
     bg: 'bg-yellow-500/10',
@@ -546,7 +546,7 @@ export default function GlossaryPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-900 to-slate-950">
+    <div className="min-h-screen bg-gradient-to-b from-[#0a0a0a] via-[#0a0a0a] to-black">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
         {/* ---- Header ---- */}
         <div className="flex items-start justify-between gap-4">
@@ -590,7 +590,7 @@ export default function GlossaryPage() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search terms or definitions..."
-                className="w-full pl-12 pr-4 py-3 bg-slate-800/50 border border-slate-700/50 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-white/20 focus:border-white/10 transition-all"
+                className="w-full pl-12 pr-4 py-3 bg-white/[0.04] border border-white/[0.06] rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-white/20 focus:border-white/10 transition-all"
               />
               {searchQuery && (
                 <button
@@ -611,8 +611,8 @@ export default function GlossaryPage() {
                 onClick={() => setSelectedCategory(null)}
                 className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-all ${
                   selectedCategory === null
-                    ? 'bg-white/10 text-slate-200 border-white/15 shadow-lg shadow-black/5'
-                    : 'bg-slate-800/50 text-slate-400 border-slate-700/50 hover:border-slate-600 hover:text-slate-300'
+                    ? 'bg-white/10 text-white/90 border-white/15 shadow-lg shadow-black/5'
+                    : 'bg-white/[0.04] text-slate-400 border-white/[0.06] hover:border-white/[0.1] hover:text-slate-300'
                 }`}
               >
                 All ({GLOSSARY_TERMS.length})
@@ -628,7 +628,7 @@ export default function GlossaryPage() {
                     className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-all ${
                       isActive
                         ? `${colors.chip} shadow-lg`
-                        : 'bg-slate-800/50 text-slate-400 border-slate-700/50 hover:border-slate-600 hover:text-slate-300'
+                        : 'bg-white/[0.04] text-slate-400 border-white/[0.06] hover:border-white/[0.1] hover:text-slate-300'
                     }`}
                   >
                     {cat} ({count})
@@ -650,7 +650,7 @@ export default function GlossaryPage() {
         <ScrollReveal delay={0.15}>
           <nav
             aria-label="Alphabetical navigation"
-            className="mb-8 sticky top-0 z-10 bg-slate-900/95 backdrop-blur-sm py-3 -mx-4 px-4 sm:-mx-6 sm:px-6 border-b border-slate-800/50"
+            className="mb-8 sticky top-0 z-10 bg-[#0a0a0a]/95 backdrop-blur-sm py-3 -mx-4 px-4 sm:-mx-6 sm:px-6 border-b border-white/[0.04]"
           >
             <div className="flex flex-wrap gap-1 justify-center">
               {ALPHABET.map((letter) => {
@@ -662,7 +662,7 @@ export default function GlossaryPage() {
                     disabled={!hasTerms}
                     className={`w-9 h-9 rounded-lg text-sm font-bold flex items-center justify-center transition-all ${
                       hasTerms
-                        ? 'bg-slate-800/50 text-slate-300 border border-slate-700/50 hover:bg-slate-100/20 hover:border-white/10 hover:shadow-lg hover:shadow-black/20 cursor-pointer'
+                        ? 'bg-white/[0.04] text-slate-300 border border-white/[0.06] hover:bg-slate-100/20 hover:border-white/10 hover:shadow-lg hover:shadow-black/20 cursor-pointer'
                         : 'text-slate-600 cursor-not-allowed'
                     }`}
                     aria-label={`Jump to letter ${letter}`}
@@ -713,8 +713,8 @@ export default function GlossaryPage() {
                         <div
                           className={`group rounded-xl border transition-all duration-300 ${
                             isExpanded
-                              ? 'bg-slate-800/70 border-white/10 shadow-lg shadow-black/20'
-                              : 'bg-slate-800/50 border-slate-700/50 hover:border-white/10 hover:bg-slate-800/60'
+                              ? 'bg-white/[0.06] border-white/10 shadow-lg shadow-black/20'
+                              : 'bg-white/[0.04] border-white/[0.06] hover:border-white/10 hover:bg-white/[0.06]'
                           }`}
                         >
                           <button
@@ -786,7 +786,7 @@ export default function GlossaryPage() {
                   setSearchQuery('');
                   setSelectedCategory(null);
                 }}
-                className="px-4 py-2 rounded-lg bg-white/10 text-slate-200 border border-white/15 hover:bg-slate-100/30 transition-all text-sm font-medium"
+                className="px-4 py-2 rounded-lg bg-white/10 text-white/90 border border-white/15 hover:bg-slate-100/30 transition-all text-sm font-medium"
               >
                 Reset filters
               </button>
@@ -796,7 +796,7 @@ export default function GlossaryPage() {
 
         {/* ---- Footer stats ---- */}
         <ScrollReveal delay={0.1}>
-          <div className="mt-16 mb-8 pt-8 border-t border-slate-800/50">
+          <div className="mt-16 mb-8 pt-8 border-t border-white/[0.04]">
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
               {[
                 { label: 'Total Terms', value: GLOSSARY_TERMS.length, color: 'text-slate-300' },
@@ -829,7 +829,7 @@ export default function GlossaryPage() {
 
         {/* ---- Explore More ---- */}
         <ScrollReveal delay={0.15}>
-          <section className="mt-16 border-t border-slate-800 pt-8">
+          <section className="mt-16 border-t border-white/[0.06] pt-8">
             <h2 className="text-xl font-bold text-white mb-6">Explore More</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <a href="/timeline" className="card p-4 hover:border-white/15 transition-colors group">

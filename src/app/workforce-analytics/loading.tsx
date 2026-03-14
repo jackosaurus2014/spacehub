@@ -4,9 +4,9 @@ export default function Loading() {
       <div className="container mx-auto px-4">
         {/* Header skeleton */}
         <div className="mb-8">
-          <div className="h-4 w-48 bg-slate-800/60 rounded animate-pulse mb-3" />
-          <div className="h-8 w-80 bg-slate-800 rounded animate-pulse mb-3" />
-          <div className="h-4 w-[500px] max-w-full bg-slate-800/60 rounded animate-pulse" />
+          <div className="h-4 w-48 bg-white/[0.05] rounded animate-pulse mb-3" />
+          <div className="h-8 w-80 bg-white/[0.06] rounded animate-pulse mb-3" />
+          <div className="h-4 w-[500px] max-w-full bg-white/[0.05] rounded animate-pulse" />
         </div>
 
         {/* Overview stat cards */}
@@ -36,10 +36,10 @@ export default function Loading() {
 
         {/* Table skeleton */}
         <div className="card overflow-hidden mb-8">
-          <div className="p-6 border-b border-slate-700/50">
+          <div className="p-6 border-b border-white/[0.06]">
             <div className="h-6 w-40 bg-slate-700/50 rounded animate-pulse" />
           </div>
-          <div className="p-4 bg-slate-800/30 border-b border-slate-700/50 flex gap-8">
+          <div className="p-4 bg-white/[0.03] border-b border-white/[0.06] flex gap-8">
             <div className="h-4 w-8 bg-slate-700/50 rounded animate-pulse" />
             <div className="h-4 w-32 bg-slate-700/50 rounded animate-pulse" />
             <div className="h-4 w-20 bg-slate-700/50 rounded animate-pulse" />
@@ -47,7 +47,7 @@ export default function Loading() {
             <div className="h-4 w-20 bg-slate-700/50 rounded animate-pulse" />
           </div>
           {Array.from({ length: 8 }).map((_, i) => (
-            <div key={i} className="p-4 border-b border-slate-700/30 flex gap-8">
+            <div key={i} className="p-4 border-b border-white/[0.04] flex gap-8">
               <div className="h-4 w-6 bg-slate-700/40 rounded animate-pulse" />
               <div className="h-4 w-36 bg-slate-700/40 rounded animate-pulse" />
               <div className="h-4 w-16 bg-slate-700/40 rounded animate-pulse" />

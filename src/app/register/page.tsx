@@ -119,36 +119,36 @@ export default function RegisterPage() {
   return (
     <div className="relative min-h-[calc(100dvh-200px)] flex items-center justify-center py-12 px-4">
       <div className="absolute top-1/3 -left-32 w-96 h-96 bg-white/10 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-1/3 -right-32 w-80 h-80 bg-plasma-500/10 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-1/3 -right-32 w-80 h-80 bg-white/10 rounded-full blur-[120px] pointer-events-none" />
       <div className="w-full max-w-4xl grid grid-cols-1 lg:grid-cols-2 gap-8 items-center relative">
         {/* Value Proposition Panel */}
         <div className="text-center lg:text-left">
           <h2 className="text-2xl md:text-3xl font-display font-bold text-white mb-4 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
             Why SpaceNexus?
           </h2>
-          <p className="text-slate-300 mb-8 drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]">
+          <p className="text-white/80 mb-8 drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]">
             Join thousands of space industry professionals accessing real-time intelligence.
           </p>
           <ul className="space-y-4 text-left">
             <li className="flex items-start gap-3">
-              <span className="text-slate-300 mt-0.5 flex-shrink-0">&#10003;</span>
-              <span className="text-slate-200 text-sm">30+ integrated modules covering every dimension of the space industry</span>
+              <span className="text-white/80 mt-0.5 flex-shrink-0">&#10003;</span>
+              <span className="text-white/90 text-sm">30+ integrated modules covering every dimension of the space industry</span>
             </li>
             <li className="flex items-start gap-3">
-              <span className="text-slate-300 mt-0.5 flex-shrink-0">&#10003;</span>
-              <span className="text-slate-200 text-sm">Real-time data from 50+ government and industry sources</span>
+              <span className="text-white/80 mt-0.5 flex-shrink-0">&#10003;</span>
+              <span className="text-white/90 text-sm">Real-time data from 50+ government and industry sources</span>
             </li>
             <li className="flex items-start gap-3">
-              <span className="text-slate-300 mt-0.5 flex-shrink-0">&#10003;</span>
-              <span className="text-slate-200 text-sm">Interactive tools: satellite trackers, mission calculators, compliance wizards</span>
+              <span className="text-white/80 mt-0.5 flex-shrink-0">&#10003;</span>
+              <span className="text-white/90 text-sm">Interactive tools: satellite trackers, mission calculators, compliance wizards</span>
             </li>
             <li className="flex items-start gap-3">
-              <span className="text-slate-300 mt-0.5 flex-shrink-0">&#10003;</span>
-              <span className="text-slate-200 text-sm">Unified regulatory intelligence: FCC, FAA, ITU, SEC filings in one place</span>
+              <span className="text-white/80 mt-0.5 flex-shrink-0">&#10003;</span>
+              <span className="text-white/90 text-sm">Unified regulatory intelligence: FCC, FAA, ITU, SEC filings in one place</span>
             </li>
             <li className="flex items-start gap-3">
-              <span className="text-slate-300 mt-0.5 flex-shrink-0">&#10003;</span>
-              <span className="text-slate-200 text-sm">Free tier with generous access &mdash; no credit card required</span>
+              <span className="text-white/80 mt-0.5 flex-shrink-0">&#10003;</span>
+              <span className="text-white/90 text-sm">Free tier with generous access &mdash; no credit card required</span>
             </li>
           </ul>
         </div>
@@ -252,7 +252,7 @@ export default function RegisterPage() {
                       <div
                         key={level}
                         className={`h-1.5 flex-1 rounded-full transition-colors ${
-                          level <= passwordStrength.score ? passwordStrength.color : 'bg-slate-200'
+                          level <= passwordStrength.score ? passwordStrength.color : 'bg-white/[0.08]'
                         }`}
                       />
                     ))}
@@ -293,14 +293,14 @@ export default function RegisterPage() {
                 type="checkbox"
                 checked={agreedToDisclaimer}
                 onChange={(e) => setAgreedToDisclaimer(e.target.checked)}
-                className="mt-1 w-4 h-4 rounded border-slate-600 bg-slate-800 text-slate-200 focus:ring-white/15 cursor-pointer"
+                className="mt-1 w-4 h-4 rounded border-white/[0.1] bg-white/[0.04] text-white/90 focus:ring-white/20 cursor-pointer"
               />
               <label htmlFor="disclaimer" className="text-slate-400 text-sm cursor-pointer">
                 I have read and agree to the{' '}
                 <button
                   type="button"
                   onClick={() => setDisclaimerOpen(true)}
-                  className="text-slate-200 hover:text-white transition-colors underline underline-offset-2"
+                  className="text-white/90 hover:text-white transition-colors underline underline-offset-2"
                 >
                   Legal Disclaimer
                 </button>
@@ -328,7 +328,7 @@ export default function RegisterPage() {
               Already have an account?{' '}
               <Link
                 href="/login"
-                className="text-slate-200 hover:text-white transition-colors"
+                className="text-white/90 hover:text-white transition-colors"
               >
                 Sign in
               </Link>

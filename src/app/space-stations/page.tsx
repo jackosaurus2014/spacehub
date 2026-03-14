@@ -692,22 +692,22 @@ const FALLBACK_ISS_POSITION: ISSPosition = {
 
 const STATUS_STYLES: Record<StationStatus, { label: string; color: string; bg: string; border: string }> = {
   operational: { label: 'Operational', color: 'text-green-400', bg: 'bg-green-900/30', border: 'border-green-500/40' },
-  assembly: { label: 'Under Assembly', color: 'text-slate-300', bg: 'bg-slate-800/40', border: 'border-white/15' },
+  assembly: { label: 'Under Assembly', color: 'text-slate-300', bg: 'bg-white/[0.04]', border: 'border-white/15' },
   development: { label: 'In Development', color: 'text-yellow-400', bg: 'bg-yellow-900/30', border: 'border-yellow-500/40' },
   concept: { label: 'Concept Phase', color: 'text-purple-400', bg: 'bg-purple-900/30', border: 'border-purple-500/40' },
   planned: { label: 'Planned', color: 'text-blue-400', bg: 'bg-blue-900/30', border: 'border-blue-500/40' },
 };
 
-const DEFAULT_STATUS_STYLE = { label: 'Unknown', color: 'text-slate-400', bg: 'bg-slate-900/30', border: 'border-slate-500/40' };
+const DEFAULT_STATUS_STYLE = { label: 'Unknown', color: 'text-slate-400', bg: 'bg-black/30', border: 'border-white/[0.08]' };
 
 const ROTATION_STATUS_STYLES: Record<string, { label: string; color: string; bg: string; dot: string }> = {
-  completed: { label: 'Completed', color: 'text-slate-400', bg: 'bg-slate-900/20', dot: 'bg-slate-500' },
+  completed: { label: 'Completed', color: 'text-slate-400', bg: 'bg-black/20', dot: 'bg-slate-500' },
   current: { label: 'On Station', color: 'text-green-400', bg: 'bg-green-900/20', dot: 'bg-green-500 animate-pulse' },
   upcoming: { label: 'Upcoming', color: 'text-yellow-400', bg: 'bg-yellow-900/20', dot: 'bg-yellow-500' },
   planned: { label: 'Planned', color: 'text-blue-400', bg: 'bg-blue-900/20', dot: 'bg-blue-500' },
 };
 
-const DEFAULT_ROTATION_STATUS_STYLE = { label: 'Unknown', color: 'text-slate-400', bg: 'bg-slate-900/20', dot: 'bg-slate-500' };
+const DEFAULT_ROTATION_STATUS_STYLE = { label: 'Unknown', color: 'text-slate-400', bg: 'bg-black/20', dot: 'bg-slate-500' };
 
 const SEVERITY_STYLES: Record<string, { color: string; bg: string }> = {
   high: { color: 'text-red-400', bg: 'bg-red-900/20' },
@@ -715,7 +715,7 @@ const SEVERITY_STYLES: Record<string, { color: string; bg: string }> = {
   low: { color: 'text-green-400', bg: 'bg-green-900/20' },
 };
 
-const DEFAULT_SEVERITY_STYLE = { color: 'text-slate-400', bg: 'bg-slate-900/20' };
+const DEFAULT_SEVERITY_STYLE = { color: 'text-slate-400', bg: 'bg-black/20' };
 
 // ────────────────────────────────────────
 // Sub-components
@@ -760,7 +760,7 @@ function ActiveStationCard({ station }: { station: SpaceStation }) {
           <p className="text-star-400 text-sm">{station.operator}</p>
         </div>
         {station.currentCrew !== undefined && (
-          <div className="text-center px-3 py-2 rounded-lg bg-slate-900/50 border border-slate-700/50">
+          <div className="text-center px-3 py-2 rounded-lg bg-black/50 border border-white/[0.06]">
             <div className="text-slate-300 font-bold text-xl">{station.currentCrew}</div>
             <div className="text-star-400 text-xs">Crew</div>
           </div>
@@ -780,7 +780,7 @@ function ActiveStationCard({ station }: { station: SpaceStation }) {
           { label: 'Modules', value: String(station.modules.length) },
           { label: 'First Launch', value: station.launchDate },
         ].map((spec) => (
-          <div key={spec.label} className="rounded-lg bg-slate-900/40 p-2.5">
+          <div key={spec.label} className="rounded-lg bg-black/40 p-2.5">
             <div className="text-star-400 text-xs">{spec.label}</div>
             <div className="text-white text-sm font-medium">{spec.value}</div>
           </div>
@@ -809,7 +809,7 @@ function ActiveStationCard({ station }: { station: SpaceStation }) {
         <div className="flex flex-wrap gap-2">
           {station.visitingVehicles.map((v) => (
             <span key={v.name} className={`px-2 py-1 rounded text-xs font-medium border ${
-              v.type === 'crew' ? 'bg-slate-800/30 text-slate-300 border-white/10' :
+              v.type === 'crew' ? 'bg-white/[0.04] text-slate-300 border-white/10' :
               v.type === 'cargo' ? 'bg-purple-900/20 text-purple-400 border-purple-500/30' :
               'bg-blue-900/20 text-blue-400 border-blue-500/30'
             }`}>
@@ -845,7 +845,7 @@ function ActiveStationCard({ station }: { station: SpaceStation }) {
         {showModules ? 'Hide' : 'Show'} Module Details ({station.modules.length} modules)
       </button>
       {showModules && (
-        <div className="border-t border-slate-700/50 pt-3 mt-2">
+        <div className="border-t border-white/[0.06] pt-3 mt-2">
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
@@ -857,7 +857,7 @@ function ActiveStationCard({ station }: { station: SpaceStation }) {
                   <th className="text-left pb-2">Builder</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-700/30">
+              <tbody className="divide-y divide-white/[0.06]">
                 {station.modules.map((mod) => (
                   <tr key={mod.name} className="text-star-300">
                     <td className="py-1.5 pr-4 text-white font-medium">{mod.name}</td>
@@ -876,7 +876,7 @@ function ActiveStationCard({ station }: { station: SpaceStation }) {
       )}
 
       {/* Description */}
-      <p className="text-star-300 text-sm leading-relaxed mt-4 border-t border-slate-700/50 pt-4">
+      <p className="text-star-300 text-sm leading-relaxed mt-4 border-t border-white/[0.06] pt-4">
         {station.description}
       </p>
     </div>
@@ -905,7 +905,7 @@ function CommercialStationCard({ station }: { station: CommercialStation }) {
           </div>
           <p className="text-star-400 text-sm">{station.developer}</p>
         </div>
-        <div className="text-center px-3 py-2 rounded-lg bg-slate-900/50 border border-slate-700/50">
+        <div className="text-center px-3 py-2 rounded-lg bg-black/50 border border-white/[0.06]">
           <div className="text-slate-300 font-bold text-lg">{station.crewCapacity}</div>
           <div className="text-star-400 text-xs">Crew Cap.</div>
         </div>
@@ -913,22 +913,22 @@ function CommercialStationCard({ station }: { station: CommercialStation }) {
 
       {/* Key Info */}
       <div className="grid grid-cols-2 gap-3 mb-4">
-        <div className="rounded-lg bg-slate-900/40 p-2.5">
+        <div className="rounded-lg bg-black/40 p-2.5">
           <div className="text-star-400 text-xs">Target Launch</div>
           <div className="text-white text-sm font-medium">{station.targetLaunch}</div>
         </div>
-        <div className="rounded-lg bg-slate-900/40 p-2.5">
+        <div className="rounded-lg bg-black/40 p-2.5">
           <div className="text-star-400 text-xs">Funding</div>
           <div className="text-white text-sm font-medium">{station.fundingSource}</div>
         </div>
         {station.pressurizedVolume && (
-          <div className="rounded-lg bg-slate-900/40 p-2.5">
+          <div className="rounded-lg bg-black/40 p-2.5">
             <div className="text-star-400 text-xs">Volume</div>
             <div className="text-white text-sm font-medium">{station.pressurizedVolume}</div>
           </div>
         )}
         {station.launchVehicle && (
-          <div className="rounded-lg bg-slate-900/40 p-2.5">
+          <div className="rounded-lg bg-black/40 p-2.5">
             <div className="text-star-400 text-xs">Launch Vehicle</div>
             <div className="text-white text-sm font-medium">{station.launchVehicle}</div>
           </div>
@@ -969,7 +969,7 @@ function CommercialStationCard({ station }: { station: CommercialStation }) {
       </div>
 
       {/* Description */}
-      <p className="text-star-300 text-sm leading-relaxed border-t border-slate-700/50 pt-4">
+      <p className="text-star-300 text-sm leading-relaxed border-t border-white/[0.06] pt-4">
         {station.description}
       </p>
     </div>
@@ -1094,15 +1094,15 @@ function ComparisonTable() {
 
   return (
     <div className="card overflow-hidden">
-      <div className="p-4 border-b border-slate-700/50">
+      <div className="p-4 border-b border-white/[0.06]">
         <h2 className="text-white font-bold text-lg">Station Comparison Matrix</h2>
         <p className="text-star-400 text-sm mt-1">Side-by-side comparison of all active and planned space stations</p>
       </div>
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-slate-700/50">
-              <th className="text-left p-3 text-star-400 text-xs uppercase tracking-widest min-w-[160px] sticky left-0 bg-slate-800/90 backdrop-blur z-10">Parameter</th>
+            <tr className="border-b border-white/[0.06]">
+              <th className="text-left p-3 text-star-400 text-xs uppercase tracking-widest min-w-[160px] sticky left-0 bg-white/[0.06] backdrop-blur z-10">Parameter</th>
               {allStations.map((s) => (
                 <th key={s.name} className="text-left p-3 text-white font-semibold min-w-[160px]">
                   <div>{s.name}</div>
@@ -1115,10 +1115,10 @@ function ComparisonTable() {
               ))}
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-700/30">
+          <tbody className="divide-y divide-white/[0.06]">
             {comparisonFields.map((field) => (
-              <tr key={field.key} className="hover:bg-slate-700/20 transition-colors">
-                <td className="p-3 text-star-400 text-xs uppercase tracking-widest sticky left-0 bg-slate-800/90 backdrop-blur z-10">
+              <tr key={field.key} className="hover:bg-white/[0.04] transition-colors">
+                <td className="p-3 text-star-400 text-xs uppercase tracking-widest sticky left-0 bg-white/[0.06] backdrop-blur z-10">
                   {field.label}
                 </td>
                 {allStations.map((s) => (
@@ -1179,7 +1179,7 @@ function CrewTracker({ currentCrew, crewRotations }: { currentCrew: CrewMember[]
                     <span className="text-star-200">{nat}</span>
                     <span className="text-white font-medium">{count} ({pct.toFixed(0)}%)</span>
                   </div>
-                  <div className="h-2 bg-slate-700/50 rounded-full overflow-hidden">
+                  <div className="h-2 bg-white/[0.08] rounded-full overflow-hidden">
                     <div
                       className="h-full bg-gradient-to-r from-white to-slate-200 rounded-full"
                       style={{ width: `${pct}%` }}
@@ -1200,7 +1200,7 @@ function CrewTracker({ currentCrew, crewRotations }: { currentCrew: CrewMember[]
                     <span className="text-star-200">{agency}</span>
                     <span className="text-white font-medium">{count} ({pct.toFixed(0)}%)</span>
                   </div>
-                  <div className="h-2 bg-slate-700/50 rounded-full overflow-hidden">
+                  <div className="h-2 bg-white/[0.08] rounded-full overflow-hidden">
                     <div
                       className="h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full"
                       style={{ width: `${pct}%` }}
@@ -1224,7 +1224,7 @@ function CrewTracker({ currentCrew, crewRotations }: { currentCrew: CrewMember[]
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
               {crew.map((member) => (
-                <div key={member.name} className="rounded-lg bg-slate-900/50 border border-slate-700/30 p-3">
+                <div key={member.name} className="rounded-lg bg-black/50 border border-white/[0.06] p-3">
                   <div className="text-white font-semibold text-sm">{member.name}</div>
                   <div className="text-star-400 text-xs mt-1">{member.role}</div>
                   <div className="flex items-center gap-2 mt-2 text-xs">
@@ -1251,7 +1251,7 @@ function CrewTracker({ currentCrew, crewRotations }: { currentCrew: CrewMember[]
           {crewRotations.map((rotation) => {
             const style = ROTATION_STATUS_STYLES[rotation.status] || DEFAULT_ROTATION_STATUS_STYLE;
             return (
-              <div key={rotation.mission} className={`rounded-lg ${style.bg} border border-slate-700/30 p-4`}>
+              <div key={rotation.mission} className={`rounded-lg ${style.bg} border border-white/[0.06] p-4`}>
                 <div className="flex items-center justify-between flex-wrap gap-2 mb-2">
                   <div className="flex items-center gap-3">
                     <span className={`w-2.5 h-2.5 rounded-full ${style.dot}`} />
@@ -1270,7 +1270,7 @@ function CrewTracker({ currentCrew, crewRotations }: { currentCrew: CrewMember[]
                 </div>
                 <div className="flex flex-wrap gap-1.5 ml-5">
                   {rotation.crew.map((name) => (
-                    <span key={name} className="px-2 py-0.5 bg-slate-800/50 text-star-200 rounded text-xs">
+                    <span key={name} className="px-2 py-0.5 bg-white/[0.04] text-star-200 rounded text-xs">
                       {name}
                     </span>
                   ))}
@@ -1340,7 +1340,7 @@ function ISSTransition({ cldMilestones, transitionRisks }: { cldMilestones: CLDM
               const dotColor = milestone.status === 'completed' ? 'bg-green-500 border-green-400' :
                 milestone.status === 'in-progress' ? 'bg-yellow-500 border-yellow-400 animate-pulse' :
                 milestone.status === 'upcoming' ? 'bg-white border-white/10' :
-                'bg-slate-600 border-slate-500';
+                'bg-white/[0.1] border-white/[0.1]';
               const statusLabel = milestone.status === 'completed' ? 'Completed' :
                 milestone.status === 'in-progress' ? 'In Progress' :
                 milestone.status === 'upcoming' ? 'Upcoming' : 'Planned';
@@ -1351,7 +1351,7 @@ function ISSTransition({ cldMilestones, transitionRisks }: { cldMilestones: CLDM
               return (
                 <div key={milestone.event} className="relative pl-12">
                   <div className={`absolute left-2.5 top-2 w-4 h-4 rounded-full border-2 ${dotColor}`} />
-                  <div className="rounded-lg bg-slate-900/40 border border-slate-700/30 p-4">
+                  <div className="rounded-lg bg-black/40 border border-white/[0.06] p-4">
                     <div className="flex flex-wrap items-center gap-3 mb-1">
                       <span className="text-star-300 text-sm font-mono">{milestone.date}</span>
                       <span className={`text-xs font-medium ${statusColor}`}>{statusLabel}</span>
@@ -1404,7 +1404,7 @@ function ISSTransition({ cldMilestones, transitionRisks }: { cldMilestones: CLDM
           {transitionRisks.map((risk) => {
             const sevStyle = SEVERITY_STYLES[risk.severity] || DEFAULT_SEVERITY_STYLE;
             return (
-              <div key={risk.category} className="rounded-lg bg-slate-900/40 border border-slate-700/30 p-4">
+              <div key={risk.category} className="rounded-lg bg-black/40 border border-white/[0.06] p-4">
                 <div className="flex items-center gap-3 mb-2">
                   <span className="text-white font-semibold text-sm">{risk.category}</span>
                   <span className={`text-xs font-medium px-2 py-0.5 rounded ${sevStyle.bg} ${sevStyle.color}`}>
@@ -1436,14 +1436,14 @@ function ISSTransition({ cldMilestones, transitionRisks }: { cldMilestones: CLDM
             { name: 'Blue Origin / Sierra Space', award: '$130M', status: 'Development', station: 'Orbital Reef', notes: 'Mixed-use business park concept with LIFE habitat' },
             { name: 'Voyager Space / Airbus', award: '$217.5M', status: 'Development', station: 'Starlab', notes: 'Single-launch design on SpaceX Starship' },
           ].map((provider) => (
-            <div key={provider.name} className="rounded-lg bg-slate-900/50 border border-slate-700/30 p-4">
+            <div key={provider.name} className="rounded-lg bg-black/50 border border-white/[0.06] p-4">
               <div className="text-white font-semibold mb-1">{provider.name}</div>
               <div className="text-slate-300 font-bold text-lg mb-2">{provider.award}</div>
               <div className="text-star-400 text-xs uppercase tracking-widest mb-1">Station</div>
               <div className="text-star-200 text-sm mb-2">{provider.station}</div>
               <div className="text-star-400 text-xs uppercase tracking-widest mb-1">Status</div>
               <div className="text-star-200 text-sm mb-2">{provider.status}</div>
-              <p className="text-star-400 text-xs mt-2 border-t border-slate-700/30 pt-2">{provider.notes}</p>
+              <p className="text-star-400 text-xs mt-2 border-t border-white/[0.06] pt-2">{provider.notes}</p>
             </div>
           ))}
         </div>
@@ -1565,16 +1565,16 @@ export default function SpaceStationTrackerPage() {
       <div className="min-h-screen bg-[#0B0F1A] text-white p-6">
         <div className="max-w-7xl mx-auto">
           <div className="animate-pulse space-y-4">
-            <div className="h-8 bg-slate-800 rounded w-1/3"></div>
-            <div className="h-4 bg-slate-800 rounded w-2/3"></div>
+            <div className="h-8 bg-white/[0.06] rounded w-1/3"></div>
+            <div className="h-4 bg-white/[0.06] rounded w-2/3"></div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8">
               {[1, 2, 3, 4].map((i) => (
-                <div key={i} className="h-24 bg-slate-800 rounded-lg"></div>
+                <div key={i} className="h-24 bg-white/[0.06] rounded-lg"></div>
               ))}
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8">
               {[1, 2, 3, 4].map((i) => (
-                <div key={i} className="h-48 bg-slate-800 rounded-lg"></div>
+                <div key={i} className="h-48 bg-white/[0.06] rounded-lg"></div>
               ))}
             </div>
           </div>
@@ -1603,7 +1603,7 @@ export default function SpaceStationTrackerPage() {
 
         {/* ISS Live Position */}
         {issPosition && (
-          <div className="card p-5 border-2 border-white/15 bg-gradient-to-r from-slate-800/20 to-slate-800/50 mb-6 mt-4">
+          <div className="card p-5 border-2 border-white/15 bg-gradient-to-r from-white/[0.04] to-white/[0.06] mb-6 mt-4">
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-white font-bold text-lg flex items-center gap-2">
                 <span className="w-3 h-3 rounded-full bg-green-500 animate-pulse" />
@@ -1612,7 +1612,7 @@ export default function SpaceStationTrackerPage() {
               <button
                 onClick={refreshIssPosition}
                 disabled={issPositionLoading}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-white/10 text-slate-200 hover:bg-slate-100/30 transition-colors border border-white/10 disabled:opacity-50"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-white/10 text-white/90 hover:bg-white/15 transition-colors border border-white/10 disabled:opacity-50"
               >
                 <svg
                   className={`w-3.5 h-3.5 ${issPositionLoading ? 'animate-spin' : ''}`}
@@ -1624,23 +1624,23 @@ export default function SpaceStationTrackerPage() {
               </button>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-              <div className="rounded-lg bg-slate-900/50 border border-slate-700/50 p-3 text-center">
+              <div className="rounded-lg bg-black/50 border border-white/[0.06] p-3 text-center">
                 <div className="text-star-400 text-xs uppercase tracking-widest mb-1">Latitude</div>
                 <div className="text-white font-bold text-lg">{issPosition.latitude.toFixed(4)}&deg;</div>
               </div>
-              <div className="rounded-lg bg-slate-900/50 border border-slate-700/50 p-3 text-center">
+              <div className="rounded-lg bg-black/50 border border-white/[0.06] p-3 text-center">
                 <div className="text-star-400 text-xs uppercase tracking-widest mb-1">Longitude</div>
                 <div className="text-white font-bold text-lg">{issPosition.longitude.toFixed(4)}&deg;</div>
               </div>
-              <div className="rounded-lg bg-slate-900/50 border border-slate-700/50 p-3 text-center">
+              <div className="rounded-lg bg-black/50 border border-white/[0.06] p-3 text-center">
                 <div className="text-star-400 text-xs uppercase tracking-widest mb-1">Altitude</div>
                 <div className="text-slate-300 font-bold text-lg">{issPosition.altitude.toFixed(1)} km</div>
               </div>
-              <div className="rounded-lg bg-slate-900/50 border border-slate-700/50 p-3 text-center">
+              <div className="rounded-lg bg-black/50 border border-white/[0.06] p-3 text-center">
                 <div className="text-star-400 text-xs uppercase tracking-widest mb-1">Velocity</div>
                 <div className="text-slate-300 font-bold text-lg">{issPosition.velocity.toFixed(0)} km/h</div>
               </div>
-              <div className="rounded-lg bg-slate-900/50 border border-slate-700/50 p-3 text-center">
+              <div className="rounded-lg bg-black/50 border border-white/[0.06] p-3 text-center">
                 <div className="text-star-400 text-xs uppercase tracking-widest mb-1">Visibility</div>
                 <div className="text-white font-bold text-lg capitalize">{issPosition.visibility || '--'}</div>
               </div>
@@ -1657,7 +1657,7 @@ export default function SpaceStationTrackerPage() {
         </ScrollReveal>
 
         {/* Tab Navigation */}
-        <div className="border-b border-slate-700/50 mb-8">
+        <div className="border-b border-white/[0.06] mb-8">
           <div className="flex gap-1 overflow-x-auto">
             {TABS.map((tab) => (
               <button
@@ -1665,8 +1665,8 @@ export default function SpaceStationTrackerPage() {
                 onClick={() => setActiveTab(tab.id)}
                 className={`px-4 py-2.5 text-sm font-medium whitespace-nowrap border-b-2 transition-colors ${
                   activeTab === tab.id
-                    ? 'border-white/15 text-slate-200'
-                    : 'border-transparent text-star-300 hover:text-white hover:border-slate-500'
+                    ? 'border-white/15 text-white/90'
+                    : 'border-transparent text-star-300 hover:text-white hover:border-white/[0.1]'
                 }`}
               >
                 {tab.label}
@@ -1715,19 +1715,19 @@ export default function SpaceStationTrackerPage() {
         <div className="card p-4 mt-8">
           <h3 className="text-sm font-semibold text-white mb-3">Related Modules</h3>
           <div className="flex flex-wrap gap-3">
-            <Link href="/cislunar?tab=gateway" className="px-3 py-1.5 rounded-lg bg-slate-700/50 text-star-300 hover:text-white hover:bg-slate-600/50 text-sm transition-colors">
+            <Link href="/cislunar?tab=gateway" className="px-3 py-1.5 rounded-lg bg-white/[0.08] text-star-300 hover:text-white hover:bg-white/[0.08] text-sm transition-colors">
               Lunar Gateway
             </Link>
-            <Link href="/space-environment?tab=debris" className="px-3 py-1.5 rounded-lg bg-slate-700/50 text-star-300 hover:text-white hover:bg-slate-600/50 text-sm transition-colors">
+            <Link href="/space-environment?tab=debris" className="px-3 py-1.5 rounded-lg bg-white/[0.08] text-star-300 hover:text-white hover:bg-white/[0.08] text-sm transition-colors">
               Debris Monitor
             </Link>
-            <Link href="/launch-windows" className="px-3 py-1.5 rounded-lg bg-slate-700/50 text-star-300 hover:text-white hover:bg-slate-600/50 text-sm transition-colors">
+            <Link href="/launch-windows" className="px-3 py-1.5 rounded-lg bg-white/[0.08] text-star-300 hover:text-white hover:bg-white/[0.08] text-sm transition-colors">
               Launch Windows
             </Link>
-            <Link href="/space-tourism" className="px-3 py-1.5 rounded-lg bg-slate-700/50 text-star-300 hover:text-white hover:bg-slate-600/50 text-sm transition-colors">
+            <Link href="/space-tourism" className="px-3 py-1.5 rounded-lg bg-white/[0.08] text-star-300 hover:text-white hover:bg-white/[0.08] text-sm transition-colors">
               Space Tourism
             </Link>
-            <Link href="/constellations" className="px-3 py-1.5 rounded-lg bg-slate-700/50 text-star-300 hover:text-white hover:bg-slate-600/50 text-sm transition-colors">
+            <Link href="/constellations" className="px-3 py-1.5 rounded-lg bg-white/[0.08] text-star-300 hover:text-white hover:bg-white/[0.08] text-sm transition-colors">
               Constellations
             </Link>
           </div>

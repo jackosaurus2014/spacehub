@@ -112,13 +112,13 @@ function CategoryScoreCard({ category, score, factors }: {
           </div>
         </div>
         <div className="flex items-center gap-4">
-          <div className="w-32 h-2 bg-slate-700 rounded-full overflow-hidden">
+          <div className="w-32 h-2 bg-white/[0.08] rounded-full overflow-hidden">
             <div
               className="h-full rounded-full transition-all duration-700"
               style={{ width: `${barWidth}%`, backgroundColor: config.color }}
             />
           </div>
-          <span className="text-lg font-bold text-slate-200 w-10 text-right">{score}</span>
+          <span className="text-lg font-bold text-white/90 w-10 text-right">{score}</span>
           <svg
             className={`w-5 h-5 text-slate-400 transition-transform duration-200 ${expanded ? 'rotate-180' : ''}`}
             fill="none"
@@ -131,11 +131,11 @@ function CategoryScoreCard({ category, score, factors }: {
       </button>
 
       {expanded && (
-        <div className="mt-4 space-y-3 border-t border-slate-700/50 pt-4">
+        <div className="mt-4 space-y-3 border-t border-white/[0.06] pt-4">
           {factors.map(f => (
-            <div key={f.factorId} className="bg-slate-900/50 rounded-lg p-3">
+            <div key={f.factorId} className="bg-black/50 rounded-lg p-3">
               <div className="flex items-center justify-between mb-1">
-                <span className="text-sm font-medium text-slate-200">{f.name}</span>
+                <span className="text-sm font-medium text-white/90">{f.name}</span>
                 <span className="text-sm font-bold" style={{ color: f.score >= 80 ? '#ef4444' : f.score >= 60 ? '#f97316' : f.score >= 40 ? '#f59e0b' : '#10b981' }}>
                   {f.score}
                 </span>
@@ -185,10 +185,10 @@ function TimelineChart({ applicableFactors }: { applicableFactors: string[] }) {
           return (
             <div key={item.id} className="flex items-center gap-4">
               <div className="w-48 shrink-0 text-right">
-                <span className="text-xs text-slate-300 leading-tight">{item.name}</span>
+                <span className="text-xs text-white/70 leading-tight">{item.name}</span>
               </div>
               <div className="flex-1 relative h-6">
-                <div className="absolute inset-0 bg-slate-700/30 rounded" />
+                <div className="absolute inset-0 bg-white/[0.04] rounded" />
                 <div
                   className="absolute top-0 h-full rounded transition-all duration-700"
                   style={{
@@ -232,20 +232,20 @@ function RiskFactorReference() {
 
         return (
           <div key={cat} className="card overflow-hidden">
-            <div className="px-5 py-3 border-b border-slate-700/50 flex items-center gap-2">
+            <div className="px-5 py-3 border-b border-white/[0.06] flex items-center gap-2">
               <span>{config.icon}</span>
-              <h4 className="text-sm font-semibold text-slate-200 uppercase tracking-wider">{config.label}</h4>
+              <h4 className="text-sm font-semibold text-white/90 uppercase tracking-wider">{config.label}</h4>
             </div>
-            <div className="divide-y divide-slate-700/30">
+            <div className="divide-y divide-white/[0.04]">
               {factors.map(f => (
                 <div key={f.id}>
                   <button
                     onClick={() => setExpandedId(expandedId === f.id ? null : f.id)}
-                    className="w-full text-left px-5 py-3 flex items-center justify-between hover:bg-slate-700/20 transition-colors"
+                    className="w-full text-left px-5 py-3 flex items-center justify-between hover:bg-white/[0.08]/20 transition-colors"
                   >
                     <div className="flex items-center gap-3">
-                      <span className="text-sm font-medium text-slate-200">{f.name}</span>
-                      <span className="text-xs px-2 py-0.5 rounded-full bg-slate-700/50 text-slate-400">
+                      <span className="text-sm font-medium text-white/90">{f.name}</span>
+                      <span className="text-xs px-2 py-0.5 rounded-full bg-white/[0.06] text-slate-400">
                         Weight: {f.weight}/10
                       </span>
                     </div>
@@ -260,9 +260,9 @@ function RiskFactorReference() {
                   </button>
                   {expandedId === f.id && (
                     <div className="px-5 pb-4 space-y-2">
-                      <p className="text-sm text-slate-300">{f.description}</p>
-                      <div className="bg-slate-900/50 rounded-lg p-3">
-                        <p className="text-xs text-slate-300 font-medium mb-1">Assessment Question:</p>
+                      <p className="text-sm text-white/70">{f.description}</p>
+                      <div className="bg-black/50 rounded-lg p-3">
+                        <p className="text-xs text-white/70 font-medium mb-1">Assessment Question:</p>
                         <p className="text-xs text-slate-400">{f.assessmentQuestion}</p>
                       </div>
                       {LICENSE_TIMELINES[f.id] && (
@@ -356,7 +356,7 @@ export default function RegulatoryRiskPage() {
             className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
               activeSection === 'form'
                 ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
-                : 'bg-slate-800/50 text-slate-400 border border-slate-700/50 hover:text-slate-200'
+                : 'bg-white/[0.04] text-slate-400 border border-white/[0.06] hover:text-white/90'
             }`}
           >
             Profile Builder
@@ -367,8 +367,8 @@ export default function RegulatoryRiskPage() {
               activeSection === 'results'
                 ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
                 : assessment
-                  ? 'bg-slate-800/50 text-slate-400 border border-slate-700/50 hover:text-slate-200'
-                  : 'bg-slate-800/30 text-slate-600 border border-slate-700/30 cursor-not-allowed'
+                  ? 'bg-white/[0.04] text-slate-400 border border-white/[0.06] hover:text-white/90'
+                  : 'bg-white/[0.03] text-slate-600 border border-white/[0.04] cursor-not-allowed'
             }`}
             disabled={!assessment}
           >
@@ -379,7 +379,7 @@ export default function RegulatoryRiskPage() {
             className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
               activeSection === 'reference'
                 ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
-                : 'bg-slate-800/50 text-slate-400 border border-slate-700/50 hover:text-slate-200'
+                : 'bg-white/[0.04] text-slate-400 border border-white/[0.06] hover:text-white/90'
             }`}
           >
             Risk Factor Reference
@@ -394,7 +394,7 @@ export default function RegulatoryRiskPage() {
 
               {/* Sector Selection */}
               <div className="mb-8">
-                <label className="block text-sm font-medium text-slate-300 mb-3">
+                <label className="block text-sm font-medium text-white/70 mb-3">
                   Primary Sector <span className="text-red-400">*</span>
                 </label>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -404,8 +404,8 @@ export default function RegulatoryRiskPage() {
                       onClick={() => setSelectedSector(s.id)}
                       className={`px-4 py-3 rounded-xl text-left text-sm font-medium transition-all border ${
                         selectedSector === s.id
-                          ? 'bg-white/10 text-slate-200 border-white/15 shadow-lg shadow-black/5'
-                          : 'bg-slate-800/50 text-slate-300 border-slate-700/50 hover:bg-slate-700/50 hover:text-slate-100'
+                          ? 'bg-white/10 text-white/90 border-white/15 shadow-lg shadow-black/5'
+                          : 'bg-white/[0.04] text-white/70 border-white/[0.06] hover:bg-white/[0.08] hover:text-slate-100'
                       }`}
                     >
                       {s.label}
@@ -416,7 +416,7 @@ export default function RegulatoryRiskPage() {
 
               {/* Activity Flags */}
               <div className="mb-8">
-                <label className="block text-sm font-medium text-slate-300 mb-1">
+                <label className="block text-sm font-medium text-white/70 mb-1">
                   Company Activities
                 </label>
                 <p className="text-xs text-slate-500 mb-3">
@@ -429,14 +429,14 @@ export default function RegulatoryRiskPage() {
                       className={`flex items-center gap-3 px-4 py-3 rounded-xl cursor-pointer transition-all border ${
                         selectedActivities.includes(a.id)
                           ? 'bg-amber-500/10 border-amber-500/30 text-amber-200'
-                          : 'bg-slate-800/40 border-slate-700/40 text-slate-400 hover:text-slate-200 hover:bg-slate-700/30'
+                          : 'bg-white/[0.04] border-white/[0.06] text-slate-400 hover:text-white/90 hover:bg-white/[0.06]'
                       }`}
                     >
                       <input
                         type="checkbox"
                         checked={selectedActivities.includes(a.id)}
                         onChange={() => toggleActivity(a.id)}
-                        className="w-4 h-4 rounded bg-slate-700 border-slate-600 text-slate-300 focus:ring-white/30 focus:ring-offset-0"
+                        className="w-4 h-4 rounded bg-white/[0.08] border-white/[0.1] text-white/70 focus:ring-white/30 focus:ring-offset-0"
                       />
                       <span className="text-sm">{a.label}</span>
                     </label>
@@ -452,7 +452,7 @@ export default function RegulatoryRiskPage() {
                   className={`px-6 py-3 rounded-xl font-semibold text-sm transition-all ${
                     selectedSector && !isAssessing
                       ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white hover:from-amber-400 hover:to-orange-400 shadow-lg shadow-amber-500/20'
-                      : 'bg-slate-700 text-slate-500 cursor-not-allowed'
+                      : 'bg-white/[0.08] text-slate-500 cursor-not-allowed'
                   }`}
                 >
                   {isAssessing ? (
@@ -470,7 +470,7 @@ export default function RegulatoryRiskPage() {
                 {assessment && (
                   <button
                     onClick={resetForm}
-                    className="px-4 py-3 rounded-xl text-sm text-slate-400 hover:text-slate-200 transition-colors"
+                    className="px-4 py-3 rounded-xl text-sm text-slate-400 hover:text-white/90 transition-colors"
                   >
                     Reset
                   </button>
@@ -479,10 +479,10 @@ export default function RegulatoryRiskPage() {
 
               {/* Quick preview of selected profile */}
               {selectedSector && (
-                <div className="mt-6 p-4 bg-slate-900/50 rounded-xl border border-slate-700/30">
+                <div className="mt-6 p-4 bg-black/50 rounded-xl border border-white/[0.04]">
                   <p className="text-xs text-slate-500 mb-2 uppercase tracking-wider font-medium">Selected Profile</p>
                   <div className="flex flex-wrap gap-2">
-                    <span className="px-3 py-1 rounded-full bg-white/8 text-slate-300 text-xs font-medium border border-white/10">
+                    <span className="px-3 py-1 rounded-full bg-white/8 text-white/70 text-xs font-medium border border-white/10">
                       {SECTORS.find(s => s.id === selectedSector)?.label}
                     </span>
                     {selectedActivities.map(a => (
@@ -529,7 +529,7 @@ export default function RegulatoryRiskPage() {
 
                   {/* Required Licenses */}
                   <div className="card p-6">
-                    <h3 className="text-sm font-semibold text-slate-300 uppercase tracking-wider mb-4">
+                    <h3 className="text-sm font-semibold text-white/70 uppercase tracking-wider mb-4">
                       Required Licenses & Authorizations
                     </h3>
                     {assessment.requiredLicenses.length > 0 ? (
@@ -539,7 +539,7 @@ export default function RegulatoryRiskPage() {
                             <svg className="w-4 h-4 text-amber-400 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
-                            <span className="text-sm text-slate-300">{lic}</span>
+                            <span className="text-sm text-white/70">{lic}</span>
                           </li>
                         ))}
                       </ul>
@@ -577,11 +577,11 @@ export default function RegulatoryRiskPage() {
                   {assessment.recommendations.length > 0 ? (
                     <div className="space-y-3">
                       {assessment.recommendations.map((rec, i) => (
-                        <div key={i} className="flex items-start gap-3 p-3 bg-slate-900/50 rounded-lg border border-slate-700/30">
+                        <div key={i} className="flex items-start gap-3 p-3 bg-black/50 rounded-lg border border-white/[0.04]">
                           <div className="w-6 h-6 rounded-full bg-amber-500/20 flex items-center justify-center shrink-0 mt-0.5">
                             <span className="text-xs font-bold text-amber-400">{i + 1}</span>
                           </div>
-                          <p className="text-sm text-slate-300 leading-relaxed">{rec}</p>
+                          <p className="text-sm text-white/70 leading-relaxed">{rec}</p>
                         </div>
                       ))}
                     </div>
@@ -596,19 +596,19 @@ export default function RegulatoryRiskPage() {
                 <div className="flex flex-wrap gap-3">
                   <button
                     onClick={() => setActiveSection('form')}
-                    className="px-5 py-2.5 rounded-xl text-sm font-medium bg-slate-800/50 text-slate-300 border border-slate-700/50 hover:bg-slate-700/50 hover:text-slate-100 transition-all"
+                    className="px-5 py-2.5 rounded-xl text-sm font-medium bg-white/[0.04] text-white/70 border border-white/[0.06] hover:bg-white/[0.08] hover:text-slate-100 transition-all"
                   >
                     Modify Profile
                   </button>
                   <button
                     onClick={resetForm}
-                    className="px-5 py-2.5 rounded-xl text-sm font-medium bg-slate-800/50 text-slate-300 border border-slate-700/50 hover:bg-slate-700/50 hover:text-slate-100 transition-all"
+                    className="px-5 py-2.5 rounded-xl text-sm font-medium bg-white/[0.04] text-white/70 border border-white/[0.06] hover:bg-white/[0.08] hover:text-slate-100 transition-all"
                   >
                     New Assessment
                   </button>
                   <Link
                     href="/compliance"
-                    className="px-5 py-2.5 rounded-xl text-sm font-medium bg-white/5 text-slate-300 border border-white/10 hover:bg-slate-100/20 transition-all"
+                    className="px-5 py-2.5 rounded-xl text-sm font-medium bg-white/5 text-white/70 border border-white/10 hover:bg-slate-100/20 transition-all"
                   >
                     View Full Compliance Hub
                   </Link>
@@ -635,10 +635,10 @@ export default function RegulatoryRiskPage() {
                     const count = RISK_FACTORS.filter(f => f.category === key).length;
                     if (count === 0) return null;
                     return (
-                      <div key={key} className="bg-slate-900/50 rounded-lg p-3 text-center">
+                      <div key={key} className="bg-black/50 rounded-lg p-3 text-center">
                         <span className="text-2xl">{config.icon}</span>
                         <p className="text-xs text-slate-400 mt-1">{config.label}</p>
-                        <p className="text-lg font-bold text-slate-200">{count}</p>
+                        <p className="text-lg font-bold text-white/90">{count}</p>
                       </div>
                     );
                   })}
@@ -660,11 +660,11 @@ export default function RegulatoryRiskPage() {
         <div className="mt-12 text-center">
           <p className="text-sm text-slate-500">
             Need help navigating space regulations?{' '}
-            <Link href="/compliance" className="text-slate-300 hover:text-white transition-colors">
+            <Link href="/compliance" className="text-white/70 hover:text-white transition-colors">
               Explore the Compliance Hub
             </Link>{' '}
             for detailed regulatory tracking, or{' '}
-            <Link href="/contact" className="text-slate-300 hover:text-white transition-colors">
+            <Link href="/contact" className="text-white/70 hover:text-white transition-colors">
               contact us
             </Link>{' '}
             for expert referrals.

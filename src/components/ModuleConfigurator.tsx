@@ -238,20 +238,20 @@ export default function ModuleConfigurator({ isOpen, onClose }: ModuleConfigurat
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-space-950/80 backdrop-blur-sm animate-fade-in"
+        className="absolute inset-0 bg-black/80 backdrop-blur-sm animate-fade-in"
         onClick={onClose}
       />
 
       {/* Modal */}
-      <div className="relative w-full max-w-2xl max-h-[90vh] overflow-hidden bg-space-900/95 backdrop-blur-xl border border-space-600/50 rounded-2xl shadow-2xl shadow-space-950/50 animate-scale-in">
+      <div className="relative w-full max-w-2xl max-h-[90vh] overflow-hidden bg-[#0a0a0a]/95 backdrop-blur-xl border border-white/[0.06] rounded-2xl shadow-2xl shadow-black/50 animate-scale-in">
         {/* Top gradient accent */}
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-plasma-400/60 to-transparent" />
+        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
 
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-space-600/50">
+        <div className="flex items-center justify-between p-6 border-b border-white/[0.06]">
           <div>
             <h2 className="text-xl font-display font-bold text-white flex items-center gap-2">
-              <svg className="w-5 h-5 text-plasma-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5 text-white/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
               </svg>
@@ -264,7 +264,7 @@ export default function ModuleConfigurator({ isOpen, onClose }: ModuleConfigurat
           <button
             onClick={onClose}
             aria-label="Close module configurator"
-            className="text-star-300 hover:text-white transition-colors p-2 hover:bg-space-700/50 rounded-lg min-h-[44px] min-w-[44px] flex items-center justify-center"
+            className="text-star-300 hover:text-white transition-colors p-2 hover:bg-white/[0.06] rounded-lg min-h-[44px] min-w-[44px] flex items-center justify-center"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -273,8 +273,8 @@ export default function ModuleConfigurator({ isOpen, onClose }: ModuleConfigurat
         </div>
 
         {/* Instruction bar */}
-        <div className="px-6 py-3 bg-space-800/50 border-b border-space-600/30 flex items-center gap-2 text-xs text-star-300">
-          <svg className="w-4 h-4 text-plasma-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="px-6 py-3 bg-white/[0.04] border-b border-white/[0.04] flex items-center gap-2 text-xs text-star-300">
+          <svg className="w-4 h-4 text-white/70 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
           <span>Toggle modules on/off and use arrows to reorder. Changes update the sidebar.</span>
@@ -287,10 +287,10 @@ export default function ModuleConfigurator({ isOpen, onClose }: ModuleConfigurat
               {/* Section header */}
               <div className="flex items-center gap-2 mb-2 px-2">
                 <span className="text-base">{SECTION_ICONS[group.section]}</span>
-                <h3 className="text-xs uppercase tracking-widest text-plasma-400/80 font-semibold">
+                <h3 className="text-xs uppercase tracking-widest text-white/60 font-semibold">
                   {group.label}
                 </h3>
-                <div className="flex-1 h-px bg-space-600/30" />
+                <div className="flex-1 h-px bg-white/[0.04]" />
               </div>
 
               {/* Module rows */}
@@ -306,8 +306,8 @@ export default function ModuleConfigurator({ isOpen, onClose }: ModuleConfigurat
                       <div
                         className={`flex items-center gap-3 px-3 py-2.5 rounded-lg border transition-all ${
                           mod.enabled
-                            ? 'bg-space-800/60 border-space-600/40 hover:border-plasma-400/30'
-                            : 'bg-space-900/40 border-space-700/20 opacity-60'
+                            ? 'bg-white/[0.04] border-white/[0.06] hover:border-white/[0.1]'
+                            : 'bg-black/40 border-white/[0.03] opacity-60'
                         }`}
                       >
                         {/* Icon */}
@@ -322,7 +322,7 @@ export default function ModuleConfigurator({ isOpen, onClose }: ModuleConfigurat
                               {mod.def.name}
                             </span>
                             {mod.def.isPremium && (
-                              <span className="text-[9px] font-semibold px-1.5 py-0.5 rounded bg-plasma-500/20 text-plasma-400 border border-plasma-500/30">
+                              <span className="text-[9px] font-semibold px-1.5 py-0.5 rounded bg-white/[0.08] text-white/70 border border-white/[0.1]">
                                 PRO
                               </span>
                             )}
@@ -344,8 +344,8 @@ export default function ModuleConfigurator({ isOpen, onClose }: ModuleConfigurat
                             disabled={isFirst}
                             className={`p-1 rounded transition-colors ${
                               isFirst
-                                ? 'text-space-600 cursor-not-allowed'
-                                : 'text-star-300 hover:text-plasma-400 hover:bg-space-700/50'
+                                ? 'text-white/20 cursor-not-allowed'
+                                : 'text-star-300 hover:text-white hover:bg-white/[0.06]'
                             }`}
                             aria-label={`Move ${mod.def.name} up`}
                           >
@@ -358,8 +358,8 @@ export default function ModuleConfigurator({ isOpen, onClose }: ModuleConfigurat
                             disabled={isLast}
                             className={`p-1 rounded transition-colors ${
                               isLast
-                                ? 'text-space-600 cursor-not-allowed'
-                                : 'text-star-300 hover:text-plasma-400 hover:bg-space-700/50'
+                                ? 'text-white/20 cursor-not-allowed'
+                                : 'text-star-300 hover:text-white hover:bg-white/[0.06]'
                             }`}
                             aria-label={`Move ${mod.def.name} down`}
                           >
@@ -377,12 +377,12 @@ export default function ModuleConfigurator({ isOpen, onClose }: ModuleConfigurat
                         >
                           <div
                             className={`w-10 h-5 rounded-full transition-colors duration-200 ${
-                              mod.enabled ? 'bg-plasma-500' : 'bg-space-600'
+                              mod.enabled ? 'bg-white' : 'bg-white/20'
                             }`}
                           />
                           <div
-                            className={`absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform duration-200 ${
-                              mod.enabled ? 'translate-x-5' : 'translate-x-0'
+                            className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full shadow transition-transform duration-200 ${
+                              mod.enabled ? 'translate-x-5 bg-black' : 'translate-x-0 bg-white'
                             }`}
                           />
                         </button>
@@ -390,7 +390,7 @@ export default function ModuleConfigurator({ isOpen, onClose }: ModuleConfigurat
 
                       {/* Show children preview when parent is expanded */}
                       {mod.enabled && mod.def.isParent && children.length > 0 && (
-                        <div className="ml-10 pl-3 border-l border-space-600/30 mt-1 mb-2 space-y-0.5">
+                        <div className="ml-10 pl-3 border-l border-white/[0.04] mt-1 mb-2 space-y-0.5">
                           {children.filter(c => c.defaultEnabled).map(child => (
                             <div
                               key={child.moduleId}
@@ -399,7 +399,7 @@ export default function ModuleConfigurator({ isOpen, onClose }: ModuleConfigurat
                               <span className="text-sm w-5 text-center">{child.icon}</span>
                               <span>{child.name}</span>
                               {child.isPremium && (
-                                <span className="text-[8px] font-semibold px-1 py-0.5 rounded bg-plasma-500/15 text-plasma-400/70 border border-plasma-500/20">
+                                <span className="text-[8px] font-semibold px-1 py-0.5 rounded bg-white/[0.06] text-white/50 border border-white/[0.06]">
                                   PRO
                                 </span>
                               )}
@@ -416,7 +416,7 @@ export default function ModuleConfigurator({ isOpen, onClose }: ModuleConfigurat
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between p-4 border-t border-space-600/50 bg-space-800/30">
+        <div className="flex items-center justify-between p-4 border-t border-white/[0.06] bg-white/[0.02]">
           <button
             onClick={handleReset}
             className="text-star-300 hover:text-white text-sm transition-colors flex items-center gap-1.5"
@@ -429,14 +429,14 @@ export default function ModuleConfigurator({ isOpen, onClose }: ModuleConfigurat
           <div className="flex gap-3">
             <button
               onClick={onClose}
-              className="px-4 py-2 text-sm font-medium text-star-300 hover:text-white border border-space-600/50 rounded-lg hover:border-space-500 transition-all"
+              className="px-4 py-2 text-sm font-medium text-star-300 hover:text-white border border-white/[0.06] rounded-lg hover:border-white/[0.1] transition-all"
             >
               Cancel
             </button>
             <button
               onClick={handleSave}
               disabled={!hasChanges}
-              className="px-6 py-2 text-sm font-medium text-space-900 bg-gradient-to-r from-plasma-400 to-plasma-500 rounded-lg hover:from-plasma-300 hover:to-plasma-400 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-plasma-500/20"
+              className="px-6 py-2 text-sm font-medium text-black bg-gradient-to-r from-white to-white/80 rounded-lg hover:from-white hover:to-white/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-white/5"
             >
               Save Changes
             </button>

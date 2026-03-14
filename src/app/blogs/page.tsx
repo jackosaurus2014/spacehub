@@ -19,7 +19,7 @@ const topicColors: Record<string, string> = {
   policy: 'bg-blue-500',
   technology: 'bg-white',
   business: 'bg-yellow-500',
-  exploration: 'bg-rocket-500',
+  exploration: 'bg-white/80',
 };
 
 const authorTypeIcons: Record<string, string> = {
@@ -69,7 +69,7 @@ function BlogPostCard({ post }: { post: BlogPost }) {
         className="block"
       >
         <div className="flex items-start gap-4">
-          <div className="w-12 h-12 rounded-full bg-slate-800 flex items-center justify-center text-2xl flex-shrink-0">
+          <div className="w-12 h-12 rounded-full bg-white/[0.06] flex items-center justify-center text-2xl flex-shrink-0">
             {authorIcon}
           </div>
           <div className="flex-1 min-w-0">
@@ -103,7 +103,7 @@ function BlogPostCard({ post }: { post: BlogPost }) {
       </a>
       {/* Cross-module links */}
       {isComplianceRelated && (
-        <div className="mt-3 pt-3 border-t border-slate-700 flex items-center gap-2">
+        <div className="mt-3 pt-3 border-t border-white/[0.06] flex items-center gap-2">
           <span className="text-xs text-slate-400">Related:</span>
           <Link
             href="/compliance"
@@ -238,8 +238,8 @@ function BlogsContent() {
                 onClick={() => handleTopicChange(null)}
                 className={`px-3 py-1.5 rounded-lg font-medium transition-all text-sm ${
                   selectedTopic === null
-                    ? 'bg-slate-700 text-white border-slate-600'
-                    : 'bg-transparent text-slate-400 border border-slate-700 hover:border-slate-500'
+                    ? 'bg-white/[0.08] text-white border-white/[0.1]'
+                    : 'bg-transparent text-slate-400 border border-white/[0.06] hover:border-white/[0.1]'
                 }`}
               >
                 All Topics
@@ -250,8 +250,8 @@ function BlogsContent() {
                   onClick={() => handleTopicChange(topic.value)}
                   className={`px-3 py-1.5 rounded-lg font-medium transition-all text-sm flex items-center gap-1 ${
                     selectedTopic === topic.value
-                      ? 'bg-slate-700 text-white border-slate-600'
-                      : 'bg-transparent text-slate-400 border border-slate-700 hover:border-slate-500'
+                      ? 'bg-white/[0.08] text-white border-white/[0.1]'
+                      : 'bg-transparent text-slate-400 border border-white/[0.06] hover:border-white/[0.1]'
                   }`}
                 >
                   <span>{topic.icon}</span>
@@ -269,8 +269,8 @@ function BlogsContent() {
                 onClick={() => handleAuthorTypeChange(null)}
                 className={`px-3 py-1.5 rounded-lg font-medium transition-all text-sm ${
                   selectedAuthorType === null
-                    ? 'bg-slate-700 text-white border-slate-600'
-                    : 'bg-transparent text-slate-400 border border-slate-700 hover:border-slate-500'
+                    ? 'bg-white/[0.08] text-white border-white/[0.1]'
+                    : 'bg-transparent text-slate-400 border border-white/[0.06] hover:border-white/[0.1]'
                 }`}
               >
                 All Authors
@@ -281,8 +281,8 @@ function BlogsContent() {
                   onClick={() => handleAuthorTypeChange(type.value)}
                   className={`px-3 py-1.5 rounded-lg font-medium transition-all text-sm flex items-center gap-1 ${
                     selectedAuthorType === type.value
-                      ? 'bg-slate-700 text-white border-slate-600'
-                      : 'bg-transparent text-slate-400 border border-slate-700 hover:border-slate-500'
+                      ? 'bg-white/[0.08] text-white border-white/[0.1]'
+                      : 'bg-transparent text-slate-400 border border-white/[0.06] hover:border-white/[0.1]'
                   }`}
                 >
                   <span>{type.icon}</span>
@@ -314,13 +314,13 @@ function BlogsContent() {
         </StaggerItem>
         <StaggerItem>
           <div className="card-elevated p-6 text-center">
-            <div className="text-4xl font-bold font-display tracking-tight text-slate-200">{BLOG_TOPICS.length}</div>
+            <div className="text-4xl font-bold font-display tracking-tight text-white/90">{BLOG_TOPICS.length}</div>
             <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Topics</div>
           </div>
         </StaggerItem>
         <StaggerItem>
           <div className="card-elevated p-6 text-center">
-            <div className="text-4xl font-bold font-display tracking-tight text-rocket-400">{AUTHOR_TYPES.length}</div>
+            <div className="text-4xl font-bold font-display tracking-tight text-white/70">{AUTHOR_TYPES.length}</div>
             <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Author Types</div>
           </div>
         </StaggerItem>

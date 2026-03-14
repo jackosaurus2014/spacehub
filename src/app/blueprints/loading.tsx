@@ -4,21 +4,21 @@ export default function Loading() {
       <div className="container mx-auto px-4">
         {/* Header skeleton */}
         <div className="mb-8">
-          <div className="h-8 w-48 bg-slate-800 rounded animate-pulse mb-3" />
-          <div className="h-4 w-80 bg-slate-800/60 rounded animate-pulse" />
+          <div className="h-8 w-48 bg-white/[0.06] rounded animate-pulse mb-3" />
+          <div className="h-4 w-80 bg-white/[0.05] rounded animate-pulse" />
         </div>
 
         {/* Filter bar */}
         <div className="flex flex-wrap gap-3 mb-8">
           {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="h-10 w-28 bg-slate-800/50 rounded-lg animate-pulse" />
+            <div key={i} className="h-10 w-28 bg-white/[0.04] rounded-lg animate-pulse" />
           ))}
         </div>
 
         {/* Blueprint cards grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="bg-slate-800/40 rounded-xl animate-pulse overflow-hidden">
+            <div key={i} className="bg-white/[0.04] rounded-xl animate-pulse overflow-hidden">
               {/* Image placeholder */}
               <div className="h-44 w-full bg-slate-700/40" />
               <div className="p-5 space-y-3">

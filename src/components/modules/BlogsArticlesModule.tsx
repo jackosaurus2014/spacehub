@@ -39,7 +39,7 @@ const topicColors: Record<string, string> = {
   policy: 'bg-blue-500',
   technology: 'bg-white',
   business: 'bg-yellow-500',
-  exploration: 'bg-rocket-500',
+  exploration: 'bg-white/[0.08]',
 };
 
 const authorTypeIcons: Record<string, string> = {
@@ -86,7 +86,7 @@ function BlogPostCard({ post }: { post: BlogPost }) {
               </span>
             )}
           </div>
-          <h3 className="font-semibold text-slate-200 text-sm line-clamp-2 group-hover:text-white transition-colors">
+          <h3 className="font-semibold text-white/90 text-sm line-clamp-2 group-hover:text-white transition-colors">
             {post.title}
           </h3>
           {post.excerpt && (
@@ -128,7 +128,7 @@ export default function BlogsArticlesModule() {
       <Link href="/blogs" className="block">
         <div className="card p-6 glow-border">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-display font-bold text-slate-200 flex items-center gap-2">
+            <h2 className="text-xl font-display font-bold text-white/90 flex items-center gap-2">
               <span>✍️</span> Blogs & Articles
             </h2>
           </div>
@@ -144,7 +144,7 @@ export default function BlogsArticlesModule() {
     <Link href="/blogs" className="block">
       <div className="card p-6 glow-border hover:border-white/10 transition-all cursor-pointer group">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-display font-bold text-slate-200 flex items-center gap-2">
+          <h2 className="text-xl font-display font-bold text-white/90 flex items-center gap-2">
             <span>✍️</span> Blogs & Articles
           </h2>
           <span className="text-slate-400 text-sm group-hover:text-white transition-colors flex items-center gap-1">
@@ -171,13 +171,13 @@ export default function BlogsArticlesModule() {
             </div>
 
             {/* Author Type Quick Filters */}
-            <div className="mt-4 pt-4 border-t border-slate-700/50">
+            <div className="mt-4 pt-4 border-t border-white/[0.06]">
               <p className="text-slate-400 text-xs mb-2">Browse by author type:</p>
               <div className="flex flex-wrap gap-2">
                 {AUTHOR_TYPES.slice(0, 4).map((type) => (
                   <span
                     key={type.value}
-                    className="bg-slate-800 text-slate-400 text-xs px-2 py-1 rounded flex items-center gap-1"
+                    className="bg-white/[0.06] text-slate-400 text-xs px-2 py-1 rounded flex items-center gap-1"
                   >
                     <span>{type.icon}</span>
                     <span>{type.label}</span>
@@ -188,8 +188,8 @@ export default function BlogsArticlesModule() {
           </>
         )}
 
-        <div className="mt-4 pt-4 border-t border-slate-700/50 text-center">
-          <span className="text-slate-200 text-sm group-hover:text-white transition-colors">
+        <div className="mt-4 pt-4 border-t border-white/[0.06] text-center">
+          <span className="text-white/90 text-sm group-hover:text-white transition-colors">
             Click to explore all expert insights →
           </span>
         </div>

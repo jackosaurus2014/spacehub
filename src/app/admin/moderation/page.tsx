@@ -149,7 +149,7 @@ export default function ModerationDashboard() {
         </ScrollReveal>
 
         {/* Tabs */}
-        <div className="flex border-b border-slate-700 mb-6">
+        <div className="flex border-b border-white/[0.08] mb-6">
           {tabs.map((t) => (
             <button
               key={t.key}
@@ -157,7 +157,7 @@ export default function ModerationDashboard() {
               className={`px-4 py-2 text-sm font-medium transition-colors border-b-2 -mb-px ${
                 tab === t.key
                   ? 'border-blue-500 text-blue-400'
-                  : 'border-transparent text-slate-400 hover:text-slate-200 hover:border-slate-500'
+                  : 'border-transparent text-slate-400 hover:text-white/90 hover:border-white/[0.12]'
               }`}
             >
               {t.label}
@@ -253,7 +253,7 @@ function ReportsTab() {
             id="status-filter"
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none w-40"
+            className="bg-white/[0.06] border border-white/[0.08] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none w-40"
           >
             <option value="all">All Statuses</option>
             <option value="pending">Pending</option>
@@ -268,7 +268,7 @@ function ReportsTab() {
             id="type-filter"
             value={contentTypeFilter}
             onChange={(e) => setContentTypeFilter(e.target.value)}
-            className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none w-40"
+            className="bg-white/[0.06] border border-white/[0.08] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none w-40"
           >
             <option value="all">All Types</option>
             <option value="thread">Thread</option>
@@ -334,11 +334,11 @@ function ReportsTab() {
 
       {/* Pagination */}
       {!loading && pagination && pagination.totalPages > 1 && (
-        <div className="flex items-center justify-between mt-6 pt-4 border-t border-slate-700">
+        <div className="flex items-center justify-between mt-6 pt-4 border-t border-white/[0.08]">
           <button
             onClick={() => setPage((p) => Math.max(1, p - 1))}
             disabled={page <= 1}
-            className="px-3 py-1.5 text-sm font-medium rounded-md border border-slate-600 bg-slate-800 text-slate-200 hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-3 py-1.5 text-sm font-medium rounded-md border border-white/[0.1] bg-white/[0.06] text-white/90 hover:bg-white/[0.08] disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Previous
           </button>
@@ -348,7 +348,7 @@ function ReportsTab() {
           <button
             onClick={() => setPage((p) => Math.min(pagination.totalPages, p + 1))}
             disabled={page >= pagination.totalPages}
-            className="px-3 py-1.5 text-sm font-medium rounded-md border border-slate-600 bg-slate-800 text-slate-200 hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-3 py-1.5 text-sm font-medium rounded-md border border-white/[0.1] bg-white/[0.06] text-white/90 hover:bg-white/[0.08] disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Next
           </button>
@@ -406,11 +406,11 @@ function ReportCard({
       </div>
 
       <p className="text-sm text-slate-400 mb-2">
-        Reported by <span className="font-medium text-slate-200">{reporterName}</span> on {reportDate}
+        Reported by <span className="font-medium text-white/90">{reporterName}</span> on {reportDate}
       </p>
 
       {truncatedDescription && (
-        <p className="text-sm text-slate-300 mb-3 bg-slate-800 rounded p-2 border border-slate-700">
+        <p className="text-sm text-white/70 mb-3 bg-white/[0.06] rounded p-2 border border-white/[0.08]">
           {truncatedDescription}
         </p>
       )}
@@ -423,21 +423,21 @@ function ReportCard({
 
       {/* Actions */}
       {isPending && (
-        <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-slate-700">
+        <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-white/[0.08]">
           {showNoteInput && (
             <input
               type="text"
               value={reviewNote}
               onChange={(e) => setReviewNote(e.target.value)}
               placeholder="Optional review note..."
-              className="flex-1 min-w-[200px] rounded-md border border-slate-600 bg-slate-800 px-3 py-1.5 text-sm text-slate-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+              className="flex-1 min-w-[200px] rounded-md border border-slate-600 bg-slate-800 px-3 py-1.5 text-sm text-white/90 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
             />
           )}
           <div className="flex items-center gap-2 ml-auto">
             {!showNoteInput && (
               <button
                 onClick={() => setShowNoteInput(true)}
-                className="px-3 py-1.5 text-xs font-medium rounded-md border border-slate-600 text-slate-300 hover:bg-slate-700 transition-colors"
+                className="px-3 py-1.5 text-xs font-medium rounded-md border border-white/[0.1] text-white/70 hover:bg-white/[0.08] transition-colors"
               >
                 Add Note
               </button>
@@ -445,7 +445,7 @@ function ReportCard({
             <button
               onClick={() => onAction(report.id, 'dismissed', reviewNote || undefined)}
               disabled={actioning}
-              className="px-3 py-1.5 text-xs font-medium rounded-md border border-slate-600 text-slate-300 hover:bg-slate-700 disabled:opacity-50 transition-colors"
+              className="px-3 py-1.5 text-xs font-medium rounded-md border border-white/[0.1] text-white/70 hover:bg-white/[0.08] disabled:opacity-50 transition-colors"
             >
               Dismiss
             </button>
@@ -573,7 +573,7 @@ function UsersTab() {
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search by user name or email..."
             aria-label="Search by user name or email"
-            className="block w-full rounded-md border border-slate-600 bg-slate-800 pl-10 pr-3 py-2 text-sm text-slate-200 placeholder-slate-400 shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+            className="block w-full rounded-md border border-white/[0.1] bg-white/[0.06] pl-10 pr-3 py-2 text-sm text-white/90 placeholder-slate-400 shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
           />
         </div>
         <button
@@ -603,7 +603,7 @@ function UsersTab() {
       {/* No Results */}
       {!loading && !error && searched && users.length === 0 && (
         <div className="text-center py-16">
-          <svg className="mx-auto h-12 w-12 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+          <svg className="mx-auto h-12 w-12 text-white/70" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
           </svg>
           <h3 className="mt-3 text-lg font-medium text-white">No users found</h3>
@@ -614,7 +614,7 @@ function UsersTab() {
       {/* Initial State */}
       {!loading && !error && !searched && (
         <div className="text-center py-16">
-          <svg className="mx-auto h-12 w-12 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+          <svg className="mx-auto h-12 w-12 text-white/70" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
           </svg>
           <h3 className="mt-3 text-lg font-medium text-white">Search for a user</h3>
@@ -706,7 +706,7 @@ function UserCard({
         <div className="flex items-center gap-2 flex-wrap">
           <button
             onClick={() => onAction(user.id, userName, 'warn')}
-            className="px-3 py-1.5 text-xs font-medium rounded-md border border-slate-600 text-slate-300 hover:bg-slate-700 transition-colors"
+            className="px-3 py-1.5 text-xs font-medium rounded-md border border-white/[0.1] text-white/70 hover:bg-white/[0.08] transition-colors"
           >
             Warn
           </button>
@@ -791,16 +791,16 @@ function ConfirmationDialog({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-      <div className="bg-slate-800 rounded-lg shadow-lg border border-slate-700 max-w-md w-full mx-4 p-6">
+      <div className="bg-white/[0.06] rounded-lg shadow-lg border border-white/[0.08] max-w-md w-full mx-4 p-6">
         <h3 className="text-lg font-bold text-white mb-2">
           Confirm {actionLabel}
         </h3>
-        <p className="text-sm text-slate-300 mb-4">
+        <p className="text-sm text-white/70 mb-4">
           Are you sure you want to <span className="font-medium">{action}</span>{' '}
           <span className="font-medium">{userName}</span>{durationLabel}?
         </p>
         <div className="mb-4">
-          <label htmlFor="action-reason" className="block text-sm font-medium text-slate-300 mb-1">
+          <label htmlFor="action-reason" className="block text-sm font-medium text-white/70 mb-1">
             Reason <span className="text-red-500">*</span>
           </label>
           <textarea
@@ -809,14 +809,14 @@ function ConfirmationDialog({
             onChange={(e) => onReasonChange(e.target.value)}
             placeholder="Provide a reason for this action..."
             rows={3}
-            className="block w-full rounded-md border border-slate-600 bg-slate-900 px-3 py-2 text-sm text-slate-200 placeholder-slate-400 shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none resize-none"
+            className="block w-full rounded-md border border-white/[0.1] bg-black px-3 py-2 text-sm text-white/90 placeholder-slate-400 shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none resize-none"
           />
         </div>
         <div className="flex justify-end gap-2">
           <button
             onClick={onCancel}
             disabled={submitting}
-            className="px-4 py-2 text-sm font-medium rounded-md border border-slate-600 text-slate-200 bg-slate-700 hover:bg-slate-600 disabled:opacity-50 transition-colors"
+            className="px-4 py-2 text-sm font-medium rounded-md border border-white/[0.1] text-white/90 bg-white/[0.08] hover:bg-white/[0.1] disabled:opacity-50 transition-colors"
           >
             Cancel
           </button>
@@ -896,7 +896,7 @@ function ActionLogTab() {
   if (actions.length === 0) {
     return (
       <div className="text-center py-16">
-        <svg className="mx-auto h-12 w-12 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+        <svg className="mx-auto h-12 w-12 text-white/70" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
         </svg>
         <h3 className="mt-3 text-lg font-medium text-white">No moderation actions yet</h3>
@@ -911,7 +911,7 @@ function ActionLogTab() {
     <ScrollReveal>
       <div className="card overflow-hidden">
         {/* Table header */}
-        <div className="hidden sm:grid sm:grid-cols-5 gap-4 px-4 py-3 bg-slate-800 border-b border-slate-700 text-xs font-medium text-slate-400 uppercase tracking-wider">
+        <div className="hidden sm:grid sm:grid-cols-5 gap-4 px-4 py-3 bg-white/[0.06] border-b border-white/[0.08] text-xs font-medium text-slate-400 uppercase tracking-wider">
           <div>Date</div>
           <div>Moderator</div>
           <div>Action</div>
@@ -920,7 +920,7 @@ function ActionLogTab() {
         </div>
 
         {/* Table rows */}
-        <div className="divide-y divide-slate-700">
+        <div className="divide-y divide-white/[0.08]">
           {actions.map((action) => (
             <ActionLogRow key={action.id} action={action} />
           ))}
@@ -958,13 +958,13 @@ function ActionLogRow({ action }: { action: ModerationActionRecord }) {
   return (
     <div className="px-4 py-3 sm:grid sm:grid-cols-5 gap-4 text-sm">
       {/* Date */}
-      <div className="text-slate-300">
+      <div className="text-white/70">
         <span className="sm:hidden text-xs font-medium text-slate-400 mr-1">Date:</span>
         {actionDate}
       </div>
 
       {/* Moderator */}
-      <div className="text-slate-200 mt-1 sm:mt-0">
+      <div className="text-white/90 mt-1 sm:mt-0">
         <span className="sm:hidden text-xs font-medium text-slate-400 mr-1">Moderator:</span>
         <span className="font-medium">{action.moderatorId.slice(0, 8)}...</span>
       </div>
@@ -978,7 +978,7 @@ function ActionLogRow({ action }: { action: ModerationActionRecord }) {
       </div>
 
       {/* Target User */}
-      <div className="text-slate-200 mt-1 sm:mt-0">
+      <div className="text-white/90 mt-1 sm:mt-0">
         <span className="sm:hidden text-xs font-medium text-slate-400 mr-1">Target:</span>
         <span className="font-medium">{action.targetUserId.slice(0, 8)}...</span>
       </div>
@@ -1002,30 +1002,30 @@ function LoadingSkeleton() {
       <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Header skeleton */}
         <div className="mb-8">
-          <div className="h-8 w-64 bg-slate-700 rounded animate-pulse" />
-          <div className="h-4 w-96 bg-slate-700 rounded animate-pulse mt-2" />
+          <div className="h-8 w-64 bg-white/[0.08] rounded animate-pulse" />
+          <div className="h-4 w-96 bg-white/[0.08] rounded animate-pulse mt-2" />
         </div>
         {/* Tabs skeleton */}
-        <div className="flex border-b border-slate-700 mb-6">
-          <div className="h-8 w-20 bg-slate-700 rounded animate-pulse mr-4" />
-          <div className="h-8 w-16 bg-slate-700 rounded animate-pulse mr-4" />
-          <div className="h-8 w-24 bg-slate-700 rounded animate-pulse" />
+        <div className="flex border-b border-white/[0.08] mb-6">
+          <div className="h-8 w-20 bg-white/[0.08] rounded animate-pulse mr-4" />
+          <div className="h-8 w-16 bg-white/[0.08] rounded animate-pulse mr-4" />
+          <div className="h-8 w-24 bg-white/[0.08] rounded animate-pulse" />
         </div>
         {/* Cards skeleton */}
         <div className="space-y-4">
           {[1, 2, 3, 4].map((i) => (
             <div key={i} className="card p-4">
               <div className="flex items-center gap-2 mb-3">
-                <div className="h-5 w-32 bg-slate-700 rounded animate-pulse" />
-                <div className="h-5 w-16 bg-slate-700 rounded-full animate-pulse" />
-                <div className="h-5 w-16 bg-slate-700 rounded-full animate-pulse" />
+                <div className="h-5 w-32 bg-white/[0.08] rounded animate-pulse" />
+                <div className="h-5 w-16 bg-white/[0.08] rounded-full animate-pulse" />
+                <div className="h-5 w-16 bg-white/[0.08] rounded-full animate-pulse" />
               </div>
-              <div className="h-4 w-48 bg-slate-700 rounded animate-pulse mb-2" />
-              <div className="h-12 w-full bg-slate-800 rounded animate-pulse mb-3" />
+              <div className="h-4 w-48 bg-white/[0.08] rounded animate-pulse mb-2" />
+              <div className="h-12 w-full bg-white/[0.06] rounded animate-pulse mb-3" />
               <div className="flex gap-2">
-                <div className="h-7 w-16 bg-slate-700 rounded animate-pulse" />
-                <div className="h-7 w-24 bg-slate-700 rounded animate-pulse" />
-                <div className="h-7 w-20 bg-slate-700 rounded animate-pulse" />
+                <div className="h-7 w-16 bg-white/[0.08] rounded animate-pulse" />
+                <div className="h-7 w-24 bg-white/[0.08] rounded animate-pulse" />
+                <div className="h-7 w-20 bg-white/[0.08] rounded animate-pulse" />
               </div>
             </div>
           ))}

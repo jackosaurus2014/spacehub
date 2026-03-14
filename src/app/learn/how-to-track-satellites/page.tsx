@@ -275,7 +275,7 @@ export default function HowToTrackSatellitesPage() {
         <ScrollReveal>
         <section className="mb-12">
           <h2 className="text-2xl font-bold text-white mb-4">What Is Satellite Tracking?</h2>
-          <div className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-6">
+          <div className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-6">
             <p className="text-slate-300 leading-relaxed mb-4">
               Satellite tracking is the process of determining and predicting the position of artificial
               objects in Earth orbit. It combines ground-based observations (radar, optical telescopes,
@@ -325,11 +325,11 @@ export default function HowToTrackSatellitesPage() {
           </p>
           <div className="space-y-4">
             {trackingConcepts.map((tc) => (
-              <div key={tc.concept} className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-5">
+              <div key={tc.concept} className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-5">
                 <h3 className="text-white font-semibold mb-2">{tc.concept}</h3>
                 <p className="text-slate-400 text-sm mb-2">{tc.description}</p>
                 {'example' in tc && tc.example && (
-                  <div className="mt-3 bg-slate-900/60 rounded-md p-3">
+                  <div className="mt-3 bg-black/60 rounded-md p-3">
                     <div className="text-xs text-slate-500 mb-1">Example TLE (ISS):</div>
                     <pre className="text-xs text-slate-300 font-mono whitespace-pre-wrap break-all">{tc.example}</pre>
                   </div>
@@ -349,7 +349,7 @@ export default function HowToTrackSatellitesPage() {
           </p>
           <div className="space-y-4">
             {orbitTypes.map((orbit) => (
-              <div key={orbit.name} className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-5">
+              <div key={orbit.name} className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-5">
                 <h3 className="text-white font-semibold text-lg mb-1">{orbit.name}</h3>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-3 text-xs">
                   <div>
@@ -394,7 +394,7 @@ export default function HowToTrackSatellitesPage() {
           </p>
           <div className="space-y-4">
             {popularSatellites.map((sat) => (
-              <div key={sat.name} className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-5">
+              <div key={sat.name} className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-5">
                 <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
                   <h3 className="text-white font-semibold">{sat.name}</h3>
                   <Link
@@ -431,7 +431,7 @@ export default function HowToTrackSatellitesPage() {
         {/* How to Use SpaceNexus Tracker */}
         <section className="mb-12">
           <h2 className="text-2xl font-bold text-white mb-6">How to Use the SpaceNexus Satellite Tracker</h2>
-          <div className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-6">
+          <div className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-6">
             <ol className="space-y-5">
               <li className="flex items-start gap-3">
                 <span className="text-slate-300 font-bold text-lg shrink-0">1.</span>
@@ -516,7 +516,7 @@ export default function HowToTrackSatellitesPage() {
         <section className="mb-12">
           <h2 className="text-2xl font-bold text-white mb-6">Tips for Spotting Satellites</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-5">
+            <div className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-5">
               <h3 className="text-white font-semibold mb-2">Best Viewing Times</h3>
               <p className="text-slate-400 text-sm">
                 The ideal window is 30-90 minutes after sunset or before sunrise. The sky needs to be
@@ -524,7 +524,7 @@ export default function HowToTrackSatellitesPage() {
                 This twilight zone is when most LEO satellites are visible.
               </p>
             </div>
-            <div className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-5">
+            <div className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-5">
               <h3 className="text-white font-semibold mb-2">What to Look For</h3>
               <p className="text-slate-400 text-sm">
                 Satellites appear as steady, non-blinking points of light moving in a straight line across
@@ -532,7 +532,7 @@ export default function HowToTrackSatellitesPage() {
                 takes 3-5 minutes to cross the sky. Most satellites are visible for 1-4 minutes.
               </p>
             </div>
-            <div className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-5">
+            <div className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-5">
               <h3 className="text-white font-semibold mb-2">Starlink Trains</h3>
               <p className="text-slate-400 text-sm">
                 Newly launched Starlink satellites fly in a visible &quot;train&quot; formation for the first few
@@ -540,7 +540,7 @@ export default function HowToTrackSatellitesPage() {
                 in a line are a stunning sight and easily visible to the naked eye.
               </p>
             </div>
-            <div className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-5">
+            <div className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-5">
               <h3 className="text-white font-semibold mb-2">Iridium Flares</h3>
               <p className="text-slate-400 text-sm">
                 The original Iridium satellites produced brilliant flares (magnitude -8, brighter than
@@ -552,7 +552,7 @@ export default function HowToTrackSatellitesPage() {
         </section>
 
         {/* CTA */}
-        <div className="bg-slate-800/60 border border-white/10 rounded-xl p-6 text-center mb-12">
+        <div className="bg-white/[0.06] border border-white/10 rounded-xl p-6 text-center mb-12">
           <h3 className="text-xl font-bold text-white mb-2">Start Tracking Satellites Now</h3>
           <p className="text-slate-400 text-sm mb-4">
             SpaceNexus tracks over 30,000 objects in real time with 3D visualization, pass predictions,
@@ -567,7 +567,7 @@ export default function HowToTrackSatellitesPage() {
             </Link>
             <Link
               href="/space-environment"
-              className="inline-block bg-slate-700/50 hover:bg-slate-700 text-white font-medium px-6 py-2.5 rounded-lg transition-colors border border-slate-600/50"
+              className="inline-block bg-white/[0.08] hover:bg-white/[0.08] text-white font-medium px-6 py-2.5 rounded-lg transition-colors border border-white/[0.1]"
             >
               View Space Environment
             </Link>
@@ -579,7 +579,7 @@ export default function HowToTrackSatellitesPage() {
           <h2 className="text-2xl font-bold text-white mb-6">Frequently Asked Questions</h2>
           <div className="space-y-4">
             {faqItems.map((item, i) => (
-              <div key={i} className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-4">
+              <div key={i} className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-4">
                 <h3 className="text-white font-semibold mb-2">{item.question}</h3>
                 <p className="text-slate-400 text-sm">{item.answer}</p>
               </div>
@@ -588,33 +588,33 @@ export default function HowToTrackSatellitesPage() {
         </section>
 
         {/* Internal Links */}
-        <section className="border-t border-slate-700/50 pt-8 mb-8">
+        <section className="border-t border-white/[0.06] pt-8 mb-8">
           <h3 className="text-lg font-bold text-white mb-4">Related SpaceNexus Tools & Data</h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             <Link
               href="/satellites"
-              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 text-center hover:border-white/15 transition-colors"
+              className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-3 text-center hover:border-white/15 transition-colors"
             >
               <div className="text-white text-sm font-medium">Satellite Tracker</div>
               <div className="text-slate-500 text-xs">30,000+ objects</div>
             </Link>
             <Link
               href="/space-environment"
-              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 text-center hover:border-white/15 transition-colors"
+              className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-3 text-center hover:border-white/15 transition-colors"
             >
               <div className="text-white text-sm font-medium">Space Environment</div>
               <div className="text-slate-500 text-xs">Weather & debris</div>
             </Link>
             <Link
               href="/constellations"
-              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 text-center hover:border-white/15 transition-colors"
+              className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-3 text-center hover:border-white/15 transition-colors"
             >
               <div className="text-white text-sm font-medium">Constellations</div>
               <div className="text-slate-500 text-xs">Fleet tracking</div>
             </Link>
             <Link
               href="/orbital-costs"
-              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 text-center hover:border-white/15 transition-colors"
+              className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-3 text-center hover:border-white/15 transition-colors"
             >
               <div className="text-white text-sm font-medium">Orbital Costs</div>
               <div className="text-slate-500 text-xs">Pricing data</div>
@@ -623,26 +623,26 @@ export default function HowToTrackSatellitesPage() {
         </section>
 
         {/* Other Guides */}
-        <section className="border-t border-slate-700/50 pt-8">
+        <section className="border-t border-white/[0.06] pt-8">
           <h3 className="text-lg font-bold text-white mb-4">More from the Learning Center</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
             <Link
               href="/learn/satellite-launch-cost"
-              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 hover:border-white/15 transition-colors"
+              className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-3 hover:border-white/15 transition-colors"
             >
               <div className="text-white text-sm font-medium">Satellite Launch Costs</div>
               <div className="text-slate-500 text-xs">Complete cost breakdown</div>
             </Link>
             <Link
               href="/learn/space-industry-market-size"
-              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 hover:border-white/15 transition-colors"
+              className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-3 hover:border-white/15 transition-colors"
             >
               <div className="text-white text-sm font-medium">Space Industry Market Size</div>
               <div className="text-slate-500 text-xs">$1.8 trillion and growing</div>
             </Link>
             <Link
               href="/learn/space-companies-to-watch"
-              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 hover:border-white/15 transition-colors"
+              className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-3 hover:border-white/15 transition-colors"
             >
               <div className="text-white text-sm font-medium">Top Space Companies 2026</div>
               <div className="text-slate-500 text-xs">25 companies to watch</div>

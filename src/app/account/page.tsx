@@ -57,7 +57,7 @@ export default function AccountPage() {
 
   if (status === 'loading') {
     return (
-      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
+      <div className="min-h-screen bg-black flex items-center justify-center">
         <LoadingSpinner size="md" />
       </div>
     );
@@ -69,7 +69,7 @@ export default function AccountPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white">
+    <div className="min-h-screen bg-black text-white">
       <div className="max-w-7xl mx-auto px-4 py-8 sm:py-12">
         {/* Header */}
         <ScrollReveal>
@@ -84,7 +84,7 @@ export default function AccountPage() {
         {/* Tab Navigation */}
         <ScrollReveal delay={0.1}>
           <div className="relative">
-            <div className="flex overflow-x-auto border-b border-slate-800 mb-8 -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-none">
+            <div className="flex overflow-x-auto border-b border-white/[0.06] mb-8 -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-none">
               {SECTION_TABS.map((tab) => (
                 <button
                   key={tab.key}
@@ -102,7 +102,7 @@ export default function AccountPage() {
                 </button>
               ))}
             </div>
-            <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-slate-950 to-transparent pointer-events-none sm:hidden" />
+            <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-black to-transparent pointer-events-none sm:hidden" />
           </div>
         </ScrollReveal>
 
@@ -117,7 +117,7 @@ export default function AccountPage() {
 
         {/* Quick Links */}
         <ScrollReveal delay={0.3}>
-        <section className="mt-8 bg-slate-900/50 border border-slate-800 rounded-lg p-6">
+        <section className="mt-8 bg-white/[0.04] border border-white/[0.06] rounded-lg p-6">
           <h2 className="text-lg font-semibold mb-4">Quick Links</h2>
           <div className="flex flex-wrap gap-4">
             <Link
@@ -216,26 +216,26 @@ function ProfileSection({ session }: { session: any }) {
   };
 
   const tierColors: Record<string, string> = {
-    free: 'bg-slate-700 text-slate-300',
-    pro: 'bg-slate-800/50 text-slate-200 border border-white/10',
+    free: 'bg-white/[0.08] text-slate-300',
+    pro: 'bg-white/[0.04] text-white/90 border border-white/10',
     enterprise: 'bg-purple-900/50 text-purple-300 border border-purple-700/50',
   };
 
   if (loading) {
     return (
-      <div className="bg-slate-900/50 border border-slate-800 rounded-lg p-6">
+      <div className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-6">
         <div className="animate-pulse space-y-4">
-          <div className="h-5 bg-slate-700 rounded w-32" />
-          <div className="h-10 bg-slate-700 rounded w-full" />
-          <div className="h-10 bg-slate-700 rounded w-full" />
-          <div className="h-10 bg-slate-700 rounded w-48" />
+          <div className="h-5 bg-white/[0.08] rounded w-32" />
+          <div className="h-10 bg-white/[0.08] rounded w-full" />
+          <div className="h-10 bg-white/[0.08] rounded w-full" />
+          <div className="h-10 bg-white/[0.08] rounded w-48" />
         </div>
       </div>
     );
   }
 
   return (
-    <section className="bg-slate-900/50 border border-slate-800 rounded-lg p-6">
+    <section className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-6">
       <h2 className="text-lg font-semibold mb-6">Profile Information</h2>
 
       <div className="space-y-5">
@@ -250,7 +250,7 @@ function ProfileSection({ session }: { session: any }) {
                 onChange={(e) => setEditName(e.target.value)}
                 autoComplete="name"
                 enterKeyHint="done"
-                className="flex-1 px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-white/30 focus:border-transparent"
+                className="flex-1 px-3 py-2 bg-white/[0.06] border border-white/[0.06] rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-white/30 focus:border-transparent"
                 placeholder="Your name"
                 autoFocus
                 onKeyDown={(e) => {
@@ -264,7 +264,7 @@ function ProfileSection({ session }: { session: any }) {
               <button
                 onClick={handleSaveName}
                 disabled={isSavingName}
-                className="px-4 py-2 bg-white hover:bg-slate-600 disabled:bg-slate-700 text-slate-900 rounded-lg text-sm font-medium transition-colors"
+                className="px-4 py-2 bg-white hover:bg-slate-100 disabled:bg-white/[0.08] text-slate-900 rounded-lg text-sm font-medium transition-colors"
               >
                 {isSavingName ? 'Saving...' : 'Save'}
               </button>
@@ -273,7 +273,7 @@ function ProfileSection({ session }: { session: any }) {
                   setIsEditing(false);
                   setEditName(profile?.name || '');
                 }}
-                className="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg text-sm transition-colors"
+                className="px-4 py-2 bg-white/[0.08] hover:bg-white/[0.12] text-white rounded-lg text-sm transition-colors"
               >
                 Cancel
               </button>
@@ -296,7 +296,7 @@ function ProfileSection({ session }: { session: any }) {
           <label className="block text-sm text-slate-400 mb-1.5">Email Address</label>
           <div className="flex items-center gap-2">
             <p className="text-white">{profile?.email || session.user?.email}</p>
-            <span className="text-xs px-2 py-0.5 rounded-full bg-slate-700 text-slate-400">
+            <span className="text-xs px-2 py-0.5 rounded-full bg-white/[0.08] text-slate-400">
               Read-only
             </span>
           </div>
@@ -400,7 +400,7 @@ function SecuritySection() {
   };
 
   return (
-    <section className="bg-slate-900/50 border border-slate-800 rounded-lg p-6">
+    <section className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-6">
       <h2 className="text-lg font-semibold mb-2">Security</h2>
       <p className="text-sm text-slate-400 mb-6">
         Update your password to keep your account secure
@@ -415,7 +415,7 @@ function SecuritySection() {
               type={showCurrent ? 'text' : 'password'}
               value={currentPassword}
               onChange={(e) => setCurrentPassword(e.target.value)}
-              className="w-full px-3 py-2 pr-10 bg-slate-800 border border-slate-700 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-white/30 focus:border-transparent"
+              className="w-full px-3 py-2 pr-10 bg-white/[0.06] border border-white/[0.06] rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-white/30 focus:border-transparent"
               placeholder="Enter current password"
               autoComplete="current-password"
               enterKeyHint="next"
@@ -448,7 +448,7 @@ function SecuritySection() {
               type={showNew ? 'text' : 'password'}
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
-              className="w-full px-3 py-2 pr-10 bg-slate-800 border border-slate-700 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-white/30 focus:border-transparent"
+              className="w-full px-3 py-2 pr-10 bg-white/[0.06] border border-white/[0.06] rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-white/30 focus:border-transparent"
               placeholder="Enter new password"
               autoComplete="new-password"
               enterKeyHint="next"
@@ -484,7 +484,7 @@ function SecuritySection() {
               type={showConfirm ? 'text' : 'password'}
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              className="w-full px-3 py-2 pr-10 bg-slate-800 border border-slate-700 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-white/30 focus:border-transparent"
+              className="w-full px-3 py-2 pr-10 bg-white/[0.06] border border-white/[0.06] rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-white/30 focus:border-transparent"
               placeholder="Confirm new password"
               autoComplete="new-password"
               enterKeyHint="done"
@@ -515,7 +515,7 @@ function SecuritySection() {
         <button
           type="submit"
           disabled={isChanging || !currentPassword || !newPassword || !confirmPassword}
-          className="px-6 py-2 bg-white hover:bg-slate-600 disabled:bg-slate-700 disabled:text-slate-500 text-slate-900 rounded-lg text-sm font-medium transition-colors"
+          className="px-6 py-2 bg-white hover:bg-slate-100 disabled:bg-white/[0.08] disabled:text-slate-500 text-slate-900 rounded-lg text-sm font-medium transition-colors"
         >
           {isChanging ? 'Changing Password...' : 'Change Password'}
         </button>
@@ -609,16 +609,16 @@ function NotificationsSection() {
 
   if (loading) {
     return (
-      <div className="bg-slate-900/50 border border-slate-800 rounded-lg p-6">
+      <div className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-6">
         <div className="animate-pulse space-y-4">
-          <div className="h-5 bg-slate-700 rounded w-40" />
+          <div className="h-5 bg-white/[0.08] rounded w-40" />
           {[...Array(6)].map((_, i) => (
             <div key={i} className="flex justify-between items-center">
               <div className="space-y-1">
-                <div className="h-4 bg-slate-700 rounded w-32" />
-                <div className="h-3 bg-slate-700 rounded w-56" />
+                <div className="h-4 bg-white/[0.08] rounded w-32" />
+                <div className="h-3 bg-white/[0.08] rounded w-56" />
               </div>
-              <div className="h-6 w-11 bg-slate-700 rounded-full" />
+              <div className="h-6 w-11 bg-white/[0.08] rounded-full" />
             </div>
           ))}
         </div>
@@ -628,14 +628,14 @@ function NotificationsSection() {
 
   if (!preferences) {
     return (
-      <div className="bg-slate-900/50 border border-slate-800 rounded-lg p-6 text-center text-slate-400">
+      <div className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-6 text-center text-slate-400">
         Unable to load notification preferences.
       </div>
     );
   }
 
   return (
-    <section className="bg-slate-900/50 border border-slate-800 rounded-lg p-6">
+    <section className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-6">
       <h2 className="text-lg font-semibold mb-2">Notification Preferences</h2>
       <p className="text-sm text-slate-400 mb-6">
         Control which notifications you receive and how
@@ -645,7 +645,7 @@ function NotificationsSection() {
         {NOTIFICATION_TOGGLES.map((toggle) => (
           <div
             key={toggle.key}
-            className="flex items-center justify-between py-3 border-b border-slate-800/50 last:border-b-0"
+            className="flex items-center justify-between py-3 border-b border-white/[0.06]/50 last:border-b-0"
           >
             <div className="mr-4">
               <p className="text-sm font-medium text-white">{toggle.label}</p>
@@ -657,8 +657,8 @@ function NotificationsSection() {
               aria-checked={!!preferences[toggle.key]}
               onClick={() => handleToggle(toggle.key)}
               disabled={savingKey === toggle.key}
-              className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-white/30 focus:ring-offset-2 focus:ring-offset-slate-900 disabled:opacity-50 ${
-                preferences[toggle.key] ? 'bg-white' : 'bg-slate-600'
+              className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-white/30 focus:ring-offset-2 focus:ring-offset-black disabled:opacity-50 ${
+                preferences[toggle.key] ? 'bg-white' : 'bg-white/[0.1]'
               }`}
             >
               <span
@@ -672,7 +672,7 @@ function NotificationsSection() {
       </div>
 
       {/* Digest Frequency Dropdown */}
-      <div className="mt-6 pt-4 border-t border-slate-800">
+      <div className="mt-6 pt-4 border-t border-white/[0.06]">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div>
             <p className="text-sm font-medium text-white">Digest Frequency</p>
@@ -682,7 +682,7 @@ function NotificationsSection() {
             value={preferences.digestFrequency}
             onChange={(e) => handleFrequencyChange(e.target.value)}
             disabled={savingKey === 'digestFrequency'}
-            className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none disabled:opacity-50 sm:w-40"
+            className="bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none disabled:opacity-50 sm:w-40"
           >
             <option value="daily">Daily</option>
             <option value="weekly">Weekly</option>
@@ -713,14 +713,14 @@ function AppearanceSection() {
   };
 
   return (
-    <section className="bg-slate-900/50 border border-slate-800 rounded-lg p-6">
+    <section className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-6">
       <h2 className="text-lg font-semibold mb-2">Appearance</h2>
       <p className="text-sm text-slate-400 mb-6">
         Customize how SpaceNexus looks on your device
       </p>
 
       <div className="space-y-1">
-        <div className="flex items-center justify-between py-3 border-b border-slate-800/50">
+        <div className="flex items-center justify-between py-3 border-b border-white/[0.06]/50">
           <div className="mr-4">
             <p className="text-sm font-medium text-white">OLED True Black Mode</p>
             <p className="text-xs text-slate-400 mt-0.5">
@@ -732,8 +732,8 @@ function AppearanceSection() {
             role="switch"
             aria-checked={oledEnabled}
             onClick={handleToggleOled}
-            className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-white/30 focus:ring-offset-2 focus:ring-offset-slate-900 ${
-              oledEnabled ? 'bg-white' : 'bg-slate-600'
+            className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-white/30 focus:ring-offset-2 focus:ring-offset-black ${
+              oledEnabled ? 'bg-white' : 'bg-white/[0.1]'
             }`}
           >
             <span
@@ -831,7 +831,7 @@ function DataPrivacySection() {
     <>
       <div className="space-y-6">
         {/* Export Data */}
-        <section className="bg-slate-900/50 border border-slate-800 rounded-lg p-6">
+        <section className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-6">
           <h2 className="text-lg font-semibold mb-2">Export Your Data</h2>
           <p className="text-sm text-slate-400 mb-4">
             Download a copy of all your SpaceNexus data including your profile, posts,
@@ -840,7 +840,7 @@ function DataPrivacySection() {
           <button
             onClick={handleExportData}
             disabled={isExporting}
-            className="flex items-center gap-2 px-4 py-2 bg-slate-700 hover:bg-slate-600 disabled:bg-slate-800 disabled:text-slate-500 text-white rounded-lg text-sm font-medium transition-colors"
+            className="flex items-center gap-2 px-4 py-2 bg-white/[0.08] hover:bg-white/[0.12] disabled:bg-white/[0.06] disabled:text-slate-500 text-white rounded-lg text-sm font-medium transition-colors"
           >
             {isExporting ? (
               <>
@@ -879,7 +879,7 @@ function DataPrivacySection() {
       {/* Delete Confirmation Modal */}
       {showDeleteModal && (
         <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/70 px-4" role="dialog" aria-modal="true" aria-labelledby="delete-account-title">
-          <div className="bg-slate-900 border border-slate-700 rounded-t-2xl sm:rounded-2xl max-w-md w-full p-6 max-h-[85vh] overflow-y-auto">
+          <div className="bg-[#0a0a0a] border border-white/[0.06] rounded-t-2xl sm:rounded-2xl max-w-md w-full p-6 max-h-[85vh] overflow-y-auto">
             <h3 id="delete-account-title" className="text-xl font-bold text-red-400 mb-2">
               Delete Account
             </h3>
@@ -898,7 +898,7 @@ function DataPrivacySection() {
                   type="text"
                   value={deleteConfirmation}
                   onChange={(e) => setDeleteConfirmation(e.target.value)}
-                  className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-red-500"
+                  className="w-full px-3 py-2 bg-white/[0.06] border border-white/[0.06] rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-red-500"
                   placeholder="DELETE MY ACCOUNT"
                   autoComplete="off"
                 />
@@ -912,7 +912,7 @@ function DataPrivacySection() {
                   type="password"
                   value={deletePassword}
                   onChange={(e) => setDeletePassword(e.target.value)}
-                  className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-red-500"
+                  className="w-full px-3 py-2 bg-white/[0.06] border border-white/[0.06] rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-red-500"
                   placeholder="Your password"
                   autoComplete="current-password"
                 />
@@ -926,7 +926,7 @@ function DataPrivacySection() {
                   setDeleteConfirmation('');
                   setDeletePassword('');
                 }}
-                className="flex-1 px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg text-sm transition-colors"
+                className="flex-1 px-4 py-2 bg-white/[0.08] hover:bg-white/[0.12] text-white rounded-lg text-sm transition-colors"
                 disabled={isDeleting}
               >
                 Cancel

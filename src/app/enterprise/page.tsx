@@ -10,7 +10,7 @@ import StickyMobileCTA from '@/components/mobile/StickyMobileCTA';
 
 const ROICalculator = dynamic(() => import('@/components/billing/ROICalculator'), {
   ssr: false,
-  loading: () => <div className="animate-pulse h-96 bg-slate-800/50 rounded-2xl" />,
+  loading: () => <div className="animate-pulse h-96 bg-white/[0.04] rounded-2xl" />,
 });
 
 export const metadata: Metadata = {
@@ -237,7 +237,7 @@ export default function EnterprisePage() {
               </Link>
               <Link
                 href="/pricing"
-                className="inline-flex items-center gap-2 px-8 py-3 border border-slate-600 hover:border-slate-500 text-slate-300 hover:text-white font-medium rounded-lg transition-colors"
+                className="inline-flex items-center gap-2 px-8 py-3 border border-white/[0.1] hover:border-white/[0.1] text-slate-300 hover:text-white font-medium rounded-lg transition-colors"
               >
                 View Pricing
               </Link>
@@ -273,7 +273,7 @@ export default function EnterprisePage() {
         {/* Comparison Strip */}
         <section className="container mx-auto px-4 pb-20">
           <ScrollReveal>
-            <div className="max-w-5xl mx-auto bg-slate-900/50 border border-slate-700/50 rounded-2xl p-8 sm:p-10">
+            <div className="max-w-5xl mx-auto bg-white/[0.04] border border-white/[0.06] rounded-2xl p-8 sm:p-10">
               <h2 className="text-2xl font-bold text-white text-center mb-2">
                 Why Enterprise over Professional?
               </h2>
@@ -285,7 +285,7 @@ export default function EnterprisePage() {
                 {DIFFERENTIATORS.map((diff) => (
                   <div
                     key={diff.title}
-                    className="text-center p-4 rounded-xl bg-slate-800/40 border border-slate-700/30"
+                    className="text-center p-4 rounded-xl bg-white/[0.04] border border-white/[0.04]"
                   >
                     <div className="w-10 h-10 mx-auto mb-3 rounded-full bg-white/5 border border-white/10 flex items-center justify-center">
                       <svg className="w-5 h-5 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
@@ -317,7 +317,7 @@ export default function EnterprisePage() {
               {CUSTOMER_CATEGORIES.map((cat) => (
                 <div
                   key={cat.label}
-                  className="flex flex-col items-center gap-2 p-6 rounded-xl bg-slate-900/50 border border-slate-700/50"
+                  className="flex flex-col items-center gap-2 p-6 rounded-xl bg-white/[0.04] border border-white/[0.06]"
                 >
                   <div className="text-slate-400">{cat.icon}</div>
                   <span className="text-sm font-medium text-slate-300">{cat.label}</span>
@@ -354,7 +354,7 @@ export default function EnterprisePage() {
                 </Link>
                 <Link
                   href="/pricing"
-                  className="inline-flex items-center gap-2 px-8 py-3 border border-slate-600 hover:border-slate-500 text-slate-300 hover:text-white font-medium rounded-lg transition-colors"
+                  className="inline-flex items-center gap-2 px-8 py-3 border border-white/[0.1] hover:border-white/[0.1] text-slate-300 hover:text-white font-medium rounded-lg transition-colors"
                 >
                   Compare Plans
                 </Link>
@@ -366,7 +366,7 @@ export default function EnterprisePage() {
         {/* Schedule a Demo CTA */}
         <section className="container mx-auto px-4 pb-20">
           <ScrollReveal>
-            <div className="max-w-4xl mx-auto bg-slate-800/40 border border-slate-700/50 rounded-2xl p-8 sm:p-12">
+            <div className="max-w-4xl mx-auto bg-white/[0.04] border border-white/[0.06] rounded-2xl p-8 sm:p-12">
               <div className="flex flex-col md:flex-row items-center gap-8">
                 <div className="flex-1">
                   <h2 className="text-2xl font-bold text-white mb-3">Schedule a Demo</h2>
@@ -435,7 +435,7 @@ export default function EnterprisePage() {
           <StaggerContainer className="max-w-3xl mx-auto space-y-4">
             {FAQ_ITEMS.map((item) => (
               <StaggerItem key={item.question}>
-                <div className="bg-slate-900/50 border border-slate-700/50 rounded-xl p-6">
+                <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-6">
                   <h3 className="text-base font-semibold text-white mb-2">{item.question}</h3>
                   <p className="text-sm text-slate-400 leading-relaxed">{item.answer}</p>
                 </div>

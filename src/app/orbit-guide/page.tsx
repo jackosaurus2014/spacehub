@@ -415,7 +415,7 @@ function AltitudeChart() {
   );
 
   return (
-    <div className="bg-slate-800/60 border border-slate-700 rounded-xl p-6 md:p-8">
+    <div className="bg-white/[0.05] border border-white/[0.08] rounded-xl p-6 md:p-8">
       <h2 className="text-xl font-bold text-slate-100 mb-2">Relative Altitude Comparison</h2>
       <p className="text-sm text-slate-400 mb-6">
         Visual scale showing orbit altitudes relative to each other (Mars Transfer excluded for scale)
@@ -430,13 +430,13 @@ function AltitudeChart() {
               className={`w-full rounded-t-md ${orbit.color} transition-all duration-500 relative group cursor-pointer`}
               style={{ height: `${orbit.barHeight}%`, minHeight: '16px' }}
             >
-              <div className="absolute -top-16 left-1/2 -translate-x-1/2 bg-slate-900 border border-slate-600 rounded px-2 py-1 text-xs text-slate-200 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
+              <div className="absolute -top-16 left-1/2 -translate-x-1/2 bg-black border border-white/[0.1] rounded px-2 py-1 text-xs text-white/90 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
                 {orbit.name}
                 <br />
                 {orbit.altitudeRange}
               </div>
             </div>
-            <span className="text-[10px] md:text-xs font-mono font-bold text-slate-300 text-center">
+            <span className="text-[10px] md:text-xs font-mono font-bold text-white/70 text-center">
               {orbit.abbreviation}
             </span>
           </div>
@@ -463,7 +463,7 @@ function OrbitCard({ orbit, index }: { orbit: OrbitType; index: number }) {
 
   return (
     <ScrollReveal delay={index * 0.04}>
-      <div className="bg-slate-800/50 border border-slate-700 rounded-xl overflow-hidden hover:border-slate-500 transition-colors">
+      <div className="bg-white/[0.04] border border-white/[0.08] rounded-xl overflow-hidden hover:border-slate-500 transition-colors">
         {/* Header */}
         <button
           onClick={() => setExpanded(!expanded)}
@@ -476,7 +476,7 @@ function OrbitCard({ orbit, index }: { orbit: OrbitType; index: number }) {
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
               <h3 className="text-lg font-bold text-slate-100">{orbit.name}</h3>
-              <span className="text-xs font-mono px-2 py-0.5 rounded bg-slate-700 text-slate-300">
+              <span className="text-xs font-mono px-2 py-0.5 rounded bg-slate-700 text-white/70">
                 {orbit.abbreviation}
               </span>
             </div>
@@ -485,13 +485,13 @@ function OrbitCard({ orbit, index }: { orbit: OrbitType; index: number }) {
             {/* Quick metrics */}
             <div className="flex flex-wrap gap-x-4 gap-y-1 mt-3 text-xs text-slate-400">
               <span>
-                <strong className="text-slate-300">Period:</strong> {orbit.period}
+                <strong className="text-white/70">Period:</strong> {orbit.period}
               </span>
               <span>
-                <strong className="text-slate-300">Velocity:</strong> {orbit.velocity}
+                <strong className="text-white/70">Velocity:</strong> {orbit.velocity}
               </span>
               <span>
-                <strong className="text-slate-300">Delta-v:</strong> {orbit.deltaV}
+                <strong className="text-white/70">Delta-v:</strong> {orbit.deltaV}
               </span>
             </div>
           </div>
@@ -512,37 +512,37 @@ function OrbitCard({ orbit, index }: { orbit: OrbitType; index: number }) {
 
         {/* Expandable Detail */}
         {expanded && (
-          <div className="px-5 md:px-6 pb-5 md:pb-6 border-t border-slate-700/50 pt-4 space-y-5">
+          <div className="px-5 md:px-6 pb-5 md:pb-6 border-t border-white/[0.06] pt-4 space-y-5">
             {/* Characteristics */}
             <div>
-              <h4 className="text-sm font-semibold text-slate-200 uppercase tracking-wider mb-2">
+              <h4 className="text-sm font-semibold text-white/90 uppercase tracking-wider mb-2">
                 Characteristics
               </h4>
-              <p className="text-sm text-slate-300 leading-relaxed">{orbit.characteristics}</p>
+              <p className="text-sm text-white/70 leading-relaxed">{orbit.characteristics}</p>
             </div>
 
             {/* Uses & Examples side-by-side */}
             <div className="grid md:grid-cols-2 gap-4">
               <div>
-                <h4 className="text-sm font-semibold text-slate-200 uppercase tracking-wider mb-2">
+                <h4 className="text-sm font-semibold text-white/90 uppercase tracking-wider mb-2">
                   Primary Uses
                 </h4>
                 <ul className="space-y-1">
                   {orbit.uses.map((use) => (
-                    <li key={use} className="flex items-start gap-2 text-sm text-slate-300">
-                      <span className="text-slate-300 mt-0.5">&#8226;</span>
+                    <li key={use} className="flex items-start gap-2 text-sm text-white/70">
+                      <span className="text-white/70 mt-0.5">&#8226;</span>
                       {use}
                     </li>
                   ))}
                 </ul>
               </div>
               <div>
-                <h4 className="text-sm font-semibold text-slate-200 uppercase tracking-wider mb-2">
+                <h4 className="text-sm font-semibold text-white/90 uppercase tracking-wider mb-2">
                   Notable Examples
                 </h4>
                 <ul className="space-y-1">
                   {orbit.examples.map((ex) => (
-                    <li key={ex} className="flex items-start gap-2 text-sm text-slate-300">
+                    <li key={ex} className="flex items-start gap-2 text-sm text-white/70">
                       <span className="text-amber-400 mt-0.5">&#9679;</span>
                       {ex}
                     </li>
@@ -559,7 +559,7 @@ function OrbitCard({ orbit, index }: { orbit: OrbitType; index: number }) {
                 </h4>
                 <ul className="space-y-1">
                   {orbit.advantages.map((adv) => (
-                    <li key={adv} className="flex items-start gap-2 text-sm text-slate-300">
+                    <li key={adv} className="flex items-start gap-2 text-sm text-white/70">
                       <svg className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                       </svg>
@@ -574,7 +574,7 @@ function OrbitCard({ orbit, index }: { orbit: OrbitType; index: number }) {
                 </h4>
                 <ul className="space-y-1">
                   {orbit.disadvantages.map((dis) => (
-                    <li key={dis} className="flex items-start gap-2 text-sm text-slate-300">
+                    <li key={dis} className="flex items-start gap-2 text-sm text-white/70">
                       <svg className="w-4 h-4 text-red-400 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                       </svg>
@@ -597,39 +597,39 @@ function OrbitCard({ orbit, index }: { orbit: OrbitType; index: number }) {
 
 function QuickReferenceTable() {
   return (
-    <div className="bg-slate-800/60 border border-slate-700 rounded-xl overflow-hidden">
-      <div className="p-5 md:p-6 border-b border-slate-700">
+    <div className="bg-white/[0.05] border border-white/[0.08] rounded-xl overflow-hidden">
+      <div className="p-5 md:p-6 border-b border-white/[0.08]">
         <h2 className="text-xl font-bold text-slate-100">Quick Reference</h2>
         <p className="text-sm text-slate-400 mt-1">At-a-glance metrics for all orbit types</p>
       </div>
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-slate-700 text-left">
-              <th className="px-4 py-3 text-slate-300 font-semibold">Orbit</th>
-              <th className="px-4 py-3 text-slate-300 font-semibold">Altitude</th>
-              <th className="px-4 py-3 text-slate-300 font-semibold">Period</th>
-              <th className="px-4 py-3 text-slate-300 font-semibold">Velocity</th>
-              <th className="px-4 py-3 text-slate-300 font-semibold">Delta-v</th>
+            <tr className="border-b border-white/[0.08] text-left">
+              <th className="px-4 py-3 text-white/70 font-semibold">Orbit</th>
+              <th className="px-4 py-3 text-white/70 font-semibold">Altitude</th>
+              <th className="px-4 py-3 text-white/70 font-semibold">Period</th>
+              <th className="px-4 py-3 text-white/70 font-semibold">Velocity</th>
+              <th className="px-4 py-3 text-white/70 font-semibold">Delta-v</th>
             </tr>
           </thead>
           <tbody>
             {ORBIT_TYPES.map((orbit, i) => (
               <tr
                 key={orbit.abbreviation}
-                className={`border-b border-slate-700/50 ${i % 2 === 0 ? 'bg-slate-800/30' : ''}`}
+                className={`border-b border-white/[0.06] ${i % 2 === 0 ? 'bg-slate-800/30' : ''}`}
               >
                 <td className="px-4 py-2.5 whitespace-nowrap">
                   <div className="flex items-center gap-2">
                     <div className={`w-2 h-2 rounded-full ${orbit.color}`} />
-                    <span className="font-mono text-slate-200">{orbit.abbreviation}</span>
+                    <span className="font-mono text-white/90">{orbit.abbreviation}</span>
                     <span className="text-slate-400 hidden md:inline">- {orbit.name}</span>
                   </div>
                 </td>
-                <td className="px-4 py-2.5 text-slate-300 whitespace-nowrap">{orbit.altitudeRange}</td>
-                <td className="px-4 py-2.5 text-slate-300 whitespace-nowrap">{orbit.period}</td>
-                <td className="px-4 py-2.5 text-slate-300 whitespace-nowrap">{orbit.velocity}</td>
-                <td className="px-4 py-2.5 text-slate-300 whitespace-nowrap">{orbit.deltaV}</td>
+                <td className="px-4 py-2.5 text-white/70 whitespace-nowrap">{orbit.altitudeRange}</td>
+                <td className="px-4 py-2.5 text-white/70 whitespace-nowrap">{orbit.period}</td>
+                <td className="px-4 py-2.5 text-white/70 whitespace-nowrap">{orbit.velocity}</td>
+                <td className="px-4 py-2.5 text-white/70 whitespace-nowrap">{orbit.deltaV}</td>
               </tr>
             ))}
           </tbody>
@@ -678,15 +678,15 @@ function KeyConcepts() {
   ];
 
   return (
-    <div className="bg-slate-800/60 border border-slate-700 rounded-xl p-5 md:p-6">
+    <div className="bg-white/[0.05] border border-white/[0.08] rounded-xl p-5 md:p-6">
       <h2 className="text-xl font-bold text-slate-100 mb-4">Key Orbital Mechanics Concepts</h2>
       <div className="grid md:grid-cols-2 gap-4">
         {concepts.map((c) => (
-          <div key={c.term} className="bg-slate-900/40 rounded-lg p-4">
-            <h3 className="text-sm font-bold text-slate-300 uppercase tracking-wider mb-1">
+          <div key={c.term} className="bg-black/40 rounded-lg p-4">
+            <h3 className="text-sm font-bold text-white/70 uppercase tracking-wider mb-1">
               {c.term}
             </h3>
-            <p className="text-sm text-slate-300 leading-relaxed">{c.definition}</p>
+            <p className="text-sm text-white/70 leading-relaxed">{c.definition}</p>
           </div>
         ))}
       </div>
@@ -714,7 +714,7 @@ export default function OrbitGuidePage() {
       : ORBIT_TYPES.filter((o) => categories[filter]?.includes(o.abbreviation));
 
   return (
-    <main className="min-h-screen bg-slate-900 text-slate-100">
+    <main className="min-h-screen bg-black text-slate-100">
       <div className="max-w-7xl mx-auto px-4 py-10 md:py-14">
         {/* Header */}
         <AnimatedPageHeader
@@ -740,8 +740,8 @@ export default function OrbitGuidePage() {
                 onClick={() => setFilter(cat)}
                 className={`px-3 py-1.5 text-sm rounded-lg border transition-colors ${
                   filter === cat
-                    ? 'bg-white/10 border-white/15 text-slate-200'
-                    : 'bg-slate-800/50 border-slate-700 text-slate-400 hover:text-slate-200 hover:border-slate-500'
+                    ? 'bg-white/10 border-white/15 text-white/90'
+                    : 'bg-white/[0.04] border-white/[0.08] text-slate-400 hover:text-white/90 hover:border-slate-500'
                 }`}
               >
                 {cat}
@@ -772,7 +772,7 @@ export default function OrbitGuidePage() {
 
         {/* Related Links */}
         <ScrollReveal className="mt-10">
-          <div className="bg-slate-800/60 border border-slate-700 rounded-xl p-5 md:p-6">
+          <div className="bg-white/[0.05] border border-white/[0.08] rounded-xl p-5 md:p-6">
             <h2 className="text-xl font-bold text-slate-100 mb-4">Related Resources</h2>
             <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-3">
               {[
@@ -784,13 +784,13 @@ export default function OrbitGuidePage() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="block bg-slate-900/50 border border-slate-700 rounded-lg p-4 hover:border-white/15 hover:bg-slate-800/80 transition-colors group"
+                  className="block bg-black/50 border border-white/[0.08] rounded-lg p-4 hover:border-white/15 hover:bg-white/[0.06] transition-colors group"
                 >
-                  <span className="text-sm font-semibold text-slate-200 group-hover:text-white transition-colors">
+                  <span className="text-sm font-semibold text-white/90 group-hover:text-white transition-colors">
                     {link.label}
                   </span>
                   <span className="block text-xs text-slate-400 mt-1">{link.desc}</span>
-                  <span className="inline-flex items-center gap-1 text-xs text-slate-300 mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <span className="inline-flex items-center gap-1 text-xs text-white/70 mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
                     Explore
                     <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />

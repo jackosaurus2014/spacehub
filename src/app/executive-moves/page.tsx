@@ -40,7 +40,7 @@ function getMoveTypeBadge(type: string) {
     hired: { bg: 'bg-emerald-500/20', text: 'text-emerald-400', label: 'HIRED' },
     departed: { bg: 'bg-red-500/20', text: 'text-red-400', label: 'DEPARTED' },
     promoted: { bg: 'bg-amber-500/20', text: 'text-amber-400', label: 'PROMOTED' },
-    appointed: { bg: 'bg-white/10', text: 'text-slate-300', label: 'APPOINTED' },
+    appointed: { bg: 'bg-white/10', text: 'text-white/70', label: 'APPOINTED' },
   };
   const style = styles[type] || styles.hired;
   return (
@@ -77,13 +77,13 @@ function CompanyLink({ name, slug }: { name: string | null; slug?: string }) {
     return (
       <Link
         href={`/company-profiles/${slug}`}
-        className="text-slate-300 hover:text-white hover:underline transition-colors"
+        className="text-white/70 hover:text-white hover:underline transition-colors"
       >
         {name}
       </Link>
     );
   }
-  return <span className="text-slate-200">{name}</span>;
+  return <span className="text-white/90">{name}</span>;
 }
 
 function NotableMovesCard({ move, index }: { move: ExecutiveMove; index: number }) {
@@ -104,7 +104,7 @@ function NotableMovesCard({ move, index }: { move: ExecutiveMove; index: number 
 
       <div className="flex items-start justify-between mb-3">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-slate-700 to-slate-800 flex items-center justify-center text-sm font-bold text-slate-300 border border-slate-600/50">
+          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-white/[0.08] to-white/[0.04] flex items-center justify-center text-sm font-bold text-white/70 border border-white/[0.08]">
             {move.personName.split(' ').map(n => n[0]).join('').slice(0, 2)}
           </div>
           <div>
@@ -119,7 +119,7 @@ function NotableMovesCard({ move, index }: { move: ExecutiveMove; index: number 
         {move.fromCompany && (
           <div className="flex items-center gap-2 text-xs">
             <span className="text-slate-500 w-10 flex-shrink-0">From</span>
-            <span className="text-slate-300">{move.fromTitle}</span>
+            <span className="text-white/70">{move.fromTitle}</span>
             <span className="text-slate-600">@</span>
             <CompanyLink name={move.fromCompany} slug={move.companySlug} />
           </div>
@@ -336,7 +336,7 @@ function ExecutiveMovesContent() {
               placeholder="Search by person name, company, or title..."
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
-              className="w-full pl-10 pr-4 bg-slate-800 border border-slate-700 text-white rounded-lg py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+              className="w-full pl-10 pr-4 bg-white/[0.06] border border-white/[0.08] text-white rounded-lg py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
             />
             <svg className="absolute left-3 top-3 w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -348,7 +348,7 @@ function ExecutiveMovesContent() {
             aria-label="Filter by move type"
             value={moveType}
             onChange={(e) => updateParams({ moveType: e.target.value })}
-            className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+            className="bg-white/[0.06] border border-white/[0.08] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
           >
             {MOVE_TYPE_OPTIONS.map(opt => (
               <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -363,7 +363,7 @@ function ExecutiveMovesContent() {
               placeholder="Filter by company..."
               value={company}
               onChange={(e) => updateParams({ company: e.target.value })}
-              className="w-full lg:w-48 bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+              className="w-full lg:w-48 bg-white/[0.06] border border-white/[0.08] text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
             />
           </div>
 
@@ -374,7 +374,7 @@ function ExecutiveMovesContent() {
                 setSearchInput('');
                 router.push('/executive-moves');
               }}
-              className="px-4 py-2.5 bg-slate-800/50 border border-slate-700/50 rounded-lg text-slate-400 hover:text-white hover:border-slate-600 transition-colors text-sm"
+              className="px-4 py-2.5 bg-white/[0.04] border border-white/[0.06] rounded-lg text-slate-400 hover:text-white hover:border-white/[0.1] transition-colors text-sm"
             >
               Clear Filters
             </button>
@@ -444,7 +444,7 @@ function ExecutiveMovesContent() {
             >
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-slate-700/50">
+                  <tr className="border-b border-white/[0.06]">
                     <th className="text-left px-4 py-3 text-xs font-semibold text-slate-400 uppercase tracking-wider">Person</th>
                     <th className="text-left px-4 py-3 text-xs font-semibold text-slate-400 uppercase tracking-wider">From</th>
                     <th className="text-center px-2 py-3 text-xs font-semibold text-slate-400 uppercase tracking-wider w-12"></th>
@@ -462,11 +462,11 @@ function ExecutiveMovesContent() {
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0 }}
                         transition={{ delay: i * 0.03 }}
-                        className="border-b border-slate-800/50 hover:bg-slate-800/30 transition-colors group"
+                        className="border-b border-white/[0.06] hover:bg-white/[0.03] transition-colors group"
                       >
                         <td className="px-4 py-3">
                           <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-slate-700 to-slate-800 flex items-center justify-center text-xs font-bold text-slate-300 border border-slate-600/50 flex-shrink-0">
+                            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-white/[0.08] to-white/[0.04] flex items-center justify-center text-xs font-bold text-white/70 border border-white/[0.08] flex-shrink-0">
                               {move.personName.split(' ').map(n => n[0]).join('').slice(0, 2)}
                             </div>
                             <div>
@@ -505,7 +505,7 @@ function ExecutiveMovesContent() {
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                               </svg>
                             ) : (
-                              <svg className="w-4 h-4 mx-auto text-slate-300/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <svg className="w-4 h-4 mx-auto text-white/70/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                               </svg>
                             )}
@@ -529,7 +529,7 @@ function ExecutiveMovesContent() {
                           )}
                         </td>
                         <td className="px-4 py-3">
-                          <div className="text-sm text-slate-300">{formatDate(move.date)}</div>
+                          <div className="text-sm text-white/70">{formatDate(move.date)}</div>
                           <div className="text-xs text-slate-500 mt-0.5">
                             {daysAgo(move.date) === 0 ? 'Today' : `${daysAgo(move.date)}d ago`}
                           </div>
@@ -559,7 +559,7 @@ function ExecutiveMovesContent() {
                 >
                   <div className="flex items-start justify-between mb-2">
                     <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-slate-700 to-slate-800 flex items-center justify-center text-xs font-bold text-slate-300 border border-slate-600/50 flex-shrink-0">
+                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-white/[0.08] to-white/[0.04] flex items-center justify-center text-xs font-bold text-white/70 border border-white/[0.08] flex-shrink-0">
                         {move.personName.split(' ').map(n => n[0]).join('').slice(0, 2)}
                       </div>
                       <div>
@@ -624,7 +624,7 @@ function ExecutiveMovesContent() {
               <button
                 onClick={() => updateParams({ page: Math.max(1, page - 1).toString() })}
                 disabled={page <= 1}
-                className="px-4 py-2 bg-slate-800/50 border border-slate-700/50 rounded-lg text-slate-300 hover:text-white hover:border-slate-600 transition-colors disabled:opacity-30 disabled:cursor-not-allowed text-sm"
+                className="px-4 py-2 bg-white/[0.04] border border-white/[0.06] rounded-lg text-white/70 hover:text-white hover:border-white/[0.1] transition-colors disabled:opacity-30 disabled:cursor-not-allowed text-sm"
               >
                 Previous
               </button>
@@ -636,8 +636,8 @@ function ExecutiveMovesContent() {
                     onClick={() => updateParams({ page: p.toString() })}
                     className={`w-9 h-9 rounded-lg text-sm font-medium transition-colors ${
                       p === page
-                        ? 'bg-white/10 text-slate-300 border border-white/10'
-                        : 'text-slate-400 hover:text-white hover:bg-slate-800/50'
+                        ? 'bg-white/10 text-white/70 border border-white/10'
+                        : 'text-slate-400 hover:text-white hover:bg-white/[0.04]'
                     }`}
                   >
                     {p}
@@ -648,7 +648,7 @@ function ExecutiveMovesContent() {
               <button
                 onClick={() => updateParams({ page: Math.min(totalPages, page + 1).toString() })}
                 disabled={page >= totalPages}
-                className="px-4 py-2 bg-slate-800/50 border border-slate-700/50 rounded-lg text-slate-300 hover:text-white hover:border-slate-600 transition-colors disabled:opacity-30 disabled:cursor-not-allowed text-sm"
+                className="px-4 py-2 bg-white/[0.04] border border-white/[0.06] rounded-lg text-white/70 hover:text-white hover:border-white/[0.1] transition-colors disabled:opacity-30 disabled:cursor-not-allowed text-sm"
               >
                 Next
               </button>

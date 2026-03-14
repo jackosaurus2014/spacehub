@@ -106,7 +106,7 @@ const KEY_STATISTICS: DebrisStat[] = [
     value: '32/yr avg',
     detail: 'ISS collision avoidance maneuvers in recent years',
     trend: 'up',
-    color: 'text-slate-300',
+    color: 'text-white/70',
   },
   {
     label: 'Kessler Syndrome Risk',
@@ -480,7 +480,7 @@ function SeverityBadge({ severity }: { severity: 'critical' | 'high' | 'medium' 
 function TRLBar({ level }: { level: number }) {
   return (
     <div className="flex items-center gap-2">
-      <div className="flex-1 h-2 bg-slate-700 rounded-full overflow-hidden">
+      <div className="flex-1 h-2 bg-white/[0.06] rounded-full overflow-hidden">
         <div
           className={`h-full rounded-full transition-all ${
             level >= 7 ? 'bg-green-500' : level >= 5 ? 'bg-amber-500' : 'bg-red-500'
@@ -495,7 +495,7 @@ function TRLBar({ level }: { level: number }) {
 
 function PercentageBar({ percentage, color }: { percentage: number; color: string }) {
   return (
-    <div className="w-full h-3 bg-slate-700 rounded-full overflow-hidden">
+    <div className="w-full h-3 bg-white/[0.06] rounded-full overflow-hidden">
       <div className={`h-full rounded-full ${color}`} style={{ width: `${percentage}%` }} />
     </div>
   );
@@ -509,7 +509,7 @@ export default function DebrisTrackerPage() {
   const [activeTab, setActiveTab] = useState<ActiveTab>('overview');
 
   return (
-    <div className="min-h-screen bg-slate-950">
+    <div className="min-h-screen bg-black">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
         {/* Header */}
         <AnimatedPageHeader
@@ -522,7 +522,7 @@ export default function DebrisTrackerPage() {
 
         {/* Tab Navigation */}
         <ScrollReveal delay={0.1}>
-          <div className="flex flex-wrap gap-2 mb-8 border-b border-slate-800 pb-4">
+          <div className="flex flex-wrap gap-2 mb-8 border-b border-white/[0.06] pb-4">
             {TABS.map((tab) => (
               <button
                 key={tab.id}
@@ -530,7 +530,7 @@ export default function DebrisTrackerPage() {
                 className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                   activeTab === tab.id
                     ? 'bg-red-500/20 text-red-300 border border-red-500/30'
-                    : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 border border-transparent'
+                    : 'text-slate-400 hover:text-white/90 hover:bg-white/[0.04] border border-transparent'
                 }`}
               >
                 <span>{tab.icon}</span>
@@ -549,8 +549,8 @@ export default function DebrisTrackerPage() {
 
         {/* Related Links */}
         <ScrollReveal delay={0.2}>
-          <div className="mt-12 pt-8 border-t border-slate-800">
-            <h3 className="text-lg font-semibold text-slate-200 mb-4">Related Modules</h3>
+          <div className="mt-12 pt-8 border-t border-white/[0.06]">
+            <h3 className="text-lg font-semibold text-white/90 mb-4">Related Modules</h3>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               {[
                 { href: '/space-environment', label: 'Space Environment', icon: '🌍' },
@@ -561,10 +561,10 @@ export default function DebrisTrackerPage() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="flex items-center gap-3 p-3 rounded-lg bg-slate-900/50 border border-slate-800 hover:border-red-500/30 hover:bg-slate-800/50 transition-all group"
+                  className="flex items-center gap-3 p-3 rounded-lg bg-black/50 border border-white/[0.06] hover:border-red-500/30 hover:bg-white/[0.04] transition-all group"
                 >
                   <span className="text-xl">{link.icon}</span>
-                  <span className="text-sm text-slate-300 group-hover:text-slate-100 transition-colors">
+                  <span className="text-sm text-white/70 group-hover:text-white/90 transition-colors">
                     {link.label}
                   </span>
                 </Link>
@@ -588,12 +588,12 @@ function OverviewTab() {
     <div className="space-y-8">
       {/* Key Statistics */}
       <ScrollReveal>
-        <h2 className="text-xl font-semibold text-slate-100 mb-4">Key Debris Statistics</h2>
+        <h2 className="text-xl font-semibold text-white/90 mb-4">Key Debris Statistics</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {KEY_STATISTICS.map((stat) => (
             <div
               key={stat.label}
-              className="p-5 rounded-xl bg-slate-900/60 border border-slate-800 hover:border-red-500/20 transition-all"
+              className="p-5 rounded-xl bg-black/60 border border-white/[0.06] hover:border-red-500/20 transition-all"
             >
               <div className="flex items-center justify-between mb-1">
                 <span className="text-sm text-slate-400">{stat.label}</span>
@@ -608,20 +608,20 @@ function OverviewTab() {
 
       {/* Debris by Orbit */}
       <ScrollReveal delay={0.1}>
-        <h2 className="text-xl font-semibold text-slate-100 mb-4">Debris Distribution by Orbit</h2>
+        <h2 className="text-xl font-semibold text-white/90 mb-4">Debris Distribution by Orbit</h2>
         <div className="space-y-4">
           {ORBIT_DISTRIBUTION.map((orbit) => (
             <div
               key={orbit.orbit}
-              className="p-5 rounded-xl bg-slate-900/60 border border-slate-800"
+              className="p-5 rounded-xl bg-black/60 border border-white/[0.06]"
             >
               <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-3 gap-2">
                 <div>
-                  <h3 className="font-semibold text-slate-100">{orbit.orbit}</h3>
+                  <h3 className="font-semibold text-white/90">{orbit.orbit}</h3>
                   <p className="text-xs text-slate-500">Altitude: {orbit.altitude}</p>
                 </div>
                 <div className="text-right">
-                  <span className="text-lg font-bold text-slate-200">{orbit.tracked}</span>
+                  <span className="text-lg font-bold text-white/90">{orbit.tracked}</span>
                   <span className="text-sm text-slate-400 ml-2">tracked objects</span>
                 </div>
               </div>
@@ -637,10 +637,10 @@ function OverviewTab() {
 
       {/* Conjunction Assessments */}
       <ScrollReveal delay={0.2}>
-        <h2 className="text-xl font-semibold text-slate-100 mb-4">Conjunction Assessment Overview</h2>
+        <h2 className="text-xl font-semibold text-white/90 mb-4">Conjunction Assessment Overview</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="p-5 rounded-xl bg-slate-900/60 border border-slate-800">
-            <h3 className="font-semibold text-slate-200 mb-3">Daily Operations</h3>
+          <div className="p-5 rounded-xl bg-black/60 border border-white/[0.06]">
+            <h3 className="font-semibold text-white/90 mb-3">Daily Operations</h3>
             <ul className="space-y-2 text-sm text-slate-400">
               <li className="flex items-start gap-2">
                 <span className="text-red-400 mt-0.5">&#9679;</span>
@@ -660,23 +660,23 @@ function OverviewTab() {
               </li>
             </ul>
           </div>
-          <div className="p-5 rounded-xl bg-slate-900/60 border border-slate-800">
-            <h3 className="font-semibold text-slate-200 mb-3">Avoidance Maneuver Statistics</h3>
+          <div className="p-5 rounded-xl bg-black/60 border border-white/[0.06]">
+            <h3 className="font-semibold text-white/90 mb-3">Avoidance Maneuver Statistics</h3>
             <ul className="space-y-2 text-sm text-slate-400">
               <li className="flex items-start gap-2">
-                <span className="text-slate-300 mt-0.5">&#9679;</span>
+                <span className="text-white/70 mt-0.5">&#9679;</span>
                 <span>ISS performs 1-3 avoidance maneuvers per month on average</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-slate-300 mt-0.5">&#9679;</span>
+                <span className="text-white/70 mt-0.5">&#9679;</span>
                 <span>SpaceX Starlink performs ~10,000 autonomous avoidance maneuvers per month</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-slate-300 mt-0.5">&#9679;</span>
+                <span className="text-white/70 mt-0.5">&#9679;</span>
                 <span>ESA spacecraft averaged 2-3 collision avoidance maneuvers per satellite/year</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-slate-300 mt-0.5">&#9679;</span>
+                <span className="text-white/70 mt-0.5">&#9679;</span>
                 <span>Maneuver cost: 0.1-5 m/s delta-v per event depending on urgency and orbit</span>
               </li>
             </ul>
@@ -686,32 +686,32 @@ function OverviewTab() {
 
       {/* Kessler Syndrome Explainer */}
       <ScrollReveal delay={0.3}>
-        <div className="p-6 rounded-xl bg-gradient-to-br from-red-950/40 to-slate-900/60 border border-red-500/20">
+        <div className="p-6 rounded-xl bg-gradient-to-br from-red-950/40 to-black/60 border border-red-500/20">
           <h2 className="text-xl font-semibold text-red-300 mb-3">Kessler Syndrome: The Cascading Threat</h2>
-          <p className="text-sm text-slate-300 mb-4">
+          <p className="text-sm text-white/70 mb-4">
             Proposed by NASA scientist Donald Kessler in 1978, this scenario describes a self-sustaining
             cascade of collisions in LEO. Each collision generates debris fragments, which in turn cause
             further collisions, creating an exponentially growing debris field that could render certain
             orbital bands unusable for generations.
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div className="p-3 rounded-lg bg-slate-900/50">
+            <div className="p-3 rounded-lg bg-black/50">
               <p className="text-xs text-slate-400 mb-1">Critical Density Threshold</p>
-              <p className="text-sm text-slate-200">
+              <p className="text-sm text-white/90">
                 Some LEO altitude bands (700-1,000 km) may already exceed the critical density
                 where cascade becomes self-sustaining even without new launches.
               </p>
             </div>
-            <div className="p-3 rounded-lg bg-slate-900/50">
+            <div className="p-3 rounded-lg bg-black/50">
               <p className="text-xs text-slate-400 mb-1">Timeframe</p>
-              <p className="text-sm text-slate-200">
+              <p className="text-sm text-white/90">
                 Models suggest without active removal of ~5 large objects per year, debris population
                 will grow uncontrollably within 50-100 years in the worst-case LEO bands.
               </p>
             </div>
-            <div className="p-3 rounded-lg bg-slate-900/50">
+            <div className="p-3 rounded-lg bg-black/50">
               <p className="text-xs text-slate-400 mb-1">Economic Impact</p>
-              <p className="text-sm text-slate-200">
+              <p className="text-sm text-white/90">
                 The space economy ($546B in 2024) depends on safe orbital access. Kessler syndrome
                 could increase launch costs 10-100x and strand $1T+ in orbital infrastructure.
               </p>
@@ -731,7 +731,7 @@ function EventsTab() {
   return (
     <div className="space-y-6">
       <ScrollReveal>
-        <h2 className="text-xl font-semibold text-slate-100 mb-2">Major Debris-Generating Events</h2>
+        <h2 className="text-xl font-semibold text-white/90 mb-2">Major Debris-Generating Events</h2>
         <p className="text-sm text-slate-400 mb-6">
           A small number of catastrophic events account for a disproportionate share of tracked orbital
           debris. These events demonstrate the fragility of the orbital environment and the long-lasting
@@ -741,33 +741,33 @@ function EventsTab() {
 
       {/* Timeline */}
       <div className="relative">
-        <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-slate-800" />
+        <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-white/[0.06]" />
         <div className="space-y-6">
           {MAJOR_EVENTS.map((event, index) => (
             <ScrollReveal key={event.name} delay={index * 0.08}>
               <div className="relative pl-12">
-                <div className="absolute left-2.5 w-3 h-3 rounded-full bg-red-500 border-2 border-slate-950" />
-                <div className="p-5 rounded-xl bg-slate-900/60 border border-slate-800 hover:border-red-500/20 transition-all">
+                <div className="absolute left-2.5 w-3 h-3 rounded-full bg-red-500 border-2 border-black" />
+                <div className="p-5 rounded-xl bg-black/60 border border-white/[0.06] hover:border-red-500/20 transition-all">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-2 gap-2">
                     <div className="flex items-center gap-3">
                       <span className="text-sm font-mono text-red-400 font-bold">{event.year}</span>
-                      <h3 className="font-semibold text-slate-100">{event.name}</h3>
+                      <h3 className="font-semibold text-white/90">{event.name}</h3>
                     </div>
                     <SeverityBadge severity={event.severity} />
                   </div>
                   <p className="text-sm text-slate-400 mb-3">{event.description}</p>
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
-                    <div className="p-2 rounded bg-slate-800/50">
+                    <div className="p-2 rounded bg-white/[0.04]">
                       <span className="text-slate-500">Fragments Created:</span>
-                      <span className="text-slate-200 ml-1 font-medium">{event.fragments}</span>
+                      <span className="text-white/90 ml-1 font-medium">{event.fragments}</span>
                     </div>
-                    <div className="p-2 rounded bg-slate-800/50">
+                    <div className="p-2 rounded bg-white/[0.04]">
                       <span className="text-slate-500">Orbit:</span>
-                      <span className="text-slate-200 ml-1 font-medium">{event.orbit}</span>
+                      <span className="text-white/90 ml-1 font-medium">{event.orbit}</span>
                     </div>
-                    <div className="p-2 rounded bg-slate-800/50">
+                    <div className="p-2 rounded bg-white/[0.04]">
                       <span className="text-slate-500">Current Status:</span>
-                      <span className="text-slate-200 ml-1 font-medium">{event.stillTracked}</span>
+                      <span className="text-white/90 ml-1 font-medium">{event.stillTracked}</span>
                     </div>
                   </div>
                 </div>
@@ -779,8 +779,8 @@ function EventsTab() {
 
       {/* Summary card */}
       <ScrollReveal delay={0.3}>
-        <div className="p-5 rounded-xl bg-slate-900/60 border border-red-500/20">
-          <h3 className="font-semibold text-slate-200 mb-3">Debris Event Impact Summary</h3>
+        <div className="p-5 rounded-xl bg-black/60 border border-red-500/20">
+          <h3 className="font-semibold text-white/90 mb-3">Debris Event Impact Summary</h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
             <div>
               <p className="text-2xl font-bold text-red-400">3</p>
@@ -795,7 +795,7 @@ function EventsTab() {
               <p className="text-xs text-slate-400">Still tracked from those events</p>
             </div>
             <div>
-              <p className="text-2xl font-bold text-slate-300">100+ yrs</p>
+              <p className="text-2xl font-bold text-white/70">100+ yrs</p>
               <p className="text-xs text-slate-400">Estimated orbital lifetime</p>
             </div>
           </div>
@@ -815,7 +815,7 @@ function RemovalTab() {
   return (
     <div className="space-y-6">
       <ScrollReveal>
-        <h2 className="text-xl font-semibold text-slate-100 mb-2">Active Debris Removal (ADR) Companies</h2>
+        <h2 className="text-xl font-semibold text-white/90 mb-2">Active Debris Removal (ADR) Companies</h2>
         <p className="text-sm text-slate-400 mb-6">
           A growing ecosystem of commercial companies and government programs are developing technologies
           to actively remove debris from orbit. The ADR market is projected to reach $2.9B by 2030,
@@ -825,7 +825,7 @@ function RemovalTab() {
 
       {/* Market opportunity card */}
       <ScrollReveal delay={0.05}>
-        <div className="p-5 rounded-xl bg-gradient-to-br from-emerald-950/30 to-slate-900/60 border border-emerald-500/20 mb-6">
+        <div className="p-5 rounded-xl bg-gradient-to-br from-emerald-950/30 to-black/60 border border-emerald-500/20 mb-6">
           <h3 className="font-semibold text-emerald-300 mb-3">ADR Market Opportunity</h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
             <div>
@@ -853,10 +853,10 @@ function RemovalTab() {
         {REMOVAL_COMPANIES.map((company, index) => (
           <ScrollReveal key={company.name} delay={index * 0.06}>
             <div
-              className={`p-5 rounded-xl bg-slate-900/60 border transition-all cursor-pointer ${
+              className={`p-5 rounded-xl bg-black/60 border transition-all cursor-pointer ${
                 expandedCompany === company.name
-                  ? 'border-red-500/30 bg-slate-900/80'
-                  : 'border-slate-800 hover:border-slate-700'
+                  ? 'border-red-500/30 bg-black/80'
+                  : 'border-white/[0.06] hover:border-white/[0.08]'
               }`}
               onClick={() =>
                 setExpandedCompany(expandedCompany === company.name ? null : company.name)
@@ -864,10 +864,10 @@ function RemovalTab() {
             >
               <div className="flex items-start justify-between mb-2">
                 <div>
-                  <h3 className="font-semibold text-slate-100">{company.name}</h3>
+                  <h3 className="font-semibold text-white/90">{company.name}</h3>
                   <p className="text-xs text-slate-500">{company.country}</p>
                 </div>
-                <span className="text-xs px-2 py-0.5 rounded-full bg-slate-800 text-slate-300">
+                <span className="text-xs px-2 py-0.5 rounded-full bg-white/[0.06] text-white/70">
                   {company.fundingStage}
                 </span>
               </div>
@@ -876,8 +876,8 @@ function RemovalTab() {
                 <span className="text-slate-400 font-medium">Status:</span> {company.status}
               </p>
               {expandedCompany === company.name && (
-                <div className="mt-3 pt-3 border-t border-slate-800">
-                  <p className="text-sm text-slate-300 mb-2">
+                <div className="mt-3 pt-3 border-t border-white/[0.06]">
+                  <p className="text-sm text-white/70 mb-2">
                     <span className="text-slate-400 font-medium">Key Mission:</span> {company.mission}
                   </p>
                   <a
@@ -907,7 +907,7 @@ function RegulationsTab() {
   return (
     <div className="space-y-6">
       <ScrollReveal>
-        <h2 className="text-xl font-semibold text-slate-100 mb-2">International Debris Mitigation Guidelines</h2>
+        <h2 className="text-xl font-semibold text-white/90 mb-2">International Debris Mitigation Guidelines</h2>
         <p className="text-sm text-slate-400 mb-6">
           The international regulatory landscape for space debris is evolving rapidly. While most guidelines
           remain voluntary, the trend toward binding national regulations is accelerating, driven by the
@@ -919,15 +919,15 @@ function RegulationsTab() {
       <div className="space-y-4">
         {REGULATIONS.map((reg, index) => (
           <ScrollReveal key={reg.guideline} delay={index * 0.08}>
-            <div className="p-5 rounded-xl bg-slate-900/60 border border-slate-800 hover:border-red-500/20 transition-all">
+            <div className="p-5 rounded-xl bg-black/60 border border-white/[0.06] hover:border-red-500/20 transition-all">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-3 gap-2">
                 <div>
-                  <h3 className="font-semibold text-slate-100">{reg.body}</h3>
-                  <p className="text-sm text-slate-300 mt-0.5">{reg.guideline}</p>
+                  <h3 className="font-semibold text-white/90">{reg.body}</h3>
+                  <p className="text-sm text-white/70 mt-0.5">{reg.guideline}</p>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="text-xs font-mono text-red-400 font-bold">{reg.year}</span>
-                  <span className="text-xs px-2 py-0.5 rounded-full bg-slate-800 text-slate-400">
+                  <span className="text-xs px-2 py-0.5 rounded-full bg-white/[0.06] text-slate-400">
                     {reg.scope}
                   </span>
                 </div>
@@ -947,17 +947,17 @@ function RegulationsTab() {
 
       {/* Key regulatory trends */}
       <ScrollReveal delay={0.3}>
-        <div className="p-5 rounded-xl bg-slate-900/60 border border-slate-800">
-          <h3 className="font-semibold text-slate-200 mb-3">Key Regulatory Trends</h3>
+        <div className="p-5 rounded-xl bg-black/60 border border-white/[0.06]">
+          <h3 className="font-semibold text-white/90 mb-3">Key Regulatory Trends</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="p-3 rounded-lg bg-slate-800/50">
+            <div className="p-3 rounded-lg bg-white/[0.04]">
               <p className="text-sm font-medium text-red-300 mb-1">Shorter Deorbit Timelines</p>
               <p className="text-xs text-slate-400">
                 The industry standard is shifting from 25 years to 5 years post-mission deorbit,
                 with the FCC leading regulatory enforcement. ESA targets zero debris by 2030.
               </p>
             </div>
-            <div className="p-3 rounded-lg bg-slate-800/50">
+            <div className="p-3 rounded-lg bg-white/[0.04]">
               <p className="text-sm font-medium text-amber-300 mb-1">Binding vs. Voluntary</p>
               <p className="text-xs text-slate-400">
                 Most international guidelines remain voluntary. However, national regulators
@@ -965,8 +965,8 @@ function RegulationsTab() {
                 for licensing.
               </p>
             </div>
-            <div className="p-3 rounded-lg bg-slate-800/50">
-              <p className="text-sm font-medium text-slate-200 mb-1">Financial Responsibility</p>
+            <div className="p-3 rounded-lg bg-white/[0.04]">
+              <p className="text-sm font-medium text-white/90 mb-1">Financial Responsibility</p>
               <p className="text-xs text-slate-400">
                 Proposals for debris removal bonds, orbital-use fees, and insurance mandates
                 are advancing in the US, EU, and UK to internalize the cost of debris risk.
@@ -996,7 +996,7 @@ function TechnologyTab() {
   return (
     <div className="space-y-6">
       <ScrollReveal>
-        <h2 className="text-xl font-semibold text-slate-100 mb-2">Debris Mitigation Technologies</h2>
+        <h2 className="text-xl font-semibold text-white/90 mb-2">Debris Mitigation Technologies</h2>
         <p className="text-sm text-slate-400 mb-4">
           From passive deorbit devices to active removal systems, a diverse portfolio of technologies
           is under development to address the growing debris problem. Technology Readiness Level (TRL)
@@ -1012,7 +1012,7 @@ function TechnologyTab() {
               className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
                 selectedCategory === cat
                   ? 'bg-red-500/20 text-red-300 border border-red-500/30'
-                  : 'text-slate-400 hover:text-slate-200 bg-slate-800/50 border border-slate-700'
+                  : 'text-slate-400 hover:text-white/90 bg-white/[0.04] border border-white/[0.08]'
               }`}
             >
               {cat === 'all' ? 'All Technologies' : cat}
@@ -1025,10 +1025,10 @@ function TechnologyTab() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {filteredTech.map((tech, index) => (
           <ScrollReveal key={tech.name} delay={index * 0.06}>
-            <div className="p-5 rounded-xl bg-slate-900/60 border border-slate-800 hover:border-red-500/20 transition-all h-full flex flex-col">
+            <div className="p-5 rounded-xl bg-black/60 border border-white/[0.06] hover:border-red-500/20 transition-all h-full flex flex-col">
               <div className="flex items-start justify-between mb-2">
                 <div>
-                  <h3 className="font-semibold text-slate-100">{tech.name}</h3>
+                  <h3 className="font-semibold text-white/90">{tech.name}</h3>
                   <p className="text-xs text-slate-500">{tech.category}</p>
                 </div>
                 <span
@@ -1079,8 +1079,8 @@ function TechnologyTab() {
 
       {/* Technology comparison summary */}
       <ScrollReveal delay={0.3}>
-        <div className="p-5 rounded-xl bg-slate-900/60 border border-slate-800">
-          <h3 className="font-semibold text-slate-200 mb-3">Technology Maturity Spectrum</h3>
+        <div className="p-5 rounded-xl bg-black/60 border border-white/[0.06]">
+          <h3 className="font-semibold text-white/90 mb-3">Technology Maturity Spectrum</h3>
           <div className="space-y-2">
             {[
               { label: 'Flight-Proven (TRL 7-9)', count: MITIGATION_TECHNOLOGIES.filter((t) => t.trl >= 7).length, color: 'bg-green-500', textColor: 'text-green-400' },

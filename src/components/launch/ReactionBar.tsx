@@ -117,7 +117,7 @@ export default function ReactionBar({ eventId, currentPhase }: ReactionBarProps)
       </div>
 
       {/* Reaction buttons */}
-      <div className="bg-slate-900/95 rounded-xl border border-slate-700/50 p-3">
+      <div className="bg-black/95 rounded-xl border border-white/[0.06] p-3">
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-1.5">
             {EMOJI_KEYS.map(key => {
@@ -134,14 +134,14 @@ export default function ReactionBar({ eventId, currentPhase }: ReactionBarProps)
                   disabled={cooldown}
                   className={`relative flex items-center gap-1 px-2.5 py-1.5 rounded-lg border transition-all ${
                     hasActivity
-                      ? 'bg-slate-800/80 border-slate-600/50'
-                      : 'bg-slate-800/50 border-slate-700/30'
+                      ? 'bg-white/[0.06] border-white/[0.08]'
+                      : 'bg-white/[0.04] border-white/[0.04]'
                   } ${cooldown ? 'opacity-50' : 'hover:border-slate-500/50'}`}
                 >
                   <span className="text-lg">{EMOJI_MAP[key]}</span>
                   {totalCount > 0 && (
                     <span className={`text-xs font-mono font-bold ${
-                      hasActivity ? 'text-slate-300' : 'text-slate-500'
+                      hasActivity ? 'text-white/70' : 'text-slate-500'
                     }`}>
                       {totalCount > 999 ? `${(totalCount / 1000).toFixed(1)}k` : totalCount}
                     </span>

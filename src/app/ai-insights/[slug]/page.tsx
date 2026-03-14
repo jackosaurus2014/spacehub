@@ -38,7 +38,7 @@ const CATEGORY_COLORS: Record<string, { badge: string }> = {
     badge: 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30',
   },
   technology: {
-    badge: 'bg-white/10 text-slate-200 border border-white/10',
+    badge: 'bg-white/10 text-white/90 border border-white/10',
   },
   geopolitical: {
     badge: 'bg-purple-500/20 text-purple-300 border border-purple-500/30',
@@ -117,23 +117,23 @@ function getDetailSourceCitations(sourcesRaw: string): Source[] {
 function SkeletonDetail() {
   return (
     <div className="animate-pulse max-w-3xl mx-auto">
-      <div className="h-4 w-32 bg-slate-700/50 rounded mb-8" />
-      <div className="h-6 w-24 bg-slate-700/50 rounded-full mb-4" />
-      <div className="h-10 w-3/4 bg-slate-700/50 rounded mb-3" />
-      <div className="h-4 w-40 bg-slate-700/50 rounded mb-8" />
+      <div className="h-4 w-32 bg-white/[0.06] rounded mb-8" />
+      <div className="h-6 w-24 bg-white/[0.06] rounded-full mb-4" />
+      <div className="h-10 w-3/4 bg-white/[0.06] rounded mb-3" />
+      <div className="h-4 w-40 bg-white/[0.06] rounded mb-8" />
       <div className="space-y-4">
-        <div className="h-4 w-full bg-slate-700/50 rounded" />
-        <div className="h-4 w-full bg-slate-700/50 rounded" />
-        <div className="h-4 w-5/6 bg-slate-700/50 rounded" />
-        <div className="h-4 w-full bg-slate-700/50 rounded" />
-        <div className="h-4 w-4/5 bg-slate-700/50 rounded" />
-        <div className="h-4 w-full bg-slate-700/50 rounded" />
-        <div className="h-4 w-2/3 bg-slate-700/50 rounded" />
+        <div className="h-4 w-full bg-white/[0.06] rounded" />
+        <div className="h-4 w-full bg-white/[0.06] rounded" />
+        <div className="h-4 w-5/6 bg-white/[0.06] rounded" />
+        <div className="h-4 w-full bg-white/[0.06] rounded" />
+        <div className="h-4 w-4/5 bg-white/[0.06] rounded" />
+        <div className="h-4 w-full bg-white/[0.06] rounded" />
+        <div className="h-4 w-2/3 bg-white/[0.06] rounded" />
       </div>
-      <div className="mt-12 h-6 w-20 bg-slate-700/50 rounded mb-4" />
+      <div className="mt-12 h-6 w-20 bg-white/[0.06] rounded mb-4" />
       <div className="space-y-2">
-        <div className="h-4 w-1/2 bg-slate-700/50 rounded" />
-        <div className="h-4 w-1/3 bg-slate-700/50 rounded" />
+        <div className="h-4 w-1/2 bg-white/[0.06] rounded" />
+        <div className="h-4 w-1/3 bg-white/[0.06] rounded" />
       </div>
     </div>
   );
@@ -265,9 +265,9 @@ export default function AIInsightDetailPage() {
             />
             {/* Breadcrumb Navigation */}
             <nav className="flex items-center gap-2 text-sm text-slate-500 mb-8">
-              <Link href="/" className="hover:text-slate-300 transition-colors">Home</Link>
+              <Link href="/" className="hover:text-white/70 transition-colors">Home</Link>
               <span>/</span>
-              <Link href="/ai-insights" className="hover:text-slate-300 transition-colors">AI Insights</Link>
+              <Link href="/ai-insights" className="hover:text-white/70 transition-colors">AI Insights</Link>
               <span>/</span>
               <span className="text-slate-400 truncate">{insight.title}</span>
             </nav>
@@ -335,25 +335,25 @@ export default function AIInsightDetailPage() {
                     h1: ({children}) => <h2 className="text-2xl font-bold text-white mt-10 mb-4">{children}</h2>,
                     h2: ({children}) => <h2 className="text-2xl font-bold text-white mt-10 mb-4">{children}</h2>,
                     h3: ({children}) => <h3 className="text-xl font-semibold text-white mt-8 mb-3">{children}</h3>,
-                    h4: ({children}) => <h4 className="text-lg font-semibold text-slate-200 mt-6 mb-2">{children}</h4>,
-                    p: ({children}) => <p className="text-slate-300 leading-relaxed mb-4">{children}</p>,
-                    a: ({href, children}) => <a href={href} className="text-slate-300 hover:text-white hover:underline" target="_blank" rel="noopener noreferrer">{children}</a>,
-                    ul: ({children}) => <ul className="list-disc list-inside space-y-2 text-slate-300 mb-4">{children}</ul>,
-                    ol: ({children}) => <ol className="list-decimal list-inside space-y-2 text-slate-300 mb-4">{children}</ol>,
-                    li: ({children}) => <li className="text-slate-300">{children}</li>,
+                    h4: ({children}) => <h4 className="text-lg font-semibold text-white/90 mt-6 mb-2">{children}</h4>,
+                    p: ({children}) => <p className="text-white/70 leading-relaxed mb-4">{children}</p>,
+                    a: ({href, children}) => <a href={href} className="text-white/70 hover:text-white hover:underline" target="_blank" rel="noopener noreferrer">{children}</a>,
+                    ul: ({children}) => <ul className="list-disc list-inside space-y-2 text-white/70 mb-4">{children}</ul>,
+                    ol: ({children}) => <ol className="list-decimal list-inside space-y-2 text-white/70 mb-4">{children}</ol>,
+                    li: ({children}) => <li className="text-white/70">{children}</li>,
                     blockquote: ({children}) => <blockquote className="border-l-4 border-white/15 pl-4 my-4 text-slate-400 italic">{children}</blockquote>,
                     code: ({children, className}) => {
                       const isBlock = className?.includes('language-');
                       return isBlock
-                        ? <pre className="bg-slate-800/50 rounded-lg p-4 overflow-x-auto my-4"><code className="text-sm text-slate-200">{children}</code></pre>
-                        : <code className="bg-slate-800/50 px-1.5 py-0.5 rounded text-slate-200 text-sm">{children}</code>;
+                        ? <pre className="bg-white/[0.04] rounded-lg p-4 overflow-x-auto my-4"><code className="text-sm text-white/90">{children}</code></pre>
+                        : <code className="bg-white/[0.04] px-1.5 py-0.5 rounded text-white/90 text-sm">{children}</code>;
                     },
                     strong: ({children}) => <strong className="text-white font-semibold">{children}</strong>,
-                    em: ({children}) => <em className="text-slate-200">{children}</em>,
-                    hr: () => <hr className="border-slate-700 my-8" />,
+                    em: ({children}) => <em className="text-white/90">{children}</em>,
+                    hr: () => <hr className="border-white/[0.08] my-8" />,
                     table: ({children}) => <div className="overflow-x-auto my-4"><table className="min-w-full border-collapse">{children}</table></div>,
-                    th: ({children}) => <th className="border border-slate-600 px-4 py-2 bg-slate-800/50 text-left text-white font-semibold">{children}</th>,
-                    td: ({children}) => <td className="border border-slate-700 px-4 py-2 text-slate-300">{children}</td>,
+                    th: ({children}) => <th className="border border-white/[0.1] px-4 py-2 bg-white/[0.04] text-left text-white font-semibold">{children}</th>,
+                    td: ({children}) => <td className="border border-white/[0.08] px-4 py-2 text-white/70">{children}</td>,
                   }}
                 >
                   {insight.content}
@@ -383,7 +383,7 @@ export default function AIInsightDetailPage() {
                     {sources.map((source, index) => (
                       <li key={index} className="flex items-start gap-2">
                         <svg
-                          className="w-4 h-4 mt-1 text-slate-300 flex-shrink-0"
+                          className="w-4 h-4 mt-1 text-white/70 flex-shrink-0"
                           fill="none"
                           viewBox="0 0 24 24"
                           stroke="currentColor"
@@ -399,7 +399,7 @@ export default function AIInsightDetailPage() {
                           href={source.url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-sm text-slate-300 hover:text-white transition-colors break-all"
+                          className="text-sm text-white/70 hover:text-white transition-colors break-all"
                         >
                           {source.title || source.url}
                         </a>
@@ -411,7 +411,7 @@ export default function AIInsightDetailPage() {
             )}
 
             {/* Back to All Link */}
-            <div className="mt-12 pt-8 border-t border-slate-700/50 text-center">
+            <div className="mt-12 pt-8 border-t border-white/[0.08]/50 text-center">
               <Link
                 href="/ai-insights"
                 className="btn-primary inline-block"

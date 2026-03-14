@@ -153,7 +153,7 @@ export default function SocialProof() {
         {/* Section Header */}
         <div className="text-center mb-14">
           <motion.p
-            className="text-sm font-semibold uppercase tracking-widest text-slate-300 mb-3"
+            className="text-sm font-semibold uppercase tracking-widest text-white/70 mb-3"
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -200,7 +200,7 @@ export default function SocialProof() {
             >
               <div className="relative card-glass p-7 h-full flex flex-col">
                 {/* Large decorative quotation mark */}
-                <div className="absolute top-4 right-5 text-6xl font-serif leading-none text-slate-300/[0.07] select-none pointer-events-none">
+                <div className="absolute top-4 right-5 text-6xl font-serif leading-none text-white/70/[0.07] select-none pointer-events-none">
                   &ldquo;
                 </div>
 
@@ -208,10 +208,10 @@ export default function SocialProof() {
                 <StarRating />
 
                 {/* Quote */}
-                <p className="text-slate-300 leading-relaxed mb-6 flex-1 relative z-10">
-                  <span className="text-slate-300 text-xl font-serif">&ldquo;</span>
+                <p className="text-white/70 leading-relaxed mb-6 flex-1 relative z-10">
+                  <span className="text-white/70 text-xl font-serif">&ldquo;</span>
                   {t.quote}
-                  <span className="text-slate-300 text-xl font-serif">&rdquo;</span>
+                  <span className="text-white/70 text-xl font-serif">&rdquo;</span>
                 </p>
 
                 {/* Divider */}
@@ -227,7 +227,7 @@ export default function SocialProof() {
                     <p className="text-sm font-semibold text-white truncate">{t.name}</p>
                     <p className="text-xs text-slate-400 truncate">{t.title}, {t.company}</p>
                   </div>
-                  <span className="text-[10px] font-semibold uppercase tracking-wider px-2 py-1 rounded-full bg-white/5 text-slate-300 border border-white/10 shrink-0">
+                  <span className="text-[10px] font-semibold uppercase tracking-wider px-2 py-1 rounded-full bg-white/5 text-white/70 border border-white/10 shrink-0">
                     {t.persona}
                   </span>
                 </div>
@@ -267,7 +267,7 @@ export default function SocialProof() {
             {['Aerospace Firms', 'Government Agencies', 'Venture Capital', 'Defense', 'Startups', 'Universities'].map((label) => (
               <span
                 key={label}
-                className="px-4 py-2 rounded-full bg-white/[0.03] border border-white/[0.06] text-xs font-medium text-slate-400 hover:text-slate-300 hover:border-white/[0.12] transition-all duration-200 ease-smooth"
+                className="px-4 py-2 rounded-full bg-white/[0.03] border border-white/[0.06] text-xs font-medium text-slate-400 hover:text-white/70 hover:border-white/[0.12] transition-all duration-200 ease-smooth"
               >
                 {label}
               </span>
@@ -293,7 +293,7 @@ export default function SocialProof() {
               { stat: '30+', label: 'Intelligence Modules' },
             ].map((item) => (
               <div key={item.label} className="group/usage">
-                <p className="text-2xl md:text-3xl font-bold text-white group-hover/usage:text-slate-300 transition-colors duration-200">
+                <p className="text-2xl md:text-3xl font-bold text-white group-hover/usage:text-white/70 transition-colors duration-200">
                   {item.stat}
                 </p>
                 <p className="text-sm text-slate-400 mt-1 font-medium">{item.label}</p>

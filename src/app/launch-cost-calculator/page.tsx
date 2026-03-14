@@ -17,7 +17,7 @@ import { PAGE_RELATIONS } from '@/lib/module-relationships';
 const BarChart = dynamic(() => import('@/components/charts/BarChart'), {
   ssr: false,
   loading: () => (
-    <div className="h-80 bg-slate-800/30 rounded-xl animate-pulse flex items-center justify-center text-slate-500">
+    <div className="h-80 bg-white/[0.03] rounded-xl animate-pulse flex items-center justify-center text-slate-500">
       Loading chart...
     </div>
   ),
@@ -270,7 +270,7 @@ function StatCard({
   accent?: 'cyan' | 'purple' | 'emerald' | 'amber';
 }) {
   const accentColors = {
-    cyan: 'text-slate-300',
+    cyan: 'text-white/70',
     purple: 'text-purple-400',
     emerald: 'text-emerald-400',
     amber: 'text-amber-400',
@@ -356,12 +356,12 @@ function CostBreakdownCard({
           <div key={item.label}>
             <div className="flex justify-between items-baseline mb-1">
               <div>
-                <span className="text-sm text-slate-300">{item.label}</span>
+                <span className="text-sm text-white/70">{item.label}</span>
                 <span className="text-xs text-slate-500 ml-2">
                   ({item.pct.toFixed(0)}%)
                 </span>
               </div>
-              <span className="text-sm font-medium text-slate-200">
+              <span className="text-sm font-medium text-white/90">
                 {formatCurrency(item.value)}
               </span>
             </div>
@@ -378,11 +378,11 @@ function CostBreakdownCard({
         ))}
       </div>
 
-      <div className="border-t border-slate-700/50 pt-3 flex justify-between items-baseline">
-        <span className="text-sm font-semibold text-slate-200">
+      <div className="border-t border-white/[0.06] pt-3 flex justify-between items-baseline">
+        <span className="text-sm font-semibold text-white/90">
           Total Estimated Cost
         </span>
-        <span className="text-lg font-bold text-slate-300">
+        <span className="text-lg font-bold text-white/70">
           {formatCurrency(totalEstimate)}
         </span>
       </div>
@@ -420,8 +420,8 @@ function VehicleCard({
       onClick={onSelect}
       className={`w-full text-left rounded-xl p-5 transition-all duration-200 border ${
         isSelected
-          ? 'bg-slate-800/80 border-white/15 ring-1 ring-white/15'
-          : 'bg-slate-800/40 border-slate-700/50 hover:border-slate-600/50 hover:bg-slate-800/60'
+          ? 'bg-white/[0.06] border-white/15 ring-1 ring-white/15'
+          : 'bg-white/[0.04] border-white/[0.06] hover:border-white/[0.08] hover:bg-white/[0.05]'
       }`}
     >
       <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 mb-4">
@@ -430,7 +430,7 @@ function VehicleCard({
           <div
             className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${
               vehicle.isBestValue
-                ? 'bg-white/10 text-slate-300 ring-1 ring-white/15'
+                ? 'bg-white/10 text-white/70 ring-1 ring-white/15'
                 : 'bg-slate-700/50 text-slate-400'
             }`}
           >
@@ -442,7 +442,7 @@ function VehicleCard({
                 {vehicle.data.vehicle}
               </h3>
               {vehicle.isBestValue && (
-                <span className="text-xs font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-white/8 text-slate-300 border border-white/10">
+                <span className="text-xs font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-white/8 text-white/70 border border-white/10">
                   Best Value
                 </span>
               )}
@@ -473,7 +473,7 @@ function VehicleCard({
           <div className="text-xs text-slate-500 uppercase tracking-wider">
             Capacity
           </div>
-          <div className="text-sm font-semibold text-slate-200 mt-0.5">
+          <div className="text-sm font-semibold text-white/90 mt-0.5">
             {formatMass(vehicle.payloadCapacity)}
           </div>
         </div>
@@ -481,7 +481,7 @@ function VehicleCard({
           <div className="text-xs text-slate-500 uppercase tracking-wider">
             Est. Cost
           </div>
-          <div className="text-sm font-semibold text-slate-200 mt-0.5">
+          <div className="text-sm font-semibold text-white/90 mt-0.5">
             {formatCurrency(vehicle.estimatedCost)}
           </div>
         </div>
@@ -489,7 +489,7 @@ function VehicleCard({
           <div className="text-xs text-slate-500 uppercase tracking-wider">
             $/kg
           </div>
-          <div className="text-sm font-semibold text-slate-300 mt-0.5">
+          <div className="text-sm font-semibold text-white/70 mt-0.5">
             {formatCurrency(vehicle.costPerKg)}
           </div>
           {costData && (
@@ -655,13 +655,13 @@ export default function LaunchCostCalculatorPage() {
         <ScrollReveal delay={0.1}>
         <div className="mb-8">
           <nav className="text-sm text-slate-500 mb-4">
-            <Link href="/" className="hover:text-slate-300 transition-colors">
+            <Link href="/" className="hover:text-white/70 transition-colors">
               Home
             </Link>
             <span className="mx-2">/</span>
             <Link
               href="/mission-cost"
-              className="hover:text-slate-300 transition-colors"
+              className="hover:text-white/70 transition-colors"
             >
               Mission Cost
             </Link>
@@ -717,7 +717,7 @@ export default function LaunchCostCalculatorPage() {
             <div className="card p-6 sticky top-8 space-y-5">
               <h2 className="text-lg font-semibold text-slate-100 flex items-center gap-2">
                 <svg
-                  className="w-5 h-5 text-slate-300"
+                  className="w-5 h-5 text-white/70"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -734,7 +734,7 @@ export default function LaunchCostCalculatorPage() {
 
               {/* Payload Mass */}
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">
+                <label className="block text-sm font-medium text-white/70 mb-2">
                   Payload Mass
                 </label>
                 <div className="flex items-center gap-3 mb-2">
@@ -745,7 +745,7 @@ export default function LaunchCostCalculatorPage() {
                     max={100000}
                     value={payloadMass}
                     onChange={handlePayloadInput}
-                    className="w-28 bg-slate-900/70 border border-slate-700/50 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-white/15 focus:ring-1 focus:ring-white/10"
+                    className="w-28 bg-black/70 border border-white/[0.06] rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-white/15 focus:ring-1 focus:ring-white/10"
                   />
                   <span className="text-sm text-slate-400">kg</span>
                   <span className="text-xs text-slate-500 ml-auto">
@@ -771,13 +771,13 @@ export default function LaunchCostCalculatorPage() {
 
               {/* Orbit Selection */}
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">
+                <label className="block text-sm font-medium text-white/70 mb-2">
                   Target Orbit
                 </label>
                 <select
                   value={orbit}
                   onChange={(e) => setOrbit(e.target.value as OrbitType)}
-                  className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+                  className="w-full bg-white/[0.06] border border-white/[0.08] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                   style={{
                     backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`,
                     backgroundPosition: 'right 0.5rem center',
@@ -799,7 +799,7 @@ export default function LaunchCostCalculatorPage() {
 
               {/* Payload Volume (optional) */}
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">
+                <label className="block text-sm font-medium text-white/70 mb-2">
                   Payload Volume{' '}
                   <span className="text-slate-500 font-normal">(optional)</span>
                 </label>
@@ -813,7 +813,7 @@ export default function LaunchCostCalculatorPage() {
                     value={payloadVolume}
                     onChange={(e) => setPayloadVolume(e.target.value)}
                     placeholder="--"
-                    className="w-28 bg-slate-900/70 border border-slate-700/50 rounded-lg px-3 py-2 text-sm text-slate-100 placeholder:text-slate-600 focus:outline-none focus:border-white/15 focus:ring-1 focus:ring-white/10"
+                    className="w-28 bg-black/70 border border-white/[0.06] rounded-lg px-3 py-2 text-sm text-slate-100 placeholder:text-slate-600 focus:outline-none focus:border-white/15 focus:ring-1 focus:ring-white/10"
                   />
                   <span className="text-sm text-slate-400">m&sup3;</span>
                 </div>
@@ -821,7 +821,7 @@ export default function LaunchCostCalculatorPage() {
 
               {/* Mission Type */}
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">
+                <label className="block text-sm font-medium text-white/70 mb-2">
                   Mission Type
                 </label>
                 <div className="grid grid-cols-2 gap-2">
@@ -831,8 +831,8 @@ export default function LaunchCostCalculatorPage() {
                       onClick={() => setMissionType(type)}
                       className={`py-2.5 px-3 rounded-lg text-sm font-medium transition-all border ${
                         missionType === type
-                          ? 'bg-white/8 border-white/15 text-slate-300'
-                          : 'bg-slate-900/50 border-slate-700/50 text-slate-400 hover:border-slate-600/50'
+                          ? 'bg-white/8 border-white/15 text-white/70'
+                          : 'bg-black/50 border-white/[0.06] text-slate-400 hover:border-white/[0.08]'
                       }`}
                     >
                       {type === 'dedicated' ? 'Dedicated' : 'Rideshare'}
@@ -843,13 +843,13 @@ export default function LaunchCostCalculatorPage() {
 
               {/* Sort By */}
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">
+                <label className="block text-sm font-medium text-white/70 mb-2">
                   Sort By
                 </label>
                 <select
                   value={sortMode}
                   onChange={(e) => setSortMode(e.target.value as SortMode)}
-                  className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+                  className="w-full bg-white/[0.06] border border-white/[0.08] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                   style={{
                     backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`,
                     backgroundPosition: 'right 0.5rem center',
@@ -876,7 +876,7 @@ export default function LaunchCostCalculatorPage() {
                   <div className="w-9 h-5 bg-slate-700/50 rounded-full peer-checked:bg-white/30 transition-colors" />
                   <div className="absolute top-0.5 left-0.5 w-4 h-4 bg-slate-400 rounded-full peer-checked:translate-x-4 peer-checked:bg-white transition-all" />
                 </div>
-                <span className="text-sm text-slate-400 group-hover:text-slate-300 transition-colors">
+                <span className="text-sm text-slate-400 group-hover:text-white/70 transition-colors">
                   Include vehicles in development
                 </span>
               </label>
@@ -898,7 +898,7 @@ export default function LaunchCostCalculatorPage() {
           <div className="lg:col-span-2 space-y-6">
             {compatibleVehicles.length === 0 ? (
               /* Empty state */
-              <div className="bg-slate-800/30 border border-slate-700/30 rounded-xl p-12 text-center">
+              <div className="bg-white/[0.03] border border-white/[0.04] rounded-xl p-12 text-center">
                 <div className="text-5xl mb-4">
                   <svg
                     className="w-16 h-16 mx-auto text-slate-600"
@@ -914,7 +914,7 @@ export default function LaunchCostCalculatorPage() {
                     />
                   </svg>
                 </div>
-                <h3 className="text-xl font-semibold text-slate-300 mb-2">
+                <h3 className="text-xl font-semibold text-white/70 mb-2">
                   No Compatible Vehicles Found
                 </h3>
                 <p className="text-slate-500 max-w-md mx-auto mb-4">
@@ -950,7 +950,7 @@ export default function LaunchCostCalculatorPage() {
 
                 {/* Vehicle Cards */}
                 <div>
-                  <h2 className="text-lg font-semibold text-slate-200 mb-4">
+                  <h2 className="text-lg font-semibold text-white/90 mb-4">
                     Compatible Launch Vehicles
                     <span className="text-sm font-normal text-slate-500 ml-2">
                       ({compatibleVehicles.length} results)
@@ -986,8 +986,8 @@ export default function LaunchCostCalculatorPage() {
                 )}
 
                 {/* Methodology note */}
-                <div className="bg-slate-800/30 border border-slate-700/30 rounded-xl p-5">
-                  <h3 className="text-sm font-semibold text-slate-300 mb-2">
+                <div className="bg-white/[0.03] border border-white/[0.04] rounded-xl p-5">
+                  <h3 className="text-sm font-semibold text-white/70 mb-2">
                     Data Sources & Methodology
                   </h3>
                   <p className="text-xs text-slate-500 leading-relaxed">

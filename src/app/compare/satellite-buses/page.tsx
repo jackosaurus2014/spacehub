@@ -455,7 +455,7 @@ function ComparisonPanel({
 
   return (
     <div className="card overflow-hidden">
-      <div className="flex items-center justify-between px-4 py-3 border-b border-slate-700">
+      <div className="flex items-center justify-between px-4 py-3 border-b border-white/[0.08]">
         <h3 className="text-sm font-semibold text-white">Side-by-Side Comparison</h3>
         <button
           onClick={onClear}
@@ -467,8 +467,8 @@ function ComparisonPanel({
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-slate-700">
-              <th className="text-left py-3 px-4 text-slate-400 font-medium text-xs uppercase tracking-widest sticky left-0 bg-slate-900/95 backdrop-blur z-10 min-w-[150px]">
+            <tr className="border-b border-white/[0.08]">
+              <th className="text-left py-3 px-4 text-slate-400 font-medium text-xs uppercase tracking-widest sticky left-0 bg-black/95 backdrop-blur z-10 min-w-[150px]">
                 Specification
               </th>
               {buses.map((b) => {
@@ -498,11 +498,11 @@ function ComparisonPanel({
               })}
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-800/50">
+          <tbody className="divide-y divide-white/[0.06]">
             {rows.map((row, idx) => {
               if (row.section) {
                 return (
-                  <tr key={`section-${idx}`} className="bg-slate-800/40">
+                  <tr key={`section-${idx}`} className="bg-white/[0.04]">
                     <td
                       colSpan={buses.length + 1}
                       className="py-2 px-4 text-xs font-bold text-purple-400 uppercase tracking-widest"
@@ -527,8 +527,8 @@ function ComparisonPanel({
               }
 
               return (
-                <tr key={`row-${idx}`} className="hover:bg-slate-800/20 transition-colors">
-                  <td className="py-2.5 px-4 text-slate-400 text-xs font-medium sticky left-0 bg-slate-900/95 backdrop-blur z-10">
+                <tr key={`row-${idx}`} className="hover:bg-white/[0.02] transition-colors">
+                  <td className="py-2.5 px-4 text-slate-400 text-xs font-medium sticky left-0 bg-black/95 backdrop-blur z-10">
                     {row.label}
                   </td>
                   {buses.map((b, bIdx) => {
@@ -550,7 +550,7 @@ function ComparisonPanel({
           </tbody>
         </table>
       </div>
-      <div className="px-4 py-3 border-t border-slate-700/50 flex items-center gap-4 text-xs text-slate-400">
+      <div className="px-4 py-3 border-t border-white/[0.06] flex items-center gap-4 text-xs text-slate-400">
         <span className="inline-flex items-center gap-1.5">
           <span className="w-3 h-3 rounded bg-green-400/10 border border-green-400/30" />
           Best value in category
@@ -580,7 +580,7 @@ function BusCard({
       className={`card p-4 transition-all ${
         isSelected
           ? 'ring-2 ring-purple-500/60 border-purple-500/40'
-          : 'hover:border-slate-600'
+          : 'hover:border-white/[0.1]'
       }`}
     >
       <div className="flex items-start justify-between mb-3">
@@ -594,19 +594,19 @@ function BusCard({
       </div>
 
       <div className="grid grid-cols-2 gap-2 mb-3">
-        <div className="bg-slate-800/50 rounded-lg p-2">
+        <div className="bg-white/[0.04] rounded-lg p-2">
           <div className="text-xs text-slate-500 uppercase tracking-wide">Mass</div>
           <div className="text-sm font-semibold text-white">{formatMass(bus.massKg)}</div>
         </div>
-        <div className="bg-slate-800/50 rounded-lg p-2">
+        <div className="bg-white/[0.04] rounded-lg p-2">
           <div className="text-xs text-slate-500 uppercase tracking-wide">Power</div>
           <div className="text-sm font-semibold text-white">{formatPower(bus.powerW)}</div>
         </div>
-        <div className="bg-slate-800/50 rounded-lg p-2">
+        <div className="bg-white/[0.04] rounded-lg p-2">
           <div className="text-xs text-slate-500 uppercase tracking-wide">Lifetime</div>
           <div className="text-sm font-semibold text-white">{bus.lifetimeYears} yrs</div>
         </div>
-        <div className="bg-slate-800/50 rounded-lg p-2">
+        <div className="bg-white/[0.04] rounded-lg p-2">
           <div className="text-xs text-slate-500 uppercase tracking-wide">Cost</div>
           <div className="text-sm font-semibold text-white">{formatCost(bus.costMillions)}</div>
         </div>
@@ -615,13 +615,13 @@ function BusCard({
       <div className="mb-3">
         <div className="text-xs text-slate-500 uppercase tracking-wide mb-1">Heritage</div>
         <div className="flex items-center gap-2">
-          <div className="flex-1 h-1.5 bg-slate-800 rounded-full overflow-hidden">
+          <div className="flex-1 h-1.5 bg-white/[0.06] rounded-full overflow-hidden">
             <div
               className="h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full"
               style={{ width: `${Math.min((bus.heritage / 200) * 100, 100)}%` }}
             />
           </div>
-          <span className="text-xs text-slate-300 font-medium min-w-[50px] text-right">
+          <span className="text-xs text-white/70 font-medium min-w-[50px] text-right">
             {bus.heritage.toLocaleString()} units
           </span>
         </div>
@@ -629,7 +629,7 @@ function BusCard({
 
       <div className="mb-3">
         <div className="text-xs text-slate-500 uppercase tracking-wide mb-1">Propulsion</div>
-        <p className="text-xs text-slate-300">{bus.propulsion}</p>
+        <p className="text-xs text-white/70">{bus.propulsion}</p>
       </div>
 
       <div className="mb-3">
@@ -638,7 +638,7 @@ function BusCard({
           {bus.applications.map((app) => (
             <span
               key={app}
-              className="px-1.5 py-0.5 text-xs bg-slate-800 text-slate-400 rounded border border-slate-700"
+              className="px-1.5 py-0.5 text-xs bg-white/[0.06] text-slate-400 rounded border border-white/[0.08]"
             >
               {app}
             </span>
@@ -651,7 +651,7 @@ function BusCard({
         className={`w-full mt-1 py-2 rounded-lg text-xs font-medium transition-all ${
           isSelected
             ? 'bg-purple-500/20 text-purple-400 border border-purple-500/40 hover:bg-purple-500/30'
-            : 'bg-slate-800 text-slate-300 border border-slate-700 hover:border-purple-500/40 hover:text-purple-400'
+            : 'bg-white/[0.06] text-white/70 border border-white/[0.08] hover:border-purple-500/40 hover:text-purple-400'
         }`}
       >
         {isSelected ? 'Remove from Comparison' : 'Add to Comparison'}
@@ -769,7 +769,7 @@ export default function SatelliteBusComparisonPage() {
                 className={`px-4 py-2 rounded-lg text-xs font-medium transition-all ${
                   selectedIds.size >= 2
                     ? 'bg-purple-600 text-white hover:bg-purple-500'
-                    : 'bg-slate-800 text-slate-500 cursor-not-allowed'
+                    : 'bg-white/[0.06] text-slate-500 cursor-not-allowed'
                 }`}
               >
                 {showComparison ? 'Hide Comparison' : 'Compare Side-by-Side'}
@@ -809,7 +809,7 @@ export default function SatelliteBusComparisonPage() {
                     className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all border ${
                       classFilter === cls
                         ? 'bg-purple-600/20 text-purple-400 border-purple-500/40'
-                        : 'bg-slate-800 text-slate-400 border-slate-700 hover:border-purple-500/30'
+                        : 'bg-white/[0.06] text-slate-400 border-white/[0.08] hover:border-purple-500/30'
                     }`}
                   >
                     {cls}
@@ -826,7 +826,7 @@ export default function SatelliteBusComparisonPage() {
               <select
                 value={manufacturerFilter}
                 onChange={(e) => setManufacturerFilter(e.target.value)}
-                className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-xs text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50"
+                className="w-full px-3 py-2 bg-white/[0.06] border border-white/[0.08] rounded-lg text-xs text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50"
               >
                 <option value="All">All Manufacturers</option>
                 {ALL_MANUFACTURERS.map((m) => (
@@ -843,7 +843,7 @@ export default function SatelliteBusComparisonPage() {
               <select
                 value={applicationFilter}
                 onChange={(e) => setApplicationFilter(e.target.value)}
-                className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-xs text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50"
+                className="w-full px-3 py-2 bg-white/[0.06] border border-white/[0.08] rounded-lg text-xs text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50"
               >
                 <option value="All">All Applications</option>
                 {ALL_APPLICATIONS.map((a) => (
@@ -861,7 +861,7 @@ export default function SatelliteBusComparisonPage() {
                 <select
                   value={sortField}
                   onChange={(e) => setSortField(e.target.value as SortField)}
-                  className="flex-1 px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-xs text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50"
+                  className="flex-1 px-3 py-2 bg-white/[0.06] border border-white/[0.08] rounded-lg text-xs text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50"
                 >
                   <option value="mass">Mass</option>
                   <option value="power">Power</option>
@@ -870,7 +870,7 @@ export default function SatelliteBusComparisonPage() {
                 </select>
                 <button
                   onClick={() => setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'))}
-                  className="px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-xs text-slate-400 hover:text-white transition-colors"
+                  className="px-3 py-2 bg-white/[0.06] border border-white/[0.08] rounded-lg text-xs text-slate-400 hover:text-white transition-colors"
                   aria-label={sortDir === 'asc' ? 'Sort descending' : 'Sort ascending'}
                 >
                   {sortDir === 'asc' ? (
@@ -940,7 +940,7 @@ export default function SatelliteBusComparisonPage() {
             <div className="text-xs text-slate-400 mt-1">Total Heritage Units</div>
           </div>
           <div className="card p-4 text-center">
-            <div className="text-2xl font-bold text-slate-300">{ALL_CLASSES.length}</div>
+            <div className="text-2xl font-bold text-white/70">{ALL_CLASSES.length}</div>
             <div className="text-xs text-slate-400 mt-1">Bus Classes</div>
           </div>
         </div>
@@ -953,25 +953,25 @@ export default function SatelliteBusComparisonPage() {
           <div className="flex flex-wrap gap-3">
             <Link
               href="/compare/satellites"
-              className="px-4 py-2 bg-slate-800/50 border border-slate-700 rounded-lg text-xs text-slate-400 hover:border-purple-500/40 hover:text-purple-400 transition-all"
+              className="px-4 py-2 bg-white/[0.04] border border-white/[0.08] rounded-lg text-xs text-slate-400 hover:border-purple-500/40 hover:text-purple-400 transition-all"
             >
               Compare Satellites
             </Link>
             <Link
               href="/blueprints"
-              className="px-4 py-2 bg-slate-800/50 border border-slate-700 rounded-lg text-xs text-slate-400 hover:border-purple-500/40 hover:text-purple-400 transition-all"
+              className="px-4 py-2 bg-white/[0.04] border border-white/[0.08] rounded-lg text-xs text-slate-400 hover:border-purple-500/40 hover:text-purple-400 transition-all"
             >
               Satellite Blueprints
             </Link>
             <Link
               href="/constellation-designer"
-              className="px-4 py-2 bg-slate-800/50 border border-slate-700 rounded-lg text-xs text-slate-400 hover:border-purple-500/40 hover:text-purple-400 transition-all"
+              className="px-4 py-2 bg-white/[0.04] border border-white/[0.08] rounded-lg text-xs text-slate-400 hover:border-purple-500/40 hover:text-purple-400 transition-all"
             >
               Constellation Designer
             </Link>
             <Link
               href="/mission-cost"
-              className="px-4 py-2 bg-slate-800/50 border border-slate-700 rounded-lg text-xs text-slate-400 hover:border-purple-500/40 hover:text-purple-400 transition-all"
+              className="px-4 py-2 bg-white/[0.04] border border-white/[0.08] rounded-lg text-xs text-slate-400 hover:border-purple-500/40 hover:text-purple-400 transition-all"
             >
               Mission Cost Calculator
             </Link>

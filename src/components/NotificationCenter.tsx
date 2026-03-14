@@ -93,7 +93,7 @@ function getNotificationColor(type: NotificationType): string {
     case 'watchlist':
       return 'text-indigo-400 bg-indigo-400/10';
     default:
-      return 'text-slate-300 bg-white/5';
+      return 'text-white/70 bg-white/5';
   }
 }
 
@@ -238,7 +238,7 @@ export default function NotificationCenter() {
       {/* Bell Icon Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="relative p-2 min-h-[44px] min-w-[44px] flex items-center justify-center text-slate-300 hover:text-white transition-colors rounded-lg hover:bg-slate-700/50"
+        className="relative p-2 min-h-[44px] min-w-[44px] flex items-center justify-center text-white/70 hover:text-white transition-colors rounded-lg hover:bg-white/[0.08]"
         aria-label="Notifications"
       >
         <BellIcon className="w-5 h-5" />
@@ -256,17 +256,17 @@ export default function NotificationCenter() {
         <div
           className="absolute top-full right-0 mt-3 w-[calc(100vw-2rem)] sm:w-96 max-h-[480px] backdrop-blur-xl border border-white/10 rounded-xl overflow-hidden animate-fade-in-down z-50"
           style={{
-            background: 'linear-gradient(145deg, rgba(15, 23, 42, 0.98) 0%, rgba(30, 41, 59, 0.96) 25%, rgba(51, 65, 85, 0.95) 50%, rgba(30, 41, 59, 0.96) 75%, rgba(15, 23, 42, 0.98) 100%)',
-            boxShadow: '0 8px 16px -4px rgba(0, 0, 0, 0.4), 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(6, 182, 212, 0.15)',
+            background: 'linear-gradient(145deg, rgba(10, 10, 10, 0.98) 0%, rgba(20, 20, 20, 0.96) 25%, rgba(30, 30, 30, 0.95) 50%, rgba(20, 20, 20, 0.96) 75%, rgba(10, 10, 10, 0.98) 100%)',
+            boxShadow: '0 8px 16px -4px rgba(0, 0, 0, 0.4), 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.08)',
           }}
         >
           {/* Header */}
-          <div className="flex items-center justify-between px-4 py-3 border-b border-slate-700/50">
-            <h3 className="text-slate-200 font-semibold text-sm">Notifications</h3>
+          <div className="flex items-center justify-between px-4 py-3 border-b border-white/[0.08]">
+            <h3 className="text-white/90 font-semibold text-sm">Notifications</h3>
             {unreadCount > 0 && (
               <button
                 onClick={handleMarkAllAsRead}
-                className="text-xs text-slate-300 hover:text-white transition-colors font-medium py-1 px-2 -mr-2 touch-target"
+                className="text-xs text-white/70 hover:text-white transition-colors font-medium py-1 px-2 -mr-2 touch-target"
               >
                 Mark all as read
               </button>
@@ -278,7 +278,7 @@ export default function NotificationCenter() {
             {notifications.length === 0 ? (
               /* Empty State */
               <div className="flex flex-col items-center justify-center py-12 px-4">
-                <div className="w-16 h-16 rounded-full bg-slate-700/50 flex items-center justify-center mb-4">
+                <div className="w-16 h-16 rounded-full bg-white/[0.08] flex items-center justify-center mb-4">
                   <BellIcon className="w-8 h-8 text-slate-400" />
                 </div>
                 <p className="text-slate-400 text-sm text-center">No notifications yet</p>
@@ -287,7 +287,7 @@ export default function NotificationCenter() {
                 </p>
               </div>
             ) : (
-              <div className="divide-y divide-slate-700/30">
+              <div className="divide-y divide-white/[0.06]">
                 {notifications.map((notification) => (
                   <div
                     key={notification.id}
@@ -297,13 +297,13 @@ export default function NotificationCenter() {
                       <Link
                         href={notification.link}
                         onClick={() => handleNotificationClick(notification)}
-                        className="block px-4 py-3 hover:bg-slate-700/30 transition-colors"
+                        className="block px-4 py-3 hover:bg-white/[0.06] transition-colors"
                       >
                         <NotificationContent notification={notification} />
                       </Link>
                     ) : (
                       <div
-                        className="px-4 py-3 hover:bg-slate-700/30 transition-colors cursor-pointer"
+                        className="px-4 py-3 hover:bg-white/[0.06] transition-colors cursor-pointer"
                         onClick={() => handleNotificationClick(notification)}
                       >
                         <NotificationContent notification={notification} />
@@ -321,14 +321,14 @@ export default function NotificationCenter() {
           </div>
 
           {/* Footer */}
-          <div className="border-t border-slate-700/50 px-4 py-2">
+          <div className="border-t border-white/[0.08] px-4 py-2">
             <Link
               href="/notifications"
               onClick={() => {
                 handleMarkAllAsRead();
                 setIsOpen(false);
               }}
-              className="block text-center text-xs text-slate-300 hover:text-white transition-colors font-medium py-1"
+              className="block text-center text-xs text-white/70 hover:text-white transition-colors font-medium py-1"
             >
               View All Notifications
             </Link>
@@ -352,7 +352,7 @@ function NotificationContent({ notification }: { notification: Notification }) {
 
       {/* Content */}
       <div className="flex-1 min-w-0">
-        <p className={`text-sm font-medium ${notification.read ? 'text-slate-300' : 'text-slate-100'}`}>
+        <p className={`text-sm font-medium ${notification.read ? 'text-white/70' : 'text-slate-100'}`}>
           {notification.title}
         </p>
         <p className="text-xs text-slate-400 mt-0.5 line-clamp-2">

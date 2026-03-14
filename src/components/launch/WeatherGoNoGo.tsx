@@ -113,20 +113,20 @@ export default function WeatherGoNoGo({ eventId }: WeatherGoNoGoProps) {
 
   if (loading) {
     return (
-      <div className="bg-slate-900/95 rounded-xl border border-slate-700/50 p-6">
+      <div className="bg-black/95 rounded-xl border border-white/[0.06] p-6">
         <div className="animate-pulse space-y-3">
-          <div className="h-4 bg-slate-700 rounded w-1/3" />
-          <div className="h-20 bg-slate-800 rounded" />
-          <div className="h-32 bg-slate-800 rounded" />
+          <div className="h-4 bg-white/[0.08] rounded w-1/3" />
+          <div className="h-20 bg-white/[0.06] rounded" />
+          <div className="h-32 bg-white/[0.06] rounded" />
         </div>
       </div>
     );
   }
 
   return (
-    <div className="bg-slate-900/95 rounded-xl border border-slate-700/50 overflow-hidden">
+    <div className="bg-black/95 rounded-xl border border-white/[0.06] overflow-hidden">
       {/* Header */}
-      <div className="px-4 py-3 border-b border-slate-700/50 bg-slate-800/50 flex items-center justify-between">
+      <div className="px-4 py-3 border-b border-white/[0.06] bg-white/[0.04] flex items-center justify-between">
         <h3 className="text-white font-semibold flex items-center gap-2 text-sm">
           <svg className="w-4 h-4 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" />
@@ -146,22 +146,22 @@ export default function WeatherGoNoGo({ eventId }: WeatherGoNoGoProps) {
         {/* Weather Conditions Grid */}
         {weather && (
           <div className="grid grid-cols-4 gap-2">
-            <div className="bg-slate-800/50 rounded-lg p-2 text-center border border-slate-700/30">
+            <div className="bg-white/[0.04] rounded-lg p-2 text-center border border-white/[0.04]">
               <div className="text-slate-400 text-xs uppercase">Wind</div>
               <div className="text-white font-mono text-sm font-bold">{weather.windSpeed}</div>
               <div className="text-slate-500 text-xs">kts {weather.windDirection}</div>
             </div>
-            <div className="bg-slate-800/50 rounded-lg p-2 text-center border border-slate-700/30">
+            <div className="bg-white/[0.04] rounded-lg p-2 text-center border border-white/[0.04]">
               <div className="text-slate-400 text-xs uppercase">Temp</div>
               <div className="text-white font-mono text-sm font-bold">{weather.temperature}</div>
               <div className="text-slate-500 text-xs">&deg;F</div>
             </div>
-            <div className="bg-slate-800/50 rounded-lg p-2 text-center border border-slate-700/30">
+            <div className="bg-white/[0.04] rounded-lg p-2 text-center border border-white/[0.04]">
               <div className="text-slate-400 text-xs uppercase">Clouds</div>
               <div className="text-white font-mono text-sm font-bold">{weather.cloudCover}%</div>
               <div className="text-slate-500 text-xs">coverage</div>
             </div>
-            <div className="bg-slate-800/50 rounded-lg p-2 text-center border border-slate-700/30">
+            <div className="bg-white/[0.04] rounded-lg p-2 text-center border border-white/[0.04]">
               <div className="text-slate-400 text-xs uppercase">Visibility</div>
               <div className="text-white font-mono text-sm font-bold">{weather.visibility}</div>
               <div className="text-slate-500 text-xs">mi</div>
@@ -178,7 +178,7 @@ export default function WeatherGoNoGo({ eventId }: WeatherGoNoGoProps) {
               initial={{ opacity: 0, x: -5 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: i * 0.03 }}
-              className="flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg bg-slate-800/30 hover:bg-slate-800/50 transition-colors"
+              className="flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg bg-white/[0.03] hover:bg-white/[0.04] transition-colors"
             >
               <StatusIcon status={criterion.status} />
               <div className="flex-1 min-w-0">
@@ -197,7 +197,7 @@ export default function WeatherGoNoGo({ eventId }: WeatherGoNoGoProps) {
 
         {/* Space Weather Section */}
         {spaceWeather && (
-          <div className="space-y-1.5 border-t border-slate-700/30 pt-3">
+          <div className="space-y-1.5 border-t border-white/[0.04] pt-3">
             <div className="text-slate-400 text-xs uppercase tracking-wider px-1 font-medium flex items-center gap-1.5">
               <svg className="w-3.5 h-3.5 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
@@ -208,7 +208,7 @@ export default function WeatherGoNoGo({ eventId }: WeatherGoNoGoProps) {
               <div className={`rounded-lg p-2 text-center border ${
                 spaceWeather.xrayConstraint === 'NO-GO' ? 'bg-red-900/20 border-red-500/30' :
                 spaceWeather.xrayConstraint === 'CAUTION' ? 'bg-yellow-900/20 border-yellow-500/30' :
-                'bg-slate-800/50 border-slate-700/30'
+                'bg-white/[0.04] border-white/[0.04]'
               }`}>
                 <div className="text-slate-400 text-xs uppercase">X-Ray</div>
                 <div className={`font-mono text-sm font-bold ${
@@ -220,7 +220,7 @@ export default function WeatherGoNoGo({ eventId }: WeatherGoNoGoProps) {
               <div className={`rounded-lg p-2 text-center border ${
                 spaceWeather.geomagConstraint === 'NO-GO' ? 'bg-red-900/20 border-red-500/30' :
                 spaceWeather.geomagConstraint === 'CAUTION' ? 'bg-yellow-900/20 border-yellow-500/30' :
-                'bg-slate-800/50 border-slate-700/30'
+                'bg-white/[0.04] border-white/[0.04]'
               }`}>
                 <div className="text-slate-400 text-xs uppercase">Geomag</div>
                 <div className={`font-mono text-sm font-bold ${
@@ -232,7 +232,7 @@ export default function WeatherGoNoGo({ eventId }: WeatherGoNoGoProps) {
               <div className={`rounded-lg p-2 text-center border ${
                 spaceWeather.protonConstraint === 'NO-GO' ? 'bg-red-900/20 border-red-500/30' :
                 spaceWeather.protonConstraint === 'CAUTION' ? 'bg-yellow-900/20 border-yellow-500/30' :
-                'bg-slate-800/50 border-slate-700/30'
+                'bg-white/[0.04] border-white/[0.04]'
               }`}>
                 <div className="text-slate-400 text-xs uppercase">Protons</div>
                 <div className={`font-mono text-sm font-bold ${

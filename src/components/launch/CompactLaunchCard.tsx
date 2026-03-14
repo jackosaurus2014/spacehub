@@ -49,7 +49,7 @@ export default function CompactLaunchCard({ event }: CompactLaunchCardProps) {
     <motion.div
       initial={{ opacity: 0, scale: 0.98 }}
       animate={{ opacity: 1, scale: 1 }}
-      className="bg-slate-800/50 rounded-lg border border-slate-700/30 p-3 hover:border-slate-600/50 transition-all"
+      className="bg-white/[0.04] rounded-lg border border-white/[0.04] p-3 hover:border-white/[0.08] transition-all"
     >
       <div className="flex items-center justify-between gap-3">
         <div className="min-w-0 flex-1">
@@ -63,10 +63,10 @@ export default function CompactLaunchCard({ event }: CompactLaunchCardProps) {
             <h4 className="text-white text-sm font-medium truncate">{event.name}</h4>
           </div>
           <div className="flex items-center gap-2 mt-1 text-[11px] text-slate-400">
-            {event.rocket && <span className="text-slate-300">{event.rocket}</span>}
+            {event.rocket && <span className="text-white/70">{event.rocket}</span>}
             {event.agency && <span>{event.agency}</span>}
             {phase && (
-              <span className="px-1.5 py-0.5 rounded bg-slate-700/50 text-slate-300 text-xs">
+              <span className="px-1.5 py-0.5 rounded bg-white/[0.06] text-white/70 text-xs">
                 {phase}
               </span>
             )}
@@ -74,12 +74,12 @@ export default function CompactLaunchCard({ event }: CompactLaunchCardProps) {
         </div>
 
         <div className="flex items-center gap-3 flex-shrink-0">
-          <span className="font-mono text-sm font-bold text-slate-300">
+          <span className="font-mono text-sm font-bold text-white/70">
             {countdown || '--:--'}
           </span>
           <Link
             href={`/launch/${event.id}`}
-            className="px-2.5 py-1 rounded-lg bg-white/10 text-slate-300 text-xs font-bold hover:bg-slate-100/30 border border-white/10 transition-colors"
+            className="px-2.5 py-1 rounded-lg bg-white/10 text-white/70 text-xs font-bold hover:bg-slate-100/30 border border-white/10 transition-colors"
           >
             Open
           </Link>

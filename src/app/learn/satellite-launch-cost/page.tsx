@@ -280,21 +280,21 @@ export default function SatelliteLaunchCostPage() {
 
         {/* Quick Answer */}
         <ScrollReveal>
-        <div className="bg-slate-800/60 border border-white/10 rounded-xl p-6 mb-12">
+        <div className="bg-white/[0.06] border border-white/10 rounded-xl p-6 mb-12">
           <h2 className="text-lg font-bold text-white mb-4">Quick Answer: Satellite Launch Costs in 2026</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="bg-slate-900/50 rounded-lg p-4">
+            <div className="bg-black/50 rounded-lg p-4">
               <div className="text-sm text-slate-400 mb-1">Rideshare (shared rocket)</div>
               <div className="text-2xl font-bold text-slate-300">$5,000 - $10,000 / kg</div>
               <div className="text-xs text-slate-500 mt-1">Lowest cost, limited orbit flexibility</div>
             </div>
-            <div className="bg-slate-900/50 rounded-lg p-4">
+            <div className="bg-black/50 rounded-lg p-4">
               <div className="text-sm text-slate-400 mb-1">Dedicated (your own rocket)</div>
               <div className="text-2xl font-bold text-slate-300">$2,500 - $67,000 / kg</div>
               <div className="text-xs text-slate-500 mt-1">Full orbit control, varies by vehicle</div>
             </div>
           </div>
-          <div className="mt-4 pt-4 border-t border-slate-700/50">
+          <div className="mt-4 pt-4 border-t border-white/[0.06]">
             <div className="grid grid-cols-3 gap-4 text-center">
               <div>
                 <div className="text-sm text-slate-400">CubeSat (3U)</div>
@@ -324,7 +324,7 @@ export default function SatelliteLaunchCostPage() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-slate-700/50">
+                <tr className="border-b border-white/[0.06]">
                   <th className="text-left text-slate-400 font-medium py-3 pr-4">Provider / Vehicle</th>
                   <th className="text-left text-slate-400 font-medium py-3 pr-4">Payload to LEO</th>
                   <th className="text-left text-slate-400 font-medium py-3 pr-4">Dedicated Price</th>
@@ -334,7 +334,7 @@ export default function SatelliteLaunchCostPage() {
               </thead>
               <tbody>
                 {launchProviders.map((lp) => (
-                  <tr key={lp.provider} className="border-b border-slate-700/30">
+                  <tr key={lp.provider} className="border-b border-white/[0.06]">
                     <td className="py-3 pr-4">
                       <div className="text-white font-medium">{lp.provider}</div>
                       <div className="text-xs text-slate-500">{lp.country} &middot; {lp.status}</div>
@@ -360,7 +360,7 @@ export default function SatelliteLaunchCostPage() {
           <h2 className="text-2xl font-bold text-white mb-6">Launch Provider Details</h2>
           <div className="space-y-4">
             {launchProviders.map((lp) => (
-              <div key={lp.provider} className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-4">
+              <div key={lp.provider} className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-4">
                 <div className="flex items-center justify-between mb-2">
                   <h3 className="text-white font-semibold">{lp.provider}</h3>
                   <span className={`text-xs px-2 py-0.5 rounded-full ${
@@ -404,7 +404,7 @@ export default function SatelliteLaunchCostPage() {
           </p>
           <div className="space-y-4">
             {costFactors.map((cf) => (
-              <div key={cf.factor} className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-4">
+              <div key={cf.factor} className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-4">
                 <div className="flex items-center gap-3 mb-2">
                   <h3 className="text-white font-semibold">{cf.factor}</h3>
                   <span className={`text-xs px-2 py-0.5 rounded-full ${
@@ -412,7 +412,7 @@ export default function SatelliteLaunchCostPage() {
                       ? 'bg-red-500/10 text-red-400 border border-red-500/20'
                       : cf.impact === 'Medium'
                       ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
-                      : 'bg-slate-700/50 text-slate-400 border border-slate-600/50'
+                      : 'bg-white/[0.08] text-slate-400 border border-white/[0.1]'
                   }`}>
                     {cf.impact} impact
                   </span>
@@ -434,7 +434,7 @@ export default function SatelliteLaunchCostPage() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-slate-700/50">
+                <tr className="border-b border-white/[0.06]">
                   <th className="text-left text-slate-400 font-medium py-3 pr-4">Year</th>
                   <th className="text-left text-slate-400 font-medium py-3 pr-4">Cost per kg to LEO</th>
                   <th className="text-left text-slate-400 font-medium py-3 pr-4">Vehicle</th>
@@ -443,7 +443,7 @@ export default function SatelliteLaunchCostPage() {
               </thead>
               <tbody>
                 {historicalCosts.map((hc) => (
-                  <tr key={hc.year} className="border-b border-slate-700/30">
+                  <tr key={hc.year} className="border-b border-white/[0.06]">
                     <td className="py-3 pr-4 text-white font-medium">{hc.year}</td>
                     <td className="py-3 pr-4 text-slate-300 font-medium">{hc.costPerKg}</td>
                     <td className="py-3 pr-4 text-slate-300">{hc.vehicle}</td>
@@ -463,7 +463,7 @@ export default function SatelliteLaunchCostPage() {
         <section className="mb-12">
           <h2 className="text-2xl font-bold text-white mb-6">Launch Costs by Orbit Type</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-5">
+            <div className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-5">
               <h3 className="text-white font-semibold mb-1">Low Earth Orbit (LEO)</h3>
               <div className="text-sm text-slate-500 mb-3">160 - 2,000 km altitude</div>
               <div className="text-xl font-bold text-slate-300 mb-2">$2,500 - $25,000 / kg</div>
@@ -473,7 +473,7 @@ export default function SatelliteLaunchCostPage() {
               </p>
               <div className="mt-3 text-xs text-slate-500">Typical satellites: Starlink, Planet Labs, ISS cargo</div>
             </div>
-            <div className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-5">
+            <div className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-5">
               <h3 className="text-white font-semibold mb-1">Medium Earth Orbit (MEO)</h3>
               <div className="text-sm text-slate-500 mb-3">2,000 - 35,786 km altitude</div>
               <div className="text-xl font-bold text-slate-300 mb-2">$5,000 - $35,000 / kg</div>
@@ -483,7 +483,7 @@ export default function SatelliteLaunchCostPage() {
               </p>
               <div className="mt-3 text-xs text-slate-500">Typical satellites: GPS III, O3b mPOWER, Galileo</div>
             </div>
-            <div className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-5">
+            <div className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-5">
               <h3 className="text-white font-semibold mb-1">Geostationary Orbit (GEO)</h3>
               <div className="text-sm text-slate-500 mb-3">35,786 km altitude (equatorial)</div>
               <div className="text-xl font-bold text-slate-300 mb-2">$8,000 - $67,000 / kg</div>
@@ -493,7 +493,7 @@ export default function SatelliteLaunchCostPage() {
               </p>
               <div className="mt-3 text-xs text-slate-500">Typical satellites: SES, Intelsat, GOES weather</div>
             </div>
-            <div className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-5">
+            <div className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-5">
               <h3 className="text-white font-semibold mb-1">Sun-Synchronous Orbit (SSO)</h3>
               <div className="text-sm text-slate-500 mb-3">600 - 800 km altitude (polar)</div>
               <div className="text-xl font-bold text-slate-300 mb-2">$5,000 - $15,000 / kg</div>
@@ -510,7 +510,7 @@ export default function SatelliteLaunchCostPage() {
         {/* How to Reduce Costs */}
         <section className="mb-12">
           <h2 className="text-2xl font-bold text-white mb-6">How to Reduce Your Satellite Launch Cost</h2>
-          <div className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-6">
+          <div className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-6">
             <ol className="space-y-4">
               <li className="flex items-start gap-3">
                 <span className="text-slate-300 font-bold text-lg shrink-0">1.</span>
@@ -567,7 +567,7 @@ export default function SatelliteLaunchCostPage() {
         </section>
 
         {/* CTA */}
-        <div className="bg-slate-800/60 border border-white/10 rounded-xl p-6 text-center mb-12">
+        <div className="bg-white/[0.06] border border-white/10 rounded-xl p-6 text-center mb-12">
           <h3 className="text-xl font-bold text-white mb-2">Calculate Your Mission Cost</h3>
           <p className="text-slate-400 text-sm mb-4">
             Use the SpaceNexus Mission Cost Calculator to estimate total launch cost based on your
@@ -582,7 +582,7 @@ export default function SatelliteLaunchCostPage() {
             </Link>
             <Link
               href="/orbital-costs"
-              className="inline-block bg-slate-700/50 hover:bg-slate-700 text-white font-medium px-6 py-2.5 rounded-lg transition-colors border border-slate-600/50"
+              className="inline-block bg-white/[0.08] hover:bg-white/[0.08] text-white font-medium px-6 py-2.5 rounded-lg transition-colors border border-white/[0.1]"
             >
               View Orbital Cost Data
             </Link>
@@ -594,7 +594,7 @@ export default function SatelliteLaunchCostPage() {
           <h2 className="text-2xl font-bold text-white mb-6">Frequently Asked Questions</h2>
           <div className="space-y-4">
             {faqItems.map((item, i) => (
-              <div key={i} className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-4">
+              <div key={i} className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-4">
                 <h3 className="text-white font-semibold mb-2">{item.question}</h3>
                 <p className="text-slate-400 text-sm">{item.answer}</p>
               </div>
@@ -603,33 +603,33 @@ export default function SatelliteLaunchCostPage() {
         </section>
 
         {/* Internal Links */}
-        <section className="border-t border-slate-700/50 pt-8 mb-8">
+        <section className="border-t border-white/[0.06] pt-8 mb-8">
           <h3 className="text-lg font-bold text-white mb-4">Related SpaceNexus Tools & Data</h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             <Link
               href="/mission-cost"
-              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 text-center hover:border-white/15 transition-colors"
+              className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-3 text-center hover:border-white/15 transition-colors"
             >
               <div className="text-white text-sm font-medium">Mission Cost</div>
               <div className="text-slate-500 text-xs">Calculator</div>
             </Link>
             <Link
               href="/orbital-costs"
-              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 text-center hover:border-white/15 transition-colors"
+              className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-3 text-center hover:border-white/15 transition-colors"
             >
               <div className="text-white text-sm font-medium">Orbital Costs</div>
               <div className="text-slate-500 text-xs">Pricing data</div>
             </Link>
             <Link
               href="/space-insurance"
-              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 text-center hover:border-white/15 transition-colors"
+              className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-3 text-center hover:border-white/15 transition-colors"
             >
               <div className="text-white text-sm font-medium">Space Insurance</div>
               <div className="text-slate-500 text-xs">Coverage & rates</div>
             </Link>
             <Link
               href="/launch-vehicles"
-              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 text-center hover:border-white/15 transition-colors"
+              className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-3 text-center hover:border-white/15 transition-colors"
             >
               <div className="text-white text-sm font-medium">Launch Vehicles</div>
               <div className="text-slate-500 text-xs">Full catalog</div>
@@ -638,26 +638,26 @@ export default function SatelliteLaunchCostPage() {
         </section>
 
         {/* Other Guides */}
-        <section className="border-t border-slate-700/50 pt-8">
+        <section className="border-t border-white/[0.06] pt-8">
           <h3 className="text-lg font-bold text-white mb-4">More from the Learning Center</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
             <Link
               href="/learn/space-industry-market-size"
-              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 hover:border-white/15 transition-colors"
+              className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-3 hover:border-white/15 transition-colors"
             >
               <div className="text-white text-sm font-medium">Space Industry Market Size</div>
               <div className="text-slate-500 text-xs">$1.8 trillion and growing</div>
             </Link>
             <Link
               href="/learn/how-to-track-satellites"
-              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 hover:border-white/15 transition-colors"
+              className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-3 hover:border-white/15 transition-colors"
             >
               <div className="text-white text-sm font-medium">How to Track Satellites</div>
               <div className="text-slate-500 text-xs">Real-time tracking guide</div>
             </Link>
             <Link
               href="/learn/space-companies-to-watch"
-              className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-3 hover:border-white/15 transition-colors"
+              className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-3 hover:border-white/15 transition-colors"
             >
               <div className="text-white text-sm font-medium">Top Space Companies 2026</div>
               <div className="text-slate-500 text-xs">25 companies to watch</div>

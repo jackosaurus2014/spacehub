@@ -504,7 +504,7 @@ function getDealTypeBadgeClasses(type: Deal['type']): string {
     case 'M&A':
       return 'bg-purple-500/20 text-purple-400 border border-purple-500/30';
     case 'Contract':
-      return 'bg-white/10 text-slate-300 border border-white/10';
+      return 'bg-white/10 text-white/70 border border-white/10';
     case 'Partnership':
       return 'bg-amber-500/20 text-amber-400 border border-amber-500/30';
     case 'SPAC':
@@ -520,7 +520,7 @@ function getStageBadgeClasses(stage: string): string {
   if (stage === 'Early' || stage === 'Seed') return 'text-lime-400';
   if (stage === 'Early Growth') return 'text-emerald-400';
   if (stage === 'Growth') return 'text-teal-400';
-  if (stage === 'Late Stage') return 'text-slate-300';
+  if (stage === 'Late Stage') return 'text-white/70';
   if (stage === 'Operational') return 'text-sky-400';
   if (stage === 'Public') return 'text-blue-400';
   if (stage === 'Completed') return 'text-purple-400';
@@ -620,7 +620,7 @@ export default function DealFlowPage() {
             </div>
             <div className="card p-5">
               <p className="text-sm font-medium text-slate-400">Deal Count</p>
-              <p className="mt-1 text-2xl font-bold text-slate-300">{stats.dealCount}</p>
+              <p className="mt-1 text-2xl font-bold text-white/70">{stats.dealCount}</p>
             </div>
             <div className="card p-5">
               <p className="text-sm font-medium text-slate-400">Average Size</p>
@@ -652,7 +652,7 @@ export default function DealFlowPage() {
                   placeholder="Company, investor, or keyword..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full rounded-lg border border-slate-600/50 bg-slate-900/50 px-3 py-2 text-sm text-white placeholder-slate-500 focus:border-emerald-500/50 focus:outline-none focus:ring-1 focus:ring-emerald-500/50"
+                  className="w-full rounded-lg border border-white/[0.08] bg-black/50 px-3 py-2 text-sm text-white placeholder-slate-500 focus:border-emerald-500/50 focus:outline-none focus:ring-1 focus:ring-emerald-500/50"
                 />
               </div>
 
@@ -665,7 +665,7 @@ export default function DealFlowPage() {
                   id="deal-type"
                   value={typeFilter}
                   onChange={(e) => setTypeFilter(e.target.value)}
-                  className="w-full rounded-lg border border-slate-600/50 bg-slate-900/50 px-3 py-2 text-sm text-white focus:border-emerald-500/50 focus:outline-none focus:ring-1 focus:ring-emerald-500/50"
+                  className="w-full rounded-lg border border-white/[0.08] bg-black/50 px-3 py-2 text-sm text-white focus:border-emerald-500/50 focus:outline-none focus:ring-1 focus:ring-emerald-500/50"
                 >
                   {DEAL_TYPES.map((opt) => (
                     <option key={opt.value} value={opt.value}>
@@ -684,7 +684,7 @@ export default function DealFlowPage() {
                   id="deal-sector"
                   value={sectorFilter}
                   onChange={(e) => setSectorFilter(e.target.value)}
-                  className="w-full rounded-lg border border-slate-600/50 bg-slate-900/50 px-3 py-2 text-sm text-white focus:border-emerald-500/50 focus:outline-none focus:ring-1 focus:ring-emerald-500/50"
+                  className="w-full rounded-lg border border-white/[0.08] bg-black/50 px-3 py-2 text-sm text-white focus:border-emerald-500/50 focus:outline-none focus:ring-1 focus:ring-emerald-500/50"
                 >
                   {SECTORS.map((opt) => (
                     <option key={opt.value} value={opt.value}>
@@ -703,7 +703,7 @@ export default function DealFlowPage() {
                   id="deal-year"
                   value={yearFilter}
                   onChange={(e) => setYearFilter(e.target.value)}
-                  className="w-full rounded-lg border border-slate-600/50 bg-slate-900/50 px-3 py-2 text-sm text-white focus:border-emerald-500/50 focus:outline-none focus:ring-1 focus:ring-emerald-500/50"
+                  className="w-full rounded-lg border border-white/[0.08] bg-black/50 px-3 py-2 text-sm text-white focus:border-emerald-500/50 focus:outline-none focus:ring-1 focus:ring-emerald-500/50"
                 >
                   {YEARS.map((opt) => (
                     <option key={opt.value} value={opt.value}>
@@ -722,7 +722,7 @@ export default function DealFlowPage() {
                   id="deal-sort"
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
-                  className="w-full rounded-lg border border-slate-600/50 bg-slate-900/50 px-3 py-2 text-sm text-white focus:border-emerald-500/50 focus:outline-none focus:ring-1 focus:ring-emerald-500/50"
+                  className="w-full rounded-lg border border-white/[0.08] bg-black/50 px-3 py-2 text-sm text-white focus:border-emerald-500/50 focus:outline-none focus:ring-1 focus:ring-emerald-500/50"
                 >
                   {SORT_OPTIONS.map((opt) => (
                     <option key={opt.value} value={opt.value}>
@@ -762,7 +762,7 @@ export default function DealFlowPage() {
             {filteredDeals.map((deal) => (
               <div
                 key={deal.id}
-                className="group card p-5 hover:border-slate-600/50 hover:bg-slate-800/70"
+                className="group card p-5 hover:border-white/[0.08] hover:bg-white/[0.05]"
               >
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                   {/* Left: Company & Info */}
@@ -783,7 +783,7 @@ export default function DealFlowPage() {
                       )}
                     </div>
 
-                    <p className="mt-2 text-sm leading-relaxed text-slate-300">{deal.description}</p>
+                    <p className="mt-2 text-sm leading-relaxed text-white/70">{deal.description}</p>
 
                     {/* Investors / Counterparties */}
                     {deal.investors.length > 0 && (
@@ -800,7 +800,7 @@ export default function DealFlowPage() {
                         {deal.investors.map((inv) => (
                           <span
                             key={inv}
-                            className="inline-flex rounded-md border border-slate-600/30 bg-slate-700/30 px-2 py-0.5 text-xs text-slate-300"
+                            className="inline-flex rounded-md border border-white/[0.06] bg-slate-700/30 px-2 py-0.5 text-xs text-white/70"
                           >
                             {inv}
                           </span>
@@ -861,7 +861,7 @@ export default function DealFlowPage() {
                     className={`rounded-lg border p-3 text-left transition-all duration-200 ${
                       typeFilter === t.value
                         ? 'border-emerald-500/50 bg-emerald-500/10'
-                        : 'border-slate-700/50 bg-slate-900/30 hover:border-slate-600/50'
+                        : 'border-white/[0.06] bg-black/30 hover:border-white/[0.08]'
                     }`}
                   >
                     <span
@@ -914,7 +914,7 @@ export default function DealFlowPage() {
                       className={`flex w-full items-center gap-4 rounded-lg border p-3 text-left transition-all duration-200 ${
                         sectorFilter === s.value
                           ? 'border-emerald-500/50 bg-emerald-500/10'
-                          : 'border-slate-700/30 bg-slate-900/20 hover:border-slate-600/50'
+                          : 'border-white/[0.04] bg-black/20 hover:border-white/[0.08]'
                       }`}
                     >
                       <div className="w-36 flex-shrink-0">
@@ -985,7 +985,7 @@ export default function DealFlowPage() {
                   <Link
                     key={link.href}
                     href={link.href}
-                    className={`group rounded-lg border border-slate-700/50 bg-slate-900/30 p-4 transition-all duration-200 hover:bg-slate-800/70 ${accentMap[link.accent]}`}
+                    className={`group rounded-lg border border-white/[0.06] bg-black/30 p-4 transition-all duration-200 hover:bg-white/[0.05] ${accentMap[link.accent]}`}
                   >
                     <h3 className={`text-sm font-semibold text-white transition-colors ${accentMap[link.accent]}`}>
                       {link.title}

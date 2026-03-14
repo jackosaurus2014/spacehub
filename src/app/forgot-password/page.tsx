@@ -62,7 +62,7 @@ export default function ForgotPasswordPage() {
               <p className="text-slate-400 mb-6">
                 If an account with that email exists, we&apos;ve sent a password reset link. Check your inbox and spam folder.
               </p>
-              <Link href="/login" className="text-plasma-400 hover:text-plasma-300 transition-colors">
+              <Link href="/login" className="text-white/70 hover:text-white transition-colors">
                 Back to login
               </Link>
             </div>
@@ -109,7 +109,7 @@ export default function ForgotPasswordPage() {
               <div className="text-center">
                 <p className="text-slate-400">
                   Remember your password?{' '}
-                  <Link href="/login" className="text-plasma-400 hover:text-plasma-300 transition-colors">
+                  <Link href="/login" className="text-white/70 hover:text-white transition-colors">
                     Sign in
                   </Link>
                 </p>

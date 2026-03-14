@@ -681,17 +681,16 @@ export default function SearchCommandPalette() {
 
       {/* Modal */}
       <div
-        className="relative w-full max-w-2xl mx-4 overflow-hidden rounded-2xl border border-white/10 animate-scale-in"
+        className="relative w-full max-w-2xl mx-4 overflow-hidden rounded-2xl border border-white/[0.08] animate-scale-in"
         style={{
-          background:
-            'linear-gradient(145deg, rgba(15, 23, 42, 0.98) 0%, rgba(30, 41, 59, 0.96) 25%, rgba(51, 65, 85, 0.95) 50%, rgba(30, 41, 59, 0.96) 75%, rgba(15, 23, 42, 0.98) 100%)',
+          background: 'rgba(10, 10, 10, 0.98)',
           boxShadow:
-            '0 25px 50px -12px rgba(0, 0, 0, 0.6), 0 0 60px rgba(6, 182, 212, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
+            '0 25px 50px -12px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.06)',
         }}
         onKeyDown={handleKeyDown}
       >
         {/* Top gradient accent */}
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-slate-300/60 to-transparent" />
+        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/[0.12] to-transparent" />
 
         {/* Search Input */}
         <div className="flex items-center px-4 border-b border-white/10">
@@ -721,10 +720,10 @@ export default function SearchCommandPalette() {
             <div className="w-4 h-4 border-2 border-white/10 border-t-white rounded-full animate-spin mr-3" />
           )}
           <div className="flex items-center gap-1 text-slate-400 text-sm">
-            <kbd className="px-2 py-1 rounded bg-slate-700/50 border border-slate-600/50 text-xs font-mono">
+            <kbd className="px-2 py-1 rounded bg-white/[0.06] border border-white/[0.08] text-xs font-mono">
               {shortcutKey}
             </kbd>
-            <kbd className="px-2 py-1 rounded bg-slate-700/50 border border-slate-600/50 text-xs font-mono">
+            <kbd className="px-2 py-1 rounded bg-white/[0.06] border border-white/[0.08] text-xs font-mono">
               K
             </kbd>
           </div>
@@ -773,14 +772,14 @@ export default function SearchCommandPalette() {
                       className={`w-full flex items-center gap-4 px-4 py-3 text-left transition-colors ${
                         isSelected
                           ? 'bg-white/5 border-l-2 border-white/10'
-                          : 'border-l-2 border-transparent hover:bg-slate-700/30'
+                          : 'border-l-2 border-transparent hover:bg-white/[0.03]'
                       }`}
                     >
                       <div
                         className={`flex-shrink-0 p-2 rounded-lg transition-colors ${
                           isSelected
-                            ? 'bg-white/10 text-slate-200'
-                            : 'bg-slate-700/50 text-slate-400'
+                            ? 'bg-white/[0.1] text-white'
+                            : 'bg-white/[0.05] text-slate-400'
                         }`}
                       >
                         {item.type === 'recent' ? <ClockIcon /> : item.type === 'result' ? <MagnifyingGlassIcon /> : item.icon}
@@ -800,7 +799,7 @@ export default function SearchCommandPalette() {
                             </span>
                           )}
                           {item.type === 'result' && (
-                            <span className="text-xs px-1.5 py-0.5 rounded bg-purple-500/20 text-purple-400 border border-purple-500/30">
+                            <span className="text-xs px-1.5 py-0.5 rounded bg-white/[0.08] text-white/60 border border-white/[0.1]">
                               Content
                             </span>
                           )}
@@ -811,7 +810,7 @@ export default function SearchCommandPalette() {
                       </div>
                       {isSelected && (
                         <div className="flex-shrink-0 flex items-center gap-1 text-slate-400">
-                          <kbd className="px-1.5 py-0.5 rounded bg-slate-700/50 border border-slate-600/50 text-xs font-mono">
+                          <kbd className="px-1.5 py-0.5 rounded bg-white/[0.06] border border-white/[0.08] text-xs font-mono">
                             Enter
                           </kbd>
                         </div>
@@ -828,22 +827,22 @@ export default function SearchCommandPalette() {
         <div className="flex items-center justify-between px-4 py-3 border-t border-white/10 text-xs text-slate-400">
           <div className="flex items-center gap-4">
             <span className="flex items-center gap-1">
-              <kbd className="px-1.5 py-0.5 rounded bg-slate-700/50 border border-slate-600/50 font-mono">
+              <kbd className="px-1.5 py-0.5 rounded bg-white/[0.06] border border-white/[0.08] font-mono">
                 &uarr;
               </kbd>
-              <kbd className="px-1.5 py-0.5 rounded bg-slate-700/50 border border-slate-600/50 font-mono">
+              <kbd className="px-1.5 py-0.5 rounded bg-white/[0.06] border border-white/[0.08] font-mono">
                 &darr;
               </kbd>
               <span className="ml-1">Navigate</span>
             </span>
             <span className="flex items-center gap-1">
-              <kbd className="px-1.5 py-0.5 rounded bg-slate-700/50 border border-slate-600/50 font-mono">
+              <kbd className="px-1.5 py-0.5 rounded bg-white/[0.06] border border-white/[0.08] font-mono">
                 Enter
               </kbd>
               <span className="ml-1">Select</span>
             </span>
             <span className="flex items-center gap-1">
-              <kbd className="px-1.5 py-0.5 rounded bg-slate-700/50 border border-slate-600/50 font-mono">
+              <kbd className="px-1.5 py-0.5 rounded bg-white/[0.06] border border-white/[0.08] font-mono">
                 Esc
               </kbd>
               <span className="ml-1">Close</span>

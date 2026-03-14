@@ -20,7 +20,7 @@ const SECTIONS = [
     description: 'Browse and search space industry professionals. Connect with engineers, executives, investors, and researchers across the space sector.',
     href: '/community/directory',
     icon: (
-      <svg className="w-8 h-8 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg className="w-8 h-8 text-white/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
       </svg>
     ),
@@ -134,7 +134,7 @@ export default function CommunityPage() {
                   </div>
 
                   <div className="relative z-10">
-                    <div className="w-14 h-14 rounded-xl bg-slate-800/60 border border-slate-700/50 flex items-center justify-center mb-4 group-hover:border-slate-600/50 transition-colors">
+                    <div className="w-14 h-14 rounded-xl bg-white/[0.05] border border-white/[0.06] flex items-center justify-center mb-4 group-hover:border-white/[0.08] transition-colors">
                       {section.icon}
                     </div>
                     <h3 className="text-lg font-semibold text-white group-hover:text-white transition-colors mb-2">
@@ -143,7 +143,7 @@ export default function CommunityPage() {
                     <p className="text-sm text-slate-400 leading-relaxed">
                       {section.description}
                     </p>
-                    <div className="mt-4 flex items-center text-sm text-slate-300 font-medium">
+                    <div className="mt-4 flex items-center text-sm text-white/70 font-medium">
                       Explore
                       <svg className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -184,7 +184,7 @@ export default function CommunityPage() {
         <div className="card p-6">
           <h3 className="text-lg font-semibold text-white mb-4">Activity Feed</h3>
           <div className="flex flex-col items-center justify-center py-8 text-center">
-            <div className="w-16 h-16 rounded-2xl bg-slate-800/60 border border-slate-700/50 flex items-center justify-center mb-4">
+            <div className="w-16 h-16 rounded-2xl bg-white/[0.05] border border-white/[0.06] flex items-center justify-center mb-4">
               <svg className="w-8 h-8 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
               </svg>

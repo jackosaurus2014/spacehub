@@ -292,7 +292,7 @@ export default function PortfolioTrackerPage() {
   // Sort arrow indicator
   const sortArrow = (key: SortKey) => {
     if (sortKey !== key) return <span className="text-slate-600 ml-1">{'\u2195'}</span>;
-    return <span className="text-slate-300 ml-1">{sortDir === 'asc' ? '\u2191' : '\u2193'}</span>;
+    return <span className="text-white/70 ml-1">{sortDir === 'asc' ? '\u2191' : '\u2193'}</span>;
   };
 
   // Market index mock data
@@ -335,7 +335,7 @@ export default function PortfolioTrackerPage() {
                 { label: 'Space IPOs (2026)', value: '4', change: '2 more expected', positive: true },
                 { label: 'SPACs Active', value: '3', change: '1 in PIPE stage', positive: false },
               ].map((stat) => (
-                <div key={stat.label} className="bg-slate-800/50 rounded-lg p-4 border border-slate-700/50">
+                <div key={stat.label} className="bg-white/[0.04] rounded-lg p-4 border border-white/[0.06]">
                   <p className="text-xs text-slate-400 mb-1">{stat.label}</p>
                   <p className="text-xl font-bold text-white">{stat.value}</p>
                   <p className={`text-xs mt-1 ${stat.positive ? 'text-emerald-400' : 'text-slate-400'}`}>{stat.change}</p>
@@ -357,10 +357,10 @@ export default function PortfolioTrackerPage() {
             {watchlistCompanies.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                 {watchlistCompanies.map((company) => (
-                  <div key={company.ticker} className="bg-slate-800/50 rounded-lg p-3 border border-slate-700/50 flex items-center justify-between">
+                  <div key={company.ticker} className="bg-white/[0.04] rounded-lg p-3 border border-white/[0.06] flex items-center justify-between">
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className="text-sm font-bold text-slate-300">{company.ticker}</span>
+                        <span className="text-sm font-bold text-white/70">{company.ticker}</span>
                         <span className="text-xs text-slate-400">{company.name}</span>
                       </div>
                       <div className="flex items-center gap-3 mt-1">
@@ -411,7 +411,7 @@ export default function PortfolioTrackerPage() {
                     placeholder="Search ticker or name..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full sm:w-64 px-4 py-2 bg-slate-800/70 border border-slate-700/50 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-white/15 transition-colors"
+                    className="w-full sm:w-64 px-4 py-2 bg-white/[0.05] border border-white/[0.06] rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-white/15 transition-colors"
                   />
                   {searchQuery && (
                     <button
@@ -426,7 +426,7 @@ export default function PortfolioTrackerPage() {
                 <select
                   value={sectorFilter}
                   onChange={(e) => setSectorFilter(e.target.value)}
-                  className="px-4 py-2 bg-slate-800/70 border border-slate-700/50 rounded-lg text-sm text-white focus:outline-none focus:border-white/15 transition-colors"
+                  className="px-4 py-2 bg-white/[0.05] border border-white/[0.06] rounded-lg text-sm text-white focus:outline-none focus:border-white/15 transition-colors"
                 >
                   <option value="">All Sectors</option>
                   {sectors.map(s => (
@@ -439,7 +439,7 @@ export default function PortfolioTrackerPage() {
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-slate-700/50">
+                  <tr className="border-b border-white/[0.06]">
                     <th className="text-left py-3 px-2 text-slate-400 font-medium w-8"></th>
                     <th
                       className="text-left py-3 px-2 text-slate-400 font-medium cursor-pointer hover:text-white transition-colors select-none"
@@ -500,7 +500,7 @@ export default function PortfolioTrackerPage() {
                     filteredCompanies.map((company) => (
                       <tr
                         key={company.ticker}
-                        className="border-b border-slate-800/50 hover:bg-slate-800/30 transition-colors group"
+                        className="border-b border-white/[0.04] hover:bg-white/[0.03] transition-colors group"
                       >
                         <td className="py-3 px-2">
                           <button
@@ -516,7 +516,7 @@ export default function PortfolioTrackerPage() {
                           </button>
                         </td>
                         <td className="py-3 px-2">
-                          <span className="font-bold text-slate-300">{company.ticker}</span>
+                          <span className="font-bold text-white/70">{company.ticker}</span>
                         </td>
                         <td className="py-3 px-2">
                           <div>
@@ -526,8 +526,8 @@ export default function PortfolioTrackerPage() {
                             )}
                           </div>
                         </td>
-                        <td className="py-3 px-2 text-slate-300 hidden md:table-cell">
-                          <span className={`inline-block px-2 py-0.5 rounded text-xs ${changeBg(1)} text-slate-300`}>
+                        <td className="py-3 px-2 text-white/70 hidden md:table-cell">
+                          <span className={`inline-block px-2 py-0.5 rounded text-xs ${changeBg(1)} text-white/70`}>
                             {company.sector}
                           </span>
                         </td>
@@ -590,10 +590,10 @@ export default function PortfolioTrackerPage() {
                         <span className={`font-mono ${changeColor(avgYtd)}`}>{formatChange(avgYtd)}</span>
                       </div>
                     </div>
-                    <div className="mt-3 pt-3 border-t border-slate-700/50">
+                    <div className="mt-3 pt-3 border-t border-white/[0.06]">
                       <div className="flex flex-wrap gap-1">
                         {group.companies.map(t => (
-                          <span key={t} className="text-xs px-1.5 py-0.5 bg-slate-800/60 rounded text-slate-300 font-mono">{t}</span>
+                          <span key={t} className="text-xs px-1.5 py-0.5 bg-white/[0.05] rounded text-white/70 font-mono">{t}</span>
                         ))}
                       </div>
                     </div>
@@ -611,7 +611,7 @@ export default function PortfolioTrackerPage() {
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-slate-700/50">
+                  <tr className="border-b border-white/[0.06]">
                     <th className="text-left py-3 px-2 text-slate-400 font-medium">Company</th>
                     <th className="text-left py-3 px-2 text-slate-400 font-medium">Ticker</th>
                     <th className="text-left py-3 px-2 text-slate-400 font-medium hidden sm:table-cell">Date</th>
@@ -622,10 +622,10 @@ export default function PortfolioTrackerPage() {
                 </thead>
                 <tbody>
                   {RECENT_IPOS.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).map((ipo) => (
-                    <tr key={ipo.ticker} className="border-b border-slate-800/50 hover:bg-slate-800/30 transition-colors">
+                    <tr key={ipo.ticker} className="border-b border-white/[0.04] hover:bg-white/[0.03] transition-colors">
                       <td className="py-3 px-2 text-white">{ipo.name}</td>
-                      <td className="py-3 px-2 font-bold text-slate-300 font-mono">{ipo.ticker}</td>
-                      <td className="py-3 px-2 text-slate-300 hidden sm:table-cell">
+                      <td className="py-3 px-2 font-bold text-white/70 font-mono">{ipo.ticker}</td>
+                      <td className="py-3 px-2 text-white/70 hidden sm:table-cell">
                         {new Date(ipo.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                       </td>
                       <td className="py-3 px-2">
@@ -638,7 +638,7 @@ export default function PortfolioTrackerPage() {
                         </span>
                       </td>
                       <td className="py-3 px-2 text-right text-white font-mono">${ipo.raisedMillions}M</td>
-                      <td className="py-3 px-2 text-slate-300 hidden md:table-cell">{ipo.sector}</td>
+                      <td className="py-3 px-2 text-white/70 hidden md:table-cell">{ipo.sector}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -662,7 +662,7 @@ export default function PortfolioTrackerPage() {
                     <div>
                       <h3 className="text-base font-semibold text-white">{thesis.title}</h3>
                       <div className="flex items-center gap-3 mt-1">
-                        <span className="text-xs px-2 py-0.5 rounded bg-slate-800/60 text-slate-300">
+                        <span className="text-xs px-2 py-0.5 rounded bg-white/[0.05] text-white/70">
                           {thesis.timeHorizon}
                         </span>
                         <span className={`text-xs px-2 py-0.5 rounded font-medium ${
@@ -675,13 +675,13 @@ export default function PortfolioTrackerPage() {
                       </div>
                     </div>
                   </div>
-                  <p className="text-sm text-slate-300 mb-4 leading-relaxed">{thesis.summary}</p>
+                  <p className="text-sm text-white/70 mb-4 leading-relaxed">{thesis.summary}</p>
                   <div>
                     <p className="text-xs font-medium text-slate-400 mb-2 uppercase tracking-wide">Key Drivers</p>
                     <ul className="space-y-1.5">
                       {thesis.keyDrivers.map((driver, idx) => (
-                        <li key={idx} className="flex items-start gap-2 text-xs text-slate-300">
-                          <span className="text-slate-300 mt-0.5 shrink-0">{'\u2192'}</span>
+                        <li key={idx} className="flex items-start gap-2 text-xs text-white/70">
+                          <span className="text-white/70 mt-0.5 shrink-0">{'\u2192'}</span>
                           {driver}
                         </li>
                       ))}
@@ -713,19 +713,19 @@ export default function PortfolioTrackerPage() {
         {/* ───── Related Links ───── */}
         <ScrollReveal>
           <div className="mt-8 flex flex-wrap gap-3">
-            <Link href="/market-intel" className="text-sm px-4 py-2 rounded-lg bg-slate-800/50 border border-slate-700/50 text-slate-300 hover:text-white hover:border-white/15 transition-colors">
+            <Link href="/market-intel" className="text-sm px-4 py-2 rounded-lg bg-white/[0.04] border border-white/[0.06] text-white/70 hover:text-white hover:border-white/15 transition-colors">
               Market Intelligence
             </Link>
-            <Link href="/funding-tracker" className="text-sm px-4 py-2 rounded-lg bg-slate-800/50 border border-slate-700/50 text-slate-300 hover:text-white hover:border-white/15 transition-colors">
+            <Link href="/funding-tracker" className="text-sm px-4 py-2 rounded-lg bg-white/[0.04] border border-white/[0.06] text-white/70 hover:text-white hover:border-white/15 transition-colors">
               Funding Tracker
             </Link>
-            <Link href="/company-profiles" className="text-sm px-4 py-2 rounded-lg bg-slate-800/50 border border-slate-700/50 text-slate-300 hover:text-white hover:border-white/15 transition-colors">
+            <Link href="/company-profiles" className="text-sm px-4 py-2 rounded-lg bg-white/[0.04] border border-white/[0.06] text-white/70 hover:text-white hover:border-white/15 transition-colors">
               Company Profiles
             </Link>
-            <Link href="/investors" className="text-sm px-4 py-2 rounded-lg bg-slate-800/50 border border-slate-700/50 text-slate-300 hover:text-white hover:border-white/15 transition-colors">
+            <Link href="/investors" className="text-sm px-4 py-2 rounded-lg bg-white/[0.04] border border-white/[0.06] text-white/70 hover:text-white hover:border-white/15 transition-colors">
               Investor Hub
             </Link>
-            <Link href="/space-economy" className="text-sm px-4 py-2 rounded-lg bg-slate-800/50 border border-slate-700/50 text-slate-300 hover:text-white hover:border-white/15 transition-colors">
+            <Link href="/space-economy" className="text-sm px-4 py-2 rounded-lg bg-white/[0.04] border border-white/[0.06] text-white/70 hover:text-white hover:border-white/15 transition-colors">
               Space Economy
             </Link>
           </div>

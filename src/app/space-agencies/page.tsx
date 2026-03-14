@@ -109,7 +109,7 @@ export default function SpaceAgenciesPage() {
 
   const resetFilters = () => { setRegionFilter('All'); setCapFilter('All'); setBudgetIdx(0); setQuery(''); };
 
-  const selectCls = 'bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50';
+  const selectCls = 'bg-white/[0.06] border border-white/[0.1] rounded-lg px-3 py-2 text-sm text-white/90 focus:outline-none focus:ring-2 focus:ring-blue-500/50';
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100">
@@ -125,7 +125,7 @@ export default function SpaceAgenciesPage() {
               { label: 'Total Workforce', value: `~${(AGENCIES.reduce((s, a) => s + a.employees, 0) / 1000).toFixed(0)}K` },
               { label: 'Regions Covered', value: ALL_REGIONS.length.toString() },
             ].map(s => (
-              <div key={s.label} className="bg-slate-900/80 border border-slate-700/60 rounded-xl p-4 text-center">
+              <div key={s.label} className="bg-black/80 border border-white/[0.08] rounded-xl p-4 text-center">
                 <p className="text-2xl font-bold text-blue-400">{s.value}</p>
                 <p className="text-xs text-slate-400 mt-1">{s.label}</p>
               </div>
@@ -135,16 +135,16 @@ export default function SpaceAgenciesPage() {
 
         {/* Budget comparison chart */}
         <ScrollReveal>
-          <div className="bg-slate-900/80 border border-slate-700/60 rounded-xl p-6 mb-8">
+          <div className="bg-black/80 border border-white/[0.08] rounded-xl p-6 mb-8">
             <h2 className="text-lg font-semibold text-slate-100 mb-4">Budget Comparison (Top 10)</h2>
             <div className="space-y-3">
               {top10.map(a => (
                 <div key={a.name} className="flex items-center gap-3">
                   <span className="text-lg flex-shrink-0">{a.flag}</span>
-                  <span className="w-28 text-sm text-slate-300 truncate flex-shrink-0">{a.name}</span>
-                  <div className="flex-1 h-6 bg-slate-800 rounded-full overflow-hidden relative">
+                  <span className="w-28 text-sm text-white/70 truncate flex-shrink-0">{a.name}</span>
+                  <div className="flex-1 h-6 bg-white/[0.06] rounded-full overflow-hidden relative">
                     <div className="h-full rounded-full bg-gradient-to-r from-blue-600 to-slate-200 transition-all duration-700" style={{ width: `${(a.budget / maxBudget) * 100}%` }} />
-                    <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs font-medium text-slate-200">{fmtBudget(a.budget)}</span>
+                    <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs font-medium text-white/90">{fmtBudget(a.budget)}</span>
 
         <RelatedModules modules={PAGE_RELATIONS['space-agencies']} />
                   </div>
@@ -157,7 +157,7 @@ export default function SpaceAgenciesPage() {
         {/* Comparison panel */}
         {comparing.length > 0 && (
           <ScrollReveal>
-            <div className="bg-slate-900/80 border border-blue-500/40 rounded-xl p-6 mb-8">
+            <div className="bg-black/80 border border-blue-500/40 rounded-xl p-6 mb-8">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-lg font-semibold text-slate-100">Compare Agencies ({comparing.length}/3)</h2>
                 <button onClick={() => setComparing([])} className="text-xs text-slate-400 hover:text-red-400 transition-colors min-h-[44px] px-2 inline-flex items-center">Clear All</button>
@@ -165,17 +165,17 @@ export default function SpaceAgenciesPage() {
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="border-b border-slate-700/60">
+                    <tr className="border-b border-white/[0.08]">
                       <th className="text-left text-slate-400 font-medium py-2 pr-4">Metric</th>
                       {comparedAgencies.map(a => (
-                        <th key={a.name} className="text-left text-slate-200 font-medium py-2 px-4 min-w-[180px]">
+                        <th key={a.name} className="text-left text-white/90 font-medium py-2 px-4 min-w-[180px]">
                           <span className="mr-2">{a.flag}</span>{a.name}
                           <button onClick={() => toggleCompare(a.name)} className="ml-2 text-slate-500 hover:text-red-400 text-xs min-h-[44px] min-w-[44px] inline-flex items-center justify-center">x</button>
                         </th>
                       ))}
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-800">
+                  <tbody className="divide-y divide-white/[0.06]">
                     {([
                       ['Country', (a: Agency) => a.country],
                       ['Founded', (a: Agency) => a.founded.toString()],
@@ -190,7 +190,7 @@ export default function SpaceAgenciesPage() {
                       <tr key={label}>
                         <td className="py-2 pr-4 text-slate-400 font-medium whitespace-nowrap">{label}</td>
                         {comparedAgencies.map(a => (
-                          <td key={a.name} className="py-2 px-4 text-slate-200">{fn(a)}</td>
+                          <td key={a.name} className="py-2 px-4 text-white/90">{fn(a)}</td>
                         ))}
                       </tr>
                     ))}
@@ -203,7 +203,7 @@ export default function SpaceAgenciesPage() {
 
         {/* Filters */}
         <ScrollReveal>
-          <div className="bg-slate-900/80 border border-slate-700/60 rounded-xl p-4 mb-6">
+          <div className="bg-black/80 border border-white/[0.08] rounded-xl p-4 mb-6">
             <div className="flex flex-wrap items-center gap-3">
               <input type="search" placeholder="Search agencies..." value={query} onChange={e => setQuery(e.target.value)} className={`${selectCls} w-full sm:w-48 placeholder-slate-500`} />
               <select value={regionFilter} onChange={e => setRegionFilter(e.target.value)} className={selectCls}>
@@ -221,7 +221,7 @@ export default function SpaceAgenciesPage() {
             <div className="flex flex-wrap items-center gap-2 mt-3">
               <span className="text-xs text-slate-400 mr-1">Sort by:</span>
               {([['budget','Budget'],['founded','Founded'],['employees','Employees'],['name','Name']] as [SortKey,string][]).map(([key, label]) => (
-                <button key={key} onClick={() => handleSort(key)} className={`px-3 py-1 rounded-lg text-xs font-medium transition-colors min-h-[44px] inline-flex items-center ${sortBy === key ? 'bg-blue-600 text-white' : 'bg-slate-800 text-slate-400 hover:text-slate-200'}`}>
+                <button key={key} onClick={() => handleSort(key)} className={`px-3 py-1 rounded-lg text-xs font-medium transition-colors min-h-[44px] inline-flex items-center ${sortBy === key ? 'bg-blue-600 text-white' : 'bg-white/[0.06] text-slate-400 hover:text-white/90'}`}>
                   {label}{sortBy === key && <span className="ml-1">{sortDir === 'desc' ? '\u2193' : '\u2191'}</span>}
                 </button>
               ))}
@@ -243,14 +243,14 @@ export default function SpaceAgenciesPage() {
             const isCompared = comparing.includes(a.name);
             return (
               <ScrollReveal key={a.name} delay={idx * 0.04}>
-                <div className={`bg-slate-900/80 border rounded-xl overflow-hidden transition-colors ${isCompared ? 'border-blue-500/60 ring-1 ring-blue-500/20' : 'border-slate-700/60 hover:border-blue-500/40'}`}>
+                <div className={`bg-black/80 border rounded-xl overflow-hidden transition-colors ${isCompared ? 'border-blue-500/60 ring-1 ring-blue-500/20' : 'border-white/[0.08] hover:border-blue-500/40'}`}>
                   <div className="flex items-center">
                     <button onClick={() => setExpandedId(prev => prev === a.name ? null : a.name)} className="flex-1 text-left px-5 py-4 flex items-center gap-4 group min-w-0">
                       <span className="text-3xl flex-shrink-0">{a.flag}</span>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 flex-wrap">
                           <h3 className="text-lg font-semibold text-slate-100 group-hover:text-blue-300 transition-colors">{a.name}</h3>
-                          <span className="text-xs bg-slate-800 text-slate-400 px-2 py-0.5 rounded-full">Est. {a.founded}</span>
+                          <span className="text-xs bg-white/[0.06] text-slate-400 px-2 py-0.5 rounded-full">Est. {a.founded}</span>
                           <span className="text-xs bg-blue-900/40 text-blue-300 px-2 py-0.5 rounded-full">{a.region}</span>
                         </div>
                         <p className="text-sm text-slate-400 mt-0.5">{a.country}</p>
@@ -263,18 +263,18 @@ export default function SpaceAgenciesPage() {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                       </svg>
                     </button>
-                    <button onClick={() => toggleCompare(a.name)} title={isCompared ? 'Remove from comparison' : 'Add to comparison'} className={`mr-4 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors flex-shrink-0 ${isCompared ? 'bg-blue-600 text-white' : 'bg-slate-800 text-slate-400 hover:text-blue-300 border border-slate-700'}`}>
+                    <button onClick={() => toggleCompare(a.name)} title={isCompared ? 'Remove from comparison' : 'Add to comparison'} className={`mr-4 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors flex-shrink-0 ${isCompared ? 'bg-blue-600 text-white' : 'bg-white/[0.06] text-slate-400 hover:text-blue-300 border border-white/[0.08]'}`}>
                       {isCompared ? 'Comparing' : 'Compare'}
                     </button>
                   </div>
                   {isExpanded && (
-                    <div className="border-t border-slate-700/60 px-5 py-5 bg-slate-900/40">
+                    <div className="border-t border-white/[0.08] px-5 py-5 bg-black/40">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="space-y-4">
-                          <p className="text-sm text-slate-300 leading-relaxed">{a.focus}</p>
+                          <p className="text-sm text-white/70 leading-relaxed">{a.focus}</p>
                           <div className="grid grid-cols-2 gap-3 text-sm">
                             {([['Headquarters', a.headquarters], ['Director', a.director], ['Annual Budget', fmtBudget(a.budget)], ['Employees', a.employees.toLocaleString()], ['Founded', a.founded.toString()]] as [string, string][]).map(([lbl, val]) => (
-                              <div key={lbl}><span className="text-slate-500">{lbl}</span><p className={lbl.includes('Budget') ? 'text-blue-400 font-medium' : lbl === 'Employees' ? 'text-emerald-400 font-medium' : 'text-slate-200'}>{val}</p></div>
+                              <div key={lbl}><span className="text-slate-500">{lbl}</span><p className={lbl.includes('Budget') ? 'text-blue-400 font-medium' : lbl === 'Employees' ? 'text-emerald-400 font-medium' : 'text-white/90'}>{val}</p></div>
                             ))}
                             <div><span className="text-slate-500">Website</span><a href={a.website} target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:text-blue-300 underline text-xs break-all">{a.website.replace(/^https?:\/\//, '')}</a></div>
                           </div>
@@ -290,10 +290,10 @@ export default function SpaceAgenciesPage() {
                           </div>
                         </div>
                       </div>
-                      <div className="mt-4 pt-4 border-t border-slate-800">
+                      <div className="mt-4 pt-4 border-t border-white/[0.06]">
                         <div className="flex items-center gap-3">
                           <span className="text-xs text-slate-500 w-24 flex-shrink-0">Global share</span>
-                          <div className="flex-1 h-3 bg-slate-800 rounded-full overflow-hidden">
+                          <div className="flex-1 h-3 bg-white/[0.06] rounded-full overflow-hidden">
                             <div className="h-full rounded-full bg-gradient-to-r from-blue-600 to-slate-200" style={{ width: `${(a.budget / TOTAL_BUDGET) * 100}%` }} />
                           </div>
                           <span className="text-xs text-slate-400 w-12 text-right flex-shrink-0">{((a.budget / TOTAL_BUDGET) * 100).toFixed(1)}%</span>
@@ -309,7 +309,7 @@ export default function SpaceAgenciesPage() {
 
         {/* Related links */}
         <ScrollReveal>
-          <div className="bg-slate-900/80 border border-slate-700/60 rounded-xl p-6">
+          <div className="bg-black/80 border border-white/[0.08] rounded-xl p-6">
             <h2 className="text-lg font-semibold text-slate-100 mb-4">Related Resources</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
               {[
@@ -318,10 +318,10 @@ export default function SpaceAgenciesPage() {
                 { href: '/regulations', label: 'Space Regulations', desc: 'International space law framework', icon: '\u{2696}\u{FE0F}' },
                 { href: '/glossary', label: 'Space Glossary', desc: 'Key terms and acronyms', icon: '\u{1F4D6}' },
               ].map(link => (
-                <Link key={link.href} href={link.href} className="flex items-start gap-3 p-3 rounded-lg bg-slate-800/60 border border-slate-700/40 hover:border-blue-500/40 hover:bg-slate-800 transition-colors group">
+                <Link key={link.href} href={link.href} className="flex items-start gap-3 p-3 rounded-lg bg-white/[0.05] border border-white/[0.06] hover:border-blue-500/40 hover:bg-white/[0.06] transition-colors group">
                   <span className="text-xl flex-shrink-0">{link.icon}</span>
                   <div>
-                    <p className="text-sm font-medium text-slate-200 group-hover:text-blue-300 transition-colors">{link.label}</p>
+                    <p className="text-sm font-medium text-white/90 group-hover:text-blue-300 transition-colors">{link.label}</p>
                     <p className="text-xs text-slate-500 mt-0.5">{link.desc}</p>
                   </div>
                 </Link>

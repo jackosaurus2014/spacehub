@@ -54,7 +54,7 @@ function ResourceRow({
   const launchMultiplier = spacePriceKg / earthPriceKg;
 
   return (
-    <tr className="border-b border-space-700/50 hover:bg-slate-800/30 transition-colors">
+    <tr className="border-b border-white/[0.06] hover:bg-white/[0.04] transition-colors">
       <td className="py-4 px-4">
         <div className="flex items-center gap-3">
           <span className="text-lg">{categoryInfo?.icon || '📦'}</span>
@@ -76,11 +76,11 @@ function ResourceRow({
         <div className="text-slate-400 text-xs">{formatPrice(earthPriceLb)}/lb</div>
       </td>
       <td className="py-4 px-4 text-right">
-        <div className="text-rocket-400 font-semibold">{formatPrice(spacePriceKg)}</div>
+        <div className="text-white/70 font-semibold">{formatPrice(spacePriceKg)}</div>
         <div className="text-slate-400 text-xs">{formatPrice(spacePriceLb)}/lb</div>
       </td>
       <td className="py-4 px-4 text-right">
-        <div className="text-slate-200 font-medium">
+        <div className="text-white/90 font-medium">
           {launchMultiplier >= 10000
             ? `${(launchMultiplier / 1000).toFixed(0)}K×`
             : launchMultiplier >= 1000
@@ -93,7 +93,7 @@ function ResourceRow({
           {(resource.applications as string[]).slice(0, 2).map((app) => (
             <span
               key={app}
-              className="text-xs bg-slate-800/50 text-slate-400 px-2 py-0.5 rounded"
+              className="text-xs bg-white/[0.04] text-slate-400 px-2 py-0.5 rounded"
             >
               {app.replace(/_/g, ' ')}
             </span>
@@ -124,7 +124,7 @@ function LaunchProviderCard({
       className={`card p-4 text-left transition-all ${
         isSelected
           ? 'border-white/15 bg-white/10'
-          : 'hover:border-space-500'
+          : 'hover:border-white/[0.1]'
       }`}
     >
       <div className="flex items-center justify-between mb-2">
@@ -136,7 +136,7 @@ function LaunchProviderCard({
         )}
       </div>
       <div className="text-slate-400 text-xs mb-2">{provider.name}</div>
-      <div className="text-rocket-400 font-bold">
+      <div className="text-white/70 font-bold">
         ${provider.costPerKgToLEO.toLocaleString()}/kg
       </div>
       <div className="text-slate-400 text-xs mb-2">
@@ -146,7 +146,7 @@ function LaunchProviderCard({
         <Link
           href={`/market-intel?search=${encodeURIComponent(provider.name)}`}
           onClick={(e) => e.stopPropagation()}
-          className="text-xs text-slate-200 hover:text-white bg-white/10 px-1.5 py-0.5 rounded transition-colors"
+          className="text-xs text-white/90 hover:text-white bg-white/10 px-1.5 py-0.5 rounded transition-colors"
         >
           Company info
         </Link>
@@ -318,13 +318,13 @@ function ResourceExchangeContent() {
                 <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Categories</div>
               </div>
               <div className="card-elevated p-6 text-center">
-                <div className="text-4xl font-bold font-display tracking-tight text-rocket-400">
+                <div className="text-4xl font-bold font-display tracking-tight text-white/70">
                   ${stats.launchCosts.min?.toLocaleString()}
                 </div>
                 <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Min Launch $/kg</div>
               </div>
               <div className="card-elevated p-6 text-center">
-                <div className="text-4xl font-bold font-display tracking-tight text-slate-200">
+                <div className="text-4xl font-bold font-display tracking-tight text-white/90">
                   {providers.length}
                 </div>
                 <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Launch Providers</div>
@@ -364,8 +364,8 @@ function ResourceExchangeContent() {
                         onClick={() => handleDestinationChange(dest)}
                         className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                           destination === dest
-                            ? 'bg-slate-700 text-white border-slate-600'
-                            : 'bg-transparent text-slate-400 border border-slate-700 hover:border-slate-500'
+                            ? 'bg-white/[0.08] text-white border-white/[0.1]'
+                            : 'bg-transparent text-slate-400 border border-white/[0.06] hover:border-white/[0.1]'
                         }`}
                       >
                         {dest === 'LEO' && '🌍 '}
@@ -385,7 +385,7 @@ function ResourceExchangeContent() {
                     onChange={(e) =>
                       setSelectedCategory(e.target.value as ResourceCategory | '')
                     }
-                    className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+                    className="bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                   >
                     <option value="">All Categories</option>
                     {RESOURCE_CATEGORIES.map((cat) => (
@@ -412,7 +412,7 @@ function ResourceExchangeContent() {
 
                 <div className="ml-auto text-right">
                   <div className="text-slate-400 text-sm">Current Launch Cost</div>
-                  <div className="text-2xl font-bold text-rocket-400">
+                  <div className="text-2xl font-bold text-white/70">
                     ${launchCost.toLocaleString()}/kg
                   </div>
                   <div className="text-slate-400 text-xs">
@@ -456,7 +456,7 @@ function ResourceExchangeContent() {
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="bg-slate-800/50 border-b border-slate-700">
+                  <tr className="bg-white/[0.04] border-b border-white/[0.06]">
                     <th className="text-left py-3 px-4 text-slate-400 font-medium text-sm">
                       Resource
                     </th>
@@ -593,7 +593,7 @@ function DynamicResourceContent() {
             </div>
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {priceUpdates.map((update) => (
-                <div key={update.slug} className="p-3 rounded-lg border border-slate-700">
+                <div key={update.slug} className="p-3 rounded-lg border border-white/[0.06]">
                   <div className="flex items-center justify-between mb-1">
                     <span className="text-sm font-medium text-white">{update.name}</span>
                     <span className={`text-xs font-bold ${update.changePercent > 0 ? 'text-green-500' : update.changePercent < 0 ? 'text-red-500' : 'text-slate-400'}`}>
@@ -629,11 +629,11 @@ function DynamicResourceContent() {
 
             {commentary.keyTakeaways.length > 0 && (
               <div className="mb-4 p-4 bg-white/5 rounded-lg border border-white/15">
-                <h4 className="text-sm font-semibold text-slate-200 mb-2">Key Takeaways</h4>
+                <h4 className="text-sm font-semibold text-white/90 mb-2">Key Takeaways</h4>
                 <ul className="space-y-1">
                   {commentary.keyTakeaways.map((t, i) => (
                     <li key={i} className="text-sm text-slate-400 flex items-start gap-2">
-                      <span className="text-slate-200 mt-0.5">•</span>
+                      <span className="text-white/90 mt-0.5">•</span>
                       {t}
                     </li>
                   ))}
@@ -649,7 +649,7 @@ function DynamicResourceContent() {
 
             <button
               onClick={() => setShowFullCommentary(!showFullCommentary)}
-              className="text-sm text-slate-200 hover:text-white font-medium transition-colors"
+              className="text-sm text-white/90 hover:text-white font-medium transition-colors"
             >
               {showFullCommentary ? 'Show Less' : 'Read Full Analysis →'}
             </button>
@@ -675,9 +675,9 @@ function DynamicResourceContent() {
                   href={article.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="block p-3 rounded-lg border border-slate-700 hover:border-white/10 hover:bg-white/5 transition-all group"
+                  className="block p-3 rounded-lg border border-white/[0.06] hover:border-white/10 hover:bg-white/5 transition-all group"
                 >
-                  <h4 className="text-sm font-medium text-white group-hover:text-slate-200 line-clamp-2 mb-1">
+                  <h4 className="text-sm font-medium text-white group-hover:text-white/90 line-clamp-2 mb-1">
                     {article.title}
                   </h4>
                   <p className="text-xs text-slate-400 line-clamp-2 mb-2">

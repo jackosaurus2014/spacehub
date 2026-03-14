@@ -79,12 +79,7 @@ export default function CookieConsent() {
           className="backdrop-blur-xl border border-white/10 rounded-2xl p-6
                      shadow-lg shadow-black/50"
           style={{
-            background: `linear-gradient(145deg,
-              rgba(15, 23, 42, 0.95) 0%,
-              rgba(30, 41, 59, 0.93) 25%,
-              rgba(51, 65, 85, 0.9) 50%,
-              rgba(30, 41, 59, 0.93) 75%,
-              rgba(15, 23, 42, 0.95) 100%)`,
+            background: 'rgba(10, 10, 10, 0.98)',
           }}
         >
           {/* Top gradient accent */}
@@ -101,13 +96,13 @@ export default function CookieConsent() {
               </h2>
               <p
                 id="cookie-consent-description"
-                className="text-sm text-slate-300 leading-relaxed"
+                className="text-sm text-white/70 leading-relaxed"
               >
                 We use cookies to analyze site usage and improve your experience.
                 You can accept or decline analytics cookies.{' '}
                 <Link
                   href="/privacy"
-                  className="text-slate-300 hover:text-white underline underline-offset-2 transition-colors"
+                  className="text-white/70 hover:text-white underline underline-offset-2 transition-colors"
                 >
                   Learn more
                 </Link>
@@ -119,10 +114,10 @@ export default function CookieConsent() {
               <button
                 onClick={handleDecline}
                 className="px-5 py-2.5 rounded-xl text-sm font-medium
-                         text-slate-300 border border-slate-500/50
-                         hover:bg-slate-700/50 hover:border-slate-400/50
+                         text-white/70 border border-white/[0.08]
+                         hover:bg-white/[0.08] hover:border-slate-400/50
                          transition-all duration-200
-                         focus:outline-none focus:ring-2 focus:ring-white/20 focus:ring-offset-2 focus:ring-offset-slate-800"
+                         focus:outline-none focus:ring-2 focus:ring-white/20 focus:ring-offset-2 focus:ring-offset-black"
               >
                 Decline
               </button>
@@ -132,7 +127,7 @@ export default function CookieConsent() {
                          text-slate-900 bg-white
                          hover:bg-slate-200
                          transition-all duration-200
-                         focus:outline-none focus:ring-2 focus:ring-white/30 focus:ring-offset-2 focus:ring-offset-slate-800"
+                         focus:outline-none focus:ring-2 focus:ring-white/30 focus:ring-offset-2 focus:ring-offset-black"
               >
                 Accept
               </button>

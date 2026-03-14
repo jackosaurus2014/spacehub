@@ -107,7 +107,7 @@ function getTierLabel(tier: number): string {
 function getTierBadge(tier: number) {
   const styles: Record<number, { bg: string; text: string; label: string }> = {
     1: { bg: 'bg-amber-500/20', text: 'text-amber-400', label: 'TIER 1' },
-    2: { bg: 'bg-white/10', text: 'text-slate-300', label: 'TIER 2' },
+    2: { bg: 'bg-white/10', text: 'text-white/70', label: 'TIER 2' },
     3: { bg: 'bg-purple-500/20', text: 'text-purple-400', label: 'TIER 3' },
   };
   const style = styles[tier] || styles[3];
@@ -135,7 +135,7 @@ function getScoreByType(scores: Score[], type: string): number | null {
 function getScoreColor(score: number | null): string {
   if (score == null) return 'text-slate-500';
   if (score >= 80) return 'text-emerald-400';
-  if (score >= 60) return 'text-slate-300';
+  if (score >= 60) return 'text-white/70';
   if (score >= 40) return 'text-amber-400';
   return 'text-red-400';
 }
@@ -211,7 +211,7 @@ export default function CompanyComparisonTable({ companies, onRemove }: CompanyC
                 href={c.website}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-slate-300 hover:text-white text-xs truncate block max-w-[180px]"
+                className="text-white/70 hover:text-white text-xs truncate block max-w-[180px]"
               >
                 {c.website.replace(/^https?:\/\/(www\.)?/, '')}
               </a>
@@ -314,7 +314,7 @@ export default function CompanyComparisonTable({ companies, onRemove }: CompanyC
                 {orbitTypes.map((o) => (
                   <span
                     key={o}
-                    className="text-xs px-1.5 py-0.5 rounded bg-slate-700/50 text-slate-300"
+                    className="text-xs px-1.5 py-0.5 rounded bg-white/[0.05] text-white/70"
                   >
                     {o}
                   </span>
@@ -338,7 +338,7 @@ export default function CompanyComparisonTable({ companies, onRemove }: CompanyC
                 {c.products.slice(0, 5).map((p) => (
                   <span
                     key={p.id}
-                    className="text-xs px-1.5 py-0.5 rounded bg-white/5 text-slate-300 border border-white/10"
+                    className="text-xs px-1.5 py-0.5 rounded bg-white/5 text-white/70 border border-white/10"
                   >
                     {p.name}
                   </span>
@@ -360,7 +360,7 @@ export default function CompanyComparisonTable({ companies, onRemove }: CompanyC
                 {cats.map((cat) => (
                   <span
                     key={cat}
-                    className="text-xs px-1.5 py-0.5 rounded bg-slate-700/50 text-slate-400 capitalize"
+                    className="text-xs px-1.5 py-0.5 rounded bg-white/[0.05] text-slate-400 capitalize"
                   >
                     {(cat as string).replace(/_/g, ' ')}
                   </span>
@@ -378,7 +378,7 @@ export default function CompanyComparisonTable({ companies, onRemove }: CompanyC
                 {c.tags.slice(0, 5).map((tag) => (
                   <span
                     key={tag}
-                    className="text-xs px-1.5 py-0.5 rounded bg-slate-700/50 text-slate-400"
+                    className="text-xs px-1.5 py-0.5 rounded bg-white/[0.05] text-slate-400"
                   >
                     {tag}
                   </span>
@@ -518,10 +518,10 @@ export default function CompanyComparisonTable({ companies, onRemove }: CompanyC
               {companies.map((company) => (
                 <div
                   key={company.slug}
-                  className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-4"
+                  className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-4"
                 >
-                  <div className="flex items-center gap-3 mb-3 pb-2 border-b border-slate-700/30">
-                    <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-slate-700 to-slate-600 flex items-center justify-center text-sm flex-shrink-0 border border-slate-600/50">
+                  <div className="flex items-center gap-3 mb-3 pb-2 border-b border-white/[0.04]">
+                    <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-white/[0.08] to-white/[0.08] flex items-center justify-center text-sm flex-shrink-0 border border-white/[0.08]">
                       {company.logoUrl ? (
                         <Image
                           src={company.logoUrl}
@@ -578,10 +578,10 @@ export default function CompanyComparisonTable({ companies, onRemove }: CompanyC
       {sections.map((section) => (
         <div
           key={section.title}
-          className="bg-slate-900/50 border border-slate-700/50 rounded-xl overflow-hidden"
+          className="bg-black/50 border border-white/[0.06] rounded-xl overflow-hidden"
         >
           {/* Section header */}
-          <div className="px-5 py-3 bg-slate-800/30 border-b border-slate-700/50">
+          <div className="px-5 py-3 bg-white/[0.03] border-b border-white/[0.06]">
             <h3 className="text-sm font-semibold text-white flex items-center gap-2">
               <span>{section.icon}</span>
               {section.title}
@@ -592,7 +592,7 @@ export default function CompanyComparisonTable({ companies, onRemove }: CompanyC
             <table className="w-full">
               {/* Company headers */}
               <thead>
-                <tr className="border-b border-slate-700/30">
+                <tr className="border-b border-white/[0.04]">
                   <th className="text-left p-4 text-slate-400 text-xs font-medium min-w-[160px] w-[160px]">
                     Feature
                   </th>
@@ -613,7 +613,7 @@ export default function CompanyComparisonTable({ companies, onRemove }: CompanyC
                             />
                           </svg>
                         </button>
-                        <div className="w-10 h-10 mx-auto rounded-lg bg-gradient-to-br from-slate-700 to-slate-800 flex items-center justify-center text-lg font-bold border border-slate-600/50 mb-1.5">
+                        <div className="w-10 h-10 mx-auto rounded-lg bg-gradient-to-br from-white/[0.08] to-white/[0.06] flex items-center justify-center text-lg font-bold border border-white/[0.08] mb-1.5">
                           {company.logoUrl ? (
                             <Image
                               src={company.logoUrl}
@@ -650,9 +650,9 @@ export default function CompanyComparisonTable({ companies, onRemove }: CompanyC
                   return (
                     <tr
                       key={row.label}
-                      className={idx % 2 === 0 ? 'bg-slate-800/20' : 'bg-transparent'}
+                      className={idx % 2 === 0 ? 'bg-white/[0.02]' : 'bg-transparent'}
                     >
-                      <td className="p-4 text-slate-400 text-sm font-medium border-r border-slate-700/30">
+                      <td className="p-4 text-slate-400 text-sm font-medium border-r border-white/[0.04]">
                         {row.label}
                       </td>
                       {companies.map((company, compIdx) => {

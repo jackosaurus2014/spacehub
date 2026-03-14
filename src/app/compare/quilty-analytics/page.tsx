@@ -57,7 +57,7 @@ export default function QuiltyComparisonPage() {
             <li>/</li>
             <li><Link href="/compare" className="hover:text-white transition-colors">Compare</Link></li>
             <li>/</li>
-            <li className="text-slate-300">Quilty Space Analytics</li>
+            <li className="text-white/70">Quilty Space Analytics</li>
           </ol>
         </nav>
 
@@ -67,7 +67,7 @@ export default function QuiltyComparisonPage() {
             <h1 className="text-3xl md:text-4xl font-bold text-white mb-4 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
               SpaceNexus vs Quilty Space Analytics
             </h1>
-            <p className="text-lg text-slate-300 leading-relaxed drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]">
+            <p className="text-lg text-white/70 leading-relaxed drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]">
               Quilty Space (formerly Quilty Analytics) is a respected space industry research firm
               delivering premium analyst reports and custom research. SpaceNexus is a self-service
               intelligence platform with real-time data, interactive tools, and AI-powered insights.
@@ -86,9 +86,9 @@ export default function QuiltyComparisonPage() {
           <div className="card p-6 mb-10 border-l-4 border-white/15">
             <h2 className="text-lg font-bold text-white mb-2">TL;DR</h2>
             <p className="text-slate-400 text-sm leading-relaxed">
-              <strong className="text-slate-300">Quilty Space</strong> excels at deep, analyst-driven
+              <strong className="text-white/70">Quilty Space</strong> excels at deep, analyst-driven
               research reports for institutional clients who need citable, boardroom-ready analysis.
-              <strong className="text-slate-300"> SpaceNexus</strong> is a self-service platform with
+              <strong className="text-white/70"> SpaceNexus</strong> is a self-service platform with
               real-time data, interactive dashboards, AI copilot, and broader coverage across launches,
               satellites, procurement, and company profiles &mdash; at a fraction of the cost. If you need
               a polished research report for investors, Quilty delivers. If you need an always-on
@@ -103,32 +103,32 @@ export default function QuiltyComparisonPage() {
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="card p-6 ring-2 ring-white/15">
-                <div className="text-xs font-semibold text-slate-300 uppercase tracking-wider mb-3">SpaceNexus</div>
+                <div className="text-xs font-semibold text-white/70 uppercase tracking-wider mb-3">SpaceNexus</div>
                 <h3 className="text-lg font-bold text-white mb-3">Self-Service Platform</h3>
                 <ul className="space-y-2 text-sm text-slate-400">
                   <li className="flex items-start gap-2">
-                    <span className="text-slate-300 mt-0.5 flex-shrink-0">&#9656;</span>
+                    <span className="text-white/70 mt-0.5 flex-shrink-0">&#9656;</span>
                     <span>Access data 24/7, explore interactively</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <span className="text-slate-300 mt-0.5 flex-shrink-0">&#9656;</span>
+                    <span className="text-white/70 mt-0.5 flex-shrink-0">&#9656;</span>
                     <span>Real-time updates (not periodic reports)</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <span className="text-slate-300 mt-0.5 flex-shrink-0">&#9656;</span>
+                    <span className="text-white/70 mt-0.5 flex-shrink-0">&#9656;</span>
                     <span>AI copilot for on-demand analysis</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <span className="text-slate-300 mt-0.5 flex-shrink-0">&#9656;</span>
+                    <span className="text-white/70 mt-0.5 flex-shrink-0">&#9656;</span>
                     <span>10 integrated modules, 200+ company profiles</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <span className="text-slate-300 mt-0.5 flex-shrink-0">&#9656;</span>
+                    <span className="text-white/70 mt-0.5 flex-shrink-0">&#9656;</span>
                     <span>Free tier, no sales process required</span>
                   </li>
                 </ul>
-                <div className="mt-4 pt-4 border-t border-slate-700">
-                  <div className="text-2xl font-bold text-slate-300">Free &ndash; $99<span className="text-sm text-slate-400 font-normal">/mo</span></div>
+                <div className="mt-4 pt-4 border-t border-white/[0.08]">
+                  <div className="text-2xl font-bold text-white/70">Free &ndash; $99<span className="text-sm text-slate-400 font-normal">/mo</span></div>
                 </div>
               </div>
               <div className="card p-6">
@@ -156,7 +156,7 @@ export default function QuiltyComparisonPage() {
                     <span>Boardroom-ready, citable research</span>
                   </li>
                 </ul>
-                <div className="mt-4 pt-4 border-t border-slate-700">
+                <div className="mt-4 pt-4 border-t border-white/[0.08]">
                   <div className="text-2xl font-bold text-white">$5,000 &ndash; $50,000<span className="text-sm text-slate-400 font-normal">/yr</span></div>
                 </div>
               </div>
@@ -171,16 +171,16 @@ export default function QuiltyComparisonPage() {
             <div className="card overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-slate-700">
-                    <th className="py-4 px-4 text-left text-slate-300 font-semibold">Feature</th>
-                    <th className="py-4 px-4 text-left text-slate-300 font-semibold">SpaceNexus</th>
-                    <th className="py-4 px-4 text-left text-slate-300 font-semibold">Quilty Space</th>
+                  <tr className="border-b border-white/[0.08]">
+                    <th className="py-4 px-4 text-left text-white/70 font-semibold">Feature</th>
+                    <th className="py-4 px-4 text-left text-white/70 font-semibold">SpaceNexus</th>
+                    <th className="py-4 px-4 text-left text-white/70 font-semibold">Quilty Space</th>
                   </tr>
                 </thead>
                 <tbody>
                   {FEATURE_COMPARISON.map((row) => (
                     <tr key={row.feature} className="border-b border-slate-100">
-                      <td className="py-3 px-4 text-slate-300 font-medium">{row.feature}</td>
+                      <td className="py-3 px-4 text-white/70 font-medium">{row.feature}</td>
                       <td className="py-3 px-4 text-slate-500">
                         <div className="flex items-start gap-2">
                           {row.winner === 'spacenexus' && (
@@ -211,7 +211,7 @@ export default function QuiltyComparisonPage() {
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="card p-6">
-                <h3 className="text-lg font-semibold text-slate-300 mb-4">Choose SpaceNexus if you:</h3>
+                <h3 className="text-lg font-semibold text-white/70 mb-4">Choose SpaceNexus if you:</h3>
                 <ul className="space-y-3">
                   {[
                     'Want to explore space industry data on your own terms, 24/7',
@@ -224,14 +224,14 @@ export default function QuiltyComparisonPage() {
                     'Want API access to build space data into your own tools',
                   ].map((item) => (
                     <li key={item} className="flex items-start gap-2 text-sm text-slate-400">
-                      <span className="text-slate-300 mt-0.5 flex-shrink-0">&#9656;</span>
+                      <span className="text-white/70 mt-0.5 flex-shrink-0">&#9656;</span>
                       <span>{item}</span>
                     </li>
                   ))}
                 </ul>
               </div>
               <div className="card p-6">
-                <h3 className="text-lg font-semibold text-slate-300 mb-4">Choose Quilty Space if you:</h3>
+                <h3 className="text-lg font-semibold text-white/70 mb-4">Choose Quilty Space if you:</h3>
                 <ul className="space-y-3">
                   {[
                     'Need polished, citable research for board presentations or investors',
@@ -274,9 +274,9 @@ export default function QuiltyComparisonPage() {
                   { title: 'Procurement advantage', desc: 'SAM.gov integration and SBIR/STTR tracking give you a direct path from intelligence to revenue — something research reports cannot provide.' },
                 ].map((item) => (
                   <li key={item.title} className="flex items-start gap-3">
-                    <span className="text-slate-300 mt-1 flex-shrink-0 font-bold">&#10003;</span>
+                    <span className="text-white/70 mt-1 flex-shrink-0 font-bold">&#10003;</span>
                     <div>
-                      <strong className="text-slate-300">{item.title}:</strong>{' '}
+                      <strong className="text-white/70">{item.title}:</strong>{' '}
                       <span className="text-slate-400 text-sm">{item.desc}</span>
                     </div>
                   </li>
@@ -296,14 +296,14 @@ export default function QuiltyComparisonPage() {
                 Organizations with larger budgets often use both:
               </p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-4">
+                <div className="bg-white/[0.04] border border-white/[0.08] rounded-lg p-4">
                   <h4 className="font-semibold text-white text-sm mb-2">SpaceNexus for daily operations</h4>
                   <p className="text-slate-400 text-xs">
                     Track launches, monitor satellites, discover procurement opportunities, research companies,
                     and stay current with real-time data every day.
                   </p>
                 </div>
-                <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-4">
+                <div className="bg-white/[0.04] border border-white/[0.08] rounded-lg p-4">
                   <h4 className="font-semibold text-white text-sm mb-2">Quilty for strategic decisions</h4>
                   <p className="text-slate-400 text-xs">
                     Commission deep research reports for board presentations, investment decisions,
@@ -337,7 +337,7 @@ export default function QuiltyComparisonPage() {
 
           {/* Back Link */}
           <div className="text-center">
-            <Link href="/compare" className="text-slate-300 hover:text-white text-sm transition-colors">
+            <Link href="/compare" className="text-white/70 hover:text-white text-sm transition-colors">
               &larr; Back to all comparisons
             </Link>
           </div>

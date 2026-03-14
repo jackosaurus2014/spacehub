@@ -63,14 +63,14 @@ export default function ReportModal({ isOpen, onClose, contentType, contentId }:
     <Modal isOpen={isOpen} onClose={onClose} title="Report Content">
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label htmlFor="report-reason" className="block text-sm font-medium text-slate-300 mb-2">
+          <label htmlFor="report-reason" className="block text-sm font-medium text-white/70 mb-2">
             Reason for report
           </label>
           <select
             id="report-reason"
             value={reason}
             onChange={(e) => setReason(e.target.value)}
-            className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+            className="w-full bg-white/[0.06] border border-white/[0.08] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
             required
           >
             <option value="">Select a reason...</option>
@@ -91,7 +91,7 @@ export default function ReportModal({ isOpen, onClose, contentType, contentId }:
         )}
 
         <div>
-          <label htmlFor="report-description" className="block text-sm font-medium text-slate-300 mb-2">
+          <label htmlFor="report-description" className="block text-sm font-medium text-white/70 mb-2">
             Additional details <span className="text-slate-500">(optional)</span>
           </label>
           <textarea
@@ -101,7 +101,7 @@ export default function ReportModal({ isOpen, onClose, contentType, contentId }:
             placeholder="Provide any additional context..."
             rows={3}
             maxLength={2000}
-            className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none resize-none"
+            className="w-full bg-white/[0.06] border border-white/[0.08] text-white rounded-lg px-3 py-2 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none resize-none"
           />
         </div>
 
@@ -113,7 +113,7 @@ export default function ReportModal({ isOpen, onClose, contentType, contentId }:
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 text-sm text-slate-400 hover:text-slate-200 transition-colors"
+            className="px-4 py-2 text-sm text-slate-400 hover:text-white/90 transition-colors"
           >
             Cancel
           </button>

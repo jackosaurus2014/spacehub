@@ -148,7 +148,7 @@ function SliderInput({
 
   return (
     <div className="mb-4">
-      <label className="block text-sm font-medium text-slate-300 mb-1.5">{label}</label>
+      <label className="block text-sm font-medium text-white/70 mb-1.5">{label}</label>
       <div className="flex items-center gap-3 mb-1.5">
         <input
           type="number"
@@ -158,7 +158,7 @@ function SliderInput({
           step={step}
           value={value}
           onChange={handleInput}
-          className="w-28 bg-slate-900/70 border border-slate-700/50 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20"
+          className="w-28 bg-slate-900/70 border border-white/[0.06] rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20"
         />
         <span className="text-sm text-slate-400">{unit}</span>
       </div>
@@ -188,7 +188,7 @@ function ResultCard({ label, value, unit, accent = 'purple' }: {
 }) {
   const colors = {
     purple: 'text-purple-400',
-    cyan: 'text-slate-300',
+    cyan: 'text-white/70',
     emerald: 'text-emerald-400',
     amber: 'text-amber-400',
   };
@@ -358,7 +358,7 @@ function ConstellationDiagram({
       width={svgSize}
       height={svgSize}
       viewBox={`0 0 ${svgSize} ${svgSize}`}
-      className="bg-slate-900/50 rounded-xl border border-slate-700/30"
+      className="bg-black/50 rounded-xl border border-white/[0.04]"
     >
       {/* Background grid */}
       <circle cx={cx} cy={cy} r={orbitR + 30} fill="none" stroke="rgba(148,163,184,0.06)" strokeWidth="0.5" />
@@ -493,9 +493,9 @@ export default function ConstellationDesignerPage() {
         {/* Breadcrumb */}
         <ScrollReveal delay={0.1}>
         <nav className="text-sm text-slate-500 mb-4">
-          <Link href="/" className="hover:text-slate-300 transition-colors">Home</Link>
+          <Link href="/" className="hover:text-white/70 transition-colors">Home</Link>
           <span className="mx-2">/</span>
-          <Link href="/satellites" className="hover:text-slate-300 transition-colors">Space Operations</Link>
+          <Link href="/satellites" className="hover:text-white/70 transition-colors">Space Operations</Link>
           <span className="mx-2">/</span>
           <span className="text-slate-400">Constellation Designer</span>
         </nav>
@@ -521,11 +521,11 @@ export default function ConstellationDesignerPage() {
                   className={`card p-4 text-left transition-all border ${
                     activePreset === key
                       ? 'border-purple-500/40 bg-purple-500/10'
-                      : 'border-slate-700/50 hover:border-slate-600/50'
+                      : 'border-white/[0.06] hover:border-slate-600/50'
                   }`}
                 >
                   <div className={`text-sm font-semibold mb-1 ${
-                    activePreset === key ? 'text-purple-300' : 'text-slate-200'
+                    activePreset === key ? 'text-purple-300' : 'text-white/90'
                   }`}>
                     {p.name}
                   </div>
@@ -544,7 +544,7 @@ export default function ConstellationDesignerPage() {
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-all border ${
                 activePreset === 'custom'
                   ? 'bg-purple-500/15 border-purple-500/40 text-purple-400'
-                  : 'bg-slate-800/50 border-slate-700/50 text-slate-400 hover:border-slate-600/50'
+                  : 'bg-white/[0.04] border-white/[0.06] text-slate-400 hover:border-slate-600/50'
               }`}
             >
               Custom Configuration
@@ -568,7 +568,7 @@ export default function ConstellationDesignerPage() {
               <div>
                 {/* Coverage Goal */}
                 <div className="mb-5">
-                  <label className="block text-sm font-medium text-slate-300 mb-2">Coverage Goal</label>
+                  <label className="block text-sm font-medium text-white/70 mb-2">Coverage Goal</label>
                   <div className="grid grid-cols-2 gap-2">
                     {COVERAGE_GOALS.map((goal) => (
                       <button
@@ -577,7 +577,7 @@ export default function ConstellationDesignerPage() {
                         className={`py-2.5 px-3 rounded-lg text-sm font-medium transition-all border ${
                           coverageGoal === goal.value
                             ? 'bg-purple-500/15 border-purple-500/40 text-purple-400'
-                            : 'bg-slate-900/50 border-slate-700/50 text-slate-400 hover:border-slate-600/50'
+                            : 'bg-black/50 border-white/[0.06] text-slate-400 hover:border-slate-600/50'
                         }`}
                       >
                         <div>{goal.label}</div>
@@ -655,21 +655,21 @@ export default function ConstellationDesignerPage() {
 
                 {/* Quick summary cards */}
                 <div className="w-full grid grid-cols-2 gap-3">
-                  <div className="card p-3 bg-slate-800/30">
+                  <div className="card p-3 bg-white/[0.03]">
                     <div className="text-xs text-slate-500 mb-1">Coverage Swath</div>
-                    <div className="text-sm text-slate-200">{fmtNum(constellation.swathWidthKm, 0)} km</div>
+                    <div className="text-sm text-white/90">{fmtNum(constellation.swathWidthKm, 0)} km</div>
                   </div>
-                  <div className="card p-3 bg-slate-800/30">
+                  <div className="card p-3 bg-white/[0.03]">
                     <div className="text-xs text-slate-500 mb-1">Swath Angular Width</div>
-                    <div className="text-sm text-slate-200">{fmtNum(constellation.swathAngularDeg, 1)} deg</div>
+                    <div className="text-sm text-white/90">{fmtNum(constellation.swathAngularDeg, 1)} deg</div>
                   </div>
-                  <div className="card p-3 bg-slate-800/30">
+                  <div className="card p-3 bg-white/[0.03]">
                     <div className="text-xs text-slate-500 mb-1">Orbital Period</div>
-                    <div className="text-sm text-slate-200">{fmtNum(constellation.orbitalPeriodMin, 1)} min</div>
+                    <div className="text-sm text-white/90">{fmtNum(constellation.orbitalPeriodMin, 1)} min</div>
                   </div>
-                  <div className="card p-3 bg-slate-800/30">
+                  <div className="card p-3 bg-white/[0.03]">
                     <div className="text-xs text-slate-500 mb-1">Plane Spacing</div>
-                    <div className="text-sm text-slate-200">{fmtNum(constellation.interPlaneSpacingDeg, 1)} deg</div>
+                    <div className="text-sm text-white/90">{fmtNum(constellation.interPlaneSpacingDeg, 1)} deg</div>
                   </div>
                 </div>
               </div>
@@ -723,42 +723,42 @@ export default function ConstellationDesignerPage() {
 
           {/* Detailed breakdown card */}
           <div className="card p-5 mt-4">
-            <h3 className="text-sm font-semibold text-slate-300 mb-3">Design Breakdown</h3>
+            <h3 className="text-sm font-semibold text-white/70 mb-3">Design Breakdown</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
               <div className="space-y-2">
                 <div className="flex justify-between">
                   <span className="text-slate-400">Coverage type</span>
-                  <span className="text-slate-200 capitalize">{coverageGoal}</span>
+                  <span className="text-white/90 capitalize">{coverageGoal}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-400">Orbit altitude</span>
-                  <span className="text-slate-200">{altitude.toLocaleString()} km</span>
+                  <span className="text-white/90">{altitude.toLocaleString()} km</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-400">Orbit radius (from center)</span>
-                  <span className="text-slate-200">{(RE + altitude).toLocaleString()} km</span>
+                  <span className="text-white/90">{(RE + altitude).toLocaleString()} km</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-400">Minimum elevation angle</span>
-                  <span className="text-slate-200">{elevationAngle} deg</span>
+                  <span className="text-white/90">{elevationAngle} deg</span>
                 </div>
               </div>
               <div className="space-y-2">
                 <div className="flex justify-between">
                   <span className="text-slate-400">Latitude range</span>
-                  <span className="text-slate-200">{latMin} deg to {latMax} deg</span>
+                  <span className="text-white/90">{latMin} deg to {latMax} deg</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-400">Target revisit time</span>
-                  <span className="text-slate-200">{revisitHours} hours</span>
+                  <span className="text-white/90">{revisitHours} hours</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-400">Orbital period</span>
-                  <span className="text-slate-200">{fmtNum(constellation.orbitalPeriodMin, 1)} min</span>
+                  <span className="text-white/90">{fmtNum(constellation.orbitalPeriodMin, 1)} min</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-400">Walker notation</span>
-                  <span className="text-slate-200">
+                  <span className="text-white/90">
                     {constellation.inclination.toFixed(0)} deg: {constellation.totalSatellites}/{constellation.numPlanes}/1
                   </span>
                 </div>
@@ -773,7 +773,7 @@ export default function ConstellationDesignerPage() {
         <section className="mb-8">
           <h2 className="text-lg font-semibold text-slate-100 mb-4">Cost Estimation</h2>
           <div className="card p-5 mb-4">
-            <h3 className="text-sm font-semibold text-slate-300 mb-1">Satellite Parameters</h3>
+            <h3 className="text-sm font-semibold text-white/70 mb-1">Satellite Parameters</h3>
             <p className="text-xs text-slate-500 mb-4">
               Adjust satellite mass to estimate launch and operations costs. Launch pricing based on
               Falcon 9 rideshare rates (~$5,000/kg). Operations costs scale with satellite complexity.
@@ -819,25 +819,25 @@ export default function ConstellationDesignerPage() {
 
           {/* Cost breakdown table */}
           <div className="card p-5">
-            <h3 className="text-sm font-semibold text-slate-300 mb-3">Cost Breakdown</h3>
+            <h3 className="text-sm font-semibold text-white/70 mb-3">Cost Breakdown</h3>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="text-left text-xs text-slate-500 uppercase tracking-wider border-b border-slate-700/50">
+                  <tr className="text-left text-xs text-slate-500 uppercase tracking-wider border-b border-white/[0.06]">
                     <th className="pb-2 pr-4">Item</th>
                     <th className="pb-2 pr-4 text-right">Per Unit</th>
                     <th className="pb-2 pr-4 text-right">Quantity</th>
                     <th className="pb-2 text-right">Total</th>
                   </tr>
                 </thead>
-                <tbody className="text-slate-300">
-                  <tr className="border-b border-slate-700/30">
+                <tbody className="text-white/70">
+                  <tr className="border-b border-white/[0.04]">
                     <td className="py-2.5 pr-4">Launch cost ({satelliteMass} kg x $5K/kg)</td>
                     <td className="py-2.5 pr-4 text-right text-slate-400">{fmtCurrency(cost.launchCostPerSat)}</td>
                     <td className="py-2.5 pr-4 text-right text-slate-400">{constellation.totalSatellites}</td>
                     <td className="py-2.5 text-right font-medium">{fmtCurrency(cost.totalLaunchCost)}</td>
                   </tr>
-                  <tr className="border-b border-slate-700/30">
+                  <tr className="border-b border-white/[0.04]">
                     <td className="py-2.5 pr-4">Annual operations</td>
                     <td className="py-2.5 pr-4 text-right text-slate-400">
                       {fmtCurrency(cost.annualOpsCost / constellation.totalSatellites)}/sat/yr
@@ -845,7 +845,7 @@ export default function ConstellationDesignerPage() {
                     <td className="py-2.5 pr-4 text-right text-slate-400">{constellation.totalSatellites}</td>
                     <td className="py-2.5 text-right font-medium">{fmtCurrency(cost.annualOpsCost)}/yr</td>
                   </tr>
-                  <tr className="border-b border-slate-700/30">
+                  <tr className="border-b border-white/[0.04]">
                     <td className="py-2.5 pr-4">5-year operations</td>
                     <td className="py-2.5 pr-4 text-right text-slate-400">-</td>
                     <td className="py-2.5 pr-4 text-right text-slate-400">5 years</td>
@@ -880,7 +880,7 @@ export default function ConstellationDesignerPage() {
         <ScrollReveal delay={0.35}>
         <section className="mb-8">
           <div className="card p-5">
-            <h3 className="text-sm font-semibold text-slate-300 mb-3">Walker Constellation Formulas</h3>
+            <h3 className="text-sm font-semibold text-white/70 mb-3">Walker Constellation Formulas</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs text-slate-500 leading-relaxed">
               <div>
                 <h4 className="text-slate-400 font-medium mb-1">Coverage Geometry</h4>

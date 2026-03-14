@@ -139,7 +139,7 @@ export default function IntelligenceBriefPage() {
           <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
             {BRIEFS.map(brief => (
               <button key={brief.id} onClick={() => setExpandedBrief(brief.id)}
-                className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${expandedBrief === brief.id ? 'bg-white/10 text-slate-200 border border-white/10' : 'bg-slate-800/50 text-slate-400 border border-slate-700/50 hover:text-slate-900'}`}>
+                className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${expandedBrief === brief.id ? 'bg-white/10 text-white/90 border border-white/10' : 'bg-white/[0.04] text-slate-400 border border-white/[0.06] hover:text-slate-900'}`}>
                 Week of {brief.weekOf.replace(', 2026', '')}
               </button>
             ))}
@@ -159,13 +159,13 @@ export default function IntelligenceBriefPage() {
 
             {/* Top Story */}
             <ScrollReveal delay={0.25}>
-              <div className="bg-gradient-to-br from-slate-800/80 to-slate-800/40 border border-white/10 rounded-xl p-6 mb-6">
+              <div className="bg-gradient-to-br from-white/[0.06] to-white/[0.04] border border-white/10 rounded-xl p-6 mb-6">
                 <div className="flex items-center gap-2 mb-3">
-                  <span className="text-xs font-bold text-slate-300 uppercase tracking-wider">Top Story</span>
+                  <span className="text-xs font-bold text-white/70 uppercase tracking-wider">Top Story</span>
                   <div className="h-px flex-1 bg-white/10" />
                 </div>
                 <h3 className="text-lg font-bold text-white mb-2">{brief.topStory.headline}</h3>
-                <p className="text-sm text-slate-300 leading-relaxed">{brief.topStory.summary}</p>
+                <p className="text-sm text-white/70 leading-relaxed">{brief.topStory.summary}</p>
               </div>
             </ScrollReveal>
 
@@ -176,7 +176,7 @@ export default function IntelligenceBriefPage() {
                 const isExpanded = expandedSections.has(sectionKey);
                 return (
                   <ScrollReveal key={section.category} delay={0.3 + i * 0.05}>
-                    <div className={`border rounded-xl overflow-hidden transition-colors ${CATEGORY_COLORS[section.category] || 'border-slate-700/50 bg-slate-800/30'}`}>
+                    <div className={`border rounded-xl overflow-hidden transition-colors ${CATEGORY_COLORS[section.category] || 'border-white/[0.06] bg-white/[0.03]'}`}>
                       <button onClick={() => toggleSection(sectionKey)}
                         className="w-full flex items-center gap-3 p-4 text-left hover:bg-white/5 transition-colors">
                         <span className="text-xl">{section.icon}</span>
@@ -192,7 +192,7 @@ export default function IntelligenceBriefPage() {
                         <div className="px-4 pb-4 pt-1 border-t border-white/5">
                           <ul className="space-y-2">
                             {section.details.map((detail, j) => (
-                              <li key={j} className="flex items-start gap-2 text-sm text-slate-300">
+                              <li key={j} className="flex items-start gap-2 text-sm text-white/70">
                                 <span className="text-slate-500 mt-1 flex-shrink-0">-</span>
                                 {detail}
                               </li>
@@ -213,7 +213,7 @@ export default function IntelligenceBriefPage() {
                   <span className="text-lg">💡</span>
                   <span className="text-sm font-bold text-amber-300">Key Takeaway</span>
                 </div>
-                <p className="text-sm text-slate-200 leading-relaxed">{brief.keyTakeaway}</p>
+                <p className="text-sm text-white/90 leading-relaxed">{brief.keyTakeaway}</p>
               </div>
             </ScrollReveal>
           </div>
@@ -229,7 +229,7 @@ export default function IntelligenceBriefPage() {
               { label: 'Executive Moves', href: '/executive-moves', icon: '👤' },
             ].map(link => (
               <Link key={link.href} href={link.href}
-                className="flex items-center gap-2 p-3 card hover:border-white/10 transition-colors text-sm text-slate-300 hover:text-white">
+                className="flex items-center gap-2 p-3 card hover:border-white/10 transition-colors text-sm text-white/70 hover:text-white">
                 <span>{link.icon}</span>
                 {link.label}
               </Link>

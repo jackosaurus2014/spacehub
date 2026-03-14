@@ -4,27 +4,27 @@ export default function Loading() {
       <div className="container mx-auto px-4">
         {/* Header skeleton */}
         <div className="mb-8">
-          <div className="h-4 w-32 bg-slate-800/60 rounded animate-pulse mb-4" />
-          <div className="h-8 w-72 bg-slate-800 rounded animate-pulse mb-3" />
-          <div className="h-4 w-[28rem] bg-slate-800/60 rounded animate-pulse" />
+          <div className="h-4 w-32 bg-white/[0.05] rounded animate-pulse mb-4" />
+          <div className="h-8 w-72 bg-white/[0.06] rounded animate-pulse mb-3" />
+          <div className="h-4 w-[28rem] bg-white/[0.05] rounded animate-pulse" />
         </div>
 
         {/* Stats bar skeleton */}
         <div className="flex gap-6 mb-8">
-          <div className="h-10 w-48 bg-slate-800/50 rounded-lg animate-pulse" />
-          <div className="h-10 w-48 bg-slate-800/50 rounded-lg animate-pulse" />
+          <div className="h-10 w-48 bg-white/[0.04] rounded-lg animate-pulse" />
+          <div className="h-10 w-48 bg-white/[0.04] rounded-lg animate-pulse" />
         </div>
 
         {/* Layout: sidebar + grid */}
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Filter sidebar skeleton */}
           <div className="w-full lg:w-72 shrink-0 space-y-4">
-            <div className="h-10 bg-slate-800/50 rounded-lg animate-pulse" />
-            <div className="h-10 bg-slate-800/50 rounded-lg animate-pulse" />
-            <div className="h-10 bg-slate-800/50 rounded-lg animate-pulse" />
-            <div className="h-10 bg-slate-800/50 rounded-lg animate-pulse" />
-            <div className="h-10 bg-slate-800/50 rounded-lg animate-pulse" />
-            <div className="h-10 bg-slate-800/50 rounded-lg animate-pulse" />
+            <div className="h-10 bg-white/[0.04] rounded-lg animate-pulse" />
+            <div className="h-10 bg-white/[0.04] rounded-lg animate-pulse" />
+            <div className="h-10 bg-white/[0.04] rounded-lg animate-pulse" />
+            <div className="h-10 bg-white/[0.04] rounded-lg animate-pulse" />
+            <div className="h-10 bg-white/[0.04] rounded-lg animate-pulse" />
+            <div className="h-10 bg-white/[0.04] rounded-lg animate-pulse" />
           </div>
 
           {/* Job cards skeleton */}
@@ -32,7 +32,7 @@ export default function Loading() {
             {Array.from({ length: 8 }).map((_, i) => (
               <div
                 key={i}
-                className="bg-slate-800/40 rounded-xl animate-pulse p-5"
+                className="bg-white/[0.04] rounded-xl animate-pulse p-5"
               >
                 <div className="flex items-start gap-4">
                   <div className="w-12 h-12 bg-slate-700/60 rounded-full shrink-0" />

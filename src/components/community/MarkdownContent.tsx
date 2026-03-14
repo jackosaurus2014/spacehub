@@ -28,7 +28,7 @@ function renderWithMentions(text: string): React.ReactNode {
     parts.push(
       <span
         key={`mention-${match.index}`}
-        className="text-slate-300 font-medium cursor-pointer hover:underline"
+        className="text-white/70 font-medium cursor-pointer hover:underline"
       >
         @{match[1]}
       </span>
@@ -67,7 +67,7 @@ export default function MarkdownContent({ content, className = '' }: MarkdownCon
               href={href}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-slate-300 hover:text-white underline transition-colors"
+              className="text-white/70 hover:text-white underline transition-colors"
             >
               {children}
             </a>
@@ -76,19 +76,19 @@ export default function MarkdownContent({ content, className = '' }: MarkdownCon
             const isInline = !codeClassName;
             if (isInline) {
               return (
-                <code className="px-1.5 py-0.5 bg-slate-800 text-slate-200 rounded text-xs" {...props}>
+                <code className="px-1.5 py-0.5 bg-white/[0.06] text-white/90 rounded text-xs" {...props}>
                   {children}
                 </code>
               );
             }
             return (
-              <code className={`block bg-slate-900/80 border border-slate-700/50 rounded-lg p-3 text-xs overflow-x-auto ${codeClassName || ''}`} {...props}>
+              <code className={`block bg-black/80 border border-white/[0.06] rounded-lg p-3 text-xs overflow-x-auto ${codeClassName || ''}`} {...props}>
                 {children}
               </code>
             );
           },
           pre: ({ children }) => (
-            <pre className="bg-slate-900/80 border border-slate-700/50 rounded-lg p-3 overflow-x-auto my-3">
+            <pre className="bg-black/80 border border-white/[0.06] rounded-lg p-3 overflow-x-auto my-3">
               {children}
             </pre>
           ),
@@ -101,12 +101,12 @@ export default function MarkdownContent({ content, className = '' }: MarkdownCon
             <li>{processChildren(children)}</li>
           ),
           ul: ({ children }) => (
-            <ul className="list-disc list-inside space-y-1 my-2 text-slate-300">
+            <ul className="list-disc list-inside space-y-1 my-2 text-white/70">
               {children}
             </ul>
           ),
           ol: ({ children }) => (
-            <ol className="list-decimal list-inside space-y-1 my-2 text-slate-300">
+            <ol className="list-decimal list-inside space-y-1 my-2 text-white/70">
               {children}
             </ol>
           ),
@@ -117,36 +117,36 @@ export default function MarkdownContent({ content, className = '' }: MarkdownCon
             <h2 className="text-lg font-semibold text-slate-100 mt-3 mb-2">{children}</h2>
           ),
           h3: ({ children }) => (
-            <h3 className="text-base font-semibold text-slate-200 mt-3 mb-1">{children}</h3>
+            <h3 className="text-base font-semibold text-white/90 mt-3 mb-1">{children}</h3>
           ),
           p: ({ children }) => (
-            <p className="text-slate-300 my-2 leading-relaxed">{processChildren(children)}</p>
+            <p className="text-white/70 my-2 leading-relaxed">{processChildren(children)}</p>
           ),
           table: ({ children }) => (
             <div className="overflow-x-auto my-3">
-              <table className="min-w-full border border-slate-700/50 text-sm">
+              <table className="min-w-full border border-white/[0.06] text-sm">
                 {children}
               </table>
             </div>
           ),
           th: ({ children }) => (
-            <th className="border border-slate-700/50 px-3 py-1.5 bg-slate-800/60 text-left text-slate-300 font-medium">
+            <th className="border border-white/[0.06] px-3 py-1.5 bg-white/[0.06]/60 text-left text-white/70 font-medium">
               {children}
             </th>
           ),
           td: ({ children }) => (
-            <td className="border border-slate-700/50 px-3 py-1.5 text-slate-400">
+            <td className="border border-white/[0.06] px-3 py-1.5 text-slate-400">
               {children}
             </td>
           ),
-          hr: () => <hr className="border-slate-700/50 my-4" />,
+          hr: () => <hr className="border-white/[0.06] my-4" />,
           img: ({ src, alt }) => (
             <Image
               src={src || ''}
               alt={alt || ''}
               width={800}
               height={400}
-              className="max-w-full h-auto rounded-lg border border-slate-700/50 my-2"
+              className="max-w-full h-auto rounded-lg border border-white/[0.06] my-2"
               unoptimized
             />
           ),

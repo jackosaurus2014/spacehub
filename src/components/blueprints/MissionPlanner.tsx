@@ -141,9 +141,9 @@ function BudgetDisplay({ budget }: { budget: BudgetSummary }) {
   };
 
   return (
-    <div className="card p-5 border border-white/10 bg-slate-800/50">
+    <div className="card p-5 border border-white/10 bg-white/[0.04]">
       <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-        <svg className="w-5 h-5 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className="w-5 h-5 text-white/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
         </svg>
         Mass / Power / Cost Budget
@@ -151,31 +151,31 @@ function BudgetDisplay({ budget }: { budget: BudgetSummary }) {
 
       {/* Summary Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5">
-        <div className="bg-slate-900/50 rounded-lg p-3">
-          <span className="text-xs text-slate-300 block">Total Mass</span>
+        <div className="bg-black/50 rounded-lg p-3">
+          <span className="text-xs text-white/70 block">Total Mass</span>
           <span className="text-xl font-bold text-white">{budget.totalMass.toFixed(2)}</span>
           <span className="text-xs text-slate-400 ml-1">kg</span>
         </div>
-        <div className="bg-slate-900/50 rounded-lg p-3">
-          <span className="text-xs text-slate-300 block">Total Power</span>
+        <div className="bg-black/50 rounded-lg p-3">
+          <span className="text-xs text-white/70 block">Total Power</span>
           <span className="text-xl font-bold text-yellow-400">{budget.totalPower.toFixed(1)}</span>
           <span className="text-xs text-slate-400 ml-1">W</span>
         </div>
-        <div className="bg-slate-900/50 rounded-lg p-3">
-          <span className="text-xs text-slate-300 block">Est. Cost</span>
+        <div className="bg-black/50 rounded-lg p-3">
+          <span className="text-xs text-white/70 block">Est. Cost</span>
           <span className="text-xl font-bold text-green-400">${budget.totalCost.toLocaleString()}</span>
           <span className="text-xs text-slate-400 ml-1">K</span>
         </div>
-        <div className="bg-slate-900/50 rounded-lg p-3">
-          <span className="text-xs text-slate-300 block">Best-Fit Bus</span>
-          <span className="text-sm font-bold text-slate-300">{budget.busClass}</span>
+        <div className="bg-black/50 rounded-lg p-3">
+          <span className="text-xs text-white/70 block">Best-Fit Bus</span>
+          <span className="text-sm font-bold text-white/70">{budget.busClass}</span>
         </div>
       </div>
 
       {/* Mass Breakdown Bar */}
       {budget.totalMass > 0 && (
         <div className="mb-5">
-          <span className="text-xs text-slate-300 block mb-1.5">Mass Breakdown</span>
+          <span className="text-xs text-white/70 block mb-1.5">Mass Breakdown</span>
           <div className="flex rounded-lg overflow-hidden h-6">
             {budget.items.filter(i => i.mass > 0).map(item => (
               <div
@@ -185,7 +185,7 @@ function BudgetDisplay({ budget }: { budget: BudgetSummary }) {
                 title={`${item.categoryName}: ${item.mass.toFixed(2)} kg (${(massPercents[item.category] || 0).toFixed(0)}%)`}
               >
                 <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 hidden group-hover:block z-10">
-                  <div className="bg-slate-900 text-white text-xs px-2 py-1 rounded shadow-lg whitespace-nowrap">
+                  <div className="bg-black text-white text-xs px-2 py-1 rounded shadow-lg whitespace-nowrap">
                     {item.categoryName}: {item.mass.toFixed(2)} kg
                   </div>
                 </div>
@@ -208,17 +208,17 @@ function BudgetDisplay({ budget }: { budget: BudgetSummary }) {
         <div className="overflow-x-auto mb-4">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-slate-700/50">
-                <th className="text-left py-2 px-2 text-slate-300 font-medium">Subsystem</th>
-                <th className="text-left py-2 px-2 text-slate-300 font-medium">Selection</th>
-                <th className="text-right py-2 px-2 text-slate-300 font-medium">Mass (kg)</th>
-                <th className="text-right py-2 px-2 text-slate-300 font-medium">Power (W)</th>
-                <th className="text-right py-2 px-2 text-slate-300 font-medium">Cost ($K)</th>
+              <tr className="border-b border-white/[0.06]">
+                <th className="text-left py-2 px-2 text-white/70 font-medium">Subsystem</th>
+                <th className="text-left py-2 px-2 text-white/70 font-medium">Selection</th>
+                <th className="text-right py-2 px-2 text-white/70 font-medium">Mass (kg)</th>
+                <th className="text-right py-2 px-2 text-white/70 font-medium">Power (W)</th>
+                <th className="text-right py-2 px-2 text-white/70 font-medium">Cost ($K)</th>
               </tr>
             </thead>
             <tbody>
               {budget.items.map(item => (
-                <tr key={item.category} className="border-b border-slate-800/50">
+                <tr key={item.category} className="border-b border-white/[0.06]">
                   <td className="py-2 px-2 text-slate-400">{item.categoryName}</td>
                   <td className="py-2 px-2 text-white text-xs">{item.optionName}</td>
                   <td className="py-2 px-2 text-right font-mono text-white">{item.mass.toFixed(2)}</td>
@@ -226,7 +226,7 @@ function BudgetDisplay({ budget }: { budget: BudgetSummary }) {
                   <td className="py-2 px-2 text-right font-mono text-green-400">{item.cost > 0 ? `$${item.cost}` : '--'}</td>
                 </tr>
               ))}
-              <tr className="border-t-2 border-slate-600 font-bold">
+              <tr className="border-t-2 border-white/[0.1] font-bold">
                 <td className="py-2 px-2 text-white" colSpan={2}>TOTAL</td>
                 <td className="py-2 px-2 text-right font-mono text-white">{budget.totalMass.toFixed(2)}</td>
                 <td className="py-2 px-2 text-right font-mono text-yellow-400">{budget.totalPower.toFixed(1)}</td>
@@ -270,11 +270,11 @@ function MissionTemplateCard({
       onClick={onSelect}
       className={`w-full text-left p-4 rounded-lg border transition-all ${
         isActive
-          ? 'border-white/15 bg-slate-800/30 shadow-lg shadow-black/10'
-          : 'border-slate-700/50 bg-slate-800/30 hover:border-slate-600/50 hover:bg-slate-800/50'
+          ? 'border-white/15 bg-white/[0.03] shadow-lg shadow-black/10'
+          : 'border-white/[0.06] bg-white/[0.03] hover:border-white/[0.08] hover:bg-white/[0.04]'
       }`}
     >
-      <h4 className={`font-semibold text-sm ${isActive ? 'text-slate-200' : 'text-white'}`}>
+      <h4 className={`font-semibold text-sm ${isActive ? 'text-white/90' : 'text-white'}`}>
         {template.name}
       </h4>
       <div className="flex gap-3 mt-1.5 text-xs text-slate-400">
@@ -359,7 +359,7 @@ export default function MissionPlanner() {
           <div className="mt-4">
             <button
               onClick={() => setShowTemplateDetails(!showTemplateDetails)}
-              className="text-sm text-slate-300 hover:text-white transition-colors flex items-center gap-1"
+              className="text-sm text-white/70 hover:text-white transition-colors flex items-center gap-1"
             >
               <svg className={`w-4 h-4 transition-transform ${showTemplateDetails ? 'rotate-90' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -367,40 +367,40 @@ export default function MissionPlanner() {
               {showTemplateDetails ? 'Hide' : 'Show'} Mission Details
             </button>
             {showTemplateDetails && (
-              <div className="mt-3 card p-4 border border-white/10 bg-slate-800/40">
+              <div className="mt-3 card p-4 border border-white/10 bg-white/[0.04]">
                 <h4 className="font-semibold text-white mb-2">{selectedTemplate.name}</h4>
                 <p className="text-sm text-slate-400 mb-3">{selectedTemplate.description}</p>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-3">
-                  <div className="bg-slate-900/50 px-3 py-2 rounded">
-                    <span className="text-xs text-slate-300 block">Orbit</span>
+                  <div className="bg-black/50 px-3 py-2 rounded">
+                    <span className="text-xs text-white/70 block">Orbit</span>
                     <span className="text-sm font-semibold text-white">{selectedTemplate.orbit}</span>
                   </div>
-                  <div className="bg-slate-900/50 px-3 py-2 rounded">
-                    <span className="text-xs text-slate-300 block">Altitude</span>
+                  <div className="bg-black/50 px-3 py-2 rounded">
+                    <span className="text-xs text-white/70 block">Altitude</span>
                     <span className="text-sm font-semibold text-white">{selectedTemplate.altitude}</span>
                   </div>
-                  <div className="bg-slate-900/50 px-3 py-2 rounded">
-                    <span className="text-xs text-slate-300 block">Inclination</span>
+                  <div className="bg-black/50 px-3 py-2 rounded">
+                    <span className="text-xs text-white/70 block">Inclination</span>
                     <span className="text-sm font-semibold text-white">{selectedTemplate.inclination}</span>
                   </div>
-                  <div className="bg-slate-900/50 px-3 py-2 rounded">
-                    <span className="text-xs text-slate-300 block">Duration</span>
+                  <div className="bg-black/50 px-3 py-2 rounded">
+                    <span className="text-xs text-white/70 block">Duration</span>
                     <span className="text-sm font-semibold text-white">{selectedTemplate.duration}</span>
                   </div>
                 </div>
                 <div className="mb-3">
-                  <span className="text-xs text-slate-300 font-medium block mb-1.5">Key Requirements</span>
+                  <span className="text-xs text-white/70 font-medium block mb-1.5">Key Requirements</span>
                   <ul className="space-y-1">
                     {selectedTemplate.keyRequirements.map((req, i) => (
                       <li key={i} className="text-xs text-slate-400 flex items-start gap-2">
-                        <span className="text-slate-300 flex-shrink-0">--</span>
+                        <span className="text-white/70 flex-shrink-0">--</span>
                         {req}
                       </li>
                     ))}
                   </ul>
                 </div>
                 <div>
-                  <span className="text-xs text-slate-300 font-medium block mb-1.5">References</span>
+                  <span className="text-xs text-white/70 font-medium block mb-1.5">References</span>
                   <div className="space-y-1">
                     {selectedTemplate.references.map((ref, i) => (
                       <a
@@ -408,7 +408,7 @@ export default function MissionPlanner() {
                         href={ref.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center gap-1.5 text-xs text-slate-300 hover:text-white"
+                        className="flex items-center gap-1.5 text-xs text-white/70 hover:text-white"
                       >
                         <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
@@ -431,7 +431,7 @@ export default function MissionPlanner() {
           <h3 className="text-lg font-semibold text-white">Subsystem Selection</h3>
 
           {/* Payload Mass/Power Inputs */}
-          <div className="card p-4 border border-slate-700/50">
+          <div className="card p-4 border border-white/[0.06]">
             <h4 className="text-sm font-semibold text-white mb-3 flex items-center gap-2">
               <svg className="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
@@ -440,7 +440,7 @@ export default function MissionPlanner() {
             </h4>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="text-xs text-slate-300 block mb-1">Payload Mass (kg)</label>
+                <label className="text-xs text-white/70 block mb-1">Payload Mass (kg)</label>
                 <input
                   type="number"
                   inputMode="decimal"
@@ -448,11 +448,11 @@ export default function MissionPlanner() {
                   onChange={(e) => setPayloadMass(Math.max(0, parseFloat(e.target.value) || 0))}
                   step={0.1}
                   min={0}
-                  className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+                  className="w-full px-3 py-2 bg-black border border-white/[0.08] rounded-lg text-white text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                 />
               </div>
               <div>
-                <label className="text-xs text-slate-300 block mb-1">Payload Power (W avg)</label>
+                <label className="text-xs text-white/70 block mb-1">Payload Power (W avg)</label>
                 <input
                   type="number"
                   inputMode="decimal"
@@ -460,7 +460,7 @@ export default function MissionPlanner() {
                   onChange={(e) => setPayloadPower(Math.max(0, parseFloat(e.target.value) || 0))}
                   step={0.5}
                   min={0}
-                  className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+                  className="w-full px-3 py-2 bg-black border border-white/[0.08] rounded-lg text-white text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                 />
               </div>
             </div>
@@ -468,9 +468,9 @@ export default function MissionPlanner() {
 
           {/* Subsystem Category Selectors */}
           {SUBSYSTEM_CATEGORIES.map(category => (
-            <div key={category.id} className="card p-4 border border-slate-700/50">
+            <div key={category.id} className="card p-4 border border-white/[0.06]">
               <h4 className="text-sm font-semibold text-white mb-1 flex items-center gap-2">
-                <span className="text-xs bg-slate-700 text-slate-300 px-1.5 py-0.5 rounded font-mono">
+                <span className="text-xs bg-white/[0.08] text-white/70 px-1.5 py-0.5 rounded font-mono">
                   {category.abbreviation}
                 </span>
                 {category.name}
@@ -486,12 +486,12 @@ export default function MissionPlanner() {
                       onClick={() => handleSelectOption(category.id, option.id)}
                       className={`text-left p-3 rounded-lg border transition-all ${
                         isSelected
-                          ? 'border-white/15 bg-slate-800/30 ring-1 ring-white/10'
-                          : 'border-slate-700/30 bg-slate-800/30 hover:border-slate-600/50 hover:bg-slate-800/50'
+                          ? 'border-white/15 bg-white/[0.03] ring-1 ring-white/10'
+                          : 'border-white/[0.04] bg-white/[0.03] hover:border-white/[0.08] hover:bg-white/[0.04]'
                       }`}
                     >
                       <div className="flex items-start justify-between">
-                        <span className={`text-sm font-medium ${isSelected ? 'text-slate-200' : 'text-white'}`}>
+                        <span className={`text-sm font-medium ${isSelected ? 'text-white/90' : 'text-white'}`}>
                           {option.name}
                         </span>
                         <span className={`text-xs px-1.5 py-0.5 rounded ${

@@ -47,13 +47,13 @@ export default function WebinarCard({ webinar, compact = false }: WebinarCardPro
     }
     if (webinar.isPast) {
       return (
-        <span className="text-xs bg-slate-600/50 text-slate-400 px-2 py-0.5 rounded">
+        <span className="text-xs bg-white/[0.08] text-slate-400 px-2 py-0.5 rounded">
           Past Event
         </span>
       );
     }
     return (
-      <span className="text-xs bg-white/10 text-slate-300 px-2 py-0.5 rounded">
+      <span className="text-xs bg-white/10 text-white/70 px-2 py-0.5 rounded">
         Upcoming
       </span>
     );
@@ -61,8 +61,8 @@ export default function WebinarCard({ webinar, compact = false }: WebinarCardPro
 
   if (compact) {
     return (
-      <div className={`bg-slate-800/50 border rounded-lg p-4 transition-all ${
-        webinar.isLive ? 'border-red-500/50 bg-red-500/5' : 'border-slate-700/50 hover:border-white/15'
+      <div className={`bg-white/[0.04] border rounded-lg p-4 transition-all ${
+        webinar.isLive ? 'border-red-500/50 bg-red-500/5' : 'border-white/[0.06] hover:border-white/15'
       }`}>
         <div className="flex items-start justify-between gap-3 mb-2">
           <div className="flex-1 min-w-0">
@@ -86,7 +86,7 @@ export default function WebinarCard({ webinar, compact = false }: WebinarCardPro
           {webinar.isLive || webinar.registrationUrl ? (
             <a
               href={webinar.isLive ? '#' : webinar.registrationUrl || '#'}
-              className="text-xs bg-white hover:bg-slate-700 text-slate-900 px-3 py-1 rounded transition-colors"
+              className="text-xs bg-white hover:bg-white/[0.08] text-slate-900 px-3 py-1 rounded transition-colors"
             >
               {webinar.isLive ? 'Join Now' : 'Register'}
             </a>
@@ -95,7 +95,7 @@ export default function WebinarCard({ webinar, compact = false }: WebinarCardPro
               href={webinar.recordingUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-xs bg-slate-700 hover:bg-slate-600 text-white px-3 py-1 rounded transition-colors"
+              className="text-xs bg-white/[0.08] hover:bg-white/[0.08] text-white px-3 py-1 rounded transition-colors"
             >
               Watch Recording
             </a>
@@ -106,15 +106,15 @@ export default function WebinarCard({ webinar, compact = false }: WebinarCardPro
   }
 
   return (
-    <div className={`bg-slate-800/50 border rounded-lg p-5 transition-all ${
-      webinar.isLive ? 'border-red-500/50 bg-red-500/5' : 'border-slate-700/50 hover:border-white/15'
+    <div className={`bg-white/[0.04] border rounded-lg p-5 transition-all ${
+      webinar.isLive ? 'border-red-500/50 bg-red-500/5' : 'border-white/[0.06] hover:border-white/15'
     }`}>
       {/* Header */}
       <div className="flex items-start justify-between mb-4">
         <div className="flex items-center gap-2">
           {getStatusBadge()}
           {topicInfo && (
-            <span className="text-xs bg-slate-700/50 text-slate-300 px-2 py-0.5 rounded">
+            <span className="text-xs bg-white/[0.05] text-white/70 px-2 py-0.5 rounded">
               {topicInfo.icon} {topicInfo.label}
             </span>
           )}
@@ -129,9 +129,9 @@ export default function WebinarCard({ webinar, compact = false }: WebinarCardPro
       <p className="text-slate-400 text-sm mb-4 line-clamp-2">{webinar.description}</p>
 
       {/* Speaker */}
-      <div className="bg-slate-700/30 rounded-lg p-3 mb-4">
+      <div className="bg-white/[0.03] rounded-lg p-3 mb-4">
         <div className="flex items-start gap-3">
-          <div className="w-10 h-10 bg-slate-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
+          <div className="w-10 h-10 bg-white/[0.1] rounded-full flex items-center justify-center text-white font-bold text-sm">
             {webinar.speaker.split(' ').map(n => n[0]).join('').slice(0, 2)}
           </div>
           <div className="flex-1 min-w-0">
@@ -171,7 +171,7 @@ export default function WebinarCard({ webinar, compact = false }: WebinarCardPro
             href={webinar.registrationUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex-1 bg-white hover:bg-slate-700 text-slate-900 text-sm font-medium py-2 px-4 rounded-lg transition-colors text-center"
+            className="flex-1 bg-white hover:bg-white/[0.08] text-slate-900 text-sm font-medium py-2 px-4 rounded-lg transition-colors text-center"
           >
             Register for Webinar
           </a>
@@ -180,7 +180,7 @@ export default function WebinarCard({ webinar, compact = false }: WebinarCardPro
             href={webinar.recordingUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex-1 bg-white hover:bg-slate-700 text-slate-900 text-sm font-medium py-2 px-4 rounded-lg transition-colors text-center"
+            className="flex-1 bg-white hover:bg-white/[0.08] text-slate-900 text-sm font-medium py-2 px-4 rounded-lg transition-colors text-center"
           >
             Watch Recording
           </a>
@@ -189,7 +189,7 @@ export default function WebinarCard({ webinar, compact = false }: WebinarCardPro
             Recording not available
           </span>
         )}
-        <button className="bg-slate-700 hover:bg-slate-600 text-white text-sm font-medium py-2 px-4 rounded-lg transition-colors">
+        <button className="bg-white/[0.08] hover:bg-white/[0.08] text-white text-sm font-medium py-2 px-4 rounded-lg transition-colors">
           Share
         </button>
       </div>

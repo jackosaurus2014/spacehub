@@ -87,7 +87,7 @@ export default function AutoBreadcrumb() {
                 )}
 
                 {isLast ? (
-                  <span className="text-slate-300 truncate max-w-[200px]" aria-current="page">
+                  <span className="text-white/70 truncate max-w-[200px]" aria-current="page">
                     {item.label}
                   </span>
                 ) : (

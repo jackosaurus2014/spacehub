@@ -61,7 +61,7 @@ export default function ReviewCard({ review }: ReviewCardProps) {
 
       {/* Sub-ratings */}
       {(review.qualityRating || review.timelineRating || review.commRating || review.valueRating) && (
-        <div className="flex flex-wrap gap-x-4 gap-y-1 pt-1 border-t border-slate-700/50">
+        <div className="flex flex-wrap gap-x-4 gap-y-1 pt-1 border-t border-white/[0.06]">
           {review.qualityRating && (
             <div className="flex items-center gap-1.5 text-xs text-slate-500">
               Quality <StarRating rating={review.qualityRating} />
@@ -87,9 +87,9 @@ export default function ReviewCard({ review }: ReviewCardProps) {
 
       {/* Provider Response */}
       {review.providerResponse && (
-        <div className="bg-slate-800/50 rounded-lg p-3 ml-4 border-l-2 border-white/10">
+        <div className="bg-white/[0.04] rounded-lg p-3 ml-4 border-l-2 border-white/10">
           <div className="flex items-center gap-2 mb-1">
-            <span className="text-xs font-bold text-slate-300">Provider Response</span>
+            <span className="text-xs font-bold text-white/70">Provider Response</span>
             {review.providerRespondedAt && (
               <span className="text-xs text-slate-600">
                 {new Date(review.providerRespondedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' })}

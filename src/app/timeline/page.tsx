@@ -399,7 +399,7 @@ function EraDivider({ label, gradient }: { label: string; gradient: string }) {
   return (
     <div className="relative flex items-center justify-center my-12">
       <div className={`absolute inset-0 h-px top-1/2 bg-gradient-to-r ${gradient} opacity-40`} />
-      <span className="relative z-10 px-6 py-2 rounded-full bg-slate-900 border border-slate-700/50 text-sm font-semibold tracking-wider uppercase text-slate-300">
+      <span className="relative z-10 px-6 py-2 rounded-full bg-black border border-white/[0.06] text-sm font-semibold tracking-wider uppercase text-slate-300">
         {label}
       </span>
     </div>
@@ -422,7 +422,7 @@ function CategoryChip({
       className={`px-4 py-1.5 rounded-full text-sm font-medium border transition-all duration-200 ${
         active
           ? `${cfg.bgClass} ${cfg.borderClass} ${cfg.textClass}`
-          : 'bg-slate-800/30 border-slate-700/30 text-slate-400 hover:border-slate-600 hover:text-slate-300'
+          : 'bg-white/[0.04] border-white/[0.04] text-slate-400 hover:border-white/[0.1] hover:text-slate-300'
       }`}
     >
       {category}
@@ -447,8 +447,8 @@ function TimelineCard({
       delay={0.05 * (index % 6)}
     >
       <div
-        className={`group relative bg-slate-800/50 border border-slate-700/50 rounded-xl p-6 backdrop-blur-sm
-          hover:border-white/15 hover:bg-slate-800/70 hover:shadow-lg hover:shadow-black/20 transition-all duration-300`}
+        className={`group relative bg-white/[0.04] border border-white/[0.06] rounded-xl p-6 backdrop-blur-sm
+          hover:border-white/15 hover:bg-white/[0.06] hover:shadow-lg hover:shadow-black/20 transition-all duration-300`}
       >
         {/* Year badge */}
         <div className="flex items-center gap-3 mb-3">
@@ -541,8 +541,8 @@ export default function SpaceTimelinePage() {
             onClick={() => setSelectedEra(era)}
             className={`px-5 py-2 rounded-lg text-sm font-semibold border transition-all duration-200 ${
               selectedEra === era
-                ? 'bg-white/8 border-white/15 text-slate-200 shadow-sm shadow-black/5'
-                : 'bg-slate-800/40 border-slate-700/40 text-slate-400 hover:border-slate-600 hover:text-slate-200'
+                ? 'bg-white/8 border-white/15 text-white/90 shadow-sm shadow-black/5'
+                : 'bg-white/[0.04] border-white/[0.04] text-slate-400 hover:border-white/[0.1] hover:text-white/90'
             }`}
           >
             {era}
@@ -678,7 +678,7 @@ export default function SpaceTimelinePage() {
                     {/* Center dot */}
                     <div className="relative flex items-center justify-center">
                       <div
-                        className={`w-4 h-4 rounded-full ${cfg.dotClass} ring-4 ring-slate-900 z-10 shadow-lg`}
+                        className={`w-4 h-4 rounded-full ${cfg.dotClass} ring-4 ring-black z-10 shadow-lg`}
                         style={{ boxShadow: `0 0 12px ${cfg.color === 'cyan' ? 'rgba(6,182,212,0.4)' : cfg.color === 'emerald' ? 'rgba(16,185,129,0.4)' : cfg.color === 'blue' ? 'rgba(59,130,246,0.4)' : cfg.color === 'purple' ? 'rgba(168,85,247,0.4)' : cfg.color === 'red' ? 'rgba(239,68,68,0.4)' : 'rgba(245,158,11,0.4)'}` }}
                       />
                     </div>
@@ -704,7 +704,7 @@ export default function SpaceTimelinePage() {
                     {/* Dot on left line */}
                     <div className="relative flex flex-col items-center flex-shrink-0" style={{ width: '32px' }}>
                       <div
-                        className={`w-3 h-3 rounded-full ${cfg.dotClass} ring-4 ring-slate-900 z-10 mt-6`}
+                        className={`w-3 h-3 rounded-full ${cfg.dotClass} ring-4 ring-black z-10 mt-6`}
                         style={{ boxShadow: `0 0 10px ${cfg.color === 'cyan' ? 'rgba(6,182,212,0.4)' : cfg.color === 'emerald' ? 'rgba(16,185,129,0.4)' : cfg.color === 'blue' ? 'rgba(59,130,246,0.4)' : cfg.color === 'purple' ? 'rgba(168,85,247,0.4)' : cfg.color === 'red' ? 'rgba(239,68,68,0.4)' : 'rgba(245,158,11,0.4)'}` }}
                       />
                     </div>
@@ -724,7 +724,7 @@ export default function SpaceTimelinePage() {
 
           {/* Timeline end cap */}
           <div className="flex justify-center mt-8">
-            <div className="w-3 h-3 rounded-full bg-white/40 ring-4 ring-slate-900" />
+            <div className="w-3 h-3 rounded-full bg-white/40 ring-4 ring-black" />
           </div>
         </div>
       )}
@@ -740,7 +740,7 @@ export default function SpaceTimelinePage() {
           { label: 'Eras', value: '3', icon: '\u23F3' },
         ].map((stat) => (
           <ScrollReveal key={stat.label} delay={0.1}>
-            <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-4 text-center hover:border-white/10 transition-colors duration-200">
+            <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-4 text-center hover:border-white/10 transition-colors duration-200">
               <span className="text-2xl block mb-1">{stat.icon}</span>
               <p className="text-2xl font-bold text-white">{stat.value}</p>
               <p className="text-xs text-slate-400 uppercase tracking-wider">{stat.label}</p>
@@ -753,7 +753,7 @@ export default function SpaceTimelinePage() {
       {/* Explore More                                                      */}
       {/* ----------------------------------------------------------------- */}
       <ScrollReveal delay={0.15}>
-        <section className="mt-16 border-t border-slate-800 pt-8">
+        <section className="mt-16 border-t border-white/[0.06] pt-8">
           <h2 className="text-xl font-bold text-white mb-6">Explore More</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <a href="/glossary" className="card p-4 hover:border-white/15 transition-colors group">

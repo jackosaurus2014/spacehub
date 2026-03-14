@@ -394,7 +394,7 @@ const IMPACT_CONFIG: Record<ImpactLevel, { label: string; color: string; bg: str
   },
   significant: {
     label: 'Significant',
-    color: 'text-slate-300',
+    color: 'text-white/70',
     bg: 'bg-white/5',
     border: 'border-white/10',
   },
@@ -452,7 +452,7 @@ export default function IndustryTrendsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100">
+    <div className="min-h-screen bg-black text-white/90">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <AnimatedPageHeader
@@ -466,19 +466,19 @@ export default function IndustryTrendsPage() {
         {/* Summary Stats */}
         <ScrollReveal>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-            <div className="bg-slate-900/50 border border-slate-700/50 rounded-xl p-4 text-center">
-              <p className="text-2xl font-bold text-slate-300">{TRENDS.length}</p>
+            <div className="bg-black/50 border border-white/[0.06] rounded-xl p-4 text-center">
+              <p className="text-2xl font-bold text-white/70">{TRENDS.length}</p>
               <p className="text-sm text-slate-400 mt-1">Tracked Trends</p>
             </div>
-            <div className="bg-slate-900/50 border border-slate-700/50 rounded-xl p-4 text-center">
+            <div className="bg-black/50 border border-white/[0.06] rounded-xl p-4 text-center">
               <p className="text-2xl font-bold text-amber-400">{impactCounts.transformative}</p>
               <p className="text-sm text-slate-400 mt-1">Transformative</p>
             </div>
-            <div className="bg-slate-900/50 border border-slate-700/50 rounded-xl p-4 text-center">
-              <p className="text-2xl font-bold text-slate-300">{impactCounts.significant}</p>
+            <div className="bg-black/50 border border-white/[0.06] rounded-xl p-4 text-center">
+              <p className="text-2xl font-bold text-white/70">{impactCounts.significant}</p>
               <p className="text-sm text-slate-400 mt-1">Significant</p>
             </div>
-            <div className="bg-slate-900/50 border border-slate-700/50 rounded-xl p-4 text-center">
+            <div className="bg-black/50 border border-white/[0.06] rounded-xl p-4 text-center">
               <p className="text-2xl font-bold text-emerald-400">{impactCounts.emerging}</p>
               <p className="text-sm text-slate-400 mt-1">Emerging</p>
             </div>
@@ -494,7 +494,7 @@ export default function IndustryTrendsPage() {
               <select
                 value={categoryFilter}
                 onChange={(e) => setCategoryFilter(e.target.value as TrendCategory | 'all')}
-                className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-white/20 focus:border-white/15"
+                className="w-full bg-white/[0.06] border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-white/90 focus:outline-none focus:ring-2 focus:ring-white/20 focus:border-white/15"
               >
                 <option value="all">All Categories ({TRENDS.length})</option>
                 {ALL_CATEGORIES.map((cat) => {
@@ -516,8 +516,8 @@ export default function IndustryTrendsPage() {
                   onClick={() => setImpactFilter('all')}
                   className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                     impactFilter === 'all'
-                      ? 'bg-slate-700 text-white'
-                      : 'bg-slate-800 text-slate-400 hover:bg-slate-700/50'
+                      ? 'bg-white/[0.1] text-white'
+                      : 'bg-white/[0.06] text-slate-400 hover:bg-white/[0.04]'
                   }`}
                 >
                   All
@@ -531,7 +531,7 @@ export default function IndustryTrendsPage() {
                       className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                         impactFilter === level
                           ? `${cfg.bg} ${cfg.color} border ${cfg.border}`
-                          : 'bg-slate-800 text-slate-400 hover:bg-slate-700/50'
+                          : 'bg-white/[0.06] text-slate-400 hover:bg-white/[0.04]'
                       }`}
                     >
                       {cfg.label}
@@ -560,8 +560,8 @@ export default function IndustryTrendsPage() {
             return (
               <ScrollReveal key={trend.title} delay={idx * 0.05}>
                 <div
-                  className={`bg-slate-900/60 border rounded-xl transition-all duration-300 ${
-                    isExpanded ? 'border-white/15 shadow-lg shadow-black/20' : 'border-slate-700/50 hover:border-slate-600/50'
+                  className={`bg-black/60 border rounded-xl transition-all duration-300 ${
+                    isExpanded ? 'border-white/15 shadow-lg shadow-black/20' : 'border-white/[0.06] hover:border-white/[0.08]'
                   }`}
                 >
                   {/* Card Header */}
@@ -585,7 +585,7 @@ export default function IndustryTrendsPage() {
                         </div>
 
                         {/* Title */}
-                        <h3 className="text-lg font-semibold text-slate-100 leading-tight">{trend.title}</h3>
+                        <h3 className="text-lg font-semibold text-white/90 leading-tight">{trend.title}</h3>
 
                         {/* Description preview */}
                         {!isExpanded && (
@@ -597,7 +597,7 @@ export default function IndustryTrendsPage() {
                           <div className="flex flex-wrap gap-3 mt-3">
                             {trend.metrics.slice(0, 3).map((m) => (
                               <span key={m.label} className="text-xs text-slate-500">
-                                <span className="text-slate-300 font-semibold">{m.value}</span>{' '}
+                                <span className="text-white/70 font-semibold">{m.value}</span>{' '}
                                 {m.label}
                               </span>
                             ))}
@@ -624,9 +624,9 @@ export default function IndustryTrendsPage() {
 
                   {/* Expanded Content */}
                   {isExpanded && (
-                    <div className="px-5 sm:px-6 pb-6 border-t border-slate-700/50 pt-4">
+                    <div className="px-5 sm:px-6 pb-6 border-t border-white/[0.06] pt-4">
                       {/* Full Description */}
-                      <p className="text-sm text-slate-300 leading-relaxed mb-5">{trend.description}</p>
+                      <p className="text-sm text-white/70 leading-relaxed mb-5">{trend.description}</p>
 
                       <div className="grid md:grid-cols-3 gap-5">
                         {/* Evidence */}
@@ -636,8 +636,8 @@ export default function IndustryTrendsPage() {
                           </h4>
                           <ul className="space-y-2">
                             {trend.evidence.map((item, i) => (
-                              <li key={i} className="flex items-start gap-2 text-sm text-slate-300">
-                                <span className="text-slate-300 mt-0.5 flex-shrink-0">&#8226;</span>
+                              <li key={i} className="flex items-start gap-2 text-sm text-white/70">
+                                <span className="text-white/70 mt-0.5 flex-shrink-0">&#8226;</span>
                                 <span>{item}</span>
                               </li>
                             ))}
@@ -651,7 +651,7 @@ export default function IndustryTrendsPage() {
                             {trend.companies.map((company) => (
                               <span
                                 key={company}
-                                className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-slate-800 text-slate-300 border border-slate-700/50"
+                                className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-white/[0.06] text-white/70 border border-white/[0.06]"
                               >
                                 {company}
                               </span>
@@ -668,9 +668,9 @@ export default function IndustryTrendsPage() {
                             {trend.metrics.map((m) => (
                               <div
                                 key={m.label}
-                                className="bg-slate-800/60 border border-slate-700/40 rounded-lg p-3"
+                                className="bg-white/[0.05] border border-white/[0.06] rounded-lg p-3"
                               >
-                                <p className="text-lg font-bold text-slate-300">{m.value}</p>
+                                <p className="text-lg font-bold text-white/70">{m.value}</p>
                                 <p className="text-xs text-slate-400 mt-0.5">{m.label}</p>
                               </div>
                             ))}
@@ -699,7 +699,7 @@ export default function IndustryTrendsPage() {
                   setCategoryFilter('all');
                   setImpactFilter('all');
                 }}
-                className="text-sm text-slate-300 hover:text-white underline underline-offset-2"
+                className="text-sm text-white/70 hover:text-white underline underline-offset-2"
               >
                 Clear all filters
               </button>
@@ -709,15 +709,15 @@ export default function IndustryTrendsPage() {
 
         {/* Related Pages */}
         <ScrollReveal delay={0.15}>
-          <div className="mt-12 border-t border-slate-800 pt-8">
-            <h2 className="text-lg font-semibold text-slate-200 mb-4">Related Analysis</h2>
+          <div className="mt-12 border-t border-white/[0.06] pt-8">
+            <h2 className="text-lg font-semibold text-white/90 mb-4">Related Analysis</h2>
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <Link
                 href="/market-intel"
-                className="group bg-slate-900/50 border border-slate-700/50 rounded-xl p-4 hover:border-white/10 transition-colors"
+                className="group bg-black/50 border border-white/[0.06] rounded-xl p-4 hover:border-white/10 transition-colors"
               >
                 <div className="text-2xl mb-2">📊</div>
-                <h3 className="text-sm font-semibold text-slate-200 group-hover:text-white transition-colors">
+                <h3 className="text-sm font-semibold text-white/90 group-hover:text-white transition-colors">
                   Market Intelligence
                 </h3>
                 <p className="text-xs text-slate-400 mt-1">
@@ -726,10 +726,10 @@ export default function IndustryTrendsPage() {
               </Link>
               <Link
                 href="/market-map"
-                className="group bg-slate-900/50 border border-slate-700/50 rounded-xl p-4 hover:border-white/10 transition-colors"
+                className="group bg-black/50 border border-white/[0.06] rounded-xl p-4 hover:border-white/10 transition-colors"
               >
                 <div className="text-2xl mb-2">🗺️</div>
-                <h3 className="text-sm font-semibold text-slate-200 group-hover:text-white transition-colors">
+                <h3 className="text-sm font-semibold text-white/90 group-hover:text-white transition-colors">
                   Market Map
                 </h3>
                 <p className="text-xs text-slate-400 mt-1">
@@ -738,10 +738,10 @@ export default function IndustryTrendsPage() {
               </Link>
               <Link
                 href="/investment-tracker"
-                className="group bg-slate-900/50 border border-slate-700/50 rounded-xl p-4 hover:border-white/10 transition-colors"
+                className="group bg-black/50 border border-white/[0.06] rounded-xl p-4 hover:border-white/10 transition-colors"
               >
                 <div className="text-2xl mb-2">💰</div>
-                <h3 className="text-sm font-semibold text-slate-200 group-hover:text-white transition-colors">
+                <h3 className="text-sm font-semibold text-white/90 group-hover:text-white transition-colors">
                   Investment Tracker
                 </h3>
                 <p className="text-xs text-slate-400 mt-1">
@@ -750,10 +750,10 @@ export default function IndustryTrendsPage() {
               </Link>
               <Link
                 href="/tech-readiness"
-                className="group bg-slate-900/50 border border-slate-700/50 rounded-xl p-4 hover:border-white/10 transition-colors"
+                className="group bg-black/50 border border-white/[0.06] rounded-xl p-4 hover:border-white/10 transition-colors"
               >
                 <div className="text-2xl mb-2">🔬</div>
-                <h3 className="text-sm font-semibold text-slate-200 group-hover:text-white transition-colors">
+                <h3 className="text-sm font-semibold text-white/90 group-hover:text-white transition-colors">
                   Tech Readiness
                 </h3>
                 <p className="text-xs text-slate-400 mt-1">
@@ -766,8 +766,8 @@ export default function IndustryTrendsPage() {
 
         {/* Methodology Note */}
         <ScrollReveal delay={0.2}>
-          <div className="mt-8 bg-slate-900/30 border border-slate-800/50 rounded-xl p-5">
-            <h3 className="text-sm font-semibold text-slate-300 mb-2">Methodology</h3>
+          <div className="mt-8 bg-black/30 border border-white/[0.04] rounded-xl p-5">
+            <h3 className="text-sm font-semibold text-white/70 mb-2">Methodology</h3>
             <p className="text-xs text-slate-400 leading-relaxed">
               Trends are identified and ranked through analysis of public filings, industry reports (Euroconsult,
               Bryce Tech, Space Capital), government budget documents, patent filings, conference proceedings, and

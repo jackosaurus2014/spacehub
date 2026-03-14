@@ -60,21 +60,21 @@ export default function RFQCard({ rfq, index = 0 }: RFQCardProps) {
 
           {/* Details Row */}
           <div className="grid grid-cols-3 gap-2 mb-3">
-            <div className="bg-slate-800/50 rounded p-2">
+            <div className="bg-white/[0.04] rounded p-2">
               <div className="text-xs text-slate-500 uppercase tracking-wider">Budget</div>
               <div className="text-xs font-semibold text-emerald-400">
                 {formatPrice(rfq.budgetMin, rfq.budgetMax)}
               </div>
             </div>
-            <div className="bg-slate-800/50 rounded p-2">
+            <div className="bg-white/[0.04] rounded p-2">
               <div className="text-xs text-slate-500 uppercase tracking-wider">Deadline</div>
-              <div className={`text-xs font-semibold ${daysLeft !== null && daysLeft <= 7 ? 'text-orange-400' : 'text-slate-300'}`}>
+              <div className={`text-xs font-semibold ${daysLeft !== null && daysLeft <= 7 ? 'text-orange-400' : 'text-white/70'}`}>
                 {daysLeft !== null ? `${daysLeft}d left` : 'Open'}
               </div>
             </div>
-            <div className="bg-slate-800/50 rounded p-2">
+            <div className="bg-white/[0.04] rounded p-2">
               <div className="text-xs text-slate-500 uppercase tracking-wider">Proposals</div>
-              <div className="text-xs font-semibold text-slate-300">
+              <div className="text-xs font-semibold text-white/70">
                 {rfq._count?.proposals ?? 0}
               </div>
             </div>

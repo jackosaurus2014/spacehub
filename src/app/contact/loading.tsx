@@ -1,15 +1,15 @@
 export default function Loading() {
   return (
-    <div className="min-h-screen bg-slate-950 p-4 sm:p-6 lg:p-8">
+    <div className="min-h-screen p-4 sm:p-6 lg:p-8">
       <div className="max-w-2xl mx-auto">
         {/* Title skeleton */}
         <div className="text-center mb-8">
-          <div className="h-8 w-40 sm:w-56 bg-slate-800 rounded-lg animate-pulse mx-auto mb-3" />
-          <div className="h-4 w-64 sm:w-80 bg-slate-800/60 rounded animate-pulse mx-auto" />
+          <div className="h-8 w-40 sm:w-56 bg-white/[0.06] rounded-lg animate-pulse mx-auto mb-3" />
+          <div className="h-4 w-64 sm:w-80 bg-white/[0.05] rounded animate-pulse mx-auto" />
         </div>
 
         {/* Contact form skeleton */}
-        <div className="bg-slate-800/50 rounded-xl p-5 sm:p-8 animate-pulse">
+        <div className="bg-white/[0.04] rounded-xl p-5 sm:p-8 animate-pulse">
           <div className="space-y-5">
             {/* Name field */}
             <div>

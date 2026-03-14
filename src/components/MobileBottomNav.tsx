@@ -350,12 +350,12 @@ export default function MobileBottomNav() {
         <div
           className="border-t border-white/[0.06] rounded-t-2xl max-h-[70vh] overflow-y-auto overscroll-contain"
           style={{
-            background: 'rgba(5, 10, 21, 0.97)',
+            background: 'rgba(0, 0, 0, 0.97)',
             boxShadow: '0 -8px 32px -8px rgba(0, 0, 0, 0.6)',
           }}
         >
           {/* Handle / close header */}
-          <div className="sticky top-0 z-10 bg-[#050a15]/95 backdrop-blur-sm border-b border-white/[0.06] px-4 pt-3 pb-2 flex items-center justify-between">
+          <div className="sticky top-0 z-10 bg-black/95 backdrop-blur-sm border-b border-white/[0.06] px-4 pt-3 pb-2 flex items-center justify-between">
             <span className="text-sm font-semibold text-slate-300 tracking-wide uppercase">
               All Modules
             </span>
@@ -414,7 +414,7 @@ export default function MobileBottomNav() {
         aria-label="Mobile navigation"
         className="fixed bottom-0 left-0 right-0 z-50 lg:hidden"
         style={{
-          background: 'rgba(5, 10, 21, 0.97)',
+          background: 'rgba(0, 0, 0, 0.97)',
           boxShadow: '0 -4px 24px -4px rgba(0, 0, 0, 0.4)',
         }}
       >

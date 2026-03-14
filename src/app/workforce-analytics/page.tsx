@@ -34,7 +34,7 @@ function formatNumber(n: number): string {
 function getTierBadge(tier: EmployerTier) {
   const styles: Record<EmployerTier, { bg: string; text: string; label: string }> = {
     prime: { bg: 'bg-amber-500/20', text: 'text-amber-400', label: 'Prime' },
-    major: { bg: 'bg-white/10', text: 'text-slate-300', label: 'Major' },
+    major: { bg: 'bg-white/10', text: 'text-white/70', label: 'Major' },
     growth: { bg: 'bg-emerald-500/20', text: 'text-emerald-400', label: 'Growth' },
   };
   const s = styles[tier];
@@ -53,7 +53,7 @@ function getTrendIcon(trend: 'up' | 'stable' | 'down' | 'flat') {
 
 function getSkillCategoryInfo(cat: SkillCategory) {
   const map: Record<SkillCategory, { label: string; color: string; bg: string }> = {
-    most_in_demand: { label: 'Most In-Demand', color: 'text-slate-300', bg: 'bg-white/10' },
+    most_in_demand: { label: 'Most In-Demand', color: 'text-white/70', bg: 'bg-white/10' },
     hardest_to_fill: { label: 'Hardest to Fill', color: 'text-red-400', bg: 'bg-red-500/20' },
     emerging: { label: 'Emerging Need', color: 'text-purple-400', bg: 'bg-purple-500/20' },
   };
@@ -153,7 +153,7 @@ export default function WorkforceAnalyticsPage() {
 
         {/* Section Navigation */}
         <ScrollReveal>
-          <div className="flex flex-wrap gap-2 mb-8 border-b border-slate-700/50 pb-4">
+          <div className="flex flex-wrap gap-2 mb-8 border-b border-white/[0.06] pb-4">
             {sections.map((sec) => (
               <button
                 key={sec.id}
@@ -161,7 +161,7 @@ export default function WorkforceAnalyticsPage() {
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-all min-h-[44px] ${
                   activeSection === sec.id
                     ? 'bg-white text-slate-900 shadow-lg shadow-black/15'
-                    : 'bg-slate-800/60 text-slate-300 hover:bg-slate-700/60 hover:text-white'
+                    : 'bg-white/[0.05] text-white/70 hover:bg-white/[0.06] hover:text-white'
                 }`}
               >
                 {sec.label}
@@ -196,7 +196,7 @@ export default function WorkforceAnalyticsPage() {
                   <select
                     value={sectorFilter}
                     onChange={(e) => setSectorFilter(e.target.value)}
-                    className="bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-300 min-h-[44px]"
+                    className="bg-white/[0.06] border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-white/70 min-h-[44px]"
                     aria-label="Filter by sector"
                   >
                     {SECTOR_FILTER_OPTIONS.map((opt) => (
@@ -211,12 +211,12 @@ export default function WorkforceAnalyticsPage() {
                     return (
                       <div key={sector.sector} className="group">
                         <div className="flex items-center justify-between mb-1">
-                          <span className="text-sm font-medium text-slate-200">{sector.sector}</span>
-                          <span className="text-sm font-semibold text-slate-300">
+                          <span className="text-sm font-medium text-white/90">{sector.sector}</span>
+                          <span className="text-sm font-semibold text-white/70">
                             {sector.employees.toLocaleString()}
                           </span>
                         </div>
-                        <div className="relative h-7 bg-slate-800/60 rounded-lg overflow-hidden">
+                        <div className="relative h-7 bg-white/[0.05] rounded-lg overflow-hidden">
                           <div
                             className={`h-full ${sector.color} rounded-lg transition-all duration-700 ease-out opacity-80 group-hover:opacity-100`}
                             style={{ width: `${widthPct}%` }}
@@ -228,9 +228,9 @@ export default function WorkforceAnalyticsPage() {
                   })}
                 </div>
 
-                <div className="mt-6 pt-4 border-t border-slate-700/50 flex items-center justify-between">
+                <div className="mt-6 pt-4 border-t border-white/[0.06] flex items-center justify-between">
                   <span className="text-sm text-slate-400">Total tracked workforce</span>
-                  <span className="text-lg font-bold text-slate-300">
+                  <span className="text-lg font-bold text-white/70">
                     {filteredSectors.reduce((sum, s) => sum + s.employees, 0).toLocaleString()}
                   </span>
                 </div>
@@ -246,16 +246,16 @@ export default function WorkforceAnalyticsPage() {
                     {GEO_HUBS.slice(0, 5).map((hub) => (
                       <div key={hub.location} className="flex items-center justify-between">
                         <div>
-                          <p className="text-sm font-medium text-slate-200">{hub.location}, {hub.state}</p>
+                          <p className="text-sm font-medium text-white/90">{hub.location}, {hub.state}</p>
                           <p className="text-xs text-slate-500">{hub.specializations[0]}</p>
                         </div>
-                        <span className="text-sm font-semibold text-slate-300">{hub.employees.toLocaleString()}</span>
+                        <span className="text-sm font-semibold text-white/70">{hub.employees.toLocaleString()}</span>
                       </div>
                     ))}
                   </div>
                   <button
                     onClick={() => setActiveSection('geography')}
-                    className="mt-4 text-sm text-slate-300 hover:text-white transition-colors"
+                    className="mt-4 text-sm text-white/70 hover:text-white transition-colors"
                   >
                     View all hubs &rarr;
                   </button>
@@ -270,7 +270,7 @@ export default function WorkforceAnalyticsPage() {
                       <div key={metric.category} className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
                           {getTrendIcon(metric.trend)}
-                          <span className="text-sm text-slate-200">{metric.category}</span>
+                          <span className="text-sm text-white/90">{metric.category}</span>
                         </div>
                         <span className={`text-sm font-semibold ${metric.color}`}>{metric.percentage}%</span>
                       </div>
@@ -278,7 +278,7 @@ export default function WorkforceAnalyticsPage() {
                   </div>
                   <button
                     onClick={() => setActiveSection('diversity')}
-                    className="mt-4 text-sm text-slate-300 hover:text-white transition-colors"
+                    className="mt-4 text-sm text-white/70 hover:text-white transition-colors"
                   >
                     Full diversity report &rarr;
                   </button>
@@ -303,7 +303,7 @@ export default function WorkforceAnalyticsPage() {
                   <select
                     value={sizeFilter}
                     onChange={(e) => setSizeFilter(e.target.value)}
-                    className="bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-300 min-h-[44px]"
+                    className="bg-white/[0.06] border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-white/70 min-h-[44px]"
                     aria-label="Filter by company size"
                   >
                     {SIZE_FILTER_OPTIONS.map((opt) => (
@@ -313,7 +313,7 @@ export default function WorkforceAnalyticsPage() {
                   <select
                     value={sortBy}
                     onChange={(e) => setSortBy(e.target.value)}
-                    className="bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-300 min-h-[44px]"
+                    className="bg-white/[0.06] border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-white/70 min-h-[44px]"
                     aria-label="Sort employers"
                   >
                     {SORT_OPTIONS.map((opt) => (
@@ -327,7 +327,7 @@ export default function WorkforceAnalyticsPage() {
               <div className="hidden md:block overflow-x-auto">
                 <table className="w-full text-left">
                   <thead>
-                    <tr className="border-b border-slate-700/50 text-xs uppercase tracking-wider text-slate-400">
+                    <tr className="border-b border-white/[0.06] text-xs uppercase tracking-wider text-slate-400">
                       <th className="pb-3 pr-4">#</th>
                       <th className="pb-3 pr-4">Company</th>
                       <th className="pb-3 pr-4">Space Workforce</th>
@@ -341,14 +341,14 @@ export default function WorkforceAnalyticsPage() {
                     {filteredEmployers.map((emp, idx) => (
                       <tr
                         key={emp.company}
-                        className="border-b border-slate-700/30 hover:bg-slate-800/30 transition-colors"
+                        className="border-b border-white/[0.04] hover:bg-white/[0.06] transition-colors"
                       >
                         <td className="py-3 pr-4 text-slate-500 text-sm">{idx + 1}</td>
                         <td className="py-3 pr-4">
                           <span className="text-sm font-medium text-slate-100">{emp.company}</span>
                         </td>
                         <td className="py-3 pr-4">
-                          <span className="text-sm font-semibold text-slate-300">{emp.spaceWorkforce}</span>
+                          <span className="text-sm font-semibold text-white/70">{emp.spaceWorkforce}</span>
                         </td>
                         <td className="py-3 pr-4">{getTierBadge(emp.tier)}</td>
                         <td className="py-3 pr-4 text-sm text-slate-400">{emp.hq}</td>
@@ -363,7 +363,7 @@ export default function WorkforceAnalyticsPage() {
               {/* Mobile cards */}
               <div className="md:hidden space-y-3">
                 {filteredEmployers.map((emp, idx) => (
-                  <div key={emp.company} className="bg-slate-800/40 rounded-xl p-4">
+                  <div key={emp.company} className="bg-white/[0.04] rounded-xl p-4">
                     <div className="flex items-start justify-between mb-2">
                       <div className="flex items-center gap-2">
                         <span className="text-xs text-slate-500 font-mono w-5">#{idx + 1}</span>
@@ -372,7 +372,7 @@ export default function WorkforceAnalyticsPage() {
                       {getTrendIcon(emp.growthTrend)}
                     </div>
                     <div className="flex items-center gap-2 mb-2">
-                      <span className="text-lg font-bold text-slate-300">{emp.spaceWorkforce}</span>
+                      <span className="text-lg font-bold text-white/70">{emp.spaceWorkforce}</span>
                       {getTierBadge(emp.tier)}
                     </div>
                     <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-slate-400">
@@ -389,7 +389,7 @@ export default function WorkforceAnalyticsPage() {
                 <p className="text-center text-slate-400 py-8">No employers match the current filters.</p>
               )}
 
-              <div className="mt-6 pt-4 border-t border-slate-700/50 text-xs text-slate-500">
+              <div className="mt-6 pt-4 border-t border-white/[0.06] text-xs text-slate-500">
                 Workforce estimates based on publicly available data, SEC filings, and industry reports. Figures represent space-specific divisions, not total corporate headcount.
               </div>
             </div>
@@ -411,7 +411,7 @@ export default function WorkforceAnalyticsPage() {
                       className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all min-h-[36px] ${
                         !skillCategoryFilter
                           ? 'bg-white text-slate-900'
-                          : 'bg-slate-800/60 text-slate-300 hover:bg-slate-700/60'
+                          : 'bg-white/[0.05] text-white/70 hover:bg-white/[0.06]'
                       }`}
                     >
                       All
@@ -425,7 +425,7 @@ export default function WorkforceAnalyticsPage() {
                           className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all min-h-[36px] ${
                             skillCategoryFilter === cat
                               ? `${info.bg} ${info.color} ring-1 ring-current`
-                              : 'bg-slate-800/60 text-slate-300 hover:bg-slate-700/60'
+                              : 'bg-white/[0.05] text-white/70 hover:bg-white/[0.06]'
                           }`}
                         >
                           {info.label}
@@ -440,7 +440,7 @@ export default function WorkforceAnalyticsPage() {
                     const catInfo = getSkillCategoryInfo(skill.category);
                     return (
                       <StaggerItem key={skill.skill}>
-                        <div className="bg-slate-800/40 rounded-xl p-4 hover:bg-slate-800/60 transition-colors">
+                        <div className="bg-white/[0.04] rounded-xl p-4 hover:bg-white/[0.05] transition-colors">
                           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-2">
                             <div className="flex items-center gap-3">
                               <span className="text-sm font-medium text-slate-100">{skill.skill}</span>
@@ -451,7 +451,7 @@ export default function WorkforceAnalyticsPage() {
                             <div className="flex items-center gap-4 text-xs text-slate-400">
                               <span>
                                 <span className="text-slate-500">Open: </span>
-                                <span className="font-semibold text-slate-200">{skill.openPositions.toLocaleString()}</span>
+                                <span className="font-semibold text-white/90">{skill.openPositions.toLocaleString()}</span>
                               </span>
                               <span>
                                 <span className="text-slate-500">Avg: </span>
@@ -487,7 +487,7 @@ export default function WorkforceAnalyticsPage() {
                 <div className="overflow-x-auto">
                   <table className="w-full text-left text-sm">
                     <thead>
-                      <tr className="border-b border-slate-700/50 text-xs uppercase tracking-wider text-slate-400">
+                      <tr className="border-b border-white/[0.06] text-xs uppercase tracking-wider text-slate-400">
                         <th className="pb-3 pr-4">Field</th>
                         <th className="pb-3 pr-4 text-right">Annual Grads</th>
                         <th className="pb-3 pr-4 text-right">Entering Space</th>
@@ -497,10 +497,10 @@ export default function WorkforceAnalyticsPage() {
                     </thead>
                     <tbody>
                       {STEM_PIPELINE.map((row) => (
-                        <tr key={row.field} className="border-b border-slate-700/30 hover:bg-slate-800/30 transition-colors">
-                          <td className="py-3 pr-4 font-medium text-slate-200">{row.field}</td>
-                          <td className="py-3 pr-4 text-right text-slate-300">{row.annualGraduates.toLocaleString()}</td>
-                          <td className="py-3 pr-4 text-right text-slate-300">{row.enteringSpace.toLocaleString()}</td>
+                        <tr key={row.field} className="border-b border-white/[0.04] hover:bg-white/[0.06] transition-colors">
+                          <td className="py-3 pr-4 font-medium text-white/90">{row.field}</td>
+                          <td className="py-3 pr-4 text-right text-white/70">{row.annualGraduates.toLocaleString()}</td>
+                          <td className="py-3 pr-4 text-right text-white/70">{row.enteringSpace.toLocaleString()}</td>
                           <td className="py-3 pr-4 text-right">
                             <span className="text-red-400">-{row.demandGap.toLocaleString()}</span>
                           </td>
@@ -528,7 +528,7 @@ export default function WorkforceAnalyticsPage() {
                 <select
                   value={locationFilter}
                   onChange={(e) => setLocationFilter(e.target.value)}
-                  className="bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-300 min-h-[44px]"
+                  className="bg-white/[0.06] border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-white/70 min-h-[44px]"
                   aria-label="Filter by location"
                 >
                   {LOCATION_FILTER_OPTIONS.map((opt) => (
@@ -540,13 +540,13 @@ export default function WorkforceAnalyticsPage() {
               <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {filteredGeoHubs.map((hub) => (
                   <StaggerItem key={hub.location}>
-                    <div className="bg-slate-800/40 rounded-xl p-5 hover:bg-slate-800/60 transition-colors h-full">
+                    <div className="bg-white/[0.04] rounded-xl p-5 hover:bg-white/[0.05] transition-colors h-full">
                       <div className="flex items-start justify-between mb-3">
                         <div>
                           <h3 className="text-base font-semibold text-slate-100">{hub.location}</h3>
                           <p className="text-xs text-slate-400">{hub.state}</p>
                         </div>
-                        <span className="text-lg font-bold text-slate-300">
+                        <span className="text-lg font-bold text-white/70">
                           {hub.employees.toLocaleString()}
                         </span>
                       </div>
@@ -557,7 +557,7 @@ export default function WorkforceAnalyticsPage() {
                           {hub.topEmployers.map((emp) => (
                             <span
                               key={emp}
-                              className="inline-block px-2 py-0.5 bg-slate-700/50 rounded-full text-xs text-slate-300"
+                              className="inline-block px-2 py-0.5 bg-white/[0.04] rounded-full text-xs text-white/70"
                             >
                               {emp}
                             </span>
@@ -571,7 +571,7 @@ export default function WorkforceAnalyticsPage() {
                           {hub.specializations.map((spec) => (
                             <span
                               key={spec}
-                              className="inline-block px-2 py-0.5 bg-white/5 border border-white/10 rounded-full text-xs text-slate-200"
+                              className="inline-block px-2 py-0.5 bg-white/5 border border-white/10 rounded-full text-xs text-white/90"
                             >
                               {spec}
                             </span>
@@ -587,9 +587,9 @@ export default function WorkforceAnalyticsPage() {
                 <p className="text-center text-slate-400 py-8">No hubs match the selected location.</p>
               )}
 
-              <div className="mt-6 pt-4 border-t border-slate-700/50 flex items-center justify-between">
+              <div className="mt-6 pt-4 border-t border-white/[0.06] flex items-center justify-between">
                 <span className="text-sm text-slate-400">Total across shown hubs</span>
-                <span className="text-lg font-bold text-slate-300">
+                <span className="text-lg font-bold text-white/70">
                   {filteredGeoHubs.reduce((sum, h) => sum + h.employees, 0).toLocaleString()}
                 </span>
               </div>
@@ -612,16 +612,16 @@ export default function WorkforceAnalyticsPage() {
                 <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                   {DIVERSITY_METRICS.map((metric) => (
                     <StaggerItem key={metric.category}>
-                      <div className="bg-slate-800/40 rounded-xl p-5 hover:bg-slate-800/60 transition-colors h-full">
+                      <div className="bg-white/[0.04] rounded-xl p-5 hover:bg-white/[0.05] transition-colors h-full">
                         <div className="flex items-center justify-between mb-3">
-                          <span className="text-sm font-medium text-slate-200">{metric.category}</span>
+                          <span className="text-sm font-medium text-white/90">{metric.category}</span>
                           {getTrendIcon(metric.trend)}
                         </div>
                         <p className={`text-3xl font-bold ${metric.color} mb-2`}>
                           {metric.percentage}%
                         </p>
                         {/* Progress bar */}
-                        <div className="h-2 bg-slate-700/50 rounded-full overflow-hidden mb-3">
+                        <div className="h-2 bg-white/[0.04] rounded-full overflow-hidden mb-3">
                           <div
                             className="h-full bg-gradient-to-r from-white to-blue-500 rounded-full transition-all duration-700"
                             style={{ width: `${metric.percentage}%` }}
@@ -647,7 +647,7 @@ export default function WorkforceAnalyticsPage() {
                   {STEM_PIPELINE.map((row) => {
                     const conversionRate = ((row.enteringSpace / row.annualGraduates) * 100).toFixed(1);
                     return (
-                      <div key={row.field} className="bg-slate-800/40 rounded-xl p-4">
+                      <div key={row.field} className="bg-white/[0.04] rounded-xl p-4">
                         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-2">
                           <div className="flex items-center gap-2">
                             <span className="text-sm font-medium text-slate-100">{row.field}</span>
@@ -657,13 +657,13 @@ export default function WorkforceAnalyticsPage() {
                             <span className="text-slate-400">
                               {row.annualGraduates.toLocaleString()} grads/yr
                             </span>
-                            <span className="text-slate-300 font-semibold">
+                            <span className="text-white/70 font-semibold">
                               {conversionRate}% to space
                             </span>
                           </div>
                         </div>
                         <div className="flex items-center gap-3">
-                          <div className="flex-1 h-3 bg-slate-700/50 rounded-full overflow-hidden">
+                          <div className="flex-1 h-3 bg-white/[0.04] rounded-full overflow-hidden">
                             <div
                               className="h-full bg-gradient-to-r from-white to-blue-500 rounded-full transition-all duration-700"
                               style={{ width: `${Math.min((row.enteringSpace / row.annualGraduates) * 100, 100)}%` }}

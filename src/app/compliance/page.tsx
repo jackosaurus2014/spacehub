@@ -21,8 +21,8 @@ const SpaceLawSection = dynamic(() => import('./SpaceLawSection'), {
   ssr: false,
   loading: () => (
     <div className="animate-pulse space-y-4">
-      <div className="h-20 bg-slate-800 rounded-lg"></div>
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">{[1,2,3,4].map(i => <div key={i} className="h-48 bg-slate-800 rounded-lg"></div>)}</div>
+      <div className="h-20 bg-white/[0.06] rounded-lg"></div>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">{[1,2,3,4].map(i => <div key={i} className="h-48 bg-white/[0.06] rounded-lg"></div>)}</div>
     </div>
   ),
 });
@@ -30,9 +30,9 @@ const FilingsSection = dynamic(() => import('./FilingsSection'), {
   ssr: false,
   loading: () => (
     <div className="animate-pulse space-y-4">
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">{[1,2,3,4].map(i => <div key={i} className="h-24 bg-slate-800 rounded-lg"></div>)}</div>
-      <div className="h-16 bg-slate-800 rounded-lg"></div>
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">{[1,2,3,4].map(i => <div key={i} className="h-48 bg-slate-800 rounded-lg"></div>)}</div>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">{[1,2,3,4].map(i => <div key={i} className="h-24 bg-white/[0.06] rounded-lg"></div>)}</div>
+      <div className="h-16 bg-white/[0.06] rounded-lg"></div>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">{[1,2,3,4].map(i => <div key={i} className="h-48 bg-white/[0.06] rounded-lg"></div>)}</div>
     </div>
   ),
 });
@@ -40,9 +40,9 @@ const ProtestsSection = dynamic(() => import('./ProtestsSection'), {
   ssr: false,
   loading: () => (
     <div className="animate-pulse space-y-4">
-      <div className="h-20 bg-slate-800 rounded-lg"></div>
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">{[1,2,3,4,5].map(i => <div key={i} className="h-24 bg-slate-800 rounded-lg"></div>)}</div>
-      <div className="space-y-4">{[1,2,3].map(i => <div key={i} className="h-40 bg-slate-800 rounded-lg"></div>)}</div>
+      <div className="h-20 bg-white/[0.06] rounded-lg"></div>
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">{[1,2,3,4,5].map(i => <div key={i} className="h-24 bg-white/[0.06] rounded-lg"></div>)}</div>
+      <div className="space-y-4">{[1,2,3].map(i => <div key={i} className="h-40 bg-white/[0.06] rounded-lg"></div>)}</div>
     </div>
   ),
 });
@@ -145,8 +145,8 @@ function PolicyCard({ policy }: { policy: PolicyChange }) {
     pending: 'bg-yellow-500/20 text-yellow-400',
     effective: 'bg-green-500/20 text-green-400',
     final: 'bg-green-500/20 text-green-400',
-    withdrawn: 'bg-slate-800/30 text-slate-400',
-    superseded: 'bg-slate-800/30 text-slate-400',
+    withdrawn: 'bg-white/[0.04] text-slate-400',
+    superseded: 'bg-white/[0.04] text-slate-400',
   };
   const agencyIcons: Record<string, string> = {
     FAA: '\u2708\uFE0F', FCC: '\uD83D\uDCE1', NOAA: '\uD83C\uDF0A', BIS: '\uD83D\uDCE6', DDTC: '\uD83D\uDD12', NASA: '\uD83D\uDE80', DOD: '\uD83C\uDF96\uFE0F', DOS: '\uD83C\uDFDB\uFE0F',
@@ -158,20 +158,20 @@ function PolicyCard({ policy }: { policy: PolicyChange }) {
       <div className="flex items-start justify-between mb-3">
         <div className="flex items-center gap-2">
           <span className="text-xl">{agencyIcons[policy.agency] || '\uD83D\uDCCB'}</span>
-          <span className="text-xs font-bold text-slate-200 bg-slate-700/60 px-2 py-1 rounded">{policy.agency}</span>
+          <span className="text-xs font-bold text-white/90 bg-white/[0.08] px-2 py-1 rounded">{policy.agency}</span>
           <span className={`text-xs px-2 py-1 rounded ${statusColors[policy.status]}`}>{policy.status.charAt(0).toUpperCase() + policy.status.slice(1)}</span>
         </div>
         <span className={`text-xs px-2 py-1 rounded border ${severityColors[policy.impactSeverity]}`}>{policy.impactSeverity.toUpperCase()} Impact</span>
       </div>
       <h4 className="font-semibold text-white mb-2">{policy.title}</h4>
       <p className="text-slate-400 text-sm mb-3 line-clamp-3">{policy.summary}</p>
-      <div className="bg-slate-800/50 rounded-lg p-3 mb-3">
+      <div className="bg-white/[0.04] rounded-lg p-3 mb-3">
         <h5 className="text-xs font-semibold text-slate-300 mb-1">Impact Analysis</h5>
         <p className="text-xs text-slate-400 line-clamp-2">{policy.impactAnalysis}</p>
       </div>
       <div className="flex flex-wrap gap-1 mb-3">
         {policy.affectedParties.slice(0, 3).map((party, i) => (
-          <span key={i} className="text-xs bg-white/10 text-slate-200 px-2 py-0.5 rounded">{party.replace(/_/g, ' ')}</span>
+          <span key={i} className="text-xs bg-white/10 text-white/90 px-2 py-0.5 rounded">{party.replace(/_/g, ' ')}</span>
         ))}
         {policy.affectedParties.length > 3 && (<span className="text-xs text-slate-400">+{policy.affectedParties.length - 3} more</span>)}
       </div>
@@ -179,7 +179,7 @@ function PolicyCard({ policy }: { policy: PolicyChange }) {
         <span className="text-slate-400">{policy.federalRegisterCitation || `Published: ${new Date(policy.publishedDate).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' })}`}</span>
         {deadline && (<span className={`${isUrgent ? 'text-yellow-500 font-semibold' : 'text-slate-400'}`}>{isUrgent && '\u26A0\uFE0F '}Comments due: {deadline.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' })}</span>)}
       </div>
-      <a href={policy.sourceUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center text-sm text-slate-200 hover:text-white mt-3">View Full Policy &rarr;</a>
+      <a href={policy.sourceUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center text-sm text-white/90 hover:text-white mt-3">View Full Policy &rarr;</a>
     </div>
   );
 }
@@ -196,12 +196,12 @@ function PolicyTrackerTab() {
           <h4 className="font-semibold text-yellow-400 mb-2">Upcoming Regulatory Deadlines</h4>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
             {upcomingDeadlines.slice(0, 3).map((d, i) => (
-              <div key={i} className="bg-slate-800/60 rounded p-3 border border-slate-700/50">
+              <div key={i} className="bg-white/[0.04] rounded p-3 border border-white/[0.06]">
                 <div className="flex items-center justify-between mb-1">
                   <span className="text-xs font-semibold text-slate-400">{d.policy.agency}</span>
                   <span className={`text-xs px-2 py-0.5 rounded ${d.deadlineType === 'comment' ? 'bg-blue-500/20 text-blue-300' : 'bg-green-500/20 text-green-300'}`}>{d.deadlineType === 'comment' ? 'Comment Deadline' : 'Effective Date'}</span>
                 </div>
-                <p className="text-sm text-slate-200 line-clamp-1">{d.policy.title}</p>
+                <p className="text-sm text-white/90 line-clamp-1">{d.policy.title}</p>
                 <p className="text-xs text-slate-400 mt-1">{d.date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' })}</p>
               </div>
             ))}
@@ -209,10 +209,10 @@ function PolicyTrackerTab() {
         </div>
       )}
       <div className="flex flex-wrap gap-3 mb-6">
-        <select value={agencyFilter} onChange={(e) => setAgencyFilter(e.target.value)} className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none">
+        <select value={agencyFilter} onChange={(e) => setAgencyFilter(e.target.value)} className="bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none">
           <option value="">All Agencies</option><option value="FAA">FAA (Launches)</option><option value="FCC">FCC (Spectrum)</option><option value="NOAA">NOAA (Remote Sensing)</option><option value="BIS">BIS (Export Controls)</option><option value="DDTC">DDTC (ITAR)</option><option value="NASA">NASA</option>
         </select>
-        <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none">
+        <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none">
           <option value="">All Statuses</option><option value="proposed">Proposed</option><option value="pending">Pending</option><option value="effective">Effective</option><option value="final">Final</option>
         </select>
         <div className="ml-auto">
@@ -230,7 +230,7 @@ function LicenseCard({ license }: { license: LicenseRequirement }) {
   return (
     <div className="card p-5 hover:border-white/15 transition-all">
       <div className="flex items-start justify-between mb-3">
-        <span className={`text-xs font-bold px-2 py-1 rounded border ${agencyColors[license.agency] || 'bg-slate-700/60 text-slate-300'}`}>{license.agency}</span>
+        <span className={`text-xs font-bold px-2 py-1 rounded border ${agencyColors[license.agency] || 'bg-white/[0.08] text-slate-300'}`}>{license.agency}</span>
         <span className="text-xs text-slate-400">{license.processingTimeMin}-{license.processingTimeMax} days</span>
       </div>
       <h4 className="font-semibold text-white mb-2">{license.licenseType}</h4>
@@ -240,15 +240,15 @@ function LicenseCard({ license }: { license: LicenseRequirement }) {
         {license.annualFee && (<span>Annual: ${license.annualFee.toLocaleString()}</span>)}
         {license.validityYears && (<span>Valid: {license.validityYears} years</span>)}
       </div>
-      <button onClick={() => setExpanded(!expanded)} className="text-sm text-slate-200 hover:text-white mb-3">{expanded ? 'Hide Requirements \u25B2' : 'Show Requirements \u25BC'}</button>
+      <button onClick={() => setExpanded(!expanded)} className="text-sm text-white/90 hover:text-white mb-3">{expanded ? 'Hide Requirements \u25B2' : 'Show Requirements \u25BC'}</button>
       {expanded && (
-        <div className="bg-slate-800/50 rounded-lg p-3 mt-2">
+        <div className="bg-white/[0.04] rounded-lg p-3 mt-2">
           <h5 className="text-xs font-semibold text-slate-300 mb-2">Requirements Checklist</h5>
           <ul className="space-y-1">
-            {(JSON.parse(JSON.stringify(license.requirements)) as string[]).map((req, i) => (<li key={i} className="flex items-start gap-2 text-xs text-slate-400"><span className="text-slate-200 mt-0.5">{'\u2610'}</span>{req}</li>))}
+            {(JSON.parse(JSON.stringify(license.requirements)) as string[]).map((req, i) => (<li key={i} className="flex items-start gap-2 text-xs text-slate-400"><span className="text-white/90 mt-0.5">{'\u2610'}</span>{req}</li>))}
           </ul>
-          <div className="mt-3 pt-3 border-t border-slate-700"><h5 className="text-xs font-semibold text-slate-300 mb-1">Regulatory Basis</h5><p className="text-xs text-slate-400">{license.regulatoryBasis}</p></div>
-          {license.applicationUrl && (<a href={license.applicationUrl} target="_blank" rel="noopener noreferrer" className="inline-block mt-3 text-xs text-slate-200 hover:text-white">Apply Now &rarr;</a>)}
+          <div className="mt-3 pt-3 border-t border-white/[0.06]"><h5 className="text-xs font-semibold text-slate-300 mb-1">Regulatory Basis</h5><p className="text-xs text-slate-400">{license.regulatoryBasis}</p></div>
+          {license.applicationUrl && (<a href={license.applicationUrl} target="_blank" rel="noopener noreferrer" className="inline-block mt-3 text-xs text-white/90 hover:text-white">Apply Now &rarr;</a>)}
         </div>
       )}
     </div>
@@ -262,14 +262,14 @@ function ComplianceWizardTab() {
   return (
     <div>
       <div className="bg-white/10 border border-white/10 rounded-lg p-4 mb-6">
-        <h4 className="font-semibold text-slate-200 mb-2">License Requirements Guide</h4>
+        <h4 className="font-semibold text-white/90 mb-2">License Requirements Guide</h4>
         <p className="text-sm text-slate-400">Select your mission type below to see required licenses. Each license includes a checklist of requirements, processing times, fees, and links to application forms.</p>
       </div>
       <div className="flex flex-wrap gap-3 mb-6">
-        <select value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)} className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none">
+        <select value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)} className="bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none">
           <option value="">All License Types</option><option value="launch">Launch Licenses (FAA)</option><option value="satellite">Satellite Licenses (FCC)</option><option value="remote_sensing">Remote Sensing (NOAA)</option><option value="spectrum">Spectrum (ITU/FCC)</option><option value="export">Export Licenses</option>
         </select>
-        <select value={agencyFilter} onChange={(e) => setAgencyFilter(e.target.value)} className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none">
+        <select value={agencyFilter} onChange={(e) => setAgencyFilter(e.target.value)} className="bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none">
           <option value="">All Agencies</option><option value="FAA">FAA</option><option value="FCC">FCC</option><option value="NOAA">NOAA</option>
         </select>
       </div>
@@ -282,7 +282,7 @@ function ComplianceWizardTab() {
               <div className="flex items-start justify-between mb-2"><h4 className="font-semibold text-white">{treaty.name}</h4>{treaty.usRatified && (<span className="text-xs bg-green-500/20 text-green-400 px-2 py-0.5 rounded">US Ratified</span>)}</div>
               <p className="text-xs text-slate-400 mb-2">{treaty.fullName}</p>
               <div className="text-xs text-slate-400"><p><strong>Parties:</strong> {treaty.parties} nations</p><p className="mt-1"><strong>US Implementation:</strong> {treaty.usImplementation}</p></div>
-              <a href={treaty.sourceUrl} target="_blank" rel="noopener noreferrer" className="inline-block mt-2 text-xs text-slate-200 hover:text-white">View Treaty Text &rarr;</a>
+              <a href={treaty.sourceUrl} target="_blank" rel="noopener noreferrer" className="inline-block mt-2 text-xs text-white/90 hover:text-white">View Treaty Text &rarr;</a>
             </div>
           ))}
         </div>
@@ -293,7 +293,7 @@ function ComplianceWizardTab() {
 
 function CaseCard({ lawCase }: { lawCase: SpaceLawCase }) {
   const [expanded, setExpanded] = useState(false);
-  const outcomeColors = { plaintiff_victory: 'bg-green-500/20 text-green-400', defendant_victory: 'bg-red-500/20 text-red-400', settlement: 'bg-yellow-500/20 text-yellow-400', dismissed: 'bg-slate-800/30 text-slate-400', pending: 'bg-blue-500/20 text-blue-400', vacated: 'bg-purple-500/20 text-purple-400' };
+  const outcomeColors = { plaintiff_victory: 'bg-green-500/20 text-green-400', defendant_victory: 'bg-red-500/20 text-red-400', settlement: 'bg-yellow-500/20 text-yellow-400', dismissed: 'bg-white/[0.04] text-slate-400', pending: 'bg-blue-500/20 text-blue-400', vacated: 'bg-purple-500/20 text-purple-400' };
   const jurisdictionIcons = { federal: '\uD83C\uDFDB\uFE0F', international: '\uD83C\uDF0D', arbitration: '\u2696\uFE0F', state: '\uD83C\uDFE2', gao: '\uD83D\uDCCA' };
   return (
     <div className="card p-5 hover:border-white/15 transition-all">
@@ -304,9 +304,9 @@ function CaseCard({ lawCase }: { lawCase: SpaceLawCase }) {
       <h4 className="font-semibold text-white mb-1">{lawCase.caseName}</h4>
       {lawCase.citation && (<p className="text-xs text-slate-400 mb-2 font-mono">{lawCase.citation}</p>)}
       <p className="text-slate-400 text-sm mb-3 line-clamp-3">{lawCase.summary}</p>
-      <div className="flex flex-wrap gap-1 mb-3">{lawCase.subjectMatter.map((subject, i) => (<span key={i} className="text-xs bg-white/10 text-slate-200 px-2 py-0.5 rounded">{subject.replace(/_/g, ' ')}</span>))}</div>
+      <div className="flex flex-wrap gap-1 mb-3">{lawCase.subjectMatter.map((subject, i) => (<span key={i} className="text-xs bg-white/10 text-white/90 px-2 py-0.5 rounded">{subject.replace(/_/g, ' ')}</span>))}</div>
       {lawCase.damages && (<div className="text-sm font-semibold text-green-400 mb-3">Damages: ${lawCase.damages.toLocaleString()}</div>)}
-      <button onClick={() => setExpanded(!expanded)} className="text-sm text-slate-200 hover:text-white">{expanded ? 'Show Less \u25B2' : 'Read More \u25BC'}</button>
+      <button onClick={() => setExpanded(!expanded)} className="text-sm text-white/90 hover:text-white">{expanded ? 'Show Less \u25B2' : 'Read More \u25BC'}</button>
       {expanded && (
         <div className="mt-4 space-y-4">
           <div><h5 className="text-xs font-semibold text-slate-300 mb-1">Parties</h5><p className="text-xs text-slate-400"><strong>Plaintiff:</strong> {lawCase.parties.plaintiff}<br /><strong>Defendant:</strong> {lawCase.parties.defendant}</p></div>
@@ -315,7 +315,7 @@ function CaseCard({ lawCase }: { lawCase: SpaceLawCase }) {
           <div><h5 className="text-xs font-semibold text-slate-300 mb-1">Significance</h5><p className="text-xs text-slate-400">{lawCase.significance}</p></div>
           <div><h5 className="text-xs font-semibold text-slate-300 mb-1">Precedent Value</h5><p className="text-xs text-slate-400">{lawCase.precedentValue}</p></div>
           {lawCase.keyQuotes && lawCase.keyQuotes.length > 0 && (<div><h5 className="text-xs font-semibold text-slate-300 mb-1">Key Quotes</h5>{lawCase.keyQuotes.map((quote, i) => (<blockquote key={i} className="text-xs text-slate-400 italic border-l-2 border-white/15 pl-2 mb-1">&ldquo;{quote}&rdquo;</blockquote>))}</div>)}
-          {lawCase.sourceUrl && (<a href={lawCase.sourceUrl} target="_blank" rel="noopener noreferrer" className="inline-block text-xs text-slate-200 hover:text-white">View Source &rarr;</a>)}
+          {lawCase.sourceUrl && (<a href={lawCase.sourceUrl} target="_blank" rel="noopener noreferrer" className="inline-block text-xs text-white/90 hover:text-white">View Source &rarr;</a>)}
         </div>
       )}
     </div>
@@ -333,14 +333,14 @@ function CaseLawArchiveTab() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         <div className="card-elevated p-4 text-center"><div className="text-2xl font-bold text-white">{filteredCases.length}</div><div className="text-xs text-slate-400">Cases</div></div>
         <div className="card-elevated p-4 text-center"><div className="text-2xl font-bold text-green-400">${(totalDamages / 1e9).toFixed(2)}B</div><div className="text-xs text-slate-400">Total Damages</div></div>
-        <div className="card-elevated p-4 text-center"><div className="text-2xl font-bold text-slate-200">{filteredCases.filter(c => c.outcome === 'plaintiff_victory').length}</div><div className="text-xs text-slate-400">Plaintiff Wins</div></div>
+        <div className="card-elevated p-4 text-center"><div className="text-2xl font-bold text-white/90">{filteredCases.filter(c => c.outcome === 'plaintiff_victory').length}</div><div className="text-xs text-slate-400">Plaintiff Wins</div></div>
         <div className="card-elevated p-4 text-center"><div className="text-2xl font-bold text-yellow-400">{filteredCases.filter(c => c.outcome === 'settlement').length}</div><div className="text-xs text-slate-400">Settlements</div></div>
       </div>
       <div className="flex flex-wrap gap-3 mb-6">
-        <select value={jurisdictionFilter} onChange={(e) => setJurisdictionFilter(e.target.value)} className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none">
+        <select value={jurisdictionFilter} onChange={(e) => setJurisdictionFilter(e.target.value)} className="bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none">
           <option value="">All Jurisdictions</option><option value="federal">Federal Courts</option><option value="international">International</option><option value="arbitration">Arbitration</option>
         </select>
-        <select value={subjectFilter} onChange={(e) => setSubjectFilter(e.target.value)} className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none">
+        <select value={subjectFilter} onChange={(e) => setSubjectFilter(e.target.value)} className="bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none">
           <option value="">All Subject Matter</option>{allSubjects.map(s => (<option key={s} value={s}>{s.replace(/_/g, ' ')}</option>))}
         </select>
         <div className="ml-auto"><ExportButton data={filteredCases} filename="space-law-cases" columns={[{ key: 'caseName', label: 'Case Name' },{ key: 'year', label: 'Year' },{ key: 'jurisdiction', label: 'Jurisdiction' },{ key: 'outcome', label: 'Outcome' },{ key: 'damages', label: 'Damages' },{ key: 'summary', label: 'Summary' }]} /></div>
@@ -358,16 +358,16 @@ function ExportControlMonitorTab() {
   return (
     <div>
       <div className="flex gap-2 mb-6">
-        <button onClick={() => setActiveSubTab('eccn')} className={`px-4 py-2 rounded-lg font-medium transition-all ${activeSubTab === 'eccn' ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' : 'bg-slate-800/60 text-slate-300 hover:bg-slate-700/60'}`}>ECCN Tracker (EAR)</button>
-        <button onClick={() => setActiveSubTab('usml')} className={`px-4 py-2 rounded-lg font-medium transition-all ${activeSubTab === 'usml' ? 'bg-red-500/20 text-red-400 border border-red-500/30' : 'bg-slate-800/60 text-slate-300 hover:bg-slate-700/60'}`}>USML Tracker (ITAR)</button>
+        <button onClick={() => setActiveSubTab('eccn')} className={`px-4 py-2 rounded-lg font-medium transition-all ${activeSubTab === 'eccn' ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' : 'bg-white/[0.04] text-slate-300 hover:bg-white/[0.08]'}`}>ECCN Tracker (EAR)</button>
+        <button onClick={() => setActiveSubTab('usml')} className={`px-4 py-2 rounded-lg font-medium transition-all ${activeSubTab === 'usml' ? 'bg-red-500/20 text-red-400 border border-red-500/30' : 'bg-white/[0.04] text-slate-300 hover:bg-white/[0.08]'}`}>USML Tracker (ITAR)</button>
       </div>
-      <div className="mb-6"><input type="search" placeholder="Search classifications..." aria-label="Search classifications" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full md:w-96 bg-slate-800/80 border border-slate-600/50 text-slate-200 rounded-lg px-4 py-2 text-sm placeholder:text-slate-400" /></div>
+      <div className="mb-6"><input type="search" placeholder="Search classifications..." aria-label="Search classifications" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full md:w-96 bg-white/[0.06] border border-white/[0.1] text-white/90 rounded-lg px-4 py-2 text-sm placeholder:text-slate-400" /></div>
       {activeSubTab === 'eccn' && (
         <div>
           <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-4 mb-6"><h4 className="font-semibold text-blue-400 mb-2">Export Administration Regulations (EAR)</h4><p className="text-sm text-slate-400">The Commerce Control List (CCL) classifies dual-use items by Export Control Classification Number (ECCN). Commercial satellites were transferred from ITAR to EAR via the 9x515 series in 2014.</p></div>
           <div className="space-y-4">{filteredECCNs.map((eccn) => (
             <div key={eccn.id} className="card p-5">
-              <div className="flex items-start justify-between mb-3"><span className="font-mono text-lg font-bold text-blue-400">{eccn.eccn}</span><span className="text-xs bg-slate-700/60 text-slate-300 px-2 py-1 rounded">{eccn.category}</span></div>
+              <div className="flex items-start justify-between mb-3"><span className="font-mono text-lg font-bold text-blue-400">{eccn.eccn}</span><span className="text-xs bg-white/[0.08] text-slate-300 px-2 py-1 rounded">{eccn.category}</span></div>
               <h4 className="font-semibold text-white mb-2">{eccn.description}</h4><p className="text-sm text-slate-400 mb-3">{eccn.spaceRelevance}</p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
                 <div><h5 className="font-semibold text-slate-300 mb-1">Reason for Control</h5><div className="flex flex-wrap gap-1">{eccn.reasonForControl.map((r, i) => (<span key={i} className="bg-blue-500/20 text-blue-300 px-2 py-0.5 rounded">{r}</span>))}</div></div>
@@ -386,7 +386,7 @@ function ExportControlMonitorTab() {
               <div className="flex items-start justify-between mb-3"><span className="font-mono text-lg font-bold text-red-400">Category {usml.category}</span><span className="text-xs bg-red-500/20 text-red-300 px-2 py-1 rounded">ITAR</span></div>
               <h4 className="font-semibold text-white mb-2">{usml.title}</h4><p className="text-sm text-slate-400 mb-3">{usml.description}</p>
               <div className="mb-3"><h5 className="text-xs font-semibold text-slate-300 mb-1">Controlled Items</h5><ul className="text-xs text-slate-400 list-disc list-inside">{usml.items.map((item, i) => (<li key={i}>{item}</li>))}</ul></div>
-              <div className="bg-slate-800/50 rounded p-3"><h5 className="text-xs font-semibold text-slate-300 mb-1">Space Relevance</h5><p className="text-xs text-slate-400">{usml.spaceRelevance}</p></div>
+              <div className="bg-white/[0.04] rounded p-3"><h5 className="text-xs font-semibold text-slate-300 mb-1">Space Relevance</h5><p className="text-xs text-slate-400">{usml.spaceRelevance}</p></div>
               {usml.exemptions && usml.exemptions.length > 0 && (<div className="mt-3"><h5 className="text-xs font-semibold text-slate-300 mb-1">Exemptions / Notes</h5><ul className="text-xs text-slate-400 list-disc list-inside">{usml.exemptions.map((ex, i) => (<li key={i}>{ex}</li>))}</ul></div>)}
             </div>
           ))}</div>
@@ -403,22 +403,22 @@ function ExpertCommentaryTab() {
   return (
     <div>
       <div className="bg-white/10 border border-white/10 rounded-lg p-4 mb-6">
-        <h4 className="font-semibold text-slate-200 mb-2">Expert Sources & Commentary</h4>
+        <h4 className="font-semibold text-white/90 mb-2">Expert Sources & Commentary</h4>
         <p className="text-sm text-slate-400">Curated collection of authoritative sources for space law, policy analysis, and industry commentary. Follow these sources for the latest expert insights on regulatory developments.</p>
       </div>
       <div className="flex flex-wrap gap-2 mb-6">
-        <button onClick={() => setTypeFilter('')} className={`px-3 py-1.5 rounded-lg text-sm transition-all ${!typeFilter ? 'bg-slate-900 text-white' : 'bg-slate-800/60 text-slate-300 hover:bg-slate-700/60'}`}>All Sources</button>
-        {Object.entries(typeLabels).map(([type, info]) => (<button key={type} onClick={() => setTypeFilter(type)} className={`px-3 py-1.5 rounded-lg text-sm transition-all flex items-center gap-1 ${typeFilter === type ? 'bg-slate-900 text-white' : 'bg-slate-800/60 text-slate-300 hover:bg-slate-700/60'}`}><span>{info.icon}</span>{info.label}</button>))}
+        <button onClick={() => setTypeFilter('')} className={`px-3 py-1.5 rounded-lg text-sm transition-all ${!typeFilter ? 'bg-black text-white' : 'bg-white/[0.04] text-slate-300 hover:bg-white/[0.08]'}`}>All Sources</button>
+        {Object.entries(typeLabels).map(([type, info]) => (<button key={type} onClick={() => setTypeFilter(type)} className={`px-3 py-1.5 rounded-lg text-sm transition-all flex items-center gap-1 ${typeFilter === type ? 'bg-black text-white' : 'bg-white/[0.04] text-slate-300 hover:bg-white/[0.08]'}`}><span>{info.icon}</span>{info.label}</button>))}
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
         {filteredSources.map((source) => { const typeInfo = typeLabels[source.type]; return (
           <a key={source.id} href={source.url} target="_blank" rel="noopener noreferrer" className="card p-5 hover:border-white/15 transition-all group">
-            <div className="flex items-start justify-between mb-3"><span className="text-3xl">{typeInfo?.icon || '\uD83D\uDCCB'}</span><span className={`text-xs px-2 py-1 rounded ${typeInfo?.color || 'bg-slate-700'}`}>{typeInfo?.label || source.type}</span></div>
-            <h4 className="font-semibold text-white mb-1 group-hover:text-slate-200 transition-colors">{source.name}</h4>
+            <div className="flex items-start justify-between mb-3"><span className="text-3xl">{typeInfo?.icon || '\uD83D\uDCCB'}</span><span className={`text-xs px-2 py-1 rounded ${typeInfo?.color || 'bg-white/[0.08]'}`}>{typeInfo?.label || source.type}</span></div>
+            <h4 className="font-semibold text-white mb-1 group-hover:text-white/90 transition-colors">{source.name}</h4>
             {source.organization && (<p className="text-sm text-slate-400 mb-2">{source.organization}</p>)}
             <p className="text-xs text-slate-400 mb-3 line-clamp-2">{source.description}</p>
-            <div className="flex flex-wrap gap-1">{source.topics.slice(0, 3).map((topic, i) => (<span key={i} className="text-xs bg-slate-700/60 text-slate-300 px-2 py-0.5 rounded">{topic.replace(/_/g, ' ')}</span>))}</div>
-            {source.keyContributors && source.keyContributors.length > 0 && (<div className="mt-3 pt-3 border-t border-slate-700/50"><p className="text-xs text-slate-400"><strong>Contributors:</strong> {source.keyContributors.join(', ')}</p></div>)}
+            <div className="flex flex-wrap gap-1">{source.topics.slice(0, 3).map((topic, i) => (<span key={i} className="text-xs bg-white/[0.08] text-slate-300 px-2 py-0.5 rounded">{topic.replace(/_/g, ' ')}</span>))}</div>
+            {source.keyContributors && source.keyContributors.length > 0 && (<div className="mt-3 pt-3 border-t border-white/[0.06]"><p className="text-xs text-slate-400"><strong>Contributors:</strong> {source.keyContributors.join(', ')}</p></div>)}
           </a>
         ); })}
       </div>
@@ -440,14 +440,14 @@ function TreatyCard({ treaty }: { treaty: Treaty }) {
         <span className={`text-xs font-bold px-2.5 py-1 rounded border flex-shrink-0 ml-3 ${statusConfig.bg} ${statusConfig.text} ${statusConfig.border}`}>{statusConfig.label}</span>
       </div>
       <div className="grid grid-cols-3 gap-3 mb-4">
-        <div className="bg-slate-800/40 border border-slate-600/30 rounded-lg p-3 text-center"><div className="text-slate-100 font-bold text-xl">{treaty.ratifications}</div><div className="text-slate-400 text-xs">Ratifications</div></div>
-        <div className="bg-slate-800/40 border border-slate-600/30 rounded-lg p-3 text-center"><div className="text-slate-100 font-bold text-xl">{treaty.signatories}</div><div className="text-slate-400 text-xs">Signatories</div></div>
-        <div className="bg-slate-800/40 border border-slate-600/30 rounded-lg p-3 text-center"><div className="text-slate-100 font-bold text-xl">{treaty.entryIntoForceYear}</div><div className="text-slate-400 text-xs">In Force</div></div>
+        <div className="bg-white/[0.04] border border-white/[0.1] rounded-lg p-3 text-center"><div className="text-white font-bold text-xl">{treaty.ratifications}</div><div className="text-slate-400 text-xs">Ratifications</div></div>
+        <div className="bg-white/[0.04] border border-white/[0.1] rounded-lg p-3 text-center"><div className="text-white font-bold text-xl">{treaty.signatories}</div><div className="text-slate-400 text-xs">Signatories</div></div>
+        <div className="bg-white/[0.04] border border-white/[0.1] rounded-lg p-3 text-center"><div className="text-white font-bold text-xl">{treaty.entryIntoForceYear}</div><div className="text-slate-400 text-xs">In Force</div></div>
       </div>
       <p className="text-slate-500 text-sm mb-3 line-clamp-3">{treaty.description}</p>
-      <button onClick={() => setExpanded(!expanded)} className="text-sm text-slate-200 hover:text-white transition-colors">{expanded ? 'Show Less' : 'View Key Provisions'}</button>
+      <button onClick={() => setExpanded(!expanded)} className="text-sm text-white/90 hover:text-white transition-colors">{expanded ? 'Show Less' : 'View Key Provisions'}</button>
       {expanded && (
-        <div className="mt-4 pt-4 border-t border-slate-700/50 space-y-3">
+        <div className="mt-4 pt-4 border-t border-white/[0.06] space-y-3">
           <div><h5 className="text-xs font-semibold text-slate-300 mb-2 uppercase tracking-wider">Key Provisions</h5><ul className="space-y-1.5">{treaty.keyProvisions.map((provision, i) => (<li key={i} className="flex items-start gap-2 text-xs text-slate-500"><span className="text-slate-300 mt-0.5 flex-shrink-0">*</span>{provision}</li>))}</ul></div>
           <div><h5 className="text-xs font-semibold text-slate-300 mb-1 uppercase tracking-wider">Significance</h5><p className="text-xs text-slate-500">{treaty.significance}</p></div>
           <div className="text-xs text-slate-400">Adopted: {treaty.adoptedYear} | Depositary: {treaty.depositary}</div>
@@ -464,7 +464,7 @@ function SpaceLawTreatiesTab() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">{TREATIES.map((treaty) => (<TreatyCard key={treaty.id} treaty={treaty} />))}</div>
       <div className="card p-5 border-dashed mt-6">
         <h3 className="text-lg font-semibold text-white mb-3">Treaty Ratification Overview</h3>
-        <div className="space-y-3">{TREATIES.map((treaty) => { const maxRatifications = 114; const pct = (treaty.ratifications / maxRatifications) * 100; return (<div key={treaty.id}><div className="flex items-center justify-between mb-1"><span className="text-sm text-slate-400 font-medium">{treaty.name}</span><span className="text-sm text-slate-400">{treaty.ratifications} ratifications</span></div><div className="h-3 bg-slate-700 rounded-full overflow-hidden"><div className={`h-full rounded-full transition-all ${treaty.status === 'not_in_force' ? 'bg-gradient-to-r from-yellow-500 to-yellow-400' : 'bg-gradient-to-r from-white to-blue-400'}`} style={{ width: `${pct}%` }} /></div></div>); })}</div>
+        <div className="space-y-3">{TREATIES.map((treaty) => { const maxRatifications = 114; const pct = (treaty.ratifications / maxRatifications) * 100; return (<div key={treaty.id}><div className="flex items-center justify-between mb-1"><span className="text-sm text-slate-400 font-medium">{treaty.name}</span><span className="text-sm text-slate-400">{treaty.ratifications} ratifications</span></div><div className="h-3 bg-white/[0.08] rounded-full overflow-hidden"><div className={`h-full rounded-full transition-all ${treaty.status === 'not_in_force' ? 'bg-gradient-to-r from-yellow-500 to-yellow-400' : 'bg-gradient-to-r from-white to-blue-400'}`} style={{ width: `${pct}%` }} /></div></div>); })}</div>
         <p className="text-xs text-slate-400 mt-4">Data based on UNOOSA treaty status reports. Signatories that have not ratified are counted separately.</p>
       </div>
     </div>
@@ -478,17 +478,17 @@ function NationalLawCard({ law }: { law: NationalLaw }) {
     <div className="card p-5 hover:border-white/10 transition-all">
       <div className="flex items-start justify-between mb-2">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg bg-slate-800/50 border border-slate-600/40 flex items-center justify-center text-sm font-bold text-slate-400">{law.countryCode}</div>
+          <div className="w-10 h-10 rounded-lg bg-white/[0.04] border border-white/[0.1] flex items-center justify-center text-sm font-bold text-slate-400">{law.countryCode}</div>
           <div><h4 className="font-semibold text-white">{law.country}</h4><span className="text-slate-400 text-xs">{law.agency}</span></div>
         </div>
         <span className={`text-xs font-bold px-2.5 py-1 rounded border flex-shrink-0 ${statusConfig.bg} ${statusConfig.text} ${statusConfig.border}`}>{statusConfig.label}</span>
       </div>
-      <h5 className="text-sm font-medium text-slate-200 mb-1">{law.lawName}</h5>
+      <h5 className="text-sm font-medium text-white/90 mb-1">{law.lawName}</h5>
       <div className="flex items-center gap-3 text-xs text-slate-400 mb-3"><span>Year: {law.year}</span><span>Scope: {law.scope}</span></div>
       <p className="text-slate-500 text-sm mb-3 line-clamp-2">{law.description}</p>
-      <button onClick={() => setExpanded(!expanded)} className="text-sm text-slate-200 hover:text-white transition-colors">{expanded ? 'Show Less' : 'View Key Features'}</button>
+      <button onClick={() => setExpanded(!expanded)} className="text-sm text-white/90 hover:text-white transition-colors">{expanded ? 'Show Less' : 'View Key Features'}</button>
       {expanded && (
-        <div className="mt-3 pt-3 border-t border-slate-700/50"><h5 className="text-xs font-semibold text-slate-300 mb-2 uppercase tracking-wider">Key Features</h5><ul className="space-y-1.5">{law.keyFeatures.map((feature, i) => (<li key={i} className="flex items-start gap-2 text-xs text-slate-500"><svg className="w-3 h-3 text-slate-300 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>{feature}</li>))}</ul></div>
+        <div className="mt-3 pt-3 border-t border-white/[0.06]"><h5 className="text-xs font-semibold text-slate-300 mb-2 uppercase tracking-wider">Key Features</h5><ul className="space-y-1.5">{law.keyFeatures.map((feature, i) => (<li key={i} className="flex items-start gap-2 text-xs text-slate-500"><svg className="w-3 h-3 text-slate-300 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>{feature}</li>))}</ul></div>
       )}
     </div>
   );
@@ -503,9 +503,9 @@ function SpaceLawNationalTab() {
     <div>
       <div className="bg-white/5 border border-white/10 rounded-lg p-4 mb-6"><h4 className="font-semibold text-slate-300 mb-2">National Space Legislation Tracker</h4><p className="text-sm text-slate-400">As commercial space activities expand, nations are rapidly developing domestic legislation to regulate launches, satellite operations, space resources, and liability. This tracker monitors major national frameworks.</p></div>
       <div className="card p-4 mb-6"><div className="flex flex-wrap gap-4 items-end">
-        <div><label className="block text-slate-400 text-sm mb-1">Country</label><select value={countryFilter} onChange={(e) => setCountryFilter(e.target.value)} className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"><option value="">All Countries</option>{countries.map(c => (<option key={c} value={c}>{c}</option>))}</select></div>
-        <div><label className="block text-slate-400 text-sm mb-1">Status</label><select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"><option value="">All Statuses</option><option value="enacted">Enacted</option><option value="amended">Amended</option><option value="proposed">Proposed</option><option value="under_review">Under Review</option></select></div>
-        {(countryFilter || statusFilter) && (<button onClick={() => { setCountryFilter(''); setStatusFilter(''); }} className="text-sm text-slate-200 hover:text-white py-2">Clear Filters</button>)}
+        <div><label className="block text-slate-400 text-sm mb-1">Country</label><select value={countryFilter} onChange={(e) => setCountryFilter(e.target.value)} className="bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"><option value="">All Countries</option>{countries.map(c => (<option key={c} value={c}>{c}</option>))}</select></div>
+        <div><label className="block text-slate-400 text-sm mb-1">Status</label><select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"><option value="">All Statuses</option><option value="enacted">Enacted</option><option value="amended">Amended</option><option value="proposed">Proposed</option><option value="under_review">Under Review</option></select></div>
+        {(countryFilter || statusFilter) && (<button onClick={() => { setCountryFilter(''); setStatusFilter(''); }} className="text-sm text-white/90 hover:text-white py-2">Clear Filters</button>)}
       </div></div>
       <div className="flex items-center justify-between mb-4"><span className="text-sm text-slate-400">Showing {filteredLaws.length} of {NATIONAL_LAWS.length} laws</span></div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">{filteredLaws.map((law) => (<NationalLawCard key={law.id} law={law} />))}</div>
@@ -523,21 +523,21 @@ function SpaceLawArtemisTab() {
     <div>
       <div className="card p-6 mb-6"><h3 className="text-lg font-semibold text-white mb-2">About the Artemis Accords</h3><p className="text-slate-500 text-sm mb-4">The Artemis Accords are a set of bilateral agreements between the United States and partner nations, grounded in the Outer Space Treaty. Established in 2020 by NASA, they set principles for the responsible and peaceful exploration of the Moon, Mars, and other celestial bodies as part of the Artemis program.</p>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          <div className="bg-slate-800/40 border border-slate-600/30 rounded-lg p-3 text-center"><div className="text-2xl font-bold text-green-400">{ARTEMIS_SIGNATORIES.length}</div><div className="text-slate-400 text-xs">Total Signatories</div></div>
-          <div className="bg-slate-800/40 border border-slate-600/30 rounded-lg p-3 text-center"><div className="text-2xl font-bold text-slate-300">{Object.keys(regionCounts).length}</div><div className="text-slate-400 text-xs">Regions</div></div>
-          <div className="bg-slate-800/40 border border-slate-600/30 rounded-lg p-3 text-center"><div className="text-2xl font-bold text-blue-400">{ARTEMIS_SIGNATORIES.filter(s => s.implementationStatus === 'implementing').length}</div><div className="text-slate-400 text-xs">Implementing</div></div>
-          <div className="bg-slate-800/40 border border-slate-600/30 rounded-lg p-3 text-center"><div className="text-2xl font-bold text-purple-400">{ARTEMIS_PRINCIPLES.length}</div><div className="text-slate-400 text-xs">Core Principles</div></div>
+          <div className="bg-white/[0.04] border border-white/[0.1] rounded-lg p-3 text-center"><div className="text-2xl font-bold text-green-400">{ARTEMIS_SIGNATORIES.length}</div><div className="text-slate-400 text-xs">Total Signatories</div></div>
+          <div className="bg-white/[0.04] border border-white/[0.1] rounded-lg p-3 text-center"><div className="text-2xl font-bold text-slate-300">{Object.keys(regionCounts).length}</div><div className="text-slate-400 text-xs">Regions</div></div>
+          <div className="bg-white/[0.04] border border-white/[0.1] rounded-lg p-3 text-center"><div className="text-2xl font-bold text-blue-400">{ARTEMIS_SIGNATORIES.filter(s => s.implementationStatus === 'implementing').length}</div><div className="text-slate-400 text-xs">Implementing</div></div>
+          <div className="bg-white/[0.04] border border-white/[0.1] rounded-lg p-3 text-center"><div className="text-2xl font-bold text-purple-400">{ARTEMIS_PRINCIPLES.length}</div><div className="text-slate-400 text-xs">Core Principles</div></div>
         </div>
       </div>
-      <div className="card p-6 mb-6"><h3 className="text-lg font-semibold text-white mb-4">Core Principles</h3><div className="grid grid-cols-1 md:grid-cols-2 gap-3">{ARTEMIS_PRINCIPLES.map((principle, i) => (<div key={i} className="bg-slate-800/50 border border-slate-700/30 rounded-lg p-4"><div className="flex items-center gap-2 mb-1"><span className="w-6 h-6 rounded-full bg-white/10 text-slate-300 text-xs font-bold flex items-center justify-center">{i + 1}</span><h5 className="font-medium text-slate-100 text-sm">{principle.title}</h5></div><p className="text-xs text-slate-500 ml-8">{principle.description}</p></div>))}</div></div>
-      <div className="card p-6 mb-6"><h3 className="text-lg font-semibold text-white mb-3">Regional Distribution</h3><div className="space-y-3">{Object.entries(regionCounts).sort((a, b) => b[1] - a[1]).map(([region, count]) => { const maxCount = Math.max(...Object.values(regionCounts)); const pct = (count / maxCount) * 100; return (<div key={region}><div className="flex items-center justify-between mb-1"><span className="text-sm text-slate-400 font-medium">{region}</span><span className="text-sm text-slate-400">{count} signatories</span></div><div className="h-3 bg-slate-700 rounded-full overflow-hidden"><div className="h-full bg-gradient-to-r from-white to-blue-400 rounded-full transition-all" style={{ width: `${pct}%` }} /></div></div>); })}</div></div>
+      <div className="card p-6 mb-6"><h3 className="text-lg font-semibold text-white mb-4">Core Principles</h3><div className="grid grid-cols-1 md:grid-cols-2 gap-3">{ARTEMIS_PRINCIPLES.map((principle, i) => (<div key={i} className="bg-white/[0.04] border border-white/[0.06]/30 rounded-lg p-4"><div className="flex items-center gap-2 mb-1"><span className="w-6 h-6 rounded-full bg-white/10 text-slate-300 text-xs font-bold flex items-center justify-center">{i + 1}</span><h5 className="font-medium text-white text-sm">{principle.title}</h5></div><p className="text-xs text-slate-500 ml-8">{principle.description}</p></div>))}</div></div>
+      <div className="card p-6 mb-6"><h3 className="text-lg font-semibold text-white mb-3">Regional Distribution</h3><div className="space-y-3">{Object.entries(regionCounts).sort((a, b) => b[1] - a[1]).map(([region, count]) => { const maxCount = Math.max(...Object.values(regionCounts)); const pct = (count / maxCount) * 100; return (<div key={region}><div className="flex items-center justify-between mb-1"><span className="text-sm text-slate-400 font-medium">{region}</span><span className="text-sm text-slate-400">{count} signatories</span></div><div className="h-3 bg-white/[0.08] rounded-full overflow-hidden"><div className="h-full bg-gradient-to-r from-white to-blue-400 rounded-full transition-all" style={{ width: `${pct}%` }} /></div></div>); })}</div></div>
       <div className="card p-4 mb-6"><div className="flex flex-wrap gap-4 items-end">
-        <div className="flex-1 min-w-[200px]"><label className="block text-slate-400 text-sm mb-1">Search</label><input type="search" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Search countries, agencies..." className="w-full bg-slate-800/80 border border-slate-600/50 text-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-white/15 placeholder:text-slate-400" /></div>
-        <div><label className="block text-slate-400 text-sm mb-1">Region</label><select value={regionFilter} onChange={(e) => setRegionFilter(e.target.value)} className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"><option value="">All Regions</option>{regions.map(r => (<option key={r} value={r}>{r} ({regionCounts[r]})</option>))}</select></div>
-        {(regionFilter || searchQuery) && (<button onClick={() => { setRegionFilter(''); setSearchQuery(''); }} className="text-sm text-slate-200 hover:text-white py-2">Clear Filters</button>)}
+        <div className="flex-1 min-w-[200px]"><label className="block text-slate-400 text-sm mb-1">Search</label><input type="search" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Search countries, agencies..." className="w-full bg-white/[0.06] border border-white/[0.1] text-white/90 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-white/15 placeholder:text-slate-400" /></div>
+        <div><label className="block text-slate-400 text-sm mb-1">Region</label><select value={regionFilter} onChange={(e) => setRegionFilter(e.target.value)} className="bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"><option value="">All Regions</option>{regions.map(r => (<option key={r} value={r}>{r} ({regionCounts[r]})</option>))}</select></div>
+        {(regionFilter || searchQuery) && (<button onClick={() => { setRegionFilter(''); setSearchQuery(''); }} className="text-sm text-white/90 hover:text-white py-2">Clear Filters</button>)}
       </div></div>
       <div className="flex items-center justify-between mb-4"><span className="text-sm text-slate-400">Showing {filteredSignatories.length} of {ARTEMIS_SIGNATORIES.length} signatories</span></div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">{filteredSignatories.map((signatory) => { const status = ARTEMIS_STATUS_CONFIG[signatory.implementationStatus] || DEFAULT_ARTEMIS_STATUS; return (<div key={signatory.id} className="card p-4 hover:border-white/10 transition-all"><div className="flex items-start justify-between mb-2"><div className="flex items-center gap-3"><div className="w-10 h-10 rounded-lg bg-slate-800/50 border border-slate-600/40 flex items-center justify-center text-sm font-bold text-slate-400">{signatory.countryCode}</div><div><h4 className="font-semibold text-white text-sm">{signatory.country}</h4><span className="text-slate-400 text-xs">{signatory.spaceAgency}</span></div></div><span className={`text-xs px-2 py-0.5 rounded border ${status.bg} ${status.text} ${status.border}`}>{status.label}</span></div><div className="flex items-center gap-3 text-xs text-slate-400 mb-2"><span>Signed: {new Date(signatory.dateSigned).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' })}</span><span>{signatory.region}</span></div><p className="text-xs text-slate-500 line-clamp-2">{signatory.notes}</p></div>); })}</div>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">{filteredSignatories.map((signatory) => { const status = ARTEMIS_STATUS_CONFIG[signatory.implementationStatus] || DEFAULT_ARTEMIS_STATUS; return (<div key={signatory.id} className="card p-4 hover:border-white/10 transition-all"><div className="flex items-start justify-between mb-2"><div className="flex items-center gap-3"><div className="w-10 h-10 rounded-lg bg-white/[0.04] border border-white/[0.1] flex items-center justify-center text-sm font-bold text-slate-400">{signatory.countryCode}</div><div><h4 className="font-semibold text-white text-sm">{signatory.country}</h4><span className="text-slate-400 text-xs">{signatory.spaceAgency}</span></div></div><span className={`text-xs px-2 py-0.5 rounded border ${status.bg} ${status.text} ${status.border}`}>{status.label}</span></div><div className="flex items-center gap-3 text-xs text-slate-400 mb-2"><span>Signed: {new Date(signatory.dateSigned).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' })}</span><span>{signatory.region}</span></div><p className="text-xs text-slate-500 line-clamp-2">{signatory.notes}</p></div>); })}</div>
     </div>
   );
 }
@@ -547,11 +547,11 @@ function ProceedingCard({ proceeding }: { proceeding: LegalProceeding }) {
   const statusConfig = PROCEEDING_STATUS_CONFIG[proceeding.status] || DEFAULT_PROCEEDING_STATUS;
   return (
     <div className="card p-5 hover:border-white/10 transition-all">
-      <div className="flex items-start justify-between mb-2"><div className="flex items-center gap-2"><span className="text-xs text-slate-400 bg-slate-800/50 border border-slate-600/40 px-2 py-0.5 rounded font-medium">{proceeding.type}</span><span className="text-xs text-slate-400">{proceeding.year}</span></div><span className={`text-xs font-bold px-2.5 py-1 rounded border ${statusConfig.bg} ${statusConfig.text} ${statusConfig.border}`}>{statusConfig.label}</span></div>
+      <div className="flex items-start justify-between mb-2"><div className="flex items-center gap-2"><span className="text-xs text-slate-400 bg-white/[0.04] border border-white/[0.1] px-2 py-0.5 rounded font-medium">{proceeding.type}</span><span className="text-xs text-slate-400">{proceeding.year}</span></div><span className={`text-xs font-bold px-2.5 py-1 rounded border ${statusConfig.bg} ${statusConfig.text} ${statusConfig.border}`}>{statusConfig.label}</span></div>
       <h4 className="font-semibold text-white mb-1">{proceeding.title}</h4><p className="text-xs text-slate-400 mb-3">{proceeding.parties}</p>
       <p className="text-slate-500 text-sm mb-3 line-clamp-3">{proceeding.description}</p>
-      <button onClick={() => setExpanded(!expanded)} className="text-sm text-slate-200 hover:text-white transition-colors">{expanded ? 'Show Less' : 'View Details'}</button>
-      {expanded && (<div className="mt-3 pt-3 border-t border-slate-700/50 space-y-3"><div><h5 className="text-xs font-semibold text-slate-300 mb-1 uppercase tracking-wider">Jurisdiction</h5><p className="text-xs text-slate-500">{proceeding.jurisdiction}</p></div><div><h5 className="text-xs font-semibold text-slate-300 mb-1 uppercase tracking-wider">Significance</h5><p className="text-xs text-slate-500">{proceeding.significance}</p></div><div><h5 className="text-xs font-semibold text-slate-300 mb-1 uppercase tracking-wider">Outcome</h5><p className="text-xs text-slate-500">{proceeding.outcome}</p></div></div>)}
+      <button onClick={() => setExpanded(!expanded)} className="text-sm text-white/90 hover:text-white transition-colors">{expanded ? 'Show Less' : 'View Details'}</button>
+      {expanded && (<div className="mt-3 pt-3 border-t border-white/[0.06] space-y-3"><div><h5 className="text-xs font-semibold text-slate-300 mb-1 uppercase tracking-wider">Jurisdiction</h5><p className="text-xs text-slate-500">{proceeding.jurisdiction}</p></div><div><h5 className="text-xs font-semibold text-slate-300 mb-1 uppercase tracking-wider">Significance</h5><p className="text-xs text-slate-500">{proceeding.significance}</p></div><div><h5 className="text-xs font-semibold text-slate-300 mb-1 uppercase tracking-wider">Outcome</h5><p className="text-xs text-slate-500">{proceeding.outcome}</p></div></div>)}
     </div>
   );
 }
@@ -571,9 +571,9 @@ function SpaceLawProceedingsTab() {
         <div className="card-elevated p-4 text-center"><div className="text-2xl font-bold font-display text-yellow-400">{LEGAL_PROCEEDINGS.filter(p => p.status === 'pending').length}</div><div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Pending</div></div>
       </div>
       <div className="card p-4 mb-6"><div className="flex flex-wrap gap-4 items-end">
-        <div><label className="block text-slate-400 text-sm mb-1">Case Type</label><select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)} className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"><option value="">All Types</option>{types.map(t => (<option key={t} value={t}>{t}</option>))}</select></div>
-        <div><label className="block text-slate-400 text-sm mb-1">Status</label><select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"><option value="">All Statuses</option><option value="active">Active</option><option value="resolved">Resolved</option><option value="pending">Pending</option><option value="advisory">Advisory</option></select></div>
-        {(typeFilter || statusFilter) && (<button onClick={() => { setTypeFilter(''); setStatusFilter(''); }} className="text-sm text-slate-200 hover:text-white py-2">Clear Filters</button>)}
+        <div><label className="block text-slate-400 text-sm mb-1">Case Type</label><select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)} className="bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"><option value="">All Types</option>{types.map(t => (<option key={t} value={t}>{t}</option>))}</select></div>
+        <div><label className="block text-slate-400 text-sm mb-1">Status</label><select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"><option value="">All Statuses</option><option value="active">Active</option><option value="resolved">Resolved</option><option value="pending">Pending</option><option value="advisory">Advisory</option></select></div>
+        {(typeFilter || statusFilter) && (<button onClick={() => { setTypeFilter(''); setStatusFilter(''); }} className="text-sm text-white/90 hover:text-white py-2">Clear Filters</button>)}
       </div></div>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">{filteredProceedings.map((p) => (<ProceedingCard key={p.id} proceeding={p} />))}</div>
     </div>
@@ -588,8 +588,8 @@ function BodyCard({ body }: { body: RegulatoryBody }) {
       <div className="flex items-start justify-between mb-3"><div><div className="flex items-center gap-2 mb-1"><h4 className="font-semibold text-white">{body.abbreviation}</h4><span className={`text-xs px-2 py-0.5 rounded border ${typeConfig.bg} ${typeConfig.text} ${typeConfig.border}`}>{typeConfig.label}</span></div><p className="text-slate-400 text-sm">{body.name}</p></div></div>
       <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-slate-400 mb-3"><span>Est. {body.established}</span><span>{body.headquarters}</span><span>{body.members}</span></div>
       <p className="text-slate-500 text-sm mb-3 line-clamp-2">{body.mandate}</p>
-      <button onClick={() => setExpanded(!expanded)} className="text-sm text-slate-200 hover:text-white transition-colors">{expanded ? 'Show Less' : 'View Functions'}</button>
-      {expanded && (<div className="mt-3 pt-3 border-t border-slate-700/50"><h5 className="text-xs font-semibold text-slate-300 mb-2 uppercase tracking-wider">Key Functions</h5><ul className="space-y-1.5">{body.keyFunctions.map((func, i) => (<li key={i} className="flex items-start gap-2 text-xs text-slate-500"><svg className="w-3 h-3 text-slate-300 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>{func}</li>))}</ul><a href={body.website} target="_blank" rel="noopener noreferrer" className="inline-block mt-3 text-xs text-slate-200 hover:text-white">Visit Website</a></div>)}
+      <button onClick={() => setExpanded(!expanded)} className="text-sm text-white/90 hover:text-white transition-colors">{expanded ? 'Show Less' : 'View Functions'}</button>
+      {expanded && (<div className="mt-3 pt-3 border-t border-white/[0.06]"><h5 className="text-xs font-semibold text-slate-300 mb-2 uppercase tracking-wider">Key Functions</h5><ul className="space-y-1.5">{body.keyFunctions.map((func, i) => (<li key={i} className="flex items-start gap-2 text-xs text-slate-500"><svg className="w-3 h-3 text-slate-300 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>{func}</li>))}</ul><a href={body.website} target="_blank" rel="noopener noreferrer" className="inline-block mt-3 text-xs text-white/90 hover:text-white">Visit Website</a></div>)}
     </div>
   );
 }
@@ -602,9 +602,9 @@ function SpaceLawBodiesTab() {
     <div>
       <div className="bg-purple-500/10 border border-purple-500/30 rounded-lg p-4 mb-6"><h4 className="font-semibold text-purple-400 mb-2">Space Regulatory Bodies Directory</h4><p className="text-sm text-slate-400">Comprehensive directory of international, regional, and national regulatory bodies governing space activities. From UN organizations to national licensing authorities and industry coordination groups.</p></div>
       <div className="card p-4 mb-6"><div className="flex flex-wrap gap-4 items-end">
-        <div className="flex-1 min-w-[200px]"><label className="block text-slate-400 text-sm mb-1">Search</label><input type="search" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Search bodies, functions..." className="w-full bg-slate-800/80 border border-slate-600/50 text-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-white/15 placeholder:text-slate-400" /></div>
-        <div><label className="block text-slate-400 text-sm mb-1">Type</label><select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)} className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"><option value="">All Types</option><option value="un">UN Bodies</option><option value="national">National</option><option value="regional">Regional</option><option value="industry">Industry</option></select></div>
-        {(typeFilter || searchQuery) && (<button onClick={() => { setTypeFilter(''); setSearchQuery(''); }} className="text-sm text-slate-200 hover:text-white py-2">Clear Filters</button>)}
+        <div className="flex-1 min-w-[200px]"><label className="block text-slate-400 text-sm mb-1">Search</label><input type="search" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Search bodies, functions..." className="w-full bg-white/[0.06] border border-white/[0.1] text-white/90 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-white/15 placeholder:text-slate-400" /></div>
+        <div><label className="block text-slate-400 text-sm mb-1">Type</label><select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)} className="bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"><option value="">All Types</option><option value="un">UN Bodies</option><option value="national">National</option><option value="regional">Regional</option><option value="industry">Industry</option></select></div>
+        {(typeFilter || searchQuery) && (<button onClick={() => { setTypeFilter(''); setSearchQuery(''); }} className="text-sm text-white/90 hover:text-white py-2">Clear Filters</button>)}
       </div></div>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">{(Object.entries(BODY_TYPE_CONFIG) as [BodyType, typeof BODY_TYPE_CONFIG[BodyType]][]).map(([type, config]) => { const count = REGULATORY_BODIES.filter(b => b.type === type).length; return (<button key={type} onClick={() => setTypeFilter(typeFilter === type ? '' : type)} className={`card-elevated p-4 text-center transition-all cursor-pointer ${typeFilter === type ? 'ring-2 ring-white/15' : ''}`}><div className={`text-2xl font-bold font-display ${config.text}`}>{count}</div><div className="text-slate-400 text-xs uppercase tracking-widest font-medium">{config.label}</div></button>); })}</div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">{filteredBodies.map((body) => (<BodyCard key={body.id} body={body} />))}</div>
@@ -629,19 +629,19 @@ function FilingsFCCTab() {
         <div className="card-elevated p-4 text-center"><div className="text-2xl font-bold font-display text-slate-300">{totalSats.toLocaleString()}</div><div className="text-star-300 text-xs uppercase tracking-widest">Satellites Filed</div></div>
       </div>
       <div className="card p-4 mb-6"><div className="flex flex-wrap items-center gap-3">
-        <input type="search" placeholder="Search applicant, file number, band..." aria-label="Search FCC filings" value={search} onChange={(e) => setSearch(e.target.value)} className="flex-1 min-w-[200px] bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none" />
-        <select value={orbitFilter} onChange={(e) => setOrbitFilter(e.target.value)} className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"><option value="">All Orbits</option>{uniqueOrbits.map((o) => (<option key={o} value={o}>{o}</option>))}</select>
-        <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"><option value="">All Statuses</option>{uniqueStatuses.map((s) => (<option key={s} value={s}>{(FILING_STATUS_STYLES[s] || DEFAULT_FILING_STATUS_STYLE).label}</option>))}</select>
+        <input type="search" placeholder="Search applicant, file number, band..." aria-label="Search FCC filings" value={search} onChange={(e) => setSearch(e.target.value)} className="flex-1 min-w-[200px] bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none" />
+        <select value={orbitFilter} onChange={(e) => setOrbitFilter(e.target.value)} className="bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"><option value="">All Orbits</option>{uniqueOrbits.map((o) => (<option key={o} value={o}>{o}</option>))}</select>
+        <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"><option value="">All Statuses</option>{uniqueStatuses.map((s) => (<option key={s} value={s}>{(FILING_STATUS_STYLES[s] || DEFAULT_FILING_STATUS_STYLE).label}</option>))}</select>
         <span className="text-xs text-star-300 ml-auto">{filtered.length} filings</span>
       </div></div>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">{filtered.map((filing) => { const statusStyle = FILING_STATUS_STYLES[filing.status] || DEFAULT_FILING_STATUS_STYLE; const orbitStyle = FILING_ORBIT_STYLES[filing.orbitType] || DEFAULT_FILING_ORBIT_STYLE; return (
         <div key={filing.id} className="card p-5 hover:border-white/15 transition-all">
           <div className="flex items-start justify-between mb-3 gap-3"><div className="flex-1 min-w-0"><h4 className="font-semibold text-white text-base">{filing.applicant}</h4><span className="text-star-300 text-xs font-mono">{filing.fileNumber}</span></div><div className="flex items-center gap-2 shrink-0"><span className={`text-xs font-medium px-2 py-1 rounded ${orbitStyle.bg} ${orbitStyle.text}`}>{filing.orbitType}</span><span className={`text-xs font-medium px-2 py-1 rounded ${statusStyle.bg} ${statusStyle.text}`}>{statusStyle.label}</span></div></div>
-          <div className="flex items-center gap-4 mb-3 text-sm"><div><span className="text-star-300 text-xs block">Type</span><span className="text-white text-sm">{filing.filingType}</span></div><div><span className="text-star-300 text-xs block">Band</span><span className="text-slate-200 text-sm font-mono">{filing.band}</span></div>{filing.satelliteCount && (<div><span className="text-star-300 text-xs block">Satellites</span><span className="text-white text-sm font-bold">{filing.satelliteCount.toLocaleString()}</span></div>)}</div>
+          <div className="flex items-center gap-4 mb-3 text-sm"><div><span className="text-star-300 text-xs block">Type</span><span className="text-white text-sm">{filing.filingType}</span></div><div><span className="text-star-300 text-xs block">Band</span><span className="text-white/90 text-sm font-mono">{filing.band}</span></div>{filing.satelliteCount && (<div><span className="text-star-300 text-xs block">Satellites</span><span className="text-white text-sm font-bold">{filing.satelliteCount.toLocaleString()}</span></div>)}</div>
           <p className="text-star-300 text-sm leading-relaxed mb-3">{filing.summary}</p>
-          <div className="flex items-center gap-4 text-xs text-star-300 pt-3 border-t border-white/10"><span>Filed: <span className="text-white font-medium">{filing.dateFiled}</span></span>{filing.dateActedOn && (<><span className="text-slate-600">|</span><span>Acted: <span className="text-white font-medium">{filing.dateActedOn}</span></span></>)}{filing.docket && (<><span className="text-slate-600">|</span><span className="text-slate-200 font-mono">{filing.docket}</span></>)}</div>
+          <div className="flex items-center gap-4 text-xs text-star-300 pt-3 border-t border-white/10"><span>Filed: <span className="text-white font-medium">{filing.dateFiled}</span></span>{filing.dateActedOn && (<><span className="text-slate-600">|</span><span>Acted: <span className="text-white font-medium">{filing.dateActedOn}</span></span></>)}{filing.docket && (<><span className="text-slate-600">|</span><span className="text-white/90 font-mono">{filing.docket}</span></>)}</div>
         </div>); })}</div>
-      {filtered.length === 0 && (<div className="text-center py-20"><h3 className="text-xl font-semibold text-white mb-2">No filings match your search</h3><button onClick={() => { setSearch(''); setOrbitFilter(''); setStatusFilter(''); }} className="text-slate-200 hover:text-white text-sm transition-colors">Clear All Filters</button></div>)}
+      {filtered.length === 0 && (<div className="text-center py-20"><h3 className="text-xl font-semibold text-white mb-2">No filings match your search</h3><button onClick={() => { setSearch(''); setOrbitFilter(''); setStatusFilter(''); }} className="text-white/90 hover:text-white text-sm transition-colors">Clear All Filters</button></div>)}
     </div>
   );
 }
@@ -659,19 +659,19 @@ function FilingsFAATab() {
         <div className="card-elevated p-4 text-center"><div className="text-2xl font-bold font-display text-slate-300">{totalMissions}</div><div className="text-star-300 text-xs uppercase tracking-widest">Missions Auth.</div></div>
       </div>
       <div className="card p-4 mb-6"><div className="flex flex-wrap items-center gap-3">
-        <input type="search" placeholder="Search licensee, vehicle, launch site..." aria-label="Search FAA licenses" value={search} onChange={(e) => setSearch(e.target.value)} className="flex-1 min-w-[200px] bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none" />
-        <select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)} className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"><option value="">All Types</option>{uniqueTypes.map((t) => (<option key={t} value={t}>{t}</option>))}</select>
-        <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"><option value="">All Statuses</option>{uniqueStatuses.map((s) => (<option key={s} value={s}>{(FILING_STATUS_STYLES[s] || DEFAULT_FILING_STATUS_STYLE).label}</option>))}</select>
+        <input type="search" placeholder="Search licensee, vehicle, launch site..." aria-label="Search FAA licenses" value={search} onChange={(e) => setSearch(e.target.value)} className="flex-1 min-w-[200px] bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none" />
+        <select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)} className="bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"><option value="">All Types</option>{uniqueTypes.map((t) => (<option key={t} value={t}>{t}</option>))}</select>
+        <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"><option value="">All Statuses</option>{uniqueStatuses.map((s) => (<option key={s} value={s}>{(FILING_STATUS_STYLES[s] || DEFAULT_FILING_STATUS_STYLE).label}</option>))}</select>
         <span className="text-xs text-star-300 ml-auto">{filtered.length} licenses</span>
       </div></div>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">{filtered.map((license) => { const statusStyle = FILING_STATUS_STYLES[license.status] || DEFAULT_FILING_STATUS_STYLE; return (
         <div key={license.id} className="card p-5 hover:border-white/15 transition-all">
           <div className="flex items-start justify-between mb-3 gap-3"><div className="flex-1 min-w-0"><h4 className="font-semibold text-white text-base">{license.licensee}</h4><span className="text-star-300 text-xs font-mono">{license.licenseNumber}</span></div><div className="flex items-center gap-2 shrink-0"><span className="text-xs font-medium px-2 py-1 rounded bg-blue-500/20 text-blue-400">{license.licenseType}</span><span className={`text-xs font-medium px-2 py-1 rounded ${statusStyle.bg} ${statusStyle.text}`}>{statusStyle.label}</span></div></div>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-3"><div><span className="text-star-300 text-xs block">Vehicle</span><span className="text-white text-sm font-medium">{license.vehicle}</span></div><div><span className="text-star-300 text-xs block">Launch Site</span><span className="text-slate-200 text-sm">{license.launchSite}</span></div>{license.missionsAuthorized > 0 && (<div><span className="text-star-300 text-xs block">Missions</span><span className="text-white text-sm font-bold">{license.missionsAuthorized}</span></div>)}</div>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-3"><div><span className="text-star-300 text-xs block">Vehicle</span><span className="text-white text-sm font-medium">{license.vehicle}</span></div><div><span className="text-star-300 text-xs block">Launch Site</span><span className="text-white/90 text-sm">{license.launchSite}</span></div>{license.missionsAuthorized > 0 && (<div><span className="text-star-300 text-xs block">Missions</span><span className="text-white text-sm font-bold">{license.missionsAuthorized}</span></div>)}</div>
           <p className="text-star-300 text-sm leading-relaxed mb-3">{license.summary}</p>
           <div className="flex items-center gap-4 text-xs text-star-300 pt-3 border-t border-white/10"><span>Issued: <span className="text-white font-medium">{license.dateIssued}</span></span><span className="text-slate-600">|</span><span>Expires: <span className="text-white font-medium">{license.expirationDate}</span></span></div>
         </div>); })}</div>
-      {filtered.length === 0 && (<div className="text-center py-20"><h3 className="text-xl font-semibold text-white mb-2">No licenses match your search</h3><button onClick={() => { setSearch(''); setTypeFilter(''); setStatusFilter(''); }} className="text-slate-200 hover:text-white text-sm transition-colors">Clear All Filters</button></div>)}
+      {filtered.length === 0 && (<div className="text-center py-20"><h3 className="text-xl font-semibold text-white mb-2">No licenses match your search</h3><button onClick={() => { setSearch(''); setTypeFilter(''); setStatusFilter(''); }} className="text-white/90 hover:text-white text-sm transition-colors">Clear All Filters</button></div>)}
     </div>
   );
 }
@@ -690,19 +690,19 @@ function FilingsITUTab() {
         <div className="card-elevated p-4 text-center"><div className="text-2xl font-bold font-display text-green-400">{ITU_FILINGS.filter((f) => f.status === 'active').length}</div><div className="text-star-300 text-xs uppercase tracking-widest">Active Filings</div></div>
       </div>
       <div className="card p-4 mb-6"><div className="flex flex-wrap items-center gap-3">
-        <input type="search" placeholder="Search network name, administration..." aria-label="Search ITU filings" value={search} onChange={(e) => setSearch(e.target.value)} className="flex-1 min-w-[200px] bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none" />
-        <select value={orbitFilter} onChange={(e) => setOrbitFilter(e.target.value)} className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"><option value="">All Orbits</option>{uniqueOrbits.map((o) => (<option key={o} value={o}>{o}</option>))}</select>
-        <select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)} className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"><option value="">All Filing Types</option>{uniqueTypes.map((t) => (<option key={t} value={t}>{t}</option>))}</select>
+        <input type="search" placeholder="Search network name, administration..." aria-label="Search ITU filings" value={search} onChange={(e) => setSearch(e.target.value)} className="flex-1 min-w-[200px] bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none" />
+        <select value={orbitFilter} onChange={(e) => setOrbitFilter(e.target.value)} className="bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"><option value="">All Orbits</option>{uniqueOrbits.map((o) => (<option key={o} value={o}>{o}</option>))}</select>
+        <select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)} className="bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"><option value="">All Filing Types</option>{uniqueTypes.map((t) => (<option key={t} value={t}>{t}</option>))}</select>
         <span className="text-xs text-star-300 ml-auto">{filtered.length} filings</span>
       </div></div>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">{filtered.map((filing) => { const statusStyle = FILING_STATUS_STYLES[filing.status] || DEFAULT_FILING_STATUS_STYLE; const orbitStyle = FILING_ORBIT_STYLES[filing.orbitType] || DEFAULT_FILING_ORBIT_STYLE; return (
         <div key={filing.id} className="card p-5 hover:border-white/15 transition-all">
           <div className="flex items-start justify-between mb-3 gap-3"><div className="flex-1 min-w-0"><h4 className="font-semibold text-white text-base font-mono">{filing.networkName}</h4><span className="text-star-300 text-sm">{filing.administration}</span></div><div className="flex items-center gap-2 shrink-0"><span className={`text-xs font-medium px-2 py-1 rounded ${orbitStyle.bg} ${orbitStyle.text}`}>{filing.orbitType}</span><span className={`text-xs font-medium px-2 py-1 rounded ${statusStyle.bg} ${statusStyle.text}`}>{statusStyle.label}</span></div></div>
-          <div className="flex items-center gap-4 mb-3 text-sm"><div><span className="text-star-300 text-xs block">Filing Type</span><span className="text-white text-sm">{filing.filingType}</span></div><div><span className="text-star-300 text-xs block">Service Band</span><span className="text-slate-200 text-sm font-mono">{filing.serviceBand}</span></div>{filing.satellites && (<div><span className="text-star-300 text-xs block">Satellites</span><span className="text-white text-sm font-bold">{filing.satellites.toLocaleString()}</span></div>)}</div>
+          <div className="flex items-center gap-4 mb-3 text-sm"><div><span className="text-star-300 text-xs block">Filing Type</span><span className="text-white text-sm">{filing.filingType}</span></div><div><span className="text-star-300 text-xs block">Service Band</span><span className="text-white/90 text-sm font-mono">{filing.serviceBand}</span></div>{filing.satellites && (<div><span className="text-star-300 text-xs block">Satellites</span><span className="text-white text-sm font-bold">{filing.satellites.toLocaleString()}</span></div>)}</div>
           <p className="text-star-300 text-sm leading-relaxed mb-3">{filing.summary}</p>
           <div className="flex items-center gap-4 text-xs text-star-300 pt-3 border-t border-white/10"><span>Filed: <span className="text-white font-medium">{filing.dateFiled}</span></span></div>
         </div>); })}</div>
-      {filtered.length === 0 && (<div className="text-center py-20"><h3 className="text-xl font-semibold text-white mb-2">No filings match your search</h3><button onClick={() => { setSearch(''); setOrbitFilter(''); setTypeFilter(''); }} className="text-slate-200 hover:text-white text-sm transition-colors">Clear All Filters</button></div>)}
+      {filtered.length === 0 && (<div className="text-center py-20"><h3 className="text-xl font-semibold text-white mb-2">No filings match your search</h3><button onClick={() => { setSearch(''); setOrbitFilter(''); setTypeFilter(''); }} className="text-white/90 hover:text-white text-sm transition-colors">Clear All Filters</button></div>)}
     </div>
   );
 }
@@ -721,19 +721,19 @@ function FilingsSECTab() {
         <div className="card-elevated p-4 text-center"><div className="text-2xl font-bold font-display text-purple-400">{uniqueTickers.length}</div><div className="text-star-300 text-xs uppercase tracking-widest">Companies</div></div>
       </div>
       <div className="card p-4 mb-6"><div className="flex flex-wrap items-center gap-3">
-        <input type="search" placeholder="Search company, ticker, content..." aria-label="Search SEC filings" value={search} onChange={(e) => setSearch(e.target.value)} className="flex-1 min-w-[200px] bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none" />
-        <select value={companyFilter} onChange={(e) => setCompanyFilter(e.target.value)} className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"><option value="">All Companies</option>{uniqueTickers.map((t) => (<option key={t} value={t}>{t}</option>))}</select>
-        <select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)} className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"><option value="">All Filing Types</option>{uniqueTypes.map((t) => (<option key={t} value={t}>{t}</option>))}</select>
+        <input type="search" placeholder="Search company, ticker, content..." aria-label="Search SEC filings" value={search} onChange={(e) => setSearch(e.target.value)} className="flex-1 min-w-[200px] bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none" />
+        <select value={companyFilter} onChange={(e) => setCompanyFilter(e.target.value)} className="bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"><option value="">All Companies</option>{uniqueTickers.map((t) => (<option key={t} value={t}>{t}</option>))}</select>
+        <select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)} className="bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"><option value="">All Filing Types</option>{uniqueTypes.map((t) => (<option key={t} value={t}>{t}</option>))}</select>
         <span className="text-xs text-star-300 ml-auto">{filtered.length} filings</span>
       </div></div>
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">{filtered.map((filing) => { const typeColor = filingTypeColors[filing.filingType] || { bg: 'bg-slate-800/30', text: 'text-slate-400' }; return (
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">{filtered.map((filing) => { const typeColor = filingTypeColors[filing.filingType] || { bg: 'bg-white/[0.04]', text: 'text-slate-400' }; return (
         <div key={filing.id} className="card p-5 hover:border-white/15 transition-all">
-          <div className="flex items-start justify-between mb-3 gap-3"><div className="flex-1 min-w-0"><h4 className="font-semibold text-white text-base">{filing.company}</h4><div className="flex items-center gap-2 mt-1"><span className="text-slate-200 text-sm font-bold font-mono">${filing.ticker}</span>{filing.period && (<span className="text-star-300 text-xs">({filing.period})</span>)}</div></div><span className={`text-xs font-medium px-2.5 py-1 rounded ${typeColor.bg} ${typeColor.text}`}>{filing.filingType}</span></div>
+          <div className="flex items-start justify-between mb-3 gap-3"><div className="flex-1 min-w-0"><h4 className="font-semibold text-white text-base">{filing.company}</h4><div className="flex items-center gap-2 mt-1"><span className="text-white/90 text-sm font-bold font-mono">${filing.ticker}</span>{filing.period && (<span className="text-star-300 text-xs">({filing.period})</span>)}</div></div><span className={`text-xs font-medium px-2.5 py-1 rounded ${typeColor.bg} ${typeColor.text}`}>{filing.filingType}</span></div>
           {filing.keyMetric && (<div className="flex items-center gap-4 mb-3"><div className="card-elevated px-4 py-2 rounded-lg"><span className="text-star-300 text-xs block">{filing.keyMetricLabel}</span><span className="text-white text-lg font-bold font-display">{filing.keyMetric}</span></div></div>)}
           <p className="text-star-300 text-sm leading-relaxed mb-3">{filing.summary}</p>
-          <div className="flex items-center justify-between text-xs text-star-300 pt-3 border-t border-white/10"><span>Filed: <span className="text-white font-medium">{filing.dateFiled}</span></span><a href={filing.url} target="_blank" rel="noopener noreferrer" className="text-slate-200 hover:text-white transition-colors">View on EDGAR</a></div>
+          <div className="flex items-center justify-between text-xs text-star-300 pt-3 border-t border-white/10"><span>Filed: <span className="text-white font-medium">{filing.dateFiled}</span></span><a href={filing.url} target="_blank" rel="noopener noreferrer" className="text-white/90 hover:text-white transition-colors">View on EDGAR</a></div>
         </div>); })}</div>
-      {filtered.length === 0 && (<div className="text-center py-20"><h3 className="text-xl font-semibold text-white mb-2">No filings match your search</h3><button onClick={() => { setSearch(''); setTypeFilter(''); setCompanyFilter(''); }} className="text-slate-200 hover:text-white text-sm transition-colors">Clear All Filters</button></div>)}
+      {filtered.length === 0 && (<div className="text-center py-20"><h3 className="text-xl font-semibold text-white mb-2">No filings match your search</h3><button onClick={() => { setSearch(''); setTypeFilter(''); setCompanyFilter(''); }} className="text-white/90 hover:text-white text-sm transition-colors">Clear All Filters</button></div>)}
     </div>
   );
 }
@@ -746,7 +746,7 @@ function FilingsFederalRegisterTab() {
   const openForComment = FEDERAL_REGISTER_ENTRIES.filter((e) => { if (!e.commentDeadline) return false; return new Date(e.commentDeadline) > new Date(); });
   return (
     <div>
-      {openForComment.length > 0 && (<div className="card p-5 mb-6 border border-yellow-500/30 bg-yellow-500/5"><h3 className="text-yellow-400 font-semibold mb-3">Open Comment Periods</h3><div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">{openForComment.map((entry) => (<div key={entry.id} className="card p-3"><div className="flex items-center justify-between mb-1"><span className="text-xs font-bold text-slate-200">{entry.agency}</span><span className="text-xs text-yellow-400">Due: {entry.commentDeadline}</span></div><p className="text-sm text-white line-clamp-2">{entry.title}</p></div>))}</div></div>)}
+      {openForComment.length > 0 && (<div className="card p-5 mb-6 border border-yellow-500/30 bg-yellow-500/5"><h3 className="text-yellow-400 font-semibold mb-3">Open Comment Periods</h3><div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">{openForComment.map((entry) => (<div key={entry.id} className="card p-3"><div className="flex items-center justify-between mb-1"><span className="text-xs font-bold text-white/90">{entry.agency}</span><span className="text-xs text-yellow-400">Due: {entry.commentDeadline}</span></div><p className="text-sm text-white line-clamp-2">{entry.title}</p></div>))}</div></div>)}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         <div className="card-elevated p-4 text-center"><div className="text-2xl font-bold font-display text-white">{FEDERAL_REGISTER_ENTRIES.length}</div><div className="text-star-300 text-xs uppercase tracking-widest">Total Entries</div></div>
         <div className="card-elevated p-4 text-center"><div className="text-2xl font-bold font-display text-green-400">{FEDERAL_REGISTER_ENTRIES.filter((e) => e.documentType === 'Final Rule').length}</div><div className="text-star-300 text-xs uppercase tracking-widest">Final Rules</div></div>
@@ -754,19 +754,19 @@ function FilingsFederalRegisterTab() {
         <div className="card-elevated p-4 text-center"><div className="text-2xl font-bold font-display text-red-400">{FEDERAL_REGISTER_ENTRIES.filter((e) => e.impact === 'high').length}</div><div className="text-star-300 text-xs uppercase tracking-widest">High Impact</div></div>
       </div>
       <div className="card p-4 mb-6"><div className="flex flex-wrap items-center gap-3">
-        <input type="search" placeholder="Search title, agency, content..." aria-label="Search Federal Register entries" value={search} onChange={(e) => setSearch(e.target.value)} className="flex-1 min-w-[200px] bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none" />
-        <select value={agencyFilter} onChange={(e) => setAgencyFilter(e.target.value)} className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"><option value="">All Agencies</option>{uniqueAgencies.map((a) => (<option key={a} value={a}>{a}</option>))}</select>
-        <select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)} className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"><option value="">All Types</option>{uniqueTypes.map((t) => (<option key={t} value={t}>{t}</option>))}</select>
-        <select value={impactFilter} onChange={(e) => setImpactFilter(e.target.value)} className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"><option value="">All Impact Levels</option><option value="high">High Impact</option><option value="medium">Medium Impact</option><option value="low">Low Impact</option></select>
+        <input type="search" placeholder="Search title, agency, content..." aria-label="Search Federal Register entries" value={search} onChange={(e) => setSearch(e.target.value)} className="flex-1 min-w-[200px] bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none" />
+        <select value={agencyFilter} onChange={(e) => setAgencyFilter(e.target.value)} className="bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"><option value="">All Agencies</option>{uniqueAgencies.map((a) => (<option key={a} value={a}>{a}</option>))}</select>
+        <select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)} className="bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"><option value="">All Types</option>{uniqueTypes.map((t) => (<option key={t} value={t}>{t}</option>))}</select>
+        <select value={impactFilter} onChange={(e) => setImpactFilter(e.target.value)} className="bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"><option value="">All Impact Levels</option><option value="high">High Impact</option><option value="medium">Medium Impact</option><option value="low">Low Impact</option></select>
         <span className="text-xs text-star-300 ml-auto">{filtered.length} entries</span>
       </div></div>
-      <div className="space-y-4">{filtered.map((entry) => { const typeColor = docTypeColors[entry.documentType] || { bg: 'bg-slate-800/30', text: 'text-slate-400' }; const impactStyle = FILING_IMPACT_STYLES[entry.impact] || DEFAULT_FILING_IMPACT_STYLE; return (
+      <div className="space-y-4">{filtered.map((entry) => { const typeColor = docTypeColors[entry.documentType] || { bg: 'bg-white/[0.04]', text: 'text-slate-400' }; const impactStyle = FILING_IMPACT_STYLES[entry.impact] || DEFAULT_FILING_IMPACT_STYLE; return (
         <div key={entry.id} className="card p-5 hover:border-white/15 transition-all">
-          <div className="flex items-start justify-between mb-3 gap-3"><div className="flex items-center gap-3"><div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center text-xs font-bold text-slate-200 shrink-0">{entry.agency}</div><div><h4 className="font-semibold text-slate-100 text-base">{entry.title}</h4><span className="text-star-300 text-xs font-mono">FR {entry.federalRegisterNumber}</span></div></div><div className="flex items-center gap-2 shrink-0"><span className={`text-xs font-medium px-2 py-1 rounded ${typeColor.bg} ${typeColor.text}`}>{entry.documentType}</span><span className={`text-xs font-medium px-2 py-1 rounded ${impactStyle.bg} ${impactStyle.text}`}>{entry.impact.charAt(0).toUpperCase() + entry.impact.slice(1)} Impact</span></div></div>
+          <div className="flex items-start justify-between mb-3 gap-3"><div className="flex items-center gap-3"><div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center text-xs font-bold text-white/90 shrink-0">{entry.agency}</div><div><h4 className="font-semibold text-white text-base">{entry.title}</h4><span className="text-star-300 text-xs font-mono">FR {entry.federalRegisterNumber}</span></div></div><div className="flex items-center gap-2 shrink-0"><span className={`text-xs font-medium px-2 py-1 rounded ${typeColor.bg} ${typeColor.text}`}>{entry.documentType}</span><span className={`text-xs font-medium px-2 py-1 rounded ${impactStyle.bg} ${impactStyle.text}`}>{entry.impact.charAt(0).toUpperCase() + entry.impact.slice(1)} Impact</span></div></div>
           <p className="text-star-300 text-sm leading-relaxed mb-3">{entry.summary}</p>
-          <div className="flex items-center flex-wrap gap-4 text-xs text-star-300 pt-3 border-t border-white/10"><span>Published: <span className="text-white font-medium">{entry.publishedDate}</span></span>{entry.effectiveDate && (<><span className="text-slate-600">|</span><span>Effective: <span className="text-white font-medium">{entry.effectiveDate}</span></span></>)}{entry.commentDeadline && (<><span className="text-slate-600">|</span><span className={new Date(entry.commentDeadline) > new Date() ? 'text-yellow-400 font-semibold' : 'text-star-300'}>Comments Due: {entry.commentDeadline}</span></>)}{entry.docket && (<><span className="text-slate-600">|</span><span className="text-slate-200 font-mono">{entry.docket}</span></>)}</div>
+          <div className="flex items-center flex-wrap gap-4 text-xs text-star-300 pt-3 border-t border-white/10"><span>Published: <span className="text-white font-medium">{entry.publishedDate}</span></span>{entry.effectiveDate && (<><span className="text-slate-600">|</span><span>Effective: <span className="text-white font-medium">{entry.effectiveDate}</span></span></>)}{entry.commentDeadline && (<><span className="text-slate-600">|</span><span className={new Date(entry.commentDeadline) > new Date() ? 'text-yellow-400 font-semibold' : 'text-star-300'}>Comments Due: {entry.commentDeadline}</span></>)}{entry.docket && (<><span className="text-slate-600">|</span><span className="text-white/90 font-mono">{entry.docket}</span></>)}</div>
         </div>); })}</div>
-      {filtered.length === 0 && (<div className="text-center py-20"><h3 className="text-xl font-semibold text-white mb-2">No entries match your search</h3><button onClick={() => { setSearch(''); setAgencyFilter(''); setTypeFilter(''); setImpactFilter(''); }} className="text-slate-200 hover:text-white text-sm transition-colors">Clear All Filters</button></div>)}
+      {filtered.length === 0 && (<div className="text-center py-20"><h3 className="text-xl font-semibold text-white mb-2">No entries match your search</h3><button onClick={() => { setSearch(''); setAgencyFilter(''); setTypeFilter(''); setImpactFilter(''); }} className="text-white/90 hover:text-white text-sm transition-colors">Clear All Filters</button></div>)}
     </div>
   );
 }
@@ -879,11 +879,11 @@ function ProtestsOverviewTab() {
       </div>
 
       <div className="card p-4 mb-6"><div className="flex flex-wrap items-center gap-3">
-        <input type="search" placeholder="Search case, protester, awardee..." aria-label="Search bid protests" value={search} onChange={(e) => setSearch(e.target.value)} className="flex-1 min-w-[200px] bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none" />
-        <select value={forumFilter} onChange={(e) => setForumFilter(e.target.value)} className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"><option value="">All Forums</option>{uniqueForums.map((f) => (<option key={f} value={f}>{(PROTEST_FORUM_STYLES[f] || DEFAULT_PROTEST_STYLE).label}</option>))}</select>
-        <select value={outcomeFilter} onChange={(e) => setOutcomeFilter(e.target.value)} className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"><option value="">All Outcomes</option>{uniqueOutcomes.map((o) => (<option key={o} value={o}>{(PROTEST_OUTCOME_STYLES[o] || DEFAULT_PROTEST_STYLE).label}</option>))}</select>
-        <select value={programFilter} onChange={(e) => setProgramFilter(e.target.value)} className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"><option value="">All Programs</option>{uniquePrograms.map((p) => (<option key={p} value={p}>{PROTEST_PROGRAM_LABELS[p]}</option>))}</select>
-        <select value={agencyFilter} onChange={(e) => setAgencyFilter(e.target.value)} className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"><option value="">All Agencies</option>{uniqueAgencies.map((a) => (<option key={a} value={a}>{a}</option>))}</select>
+        <input type="search" placeholder="Search case, protester, awardee..." aria-label="Search bid protests" value={search} onChange={(e) => setSearch(e.target.value)} className="flex-1 min-w-[200px] bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none" />
+        <select value={forumFilter} onChange={(e) => setForumFilter(e.target.value)} className="bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"><option value="">All Forums</option>{uniqueForums.map((f) => (<option key={f} value={f}>{(PROTEST_FORUM_STYLES[f] || DEFAULT_PROTEST_STYLE).label}</option>))}</select>
+        <select value={outcomeFilter} onChange={(e) => setOutcomeFilter(e.target.value)} className="bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"><option value="">All Outcomes</option>{uniqueOutcomes.map((o) => (<option key={o} value={o}>{(PROTEST_OUTCOME_STYLES[o] || DEFAULT_PROTEST_STYLE).label}</option>))}</select>
+        <select value={programFilter} onChange={(e) => setProgramFilter(e.target.value)} className="bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"><option value="">All Programs</option>{uniquePrograms.map((p) => (<option key={p} value={p}>{PROTEST_PROGRAM_LABELS[p]}</option>))}</select>
+        <select value={agencyFilter} onChange={(e) => setAgencyFilter(e.target.value)} className="bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"><option value="">All Agencies</option>{uniqueAgencies.map((a) => (<option key={a} value={a}>{a}</option>))}</select>
         <span className="text-xs text-star-300 ml-auto">{filtered.length} cases</span>
       </div></div>
 
@@ -905,12 +905,12 @@ function ProtestsOverviewTab() {
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-3">
               <div><span className="text-star-300 text-xs block">Protester</span><span className="text-white text-sm font-medium">{protest.protester}</span></div>
-              <div><span className="text-star-300 text-xs block">Awardee</span><span className="text-slate-200 text-sm">{protest.awardee}</span></div>
+              <div><span className="text-star-300 text-xs block">Awardee</span><span className="text-white/90 text-sm">{protest.awardee}</span></div>
               <div><span className="text-star-300 text-xs block">Agency</span><span className="text-white text-sm">{protest.agency}</span></div>
               <div><span className="text-star-300 text-xs block">Contract Value</span><span className="text-white text-sm font-bold">{protest.contractValue}</span></div>
             </div>
             <p className="text-star-300 text-sm leading-relaxed mb-3">{protest.description}</p>
-            <button onClick={() => setExpandedId(isExpanded ? null : protest.id)} className="text-sm text-slate-200 hover:text-white transition-colors mb-2">{isExpanded ? 'Show Less' : 'View Key Findings & Significance'}</button>
+            <button onClick={() => setExpandedId(isExpanded ? null : protest.id)} className="text-sm text-white/90 hover:text-white transition-colors mb-2">{isExpanded ? 'Show Less' : 'View Key Findings & Significance'}</button>
             {isExpanded && (
               <div className="mt-3 pt-3 border-t border-white/10 space-y-3">
                 <div><h5 className="text-xs font-semibold text-star-300 mb-2 uppercase tracking-wider">Key Findings</h5><ul className="space-y-1.5">{protest.keyFindings.map((finding, i) => (<li key={i} className="flex items-start gap-2 text-xs text-star-300"><svg className="w-3 h-3 text-slate-300 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>{finding}</li>))}</ul></div>
@@ -918,7 +918,7 @@ function ProtestsOverviewTab() {
                 <div className="text-xs text-star-300">
                   <span className="font-medium text-white">{protest.title}</span>
                   <span className="mx-2 text-slate-600">|</span>
-                  <span>Program: <span className="text-slate-200">{PROTEST_PROGRAM_LABELS[protest.program]}</span></span>
+                  <span>Program: <span className="text-white/90">{PROTEST_PROGRAM_LABELS[protest.program]}</span></span>
                   {protest.judge && (<><span className="mx-2 text-slate-600">|</span><span>{protest.judge}</span></>)}
                 </div>
               </div>
@@ -928,13 +928,13 @@ function ProtestsOverviewTab() {
               <span className="text-slate-600">|</span>
               <span>Decided: <span className="text-white font-medium">{protest.decisionDate}</span></span>
               <span className="text-slate-600">|</span>
-              <span className="text-slate-200">{PROTEST_PROGRAM_LABELS[protest.program]}</span>
+              <span className="text-white/90">{PROTEST_PROGRAM_LABELS[protest.program]}</span>
             </div>
           </div>
         );
       })}</div>
 
-      {filtered.length === 0 && (<div className="text-center py-20"><h3 className="text-xl font-semibold text-white mb-2">No protests match your search</h3><button onClick={() => { setSearch(''); setForumFilter(''); setOutcomeFilter(''); setProgramFilter(''); setAgencyFilter(''); }} className="text-slate-200 hover:text-white text-sm transition-colors">Clear All Filters</button></div>)}
+      {filtered.length === 0 && (<div className="text-center py-20"><h3 className="text-xl font-semibold text-white mb-2">No protests match your search</h3><button onClick={() => { setSearch(''); setForumFilter(''); setOutcomeFilter(''); setProgramFilter(''); setAgencyFilter(''); }} className="text-white/90 hover:text-white text-sm transition-colors">Clear All Filters</button></div>)}
     </div>
   );
 }
@@ -998,7 +998,7 @@ function ProtestsTimelineTab() {
                 const forumStyle = PROTEST_FORUM_STYLES[protest.forum] || DEFAULT_PROTEST_STYLE;
                 return (
                   <div key={protest.id} className="card p-4 hover:border-white/15 transition-all relative">
-                    <div className={`absolute left-[-28px] top-4 w-3 h-3 rounded-full ${outcomeColors[protest.outcome]} border-2 border-slate-900`} />
+                    <div className={`absolute left-[-28px] top-4 w-3 h-3 rounded-full ${outcomeColors[protest.outcome]} border-2 border-black`} />
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex-1 min-w-0">
                         <h4 className="font-semibold text-white text-sm">{protest.shortTitle}</h4>
@@ -1165,7 +1165,7 @@ function ProtestsAnalysisTab() {
             {byProgram.map(([program, count]) => (
               <div key={program} className="flex items-center justify-between py-2 border-b border-white/5 last:border-0">
                 <span className="text-sm text-white">{PROTEST_PROGRAM_LABELS[program as ProtestProgram]}</span>
-                <span className="text-sm font-bold text-slate-200">{count}</span>
+                <span className="text-sm font-bold text-white/90">{count}</span>
               </div>
             ))}
           </div>
@@ -1177,7 +1177,7 @@ function ProtestsAnalysisTab() {
             {byAgency.map(([agency, count]) => (
               <div key={agency} className="flex items-center justify-between py-2 border-b border-white/5 last:border-0">
                 <span className="text-sm text-white">{agency}</span>
-                <span className="text-sm font-bold text-slate-200">{count}</span>
+                <span className="text-sm font-bold text-white/90">{count}</span>
               </div>
             ))}
           </div>
@@ -1899,7 +1899,7 @@ function RegulatoryBodiesRefTab() {
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search regulatory bodies..."
               aria-label="Search regulatory bodies"
-              className="w-full bg-slate-800/80 border border-slate-600/50 text-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-white/15 placeholder:text-slate-400"
+              className="w-full bg-white/[0.06] border border-white/[0.1] text-white/90 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-white/15 placeholder:text-slate-400"
             />
           </div>
           <div>
@@ -1907,7 +1907,7 @@ function RegulatoryBodiesRefTab() {
             <select
               value={categoryFilter}
               onChange={(e) => setCategoryFilter(e.target.value)}
-              className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+              className="bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
             >
               <option value="">All Categories</option>
               <option value="us_licensing">US Licensing</option>
@@ -1916,7 +1916,7 @@ function RegulatoryBodiesRefTab() {
             </select>
           </div>
           {(searchQuery || categoryFilter) && (
-            <button onClick={() => { setSearchQuery(''); setCategoryFilter(''); }} className="text-sm text-slate-200 hover:text-white py-2">Clear Filters</button>
+            <button onClick={() => { setSearchQuery(''); setCategoryFilter(''); }} className="text-sm text-white/90 hover:text-white py-2">Clear Filters</button>
           )}
         </div>
       </div>
@@ -1955,18 +1955,18 @@ function RegulatoryBodiesRefTab() {
               <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-slate-400 mb-3">
                 <span>Jurisdiction: {body.jurisdiction}</span>
               </div>
-              <div className="bg-slate-800/40 border border-slate-600/30 rounded-lg p-3 mb-3">
-                <p className="text-sm text-slate-200 font-medium">{body.primaryFunction}</p>
+              <div className="bg-white/[0.04] border border-white/[0.1] rounded-lg p-3 mb-3">
+                <p className="text-sm text-white/90 font-medium">{body.primaryFunction}</p>
               </div>
               <p className="text-slate-400 text-sm mb-3 leading-relaxed">{body.description}</p>
               <button
                 onClick={() => setExpandedId(isExpanded ? null : body.id)}
-                className="text-sm text-slate-200 hover:text-white transition-colors"
+                className="text-sm text-white/90 hover:text-white transition-colors"
               >
                 {isExpanded ? 'Show Less' : 'View Details'}
               </button>
               {isExpanded && (
-                <div className="mt-4 pt-4 border-t border-slate-700/50 space-y-4">
+                <div className="mt-4 pt-4 border-t border-white/[0.06] space-y-4">
                   <div>
                     <h5 className="text-xs font-semibold text-slate-300 mb-2 uppercase tracking-wider">Key Responsibilities</h5>
                     <ul className="space-y-1.5">
@@ -1995,7 +1995,7 @@ function RegulatoryBodiesRefTab() {
                   </div>
                   <div className="flex items-center gap-4 text-xs text-slate-400 pt-2">
                     <span>{body.contactInfo}</span>
-                    <a href={body.website} target="_blank" rel="noopener noreferrer" className="text-slate-200 hover:text-white">Visit Website &rarr;</a>
+                    <a href={body.website} target="_blank" rel="noopener noreferrer" className="text-white/90 hover:text-white">Visit Website &rarr;</a>
                   </div>
                 </div>
               )}
@@ -2006,7 +2006,7 @@ function RegulatoryBodiesRefTab() {
       {filtered.length === 0 && (
         <div className="text-center py-20">
           <h3 className="text-xl font-semibold text-white mb-2">No regulatory bodies match your search</h3>
-          <button onClick={() => { setSearchQuery(''); setCategoryFilter(''); }} className="text-slate-200 hover:text-white text-sm transition-colors">Clear All Filters</button>
+          <button onClick={() => { setSearchQuery(''); setCategoryFilter(''); }} className="text-white/90 hover:text-white text-sm transition-colors">Clear All Filters</button>
         </div>
       )}
     </div>
@@ -2052,7 +2052,7 @@ function KeyRegulationsTab() {
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search regulations, treaties, CFR references..."
               aria-label="Search regulations"
-              className="w-full bg-slate-800/80 border border-slate-600/50 text-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-white/15 placeholder:text-slate-400"
+              className="w-full bg-white/[0.06] border border-white/[0.1] text-white/90 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-white/15 placeholder:text-slate-400"
             />
           </div>
           <div>
@@ -2060,7 +2060,7 @@ function KeyRegulationsTab() {
             <select
               value={categoryFilter}
               onChange={(e) => setCategoryFilter(e.target.value)}
-              className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+              className="bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
             >
               <option value="">All Categories</option>
               <option value="international_treaty">International Treaties</option>
@@ -2069,7 +2069,7 @@ function KeyRegulationsTab() {
             </select>
           </div>
           {(searchQuery || categoryFilter) && (
-            <button onClick={() => { setSearchQuery(''); setCategoryFilter(''); }} className="text-sm text-slate-200 hover:text-white py-2">Clear Filters</button>
+            <button onClick={() => { setSearchQuery(''); setCategoryFilter(''); }} className="text-sm text-white/90 hover:text-white py-2">Clear Filters</button>
           )}
         </div>
       </div>
@@ -2106,17 +2106,17 @@ function KeyRegulationsTab() {
               <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-slate-400 mb-3">
                 <span>Year: {reg.year}</span>
                 <span>Authority: {reg.authority}</span>
-                {reg.cfrReference && <span className="font-mono text-slate-200">{reg.cfrReference}</span>}
+                {reg.cfrReference && <span className="font-mono text-white/90">{reg.cfrReference}</span>}
               </div>
               <p className="text-slate-400 text-sm mb-3 leading-relaxed line-clamp-3">{reg.description}</p>
               <button
                 onClick={() => setExpandedId(isExpanded ? null : reg.id)}
-                className="text-sm text-slate-200 hover:text-white transition-colors"
+                className="text-sm text-white/90 hover:text-white transition-colors"
               >
                 {isExpanded ? 'Show Less' : 'View Full Details'}
               </button>
               {isExpanded && (
-                <div className="mt-4 pt-4 border-t border-slate-700/50 space-y-4">
+                <div className="mt-4 pt-4 border-t border-white/[0.06] space-y-4">
                   <div>
                     <h5 className="text-xs font-semibold text-slate-300 mb-2 uppercase tracking-wider">Key Provisions</h5>
                     <ul className="space-y-1.5">
@@ -2129,7 +2129,7 @@ function KeyRegulationsTab() {
                     </ul>
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="bg-slate-800/40 border border-slate-600/30 rounded-lg p-3">
+                    <div className="bg-white/[0.04] border border-white/[0.1] rounded-lg p-3">
                       <h5 className="text-xs font-semibold text-slate-300 mb-1 uppercase tracking-wider">Applicability</h5>
                       <p className="text-xs text-slate-400">{reg.applicability}</p>
                     </div>
@@ -2149,7 +2149,7 @@ function KeyRegulationsTab() {
                       ))}
                     </ul>
                   </div>
-                  <a href={reg.furtherReading} target="_blank" rel="noopener noreferrer" className="inline-block text-xs text-slate-200 hover:text-white">View Full Text / Further Reading &rarr;</a>
+                  <a href={reg.furtherReading} target="_blank" rel="noopener noreferrer" className="inline-block text-xs text-white/90 hover:text-white">View Full Text / Further Reading &rarr;</a>
                 </div>
               )}
             </div>
@@ -2159,7 +2159,7 @@ function KeyRegulationsTab() {
       {filtered.length === 0 && (
         <div className="text-center py-20">
           <h3 className="text-xl font-semibold text-white mb-2">No regulations match your search</h3>
-          <button onClick={() => { setSearchQuery(''); setCategoryFilter(''); }} className="text-slate-200 hover:text-white text-sm transition-colors">Clear All Filters</button>
+          <button onClick={() => { setSearchQuery(''); setCategoryFilter(''); }} className="text-white/90 hover:text-white text-sm transition-colors">Clear All Filters</button>
         </div>
       )}
     </div>
@@ -2219,7 +2219,7 @@ function ComplianceChecklistsTab() {
                 className={`flex flex-col items-start px-4 py-3 rounded-lg transition-all whitespace-nowrap min-w-[180px] ${
                   selectedChecklist === cl.id
                     ? 'bg-white/10 text-white border border-white/15'
-                    : 'bg-slate-800/60 text-slate-300 hover:bg-slate-700/60 border border-slate-600/50'
+                    : 'bg-white/[0.04] text-slate-300 hover:bg-white/[0.08] border border-white/[0.1]'
                 }`}
               >
                 <span className="text-sm font-semibold">{cl.activity}</span>
@@ -2228,7 +2228,7 @@ function ComplianceChecklistsTab() {
             );
           })}
         </div>
-        <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-slate-950 to-transparent pointer-events-none md:hidden" />
+        <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-black to-transparent pointer-events-none md:hidden" />
       </div>
 
       {/* Checklist Header */}
@@ -2247,9 +2247,9 @@ function ComplianceChecklistsTab() {
         <div className="mt-4">
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm text-slate-400">Progress: {completionCount}/{checklist.steps.length} steps</span>
-            <span className="text-sm font-bold text-slate-200">{completionPct}%</span>
+            <span className="text-sm font-bold text-white/90">{completionPct}%</span>
           </div>
-          <div className="h-3 bg-slate-700 rounded-full overflow-hidden">
+          <div className="h-3 bg-white/[0.08] rounded-full overflow-hidden">
             <div
               className="h-full bg-gradient-to-r from-white to-slate-400 rounded-full transition-all duration-300"
               style={{ width: `${completionPct}%` }}
@@ -2266,7 +2266,7 @@ function ComplianceChecklistsTab() {
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder="Search within checklist steps..."
           aria-label="Search checklist steps"
-          className="w-full md:w-96 bg-slate-800/80 border border-slate-600/50 text-slate-200 rounded-lg px-4 py-2 text-sm placeholder:text-slate-400 focus:outline-none focus:border-white/15"
+          className="w-full md:w-96 bg-white/[0.06] border border-white/[0.1] text-white/90 rounded-lg px-4 py-2 text-sm placeholder:text-slate-400 focus:outline-none focus:border-white/15"
         />
       </div>
 
@@ -2285,7 +2285,7 @@ function ComplianceChecklistsTab() {
                   className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 transition-all ${
                     isCompleted
                       ? 'bg-green-500/20 text-green-400 border border-green-500/30'
-                      : 'bg-slate-800/50 text-slate-400 border border-slate-600/40 hover:border-white/15'
+                      : 'bg-white/[0.04] text-slate-400 border border-white/[0.1] hover:border-white/15'
                   }`}
                   aria-label={`${isCompleted ? 'Uncheck' : 'Check'} step ${step.step}`}
                 >
@@ -2299,7 +2299,7 @@ function ComplianceChecklistsTab() {
                   <div className="flex items-start justify-between gap-3 mb-1">
                     <div>
                       <div className="flex items-center gap-2 mb-1">
-                        <span className="text-xs font-bold text-slate-200 bg-slate-700/60 px-2 py-0.5 rounded">{step.agency}</span>
+                        <span className="text-xs font-bold text-white/90 bg-white/[0.08] px-2 py-0.5 rounded">{step.agency}</span>
                         <h4 className={`font-semibold text-sm ${isCompleted ? 'text-green-400 line-through' : 'text-white'}`}>{step.requirement}</h4>
                       </div>
                     </div>
@@ -2539,21 +2539,21 @@ function RegulatoryHubContent() {
   if (loading) {
     return (
       <div className="animate-pulse space-y-4">
-        <div className="h-8 bg-slate-800 rounded w-1/3"></div>
-        <div className="h-4 bg-slate-800 rounded w-2/3"></div>
+        <div className="h-8 bg-white/[0.06] rounded w-1/3"></div>
+        <div className="h-4 bg-white/[0.06] rounded w-2/3"></div>
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mt-8">
           {[1, 2, 3, 4, 5].map((i) => (
-            <div key={i} className="h-24 bg-slate-800 rounded-lg"></div>
+            <div key={i} className="h-24 bg-white/[0.06] rounded-lg"></div>
           ))}
         </div>
         <div className="flex gap-2 mt-6">
           {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="h-10 w-32 bg-slate-800 rounded-lg"></div>
+            <div key={i} className="h-10 w-32 bg-white/[0.06] rounded-lg"></div>
           ))}
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-6">
           {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="h-48 bg-slate-800 rounded-lg"></div>
+            <div key={i} className="h-48 bg-white/[0.06] rounded-lg"></div>
           ))}
         </div>
       </div>
@@ -2576,7 +2576,7 @@ function RegulatoryHubContent() {
           <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">Policy Changes</div>
         </div>
         <div className="card-elevated p-6 text-center">
-          <div className="text-4xl font-bold font-display tracking-tight text-slate-200">{stats.totalLicenseTypes}</div>
+          <div className="text-4xl font-bold font-display tracking-tight text-white/90">{stats.totalLicenseTypes}</div>
           <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">License Types</div>
         </div>
         <div className="card-elevated p-6 text-center">
@@ -2605,7 +2605,7 @@ function RegulatoryHubContent() {
               className={`flex items-center gap-2 px-4 sm:px-5 py-3 min-h-[44px] rounded-lg font-semibold text-sm transition-all whitespace-nowrap touch-target ${
                 activeSection === section.id
                   ? 'bg-white text-slate-900'
-                  : 'bg-slate-800/60 text-slate-300 hover:bg-slate-700/60 border border-slate-600/50'
+                  : 'bg-white/[0.04] text-slate-300 hover:bg-white/[0.08] border border-white/[0.1]'
               }`}
             >
               <span>{section.icon}</span>
@@ -2613,7 +2613,7 @@ function RegulatoryHubContent() {
             </button>
           ))}
         </div>
-        <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-slate-950 to-transparent pointer-events-none md:hidden" />
+        <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-black to-transparent pointer-events-none md:hidden" />
       </div>
 
       {/* Sub-Tab Navigation */}
@@ -2626,8 +2626,8 @@ function RegulatoryHubContent() {
                 onClick={() => setActiveSubTab(tab.id)}
                 className={`flex items-center gap-2 px-4 py-2.5 min-h-[44px] rounded-lg font-medium transition-all whitespace-nowrap touch-target ${
                   activeSubTab === tab.id
-                    ? 'bg-slate-700/80 text-slate-100 border-slate-500/50'
-                    : 'bg-transparent text-slate-400 border border-slate-700 hover:border-slate-300'
+                    ? 'bg-white/[0.08] text-white border-white/[0.1]'
+                    : 'bg-transparent text-slate-400 border border-white/[0.06] hover:border-slate-300'
                 }`}
               >
                 <span>{tab.icon}</span>
@@ -2635,7 +2635,7 @@ function RegulatoryHubContent() {
               </button>
             ))}
           </div>
-          <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-slate-950 to-transparent pointer-events-none md:hidden" />
+          <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-black to-transparent pointer-events-none md:hidden" />
         </div>
       )}
 
@@ -2647,8 +2647,8 @@ function RegulatoryHubContent() {
               onClick={() => setActiveSubTab(tab.id)}
               className={`flex items-center gap-2 px-5 py-2.5 min-h-[44px] rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
                 activeSubTab === tab.id
-                  ? 'bg-slate-700/80 text-slate-100 border border-slate-500/50'
-                  : 'bg-transparent text-slate-400 border border-slate-700 hover:border-slate-300'
+                  ? 'bg-white/[0.08] text-white border border-white/[0.1]'
+                  : 'bg-transparent text-slate-400 border border-white/[0.06] hover:border-slate-300'
               }`}
             >
               {tab.label}
@@ -2675,7 +2675,7 @@ function RegulatoryHubContent() {
               </button>
             ))}
           </div>
-          <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-slate-950 to-transparent pointer-events-none md:hidden" />
+          <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-black to-transparent pointer-events-none md:hidden" />
         </div>
       )}
 
@@ -2687,8 +2687,8 @@ function RegulatoryHubContent() {
               onClick={() => setActiveSubTab(tab.id)}
               className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
                 activeSubTab === tab.id
-                  ? 'bg-slate-700/80 text-slate-100 border border-slate-500/50'
-                  : 'bg-transparent text-slate-400 border border-slate-700 hover:border-slate-300'
+                  ? 'bg-white/[0.08] text-white border border-white/[0.1]'
+                  : 'bg-transparent text-slate-400 border border-white/[0.06] hover:border-slate-300'
               }`}
             >
               {tab.label}
@@ -2705,8 +2705,8 @@ function RegulatoryHubContent() {
               onClick={() => setActiveSubTab(tab.id)}
               className={`flex items-center gap-2 px-5 py-2.5 min-h-[44px] rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
                 activeSubTab === tab.id
-                  ? 'bg-slate-700/80 text-slate-100 border border-slate-500/50'
-                  : 'bg-transparent text-slate-400 border border-slate-700 hover:border-slate-300'
+                  ? 'bg-white/[0.08] text-white border border-white/[0.1]'
+                  : 'bg-transparent text-slate-400 border border-white/[0.06] hover:border-slate-300'
               }`}
             >
               {tab.label}

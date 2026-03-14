@@ -209,15 +209,15 @@ export default function PWAInstallPrompt() {
       <div
         className="relative overflow-hidden rounded-2xl border border-white/10 p-4"
         style={{
-          background: 'linear-gradient(145deg, rgba(15, 23, 42, 0.98) 0%, rgba(30, 41, 59, 0.96) 50%, rgba(15, 23, 42, 0.98) 100%)',
+          background: 'linear-gradient(145deg, rgba(10, 10, 10, 0.98) 0%, rgba(20, 20, 20, 0.96) 50%, rgba(10, 10, 10, 0.98) 100%)',
           backdropFilter: 'blur(20px)',
-          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(6, 182, 212, 0.1)',
+          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.06)',
         }}
       >
         {/* Close button */}
         <button
           onClick={handleDismiss}
-          className="absolute top-3 right-3 p-1.5 rounded-full hover:bg-slate-700/50 transition-colors"
+          className="absolute top-3 right-3 p-1.5 rounded-full hover:bg-white/[0.08] transition-colors"
           aria-label="Dismiss"
         >
           <svg
@@ -240,12 +240,12 @@ export default function PWAInstallPrompt() {
           <div
             className="flex-shrink-0 w-14 h-14 rounded-xl flex items-center justify-center"
             style={{
-              background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
-              border: '1px solid rgba(6, 182, 212, 0.3)',
+              background: 'linear-gradient(135deg, #0a0a0a 0%, #141414 100%)',
+              border: '1px solid rgba(255, 255, 255, 0.15)',
             }}
           >
             <svg
-              className="w-8 h-8 text-slate-300"
+              className="w-8 h-8 text-white/70"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -275,7 +275,7 @@ export default function PWAInstallPrompt() {
         <div className="flex items-center gap-3 mt-4">
           <button
             onClick={handleDismiss}
-            className="flex-1 px-4 py-2.5 text-sm font-medium text-slate-300 rounded-xl hover:bg-slate-700/50 transition-colors"
+            className="flex-1 px-4 py-2.5 text-sm font-medium text-white/70 rounded-xl hover:bg-white/[0.08] transition-colors"
           >
             Not Now
           </button>
@@ -285,7 +285,7 @@ export default function PWAInstallPrompt() {
             className="flex-1 px-4 py-2.5 text-sm font-semibold text-white rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             style={{
               background: 'linear-gradient(135deg, #0891b2 0%, #06b6d4 100%)',
-              boxShadow: '0 4px 14px rgba(6, 182, 212, 0.3)',
+              boxShadow: '0 4px 14px rgba(255, 255, 255, 0.15)',
             }}
           >
             {isInstalling ? (

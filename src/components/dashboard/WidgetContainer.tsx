@@ -66,7 +66,7 @@ export default function WidgetContainer({
       `}
     >
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-2.5 border-b border-slate-700/50 bg-slate-800/50 flex-shrink-0">
+      <div className="flex items-center justify-between px-4 py-2.5 border-b border-white/[0.06] bg-white/[0.04] flex-shrink-0">
         <div className="flex items-center gap-2 min-w-0">
           {/* Drag handle (edit mode only) */}
           {isEditing && (
@@ -90,7 +90,7 @@ export default function WidgetContainer({
           <h3 className="text-sm font-semibold text-slate-100 truncate">{displayTitle}</h3>
 
           {/* Widget type badge */}
-          <span className="text-xs text-slate-400 bg-slate-800 border border-slate-700 rounded px-1.5 py-0.5 flex-shrink-0">
+          <span className="text-xs text-slate-400 bg-white/[0.06] border border-white/[0.08] rounded px-1.5 py-0.5 flex-shrink-0">
             {widgetType}
           </span>
         </div>
@@ -118,7 +118,7 @@ export default function WidgetContainer({
           {!isEditing && (
             <Link
               href={moduleRoute}
-              className="text-slate-400 hover:text-slate-300 p-1 rounded"
+              className="text-slate-400 hover:text-white/70 p-1 rounded"
               aria-label="Open full module"
             >
               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -150,7 +150,7 @@ export default function WidgetContainer({
               <p className="text-red-400 text-sm">Something went wrong</p>
               <button
                 onClick={() => setHasError(false)}
-                className="text-slate-300 hover:text-white text-sm mt-2 underline"
+                className="text-white/70 hover:text-white text-sm mt-2 underline"
               >
                 Try again
               </button>

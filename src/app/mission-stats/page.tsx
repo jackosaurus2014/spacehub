@@ -441,7 +441,7 @@ export default function MissionStatsPage() {
                 className={`rounded-full px-4 py-1.5 text-sm font-semibold transition-colors ${
                   selectedYear === d.year
                     ? 'bg-white text-slate-900 shadow-lg shadow-black/15'
-                    : 'bg-slate-800/60 text-slate-300 hover:bg-slate-700/80'
+                    : 'bg-white/[0.05] text-white/70 hover:bg-slate-700/80'
                 }`}
               >
                 {d.year}
@@ -462,7 +462,7 @@ export default function MissionStatsPage() {
 
         {/* ---------- Launches by year bar chart ---------- */}
         <ScrollReveal delay={0.05}>
-          <section className="mb-10 rounded-2xl border border-slate-700/50 bg-slate-800/50 p-6 backdrop-blur-sm">
+          <section className="mb-10 rounded-2xl border border-white/[0.06] bg-white/[0.04] p-6 backdrop-blur-sm">
             <h2 className="mb-6 text-xl font-bold text-white">Launches by Year (2018 - 2024)</h2>
             <div className="flex items-end gap-3 sm:gap-5" style={{ height: 260 }}>
               {YEAR_LAUNCH_TOTALS.map((d) => {
@@ -475,7 +475,7 @@ export default function MissionStatsPage() {
                     className="group relative flex flex-1 flex-col items-center"
                     style={{ height: '100%' }}
                   >
-                    <span className="mb-1 text-xs font-bold text-slate-200">{d.launches}</span>
+                    <span className="mb-1 text-xs font-bold text-white/90">{d.launches}</span>
                     <div className="flex w-full flex-1 items-end">
                       <div
                         className={`w-full rounded-t-md transition-all duration-500 ${
@@ -488,7 +488,7 @@ export default function MissionStatsPage() {
                     </div>
                     <span
                       className={`mt-2 text-xs font-semibold ${
-                        isSelected ? 'text-slate-300' : 'text-slate-400'
+                        isSelected ? 'text-white/70' : 'text-slate-400'
                       }`}
                     >
                       {d.year}
@@ -504,7 +504,7 @@ export default function MissionStatsPage() {
         <div className="mb-10 grid grid-cols-1 gap-6 lg:grid-cols-2">
           {/* Provider leaderboard */}
           <ScrollReveal delay={0.1}>
-            <section className="rounded-2xl border border-slate-700/50 bg-slate-800/50 p-6 backdrop-blur-sm">
+            <section className="rounded-2xl border border-white/[0.06] bg-white/[0.04] p-6 backdrop-blur-sm">
               <h2 className="mb-4 text-xl font-bold text-white">Provider Leaderboard ({selectedYear})</h2>
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-sm">
@@ -512,19 +512,19 @@ export default function MissionStatsPage() {
                     <tr className="border-b border-slate-700/60 text-slate-400">
                       <th className="pb-3 pr-4 font-medium">#</th>
                       <th
-                        className="cursor-pointer pb-3 pr-4 font-medium hover:text-slate-200"
+                        className="cursor-pointer pb-3 pr-4 font-medium hover:text-white/90"
                         onClick={() => toggleProviderSort('name')}
                       >
                         Provider{sortIcon('name')}
                       </th>
                       <th
-                        className="cursor-pointer pb-3 pr-4 text-right font-medium hover:text-slate-200"
+                        className="cursor-pointer pb-3 pr-4 text-right font-medium hover:text-white/90"
                         onClick={() => toggleProviderSort('launches')}
                       >
                         Launches{sortIcon('launches')}
                       </th>
                       <th
-                        className="cursor-pointer pb-3 text-right font-medium hover:text-slate-200"
+                        className="cursor-pointer pb-3 text-right font-medium hover:text-white/90"
                         onClick={() => toggleProviderSort('successRate')}
                       >
                         Success&nbsp;Rate{sortIcon('successRate')}
@@ -535,18 +535,18 @@ export default function MissionStatsPage() {
                     {sortedProviders.map((p, i) => (
                       <tr
                         key={p.name}
-                        className="border-b border-slate-700/30 last:border-0 hover:bg-slate-700/20"
+                        className="border-b border-white/[0.04] last:border-0 hover:bg-slate-700/20"
                       >
                         <td className="py-3 pr-4 text-slate-500">{i + 1}</td>
                         <td className="py-3 pr-4 font-medium text-slate-100">{p.name}</td>
-                        <td className="py-3 pr-4 text-right text-slate-200">{p.launches}</td>
+                        <td className="py-3 pr-4 text-right text-white/90">{p.launches}</td>
                         <td className="py-3 text-right">
                           <span
                             className={`font-semibold ${
                               p.successRate >= 99
                                 ? 'text-emerald-400'
                                 : p.successRate >= 95
-                                  ? 'text-slate-300'
+                                  ? 'text-white/70'
                                   : p.successRate >= 90
                                     ? 'text-amber-400'
                                     : 'text-red-400'
@@ -565,7 +565,7 @@ export default function MissionStatsPage() {
 
           {/* Launch sites */}
           <ScrollReveal delay={0.15}>
-            <section className="rounded-2xl border border-slate-700/50 bg-slate-800/50 p-6 backdrop-blur-sm">
+            <section className="rounded-2xl border border-white/[0.06] bg-white/[0.04] p-6 backdrop-blur-sm">
               <h2 className="mb-4 text-xl font-bold text-white">Launch Sites ({selectedYear})</h2>
               <div className="space-y-3">
                 {yearData.sites.map((site) => {
@@ -573,7 +573,7 @@ export default function MissionStatsPage() {
                   return (
                     <div key={site.name}>
                       <div className="mb-1 flex items-center justify-between text-sm">
-                        <span className="font-medium text-slate-200">{site.name}</span>
+                        <span className="font-medium text-white/90">{site.name}</span>
                         <span className="text-slate-400">{site.launches} launches</span>
                       </div>
                       <div className="h-3 w-full overflow-hidden rounded-full bg-slate-700/50">
@@ -596,7 +596,7 @@ export default function MissionStatsPage() {
         <div className="mb-10 grid grid-cols-1 gap-6 lg:grid-cols-2">
           {/* Orbit distribution */}
           <ScrollReveal delay={0.2}>
-            <section className="rounded-2xl border border-slate-700/50 bg-slate-800/50 p-6 backdrop-blur-sm">
+            <section className="rounded-2xl border border-white/[0.06] bg-white/[0.04] p-6 backdrop-blur-sm">
               <h2 className="mb-4 text-xl font-bold text-white">Orbit Distribution ({selectedYear})</h2>
 
               {/* Stacked bar */}
@@ -616,7 +616,7 @@ export default function MissionStatsPage() {
                 {yearData.orbitDistribution.map((o) => (
                   <div key={o.label} className="flex items-center gap-2 text-sm">
                     <span className={`inline-block h-3 w-3 rounded-sm ${o.color}`} />
-                    <span className="text-slate-300">
+                    <span className="text-white/70">
                       {o.label} <span className="text-slate-500">({o.pct}%)</span>
                     </span>
                   </div>
@@ -627,7 +627,7 @@ export default function MissionStatsPage() {
 
           {/* Payload types */}
           <ScrollReveal delay={0.25}>
-            <section className="rounded-2xl border border-slate-700/50 bg-slate-800/50 p-6 backdrop-blur-sm">
+            <section className="rounded-2xl border border-white/[0.06] bg-white/[0.04] p-6 backdrop-blur-sm">
               <h2 className="mb-4 text-xl font-bold text-white">Payload Types ({selectedYear})</h2>
 
               {/* Stacked bar */}
@@ -647,7 +647,7 @@ export default function MissionStatsPage() {
                 {yearData.payloadTypes.map((p) => (
                   <div key={p.label} className="flex items-center gap-2 text-sm">
                     <span className={`inline-block h-3 w-3 rounded-sm ${p.color}`} />
-                    <span className="text-slate-300">
+                    <span className="text-white/70">
                       {p.label} <span className="text-slate-500">({p.pct}%)</span>
                     </span>
                   </div>
@@ -691,7 +691,7 @@ function KpiCard({
     amber: 'border-amber-500/30',
   };
   const textColors: Record<string, string> = {
-    cyan: 'text-slate-300',
+    cyan: 'text-white/70',
     emerald: 'text-emerald-400',
     purple: 'text-purple-400',
     amber: 'text-amber-400',
@@ -699,7 +699,7 @@ function KpiCard({
 
   return (
     <div
-      className={`rounded-2xl border bg-slate-800/50 p-5 backdrop-blur-sm ${borderColors[accent] ?? 'border-slate-700/50'}`}
+      className={`rounded-2xl border bg-white/[0.04] p-5 backdrop-blur-sm ${borderColors[accent] ?? 'border-white/[0.06]'}`}
     >
       <p className="mb-1 text-xs font-medium uppercase tracking-wider text-slate-400">{label}</p>
       <p className={`text-2xl font-bold ${textColors[accent] ?? 'text-white'}`}>{value}</p>

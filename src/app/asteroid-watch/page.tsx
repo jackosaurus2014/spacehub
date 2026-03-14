@@ -879,7 +879,7 @@ function ApproachCard({ approach }: { approach: CloseApproach }) {
   const isPast = daysUntil < 0;
 
   return (
-    <div className={`card p-5 border ${approach.torino >= 2 ? torino.border : 'border-slate-700/50'} ${approach.torino >= 2 ? torino.bg : ''}`}>
+    <div className={`card p-5 border ${approach.torino >= 2 ? torino.border : 'border-white/[0.06]'} ${approach.torino >= 2 ? torino.bg : ''}`}>
       <div className="flex items-start justify-between flex-wrap gap-3">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-2 flex-wrap">
@@ -892,11 +892,11 @@ function ApproachCard({ approach }: { approach: CloseApproach }) {
             <span className={`text-xs font-medium px-2 py-0.5 rounded ${torino.bg} ${torino.text} border ${torino.border}`}>
               Torino {approach.torino}
             </span>
-            <span className="text-xs px-2 py-0.5 rounded bg-slate-700/50 text-slate-400">
+            <span className="text-xs px-2 py-0.5 rounded bg-white/[0.08] text-slate-400">
               {approach.orbitClass}
             </span>
             {isPast && (
-              <span className="text-xs bg-slate-700/50 text-slate-500 px-2 py-0.5 rounded">Past</span>
+              <span className="text-xs bg-white/[0.08] text-slate-500 px-2 py-0.5 rounded">Past</span>
             )}
           </div>
           <div className="text-slate-400 text-sm">
@@ -922,7 +922,7 @@ function ApproachCard({ approach }: { approach: CloseApproach }) {
         </div>
       </div>
 
-      <div className="flex flex-wrap items-center gap-4 mt-4 pt-3 border-t border-slate-700/50 text-xs">
+      <div className="flex flex-wrap items-center gap-4 mt-4 pt-3 border-t border-white/[0.06] text-xs">
         <span className="text-slate-400">
           Diameter: <span className="text-slate-300 font-medium">{formatDiameter(approach.diameterMin, approach.diameterMax)}</span>
         </span>
@@ -1052,10 +1052,10 @@ function AsteroidWatchContent() {
       <div className="min-h-screen bg-[#0B0F1A] text-white p-6">
         <div className="max-w-7xl mx-auto">
           <div className="animate-pulse space-y-4">
-            <div className="h-8 bg-slate-800 rounded w-1/3"></div>
-            <div className="h-4 bg-slate-800 rounded w-2/3"></div>
+            <div className="h-8 bg-white/[0.06] rounded w-1/3"></div>
+            <div className="h-4 bg-white/[0.06] rounded w-2/3"></div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8">
-              {[1,2,3,4].map(i => <div key={i} className="h-48 bg-slate-800 rounded-lg"></div>)}
+              {[1,2,3,4].map(i => <div key={i} className="h-48 bg-white/[0.06] rounded-lg"></div>)}
             </div>
           </div>
         </div>
@@ -1115,7 +1115,7 @@ function AsteroidWatchContent() {
               className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
                 activeTab === tab.id
                   ? 'bg-white text-slate-900'
-                  : 'bg-slate-800/50 text-slate-400 hover:bg-slate-700/50'
+                  : 'bg-white/[0.04] text-slate-400 hover:bg-white/[0.08]'
               }`}
             >
               {tab.label}
@@ -1154,8 +1154,8 @@ function AsteroidWatchContent() {
             <div className="card p-6 border border-white/10 bg-white/5 mt-6">
               <h3 className="text-lg font-semibold text-white mb-4">Key Upcoming Events</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="p-4 bg-slate-800/50 rounded-lg">
-                  <div className="text-slate-200 font-semibold mb-1">Apophis Close Approach</div>
+                <div className="p-4 bg-white/[0.04] rounded-lg">
+                  <div className="text-white/90 font-semibold mb-1">Apophis Close Approach</div>
                   <div className="text-slate-400 text-sm">April 13, 2029</div>
                   <p className="text-slate-400 text-sm mt-2">
                     99942 Apophis will pass within 31,600 km of Earth -- closer than geostationary satellites.
@@ -1163,8 +1163,8 @@ function AsteroidWatchContent() {
                     but the closest approach of an asteroid this large in recorded history.
                   </p>
                 </div>
-                <div className="p-4 bg-slate-800/50 rounded-lg">
-                  <div className="text-slate-200 font-semibold mb-1">Bennu Close Approach</div>
+                <div className="p-4 bg-white/[0.04] rounded-lg">
+                  <div className="text-white/90 font-semibold mb-1">Bennu Close Approach</div>
                   <div className="text-slate-400 text-sm">September 25, 2060</div>
                   <p className="text-slate-400 text-sm mt-2">
                     101955 Bennu will make a very close approach to Earth. While cumulative impact
@@ -1187,7 +1187,7 @@ function AsteroidWatchContent() {
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm">
                     <thead>
-                      <tr className="text-left text-slate-400 border-b border-slate-700">
+                      <tr className="text-left text-slate-400 border-b border-white/[0.06]">
                         <th className="pb-3 pr-4">Object</th>
                         <th className="pb-3 pr-4">Diameter</th>
                         <th className="pb-3 pr-4 text-right">Impact Prob.</th>
@@ -1202,7 +1202,7 @@ function AsteroidWatchContent() {
                         const torinoVal = parseInt(obj.ts_max) || 0;
                         const torinoStyle = getTorinoColor(torinoVal);
                         return (
-                          <tr key={obj.des} className="border-b border-slate-800">
+                          <tr key={obj.des} className="border-b border-white/[0.06]">
                             <td className="py-2.5 pr-4">
                               <div className="text-white font-medium">{obj.fullname || obj.des}</div>
                               <div className="text-slate-500 text-xs">{obj.range}</div>
@@ -1325,7 +1325,7 @@ function AsteroidWatchContent() {
                 <div className="text-slate-500 text-xs mt-0.5">MOID &lt; 0.05 AU, H &lt; 22</div>
               </div>
               <div className="card p-5 text-center">
-                <div className="text-3xl font-bold font-display text-slate-200">{NEO_STATS.lastYearDiscoveries.toLocaleString()}</div>
+                <div className="text-3xl font-bold font-display text-white/90">{NEO_STATS.lastYearDiscoveries.toLocaleString()}</div>
                 <div className="text-slate-400 text-sm mt-1">Discovered Last Year</div>
                 <div className="text-slate-500 text-xs mt-0.5">~{Math.round(NEO_STATS.lastYearDiscoveries / 12)} per month average</div>
               </div>
@@ -1355,7 +1355,7 @@ function AsteroidWatchContent() {
                         </span>
                       </div>
                     </div>
-                    <div className="h-4 bg-slate-800 rounded-full overflow-hidden">
+                    <div className="h-4 bg-white/[0.06] rounded-full overflow-hidden">
                       <div
                         className={`h-full bg-gradient-to-r ${cat.color} rounded-full transition-all`}
                         style={{ width: `${Math.min(cat.completeness, 100)}%` }}
@@ -1379,12 +1379,12 @@ function AsteroidWatchContent() {
               </p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {SPECTRAL_DISTRIBUTION.map((spec) => (
-                  <div key={spec.type} className="p-4 bg-slate-800/50 rounded-lg">
+                  <div key={spec.type} className="p-4 bg-white/[0.04] rounded-lg">
                     <div className="flex items-center justify-between mb-2">
                       <span className="text-white font-medium text-sm">{spec.type}</span>
                       <span className="text-slate-300 font-bold">{spec.percentage}%</span>
                     </div>
-                    <div className="h-2 bg-slate-800 rounded-full overflow-hidden mb-2">
+                    <div className="h-2 bg-white/[0.06] rounded-full overflow-hidden mb-2">
                       <div
                         className={`h-full bg-gradient-to-r ${spec.color} rounded-full`}
                         style={{ width: `${spec.percentage * 2.5}%` }}
@@ -1412,7 +1412,7 @@ function AsteroidWatchContent() {
                       <span className={`text-lg font-bold ${cls.color}`}>{cls.name}</span>
                       <span className="text-white font-display text-lg">{cls.count.toLocaleString()}</span>
                     </div>
-                    <div className="h-2 bg-slate-800 rounded-full overflow-hidden mb-3">
+                    <div className="h-2 bg-white/[0.06] rounded-full overflow-hidden mb-3">
                       <div className="h-full bg-gradient-to-r from-white to-plasma-400 rounded-full" style={{ width: `${cls.percentage}%` }} />
                     </div>
                     <p className="text-slate-400 text-xs leading-relaxed">{cls.description}</p>
@@ -1428,7 +1428,7 @@ function AsteroidWatchContent() {
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="text-left text-slate-400 border-b border-slate-700">
+                    <tr className="text-left text-slate-400 border-b border-white/[0.06]">
                       <th className="pb-3 pr-4">Year</th>
                       <th className="pb-3 pr-4 text-right">Total NEOs</th>
                       <th className="pb-3 pr-4 text-right">Total PHAs</th>
@@ -1437,7 +1437,7 @@ function AsteroidWatchContent() {
                   </thead>
                   <tbody>
                     {DISCOVERY_MILESTONES.map((milestone) => (
-                      <tr key={milestone.year} className="border-b border-slate-800">
+                      <tr key={milestone.year} className="border-b border-white/[0.06]">
                         <td className="py-2.5 pr-4 text-white font-medium">{milestone.year}</td>
                         <td className="py-2.5 pr-4 text-right text-slate-300">{milestone.cumulativeNEOs.toLocaleString()}</td>
                         <td className="py-2.5 pr-4 text-right text-orange-400">{milestone.cumulativePHAs.toLocaleString()}</td>
@@ -1448,7 +1448,7 @@ function AsteroidWatchContent() {
                 </table>
               </div>
               {/* Visual bar representation */}
-              <div className="mt-6 pt-4 border-t border-slate-700">
+              <div className="mt-6 pt-4 border-t border-white/[0.06]">
                 <h4 className="text-sm font-medium text-slate-400 mb-3">Discovery Growth</h4>
                 <div className="flex items-end gap-1 h-32">
                   {DISCOVERY_MILESTONES.map((m) => {
@@ -1463,7 +1463,7 @@ function AsteroidWatchContent() {
                         <span className="text-[9px] text-slate-500 rotate-[-45deg] origin-center whitespace-nowrap">{m.year}</span>
                         {/* Tooltip */}
                         <div className="absolute bottom-full mb-2 hidden group-hover:block z-10">
-                          <div className="bg-slate-900 border border-slate-700 rounded-lg p-2 text-xs whitespace-nowrap shadow-xl">
+                          <div className="bg-black border border-white/[0.06] rounded-lg p-2 text-xs whitespace-nowrap shadow-xl">
                             <div className="text-white font-medium">{m.year}</div>
                             <div className="text-slate-400">{m.cumulativeNEOs.toLocaleString()} NEOs</div>
                           </div>
@@ -1505,7 +1505,7 @@ function AsteroidWatchContent() {
                       <h3 className="text-lg font-semibold text-white">{program.name}</h3>
                       <div className="flex items-center gap-3 mt-1">
                         <span className="text-slate-400 text-sm">{program.agency}</span>
-                        <span className={`text-xs font-medium px-2 py-0.5 rounded bg-slate-800 ${program.statusColor}`}>
+                        <span className={`text-xs font-medium px-2 py-0.5 rounded bg-white/[0.06] ${program.statusColor}`}>
                           {program.status}
                         </span>
                       </div>
@@ -1542,7 +1542,7 @@ function AsteroidWatchContent() {
                   { name: 'Laser Ablation', readiness: 'Laboratory', readinessColor: 'text-orange-400', description: 'Focused laser beam vaporizes asteroid surface material, creating a jet of ejecta that pushes the asteroid. Could operate from orbit.', effectiveness: 'Promising for continuous, controlled deflection.' },
                   { name: 'Mass Driver', readiness: 'Conceptual', readinessColor: 'text-yellow-400', description: 'Robotic device lands on asteroid and uses electromagnetic launcher to eject surface material, producing reaction force.', effectiveness: 'Self-sustaining using asteroid material as propellant.' },
                 ].map((method) => (
-                  <div key={method.name} className="p-4 bg-slate-800/30 rounded-lg">
+                  <div key={method.name} className="p-4 bg-white/[0.04] rounded-lg">
                     <h4 className="text-white font-medium mb-1">{method.name}</h4>
                     <span className={`text-xs ${method.readinessColor}`}>{method.readiness}</span>
                     <p className="text-slate-400 text-xs mt-2 leading-relaxed">{method.description}</p>
@@ -1556,16 +1556,16 @@ function AsteroidWatchContent() {
             <ScrollReveal><div className="card p-5">
               <h3 className="text-lg font-semibold text-white mb-3">Related Modules</h3>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <Link href="/space-environment?tab=debris" className="p-3 rounded-lg bg-slate-800/30 hover:bg-slate-700/50 transition-colors group">
-                  <div className="text-sm font-medium text-white group-hover:text-slate-200">Debris Monitor</div>
+                <Link href="/space-environment?tab=debris" className="p-3 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] transition-colors group">
+                  <div className="text-sm font-medium text-white group-hover:text-white/90">Debris Monitor</div>
                   <p className="text-xs text-slate-400 mt-1">Impact debris and conjunction tracking</p>
                 </Link>
-                <Link href="/solar-exploration" className="p-3 rounded-lg bg-slate-800/30 hover:bg-slate-700/50 transition-colors group">
-                  <div className="text-sm font-medium text-white group-hover:text-slate-200">Solar Exploration</div>
+                <Link href="/solar-exploration" className="p-3 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] transition-colors group">
+                  <div className="text-sm font-medium text-white group-hover:text-white/90">Solar Exploration</div>
                   <p className="text-xs text-slate-400 mt-1">Planetary missions and surface landers</p>
                 </Link>
-                <Link href="/space-mining" className="p-3 rounded-lg bg-slate-800/30 hover:bg-slate-700/50 transition-colors group">
-                  <div className="text-sm font-medium text-white group-hover:text-slate-200">Space Mining</div>
+                <Link href="/space-mining" className="p-3 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] transition-colors group">
+                  <div className="text-sm font-medium text-white group-hover:text-white/90">Space Mining</div>
                   <p className="text-xs text-slate-400 mt-1">Asteroid mining intelligence</p>
                 </Link>
               </div>
@@ -1587,7 +1587,7 @@ function AsteroidWatchContent() {
                         <h4 className="text-white font-semibold text-lg">{target.name}</h4>
                         <div className="flex items-center gap-2 mt-1">
                           <span className="text-slate-500 text-xs">Designation: {target.designation}</span>
-                          <span className="text-xs px-2 py-0.5 rounded bg-slate-800 text-slate-300">
+                          <span className="text-xs px-2 py-0.5 rounded bg-white/[0.06] text-slate-300">
                             {target.spectralType}
                           </span>
                           <span className={`text-xs font-medium ${target.accessColor}`}>
@@ -1596,7 +1596,7 @@ function AsteroidWatchContent() {
                         </div>
                       </div>
                       <div className="text-right">
-                        <div className="text-slate-200 font-bold text-sm">{target.estimatedValue}</div>
+                        <div className="text-white/90 font-bold text-sm">{target.estimatedValue}</div>
                         <div className="text-slate-500 text-xs">Est. Value</div>
                       </div>
                     </div>
@@ -1616,7 +1616,7 @@ function AsteroidWatchContent() {
                       <span className="text-slate-500 text-xs block mb-1">Key Resources</span>
                       <div className="flex flex-wrap gap-1">
                         {target.resources.map((resource) => (
-                          <span key={resource} className="text-xs px-2 py-0.5 rounded bg-slate-800/80 text-slate-400">
+                          <span key={resource} className="text-xs px-2 py-0.5 rounded bg-white/[0.06]/80 text-slate-400">
                             {resource}
                           </span>
                         ))}
@@ -1634,7 +1634,7 @@ function AsteroidWatchContent() {
               <h3 className="text-xl font-semibold text-white mb-4">Asteroid Mining Companies</h3>
               <div className="space-y-4">
                 {MINING_COMPANIES.map((company) => (
-                  <div key={company.name} className="p-4 bg-slate-800/30 rounded-lg">
+                  <div key={company.name} className="p-4 bg-white/[0.04] rounded-lg">
                     <div className="flex items-start justify-between flex-wrap gap-2 mb-2">
                       <div>
                         <h4 className="text-white font-medium">{company.name}</h4>
@@ -1691,7 +1691,7 @@ function AsteroidWatchContent() {
               </div>
               <Link
                 href="/space-mining"
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium bg-white/10 text-slate-200 hover:bg-white/15 transition-colors border border-white/10 whitespace-nowrap"
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium bg-white/10 text-white/90 hover:bg-white/15 transition-colors border border-white/10 whitespace-nowrap"
               >
                 Space Mining Hub &rarr;
               </Link>
@@ -1716,7 +1716,7 @@ function AsteroidWatchContent() {
                     const widthPct = maxDiscoveries > 0 ? (telescope.neoDiscoveries / maxDiscoveries) * 100 : 0;
 
                     return (
-                      <div key={telescope.name} className="p-4 bg-slate-800/30 rounded-lg">
+                      <div key={telescope.name} className="p-4 bg-white/[0.04] rounded-lg">
                         <div className="flex items-start justify-between flex-wrap gap-2 mb-2">
                           <div>
                             <h4 className="text-white font-medium">{telescope.name}</h4>
@@ -1728,7 +1728,7 @@ function AsteroidWatchContent() {
                         </div>
 
                         <div className="flex items-center gap-3 mb-2">
-                          <div className="flex-1 h-3 bg-slate-800 rounded-full overflow-hidden">
+                          <div className="flex-1 h-3 bg-white/[0.06] rounded-full overflow-hidden">
                             <div
                               className="h-full bg-gradient-to-r from-white to-plasma-400 rounded-full"
                               style={{ width: `${widthPct}%` }}
@@ -1766,15 +1766,15 @@ function AsteroidWatchContent() {
                     transforming NEO detection capabilities.
                   </p>
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
-                    <div className="p-3 bg-slate-800/40 rounded-lg">
+                    <div className="p-3 bg-white/[0.04] rounded-lg">
                       <div className="text-blue-400 font-bold text-xl">~5M</div>
                       <div className="text-slate-400 text-xs">Predicted NEO detections over survey lifetime</div>
                     </div>
-                    <div className="p-3 bg-slate-800/40 rounded-lg">
+                    <div className="p-3 bg-white/[0.04] rounded-lg">
                       <div className="text-blue-400 font-bold text-xl">60-70%</div>
                       <div className="text-slate-400 text-xs">Expected to find this share of remaining 140m+ NEOs</div>
                     </div>
-                    <div className="p-3 bg-slate-800/40 rounded-lg">
+                    <div className="p-3 bg-white/[0.04] rounded-lg">
                       <div className="text-blue-400 font-bold text-xl">Every 3 nights</div>
                       <div className="text-slate-400 text-xs">Full southern sky cadence</div>
                     </div>
@@ -1787,17 +1787,17 @@ function AsteroidWatchContent() {
             <div className="card p-6">
               <h3 className="text-xl font-semibold text-white mb-4">Discovery Rate Trends</h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                <div className="p-4 bg-slate-800/30 rounded-lg text-center">
+                <div className="p-4 bg-white/[0.04] rounded-lg text-center">
                   <div className="text-3xl font-bold font-display text-white">~260</div>
                   <div className="text-slate-400 text-sm">NEOs per month (2025)</div>
                   <div className="text-slate-500 text-xs mt-1">Up from ~150/month in 2020</div>
                 </div>
-                <div className="p-4 bg-slate-800/30 rounded-lg text-center">
+                <div className="p-4 bg-white/[0.04] rounded-lg text-center">
                   <div className="text-3xl font-bold font-display text-white">~10</div>
                   <div className="text-slate-400 text-sm">PHAs per month (average)</div>
                   <div className="text-slate-500 text-xs mt-1">Rate increasing with survey capability</div>
                 </div>
-                <div className="p-4 bg-slate-800/30 rounded-lg text-center">
+                <div className="p-4 bg-white/[0.04] rounded-lg text-center">
                   <div className="text-3xl font-bold font-display text-white">2</div>
                   <div className="text-slate-400 text-sm">Pre-impact detections to date</div>
                   <div className="text-slate-500 text-xs mt-1">2008 TC3, 2024 BX1</div>
@@ -1814,7 +1814,7 @@ function AsteroidWatchContent() {
                   { date: '2019', name: '2019 OK', note: '~100m asteroid passed within 0.19 LD -- discovered only hours before closest approach. Highlighted gaps in detection.' },
                   { date: '2017', name: 'Oumuamua (1I/2017 U1)', note: 'First known interstellar object to pass through our solar system. Discovered by Pan-STARRS.' },
                 ].map((discovery, idx) => (
-                  <div key={idx} className="p-3 bg-slate-800/20 rounded-lg flex items-start gap-3">
+                  <div key={idx} className="p-3 bg-white/[0.04] rounded-lg flex items-start gap-3">
                     <span className="text-slate-300 text-xs font-mono font-medium mt-0.5 flex-shrink-0 w-10">{discovery.date}</span>
                     <div>
                       <span className="text-white font-medium text-sm">{discovery.name}</span>

@@ -419,9 +419,9 @@ function getStatusStyle(status: VehicleStatus): { bg: string; text: string } {
     case 'Operational':
       return { bg: 'bg-green-900/30 border border-green-500/30', text: 'text-green-400' };
     case 'In Development':
-      return { bg: 'bg-slate-800/40 border border-white/10', text: 'text-slate-300' };
+      return { bg: 'bg-white/[0.04] border border-white/10', text: 'text-white/70' };
     case 'Retired':
-      return { bg: 'bg-slate-800/30 border border-slate-500/30', text: 'text-slate-400' };
+      return { bg: 'bg-white/[0.03] border border-slate-500/30', text: 'text-slate-400' };
   }
 }
 
@@ -622,7 +622,7 @@ function VehicleSelector({
             Choose up to {maxVehicles} vehicles. Search by name, manufacturer, or country.
           </p>
         </div>
-        <span className="text-xs text-star-300 bg-slate-800 px-2.5 py-1 rounded-full">
+        <span className="text-xs text-star-300 bg-white/[0.06] px-2.5 py-1 rounded-full">
           {selected.length} / {maxVehicles}
         </span>
       </div>
@@ -633,7 +633,7 @@ function VehicleSelector({
           {selected.map((v) => (
             <span
               key={v.id}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white/8 text-slate-300 border border-white/10 rounded-lg text-xs font-medium"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white/8 text-white/70 border border-white/10 rounded-lg text-xs font-medium"
             >
               {v.name}
               <button
@@ -683,12 +683,12 @@ function VehicleSelector({
                 setDropdownOpen(true);
               }}
               onFocus={() => setDropdownOpen(true)}
-              className="w-full pl-10 pr-4 py-2.5 bg-slate-800/80 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-white/20 focus:border-white/15 transition-all"
+              className="w-full pl-10 pr-4 py-2.5 bg-white/[0.06] border border-white/[0.08] rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-white/20 focus:border-white/15 transition-all"
             />
           </div>
 
           {dropdownOpen && (
-            <div className="absolute z-50 top-full left-0 right-0 mt-1 bg-slate-800 border border-slate-700 rounded-xl shadow-xl max-h-64 overflow-y-auto">
+            <div className="absolute z-50 top-full left-0 right-0 mt-1 bg-white/[0.06] border border-white/[0.08] rounded-xl shadow-xl max-h-64 overflow-y-auto">
               {filtered.length === 0 ? (
                 <div className="px-4 py-3 text-sm text-star-300">No matching vehicles found</div>
               ) : (
@@ -698,7 +698,7 @@ function VehicleSelector({
                     <button
                       key={v.id}
                       onClick={() => handleSelect(v)}
-                      className="w-full text-left px-4 py-2.5 hover:bg-slate-700/50 transition-colors flex items-center justify-between gap-3 border-b border-slate-700/50 last:border-b-0"
+                      className="w-full text-left px-4 py-2.5 hover:bg-white/[0.08] transition-colors flex items-center justify-between gap-3 border-b border-white/[0.06] last:border-b-0"
                     >
                       <div>
                         <span className="text-sm font-medium text-white">{v.name}</span>
@@ -729,8 +729,8 @@ function VehicleSelector({
                 disabled={selected.length >= maxVehicles}
                 className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-all border ${
                   selected.length >= maxVehicles
-                    ? 'opacity-30 cursor-not-allowed bg-slate-800 text-star-300 border-slate-700'
-                    : 'bg-slate-800 text-star-300 border-slate-700 hover:border-white/15 hover:text-white'
+                    ? 'opacity-30 cursor-not-allowed bg-white/[0.06] text-star-300 border-white/[0.08]'
+                    : 'bg-white/[0.06] text-star-300 border-white/[0.08] hover:border-white/15 hover:text-white'
                 }`}
               >
                 {v.name}
@@ -740,7 +740,7 @@ function VehicleSelector({
       </div>
 
       {/* Preset comparisons */}
-      <div className="mt-4 pt-4 border-t border-slate-700/50">
+      <div className="mt-4 pt-4 border-t border-white/[0.06]">
         <p className="text-xs uppercase tracking-widest text-star-300 font-medium mb-2">Preset Comparisons</p>
         <div className="flex flex-wrap gap-2">
           {[
@@ -761,7 +761,7 @@ function VehicleSelector({
                 selected.forEach((v) => onRemove(v.id));
                 vehicles.forEach((v) => onAdd(v));
               }}
-              className="px-3 py-1.5 bg-slate-800/50 border border-slate-700 rounded-lg text-xs text-star-300 hover:border-white/15 hover:text-white transition-all"
+              className="px-3 py-1.5 bg-white/[0.04] border border-white/[0.08] rounded-lg text-xs text-star-300 hover:border-white/15 hover:text-white transition-all"
             >
               {preset.label}
             </button>
@@ -811,7 +811,7 @@ function PayloadChart({ vehicles }: { vehicles: LaunchVehicle[] }) {
               return (
                 <div key={bi} className="flex items-center gap-2 mb-1">
                   <span className="w-7 text-xs text-star-300 text-right shrink-0">{label}</span>
-                  <div className="flex-1 h-5 bg-slate-800/60 rounded overflow-hidden relative">
+                  <div className="flex-1 h-5 bg-white/[0.05] rounded overflow-hidden relative">
                     <div
                       className="h-full rounded transition-all duration-700 ease-out"
                       style={{ width: `${Math.max(pct, 0.5)}%`, backgroundColor: color, opacity: bi === 0 ? 1 : 0.55 }}
@@ -862,7 +862,7 @@ function CostEfficiencyChart({ vehicles }: { vehicles: LaunchVehicle[] }) {
                     {isBest && <span className="text-[9px] px-1.5 py-0.5 bg-green-900/40 text-green-400 border border-green-500/30 rounded font-medium">BEST</span>}
                   </div>
                 </div>
-                <div className="flex-1 h-6 bg-slate-800/60 rounded overflow-hidden relative">
+                <div className="flex-1 h-6 bg-white/[0.05] rounded overflow-hidden relative">
                   {cpk && cpk > 0 ? (
                     <>
                       <div className="h-full rounded transition-all duration-700 ease-out" style={{ width: `${Math.max(pct, 2)}%`, backgroundColor: barColor }} />
@@ -876,7 +876,7 @@ function CostEfficiencyChart({ vehicles }: { vehicles: LaunchVehicle[] }) {
             );
           })}
       </div>
-      <div className="mt-4 pt-3 border-t border-slate-700/50 flex flex-wrap items-center gap-3 text-xs text-star-300">
+      <div className="mt-4 pt-3 border-t border-white/[0.06] flex flex-wrap items-center gap-3 text-xs text-star-300">
         <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-sm bg-green-500" /> Under $1K/kg</span>
         <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-sm bg-white" /> $1K-$3K/kg</span>
         <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-sm bg-amber-500" /> $3K-$5K/kg</span>
@@ -906,7 +906,7 @@ function SuccessRateChart({ vehicles }: { vehicles: LaunchVehicle[] }) {
                 <span className="text-xs font-medium text-white truncate mr-2">{v.name}</span>
                 <span className="text-xs text-star-300 shrink-0">{v.totalLaunches > 0 ? `${v.totalLaunches} launches` : 'No launches yet'}</span>
               </div>
-              <div className="flex-1 h-5 bg-slate-800/60 rounded overflow-hidden relative">
+              <div className="flex-1 h-5 bg-white/[0.05] rounded overflow-hidden relative">
                 {rate !== null ? (
                   <>
                     <div className="h-full rounded transition-all duration-700 ease-out" style={{ width: `${rate}%`, backgroundColor: barColor }} />
@@ -952,8 +952,8 @@ function ComparisonTable({ vehicles }: { vehicles: LaunchVehicle[] }) {
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-slate-700">
-              <th className="text-left py-3 px-4 text-star-300 font-medium text-xs uppercase tracking-widest sticky left-0 bg-slate-900/95 backdrop-blur z-10 min-w-[160px]">
+            <tr className="border-b border-white/[0.08]">
+              <th className="text-left py-3 px-4 text-star-300 font-medium text-xs uppercase tracking-widest sticky left-0 bg-black/95 backdrop-blur z-10 min-w-[160px]">
                 Specification
               </th>
               {vehicles.map((v) => (
@@ -964,15 +964,15 @@ function ComparisonTable({ vehicles }: { vehicles: LaunchVehicle[] }) {
               ))}
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-800/50">
+          <tbody className="divide-y divide-white/[0.06]">
             {COMPARISON_ROWS.map((row, rowIdx) => {
               // Section header
               if (row.section === 'header') {
                 return (
-                  <tr key={`section-${rowIdx}`} className="bg-slate-800/40">
+                  <tr key={`section-${rowIdx}`} className="bg-white/[0.04]">
                     <td
                       colSpan={vehicles.length + 1}
-                      className="py-2 px-4 text-xs font-bold text-slate-300 uppercase tracking-widest"
+                      className="py-2 px-4 text-xs font-bold text-white/70 uppercase tracking-widest"
                     >
                       {row.label}
                     </td>
@@ -983,8 +983,8 @@ function ComparisonTable({ vehicles }: { vehicles: LaunchVehicle[] }) {
               const bestIndices = getBestIdx(row);
 
               return (
-                <tr key={`row-${rowIdx}`} className="hover:bg-slate-800/20 transition-colors">
-                  <td className="py-2.5 px-4 text-star-300 text-xs font-medium sticky left-0 bg-slate-900/95 backdrop-blur z-10">
+                <tr key={`row-${rowIdx}`} className="hover:bg-white/[0.02] transition-colors">
+                  <td className="py-2.5 px-4 text-star-300 text-xs font-medium sticky left-0 bg-black/95 backdrop-blur z-10">
                     {row.label}
                   </td>
                   {vehicles.map((v, vIdx) => {
@@ -1024,7 +1024,7 @@ function ComparisonTable({ vehicles }: { vehicles: LaunchVehicle[] }) {
       </div>
 
       {/* Legend */}
-      <div className="px-4 py-3 border-t border-slate-700/50 flex items-center gap-4 text-xs text-star-300">
+      <div className="px-4 py-3 border-t border-white/[0.06] flex items-center gap-4 text-xs text-star-300">
         <span className="inline-flex items-center gap-1.5">
           <span className="w-3 h-3 rounded bg-green-400/10 border border-green-400/30" />
           Best value in category
@@ -1089,12 +1089,12 @@ export default function LaunchVehicleComparePage() {
       ) : (
         <>
           {/* View mode toggle */}
-          <div className="flex items-center gap-1 mb-4 bg-slate-800/50 border border-slate-700 rounded-lg p-1 w-fit">
+          <div className="flex items-center gap-1 mb-4 bg-white/[0.04] border border-white/[0.08] rounded-lg p-1 w-fit">
             <button
               onClick={() => setViewMode('table')}
               className={`px-4 py-1.5 rounded-md text-xs font-medium transition-all ${
                 viewMode === 'table'
-                  ? 'bg-white/10 text-slate-300 border border-white/10'
+                  ? 'bg-white/10 text-white/70 border border-white/10'
                   : 'text-star-300 hover:text-white border border-transparent'
               }`}
             >
@@ -1104,7 +1104,7 @@ export default function LaunchVehicleComparePage() {
               onClick={() => setViewMode('charts')}
               className={`px-4 py-1.5 rounded-md text-xs font-medium transition-all ${
                 viewMode === 'charts'
-                  ? 'bg-white/10 text-slate-300 border border-white/10'
+                  ? 'bg-white/10 text-white/70 border border-white/10'
                   : 'text-star-300 hover:text-white border border-transparent'
               }`}
             >
@@ -1130,7 +1130,7 @@ export default function LaunchVehicleComparePage() {
       <ScrollReveal delay={0.1}>
       <div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-3">
         <div className="card p-4 text-center">
-          <div className="text-2xl font-bold text-slate-300">{VEHICLES.length}</div>
+          <div className="text-2xl font-bold text-white/70">{VEHICLES.length}</div>
           <div className="text-xs text-star-300 mt-1">Vehicles in Database</div>
         </div>
         <div className="card p-4 text-center">
@@ -1161,25 +1161,25 @@ export default function LaunchVehicleComparePage() {
         <div className="flex flex-wrap gap-3">
           <Link
             href="/launch-vehicles"
-            className="px-4 py-2 bg-slate-800/50 border border-slate-700 rounded-lg text-xs text-star-300 hover:border-white/15 hover:text-white transition-all"
+            className="px-4 py-2 bg-white/[0.04] border border-white/[0.08] rounded-lg text-xs text-star-300 hover:border-white/15 hover:text-white transition-all"
           >
             Launch Vehicle Database
           </Link>
           <Link
             href="/launch-cost-calculator"
-            className="px-4 py-2 bg-slate-800/50 border border-slate-700 rounded-lg text-xs text-star-300 hover:border-white/15 hover:text-white transition-all"
+            className="px-4 py-2 bg-white/[0.04] border border-white/[0.08] rounded-lg text-xs text-star-300 hover:border-white/15 hover:text-white transition-all"
           >
             Launch Cost Calculator
           </Link>
           <Link
             href="/compare/companies"
-            className="px-4 py-2 bg-slate-800/50 border border-slate-700 rounded-lg text-xs text-star-300 hover:border-white/15 hover:text-white transition-all"
+            className="px-4 py-2 bg-white/[0.04] border border-white/[0.08] rounded-lg text-xs text-star-300 hover:border-white/15 hover:text-white transition-all"
           >
             Compare Companies
           </Link>
           <Link
             href="/mission-cost"
-            className="px-4 py-2 bg-slate-800/50 border border-slate-700 rounded-lg text-xs text-star-300 hover:border-white/15 hover:text-white transition-all"
+            className="px-4 py-2 bg-white/[0.04] border border-white/[0.08] rounded-lg text-xs text-star-300 hover:border-white/15 hover:text-white transition-all"
           >
             Mission Planning
           </Link>

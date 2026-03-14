@@ -68,11 +68,11 @@ interface InternshipProgram {
 // ────────────────────────────────────────────────────────────────
 
 const INTEREST_FILTERS: Record<InterestFilter, { label: string; color: string }> = {
-  all:          { label: 'All Paths',    color: 'text-slate-300' },
+  all:          { label: 'All Paths',    color: 'text-white/70' },
   engineering:  { label: 'Engineering',  color: 'text-blue-400' },
   science:      { label: 'Science',      color: 'text-purple-400' },
   business:     { label: 'Business',     color: 'text-amber-400' },
-  software:     { label: 'Software',     color: 'text-slate-300' },
+  software:     { label: 'Software',     color: 'text-white/70' },
   operations:   { label: 'Operations',   color: 'text-green-400' },
 };
 
@@ -142,7 +142,7 @@ const CAREER_PATHWAYS: CareerPathway[] = [
     title: 'Software Engineering',
     interest: 'software',
     icon: '\u{1F4BB}',
-    color: 'text-slate-300',
+    color: 'text-white/70',
     borderColor: 'border-white/10',
     bgColor: 'bg-white/5',
     description: 'Build the software that controls spacecraft, processes telemetry, runs ground systems, and analyzes mission data. Software is the fastest-growing discipline in the space industry.',
@@ -306,7 +306,7 @@ function PathwayCard({ pathway }: { pathway: CareerPathway }) {
         </div>
       </div>
 
-      <p className="text-sm text-slate-300 leading-relaxed mb-4">{pathway.description}</p>
+      <p className="text-sm text-white/70 leading-relaxed mb-4">{pathway.description}</p>
 
       {/* Career Progression */}
       <div className="mb-4">
@@ -343,12 +343,12 @@ function PathwayCard({ pathway }: { pathway: CareerPathway }) {
       </button>
 
       {expanded && (
-        <div className="mt-4 pt-4 border-t border-slate-700/50 space-y-4">
+        <div className="mt-4 pt-4 border-t border-white/[0.06] space-y-4">
           <div>
             <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Top Schools</p>
             <div className="flex flex-wrap gap-2">
               {pathway.topSchools.map((school) => (
-                <span key={school} className="text-xs bg-slate-700/50 text-slate-200 px-2.5 py-1 rounded-md border border-slate-600/50">
+                <span key={school} className="text-xs bg-white/[0.04] text-white/90 px-2.5 py-1 rounded-md border border-white/[0.08]">
                   {school}
                 </span>
               ))}
@@ -376,14 +376,14 @@ function UniversityRow({ uni }: { uni: University }) {
   const [expanded, setExpanded] = useState(false);
 
   return (
-    <div className="border-b border-slate-700/40 last:border-b-0">
+    <div className="border-b border-white/[0.06] last:border-b-0">
       <button
         onClick={() => setExpanded(!expanded)}
-        className="w-full flex items-center gap-4 py-3 px-4 hover:bg-slate-800/40 transition-colors text-left"
+        className="w-full flex items-center gap-4 py-3 px-4 hover:bg-white/[0.04] transition-colors text-left"
         aria-expanded={expanded}
       >
-        <span className="text-sm font-bold text-slate-300 w-8 shrink-0">#{uni.rank}</span>
-        <span className="text-sm text-slate-200 flex-1 min-w-0">{uni.name}</span>
+        <span className="text-sm font-bold text-white/70 w-8 shrink-0">#{uni.rank}</span>
+        <span className="text-sm text-white/90 flex-1 min-w-0">{uni.name}</span>
         <span className="text-xs text-slate-400 hidden sm:inline shrink-0">{uni.acceptanceRate}</span>
         <svg
           className={`w-4 h-4 text-slate-400 transition-transform shrink-0 ${expanded ? 'rotate-180' : ''}`}
@@ -399,21 +399,21 @@ function UniversityRow({ uni }: { uni: University }) {
             <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Program Strengths</p>
             <div className="flex flex-wrap gap-1">
               {uni.strengths.map((s) => (
-                <span key={s} className="text-xs bg-white/5 text-slate-300 px-2 py-0.5 rounded border border-white/10">{s}</span>
+                <span key={s} className="text-xs bg-white/5 text-white/70 px-2 py-0.5 rounded border border-white/10">{s}</span>
               ))}
             </div>
           </div>
           <div>
             <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Notable Alumni</p>
-            <p className="text-xs text-slate-300">{uni.notableAlumni.join(', ')}</p>
+            <p className="text-xs text-white/70">{uni.notableAlumni.join(', ')}</p>
           </div>
           <div className="sm:col-span-2">
             <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Research Focus</p>
-            <p className="text-xs text-slate-300">{uni.researchFocus}</p>
+            <p className="text-xs text-white/70">{uni.researchFocus}</p>
           </div>
           <div>
             <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Acceptance Rate</p>
-            <p className="text-xs text-slate-300">{uni.acceptanceRate}</p>
+            <p className="text-xs text-white/70">{uni.acceptanceRate}</p>
           </div>
         </div>
       )}
@@ -444,7 +444,7 @@ export default function EducationPathwaysPage() {
   ];
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 px-4 py-12 md:px-8">
+    <main className="min-h-screen bg-gradient-to-b from-black via-black to-black px-4 py-12 md:px-8">
       <div className="max-w-7xl mx-auto">
 
         <AnimatedPageHeader
@@ -471,7 +471,7 @@ export default function EducationPathwaysPage() {
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                   activeSection === section.id
                     ? 'bg-white text-slate-900 shadow-lg shadow-black/10'
-                    : 'bg-slate-800/60 text-slate-300 hover:bg-slate-700/60 border border-slate-700/50'
+                    : 'bg-white/[0.05] text-white/70 hover:bg-white/[0.06] border border-white/[0.06]'
                 }`}
               >
                 {section.label}
@@ -495,7 +495,7 @@ export default function EducationPathwaysPage() {
                       className={`px-3 py-1.5 rounded-lg text-sm transition-all ${
                         activeFilter === key
                           ? 'bg-white text-slate-900'
-                          : `bg-slate-800/60 ${val.color} hover:bg-slate-700/60 border border-slate-700/50`
+                          : `bg-white/[0.05] ${val.color} hover:bg-white/[0.06] border border-white/[0.06]`
                       }`}
                     >
                       {val.label}
@@ -520,7 +520,7 @@ export default function EducationPathwaysPage() {
                 <p className="text-lg text-slate-400">No pathways match the selected filter.</p>
                 <button
                   onClick={() => setActiveFilter('all')}
-                  className="mt-3 text-slate-300 hover:text-white underline text-sm"
+                  className="mt-3 text-white/70 hover:text-white underline text-sm"
                 >
                   Show all paths
                 </button>
@@ -533,16 +533,16 @@ export default function EducationPathwaysPage() {
         {activeSection === 'universities' && (
           <ScrollReveal>
             <div className="card p-0 overflow-hidden mb-12">
-              <div className="px-6 py-4 border-b border-slate-700/50">
-                <h2 className="text-xl font-bold text-slate-100">Top 20 Space & Aerospace Programs</h2>
+              <div className="px-6 py-4 border-b border-white/[0.06]">
+                <h2 className="text-xl font-bold text-white/90">Top 20 Space & Aerospace Programs</h2>
                 <p className="text-sm text-slate-400 mt-1">
                   Leading university programs for aerospace engineering, space science, and related disciplines. Click any row to expand details.
                 </p>
               </div>
 
-              <div className="divide-y divide-slate-700/30">
+              <div className="divide-y divide-white/[0.04]">
                 {/* Header */}
-                <div className="flex items-center gap-4 py-2 px-4 bg-slate-800/40 text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                <div className="flex items-center gap-4 py-2 px-4 bg-white/[0.04] text-xs font-semibold text-slate-400 uppercase tracking-wider">
                   <span className="w-8">Rank</span>
                   <span className="flex-1">University</span>
                   <span className="hidden sm:inline">Acceptance</span>
@@ -561,7 +561,7 @@ export default function EducationPathwaysPage() {
         {activeSection === 'certifications' && (
           <ScrollReveal>
             <div className="mb-12">
-              <h2 className="text-xl font-bold text-slate-100 mb-2">Professional Certifications</h2>
+              <h2 className="text-xl font-bold text-white/90 mb-2">Professional Certifications</h2>
               <p className="text-sm text-slate-400 mb-6">
                 Industry-recognized certifications that boost your credibility and earning potential in the space sector.
               </p>
@@ -571,8 +571,8 @@ export default function EducationPathwaysPage() {
                   <div key={cert.acronym} className="card p-5">
                     <div className="flex items-start justify-between mb-3">
                       <div>
-                        <h3 className="text-lg font-semibold text-slate-100">{cert.name}</h3>
-                        <span className="text-xs bg-white/8 text-slate-300 px-2 py-0.5 rounded border border-white/10 inline-block mt-1">
+                        <h3 className="text-lg font-semibold text-white/90">{cert.name}</h3>
+                        <span className="text-xs bg-white/8 text-white/70 px-2 py-0.5 rounded border border-white/10 inline-block mt-1">
                           {cert.acronym}
                         </span>
                       </div>
@@ -591,10 +591,10 @@ export default function EducationPathwaysPage() {
                       </span>
                     </div>
                     <p className="text-xs text-slate-500 mb-2">Issued by: {cert.issuer}</p>
-                    <p className="text-sm text-slate-300 leading-relaxed mb-3">{cert.description}</p>
-                    <div className="bg-slate-900/50 rounded-lg p-3 border border-slate-700/30">
+                    <p className="text-sm text-white/70 leading-relaxed mb-3">{cert.description}</p>
+                    <div className="bg-black/50 rounded-lg p-3 border border-white/[0.04]">
                       <p className="text-xs text-slate-400 font-semibold uppercase tracking-wider mb-1">Industry Relevance</p>
-                      <p className="text-xs text-slate-300">{cert.relevance}</p>
+                      <p className="text-xs text-white/70">{cert.relevance}</p>
                     </div>
                   </div>
                 ))}
@@ -607,7 +607,7 @@ export default function EducationPathwaysPage() {
         {activeSection === 'salaries' && (
           <ScrollReveal>
             <div className="mb-12">
-              <h2 className="text-xl font-bold text-slate-100 mb-2">Salary Ranges by Role</h2>
+              <h2 className="text-xl font-bold text-white/90 mb-2">Salary Ranges by Role</h2>
               <p className="text-sm text-slate-400 mb-6">
                 Approximate U.S. salary ranges for common space industry positions. Based on 2025-2026 industry data.
               </p>
@@ -632,9 +632,9 @@ export default function EducationPathwaysPage() {
                       <div key={role.role} className="flex items-center gap-3">
                         <div className="w-48 shrink-0 flex items-center gap-2">
                           <span className={`w-2 h-2 rounded-full ${lc.bg} border ${lc.border} shrink-0`} />
-                          <span className="text-xs text-slate-300 truncate" title={role.role}>{role.role}</span>
+                          <span className="text-xs text-white/70 truncate" title={role.role}>{role.role}</span>
                         </div>
-                        <div className="relative flex-1 h-6 bg-slate-700/40 rounded">
+                        <div className="relative flex-1 h-6 bg-white/[0.04] rounded">
                           <div
                             className={`absolute h-full rounded ${lc.bg} border ${lc.border}`}
                             style={{ left: `${minPct}%`, width: `${rangePct}%` }}
@@ -652,7 +652,7 @@ export default function EducationPathwaysPage() {
                 </div>
 
                 {/* Scale */}
-                <div className="flex justify-between mt-4 text-xs text-slate-500 border-t border-slate-700/40 pt-3">
+                <div className="flex justify-between mt-4 text-xs text-slate-500 border-t border-white/[0.06] pt-3">
                   <span>$0</span>
                   <span>$50K</span>
                   <span>$100K</span>
@@ -675,7 +675,7 @@ export default function EducationPathwaysPage() {
         {activeSection === 'internships' && (
           <ScrollReveal>
             <div className="mb-12">
-              <h2 className="text-xl font-bold text-slate-100 mb-2">Top Internship Programs</h2>
+              <h2 className="text-xl font-bold text-white/90 mb-2">Top Internship Programs</h2>
               <p className="text-sm text-slate-400 mb-6">
                 The 10 most impactful internship and early-career programs in the space industry. These are the primary pipelines into full-time space careers.
               </p>
@@ -685,8 +685,8 @@ export default function EducationPathwaysPage() {
                   <div key={program.company} className="card p-5">
                     <div className="flex items-start justify-between mb-2">
                       <div>
-                        <h3 className="text-base font-semibold text-slate-100">{program.company}</h3>
-                        <p className="text-xs text-slate-300">{program.programName}</p>
+                        <h3 className="text-base font-semibold text-white/90">{program.company}</h3>
+                        <p className="text-xs text-white/70">{program.programName}</p>
                       </div>
                       <div className="flex items-center gap-2 shrink-0">
                         <span className="text-xs bg-green-500/15 text-green-400 px-2 py-0.5 rounded border border-green-500/20">
@@ -694,14 +694,14 @@ export default function EducationPathwaysPage() {
                         </span>
                       </div>
                     </div>
-                    <p className="text-sm text-slate-300 leading-relaxed mb-3">{program.description}</p>
+                    <p className="text-sm text-white/70 leading-relaxed mb-3">{program.description}</p>
                     <div className="flex items-center justify-between">
                       <span className="text-xs text-slate-400">Duration: {program.duration}</span>
                       <a
                         href={program.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-xs text-slate-300 hover:text-white transition-colors flex items-center gap-1"
+                        className="text-xs text-white/70 hover:text-white transition-colors flex items-center gap-1"
                       >
                         Learn more
                         <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -720,7 +720,7 @@ export default function EducationPathwaysPage() {
         {activeSection === 'skills' && (
           <ScrollReveal>
             <div className="mb-12">
-              <h2 className="text-xl font-bold text-slate-100 mb-2">Skills in Demand</h2>
+              <h2 className="text-xl font-bold text-white/90 mb-2">Skills in Demand</h2>
               <p className="text-sm text-slate-400 mb-6">
                 The most sought-after technical skills, tools, and soft skills across the space industry in 2026.
               </p>
@@ -728,7 +728,7 @@ export default function EducationPathwaysPage() {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {/* Technical Skills */}
                 <div className="card p-5">
-                  <h3 className="text-base font-semibold text-slate-300 mb-4 flex items-center gap-2">
+                  <h3 className="text-base font-semibold text-white/70 mb-4 flex items-center gap-2">
                     <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5" />
                     </svg>
@@ -738,7 +738,7 @@ export default function EducationPathwaysPage() {
                     {SKILLS_TECHNICAL.map((skill) => (
                       <div key={skill.name} className="flex items-center justify-between">
                         <div>
-                          <span className="text-sm text-slate-200">{skill.name}</span>
+                          <span className="text-sm text-white/90">{skill.name}</span>
                           <span className="text-xs text-slate-500 ml-2">({skill.category})</span>
                         </div>
                         <span className={`text-xs px-2 py-0.5 rounded ${
@@ -765,8 +765,8 @@ export default function EducationPathwaysPage() {
                   </h3>
                   <div className="space-y-3">
                     {SKILLS_TOOLS.map((tool) => (
-                      <div key={tool.name} className="bg-slate-800/50 rounded-lg p-3 border border-slate-700/30">
-                        <p className="text-sm text-slate-200 font-medium">{tool.name}</p>
+                      <div key={tool.name} className="bg-white/[0.04] rounded-lg p-3 border border-white/[0.04]">
+                        <p className="text-sm text-white/90 font-medium">{tool.name}</p>
                         <p className="text-xs text-slate-400">{tool.category}</p>
                       </div>
                     ))}
@@ -783,9 +783,9 @@ export default function EducationPathwaysPage() {
                   </h3>
                   <div className="space-y-2">
                     {SKILLS_SOFT.map((skill) => (
-                      <div key={skill} className="flex items-center gap-2 py-2 border-b border-slate-700/30 last:border-b-0">
+                      <div key={skill} className="flex items-center gap-2 py-2 border-b border-white/[0.04] last:border-b-0">
                         <span className="text-emerald-400">{'\u25B8'}</span>
-                        <span className="text-sm text-slate-200">{skill}</span>
+                        <span className="text-sm text-white/90">{skill}</span>
                       </div>
                     ))}
                   </div>
@@ -805,8 +805,8 @@ export default function EducationPathwaysPage() {
               { label: 'Internships', value: '10', sub: 'pipeline programs' },
             ].map((stat) => (
               <div key={stat.label} className="card p-4 text-center">
-                <p className="text-2xl font-bold text-slate-300">{stat.value}</p>
-                <p className="text-sm text-slate-300 font-medium">{stat.label}</p>
+                <p className="text-2xl font-bold text-white/70">{stat.value}</p>
+                <p className="text-sm text-white/70 font-medium">{stat.label}</p>
                 <p className="text-xs text-slate-500">{stat.sub}</p>
               </div>
             ))}
@@ -815,7 +815,7 @@ export default function EducationPathwaysPage() {
 
         {/* ───────────────── Explore More ───────────────── */}
         <ScrollReveal delay={0.15}>
-          <section className="mt-16 border-t border-slate-800 pt-8 mb-8">
+          <section className="mt-16 border-t border-white/[0.06] pt-8 mb-8">
             <h2 className="text-xl font-bold text-white mb-6">Explore More</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <a href="/salary-benchmarks" className="card p-4 hover:border-white/15 transition-colors group">

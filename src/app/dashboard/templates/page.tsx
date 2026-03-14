@@ -16,16 +16,16 @@ import {
 
 /** Size-to-color mapping for widget preview badges */
 const SIZE_COLORS: Record<string, string> = {
-  small: 'bg-slate-700/60 text-slate-300',
-  medium: 'bg-slate-800/60 text-slate-200',
+  small: 'bg-white/[0.05] text-white/70',
+  medium: 'bg-white/[0.05] text-white/90',
   large: 'bg-purple-900/40 text-purple-300',
 };
 
 function WidgetPreview({ widget }: { widget: DashboardTemplate['widgets'][0] }) {
   return (
-    <div className="flex items-center gap-2 text-xs py-1.5 px-2 rounded-lg bg-slate-800/60 border border-slate-700/30">
+    <div className="flex items-center gap-2 text-xs py-1.5 px-2 rounded-lg bg-white/[0.05] border border-white/[0.04]">
       <span className="flex-shrink-0">{getWidgetTypeIcon(widget.type)}</span>
-      <span className="text-slate-300 truncate flex-1">{widget.title}</span>
+      <span className="text-white/70 truncate flex-1">{widget.title}</span>
       <span className={`px-1.5 py-0.5 rounded text-xs font-medium ${SIZE_COLORS[widget.size] || SIZE_COLORS.medium}`}>
         {getWidgetSizeLabel(widget.size)}
       </span>
@@ -44,27 +44,27 @@ function TemplateCard({
 }) {
   return (
     <div
-      className={`relative group bg-slate-800/50 backdrop-blur-sm border rounded-2xl p-6 transition-all duration-300 hover:shadow-lg hover:shadow-black/20 ${
+      className={`relative group bg-white/[0.04] backdrop-blur-sm border rounded-2xl p-6 transition-all duration-300 hover:shadow-lg hover:shadow-black/20 ${
         isActive
           ? 'border-white/10 ring-2 ring-white/10 shadow-lg shadow-black/5'
-          : 'border-slate-700/50 hover:border-white/10'
+          : 'border-white/[0.06] hover:border-white/10'
       }`}
     >
       {/* Active indicator */}
       {isActive && (
         <div className="absolute top-3 right-3 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/10 border border-white/10">
           <div className="w-2 h-2 rounded-full bg-white animate-pulse" />
-          <span className="text-xs font-medium text-slate-200">Active</span>
+          <span className="text-xs font-medium text-white/90">Active</span>
         </div>
       )}
 
       {/* Header */}
       <div className="flex items-start gap-4 mb-4">
-        <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-slate-700/80 to-slate-800/80 border border-slate-600/50 flex items-center justify-center text-3xl flex-shrink-0">
+        <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-white/[0.06] to-white/[0.04] border border-white/[0.08] flex items-center justify-center text-3xl flex-shrink-0">
           {template.icon}
         </div>
         <div className="min-w-0 flex-1">
-          <h3 className="text-lg font-bold text-white group-hover:text-slate-200 transition-colors">
+          <h3 className="text-lg font-bold text-white group-hover:text-white/90 transition-colors">
             {template.name}
           </h3>
           <p className="text-sm text-slate-400 mt-0.5 line-clamp-2">
@@ -75,7 +75,7 @@ function TemplateCard({
 
       {/* Persona tag */}
       <div className="mb-4">
-        <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-slate-700/60 text-slate-300 border border-slate-600/40">
+        <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-white/[0.05] text-white/70 border border-white/[0.08]">
           Best for: {template.persona.charAt(0).toUpperCase() + template.persona.slice(1)}s
         </span>
       </div>
@@ -97,7 +97,7 @@ function TemplateCard({
         onClick={() => onSelect(template.id)}
         className={`w-full py-3 px-4 rounded-xl font-semibold text-sm transition-all duration-200 ${
           isActive
-            ? 'bg-white/10 text-slate-200 border border-white/10 cursor-default'
+            ? 'bg-white/10 text-white/90 border border-white/10 cursor-default'
             : 'bg-gradient-to-r from-white to-blue-600 text-white hover:from-slate-300 hover:to-blue-500 shadow-md hover:shadow-lg hover:shadow-black/10'
         }`}
         disabled={isActive}
@@ -154,30 +154,30 @@ export default function DashboardTemplatesPage() {
         {/* Description cards */}
         <ScrollReveal delay={0.1}>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
-            <div className="flex items-start gap-3 p-4 rounded-xl bg-slate-800/30 border border-slate-700/30">
+            <div className="flex items-start gap-3 p-4 rounded-xl bg-white/[0.03] border border-white/[0.04]">
               <div className="w-10 h-10 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-lg flex-shrink-0">
                 {'\u{1F3AF}'}
               </div>
               <div>
-                <p className="text-sm font-semibold text-slate-200">Role-Optimized</p>
+                <p className="text-sm font-semibold text-white/90">Role-Optimized</p>
                 <p className="text-xs text-slate-400 mt-0.5">Widgets curated for your specific use case and workflow</p>
               </div>
             </div>
-            <div className="flex items-start gap-3 p-4 rounded-xl bg-slate-800/30 border border-slate-700/30">
+            <div className="flex items-start gap-3 p-4 rounded-xl bg-white/[0.03] border border-white/[0.04]">
               <div className="w-10 h-10 rounded-lg bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-lg flex-shrink-0">
                 {'\u{26A1}'}
               </div>
               <div>
-                <p className="text-sm font-semibold text-slate-200">Instant Setup</p>
+                <p className="text-sm font-semibold text-white/90">Instant Setup</p>
                 <p className="text-xs text-slate-400 mt-0.5">One click to activate -- no configuration required</p>
               </div>
             </div>
-            <div className="flex items-start gap-3 p-4 rounded-xl bg-slate-800/30 border border-slate-700/30">
+            <div className="flex items-start gap-3 p-4 rounded-xl bg-white/[0.03] border border-white/[0.04]">
               <div className="w-10 h-10 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-lg flex-shrink-0">
                 {'\u{1F504}'}
               </div>
               <div>
-                <p className="text-sm font-semibold text-slate-200">Switch Anytime</p>
+                <p className="text-sm font-semibold text-white/90">Switch Anytime</p>
                 <p className="text-xs text-slate-400 mt-0.5">Change templates whenever your needs evolve</p>
               </div>
             </div>
@@ -195,8 +195,8 @@ export default function DashboardTemplatesPage() {
               />
               {/* Activation success overlay */}
               {justActivated === template.id && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm pointer-events-none animate-fade-in">
-                  <div className="bg-slate-800 border border-white/10 rounded-2xl p-8 text-center shadow-2xl shadow-black/10">
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm pointer-events-none animate-fade-in">
+                  <div className="bg-white/[0.06] border border-white/10 rounded-2xl p-8 text-center shadow-2xl shadow-black/10">
                     <div className="text-5xl mb-3">{template.icon}</div>
                     <p className="text-lg font-bold text-white mb-1">{template.name} Activated</p>
                     <p className="text-sm text-slate-400">Redirecting to your dashboard...</p>
@@ -212,7 +212,7 @@ export default function DashboardTemplatesPage() {
           <div className="mt-10 text-center">
             <p className="text-sm text-slate-500">
               Want more control? Use the{' '}
-              <Link href="/dashboard/builder" className="text-slate-300 hover:text-white underline underline-offset-2">
+              <Link href="/dashboard/builder" className="text-white/70 hover:text-white underline underline-offset-2">
                 Dashboard Builder
               </Link>{' '}
               to create a fully custom layout with any widgets you choose.

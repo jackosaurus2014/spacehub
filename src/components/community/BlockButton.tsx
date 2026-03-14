@@ -72,7 +72,7 @@ export default function BlockButton({
         </button>
         <button
           onClick={handleCancel}
-          className="px-2 py-1 text-slate-500 hover:text-slate-300 text-xs transition-colors"
+          className="px-2 py-1 text-slate-500 hover:text-white/70 text-xs transition-colors"
         >
           Cancel
         </button>

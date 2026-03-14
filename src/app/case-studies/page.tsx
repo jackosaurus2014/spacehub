@@ -25,7 +25,7 @@ const CASE_STUDIES = [
     authorTitle: 'Managing Partner',
     gradient: 'from-white to-blue-500',
     accentClass: 'text-slate-300',
-    badgeClass: 'bg-white/5 text-slate-200 border-white/10',
+    badgeClass: 'bg-white/5 text-white/90 border-white/10',
   },
   {
     slug: 'astral-defense-compliance',
@@ -89,7 +89,7 @@ export default function CaseStudiesPage() {
         <div className="container mx-auto px-4 relative z-10">
           <ScrollReveal>
             <div className="max-w-3xl mx-auto text-center">
-              <span className="inline-block px-4 py-1.5 rounded-full text-xs font-semibold tracking-wide uppercase bg-white/5 text-slate-200 border border-white/10 mb-6">
+              <span className="inline-block px-4 py-1.5 rounded-full text-xs font-semibold tracking-wide uppercase bg-white/5 text-white/90 border border-white/10 mb-6">
                 Case Studies
               </span>
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
@@ -114,7 +114,7 @@ export default function CaseStudiesPage() {
               {HERO_STATS.map((stat) => (
                 <div
                   key={stat.label}
-                  className="rounded-xl border border-slate-700/50 bg-slate-900/50 backdrop-blur-sm p-6 text-center"
+                  className="rounded-xl border border-white/[0.06] bg-white/[0.04] backdrop-blur-sm p-6 text-center"
                 >
                   <p className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-slate-300 to-emerald-400 bg-clip-text text-transparent">
                     {stat.value}
@@ -133,9 +133,9 @@ export default function CaseStudiesPage() {
           <StaggerContainer className="space-y-12 max-w-4xl mx-auto">
             {CASE_STUDIES.map((cs) => (
               <StaggerItem key={cs.slug}>
-                <article className="rounded-2xl border border-slate-700/50 bg-slate-900/50 backdrop-blur-sm overflow-hidden content-auto">
+                <article className="rounded-2xl border border-white/[0.06] bg-white/[0.04] backdrop-blur-sm overflow-hidden content-auto">
                   {/* Header */}
-                  <div className="p-6 md:p-8 border-b border-slate-700/50">
+                  <div className="p-6 md:p-8 border-b border-white/[0.06]">
                     <div className="flex items-start gap-4">
                       <div
                         className={`w-14 h-14 rounded-full bg-gradient-to-br ${cs.gradient} flex items-center justify-center text-white font-bold text-lg shrink-0`}
@@ -183,7 +183,7 @@ export default function CaseStudiesPage() {
                         {cs.results.map((r) => (
                           <div
                             key={r.label}
-                            className="rounded-xl border border-slate-700/50 bg-slate-800/50 p-4 text-center"
+                            className="rounded-xl border border-white/[0.06] bg-white/[0.04] p-4 text-center"
                           >
                             <p className={`text-2xl font-bold ${cs.accentClass}`}>{r.metric}</p>
                             <p className="text-slate-400 text-xs mt-1">{r.label}</p>
@@ -194,7 +194,7 @@ export default function CaseStudiesPage() {
 
                     {/* Quote */}
                     <blockquote className="rounded-xl bg-gradient-to-r from-white/5 to-blue-500/5 border border-white/15 p-4">
-                      <p className="text-slate-200 text-sm italic leading-relaxed">
+                      <p className="text-white/90 text-sm italic leading-relaxed">
                         &ldquo;{cs.quote}&rdquo;
                       </p>
                       <cite className="text-slate-500 text-xs mt-2 block not-italic">
@@ -250,7 +250,7 @@ export default function CaseStudiesPage() {
                 </Link>
                 <Link
                   href="/book-demo"
-                  className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-xl border border-slate-600 text-slate-200 font-semibold hover:bg-slate-800/50 transition-colors"
+                  className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-xl border border-white/[0.1] text-white/90 font-semibold hover:bg-white/[0.04] transition-colors"
                 >
                   Book a Demo
                 </Link>

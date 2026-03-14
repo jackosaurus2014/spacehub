@@ -57,7 +57,7 @@ export default function SaveSearchButton({ searchType, filters, query }: SaveSea
     return (
       <button
         onClick={() => setShowForm(true)}
-        className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-700 hover:bg-slate-600 text-white rounded-lg text-xs font-medium transition-colors"
+        className="flex items-center gap-1.5 px-3 py-1.5 bg-white/[0.08] hover:bg-white/[0.08] text-white rounded-lg text-xs font-medium transition-colors"
       >
         <span>💾</span>
         <span>Save Search</span>
@@ -74,7 +74,7 @@ export default function SaveSearchButton({ searchType, filters, query }: SaveSea
         placeholder="Search name..."
         maxLength={200}
         autoFocus
-        className="bg-slate-800 border border-slate-700 text-white rounded-lg px-2.5 py-1.5 text-xs placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none w-40"
+        className="bg-white/[0.06] border border-white/[0.08] text-white rounded-lg px-2.5 py-1.5 text-xs placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none w-40"
         onKeyDown={(e) => {
           if (e.key === 'Enter') handleSave();
           if (e.key === 'Escape') setShowForm(false);
@@ -85,7 +85,7 @@ export default function SaveSearchButton({ searchType, filters, query }: SaveSea
           type="checkbox"
           checked={alertEnabled}
           onChange={(e) => setAlertEnabled(e.target.checked)}
-          className="w-3 h-3 rounded bg-slate-700 border-slate-600"
+          className="w-3 h-3 rounded bg-white/[0.08] border-white/[0.1]"
         />
         Alerts
       </label>

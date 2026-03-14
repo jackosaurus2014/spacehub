@@ -41,11 +41,11 @@ export default function MobileDataCard({
   return (
     <div
       onClick={onClick}
-      className={`rounded-xl border border-slate-700/50 p-4 backdrop-blur-sm transition-all duration-150 ${
-        onClick ? 'cursor-pointer active:scale-[0.98] active:bg-slate-800/60 hover:border-white/10' : ''
+      className={`rounded-xl border border-white/[0.08] p-4 backdrop-blur-sm transition-all duration-150 ${
+        onClick ? 'cursor-pointer active:scale-[0.98] active:bg-white/[0.06] hover:border-white/10' : ''
       } ${className}`}
       style={{
-        background: 'linear-gradient(145deg, rgba(15, 23, 42, 0.9), rgba(30, 41, 59, 0.85))',
+        background: 'linear-gradient(145deg, rgba(10, 10, 10, 0.9), rgba(20, 20, 20, 0.85))',
       }}
       role={onClick ? 'button' : undefined}
       tabIndex={onClick ? 0 : undefined}
@@ -54,7 +54,7 @@ export default function MobileDataCard({
       <div className="flex items-start justify-between gap-3 mb-3">
         <div className="flex items-center gap-2.5 min-w-0 flex-1">
           {icon && (
-            <div className="flex-shrink-0 w-9 h-9 rounded-lg bg-slate-800/80 border border-slate-700/50 flex items-center justify-center text-lg">
+            <div className="flex-shrink-0 w-9 h-9 rounded-lg bg-white/[0.06] border border-white/[0.08] flex items-center justify-center text-lg">
               {icon}
             </div>
           )}
@@ -74,17 +74,17 @@ export default function MobileDataCard({
 
       {/* Primary value */}
       <div className="mb-3">
-        <div className="text-2xl font-bold text-slate-300 tabular-nums">{primaryValue}</div>
+        <div className="text-2xl font-bold text-white/70 tabular-nums">{primaryValue}</div>
         <div className="text-xs text-slate-400 mt-0.5">{primaryLabel}</div>
       </div>
 
       {/* Secondary fields grid */}
       {secondaryFields && secondaryFields.length > 0 && (
-        <div className="grid grid-cols-2 gap-x-4 gap-y-2 pt-3 border-t border-slate-700/40">
+        <div className="grid grid-cols-2 gap-x-4 gap-y-2 pt-3 border-t border-white/[0.08]">
           {secondaryFields.map((field) => (
             <div key={field.label}>
               <div className="text-xs text-slate-500 uppercase tracking-wider">{field.label}</div>
-              <div className="text-sm text-slate-200 font-medium tabular-nums">{field.value}</div>
+              <div className="text-sm text-white/90 font-medium tabular-nums">{field.value}</div>
             </div>
           ))}
         </div>

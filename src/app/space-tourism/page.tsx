@@ -34,7 +34,7 @@ const PRICE_RANGES = [
 
 // Glass card style helper
 const glassCard = {
-  background: 'linear-gradient(145deg, rgba(15, 23, 42, 0.9) 0%, rgba(30, 41, 59, 0.85) 100%)'
+  background: 'linear-gradient(145deg, rgba(10, 10, 10, 0.9) 0%, rgba(10, 10, 10, 0.85) 100%)'
 };
 
 // Active tab sections
@@ -81,24 +81,24 @@ function DetailModal({
       <div
         className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl animate-scale-in"
         style={{
-          background: 'linear-gradient(145deg, rgba(15, 23, 42, 0.98) 0%, rgba(30, 41, 59, 0.96) 100%)'
+          background: 'linear-gradient(145deg, rgba(10, 10, 10, 0.98) 0%, rgba(10, 10, 10, 0.96) 100%)'
         }}
       >
         {/* Top gradient accent */}
         <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-slate-300/50 to-transparent" />
 
         {/* Header */}
-        <div className="p-6 border-b border-slate-700/50">
+        <div className="p-6 border-b border-white/[0.06]">
           <div className="flex items-start justify-between">
             <div className="flex items-center gap-4">
-              <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-slate-700 to-slate-800 flex items-center justify-center text-2xl font-bold text-slate-300 border border-slate-600/50">
+              <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-white/[0.08] to-white/[0.06] flex items-center justify-center text-2xl font-bold text-slate-300 border border-white/[0.1]">
                 {offering.logoIcon}
               </div>
               <div>
                 <p className="text-slate-300 text-sm font-medium">{offering.provider}</p>
                 <h2 className="text-2xl font-display font-bold text-white">{offering.name}</h2>
                 <div className="flex items-center gap-2 mt-2">
-                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-800/80 text-slate-300 text-xs font-medium">
+                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white/[0.06] text-slate-300 text-xs font-medium">
                     <span>{experienceInfo?.icon}</span>
                     {experienceInfo?.label}
                   </span>
@@ -123,19 +123,19 @@ function DetailModal({
         <div className="p-6 space-y-6">
           {/* Price & Key Stats */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="bg-slate-800/50 rounded-lg p-4 text-center">
+            <div className="bg-white/[0.04] rounded-lg p-4 text-center">
               <p className="text-slate-400 text-xs mb-1">Price</p>
               <p className="text-slate-300 font-bold text-xl">{offering.priceDisplay}</p>
             </div>
-            <div className="bg-slate-800/50 rounded-lg p-4 text-center">
+            <div className="bg-white/[0.04] rounded-lg p-4 text-center">
               <p className="text-slate-400 text-xs mb-1">Duration</p>
               <p className="text-white font-semibold">{offering.duration}</p>
             </div>
-            <div className="bg-slate-800/50 rounded-lg p-4 text-center">
+            <div className="bg-white/[0.04] rounded-lg p-4 text-center">
               <p className="text-slate-400 text-xs mb-1">Altitude</p>
               <p className="text-white font-semibold">{offering.altitudeDisplay}</p>
             </div>
-            <div className="bg-slate-800/50 rounded-lg p-4 text-center">
+            <div className="bg-white/[0.04] rounded-lg p-4 text-center">
               <p className="text-slate-400 text-xs mb-1">Passengers</p>
               <p className="text-white font-semibold">{offering.maxPassengers}</p>
             </div>
@@ -190,7 +190,7 @@ function DetailModal({
           </div>
 
           {/* Mission Details */}
-          <div className="bg-slate-800/30 rounded-lg p-4">
+          <div className="bg-white/[0.04] rounded-lg p-4">
             <h3 className="text-white font-semibold mb-3">Mission Details</h3>
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div>
@@ -252,7 +252,7 @@ function IndustryStatisticsSection() {
   const statCards = [
     { label: 'Space Tourists to Date', value: stats.totalTouristsLabel, color: 'text-slate-300', subtext: 'Since Dennis Tito (2001)' },
     { label: 'Revenue Projection (2030)', value: stats.revenueProjection2030, color: 'text-green-400', subtext: `Growing at ${stats.marketGrowthRate}` },
-    { label: 'Total Industry Investment', value: stats.totalInvestment, color: 'text-purple-400', subtext: 'Across all providers' },
+    { label: 'Total Industry Investment', value: stats.totalInvestment, color: 'text-white/70', subtext: 'Across all providers' },
     { label: 'Active Providers', value: `${stats.activeProviders}`, color: 'text-blue-400', subtext: `${stats.plannedProviders} more planned` },
     { label: 'Countries Represented', value: `${stats.countriesRepresented}`, color: 'text-amber-400', subtext: 'Nations with space tourists' },
     { label: 'First Space Tourist Cost', value: stats.firstSpaceTouristCost, color: 'text-rose-400', subtext: stats.firstSpaceTourist },
@@ -277,7 +277,7 @@ function IndustryStatisticsSection() {
           {statCards.map((stat) => (
             <div
               key={stat.label}
-              className="backdrop-blur-xl rounded-xl border border-slate-700/50 p-5"
+              className="backdrop-blur-xl rounded-xl border border-white/[0.06] p-5"
               style={glassCard}
             >
               <div className={`text-3xl font-display font-bold ${stat.color} mb-1`}>
@@ -294,12 +294,12 @@ function IndustryStatisticsSection() {
       <ScrollReveal delay={0.15}>
         <h3 className="text-xl font-display font-bold text-white mb-6">The Space Tourism Experience</h3>
         <div
-          className="backdrop-blur-xl rounded-xl border border-slate-700/50 p-6"
+          className="backdrop-blur-xl rounded-xl border border-white/[0.06] p-6"
           style={glassCard}
         >
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {experienceStats.map((stat) => (
-              <div key={stat.label} className="flex items-start gap-3 bg-slate-800/40 rounded-lg p-4">
+              <div key={stat.label} className="flex items-start gap-3 bg-white/[0.04] rounded-lg p-4">
                 <span className="text-2xl">{stat.icon}</span>
                 <div>
                   <p className="text-white font-semibold text-sm">{stat.value}</p>
@@ -314,7 +314,7 @@ function IndustryStatisticsSection() {
       {/* Market Trajectory */}
       <ScrollReveal delay={0.2}>
         <div
-          className="backdrop-blur-xl rounded-xl border border-slate-700/50 p-6"
+          className="backdrop-blur-xl rounded-xl border border-white/[0.06] p-6"
           style={glassCard}
         >
           <h3 className="text-lg font-display font-bold text-white mb-4">Market Growth Trajectory</h3>
@@ -328,7 +328,7 @@ function IndustryStatisticsSection() {
             ].map((bar) => (
               <div key={bar.year} className="flex items-center gap-4">
                 <span className="text-slate-400 text-sm font-mono w-12">{bar.year}</span>
-                <div className="flex-1 bg-slate-800/50 rounded-full h-8 overflow-hidden">
+                <div className="flex-1 bg-white/[0.04] rounded-full h-8 overflow-hidden">
                   <div
                     className={`h-full bg-gradient-to-r ${bar.color} rounded-full flex items-center justify-end pr-3 transition-all duration-1000`}
                     style={{ width: bar.width }}
@@ -395,11 +395,11 @@ function ComparisonTableSection() {
   return (
     <ScrollReveal>
       <div
-        className="backdrop-blur-xl rounded-xl border border-slate-700/50 overflow-hidden"
+        className="backdrop-blur-xl rounded-xl border border-white/[0.06] overflow-hidden"
         style={glassCard}
       >
         {/* Table Header */}
-        <div className="p-6 border-b border-slate-700/50">
+        <div className="p-6 border-b border-white/[0.06]">
           <h3 className="text-xl font-display font-bold text-white mb-2">
             Complete Experience Comparison
           </h3>
@@ -410,7 +410,7 @@ function ComparisonTableSection() {
             <select
               value={filterType}
               onChange={(e) => setFilterType(e.target.value as ExperienceType | '')}
-              className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-1.5 text-sm focus:ring-2 focus:ring-white/30 outline-none"
+              className="bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-1.5 text-sm focus:ring-2 focus:ring-white/30 outline-none"
             >
               <option value="">All Types</option>
               {EXPERIENCE_TYPES.map((type) => (
@@ -420,7 +420,7 @@ function ComparisonTableSection() {
             <select
               value={filterStatus}
               onChange={(e) => setFilterStatus(e.target.value as TourismStatus | '')}
-              className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-1.5 text-sm focus:ring-2 focus:ring-white/30 outline-none"
+              className="bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-1.5 text-sm focus:ring-2 focus:ring-white/30 outline-none"
             >
               <option value="">All Statuses</option>
               <option value="active">Active</option>
@@ -434,7 +434,7 @@ function ComparisonTableSection() {
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="bg-slate-800/60">
+              <tr className="bg-white/[0.04]">
                 {[
                   { key: 'provider', label: 'Provider' },
                   { key: 'vehicle', label: 'Vehicle' },
@@ -470,8 +470,8 @@ function ComparisonTableSection() {
                 return (
                   <tr
                     key={`${row.provider}-${row.vehicle}-${idx}`}
-                    className={`border-t border-slate-700/30 hover:bg-slate-800/40 transition-colors ${
-                      idx % 2 === 0 ? 'bg-slate-800/20' : ''
+                    className={`border-t border-white/[0.06] hover:bg-white/[0.04] transition-colors ${
+                      idx % 2 === 0 ? 'bg-white/[0.02]' : ''
                     }`}
                   >
                     <td className="px-4 py-3 text-white font-medium whitespace-nowrap">{row.provider}</td>
@@ -506,7 +506,7 @@ function ComparisonTableSection() {
           </div>
         )}
 
-        <div className="p-4 border-t border-slate-700/50">
+        <div className="p-4 border-t border-white/[0.06]">
           <p className="text-slate-400 text-xs">
             Showing {filteredData.length} of {QUICK_COMPARISON_TABLE.length} offerings. Prices are estimates and subject to change.
           </p>
@@ -521,7 +521,7 @@ function TimelineSection() {
   return (
     <ScrollReveal>
       <div
-        className="backdrop-blur-xl rounded-xl border border-slate-700/50 p-6"
+        className="backdrop-blur-xl rounded-xl border border-white/[0.06] p-6"
         style={glassCard}
       >
         <h3 className="text-xl font-display font-bold text-white mb-2">
@@ -546,7 +546,7 @@ function TimelineSection() {
                     isCurrent
                       ? 'bg-white/10 border-white/10 shadow-lg shadow-black/15'
                       : isPast
-                        ? 'bg-slate-800 border-slate-600'
+                        ? 'bg-white/[0.06] border-white/[0.1]'
                         : 'bg-purple-500/10 border-purple-500/30'
                   }`}>
                     {milestone.icon}
@@ -598,7 +598,7 @@ function FutureDestinationsSection() {
     <div className="space-y-6">
       <ScrollReveal>
         <div
-          className="backdrop-blur-xl rounded-xl border border-slate-700/50 p-6"
+          className="backdrop-blur-xl rounded-xl border border-white/[0.06] p-6"
           style={glassCard}
         >
           <h3 className="text-xl font-display font-bold text-white mb-2">
@@ -618,7 +618,7 @@ function FutureDestinationsSection() {
           return (
             <StaggerItem key={dest.id}>
               <div
-                className="backdrop-blur-xl rounded-xl border border-slate-700/50 overflow-hidden transition-all duration-300 hover:border-slate-600/50"
+                className="backdrop-blur-xl rounded-xl border border-white/[0.06] overflow-hidden transition-all duration-300 hover:border-white/[0.08]"
                 style={glassCard}
               >
                 <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-purple-400/30 to-transparent" />
@@ -647,11 +647,11 @@ function FutureDestinationsSection() {
 
                   {/* Key Info */}
                   <div className="grid grid-cols-2 gap-3 mb-4">
-                    <div className="bg-slate-800/50 rounded-lg p-3">
+                    <div className="bg-white/[0.04] rounded-lg p-3">
                       <p className="text-slate-400 text-xs mb-1">Estimated Cost</p>
                       <p className="text-slate-300 font-semibold text-sm">{dest.estimatedCost}</p>
                     </div>
-                    <div className="bg-slate-800/50 rounded-lg p-3">
+                    <div className="bg-white/[0.04] rounded-lg p-3">
                       <p className="text-slate-400 text-xs mb-1">Distance</p>
                       <p className="text-white font-semibold text-sm">{dest.distance}</p>
                     </div>
@@ -667,7 +667,7 @@ function FutureDestinationsSection() {
                           {dest.keyPlayers.map((player) => (
                             <span
                               key={player}
-                              className="px-2.5 py-1 rounded-lg bg-slate-800/60 text-slate-300 text-xs border border-slate-700/50"
+                              className="px-2.5 py-1 rounded-lg bg-white/[0.04] text-slate-300 text-xs border border-white/[0.06]"
                             >
                               {player}
                             </span>
@@ -861,14 +861,14 @@ function SpaceTourismContent() {
                 {[
                   { label: 'Total Offerings', value: offerings.length.toString(), color: 'text-slate-300' },
                   { label: 'Active Programs', value: offerings.filter((o) => o.status === 'active').length.toString(), color: 'text-green-400' },
-                  { label: 'Providers', value: TOURISM_PROVIDERS.length.toString(), color: 'text-purple-400' },
+                  { label: 'Providers', value: TOURISM_PROVIDERS.length.toString(), color: 'text-white/70' },
                   { label: 'Starting From', value: '$50K', color: 'text-white' },
                   { label: 'Space Tourists', value: TOURISM_STATS.totalTouristsLabel, color: 'text-amber-400' },
                   { label: 'Market (2030)', value: TOURISM_STATS.revenueProjection2030, color: 'text-green-400' },
                 ].map((stat) => (
                   <div
                     key={stat.label}
-                    className="backdrop-blur-xl rounded-xl border border-slate-700/50 p-4 text-center"
+                    className="backdrop-blur-xl rounded-xl border border-white/[0.06] p-4 text-center"
                     style={glassCard}
                   >
                     <div className={`text-2xl font-display font-bold ${stat.color}`}>
@@ -885,7 +885,7 @@ function SpaceTourismContent() {
             {/* Tab Navigation */}
             <ScrollReveal delay={0.05}>
               <div
-                className="backdrop-blur-xl rounded-xl border border-slate-700/50 p-2 mb-8"
+                className="backdrop-blur-xl rounded-xl border border-white/[0.06] p-2 mb-8"
                 style={glassCard}
               >
                 <div className="flex flex-wrap gap-1">
@@ -896,7 +896,7 @@ function SpaceTourismContent() {
                       className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all ${
                         activeTab === tab.id
                           ? 'bg-gradient-to-r from-white/5 to-blue-500/20 text-slate-300 border border-white/10'
-                          : 'text-slate-400 hover:text-white hover:bg-slate-800/50'
+                          : 'text-slate-400 hover:text-white hover:bg-white/[0.06]'
                       }`}
                     >
                       <span>{tab.icon}</span>
@@ -912,7 +912,7 @@ function SpaceTourismContent() {
               <>
                 {/* Filter Bar */}
                 <ScrollReveal><div
-                  className="backdrop-blur-xl rounded-xl border border-slate-700/50 p-4 mb-8"
+                  className="backdrop-blur-xl rounded-xl border border-white/[0.06] p-4 mb-8"
                   style={glassCard}
                 >
                   <div className="flex flex-wrap items-center gap-4">
@@ -922,7 +922,7 @@ function SpaceTourismContent() {
                       <select
                         value={providerFilter}
                         onChange={(e) => handleProviderChange(e.target.value)}
-                        className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+                        className="w-full bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                       >
                         <option value="">All Providers ({TOURISM_PROVIDERS.length})</option>
                         {TOURISM_PROVIDERS.map((provider) => (
@@ -939,7 +939,7 @@ function SpaceTourismContent() {
                       <select
                         value={experienceFilter}
                         onChange={(e) => handleExperienceChange(e.target.value)}
-                        className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+                        className="w-full bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                       >
                         <option value="">All Types</option>
                         {EXPERIENCE_TYPES.map((type) => (
@@ -956,7 +956,7 @@ function SpaceTourismContent() {
                       <select
                         value={priceRangeIndex}
                         onChange={(e) => handlePriceRangeChange(e.target.value)}
-                        className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+                        className="w-full bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                       >
                         {PRICE_RANGES.map((range, i) => (
                           <option key={i} value={i}>
@@ -974,7 +974,7 @@ function SpaceTourismContent() {
                         className={`px-5 py-2 rounded-lg font-semibold text-sm transition-all ${
                           selectedForCompare.length >= 2
                             ? 'bg-gradient-to-r from-white to-blue-500 text-white shadow-lg shadow-black/15 hover:shadow-black/20'
-                            : 'bg-slate-700 text-slate-400 cursor-not-allowed'
+                            : 'bg-white/[0.08] text-slate-400 cursor-not-allowed'
                         }`}
                       >
                         Compare ({selectedForCompare.length})
@@ -984,7 +984,7 @@ function SpaceTourismContent() {
 
                   {/* Selected for comparison indicator */}
                   {selectedForCompare.length > 0 && (
-                    <div className="mt-4 pt-4 border-t border-slate-700/50">
+                    <div className="mt-4 pt-4 border-t border-white/[0.06]">
                       <div className="flex items-center gap-2 flex-wrap">
                         <span className="text-slate-400 text-sm">Selected:</span>
                         {selectedForCompare.map((id) => {
@@ -1021,7 +1021,7 @@ function SpaceTourismContent() {
                 {/* Offerings Grid */}
                 {offerings.length === 0 ? (
                   <div
-                    className="backdrop-blur-xl rounded-xl border border-slate-700/50 p-12 text-center"
+                    className="backdrop-blur-xl rounded-xl border border-white/[0.06] p-12 text-center"
                     style={glassCard}
                   >
                     <span className="text-6xl block mb-4">🚀</span>
@@ -1047,7 +1047,7 @@ function SpaceTourismContent() {
 
                 {/* Experience Type Guide */}
                 <ScrollReveal><div
-                  className="mt-12 backdrop-blur-xl rounded-xl border border-slate-700/50 p-6"
+                  className="mt-12 backdrop-blur-xl rounded-xl border border-white/[0.06] p-6"
                   style={glassCard}
                 >
                   <h3 className="text-lg font-display font-bold text-white mb-4">
@@ -1055,7 +1055,7 @@ function SpaceTourismContent() {
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
                     {EXPERIENCE_TYPES.map((type) => (
-                      <div key={type.value} className="bg-slate-800/50 rounded-lg p-4">
+                      <div key={type.value} className="bg-white/[0.04] rounded-lg p-4">
                         <div className="text-2xl mb-2">{type.icon}</div>
                         <h4 className="text-white font-semibold text-sm mb-1">{type.label}</h4>
                         <p className="text-slate-400 text-xs">{type.description}</p>

@@ -275,7 +275,7 @@ const CATEGORIES = [
   { id: 'Propulsion', icon: '\u{1F680}', color: 'text-orange-400' },
   { id: 'Power & Energy', icon: '\u{26A1}', color: 'text-yellow-400' },
   { id: 'Communications', icon: '\u{1F4E1}', color: 'text-blue-400' },
-  { id: 'Manufacturing & ISRU', icon: '\u{1F3ED}', color: 'text-slate-300' },
+  { id: 'Manufacturing & ISRU', icon: '\u{1F3ED}', color: 'text-white/70' },
   { id: 'AI & Autonomy', icon: '\u{1F916}', color: 'text-purple-400' },
   { id: 'Life Support', icon: '\u{1FAC1}', color: 'text-green-400' },
   { id: 'Materials & Structures', icon: '\u{1F9F1}', color: 'text-amber-400' },
@@ -971,7 +971,7 @@ export default function TechReadinessPage() {
   // ────────────────────────────────────────
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100">
+    <div className="min-h-screen bg-black text-slate-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
         {/* Header */}
@@ -996,7 +996,7 @@ export default function TechReadinessPage() {
                 className={`px-5 py-3 rounded-xl text-sm font-medium transition-all flex items-center gap-2 ${
                   activeTab === tab.id
                     ? 'bg-purple-600/30 text-purple-200 border border-purple-500/50 shadow-lg shadow-purple-500/10'
-                    : 'bg-slate-800/50 text-slate-400 border border-slate-700/50 hover:bg-slate-800 hover:text-slate-200'
+                    : 'bg-white/[0.04] text-slate-400 border border-white/[0.06] hover:bg-white/[0.06] hover:text-white/90'
                 }`}
               >
                 <span>{tab.icon}</span>
@@ -1029,8 +1029,8 @@ export default function TechReadinessPage() {
                       onClick={() => setExpandedLevel(expandedLevel === trl.level ? null : trl.level)}
                       className={`flex flex-col items-center p-1 rounded-lg transition-all ${
                         expandedLevel === trl.level
-                          ? 'bg-slate-700/60 ring-1 ring-purple-500/40'
-                          : 'hover:bg-slate-800/60'
+                          ? 'bg-white/[0.05] ring-1 ring-purple-500/40'
+                          : 'hover:bg-white/[0.05]'
                       }`}
                     >
                       <div className={`w-full h-3 rounded-full ${getTrlColor(trl.level)}`} />
@@ -1063,7 +1063,7 @@ export default function TechReadinessPage() {
                       {/* Level Header */}
                       <button
                         onClick={() => setExpandedLevel(isExpanded ? null : trl.level)}
-                        className="w-full text-left p-5 flex items-start gap-4 hover:bg-slate-800/20 transition-colors"
+                        className="w-full text-left p-5 flex items-start gap-4 hover:bg-white/[0.03] transition-colors"
                       >
                         {/* Level Badge */}
                         <div className="flex-shrink-0">
@@ -1107,7 +1107,7 @@ export default function TechReadinessPage() {
 
                       {/* Expanded Details */}
                       {isExpanded && (
-                        <div className="px-5 pb-5 border-t border-slate-700/40">
+                        <div className="px-5 pb-5 border-t border-white/[0.06]">
                           {/* Progress visualization */}
                           <div className="mt-4 mb-5">
                             <div className="flex gap-1">
@@ -1115,7 +1115,7 @@ export default function TechReadinessPage() {
                                 <div
                                   key={l}
                                   className={`flex-1 h-2.5 rounded-full transition-all ${
-                                    l <= trl.level ? getTrlColor(l) : 'bg-slate-800'
+                                    l <= trl.level ? getTrlColor(l) : 'bg-white/[0.06]'
                                   }`}
                                 />
                               ))}
@@ -1125,11 +1125,11 @@ export default function TechReadinessPage() {
                           <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
                             {/* Description */}
                             <div>
-                              <h4 className="text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
+                              <h4 className="text-xs font-semibold text-white/70 uppercase tracking-wider mb-2">
                                 &#x1F4D6; Full Description
                               </h4>
                               <p className="text-sm text-slate-400 leading-relaxed">{trl.description}</p>
-                              <div className="mt-3 px-3 py-2 rounded-lg bg-slate-800/60 border border-slate-700/40">
+                              <div className="mt-3 px-3 py-2 rounded-lg bg-white/[0.05] border border-white/[0.06]">
                                 <span className="text-xs text-slate-500">Estimated time to next TRL:</span>
                                 <span className={`text-sm font-semibold ml-2 ${getTrlTextColor(trl.level)}`}>
                                   {trl.estimatedTimeToNext}
@@ -1139,7 +1139,7 @@ export default function TechReadinessPage() {
 
                             {/* Activities */}
                             <div>
-                              <h4 className="text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
+                              <h4 className="text-xs font-semibold text-white/70 uppercase tracking-wider mb-2">
                                 &#x2699;&#xFE0F; Typical Activities
                               </h4>
                               <ul className="space-y-2">
@@ -1154,7 +1154,7 @@ export default function TechReadinessPage() {
 
                             {/* Evidence */}
                             <div>
-                              <h4 className="text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
+                              <h4 className="text-xs font-semibold text-white/70 uppercase tracking-wider mb-2">
                                 &#x1F4CB; Required Evidence
                               </h4>
                               <ul className="space-y-2">
@@ -1169,8 +1169,8 @@ export default function TechReadinessPage() {
                           </div>
 
                           {/* Technologies at this TRL */}
-                          <div className="mt-5 pt-4 border-t border-slate-700/30">
-                            <h4 className="text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
+                          <div className="mt-5 pt-4 border-t border-white/[0.04]">
+                            <h4 className="text-xs font-semibold text-white/70 uppercase tracking-wider mb-2">
                               &#x1F680; Technologies Currently at TRL {trl.level}
                             </h4>
                             <div className="flex flex-wrap gap-2">
@@ -1183,7 +1183,7 @@ export default function TechReadinessPage() {
                                     setTrlMin(trl.level);
                                     setTrlMax(trl.level);
                                   }}
-                                  className="px-3 py-1.5 text-xs rounded-lg bg-slate-800/60 text-slate-300 border border-slate-700/50 hover:border-purple-500/40 hover:text-purple-300 transition-all"
+                                  className="px-3 py-1.5 text-xs rounded-lg bg-white/[0.05] text-white/70 border border-white/[0.06] hover:border-purple-500/40 hover:text-purple-300 transition-all"
                                 >
                                   {t.name}
                                 </button>
@@ -1228,7 +1228,7 @@ export default function TechReadinessPage() {
                     <span>Assessment Progress</span>
                     <span>{Math.round(assessmentProgress)}% Complete</span>
                   </div>
-                  <div className="w-full bg-slate-800 rounded-full h-3 overflow-hidden">
+                  <div className="w-full bg-white/[0.06] rounded-full h-3 overflow-hidden">
                     <div
                       className="h-3 rounded-full bg-gradient-to-r from-purple-600 to-slate-200 transition-all duration-500"
                       style={{ width: `${assessmentProgress}%` }}
@@ -1237,9 +1237,9 @@ export default function TechReadinessPage() {
                 </div>
 
                 {/* Current TRL Result (always visible) */}
-                <div className="flex items-center gap-4 p-4 rounded-xl bg-slate-800/60 border border-slate-700/40">
+                <div className="flex items-center gap-4 p-4 rounded-xl bg-white/[0.05] border border-white/[0.06]">
                   <div className={`w-16 h-16 rounded-xl flex items-center justify-center text-2xl font-bold text-white shadow-lg ${
-                    assessedTRL > 0 ? getTrlColor(assessedTRL) : 'bg-slate-700'
+                    assessedTRL > 0 ? getTrlColor(assessedTRL) : 'bg-white/[0.06]'
                   }`}>
                     {assessedTRL > 0 ? assessedTRL : '?'}
                   </div>
@@ -1270,7 +1270,7 @@ export default function TechReadinessPage() {
                 {assessmentStarted && (
                   <button
                     onClick={resetAssessment}
-                    className="mt-4 px-4 py-2 bg-slate-700 hover:bg-slate-600 text-slate-300 text-sm rounded-lg transition-colors"
+                    className="mt-4 px-4 py-2 bg-white/[0.06] hover:bg-white/[0.06] text-white/70 text-sm rounded-lg transition-colors"
                   >
                     Reset Assessment
                   </button>
@@ -1298,7 +1298,7 @@ export default function TechReadinessPage() {
                             {/* TRL Badge */}
                             <div className="flex-shrink-0">
                               <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-lg font-bold text-white ${
-                                answer === true ? getTrlColor(q.trl) : answer === false ? 'bg-slate-600' : 'bg-slate-700'
+                                answer === true ? getTrlColor(q.trl) : answer === false ? 'bg-white/[0.08]' : 'bg-white/[0.06]'
                               }`}>
                                 {answer === true ? '\u2713' : answer === false ? '\u2717' : q.trl}
                               </div>
@@ -1352,7 +1352,7 @@ export default function TechReadinessPage() {
                         <div>
                           <div className="flex items-center gap-4 mb-4">
                             <div className={`w-20 h-20 rounded-2xl flex items-center justify-center text-3xl font-bold text-white shadow-xl ${
-                              assessedTRL > 0 ? getTrlColor(assessedTRL) : 'bg-slate-700'
+                              assessedTRL > 0 ? getTrlColor(assessedTRL) : 'bg-white/[0.06]'
                             } ${assessedTRL > 0 ? getTrlGlowColor(assessedTRL) : ''}`}>
                               {assessedTRL}
                             </div>
@@ -1374,7 +1374,7 @@ export default function TechReadinessPage() {
                             {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((l) => (
                               <div
                                 key={l}
-                                className={`flex-1 h-3 rounded-full ${l <= assessedTRL ? getTrlColor(l) : 'bg-slate-800'}`}
+                                className={`flex-1 h-3 rounded-full ${l <= assessedTRL ? getTrlColor(l) : 'bg-white/[0.06]'}`}
                               />
                             ))}
                           </div>
@@ -1383,7 +1383,7 @@ export default function TechReadinessPage() {
                         <div>
                           {assessedTRL > 0 && assessedTRL < 9 && (
                             <div>
-                              <h4 className="text-sm font-semibold text-slate-200 mb-2">To reach TRL {assessedTRL + 1}:</h4>
+                              <h4 className="text-sm font-semibold text-white/90 mb-2">To reach TRL {assessedTRL + 1}:</h4>
                               <ul className="space-y-1.5">
                                 {TRL_SCALE[assessedTRL].activities.map((a, i) => (
                                   <li key={i} className="flex items-start gap-2 text-xs text-slate-400">
@@ -1393,7 +1393,7 @@ export default function TechReadinessPage() {
                                 ))}
                               </ul>
                               <div className="mt-3 text-xs text-slate-500">
-                                Estimated time: <span className="text-slate-300">{TRL_SCALE[assessedTRL].estimatedTimeToNext}</span>
+                                Estimated time: <span className="text-white/70">{TRL_SCALE[assessedTRL].estimatedTimeToNext}</span>
                               </div>
                             </div>
                           )}
@@ -1458,7 +1458,7 @@ export default function TechReadinessPage() {
             {/* Compact TRL Scale Bar */}
             <ScrollReveal delay={0.08}>
               <div className="card p-5">
-                <h2 className="text-sm font-semibold text-slate-200 mb-3">TRL Distribution</h2>
+                <h2 className="text-sm font-semibold text-white/90 mb-3">TRL Distribution</h2>
                 <div className="grid grid-cols-9 gap-1.5">
                   {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((level) => {
                     const count = TECHNOLOGIES.filter((t) => t.trl === level).length;
@@ -1471,8 +1471,8 @@ export default function TechReadinessPage() {
                         }}
                         className={`flex flex-col items-center p-1.5 rounded-lg transition-all ${
                           trlMin === level && trlMax === level
-                            ? 'bg-slate-700/80 ring-1 ring-purple-500/40'
-                            : 'hover:bg-slate-800/60'
+                            ? 'bg-white/[0.06] ring-1 ring-purple-500/40'
+                            : 'hover:bg-white/[0.05]'
                         }`}
                       >
                         <div className={`w-full h-2.5 rounded-full ${getTrlColor(level)}`} />
@@ -1501,7 +1501,7 @@ export default function TechReadinessPage() {
             {/* Category Summary Cards */}
             <ScrollReveal delay={0.1}>
               <div>
-                <h2 className="text-sm font-semibold text-slate-200 mb-3">Average TRL by Category</h2>
+                <h2 className="text-sm font-semibold text-white/90 mb-3">Average TRL by Category</h2>
                 <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
                   {categorySummary.map((cat) => (
                     <button
@@ -1523,7 +1523,7 @@ export default function TechReadinessPage() {
                         </span>
                         <span className="text-[9px] text-slate-500 mb-0.5">avg</span>
                       </div>
-                      <div className="mt-1.5 w-full bg-slate-800 rounded-full h-1">
+                      <div className="mt-1.5 w-full bg-white/[0.06] rounded-full h-1">
                         <div
                           className={`h-1 rounded-full ${getTrlColor(Math.round(cat.avgTrl))}`}
                           style={{ width: `${(cat.avgTrl / 9) * 100}%` }}
@@ -1550,7 +1550,7 @@ export default function TechReadinessPage() {
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       placeholder="Search technologies, developers..."
-                      className="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50"
+                      className="w-full bg-white/[0.06] border border-white/[0.1] rounded-lg px-3 py-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50"
                     />
                   </div>
 
@@ -1560,7 +1560,7 @@ export default function TechReadinessPage() {
                     <select
                       value={categoryFilter}
                       onChange={(e) => setCategoryFilter(e.target.value)}
-                      className="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:ring-2 focus:ring-purple-500/50"
+                      className="w-full bg-white/[0.06] border border-white/[0.1] rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:ring-2 focus:ring-purple-500/50"
                     >
                       <option value="All">All Categories</option>
                       {CATEGORIES.map((cat) => (
@@ -1577,7 +1577,7 @@ export default function TechReadinessPage() {
                     <select
                       value={maturityFilter}
                       onChange={(e) => setMaturityFilter(e.target.value as MaturityFilter)}
-                      className="bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:ring-2 focus:ring-purple-500/50"
+                      className="bg-white/[0.06] border border-white/[0.1] rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:ring-2 focus:ring-purple-500/50"
                     >
                       <option value="all">All Maturity</option>
                       <option value="research">Research (TRL 1-3)</option>
@@ -1593,7 +1593,7 @@ export default function TechReadinessPage() {
                       <select
                         value={trlMin}
                         onChange={(e) => setTrlMin(Number(e.target.value))}
-                        className="bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:ring-2 focus:ring-purple-500/50"
+                        className="bg-white/[0.06] border border-white/[0.1] rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:ring-2 focus:ring-purple-500/50"
                       >
                         {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => (
                           <option key={n} value={n}>{n}</option>
@@ -1605,7 +1605,7 @@ export default function TechReadinessPage() {
                       <select
                         value={trlMax}
                         onChange={(e) => setTrlMax(Number(e.target.value))}
-                        className="bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:ring-2 focus:ring-purple-500/50"
+                        className="bg-white/[0.06] border border-white/[0.1] rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:ring-2 focus:ring-purple-500/50"
                       >
                         {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => (
                           <option key={n} value={n}>{n}</option>
@@ -1630,7 +1630,7 @@ export default function TechReadinessPage() {
                           className={`px-3 py-2 text-xs font-medium rounded-lg transition-colors ${
                             sortField === field
                               ? 'bg-purple-600 text-white'
-                              : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+                              : 'bg-white/[0.06] text-white/70 hover:bg-white/[0.06]'
                           }`}
                         >
                           {label}
@@ -1675,7 +1675,7 @@ export default function TechReadinessPage() {
                       {/* Card Header */}
                       <button
                         onClick={() => setExpandedTech(isExpanded ? null : tech.name)}
-                        className="w-full text-left p-4 sm:p-5 flex items-start gap-4 hover:bg-slate-800/20 transition-colors"
+                        className="w-full text-left p-4 sm:p-5 flex items-start gap-4 hover:bg-white/[0.03] transition-colors"
                       >
                         {/* TRL Badge */}
                         <div className="flex-shrink-0 flex flex-col items-center">
@@ -1691,7 +1691,7 @@ export default function TechReadinessPage() {
                             <h3 className="text-sm sm:text-base font-semibold text-slate-100">
                               {tech.name}
                             </h3>
-                            <span className="text-[10px] px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 border border-slate-700">
+                            <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/[0.06] text-slate-400 border border-white/[0.08]">
                               {tech.category}
                             </span>
                             <span className={`text-[10px] px-2 py-0.5 rounded-full border font-medium ${getMaturityBadgeClass(tech.trl)}`}>
@@ -1738,7 +1738,7 @@ export default function TechReadinessPage() {
 
                       {/* Expanded Content */}
                       {isExpanded && (
-                        <div className="px-4 sm:px-5 pb-5 border-t border-slate-700/40">
+                        <div className="px-4 sm:px-5 pb-5 border-t border-white/[0.06]">
                           {/* TRL Progress Bar */}
                           <div className="mt-4 mb-5">
                             <div className="flex justify-between text-xs text-slate-400 mb-1.5">
@@ -1750,7 +1750,7 @@ export default function TechReadinessPage() {
                                 <div
                                   key={level}
                                   className={`flex-1 h-3 rounded-full transition-all ${
-                                    level <= tech.trl ? getTrlColor(level) : 'bg-slate-800'
+                                    level <= tech.trl ? getTrlColor(level) : 'bg-white/[0.06]'
                                   }`}
                                   title={`TRL ${level}: ${TRL_SCALE[level - 1].name}`}
                                 />
@@ -1761,7 +1761,7 @@ export default function TechReadinessPage() {
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                             {/* Full Description */}
                             <div>
-                              <h4 className="text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
+                              <h4 className="text-xs font-semibold text-white/70 uppercase tracking-wider mb-2">
                                 Description
                               </h4>
                               <p className="text-sm text-slate-400 leading-relaxed">{tech.description}</p>
@@ -1769,7 +1769,7 @@ export default function TechReadinessPage() {
 
                             {/* Impact & Milestone */}
                             <div>
-                              <h4 className="text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
+                              <h4 className="text-xs font-semibold text-white/70 uppercase tracking-wider mb-2">
                                 Expected Impact
                               </h4>
                               <p className="text-sm text-purple-300/90 leading-relaxed">{tech.impact}</p>
@@ -1784,14 +1784,14 @@ export default function TechReadinessPage() {
 
                             {/* Developers */}
                             <div>
-                              <h4 className="text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
+                              <h4 className="text-xs font-semibold text-white/70 uppercase tracking-wider mb-2">
                                 Key Developers &amp; Programs
                               </h4>
                               <div className="flex flex-wrap gap-1.5">
                                 {tech.developers.map((dev) => (
                                   <span
                                     key={dev}
-                                    className="px-2.5 py-1 text-xs rounded-md bg-slate-800/80 text-slate-300 border border-slate-700/50"
+                                    className="px-2.5 py-1 text-xs rounded-md bg-white/[0.06] text-white/70 border border-white/[0.06]"
                                   >
                                     {dev}
                                   </span>
@@ -1801,7 +1801,7 @@ export default function TechReadinessPage() {
 
                             {/* Challenges */}
                             <div>
-                              <h4 className="text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
+                              <h4 className="text-xs font-semibold text-white/70 uppercase tracking-wider mb-2">
                                 Key Challenges
                               </h4>
                               <ul className="space-y-1.5">
@@ -1817,8 +1817,8 @@ export default function TechReadinessPage() {
 
                           {/* What it takes to advance */}
                           {tech.trl < 9 && (
-                            <div className="mt-5 pt-4 border-t border-slate-700/30">
-                              <h4 className="text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
+                            <div className="mt-5 pt-4 border-t border-white/[0.04]">
+                              <h4 className="text-xs font-semibold text-white/70 uppercase tracking-wider mb-2">
                                 To Advance to TRL {tech.trl + 1}: {TRL_SCALE[tech.trl].name}
                               </h4>
                               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -1827,7 +1827,7 @@ export default function TechReadinessPage() {
                                   <ul className="mt-1 space-y-1">
                                     {TRL_SCALE[tech.trl].activities.map((a, i) => (
                                       <li key={i} className="flex items-start gap-1.5 text-xs text-slate-400">
-                                        <span className="text-slate-300 mt-0.5 flex-shrink-0">&#x25B8;</span>
+                                        <span className="text-white/70 mt-0.5 flex-shrink-0">&#x25B8;</span>
                                         {a}
                                       </li>
                                     ))}
@@ -1893,10 +1893,10 @@ export default function TechReadinessPage() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="group p-4 rounded-lg bg-slate-800/50 border border-slate-700/50 hover:border-purple-500/40 hover:bg-slate-800/80 transition-all"
+                  className="group p-4 rounded-lg bg-white/[0.04] border border-white/[0.06] hover:border-purple-500/40 hover:bg-white/[0.06] transition-all"
                 >
                   <span className="text-2xl">{link.icon}</span>
-                  <h3 className="text-sm font-medium text-slate-200 mt-2 group-hover:text-purple-300 transition-colors">
+                  <h3 className="text-sm font-medium text-white/90 mt-2 group-hover:text-purple-300 transition-colors">
                     {link.label}
                   </h3>
                   <p className="text-[11px] text-slate-500 mt-0.5">{link.desc}</p>

@@ -176,13 +176,13 @@ export default function OnboardingTour() {
         role="dialog"
         aria-modal="true"
         aria-label="Welcome to SpaceNexus"
-        className="relative bg-slate-900 border border-slate-700/50 rounded-2xl w-full max-w-xl max-h-[90vh] overflow-hidden shadow-2xl"
+        className="relative bg-black border border-white/[0.06] rounded-2xl w-full max-w-xl max-h-[90vh] overflow-hidden shadow-2xl"
       >
         {/* Top gradient accent */}
         <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-white via-purple-500 to-pink-500" />
 
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-700/50">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-white/[0.06]">
           <div>
             <h2 className="text-lg font-bold text-white">
               {isPersonaStep ? 'Welcome to SpaceNexus' : tourStep?.title}
@@ -204,7 +204,7 @@ export default function OnboardingTour() {
         <div className="px-6 py-5 overflow-y-auto max-h-[60vh]">
           {isPersonaStep ? (
             <>
-              <p className="text-slate-300 mb-5">
+              <p className="text-white/70 mb-5">
                 Tell us about yourself so we can personalize your experience. Select the role that best describes you:
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -215,13 +215,13 @@ export default function OnboardingTour() {
                     className={`text-left p-4 rounded-xl border transition-all duration-200 ${
                       selectedPersona === persona.id
                         ? 'border-white/10 bg-white/5 shadow-lg shadow-black/5'
-                        : 'border-slate-700/50 bg-slate-800/50 hover:border-slate-600 hover:bg-slate-800'
+                        : 'border-white/[0.06] bg-white/[0.04] hover:border-white/[0.1] hover:bg-white/[0.06]'
                     }`}
                   >
                     <div className="flex items-start gap-3">
                       <span className="text-2xl flex-shrink-0">{persona.icon}</span>
                       <div>
-                        <div className={`font-semibold text-sm ${selectedPersona === persona.id ? 'text-slate-200' : 'text-white'}`}>
+                        <div className={`font-semibold text-sm ${selectedPersona === persona.id ? 'text-white/90' : 'text-white'}`}>
                           {persona.title}
                         </div>
                         <div className="text-xs text-slate-400 mt-0.5">{persona.description}</div>
@@ -236,17 +236,17 @@ export default function OnboardingTour() {
               <div className="text-center mb-6">
                 <span className="text-5xl">{tourStep.icon}</span>
               </div>
-              <p className="text-slate-300 text-center mb-6">{tourStep.description}</p>
+              <p className="text-white/70 text-center mb-6">{tourStep.description}</p>
               <div className="grid grid-cols-2 gap-2">
                 {tourStep.highlights.map((highlight) => (
                   <div
                     key={highlight}
-                    className="flex items-center gap-2 px-3 py-2 rounded-lg bg-slate-800/60 border border-slate-700/40"
+                    className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/[0.05] border border-white/[0.06]"
                   >
-                    <svg className="w-4 h-4 text-slate-300 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-4 h-4 text-white/70 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                     </svg>
-                    <span className="text-sm text-slate-300">{highlight}</span>
+                    <span className="text-sm text-white/70">{highlight}</span>
                   </div>
                 ))}
               </div>
@@ -271,7 +271,7 @@ export default function OnboardingTour() {
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-4 border-t border-slate-700/50 flex items-center justify-between">
+        <div className="px-6 py-4 border-t border-white/[0.06] flex items-center justify-between">
           {step > 0 ? (
             <button
               onClick={handleBack}
@@ -287,7 +287,7 @@ export default function OnboardingTour() {
             disabled={isPersonaStep && !selectedPersona}
             className={`font-medium py-2.5 px-6 rounded-lg transition-all text-sm ${
               isPersonaStep && !selectedPersona
-                ? 'bg-slate-700 text-slate-500 cursor-not-allowed'
+                ? 'bg-white/[0.08] text-slate-500 cursor-not-allowed'
                 : step === TOUR_STEPS.length
                   ? 'bg-gradient-to-r from-white to-purple-500 hover:from-slate-300 hover:to-purple-400 text-white shadow-lg'
                   : 'bg-white hover:bg-slate-100 text-slate-900'

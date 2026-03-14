@@ -96,9 +96,9 @@ export default function LaunchPollCard({ eventId }: LaunchPollCardProps) {
             key={poll.id}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-slate-900/95 rounded-xl border border-slate-700/50 overflow-hidden"
+            className="bg-black/95 rounded-xl border border-white/[0.06] overflow-hidden"
           >
-            <div className="px-4 py-3 border-b border-slate-700/50 bg-slate-800/50">
+            <div className="px-4 py-3 border-b border-white/[0.06] bg-white/[0.04]">
               <h4 className="text-white font-medium text-sm flex items-center gap-2">
                 <span className="text-lg">📊</span>
                 {poll.question}
@@ -117,8 +117,8 @@ export default function LaunchPollCard({ eventId }: LaunchPollCardProps) {
                     disabled={hasVoted}
                     className={`w-full relative overflow-hidden rounded-lg border transition-all text-left ${
                       hasVoted
-                        ? 'border-slate-700/30 cursor-default'
-                        : 'border-slate-600/50 hover:border-white/15 cursor-pointer'
+                        ? 'border-white/[0.04] cursor-default'
+                        : 'border-white/[0.08] hover:border-white/15 cursor-pointer'
                     }`}
                   >
                     {/* Progress background */}
@@ -132,11 +132,11 @@ export default function LaunchPollCard({ eventId }: LaunchPollCardProps) {
                     )}
 
                     <div className="relative flex items-center justify-between px-3 py-2">
-                      <span className={`text-sm ${hasVoted ? 'text-slate-300' : 'text-white'}`}>
+                      <span className={`text-sm ${hasVoted ? 'text-white/70' : 'text-white'}`}>
                         {option}
                       </span>
                       {hasVoted && (
-                        <span className="text-xs font-mono text-slate-300 font-bold ml-2">
+                        <span className="text-xs font-mono text-white/70 font-bold ml-2">
                           {pct}%
                         </span>
                       )}

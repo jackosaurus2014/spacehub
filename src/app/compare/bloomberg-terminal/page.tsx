@@ -58,7 +58,7 @@ export default function BloombergComparisonPage() {
             <li>/</li>
             <li><Link href="/compare" className="hover:text-white transition-colors">Compare</Link></li>
             <li>/</li>
-            <li className="text-slate-300">Bloomberg Terminal</li>
+            <li className="text-white/70">Bloomberg Terminal</li>
           </ol>
         </nav>
 
@@ -68,7 +68,7 @@ export default function BloombergComparisonPage() {
             <h1 className="text-3xl md:text-4xl font-bold text-white mb-4 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
               SpaceNexus vs Bloomberg Terminal for Space Industry
             </h1>
-            <p className="text-lg text-slate-300 leading-relaxed drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]">
+            <p className="text-lg text-white/70 leading-relaxed drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]">
               Bloomberg Terminal is the gold standard for financial data across all industries. But at
               $25,000/year, is it the right tool for space industry professionals who need satellite tracking,
               launch data, procurement intelligence, and orbital analytics? Here is how SpaceNexus compares.
@@ -87,8 +87,8 @@ export default function BloombergComparisonPage() {
           <div className="card p-6 mb-10 border-l-4 border-white/15">
             <h2 className="text-lg font-bold text-white mb-2">TL;DR</h2>
             <p className="text-slate-400 text-sm leading-relaxed">
-              <strong className="text-slate-300">Bloomberg Terminal</strong> excels at deep financial data across
-              all markets and has an unmatched trading ecosystem. <strong className="text-slate-300">SpaceNexus</strong> is
+              <strong className="text-white/70">Bloomberg Terminal</strong> excels at deep financial data across
+              all markets and has an unmatched trading ecosystem. <strong className="text-white/70">SpaceNexus</strong> is
               purpose-built for the space industry, offering satellite tracking, launch monitoring, procurement
               intelligence, orbital data, and 200+ company profiles at a fraction of the cost. If you need
               space-specific intelligence, SpaceNexus is the better tool. If you need broad financial market
@@ -105,18 +105,18 @@ export default function BloombergComparisonPage() {
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="card p-6 ring-2 ring-white/15">
-                <div className="text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">SpaceNexus</div>
+                <div className="text-xs font-semibold text-white/70 uppercase tracking-wider mb-2">SpaceNexus</div>
                 <div className="space-y-3">
                   <div className="flex justify-between items-baseline">
-                    <span className="text-slate-300 font-medium">Explorer</span>
-                    <span className="text-2xl font-bold text-slate-300">Free</span>
+                    <span className="text-white/70 font-medium">Explorer</span>
+                    <span className="text-2xl font-bold text-white/70">Free</span>
                   </div>
                   <div className="flex justify-between items-baseline">
-                    <span className="text-slate-300 font-medium">Professional</span>
+                    <span className="text-white/70 font-medium">Professional</span>
                     <span className="text-xl font-bold text-white">$29<span className="text-sm text-slate-400 font-normal">/mo</span></span>
                   </div>
                   <div className="flex justify-between items-baseline">
-                    <span className="text-slate-300 font-medium">Enterprise</span>
+                    <span className="text-white/70 font-medium">Enterprise</span>
                     <span className="text-xl font-bold text-white">$99<span className="text-sm text-slate-400 font-normal">/mo</span></span>
                   </div>
                 </div>
@@ -126,11 +126,11 @@ export default function BloombergComparisonPage() {
                 <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Bloomberg Terminal</div>
                 <div className="space-y-3">
                   <div className="flex justify-between items-baseline">
-                    <span className="text-slate-300 font-medium">Single User</span>
+                    <span className="text-white/70 font-medium">Single User</span>
                     <span className="text-2xl font-bold text-white">$25,000<span className="text-sm text-slate-400 font-normal">/yr</span></span>
                   </div>
                   <div className="flex justify-between items-baseline">
-                    <span className="text-slate-300 font-medium">Additional Seats</span>
+                    <span className="text-white/70 font-medium">Additional Seats</span>
                     <span className="text-xl font-bold text-white">$20,000<span className="text-sm text-slate-400 font-normal">/yr each</span></span>
                   </div>
                 </div>
@@ -156,16 +156,16 @@ export default function BloombergComparisonPage() {
             <div className="card overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-slate-700">
-                    <th className="py-4 px-4 text-left text-slate-300 font-semibold">Feature</th>
-                    <th className="py-4 px-4 text-left text-slate-300 font-semibold">SpaceNexus</th>
-                    <th className="py-4 px-4 text-left text-slate-300 font-semibold">Bloomberg Terminal</th>
+                  <tr className="border-b border-white/[0.08]">
+                    <th className="py-4 px-4 text-left text-white/70 font-semibold">Feature</th>
+                    <th className="py-4 px-4 text-left text-white/70 font-semibold">SpaceNexus</th>
+                    <th className="py-4 px-4 text-left text-white/70 font-semibold">Bloomberg Terminal</th>
                   </tr>
                 </thead>
                 <tbody>
                   {FEATURE_COMPARISON.map((row) => (
                     <tr key={row.feature} className="border-b border-slate-100">
-                      <td className="py-3 px-4 text-slate-300 font-medium">{row.feature}</td>
+                      <td className="py-3 px-4 text-white/70 font-medium">{row.feature}</td>
                       <td className="py-3 px-4 text-slate-500">
                         <div className="flex items-start gap-2">
                           {row.winner === 'spacenexus' && (
@@ -198,7 +198,7 @@ export default function BloombergComparisonPage() {
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="card p-6">
-                <h3 className="text-lg font-semibold text-slate-300 mb-4">Choose SpaceNexus if you:</h3>
+                <h3 className="text-lg font-semibold text-white/70 mb-4">Choose SpaceNexus if you:</h3>
                 <ul className="space-y-3">
                   {[
                     'Need space-specific data: launches, satellites, orbital slots, spectrum',
@@ -211,14 +211,14 @@ export default function BloombergComparisonPage() {
                     'Need regulatory tracking for FCC, ITU, and space law',
                   ].map((item) => (
                     <li key={item} className="flex items-start gap-2 text-sm text-slate-400">
-                      <span className="text-slate-300 mt-0.5 flex-shrink-0">&#9656;</span>
+                      <span className="text-white/70 mt-0.5 flex-shrink-0">&#9656;</span>
                       <span>{item}</span>
                     </li>
                   ))}
                 </ul>
               </div>
               <div className="card p-6">
-                <h3 className="text-lg font-semibold text-slate-300 mb-4">Choose Bloomberg Terminal if you:</h3>
+                <h3 className="text-lg font-semibold text-white/70 mb-4">Choose Bloomberg Terminal if you:</h3>
                 <ul className="space-y-3">
                   {[
                     'Need deep financial data across all markets (equities, bonds, FX)',
@@ -263,9 +263,9 @@ export default function BloombergComparisonPage() {
                   { title: 'Free tier available', desc: 'Start exploring space industry data immediately with no credit card, no sales call, and no 2-year contract. Upgrade when you need more.' },
                 ].map((item) => (
                   <li key={item.title} className="flex items-start gap-3">
-                    <span className="text-slate-300 mt-1 flex-shrink-0 font-bold">&#10003;</span>
+                    <span className="text-white/70 mt-1 flex-shrink-0 font-bold">&#10003;</span>
                     <div>
-                      <strong className="text-slate-300">{item.title}:</strong>{' '}
+                      <strong className="text-white/70">{item.title}:</strong>{' '}
                       <span className="text-slate-400 text-sm">{item.desc}</span>
                     </div>
                   </li>
@@ -296,7 +296,7 @@ export default function BloombergComparisonPage() {
                   'An AI copilot that understands space industry terminology and relationships',
                 ].map((item) => (
                   <li key={item} className="flex items-start gap-2 text-sm text-slate-400">
-                    <span className="text-slate-300 mt-0.5 flex-shrink-0">&#9656;</span>
+                    <span className="text-white/70 mt-0.5 flex-shrink-0">&#9656;</span>
                     <span>{item}</span>
                   </li>
                 ))}
@@ -330,7 +330,7 @@ export default function BloombergComparisonPage() {
 
           {/* Back Link */}
           <div className="text-center">
-            <Link href="/compare" className="text-slate-300 hover:text-white text-sm transition-colors">
+            <Link href="/compare" className="text-white/70 hover:text-white text-sm transition-colors">
               &larr; Back to all comparisons
             </Link>
           </div>

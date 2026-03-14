@@ -108,7 +108,7 @@ function PercentileBar({
       </div>
 
       {/* Bar */}
-      <div className="relative h-4 bg-slate-700/40 rounded-full overflow-hidden">
+      <div className="relative h-4 bg-white/[0.06] rounded-full overflow-hidden">
         {/* Full range background */}
         <div
           className="absolute h-full rounded-full"
@@ -216,7 +216,7 @@ function RoleCard({
   const adjMedian = Math.round(displayRange.median * locationMultiplier);
 
   return (
-    <div className="card p-5 hover:border-slate-600/70">
+    <div className="card p-5 hover:border-white/[0.1]">
       <div className="flex items-start justify-between mb-3">
         <div className="flex-1 min-w-0">
           <h3 className="font-semibold text-white text-base">{role.title}</h3>
@@ -251,12 +251,12 @@ function RoleCard({
       {/* Skills */}
       <div className="flex flex-wrap gap-1.5 mt-3 mb-3">
         {role.skills.slice(0, expanded ? undefined : 3).map((skill) => (
-          <span key={skill} className="text-xs px-2 py-0.5 rounded bg-slate-700/50 text-slate-400">
+          <span key={skill} className="text-xs px-2 py-0.5 rounded bg-white/[0.06] text-slate-400">
             {skill}
           </span>
         ))}
         {!expanded && role.skills.length > 3 && (
-          <span className="text-xs px-2 py-0.5 rounded bg-slate-700/30 text-slate-500">+{role.skills.length - 3}</span>
+          <span className="text-xs px-2 py-0.5 rounded bg-white/[0.04] text-slate-500">+{role.skills.length - 3}</span>
         )}
       </div>
 
@@ -266,26 +266,26 @@ function RoleCard({
       </button>
 
       {expanded && (
-        <div className="mt-3 pt-3 border-t border-slate-700/50 space-y-3">
+        <div className="mt-3 pt-3 border-t border-white/[0.06] space-y-3">
           {/* Experience Level Breakdown */}
           <div>
             <h4 className="text-xs font-medium text-slate-400 mb-2">Salary by Experience</h4>
             <div className="grid grid-cols-3 gap-2">
-              <div className="bg-slate-700/30 rounded-lg p-2 text-center">
+              <div className="bg-white/[0.04] rounded-lg p-2 text-center">
                 <div className="text-xs text-slate-500 mb-1">Junior (0-3 yr)</div>
                 <div className="text-sm font-medium text-slate-300">
                   {formatSalary(Math.round(role.experienceLevels.junior.min * locationMultiplier))} -{' '}
                   {formatSalary(Math.round(role.experienceLevels.junior.max * locationMultiplier))}
                 </div>
               </div>
-              <div className="bg-slate-700/30 rounded-lg p-2 text-center">
+              <div className="bg-white/[0.04] rounded-lg p-2 text-center">
                 <div className="text-xs text-slate-500 mb-1">Mid (3-7 yr)</div>
                 <div className="text-sm font-medium text-slate-300">
                   {formatSalary(Math.round(role.experienceLevels.mid.min * locationMultiplier))} -{' '}
                   {formatSalary(Math.round(role.experienceLevels.mid.max * locationMultiplier))}
                 </div>
               </div>
-              <div className="bg-slate-700/30 rounded-lg p-2 text-center">
+              <div className="bg-white/[0.04] rounded-lg p-2 text-center">
                 <div className="text-xs text-slate-500 mb-1">Senior (7+ yr)</div>
                 <div className="text-sm font-medium text-slate-300">
                   {formatSalary(Math.round(role.experienceLevels.senior.min * locationMultiplier))} -{' '}
@@ -302,7 +302,7 @@ function RoleCard({
               {LOCATION_MODIFIERS.slice(0, 4).map((loc) => {
                 const adjusted = applyLocationModifier(displayRange.median, loc.id);
                 return (
-                  <div key={loc.id} className="bg-slate-700/20 rounded-lg px-2 py-1.5 text-center">
+                  <div key={loc.id} className="bg-white/[0.04] rounded-lg px-2 py-1.5 text-center">
                     <div className="text-[10px] text-slate-500">{loc.shortLabel}</div>
                     <div className="text-xs font-medium text-slate-300">{formatSalary(adjusted)}</div>
                     <div className={`text-[9px] ${loc.multiplier >= 1 ? 'text-green-500' : 'text-yellow-500'}`}>
@@ -320,7 +320,7 @@ function RoleCard({
             <h4 className="text-xs font-medium text-slate-400 mb-2">Top Paying Companies</h4>
             <div className="flex flex-wrap gap-1.5">
               {role.topCompanies.map((company) => (
-                <span key={company} className="text-xs px-2 py-0.5 rounded bg-white/5 text-slate-200">
+                <span key={company} className="text-xs px-2 py-0.5 rounded bg-white/5 text-white/90">
                   {company}
                 </span>
               ))}
@@ -332,7 +332,7 @@ function RoleCard({
             <h4 className="text-xs font-medium text-slate-400 mb-2">Available In</h4>
             <div className="flex gap-2">
               {role.locations.map((loc) => (
-                <span key={loc} className="text-xs px-2 py-0.5 rounded bg-slate-700/50 text-slate-400">
+                <span key={loc} className="text-xs px-2 py-0.5 rounded bg-white/[0.06] text-slate-400">
                   {loc === 'US' ? 'United States' : loc === 'EU' ? 'Europe' : 'Remote'}
                 </span>
               ))}
@@ -344,7 +344,7 @@ function RoleCard({
             <h4 className="text-xs font-medium text-slate-400 mb-2">Key Skills</h4>
             <div className="flex flex-wrap gap-1.5">
               {role.skills.map((skill) => (
-                <span key={skill} className="text-xs px-2 py-0.5 rounded bg-slate-700/50 text-slate-400">
+                <span key={skill} className="text-xs px-2 py-0.5 rounded bg-white/[0.06] text-slate-400">
                   {skill}
                 </span>
               ))}
@@ -381,7 +381,7 @@ function CompanyCard({ comp }: { comp: (typeof COMPANY_COMPENSATIONS)[0] }) {
   const multiplierColor = comp.baseSalaryMultiplier >= 1 ? 'text-green-400' : 'text-yellow-400';
 
   return (
-    <div className="card p-5 hover:border-slate-600/70">
+    <div className="card p-5 hover:border-white/[0.1]">
       <div className="flex items-start justify-between mb-3">
         <div>
           <Link
@@ -459,7 +459,7 @@ function LocationModifierSection({
               className={`text-center px-2 py-2 rounded-lg border transition-all text-xs ${
                 isSelected
                   ? 'bg-white/10 border-white/15 text-slate-900'
-                  : 'bg-slate-700/30 border-slate-700/50 text-slate-400 hover:border-slate-600 hover:text-slate-300'
+                  : 'bg-white/[0.04] border-white/[0.06] text-slate-400 hover:border-white/[0.1] hover:text-slate-300'
               }`}
               title={loc.description}
             >
@@ -654,12 +654,12 @@ function SalaryBenchmarksContent() {
             className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
               activeView === tab.id
                 ? 'bg-white text-slate-900 shadow-lg shadow-black/15'
-                : 'bg-slate-800/50 text-slate-400 hover:bg-slate-700/50 hover:text-white'
+                : 'bg-white/[0.04] text-slate-400 hover:bg-white/[0.06] hover:text-white'
             }`}
           >
             {tab.label}
             {tab.count !== null && (
-              <span className={`text-xs px-1.5 py-0.5 rounded-full ${activeView === tab.id ? 'bg-white/20' : 'bg-slate-700/50'}`}>
+              <span className={`text-xs px-1.5 py-0.5 rounded-full ${activeView === tab.id ? 'bg-white/20' : 'bg-white/[0.06]'}`}>
                 {tab.count}
               </span>
             )}
@@ -696,7 +696,7 @@ function SalaryBenchmarksContent() {
                     setSearchQuery(e.target.value);
                     updateUrl({ search: e.target.value || null });
                   }}
-                  className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+                  className="w-full bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
                 />
               </div>
               <select
@@ -707,7 +707,7 @@ function SalaryBenchmarksContent() {
                   setExperienceLevel(val);
                   updateUrl({ experience: val === 'all' ? null : val });
                 }}
-                className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+                className="bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
               >
                 <option value="all">All Experience Levels</option>
                 <option value="junior">Junior (0-3 years)</option>
@@ -722,7 +722,7 @@ function SalaryBenchmarksContent() {
                   setLocationFilter(val);
                   updateUrl({ location: val || null });
                 }}
-                className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+                className="bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
               >
                 <option value="">All Regions</option>
                 <option value="US">United States</option>
@@ -739,7 +739,7 @@ function SalaryBenchmarksContent() {
                   updateUrl({ category: null });
                 }}
                 className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                  activeCategory === '' ? 'bg-white text-slate-900' : 'bg-slate-700/50 text-slate-400 hover:text-slate-900'
+                  activeCategory === '' ? 'bg-white text-slate-900' : 'bg-white/[0.06] text-slate-400 hover:text-slate-900'
                 }`}
               >
                 All ({SALARY_ROLES.length})
@@ -757,7 +757,7 @@ function SalaryBenchmarksContent() {
                     className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
                       activeCategory === cat.id
                         ? `${colors.bg} ${colors.text} border ${colors.border}`
-                        : 'bg-slate-700/50 text-slate-400 hover:text-white'
+                        : 'bg-white/[0.06] text-slate-400 hover:text-white'
                     }`}
                   >
                     {cat.label} ({count})
@@ -777,7 +777,7 @@ function SalaryBenchmarksContent() {
           {/* Location adjustment notice */}
           {metroLocation && (
             <div className="mb-4 bg-white/5 border border-white/10 rounded-lg px-4 py-2">
-              <p className="text-slate-200 text-xs">
+              <p className="text-white/90 text-xs">
                 Salaries adjusted for{' '}
                 <strong>{LOCATION_MODIFIERS.find((l) => l.id === metroLocation)?.label}</strong> (
                 {locationMultiplier >= 1 ? '+' : ''}
@@ -828,7 +828,7 @@ function SalaryBenchmarksContent() {
             <div className="w-full" style={{ height: 400 }}>
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={chartData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.08)" />
                   <XAxis dataKey="name" tick={{ fill: '#94a3b8', fontSize: 12 }} />
                   <YAxis
                     tick={{ fill: '#94a3b8', fontSize: 12 }}
@@ -836,8 +836,8 @@ function SalaryBenchmarksContent() {
                   />
                   <Tooltip
                     contentStyle={{
-                      backgroundColor: '#1e293b',
-                      border: '1px solid #475569',
+                      backgroundColor: 'rgba(10,10,10,0.9)',
+                      border: '1px solid rgba(255,255,255,0.1)',
                       borderRadius: '8px',
                       color: '#f1f5f9',
                     }}
@@ -847,7 +847,7 @@ function SalaryBenchmarksContent() {
                     ]}
                   />
                   <Legend wrapperStyle={{ color: '#94a3b8' }} />
-                  <Bar dataKey="min" name="Min" fill="#475569" radius={[2, 2, 0, 0]} />
+                  <Bar dataKey="min" name="Min" fill="rgba(255,255,255,0.1)" radius={[2, 2, 0, 0]} />
                   <Bar dataKey="median" name="Median" fill="#22d3ee" radius={[2, 2, 0, 0]} />
                   <Bar dataKey="max" name="Max" fill="#6366f1" radius={[2, 2, 0, 0]} />
                 </BarChart>
@@ -864,7 +864,7 @@ function SalaryBenchmarksContent() {
             <div className="w-full" style={{ height: 400 }}>
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={companyChartData} layout="vertical" margin={{ top: 5, right: 30, left: 100, bottom: 5 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.08)" />
                   <XAxis
                     type="number"
                     domain={[80, 115]}
@@ -874,8 +874,8 @@ function SalaryBenchmarksContent() {
                   <YAxis type="category" dataKey="name" tick={{ fill: '#94a3b8', fontSize: 11 }} width={95} />
                   <Tooltip
                     contentStyle={{
-                      backgroundColor: '#1e293b',
-                      border: '1px solid #475569',
+                      backgroundColor: 'rgba(10,10,10,0.9)',
+                      border: '1px solid rgba(255,255,255,0.1)',
                       borderRadius: '8px',
                       color: '#f1f5f9',
                     }}
@@ -894,7 +894,7 @@ function SalaryBenchmarksContent() {
                 </BarChart>
               </ResponsiveContainer>
             </div>
-            <div className="mt-4 p-3 bg-slate-700/30 rounded-lg">
+            <div className="mt-4 p-3 bg-white/[0.04] rounded-lg">
               <p className="text-slate-400 text-xs">
                 Note: Base salary is only one component of total compensation. Companies with lower base salaries (like SpaceX)
                 often compensate with significant equity grants. Government positions (NASA/JPL) offer lower base but exceptional
@@ -934,14 +934,14 @@ function SalaryBenchmarksContent() {
       {/* FAQ SECTION                                                        */}
       {/* ================================================================= */}
       <ScrollReveal>
-      <div className="mt-12 pt-8 border-t border-slate-700/50">
+      <div className="mt-12 pt-8 border-t border-white/[0.06]">
         <h2 className="text-xl font-bold text-white mb-6">Frequently Asked Questions</h2>
         <div className="space-y-3">
           {SALARY_FAQS.map((faq, index) => (
             <div key={index} className="card overflow-hidden">
               <button
                 onClick={() => setFaqOpen(faqOpen === index ? null : index)}
-                className="w-full text-left px-5 py-4 flex items-center justify-between hover:bg-slate-700/30 transition-colors"
+                className="w-full text-left px-5 py-4 flex items-center justify-between hover:bg-white/[0.04] transition-colors"
               >
                 <h3 className="font-medium text-white text-sm pr-4">{faq.question}</h3>
                 <svg
@@ -966,7 +966,7 @@ function SalaryBenchmarksContent() {
 
       {/* ---- RELATED RESOURCES ---- */}
       <ScrollReveal delay={0.1}>
-      <div className="mt-8 pt-8 border-t border-slate-700/50">
+      <div className="mt-8 pt-8 border-t border-white/[0.06]">
         <h3 className="text-slate-400 text-sm font-medium mb-4">Related Resources</h3>
         <div className="flex flex-wrap gap-3">
           <Link

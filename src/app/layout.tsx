@@ -8,7 +8,7 @@ import DataInitializer from '@/components/DataInitializer';
 import MobileTabBar from '@/components/mobile/MobileTabBar';
 import StructuredData from '@/components/StructuredData';
 import dynamic from 'next/dynamic';
-const Starfield = dynamic(() => import('@/components/Starfield'), { ssr: false });
+// Starfield removed in V2 redesign — true black background needs no decoration
 const Footer = dynamic(() => import('@/components/Footer'), { ssr: false });
 const QuickAccessSidebar = dynamic(() => import('@/components/QuickAccessSidebar'), { ssr: false });
 const SearchCommandPalette = dynamic(() => import('@/components/SearchCommandPalette'), { ssr: false });
@@ -141,8 +141,8 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#ffffff' },
-    { media: '(prefers-color-scheme: dark)', color: '#0f172a' },
+    { media: '(prefers-color-scheme: light)', color: '#000000' },
+    { media: '(prefers-color-scheme: dark)', color: '#000000' },
   ],
   width: 'device-width',
   initialScale: 1,
@@ -159,8 +159,6 @@ export default function RootLayout({
     <html lang="en">
       <head>
         <meta name="color-scheme" content="dark light" />
-        {/* Preload hero poster image for faster LCP on homepage */}
-        <link rel="preload" as="image" href="/SpaceNexus%20background.jpg" />
         <link rel="preconnect" href="https://ll.thespacedevs.com" />
         <link rel="dns-prefetch" href="https://ll.thespacedevs.com" />
         <link rel="preconnect" href="https://celestrak.org" />
@@ -181,7 +179,7 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-title" content="SpaceNexus" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="application-name" content="SpaceNexus" />
-        <meta name="msapplication-TileColor" content="#0f172a" />
+        <meta name="msapplication-TileColor" content="#000000" />
         <meta name="msapplication-config" content="/browserconfig.xml" />
         {/* iOS splash screen / startup images */}
         <meta name="apple-touch-fullscreen" content="yes" />
@@ -203,7 +201,7 @@ export default function RootLayout({
           />
         )}
       </head>
-      <body className={`${inter.className} ${orbitron.variable}`}>
+      <body className={inter.className}>
         <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[9999] focus:bg-white focus:text-slate-900 focus:px-4 focus:py-2 focus:rounded-lg focus:outline-none">
           Skip to main content
         </a>
@@ -213,7 +211,6 @@ export default function RootLayout({
         <AuthProvider>
           <SubscriptionProvider>
             <DataInitializer />
-            <Starfield />
             <div className="relative z-10 min-h-screen flex flex-col">
               <AnnouncementBanner />
               <Navigation />

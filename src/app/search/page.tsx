@@ -240,11 +240,11 @@ function NewsResultCard({ item }: { item: NewsResult }) {
           </svg>
         </div>
         <div className="flex-1 min-w-0">
-          <h3 className="text-slate-100 font-medium group-hover:text-white transition-colors line-clamp-1">
+          <h3 className="text-white font-medium group-hover:text-white transition-colors line-clamp-1">
             {item.title}
           </h3>
           {item.snippet ? (
-            <p className="text-star-300 text-sm mt-1 line-clamp-2 [&_mark]:bg-white/10 [&_mark]:text-slate-200 [&_mark]:rounded-sm [&_mark]:px-0.5">
+            <p className="text-star-300 text-sm mt-1 line-clamp-2 [&_mark]:bg-white/10 [&_mark]:text-white/90 [&_mark]:rounded-sm [&_mark]:px-0.5">
               <HighlightedText html={item.snippet} fallback={item.summary || ''} />
             </p>
           ) : item.summary ? (
@@ -284,7 +284,7 @@ function EventResultCard({ item }: { item: EventResult }) {
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
-            <h3 className="text-slate-100 font-medium group-hover:text-white transition-colors line-clamp-1">
+            <h3 className="text-white font-medium group-hover:text-white transition-colors line-clamp-1">
               {item.name}
             </h3>
             <span className={`text-xs px-1.5 py-0.5 rounded font-medium ${
@@ -298,7 +298,7 @@ function EventResultCard({ item }: { item: EventResult }) {
             </span>
           </div>
           {item.snippet ? (
-            <p className="text-star-300 text-sm mt-1 line-clamp-2 [&_mark]:bg-white/10 [&_mark]:text-slate-200 [&_mark]:rounded-sm [&_mark]:px-0.5">
+            <p className="text-star-300 text-sm mt-1 line-clamp-2 [&_mark]:bg-white/10 [&_mark]:text-white/90 [&_mark]:rounded-sm [&_mark]:px-0.5">
               <HighlightedText html={item.snippet} fallback={item.description || ''} />
             </p>
           ) : item.description ? (
@@ -334,11 +334,11 @@ function OpportunityResultCard({ item }: { item: OpportunityResult }) {
           </svg>
         </div>
         <div className="flex-1 min-w-0">
-          <h3 className="text-slate-100 font-medium group-hover:text-white transition-colors line-clamp-1">
+          <h3 className="text-white font-medium group-hover:text-white transition-colors line-clamp-1">
             {item.title}
           </h3>
           {item.snippet ? (
-            <p className="text-star-300 text-sm mt-1 line-clamp-2 [&_mark]:bg-white/10 [&_mark]:text-slate-200 [&_mark]:rounded-sm [&_mark]:px-0.5">
+            <p className="text-star-300 text-sm mt-1 line-clamp-2 [&_mark]:bg-white/10 [&_mark]:text-white/90 [&_mark]:rounded-sm [&_mark]:px-0.5">
               <HighlightedText html={item.snippet} fallback={item.description || ''} />
             </p>
           ) : item.description ? (
@@ -376,11 +376,11 @@ function BlogResultCard({ item }: { item: BlogResult }) {
           </svg>
         </div>
         <div className="flex-1 min-w-0">
-          <h3 className="text-slate-100 font-medium group-hover:text-white transition-colors line-clamp-1">
+          <h3 className="text-white font-medium group-hover:text-white transition-colors line-clamp-1">
             {item.title}
           </h3>
           {item.snippet ? (
-            <p className="text-star-300 text-sm mt-1 line-clamp-2 [&_mark]:bg-white/10 [&_mark]:text-slate-200 [&_mark]:rounded-sm [&_mark]:px-0.5">
+            <p className="text-star-300 text-sm mt-1 line-clamp-2 [&_mark]:bg-white/10 [&_mark]:text-white/90 [&_mark]:rounded-sm [&_mark]:px-0.5">
               <HighlightedText html={item.snippet} fallback={item.excerpt || ''} />
             </p>
           ) : item.excerpt ? (
@@ -424,7 +424,7 @@ function ModuleGroup({
         <h2 className={`text-sm font-semibold uppercase tracking-wider ${color}`}>
           {label}
         </h2>
-        <span className="text-xs px-2 py-0.5 rounded-full bg-slate-700/60 text-star-300 border border-slate-600/40">
+        <span className="text-xs px-2 py-0.5 rounded-full bg-white/[0.06] text-star-300 border border-white/[0.06]">
           {count} {count === 1 ? 'result' : 'results'}
         </span>
       </div>
@@ -633,7 +633,7 @@ function SearchContent() {
           onChange={(e) => setQuery(e.target.value)}
           aria-label="Search across news, companies, events, opportunities, and blogs"
           placeholder="Search across news, companies, events, opportunities, and blogs..."
-          className="w-full pl-14 pr-12 py-4 text-lg bg-slate-800/60 border border-white/10 rounded-2xl text-slate-100 placeholder-star-400 focus:outline-none focus:border-white/10 focus:ring-2 focus:ring-white/20 transition-all"
+          className="w-full pl-14 pr-12 py-4 text-lg bg-white/[0.06] border border-white/10 rounded-2xl text-white placeholder-star-400 focus:outline-none focus:border-white/10 focus:ring-2 focus:ring-white/20 transition-all"
         />
         {loading && (
           <div className="absolute inset-y-0 right-0 flex items-center pr-5">
@@ -643,7 +643,7 @@ function SearchContent() {
         {!loading && query && (
           <button
             onClick={() => setQuery('')}
-            className="absolute inset-y-0 right-0 flex items-center pr-5 text-star-300 hover:text-slate-200 transition-colors"
+            className="absolute inset-y-0 right-0 flex items-center pr-5 text-star-300 hover:text-white/90 transition-colors"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -708,7 +708,7 @@ function SearchContent() {
                 <button
                   key={q}
                   onClick={() => setQuery(q)}
-                  className="text-xs px-2.5 py-1 rounded-full bg-slate-700/40 text-star-300 border border-slate-600/30 hover:border-purple-500/30 transition-all"
+                  className="text-xs px-2.5 py-1 rounded-full bg-white/[0.04] text-star-300 border border-white/[0.06] hover:border-purple-500/30 transition-all"
                 >
                   {q}
                 </button>
@@ -731,8 +731,8 @@ function SearchContent() {
             onClick={() => setFilterOpen(!filterOpen)}
             className={`lg:hidden flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all ${
               filterOpen
-                ? 'bg-white/5 text-slate-200 border border-white/10'
-                : 'bg-slate-800/60 text-star-300 border border-slate-600/40 hover:border-white/10'
+                ? 'bg-white/5 text-white/90 border border-white/10'
+                : 'bg-white/[0.06] text-star-300 border border-white/[0.06] hover:border-white/10'
             }`}
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -763,7 +763,7 @@ function SearchContent() {
             id="sort-select"
             value={sortOption}
             onChange={(e) => setSortOption(e.target.value as SortOption)}
-            className="bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+            className="bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
           >
             {SORT_OPTIONS.map((opt) => (
               <option key={opt.value} value={opt.value}>
@@ -799,7 +799,7 @@ function SearchContent() {
                     className={`flex items-center gap-3 p-2.5 rounded-xl cursor-pointer transition-all ${
                       selectedModules.has(key)
                         ? 'bg-white/5 border border-white/10'
-                        : 'border border-transparent hover:bg-slate-700/30'
+                        : 'border border-transparent hover:bg-white/[0.06]'
                     }`}
                   >
                     <input
@@ -841,7 +841,7 @@ function SearchContent() {
                     type="date"
                     value={dateFrom}
                     onChange={(e) => setDateFrom(e.target.value)}
-                    className="w-full bg-slate-800/60 border border-slate-600/40 rounded-xl px-3 py-2 text-sm text-star-200 focus:outline-none focus:border-white/10 focus:ring-1 focus:ring-white/20 transition-all"
+                    className="w-full bg-white/[0.06] border border-white/[0.06] rounded-xl px-3 py-2 text-sm text-star-200 focus:outline-none focus:border-white/10 focus:ring-1 focus:ring-white/20 transition-all"
                   />
                 </div>
                 <div>
@@ -851,7 +851,7 @@ function SearchContent() {
                     type="date"
                     value={dateTo}
                     onChange={(e) => setDateTo(e.target.value)}
-                    className="w-full bg-slate-800/60 border border-slate-600/40 rounded-xl px-3 py-2 text-sm text-star-200 focus:outline-none focus:border-white/10 focus:ring-1 focus:ring-white/20 transition-all"
+                    className="w-full bg-white/[0.06] border border-white/[0.06] rounded-xl px-3 py-2 text-sm text-star-200 focus:outline-none focus:border-white/10 focus:ring-1 focus:ring-white/20 transition-all"
                   />
                 </div>
               </div>
@@ -861,7 +861,7 @@ function SearchContent() {
             {hasActiveFilters && (
               <button
                 onClick={clearFilters}
-                className="w-full py-2 text-sm text-star-300 hover:text-white border border-slate-600/40 rounded-xl hover:border-white/10 transition-all"
+                className="w-full py-2 text-sm text-star-300 hover:text-white border border-white/[0.06] rounded-xl hover:border-white/10 transition-all"
               >
                 Clear All Filters
               </button>
@@ -895,7 +895,7 @@ function SearchContent() {
                   <button
                     key={suggestion}
                     onClick={() => setQuery(suggestion)}
-                    className="px-4 py-1.5 text-sm rounded-full bg-slate-700/40 text-star-300 border border-slate-600/40 hover:border-white/10 hover:text-white transition-all"
+                    className="px-4 py-1.5 text-sm rounded-full bg-white/[0.06] text-star-300 border border-white/[0.06] hover:border-white/10 hover:text-white transition-all"
                   >
                     {suggestion}
                   </button>
@@ -917,14 +917,14 @@ function SearchContent() {
                   {hasActiveFilters && (
                     <button
                       onClick={clearFilters}
-                      className="px-4 py-2 text-sm rounded-xl bg-white/5 text-slate-200 border border-white/10 hover:bg-slate-100/20 transition-all"
+                      className="px-4 py-2 text-sm rounded-xl bg-white/5 text-white/90 border border-white/10 hover:bg-white/[0.08] transition-all"
                     >
                       Clear Filters
                     </button>
                   )}
                   <button
                     onClick={() => setQuery('')}
-                    className="px-4 py-2 text-sm rounded-xl bg-slate-700/40 text-star-300 border border-slate-600/40 hover:border-white/10 transition-all"
+                    className="px-4 py-2 text-sm rounded-xl bg-white/[0.06] text-star-300 border border-white/[0.06] hover:border-white/10 transition-all"
                   >
                     Clear Search
                   </button>

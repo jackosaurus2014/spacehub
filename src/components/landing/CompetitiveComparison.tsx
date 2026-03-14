@@ -13,7 +13,7 @@ const FEATURES = [
 ];
 
 function CellValue({ value }: { value: boolean | string }) {
-  if (value === true) return <span className="text-slate-300 font-semibold">Included</span>;
+  if (value === true) return <span className="text-white/70 font-semibold">Included</span>;
   if (value === false) return <span className="text-slate-500">Not available</span>;
   return <span className="text-slate-400">{value}</span>;
 }
@@ -38,19 +38,19 @@ export default function CompetitiveComparison() {
           <div className="card-glass overflow-hidden">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-slate-700/50">
+                <tr className="border-b border-white/[0.06]">
                   <th className="text-left text-slate-400 font-medium p-4 w-[34%]">Feature</th>
                   <th className="text-center text-slate-400 font-medium p-4 w-[22%]">Traditional Consulting</th>
                   <th className="text-center text-slate-400 font-medium p-4 w-[22%]">Bloomberg Terminal</th>
-                  <th className="text-center p-4 w-[22%] bg-white/5 border-x border-white/10 text-slate-200 font-semibold">
+                  <th className="text-center p-4 w-[22%] bg-white/5 border-x border-white/10 text-white/90 font-semibold">
                     SpaceNexus
                   </th>
                 </tr>
               </thead>
               <tbody>
                 {FEATURES.map((row, i) => (
-                  <tr key={i} className="border-b border-slate-800/60 last:border-b-0 hover:bg-white/[0.02] transition-colors duration-150">
-                    <td className="p-4 text-slate-300 font-medium">{row.feature}</td>
+                  <tr key={i} className="border-b border-white/[0.05] last:border-b-0 hover:bg-white/[0.02] transition-colors duration-150">
+                    <td className="p-4 text-white/70 font-medium">{row.feature}</td>
                     <td className="p-4 text-center text-slate-400">{row.consulting}</td>
                     <td className="p-4 text-center"><CellValue value={row.bloomberg} /></td>
                     <td className="p-4 text-center bg-white/5 border-x border-white/10">
@@ -59,12 +59,12 @@ export default function CompetitiveComparison() {
                   </tr>
                 ))}
                 {/* Price row */}
-                <tr className="bg-slate-800/30">
+                <tr className="bg-white/[0.03]">
                   <td className="p-4 text-white font-semibold">Starting Price</td>
-                  <td className="p-4 text-center text-slate-300 font-medium">$5,000/project</td>
-                  <td className="p-4 text-center text-slate-300 font-medium">$2,000+/month</td>
+                  <td className="p-4 text-center text-white/70 font-medium">$5,000/project</td>
+                  <td className="p-4 text-center text-white/70 font-medium">$2,000+/month</td>
                   <td className="p-4 text-center bg-white/5 border-x border-white/10">
-                    <span className="text-2xl font-bold bg-gradient-to-r from-slate-300 to-blue-400 bg-clip-text text-transparent">
+                    <span className="text-2xl font-bold bg-gradient-to-r from-white/70 to-blue-400 bg-clip-text text-transparent">
                       Free
                     </span>
                   </td>
@@ -90,7 +90,7 @@ export default function CompetitiveComparison() {
                     <CellValue value={row.bloomberg} />
                   </div>
                   <div className="flex justify-between border-t border-white/10 pt-2 mt-2">
-                    <span className="text-slate-200 font-medium">SpaceNexus</span>
+                    <span className="text-white/90 font-medium">SpaceNexus</span>
                     <CellValue value={row.spacenexus} />
                   </div>
                 </div>
@@ -101,7 +101,7 @@ export default function CompetitiveComparison() {
           <ScrollReveal delay={FEATURES.length * 0.07}>
             <div className="rounded-xl border border-white/10 bg-white/5 p-4 text-center">
               <p className="text-slate-400 text-sm mb-1">Others start at $2,000-$5,000+</p>
-              <p className="text-3xl font-bold bg-gradient-to-r from-slate-300 to-blue-400 bg-clip-text text-transparent">
+              <p className="text-3xl font-bold bg-gradient-to-r from-white/70 to-blue-400 bg-clip-text text-transparent">
                 SpaceNexus is Free
               </p>
             </div>

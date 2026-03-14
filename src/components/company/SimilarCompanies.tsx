@@ -52,12 +52,12 @@ function getSectorIcon(s: string | null): string {
 
 function getReasonColor(reason: string): string {
   if (reason === 'Competitor') return 'bg-red-500/20 text-red-400';
-  if (reason === 'Same sector') return 'bg-white/10 text-slate-300';
+  if (reason === 'Same sector') return 'bg-white/10 text-white/70';
   if (reason === 'Same subsector') return 'bg-blue-500/20 text-blue-400';
   if (reason.includes('Shared investors')) return 'bg-green-500/20 text-green-400';
   if (reason.includes('shared tags') || reason === 'Shared focus area')
     return 'bg-purple-500/20 text-purple-400';
-  return 'bg-slate-700/50 text-slate-400';
+  return 'bg-white/[0.05] text-slate-400';
 }
 
 // ────────────────────────────────────────
@@ -93,13 +93,13 @@ export default function SimilarCompanies({ companySlug, companyName }: SimilarCo
           {[1, 2, 3].map((i) => (
             <div
               key={i}
-              className="bg-slate-800/30 border border-slate-700/30 rounded-xl p-4 animate-pulse"
+              className="bg-white/[0.03] border border-white/[0.04] rounded-xl p-4 animate-pulse"
             >
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-slate-700" />
+                <div className="w-10 h-10 rounded-lg bg-white/[0.08]" />
                 <div className="flex-1">
-                  <div className="h-4 bg-slate-700 rounded w-24 mb-2" />
-                  <div className="h-3 bg-slate-700/50 rounded w-16" />
+                  <div className="h-4 bg-white/[0.08] rounded w-24 mb-2" />
+                  <div className="h-3 bg-white/[0.05] rounded w-16" />
                 </div>
               </div>
             </div>
@@ -117,7 +117,7 @@ export default function SimilarCompanies({ companySlug, companyName }: SimilarCo
         <h3 className="text-lg font-semibold text-white">
           Similar Companies
         </h3>
-        <span className="text-xs bg-slate-700/50 text-slate-400 px-2 py-0.5 rounded-full">
+        <span className="text-xs bg-white/[0.05] text-slate-400 px-2 py-0.5 rounded-full">
           {companies.length} found
         </span>
       </div>
@@ -130,11 +130,11 @@ export default function SimilarCompanies({ companySlug, companyName }: SimilarCo
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.06 }}
               whileHover={{ scale: 1.02 }}
-              className="bg-slate-800/30 border border-slate-700/30 rounded-xl p-4 cursor-pointer hover:border-white/10 transition-colors h-full"
+              className="bg-white/[0.03] border border-white/[0.04] rounded-xl p-4 cursor-pointer hover:border-white/10 transition-colors h-full"
             >
               <div className="flex items-start gap-3">
                 {/* Logo / Icon */}
-                <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-slate-700 to-slate-800 flex items-center justify-center text-lg flex-shrink-0 border border-slate-600/30">
+                <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-white/[0.08] to-white/[0.06] flex items-center justify-center text-lg flex-shrink-0 border border-white/[0.04]">
                   {company.logoUrl ? (
                     <Image
                       src={company.logoUrl}
@@ -157,7 +157,7 @@ export default function SimilarCompanies({ companySlug, companyName }: SimilarCo
 
                   {/* Sector badge */}
                   {company.sector && (
-                    <span className="text-xs text-slate-300 capitalize">
+                    <span className="text-xs text-white/70 capitalize">
                       {company.sector}
                     </span>
                   )}
@@ -177,8 +177,8 @@ export default function SimilarCompanies({ companySlug, companyName }: SimilarCo
                       company.similarityScore >= 60
                         ? 'bg-emerald-500/20 text-emerald-400'
                         : company.similarityScore >= 30
-                        ? 'bg-white/10 text-slate-300'
-                        : 'bg-slate-700/50 text-slate-400'
+                        ? 'bg-white/10 text-white/70'
+                        : 'bg-white/[0.05] text-slate-400'
                     }`}
                     title={`Similarity score: ${company.similarityScore}`}
                   >

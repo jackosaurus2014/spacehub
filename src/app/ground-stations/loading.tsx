@@ -4,12 +4,12 @@ export default function Loading() {
       <div className="container mx-auto px-4">
         {/* Header skeleton */}
         <div className="mb-8">
-          <div className="h-8 w-56 bg-slate-800 rounded animate-pulse mb-3" />
-          <div className="h-4 w-80 bg-slate-800/60 rounded animate-pulse" />
+          <div className="h-8 w-56 bg-white/[0.06] rounded animate-pulse mb-3" />
+          <div className="h-4 w-80 bg-white/[0.05] rounded animate-pulse" />
         </div>
 
         {/* Map placeholder */}
-        <div className="bg-slate-800/40 rounded-xl animate-pulse mb-8 overflow-hidden">
+        <div className="bg-white/[0.04] rounded-xl animate-pulse mb-8 overflow-hidden">
           <div className="h-80 w-full bg-slate-700/30 flex items-center justify-center">
             <div className="h-12 w-12 bg-slate-700/40 rounded-full" />
           </div>
@@ -17,9 +17,9 @@ export default function Loading() {
 
         {/* Station list */}
         <div className="space-y-4">
-          <div className="h-6 w-40 bg-slate-800 rounded animate-pulse mb-4" />
+          <div className="h-6 w-40 bg-white/[0.06] rounded animate-pulse mb-4" />
           {Array.from({ length: 5 }).map((_, i) => (
-            <div key={i} className="bg-slate-800/40 rounded-xl animate-pulse p-5 flex items-center gap-5">
+            <div key={i} className="bg-white/[0.04] rounded-xl animate-pulse p-5 flex items-center gap-5">
               {/* Status indicator */}
               <div className="h-3 w-3 bg-emerald-500/30 rounded-full flex-shrink-0" />
               {/* Station info */}

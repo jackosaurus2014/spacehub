@@ -141,7 +141,7 @@ export default function InstallPrompt() {
       role="dialog"
       aria-label="Install SpaceNexus application"
     >
-      <div className="bg-slate-900 border-t border-white/10 px-4 py-3 safe-area-bottom">
+      <div className="bg-black border-t border-white/10 px-4 py-3 safe-area-bottom">
         <div className="max-w-lg mx-auto flex items-center gap-3">
           {/* SpaceNexus icon */}
           <div className="flex-shrink-0 w-10 h-10 rounded-lg overflow-hidden border border-white/10">
@@ -163,7 +163,7 @@ export default function InstallPrompt() {
           <div className="flex items-center gap-2 flex-shrink-0">
             <button
               onClick={handleDismiss}
-              className="px-3 py-1.5 text-xs font-medium text-slate-400 hover:text-white rounded-lg hover:bg-slate-700/60 transition-colors"
+              className="px-3 py-1.5 text-xs font-medium text-slate-400 hover:text-white rounded-lg hover:bg-white/[0.07] transition-colors"
               aria-label="Dismiss install prompt"
             >
               Dismiss

@@ -169,7 +169,7 @@ const SPECTRUM_BANDS: SpectrumBand[] = [
     color: '#06b6d4',
     colorBg: 'bg-white/5',
     colorBorder: 'border-white/10',
-    colorText: 'text-slate-300',
+    colorText: 'text-white/70',
     wavelength: '7.5 - 15 cm',
     applications: [
       'NASA deep space communications (S-band up/downlinks)',
@@ -671,7 +671,7 @@ function SpectrumBar({
       </div>
 
       {/* Spectrum bar */}
-      <div className="relative h-16 rounded-lg bg-slate-800/50 border border-slate-700/50 overflow-hidden flex">
+      <div className="relative h-16 rounded-lg bg-white/[0.04] border border-white/[0.06] overflow-hidden flex">
         {bands.map((band) => {
           const widthPct = bandWidthPercent(band.freqStartMHz, band.freqEndMHz);
           const isSelected = selectedBand === band.id;
@@ -689,7 +689,7 @@ function SpectrumBar({
             >
               <span
                 className={`absolute inset-0 flex items-center justify-center text-[11px] font-bold transition-colors ${
-                  isSelected ? 'text-white' : 'text-slate-200'
+                  isSelected ? 'text-white' : 'text-white/90'
                 } group-hover:text-white`}
               >
                 {band.name}
@@ -715,7 +715,7 @@ function SpectrumBar({
             className={`flex items-center gap-1.5 text-xs px-2 py-1 rounded-lg transition-all border ${
               selectedBand === band.id
                 ? `${band.colorBg} ${band.colorBorder} ${band.colorText}`
-                : 'border-transparent text-slate-400 hover:text-slate-200'
+                : 'border-transparent text-slate-400 hover:text-white/90'
             }`}
           >
             <span
@@ -761,13 +761,13 @@ function BandDetailCard({ band }: { band: SpectrumBand }) {
             {formatFreq(band.freqStartMHz)} - {formatFreq(band.freqEndMHz)} | Wavelength: {band.wavelength}
           </p>
         </div>
-        <span className="text-xs px-3 py-1 rounded-full bg-slate-700/50 text-slate-300 border border-slate-600/30">
+        <span className="text-xs px-3 py-1 rounded-full bg-white/[0.06] text-white/70 border border-white/[0.06]">
           {band.regulatoryBody}
         </span>
       </div>
 
       {/* Tab bar */}
-      <div className="flex gap-1 mb-4 border-b border-slate-700/50 pb-0.5">
+      <div className="flex gap-1 mb-4 border-b border-white/[0.06] pb-0.5">
         {tabs.map((tab) => (
           <button
             key={tab.id}
@@ -775,7 +775,7 @@ function BandDetailCard({ band }: { band: SpectrumBand }) {
             className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-colors ${
               activeTab === tab.id
                 ? `${band.colorBg} ${band.colorText} ${band.colorBorder} border border-b-0`
-                : 'text-slate-400 hover:text-slate-200'
+                : 'text-slate-400 hover:text-white/90'
             }`}
           >
             {tab.label}
@@ -787,10 +787,10 @@ function BandDetailCard({ band }: { band: SpectrumBand }) {
       {activeTab === 'overview' && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div>
-            <h4 className="text-sm font-semibold text-slate-200 mb-2">Applications</h4>
+            <h4 className="text-sm font-semibold text-white/90 mb-2">Applications</h4>
             <ul className="space-y-1.5">
               {band.applications.map((app, i) => (
-                <li key={i} className="flex items-start gap-2 text-sm text-slate-300">
+                <li key={i} className="flex items-start gap-2 text-sm text-white/70">
                   <span className={`mt-1.5 w-1.5 h-1.5 rounded-full flex-shrink-0`} style={{ backgroundColor: band.color }} />
                   {app}
                 </li>
@@ -801,7 +801,7 @@ function BandDetailCard({ band }: { band: SpectrumBand }) {
             <h4 className="text-sm font-semibold text-green-400 mb-2">Advantages</h4>
             <ul className="space-y-1.5 mb-4">
               {band.advantages.map((adv, i) => (
-                <li key={i} className="flex items-start gap-2 text-sm text-slate-300">
+                <li key={i} className="flex items-start gap-2 text-sm text-white/70">
                   <svg className="w-4 h-4 text-green-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
@@ -812,7 +812,7 @@ function BandDetailCard({ band }: { band: SpectrumBand }) {
             <h4 className="text-sm font-semibold text-red-400 mb-2">Disadvantages</h4>
             <ul className="space-y-1.5">
               {band.disadvantages.map((dis, i) => (
-                <li key={i} className="flex items-start gap-2 text-sm text-slate-300">
+                <li key={i} className="flex items-start gap-2 text-sm text-white/70">
                   <svg className="w-4 h-4 text-red-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                   </svg>
@@ -822,7 +822,7 @@ function BandDetailCard({ band }: { band: SpectrumBand }) {
             </ul>
           </div>
           <div>
-            <h4 className="text-sm font-semibold text-slate-200 mb-2">Key Operators</h4>
+            <h4 className="text-sm font-semibold text-white/90 mb-2">Key Operators</h4>
             <div className="flex flex-wrap gap-2">
               {band.keyOperators.map((op, i) => (
                 <span
@@ -835,8 +835,8 @@ function BandDetailCard({ band }: { band: SpectrumBand }) {
             </div>
           </div>
           <div>
-            <h4 className="text-sm font-semibold text-slate-200 mb-2">Rain Fade Characteristics</h4>
-            <p className="text-sm text-slate-300">{band.rainFade}</p>
+            <h4 className="text-sm font-semibold text-white/90 mb-2">Rain Fade Characteristics</h4>
+            <p className="text-sm text-white/70">{band.rainFade}</p>
           </div>
         </div>
       )}
@@ -844,7 +844,7 @@ function BandDetailCard({ band }: { band: SpectrumBand }) {
       {activeTab === 'link-budget' && (
         <div className="space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="bg-slate-800/40 rounded-xl p-4 border border-slate-700/30">
+            <div className="bg-white/[0.04] rounded-xl p-4 border border-white/[0.04]">
               <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-1">
                 Free Space Path Loss (LEO ~500 km)
               </h4>
@@ -852,7 +852,7 @@ function BandDetailCard({ band }: { band: SpectrumBand }) {
                 {band.linkBudget.freeSpacePathLossLEO}
               </p>
             </div>
-            <div className="bg-slate-800/40 rounded-xl p-4 border border-slate-700/30">
+            <div className="bg-white/[0.04] rounded-xl p-4 border border-white/[0.04]">
               <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-1">
                 Free Space Path Loss (GEO ~35,786 km)
               </h4>
@@ -860,7 +860,7 @@ function BandDetailCard({ band }: { band: SpectrumBand }) {
                 {band.linkBudget.freeSpacePathLossGEO}
               </p>
             </div>
-            <div className="bg-slate-800/40 rounded-xl p-4 border border-slate-700/30">
+            <div className="bg-white/[0.04] rounded-xl p-4 border border-white/[0.04]">
               <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-1">
                 Typical Antenna Size
               </h4>
@@ -868,7 +868,7 @@ function BandDetailCard({ band }: { band: SpectrumBand }) {
                 {band.linkBudget.typicalAntennaSize}
               </p>
             </div>
-            <div className="bg-slate-800/40 rounded-xl p-4 border border-slate-700/30">
+            <div className="bg-white/[0.04] rounded-xl p-4 border border-white/[0.04]">
               <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-1">
                 Data Rate Capability
               </h4>
@@ -879,8 +879,8 @@ function BandDetailCard({ band }: { band: SpectrumBand }) {
           </div>
 
           {/* Rain attenuation table */}
-          <div className="bg-slate-800/40 rounded-xl p-4 border border-slate-700/30">
-            <h4 className="text-sm font-semibold text-slate-200 mb-3">
+          <div className="bg-white/[0.04] rounded-xl p-4 border border-white/[0.04]">
+            <h4 className="text-sm font-semibold text-white/90 mb-3">
               Rain Attenuation by Region
             </h4>
             <div className="grid grid-cols-3 gap-4">
@@ -908,21 +908,21 @@ function BandDetailCard({ band }: { band: SpectrumBand }) {
               </svg>
               <h4 className="text-sm font-semibold text-amber-400">Conflict Zone</h4>
             </div>
-            <p className="text-sm text-slate-300 mb-1">
+            <p className="text-sm text-white/70 mb-1">
               <span className="text-slate-400">Terrestrial Use:</span>{' '}
               {band.terrestrialConflict.terrestrialUse}
             </p>
-            <p className="text-sm text-slate-300">
+            <p className="text-sm text-white/70">
               {band.terrestrialConflict.interferenceIssues}
             </p>
           </div>
 
           <div>
-            <h4 className="text-sm font-semibold text-slate-200 mb-2">Mitigation Approaches</h4>
+            <h4 className="text-sm font-semibold text-white/90 mb-2">Mitigation Approaches</h4>
             <ul className="space-y-2">
               {band.terrestrialConflict.mitigationApproaches.map((approach, i) => (
-                <li key={i} className="flex items-start gap-2 text-sm text-slate-300">
-                  <svg className="w-4 h-4 text-slate-300 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <li key={i} className="flex items-start gap-2 text-sm text-white/70">
+                  <svg className="w-4 h-4 text-white/70 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                   </svg>
                   {approach}
@@ -956,7 +956,7 @@ function EmergingTrendsSection() {
                   {STATUS_LABELS[trend.status]}
                 </span>
               </div>
-              <p className="text-sm text-slate-300 mb-4 leading-relaxed">
+              <p className="text-sm text-white/70 mb-4 leading-relaxed">
                 {trend.description}
               </p>
               <div className="space-y-2">
@@ -966,7 +966,7 @@ function EmergingTrendsSection() {
                     {trend.keyPlayers.map((player, i) => (
                       <span
                         key={i}
-                        className="text-xs px-2 py-0.5 rounded-md bg-slate-700/50 text-slate-300 border border-slate-600/30"
+                        className="text-xs px-2 py-0.5 rounded-md bg-white/[0.06] text-white/70 border border-white/[0.06]"
                       >
                         {player}
                       </span>
@@ -975,7 +975,7 @@ function EmergingTrendsSection() {
                 </div>
                 <div>
                   <span className="text-xs text-slate-500 uppercase tracking-wide">Timeline</span>
-                  <p className="text-sm text-slate-300 mt-0.5">{trend.timeline}</p>
+                  <p className="text-sm text-white/70 mt-0.5">{trend.timeline}</p>
                 </div>
               </div>
             </div>
@@ -998,7 +998,7 @@ function RegulatorySection() {
             <StaggerItem key={idx}>
               <div className="card p-6 h-full">
                 <div className="flex items-center gap-2 mb-3">
-                  <span className="text-xs px-2 py-0.5 rounded-full bg-white/8 text-slate-300 border border-white/10 font-medium">
+                  <span className="text-xs px-2 py-0.5 rounded-full bg-white/8 text-white/70 border border-white/10 font-medium">
                     {region.region}
                   </span>
                   <h3 className="text-base font-semibold text-slate-100">
@@ -1014,7 +1014,7 @@ function RegulatorySection() {
                     {region.keyBodies.map((body, i) => (
                       <span
                         key={i}
-                        className="text-xs px-2 py-0.5 rounded-md bg-slate-700/50 text-slate-300 border border-slate-600/30"
+                        className="text-xs px-2 py-0.5 rounded-md bg-white/[0.06] text-white/70 border border-white/[0.06]"
                       >
                         {body}
                       </span>
@@ -1025,7 +1025,7 @@ function RegulatorySection() {
                   <h4 className="text-xs text-slate-500 uppercase tracking-wide mb-2">Highlights</h4>
                   <ul className="space-y-1.5">
                     {region.highlights.map((hl, i) => (
-                      <li key={i} className="flex items-start gap-2 text-xs text-slate-300">
+                      <li key={i} className="flex items-start gap-2 text-xs text-white/70">
                         <span className="mt-1 w-1 h-1 rounded-full bg-white flex-shrink-0" />
                         {hl}
                       </li>
@@ -1047,7 +1047,7 @@ function RegulatorySection() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-slate-700/50">
+                <tr className="border-b border-white/[0.06]">
                   <th className="text-left px-4 py-3 text-xs font-semibold text-slate-400 uppercase tracking-wide">
                     Agenda Item
                   </th>
@@ -1066,18 +1066,18 @@ function RegulatorySection() {
                 {WRC_OUTCOMES.map((item, idx) => (
                   <tr
                     key={idx}
-                    className="border-b border-slate-700/20 hover:bg-slate-800/30 transition-colors"
+                    className="border-b border-white/[0.04] hover:bg-white/[0.04] transition-colors"
                   >
-                    <td className="px-4 py-3 font-mono text-slate-300 whitespace-nowrap">
+                    <td className="px-4 py-3 font-mono text-white/70 whitespace-nowrap">
                       {item.agendaItem}
                     </td>
-                    <td className="px-4 py-3 text-slate-200 font-medium">
+                    <td className="px-4 py-3 text-white/90 font-medium">
                       {item.topic}
                     </td>
-                    <td className="px-4 py-3 text-slate-300 max-w-sm">
+                    <td className="px-4 py-3 text-white/70 max-w-sm">
                       {item.outcome}
                     </td>
-                    <td className="px-4 py-3 text-slate-300 max-w-xs">
+                    <td className="px-4 py-3 text-white/70 max-w-xs">
                       {item.impactOnSpace}
                     </td>
                   </tr>
@@ -1118,10 +1118,10 @@ function SpaceVsTerrestrialSummary({ bands }: { bands: SpectrumBand[] }) {
               <div className="space-y-3">
                 <div className="grid grid-cols-2 gap-3">
                   <div className="bg-white/5 border border-white/10 rounded-lg p-3">
-                    <p className="text-[10px] text-slate-300 uppercase tracking-wide mb-1 font-semibold">
+                    <p className="text-[10px] text-white/70 uppercase tracking-wide mb-1 font-semibold">
                       Space Use
                     </p>
-                    <p className="text-xs text-slate-300">
+                    <p className="text-xs text-white/70">
                       {band.applications[0]}
                     </p>
                   </div>
@@ -1129,7 +1129,7 @@ function SpaceVsTerrestrialSummary({ bands }: { bands: SpectrumBand[] }) {
                     <p className="text-[10px] text-amber-400 uppercase tracking-wide mb-1 font-semibold">
                       Terrestrial Use
                     </p>
-                    <p className="text-xs text-slate-300">
+                    <p className="text-xs text-white/70">
                       {band.terrestrialConflict!.terrestrialUse}
                     </p>
                   </div>
@@ -1138,7 +1138,7 @@ function SpaceVsTerrestrialSummary({ bands }: { bands: SpectrumBand[] }) {
                   <p className="text-[10px] text-red-400 uppercase tracking-wide mb-1 font-semibold">
                     Interference Issues
                   </p>
-                  <p className="text-xs text-slate-300 line-clamp-3">
+                  <p className="text-xs text-white/70 line-clamp-3">
                     {band.terrestrialConflict!.interferenceIssues}
                   </p>
                 </div>
@@ -1174,7 +1174,7 @@ function LinkBudgetQuickRef({ bands }: { bands: SpectrumBand[] }) {
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-slate-700/50">
+              <tr className="border-b border-white/[0.06]">
                 <th className="text-left px-4 py-3 text-xs font-semibold text-slate-400 uppercase tracking-wide">
                   Band
                 </th>
@@ -1205,7 +1205,7 @@ function LinkBudgetQuickRef({ bands }: { bands: SpectrumBand[] }) {
               {bands.map((band, idx) => (
                 <tr
                   key={idx}
-                  className="border-b border-slate-700/20 hover:bg-slate-800/30 transition-colors"
+                  className="border-b border-white/[0.04] hover:bg-white/[0.04] transition-colors"
                 >
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2">
@@ -1218,16 +1218,16 @@ function LinkBudgetQuickRef({ bands }: { bands: SpectrumBand[] }) {
                       </span>
                     </div>
                   </td>
-                  <td className="px-4 py-3 text-slate-300 font-mono text-xs">
+                  <td className="px-4 py-3 text-white/70 font-mono text-xs">
                     {band.linkBudget.freeSpacePathLossLEO}
                   </td>
-                  <td className="px-4 py-3 text-slate-300 font-mono text-xs">
+                  <td className="px-4 py-3 text-white/70 font-mono text-xs">
                     {band.linkBudget.freeSpacePathLossGEO}
                   </td>
-                  <td className="px-4 py-3 text-slate-300 text-xs">
+                  <td className="px-4 py-3 text-white/70 text-xs">
                     {band.linkBudget.typicalAntennaSize}
                   </td>
-                  <td className="px-4 py-3 text-slate-300 text-xs">
+                  <td className="px-4 py-3 text-white/70 text-xs">
                     {band.linkBudget.dataRateCapability}
                   </td>
                   <td className="px-4 py-3 text-center text-xs text-red-400 font-mono">
@@ -1236,7 +1236,7 @@ function LinkBudgetQuickRef({ bands }: { bands: SpectrumBand[] }) {
                   <td className="px-4 py-3 text-center text-xs text-amber-400 font-mono">
                     {band.linkBudget.rainAttenuation.temperate}
                   </td>
-                  <td className="px-4 py-3 text-center text-xs text-slate-300 font-mono">
+                  <td className="px-4 py-3 text-center text-xs text-white/70 font-mono">
                     {band.linkBudget.rainAttenuation.arctic}
                   </td>
                 </tr>
@@ -1270,7 +1270,7 @@ export default function RFSpectrumPage() {
           subtitle="Interactive visualization of radio frequency spectrum allocations for satellite and space communications. Explore frequency bands, link budgets, regulatory frameworks, and emerging spectrum trends."
           accentColor="cyan"
           icon={
-            <svg className="w-8 h-8 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-8 h-8 text-white/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.858 15.355-5.858 21.213 0" />
             </svg>
           }

@@ -87,8 +87,8 @@ export default function LaunchCountdownBanner() {
               ? 'bg-gradient-to-r from-red-900/80 via-red-800/80 to-red-900/80'
               : isImminent
               ? 'bg-gradient-to-r from-orange-900/80 via-orange-800/80 to-orange-900/80'
-              : 'bg-gradient-to-r from-slate-800/90 via-slate-700/90 to-slate-800/90'
-          } border-b border-slate-700/50`}
+              : 'bg-gradient-to-r from-white/[0.06] via-white/[0.08] to-white/[0.06]'
+          } border-b border-white/[0.06]`}
         >
           {/* Pulsing background for imminent launches */}
           {isImminent && (
@@ -125,7 +125,7 @@ export default function LaunchCountdownBanner() {
                     ? 'text-red-400'
                     : isImminent
                     ? 'text-orange-400'
-                    : 'text-slate-300'
+                    : 'text-white/70'
                 }`}
               >
                 {countdown}

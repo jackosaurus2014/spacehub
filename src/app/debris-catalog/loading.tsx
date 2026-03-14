@@ -4,9 +4,9 @@ export default function Loading() {
       <div className="container mx-auto px-4">
         {/* Header skeleton */}
         <div className="mb-8">
-          <div className="h-4 w-48 bg-slate-800/60 rounded animate-pulse mb-4" />
-          <div className="h-8 w-72 bg-slate-800 rounded animate-pulse mb-3" />
-          <div className="h-4 w-[480px] max-w-full bg-slate-800/60 rounded animate-pulse" />
+          <div className="h-4 w-48 bg-white/[0.05] rounded animate-pulse mb-4" />
+          <div className="h-8 w-72 bg-white/[0.06] rounded animate-pulse mb-3" />
+          <div className="h-4 w-[480px] max-w-full bg-white/[0.05] rounded animate-pulse" />
         </div>
 
         {/* Stats grid skeleton */}
@@ -14,7 +14,7 @@ export default function Loading() {
           {Array.from({ length: 8 }).map((_, i) => (
             <div
               key={i}
-              className="bg-slate-800/40 rounded-2xl animate-pulse p-5 space-y-3"
+              className="bg-white/[0.04] rounded-2xl animate-pulse p-5 space-y-3"
             >
               <div className="h-4 w-20 bg-slate-700/50 rounded" />
               <div className="h-8 w-24 bg-slate-700/30 rounded" />
@@ -26,13 +26,13 @@ export default function Loading() {
         {/* Filter bar skeleton */}
         <div className="flex gap-3 mb-8">
           {Array.from({ length: 3 }).map((_, i) => (
-            <div key={i} className="h-10 w-36 bg-slate-800/40 rounded-lg animate-pulse" />
+            <div key={i} className="h-10 w-36 bg-white/[0.04] rounded-lg animate-pulse" />
           ))}
-          <div className="h-10 flex-1 max-w-xs bg-slate-800/40 rounded-lg animate-pulse ml-auto" />
+          <div className="h-10 flex-1 max-w-xs bg-white/[0.04] rounded-lg animate-pulse ml-auto" />
         </div>
 
         {/* Timeline skeleton */}
-        <div className="bg-slate-800/40 rounded-2xl animate-pulse p-6 mb-8">
+        <div className="bg-white/[0.04] rounded-2xl animate-pulse p-6 mb-8">
           <div className="h-6 w-52 bg-slate-700/50 rounded mb-6" />
           <div className="space-y-4">
             {Array.from({ length: 4 }).map((_, i) => (
@@ -52,7 +52,7 @@ export default function Loading() {
           {Array.from({ length: 4 }).map((_, i) => (
             <div
               key={i}
-              className="bg-slate-800/40 rounded-2xl animate-pulse p-5 space-y-3"
+              className="bg-white/[0.04] rounded-2xl animate-pulse p-5 space-y-3"
             >
               <div className="h-5 w-40 bg-slate-700/50 rounded" />
               <div className="h-4 w-full bg-slate-700/30 rounded" />

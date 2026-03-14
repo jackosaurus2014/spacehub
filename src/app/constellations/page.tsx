@@ -40,7 +40,7 @@ interface Constellation {
 
 const STATUS_CONFIG: Record<ConstellationStatus, { label: string; bg: string; text: string; border: string }> = {
   operational: { label: 'Operational', bg: 'bg-green-900/30', text: 'text-green-400', border: 'border-green-500/40' },
-  deploying: { label: 'Deploying', bg: 'bg-slate-800/40', text: 'text-slate-300', border: 'border-white/15' },
+  deploying: { label: 'Deploying', bg: 'bg-white/[0.04]', text: 'text-slate-300', border: 'border-white/15' },
   'pre-launch': { label: 'Pre-Launch', bg: 'bg-amber-900/30', text: 'text-amber-400', border: 'border-amber-500/40' },
   development: { label: 'Development', bg: 'bg-purple-900/30', text: 'text-purple-400', border: 'border-purple-500/40' },
 };
@@ -845,16 +845,16 @@ export default function ConstellationTrackerPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0B0F1A] text-white p-6">
+      <div className="min-h-screen bg-black text-white p-6">
         <div className="max-w-7xl mx-auto">
           <div className="animate-pulse space-y-4">
-            <div className="h-8 bg-slate-800 rounded w-1/3"></div>
-            <div className="h-4 bg-slate-800 rounded w-2/3"></div>
+            <div className="h-8 bg-white/[0.06] rounded w-1/3"></div>
+            <div className="h-4 bg-white/[0.06] rounded w-2/3"></div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8">
-              {[1,2,3,4].map(i => <div key={i} className="h-24 bg-slate-800 rounded-lg"></div>)}
+              {[1,2,3,4].map(i => <div key={i} className="h-24 bg-white/[0.06] rounded-lg"></div>)}
             </div>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8">
-              {[1,2,3,4].map(i => <div key={i} className="h-48 bg-slate-800 rounded-lg"></div>)}
+              {[1,2,3,4].map(i => <div key={i} className="h-48 bg-white/[0.06] rounded-lg"></div>)}
             </div>
           </div>
         </div>
