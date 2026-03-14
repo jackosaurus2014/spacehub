@@ -5,7 +5,7 @@ import ScrollReveal from '@/components/ui/ScrollReveal';
 export const metadata: Metadata = {
   title: 'SpaceNexus vs Bloomberg Terminal for Space Industry | SpaceNexus',
   description:
-    'Comparing SpaceNexus (free-$99/mo) vs Bloomberg Terminal ($25,000/yr) for space industry professionals. Feature-by-feature comparison of data coverage, space-specific tools, pricing, and API access.',
+    'Comparing SpaceNexus (free-$49.99/mo) vs Bloomberg Terminal ($25,000/yr) for space industry professionals. Feature-by-feature comparison of data coverage, space-specific tools, pricing, and API access.',
   keywords: [
     'bloomberg terminal space industry',
     'bloomberg terminal alternative space',
@@ -30,7 +30,7 @@ export const metadata: Metadata = {
 };
 
 const FEATURE_COMPARISON = [
-  { feature: 'Starting Price', spacenexus: 'Free (Pro $29/mo, Enterprise $99/mo)', competitor: '$25,000/year (~$2,083/mo)', winner: 'spacenexus' },
+  { feature: 'Starting Price', spacenexus: 'Free (Pro $19.99/mo, Enterprise $49.99/mo)', competitor: '$25,000/year (~$2,083/mo)', winner: 'spacenexus' },
   { feature: 'Space Launch Tracking', spacenexus: 'Real-time global launch dashboard with countdowns', competitor: 'Limited launch news via wire services', winner: 'spacenexus' },
   { feature: 'Satellite Tracking', spacenexus: 'Interactive 3D globe, 19,000+ objects, TLE data', competitor: 'Not available', winner: 'spacenexus' },
   { feature: 'Orbital Slot Data', spacenexus: 'ITU filings, GEO/LEO slot tracking, spectrum data', competitor: 'Not available', winner: 'spacenexus' },
@@ -113,11 +113,11 @@ export default function BloombergComparisonPage() {
                   </div>
                   <div className="flex justify-between items-baseline">
                     <span className="text-white/70 font-medium">Professional</span>
-                    <span className="text-xl font-bold text-white">$29<span className="text-sm text-slate-400 font-normal">/mo</span></span>
+                    <span className="text-xl font-bold text-white">$19.99<span className="text-sm text-slate-400 font-normal">/mo</span></span>
                   </div>
                   <div className="flex justify-between items-baseline">
                     <span className="text-white/70 font-medium">Enterprise</span>
-                    <span className="text-xl font-bold text-white">$99<span className="text-sm text-slate-400 font-normal">/mo</span></span>
+                    <span className="text-xl font-bold text-white">$49.99<span className="text-sm text-slate-400 font-normal">/mo</span></span>
                   </div>
                 </div>
                 <p className="text-xs text-slate-400 mt-3">API access included in Enterprise. No long-term contracts required.</p>
@@ -140,7 +140,7 @@ export default function BloombergComparisonPage() {
             <div className="card p-4 mt-4 bg-slate-50 border-slate-200">
               <p className="text-slate-700 text-sm">
                 <strong>Cost savings:</strong> A team of 5 would pay ~$125,000/year for Bloomberg Terminals.
-                SpaceNexus Enterprise for 5 users costs $5,940/year &mdash; a <strong>95% savings</strong> with
+                SpaceNexus Enterprise for 5 users costs $3,000/year &mdash; a <strong>97% savings</strong> with
                 space-specific features Bloomberg does not offer.
               </p>
             </div>
@@ -205,7 +205,7 @@ export default function BloombergComparisonPage() {
                     'Want procurement intelligence (SAM.gov, SBIR/STTR contracts)',
                     'Need company profiles for 200+ space companies',
                     'Are a space startup, defense contractor, or government PM',
-                    'Want a free tier or affordable Pro plan ($29/mo)',
+                    'Want a free tier or affordable Pro plan ($19.99/mo)',
                     'Need a B2B marketplace for space industry services',
                     'Want AI-powered space procurement and market analysis',
                     'Need regulatory tracking for FCC, ITU, and space law',
@@ -256,7 +256,7 @@ export default function BloombergComparisonPage() {
               <ul className="space-y-3">
                 {[
                   { title: 'Purpose-built for space', desc: 'SpaceNexus was designed from day one for the space industry. Every module, every data feed, and every feature is optimized for aerospace professionals.' },
-                  { title: '99.6% cost reduction', desc: 'SpaceNexus Enterprise ($99/mo) costs 95% less than a single Bloomberg Terminal ($2,083/mo), while providing space-specific features Bloomberg lacks entirely.' },
+                  { title: '97.6% cost reduction', desc: 'SpaceNexus Enterprise ($49.99/mo) costs 97% less than a single Bloomberg Terminal ($2,083/mo), while providing space-specific features Bloomberg lacks entirely.' },
                   { title: 'Satellite and orbital intelligence', desc: 'Track 19,000+ objects on an interactive 3D globe, monitor orbital slots, analyze constellation deployments, and access TLE data — none of which Bloomberg offers.' },
                   { title: 'Government procurement', desc: 'Integrated SAM.gov and SBIR/STTR intelligence helps you find and win government contracts in the space sector. Bloomberg has no equivalent capability.' },
                   { title: 'Space-specific company profiles', desc: '200+ detailed profiles of space companies including launch providers, satellite operators, ground segment, and defense contractors — with competitive positioning and financial data.' },
@@ -346,7 +346,7 @@ export default function BloombergComparisonPage() {
             '@type': 'Article',
             headline: 'SpaceNexus vs Bloomberg Terminal for Space Industry',
             description:
-              'Comparing SpaceNexus (free-$99/mo) vs Bloomberg Terminal ($25,000/yr) for space industry professionals. Feature-by-feature comparison.',
+              'Comparing SpaceNexus (free-$49.99/mo) vs Bloomberg Terminal ($25,000/yr) for space industry professionals. Feature-by-feature comparison.',
             author: { '@type': 'Organization', name: 'SpaceNexus' },
             publisher: {
               '@type': 'Organization',

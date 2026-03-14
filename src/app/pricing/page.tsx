@@ -518,7 +518,103 @@ function PricingPageContent() {
   return (
     <div className="min-h-screen pb-12">
       <FAQSchema items={PRICING_FAQ} />
+
+      {/* Product structured data for each pricing tier */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify([
+            {
+              '@context': 'https://schema.org',
+              '@type': 'Product',
+              name: 'SpaceNexus Explorer',
+              description: 'Free tier of SpaceNexus space industry intelligence platform. Includes news feeds, satellite tracking, mission countdowns, and public data.',
+              brand: { '@type': 'Brand', name: 'SpaceNexus' },
+              offers: {
+                '@type': 'Offer',
+                price: '0',
+                priceCurrency: 'USD',
+                availability: 'https://schema.org/InStock',
+                url: 'https://spacenexus.us/pricing',
+              },
+            },
+            {
+              '@context': 'https://schema.org',
+              '@type': 'Product',
+              name: 'SpaceNexus Professional',
+              description: 'Professional tier with unlimited articles, deal flow database, executive move tracker, supply chain intelligence, full company profiles, and ad-free experience.',
+              brand: { '@type': 'Brand', name: 'SpaceNexus' },
+              offers: {
+                '@type': 'Offer',
+                price: '19.99',
+                priceCurrency: 'USD',
+                availability: 'https://schema.org/InStock',
+                url: 'https://spacenexus.us/pricing',
+                priceSpecification: {
+                  '@type': 'UnitPriceSpecification',
+                  price: '19.99',
+                  priceCurrency: 'USD',
+                  unitCode: 'MON',
+                  billingDuration: { '@type': 'QuantitativeValue', value: 1, unitCode: 'MON' },
+                },
+              },
+            },
+            {
+              '@context': 'https://schema.org',
+              '@type': 'Product',
+              name: 'SpaceNexus Enterprise',
+              description: 'Enterprise tier with AI-powered intelligence reports, API access, custom dashboards, webhook integrations, patent intelligence, procurement intelligence, and dedicated account manager.',
+              brand: { '@type': 'Brand', name: 'SpaceNexus' },
+              offers: {
+                '@type': 'Offer',
+                price: '49.99',
+                priceCurrency: 'USD',
+                availability: 'https://schema.org/InStock',
+                url: 'https://spacenexus.us/pricing',
+                priceSpecification: {
+                  '@type': 'UnitPriceSpecification',
+                  price: '49.99',
+                  priceCurrency: 'USD',
+                  unitCode: 'MON',
+                  billingDuration: { '@type': 'QuantitativeValue', value: 1, unitCode: 'MON' },
+                },
+              },
+            },
+          ]).replace(/</g, '\\u003c'),
+        }}
+      />
+
       <div className="container mx-auto px-4">
+        {/* Founding Member Promotional Banner */}
+        <ScrollReveal>
+          <div className="max-w-4xl mx-auto mt-8 mb-6">
+            <div className="relative overflow-hidden rounded-2xl border border-purple-500/30 shadow-lg shadow-purple-500/10">
+              {/* Gradient background */}
+              <div className="absolute inset-0 bg-gradient-to-r from-indigo-900/90 via-purple-800/90 to-blue-900/90" />
+              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(99,102,241,0.15),transparent_60%)]" />
+              <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-purple-400/60 to-transparent" />
+
+              <div className="relative px-6 py-5 sm:px-8 sm:py-6 flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
+                <div className="flex-1 text-center sm:text-left">
+                  <p className="text-lg sm:text-xl font-bold text-white mb-1">
+                    <span role="img" aria-label="rocket">🚀</span> Founding Member Offer
+                  </p>
+                  <p className="text-sm sm:text-base text-purple-100/90">
+                    First 50 subscribers get <span className="font-bold text-white">Professional access at $4.99/month</span>, locked for life.
+                    Only <span className="font-bold text-amber-300">12 spots</span> remaining.
+                  </p>
+                </div>
+                <Link
+                  href="/register?plan=pro&founding=true"
+                  className="shrink-0 px-6 py-3 rounded-xl bg-white text-indigo-900 font-bold text-sm sm:text-base hover:bg-purple-100 transition-colors shadow-md hover:shadow-lg"
+                >
+                  Claim Your Spot
+                </Link>
+              </div>
+            </div>
+          </div>
+        </ScrollReveal>
+
         <AnimatedPageHeader title="Choose Your Plan" subtitle="Unlock the full power of space intelligence" icon="💎" accentColor="purple" />
 
         {/* Audience strip */}

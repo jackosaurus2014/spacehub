@@ -44,5 +44,42 @@ export default function NewsLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return children;
+  const newsWebSiteSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: 'SpaceNexus News',
+    url: 'https://spacenexus.us/news',
+    description:
+      'Breaking space industry news on launches, discoveries, satellites, commercial spaceflight, and astronomical events.',
+    potentialAction: {
+      '@type': 'SearchAction',
+      target: {
+        '@type': 'EntryPoint',
+        urlTemplate: 'https://spacenexus.us/news?search={search_term_string}',
+      },
+      'query-input': 'required name=search_term_string',
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: 'SpaceNexus',
+      url: 'https://spacenexus.us',
+      logo: {
+        '@type': 'ImageObject',
+        url: 'https://spacenexus.us/spacenexus-logo.png',
+      },
+    },
+    inLanguage: 'en-US',
+  };
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(newsWebSiteSchema).replace(/</g, '\\u003c'),
+        }}
+      />
+      {children}
+    </>
+  );
 }

@@ -4,7 +4,7 @@ import Link from 'next/link';
 export const metadata: Metadata = {
   title: 'SpaceNexus vs Quilty Space Analytics — Space Industry Platform Comparison | SpaceNexus',
   description:
-    'Comparing SpaceNexus (free-$99/mo) vs Quilty Space Analytics ($5,000-50,000/yr). Self-service real-time platform vs. premium analyst research reports for the space industry.',
+    'Comparing SpaceNexus (free-$49.99/mo) vs Quilty Space Analytics ($5,000-50,000/yr). Self-service real-time platform vs. premium analyst research reports for the space industry.',
   keywords: [
     'quilty analytics alternative',
     'space industry analytics platform',
@@ -29,7 +29,7 @@ export const metadata: Metadata = {
 };
 
 const FEATURE_COMPARISON = [
-  { feature: 'Starting Price', spacenexus: 'Free (Pro $29/mo, Enterprise $99/mo)', competitor: '$5,000-50,000/year (report packages)', winner: 'spacenexus' },
+  { feature: 'Starting Price', spacenexus: 'Free (Pro $19.99/mo, Enterprise $49.99/mo)', competitor: '$5,000-50,000/year (report packages)', winner: 'spacenexus' },
   { feature: 'Delivery Model', spacenexus: 'Self-service interactive platform', competitor: 'PDF reports and analyst briefings', winner: 'spacenexus' },
   { feature: 'Data Freshness', spacenexus: 'Real-time feeds, updated continuously', competitor: 'Periodic reports (monthly/quarterly)', winner: 'spacenexus' },
   { feature: 'Satellite Tracking', spacenexus: '19,000+ objects on interactive 3D globe', competitor: 'Satellite market analysis in reports', winner: 'spacenexus' },
@@ -128,7 +128,7 @@ export default function QuiltyComparisonPage() {
                   </li>
                 </ul>
                 <div className="mt-4 pt-4 border-t border-white/[0.08]">
-                  <div className="text-2xl font-bold text-white/70">Free &ndash; $99<span className="text-sm text-slate-400 font-normal">/mo</span></div>
+                  <div className="text-2xl font-bold text-white/70">Free &ndash; $49.99<span className="text-sm text-slate-400 font-normal">/mo</span></div>
                 </div>
               </div>
               <div className="card p-6">
@@ -270,7 +270,7 @@ export default function QuiltyComparisonPage() {
                   { title: 'Broader coverage', desc: '10 integrated modules covering launches, satellites, market intelligence, procurement, companies, regulatory, and more. Research firms typically cover only market analysis.' },
                   { title: 'Self-service exploration', desc: 'Ask your own questions, explore data interactively, and discover insights that a pre-written report might not cover. The AI copilot is available anytime.' },
                   { title: '200+ company profiles', desc: 'Interactive profiles with financial data, competitive positioning, satellite assets, and news tagging. Updated automatically, not annually.' },
-                  { title: 'Accessible pricing', desc: 'Start free, upgrade to Pro at $29/mo. A single Quilty report package can cost more than years of SpaceNexus Enterprise access.' },
+                  { title: 'Accessible pricing', desc: 'Start free, upgrade to Pro at $19.99/mo. A single Quilty report package can cost more than years of SpaceNexus Enterprise access.' },
                   { title: 'Procurement advantage', desc: 'SAM.gov integration and SBIR/STTR tracking give you a direct path from intelligence to revenue — something research reports cannot provide.' },
                 ].map((item) => (
                   <li key={item.title} className="flex items-start gap-3">
@@ -353,7 +353,7 @@ export default function QuiltyComparisonPage() {
             '@type': 'Article',
             headline: 'SpaceNexus vs Quilty Space Analytics',
             description:
-              'Comparing SpaceNexus (free-$99/mo) vs Quilty Space Analytics ($5,000-50,000/yr). Self-service real-time platform vs. premium analyst research reports.',
+              'Comparing SpaceNexus (free-$49.99/mo) vs Quilty Space Analytics ($5,000-50,000/yr). Self-service real-time platform vs. premium analyst research reports.',
             author: { '@type': 'Organization', name: 'SpaceNexus' },
             publisher: {
               '@type': 'Organization',

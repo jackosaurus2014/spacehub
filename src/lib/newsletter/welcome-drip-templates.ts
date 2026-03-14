@@ -322,7 +322,7 @@ function generateProUpsellEmail(): { html: string; plain: string; subject: strin
       </td></tr>
     </table>
     <p style="color:${styles.textLight};font-size:14px;text-align:center;margin:0 0 4px;">
-      Pro starts at <strong style="color:${styles.textWhite};">$29/month</strong>. Cancel anytime.
+      Pro starts at <strong style="color:${styles.textWhite};">$19.99/month</strong>. Cancel anytime.
     </p>
     ${ctaButton('Upgrade to Pro', `${APP_URL}/pricing`)}
     <p style="color:${styles.textMuted};font-size:12px;text-align:center;margin:0;">
@@ -341,7 +341,7 @@ You've been using SpaceNexus for 10 days. Here's what Pro unlocks:
 - API Access — integrate SpaceNexus data into your tools
 - Ad-Free Experience — clean interface
 
-Pro starts at $29/month. Cancel anytime.
+Pro starts at $19.99/month. Cancel anytime.
 Upgrade: ${APP_URL}/pricing
 
 Not ready? The free tier is yours forever.

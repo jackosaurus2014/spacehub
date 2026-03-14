@@ -73,7 +73,7 @@ export default function PressPage() {
                     <li><strong className="text-slate-400">Headquarters:</strong> Houston, TX</li>
                     <li><strong className="text-slate-400">Company:</strong> SpaceNexus LLC</li>
                     <li><strong className="text-slate-400">Industry:</strong> Space Intelligence / SaaS</li>
-                    <li><strong className="text-slate-400">Model:</strong> Freemium (Free / Pro $29/mo / Enterprise $99/mo)</li>
+                    <li><strong className="text-slate-400">Model:</strong> Freemium (Free / Pro $19.99/mo / Enterprise $49.99/mo)</li>
                     <li><strong className="text-slate-400">Platforms:</strong> Web (PWA), Android, iOS</li>
                   </ul>
                 </div>
@@ -156,7 +156,7 @@ export default function PressPage() {
                   contractors, investors, startup founders, government program managers, journalists, and space
                   enthusiasts alike.<br /><br />
                   Unlike legacy competitors charging $10,000-50,000+ per year for narrow data sets, SpaceNexus
-                  offers a free Explorer tier alongside Professional ($29/month) and Enterprise ($99/month) plans,
+                  offers a free Explorer tier alongside Professional ($19.99/month) and Enterprise ($49.99/month) plans,
                   democratizing access to space industry intelligence. The platform is available as a responsive
                   web application with progressive web app capabilities and native Android and iOS mobile apps.
                   Founded in 2024 and headquartered in Houston, Texas, SpaceNexus LLC is building the Bloomberg

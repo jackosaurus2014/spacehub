@@ -374,6 +374,20 @@ const RSS_FEEDS: RSSFeedSource[] = [
   // Regional
   { name: 'Space in Africa', url: 'https://spaceinafrica.com/feed/', defaultCategory: 'companies' },
   { name: 'Moon Monday', url: 'https://blog.jatan.space/feed', defaultCategory: 'missions' },
+
+  // Additional sources — expanded coverage (batch 2)
+  { name: 'SciTechDaily Space', url: 'https://scitechdaily.com/news/space/feed/', defaultCategory: 'missions' },
+  { name: 'AmericaSpace', url: 'https://www.americaspace.com/feed/', defaultCategory: 'launches' },
+  { name: 'CNN Space', url: 'http://rss.cnn.com/rss/edition_space.rss', defaultCategory: 'general' },
+  { name: 'Military Aerospace', url: 'https://www.militaryaerospace.com/rss', defaultCategory: 'defense' },
+  { name: 'Federal News Network Defense', url: 'https://federalnewsnetwork.com/category/defense-main/feed/', defaultCategory: 'defense' },
+  { name: 'Wired Space', url: 'https://www.wired.com/feed/tag/space/latest/rss', defaultCategory: 'general' },
+  { name: 'NASA Technology', url: 'https://www.nasa.gov/technology/feed/', defaultCategory: 'technology' },
+  { name: 'NASA Kennedy Space Center', url: 'https://www.nasa.gov/centers-and-facilities/kennedy/feed/', defaultCategory: 'launches' },
+  { name: 'ESA Launchers', url: 'http://www.esa.int/rssfeed/Our_Activities/Launchers', defaultCategory: 'launches' },
+  { name: 'ESA Observing the Earth', url: 'http://www.esa.int/rssfeed/Our_Activities/Observing_the_Earth', defaultCategory: 'satellites' },
+  { name: 'ESA Navigation', url: 'http://www.esa.int/rssfeed/Our_Activities/Navigation', defaultCategory: 'satellites' },
+  { name: 'NASA Image of the Day', url: 'https://www.nasa.gov/feeds/iotd-feed/', defaultCategory: 'general' },
 ];
 
 const rssParser = new RSSParser({

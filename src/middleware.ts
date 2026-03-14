@@ -265,6 +265,7 @@ function checkCsrf(req: NextRequest): boolean {
         '/api/newsletter/intelligence-brief', '/api/newsletter/forum-digest',
         '/api/ai-insights/generate', '/api/refresh/cleanup',
         '/api/admin/seed-all', '/api/admin/freshness-check',
+        '/api/funding-opportunities',
       ];
       // Also allow all /init endpoints
       if (cronPaths.some(p => pathname.startsWith(p)) || pathname.endsWith('/init')) {

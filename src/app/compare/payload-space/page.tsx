@@ -30,7 +30,7 @@ export const metadata: Metadata = {
 
 const FEATURE_COMPARISON = [
   { feature: 'Type', spacenexus: 'Interactive intelligence platform', competitor: 'Newsletter and media brand', winner: 'tie' },
-  { feature: 'Price', spacenexus: 'Free (Pro $29/mo, Enterprise $99/mo)', competitor: 'Free newsletter (premium tier available)', winner: 'tie' },
+  { feature: 'Price', spacenexus: 'Free (Pro $19.99/mo, Enterprise $49.99/mo)', competitor: 'Free newsletter (premium tier available)', winner: 'tie' },
   { feature: 'News Delivery', spacenexus: '50+ RSS feeds, auto-categorized, searchable', competitor: 'Curated daily newsletter by editors', winner: 'tie' },
   { feature: 'Satellite Tracking', spacenexus: 'Interactive 3D globe with 19,000+ objects', competitor: 'Not available', winner: 'spacenexus' },
   { feature: 'Launch Tracking', spacenexus: 'Live dashboard with countdowns and alerts', competitor: 'Launch news coverage in newsletter', winner: 'spacenexus' },

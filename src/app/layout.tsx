@@ -54,7 +54,7 @@ export const metadata: Metadata = {
     template: '%s | SpaceNexus',
     default: 'SpaceNexus - Space Industry Intelligence Platform',
   },
-  description: 'The comprehensive space industry intelligence platform. Company profiles, market data, mission planning tools, procurement intelligence, and community forums for space professionals.',
+  description: 'SpaceNexus — Space industry intelligence platform. Track satellites, monitor launches, analyze space stocks, and access 200+ company profiles. Free to start.',
   keywords: [
     'space industry',
     'space intelligence',

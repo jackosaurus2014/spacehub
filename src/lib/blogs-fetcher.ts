@@ -402,6 +402,46 @@ const BLOG_SOURCES = [
     authorType: 'journalist',
     description: 'Reinsurance industry news covering aerospace and space markets',
   },
+
+  // --- Investment & Business ---
+  {
+    name: 'Space Capital',
+    slug: 'space-capital',
+    url: 'https://www.spacecapital.com/publications',
+    feedUrl: 'https://www.spacecapital.com/publications',
+    type: 'blog',
+    authorType: 'consultant',
+    description: 'Space economy investment research and quarterly reports',
+  },
+  {
+    name: 'Crunchbase News',
+    slug: 'crunchbase-news',
+    url: 'https://news.crunchbase.com',
+    feedUrl: 'https://news.crunchbase.com/feed/',
+    type: 'blog',
+    authorType: 'journalist',
+    description: 'Startup funding, venture capital, and business news',
+  },
+  {
+    name: 'Seraphim Space Insights',
+    slug: 'seraphim-space-insights',
+    url: 'https://seraphim.vc/insights/',
+    feedUrl: 'https://seraphim.vc/insights/',
+    type: 'blog',
+    authorType: 'consultant',
+    description: 'SpaceTech venture capital insights and market analysis',
+  },
+
+  // --- Defense ---
+  {
+    name: 'RealClearDefense',
+    slug: 'realclear-defense',
+    url: 'https://www.realcleardefense.com',
+    feedUrl: 'https://www.realcleardefense.com/index.xml',
+    type: 'blog',
+    authorType: 'consultant',
+    description: 'Defense policy analysis and commentary aggregation',
+  },
 ];
 
 const TOPIC_KEYWORDS: Record<string, string[]> = {

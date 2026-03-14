@@ -408,7 +408,7 @@ export default function PremiumGate({
               >
                 {plan?.trialDays
                   ? `Start ${plan.trialDays}-Day Free Trial`
-                  : `View Plans - Starting at $${plan?.price || 9.99}/mo`}
+                  : `View Plans - Starting at $${plan?.price || 19.99}/mo`}
               </Link>
               <Link
                 href="/pricing"

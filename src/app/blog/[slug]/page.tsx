@@ -36,6 +36,9 @@ const BLOG_CTA_MAP: Record<string, { tool: string; path: string }> = {
   'building-spacenexus-idea-to-launch-90-days': { tool: 'Mission Control', path: '/mission-control' },
   'itar-ear-compliance-space-startups': { tool: 'Compliance Hub', path: '/compliance' },
   'sam-gov-to-space-government-contracts-guide': { tool: 'Procurement Intelligence', path: '/procurement' },
+  'spacex-ipo-what-it-means-for-space-investors': { tool: 'Space Capital Tracker', path: '/space-capital' },
+  'artemis-ii-moon-mission-everything-you-need-to-know': { tool: 'Launch Manifest', path: '/launch-manifest' },
+  'ai-in-orbit-space-based-data-centers-revolution': { tool: 'Space Edge Computing', path: '/space-edge-computing' },
 };
 
 type Props = {

@@ -107,11 +107,11 @@ export default function StructuredData() {
       {
         '@type': 'Offer',
         name: 'Professional',
-        price: '29',
+        price: '19.99',
         priceCurrency: 'USD',
         priceSpecification: {
           '@type': 'UnitPriceSpecification',
-          price: '29',
+          price: '19.99',
           priceCurrency: 'USD',
           billingDuration: 'P1M',
         },
@@ -120,11 +120,11 @@ export default function StructuredData() {
       {
         '@type': 'Offer',
         name: 'Enterprise',
-        price: '99',
+        price: '49.99',
         priceCurrency: 'USD',
         priceSpecification: {
           '@type': 'UnitPriceSpecification',
-          price: '99',
+          price: '49.99',
           priceCurrency: 'USD',
           billingDuration: 'P1M',
         },

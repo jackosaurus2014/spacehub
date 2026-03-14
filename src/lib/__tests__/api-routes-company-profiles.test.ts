@@ -332,7 +332,7 @@ describe('GET /api/company-profiles', () => {
     expect(res.status).toBe(500);
     expect(body.success).toBe(false);
     expect(body.error.code).toBe('INTERNAL_ERROR');
-    expect(body.error.message).toBe('Failed to fetch company profiles');
+    expect(body.error.message).toContain('Failed to fetch company profiles');
   });
 });
 

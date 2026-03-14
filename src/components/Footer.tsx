@@ -56,6 +56,7 @@ const footerLinks = {
       { label: 'Podcasts', href: '/podcasts' },
       { label: 'FAQ', href: '/faq' },
       { label: 'Blog', href: '/blog' },
+      { label: 'AI Insights', href: '/ai-insights' },
       { label: 'Learning Center', href: '/learn' },
       { label: 'Getting Started', href: '/getting-started' },
     ],
@@ -72,6 +73,19 @@ const footerLinks = {
       { label: 'Case Studies', href: '/case-studies' },
       { label: 'Book a Demo', href: '/book-demo' },
       { label: 'State of Space 2026', href: '/report/state-of-space-2026' },
+    ],
+  },
+  insights: {
+    title: 'Featured Articles',
+    links: [
+      { label: 'Space Economy 2026', href: '/blog/space-economy-2026-where-money-is-going' },
+      { label: 'Space Startup Funding', href: '/blog/space-startup-funding-trends-2026' },
+      { label: 'Space Industry Trends', href: '/blog/5-space-industry-trends-reshaping-market-2026' },
+      { label: 'Satellite Tracking Guide', href: '/blog/satellite-tracking-explained-beginners-guide' },
+      { label: 'Mega Constellations', href: '/blog/rise-of-mega-constellations-business-impact' },
+      { label: 'Space Insurance Market', href: '/blog/space-insurance-billion-dollar-market' },
+      { label: 'Space M&A Trends', href: '/blog/space-sector-ma-trends-analysis' },
+      { label: 'Gov Contracts Guide', href: '/blog/sam-gov-to-space-government-contracts-guide' },
     ],
   },
   company: {
@@ -150,7 +164,7 @@ export default function Footer() {
           </div>
 
           {/* Main footer grid */}
-          <div className="py-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-7 gap-8 lg:gap-6">
+          <div className="py-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-8 gap-8 lg:gap-5">
             {/* Brand column */}
             <div className="sm:col-span-2 lg:col-span-1">
               <Image
