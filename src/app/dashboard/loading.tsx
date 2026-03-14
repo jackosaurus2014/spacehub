@@ -2,6 +2,15 @@ export default function Loading() {
   return (
     <div className="min-h-screen p-4 sm:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto">
+        {/* Loading status message */}
+        <div className="flex items-center gap-2 mb-6">
+          <span className="relative flex h-2 w-2">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400" />
+          </span>
+          <span className="text-sm text-slate-400">Loading live data...</span>
+        </div>
+
         {/* Title skeleton */}
         <div className="h-8 w-48 sm:w-64 bg-white/[0.06] rounded-lg animate-pulse mb-6" />
 

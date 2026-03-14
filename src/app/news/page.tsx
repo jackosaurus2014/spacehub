@@ -159,7 +159,16 @@ function NewsContent() {
 
       {/* News Grid */}
       {loading && articles.length === 0 ? (
-        <SkeletonNewsGrid count={6} />
+        <div>
+          <div className="flex items-center gap-2 mb-4">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400" />
+            </span>
+            <span className="text-sm text-slate-400">Loading live data...</span>
+          </div>
+          <SkeletonNewsGrid count={6} />
+        </div>
       ) : articles.length === 0 ? (
         <EmptyState
           icon={<span className="text-4xl">🔭</span>}

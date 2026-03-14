@@ -2468,6 +2468,344 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 <p>Track commercial station development milestones, company profiles, and related investment opportunities through the SpaceNexus <a href="/space-stations">Space Stations</a> module. Follow funding rounds in <a href="/space-capital">Space Capital Tracker</a> and monitor NASA CLD contract awards in <a href="/procurement">Procurement Intelligence</a>.</p>
 `,
   },
+  {
+    slug: 'china-commercial-space-surge-2026',
+    title: 'China\'s Commercial Space Surge: 100+ Launches Planned for 2026',
+    excerpt: 'China\'s commercial launch sector is accelerating at an unprecedented pace, with over 100 orbital launches planned for 2026, 11 reusable rocket models in development, and 8 maiden flights on the calendar. Here\'s what it means for global competition.',
+    category: 'analysis',
+    author: 'SpaceNexus Team',
+    authorRole: 'Market Intelligence',
+    publishedAt: '2026-03-14T00:00:00Z',
+    readingTime: 10,
+    featured: true,
+    keywords: ['China commercial space', 'Chinese space launches 2026', 'iSpace', 'Landspace', 'Galactic Energy', 'CAS Space', 'Space Pioneer', 'reusable rockets China', 'space race', 'Chinese launch vehicles'],
+    content: `
+<p>While SpaceX and Rocket Lab dominate Western headlines, a parallel space revolution is unfolding in China — one that could reshape the global launch landscape within the decade. In 2026, China's commercial launch sector is targeting <strong>over 100 orbital launches</strong>, up from 67 in 2024 and approximately 80 in 2025. If achieved, it would mark the first time any nation other than the United States has crossed the triple-digit launch threshold in a single year.</p>
+
+<p>This isn't just about launch volume. China now has <strong>11 reusable rocket models</strong> in active development across a dozen companies, <strong>8 maiden flights</strong> scheduled for this year, and a government industrial policy explicitly designed to create a competitive commercial space sector. For space industry professionals, investors, and policymakers, understanding this surge is no longer optional — it's essential.</p>
+
+<h2 id="the-numbers">The Numbers: 100+ Launches in Context</h2>
+
+<p>China's orbital launch pace has been accelerating steadily:</p>
+
+<ul>
+<li><strong>2020:</strong> 39 launches (state + commercial)</li>
+<li><strong>2022:</strong> 64 launches</li>
+<li><strong>2024:</strong> 67 launches</li>
+<li><strong>2025:</strong> ~80 launches (estimated)</li>
+<li><strong>2026:</strong> 100+ launches (planned)</li>
+</ul>
+
+<p>The growth is being driven primarily by the commercial sector. While state-owned CASC (China Aerospace Science and Technology Corporation) and CASIC (China Aerospace Science and Industry Corporation) continue to operate the Long March and Kuaizhou families, commercial providers now account for a rapidly growing share of total launches. In 2026, commercial companies are expected to conduct <strong>40-50 of the 100+ planned missions</strong> — a dramatic increase from near-zero just five years ago.</p>
+
+<h2 id="key-companies">The Key Companies to Watch</h2>
+
+<p>China's commercial space ecosystem includes dozens of startups, but five companies stand out as market leaders:</p>
+
+<h3>iSpace (Beijing Interstellar Glory Space Technology)</h3>
+<p>Founded in 2016, iSpace became the first Chinese private company to reach orbit in 2019 with its Hyperbola-1 solid rocket. The company is now developing <strong>Hyperbola-2</strong>, a medium-lift reusable vehicle with methane-LOX engines designed to compete with Falcon 9 on cost. iSpace has raised over $500 million and is targeting its first Hyperbola-2 flight in 2026, featuring a vertical landing attempt on the maiden mission — an ambitious but telling strategy.</p>
+
+<h3>Landspace (Zhejiang Landspace Technology)</h3>
+<p>Landspace made history in 2023 as the first company worldwide to successfully orbit a methane-fueled rocket — the <strong>Zhuque-2</strong> — beating SpaceX's Starship methane engine to orbit. The company has since conducted multiple successful launches and is scaling production. In 2026, Landspace is targeting <strong>10+ Zhuque-2 missions</strong> and continuing development of the larger, reusable <strong>Zhuque-3</strong>, designed to land propulsively and carry 20 tonnes to LEO. Zhuque-3's first flight is expected in late 2026.</p>
+
+<h3>Galactic Energy (Beijing Galactic Energy Technology)</h3>
+<p>Galactic Energy operates the <strong>Ceres-1</strong> solid-fuel small launcher, which has become one of China's most reliable commercial vehicles with an impressive launch cadence. The company is developing the <strong>Pallas-1</strong>, a kerosene-LOX medium-lift rocket with a reusable first stage. With multiple successful missions under its belt and strong commercial contracts, Galactic Energy is positioned as one of China's most operationally mature startups.</p>
+
+<h3>CAS Space (Chinese Academy of Sciences Space Technology)</h3>
+<p>A spinoff from the Chinese Academy of Sciences, CAS Space operates the <strong>Kinetica-1</strong> (Lijian-1) solid rocket, which set records as the world's most capable solid-fuel orbital vehicle at its debut. The company is developing the <strong>Kinetica-2</strong>, a reusable liquid-fueled medium-lift vehicle. CAS Space benefits from deep ties to China's premier research institution, giving it access to cutting-edge propulsion and materials technology.</p>
+
+<h3>Space Pioneer (Beijing Tianbing Technology)</h3>
+<p>Space Pioneer achieved orbit in 2023 with its <strong>Tianlong-2</strong> kerosene-LOX rocket and is now developing the <strong>Tianlong-3</strong>, a larger vehicle explicitly designed to match Falcon 9's performance class. The company made headlines in 2024 with an accidental test flight that demonstrated its engine capabilities in a spectacularly unplanned way. Space Pioneer's Tianlong-3 maiden flight is among the most anticipated launches of 2026.</p>
+
+<h2 id="reusable-rockets">11 Reusable Rockets: The Falcon 9 Effect</h2>
+
+<p>Perhaps the most significant trend in China's commercial space sector is the wholesale embrace of reusability. At least <strong>11 distinct reusable rocket models</strong> are in various stages of development:</p>
+
+<ul>
+<li><strong>Landspace Zhuque-3</strong> — Methane-LOX, vertical landing, 20t to LEO</li>
+<li><strong>iSpace Hyperbola-2</strong> — Methane-LOX, vertical landing</li>
+<li><strong>Space Pioneer Tianlong-3</strong> — Kerosene-LOX, Falcon 9-class</li>
+<li><strong>Galactic Energy Pallas-1</strong> — Kerosene-LOX, reusable first stage</li>
+<li><strong>CAS Space Kinetica-2</strong> — Liquid-fueled, reusable</li>
+<li><strong>Deep Blue Aerospace Nebula-1</strong> — Kerosene-LOX, vertical landing demonstrated</li>
+<li><strong>Orienspace Gravity-2</strong> — Reusable medium-lift</li>
+<li><strong>CASC Long March 10</strong> — State-developed crewed vehicle with reusable booster</li>
+<li><strong>CASIC Tengyun</strong> — Spaceplane concept with reusable first stage</li>
+<li><strong>LinkSpace (various)</strong> — VTVL demonstrators progressing to orbital class</li>
+<li><strong>ExPace Kuaizhou-3</strong> — CASIC subsidiary developing reusable variant</li>
+</ul>
+
+<p>The diversity of approaches mirrors the early American commercial space ecosystem — many competitors, varied technical strategies, and a Darwinian market that will eventually consolidate around two or three winners. The difference is the speed: China is compressing what took the U.S. a decade into roughly five years.</p>
+
+<h2 id="maiden-flights">8 Maiden Flights: 2026's Busiest Test Calendar</h2>
+
+<p>The 2026 launch calendar includes <strong>8 maiden flights</strong> of new Chinese launch vehicles — an extraordinary concentration of new hardware:</p>
+
+<ol>
+<li><strong>Landspace Zhuque-3</strong> — First flight of reusable methane mega-rocket</li>
+<li><strong>iSpace Hyperbola-2</strong> — Methane reusable with landing attempt</li>
+<li><strong>Space Pioneer Tianlong-3</strong> — Falcon 9-class kerosene vehicle</li>
+<li><strong>CAS Space Kinetica-2</strong> — CAS-derived medium-lift reusable</li>
+<li><strong>Orienspace Gravity-2</strong> — Follow-on to successful Gravity-1</li>
+<li><strong>CASC Long March 12</strong> — New state-developed medium-lift vehicle</li>
+<li><strong>Deep Blue Aerospace Nebula-1</strong> — First orbital attempt after VTVL demos</li>
+<li><strong>Galactic Energy Pallas-1</strong> — Reusable kerosene medium-lift</li>
+</ol>
+
+<p>Not all will succeed on the first attempt — maiden flights carry inherent risk, and even SpaceX's Falcon 1 required four tries to reach orbit. But even a 50% success rate would add four new operational vehicles to China's launch fleet, a pace of new vehicle introduction unmatched anywhere else in the world.</p>
+
+<h2 id="government-policy">Government Policy: The Invisible Hand</h2>
+
+<p>China's commercial space surge isn't happening in a vacuum. The Chinese government has implemented a deliberate industrial policy to foster commercial space competition:</p>
+
+<ul>
+<li><strong>State Council directives</strong> in 2014 and 2019 explicitly opened the launch sector to private investment</li>
+<li><strong>Local government incentives</strong> — provinces like Hainan, Anhui, and Shandong are offering land, tax breaks, and launch infrastructure to attract space companies</li>
+<li><strong>Hainan Commercial Launch Site</strong> — A dedicated commercial spaceport under construction, designed to provide low-latitude launch access for commercial providers</li>
+<li><strong>Constellation contracts</strong> — China's planned national broadband constellation (Qianfan/G60 and Guowang) will require thousands of satellite deployments, providing guaranteed launch demand for commercial providers</li>
+<li><strong>Military-civil fusion</strong> — Dual-use technology policies allow commercial companies to leverage state research institutions</li>
+</ul>
+
+<p>This model — state-directed market creation combined with private sector competition — has proven effective in other Chinese technology sectors, from electric vehicles to solar panels to telecommunications equipment. Whether it will produce a company that can compete globally with SpaceX remains to be seen, but the structural conditions are in place.</p>
+
+<h2 id="us-implications">U.S. Policy Implications and Competitive Dynamics</h2>
+
+<p>China's commercial space surge has significant implications for U.S. space policy and the broader competitive landscape:</p>
+
+<h3>Launch Market Competition</h3>
+<p>Chinese commercial launch providers are already offering prices 20-40% below Western competitors for non-ITAR payloads. If reusable vehicles achieve operational status, those prices could drop further. While ITAR restrictions prevent Chinese rockets from launching most Western satellites, the rest of the global market — including customers in Southeast Asia, the Middle East, Africa, and Latin America — is increasingly price-sensitive.</p>
+
+<h3>Technology Parity</h3>
+<p>The gap between Chinese and American launch technology is narrowing faster than many analysts expected. Landspace's methane engine reached orbit before SpaceX's Raptor. Chinese companies are demonstrating VTVL (vertical takeoff, vertical landing) capabilities that took SpaceX years to develop. While SpaceX retains a commanding lead in operational reusability and flight heritage, the technical foundations for Chinese reusability are being laid now.</p>
+
+<h3>Strategic Competition</h3>
+<p>The United States Space Force and intelligence community view China's space expansion through a national security lens. China's proliferated constellation plans mirror the U.S. Space Development Agency's architecture, and the overlap between commercial and military applications of Chinese space technology creates dual-use concerns. The U.S. is responding with increased investment in resilient space architectures and commercial space partnerships.</p>
+
+<h3>Allied Alignment</h3>
+<p>U.S. allies and partners face increasing pressure to choose between American and Chinese space ecosystems. The Artemis Accords (signed by 45+ nations) represent one framework; China's ILRS (International Lunar Research Station) partnership represents another. Commercial launch affordability could influence these strategic alignments.</p>
+
+<h2 id="what-to-watch">What to Watch in 2026</h2>
+
+<p>For space industry professionals tracking China's commercial surge, the key milestones to watch this year include:</p>
+
+<ul>
+<li><strong>Q1-Q2:</strong> Maiden flights of Tianlong-3 and Hyperbola-2 — success here validates the Falcon 9-class competitive threat</li>
+<li><strong>Q2-Q3:</strong> Zhuque-3 first flight — the most ambitious Chinese reusable vehicle, attempting methane vertical landing</li>
+<li><strong>Throughout 2026:</strong> Qianfan constellation deployment cadence — the rate of deployment reveals whether Chinese launch capacity can match constellation demand</li>
+<li><strong>Q4:</strong> Total launch count tracking — whether China actually crosses 100 launches reveals the gap between ambition and execution</li>
+</ul>
+
+<h2 id="the-bottom-line">The Bottom Line</h2>
+
+<p>China's commercial space surge is real, funded, and accelerating. The 100+ launch target for 2026 may prove ambitious, but even achieving 80-90 launches would represent extraordinary growth. With 11 reusable rockets in development, 8 maiden flights planned, and explicit government support, China is building the industrial base for sustained space access at scale.</p>
+
+<p>For the global space industry, the implications are clear: the era of American launch dominance is evolving into an era of <strong>great power space competition</strong>. Companies, investors, and policymakers who fail to account for China's commercial space trajectory risk being caught off guard by the most significant shift in the global launch market since the emergence of SpaceX.</p>
+
+<p>Track Chinese launch activity, company profiles, and competitive market dynamics through the SpaceNexus <a href="/market-intel">Market Intelligence</a> module. Monitor launch schedules on the <a href="/launch-manifest">Launch Manifest</a> and follow geopolitical space developments in our curated <a href="/news">News feed</a>.</p>
+`,
+  },
+  {
+    slug: 'space-industry-investment-guide-2026',
+    title: 'Space Industry Investment Guide: Where Smart Money Is Going in 2026',
+    excerpt: 'From launch providers to satellite operators to in-space services, here\'s a comprehensive guide to investing in the space economy — including the sectors, stocks, and strategies that are attracting the most capital in 2026.',
+    category: 'market',
+    author: 'SpaceNexus Team',
+    authorRole: 'Market Intelligence',
+    publishedAt: '2026-03-14T00:00:00Z',
+    readingTime: 12,
+    featured: true,
+    keywords: ['space investment', 'space stocks 2026', 'space industry ETF', 'space SPAC', 'satellite stocks', 'Rocket Lab stock', 'space venture capital', 'space portfolio', 'space economy investing', 'space industry funding'],
+    content: `
+<p>The space economy is no longer a niche investment thesis — it's a <strong>$630+ billion market</strong> growing at 9% annually toward a projected $1.8 trillion by 2035. From Rocket Lab's ascent as a multi-billion-dollar pure-play to the explosion of private funding in Earth observation AI, the space sector is offering investors more opportunities — and more complexity — than ever before.</p>
+
+<p>This guide breaks down the space investment landscape for 2026: the key sectors, the public market opportunities, the private market dynamics, and the portfolio strategies that separate informed space investors from tourists.</p>
+
+<h2 id="investment-landscape">The 2026 Space Investment Landscape</h2>
+
+<p>Space investing has matured significantly since the SPAC frenzy of 2021, when companies like Astra, Momentus, and Satellogic went public at speculative valuations. The post-SPAC hangover was brutal — many of those stocks declined 80-90% from their peaks. But the correction was healthy. It flushed out the weakest companies and reset expectations to align with operational reality.</p>
+
+<p>In 2026, the space investment landscape is characterized by:</p>
+
+<ul>
+<li><strong>Revenue maturation:</strong> Companies like Rocket Lab, Planet Labs, and Spire Global are generating meaningful, growing revenue — not just pitching TAM slides</li>
+<li><strong>Selective private funding:</strong> Venture capital in space has settled to ~$8 billion annually, concentrated in companies with clear paths to profitability</li>
+<li><strong>Defense tailwinds:</strong> U.S. Space Force and allied military spending on commercial space services is accelerating, providing government-backed revenue floors</li>
+<li><strong>Infrastructure buildout:</strong> The Starlink effect — demonstrating that space businesses can achieve massive scale — has pulled forward investment across the value chain</li>
+</ul>
+
+<h2 id="top-sectors">Top Sectors for Space Investment</h2>
+
+<h3>1. Launch Services</h3>
+<p>The launch sector is the gateway to space, and its economics are being fundamentally reshaped by reusability. Key dynamics:</p>
+
+<ul>
+<li><strong>SpaceX</strong> remains dominant with 60%+ market share and Falcon 9's unmatched flight cadence, but it's a private company — investors can only access it through secondary markets or a potential future IPO</li>
+<li><strong>Rocket Lab (RKLB)</strong> is the most investable pure-play launch company. With Electron achieving consistent profitability per mission, Neutron (medium-lift) in development, and a growing Space Systems division building satellite buses, RKLB has become a market darling — up over 400% from its 2022 lows</li>
+<li><strong>Blue Origin</strong> remains private, but New Glenn's entry into service creates competitive pressure that affects the entire sector</li>
+<li><strong>Emerging launchers:</strong> Relativity Space (Terran R), Stoke Space, and Chinese competitors are all pre-revenue but worth monitoring</li>
+</ul>
+
+<p><strong>Investment thesis:</strong> Launch is a natural monopoly/oligopoly market. The winner(s) will capture outsized returns as total launch demand grows 3-5x by 2030. Rocket Lab is the best public market proxy.</p>
+
+<h3>2. Satellite Communications</h3>
+<p>Satellite communications is the largest revenue segment in the space economy, and it's being transformed by LEO broadband constellations:</p>
+
+<ul>
+<li><strong>Starlink</strong> (SpaceX) is generating an estimated $6-8 billion in annual revenue with 4+ million subscribers. It's proven the market exists.</li>
+<li><strong>AST SpaceMobile (ASTS)</strong> is building a direct-to-device constellation that connects unmodified smartphones to satellites. High risk, enormous TAM — if it works, the addressable market is every unconnected phone on Earth</li>
+<li><strong>Globalstar (GSAT)</strong> is Apple's satellite partner, providing emergency SOS services on iPhones. Apple's majority investment provides financial stability and a path to broader D2D services</li>
+<li><strong>Iridium (IRDM)</strong> is the boring, profitable incumbent — steady cash flows from IoT, maritime, and aviation connectivity with low churn</li>
+<li><strong>SES (Euronext: SESG)</strong> and <strong>Intelsat</strong> (post-restructuring) represent the traditional GEO operator segment, which is facing secular decline but still generates significant free cash flow</li>
+</ul>
+
+<p><strong>Investment thesis:</strong> LEO broadband is a generational infrastructure buildout. ASTS offers the highest risk/reward; IRDM offers stability; GSAT offers Apple ecosystem exposure. Position size according to risk tolerance.</p>
+
+<h3>3. Earth Observation &amp; Geospatial Analytics</h3>
+<p>Earth observation (EO) is where space meets AI, and the combination is creating a new data intelligence market:</p>
+
+<ul>
+<li><strong>Planet Labs (PL)</strong> operates the largest fleet of Earth-imaging satellites, capturing the entire land surface daily. Revenue growing 15-20% annually with improving margins as the data flywheel accelerates</li>
+<li><strong>BlackSky Technology (BKSY)</strong> focuses on real-time intelligence and analytics, with strong defense and intelligence community contracts</li>
+<li><strong>Maxar (acquired by Advent International)</strong> was taken private in 2023 — a loss for public market investors but validation of the sector's value</li>
+<li><strong>Spire Global (SPIR)</strong> provides weather and maritime data from its CubeSat constellation, serving aviation, logistics, and climate customers</li>
+</ul>
+
+<p><strong>Investment thesis:</strong> EO data is becoming as essential as GPS data. The shift from selling images to selling AI-derived insights increases margins and stickiness. Planet is the market leader; BlackSky is the defense-focused play.</p>
+
+<h3>4. In-Space Services &amp; Infrastructure</h3>
+<p>The newest and potentially highest-growth segment encompasses everything that happens after launch:</p>
+
+<ul>
+<li><strong>Orbit Fab</strong> (private) is building gas stations in space — orbital refueling depots that extend satellite lifespans</li>
+<li><strong>Astroscale</strong> (private, IPO expected) is the leader in active debris removal, with demonstrated rendezvous and inspection capabilities</li>
+<li><strong>Redwire (RDW)</strong> is a public company focused on in-space manufacturing, 3D printing, and space infrastructure components</li>
+<li><strong>Varda Space Industries</strong> (private) is manufacturing pharmaceuticals in microgravity and returning them to Earth — a new commercial use case for space</li>
+<li><strong>Axiom Space</strong> (private) is building the first commercial modules for the ISS and planning a free-flying commercial station</li>
+</ul>
+
+<p><strong>Investment thesis:</strong> In-space services is pre-revenue for most players but represents the infrastructure layer of the future space economy. Redwire is the primary public market option. Watch for Astroscale's IPO.</p>
+
+<h2 id="notable-deals">Notable Deals and Funding Rounds in 2025-2026</h2>
+
+<p>The private space market has seen several significant transactions that signal where institutional capital is flowing:</p>
+
+<ul>
+<li><strong>SpaceX:</strong> Valued at $350+ billion in secondary markets, making it one of the most valuable private companies in the world. The rumored IPO of Starlink as a separate entity would be the space industry's defining liquidity event</li>
+<li><strong>Axiom Space:</strong> Raised $350 million in a Series D at a reported $4+ billion valuation, backed by sovereign wealth funds and strategic investors</li>
+<li><strong>Anduril Industries:</strong> Raised $1.5 billion at a $14 billion valuation — not purely a space company, but its expansion into space defense (including autonomous satellite systems) makes it increasingly relevant</li>
+<li><strong>Impulse Space:</strong> Raised $150 million for its orbital transfer vehicle, positioning to be the "FedEx of space" for last-mile satellite delivery</li>
+<li><strong>Varda Space Industries:</strong> Raised $90 million following successful in-space manufacturing demonstration missions</li>
+<li><strong>True Anomaly:</strong> Raised $100 million for space domain awareness and autonomous rendezvous technology, driven by Space Force demand</li>
+</ul>
+
+<h2 id="public-market-stocks">Public Market Space Stocks to Watch</h2>
+
+<p>For investors seeking public market exposure to the space economy, here are the key categories and tickers:</p>
+
+<h3>Pure-Play Space Companies</h3>
+<ul>
+<li><strong>Rocket Lab (RKLB)</strong> — Launch + Space Systems. The highest-conviction public space stock for many analysts</li>
+<li><strong>Planet Labs (PL)</strong> — Earth observation data. Growing revenue, improving margins, expanding government contracts</li>
+<li><strong>AST SpaceMobile (ASTS)</strong> — Direct-to-device satellite broadband. Binary outcome — massive upside if execution succeeds</li>
+<li><strong>Redwire (RDW)</strong> — In-space manufacturing and infrastructure components</li>
+<li><strong>Spire Global (SPIR)</strong> — Weather and maritime data from space</li>
+<li><strong>BlackSky Technology (BKSY)</strong> — Real-time geospatial intelligence</li>
+<li><strong>Iridium (IRDM)</strong> — Satellite communications incumbent with steady cash flows</li>
+<li><strong>Globalstar (GSAT)</strong> — Apple-backed satellite communications</li>
+</ul>
+
+<h3>Large-Cap Space Exposure</h3>
+<ul>
+<li><strong>L3Harris Technologies (LHX)</strong> — Major defense prime with significant space division (satellites, ground systems, sensors)</li>
+<li><strong>Northrop Grumman (NOC)</strong> — Builds the James Webb Space Telescope, operates Cygnus cargo spacecraft, key SDA contractor</li>
+<li><strong>RTX Corporation (RTX)</strong> — Collins Aerospace division provides critical space systems and components</li>
+<li><strong>Boeing (BA)</strong> — Starliner crew vehicle (troubled but funded), SLS core stage, satellite manufacturing</li>
+<li><strong>Lockheed Martin (LMT)</strong> — Orion spacecraft, GPS III satellites, missile warning systems</li>
+</ul>
+
+<h3>Space ETFs</h3>
+<ul>
+<li><strong>ARK Space Exploration &amp; Innovation ETF (ARKX)</strong> — Actively managed, includes both pure-play and adjacent companies</li>
+<li><strong>Procure Space ETF (UFO)</strong> — Focuses on companies deriving significant revenue from space</li>
+<li><strong>SPDR S&amp;P Kensho Final Frontiers ETF (ROKT)</strong> — Includes space and deep-sea exploration companies</li>
+</ul>
+
+<p>ETFs provide diversified exposure but often include non-space companies (ARKX famously holds John Deere and Netflix). For targeted exposure, individual stock selection tends to outperform.</p>
+
+<h2 id="building-a-portfolio">How to Build a Space Portfolio</h2>
+
+<p>Building a thoughtful space investment portfolio requires balancing growth potential with risk management. Here's a framework:</p>
+
+<h3>Core Holdings (50-60% of space allocation)</h3>
+<p>Companies with proven revenue, growing backlogs, and clear competitive moats:</p>
+<ul>
+<li>Rocket Lab (RKLB) — best-in-class execution, diversified revenue</li>
+<li>Iridium (IRDM) — stable cash flows, low churn satellite communications</li>
+<li>L3Harris (LHX) or Northrop Grumman (NOC) — large-cap defense/space exposure</li>
+</ul>
+
+<h3>Growth Holdings (25-35% of space allocation)</h3>
+<p>Companies with strong technology and large addressable markets but still proving unit economics:</p>
+<ul>
+<li>Planet Labs (PL) — Earth observation market leader with improving financials</li>
+<li>AST SpaceMobile (ASTS) — high-conviction D2D play (size appropriately for risk)</li>
+<li>Globalstar (GSAT) — Apple ecosystem satellite play</li>
+</ul>
+
+<h3>Speculative Holdings (10-15% of space allocation)</h3>
+<p>Smaller companies with outsized upside potential and corresponding risk:</p>
+<ul>
+<li>Redwire (RDW) — in-space manufacturing optionality</li>
+<li>BlackSky (BKSY) — defense intelligence data play</li>
+<li>Spire Global (SPIR) — weather and maritime data from space</li>
+</ul>
+
+<h3>Portfolio Management Principles</h3>
+<ul>
+<li><strong>Size positions by conviction:</strong> Your highest-conviction ideas should be your largest positions. Don't equal-weight a speculative CubeSat company with Rocket Lab</li>
+<li><strong>Watch for catalysts:</strong> Maiden flights, contract awards, earnings beats, and regulatory decisions all create entry/exit points. SpaceNexus's <a href="/market-intel">Market Intelligence</a> tracks these in real time</li>
+<li><strong>Monitor the private market:</strong> SpaceX's valuation, private funding rounds, and upcoming IPOs (Astroscale, potentially Starlink) all affect public market sentiment</li>
+<li><strong>Rebalance quarterly:</strong> Space stocks are volatile. Winners can double in a quarter; losers can halve. Regular rebalancing enforces discipline</li>
+<li><strong>Think in decades:</strong> The space economy is a 10-20 year secular growth story. Short-term volatility is noise. The trend — more launches, more satellites, more data, more services — is durable</li>
+</ul>
+
+<h2 id="risks">Key Risks for Space Investors</h2>
+
+<p>No investment guide is complete without a frank assessment of risks:</p>
+
+<ul>
+<li><strong>Execution risk:</strong> Rockets explode. Satellites fail. Timelines slip. Space is hard, and even well-funded companies face technical setbacks. The Starliner saga at Boeing is a cautionary tale</li>
+<li><strong>Valuation risk:</strong> Some space stocks trade at 15-30x revenue with no profitability. If growth disappoints, multiple compression can be severe</li>
+<li><strong>SpaceX concentration risk:</strong> SpaceX's dominance in launch, broadband, and increasingly other segments means it can disrupt any space company's business model. A Starlink IPO could also pull capital from smaller space stocks</li>
+<li><strong>Regulatory risk:</strong> Spectrum allocation, launch licensing, debris mitigation rules, and ITAR/export controls all affect space companies. Regulatory changes can create or destroy value quickly</li>
+<li><strong>Geopolitical risk:</strong> U.S.-China competition, sanctions, and allied alignment decisions affect supply chains, customer access, and government contract flows</li>
+<li><strong>Liquidity risk:</strong> Many space stocks are small-cap with limited trading volume. Bid-ask spreads can be wide, and large positions can be difficult to exit without moving the market</li>
+</ul>
+
+<h2 id="looking-ahead">Looking Ahead: 2026-2030 Catalysts</h2>
+
+<p>Several upcoming events could be transformative for space investments:</p>
+
+<ul>
+<li><strong>SpaceX Starlink IPO</strong> — If/when it happens, it would be the largest space industry liquidity event in history, potentially valued at $100+ billion</li>
+<li><strong>Artemis missions</strong> — Artemis II (crewed lunar flyby) and III (lunar landing) will drive cislunar economy investment</li>
+<li><strong>AST SpaceMobile commercial service</strong> — Successful D2D broadband deployment would validate a multi-trillion-dollar TAM</li>
+<li><strong>Commercial space station transition</strong> — ISS decommissioning by 2030 creates a must-fund replacement market</li>
+<li><strong>Chinese constellation deployment</strong> — Qianfan and Guowang constellations (13,000+ satellites planned) will reshape the global satellite market</li>
+<li><strong>Space Force budget growth</strong> — Continued increases in military space spending provide a revenue floor for defense-oriented space companies</li>
+</ul>
+
+<h2 id="the-bottom-line">The Bottom Line</h2>
+
+<p>The space economy in 2026 offers the most compelling investment opportunity since the early days of the internet — a massive, growing addressable market with improving unit economics, increasing government support, and technology maturation that is turning science fiction into revenue. But it requires discipline: not every space company will survive, valuations can detach from fundamentals, and the sector's inherent technical risk demands appropriate position sizing.</p>
+
+<p>The smart money isn't just investing in space — it's investing in the <strong>right parts</strong> of space, at the <strong>right valuations</strong>, with the <strong>right time horizons</strong>. Use this guide as a starting framework, but do your own due diligence, monitor the data continuously, and adjust as the market evolves.</p>
+
+<p>Track space stocks, funding rounds, and market trends in real time with SpaceNexus's <a href="/space-capital">Space Capital Tracker</a>. Monitor company fundamentals in <a href="/market-intel">Market Intelligence</a>, and follow launch catalysts on the <a href="/launch-manifest">Launch Manifest</a>.</p>
+
+<p><em>Disclaimer: This article is for informational purposes only and does not constitute investment advice. Space investments carry significant risk, including the potential loss of principal. Always consult a qualified financial advisor before making investment decisions.</em></p>
+`,
+  },
 ];
 
 export function getBlogPost(slug: string): OriginalBlogPost | undefined {

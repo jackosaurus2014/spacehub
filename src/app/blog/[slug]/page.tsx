@@ -43,6 +43,8 @@ const BLOG_CTA_MAP: Record<string, { tool: string; path: string }> = {
   'golden-dome-space-missile-defense-program': { tool: 'Space Defense', path: '/space-defense' },
   'direct-to-device-satellites-replace-cell-towers': { tool: 'Satellite Tracker', path: '/satellites' },
   'commercial-space-stations-race-to-replace-iss': { tool: 'Space Stations', path: '/space-stations' },
+  'china-commercial-space-surge-2026': { tool: 'Market Intelligence', path: '/market-intel' },
+  'space-industry-investment-guide-2026': { tool: 'Space Capital Tracker', path: '/space-capital' },
 };
 
 type Props = {

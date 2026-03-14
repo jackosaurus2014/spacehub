@@ -4,8 +4,11 @@ import ScrollReveal from '@/components/ui/ScrollReveal';
 
 const DATA_SOURCES = [
   { name: 'NASA', description: 'Launch data, planetary science, mission updates' },
+  { name: 'ESA', description: 'European Space Agency mission and research data' },
   { name: 'NOAA', description: 'Space weather, solar activity, geomagnetic data' },
+  { name: 'SpaceX', description: 'Launch manifests, Starlink, and mission data' },
   { name: 'SAM.gov', description: 'Government procurement opportunities' },
+  { name: 'SEC EDGAR', description: 'Space company financial filings and disclosures' },
   { name: 'FCC', description: 'Spectrum filings and satellite licensing' },
   { name: 'FAA', description: 'Launch licensing and commercial space data' },
   { name: 'CelesTrak', description: 'Two-line element sets for satellite tracking' },
@@ -25,7 +28,7 @@ export default function TrustSignals() {
         <ScrollReveal>
           <div className="text-center mb-10">
             <h2 className="text-display text-3xl md:text-4xl text-white mb-3">
-              Powered by Authoritative Data
+              Powered by Real Data
             </h2>
             <p className="text-slate-400 text-sm max-w-xl mx-auto">
               SpaceNexus aggregates real-time data from government agencies, industry feeds, and curated sources
@@ -33,7 +36,33 @@ export default function TrustSignals() {
           </div>
         </ScrollReveal>
 
-        {/* Data Source Badges */}
+        {/* Primary Data Provenance Badges */}
+        <ScrollReveal delay={0.05}>
+          <div className="mb-8 max-w-4xl mx-auto">
+            <div className="rounded-2xl bg-white/[0.02] border border-white/[0.06] py-5 px-6">
+              <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3">
+                {[
+                  { name: 'NASA', accent: 'text-blue-400' },
+                  { name: 'ESA', accent: 'text-sky-400' },
+                  { name: 'NOAA', accent: 'text-cyan-400' },
+                  { name: 'SpaceX', accent: 'text-slate-200' },
+                  { name: 'SAM.gov', accent: 'text-amber-400' },
+                  { name: 'SEC EDGAR', accent: 'text-emerald-400' },
+                  { name: 'FCC', accent: 'text-violet-400' },
+                ].map((src, i, arr) => (
+                  <div key={src.name} className="flex items-center gap-4">
+                    <span className={`${src.accent} font-bold text-sm sm:text-base tracking-wide`}>{src.name}</span>
+                    {i < arr.length - 1 && (
+                      <span className="hidden sm:inline-block w-px h-4 bg-white/[0.08]" />
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </ScrollReveal>
+
+        {/* Detailed Data Source Badges with tooltips */}
         <ScrollReveal delay={0.1}>
           <div className="flex flex-wrap justify-center gap-3 mb-12 max-w-3xl mx-auto">
             {DATA_SOURCES.map((source) => (

@@ -182,6 +182,35 @@ export default function LandingHero() {
 
       {/* Bottom gradient divider */}
       <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-black to-transparent z-[2]" />
+
+      {/* Live Stats Ticker Bar — above the fold, below hero content */}
+      <div className="absolute bottom-0 left-0 right-0 z-10">
+        <div className="bg-white/[0.03] backdrop-blur-sm border-t border-white/[0.06]">
+          <div className="container mx-auto px-4">
+            <div className="flex items-center justify-center divide-x divide-white/[0.08] py-3">
+              {[
+                { value: '30+', label: 'Modules' },
+                { value: '200+', label: 'Companies' },
+                { value: '10,000+', label: 'Data Points' },
+                { value: '', label: 'Updated Every 5 Minutes', pulse: true },
+              ].map((item) => (
+                <div key={item.label} className="flex items-center gap-2 px-4 sm:px-6 md:px-8">
+                  {item.pulse && (
+                    <span className="relative flex h-1.5 w-1.5">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                      <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-400" />
+                    </span>
+                  )}
+                  {item.value && (
+                    <span className="text-white font-semibold text-xs sm:text-sm">{item.value}</span>
+                  )}
+                  <span className="text-slate-400 text-[10px] sm:text-xs tracking-wide">{item.label}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
     </section>
   );
 }
