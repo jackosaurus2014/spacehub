@@ -356,7 +356,7 @@ export default function MobileBottomNav() {
         >
           {/* Handle / close header */}
           <div className="sticky top-0 z-10 bg-black/95 backdrop-blur-sm border-b border-white/[0.06] px-4 pt-3 pb-2 flex items-center justify-between">
-            <span className="text-sm font-semibold text-slate-300 tracking-wide uppercase">
+            <span className="text-sm font-semibold text-white/70 tracking-wide uppercase">
               All Modules
             </span>
             <button
@@ -392,7 +392,7 @@ export default function MobileBottomNav() {
                         className={`flex flex-col items-center justify-center min-h-[72px] min-w-[44px] px-2 py-3 rounded-xl transition-all duration-200 ${
                           active
                             ? 'bg-white/[0.08] text-white ring-1 ring-white/[0.1]'
-                            : 'text-slate-400 hover:bg-white/[0.05] hover:text-slate-200 active:bg-white/[0.08]'
+                            : 'text-slate-400 hover:bg-white/[0.05] hover:text-white/90 active:bg-white/[0.08]'
                         }`}
                       >
                         <NavIcon icon={item.icon} className="w-6 h-6 mb-1.5" />
@@ -435,7 +435,7 @@ export default function MobileBottomNav() {
                 className={`relative flex flex-col items-center justify-center flex-1 h-full min-w-[44px] min-h-[44px] px-2 transition-all duration-200 ${
                   active
                     ? 'text-white'
-                    : 'text-slate-400 hover:text-slate-200 active:text-white'
+                    : 'text-slate-400 hover:text-white/90 active:text-white'
                 }`}
               >
                 {/* Active indicator */}
@@ -479,7 +479,7 @@ export default function MobileBottomNav() {
             className={`relative flex flex-col items-center justify-center flex-1 h-full min-w-[44px] min-h-[44px] px-2 transition-all duration-200 ${
               moreOpen || moreRouteActive
                 ? 'text-white'
-                : 'text-slate-400 hover:text-slate-200 active:text-white'
+                : 'text-slate-400 hover:text-white/90 active:text-white'
             }`}
           >
             {/* Active indicator when a "more" route is active */}

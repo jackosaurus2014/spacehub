@@ -205,7 +205,7 @@ export default function SearchSuggestions({
       {groups.map((group) => (
         <div key={group.label}>
           <div className="px-4 py-1.5">
-            <span className="text-[10px] font-semibold uppercase tracking-widest text-slate-300/60">
+            <span className="text-[10px] font-semibold uppercase tracking-widest text-white/70/60">
               {group.label}
             </span>
           </div>

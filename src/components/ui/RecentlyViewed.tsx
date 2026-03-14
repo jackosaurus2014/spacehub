@@ -86,7 +86,7 @@ export default function RecentlyViewed() {
                     onClick={() => setIsOpen(false)}
                     className="flex items-center justify-between px-4 py-2.5 hover:bg-white/[0.08] transition-colors group"
                   >
-                    <span className="text-sm text-slate-300 group-hover:text-white transition-colors truncate mr-3">
+                    <span className="text-sm text-white/70 group-hover:text-white transition-colors truncate mr-3">
                       {item.title}
                     </span>
                     <span className="text-xs text-slate-400 whitespace-nowrap flex-shrink-0">
@@ -106,7 +106,7 @@ export default function RecentlyViewed() {
                   clearRecent();
                   setIsOpen(false);
                 }}
-                className="text-xs text-slate-400 hover:text-slate-300 transition-colors w-full text-center"
+                className="text-xs text-slate-400 hover:text-white/70 transition-colors w-full text-center"
               >
                 Clear history
               </button>

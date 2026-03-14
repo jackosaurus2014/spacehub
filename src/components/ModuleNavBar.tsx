@@ -79,7 +79,7 @@ export default function ModuleNavBar() {
             {prevModule && (
               <button
                 onClick={() => navigateTo(prevModule.moduleId)}
-                className="group flex items-center gap-1 sm:gap-2 px-2 py-2 sm:px-4 sm:py-3 rounded-xl bg-white/[0.05] hover:bg-white/[0.08] border border-white/[0.08] hover:border-white/[0.1] text-slate-200 hover:text-white transition-all duration-300 shadow-lg shadow-black/10 hover:shadow-black/15 hover:scale-[1.03] active:scale-95 touch-target"
+                className="group flex items-center gap-1 sm:gap-2 px-2 py-2 sm:px-4 sm:py-3 rounded-xl bg-white/[0.05] hover:bg-white/[0.08] border border-white/[0.08] hover:border-white/[0.1] text-white/90 hover:text-white transition-all duration-300 shadow-lg shadow-black/10 hover:shadow-black/15 hover:scale-[1.03] active:scale-95 touch-target"
                 title={`Previous: ${prevModule.name}`}
               >
                 <svg className="w-5 h-5 sm:w-6 sm:h-6 group-hover:-translate-x-1 transition-transform duration-300 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -87,7 +87,7 @@ export default function ModuleNavBar() {
                 </svg>
                 <div className="hidden sm:flex flex-col items-start leading-tight">
                   <span className="text-sm font-bold tracking-wide">Previous</span>
-                  <span className="text-xs text-slate-300/80 truncate max-w-[140px]">
+                  <span className="text-xs text-white/70/80 truncate max-w-[140px]">
                     {prevModule.name}
                   </span>
                 </div>
@@ -147,7 +147,7 @@ export default function ModuleNavBar() {
                                   }`}
                                 >
                                   <span className="text-xl w-8 text-center">{module.icon}</span>
-                                  <span className={`flex-1 truncate text-sm sm:text-base ${isActive ? 'text-slate-200 font-medium' : 'text-slate-300'}`}>
+                                  <span className={`flex-1 truncate text-sm sm:text-base ${isActive ? 'text-white/90 font-medium' : 'text-white/70'}`}>
                                     {module.name}
                                   </span>
                                   <span className={`text-xs font-medium px-2 py-1 rounded border ${moduleTier.bgColor} ${moduleTier.color}`}>
@@ -169,12 +169,12 @@ export default function ModuleNavBar() {
             {nextModule && (
               <button
                 onClick={() => navigateTo(nextModule.moduleId)}
-                className="group flex items-center gap-1 sm:gap-2 px-2 py-2 sm:px-4 sm:py-3 rounded-xl bg-white/[0.05] hover:bg-white/[0.08] border border-white/[0.08] hover:border-white/[0.1] text-slate-200 hover:text-white transition-all duration-300 shadow-lg shadow-black/10 hover:shadow-black/15 hover:scale-[1.03] active:scale-95 touch-target"
+                className="group flex items-center gap-1 sm:gap-2 px-2 py-2 sm:px-4 sm:py-3 rounded-xl bg-white/[0.05] hover:bg-white/[0.08] border border-white/[0.08] hover:border-white/[0.1] text-white/90 hover:text-white transition-all duration-300 shadow-lg shadow-black/10 hover:shadow-black/15 hover:scale-[1.03] active:scale-95 touch-target"
                 title={`Next: ${nextModule.name}`}
               >
                 <div className="hidden sm:flex flex-col items-end leading-tight">
                   <span className="text-sm font-bold tracking-wide">Next</span>
-                  <span className="text-xs text-slate-300/80 truncate max-w-[140px]">
+                  <span className="text-xs text-white/70/80 truncate max-w-[140px]">
                     {nextModule.name}
                   </span>
                 </div>
@@ -249,8 +249,8 @@ export default function ModuleNavBar() {
       {/* Keyboard Hint — desktop only */}
       <div className="hidden sm:block text-center mt-2">
         <span className="text-xs text-slate-400">
-          Use <kbd className="px-1.5 py-0.5 rounded bg-white/[0.08] text-slate-300 border border-white/[0.08] font-mono text-xs">←</kbd>{' '}
-          <kbd className="px-1.5 py-0.5 rounded bg-white/[0.08] text-slate-300 border border-white/[0.08] font-mono text-xs">→</kbd> arrow keys to navigate modules
+          Use <kbd className="px-1.5 py-0.5 rounded bg-white/[0.08] text-white/70 border border-white/[0.08] font-mono text-xs">←</kbd>{' '}
+          <kbd className="px-1.5 py-0.5 rounded bg-white/[0.08] text-white/70 border border-white/[0.08] font-mono text-xs">→</kbd> arrow keys to navigate modules
         </span>
       </div>
     </div>

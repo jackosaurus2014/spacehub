@@ -70,10 +70,10 @@ export default function HowItWorks() {
               className="group flex flex-col items-center text-center cursor-default"
             >
               <div className="relative z-10 w-20 h-20 rounded-full bg-white/[0.05] backdrop-blur-sm border border-white/[0.08] flex items-center justify-center mb-5 group-hover:border-white/15 transition-all duration-200 ease-smooth">
-                <span className="absolute -top-1.5 -right-1.5 w-7 h-7 rounded-full bg-black border border-white/[0.12] text-xs font-bold text-slate-300 flex items-center justify-center">
+                <span className="absolute -top-1.5 -right-1.5 w-7 h-7 rounded-full bg-black border border-white/[0.12] text-xs font-bold text-white/70 flex items-center justify-center">
                   {s.step}
                 </span>
-                <span className="text-slate-300 group-hover:text-white transition-colors duration-200">{s.icon}</span>
+                <span className="text-white/70 group-hover:text-white transition-colors duration-200">{s.icon}</span>
               </div>
               <h3 className="text-lg font-semibold text-white mb-2 group-hover:text-white transition-colors duration-200">{s.title}</h3>
               <p className="text-sm text-slate-400 leading-relaxed max-w-xs">{s.description}</p>

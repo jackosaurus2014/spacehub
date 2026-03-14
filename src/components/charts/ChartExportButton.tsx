@@ -33,7 +33,7 @@ export default function ChartExportButton({
       <button
         type="button"
         onClick={handleCSV}
-        className="flex items-center gap-1 px-2 py-1 text-xs font-medium rounded bg-white/[0.08] hover:bg-white/[0.1] text-white/70 hover:text-slate-100 transition-colors duration-150"
+        className="flex items-center gap-1 px-2 py-1 text-xs font-medium rounded bg-white/[0.08] hover:bg-white/[0.1] text-white/70 hover:text-white transition-colors duration-150"
         aria-label="Export data as CSV"
       >
         <DownloadIcon />
@@ -42,7 +42,7 @@ export default function ChartExportButton({
       <button
         type="button"
         onClick={handlePNG}
-        className="flex items-center gap-1 px-2 py-1 text-xs font-medium rounded bg-white/[0.08] hover:bg-white/[0.1] text-white/70 hover:text-slate-100 transition-colors duration-150"
+        className="flex items-center gap-1 px-2 py-1 text-xs font-medium rounded bg-white/[0.08] hover:bg-white/[0.1] text-white/70 hover:text-white transition-colors duration-150"
         aria-label="Export chart as PNG"
       >
         <DownloadIcon />

@@ -38,7 +38,7 @@ const typeStyles: Record<ToastType, {
   info: {
     border: 'border-white/15',
     bg: 'bg-white/5',
-    text: 'text-slate-300',
+    text: 'text-white/70',
     progress: 'bg-white',
     icon: 'M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z',
   },
@@ -142,7 +142,7 @@ function ToastItem({ toast, onRemove }: ToastItemProps) {
               {title}
             </p>
           )}
-          <p className="text-sm text-slate-300 leading-snug">
+          <p className="text-sm text-white/70 leading-snug">
             {message}
           </p>
         </div>

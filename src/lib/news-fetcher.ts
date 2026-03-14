@@ -406,7 +406,9 @@ async function fetchSingleRSSFeed(feed: RSSFeedSource): Promise<number> {
           ? categorizeArticle(item.title, cleanSummary)
           : (feed.defaultCategory || 'missions');
 
-        const publishedAt = item.pubDate ? new Date(item.pubDate) : new Date();
+        const rawDate = item.pubDate ? new Date(item.pubDate) : new Date();
+        // Cap future dates to now (RSS feeds with timezone offsets can appear in the future)
+        const publishedAt = rawDate > new Date() ? new Date() : rawDate;
         // Skip articles older than 7 days
         const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
         if (publishedAt < sevenDaysAgo) continue;

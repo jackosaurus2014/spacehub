@@ -695,7 +695,7 @@ export default function SearchCommandPalette() {
         {/* Search Input */}
         <div className="flex items-center px-4 border-b border-white/10">
           <svg
-            className="w-5 h-5 text-slate-300 mr-3"
+            className="w-5 h-5 text-white/70 mr-3"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -754,7 +754,7 @@ export default function SearchCommandPalette() {
             Object.entries(groupedItems).map(([category, items]) => (
               <div key={category}>
                 <div className="px-4 py-2">
-                  <span className="text-xs font-semibold uppercase tracking-wider text-slate-300/80">
+                  <span className="text-xs font-semibold uppercase tracking-wider text-white/70/80">
                     {category}
                   </span>
                 </div>
@@ -788,13 +788,13 @@ export default function SearchCommandPalette() {
                         <div className="flex items-center gap-2">
                           <span
                             className={`font-medium ${
-                              isSelected ? 'text-slate-200' : 'text-slate-200'
+                              isSelected ? 'text-white/90' : 'text-white/90'
                             }`}
                           >
                             {item.label}
                           </span>
                           {item.type === 'recent' && (
-                            <span className="text-xs px-1.5 py-0.5 rounded bg-white/10 text-slate-300 border border-white/10">
+                            <span className="text-xs px-1.5 py-0.5 rounded bg-white/10 text-white/70 border border-white/10">
                               Recent
                             </span>
                           )}
@@ -848,7 +848,7 @@ export default function SearchCommandPalette() {
               <span className="ml-1">Close</span>
             </span>
           </div>
-          <span className="text-slate-300/60">SpaceNexus</span>
+          <span className="text-white/70/60">SpaceNexus</span>
         </div>
       </div>
     </div>
