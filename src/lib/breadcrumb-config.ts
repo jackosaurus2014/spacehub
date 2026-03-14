@@ -54,6 +54,7 @@ export const ROUTE_LABELS: Record<string, string> = {
   '/cislunar': 'Cislunar Ecosystem',
   '/asteroid-watch': 'Asteroid Watch',
   '/space-environment': 'Space Environment',
+  '/earth-events': 'Earth Events',
 
   // ── Intelligence ──
   '/market-intel': 'Market Intelligence',

@@ -2,7 +2,7 @@ import { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Space Defense & National Security',
-  description: 'Open-source intelligence on military space programs, Space Force procurement, counterspace threats, allied cooperation, and defense contractor analysis.',
+  description: 'Track global space defense programs, military satellite constellations, and $95B+ in government space spending across 15+ nations.',
   keywords: [
     'space defense',
     'Space Force',
@@ -13,13 +13,13 @@ export const metadata: Metadata = {
   ],
   openGraph: {
     title: 'Space Defense & National Security | SpaceNexus',
-    description: 'Open-source intelligence on military space programs, Space Force, and counterspace threats.',
+    description: 'Track global space defense programs, military satellite constellations, and $95B+ in government space spending across 15+ nations.',
     url: 'https://spacenexus.us/space-defense',
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Space Defense & National Security | SpaceNexus',
-    description: 'Open-source intelligence on military space programs, Space Force, and counterspace threats.',
+    description: 'Track global space defense programs, military satellite constellations, and $95B+ in government space spending across 15+ nations.',
   },
   alternates: {
     canonical: 'https://spacenexus.us/space-defense',

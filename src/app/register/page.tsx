@@ -58,6 +58,7 @@ export default function RegisterPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [agreedToDisclaimer, setAgreedToDisclaimer] = useState(false);
+  const [role, setRole] = useState('');
   const [disclaimerOpen, setDisclaimerOpen] = useState(false);
   const passwordStrength = useMemo(() => getPasswordStrength(password), [password]);
   const [touched, setTouched] = useState<Record<string, boolean>>({});
@@ -94,7 +95,7 @@ export default function RegisterPage() {
       const res = await fetch('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, password }),
+        body: JSON.stringify({ name, email, password, role: role || undefined }),
       });
 
       const data = await res.json();
@@ -106,6 +107,10 @@ export default function RegisterPage() {
         return;
       }
 
+      // Store selected role for future personalization
+      if (role) {
+        try { localStorage.setItem('spacenexus-user-role', role); } catch { /* ignore */ }
+      }
       toast.success('Account created! Please check your email to verify.');
       router.push('/login?registered=true');
     } catch {
@@ -285,6 +290,51 @@ export default function RegisterPage() {
               {confirmPasswordError && (
                 <p id="confirmPassword-error" className="text-red-400 text-sm mt-1">{confirmPasswordError}</p>
               )}
+            </div>
+
+            <div>
+              <label className="block text-slate-400 text-sm mb-2">
+                What brings you to SpaceNexus?
+              </label>
+              <div className="grid grid-cols-1 gap-2">
+                {[
+                  'Space Industry Investor',
+                  'Aerospace Engineer',
+                  'Policy & Regulatory Analyst',
+                  'Space Startup Founder',
+                  'Defense & Intelligence',
+                  'Space Enthusiast',
+                  'Other',
+                ].map((option) => (
+                  <label
+                    key={option}
+                    className={`flex items-center gap-3 px-3 py-2.5 rounded-lg border cursor-pointer transition-all text-sm ${
+                      role === option
+                        ? 'border-white/20 bg-white/[0.08] text-white'
+                        : 'border-white/[0.06] bg-white/[0.02] text-slate-400 hover:border-white/10 hover:text-slate-300'
+                    }`}
+                  >
+                    <input
+                      type="radio"
+                      name="role"
+                      value={option}
+                      checked={role === option}
+                      onChange={(e) => setRole(e.target.value)}
+                      className="sr-only"
+                    />
+                    <span className={`flex-shrink-0 w-4 h-4 rounded-full border-2 flex items-center justify-center transition-colors ${
+                      role === option
+                        ? 'border-white bg-white'
+                        : 'border-white/20'
+                    }`}>
+                      {role === option && (
+                        <span className="w-1.5 h-1.5 rounded-full bg-slate-900" />
+                      )}
+                    </span>
+                    {option}
+                  </label>
+                ))}
+              </div>
             </div>
 
             <div className="flex items-start gap-3">

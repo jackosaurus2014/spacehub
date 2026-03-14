@@ -44,6 +44,7 @@ const ScrollProgress = dynamic(() => import('@/components/ui/ScrollProgress'), {
 const WebVitals = dynamic(() => import('@/components/analytics/WebVitals'), { ssr: false });
 const ErrorReporter = dynamic(() => import('@/components/ErrorReporter'), { ssr: false });
 import ModuleNavBar from '@/components/ModuleNavBar';
+import AutoBreadcrumb from '@/components/ui/AutoBreadcrumb';
 
 const inter = Inter({ subsets: ['latin'], display: 'swap' });
 const orbitron = Orbitron({ subsets: ['latin'], variable: '--font-orbitron', display: 'optional' });
@@ -217,6 +218,7 @@ export default function RootLayout({
               <QuickAccessSidebar />
               <main id="main-content" className="flex-1 lg:pl-16 pb-[calc(4rem+env(safe-area-inset-bottom,0px))] lg:pb-0" tabIndex={-1}>
                 <ModuleNavBar />
+                <AutoBreadcrumb />
                 <TrialCountdownBanner />
                 <PageTransitionProvider>
                   {children}
