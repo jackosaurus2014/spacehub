@@ -202,6 +202,18 @@ export default async function BlogPostPage({ params }: Props) {
           dangerouslySetInnerHTML={{ __html: sanitizeHtml(post.content, SAFE_HTML_CONFIG) }}
         />
 
+        {/* Share This Article */}
+        <div className="mt-12 pt-8 border-t border-white/[0.06]">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <p className="text-sm font-medium text-white/70">Share this article</p>
+            <SocialShare
+              title={post.title}
+              url={`https://spacenexus.us/blog/${post.slug}`}
+              description={post.excerpt}
+            />
+          </div>
+        </div>
+
         {/* Topic-Aware CTA */}
         {BLOG_CTA_MAP[post.slug] && (
           <div className="mt-12 p-5 bg-white/10 border border-white/10 rounded-xl flex items-center justify-between gap-4">

@@ -424,6 +424,40 @@ function MarketIntelContent() {
       <div className="container mx-auto px-4">
         <AnimatedPageHeader title="Market Intel" subtitle="Track space industry companies, stock performance, and funding rounds" icon="📊" accentColor="emerald" breadcrumb="Dashboard → Market Intel" />
 
+        {/* ═══════ SpaceX IPO Market Alert ═══════ */}
+        <Link href="/blog/spacex-ipo-what-it-means-for-space-investors" className="block mb-6 group">
+          <div className="relative overflow-hidden rounded-xl border border-amber-500/20 bg-gradient-to-r from-amber-950/30 via-slate-900 to-amber-950/20 p-5 sm:p-6 hover:border-amber-400/40 transition-all duration-300">
+            {/* Subtle amber glow */}
+            <div className="absolute top-0 right-0 w-40 h-40 bg-amber-500/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/4" />
+
+            <div className="relative flex flex-col sm:flex-row sm:items-center gap-4">
+              <div className="flex items-center gap-3 shrink-0">
+                <span className="flex items-center justify-center w-10 h-10 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-400 text-lg font-bold">!</span>
+                <div>
+                  <span className="text-[10px] font-semibold uppercase tracking-widest text-amber-400/80">Market Alert</span>
+                  <h3 className="text-lg font-bold font-display text-white group-hover:text-amber-300 transition-colors">SpaceX IPO Watch</h3>
+                </div>
+              </div>
+
+              <div className="flex-1 min-w-0">
+                <p className="text-sm text-slate-300 font-medium">
+                  Potential <span className="text-amber-400 font-semibold">$1.5&ndash;1.75T</span> valuation&nbsp;&nbsp;|&nbsp;&nbsp;Expected <span className="text-amber-400 font-semibold">June 2026</span>
+                </p>
+                <p className="text-xs text-slate-400 mt-1">
+                  The largest IPO in history could reshape the space investment landscape
+                </p>
+              </div>
+
+              <div className="shrink-0 flex items-center gap-1.5 text-xs text-amber-400 font-medium group-hover:gap-2.5 transition-all whitespace-nowrap">
+                Read analysis
+                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                </svg>
+              </div>
+            </div>
+          </div>
+        </Link>
+
         <div className="mb-4">
           <DataFreshnessBadge
             lastUpdated={lastUpdated}

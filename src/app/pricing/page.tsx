@@ -615,6 +615,28 @@ function PricingPageContent() {
           </div>
         </ScrollReveal>
 
+        {/* Social Proof Stats */}
+        <ScrollReveal>
+          <div className="max-w-4xl mx-auto mb-8 text-center">
+            <p className="text-sm font-semibold text-white/80 mb-3">
+              Trusted by space professionals worldwide
+            </p>
+            <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm text-slate-400">
+              <span className="flex items-center gap-1.5">
+                <span className="text-white font-bold">200+</span> company profiles
+              </span>
+              <span className="hidden sm:inline text-slate-600" aria-hidden="true">|</span>
+              <span className="flex items-center gap-1.5">
+                <span className="text-white font-bold">30+</span> data modules
+              </span>
+              <span className="hidden sm:inline text-slate-600" aria-hidden="true">|</span>
+              <span className="flex items-center gap-1.5">
+                <span className="text-white font-bold">10,000+</span> data points updated daily
+              </span>
+            </div>
+          </div>
+        </ScrollReveal>
+
         <AnimatedPageHeader title="Choose Your Plan" subtitle="Unlock the full power of space intelligence" icon="💎" accentColor="purple" />
 
         {/* Audience strip */}

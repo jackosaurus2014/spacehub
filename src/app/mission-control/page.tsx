@@ -917,6 +917,44 @@ function LiveStreamEmbed({ event }: { event: SpaceEvent }) {
   );
 }
 
+// ════════════════════════════════════════
+// Artemis II Countdown Component
+// ════════════════════════════════════════
+
+function ArtemisCountdown() {
+  const LAUNCH_DATE = new Date('2026-04-01T00:00:00Z').getTime();
+  const [now, setNow] = useState(Date.now());
+
+  useEffect(() => {
+    const timer = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const diff = Math.max(0, LAUNCH_DATE - now);
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+  const minutes = Math.floor((diff / (1000 * 60)) % 60);
+  const seconds = Math.floor((diff / 1000) % 60);
+
+  const units = [
+    { label: 'Days', value: days },
+    { label: 'Hrs', value: hours },
+    { label: 'Min', value: minutes },
+    { label: 'Sec', value: seconds },
+  ];
+
+  return (
+    <div className="flex gap-2 justify-center lg:justify-end">
+      {units.map((u) => (
+        <div key={u.label} className="flex flex-col items-center bg-white/[0.04] border border-white/[0.06] rounded-lg px-3 py-2 min-w-[52px]">
+          <span className="text-2xl sm:text-3xl font-bold font-display tracking-tight text-white tabular-nums">{String(u.value).padStart(2, '0')}</span>
+          <span className="text-[10px] uppercase tracking-widest text-slate-500 font-medium">{u.label}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 function MissionControlContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -1058,6 +1096,51 @@ function MissionControlContent() {
         <AnimatedPageHeader title="Mission Control" subtitle="Explore all upcoming space missions, launches, and events" icon="🚀" accentColor="cyan" />
 
         <AlertNudge moduleName="Mission Control" alertType="launch" ctaHref="/alerts" className="mb-4" />
+
+        {/* ═══════ Artemis II Countdown Card ═══════ */}
+        <ScrollReveal>
+        <Link href="/blog/artemis-ii-moon-mission-everything-you-need-to-know" className="block mb-8 group">
+          <div className="relative overflow-hidden rounded-2xl border border-cyan-500/20 bg-gradient-to-r from-slate-900 via-slate-800/80 to-slate-900 p-6 sm:p-8 hover:border-cyan-400/40 transition-all duration-300">
+            {/* Background glow effect */}
+            <div className="absolute top-0 right-0 w-64 h-64 bg-cyan-500/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+            <div className="absolute bottom-0 left-0 w-48 h-48 bg-blue-500/5 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
+
+            <div className="relative flex flex-col lg:flex-row lg:items-center gap-6">
+              {/* Left: Mission Info */}
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-xs font-semibold uppercase tracking-widest text-cyan-400 bg-cyan-400/10 px-2.5 py-1 rounded-full">Featured Mission</span>
+                </div>
+                <h2 className="text-2xl sm:text-3xl font-bold font-display tracking-tight text-white mb-2 group-hover:text-cyan-300 transition-colors">
+                  Artemis II &mdash; Return to the Moon
+                </h2>
+                <p className="text-slate-400 text-sm sm:text-base mb-4 max-w-xl">
+                  First crewed lunar mission in 54 years. Four astronauts will orbit the Moon aboard Orion, paving the way for a sustained human presence on the lunar surface.
+                </p>
+                <div className="flex flex-wrap gap-x-4 gap-y-2 text-xs text-slate-400">
+                  <span className="flex items-center gap-1.5"><span className="text-cyan-400">Commander:</span> Reid Wiseman</span>
+                  <span className="flex items-center gap-1.5"><span className="text-cyan-400">Pilot:</span> Victor Glover</span>
+                  <span className="flex items-center gap-1.5"><span className="text-cyan-400">MS 1:</span> Christina Koch</span>
+                  <span className="flex items-center gap-1.5"><span className="text-cyan-400">MS 2:</span> Jeremy Hansen</span>
+                </div>
+              </div>
+
+              {/* Right: Countdown */}
+              <div className="shrink-0 text-center lg:text-right">
+                <div className="text-[10px] uppercase tracking-widest text-slate-500 mb-2 font-medium">Launch Target</div>
+                <ArtemisCountdown />
+                <div className="text-sm text-slate-400 mt-2 font-medium">April 1, 2026</div>
+                <div className="mt-3 inline-flex items-center gap-1.5 text-xs text-cyan-400 font-medium group-hover:gap-2.5 transition-all">
+                  Read full mission brief
+                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                  </svg>
+                </div>
+              </div>
+            </div>
+          </div>
+        </Link>
+        </ScrollReveal>
 
         {error && (
           <div className="card p-5 border border-red-500/20 bg-red-500/5 text-center mb-6">
