@@ -34,6 +34,7 @@ import StreakBadge from '@/components/mobile/StreakBadge';
 import ExplorationProgress from '@/components/ui/ExplorationProgress';
 import WhatsNewBanner from '@/components/WhatsNewBanner';
 import OnboardingChecklist from '@/components/OnboardingChecklist';
+import ReferralWidget from '@/components/ReferralWidget';
 
 /** Returns a time-of-day greeting with the user's name */
 function getTimeGreeting(name: string): string {
@@ -341,6 +342,13 @@ export default function DashboardPage() {
 
         {/* Onboarding Checklist for new users */}
         <OnboardingChecklist />
+
+        {/* Referral Widget */}
+        <ScrollReveal>
+          <div className="mb-8">
+            <ReferralWidget />
+          </div>
+        </ScrollReveal>
 
         {/* Control Buttons */}
         <div className="flex justify-end gap-3 mb-4">

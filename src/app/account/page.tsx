@@ -8,6 +8,7 @@ import { toast } from '@/lib/toast';
 import { extractApiError } from '@/lib/errors';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import ScrollReveal from '@/components/ui/ScrollReveal';
+import ReferralWidget from '@/components/ReferralWidget';
 
 type Section = 'profile' | 'security' | 'notifications' | 'appearance' | 'data-privacy';
 
@@ -113,6 +114,13 @@ export default function AccountPage() {
           {activeSection === 'notifications' && <NotificationsSection />}
           {activeSection === 'appearance' && <AppearanceSection />}
           {activeSection === 'data-privacy' && <DataPrivacySection />}
+        </ScrollReveal>
+
+        {/* Referral Widget */}
+        <ScrollReveal delay={0.25}>
+          <div className="mt-8">
+            <ReferralWidget />
+          </div>
         </ScrollReveal>
 
         {/* Quick Links */}

@@ -132,6 +132,7 @@ const BUSINESS_ITEMS: DropdownItem[] = [
   { label: 'Case Studies', href: '/case-studies', description: 'Success stories from space organizations' },
   { label: 'Security & Trust', href: '/security', description: 'How we protect your data' },
   { label: 'Book a Demo', href: '/book-demo', description: 'Schedule a personalized walkthrough' },
+  { label: 'API Access', href: '/api-access', description: 'REST API for space intelligence data' },
 ];
 
 const TOOLS_ITEMS: DropdownItem[] = [

@@ -280,6 +280,7 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
     // Developer pages
     { url: `${BASE_URL}/developer/docs`, changeFrequency: 'monthly' as const, priority: 0.5 },
     { url: `${BASE_URL}/developer/explorer`, changeFrequency: 'monthly' as const, priority: 0.4 },
+    { url: `${BASE_URL}/api-access`, changeFrequency: 'monthly' as const, priority: 0.7 },
 
     // Procurement
     { url: `${BASE_URL}/procurement/awards`, changeFrequency: 'weekly' as const, priority: 0.6 },

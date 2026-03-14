@@ -3,19 +3,27 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useSession } from 'next-auth/react';
 
-const BENEFITS = [
+const TRIAL_BENEFITS = [
   '30-day Pro trial (normally 14 days)',
   'Full access to 200+ intelligence modules',
   'Daily curated space industry alerts',
 ];
 
+const NEWSLETTER_BENEFITS = [
+  'Weekly curated space industry brief',
+  'Key launches, funding rounds & policy changes',
+  'Free forever — no account required',
+];
+
 const DISMISS_DURATION_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
 const MIN_TIME_ON_SITE_MS = 15000; // 15 seconds
 const SCROLL_THRESHOLD = 500; // px scrolled before mobile detection activates
+const SESSION_KEY = 'exit-popup-shown-this-session';
 
 export default function ExitIntentPopup() {
-  const { data: session } = useSession();
+  const { data: session, status: sessionStatus } = useSession();
   const [visible, setVisible] = useState(false);
+  const [activeTab, setActiveTab] = useState<'trial' | 'newsletter'>('trial');
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
@@ -30,11 +38,21 @@ export default function ExitIntentPopup() {
     // Don't show to logged-in users
     if (session) return true;
 
+    // Still loading auth — suppress to avoid flash
+    if (sessionStatus === 'loading') return true;
+
     // Don't show to newsletter subscribers
     try {
       if (localStorage.getItem('newsletter-subscribed')) return true;
     } catch {
       // localStorage unavailable
+    }
+
+    // Only trigger once per session
+    try {
+      if (sessionStorage.getItem(SESSION_KEY)) return true;
+    } catch {
+      // sessionStorage unavailable
     }
 
     // Don't show if dismissed within the last 7 days
@@ -49,7 +67,7 @@ export default function ExitIntentPopup() {
     }
 
     return false;
-  }, [session]);
+  }, [session, sessionStatus]);
 
   const showPopup = useCallback(() => {
     if (triggeredRef.current) return;
@@ -59,6 +77,14 @@ export default function ExitIntentPopup() {
     if (Date.now() - pageLoadTimeRef.current < MIN_TIME_ON_SITE_MS) return;
 
     triggeredRef.current = true;
+
+    // Mark as shown for this session
+    try {
+      sessionStorage.setItem(SESSION_KEY, 'true');
+    } catch {
+      // sessionStorage unavailable
+    }
+
     setVisible(true);
   }, [shouldSuppress]);
 
@@ -102,7 +128,7 @@ export default function ExitIntentPopup() {
     };
   }, [shouldSuppress, showPopup]);
 
-  // Countdown timer for urgency
+  // Countdown timer for urgency (trial tab only)
   useEffect(() => {
     if (!visible) return;
     const interval = setInterval(() => {
@@ -136,12 +162,14 @@ export default function ExitIntentPopup() {
     setErrorMessage('');
 
     try {
+      const source = activeTab === 'newsletter' ? 'exit-intent-newsletter' : 'exit-intent';
+
       const response = await fetch('/api/newsletter/subscribe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           email,
-          source: 'exit-intent',
+          source,
         }),
       });
 
@@ -170,12 +198,14 @@ export default function ExitIntentPopup() {
 
   if (!visible) return null;
 
+  const currentBenefits = activeTab === 'trial' ? TRIAL_BENEFITS : NEWSLETTER_BENEFITS;
+
   return (
     <div
       className="fixed inset-0 z-[100] flex items-center justify-center p-4 animate-in fade-in duration-300"
       role="dialog"
       aria-modal="true"
-      aria-label="Newsletter signup"
+      aria-label={activeTab === 'trial' ? 'Free trial signup' : 'Newsletter signup'}
     >
       {/* Backdrop */}
       <div
@@ -209,7 +239,9 @@ export default function ExitIntentPopup() {
             </div>
             <h3 className="text-xl font-bold text-white mb-2">Check your inbox!</h3>
             <p className="text-slate-400 text-sm mb-5">
-              We&apos;ve sent a confirmation email. Verify to start receiving space intelligence.
+              {activeTab === 'newsletter'
+                ? 'You\u2019ll receive your first weekly space intelligence brief soon.'
+                : 'We\u2019ve sent a confirmation email. Verify to start receiving space intelligence.'}
             </p>
             <button
               onClick={handleDismiss}
@@ -229,33 +261,66 @@ export default function ExitIntentPopup() {
             </div>
 
             <h3 className="text-xl font-bold text-white text-center mb-2">
-              Wait — here&apos;s an exclusive offer
+              Wait — before you go
             </h3>
-            <p className="text-sm text-slate-400 text-center mb-3">
-              Subscribe now and get a <span className="text-white/70 font-semibold">free extended 30-day trial</span> of SpaceNexus Pro
-            </p>
 
-            {/* Countdown timer */}
-            <div className="flex justify-center gap-2 mb-5">
-              {[
-                { value: countdown.hours, label: 'HRS' },
-                { value: countdown.minutes, label: 'MIN' },
-                { value: countdown.seconds, label: 'SEC' },
-              ].map((unit) => (
-                <div key={unit.label} className="text-center">
-                  <div className="w-12 h-12 rounded-lg bg-white/[0.06] border border-white/[0.1] flex items-center justify-center">
-                    <span className="text-lg font-bold text-white/70 tabular-nums">
-                      {String(unit.value).padStart(2, '0')}
-                    </span>
-                  </div>
-                  <span className="text-[10px] text-slate-500 mt-1 block">{unit.label}</span>
-                </div>
-              ))}
+            {/* Tab switcher */}
+            <div className="flex rounded-lg bg-white/[0.04] border border-white/[0.08] p-1 mb-5">
+              <button
+                onClick={() => setActiveTab('trial')}
+                className={`flex-1 py-2 px-3 rounded-md text-xs font-semibold transition-all ${
+                  activeTab === 'trial'
+                    ? 'bg-white/[0.1] text-white shadow-sm'
+                    : 'text-slate-400 hover:text-slate-300'
+                }`}
+              >
+                Free 30-Day Trial
+              </button>
+              <button
+                onClick={() => setActiveTab('newsletter')}
+                className={`flex-1 py-2 px-3 rounded-md text-xs font-semibold transition-all ${
+                  activeTab === 'newsletter'
+                    ? 'bg-white/[0.1] text-white shadow-sm'
+                    : 'text-slate-400 hover:text-slate-300'
+                }`}
+              >
+                Free Weekly Brief
+              </button>
             </div>
+
+            {activeTab === 'trial' ? (
+              <p className="text-sm text-slate-400 text-center mb-3">
+                Subscribe now and get a <span className="text-white/70 font-semibold">free extended 30-day trial</span> of SpaceNexus Pro
+              </p>
+            ) : (
+              <p className="text-sm text-slate-400 text-center mb-3">
+                Get the <span className="text-white/70 font-semibold">free weekly intelligence brief</span> — top stories, launches, and deals
+              </p>
+            )}
+
+            {/* Countdown timer (trial tab only) */}
+            {activeTab === 'trial' && (
+              <div className="flex justify-center gap-2 mb-5">
+                {[
+                  { value: countdown.hours, label: 'HRS' },
+                  { value: countdown.minutes, label: 'MIN' },
+                  { value: countdown.seconds, label: 'SEC' },
+                ].map((unit) => (
+                  <div key={unit.label} className="text-center">
+                    <div className="w-12 h-12 rounded-lg bg-white/[0.06] border border-white/[0.1] flex items-center justify-center">
+                      <span className="text-lg font-bold text-white/70 tabular-nums">
+                        {String(unit.value).padStart(2, '0')}
+                      </span>
+                    </div>
+                    <span className="text-[10px] text-slate-500 mt-1 block">{unit.label}</span>
+                  </div>
+                ))}
+              </div>
+            )}
 
             {/* Benefits */}
             <ul className="space-y-2.5 mb-6">
-              {BENEFITS.map((b) => (
+              {currentBenefits.map((b) => (
                 <li key={b} className="flex items-start gap-2.5 text-sm text-white/70">
                   <svg className="w-4 h-4 text-white/70 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
@@ -294,6 +359,8 @@ export default function ExitIntentPopup() {
                     </svg>
                     Subscribing...
                   </span>
+                ) : activeTab === 'trial' ? (
+                  'Start Free Trial'
                 ) : (
                   'Subscribe Free'
                 )}
