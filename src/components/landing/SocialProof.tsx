@@ -5,6 +5,33 @@ import { useRef, useEffect, useState, useCallback } from 'react';
 
 const TESTIMONIALS = [
   {
+    quote: "SpaceNexus replaced three separate tools for our team. The satellite tracking and market intelligence in one platform is exactly what we needed.",
+    name: "Alex R.",
+    title: "Aerospace Analyst",
+    company: "",
+    persona: "Analyst",
+    initials: "AR",
+    gradient: "from-cyan-500 to-blue-600",
+  },
+  {
+    quote: "The regulatory compliance module alone saves us hours of manual research every week. The space industry finally has its own Bloomberg Terminal.",
+    name: "Dr. Sarah M.",
+    title: "Space Policy Consultant",
+    company: "",
+    persona: "Policy",
+    initials: "SM",
+    gradient: "from-rose-500 to-pink-600",
+  },
+  {
+    quote: "As a space startup founder, having 200+ company profiles and funding data at my fingertips has been invaluable for competitive analysis.",
+    name: "James K.",
+    title: "CEO",
+    company: "Orbital Ventures",
+    persona: "Founder",
+    initials: "JK",
+    gradient: "from-amber-500 to-yellow-600",
+  },
+  {
     quote: "SpaceNexus replaced three different tools we were using. The company intelligence and market data in one place is a game-changer.",
     name: "Sarah Chen",
     title: "VP of Strategy",
@@ -168,7 +195,7 @@ export default function SocialProof() {
             viewport={{ once: true }}
             transition={{ duration: 0.4, delay: 0.1 }}
           >
-            What Space Professionals Are Saying
+            What Space Professionals Say
           </motion.h2>
           <motion.p
             className="text-slate-400 text-lg max-w-2xl mx-auto"
@@ -225,7 +252,7 @@ export default function SocialProof() {
                   </div>
                   <div className="min-w-0 flex-1">
                     <p className="text-sm font-semibold text-white truncate">{t.name}</p>
-                    <p className="text-xs text-slate-400 truncate">{t.title}, {t.company}</p>
+                    <p className="text-xs text-slate-400 truncate">{t.title}{t.company ? `, ${t.company}` : ''}</p>
                   </div>
                   <span className="text-[10px] font-semibold uppercase tracking-wider px-2 py-1 rounded-full bg-white/5 text-white/70 border border-white/10 shrink-0">
                     {t.persona}

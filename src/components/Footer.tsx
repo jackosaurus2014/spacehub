@@ -18,6 +18,7 @@ const footerLinks = {
       { label: 'Satellite Tracker', href: '/satellites' },
       { label: 'Space Talent Hub', href: '/space-talent' },
       { label: 'Launch Manifest', href: '/launch-manifest' },
+      { label: 'Earth Events', href: '/earth-events' },
     ],
   },
   intelligence: {

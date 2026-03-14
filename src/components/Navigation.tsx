@@ -60,6 +60,7 @@ const EXPLORE_ITEMS: DropdownItem[] = [
   { label: 'Career Guide', href: '/career-guide', description: 'Space industry career paths & salary data' },
   { label: 'Acronyms', href: '/acronyms', description: 'A-Z space industry acronym reference' },
   { label: 'Space Weather', href: '/space-weather', description: 'Solar conditions & impact forecasts' },
+  { label: 'Earth Events', href: '/earth-events', description: 'NASA EONET natural disaster tracking' },
   { label: 'Space Agencies', href: '/space-agencies', description: 'World space agency profiles & budgets' },
   { label: '🎙️ Space Podcasts', href: '/podcasts', description: '25+ space industry podcasts directory' },
   { label: 'Debris Remediation', href: '/debris-remediation', description: 'Active debris removal efforts and space sustainability' },
@@ -686,6 +687,9 @@ export default function Navigation() {
                 <Link href="/register" className="bg-white text-slate-900 font-medium text-xs py-2 px-5 rounded-lg hover:bg-slate-100 transition-all duration-200 ease-smooth">
                   Get Started
                 </Link>
+                <Link href="/register?trial=true" className="bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 text-white font-medium text-xs py-2 px-5 rounded-lg transition-all duration-200 ease-smooth shadow-lg shadow-cyan-500/20">
+                  Start Free Trial
+                </Link>
               </>
             )}
           </div>
@@ -1040,6 +1044,13 @@ export default function Navigation() {
                         onClick={() => setIsMenuOpen(false)}
                       >
                         Get Started
+                      </Link>
+                      <Link
+                        href="/register?trial=true"
+                        className="bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 text-white font-medium text-sm py-3 px-4 rounded-lg text-center block transition-all duration-200 ease-smooth shadow-lg shadow-cyan-500/20"
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        Start Free Trial
                       </Link>
                     </>
                   )}

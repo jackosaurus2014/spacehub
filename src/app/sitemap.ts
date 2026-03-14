@@ -205,6 +205,7 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/frequency-bands`, changeFrequency: 'monthly' as const, priority: 0.6 },
     { url: `${BASE_URL}/materials-database`, changeFrequency: 'monthly' as const, priority: 0.6 },
     { url: `${BASE_URL}/podcasts`, changeFrequency: 'weekly' as const, priority: 0.6 },
+    { url: `${BASE_URL}/earth-events`, changeFrequency: 'daily' as const, priority: 0.7 },
     { url: `${BASE_URL}/debris-remediation`, changeFrequency: 'weekly' as const, priority: 0.6 },
     { url: `${BASE_URL}/isru`, changeFrequency: 'weekly' as const, priority: 0.6 },
     { url: `${BASE_URL}/space-comms`, changeFrequency: 'weekly' as const, priority: 0.6 },

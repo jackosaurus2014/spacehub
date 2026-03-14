@@ -7,6 +7,7 @@ import FAQSchema from '@/components/seo/FAQSchema';
 import SocialShare from '@/components/ui/SocialShare';
 import ShareButton from '@/components/ui/ShareButton';
 import BlogViewTracker from '@/components/blog/BlogViewTracker';
+import InlineNewsletterSignup from '@/components/blog/InlineNewsletterSignup';
 
 const SAFE_HTML_CONFIG: sanitizeHtml.IOptions = {
   allowedTags: ['b', 'i', 'em', 'strong', 'a', 'p', 'br', 'ul', 'ol', 'li', 'h2', 'h3', 'h4', 'blockquote', 'code', 'pre', 'img', 'span', 'div', 'table', 'thead', 'tbody', 'tr', 'th', 'td'],
@@ -216,6 +217,9 @@ export default async function BlogPostPage({ params }: Props) {
             />
           </div>
         </div>
+
+        {/* Inline Newsletter Signup */}
+        <InlineNewsletterSignup />
 
         {/* Topic-Aware CTA */}
         {BLOG_CTA_MAP[post.slug] && (

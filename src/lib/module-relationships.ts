@@ -120,6 +120,7 @@ const MODULES: Record<string, RelatedModuleConfig> = {
   spaceEnvironment: { name: 'Space Environment', description: 'Weather & debris', href: '/space-environment', icon: '🌍' },
   spaceWeather: { name: 'Space Weather', description: 'Solar conditions', href: '/space-weather', icon: '☀️' },
   spaceEvents: { name: 'Space Events', description: 'Industry events', href: '/space-events', icon: '📅' },
+  earthEvents: { name: 'Earth Events', description: 'NASA EONET disasters', href: '/earth-events', icon: '🌎' },
 
   // ── Tourism & Misc ──
   spaceTourism: { name: 'Space Tourism', description: 'Commercial flights', href: '/space-tourism', icon: '✈️' },
@@ -262,6 +263,7 @@ export const PAGE_RELATIONS: Record<string, RelatedModuleConfig[]> = {
   'space-environment': [MODULES.spaceWeather, MODULES.debrisTracker, MODULES.satellites, MODULES.solarExploration],
   'space-weather': [MODULES.spaceEnvironment, MODULES.satellites, MODULES.solarExploration, MODULES.spaceEvents],
   'space-events': [MODULES.conferences, MODULES.news, MODULES.spaceWeather, MODULES.launchManifest],
+  'earth-events': [MODULES.spaceEnvironment, MODULES.spaceWeather, MODULES.satellites, MODULES.news, MODULES.asteroidWatch],
 
   // ── Misc pages ──
   'space-tourism': [MODULES.launchVehicles, MODULES.spaceStations, MODULES.spaceInsurance, MODULES.businessOps],

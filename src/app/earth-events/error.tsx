@@ -16,7 +16,7 @@ export default function Error({
           </svg>
         </div>
         <h2 className="text-xl font-bold mb-2">Something went wrong</h2>
-        <p className="text-slate-400 mb-6">Failed to load the podcast directory. Please try again.</p>
+        <p className="text-slate-400 mb-6">Failed to load earth events. Please try again.</p>
         <button
           onClick={reset}
           className="px-6 py-3 bg-white hover:bg-slate-100 text-slate-900 rounded-xl font-medium transition-colors"
