@@ -85,7 +85,7 @@ export default function CompanyIntelCard({ item }: { item: CompanyIntelResult })
             {item.totalFunding && (
               <>
                 <span className="text-star-300/40">|</span>
-                <span className="text-slate-300">{formatFunding(item.totalFunding)} raised</span>
+                <span className="text-white/70">{formatFunding(item.totalFunding)} raised</span>
               </>
             )}
           </div>
@@ -109,7 +109,7 @@ export default function CompanyIntelCard({ item }: { item: CompanyIntelResult })
                 </span>
               )}
               {counts.satelliteAssets > 0 && (
-                <span className="text-xs px-2 py-0.5 rounded-full bg-white/5 text-slate-300 border border-white/10">
+                <span className="text-xs px-2 py-0.5 rounded-full bg-white/5 text-white/70 border border-white/10">
                   {counts.satelliteAssets} Satellites
                 </span>
               )}

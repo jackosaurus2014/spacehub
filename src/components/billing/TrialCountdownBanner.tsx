@@ -23,7 +23,7 @@ const URGENCY_STYLES: Record<UrgencyLevel, { banner: string; button: string; ico
   info: {
     banner: 'bg-gradient-to-r from-white/5 to-white/10 border-white/10',
     button: 'bg-white hover:bg-slate-100 text-slate-900',
-    icon: 'text-slate-300',
+    icon: 'text-white/70',
   },
   warning: {
     banner: 'bg-gradient-to-r from-amber-500/15 to-orange-500/15 border-amber-500/30',

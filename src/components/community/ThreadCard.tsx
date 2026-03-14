@@ -114,7 +114,7 @@ export default function ThreadCard({ thread, categorySlug, index = 0 }: ThreadCa
               </div>
 
               {/* Title */}
-              <h3 className="font-medium text-slate-200 group-hover:text-white transition-colors line-clamp-1 mb-1">
+              <h3 className="font-medium text-white/90 group-hover:text-white transition-colors line-clamp-1 mb-1">
                 {thread.title}
               </h3>
 

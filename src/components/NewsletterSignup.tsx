@@ -175,7 +175,7 @@ export default function NewsletterSignup({
                     setMessage('Failed to resend. Please try again later.');
                   }
                 }}
-                className="mt-3 text-sm text-slate-300 hover:text-white underline transition-colors"
+                className="mt-3 text-sm text-white/70 hover:text-white underline transition-colors"
               >
                 Resend verification email
               </button>

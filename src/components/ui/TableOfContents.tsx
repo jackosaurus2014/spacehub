@@ -55,7 +55,7 @@ export default function TableOfContents({ items }: TableOfContentsProps) {
                 } ${
                   activeId === item.id
                     ? 'text-white/70 font-medium'
-                    : 'text-slate-400 hover:text-slate-200'
+                    : 'text-slate-400 hover:text-white/90'
                 }`}
               >
                 {item.text}

@@ -9,7 +9,7 @@ interface MatchScoreProps {
 export default function MatchScore({ score, reasons, showDetails = false }: MatchScoreProps) {
   const getColor = (s: number) => {
     if (s >= 80) return 'text-green-400';
-    if (s >= 60) return 'text-slate-300';
+    if (s >= 60) return 'text-white/70';
     if (s >= 40) return 'text-yellow-400';
     return 'text-orange-400';
   };
