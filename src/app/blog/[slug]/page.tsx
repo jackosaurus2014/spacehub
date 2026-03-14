@@ -39,6 +39,9 @@ const BLOG_CTA_MAP: Record<string, { tool: string; path: string }> = {
   'spacex-ipo-what-it-means-for-space-investors': { tool: 'Space Capital Tracker', path: '/space-capital' },
   'artemis-ii-moon-mission-everything-you-need-to-know': { tool: 'Launch Manifest', path: '/launch-manifest' },
   'ai-in-orbit-space-based-data-centers-revolution': { tool: 'Space Edge Computing', path: '/space-edge-computing' },
+  'golden-dome-space-missile-defense-program': { tool: 'Space Defense', path: '/space-defense' },
+  'direct-to-device-satellites-replace-cell-towers': { tool: 'Satellite Tracker', path: '/satellites' },
+  'commercial-space-stations-race-to-replace-iss': { tool: 'Space Stations', path: '/space-stations' },
 };
 
 type Props = {

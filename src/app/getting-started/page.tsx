@@ -256,6 +256,111 @@ export default function GettingStartedPage() {
         </div>
       </section>
 
+      {/* Quick Tour - 5 Steps to Key Features */}
+      <section className="py-12 md:py-16">
+        <div className="container mx-auto px-4">
+          <ScrollReveal>
+            <div className="text-center mb-12">
+              <span className="inline-block px-4 py-1.5 rounded-full text-xs font-semibold tracking-wide uppercase bg-purple-500/10 text-purple-400 border border-purple-500/20 mb-4">
+                Quick Tour
+              </span>
+              <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+                Explore Key Features
+              </h2>
+              <p className="text-slate-400 text-lg max-w-xl mx-auto">
+                Five essential modules to start with. Each one gives you an edge in the space economy.
+              </p>
+            </div>
+          </ScrollReveal>
+
+          <div className="max-w-4xl mx-auto space-y-6">
+            {[
+              {
+                step: 1,
+                title: 'Browse Company Profiles',
+                description:
+                  'Explore 200+ space company profiles with SpaceNexus Scores, funding history, key personnel, competitive positioning, and real-time news. Filter by sector, funding stage, or technology focus to find exactly what you need.',
+                href: '/company-profiles',
+                gradient: 'from-purple-500/20 to-indigo-500/20',
+                borderColor: 'border-purple-500/20',
+                badgeColor: 'bg-purple-500 text-white',
+              },
+              {
+                step: 2,
+                title: 'Track Satellites',
+                description:
+                  'Monitor the ISS, Starlink constellation, weather satellites, and more with real-time orbital tracking. View TLE data, pass predictions, and constellation status across multiple orbit types including LEO, MEO, and GEO.',
+                href: '/satellites',
+                gradient: 'from-blue-500/20 to-cyan-500/20',
+                borderColor: 'border-blue-500/20',
+                badgeColor: 'bg-blue-500 text-white',
+              },
+              {
+                step: 3,
+                title: 'Monitor Space News',
+                description:
+                  'Stay current with aggregated news from 53+ RSS feeds, categorized by topic: launches, policy, defense, commercial, science, and more. Save articles to your reading list and get AI-powered summaries.',
+                href: '/news',
+                gradient: 'from-emerald-500/20 to-teal-500/20',
+                borderColor: 'border-emerald-500/20',
+                badgeColor: 'bg-emerald-500 text-white',
+              },
+              {
+                step: 4,
+                title: 'Explore Market Intel',
+                description:
+                  'Access market intelligence dashboards covering space stocks, deal flow, funding rounds, M&A activity, and executive moves. Track the financial pulse of the space economy in real time.',
+                href: '/market-intel',
+                gradient: 'from-amber-500/20 to-orange-500/20',
+                borderColor: 'border-amber-500/20',
+                badgeColor: 'bg-amber-500 text-white',
+              },
+              {
+                step: 5,
+                title: 'Use Mission Tools',
+                description:
+                  'Run orbital simulations, calculate launch costs, design satellite constellations, estimate link budgets, and plan missions with our engineering toolkit. Built for engineers and mission planners.',
+                href: '/tools',
+                gradient: 'from-rose-500/20 to-pink-500/20',
+                borderColor: 'border-rose-500/20',
+                badgeColor: 'bg-rose-500 text-white',
+              },
+            ].map((item, index) => (
+              <ScrollReveal key={item.step} delay={index * 0.1}>
+                <div
+                  className={`relative flex items-start gap-5 md:gap-6 rounded-2xl border ${item.borderColor} bg-gradient-to-br ${item.gradient} backdrop-blur-sm p-5 md:p-7 hover:scale-[1.01] transition-transform`}
+                >
+                  {/* Step number badge */}
+                  <div
+                    className={`shrink-0 w-10 h-10 md:w-12 md:h-12 rounded-full ${item.badgeColor} flex items-center justify-center font-bold text-lg md:text-xl shadow-lg`}
+                  >
+                    {item.step}
+                  </div>
+
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-lg md:text-xl font-bold text-white mb-2">
+                      {item.title}
+                    </h3>
+                    <p className="text-slate-300 text-sm md:text-base leading-relaxed mb-4">
+                      {item.description}
+                    </p>
+                    <Link
+                      href={item.href}
+                      className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white/10 hover:bg-white/15 border border-white/10 text-white text-sm font-medium transition-colors"
+                    >
+                      Try it
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                      </svg>
+                    </Link>
+                  </div>
+                </div>
+              </ScrollReveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* What Can You Do With SpaceNexus? */}
       <section className="py-12 md:py-16">
         <div className="container mx-auto px-4">

@@ -32,6 +32,7 @@ import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
 import StreakBadge from '@/components/mobile/StreakBadge';
 import ExplorationProgress from '@/components/ui/ExplorationProgress';
+import WhatsNewBanner from '@/components/WhatsNewBanner';
 
 /** Returns a time-of-day greeting with the user's name */
 function getTimeGreeting(name: string): string {
@@ -321,6 +322,9 @@ export default function DashboardPage() {
   return (
     <div className="min-h-screen py-8">
       <div className="container mx-auto px-4">
+        {/* What's New Banner */}
+        <WhatsNewBanner />
+
         {/* Control Buttons */}
         <div className="flex justify-end gap-3 mb-4">
           <button

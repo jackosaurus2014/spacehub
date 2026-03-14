@@ -15,9 +15,11 @@ import FAQSchema from '@/components/seo/FAQSchema';
 import StickyMobileCTA from '@/components/mobile/StickyMobileCTA';
 
 const PRICING_FAQ = [
-  { question: 'Is there a free trial?', answer: 'Yes! All paid plans include a 14-day free trial with full access to every feature. No credit card required to start — you only pay if you choose to continue after the trial ends.' },
-  { question: 'Can I cancel anytime?', answer: 'Absolutely. Cancel with one click from your account settings. No contracts, no cancellation fees. You keep full access until the end of your billing period.' },
-  { question: 'What payment methods do you accept?', answer: 'We accept all major credit cards, PayPal, and Apple Pay through Stripe — the same payment processor trusted by Amazon, Google, and thousands of enterprises.' },
+  { question: 'What is SpaceNexus?', answer: 'SpaceNexus is a comprehensive space industry intelligence platform that provides real-time data on satellite tracking, launch schedules, space stocks, regulatory compliance, and 200+ company profiles across 30+ modules.' },
+  { question: 'Is there a free plan?', answer: 'Yes! Our Explorer plan is completely free and includes access to mission countdowns, basic news feeds, satellite tracking for 50 satellites, and community features.' },
+  { question: "What's included in the Professional plan?", answer: 'Professional ($19.99/month) unlocks unlimited news, full satellite tracking, market intelligence dashboards, launch window calculators, real-time stock tracking for 20 stocks, CSV data export, and an ad-free experience.' },
+  { question: 'Can I cancel anytime?', answer: 'Absolutely. All plans are month-to-month with no long-term commitment. You can cancel anytime and retain access until the end of your billing period.' },
+  { question: 'What payment methods do you accept?', answer: 'We accept all major credit cards (Visa, Mastercard, American Express), Apple Pay, and Google Pay through our secure Stripe payment processor.' },
   { question: 'How does SpaceNexus compare to building this in-house?', answer: 'Companies typically spend $50K–$200K/year aggregating the same data from NASA, NOAA, SEC, SAM.gov, and 40+ other sources. SpaceNexus gives you all of it for under $50/month — with AI analysis included.' },
   { question: 'Do you offer team or enterprise pricing?', answer: 'Yes! Enterprise plans include team collaboration, custom dashboards, API access, SSO, and dedicated support. Contact us for a tailored quote.' },
   { question: 'What data sources does SpaceNexus use?', answer: 'We aggregate real-time data from NASA, NOAA, ESA, SpaceTrack, SEC filings, SAM.gov procurement, 53+ RSS feeds, and proprietary AI analysis — all automatically updated.' },
@@ -383,6 +385,40 @@ function SocialProofSection() {
   );
 }
 
+/* ---------- FAQ Accordion Item ---------- */
+
+function FAQAccordionItem({ question, answer }: { question: string; answer: string }) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <div className="rounded-xl border border-white/[0.06] bg-white/[0.03] backdrop-blur-sm overflow-hidden transition-colors hover:border-white/[0.1]">
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full flex items-center justify-between gap-4 p-5 text-left"
+        aria-expanded={isOpen}
+      >
+        <h3 className="font-semibold text-white text-sm md:text-base">{question}</h3>
+        <svg
+          className={`w-5 h-5 text-slate-400 shrink-0 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          strokeWidth={2}
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+      <div
+        className={`overflow-hidden transition-all duration-200 ${isOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'}`}
+      >
+        <p className="px-5 pb-5 text-slate-400 text-sm leading-relaxed">
+          {answer}
+        </p>
+      </div>
+    </div>
+  );
+}
+
 function PricingPageContent() {
   const { data: session } = useSession();
   const { tier, isTrialing, trialEndsAt, refreshSubscription } = useSubscription();
@@ -731,28 +767,22 @@ function PricingPageContent() {
           <SocialProofSection />
         </ScrollReveal>
 
-        {/* FAQ / Trust Section */}
+        {/* FAQ Accordion Section */}
         <ScrollReveal className="mt-16">
-          <div className="text-center">
-            <h2 className="text-2xl font-bold text-white mb-6 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+          <div className="text-center mb-8">
+            <h2 className="text-2xl font-bold text-white mb-2 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
               Frequently Asked Questions
             </h2>
+            <p className="text-slate-400 text-sm">Everything you need to know about SpaceNexus</p>
           </div>
         </ScrollReveal>
-        <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto text-left" staggerDelay={0.1}>
-          {PRICING_FAQ.map((faq) => (
-            <StaggerItem key={faq.question}>
-              <div className="card p-6 hover:border-white/10 transition-colors">
-                <h3 className="font-semibold text-white mb-2">
-                  {faq.question}
-                </h3>
-                <p className="text-slate-400 text-sm leading-relaxed">
-                  {faq.answer}
-                </p>
-              </div>
-            </StaggerItem>
+        <div className="max-w-3xl mx-auto space-y-3">
+          {PRICING_FAQ.map((faq, index) => (
+            <ScrollReveal key={faq.question} delay={index * 0.05}>
+              <FAQAccordionItem question={faq.question} answer={faq.answer} />
+            </ScrollReveal>
           ))}
-        </StaggerContainer>
+        </div>
 
         {/* Feature Comparison Table */}
         <ScrollReveal className="mt-16">

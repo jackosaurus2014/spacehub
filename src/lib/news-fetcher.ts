@@ -388,6 +388,13 @@ const RSS_FEEDS: RSSFeedSource[] = [
   { name: 'ESA Observing the Earth', url: 'http://www.esa.int/rssfeed/Our_Activities/Observing_the_Earth', defaultCategory: 'satellites' },
   { name: 'ESA Navigation', url: 'http://www.esa.int/rssfeed/Our_Activities/Navigation', defaultCategory: 'satellites' },
   { name: 'NASA Image of the Day', url: 'https://www.nasa.gov/feeds/iotd-feed/', defaultCategory: 'general' },
+
+  // YouTube space channels
+  { name: 'Scott Manley', url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCxzC4EngIsMrPmbm6Nxvb-A', defaultCategory: 'general' },
+  { name: 'Marcus House', url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCBNHHEoiSF8pcLgqLKVugOw', defaultCategory: 'launches' },
+  { name: 'Everyday Astronaut', url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UC6uKrU_WqJ1R2HMTY3LIx5Q', defaultCategory: 'launches' },
+  { name: 'NASA YouTube', url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCLA_DiR1FfKNvjuUpBHmylQ', defaultCategory: 'general' },
+  { name: 'SpaceX YouTube', url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCtI0Hodo5o5dUb67FeUjDeA', defaultCategory: 'launches' },
 ];
 
 const rssParser = new RSSParser({
