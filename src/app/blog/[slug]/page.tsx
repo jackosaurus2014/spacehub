@@ -45,6 +45,8 @@ const BLOG_CTA_MAP: Record<string, { tool: string; path: string }> = {
   'commercial-space-stations-race-to-replace-iss': { tool: 'Space Stations', path: '/space-stations' },
   'china-commercial-space-surge-2026': { tool: 'Market Intelligence', path: '/market-intel' },
   'space-industry-investment-guide-2026': { tool: 'Space Capital Tracker', path: '/space-capital' },
+  'sierra-space-vast-billion-dollar-raises-2026': { tool: 'Space Capital Tracker', path: '/space-capital' },
+  'satellite-2026-conference-preview': { tool: 'Space Events', path: '/space-events' },
 };
 
 type Props = {

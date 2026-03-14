@@ -227,6 +227,13 @@ export const ROUTE_LABELS: Record<string, string> = {
   '/cookies': 'Cookie Policy',
   '/legal/dmca': 'DMCA',
 
+  // ── New Pages ──
+  '/api-access': 'API Access',
+  '/newsletter-archive': 'Newsletter Archive',
+  '/why-spacenexus': 'Why SpaceNexus',
+  '/reports/space-economy-2026': 'Space Economy 2026 Report',
+  '/widgets': 'Widgets',
+
   // ── Developer ──
   '/developer': 'Developer Portal',
   '/developer/docs': 'API Documentation',
@@ -303,6 +310,7 @@ export const ROUTE_PARENTS: Record<string, string> = {
 
   // Report sub-pages
   '/report/state-of-space-2026': '/reports',
+  '/reports/space-economy-2026': '/reports',
 
   // Guide pages → /learn parent
   '/guide/space-industry': '/learn',

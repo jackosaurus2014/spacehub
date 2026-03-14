@@ -328,6 +328,12 @@ export const PAGE_RELATIONS: Record<string, RelatedModuleConfig[]> = {
 
   // ── Onboarding ──
   'getting-started': [MODULES.companyProfiles, MODULES.satellites, MODULES.marketIntel, MODULES.tools, MODULES.compliance, MODULES.businessOps],
+
+  // ── New Pages ──
+  'api-access': [MODULES.tools, MODULES.companyProfiles, MODULES.satellites, MODULES.marketIntel, MODULES.spaceEconomy],
+  'newsletter-archive': [MODULES.newsletters, MODULES.newsDigest, MODULES.intelligenceBrief, MODULES.blogs, MODULES.resources],
+  'why-spacenexus': [MODULES.marketIntel, MODULES.companyProfiles, MODULES.tools, MODULES.satellites, MODULES.spaceCapital],
+  'widgets': [MODULES.satellites, MODULES.spaceWeather, MODULES.launchManifest, MODULES.marketIntel, MODULES.news],
 };
 
 // Helper to get related modules for a page

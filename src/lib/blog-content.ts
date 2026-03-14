@@ -2806,6 +2806,300 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 <p><em>Disclaimer: This article is for informational purposes only and does not constitute investment advice. Space investments carry significant risk, including the potential loss of principal. Always consult a qualified financial advisor before making investment decisions.</em></p>
 `,
   },
+  {
+    slug: 'sierra-space-vast-billion-dollar-raises-2026',
+    title: 'Sierra Space and Vast Raise Over $1 Billion: What the Space Station Funding Boom Means',
+    excerpt: 'Sierra Space closed $550M at an $8B valuation while Vast secured $500M in a combined equity-debt round — together surpassing $1 billion in fresh capital. The commercial space station market just received its biggest investor endorsement yet, and it signals a seismic shift in how the world thinks about low Earth orbit infrastructure.',
+    category: 'market',
+    author: 'SpaceNexus Team',
+    authorRole: 'Market Intelligence',
+    publishedAt: '2026-03-14T00:00:00Z',
+    readingTime: 12,
+    featured: true,
+    keywords: ['Sierra Space funding', 'Vast funding', 'commercial space stations', 'space station investment', 'LuminArx Capital', 'Balerion Space Ventures', 'ISS replacement', 'NASA CLD program', 'space station market', 'LEO economy'],
+    content: `
+<p>In the span of just weeks, two of the most ambitious commercial space station ventures in the world announced funding rounds that, combined, exceed <strong>$1 billion</strong>. Sierra Space closed a <strong>$550 million raise at an $8 billion valuation</strong>, led by LuminArx Capital Management. Vast followed with a <strong>$500 million round</strong> — $300 million in equity and $200 million in debt — led by Balerion Space Ventures.</p>
+
+<p>These are not incremental funding events. They represent a decisive vote of institutional confidence in the commercial space station market at a moment when the stakes could not be higher. The International Space Station is headed for decommission by <strong>2030</strong>, and the race to build its successors is no longer a speculative exercise — it's a funded industrial program with billion-dollar backing.</p>
+
+<p>Here's what these raises mean for the companies, the market, and the broader trajectory of human activity in low Earth orbit.</p>
+
+<h2 id="sierra-space-raise">Sierra Space: $550M at $8 Billion Valuation</h2>
+
+<p>Sierra Space, the commercial space subsidiary of Sierra Nevada Corporation, has been building toward this moment for years. The company is best known for the <strong>Dream Chaser</strong> spaceplane — a reusable, winged vehicle designed to carry crew and cargo to and from low Earth orbit. Dream Chaser is under contract with NASA through the Commercial Resupply Services 2 (CRS-2) program and is on track for its first orbital flight in 2026.</p>
+
+<p>But Dream Chaser is only part of the story. Sierra Space is also a key partner in <strong>Orbital Reef</strong>, the commercial space station being developed in collaboration with Blue Origin, Boeing, and other industry partners. Orbital Reef is one of the leading contenders in NASA's <strong>Commercial LEO Destinations (CLD)</strong> program, which is investing in private space stations to ensure continuity of American presence in low Earth orbit after the ISS retires.</p>
+
+<p>The $550 million round, led by <strong>LuminArx Capital Management</strong>, values Sierra Space at approximately <strong>$8 billion</strong> — a significant increase from earlier valuations and a reflection of the company's progress on multiple fronts:</p>
+
+<ul>
+<li><strong>Dream Chaser development milestones:</strong> The spaceplane has completed major integration and testing phases, and its first ISS cargo mission is approaching</li>
+<li><strong>LIFE habitat:</strong> Sierra Space's Large Integrated Flexible Environment (LIFE) is an expandable space station module that successfully completed a full-scale burst pressure test at NASA's Marshall Space Flight Center, demonstrating viability of inflatable habitat technology</li>
+<li><strong>Orbital Reef partnership:</strong> The Blue Origin-led station program gives Sierra Space a seat at the table for the next generation of LEO infrastructure</li>
+<li><strong>Diversified revenue streams:</strong> Between NASA contracts, commercial partnerships, and defense applications, Sierra Space has built a multi-pillar business model</li>
+</ul>
+
+<p>The $8 billion valuation places Sierra Space among the most valuable private space companies in the world, behind only SpaceX ($350B+) and a handful of others. It reflects not just current contracts but investor belief in the long-term addressable market for commercial space stations — a market that analysts project could reach <strong>$37 billion annually</strong> by the mid-2030s.</p>
+
+<h2 id="vast-raise">Vast: $500M to Accelerate Haven-1</h2>
+
+<p>If Sierra Space represents the established aerospace player making its commercial station play, Vast represents the new-generation startup moving at startup speed. Founded by crypto billionaire <strong>Jed McCaleb</strong>, Vast is developing <strong>Haven-1</strong> — designed to be the world's first commercial space station, with a target launch date of <strong>2027</strong> on a SpaceX Falcon 9.</p>
+
+<p>The $500 million raise — structured as <strong>$300 million in equity and $200 million in debt</strong> — was led by <strong>Balerion Space Ventures</strong>. The capital is earmarked for accelerating Haven-1 development, expanding Vast's engineering team, and beginning work on the company's larger follow-on station architecture.</p>
+
+<p>Vast's approach to the commercial station market is deliberately different from the consortium-based models pursued by Orbital Reef and Starlab:</p>
+
+<ul>
+<li><strong>Speed to market:</strong> Haven-1 is designed as a single-module station that can launch on an existing Falcon 9, avoiding the multi-launch assembly complexity of larger stations. This "start small, iterate fast" philosophy mirrors the approach that made SpaceX successful</li>
+<li><strong>Artificial gravity research:</strong> Vast has been vocal about its long-term ambition to develop rotating space stations capable of generating artificial gravity — a technology that would be transformative for long-duration human spaceflight</li>
+<li><strong>Vertical integration:</strong> Vast is building significant in-house manufacturing capability, including station structure, life support systems, and avionics, reducing dependence on traditional aerospace suppliers</li>
+<li><strong>SpaceX alignment:</strong> Haven-1 is designed to be visited by SpaceX Dragon capsules, and Vast's close relationship with SpaceX provides both launch access and potential crew transport synergies</li>
+</ul>
+
+<p>The $200 million debt component of the raise is notable. Debt financing in space ventures has historically been rare — lenders typically view pre-revenue space companies as too risky. The fact that Vast secured $200 million in debt suggests that lenders see the company's revenue trajectory (including contracted missions and partner agreements) as sufficiently de-risked to underwrite.</p>
+
+<h2 id="combined-signal">$1 Billion+ Combined: What the Market Is Saying</h2>
+
+<p>Step back from the individual company stories and the aggregate picture is striking. More than <strong>$1 billion in fresh capital</strong> has flowed into commercial space stations in a single funding cycle. Add in Axiom Space's recent $350 million Series D and other station-adjacent investments, and the total capital committed to the commercial LEO station market in recent quarters approaches <strong>$2 billion</strong>.</p>
+
+<p>This level of investment is sending several clear signals:</p>
+
+<h3>1. Investors Believe the ISS Transition Is Real</h3>
+<p>For years, skeptics questioned whether NASA would actually decommission the ISS or whether political inertia would extend its life indefinitely. The funding surge indicates that sophisticated investors now believe the transition is happening. NASA's CLD program, with its milestone-based payments to commercial station developers, has created a credible procurement pathway. And the ISS's aging hardware — including ongoing issues with the Russian segment and persistent air leak concerns — reinforces the reality that the station cannot operate indefinitely.</p>
+
+<h3>2. The TAM Is Larger Than Government Demand</h3>
+<p>If the commercial station market were limited to replacing NASA's ISS research activities, the addressable market would be relatively modest. What's driving billion-dollar valuations is the belief that commercial stations will unlock <strong>entirely new markets</strong>: in-space manufacturing (pharmaceuticals, fiber optics, semiconductors), space tourism, media and entertainment, corporate R&D, and sovereign astronaut programs from countries that can't afford their own stations. The <strong>in-space manufacturing market alone</strong> is projected to reach $10 billion by 2035.</p>
+
+<h3>3. Multiple Winners Are Possible</h3>
+<p>The simultaneous funding of Sierra Space, Vast, and Axiom suggests investors don't view the commercial station market as winner-take-all. Unlike launch (where SpaceX's cost advantages create natural monopoly dynamics), space stations serve diverse use cases and customer segments. There's room for a research-focused station, a manufacturing-optimized station, a tourism-oriented station, and sovereign-use stations — much like the hotel industry supports everything from Motel 6 to the Four Seasons.</p>
+
+<h3>4. The Space Economy Is Infrastructure-Led</h3>
+<p>The biggest investments in the space economy are increasingly flowing to <strong>infrastructure</strong> — stations, launch vehicles, orbital transfer vehicles, and ground systems — rather than to individual applications. This mirrors every major economic expansion in history: the railroad infrastructure preceded the industrial economy, fiber optic cables preceded the internet economy, and orbital infrastructure will precede the in-space economy.</p>
+
+<h2 id="nasa-cld-context">The NASA CLD Program: Context and Stakes</h2>
+
+<p>Both Sierra Space (via Orbital Reef) and Vast are participants in or aligned with NASA's <strong>Commercial LEO Destinations (CLD)</strong> program. Launched in 2021, CLD allocated initial funding to multiple commercial station concepts, with the goal of ensuring that at least one (and preferably multiple) commercial stations are operational before the ISS is decommissioned.</p>
+
+<p>The program has awarded Space Act Agreements to:</p>
+
+<ul>
+<li><strong>Blue Origin / Sierra Space (Orbital Reef)</strong> — received $130 million in initial CLD funding</li>
+<li><strong>Nanoracks / Voyager Space / Lockheed Martin (Starlab)</strong> — received $160 million in initial CLD funding</li>
+<li><strong>Axiom Space</strong> — has its own NASA contract for commercial ISS modules that will eventually detach to form a free-flying station</li>
+<li><strong>Vast</strong> — while not an initial CLD awardee, Vast has positioned Haven-1 as a pathfinder that could support NASA crew and research needs</li>
+</ul>
+
+<p>NASA's strategy is deliberate: rather than building and owning the next station (as it did with ISS), the agency plans to be an <strong>anchor tenant</strong> — purchasing services from commercial providers at significantly lower cost. NASA currently spends approximately <strong>$3-4 billion annually</strong> on ISS operations. The CLD approach aims to reduce NASA's LEO costs while enabling the private sector to generate additional revenue from non-NASA customers.</p>
+
+<h2 id="competitive-landscape">The Competitive Landscape: Who's Building What</h2>
+
+<p>The commercial space station market now features four primary competitors, each with distinct architectures and business models:</p>
+
+<ul>
+<li><strong>Axiom Space:</strong> Building modules that attach to the ISS before separating into a free-flying station. First module (Axiom-1) already launched. Has conducted multiple private astronaut missions. Most mature commercially</li>
+<li><strong>Orbital Reef (Blue Origin / Sierra Space / Boeing):</strong> Ambitious multi-module station with a "mixed-use business park" concept. Leverages Blue Origin's New Glenn for launch and Sierra Space's LIFE habitats for expandable volume</li>
+<li><strong>Starlab (Voyager Space / Airbus):</strong> Single-launch station targeting 2028 deployment. Recently partnered with Airbus, bringing European aerospace expertise and potential ESA demand</li>
+<li><strong>Vast (Haven-1):</strong> Smallest initial station but fastest-to-market approach. Single Falcon 9 launch in 2027. Designed for rapid iteration toward larger station architectures</li>
+</ul>
+
+<p>The diversity of approaches is a strength for the market. If even two of these four programs succeed, the commercial station ecosystem will be more robust and competitive than the government-monopoly model of the ISS era.</p>
+
+<h2 id="what-it-means">What This Means for the Broader Space Economy</h2>
+
+<p>The billion-dollar station funding wave has implications that extend well beyond the station builders themselves:</p>
+
+<ul>
+<li><strong>Launch demand:</strong> Building, supplying, and servicing multiple commercial stations creates sustained launch demand for SpaceX, Rocket Lab, Blue Origin, and other providers. Each station needs regular crew rotation, cargo resupply, and potentially modular expansion launches</li>
+<li><strong>Supply chain growth:</strong> Station development requires life support systems, power generation, thermal management, docking mechanisms, radiation shielding, and dozens of other subsystems — creating opportunities for specialized suppliers</li>
+<li><strong>In-space manufacturing:</strong> Commercial stations provide the platforms needed for pharmaceutical crystallization, fiber optic production, and semiconductor manufacturing in microgravity — industries that have been waiting for reliable, affordable access to orbital facilities</li>
+<li><strong>Space tourism evolution:</strong> As station capacity increases and costs decrease, space tourism transitions from $50M Axiom missions to potentially sub-$10M experiences within the decade, dramatically expanding the customer base</li>
+<li><strong>International partnerships:</strong> Countries that can't afford their own space stations (but want sovereign astronaut capabilities) represent a large and underserved market. Multiple commercial stations allow these nations to purchase services competitively</li>
+</ul>
+
+<h2 id="investor-takeaways">Investor Takeaways</h2>
+
+<p>For space investors and industry observers, the Sierra Space and Vast raises offer several actionable insights:</p>
+
+<ul>
+<li><strong>The commercial station thesis is investable now.</strong> With $1B+ in institutional capital committed, this is no longer a speculative concept — it's a funded market with concrete timelines</li>
+<li><strong>Watch for public market ripple effects.</strong> Companies in the station supply chain — Redwire (RDW) for in-space manufacturing components, Rocket Lab (RKLB) for potential station subsystems, and defense primes with space station heritage — could benefit from the rising tide</li>
+<li><strong>The 2027-2030 window is critical.</strong> Haven-1's 2027 target, Axiom's module deployments, and ISS decommission by 2030 create a compressed timeline where success or failure will be demonstrated, not just projected</li>
+<li><strong>Debt financing in space is a maturation signal.</strong> Vast's ability to raise $200M in debt suggests the space industry is graduating from purely equity-funded ventures to bankable businesses with predictable cash flows</li>
+</ul>
+
+<h2 id="the-bottom-line">The Bottom Line</h2>
+
+<p>The combined $1 billion+ raised by Sierra Space and Vast is more than a fundraising milestone — it's a market-defining moment. The commercial space station sector has moved from aspirational concept to capital-intensive industrial reality. The ISS's retirement is no longer a hypothetical; it's a countdown clock that's driving urgency, investment, and innovation across the entire space ecosystem.</p>
+
+<p>For the first time in the history of human spaceflight, the next chapter in orbit will be written primarily by private companies with private capital — supported by, but not dependent on, government funding. Whether you're an investor, an engineer, or simply someone who believes that humanity's future includes a permanent presence in space, this is the moment to pay attention.</p>
+
+<p>Track commercial space station developments, funding rounds, and competitive dynamics in real time with SpaceNexus's <a href="/space-capital">Space Capital Tracker</a>. Monitor station program milestones on <a href="/space-stations">Space Stations</a>, and follow the companies shaping the LEO economy through <a href="/market-intel">Market Intelligence</a>.</p>
+`,
+  },
+  {
+    slug: 'satellite-2026-conference-preview',
+    title: 'SATELLITE 2026 Preview: What to Watch at the World\'s Largest Space Conference',
+    excerpt: 'March 23-26 in Washington, DC — SATELLITE 2026 brings together 15,000+ attendees from 110+ countries and 450+ exhibitors for the most important week on the space industry calendar. From direct-to-device breakthroughs to space-based data centers, here\'s your comprehensive guide to what matters most.',
+    category: 'analysis',
+    author: 'SpaceNexus Team',
+    authorRole: 'Editorial',
+    publishedAt: '2026-03-14T00:00:00Z',
+    readingTime: 12,
+    featured: true,
+    keywords: ['SATELLITE 2026', 'satellite conference', 'space conference 2026', 'direct-to-device', 'space-based data centers', 'defense space', 'GovMilSpace', 'Startup Space', 'satellite industry', 'space events'],
+    content: `
+<p>Every March, the global space and satellite industry descends on Washington, DC for <strong>SATELLITE</strong> — the world's largest and longest-running event dedicated to satellite technology, space infrastructure, and the businesses building humanity's orbital future. Now in its fifth decade, SATELLITE 2026 runs <strong>March 23-26 at the Walter E. Washington Convention Center</strong>, and this year's edition arrives at a moment of extraordinary industry transformation.</p>
+
+<p>With <strong>15,000+ attendees from 110+ countries</strong>, <strong>450+ exhibitors</strong>, and hundreds of sessions, panels, and keynotes, SATELLITE is where deals get made, partnerships get announced, and the industry's direction for the coming year gets set. Whether you're attending in person or following from afar, here's your comprehensive guide to what matters most at SATELLITE 2026.</p>
+
+<h2 id="why-satellite-2026-matters">Why SATELLITE 2026 Matters More Than Usual</h2>
+
+<p>Every edition of SATELLITE is important, but 2026 stands apart for several reasons:</p>
+
+<ul>
+<li><strong>The industry is at an inflection point.</strong> Commercial space revenue is growing at 9% annually, new business models (direct-to-device, in-space computing, commercial stations) are moving from concept to deployment, and the competitive landscape is being reshaped by new entrants from the U.S., Europe, and China</li>
+<li><strong>Defense and commercial are converging.</strong> The co-located <strong>GovMilSpace</strong> conference brings military and intelligence community attendees into the same venue, reflecting the reality that defense and commercial space are increasingly intertwined</li>
+<li><strong>Capital is flowing at record levels.</strong> With Sierra Space raising $550M, Vast securing $500M, and venture funding in space approaching $8 billion annually, SATELLITE 2026 is where investors and operators come to find each other</li>
+<li><strong>Regulatory decisions loom.</strong> Spectrum allocation, orbital debris mitigation rules, and international licensing frameworks are all in flux — and the policymakers shaping these decisions will be in the room</li>
+</ul>
+
+<h2 id="key-themes">Five Key Themes to Watch</h2>
+
+<h3>1. Direct-to-Device: The Biggest Bet in Satellite Communications</h3>
+
+<p>If there's a single technology dominating SATELLITE 2026 conversations, it's <strong>direct-to-device (D2D)</strong> — the ability for unmodified smartphones to connect directly to satellites without specialized hardware or dedicated satellite phones.</p>
+
+<p>The D2D race has intensified dramatically over the past year:</p>
+
+<ul>
+<li><strong>AST SpaceMobile (ASTS)</strong> launched its first five BlueBird satellites in 2025 and is demonstrating broadband connectivity to standard smartphones. The company is targeting commercial service launch in 2026, with partnerships with AT&T, Vodafone, and other major carriers</li>
+<li><strong>Apple/Globalstar</strong> has expanded Emergency SOS via satellite to more countries and iPhone models, and is developing two-way messaging capabilities. Apple's majority investment in Globalstar signals a long-term commitment to satellite connectivity as a core iPhone feature</li>
+<li><strong>T-Mobile/SpaceX</strong> has been testing Starlink-to-phone connectivity and is rolling out text messaging capabilities to T-Mobile customers, with voice and data planned to follow</li>
+<li><strong>Qualcomm's Snapdragon Satellite</strong> is enabling D2D capability in Android devices, opening the door for multiple device manufacturers and carrier partnerships</li>
+</ul>
+
+<p>At SATELLITE 2026, expect major D2D announcements, panel discussions on spectrum sharing between terrestrial and satellite operators, and intense debate about which architecture (LEO mega-constellation vs. large-aperture GEO satellites) will ultimately win. The economic stakes are enormous — the addressable market is every mobile phone user on Earth without reliable terrestrial coverage, estimated at <strong>3+ billion people</strong>.</p>
+
+<h3>2. Space-Based Data Centers: Computing at the Edge — Way at the Edge</h3>
+
+<p>One of the most provocative new themes at SATELLITE 2026 is <strong>space-based data centers</strong> — the concept of deploying computing infrastructure in orbit rather than (or in addition to) on the ground.</p>
+
+<p>This isn't science fiction. Several companies are actively pursuing orbital computing:</p>
+
+<ul>
+<li><strong>Lumen Orbit</strong> has raised funding to deploy GPU-equipped satellites that process data in orbit, eliminating the latency and bandwidth constraints of downlinking raw data to ground stations</li>
+<li><strong>OrbitsEdge</strong> is developing hardened computing platforms for space deployment, targeting Earth observation data processing, AI inference, and edge computing applications</li>
+<li><strong>Microsoft and Amazon</strong> have both expanded their Azure Space and AWS Ground Station offerings, pushing cloud computing capabilities closer to the data sources in orbit</li>
+</ul>
+
+<p>The business case is driven by a fundamental mismatch: satellites are generating data exponentially faster than downlink capacity is growing. A modern Earth observation satellite can generate <strong>terabytes of data per day</strong>, but ground station downlink windows are limited. Processing data in orbit — running AI models on satellite imagery before it's downlinked — reduces bandwidth requirements by orders of magnitude and enables real-time analytics that simply aren't possible with ground-based processing.</p>
+
+<p>SATELLITE 2026 will feature dedicated sessions on in-orbit computing architectures, thermal management for space-based GPUs, and the emerging market for "compute-as-a-service" from orbit. This theme is early-stage but could reshape how the entire satellite data value chain operates.</p>
+
+<h3>3. Defense Space: The Military's Growing Appetite for Commercial Services</h3>
+
+<p>The co-located <strong>GovMilSpace</strong> conference at SATELLITE 2026 reflects a structural shift in how military and intelligence organizations approach space. The U.S. Space Force, Space Development Agency (SDA), and National Reconnaissance Office (NRO) are all <strong>accelerating procurement of commercial space services</strong> — from satellite imagery to communications to space domain awareness.</p>
+
+<p>Key defense space dynamics to watch:</p>
+
+<ul>
+<li><strong>SDA's Proliferated Warfighter Space Architecture (PWSA):</strong> The agency is deploying hundreds of satellites in LEO for missile tracking and data transport, and is increasingly using commercial satellite buses and launch services to accelerate deployment</li>
+<li><strong>Commercial SATCOM for military:</strong> The Department of Defense is shifting from building bespoke military communications satellites to purchasing bandwidth from commercial operators, creating revenue opportunities for companies like SES, Intelsat, Viasat, and potentially Starlink</li>
+<li><strong>Space domain awareness:</strong> Companies like LeoLabs, ExoAnalytic, and True Anomaly are providing commercial space situational awareness data to both military and civil customers, supplementing the Space Force's own tracking capabilities</li>
+<li><strong>Golden Dome and missile defense:</strong> The Trump administration's "Golden Dome" missile defense initiative, which includes a significant space-based sensor layer, is driving new requirements and funding for both traditional defense primes and commercial space companies</li>
+</ul>
+
+<p>For commercial space companies, the defense market represents a <strong>predictable, high-margin revenue stream</strong> that can anchor business models while commercial markets develop. Expect significant contract announcements, partnership deals, and policy discussions at GovMilSpace.</p>
+
+<h3>4. Mega-Constellation Economics: Beyond Starlink</h3>
+
+<p>SpaceX's Starlink has proven that LEO broadband constellations can reach massive scale and generate billions in revenue. But the next wave of constellation economics is raising new questions:</p>
+
+<ul>
+<li><strong>Amazon's Project Kuiper:</strong> Amazon is ramping production and launch of its 3,236-satellite constellation, representing the first well-funded challenger to Starlink's LEO broadband dominance. SATELLITE 2026 is where Kuiper's commercial strategy will become clearer</li>
+<li><strong>European constellations:</strong> The EU's IRIS² secure connectivity constellation (targeting 2030 deployment) represents Europe's strategic response to American and Chinese LEO dominance</li>
+<li><strong>Chinese mega-constellations:</strong> The Qianfan (G60) and Guowang programs have collectively filed for 26,000+ satellites. Early deployment has begun, raising questions about orbital congestion, spectrum coordination, and geopolitical competition</li>
+<li><strong>Spectrum and orbital sustainability:</strong> As constellation sizes grow, the ITU's spectrum coordination processes and orbital debris mitigation requirements are becoming critical business constraints. Multiple SATELLITE panels will address these regulatory challenges</li>
+</ul>
+
+<h3>5. The Space Sustainability Imperative</h3>
+
+<p>With 10,000+ active satellites in orbit and tens of thousands more planned, <strong>space sustainability</strong> has moved from a niche environmental concern to a core business risk. At SATELLITE 2026, expect significant attention on:</p>
+
+<ul>
+<li><strong>Active debris removal (ADR):</strong> Companies like Astroscale and ClearSpace are moving from demonstration to operational debris removal. New business models — including "end-of-life service" contracts where satellite operators pre-pay for deorbiting — are emerging</li>
+<li><strong>Space traffic management:</strong> The FCC's new deorbiting rules (requiring satellites to deorbit within 5 years of end-of-life) are tightening requirements, and new international frameworks are being negotiated</li>
+<li><strong>Collision avoidance:</strong> As LEO becomes more crowded, automated conjunction assessment and collision avoidance maneuvers are becoming operational necessities. Companies like Kayhan Space and COMSPOC are building the software infrastructure for a more managed orbital environment</li>
+</ul>
+
+<h2 id="startup-space">Startup Space: 10 Startups to Watch</h2>
+
+<p>One of SATELLITE's most anticipated features is <strong>Startup Space</strong> — a curated competition and exhibition showcasing the most promising early-stage companies in the satellite and space sector. The 2026 cohort features startups spanning the full value chain:</p>
+
+<p>While the final lineup is being confirmed, the Startup Space program typically highlights companies in these high-growth categories:</p>
+
+<ul>
+<li><strong>AI-powered satellite analytics:</strong> Startups using machine learning to extract actionable intelligence from satellite imagery — moving beyond pixels to predictions in areas like agriculture, insurance, supply chain, and climate monitoring</li>
+<li><strong>Software-defined satellites:</strong> Companies enabling on-orbit reprogrammability, allowing satellite operators to change frequency bands, coverage areas, and even mission profiles after launch</li>
+<li><strong>Optical inter-satellite links:</strong> Laser communications between satellites in orbit, enabling high-bandwidth mesh networks without ground station dependencies</li>
+<li><strong>Quantum key distribution:</strong> Satellite-based quantum encryption for ultra-secure communications — a market driven by government and financial sector demand</li>
+<li><strong>Space-as-a-service platforms:</strong> Companies abstracting away the complexity of satellite operations, enabling non-space companies to access orbital capabilities through APIs and cloud-like interfaces</li>
+<li><strong>Spectrum management tools:</strong> Software platforms that optimize spectrum utilization and help operators navigate the increasingly complex regulatory environment</li>
+<li><strong>Satellite manufacturing automation:</strong> Companies bringing automotive-style production line efficiency to satellite manufacturing, driving down costs and increasing throughput</li>
+<li><strong>Ground segment innovation:</strong> Software-defined ground stations, cloud-based ground networks, and managed ground services that reduce the cost and complexity of satellite operations</li>
+<li><strong>Climate and ESG monitoring:</strong> Satellites purpose-built for methane detection, carbon monitoring, and environmental compliance verification — a market being driven by new regulatory requirements</li>
+<li><strong>Non-terrestrial networks (NTN):</strong> Companies building the 3GPP-standard infrastructure that enables satellite integration into 5G and future 6G networks</li>
+</ul>
+
+<p>Startup Space is worth watching not just for the individual companies but for the <strong>pattern recognition</strong> — the categories that attract the most startups reflect where the market sees unmet demand and disruptable incumbents. In 2026, AI analytics, D2D infrastructure, and space sustainability are clearly the hottest categories.</p>
+
+<h2 id="govmilspace">GovMilSpace: The Defense-Commercial Nexus</h2>
+
+<p>Co-located with SATELLITE for the first time, the <strong>GovMilSpace</strong> event brings together military space leaders, defense procurement officials, and commercial companies vying for government contracts. Key sessions to watch:</p>
+
+<ul>
+<li><strong>Space Force commercial integration strategy:</strong> How USSF plans to increase procurement of commercial satellite services and what that means for both traditional defense contractors and new space companies</li>
+<li><strong>Allied space cooperation:</strong> Sessions on Five Eyes satellite sharing, NATO space policy, and multilateral approaches to space security</li>
+<li><strong>Resilient space architectures:</strong> How disaggregated, proliferated satellite constellations change the calculus of space warfare and make space systems more survivable</li>
+<li><strong>Cyber threats to space systems:</strong> The growing attack surface of commercial satellites and ground infrastructure, and what the defense community is doing about it</li>
+</ul>
+
+<p>For commercial space companies, GovMilSpace is a concentrated networking opportunity with the government customers that represent the most reliable revenue in the industry. Preparation tip: if you're meeting with government officials, have your SAM.gov registration current, your ITAR/EAR compliance documentation ready, and a clear articulation of how your technology maps to published defense requirements.</p>
+
+<h2 id="what-spacenexus-users-should-watch">What SpaceNexus Users Should Pay Attention To</h2>
+
+<p>If you're following SATELLITE 2026 through a SpaceNexus lens, here's where to focus your attention:</p>
+
+<ul>
+<li><strong>Contract announcements:</strong> SATELLITE is a traditional venue for announcing major satellite orders, launch contracts, and partnership deals. Follow these on SpaceNexus's <a href="/procurement">Procurement Intelligence</a> dashboard as they're announced</li>
+<li><strong>Funding and M&A:</strong> Expect VC and PE firms to announce space-related investments during the conference. Track these on <a href="/space-capital">Space Capital Tracker</a></li>
+<li><strong>Regulatory signals:</strong> FCC commissioners, ITU officials, and international regulators often use SATELLITE as a platform for policy signals. These can move markets — watch for spectrum allocation decisions, deorbiting requirements, and licensing frameworks</li>
+<li><strong>Technology readiness:</strong> Pay attention to what moves from "concept" to "demo" to "commercially available." The gap between conference presentations and actual deployment is narrowing, and SATELLITE 2026 will showcase several technologies crossing the commercialization threshold</li>
+<li><strong>International market access:</strong> With 110+ countries represented, SATELLITE is the best venue for understanding which international markets are opening to commercial satellite services and which regulatory frameworks are maturing</li>
+</ul>
+
+<h2 id="practical-guide">Practical Guide for Attendees</h2>
+
+<p>For those attending in person, here are logistics and tips:</p>
+
+<ul>
+<li><strong>Dates:</strong> March 23-26, 2026 (Monday-Thursday)</li>
+<li><strong>Venue:</strong> Walter E. Washington Convention Center, Washington, DC</li>
+<li><strong>Registration tiers:</strong> Exhibition-only passes, conference passes, and all-access passes are available. Conference sessions require a conference-level pass</li>
+<li><strong>Key networking events:</strong> The opening reception, Startup Space pitch competition, and various evening receptions are where the most productive informal conversations happen</li>
+<li><strong>Meeting strategy:</strong> Schedule meetings well in advance. The most in-demand executives book their SATELLITE schedules 4-6 weeks early. Use the official SATELLITE app for meeting scheduling</li>
+<li><strong>D.C. context:</strong> Being in Washington means Hill meetings are possible. Many companies combine SATELLITE attendance with Congressional visits to advance policy priorities</li>
+</ul>
+
+<h2 id="the-bottom-line">The Bottom Line</h2>
+
+<p>SATELLITE 2026 arrives at a moment when the satellite and space industry is undergoing its most fundamental transformation in decades. The convergence of direct-to-device technology, space-based computing, defense demand acceleration, and mega-constellation economics is reshaping the business models, competitive dynamics, and investment thesis of the entire sector.</p>
+
+<p>Whether you're an operator, investor, engineer, or policy maker, the conversations that happen March 23-26 in Washington will set the trajectory for the industry's next chapter. The companies, technologies, and partnerships that emerge from SATELLITE 2026 will shape the $1.8 trillion space economy of 2035.</p>
+
+<p>Follow SATELLITE 2026 announcements, contract awards, and industry analysis in real time through SpaceNexus. Track exhibitor companies on <a href="/market-intel">Market Intelligence</a>, monitor deal flow on <a href="/space-capital">Space Capital Tracker</a>, and find upcoming industry events on <a href="/space-events">Space Events</a>.</p>
+`,
+  },
 ];
 
 export function getBlogPost(slug: string): OriginalBlogPost | undefined {
