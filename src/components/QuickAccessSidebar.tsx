@@ -301,7 +301,7 @@ export default function QuickAccessSidebar() {
                     {/* Tooltip (only when collapsed) */}
                     {!isExpanded && (
                       <div className="absolute left-full top-1/2 -translate-y-1/2 ml-2 px-3 py-2 rounded-lg bg-white/[0.08] border border-white/[0.08] shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 whitespace-nowrap">
-                        <span className="text-sm text-slate-200 font-medium">{module.name}</span>
+                        <span className="text-sm text-white/90 font-medium">{module.name}</span>
                         {module.isPremium && (
                           <span className="ml-2 text-xs font-semibold px-1.5 py-0.5 rounded bg-white/10 text-white/70 border border-white/10">
                             PRO

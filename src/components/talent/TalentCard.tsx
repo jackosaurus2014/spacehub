@@ -100,7 +100,7 @@ export default function TalentCard({ talent, compact = false }: TalentCardProps)
         {talent.expertise.map(exp => {
           const { label, icon } = getExpertiseLabel(exp);
           return (
-            <span key={exp} className="text-xs bg-white/5 text-slate-200 px-2 py-1 rounded border border-white/10">
+            <span key={exp} className="text-xs bg-white/5 text-white/90 px-2 py-1 rounded border border-white/10">
               {icon} {label}
             </span>
           );

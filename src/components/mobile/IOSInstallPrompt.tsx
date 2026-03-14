@@ -219,7 +219,7 @@ export default function IOSInstallPrompt() {
         {/* Dismiss button */}
         <button
           onClick={handleDismiss}
-          className="w-full py-2.5 text-sm font-medium text-slate-400 hover:text-slate-200 rounded-xl hover:bg-white/[0.05] transition-colors"
+          className="w-full py-2.5 text-sm font-medium text-slate-400 hover:text-white/90 rounded-xl hover:bg-white/[0.05] transition-colors"
         >
           Not now
         </button>

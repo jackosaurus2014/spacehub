@@ -74,7 +74,7 @@ export default function WidgetContainer({
               draggable
               onDragStart={handleDragStart}
               onDragEnd={onDragEnd}
-              className="cursor-grab active:cursor-grabbing text-slate-400 hover:text-slate-200 p-0.5 flex-shrink-0"
+              className="cursor-grab active:cursor-grabbing text-slate-400 hover:text-white/90 p-0.5 flex-shrink-0"
               title="Drag to reposition"
             >
               <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -100,7 +100,7 @@ export default function WidgetContainer({
           {!isEditing && (
             <button
               onClick={() => setCollapsed(!collapsed)}
-              className="text-slate-400 hover:text-slate-200 p-1 rounded"
+              className="text-slate-400 hover:text-white/90 p-1 rounded"
               title={collapsed ? 'Expand' : 'Collapse'}
             >
               <svg

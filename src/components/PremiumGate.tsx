@@ -429,7 +429,7 @@ export function PremiumBadge({ tier }: { tier: SubscriptionTier }) {
   if (tier === 'free') return null;
 
   const colors: Record<string, string> = {
-    pro: 'bg-white/5 text-slate-200 border-white/10',
+    pro: 'bg-white/5 text-white/90 border-white/10',
     enterprise: 'bg-purple-500/10 text-purple-300 border-purple-500/30',
     test: 'bg-green-500/10 text-green-300 border-green-500/30',
   };
@@ -488,7 +488,7 @@ export function UpgradePrompt({
   return (
     <Link
       href="/pricing"
-      className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-slate-200 text-sm hover:bg-slate-100/20 hover:border-white/15 transition-all duration-200"
+      className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-white/90 text-sm hover:bg-slate-100/20 hover:border-white/15 transition-all duration-200"
     >
       <span>{contextMessage?.icon || '\u{1F512}'}</span>
       <span>{contextMessage ? contextMessage.title : `Upgrade to unlock ${feature}`}</span>

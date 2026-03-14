@@ -98,7 +98,7 @@ export default function AddWidgetModal({
           </div>
           <button
             onClick={handleClose}
-            className="text-slate-400 hover:text-slate-200 p-2 rounded-lg hover:bg-white/[0.06]"
+            className="text-slate-400 hover:text-white/90 p-2 rounded-lg hover:bg-white/[0.06]"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -230,7 +230,7 @@ export default function AddWidgetModal({
           <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-white/[0.08]">
             <button
               onClick={handleClose}
-              className="px-4 py-2 text-sm text-slate-400 hover:text-slate-200 rounded-lg hover:bg-white/[0.06]"
+              className="px-4 py-2 text-sm text-slate-400 hover:text-white/90 rounded-lg hover:bg-white/[0.06]"
             >
               Cancel
             </button>
