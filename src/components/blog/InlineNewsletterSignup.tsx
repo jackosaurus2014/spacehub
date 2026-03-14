@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { trackGA4Event } from '@/lib/analytics';
 
 export default function InlineNewsletterSignup() {
   const [email, setEmail] = useState('');
@@ -11,6 +12,7 @@ export default function InlineNewsletterSignup() {
     e.preventDefault();
     if (!email) return;
 
+    trackGA4Event('newsletter_subscribe', { source: 'blog_inline' });
     setStatus('loading');
     setMessage('');
 

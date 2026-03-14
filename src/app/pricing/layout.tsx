@@ -47,5 +47,33 @@ export default function PricingLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return children;
+  return (
+    <>
+      {/* Google Ads Conversion Tracking
+          Replace AW-XXXXXXXXX with your Google Ads conversion ID.
+          <script async src="https://www.googletagmanager.com/gtag/js?id=AW-XXXXXXXXX" />
+          <script dangerouslySetInnerHTML={{ __html: `
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('config', 'AW-XXXXXXXXX');
+          `}} />
+      */}
+
+      {/* LinkedIn Insight Tag
+          Replace PARTNER_ID with your LinkedIn partner ID.
+          <script dangerouslySetInnerHTML={{ __html: `
+            _linkedin_partner_id = "PARTNER_ID";
+            window._linkedin_data_partner_ids = window._linkedin_data_partner_ids || [];
+            window._linkedin_data_partner_ids.push(_linkedin_partner_id);
+            (function(l) { ... })(window.lintrk);
+          `}} />
+          <noscript>
+            <img height="1" width="1" style={{ display: 'none' }} alt=""
+              src="https://px.ads.linkedin.com/collect/?pid=PARTNER_ID&fmt=gif" />
+          </noscript>
+      */}
+
+      {children}
+    </>
+  );
 }

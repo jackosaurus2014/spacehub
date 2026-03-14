@@ -13,6 +13,7 @@ import ScrollReveal from '@/components/ui/ScrollReveal';
 import { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import FAQSchema from '@/components/seo/FAQSchema';
 import StickyMobileCTA from '@/components/mobile/StickyMobileCTA';
+import { trackGA4Event } from '@/lib/analytics';
 
 const PRICING_FAQ = [
   { question: 'What is SpaceNexus?', answer: 'SpaceNexus is a comprehensive space industry intelligence platform that provides real-time data on satellite tracking, launch schedules, space stocks, regulatory compliance, and 200+ company profiles across 30+ modules.' },
@@ -455,6 +456,8 @@ function PricingPageContent() {
   }, [session]);
 
   const handleStartTrial = async (planTier: SubscriptionTier) => {
+    trackGA4Event('cta_click', { cta: 'start_free_trial', plan: planTier, location: 'pricing_page' });
+
     if (!session?.user) {
       toast.info('Please sign in to start a free trial.');
       return;
@@ -485,6 +488,8 @@ function PricingPageContent() {
   };
 
   const handleSubscribe = async (planTier: SubscriptionTier, interval: 'month' | 'year') => {
+    trackGA4Event('cta_click', { cta: 'subscribe', plan: planTier, interval, location: 'pricing_page' });
+
     if (!session?.user) {
       toast.info('Please sign in to subscribe.');
       return;
@@ -642,6 +647,7 @@ function PricingPageContent() {
                 </div>
                 <Link
                   href="/register?plan=pro&founding=true"
+                  onClick={() => trackGA4Event('cta_click', { cta: 'founding_member', location: 'pricing_page' })}
                   className="shrink-0 px-6 py-3 rounded-xl bg-white text-indigo-900 font-bold text-sm sm:text-base hover:bg-purple-100 transition-colors shadow-md hover:shadow-lg"
                 >
                   Claim Your Spot

@@ -1,10 +1,37 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
+
+// ---------------------------------------------------------------------------
+// USAspending types (client-side)
+// ---------------------------------------------------------------------------
+
+interface USASpendingAward {
+  awardId: string;
+  recipientName: string;
+  description: string;
+  awardAmount: number;
+  awardDate: string;
+  awardingAgency: string;
+  awardType: string;
+}
+
+interface USASpendingResponse {
+  agencySpending: Array<{
+    name: string;
+    abbreviation: string;
+    obligatedAmount: number;
+    budgetAuthority: number;
+    fiscalYear: number;
+  }>;
+  recentAwards: USASpendingAward[];
+  totalSpending: number;
+  fetchedAt: string;
+}
 
 interface Agency {
   name: string;
@@ -55,6 +82,18 @@ export default function GovernmentBudgetsPage() {
   const [regionFilter, setRegionFilter] = useState<string>('All');
   const [sortBy, setSortBy] = useState<SortKey>('budget');
   const [sortDir, setSortDir] = useState<'desc' | 'asc'>('desc');
+
+  // Live Federal Spending from USAspending.gov
+  const [spendingData, setSpendingData] = useState<USASpendingResponse | null>(null);
+  const [spendingLoading, setSpendingLoading] = useState(true);
+
+  useEffect(() => {
+    fetch('/api/usa-spending')
+      .then(res => res.ok ? res.json() : null)
+      .then(data => { if (data) setSpendingData(data); })
+      .catch(() => {})
+      .finally(() => setSpendingLoading(false));
+  }, []);
 
   const totalGlobal = useMemo(() => AGENCIES.reduce((sum, a) => sum + a.budget, 0), []);
 
@@ -115,6 +154,96 @@ export default function GovernmentBudgetsPage() {
                 <p className="text-xs text-white/70 mt-0.5">{stat.sub}</p>
               </div>
             ))}
+          </div>
+        </ScrollReveal>
+
+        {/* Live Federal Spending from USAspending.gov */}
+        <ScrollReveal delay={0.12}>
+          <div className="card p-6 mb-8">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                <span className="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                Live Federal Spending
+              </h3>
+              <a
+                href="https://www.usaspending.gov"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs text-slate-400 hover:text-white transition-colors"
+              >
+                Source: USAspending.gov &rarr;
+              </a>
+            </div>
+
+            {spendingLoading ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-3">
+                  {[1, 2, 3].map(i => (
+                    <div key={i} className="h-4 bg-white/[0.04] rounded animate-pulse" />
+                  ))}
+                </div>
+                <div className="space-y-3">
+                  {[1, 2, 3].map(i => (
+                    <div key={i} className="h-4 bg-white/[0.04] rounded animate-pulse" />
+                  ))}
+                </div>
+              </div>
+            ) : spendingData ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Left: Total NASA budget */}
+                <div>
+                  <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Total NASA Obligated (Current FY)</p>
+                  <p className="text-3xl font-bold text-white mb-3">
+                    ${spendingData.totalSpending > 0
+                      ? (spendingData.totalSpending / 1_000_000_000).toFixed(2) + 'B'
+                      : '25.4B (est.)'}
+                  </p>
+                  {spendingData.agencySpending.length > 0 && (
+                    <div className="space-y-2">
+                      {spendingData.agencySpending.slice(0, 5).map((agency, i) => (
+                        <div key={i} className="flex justify-between text-sm">
+                          <span className="text-white/70 truncate mr-2">{agency.name}</span>
+                          <span className="text-white font-medium shrink-0">
+                            ${(agency.obligatedAmount / 1_000_000_000).toFixed(2)}B
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  {spendingData.fetchedAt && (
+                    <p className="text-xs text-slate-600 mt-3">
+                      Updated: {new Date(spendingData.fetchedAt).toLocaleDateString('en-US', {
+                        month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit',
+                      })}
+                    </p>
+                  )}
+                </div>
+
+                {/* Right: Recent contract awards (top 5 by value) */}
+                <div>
+                  <p className="text-xs text-slate-500 uppercase tracking-wider mb-2">Recent Contract Awards</p>
+                  {spendingData.recentAwards.length > 0 ? (
+                    <div className="space-y-2.5">
+                      {spendingData.recentAwards.slice(0, 5).map((award, i) => (
+                        <div key={award.awardId || i} className="bg-white/[0.03] rounded-lg px-3 py-2">
+                          <div className="flex justify-between items-start gap-2">
+                            <span className="text-sm text-white font-medium truncate">{award.recipientName}</span>
+                            <span className="text-sm text-emerald-400 font-bold shrink-0">
+                              ${(award.awardAmount / 1_000_000).toFixed(1)}M
+                            </span>
+                          </div>
+                          <p className="text-xs text-slate-500 mt-0.5 line-clamp-1">{award.description || award.awardingAgency}</p>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-sm text-slate-500">No recent awards data available.</p>
+                  )}
+                </div>
+              </div>
+            ) : (
+              <p className="text-sm text-slate-500">Unable to load live spending data. Showing static estimates above.</p>
+            )}
           </div>
         </ScrollReveal>
 

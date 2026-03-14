@@ -268,6 +268,11 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/regulatory-tracker`, changeFrequency: 'weekly' as const, priority: 0.7 },
     { url: `${BASE_URL}/space-investors`, changeFrequency: 'weekly' as const, priority: 0.7 },
 
+    // Widgets, Newsletter Archive, Why SpaceNexus
+    { url: `${BASE_URL}/widgets`, changeFrequency: 'weekly' as const, priority: 0.6 },
+    { url: `${BASE_URL}/newsletter-archive`, changeFrequency: 'weekly' as const, priority: 0.6 },
+    { url: `${BASE_URL}/why-spacenexus`, changeFrequency: 'monthly' as const, priority: 0.7 },
+
     // About & Dashboard
     { url: `${BASE_URL}/about`, changeFrequency: 'monthly' as const, priority: 0.5 },
     { url: `${BASE_URL}/dashboard`, changeFrequency: 'daily' as const, priority: 0.6 },

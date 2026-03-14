@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
+import { trackGA4Event } from '@/lib/analytics';
 
 const STORAGE_KEY = 'spacenexus-onboarding';
 const DISMISSED_KEY = 'spacenexus-onboarding-dismissed';
@@ -71,10 +72,18 @@ export default function OnboardingChecklist() {
 
   const toggleItem = useCallback((id: string) => {
     setCompleted((prev) => {
-      const next = prev.includes(id)
+      const wasCompleted = prev.includes(id);
+      const next = wasCompleted
         ? prev.filter((item) => item !== id)
         : [...prev, id];
       saveCompleted(next);
+
+      // Track step completion (only when checking, not unchecking)
+      if (!wasCompleted) {
+        const step = CHECKLIST_ITEMS.find((item) => item.id === id);
+        trackGA4Event('onboarding_step', { step: step?.label || id, step_id: id, completed: true });
+      }
+
       return next;
     });
   }, []);

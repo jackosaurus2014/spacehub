@@ -88,6 +88,22 @@ export function trackEvent(
 }
 
 /**
+ * Track a GA4-style custom event with arbitrary parameters
+ * @param eventName - GA4 event name (e.g., 'cta_click', 'signup_attempt')
+ * @param params - Key-value pairs of event parameters
+ */
+export function trackGA4Event(
+  eventName: string,
+  params?: Record<string, string | number | boolean>
+): void {
+  if (typeof window === 'undefined' || !window.gtag || !isTrackingAllowed()) {
+    return;
+  }
+
+  window.gtag('event', eventName, params);
+}
+
+/**
  * Track a page view with Google Analytics
  * @param path - The page path (e.g., '/mission-control', '/news')
  * @param title - Optional page title

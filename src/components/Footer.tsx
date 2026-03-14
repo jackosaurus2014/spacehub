@@ -55,6 +55,8 @@ const footerLinks = {
       { label: 'Education Pathways', href: '/education-pathways' },
       { label: 'Conferences', href: '/conferences' },
       { label: 'Podcasts', href: '/podcasts' },
+      { label: 'Widgets', href: '/widgets' },
+      { label: 'Newsletter Archive', href: '/newsletter-archive' },
       { label: 'FAQ', href: '/faq' },
       { label: 'Blog', href: '/blog' },
       { label: 'AI Insights', href: '/ai-insights' },
@@ -93,6 +95,7 @@ const footerLinks = {
     title: 'Company',
     links: [
       { label: 'About', href: '/about' },
+      { label: 'Why SpaceNexus', href: '/why-spacenexus' },
       { label: 'Blog', href: '/blog' },
       { label: 'Contact', href: '/contact' },
       { label: 'Security & Trust', href: '/security' },

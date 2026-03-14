@@ -8,6 +8,7 @@ import LegalDisclaimerModal from '@/components/LegalDisclaimerModal';
 import { toast } from '@/lib/toast';
 import { extractApiError } from '@/lib/errors';
 import StickyMobileCTA from '@/components/mobile/StickyMobileCTA';
+import { trackGA4Event } from '@/lib/analytics';
 
 function getPasswordStrength(password: string): { score: number; label: string; color: string } {
   if (!password) return { score: 0, label: '', color: '' };
@@ -73,6 +74,7 @@ export default function RegisterPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    trackGA4Event('signup_attempt', { role: role || 'not_selected' });
 
     if (password !== confirmPassword) {
       setError('Passwords do not match');
@@ -319,7 +321,10 @@ export default function RegisterPage() {
                       name="role"
                       value={option}
                       checked={role === option}
-                      onChange={(e) => setRole(e.target.value)}
+                      onChange={(e) => {
+                        setRole(e.target.value);
+                        trackGA4Event('role_selected', { role: e.target.value });
+                      }}
                       className="sr-only"
                     />
                     <span className={`flex-shrink-0 w-4 h-4 rounded-full border-2 flex items-center justify-center transition-colors ${
