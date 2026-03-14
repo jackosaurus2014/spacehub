@@ -105,6 +105,8 @@ const footerLinks = {
       { label: 'Terms of Service', href: '/terms' },
       { label: 'Developer API', href: '/developer' },
       { label: 'API Access', href: '/api-access' },
+      { label: 'Advertise', href: '/advertise' },
+      { label: 'SATELLITE 2026', href: '/satellite-2026' },
     ],
   },
 };

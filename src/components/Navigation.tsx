@@ -133,6 +133,7 @@ const BUSINESS_ITEMS: DropdownItem[] = [
   { label: 'Security & Trust', href: '/security', description: 'How we protect your data' },
   { label: 'Book a Demo', href: '/book-demo', description: 'Schedule a personalized walkthrough' },
   { label: 'API Access', href: '/api-access', description: 'REST API for space intelligence data' },
+  { label: 'Advertise', href: '/advertise', description: 'Sponsorship tiers for space industry brands' },
 ];
 
 const TOOLS_ITEMS: DropdownItem[] = [
