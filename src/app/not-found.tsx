@@ -7,38 +7,31 @@ import { motion } from 'framer-motion';
 
 const popularPages = [
   {
-    href: '/mission-control',
-    label: 'Mission Control',
-    description: 'Real-time space operations dashboard',
-    icon: 'M15.59 14.37a6 6 0 01-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 006.16-12.12A14.98 14.98 0 009.631 8.41m5.96 5.96a14.926 14.926 0 01-5.841 2.58m-.119-8.54a6 6 0 00-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 00-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 01-2.448-2.448 14.9 14.9 0 01.06-.312m-2.24 2.39a4.493 4.493 0 00-1.757 4.306 4.493 4.493 0 004.306-1.758M16.5 9a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z',
+    href: '/',
+    label: 'Home',
+    description: 'Return to the SpaceNexus homepage',
+    icon: 'M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25',
     color: 'cyan',
   },
   {
-    href: '/company-profiles',
-    label: 'Company Directory',
-    description: '100+ space company profiles',
-    icon: 'M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 3.75h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008z',
+    href: '/dashboard',
+    label: 'Dashboard',
+    description: 'Your personalized mission control',
+    icon: 'M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25a2.25 2.25 0 01-2.25-2.25v-2.25z',
     color: 'purple',
   },
   {
-    href: '/marketplace',
-    label: 'Marketplace',
-    description: 'Space services and procurement',
-    icon: 'M13.5 21v-7.5a.75.75 0 01.75-.75h3a.75.75 0 01.75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349m-16.5 11.65V9.35m0 0a3.001 3.001 0 003.75-.615A2.993 2.993 0 009.75 9.75c.896 0 1.7-.393 2.25-1.016a2.993 2.993 0 002.25 1.016c.896 0 1.7-.393 2.25-1.016A3.001 3.001 0 0021 9.349m-18 0A2.25 2.25 0 005.25 7.5h13.5A2.25 2.25 0 0021 9.349',
-    color: 'emerald',
-  },
-  {
-    href: '/news',
-    label: 'News & Media',
-    description: 'Latest space industry news',
+    href: '/news-digest',
+    label: 'News',
+    description: 'Latest space industry headlines',
     icon: 'M12 7.5h1.5m-1.5 3h1.5m-7.5 3h7.5m-7.5 3h7.5m3-9h3.375c.621 0 1.125.504 1.125 1.125V18a2.25 2.25 0 01-2.25 2.25M16.5 7.5V4.875c0-.621-.504-1.125-1.125-1.125H4.125C3.504 3.75 3 4.254 3 4.875V18a2.25 2.25 0 002.25 2.25h13.5M6 7.5h3v3H6v-3z',
     color: 'amber',
   },
   {
-    href: '/tools',
-    label: 'Tools',
-    description: 'Calculators and analysis tools',
-    icon: 'M11.42 15.17l-5.1-5.1m0 0L11.42 4.97m-5.1 5.1h14.25M4.5 19.5h15M21 12a9 9 0 11-18 0 9 9 0 0118 0z',
+    href: '/contact',
+    label: 'Help',
+    description: 'Get help and support',
+    icon: 'M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z',
     color: 'blue',
   },
 ];
@@ -261,10 +254,10 @@ export default function NotFound() {
             Lost in Space?
           </h1>
           <p className="text-slate-400 mb-2 max-w-md mx-auto text-base">
-            This page doesn&apos;t exist. It may have been moved, renamed, or lost to the void.
+            The page you&apos;re looking for has drifted into deep space. It may have been moved, renamed, or lost beyond the event horizon.
           </p>
           <p className="text-slate-500 text-sm mb-8 max-w-sm mx-auto">
-            Try searching for what you&apos;re looking for, or navigate to one of our popular destinations below.
+            Try searching for what you need, or navigate to one of our popular destinations below.
           </p>
         </motion.div>
 
@@ -340,7 +333,7 @@ export default function NotFound() {
             </svg>
             Popular Destinations
           </p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {popularPages.map((page, index) => {
               const colors = colorClasses[page.color] || colorClasses.cyan;
               return (

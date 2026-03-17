@@ -24,6 +24,7 @@ import { BLOG_POSTS } from '@/lib/blog-content';
 import ItemListSchema from '@/components/seo/ItemListSchema';
 import { NewsArticle } from '@/types';
 import RelatedModules from '@/components/ui/RelatedModules';
+import TrendingSidebar from '@/components/TrendingSidebar';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 function NewsContent() {
@@ -246,14 +247,25 @@ export default function NewsPage() {
 
         <AlertNudge moduleName="Space News" alertType="news" ctaHref="/alerts" className="mb-4" />
 
-        {/* Content wrapped in Suspense for useSearchParams */}
-        <Suspense fallback={
-          <div className="flex justify-center py-20">
-            <LoadingSpinner size="lg" />
+        {/* Main content + Trending sidebar grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+          {/* Main content — 3/4 width on desktop */}
+          <div className="lg:col-span-3">
+            {/* Content wrapped in Suspense for useSearchParams */}
+            <Suspense fallback={
+              <div className="flex justify-center py-20">
+                <LoadingSpinner size="lg" />
+              </div>
+            }>
+              <NewsContent />
+            </Suspense>
           </div>
-        }>
-          <NewsContent />
-        </Suspense>
+
+          {/* Trending sidebar — 1/4 width on desktop, full width on mobile */}
+          <div className="lg:col-span-1">
+            <TrendingSidebar />
+          </div>
+        </div>
 
         {/* From Our Blog */}
         <ScrollReveal>

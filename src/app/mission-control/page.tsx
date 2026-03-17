@@ -16,6 +16,7 @@ import { clientLogger } from '@/lib/client-logger';
 import { getCompanyProfileUrl } from '@/lib/company-links';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import RelatedModules from '@/components/ui/RelatedModules';
+import NewsTicker from '@/components/NewsTicker';
 import { BLUR_PLACEHOLDER_1_1 } from '@/lib/blur-placeholder';
 
 const EVENT_TYPES: { value: SpaceEventType | 'all'; label: string; icon: string }[] = [
@@ -1092,6 +1093,9 @@ function MissionControlContent() {
   return (
     <PullToRefresh onRefresh={handleRefresh}>
     <div className="min-h-screen">
+      {/* Live News Ticker */}
+      <NewsTicker />
+
       <div className="container mx-auto px-4">
         <AnimatedPageHeader title="Mission Control" subtitle="Explore all upcoming space missions, launches, and events" icon="🚀" accentColor="cyan" />
 

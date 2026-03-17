@@ -1412,6 +1412,18 @@ pre {
   overflow: hidden;
 }
 
+/* ——— News ticker marquee scroll ——— */
+@keyframes ticker-scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.ticker-scroll {
+  animation: ticker-scroll 45s linear infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ticker-scroll { animation: none; }
+}
+
 /* ——— Print-friendly styles ——— */
 @media print {
   /* Page setup */

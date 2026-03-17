@@ -35,6 +35,7 @@ import ExplorationProgress from '@/components/ui/ExplorationProgress';
 import WhatsNewBanner from '@/components/WhatsNewBanner';
 import OnboardingChecklist from '@/components/OnboardingChecklist';
 import ReferralWidget from '@/components/ReferralWidget';
+import NewsTicker from '@/components/NewsTicker';
 import { useSubscription } from '@/components/SubscriptionProvider';
 
 /** Returns a time-of-day greeting with the user's name */
@@ -424,6 +425,9 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen py-8">
+      {/* Live News Ticker — spans full width above container */}
+      <NewsTicker />
+
       <div className="container mx-auto px-4">
         {/* What's New Banner */}
         <WhatsNewBanner />
