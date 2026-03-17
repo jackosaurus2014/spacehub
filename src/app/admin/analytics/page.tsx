@@ -5,6 +5,7 @@ import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
+import { BLOG_POSTS } from '@/lib/blog-content';
 
 interface AnalyticsData {
   totalUsers: number;
@@ -185,6 +186,76 @@ export default function AdminAnalyticsPage() {
                       </div>
                     );
                   })}
+                </div>
+              </div>
+            </ScrollReveal>
+
+            {/* Content Stats */}
+            <ScrollReveal delay={0.17}>
+              <div className="card border border-space-600/50 p-5">
+                <h2 className="text-white font-semibold text-lg mb-4">Content Stats</h2>
+                <StaggerContainer className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <StaggerItem>
+                    <div className="rounded-lg border border-space-600/30 bg-space-700/20 p-4 text-center">
+                      <p className="text-star-400 text-sm font-medium">Blog Articles</p>
+                      <p className="text-3xl font-bold text-cyan-400 mt-1">{BLOG_POSTS.length}</p>
+                      <p className="text-star-500 text-xs mt-1">original posts</p>
+                    </div>
+                  </StaggerItem>
+                  <StaggerItem>
+                    <div className="rounded-lg border border-space-600/30 bg-space-700/20 p-4 text-center">
+                      <p className="text-star-400 text-sm font-medium">RSS Sources</p>
+                      <p className="text-3xl font-bold text-purple-400 mt-1">97</p>
+                      <p className="text-star-500 text-xs mt-1">aggregated feeds</p>
+                    </div>
+                  </StaggerItem>
+                  <StaggerItem>
+                    <div className="rounded-lg border border-space-600/30 bg-space-700/20 p-4 text-center">
+                      <p className="text-star-400 text-sm font-medium">Cron Jobs</p>
+                      <p className="text-3xl font-bold text-amber-400 mt-1">33</p>
+                      <p className="text-star-500 text-xs mt-1">scheduled tasks</p>
+                    </div>
+                  </StaggerItem>
+                </StaggerContainer>
+              </div>
+            </ScrollReveal>
+
+            {/* Recent Activity */}
+            <ScrollReveal delay={0.19}>
+              <div className="card border border-space-600/50 p-5">
+                <h2 className="text-white font-semibold text-lg mb-4">Recent Activity</h2>
+                <div className="space-y-3">
+                  {data.recentSignups.length > 0 ? (
+                    <>
+                      <p className="text-star-300 text-sm">
+                        <span className="text-emerald-400 font-semibold">{data.signupsLast7Days}</span> new subscriptions in the last 7 days
+                      </p>
+                      <div className="space-y-2">
+                        {data.recentSignups.slice(0, 5).map((user) => (
+                          <div key={user.id} className="flex items-center justify-between rounded-lg border border-space-600/30 bg-space-700/20 px-4 py-2.5">
+                            <div className="flex items-center gap-3 min-w-0">
+                              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+                                {(user.name || user.email).charAt(0).toUpperCase()}
+                              </div>
+                              <div className="min-w-0">
+                                <p className="text-white text-sm font-medium truncate">{user.name || 'Anonymous'}</p>
+                                <p className="text-star-500 text-xs truncate">{user.email}</p>
+                              </div>
+                            </div>
+                            <span className="text-star-400 text-xs whitespace-nowrap ml-3">
+                              {new Date(user.createdAt).toLocaleDateString('en-US', {
+                                month: 'short',
+                                day: 'numeric',
+                                timeZone: 'UTC',
+                              })}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </>
+                  ) : (
+                    <p className="text-star-400 text-sm text-center py-4">No recent newsletter subscriptions to display.</p>
+                  )}
                 </div>
               </div>
             </ScrollReveal>

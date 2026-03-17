@@ -16,6 +16,32 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '1.4.0',
+    date: '2026-03-17',
+    title: 'Major Platform Update',
+    description:
+      'Waves 80-91: Major expansion with podcast aggregation, SpaceX API, NASA Earth Events, federal spending data, 12 new blog articles, embeddable widgets, API pricing docs, referral program, SATELLITE 2026 conference page, and dozens of fixes and improvements.',
+    highlight: '9 new features, 4 improvements, 3 fixes',
+    changes: [
+      { type: 'feature', text: 'Podcast aggregation system with 5 curated feeds' },
+      { type: 'feature', text: 'SpaceX API integration for launch and vehicle data' },
+      { type: 'feature', text: 'NASA Earth Events (EONET) tracking for natural events' },
+      { type: 'feature', text: 'USAspending.gov federal spending data for space-related contracts' },
+      { type: 'feature', text: '12 new blog articles covering trending space industry topics' },
+      { type: 'feature', text: 'Embeddable widgets page for external site integration' },
+      { type: 'feature', text: 'API pricing and documentation page for developers' },
+      { type: 'feature', text: 'Referral program for user growth and rewards' },
+      { type: 'feature', text: 'SATELLITE 2026 conference page with schedule and exhibitors' },
+      { type: 'improvement', text: 'Founding Member pricing offer with early-adopter benefits' },
+      { type: 'improvement', text: 'Interactive FAQ on pricing page for common questions' },
+      { type: 'improvement', text: 'Onboarding checklist on dashboard for new user guidance' },
+      { type: 'improvement', text: 'Mobile responsiveness across all new and existing pages' },
+      { type: 'fix', text: 'Pricing inconsistency resolved across all pages' },
+      { type: 'fix', text: 'Company profiles data loading reliability improved' },
+      { type: 'fix', text: 'Cron job CSRF authentication hardened' },
+    ],
+  },
+  {
     version: '1.3.0',
     date: '2026-02-27',
     title: 'Platform Polish & Animation Overhaul',

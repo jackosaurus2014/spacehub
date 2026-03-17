@@ -1,7 +1,9 @@
 'use client';
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useSession } from 'next-auth/react';
 import Link from 'next/link';
+import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 
 // TTL policies mirrored from src/lib/freshness-policies.ts for client-side status calculation
@@ -182,10 +184,12 @@ function HeatmapCell({ entry }: { entry: HeatmapEntry }) {
 }
 
 export default function DataFreshnessPage() {
+  const { data: session, status: authStatus } = useSession();
   const [data, setData] = useState<FreshnessData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState<string | null>(null);
+  const [refreshingAll, setRefreshingAll] = useState(false);
   const [sortBy, setSortBy] = useState<SortBy>('priority');
 
   const fetchData = useCallback(async () => {
@@ -209,10 +213,42 @@ export default function DataFreshnessPage() {
   }, []);
 
   useEffect(() => {
-    fetchData();
-    const interval = setInterval(fetchData, 30000);
-    return () => clearInterval(interval);
-  }, [fetchData]);
+    if (session?.user?.isAdmin) {
+      fetchData();
+      const interval = setInterval(fetchData, 30000);
+      return () => clearInterval(interval);
+    }
+  }, [fetchData, session]);
+
+  const handleRefreshAll = async () => {
+    setRefreshingAll(true);
+    try {
+      for (const mod of refreshModules) {
+        await fetch('/api/admin/data-freshness', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ module: mod.key }),
+        });
+      }
+      setTimeout(fetchData, 2000);
+    } catch {
+      // Silent fail
+    } finally {
+      setRefreshingAll(false);
+    }
+  };
+
+  const refreshModules = [
+    { key: 'news', label: 'News' },
+    { key: 'events', label: 'Events' },
+    { key: 'blogs', label: 'Blogs' },
+    { key: 'external-apis', label: 'External APIs' },
+    { key: 'space-weather', label: 'Space Weather' },
+    { key: 'regulatory-feeds', label: 'Regulatory Feeds' },
+    { key: 'sec-filings', label: 'SEC Filings' },
+    { key: 'ai-research', label: 'AI Research' },
+    { key: 'space-defense', label: 'Space Defense' },
+  ];
 
   const triggerRefresh = async (module: string) => {
     setRefreshing(module);
@@ -306,6 +342,25 @@ export default function DataFreshnessPage() {
     return { fresh, stale, expired, noData };
   }, [heatmapEntries]);
 
+  if (authStatus === 'loading') {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <LoadingSpinner size="md" />
+      </div>
+    );
+  }
+
+  if (!session?.user?.isAdmin) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="card p-8 text-center max-w-md">
+          <h1 className="text-2xl font-display font-bold text-white mb-4">Access Denied</h1>
+          <p className="text-star-300">You do not have permission to view this page.</p>
+        </div>
+      </div>
+    );
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen bg-slate-950 text-white p-8">
@@ -324,7 +379,7 @@ export default function DataFreshnessPage() {
     return (
       <div className="min-h-screen bg-slate-950 text-white p-8">
         <div className="max-w-7xl mx-auto">
-          <h1 className="text-2xl font-bold mb-4">Data Freshness</h1>
+          <h1 className="text-2xl font-bold mb-4">Data Freshness Monitor</h1>
           <div className="bg-red-900/20 border border-red-500/30 rounded-lg p-4 text-red-400">
             {error}
           </div>
@@ -338,33 +393,59 @@ export default function DataFreshnessPage() {
 
   if (!data) return null;
 
-  const refreshModules = [
-    { key: 'news', label: 'News' },
-    { key: 'events', label: 'Events' },
-    { key: 'blogs', label: 'Blogs' },
-    { key: 'external-apis', label: 'External APIs' },
-    { key: 'space-weather', label: 'Space Weather' },
-    { key: 'regulatory-feeds', label: 'Regulatory Feeds' },
-    { key: 'sec-filings', label: 'SEC Filings' },
-    { key: 'ai-research', label: 'AI Research' },
-    { key: 'space-defense', label: 'Space Defense' },
-  ];
-
   return (
     <div className="min-h-screen bg-slate-950 text-white p-4 md:p-8">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
         <ScrollReveal>
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div>
-              <h1 className="text-2xl font-bold">Data Freshness Dashboard</h1>
+              <h1 className="text-2xl font-bold">Data Freshness Monitor</h1>
               <p className="text-slate-400 text-sm mt-1">
                 Last updated: {new Date(data.generatedAt).toLocaleString('en-US', { timeZone: 'UTC' })}
               </p>
             </div>
-            <Link href="/admin" className="text-white/70 hover:underline text-sm">
-              Back to Admin
-            </Link>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={handleRefreshAll}
+                disabled={refreshingAll}
+                className="px-4 py-2 text-sm font-semibold rounded-lg bg-gradient-to-r from-blue-600 to-cyan-600 text-white hover:from-blue-500 hover:to-cyan-500 transition-all disabled:opacity-50"
+              >
+                {refreshingAll ? (
+                  <span className="flex items-center gap-2">
+                    <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    Refreshing All...
+                  </span>
+                ) : (
+                  'Refresh All'
+                )}
+              </button>
+              <Link href="/admin" className="text-white/70 hover:underline text-sm">
+                Back to Admin
+              </Link>
+            </div>
+          </div>
+        </ScrollReveal>
+
+        {/* Summary Counts */}
+        <ScrollReveal delay={0.05}>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div className="rounded-xl border border-green-500/20 bg-green-500/5 p-4 text-center">
+              <div className="text-2xl font-bold text-green-400">{summary.fresh}</div>
+              <div className="text-xs text-slate-400 mt-1">Fresh</div>
+            </div>
+            <div className="rounded-xl border border-yellow-500/20 bg-yellow-500/5 p-4 text-center">
+              <div className="text-2xl font-bold text-yellow-400">{summary.stale}</div>
+              <div className="text-xs text-slate-400 mt-1">Stale</div>
+            </div>
+            <div className="rounded-xl border border-red-500/20 bg-red-500/5 p-4 text-center">
+              <div className="text-2xl font-bold text-red-400">{summary.expired}</div>
+              <div className="text-xs text-slate-400 mt-1">Failed / Expired</div>
+            </div>
+            <div className="rounded-xl border border-white/[0.06] bg-white/[0.03] p-4 text-center">
+              <div className="text-2xl font-bold text-slate-400">{summary.noData}</div>
+              <div className="text-xs text-slate-400 mt-1">No Data</div>
+            </div>
           </div>
         </ScrollReveal>
 
@@ -430,6 +511,73 @@ export default function DataFreshnessPage() {
                 </StaggerItem>
               ))}
             </StaggerContainer>
+          </div>
+        </div>
+        </ScrollReveal>
+
+        {/* Data Sources Table */}
+        <ScrollReveal delay={0.12}>
+        <div className="bg-black/80 rounded-xl border border-white/[0.06] overflow-hidden">
+          <div className="px-4 py-3 border-b border-white/[0.06] bg-white/[0.04]">
+            <h2 className="text-white font-semibold text-sm">All Data Sources</h2>
+            <p className="text-slate-500 text-xs mt-0.5">Source Name, Last Updated, Status, and Refresh Interval</p>
+          </div>
+          <div className="p-4 overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="text-slate-400 text-xs uppercase">
+                  <th className="text-left px-3 py-2">Source Name</th>
+                  <th className="text-left px-3 py-2">Last Updated</th>
+                  <th className="text-left px-3 py-2">Status</th>
+                  <th className="text-left px-3 py-2">Refresh Interval</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-white/[0.06]">
+                {sortedEntries.map((entry) => (
+                  <tr key={entry.module} className="hover:bg-white/[0.03]">
+                    <td className="px-3 py-2 text-white font-medium">{entry.module}</td>
+                    <td className="px-3 py-2">
+                      <span className={
+                        entry.status === 'fresh' ? 'text-green-400' :
+                        entry.status === 'stale' ? 'text-yellow-400' :
+                        entry.status === 'expired' ? 'text-red-400' :
+                        'text-slate-500'
+                      }>
+                        {entry.ageLabel}
+                      </span>
+                    </td>
+                    <td className="px-3 py-2">
+                      <span className={`inline-flex items-center gap-1.5 text-xs font-medium px-2 py-0.5 rounded-full border ${
+                        entry.status === 'fresh'
+                          ? 'bg-green-500/20 text-green-400 border-green-500/30'
+                          : entry.status === 'stale'
+                            ? 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30'
+                            : entry.status === 'expired'
+                              ? 'bg-red-500/20 text-red-400 border-red-500/30'
+                              : 'bg-white/[0.06] text-slate-500 border-white/[0.06]'
+                      }`}>
+                        <span className={`w-1.5 h-1.5 rounded-full ${
+                          entry.status === 'fresh' ? 'bg-green-500' :
+                          entry.status === 'stale' ? 'bg-yellow-500' :
+                          entry.status === 'expired' ? 'bg-red-500' :
+                          'bg-slate-500'
+                        }`} />
+                        {entry.status === 'fresh' ? 'Fresh' :
+                         entry.status === 'stale' ? 'Stale' :
+                         entry.status === 'expired' ? 'Error' :
+                         'No Data'}
+                      </span>
+                    </td>
+                    <td className="px-3 py-2 text-slate-400">
+                      {entry.ttlHours < 24
+                        ? `${entry.ttlHours}h`
+                        : `${Math.round(entry.ttlHours / 24)}d`}
+                      <span className="text-slate-600 ml-1.5 text-xs">({entry.priority})</span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
         </ScrollReveal>

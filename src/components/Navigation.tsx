@@ -71,6 +71,7 @@ const EXPLORE_ITEMS: DropdownItem[] = [
   { label: 'Debris Catalog', href: '/debris-catalog', description: 'Comprehensive orbital debris database' },
   { label: 'Sustainability Scorecard', href: '/sustainability-scorecard', description: 'Space sustainability metrics & ratings' },
   { label: 'FAQ', href: '/faq', description: 'Frequently asked questions' },
+  { label: 'Help Center', href: '/help', description: 'Guides, FAQs & support resources' },
   { label: 'Newsletters', href: '/newsletters-directory', description: 'Space industry newsletter directory' },
   { label: 'All Features & Modules', href: '/features', description: 'Browse 30+ modules in one directory' },
   { label: 'Getting Started', href: '/getting-started', description: 'New to SpaceNexus? Start here' },

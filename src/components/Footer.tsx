@@ -62,6 +62,7 @@ const footerLinks = {
       { label: 'AI Insights', href: '/ai-insights' },
       { label: 'Learning Center', href: '/learn' },
       { label: 'Getting Started', href: '/getting-started' },
+      { label: 'Help Center', href: '/help' },
     ],
   },
   solutions: {

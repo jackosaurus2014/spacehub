@@ -307,6 +307,9 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/case-studies`, changeFrequency: 'monthly' as const, priority: 0.7 },
     { url: `${BASE_URL}/book-demo`, changeFrequency: 'monthly' as const, priority: 0.6 },
     { url: `${BASE_URL}/getting-started`, changeFrequency: 'monthly' as const, priority: 0.7 },
+
+    // Help Center
+    { url: `${BASE_URL}/help`, changeFrequency: 'monthly' as const, priority: 0.6 },
   ];
 
   return routes.map(route => ({

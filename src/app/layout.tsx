@@ -39,6 +39,7 @@ const WhatsNew = dynamic(() => import('@/components/mobile/WhatsNew').then(m => 
 const ReferralPrompt = dynamic(() => import('@/components/marketing/ReferralPrompt'), { ssr: false });
 const AppRatingPrompt = dynamic(() => import('@/components/mobile/AppRatingPrompt'), { ssr: false });
 const MobileSocialProofBar = dynamic(() => import('@/components/marketing/MobileSocialProofBar'), { ssr: false });
+const HelpButton = dynamic(() => import('@/components/HelpButton'), { ssr: false });
 const BackToTop = dynamic(() => import('@/components/ui/BackToTop'), { ssr: false });
 const ScrollProgress = dynamic(() => import('@/components/ui/ScrollProgress'), { ssr: false });
 const WebVitals = dynamic(() => import('@/components/analytics/WebVitals'), { ssr: false });
@@ -245,6 +246,7 @@ export default function RootLayout({
               <ReferralPrompt />
               <AppRatingPrompt />
               <ErrorReporter />
+              <HelpButton />
               <BackToTop />
               <ScrollProgress />
               <ExitIntentPopup />
