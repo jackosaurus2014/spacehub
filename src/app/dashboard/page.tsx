@@ -35,6 +35,7 @@ import ExplorationProgress from '@/components/ui/ExplorationProgress';
 import WhatsNewBanner from '@/components/WhatsNewBanner';
 import OnboardingChecklist from '@/components/OnboardingChecklist';
 import ReferralWidget from '@/components/ReferralWidget';
+import { useSubscription } from '@/components/SubscriptionProvider';
 
 /** Returns a time-of-day greeting with the user's name */
 function getTimeGreeting(name: string): string {
@@ -228,6 +229,93 @@ function ModuleSection({ title, icon, modules, sizeClasses, delay }: {
   );
 }
 
+const TRIAL_BANNER_DISMISS_KEY = 'spacenexus_dash_trial_dismissed';
+
+/** Dashboard-inline trial expiration warning — shows when trial has < 3 days left */
+function TrialExpirationWarning() {
+  const { isTrialing, trialEndsAt } = useSubscription();
+  const [dismissed, setDismissed] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  const daysRemaining = useMemo(() => {
+    if (!trialEndsAt) return null;
+    const diff = trialEndsAt.getTime() - Date.now();
+    return Math.ceil(diff / (1000 * 60 * 60 * 24));
+  }, [trialEndsAt]);
+
+  useEffect(() => {
+    setMounted(true);
+    try {
+      const dismissedDate = localStorage.getItem(TRIAL_BANNER_DISMISS_KEY);
+      if (dismissedDate) {
+        // Reappear daily: only stay dismissed if dismissed today
+        const today = new Date().toISOString().slice(0, 10);
+        if (dismissedDate === today) {
+          setDismissed(true);
+        } else {
+          localStorage.removeItem(TRIAL_BANNER_DISMISS_KEY);
+        }
+      }
+    } catch {
+      // localStorage not available
+    }
+  }, []);
+
+  const handleDismiss = () => {
+    setDismissed(true);
+    try {
+      const today = new Date().toISOString().slice(0, 10);
+      localStorage.setItem(TRIAL_BANNER_DISMISS_KEY, today);
+    } catch {
+      // localStorage not available
+    }
+  };
+
+  if (!mounted || !isTrialing || daysRemaining === null || daysRemaining > 3 || dismissed) {
+    return null;
+  }
+
+  const message =
+    daysRemaining <= 0
+      ? 'Your free trial has expired. Upgrade now to keep full access.'
+      : `Your free trial ends in ${daysRemaining} day${daysRemaining === 1 ? '' : 's'}. Upgrade to keep full access.`;
+
+  return (
+    <div
+      className="mb-6 flex items-center justify-between gap-4 rounded-xl border border-amber-500/30 bg-gradient-to-r from-amber-500/15 to-orange-500/15 px-5 py-3.5 animate-fade-in"
+      role="alert"
+      aria-live="polite"
+    >
+      <div className="flex items-center gap-3 min-w-0">
+        <svg className="w-5 h-5 text-amber-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+        </svg>
+        <p className="text-sm font-medium text-white">{message}</p>
+      </div>
+      <div className="flex items-center gap-2 shrink-0">
+        <Link
+          href="/pricing"
+          className="inline-flex items-center gap-1.5 rounded-lg bg-amber-600 px-4 py-1.5 text-sm font-semibold text-white transition-colors hover:bg-amber-500"
+        >
+          Upgrade
+          <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+          </svg>
+        </Link>
+        <button
+          onClick={handleDismiss}
+          className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-white/[0.08] hover:text-white"
+          aria-label="Dismiss trial warning"
+        >
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export default function DashboardPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
@@ -339,6 +427,9 @@ export default function DashboardPage() {
       <div className="container mx-auto px-4">
         {/* What's New Banner */}
         <WhatsNewBanner />
+
+        {/* Trial Expiration Warning — amber banner when < 3 days remain */}
+        <TrialExpirationWarning />
 
         {/* Onboarding Checklist for new users */}
         <OnboardingChecklist />

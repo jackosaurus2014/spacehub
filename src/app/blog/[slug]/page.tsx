@@ -47,6 +47,8 @@ const BLOG_CTA_MAP: Record<string, { tool: string; path: string }> = {
   'space-industry-investment-guide-2026': { tool: 'Space Capital Tracker', path: '/space-capital' },
   'sierra-space-vast-billion-dollar-raises-2026': { tool: 'Space Capital Tracker', path: '/space-capital' },
   'satellite-2026-conference-preview': { tool: 'Space Events', path: '/space-events' },
+  'how-to-track-satellites-real-time-2026-guide': { tool: 'Satellite Tracker', path: '/satellites' },
+  'space-stocks-to-watch-2026-investors-guide': { tool: 'Market Intelligence', path: '/market-intel' },
 };
 
 type Props = {
