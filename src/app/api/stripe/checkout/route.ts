@@ -96,7 +96,7 @@ export async function POST(req: Request) {
           quantity: 1,
         },
       ],
-      success_url: `${APP_URL}/pricing?success=true`,
+      success_url: `${APP_URL}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${APP_URL}/pricing?canceled=true`,
       subscription_data: {
         ...(trialPeriodDays ? { trial_period_days: trialPeriodDays } : {}),

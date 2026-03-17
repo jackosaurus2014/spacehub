@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useMemo } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useMemo, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import LegalDisclaimerModal from '@/components/LegalDisclaimerModal';
@@ -50,8 +50,15 @@ function getRegisterFieldError(field: string, value: string, password?: string):
   }
 }
 
-export default function RegisterPage() {
+function RegisterPageContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  // Parse monetization-relevant query params
+  const isFounding = searchParams.get('founding') === 'true';
+  const isTrial = searchParams.get('trial') === 'true';
+  const planParam = searchParams.get('plan'); // 'pro' | 'enterprise'
+
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -74,7 +81,12 @@ export default function RegisterPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    trackGA4Event('signup_attempt', { role: role || 'not_selected' });
+    trackGA4Event('signup_attempt', {
+      role: role || 'not_selected',
+      plan: planParam || 'free',
+      founding: isFounding,
+      trial: isTrial,
+    });
 
     if (password !== confirmPassword) {
       setError('Passwords do not match');
@@ -114,7 +126,16 @@ export default function RegisterPage() {
         try { localStorage.setItem('spacenexus-user-role', role); } catch { /* ignore */ }
       }
       toast.success('Account created! Please check your email to verify.');
-      router.push('/login?registered=true');
+      // Preserve plan context so the user can subscribe after login
+      const loginParams = new URLSearchParams({ registered: 'true' });
+      if (isFounding) {
+        loginParams.set('founding', 'true');
+        loginParams.set('plan', planParam || 'pro');
+      } else if (isTrial) {
+        loginParams.set('trial', 'true');
+        loginParams.set('plan', planParam || 'pro');
+      }
+      router.push(`/login?${loginParams.toString()}`);
     } catch {
       setError('An error occurred. Please try again.');
       toast.error('An error occurred. Please try again.');
@@ -161,6 +182,31 @@ export default function RegisterPage() {
         </div>
 
         <div className="card p-8 glow-border">
+          {/* Founding Member banner */}
+          {isFounding && (
+            <div className="mb-6 p-4 rounded-xl border border-purple-500/30 bg-gradient-to-r from-indigo-900/60 via-purple-800/60 to-blue-900/60">
+              <p className="text-sm font-bold text-white mb-1">
+                You&apos;re claiming a Founding Member spot!
+              </p>
+              <p className="text-purple-200 text-sm">
+                <span className="font-bold text-white">$4.99/month</span> locked for life.
+                Create your account below to secure your price.
+              </p>
+            </div>
+          )}
+
+          {/* Trial banner */}
+          {isTrial && !isFounding && (
+            <div className="mb-6 p-4 rounded-xl border border-amber-500/30 bg-amber-500/10">
+              <p className="text-sm font-bold text-white mb-1">
+                Start your free 14-day Professional trial
+              </p>
+              <p className="text-amber-200 text-sm">
+                Full access to all Professional features. No credit card required.
+              </p>
+            </div>
+          )}
+
           <div className="text-center mb-8">
             <Image
               src="/spacenexus-logo.png"
@@ -170,10 +216,18 @@ export default function RegisterPage() {
               className="mx-auto w-full max-w-xs h-auto rounded-lg mb-4"
             />
             <h1 className="text-2xl font-display font-bold text-white">
-              Join SpaceNexus
+              {isFounding
+                ? 'Claim Your Founding Member Spot'
+                : isTrial
+                ? 'Start Your Free Trial'
+                : 'Join SpaceNexus'}
             </h1>
             <p className="text-slate-400 mt-2">
-              Create your account and explore the cosmos
+              {isFounding
+                ? 'Lock in $4.99/month Professional access forever'
+                : isTrial
+                ? 'Create your account to begin your 14-day Professional trial'
+                : 'Create your account and explore the cosmos'}
             </p>
           </div>
 
@@ -372,6 +426,10 @@ export default function RegisterPage() {
                   <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
                   <span>Creating account...</span>
                 </span>
+              ) : isFounding ? (
+                'Create Account & Claim Founding Price'
+              ) : isTrial ? (
+                'Create Account & Start Free Trial'
               ) : (
                 'Start Free — No Credit Card'
               )}
@@ -416,10 +474,18 @@ export default function RegisterPage() {
       />
 
       <StickyMobileCTA
-        label="Create Free Account"
+        label={isFounding ? 'Claim Founding Spot' : isTrial ? 'Start Free Trial' : 'Create Free Account'}
         href="#name"
         icon={<svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" /></svg>}
       />
     </div>
+  );
+}
+
+export default function RegisterPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="text-slate-400">Loading...</div></div>}>
+      <RegisterPageContent />
+    </Suspense>
   );
 }

@@ -860,7 +860,7 @@ function PricingPageContent() {
 
       <StickyMobileCTA
         label="Start Free Trial"
-        href="/register"
+        href="/register?trial=true&plan=pro"
         variant="primary"
       />
     </div>

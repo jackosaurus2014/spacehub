@@ -125,6 +125,27 @@ export default async function BlogPostPage({ params }: Props) {
     relatedPosts = [...relatedPosts, ...remaining];
   }
 
+  // Build "Recommended Reading" — 3 additional posts from the same category
+  // that are NOT already in relatedPosts, supplemented by keyword-ranked picks
+  const relatedSlugs = new Set([post.slug, ...relatedPosts.map((rp) => rp.slug)]);
+  let recommendedPosts = sameCategoryPosts
+    .filter((p) => !relatedSlugs.has(p.slug))
+    .slice(0, 3);
+
+  if (recommendedPosts.length < 3) {
+    const postKeywords = new Set(post.keywords.map((k) => k.toLowerCase()));
+    const excludeSlugs = new Set(Array.from(relatedSlugs).concat(recommendedPosts.map((rp) => rp.slug)));
+    const extras = BLOG_POSTS.filter((p) => !excludeSlugs.has(p.slug))
+      .map((p) => ({
+        post: p,
+        overlap: p.keywords.filter((k) => postKeywords.has(k.toLowerCase())).length,
+      }))
+      .sort((a, b) => b.overlap - a.overlap)
+      .slice(0, 3 - recommendedPosts.length)
+      .map((r) => r.post);
+    recommendedPosts = [...recommendedPosts, ...extras];
+  }
+
   // Article structured data
   const articleSchema = {
     '@context': 'https://schema.org',
@@ -286,6 +307,50 @@ export default async function BlogPostPage({ params }: Props) {
                   <div className="flex items-center justify-between text-xs text-slate-500 pt-2 border-t border-white/[0.04]">
                     <span>{formatDate(rp.publishedAt)}</span>
                     <span className="text-white/70 group-hover:text-white/90 transition-colors font-medium">
+                      Read more &rarr;
+                    </span>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Recommended Reading */}
+        {recommendedPosts.length > 0 && (
+          <div className="mt-12">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="h-px flex-1 bg-gradient-to-r from-transparent via-slate-700/50 to-transparent" />
+              <h2 className="text-lg font-bold text-white whitespace-nowrap flex items-center gap-2">
+                <svg className="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                </svg>
+                Recommended Reading
+              </h2>
+              <div className="h-px flex-1 bg-gradient-to-r from-transparent via-slate-700/50 to-transparent" />
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {recommendedPosts.map((rp) => (
+                <Link
+                  key={rp.slug}
+                  href={`/blog/${rp.slug}`}
+                  className="group flex flex-col bg-gradient-to-b from-white/[0.05] to-white/[0.02] border border-white/[0.06] rounded-xl p-5 hover:border-amber-500/20 hover:from-white/[0.06] hover:to-amber-500/[0.02] transition-all"
+                >
+                  <div className="flex items-center gap-2 mb-3">
+                    <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-300 border border-amber-500/15">
+                      {BLOG_CATEGORIES.find((c) => c.value === rp.category)?.label || rp.category}
+                    </span>
+                    <span className="text-xs text-slate-500">{rp.readingTime} min</span>
+                  </div>
+                  <h4 className="text-sm font-semibold text-white group-hover:text-amber-100 transition-colors line-clamp-2 mb-2">
+                    {rp.title}
+                  </h4>
+                  <p className="text-xs text-slate-400 line-clamp-2 mb-3 flex-1">
+                    {rp.excerpt}
+                  </p>
+                  <div className="flex items-center justify-between text-xs text-slate-500 pt-2 border-t border-white/[0.04]">
+                    <span>{formatDate(rp.publishedAt)}</span>
+                    <span className="text-amber-400/70 group-hover:text-amber-300 transition-colors font-medium">
                       Read more &rarr;
                     </span>
                   </div>
