@@ -127,6 +127,13 @@ const BLOG_CTA_MAP: Record<string, { tool: string; path: string }> = {
   'orbital-mechanics-101-satellites-stay-orbit': { tool: 'Orbital Calculator', path: '/orbital-calculator' },
   'outer-space-treaty-foundation-space-law': { tool: 'Compliance Hub', path: '/compliance' },
   'space-debris-removal-companies-cleaning-orbit': { tool: 'Space Environment Monitor', path: '/space-environment' },
+  'reusable-rockets-landing-boosters-changed-everything': { tool: 'Launch Vehicles', path: '/launch-vehicles' },
+  'space-stations-through-history-salyut-starlab': { tool: 'Space Stations', path: '/space-stations' },
+  'role-of-ai-space-exploration': { tool: 'AI Insights', path: '/ai-insights' },
+  'how-satellites-help-fight-climate-change': { tool: 'Satellite Tracker', path: '/satellites' },
+  'space-industry-venture-capital-how-vcs-invest': { tool: 'Investor Dashboard', path: '/investors' },
+  'ground-stations-invisible-infrastructure-space': { tool: 'Ground Stations', path: '/ground-stations' },
+  'economics-satellite-launch-cost-per-kilogram': { tool: 'Orbital Cost Calculator', path: '/orbital-costs' },
 };
 
 type Props = {
