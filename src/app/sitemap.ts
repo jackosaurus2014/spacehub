@@ -365,6 +365,9 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
     // Enthusiast guide pages
     { url: `${BASE_URL}/satellite-spotting`, changeFrequency: 'monthly' as const, priority: 0.7 },
     { url: `${BASE_URL}/aurora-forecast`, changeFrequency: 'daily' as const, priority: 0.7 },
+
+    // Legal Resources
+    { url: `${BASE_URL}/legal-resources`, changeFrequency: 'monthly' as const, priority: 0.7 },
   ];
 
   return routes.map(route => ({

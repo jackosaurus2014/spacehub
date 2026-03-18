@@ -172,6 +172,7 @@ export const ROUTE_LABELS: Record<string, string> = {
   '/licensing-checker': 'Licensing Requirements Checker',
   '/export-classifications': 'Export Control Classifications',
   '/compliance-checklist': 'Compliance Checklist',
+  '/legal-resources': 'Legal Resources',
 
   // ── Space Operations ──
   '/orbital-slots': 'Orbital Slots',
@@ -350,6 +351,7 @@ export const ROUTE_PARENTS: Record<string, string> = {
   // Regulatory tools → compliance parent
   '/licensing-checker': '/compliance',
   '/export-classifications': '/compliance',
+  '/legal-resources': '/compliance',
 
   // Report sub-pages
   '/report/state-of-space-2026': '/reports',

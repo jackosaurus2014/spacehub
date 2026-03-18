@@ -112,6 +112,7 @@ const MODULES: Record<string, RelatedModuleConfig> = {
   exportClassifications: { name: 'Export Classifications', description: 'ITAR/EAR reference', href: '/export-classifications', icon: '📦' },
   regulatoryAgencies: { name: 'Regulatory Agencies', description: 'Agency directory', href: '/regulatory-agencies', icon: '🏛️' },
   complianceChecklist: { name: 'Compliance Checklist', description: 'Regulatory checklist', href: '/compliance-checklist', icon: '✅' },
+  legalResources: { name: 'Legal Resources', description: 'Law firms & treaties', href: '/legal-resources', icon: '📋' },
 
   // ── Solar System Expansion ──
   solarExploration: { name: 'Solar Exploration', description: 'Deep space missions', href: '/solar-exploration', icon: '☀️' },
@@ -271,6 +272,7 @@ export const PAGE_RELATIONS: Record<string, RelatedModuleConfig[]> = {
   'export-classifications': [MODULES.compliance, MODULES.licensingChecker, MODULES.regulatoryRisk, MODULES.regulations, MODULES.spaceLaw],
   'regulatory-agencies': [MODULES.compliance, MODULES.regulatoryCalendar, MODULES.regulatoryRisk, MODULES.spaceLaw, MODULES.spaceAgencies],
   'compliance-checklist': [MODULES.compliance, MODULES.licensingChecker, MODULES.exportClassifications, MODULES.regulatoryRisk, MODULES.spaceLaw],
+  'legal-resources': [MODULES.compliance, MODULES.spaceLaw, MODULES.regulatoryAgencies, MODULES.regulations, MODULES.regulatoryRisk],
 
   // ── Solar System Expansion cluster ──
   'solar-exploration': [MODULES.marsPlanner, MODULES.cislunar, MODULES.asteroidWatch, MODULES.isru, MODULES.missionPipeline],

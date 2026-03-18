@@ -157,6 +157,11 @@ const BLOG_CTA_MAP: Record<string, { tool: string; path: string }> = {
   'space-insurance-regulations-required-changing': { tool: 'Space Insurance', path: '/space-insurance' },
   'photograph-iss-satellites-beginners-guide': { tool: 'Satellite Tracker', path: '/satellites' },
   'artemis-accords-vs-moon-treaty-difference': { tool: 'Space Law', path: '/space-law' },
+  'space-environmental-regulations-nepa-debris-sustainability': { tool: 'Compliance Hub', path: '/compliance' },
+  'government-space-contracts-sbir-sttr-prime': { tool: 'Procurement Intelligence', path: '/procurement' },
+  'fcc-5-year-deorbit-rule-satellite-operators': { tool: 'Compliance Hub', path: '/compliance' },
+  'space-traffic-management-who-controls-traffic-orbit': { tool: 'Space Environment Monitor', path: '/space-environment' },
+  'how-to-value-space-company-metrics-multiples': { tool: 'Company Profiles', path: '/company-profiles' },
 };
 
 type Props = {

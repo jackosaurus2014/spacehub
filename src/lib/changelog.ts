@@ -16,6 +16,26 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '2.3.0',
+    date: '2026-03-18',
+    title: 'Regulatory & Business Depth — 138 Articles, Legal Resources Directory',
+    description:
+      'Deep regulatory and business content buildout: 5 new long-form articles on environmental regulations, government contracts, FCC deorbit rules, space traffic management, and space company valuation. New Space Industry Legal Resources directory with 50+ curated entries across law firms, regulations, government agencies, treaties, and academic programs.',
+    highlight: '148 articles, Legal Resources directory, 50+ curated legal references',
+    changes: [
+      { type: 'feature', text: 'Space Environmental Regulations article: NEPA, orbital debris, and sustainability requirements' },
+      { type: 'feature', text: 'Government Space Contracts guide: How to win SBIR, STTR, and prime contracts' },
+      { type: 'feature', text: 'FCC 5-Year Deorbit Rule deep dive for satellite operators' },
+      { type: 'feature', text: 'Space Traffic Management policy analysis: who controls traffic in orbit' },
+      { type: 'feature', text: 'How to Value a Space Company: metrics, multiples, and methods guide' },
+      { type: 'feature', text: 'Space Industry Legal Resources directory with 50+ curated entries' },
+      { type: 'feature', text: 'Legal Resources covers law firms, regulations, government agencies, industry orgs, academic programs, and international treaties' },
+      { type: 'feature', text: 'Searchable and filterable legal resources with category-based navigation' },
+      { type: 'improvement', text: '148 total original blog articles — the largest free space content library on the internet' },
+      { type: 'improvement', text: 'Expanded regulatory content coverage across compliance, policy, and business categories' },
+    ],
+  },
+  {
     version: '2.2.0',
     date: '2026-03-18',
     title: 'SpaceNexus — The Definitive Space Industry Platform',

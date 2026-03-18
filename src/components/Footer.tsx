@@ -77,6 +77,7 @@ const footerLinks = {
       { label: 'Aurora Forecast', href: '/aurora-forecast' },
       { label: 'Getting Started', href: '/getting-started' },
       { label: 'Help Center', href: '/help' },
+      { label: 'Legal Resources', href: '/legal-resources' },
     ],
   },
   solutions: {

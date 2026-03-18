@@ -103,6 +103,7 @@ const INTELLIGENCE_ITEMS: DropdownItem[] = [
   { label: 'Regulation Explainers', href: '/regulation-explainers', description: 'AI plain-English regulation summaries' },
   { label: 'Regulatory Agencies', href: '/regulatory-agencies', description: 'Complete directory of space regulatory bodies' },
   { label: 'Compliance Checklist', href: '/compliance-checklist', description: 'Interactive space industry compliance tracker' },
+  { label: 'Legal Resources', href: '/legal-resources', description: 'Law firms, treaties & regulatory references' },
   { label: 'Spectrum Management', href: '/spectrum', description: 'Allocations, auctions & filings' },
   { label: 'Patent & IP Tracker', href: '/patents', description: 'Space technology patent trends' },
   { label: 'Startup Tracker', href: '/startup-tracker', description: 'Emerging space companies & funding stages' },

@@ -36,6 +36,7 @@ const PAGE_ROUTES = [
   'portfolio-tracker', 'customer-discovery', 'alerts', 'reading-list',
   'dashboard', 'procurement', 'patents', 'space-mining',
   'space-manufacturing', 'supply-chain-risk', 'supply-chain-map',
+  'legal-resources',
 ];
 
 let updated = 0;
