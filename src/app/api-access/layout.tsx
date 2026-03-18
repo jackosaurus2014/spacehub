@@ -10,6 +10,7 @@ export const metadata: Metadata = {
     description:
       'REST API with real-time space industry data. Launch schedules, company intelligence, market data, and more.',
     url: 'https://spacenexus.us/api-access',
+    images: ['/api/og?title=API%20Access&subtitle=Space%20intelligence%20for%20developers'],
   },
 };
 

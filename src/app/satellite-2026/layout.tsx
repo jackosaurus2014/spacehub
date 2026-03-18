@@ -21,14 +21,7 @@ export const metadata: Metadata = {
     title: 'SpaceNexus at SATELLITE 2026 | March 23-26, Washington DC',
     description: 'Meet the SpaceNexus team at SATELLITE 2026. See live demos of satellite tracking, market intelligence, and government contract tools. Sign up and get 3 months of Professional free.',
     url: 'https://spacenexus.us/satellite-2026',
-    images: [
-      {
-        url: '/og-image.png',
-        width: 1200,
-        height: 630,
-        alt: 'SpaceNexus at SATELLITE 2026 - Space Industry Intelligence Platform',
-      },
-    ],
+    images: ['/api/og?title=SATELLITE%202026&subtitle=SpaceNexus%20at%20Washington%20DC'],
   },
   twitter: {
     card: 'summary_large_image',

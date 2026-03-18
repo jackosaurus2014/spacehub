@@ -20,6 +20,7 @@ export const metadata: Metadata = {
       'Find answers, tutorials, and support for the SpaceNexus space industry intelligence platform.',
     url: 'https://spacenexus.us/help',
     type: 'website',
+    images: ['/api/og?title=Help%20Center&subtitle=SpaceNexus%20support%20%26%20resources'],
   },
   twitter: {
     card: 'summary',

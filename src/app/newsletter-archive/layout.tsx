@@ -23,6 +23,7 @@ export const metadata: Metadata = {
     type: 'website',
     url: 'https://spacenexus.us/newsletter-archive',
     siteName: 'SpaceNexus',
+    images: ['/api/og?title=Newsletter%20Archive&subtitle=Weekly%20intelligence%20briefs'],
   },
   twitter: {
     card: 'summary_large_image',

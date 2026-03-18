@@ -371,6 +371,86 @@ export default async function BlogPostPage({ params }: Props) {
           </div>
         )}
 
+        {/* Explore More on SpaceNexus */}
+        <div className="mt-12">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-slate-700/50 to-transparent" />
+            <h2 className="text-lg font-bold text-white whitespace-nowrap">Explore More on SpaceNexus</h2>
+            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-slate-700/50 to-transparent" />
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+            {[
+              { label: 'Satellite Tracker', href: '/satellites', icon: '🛰' },
+              { label: 'Market Intelligence', href: '/market-intel', icon: '📊' },
+              { label: 'Company Profiles', href: '/company-profiles', icon: '🏢' },
+              { label: 'Launch Schedule', href: '/mission-control', icon: '🚀' },
+              { label: 'Space News', href: '/news', icon: '📰' },
+              { label: 'All Features', href: '/features', icon: '⚡' },
+            ].map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="group flex items-center gap-2.5 p-3 bg-white/[0.04] border border-white/[0.06] rounded-lg hover:border-white/15 hover:bg-white/[0.06] transition-all"
+              >
+                <span className="text-base">{link.icon}</span>
+                <span className="text-sm font-medium text-white/70 group-hover:text-white transition-colors">
+                  {link.label}
+                </span>
+              </Link>
+            ))}
+          </div>
+        </div>
+
+        {/* Read Next — prev/next article navigation */}
+        {(() => {
+          const sorted = [...BLOG_POSTS].sort(
+            (a, b) => new Date(a.publishedAt).getTime() - new Date(b.publishedAt).getTime()
+          );
+          const currentIdx = sorted.findIndex((p) => p.slug === post.slug);
+          const prevPost = currentIdx > 0 ? sorted[currentIdx - 1] : null;
+          const nextPost = currentIdx < sorted.length - 1 ? sorted[currentIdx + 1] : null;
+          if (!prevPost && !nextPost) return null;
+          return (
+            <div className="mt-12 pt-8 border-t border-white/[0.06]">
+              <h2 className="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-4">Read Next</h2>
+              <div className="flex flex-col sm:flex-row gap-3">
+                {prevPost ? (
+                  <Link
+                    href={`/blog/${prevPost.slug}`}
+                    className="group flex-1 flex items-start gap-3 p-4 bg-white/[0.04] border border-white/[0.06] rounded-xl hover:border-white/15 hover:bg-white/[0.06] transition-all"
+                  >
+                    <span className="text-slate-500 text-lg mt-0.5">&larr;</span>
+                    <div className="min-w-0">
+                      <span className="text-xs text-slate-500">Previous</span>
+                      <p className="text-sm font-medium text-white/70 group-hover:text-white transition-colors line-clamp-2">
+                        {prevPost.title}
+                      </p>
+                    </div>
+                  </Link>
+                ) : (
+                  <div className="flex-1" />
+                )}
+                {nextPost ? (
+                  <Link
+                    href={`/blog/${nextPost.slug}`}
+                    className="group flex-1 flex items-start gap-3 p-4 bg-white/[0.04] border border-white/[0.06] rounded-xl hover:border-white/15 hover:bg-white/[0.06] transition-all sm:text-right"
+                  >
+                    <div className="min-w-0 flex-1">
+                      <span className="text-xs text-slate-500">Next</span>
+                      <p className="text-sm font-medium text-white/70 group-hover:text-white transition-colors line-clamp-2">
+                        {nextPost.title}
+                      </p>
+                    </div>
+                    <span className="text-slate-500 text-lg mt-0.5">&rarr;</span>
+                  </Link>
+                ) : (
+                  <div className="flex-1" />
+                )}
+              </div>
+            </div>
+          );
+        })()}
+
         {/* Back to Blog */}
         <div className="mt-8 pt-8 border-t border-white/[0.06]">
           <Link

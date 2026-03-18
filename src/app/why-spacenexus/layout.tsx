@@ -23,6 +23,7 @@ export const metadata: Metadata = {
     type: 'website',
     url: 'https://spacenexus.us/why-spacenexus',
     siteName: 'SpaceNexus',
+    images: ['/api/og?title=Why%20SpaceNexus&subtitle=Space%20intelligence%20comparison'],
   },
   twitter: {
     card: 'summary_large_image',
