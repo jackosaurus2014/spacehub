@@ -100,6 +100,16 @@ const BLOG_CTA_MAP: Record<string, { tool: string; path: string }> = {
   'history-of-spaceflight-sputnik-to-starship': { tool: 'Space Timeline', path: '/timeline' },
   'cislunar-economy-100-billion-opportunity': { tool: 'Cislunar Ecosystem', path: '/cislunar' },
   'space-cybersecurity-protecting-satellites-hackers': { tool: 'Space Security', path: '/security' },
+  'spacex-starlink-maritime-connecting-ships-sea': { tool: 'Constellation Tracker', path: '/constellations' },
+  'how-to-become-astronaut-2026': { tool: 'Space Talent Hub', path: '/space-talent' },
+  'james-webb-vs-hubble-telescope-comparison': { tool: 'Solar Exploration', path: '/solar-exploration' },
+  'small-satellite-revolution-smaller-better-space': { tool: 'Satellite Tracker', path: '/satellites' },
+  'space-law-101-legal-framework-outer-space': { tool: 'Space Law', path: '/space-law' },
+  'rocket-fuel-explained-kerosene-methane': { tool: 'Launch Vehicles', path: '/launch-vehicles' },
+  'space-station-future-commercial-stations': { tool: 'Space Stations', path: '/space-stations' },
+  'why-space-companies-moving-texas': { tool: 'Houston Space Hub', path: '/space-industry/houston' },
+  'satellite-imagery-explained-see-earth-space': { tool: 'Satellite Tracker', path: '/satellites' },
+  'space-economy-2030-trillion-dollar-industry': { tool: 'Space Economy', path: '/space-economy' },
 };
 
 type Props = {
