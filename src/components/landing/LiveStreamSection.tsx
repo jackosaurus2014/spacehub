@@ -400,11 +400,19 @@ function LiveDiscussion({ videoId }: { videoId: string }) {
 /*  Main Component: LiveStreamSection                                  */
 /* ------------------------------------------------------------------ */
 
+interface NextLaunch {
+  title: string;
+  provider: string;
+  scheduledTime: string;
+}
+
 export default function LiveStreamSection() {
   const [streams, setStreams] = useState<ActiveLiveStream[]>([]);
   const [selectedStream, setSelectedStream] = useState<ActiveLiveStream | null>(
     null
   );
+  const [nextLaunch, setNextLaunch] = useState<NextLaunch | null>(null);
+  const [countdown, setCountdown] = useState('');
   const [loaded, setLoaded] = useState(false);
 
   // Fetch active livestreams on mount and poll every 60s
@@ -413,30 +421,45 @@ export default function LiveStreamSection() {
 
     const fetchStreams = async () => {
       try {
-        const res = await fetch('/api/livestreams');
-        if (!res.ok) return;
-        const data = await res.json();
-        const active: ActiveLiveStream[] = data.streams || [];
+        // Fetch active streams and next launch in parallel
+        const [streamsRes, liveRes] = await Promise.all([
+          fetch('/api/livestreams').catch(() => null),
+          fetch('/api/live').catch(() => null),
+        ]);
 
         if (!isMounted) return;
 
-        setStreams(active);
+        // Process active streams
+        if (streamsRes?.ok) {
+          const data = await streamsRes.json();
+          const active: ActiveLiveStream[] = data.streams || [];
+          setStreams(active);
 
-        // Default to the stream with the highest viewerCount
-        if (active.length > 0) {
-          setSelectedStream((prev) => {
-            // Keep current selection if still active
-            if (prev && active.find((s) => s.videoId === prev.videoId)) {
-              return prev;
-            }
-            // Otherwise pick highest viewerCount (API already sorts desc)
-            return active[0];
-          });
-        } else {
-          setSelectedStream(null);
+          if (active.length > 0) {
+            setSelectedStream((prev) => {
+              if (prev && active.find((s) => s.videoId === prev.videoId)) {
+                return prev;
+              }
+              return active[0];
+            });
+          } else {
+            setSelectedStream(null);
+          }
+        }
+
+        // Process next launch (for countdown when no active streams)
+        if (liveRes?.ok) {
+          const liveData = await liveRes.json();
+          if (liveData.nextStream) {
+            setNextLaunch({
+              title: liveData.nextStream.title || 'Upcoming Launch',
+              provider: liveData.nextStream.provider || '',
+              scheduledTime: liveData.nextStream.scheduledTime,
+            });
+          }
         }
       } catch {
-        // Silently fail -- section just won't show
+        // Silently fail
       } finally {
         if (isMounted) setLoaded(true);
       }
@@ -450,11 +473,144 @@ export default function LiveStreamSection() {
     };
   }, []);
 
-  // Render nothing if no active streams (or still loading)
-  if (!loaded || streams.length === 0) {
-    return null;
+  // Countdown timer for next launch
+  useEffect(() => {
+    if (!nextLaunch?.scheduledTime || streams.length > 0) {
+      setCountdown('');
+      return;
+    }
+
+    const updateCountdown = () => {
+      const now = Date.now();
+      const target = new Date(nextLaunch.scheduledTime).getTime();
+      const diff = target - now;
+
+      if (diff <= 0) {
+        setCountdown('Starting soon...');
+        return;
+      }
+
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+      const parts: string[] = [];
+      if (days > 0) parts.push(`${days}d`);
+      parts.push(`${hours}h`);
+      parts.push(`${minutes}m`);
+      parts.push(`${seconds}s`);
+      setCountdown(parts.join(' '));
+    };
+
+    updateCountdown();
+    const timer = setInterval(updateCountdown, 1000);
+    return () => clearInterval(timer);
+  }, [nextLaunch, streams.length]);
+
+  // Still loading
+  if (!loaded) return null;
+
+  // ---- No active streams: show countdown card ----
+  if (streams.length === 0) {
+    return (
+      <section className="relative z-10 py-6">
+        <div className="container mx-auto px-4">
+          <div className="relative overflow-hidden rounded-2xl border border-white/[0.08] bg-gradient-to-br from-slate-900/80 via-space-900/60 to-indigo-950/40 backdrop-blur-sm">
+            {/* Subtle background glow */}
+            <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/[0.05] rounded-full blur-3xl" />
+            <div className="absolute bottom-0 left-0 w-48 h-48 bg-cyan-500/[0.05] rounded-full blur-3xl" />
+
+            <div className="relative p-6 md:p-8">
+              <div className="flex flex-col md:flex-row items-center gap-6">
+                {/* Left: Icon + Status */}
+                <div className="flex items-center gap-4 flex-shrink-0">
+                  <div className="relative">
+                    <div className="w-14 h-14 rounded-full bg-white/[0.05] border border-white/[0.08] flex items-center justify-center">
+                      <svg className="w-7 h-7 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                      </svg>
+                    </div>
+                    {/* Offline indicator */}
+                    <span className="absolute -top-0.5 -right-0.5 w-3.5 h-3.5 bg-slate-600 rounded-full border-2 border-slate-900" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-slate-300 uppercase tracking-wider">
+                      No Active Livestream
+                    </p>
+                    <p className="text-xs text-slate-500 mt-0.5">
+                      We monitor SpaceX, NASA, Blue Origin & more
+                    </p>
+                  </div>
+                </div>
+
+                {/* Center: Next launch info + countdown */}
+                {nextLaunch && countdown ? (
+                  <div className="flex-1 text-center md:text-left">
+                    <p className="text-sm text-slate-400 mb-1">
+                      Next livestream expected
+                    </p>
+                    <h3 className="text-lg md:text-xl font-bold text-white mb-2 line-clamp-1">
+                      {nextLaunch.title}
+                      {nextLaunch.provider && (
+                        <span className="text-sm font-normal text-slate-400 ml-2">
+                          — {nextLaunch.provider}
+                        </span>
+                      )}
+                    </h3>
+                    {/* Countdown digits */}
+                    <div className="flex items-center justify-center md:justify-start gap-2">
+                      {countdown.split(' ').map((part, i) => {
+                        const num = part.slice(0, -1);
+                        const unit = part.slice(-1);
+                        return (
+                          <div key={i} className="flex items-baseline gap-0.5">
+                            <span className="text-2xl md:text-3xl font-mono font-bold text-white tabular-nums">
+                              {num}
+                            </span>
+                            <span className="text-sm text-slate-500 font-medium">
+                              {unit}
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex-1 text-center md:text-left">
+                    <p className="text-sm text-slate-400">
+                      No upcoming launches scheduled — check back soon
+                    </p>
+                  </div>
+                )}
+
+                {/* Right: CTA */}
+                <div className="flex-shrink-0 flex flex-col gap-2">
+                  <a
+                    href="/live"
+                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white/[0.06] border border-white/[0.08] text-sm font-medium text-white hover:bg-white/[0.1] hover:border-white/15 transition-all"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                    </svg>
+                    View Launch Schedule
+                  </a>
+                  <a
+                    href="/mission-control"
+                    className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-xs font-medium text-slate-400 hover:text-white transition-colors"
+                  >
+                    Mission Control →
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
   }
 
+  // ---- Active streams: show full live experience ----
   const currentStream = selectedStream || streams[0];
   const hasMultipleStreams = streams.length > 1;
 
