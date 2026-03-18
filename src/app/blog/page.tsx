@@ -113,6 +113,22 @@ function BlogListingContent() {
           subtitle="Original analysis, guides, and insights on the space industry from the SpaceNexus team."
         />
 
+        {/* 100+ Articles Social Proof Badge */}
+        <div className="flex items-center justify-center mb-6">
+          <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-gradient-to-r from-violet-500/[0.12] to-blue-500/[0.08] border border-violet-500/25">
+            <span className="flex items-center justify-center w-5 h-5 rounded-full bg-violet-500/20">
+              <svg className="w-3 h-3 text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+              </svg>
+            </span>
+            <span className="text-sm font-semibold text-white">100+ Original Articles</span>
+            <span className="text-xs text-slate-400">|</span>
+            <Link href="/blog/topics" className="text-xs text-violet-400 hover:text-violet-300 transition-colors font-medium">
+              Explore Topics
+            </Link>
+          </div>
+        </div>
+
         <p className="text-xs text-slate-500 mb-6">
           Latest post: {new Date(BLOG_POSTS.sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime())[0]?.publishedAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric', timeZone: 'UTC' })}
         </p>
