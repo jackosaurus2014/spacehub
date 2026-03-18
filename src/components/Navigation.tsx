@@ -801,7 +801,7 @@ export default function Navigation() {
                         <Link
                           key={mod.href}
                           href={mod.href}
-                          className="block px-3 py-2 rounded-lg text-white/70 hover:bg-white/[0.05] hover:text-white active:bg-white/[0.08] transition-colors text-sm font-medium"
+                          className="block px-3 py-2 rounded-lg text-white/70 hover:bg-white/[0.05] hover:text-white active:bg-white/[0.08] transition-colors text-sm font-medium min-h-[44px] flex items-center"
                           onClick={() => setIsMenuOpen(false)}
                         >
                           {mod.label}
@@ -883,7 +883,7 @@ export default function Navigation() {
                             {!mobileSearchQuery && hiddenCount > 0 && (
                               <button
                                 onClick={() => toggleShowAll(category.key)}
-                                className="w-full px-3 py-2.5 text-sm text-white/70 hover:text-white font-medium transition-colors flex items-center gap-1.5 justify-center"
+                                className="w-full px-3 py-2.5 text-sm text-white/70 hover:text-white font-medium transition-colors flex items-center gap-1.5 justify-center min-h-[44px]"
                               >
                                 {isShowingAll ? (
                                   <>
@@ -921,7 +921,7 @@ export default function Navigation() {
                     <h3 className="text-white/70 text-xs uppercase tracking-widest font-medium mb-3">Admin</h3>
                     <Link
                       href="/admin"
-                      className="block px-3 py-2.5 rounded-lg text-amber-400 hover:bg-white/[0.05] hover:text-amber-300 transition-colors text-sm font-medium"
+                      className="block px-3 py-2.5 rounded-lg text-amber-400 hover:bg-white/[0.05] hover:text-amber-300 transition-colors text-sm font-medium min-h-[44px] flex items-center"
                       onClick={() => setIsMenuOpen(false)}
                     >
                       Admin Panel

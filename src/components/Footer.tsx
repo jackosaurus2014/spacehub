@@ -240,12 +240,12 @@ export default function Footer() {
                 <h4 className="text-white font-semibold text-xs uppercase tracking-wider mb-3">
                   {section.title}
                 </h4>
-                <ul className="space-y-2">
+                <ul className="space-y-0.5">
                   {section.links.map((link) => (
                     <li key={link.href}>
                       <Link
                         href={link.href}
-                        className="text-slate-400 hover:text-white text-sm transition-colors inline-block"
+                        className="text-slate-400 hover:text-white text-sm transition-colors inline-block py-1.5 sm:py-0.5 min-h-[44px] sm:min-h-0 flex items-center"
                       >
                         {link.label}
                       </Link>
@@ -265,21 +265,21 @@ export default function Footer() {
 
             {/* Legal links */}
             <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1">
-              <Link href="/privacy" className="text-slate-400 hover:text-white text-xs transition-colors">
+              <Link href="/privacy" className="text-slate-400 hover:text-white text-xs transition-colors min-h-[44px] sm:min-h-0 inline-flex items-center">
                 Privacy
               </Link>
-              <Link href="/terms" className="text-slate-400 hover:text-white text-xs transition-colors">
+              <Link href="/terms" className="text-slate-400 hover:text-white text-xs transition-colors min-h-[44px] sm:min-h-0 inline-flex items-center">
                 Terms
               </Link>
-              <Link href="/legal/dmca" className="text-slate-400 hover:text-white text-xs transition-colors">
+              <Link href="/legal/dmca" className="text-slate-400 hover:text-white text-xs transition-colors min-h-[44px] sm:min-h-0 inline-flex items-center">
                 DMCA
               </Link>
-              <Link href="/cookies" className="text-slate-400 hover:text-white text-xs transition-colors">
+              <Link href="/cookies" className="text-slate-400 hover:text-white text-xs transition-colors min-h-[44px] sm:min-h-0 inline-flex items-center">
                 Cookie Policy
               </Link>
               <button
                 onClick={() => setDisclaimerOpen(true)}
-                className="text-slate-400 hover:text-white text-xs transition-colors"
+                className="text-slate-400 hover:text-white text-xs transition-colors min-h-[44px] sm:min-h-0 inline-flex items-center"
               >
                 Legal Disclaimer
               </button>
@@ -290,7 +290,7 @@ export default function Footer() {
                     (opener as () => void)();
                   }
                 }}
-                className="text-slate-400 hover:text-white text-xs transition-colors flex items-center gap-1"
+                className="text-slate-400 hover:text-white text-xs transition-colors flex items-center gap-1 min-h-[44px] sm:min-h-0"
                 aria-label="Open keyboard shortcuts help"
               >
                 Press
@@ -301,7 +301,7 @@ export default function Footer() {
               </button>
               <button
                 onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-                className="text-slate-400 hover:text-white text-xs transition-colors flex items-center gap-1"
+                className="text-slate-400 hover:text-white text-xs transition-colors flex items-center gap-1 min-h-[44px] sm:min-h-0"
                 aria-label="Back to top"
               >
                 <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
