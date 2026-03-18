@@ -242,44 +242,105 @@ function toActiveLiveStreams(
 // Primary detection: YouTube Data API
 // ---------------------------------------------------------------------------
 
+// ---------------------------------------------------------------------------
+// Free RSS/page-based livestream detection (no API quota cost)
+// ---------------------------------------------------------------------------
+
+/**
+ * Check a YouTube channel's /live page for active livestreams.
+ * This is FREE — no API quota used. We fetch the channel page HTML
+ * and look for live broadcast indicators.
+ */
+async function checkChannelLivePage(channel: SpaceChannel): Promise<YouTubeSearchItem[]> {
+  try {
+    const url = `https://www.youtube.com/channel/${channel.channelId}/live`;
+    const res = await fetch(url, {
+      signal: AbortSignal.timeout(8000),
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (compatible; SpaceNexus/2.0)',
+        'Accept-Language': 'en-US,en;q=0.9',
+      },
+    });
+
+    if (!res.ok) return [];
+
+    const html = await res.text();
+
+    // Look for live broadcast indicators in the page HTML
+    const isLive = html.includes('"isLiveBroadcast":true') ||
+                   html.includes('"isLiveNow":true') ||
+                   html.includes('"style":"LIVE"') ||
+                   html.includes('"isLive":true');
+
+    if (!isLive) return [];
+
+    // Extract the video ID from the page
+    const videoIdMatch = html.match(/"videoId":"([a-zA-Z0-9_-]{11})"/);
+    if (!videoIdMatch) return [];
+
+    const videoId = videoIdMatch[1];
+
+    // Extract the title
+    const titleMatch = html.match(/"title":"([^"]+)"/);
+    const title = titleMatch ? titleMatch[1] : `${channel.name} Live`;
+
+    // Extract thumbnail
+    const thumbMatch = html.match(/"thumbnail":\{"thumbnails":\[\{"url":"([^"]+)"/);
+    const thumbnail = thumbMatch ? thumbMatch[1] : `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`;
+
+    return [{
+      id: { videoId },
+      snippet: {
+        channelId: channel.channelId,
+        channelTitle: channel.name,
+        title: title.replace(/\\u0026/g, '&').replace(/\\"/g, '"'),
+        thumbnails: {
+          high: { url: thumbnail },
+        },
+        publishedAt: new Date().toISOString(),
+      },
+    }];
+  } catch {
+    // Silently fail — channel page might be unreachable
+    return [];
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Primary detection: Free page scraping + optional YouTube API
+// ---------------------------------------------------------------------------
+
 async function detectViaYouTubeAPI(apiKey: string): Promise<ActiveLiveStream[]> {
-  // Step 1: Check ALL known space channels for active livestreams
-  // This is the most reliable method — directly query each channel
-  // Cost: 100 units per channel, but we only check priority <= 3 (7 channels = 700 units)
-  const channelSearchPromises = SPACE_CHANNELS
-    .filter((ch) => ch.priority <= HIGH_PRIORITY_THRESHOLD)
-    .map((ch) =>
-      youtubeSearchLive(apiKey, {
-        channelId: ch.channelId,
-        maxResults: '5',
-      }),
-    );
+  // ═══════════════════════════════════════════════════════════════════
+  // STEP 1 (FREE): Check all channel /live pages — zero quota cost
+  // This catches 24/7 streams like NASA ISS and any active broadcasts
+  // ═══════════════════════════════════════════════════════════════════
+  const pageCheckPromises = SPACE_CHANNELS.map((ch) => checkChannelLivePage(ch));
+  const pageResults = await Promise.all(pageCheckPromises);
+  const pageItems = pageResults.flat();
 
-  const channelResults = await Promise.all(channelSearchPromises);
-  const channelItems = channelResults.flat();
+  logger.info('[LivestreamDetector] Free page check complete', {
+    checked: SPACE_CHANNELS.length,
+    found: pageItems.length,
+    channels: pageItems.map(i => i.snippet.channelTitle),
+  });
 
-  // Step 2: Also do broad searches to catch streams from channels
-  // not in our registry (indie coverage, partner channels, etc.)
-  const [broadSpace, broadISS, broadNASA] = await Promise.all([
-    youtubeSearchLive(apiKey, { q: 'space launch live', maxResults: '5' }),
-    youtubeSearchLive(apiKey, { q: 'ISS live', maxResults: '3' }),
-    youtubeSearchLive(apiKey, { q: 'NASA live', maxResults: '3' }),
-  ]);
-
-  // Step 3: Also check lower-priority channels individually
-  const foundChannelIds = new Set(channelItems.map((item) => item.snippet.channelId));
-  const lowPriorityMissing = SPACE_CHANNELS.filter(
-    (ch) => ch.priority > HIGH_PRIORITY_THRESHOLD && !foundChannelIds.has(ch.channelId),
-  );
-  const lowPriorityResults = await Promise.all(
-    lowPriorityMissing.map((ch) =>
-      youtubeSearchLive(apiKey, { channelId: ch.channelId, maxResults: '2' }),
-    ),
-  );
-  const lowPriorityItems = lowPriorityResults.flat();
+  // ═══════════════════════════════════════════════════════════════════
+  // STEP 2 (PAID, CONSERVATIVE): One single broad YouTube API search
+  // Only if the free check found nothing — catches non-registered channels
+  // Cost: 100 units per call. At 10-min intervals = 144/day = 14,400 units
+  // We only do this if we haven't found anything via free checks.
+  // ═══════════════════════════════════════════════════════════════════
+  let apiItems: YouTubeSearchItem[] = [];
+  if (pageItems.length === 0) {
+    apiItems = await youtubeSearchLive(apiKey, {
+      q: 'NASA ISS live OR space launch live',
+      maxResults: '5',
+    });
+  }
 
   // Merge all results
-  const allItems = [...channelItems, ...broadSpace, ...broadISS, ...broadNASA, ...lowPriorityItems];
+  const allItems = [...pageItems, ...apiItems];
 
   // Deduplicate by videoId
   const seen = new Set<string>();
@@ -532,7 +593,7 @@ async function detectViaXApi(bearerToken: string): Promise<ActiveLiveStream[]> {
 // ---------------------------------------------------------------------------
 
 /** Cache TTL for livestream detection: 2 minutes. */
-const LIVESTREAM_CACHE_TTL = 120; // seconds
+const LIVESTREAM_CACHE_TTL = 300; // 5 minutes
 
 /**
  * Detect currently active YouTube livestreams from space industry channels.
