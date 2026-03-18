@@ -16,6 +16,31 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '2.0.0',
+    date: '2026-03-17',
+    title: 'SpaceNexus 2.0 — The Complete Space Intelligence Platform',
+    description:
+      'Major milestone: 70 original blog articles, 30+ modules, 600+ routes, 200+ company profiles, and every tool a space professional needs — all in one platform. SpaceNexus 2.0 is the most comprehensive free space intelligence platform on the internet.',
+    highlight: '70 articles, 200+ companies, 30+ modules, 600+ routes',
+    changes: [
+      { type: 'feature', text: '70 original blog articles covering every corner of the space industry — from orbital debris tracking to asteroid mining economics' },
+      { type: 'feature', text: 'Industry Scorecard with quarterly grades across 6 dimensions: Launch, Satellite, Investment, Policy, Workforce, and Innovation' },
+      { type: 'feature', text: 'Space Calendar with month-by-month key dates, launches, and conferences for 2026' },
+      { type: 'feature', text: 'Interactive Space Industry Map showing sector relationships and company positioning across the ecosystem' },
+      { type: 'feature', text: 'Startup Directory with curated profiles of 35+ emerging space companies and funding data' },
+      { type: 'feature', text: '126 space industry acronyms in the A-Z reference — the most comprehensive space acronym database available' },
+      { type: 'feature', text: '69 glossary terms with detailed definitions for space industry concepts' },
+      { type: 'feature', text: 'Livestream detection and embedding for YouTube and X (Twitter) live launch coverage' },
+      { type: 'feature', text: 'Learning Path system for structured space industry education from beginner to advanced' },
+      { type: 'feature', text: 'Newsletter landing page with email capture and past issue archive' },
+      { type: 'feature', text: 'Media Kit with brand assets, logos, and press resources for journalists and partners' },
+      { type: 'feature', text: '8 curated podcast feeds aggregated from top space industry shows' },
+      { type: 'feature', text: '26 content sources monitored for real-time space industry news aggregation' },
+      { type: 'improvement', text: 'Complete platform polish pass across all 30+ modules and 600+ routes' },
+      { type: 'improvement', text: '200+ company profiles with financials, satellite assets, leadership, and news integration' },
+    ],
+  },
+  {
     version: '1.9.0',
     date: '2026-03-17',
     title: 'Content Authority & Platform Depth',

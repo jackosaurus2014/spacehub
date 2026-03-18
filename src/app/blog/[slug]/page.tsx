@@ -81,6 +81,9 @@ const BLOG_CTA_MAP: Record<string, { tool: string; path: string }> = {
   'every-space-agency-world-complete-directory': { tool: 'Space Agencies', path: '/space-agencies' },
   'falcon-9-workhorse-rocket-changed-spaceflight': { tool: 'Launch Vehicles', path: '/launch-vehicles' },
   'what-is-cubesat-tiny-satellites-revolutionizing-space': { tool: 'Satellite Tracker', path: '/satellites' },
+  'orbital-debris-tracking-space-fence-25000-objects': { tool: 'Space Environment Monitor', path: '/space-environment' },
+  'houston-space-capital-of-the-world': { tool: 'Houston Space Hub', path: '/space-industry/houston' },
+  '5-free-tools-every-space-professional-should-use': { tool: 'SpaceNexus Platform', path: '/register' },
 };
 
 type Props = {
