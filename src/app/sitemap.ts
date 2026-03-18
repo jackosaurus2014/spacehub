@@ -351,6 +351,13 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
 
     // Alternatives & Competitors
     { url: `${BASE_URL}/alternatives`, changeFrequency: 'monthly' as const, priority: 0.7 },
+
+    // Regulatory tools
+    { url: `${BASE_URL}/licensing-checker`, changeFrequency: 'monthly' as const, priority: 0.7 },
+    { url: `${BASE_URL}/export-classifications`, changeFrequency: 'monthly' as const, priority: 0.7 },
+
+    // Regulatory Agencies Directory
+    { url: `${BASE_URL}/regulatory-agencies`, changeFrequency: 'monthly' as const, priority: 0.7 },
   ];
 
   return routes.map(route => ({

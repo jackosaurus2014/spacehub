@@ -147,6 +147,11 @@ const BLOG_CTA_MAP: Record<string, { tool: string; path: string }> = {
   'what-is-meo-medium-earth-orbit-uses': { tool: 'Satellite Tracker', path: '/satellites' },
   'rideshare-launches-small-satellites-affordably': { tool: 'Launch Vehicles', path: '/launch-vehicles' },
   'space-foundation-advocating-space-industry': { tool: 'Resources', path: '/resources' },
+  'faa-space-launch-licensing-complete-guide-2026': { tool: 'Compliance Hub', path: '/compliance' },
+  'fcc-satellite-licensing-spectrum-orbital-slots': { tool: 'Spectrum Management', path: '/spectrum' },
+  'export-controls-space-hardware-itar-vs-ear': { tool: 'Compliance Hub', path: '/compliance' },
+  'noaa-remote-sensing-licensing-satellite-operators': { tool: 'Compliance Hub', path: '/compliance' },
+  'wrc-27-preview-spectrum-battles-space-communications': { tool: 'Spectrum Management', path: '/spectrum' },
 };
 
 type Props = {

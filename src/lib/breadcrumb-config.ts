@@ -161,11 +161,14 @@ export const ROUTE_LABELS: Record<string, string> = {
   '/regulatory-tracker': 'Regulatory Tracker',
   '/regulatory-risk': 'Regulatory Risk',
   '/regulation-explainers': 'Regulation Explainers',
+  '/regulatory-agencies': 'Regulatory Agencies Directory',
   '/spectrum': 'Spectrum Management',
   '/frequency-bands': 'Frequency Bands',
   '/frequency-database': 'Frequency Database',
   '/rf-spectrum': 'RF Spectrum',
   '/space-law': 'Space Law',
+  '/licensing-checker': 'Licensing Requirements Checker',
+  '/export-classifications': 'Export Control Classifications',
 
   // ── Space Operations ──
   '/orbital-slots': 'Orbital Slots',
@@ -340,6 +343,10 @@ export const ROUTE_PARENTS: Record<string, string> = {
   '/orbit-guide': '/tools',
   '/glossary': '/tools',
   '/blueprints': '/tools',
+
+  // Regulatory tools → compliance parent
+  '/licensing-checker': '/compliance',
+  '/export-classifications': '/compliance',
 
   // Report sub-pages
   '/report/state-of-space-2026': '/reports',

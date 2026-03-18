@@ -35,6 +35,7 @@ const footerLinks = {
       { label: 'Startup Directory', href: '/startup-directory' },
       { label: 'Space Economy', href: '/space-economy' },
       { label: 'Procurement', href: '/procurement' },
+      { label: 'Regulatory Agencies', href: '/regulatory-agencies' },
     ],
   },
   tools: {
@@ -48,6 +49,8 @@ const footerLinks = {
       { label: 'Radiation Calculator', href: '/radiation-calculator' },
       { label: 'Link Budget Calculator', href: '/link-budget-calculator' },
       { label: 'Power Budget Calculator', href: '/power-budget-calculator' },
+      { label: 'Licensing Checker', href: '/licensing-checker' },
+      { label: 'Export Classifications', href: '/export-classifications' },
     ],
   },
   resources: {
