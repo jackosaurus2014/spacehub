@@ -302,6 +302,45 @@ export default function SpaceEconomyPage() {
           { name: 'Launch Vehicles', description: 'Launch costs and vehicle comparison', href: '/launch-vehicles', icon: '\u{1F680}' },
         ]} />
 
+        {/* ── Related Reading ──────────────────────────────── */}
+        <ScrollReveal>
+        <div className="mt-10 mb-10">
+          <h3 className="text-lg font-semibold text-white mb-4">Related Reading</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <a
+              href="/blog/state-of-space-economy-2026-overview"
+              className="group bg-white/[0.04] border border-white/[0.06] rounded-xl p-5 hover:border-white/15 hover:bg-white/[0.06] transition-all"
+            >
+              <div className="text-white font-medium text-sm group-hover:text-white/80 transition-colors mb-1">
+                State of the Space Economy 2026
+              </div>
+              <div className="text-slate-500 text-xs">In-depth analysis of the global space economy and where it&apos;s heading.</div>
+              <div className="text-white/60 text-xs mt-3 font-medium group-hover:underline">Read article &rarr;</div>
+            </a>
+            <a
+              href="/blog/space-economy-2026-where-money-is-going"
+              className="group bg-white/[0.04] border border-white/[0.06] rounded-xl p-5 hover:border-white/15 hover:bg-white/[0.06] transition-all"
+            >
+              <div className="text-white font-medium text-sm group-hover:text-white/80 transition-colors mb-1">
+                Space Industry Statistics
+              </div>
+              <div className="text-slate-500 text-xs">Key numbers, growth metrics, and market data every space professional should know.</div>
+              <div className="text-white/60 text-xs mt-3 font-medium group-hover:underline">Read article &rarr;</div>
+            </a>
+            <a
+              href="/blog/five-space-industry-trends-defining-2026"
+              className="group bg-white/[0.04] border border-white/[0.06] rounded-xl p-5 hover:border-white/15 hover:bg-white/[0.06] transition-all"
+            >
+              <div className="text-white font-medium text-sm group-hover:text-white/80 transition-colors mb-1">
+                5 Trends Defining 2026
+              </div>
+              <div className="text-slate-500 text-xs">From mega-constellations to sovereign space programs, the forces reshaping the industry.</div>
+              <div className="text-white/60 text-xs mt-3 font-medium group-hover:underline">Read article &rarr;</div>
+            </a>
+          </div>
+        </div>
+        </ScrollReveal>
+
         {/* ── Sources Footer ─────────────────────────────── */}
         <ScrollReveal>
         <div className="mt-12 card p-6">

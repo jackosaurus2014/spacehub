@@ -292,6 +292,7 @@ export const PAGE_RELATIONS: Record<string, RelatedModuleConfig[]> = {
   'tech-readiness': [MODULES.patentLandscape, MODULES.industryTrends, MODULES.companyResearch, MODULES.techReadiness.href === '/tech-readiness' ? MODULES.marketIntel : MODULES.marketIntel],
   'conferences': [MODULES.spaceEvents, MODULES.news, MODULES.resources, MODULES.podcasts],
   'learn': [MODULES.glossary, MODULES.careerGuide, MODULES.orbitGuide, MODULES.educationPathways],
+  'learn/space-industry': [MODULES.spaceEconomy, MODULES.launchVehicles, MODULES.careerGuide, MODULES.glossary, MODULES.acronyms],
   'materials-database': [MODULES.propulsionDB, MODULES.manufacturing, MODULES.blueprints, MODULES.standardsRef],
   'propulsion-database': [MODULES.propulsionComp, MODULES.launchVehicles, MODULES.materialsDB, MODULES.tools],
   'propulsion-comparison': [MODULES.propulsionDB, MODULES.launchVehicles, MODULES.launchEconomics, MODULES.tools],
@@ -367,6 +368,9 @@ export const PAGE_RELATIONS: Record<string, RelatedModuleConfig[]> = {
 
   // ── Space Industry Statistics ──
   'space-stats': [MODULES.spaceEconomy, MODULES.marketIntel, MODULES.industryTrends, MODULES.govBudgets, MODULES.satellites],
+
+  // ── Newsletter ──
+  'newsletter': [MODULES.intelligenceBrief, MODULES.newsDigest, MODULES.news, MODULES.newsletters, MODULES.blogs],
 };
 
 // Helper to get related modules for a page

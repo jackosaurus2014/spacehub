@@ -133,6 +133,7 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/learn/space-industry-market-size`, changeFrequency: 'monthly' as const, priority: 0.7 },
     { url: `${BASE_URL}/learn/how-to-track-satellites`, changeFrequency: 'monthly' as const, priority: 0.7 },
     { url: `${BASE_URL}/learn/space-companies-to-watch`, changeFrequency: 'monthly' as const, priority: 0.7 },
+    { url: `${BASE_URL}/learn/space-industry`, changeFrequency: 'monthly' as const, priority: 0.7 },
 
     // Regulation explainers index
     { url: `${BASE_URL}/regulation-explainers`, changeFrequency: 'monthly' as const, priority: 0.7 },
@@ -340,6 +341,9 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
 
     // Data Sources transparency page
     { url: `${BASE_URL}/data-sources`, changeFrequency: 'monthly' as const, priority: 0.6 },
+
+    // Newsletter
+    { url: `${BASE_URL}/newsletter`, changeFrequency: 'weekly' as const, priority: 0.7 },
   ];
 
   return routes.map(route => ({

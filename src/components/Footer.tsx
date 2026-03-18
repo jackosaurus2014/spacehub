@@ -62,6 +62,7 @@ const footerLinks = {
       { label: 'Podcasts', href: '/podcasts' },
       { label: 'Widgets', href: '/widgets' },
       { label: 'Newsletter Archive', href: '/newsletter-archive' },
+      { label: 'Newsletter', href: '/newsletter' },
       { label: 'FAQ', href: '/faq' },
       { label: 'Blog', href: '/blog' },
       { label: 'AI Insights', href: '/ai-insights' },

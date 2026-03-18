@@ -232,6 +232,7 @@ export const ROUTE_LABELS: Record<string, string> = {
   // ── New Pages ──
   '/api-access': 'API Access',
   '/newsletter-archive': 'Newsletter Archive',
+  '/newsletter': 'Newsletter',
   '/why-spacenexus': 'Why SpaceNexus',
   '/reports/space-economy-2026': 'Space Economy 2026 Report',
   '/widgets': 'Widgets',
@@ -266,6 +267,7 @@ export const ROUTE_LABELS: Record<string, string> = {
   // ── Guides ──
   '/guide/space-industry': 'Space Industry Guide',
   '/learn': 'Learn',
+  '/learn/space-industry': 'Space Industry Learning Path',
 };
 
 // ─── Route Parents ───────────────────────────────────────────────────────────
@@ -354,6 +356,7 @@ export const ROUTE_PARENTS: Record<string, string> = {
   '/learn/how-to-track-satellites': '/learn',
   '/learn/satellite-launch-cost': '/learn',
   '/learn/space-companies-to-watch': '/learn',
+  '/learn/space-industry': '/learn',
   '/learn/space-industry-market-size': '/learn',
 
   // Checkout pages

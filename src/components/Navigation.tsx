@@ -74,6 +74,7 @@ const EXPLORE_ITEMS: DropdownItem[] = [
   { label: 'FAQ', href: '/faq', description: 'Frequently asked questions' },
   { label: 'Help Center', href: '/help', description: 'Guides, FAQs & support resources' },
   { label: 'Newsletters', href: '/newsletters-directory', description: 'Space industry newsletter directory' },
+  { label: 'Newsletter Signup', href: '/newsletter', description: 'Weekly intelligence brief delivered free' },
   { label: 'All Features & Modules', href: '/features', description: 'Browse 30+ modules in one directory' },
   { label: 'Data Sources', href: '/data-sources', description: 'Transparency in our data pipeline' },
   { label: 'Space Industry Statistics', href: '/space-stats', description: 'Comprehensive space industry stats & facts 2026' },

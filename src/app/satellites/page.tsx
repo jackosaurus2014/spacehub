@@ -639,6 +639,45 @@ function SatelliteTrackerContent() {
           </>
         )}
 
+        {/* Related Reading */}
+        <ScrollReveal>
+        <div className="mt-10 mb-6">
+          <h3 className="text-lg font-semibold text-white mb-4">Related Reading</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <Link
+              href="/blog/how-many-satellites-in-space-2026"
+              className="group bg-white/[0.04] border border-white/[0.06] rounded-xl p-5 hover:border-white/15 hover:bg-white/[0.06] transition-all"
+            >
+              <div className="text-white font-medium text-sm group-hover:text-white/80 transition-colors mb-1">
+                How Many Satellites Are in Space?
+              </div>
+              <div className="text-slate-500 text-xs">The complete breakdown of active satellites by orbit, operator, and purpose.</div>
+              <div className="text-white/60 text-xs mt-3 font-medium group-hover:underline">Read article &rarr;</div>
+            </Link>
+            <Link
+              href="/blog/spacex-starlink-everything-you-need-to-know-2026"
+              className="group bg-white/[0.04] border border-white/[0.06] rounded-xl p-5 hover:border-white/15 hover:bg-white/[0.06] transition-all"
+            >
+              <div className="text-white font-medium text-sm group-hover:text-white/80 transition-colors mb-1">
+                Starlink: Everything You Need to Know
+              </div>
+              <div className="text-slate-500 text-xs">The largest satellite constellation in history -- 6,000+ satellites and 4M+ subscribers.</div>
+              <div className="text-white/60 text-xs mt-3 font-medium group-hover:underline">Read article &rarr;</div>
+            </Link>
+            <Link
+              href="/blog/starlink-oneweb-kuiper-mega-constellation-comparison"
+              className="group bg-white/[0.04] border border-white/[0.06] rounded-xl p-5 hover:border-white/15 hover:bg-white/[0.06] transition-all"
+            >
+              <div className="text-white font-medium text-sm group-hover:text-white/80 transition-colors mb-1">
+                Mega-Constellation Wars
+              </div>
+              <div className="text-slate-500 text-xs">Starlink vs. OneWeb vs. Kuiper -- comparing the broadband constellation race.</div>
+              <div className="text-white/60 text-xs mt-3 font-medium group-hover:underline">Read article &rarr;</div>
+            </Link>
+          </div>
+        </div>
+        </ScrollReveal>
+
         <RelatedModules modules={[
           { name: 'Space Environment', description: 'Debris tracking and space weather', href: '/space-environment', icon: '\u{1F321}\u{FE0F}' },
           { name: 'Orbital Slots', description: 'GEO/LEO slot management', href: '/orbital-slots', icon: '\u{1F6F0}\u{FE0F}' },
