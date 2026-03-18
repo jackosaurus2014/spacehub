@@ -212,19 +212,19 @@ const FEATURE_CATEGORIES = [
   {
     name: 'Content & Data',
     features: [
-      { label: 'Daily article limit', free: '25', pro: 'Unlimited', enterprise: 'Unlimited' },
-      { label: 'Company directory', free: 'Basic', pro: 'Full intelligence', enterprise: 'Full + AI reports' },
+      { label: 'News articles', free: '10/day', pro: 'Unlimited', enterprise: 'Unlimited' },
+      { label: 'Company profiles', free: '10/month', pro: 'Unlimited', enterprise: 'Unlimited' },
+      { label: 'Market intelligence', free: 'Preview', pro: 'Full dashboard', enterprise: 'Full + export' },
       { label: 'Space Score access', free: 'Top 10', pro: 'Full rankings', enterprise: 'Full + custom scoring' },
       { label: 'News categories', free: 'All', pro: 'All', enterprise: 'All' },
-      { label: 'Market intelligence', free: 'Limited', pro: 'Full', enterprise: 'Full + AI insights' },
     ],
   },
   {
-    name: 'Tools & Calculators',
+    name: 'Tracking & Tools',
     features: [
-      { label: 'Satellite tracker', free: true, pro: true, enterprise: true },
+      { label: 'Satellite tracking', free: '50 satellites', pro: 'Full catalog', enterprise: 'Full + alerts' },
+      { label: 'Launch tracking', free: 'Basic', pro: 'Full + calculator', enterprise: 'Full + API' },
       { label: 'Orbital calculator', free: true, pro: true, enterprise: true },
-      { label: 'Launch cost calculator', free: true, pro: true, enterprise: true },
       { label: 'Resource exchange', free: false, pro: true, enterprise: true },
       { label: 'Space insurance calc', free: false, pro: false, enterprise: true },
       { label: 'Constellation designer', free: true, pro: true, enterprise: true },
@@ -233,6 +233,7 @@ const FEATURE_CATEGORIES = [
   {
     name: 'Intelligence & Analytics',
     features: [
+      { label: 'AI insights', free: false, pro: '10/day', enterprise: 'Unlimited' },
       { label: 'Deal flow database', free: false, pro: '113+ deals', enterprise: '113+ deals' },
       { label: 'Executive move tracker', free: false, pro: true, enterprise: true },
       { label: 'Supply chain intel', free: false, pro: true, enterprise: true },
@@ -244,8 +245,9 @@ const FEATURE_CATEGORIES = [
   {
     name: 'Export & Integration',
     features: [
-      { label: 'Chart export (CSV/PNG)', free: false, pro: true, enterprise: true },
-      { label: 'Full API access', free: false, pro: false, enterprise: true },
+      { label: 'Data export', free: false, pro: 'CSV', enterprise: 'CSV, JSON, PDF' },
+      { label: 'Custom alerts', free: false, pro: '10 active', enterprise: 'Unlimited' },
+      { label: 'API access', free: false, pro: false, enterprise: '10,000 req/month' },
       { label: 'Webhook integrations', free: false, pro: false, enterprise: true },
       { label: 'Custom dashboards', free: false, pro: false, enterprise: true },
     ],
@@ -253,8 +255,7 @@ const FEATURE_CATEGORIES = [
   {
     name: 'Support',
     features: [
-      { label: 'Community support', free: true, pro: true, enterprise: true },
-      { label: 'Priority support', free: false, pro: true, enterprise: true },
+      { label: 'Support', free: 'Community', pro: 'Email (48hr)', enterprise: 'Priority (24hr)' },
       { label: 'Dedicated account manager', free: false, pro: false, enterprise: true },
       { label: 'Ad-free experience', free: false, pro: true, enterprise: true },
     ],
@@ -307,9 +308,9 @@ function FeatureComparisonTable() {
                     {category.name}
                   </td>
                 </tr>
-                {/* Feature rows */}
-                {category.features.map((feature) => (
-                  <tr key={feature.label} className="border-b border-white/[0.04] hover:bg-white/[0.04] transition-colors">
+                {/* Feature rows with alternating colors */}
+                {category.features.map((feature, idx) => (
+                  <tr key={feature.label} className={`border-b border-white/[0.04] hover:bg-white/[0.06] transition-colors ${idx % 2 === 1 ? 'bg-white/[0.02]' : ''}`}>
                     <td className="py-2.5 px-3 sm:py-3 sm:px-5 text-sm text-slate-300">{feature.label}</td>
                     <td className="py-2.5 px-2 sm:py-3 sm:px-4 text-center">{renderCellValue(feature.free)}</td>
                     <td className="py-2.5 px-2 sm:py-3 sm:px-4 text-center border-x border-white/10 bg-white/[0.02]">{renderCellValue(feature.pro)}</td>

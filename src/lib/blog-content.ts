@@ -3509,6 +3509,414 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 <p><em><strong>Disclaimer:</strong> This article is for informational purposes only and does not constitute investment advice. All investments carry risk, including the potential loss of principal. The space sector is particularly volatile and speculative. SpaceNexus does not provide investment advisory services and has no financial relationships with any companies mentioned. Consult a qualified financial advisor before making investment decisions.</em></p>
 `,
   },
+  {
+    slug: 'space-launch-schedule-2026-complete-guide',
+    title: 'Space Launch Schedule 2026: Every Mission You Need to Know',
+    excerpt: 'The complete guide to every major rocket launch in 2026 — from Artemis II and Starship V3 to New Glenn and Vulcan. Monthly breakdown, launch providers, how to watch, and real-time tracking with SpaceNexus.',
+    category: 'guide',
+    author: 'SpaceNexus Team',
+    authorRole: 'Mission Intelligence',
+    publishedAt: '2026-03-17T00:00:00Z',
+    readingTime: 14,
+    featured: true,
+    keywords: ['space launch schedule 2026', 'rocket launch schedule', 'upcoming space launches', 'Artemis II launch date', 'Starship launch schedule', 'New Glenn launch', 'Vulcan launch schedule', 'SpaceX launch schedule 2026', 'how to watch rocket launches', 'space mission calendar 2026'],
+    content: `
+<p>2026 is shaping up to be the most ambitious year in spaceflight history. With over <strong>300 orbital launches</strong> expected — up from 230+ in 2025 — the cadence of missions reaching orbit has never been higher. From NASA\'s Artemis II crewed lunar flyby to SpaceX\'s next-generation Starship V3, Blue Origin\'s New Glenn entering service, and ULA\'s Vulcan ramping operations, the launch manifest is packed with historic firsts and record-breaking campaigns.</p>
+
+<p>This guide provides a comprehensive overview of the 2026 space launch schedule, organized by month and provider. Whether you\'re an industry professional tracking the competitive landscape, an investor monitoring company milestones, or a space enthusiast who wants to know when to look up, this is your definitive reference.</p>
+
+<h2 id="2026-launch-landscape">The 2026 Launch Landscape: What\'s Different This Year</h2>
+
+<p>Several factors make 2026 a pivotal year for the global launch industry:</p>
+
+<ul>
+<li><strong>Vehicle diversity</strong> — More orbital-class rockets are operational simultaneously than at any point in history. SpaceX\'s Falcon 9 and Falcon Heavy, Starship, Blue Origin\'s New Glenn, ULA\'s Vulcan Centaur, Rocket Lab\'s Electron and Neutron, Arianespace\'s Ariane 6, and multiple Chinese vehicles are all flying or entering service.</li>
+<li><strong>Reusability goes mainstream</strong> — SpaceX has proven reusability works. Now Rocket Lab (Neutron), Blue Origin (New Glenn), and others are bringing reusable architectures to market, permanently shifting launch economics.</li>
+<li><strong>Mega-constellation deployment</strong> — Amazon\'s Project Kuiper begins full-scale deployment, joining SpaceX Starlink, OneWeb, and China\'s Guowang in a race to connect the planet from orbit.</li>
+<li><strong>Lunar missions</strong> — Artemis II, commercial lunar landers from Intuitive Machines and Firefly, and international Moon missions mark a new era of cislunar activity.</li>
+<li><strong>National security launches</strong> — The U.S. Space Force\'s National Security Space Launch (NSSL) program is awarding record numbers of missions across multiple certified providers.</li>
+</ul>
+
+<h2 id="major-missions-2026">The Headline Missions of 2026</h2>
+
+<h3>Artemis II — Humanity Returns to Lunar Orbit</h3>
+
+<p>NASA\'s <strong>Artemis II</strong> mission is arguably the most significant crewed spaceflight since the Apollo program. The mission will send four astronauts — Reid Wiseman, Victor Glover, Christina Koch, and Jeremy Hansen — on a roughly 10-day journey around the Moon aboard the Orion spacecraft, launched by the Space Launch System (SLS). This is the first crewed flight beyond low Earth orbit since Apollo 17 in 1972.</p>
+
+<p>The mission serves as a critical shakedown of the Orion spacecraft\'s life support systems, navigation, and communication capabilities with crew aboard, paving the way for Artemis III\'s lunar surface landing. The launch window is targeted for <strong>mid-to-late 2026</strong> from Kennedy Space Center\'s Launch Complex 39B.</p>
+
+<h3>Starship V3 — The Next Leap in Heavy Lift</h3>
+
+<p>SpaceX\'s <strong>Starship V3</strong> represents a significant upgrade to the already-revolutionary Starship system. With an extended upper stage, improved Raptor 3 engines, and a target payload capacity exceeding <strong>200 metric tons to LEO</strong> in fully reusable configuration, V3 is designed to enable rapid iteration on SpaceX\'s Mars architecture while dramatically reducing the cost of heavy-lift missions.</p>
+
+<p>Key V3 milestones expected in 2026 include the first flights of the stretched upper stage, continued refinement of the booster catch-and-refly system at Starbase, and potentially the first operational payload deliveries on the new configuration. SpaceX is targeting a cadence of multiple Starship flights per month by year-end.</p>
+
+<h3>New Glenn — Blue Origin\'s Orbital Debut Matures</h3>
+
+<p>Blue Origin\'s <strong>New Glenn</strong> heavy-lift rocket is entering operational service in 2026 after its inaugural flight. The 98-meter-tall vehicle features a reusable first stage powered by seven BE-4 engines and a 7-meter payload fairing — the largest in the industry. New Glenn\'s manifest includes launches for the U.S. Space Force (NSSL Phase 2 Lane 1), Amazon\'s Project Kuiper constellation, and commercial customers including Telesat and AST SpaceMobile.</p>
+
+<p>The vehicle\'s entrance into the market is significant: it provides the first credible heavy-lift alternative to SpaceX\'s Falcon Heavy and Starship from a U.S. provider, and its reusable booster targets economic competitiveness with Falcon 9.</p>
+
+<h3>Vulcan Centaur — ULA\'s Next-Generation Workhorse</h3>
+
+<p>United Launch Alliance\'s <strong>Vulcan Centaur</strong> is ramping its flight rate in 2026 with a manifest of national security, commercial, and NASA missions. Powered by Blue Origin\'s BE-4 engines and featuring the high-energy Centaur V upper stage with the RL10C-1-1 engine, Vulcan offers unique capabilities for high-energy orbits critical to Department of Defense and intelligence community missions.</p>
+
+<p>Key 2026 Vulcan missions include NSSL launches for the U.S. Space Force, Sierra Space\'s Dream Chaser cargo mission to the ISS, and Astrobotic\'s Griffin lander carrying NASA\'s VIPER lunar rover.</p>
+
+<h2 id="monthly-launch-calendar">Monthly Launch Calendar: Key Missions by Month</h2>
+
+<h3>January–February 2026</h3>
+<ul>
+<li><strong>SpaceX Falcon 9</strong> — Starlink Group 12 missions (multiple), Bandwagon rideshare</li>
+<li><strong>Rocket Lab Electron</strong> — Kineis IoT constellation deployment</li>
+<li><strong>Ariane 6</strong> — Galileo navigation satellite batch</li>
+<li><strong>ISRO GSLV Mk III</strong> — GSAT-24 communications satellite</li>
+<li><strong>China Long March 5B</strong> — Tiangong station resupply (Tianzhou-8)</li>
+</ul>
+
+<h3>March–April 2026</h3>
+<ul>
+<li><strong>SpaceX Starship</strong> — Test flight and potential Starlink V3 deployment</li>
+<li><strong>ULA Vulcan Centaur</strong> — NSSL mission (STP-3 follow-on)</li>
+<li><strong>Blue Origin New Glenn</strong> — Project Kuiper prototype batch deployment</li>
+<li><strong>SpaceX Falcon Heavy</strong> — NASA Europa Clipper follow-on / classified NRO mission</li>
+<li><strong>Rocket Lab Electron</strong> — NASA PREFIRE climate science mission</li>
+</ul>
+
+<h3>May–June 2026</h3>
+<ul>
+<li><strong>SpaceX Crew Dragon</strong> — Crew-12 ISS rotation mission (NASA Commercial Crew)</li>
+<li><strong>Boeing Starliner</strong> — CFT-2 or operational crew rotation</li>
+<li><strong>Intuitive Machines</strong> — IM-3 lunar lander (NASA CLPS Task Order)</li>
+<li><strong>ULA Vulcan</strong> — Sierra Space Dream Chaser cargo mission to ISS</li>
+<li><strong>Amazon Kuiper</strong> — First operational constellation deployment on Atlas V / Vulcan</li>
+</ul>
+
+<h3>July–August 2026</h3>
+<ul>
+<li><strong>NASA SLS / Orion</strong> — Artemis II crewed lunar flyby (window dependent)</li>
+<li><strong>SpaceX Starship</strong> — Potential crewed test flight / HLS development mission</li>
+<li><strong>Rocket Lab Neutron</strong> — Maiden flight (targeted mid-2026)</li>
+<li><strong>Firefly Alpha</strong> — NASA CLPS Firefly Blue Ghost 2 lunar lander</li>
+<li><strong>Relativity Space Terran R</strong> — First flight attempt of 3D-printed reusable rocket</li>
+</ul>
+
+<h3>September–October 2026</h3>
+<ul>
+<li><strong>SpaceX Falcon 9</strong> — Starlink V3 constellation expansion (multiple launches)</li>
+<li><strong>Blue Origin New Glenn</strong> — Telesat Lightspeed deployment begins</li>
+<li><strong>ULA Vulcan</strong> — Astrobotic Griffin lander with NASA VIPER rover</li>
+<li><strong>Ariane 6</strong> — European institutional payload (Copernicus Sentinel follow-on)</li>
+<li><strong>JAXA H3</strong> — Japanese national payload launches</li>
+</ul>
+
+<h3>November–December 2026</h3>
+<ul>
+<li><strong>SpaceX Starship</strong> — Continued rapid iteration; potential first commercial payload</li>
+<li><strong>SpaceX Falcon 9</strong> — Year-end Starlink and commercial manifest push (targeting 150+ Falcon 9 flights in 2026)</li>
+<li><strong>ispace Mission 2</strong> — Japanese commercial lunar lander (HAKUTO-R follow-on)</li>
+<li><strong>China Long March 10</strong> — Potential first crewed flight of next-gen vehicle (timeline subject to change)</li>
+<li><strong>Rocket Lab Neutron</strong> — Early operational flights if maiden flight succeeds on schedule</li>
+</ul>
+
+<h2 id="launch-providers-overview">Launch Provider Scorecard: Who\'s Flying What</h2>
+
+<p>The competitive landscape for launch services has never been more dynamic. Here\'s how the major providers stack up heading into 2026:</p>
+
+<h3>SpaceX — The Undisputed Market Leader</h3>
+<p>SpaceX is targeting <strong>150+ Falcon 9 launches</strong> in 2026, continuing its aircraft-like operational cadence with booster reuse now routinely exceeding 20 flights per vehicle. Falcon Heavy handles the heaviest payloads and highest-energy orbits. Meanwhile, Starship is transitioning from test flights to early operational missions, with the V3 configuration pushing payload capacity beyond any rocket in history.</p>
+
+<h3>United Launch Alliance — Heritage Meets Next-Gen</h3>
+<p>ULA is completing the transition from Atlas V and Delta IV to <strong>Vulcan Centaur</strong>. With a deep national security manifest and unique high-energy upper stage capabilities, Vulcan is the Pentagon\'s preferred vehicle for the most demanding NSSL missions. ULA\'s track record of 100% mission success across 150+ consecutive launches gives customers unmatched confidence.</p>
+
+<h3>Blue Origin — New Glenn Changes the Game</h3>
+<p>New Glenn\'s entry into service gives Blue Origin its first orbital launch vehicle and introduces meaningful competition in the heavy-lift segment. The <strong>Amazon Kuiper contract alone</strong> — requiring 83 launches across multiple providers — guarantees a substantial manifest, and NSSL certification opens the door to lucrative government missions.</p>
+
+<h3>Rocket Lab — Small Launch Leader, Medium Launch Challenger</h3>
+<p>Rocket Lab continues to dominate the dedicated small launch market with <strong>Electron</strong> while preparing to enter the medium-lift segment with <strong>Neutron</strong>. A successful Neutron maiden flight in 2026 would position Rocket Lab as the only publicly traded company with operational rockets in both small and medium launch classes.</p>
+
+<h3>Arianespace — European Independence</h3>
+<p><strong>Ariane 6</strong> is Europe\'s path back to independent launch access after the retirement of Ariane 5 and the loss of Russian Soyuz launches from Kourou. The A62 (two boosters) and A64 (four boosters) configurations serve European institutional missions and compete for commercial GEO and MEO payloads.</p>
+
+<h3>International Providers</h3>
+<p>China\'s <strong>Long March family</strong> continues to launch at a furious pace, with CASC and commercial providers like Landspace (Zhuque-2) and Galactic Energy (Ceres-1) adding capacity. India\'s <strong>ISRO</strong> is expanding commercial launch services through NSIL. Japan\'s <strong>JAXA H3</strong> rocket is entering reliable service after early setbacks.</p>
+
+<h2 id="how-to-watch-launches">How to Watch Rocket Launches in 2026</h2>
+
+<p>Whether you want to watch from your couch or travel to see a launch in person, here\'s how to make it happen:</p>
+
+<h3>Live Streams</h3>
+<ul>
+<li><strong>SpaceX</strong> — Official webcasts on X (Twitter) and YouTube typically begin T-30 minutes before launch. SpaceX streams are the gold standard for launch coverage.</li>
+<li><strong>NASA</strong> — NASA TV and the NASA+ app provide extensive coverage for all NASA missions, including pre-launch commentary and post-launch briefings.</li>
+<li><strong>ULA</strong> — ULA webcasts on YouTube with their signature detailed technical commentary.</li>
+<li><strong>Blue Origin</strong> — New Glenn launches streamed on Blue Origin\'s website and YouTube channel.</li>
+<li><strong>Rocket Lab</strong> — "It\'s Business Time" and similar mission-named webcasts on YouTube with Rocket Lab\'s trademark humor.</li>
+</ul>
+
+<h3>In-Person Viewing</h3>
+<ul>
+<li><strong>Kennedy Space Center, Florida</strong> — The KSC Visitor Complex offers launch viewing packages for SpaceX, ULA, and NASA missions from LC-39A, SLC-40, and SLC-41. Tickets sell out fast for major missions.</li>
+<li><strong>Vandenberg Space Force Base, California</strong> — Limited public viewing areas along Highway 1 for polar orbit launches. SpaceX and ULA both launch from Vandenberg.</li>
+<li><strong>Starbase, Boca Chica, Texas</strong> — Viewing areas for Starship launches are limited but expanding. Check local guidelines for road closures and viewing zones.</li>
+<li><strong>Wallops Flight Facility, Virginia</strong> — NASA\'s Wallops visitor center offers viewing for Northrop Grumman Antares/Cygnus and other missions from the Mid-Atlantic Regional Spaceport.</li>
+</ul>
+
+<h3>Real-Time Tracking With SpaceNexus</h3>
+<p>SpaceNexus\'s <a href="/mission-control"><strong>Mission Control</strong></a> dashboard provides a real-time launch manifest with countdown timers, mission details, launch provider information, and live status updates for every upcoming mission. Set up custom alerts to get notified before launches that matter to you — whether you\'re tracking a specific provider, orbit type, or customer.</p>
+
+<h2 id="tracking-the-full-manifest">Beyond the Headlines: Why the Full Manifest Matters</h2>
+
+<p>While headline missions like Artemis II and Starship grab attention, the real story of 2026 is the <strong>sheer volume and diversity</strong> of orbital launches. The 300+ launch target represents a fundamental shift in how humanity accesses space — from an era of scarcity (each launch a major event) to an era of abundance (multiple launches per day across multiple providers).</p>
+
+<p>This shift has profound implications for every segment of the space economy:</p>
+
+<ul>
+<li><strong>Satellite operators</strong> benefit from lower launch costs and more frequent launch opportunities, reducing the risk of manifest delays.</li>
+<li><strong>Investors</strong> can track launch cadence as a leading indicator of revenue for publicly traded launch companies and their customers.</li>
+<li><strong>Defense planners</strong> gain responsive space access — the ability to replace or augment constellations rapidly in a contested environment.</li>
+<li><strong>Researchers</strong> get more frequent access to orbit for scientific instruments, technology demonstrations, and ISS resupply.</li>
+</ul>
+
+<p>Staying on top of the full launch manifest — not just the blockbuster missions — gives professionals the context they need to anticipate market movements, track competitive dynamics, and identify emerging opportunities.</p>
+
+<h2 id="track-launches-spacenexus">Track Every Launch With SpaceNexus Mission Control</h2>
+
+<p>The 2026 launch schedule is the most ambitious in history, and keeping up requires more than bookmarking a dozen websites. SpaceNexus\'s <a href="/mission-control"><strong>Mission Control</strong></a> aggregates launch data from NASA, SpaceX, ULA, Arianespace, Rocket Lab, and dozens of other providers into a single real-time dashboard with:</p>
+
+<ul>
+<li><strong>Live countdown timers</strong> for every upcoming launch</li>
+<li><strong>Mission details</strong> including payload, orbit, customer, and vehicle configuration</li>
+<li><strong>Historical launch data</strong> for trend analysis and provider comparison</li>
+<li><strong>Custom alerts</strong> so you never miss a launch that matters to you</li>
+<li><strong>Integration with satellite tracking</strong> to follow payloads from launch to orbit</li>
+</ul>
+
+<p><a href="/mission-control">Explore Mission Control</a> or <a href="/register">sign up free</a> to start tracking the 2026 launch schedule in real time.</p>
+`,
+  },
+  {
+    slug: 'space-industry-careers-guide-2026',
+    title: 'The Complete Guide to Space Industry Careers in 2026',
+    excerpt: 'Everything you need to know about working in the space industry — from engineering and operations roles to business and policy careers. Salary ranges, top employers, skills needed, educational paths, and how to break in.',
+    category: 'guide',
+    author: 'SpaceNexus Team',
+    authorRole: 'Space Talent Intelligence',
+    publishedAt: '2026-03-17T00:00:00Z',
+    readingTime: 14,
+    featured: false,
+    keywords: ['space industry jobs', 'aerospace careers', 'how to work in space industry', 'space industry careers', 'space jobs 2026', 'aerospace engineering jobs', 'space industry salary', 'NASA careers', 'SpaceX jobs', 'space workforce'],
+    content: `
+<p>The space industry is hiring at an unprecedented pace. With the global space economy growing at 9% annually toward a projected <strong>$1.8 trillion by 2035</strong>, companies across the sector are competing fiercely for talent. The U.S. space workforce alone exceeds <strong>360,000 workers</strong> across government agencies, defense primes, commercial startups, and supporting industries — and that number is climbing as new programs, companies, and missions come online every quarter.</p>
+
+<p>But "working in space" means very different things depending on your background, skills, and ambitions. The space industry employs far more than rocket engineers. It needs software developers, data scientists, business analysts, policy experts, supply chain managers, lawyers, marketers, and dozens of other professionals. This guide breaks down the landscape so you can find your path in.</p>
+
+<h2 id="types-of-space-careers">Types of Space Industry Careers</h2>
+
+<p>Space industry careers fall into several broad categories. Understanding these categories is the first step to identifying where your skills fit — and where the opportunities are growing fastest.</p>
+
+<h3>Engineering and Technical Roles</h3>
+
+<p>Engineering remains the backbone of the space industry, but the discipline has expanded far beyond traditional aerospace engineering:</p>
+
+<ul>
+<li><strong>Aerospace / Mechanical Engineering</strong> — Designing spacecraft structures, propulsion systems, thermal management, and mechanisms. Core roles at every launch provider, satellite manufacturer, and space systems company. Typical salary range: $90,000–$170,000, with senior and principal engineers exceeding $200,000 at top employers.</li>
+<li><strong>Software Engineering</strong> — Flight software, ground systems, mission planning tools, simulation environments, and customer-facing platforms. SpaceX employs more software engineers than many pure software companies. Demand is exceptionally high. Salary range: $100,000–$200,000+, with top-tier employers matching Big Tech compensation.</li>
+<li><strong>Electrical / RF Engineering</strong> — Avionics, power systems, communications payloads, antenna design, and radio frequency engineering. Critical for satellite manufacturers and ground segment providers. Salary range: $95,000–$175,000.</li>
+<li><strong>Systems Engineering</strong> — Integrating complex subsystems, managing requirements, and ensuring mission-level performance. Systems engineers are the glue that holds space programs together. Salary range: $100,000–$180,000.</li>
+<li><strong>Data Science / Machine Learning</strong> — Processing satellite imagery, training Earth observation AI models, predictive maintenance for spacecraft, orbit determination, and space traffic management. One of the fastest-growing specializations. Salary range: $110,000–$200,000+.</li>
+<li><strong>Manufacturing / Production Engineering</strong> — Scaling satellite production from artisanal builds to factory-line manufacturing. SpaceX\'s ability to produce 5+ Starlink satellites per day requires manufacturing engineers who can optimize assembly, test, and quality processes. Salary range: $85,000–$150,000.</li>
+</ul>
+
+<h3>Operations Roles</h3>
+
+<p>Operations professionals keep missions running after the engineers hand over the hardware:</p>
+
+<ul>
+<li><strong>Mission Operations</strong> — Planning and executing spacecraft missions from ground control centers. Includes orbit maneuver planning, anomaly resolution, and end-of-life disposal. Jobs at NASA\'s Mission Control, SpaceX Starlink operations, and commercial satellite operators. Salary range: $80,000–$150,000.</li>
+<li><strong>Launch Operations</strong> — Managing launch campaigns, pad operations, vehicle integration, and countdown procedures. These roles are based at launch sites (Cape Canaveral, Vandenberg, Wallops, Boca Chica) and require hands-on experience with flight hardware. Salary range: $75,000–$140,000.</li>
+<li><strong>Ground Station Operations</strong> — Operating and maintaining the global network of antennas that communicate with spacecraft. Increasingly automated but still requiring human oversight, especially for deep space missions. Salary range: $70,000–$120,000.</li>
+<li><strong>Space Traffic Management</strong> — An emerging field focused on tracking objects in orbit, predicting conjunctions (potential collisions), and coordinating maneuvers between operators. Demand is surging as LEO becomes more congested. Salary range: $90,000–$160,000.</li>
+</ul>
+
+<h3>Business and Commercial Roles</h3>
+
+<p>As the space industry commercializes, demand for business professionals has exploded:</p>
+
+<ul>
+<li><strong>Business Development / Sales</strong> — Selling launch services, satellite capacity, Earth observation data, or space-based solutions to government and commercial customers. Requires understanding both the technology and the customer\'s mission. Salary range: $90,000–$180,000+ (with commissions/bonuses, top performers exceed $250,000).</li>
+<li><strong>Product Management</strong> — Defining product strategy for space-based services, data platforms, and customer tools. Companies like Planet Labs, Spire Global, and HawkEye 360 need product managers who can translate satellite capabilities into customer value. Salary range: $110,000–$190,000.</li>
+<li><strong>Finance and Strategy</strong> — Financial planning, M&amp;A analysis, investor relations, and strategic planning. Space companies going through growth stages, fundraising, or IPO preparation need experienced finance professionals. Salary range: $100,000–$200,000+.</li>
+<li><strong>Marketing and Communications</strong> — Building brand awareness, managing launch coverage, and communicating complex technology to diverse audiences. Space companies increasingly compete for public attention and talent mindshare. Salary range: $70,000–$150,000.</li>
+<li><strong>Supply Chain and Procurement</strong> — Managing the complex supply chains for space-grade components, from radiation-hardened electronics to specialty alloys. Supply chain disruptions can delay missions by months or years. Salary range: $80,000–$140,000.</li>
+</ul>
+
+<h3>Policy, Legal, and Regulatory Roles</h3>
+
+<p>The space industry operates under a complex web of national and international regulations, creating strong demand for policy and legal professionals:</p>
+
+<ul>
+<li><strong>Space Policy / Government Affairs</strong> — Working with Congress, the White House, FAA, FCC, and international bodies to shape space policy. Roles at companies, trade associations (SIA, CSF), and think tanks. Salary range: $80,000–$160,000.</li>
+<li><strong>Space Law</strong> — Advising on licensing (FAA launch licenses, FCC spectrum), export controls (ITAR/EAR), international treaties, and liability. A niche but growing specialty within major law firms and in-house legal departments. Salary range: $120,000–$300,000+ (at major firms).</li>
+<li><strong>Regulatory Compliance</strong> — Ensuring companies meet FAA, FCC, ITAR, EAR, and environmental requirements. Compliance professionals are essential for any company building, launching, or operating spacecraft. Salary range: $85,000–$150,000.</li>
+<li><strong>Spectrum Management</strong> — Managing the radio frequency allocations that spacecraft use to communicate with ground stations. As orbital congestion increases, spectrum management becomes more complex and valuable. Salary range: $90,000–$160,000.</li>
+</ul>
+
+<h2 id="top-space-employers">Top Space Industry Employers in 2026</h2>
+
+<p>The employer landscape spans government agencies, defense primes, commercial startups, and supporting organizations:</p>
+
+<h3>Government Agencies</h3>
+<ul>
+<li><strong>NASA</strong> — ~18,000 civil servants across 10 centers plus 60,000+ contractor support. Roles span every discipline from engineering to communications. Government pay scales (GS system) are lower than commercial but benefits, job security, mission diversity, and work-life balance are strong differentiators.</li>
+<li><strong>U.S. Space Force / Space Systems Command</strong> — The newest military branch is growing rapidly and offers both uniformed and civilian positions in space operations, acquisition, and intelligence.</li>
+<li><strong>NRO, NGA, Space Development Agency</strong> — Intelligence and defense agencies with substantial space programs and competitive salaries for cleared professionals.</li>
+<li><strong>FAA Office of Commercial Space Transportation</strong> — Regulates the rapidly growing commercial launch industry. Small but influential organization.</li>
+</ul>
+
+<h3>Defense Primes and Large Contractors</h3>
+<ul>
+<li><strong>Lockheed Martin Space</strong> — Orion spacecraft, GPS III satellites, missile warning, space surveillance. ~30,000 space division employees.</li>
+<li><strong>Northrop Grumman Space Systems</strong> — James Webb Space Telescope, Cygnus cargo, missile defense, classified programs. Major employer in the Washington D.C. area and Utah.</li>
+<li><strong>Boeing Space &amp; Launch</strong> — SLS, Starliner, WGS satellites, ISS operations. Despite recent challenges, Boeing remains one of the largest space employers.</li>
+<li><strong>L3Harris Space &amp; Airborne Systems</strong> — Weather satellites, responsive space, space domain awareness sensors.</li>
+<li><strong>RTX (Raytheon)</strong> — Missile tracking, space-based infrared systems, and defense electronics with space applications.</li>
+</ul>
+
+<h3>Commercial Space Companies</h3>
+<ul>
+<li><strong>SpaceX</strong> — ~13,000+ employees. The most sought-after space employer for engineers, known for intense work culture, rapid iteration, and unmatched launch cadence. Compensation includes equity that has appreciated significantly.</li>
+<li><strong>Blue Origin</strong> — ~11,000+ employees across New Glenn, Blue Moon lander, New Shepard, and orbital reef programs. Growing aggressively as New Glenn enters service.</li>
+<li><strong>Rocket Lab</strong> — ~2,000+ employees. Lean, fast-moving culture with roles across launch (Electron/Neutron), spacecraft (Photon), and space systems (components).</li>
+<li><strong>Planet Labs, Spire Global, BlackSky, HawkEye 360</strong> — Earth observation and data analytics companies combining space engineering with software and data science.</li>
+<li><strong>Relativity Space, Firefly, ABL Space, Stoke Space</strong> — Next-generation launch startups offering ground-floor opportunities with higher risk and higher potential reward.</li>
+<li><strong>Sierra Space, Axiom Space, Vast</strong> — Commercial space station developers building the post-ISS future.</li>
+</ul>
+
+<h2 id="skills-in-demand">Skills the Space Industry Needs Most in 2026</h2>
+
+<p>Beyond domain-specific expertise, several cross-cutting skills are in particularly high demand:</p>
+
+<ul>
+<li><strong>Security clearances</strong> — A TS/SCI clearance is a significant competitive advantage. Many defense space roles require them, and the backlog for new clearance investigations creates a premium for already-cleared candidates. Cleared professionals can command 10-20% salary premiums.</li>
+<li><strong>Python and data engineering</strong> — Python is the lingua franca of space data processing. Experience with satellite data pipelines, geospatial analysis (GDAL, Rasterio), and cloud computing (AWS, GCP) is highly valued.</li>
+<li><strong>Model-based systems engineering (MBSE)</strong> — The industry is transitioning from document-based to model-based engineering practices. Experience with SysML, CAMEO, and digital twin technologies is increasingly required.</li>
+<li><strong>Additive manufacturing</strong> — 3D printing is transforming how rockets and satellites are built. Relativity Space prints nearly entire rockets. SpaceX uses metal 3D printing for Raptor engine components. Manufacturing engineers with additive experience are in short supply.</li>
+<li><strong>RF and antenna design</strong> — With tens of thousands of satellites needing to communicate with ground stations, and the rise of direct-to-device systems (AST SpaceMobile, SpaceX/T-Mobile), RF expertise is critical.</li>
+<li><strong>Orbital mechanics and astrodynamics</strong> — The fundamental physics of space operations. Required for mission planning, space traffic management, and constellation design.</li>
+<li><strong>AI/ML applied to space</strong> — Autonomous satellite operations, imagery analysis, predictive maintenance, and space situational awareness all leverage machine learning. This intersection of AI and space is one of the hottest areas for hiring.</li>
+</ul>
+
+<h2 id="educational-paths">Educational Paths Into the Space Industry</h2>
+
+<p>There is no single path into the space industry. The "right" education depends on your target role:</p>
+
+<h3>Traditional Engineering Path</h3>
+<p>A bachelor\'s degree in aerospace, mechanical, electrical, or computer engineering from an accredited program remains the most direct route into technical roles. Programs at MIT, Stanford, Caltech, Georgia Tech, Purdue, University of Michigan, CU Boulder, and the University of Maryland have deep space industry connections and strong employer recruiting pipelines.</p>
+
+<p>A master\'s degree is increasingly common for systems engineering and specialized roles, though many employers (especially SpaceX) prioritize demonstrated ability over advanced degrees. PhDs are valuable for R&amp;D and principal engineer tracks but are not required for most industry positions.</p>
+
+<h3>Computer Science and Software Path</h3>
+<p>Software engineers can enter the space industry from any strong CS program or even through self-taught / bootcamp paths, particularly for ground systems, web platforms, and data engineering roles. Flight software and embedded systems roles typically require formal CS/CE education and knowledge of real-time operating systems, C/C++, and safety-critical software practices.</p>
+
+<h3>Non-Traditional Paths</h3>
+<p>The expanding space industry is increasingly accessible to non-STEM professionals:</p>
+
+<ul>
+<li><strong>MBA programs</strong> with aerospace or technology focus (MIT Sloan, Wharton, Stanford GSB) can lead to strategy, business development, and leadership roles at space companies.</li>
+<li><strong>Law degrees</strong> with specialization in space law, telecommunications law, or government contracts open paths to in-house counsel, regulatory affairs, and policy roles.</li>
+<li><strong>Public policy programs</strong> (Georgetown, George Washington, Harvard Kennedy School) with space policy focus feed into government agencies, trade associations, and company government affairs teams.</li>
+<li><strong>Military service</strong> — Veterans, especially from Space Force, Air Force space operations, and Navy nuclear programs, are actively recruited by both defense primes and commercial companies. Military space experience translates directly.</li>
+<li><strong>Technician and trades paths</strong> — Launch pad technicians, composite fabricators, avionics technicians, and test operators don\'t require four-year degrees. Community colleges near space industry hubs (Brevard County FL, Huntsville AL, Denver CO) offer relevant programs.</li>
+</ul>
+
+<h2 id="where-space-jobs-are">Where Space Jobs Are Located</h2>
+
+<p>Space industry employment is concentrated in several geographic hubs, each with its own character:</p>
+
+<ul>
+<li><strong>Los Angeles / Hawthorne, CA</strong> — SpaceX headquarters, Rocket Lab USA headquarters, Northrop Grumman Space Systems, The Aerospace Corporation, Virgin Orbit (legacy), and dozens of startups. The densest concentration of space companies in the world.</li>
+<li><strong>Washington D.C. / Northern Virginia</strong> — NASA HQ, Space Force, NRO, NGA, defense contractors, policy organizations, and consulting firms. The center of space policy and government contracting.</li>
+<li><strong>Cape Canaveral / Space Coast, FL</strong> — Kennedy Space Center, Cape Canaveral Space Force Station, SpaceX Starbase East, Blue Origin launch operations, ULA, L3Harris. The launch capital of the Western world.</li>
+<li><strong>Huntsville, AL</strong> — NASA Marshall Space Flight Center, ULA, Blue Origin engine manufacturing, Aerojet Rocketdyne, Dynetics. Known as "Rocket City" with a strong propulsion focus.</li>
+<li><strong>Denver / Colorado Springs, CO</strong> — Lockheed Martin Space HQ, United Launch Alliance, Ball Aerospace, Space Force Space Operations Command. Major hub for satellites, launch, and military space.</li>
+<li><strong>Seattle / Kent, WA</strong> — Blue Origin headquarters, Amazon Kuiper, Spaceflight Industries, BlackSky. Growing rapidly as a space industry hub.</li>
+<li><strong>Houston, TX</strong> — NASA Johnson Space Center, Intuitive Machines, Axiom Space, and ISS operations support. The human spaceflight capital.</li>
+</ul>
+
+<h2 id="breaking-in">How to Break Into the Space Industry</h2>
+
+<p>Getting your first space industry role can feel daunting, but these strategies consistently work:</p>
+
+<ul>
+<li><strong>Internships and co-ops</strong> — NASA Pathways, SpaceX internships, Rocket Lab internships, and defense contractor co-op programs are the single best pipeline into full-time roles. Apply broadly and early — NASA internship applications open months before the term.</li>
+<li><strong>University research and CubeSat projects</strong> — Participating in a university satellite project (many schools have CubeSat programs) provides hands-on spacecraft experience that employers value highly. It demonstrates initiative and practical skills that coursework alone cannot.</li>
+<li><strong>Networking at industry events</strong> — Conferences like SATELLITE, Space Symposium, SmallSat, IAC (International Astronautical Congress), and ASCEND provide face-to-face access to hiring managers. Many roles are filled through professional networks before they\'re posted publicly.</li>
+<li><strong>Start adjacent, move inward</strong> — If you can\'t get a role at SpaceX immediately, consider starting at a defense prime, a space startup, or even a non-space role at a company with a space division. Industry experience and a security clearance from an adjacent role make you a stronger candidate for your dream position.</li>
+<li><strong>Contribute to open-source space tools</strong> — Projects like SatNOGS (ground station network), Orekit (orbital mechanics library), and various NASA open-source projects allow you to build space-relevant portfolio pieces and connect with the space developer community.</li>
+<li><strong>Leverage transferable skills</strong> — If you\'re a software engineer at a tech company, your skills in distributed systems, cloud infrastructure, or machine learning are directly applicable to space. Emphasize how your existing expertise solves space industry problems.</li>
+</ul>
+
+<h2 id="salary-expectations">Salary Expectations and Compensation Trends</h2>
+
+<p>Space industry compensation has risen significantly as companies compete with Big Tech for talent:</p>
+
+<table>
+<thead>
+<tr><th>Role Category</th><th>Entry Level</th><th>Mid-Career</th><th>Senior/Principal</th></tr>
+</thead>
+<tbody>
+<tr><td>Aerospace Engineer</td><td>$80K–$100K</td><td>$110K–$150K</td><td>$160K–$220K+</td></tr>
+<tr><td>Software Engineer</td><td>$90K–$120K</td><td>$130K–$180K</td><td>$190K–$250K+</td></tr>
+<tr><td>Data Scientist / ML Engineer</td><td>$95K–$125K</td><td>$135K–$185K</td><td>$195K–$260K+</td></tr>
+<tr><td>Systems Engineer</td><td>$85K–$105K</td><td>$115K–$160K</td><td>$170K–$220K+</td></tr>
+<tr><td>Mission Operations</td><td>$70K–$90K</td><td>$95K–$130K</td><td>$140K–$180K+</td></tr>
+<tr><td>Business Development</td><td>$75K–$95K</td><td>$100K–$150K</td><td>$160K–$250K+</td></tr>
+<tr><td>Space Policy / Legal</td><td>$70K–$95K</td><td>$100K–$160K</td><td>$170K–$300K+</td></tr>
+<tr><td>Manufacturing / Technician</td><td>$55K–$75K</td><td>$80K–$110K</td><td>$120K–$160K+</td></tr>
+</tbody>
+</table>
+
+<p><strong>Key compensation trends:</strong></p>
+
+<ul>
+<li><strong>Equity is increasingly significant</strong> — SpaceX equity has appreciated dramatically for early employees. Later-stage startups and pre-IPO companies offer stock options or RSUs that can meaningfully increase total compensation.</li>
+<li><strong>Clearance premiums persist</strong> — Professionals with active TS/SCI clearances command 10-20% premiums, especially at defense-focused employers.</li>
+<li><strong>Remote work varies widely</strong> — Software and data roles increasingly offer remote or hybrid options, but hardware, operations, and cleared roles generally require on-site presence.</li>
+<li><strong>Government vs. commercial tradeoffs</strong> — Government (NASA, Space Force) salaries are lower on paper but include pension benefits, job stability, work-life balance, and access to unique missions that commercial roles cannot match.</li>
+</ul>
+
+<h2 id="industry-outlook">Space Workforce Outlook: What\'s Ahead</h2>
+
+<p>The space workforce is projected to grow 8-12% annually through 2030, driven by several factors:</p>
+
+<ul>
+<li><strong>Commercial space station programs</strong> (Axiom, Orbital Reef, Starlab) will require thousands of new workers as the ISS is decommissioned.</li>
+<li><strong>Artemis and lunar programs</strong> are creating sustained demand for engineers, scientists, and operations professionals across NASA and its contractor base.</li>
+<li><strong>Mega-constellation operations</strong> need growing teams to manage thousands of satellites — from manufacturing to orbit operations to decommissioning.</li>
+<li><strong>Space sustainability and debris remediation</strong> is an emerging sector that barely existed five years ago but is now attracting significant investment and hiring.</li>
+<li><strong>Allied nation space programs</strong> — The Artemis Accords, AUKUS space cooperation, and NATO space activities are expanding the international space workforce and creating collaboration opportunities.</li>
+</ul>
+
+<p>The biggest challenge facing the industry isn\'t a lack of interesting work — it\'s a shortage of qualified workers. The space workforce pipeline is not growing fast enough to meet demand, creating significant opportunities for professionals willing to develop space-relevant skills.</p>
+
+<h2 id="research-careers-spacenexus">Research Space Careers With SpaceNexus</h2>
+
+<p>Understanding the space industry landscape is essential for making smart career decisions. SpaceNexus\'s <a href="/space-talent"><strong>Space Talent Hub</strong></a> provides tools to research the space workforce ecosystem:</p>
+
+<ul>
+<li><strong>Company profiles</strong> for 200+ space companies with workforce data, funding history, and technology focus</li>
+<li><strong>Job market intelligence</strong> tracking hiring trends across the space sector</li>
+<li><strong>Salary benchmarking data</strong> for space industry roles by location and experience level</li>
+<li><strong>Employer comparisons</strong> to evaluate culture, compensation, and growth trajectory across companies</li>
+<li><strong>Industry news and analysis</strong> to stay informed about which companies and sectors are growing</li>
+</ul>
+
+<p>Whether you\'re a student planning your education, a mid-career professional considering a pivot, or an experienced engineer looking for your next challenge, the space industry has never offered more opportunity. The question isn\'t whether there\'s a role for you — it\'s which of the many paths you\'ll choose.</p>
+
+<p><a href="/space-talent">Explore the Space Talent Hub</a> or <a href="/register">sign up free</a> to start researching space industry careers.</p>
+`,
+  },
 ];
 
 export function getBlogPost(slug: string): OriginalBlogPost | undefined {

@@ -27,7 +27,11 @@ export type UpgradeContext =
   | 'investment-thesis'
   | 'deal-rooms'
   | 'funding-tracker'
-  | 'customer-discovery';
+  | 'customer-discovery'
+  | 'market-intel'
+  | 'satellite-tracking'
+  | 'launch-tracking'
+  | 'patent-tracker';
 
 interface ContextualMessage {
   icon: string;
@@ -76,14 +80,14 @@ const CONTEXTUAL_MESSAGES: Record<UpgradeContext, ContextualMessage> = {
   },
   compliance: {
     icon: '\u{1F4DC}',
-    title: 'Regulatory Compliance Suite',
+    title: 'ITAR/EAR Export Control Database',
     description:
-      'Access regulatory compliance tools, treaty monitoring, and filing trackers. Stay ahead of policy changes affecting your operations.',
+      'Access the complete ITAR/EAR export control database, treaty monitoring, and regulatory filing trackers. Stay compliant across all jurisdictions.',
     requiredTier: 'enterprise',
     highlights: [
-      'Treaty monitoring',
-      'Filing deadline alerts',
-      'Compliance checklists',
+      'Complete ITAR/EAR export control database',
+      'Treaty monitoring & filing deadline alerts',
+      'Jurisdiction-specific compliance checklists',
     ],
   },
   'spectrum-tracker': {
@@ -278,6 +282,80 @@ const CONTEXTUAL_MESSAGES: Record<UpgradeContext, ContextualMessage> = {
       'Customer segment analysis',
     ],
   },
+  'market-intel': {
+    icon: '\u{1F4C8}',
+    title: 'Space Market Intelligence',
+    description:
+      'Unlock real-time space stock tracking and 200+ company valuations. Monitor market cap movements, earnings, and sector performance across the space economy.',
+    requiredTier: 'pro',
+    highlights: [
+      'Real-time stock tracking for 20+ space companies',
+      '200+ company valuations & financial profiles',
+      'Sector performance analytics & trend detection',
+    ],
+  },
+  'satellite-tracking': {
+    icon: '\u{1F6F0}\u{FE0F}',
+    title: 'Full Satellite Catalog',
+    description:
+      'Track every active satellite in orbit with real-time TLE data. The free tier covers 50 satellites \u2014 upgrade for the full catalog plus conjunction alerts.',
+    requiredTier: 'pro',
+    highlights: [
+      'Full catalog of 8,000+ active satellites',
+      'Real-time conjunction & collision alerts',
+      'Custom tracking lists & ground station passes',
+    ],
+  },
+  'launch-tracking': {
+    icon: '\u{1F680}',
+    title: 'Advanced Launch Intelligence',
+    description:
+      'Go beyond basic launch schedules with window calculators, payload manifests, and provider comparison tools. Enterprise includes full API access.',
+    requiredTier: 'pro',
+    highlights: [
+      'Launch window calculator & delta-v planner',
+      'Payload manifest & provider comparison',
+      'Historical success rate analytics',
+    ],
+  },
+  'patent-tracker': {
+    icon: '\u{1F4DD}',
+    title: 'Space Patent Intelligence',
+    description:
+      'Monitor patent filings across the space industry. Track competitor IP strategies, identify white space opportunities, and get alerts on new filings.',
+    requiredTier: 'enterprise',
+    highlights: [
+      'Space patent database & search',
+      'Competitor IP landscape analysis',
+      'New filing alerts & trend reports',
+    ],
+  },
+};
+
+// Map moduleId values to their corresponding UpgradeContext so that
+// PremiumGate can automatically show module-specific messaging even when
+// only a moduleId is provided (e.g. from ModuleContainer).
+const MODULE_ID_TO_CONTEXT: Record<string, UpgradeContext> = {
+  'resource-exchange': 'resource-exchange',
+  'business-opportunities': 'business-opportunities',
+  'compliance': 'compliance',
+  'spectrum-tracker': 'spectrum-tracker',
+  'space-insurance': 'space-insurance',
+  'orbital-services': 'orbital-services',
+  'deal-flow': 'deal-flow',
+  'supply-chain-map': 'supply-chain-map',
+  'supply-chain': 'supply-chain-map',
+  'regulatory-calendar': 'regulatory-calendar',
+  'executive-moves': 'executive-moves',
+  'intel-reports': 'intel-reports',
+  'investment-thesis': 'investment-thesis',
+  'deal-rooms': 'deal-rooms',
+  'funding-tracker': 'funding-tracker',
+  'customer-discovery': 'customer-discovery',
+  'api-docs': 'api-access',
+  'patent-tracker': 'patent-tracker',
+  'space-economy': 'market-intel',
+  'space-capital': 'deal-flow',
 };
 
 interface PremiumGateProps {
@@ -332,8 +410,9 @@ export default function PremiumGate({
     );
   }
 
-  // Resolve contextual message
-  const contextMessage = context ? CONTEXTUAL_MESSAGES[context] : null;
+  // Resolve contextual message — prefer explicit context, fall back to moduleId mapping
+  const resolvedContext = context || (moduleId ? MODULE_ID_TO_CONTEXT[moduleId] : undefined);
+  const contextMessage = resolvedContext ? CONTEXTUAL_MESSAGES[resolvedContext] : null;
   const plan = SUBSCRIPTION_PLANS.find(
     (p) => p.id === (contextMessage?.requiredTier || requiredTier)
   );

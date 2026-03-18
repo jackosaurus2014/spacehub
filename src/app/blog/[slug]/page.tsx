@@ -49,6 +49,8 @@ const BLOG_CTA_MAP: Record<string, { tool: string; path: string }> = {
   'satellite-2026-conference-preview': { tool: 'Space Events', path: '/space-events' },
   'how-to-track-satellites-real-time-2026-guide': { tool: 'Satellite Tracker', path: '/satellites' },
   'space-stocks-to-watch-2026-investors-guide': { tool: 'Market Intelligence', path: '/market-intel' },
+  'space-launch-schedule-2026-complete-guide': { tool: 'Mission Control', path: '/mission-control' },
+  'space-industry-careers-guide-2026': { tool: 'Space Talent Hub', path: '/space-talent' },
 };
 
 type Props = {
