@@ -6,6 +6,7 @@ import DataFreshness from '@/components/ui/DataFreshness';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { clientLogger } from '@/lib/client-logger';
+import Link from 'next/link';
 
 // ────────────────────────────────────────
 // Types & Constants
@@ -1081,7 +1082,36 @@ export default function ConstellationTrackerPage() {
           </div>
         )}
 
-        
+
+            {/* Related Reading */}
+            <ScrollReveal>
+              <div className="mt-12 mb-8 p-6 rounded-xl border border-white/[0.06] bg-white/[0.03]">
+                <h3 className="text-sm font-semibold uppercase tracking-wider text-slate-400 mb-4">Related Reading</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <Link
+                    href="/blog/rise-of-mega-constellations-business-impact"
+                    className="group flex items-start gap-3 p-3 rounded-lg hover:bg-white/[0.04] transition-colors"
+                  >
+                    <span className="text-slate-500 mt-0.5 shrink-0">📰</span>
+                    <div>
+                      <p className="text-sm font-medium text-white/80 group-hover:text-white transition-colors">The Rise of Mega-Constellations: Business Impact</p>
+                      <p className="text-xs text-slate-500 mt-0.5">Blog article</p>
+                    </div>
+                  </Link>
+                  <Link
+                    href="/blog/spacex-starlink-everything-you-need-to-know-2026"
+                    className="group flex items-start gap-3 p-3 rounded-lg hover:bg-white/[0.04] transition-colors"
+                  >
+                    <span className="text-slate-500 mt-0.5 shrink-0">📰</span>
+                    <div>
+                      <p className="text-sm font-medium text-white/80 group-hover:text-white transition-colors">SpaceX Starlink: Everything You Need to Know (2026)</p>
+                      <p className="text-xs text-slate-500 mt-0.5">Blog article</p>
+                    </div>
+                  </Link>
+                </div>
+              </div>
+            </ScrollReveal>
+
             <ScrollReveal>
               <RelatedModules
                 modules={[

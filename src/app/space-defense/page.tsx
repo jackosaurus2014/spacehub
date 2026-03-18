@@ -2572,6 +2572,35 @@ export default function SpaceDefensePage() {
         </ScrollReveal>
       </div>
 
+            {/* Related Reading */}
+            <ScrollReveal>
+              <div className="mt-12 mb-8 p-6 rounded-xl border border-white/[0.06] bg-white/[0.03]">
+                <h3 className="text-sm font-semibold uppercase tracking-wider text-slate-400 mb-4">Related Reading</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <Link
+                    href="/blog/space-force-explained-what-does-us-space-force-do"
+                    className="group flex items-start gap-3 p-3 rounded-lg hover:bg-white/[0.04] transition-colors"
+                  >
+                    <span className="text-slate-500 mt-0.5 shrink-0">📰</span>
+                    <div>
+                      <p className="text-sm font-medium text-white/80 group-hover:text-white transition-colors">Space Force Explained: What Does the US Space Force Do?</p>
+                      <p className="text-xs text-slate-500 mt-0.5">Blog article</p>
+                    </div>
+                  </Link>
+                  <Link
+                    href="/blog/golden-dome-space-missile-defense-program"
+                    className="group flex items-start gap-3 p-3 rounded-lg hover:bg-white/[0.04] transition-colors"
+                  >
+                    <span className="text-slate-500 mt-0.5 shrink-0">📰</span>
+                    <div>
+                      <p className="text-sm font-medium text-white/80 group-hover:text-white transition-colors">Golden Dome: Space-Based Missile Defense Program</p>
+                      <p className="text-xs text-slate-500 mt-0.5">Blog article</p>
+                    </div>
+                  </Link>
+                </div>
+              </div>
+            </ScrollReveal>
+
             <ScrollReveal>
               <RelatedModules
                 modules={[

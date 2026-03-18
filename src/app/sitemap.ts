@@ -94,6 +94,7 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
 
     // Blog index
     { url: `${BASE_URL}/blog`, changeFrequency: 'weekly' as const, priority: 0.7 },
+    { url: `${BASE_URL}/blog/topics`, changeFrequency: 'weekly' as const, priority: 0.6 },
 
     // City-specific landing pages
     { url: `${BASE_URL}/space-industry/houston`, changeFrequency: 'monthly' as const, priority: 0.6 },

@@ -859,24 +859,40 @@ function PricingPageContent() {
           </div>
         </ScrollReveal>
 
-        {/* CTA */}
+        {/* Still have questions? */}
         <ScrollReveal className="mt-12">
-          <div className="text-center">
-            <p className="text-white/90 mb-4 drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]">
-              Have questions? We&apos;re here to help.
+          <div className="max-w-2xl mx-auto p-6 rounded-xl border border-white/[0.06] bg-white/[0.03] text-center">
+            <h2 className="text-xl font-bold text-white mb-2">Still have questions?</h2>
+            <p className="text-slate-400 text-sm mb-5">
+              Check our Help Center for guides and FAQs, or reach out directly &mdash; we&apos;re happy to help.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Link
-                href="/book-demo"
+                href="/help"
                 className="btn-primary px-8 py-3"
+              >
+                Visit Help Center
+              </Link>
+              <Link
+                href="/contact"
+                className="text-white/90 hover:text-white transition-colors"
+              >
+                Contact Us &rarr;
+              </Link>
+            </div>
+            <div className="mt-4 pt-4 border-t border-white/[0.06] flex flex-wrap justify-center gap-4">
+              <Link
+                href="/book-demo"
+                className="text-sm text-slate-400 hover:text-white transition-colors"
               >
                 Book a Demo
               </Link>
+              <span className="text-slate-700">&bull;</span>
               <Link
                 href="mailto:support@spacenexus.us"
-                className="text-white/90 hover:text-white transition-colors"
+                className="text-sm text-slate-400 hover:text-white transition-colors"
               >
-                Contact Support &rarr;
+                Email Support
               </Link>
             </div>
           </div>
