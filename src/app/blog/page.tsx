@@ -18,6 +18,12 @@ function formatDate(iso: string): string {
   });
 }
 
+function isNewPost(publishedAt: string): boolean {
+  const published = new Date(publishedAt).getTime();
+  const sevenDaysAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
+  return published >= sevenDaysAgo;
+}
+
 const categoryColors: Record<BlogCategory, string> = {
   analysis: 'bg-indigo-500/20 text-indigo-300 border-indigo-500/30',
   guide: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30',
@@ -104,6 +110,16 @@ function BlogListingContent() {
                       >
                         {BLOG_CATEGORIES.find((c) => c.value === post.category)?.label}
                       </span>
+                      {isNewPost(post.publishedAt) && (
+                        <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-green-500/20 text-green-400 border border-green-500/30">
+                          New
+                        </span>
+                      )}
+                      {post.featured && (
+                        <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-amber-500/20 text-amber-400 border border-amber-500/30">
+                          Featured
+                        </span>
+                      )}
                       <ContentEngagementBadge
                         readTimeMin={post.readingTime}
                         publishedAt={post.publishedAt}
@@ -173,6 +189,16 @@ function BlogListingContent() {
                   >
                     {BLOG_CATEGORIES.find((c) => c.value === post.category)?.label}
                   </span>
+                  {isNewPost(post.publishedAt) && (
+                    <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-green-500/20 text-green-400 border border-green-500/30">
+                      New
+                    </span>
+                  )}
+                  {post.featured && (
+                    <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-amber-500/20 text-amber-400 border border-amber-500/30">
+                      Featured
+                    </span>
+                  )}
                   <ContentEngagementBadge
                     readTimeMin={post.readingTime}
                     publishedAt={post.publishedAt}

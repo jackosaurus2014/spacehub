@@ -4942,6 +4942,121 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 <p><a href="/register">Create your free account</a> to start tracking the mega-constellation race today.</p>
 `,
   },
+  {
+    slug: 'how-to-watch-artemis-ii-complete-viewing-guide',
+    title: 'How to Watch Artemis II: Your Complete Viewing Guide',
+    excerpt: 'Everything you need to know to watch NASA\'s Artemis II crewed Moon mission launch on April 1, 2026 — live stream links, in-person viewing spots at KSC, timeline of key events, and what to look for during the mission.',
+    category: 'guide',
+    author: 'SpaceNexus Team',
+    authorRole: 'Editorial',
+    publishedAt: '2026-03-17T16:00:00Z',
+    readingTime: 8,
+    keywords: ['Artemis II', 'how to watch Artemis II', 'Artemis II launch', 'NASA live stream', 'Kennedy Space Center viewing', 'Moon mission', 'SLS launch', 'Orion spacecraft', 'Artemis program', 'space launch viewing guide'],
+    content: `
+<p>NASA\'s <strong>Artemis II</strong> mission is set to launch on <strong>April 1, 2026</strong>, sending four astronauts around the Moon for the first time since Apollo 17 in 1972. This is the most anticipated crewed space launch in a generation, and whether you plan to watch from your couch or from the shores of the Kennedy Space Center, this guide has everything you need to make the most of it.</p>
+
+<p>Artemis II is a 10-day mission that will send Commander Reid Wiseman, Pilot Victor Glover, Mission Specialist Christina Koch, and Canadian Space Agency astronaut Jeremy Hansen on a free-return trajectory around the Moon. They will fly farther from Earth than any humans in history, reaching a maximum distance of approximately 370,000 kilometers. The crew will not land on the lunar surface — that milestone is reserved for Artemis III — but they will test every critical system of the Orion spacecraft and Space Launch System (SLS) rocket with humans aboard for the first time.</p>
+
+<h2 id="when-to-watch">When to Watch</h2>
+
+<p>The launch window opens on <strong>April 1, 2026</strong>. NASA typically announces the exact launch time approximately 48 hours before liftoff, but based on trajectory requirements, expect a window in the <strong>late morning to early afternoon Eastern Time</strong> range. The launch window is instantaneous or very narrow (minutes), meaning any delay pushes to a backup date.</p>
+
+<p>Key timeline events on launch day:</p>
+
+<ul>
+<li><strong>T-6 hours:</strong> Crew walkout and suit-up at the Neil Armstrong Operations & Checkout Building — this is a great photo opportunity and is usually broadcast live.</li>
+<li><strong>T-2 hours:</strong> Crew ingress into the Orion capsule atop the SLS rocket at Launch Complex 39B.</li>
+<li><strong>T-10 minutes:</strong> Terminal countdown begins. This is when you want to be watching.</li>
+<li><strong>T-0:</strong> Ignition of the SLS core stage RS-25 engines and solid rocket boosters. The SLS produces 8.8 million pounds of thrust at liftoff — 15% more than the Saturn V.</li>
+<li><strong>T+2 minutes:</strong> Solid rocket booster separation.</li>
+<li><strong>T+8 minutes:</strong> Core stage engine cutoff and separation.</li>
+<li><strong>T+18 minutes:</strong> Interim Cryogenic Propulsion Stage (ICPS) burn for trans-lunar injection — this is the moment the crew leaves Earth orbit and heads for the Moon.</li>
+</ul>
+
+<p>After launch, coverage continues for the trans-lunar injection burn and initial checkout. The outbound journey to the Moon takes approximately four days, with the closest lunar approach on <strong>Day 5</strong>. Plan to check in throughout the mission for live crew video, mission updates, and the dramatic return and splashdown in the Pacific Ocean on approximately <strong>Day 10</strong>.</p>
+
+<h2 id="where-to-watch-online">Where to Watch Online</h2>
+
+<p>Multiple free live streams will carry the launch. Here are the best options:</p>
+
+<h3>NASA TV (Official Coverage)</h3>
+
+<p>NASA\'s official broadcast is the gold standard. Coverage typically begins 2-3 hours before launch with commentary from NASA Public Affairs Officers at Kennedy Space Center and Johnson Space Center.</p>
+
+<ul>
+<li><strong>NASA TV:</strong> <a href="https://www.nasa.gov/nasatv" target="_blank" rel="noopener noreferrer">nasa.gov/nasatv</a></li>
+<li><strong>NASA YouTube:</strong> <a href="https://www.youtube.com/@NASA" target="_blank" rel="noopener noreferrer">youtube.com/@NASA</a></li>
+<li><strong>NASA App:</strong> Available on iOS, Android, Apple TV, Roku, and Fire TV.</li>
+</ul>
+
+<p>NASA TV offers two streams: the <strong>Public Channel</strong> (commentary and graphics) and the <strong>Media Channel</strong> (raw feeds, press conferences). For the best launch day experience, watch the Public Channel.</p>
+
+<h3>YouTube Live Streams</h3>
+
+<p>Several space media channels provide excellent independent coverage with expert commentary:</p>
+
+<ul>
+<li><strong>Everyday Astronaut</strong> — Tim Dodd provides detailed technical commentary and multi-camera angles.</li>
+<li><strong>NASASpaceflight</strong> — The NSF team offers comprehensive pre-launch and launch coverage with deep technical analysis.</li>
+<li><strong>Scott Manley</strong> — Excellent real-time analysis of orbital mechanics and mission events.</li>
+<li><strong>The Space Bucket</strong> — Community-focused live coverage with audience interaction.</li>
+</ul>
+
+<h3>SpaceNexus Live Coverage</h3>
+
+<p>Our <a href="/live">SpaceNexus Live page</a> will provide real-time mission telemetry, trajectory visualization, and curated multi-source coverage throughout the Artemis II mission. Follow the Orion spacecraft\'s position in real time, track key mission milestones, and access instant analysis from the SpaceNexus team. Bookmark <a href="/live">spacenexus.us/live</a> now so you are ready on launch day.</p>
+
+<h2 id="watch-in-person">Watching In Person from Kennedy Space Center</h2>
+
+<p>If you can make the trip to Florida\'s Space Coast, watching a crewed SLS launch in person is a once-in-a-generation experience. The SLS is the most powerful rocket ever to fly with crew aboard, and the sound and vibration of 8.8 million pounds of thrust is something no screen can replicate.</p>
+
+<h3>Kennedy Space Center Visitor Complex</h3>
+
+<p>The <strong>Kennedy Space Center Visitor Complex</strong> offers official launch viewing packages. These sell out fast for high-profile missions, so check availability immediately at <a href="https://www.kennedyspacecenter.com" target="_blank" rel="noopener noreferrer">kennedyspacecenter.com</a>. Packages typically include:</p>
+
+<ul>
+<li><strong>Feel the Thrill:</strong> Viewing from the LC-39 observation gantry, approximately 3.9 miles from the pad. Includes live commentary, mission briefings, and Visitor Complex admission.</li>
+<li><strong>Launch Viewing Experience:</strong> Viewing from the Saturn V Center or Banana Creek, approximately 6 miles from the pad. More widely available and less expensive.</li>
+</ul>
+
+<h3>Free Public Viewing Spots</h3>
+
+<p>If official tickets are sold out, several public areas along the Space Coast offer excellent free viewing:</p>
+
+<ul>
+<li><strong>Playalinda Beach</strong> (Canaveral National Seashore) — The closest public viewing point, approximately 5 miles from Pad 39B. Arrive early; the beach closes when capacity is reached, often hours before launch.</li>
+<li><strong>Jetty Park</strong> (Port Canaveral) — About 12 miles from the pad. Offers beach and pier viewing with food vendors nearby.</li>
+<li><strong>Max Brewer Bridge</strong> (Titusville) — A popular viewing spot approximately 12 miles from the pad, along the Indian River.</li>
+<li><strong>Space View Park</strong> (Titusville) — A dedicated launch viewing park with bleachers and a clear sightline to Pad 39B.</li>
+</ul>
+
+<p><strong>Pro tips for in-person viewing:</strong> Arrive at least 4-5 hours early for prime spots. Bring sunscreen, water, a portable chair, binoculars, and a camera with at least 200mm zoom. A portable radio or phone with a NASA TV audio feed enhances the experience enormously — you will hear the countdown commentary synchronized with what you see.</p>
+
+<h2 id="what-to-look-for">What to Look For During the Mission</h2>
+
+<p>Beyond the spectacle of launch, several mission events are worth watching for:</p>
+
+<ul>
+<li><strong>SLS performance:</strong> This is only the second SLS flight. Engineers will be closely monitoring engine performance, vibration levels, and separation events. Any anomalies will be discussed in real time on NASA TV.</li>
+<li><strong>Orion crew operations:</strong> For the first time, humans will operate the Orion spacecraft systems. Watch for live video from inside the capsule as the crew tests navigation, life support, and communication systems.</li>
+<li><strong>Earthrise and lunar views:</strong> As Orion passes behind the Moon on Day 5, expect stunning high-definition video of the lunar surface and an "Earthrise" moment reminiscent of Apollo 8\'s iconic photograph.</li>
+<li><strong>Skip reentry:</strong> Orion uses a novel "skip entry" technique, bouncing off the upper atmosphere once before final descent. This reduces G-forces on the crew and improves landing precision. It has been tested uncrewed on Artemis I but never with humans aboard.</li>
+<li><strong>Splashdown:</strong> The mission concludes with a Pacific Ocean splashdown, with the USS Portland recovery ship standing by. Recovery operations are broadcast live and typically take 1-2 hours from splashdown to crew extraction.</li>
+</ul>
+
+<h2 id="mission-significance">Why This Mission Matters</h2>
+
+<p>Artemis II is more than a test flight. It represents humanity\'s return to deep space after a 54-year hiatus. The crew is the most diverse ever sent beyond low Earth orbit, including the first woman (Koch) and first Canadian (Hansen) to fly to the Moon. A successful mission clears the path for Artemis III, which will land the first woman and first person of color on the lunar surface, and for the long-term Artemis program goal of establishing a sustained human presence at the Moon.</p>
+
+<p>For the space industry, Artemis II validates the SLS-Orion architecture for crewed deep space missions, demonstrates the Orion spacecraft\'s life support systems for extended duration flights, and generates enormous public interest that drives political support and funding for future exploration programs.</p>
+
+<h2 id="follow-on-spacenexus">Follow Artemis II on SpaceNexus</h2>
+
+<p>Do not miss a single moment. Our <a href="/live">Live Mission Coverage</a> page will feature real-time telemetry, trajectory tracking, crew updates, and expert analysis throughout the entire 10-day Artemis II mission. Set up <a href="/alerts">custom alerts</a> for launch updates, key mission milestones, and splashdown.</p>
+
+<p><a href="/register">Create your free SpaceNexus account</a> to get Artemis II countdown notifications and real-time mission updates delivered directly to your inbox and dashboard.</p>
+`,
+  },
 ];
 
 export function getBlogPost(slug: string): OriginalBlogPost | undefined {
