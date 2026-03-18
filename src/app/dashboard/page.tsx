@@ -976,9 +976,12 @@ export default function DashboardPage() {
         {/* Welcome state for brand-new users (no interaction history) */}
         <NewUserWelcome />
 
-        {/* Referral Widget */}
+        {/* Tell a Colleague CTA + Referral Widget */}
         <ScrollReveal>
           <div className="mb-8">
+            <p className="text-sm text-slate-400 mb-3">
+              Know someone who&apos;d find SpaceNexus useful? Share your referral link below and earn a free month of Professional.
+            </p>
             <ReferralWidget />
           </div>
         </ScrollReveal>
