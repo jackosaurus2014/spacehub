@@ -53,6 +53,8 @@ const BLOG_CTA_MAP: Record<string, { tool: string; path: string }> = {
   'space-industry-careers-guide-2026': { tool: 'Space Talent Hub', path: '/space-talent' },
   'space-debris-growing-threat-orbital-environment': { tool: 'Space Environment Monitor', path: '/space-environment' },
   'spacenexus-platform-guide-first-week': { tool: 'Getting Started', path: '/getting-started' },
+  'space-funding-record-levels-sierra-vast-2026': { tool: 'Space Capital Tracker', path: '/space-capital' },
+  'five-space-industry-trends-defining-2026': { tool: 'Market Intelligence', path: '/market-intel' },
 };
 
 type Props = {

@@ -76,10 +76,15 @@ function PricingCard({
       } ${isCurrentPlan ? 'ring-1 ring-green-500/50' : ''}`}
     >
       {plan.highlighted && (
-        <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+        <div className="absolute -top-3 left-1/2 -translate-x-1/2 flex items-center gap-2">
           <span className="bg-white text-slate-900 text-xs font-semibold px-3 py-1 rounded-full">
             Most Popular
           </span>
+          {isYearly && (
+            <span className="bg-emerald-500 text-white text-xs font-semibold px-3 py-1 rounded-full">
+              Best Value
+            </span>
+          )}
         </div>
       )}
 
@@ -722,7 +727,7 @@ function PricingPageContent() {
               Annual
             </span>
             <span className="text-xs bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2.5 py-1 rounded-full font-semibold">
-              Save up to 17%
+              Save 17% with annual billing
             </span>
           </div>
         </ScrollReveal>

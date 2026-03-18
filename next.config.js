@@ -60,6 +60,73 @@ const nextConfig = {
           { key: 'Content-Security-Policy', value: "default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com https://pagead2.googlesyndication.com https://adservice.google.com https://www.googletagservices.com https://tpc.googlesyndication.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https:; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' https://api.spaceflightnewsapi.net https://ll.thespacedevs.com https://api.nasa.gov https://services.swpc.noaa.gov https://celestrak.org https://www.google-analytics.com https://ssd-api.jpl.nasa.gov https://epic.gsfc.nasa.gov https://eonet.gsfc.nasa.gov https://api.helioviewer.org https://eyes.jpl.nasa.gov https://api.wheretheiss.at https://www.sbir.gov https://images-api.nasa.gov https://exoplanetarchive.ipac.caltech.edu https://www.asterank.com https://pagead2.googlesyndication.com https://adservice.google.com; frame-src https://googleads.g.doubleclick.net https://tpc.googlesyndication.com https://www.google.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self';" },
         ],
       },
+      // Static asset caching — immutable content-hashed files (1 year)
+      {
+        source: '/_next/static/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+      // Image / font / media assets (1 year)
+      {
+        source: '/icons/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+      {
+        source: '/logos/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+      {
+        source: '/textures/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+      {
+        source: '/screenshots/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+      // OG images and favicon assets (1 week — may change with branding updates)
+      {
+        source: '/:file(og-.*\\.png|favicon-.*\\.png|apple-touch-icon.*\\.png|twitter-image\\.png|spacenexus-logo\\.png)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=604800, stale-while-revalidate=86400',
+          },
+        ],
+      },
+      // API routes — Vary header so CDN caches per-origin correctly
+      {
+        source: '/api/:path*',
+        headers: [
+          {
+            key: 'Vary',
+            value: 'Accept, Accept-Encoding, Origin',
+          },
+        ],
+      },
       {
         source: '/api/companies',
         headers: [

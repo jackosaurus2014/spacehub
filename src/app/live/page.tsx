@@ -350,7 +350,97 @@ function LiveHubContent() {
           </div>
         </div>
         </ScrollReveal>
+
+        {/* Launch Notification Signup */}
+        <ScrollReveal delay={0.3}>
+          <LaunchNotificationSignup />
+        </ScrollReveal>
       </div>
+    </div>
+  );
+}
+
+function LaunchNotificationSignup() {
+  const [email, setEmail] = useState('');
+  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [message, setMessage] = useState('');
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email) return;
+
+    setStatus('loading');
+    setMessage('');
+
+    try {
+      const res = await fetch('/api/newsletter/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, source: 'live_page' }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        setStatus('success');
+        setMessage(data.message || 'Check your email to confirm!');
+        setEmail('');
+      } else {
+        setStatus('error');
+        setMessage(
+          data.code === 'ALREADY_SUBSCRIBED'
+            ? 'You\'re already subscribed!'
+            : data.error || 'Failed to subscribe. Please try again.'
+        );
+      }
+    } catch {
+      setStatus('error');
+      setMessage('Network error. Please try again.');
+    }
+  };
+
+  return (
+    <div className="card p-6 mb-8 text-center">
+      <h3 className="text-lg font-semibold text-white mb-1 flex items-center justify-center gap-2">
+        <svg className="w-5 h-5 text-white/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+        </svg>
+        Get notified when launches go live
+      </h3>
+      <p className="text-slate-400 text-sm mb-4">
+        Never miss a launch. We&apos;ll email you before streams start.
+      </p>
+
+      {status === 'success' ? (
+        <p className="text-emerald-400 text-sm font-medium">{message}</p>
+      ) : (
+        <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+          <input
+            type="email"
+            inputMode="email"
+            autoComplete="email"
+            enterKeyHint="send"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Your email address"
+            aria-label="Email address"
+            className="flex-1 px-4 py-2.5 text-sm bg-white/[0.04] border border-white/[0.08] rounded-lg text-white placeholder:text-slate-500 focus:outline-none focus:border-white/20 transition-colors"
+            required
+            disabled={status === 'loading'}
+          />
+          <button
+            type="submit"
+            disabled={status === 'loading' || !email}
+            className="px-5 py-2.5 text-sm font-semibold bg-white text-slate-900 rounded-lg hover:bg-slate-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+          >
+            {status === 'loading' ? 'Subscribing...' : 'Subscribe'}
+          </button>
+        </form>
+      )}
+
+      {status === 'error' && (
+        <p className="mt-3 text-red-400 text-sm">{message}</p>
+      )}
     </div>
   );
 }

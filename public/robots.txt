@@ -2,10 +2,22 @@ User-agent: *
 Allow: /
 Disallow: /api/
 Disallow: /admin/
+Disallow: /checkout/
 Disallow: /account/
+Disallow: /dashboard/
+Disallow: /login
+Disallow: /register
+Disallow: /forgot-password
+Disallow: /reset-password
+Disallow: /verify-email
+Disallow: /provider-dashboard/
+Disallow: /advertise/dashboard
+Disallow: /my-watchlists/
 Disallow: /messages/
 Disallow: /notifications/
-Disallow: /my-watchlists/
 Disallow: /reading-list/
+Disallow: /widgets/
+Disallow: /community/profile
+Crawl-delay: 1
 
 Sitemap: https://spacenexus.us/sitemap.xml
