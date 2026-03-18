@@ -90,6 +90,11 @@ const BLOG_CTA_MAP: Record<string, { tool: string; path: string }> = {
   'what-is-geostationary-orbit-geo-explained': { tool: 'Satellite Tracker', path: '/satellites' },
   'elon-musk-mars-plan-spacex-path-red-planet': { tool: 'Mars Mission Planner', path: '/mars-planner' },
   'space-force-explained-what-does-us-space-force-do': { tool: 'Space Defense', path: '/space-defense' },
+  'satellite-internet-explained-broadband-space': { tool: 'Constellation Tracker', path: '/constellations' },
+  'space-economy-value-chain-manufacturing-revenue': { tool: 'Space Economy', path: '/space-economy' },
+  'nuclear-propulsion-space-future-deep-space-travel': { tool: 'Engineering Toolkit', path: '/tools' },
+  'in-space-manufacturing-building-products-zero-gravity': { tool: 'Space Manufacturing', path: '/space-manufacturing' },
+  'space-sustainability-industry-going-green': { tool: 'Space Environment', path: '/space-environment' },
 };
 
 type Props = {

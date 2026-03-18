@@ -441,6 +441,100 @@ export default function GettingStartedPage() {
         </div>
       </section>
 
+      {/* Explore More */}
+      <section className="py-12 md:py-16">
+        <div className="container mx-auto px-4">
+          <ScrollReveal>
+            <div className="text-center mb-10">
+              <span className="inline-block px-4 py-1.5 rounded-full text-xs font-semibold tracking-wide uppercase bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 mb-4">
+                Explore More
+              </span>
+              <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+                More Ways to Stay Informed
+              </h2>
+              <p className="text-slate-400 text-lg max-w-xl mx-auto">
+                Discover additional tools and resources for space professionals.
+              </p>
+            </div>
+          </ScrollReveal>
+
+          <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto content-auto">
+            <StaggerItem>
+              <Link
+                href="/daily-digest"
+                className="block h-full rounded-2xl border border-amber-500/20 bg-gradient-to-br from-amber-500/10 to-orange-500/10 p-6 hover:scale-[1.02] transition-transform group"
+              >
+                <div className="text-amber-400 mb-4">
+                  <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 7.5h1.5m-1.5 3h1.5m-7.5 3h7.5m-7.5 3h7.5m3-9h3.375c.621 0 1.125.504 1.125 1.125V18a2.25 2.25 0 01-2.25 2.25M16.5 7.5V18a2.25 2.25 0 002.25 2.25M16.5 7.5V4.875c0-.621-.504-1.125-1.125-1.125H4.125C3.504 3.75 3 4.254 3 4.875V18a2.25 2.25 0 002.25 2.25h13.5M6 7.5h3v3H6v-3z" />
+                  </svg>
+                </div>
+                <h3 className="text-lg font-bold text-white mb-2 group-hover:text-white transition-colors">
+                  Daily Digest
+                </h3>
+                <p className="text-slate-300 text-sm leading-relaxed">
+                  Get a curated daily briefing of the most important space industry news, launches, and market moves.
+                </p>
+                <span className="inline-flex items-center gap-1 mt-4 text-sm font-medium text-slate-300 group-hover:gap-2 transition-all">
+                  View Digest
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                  </svg>
+                </span>
+              </Link>
+            </StaggerItem>
+            <StaggerItem>
+              <Link
+                href="/space-stats"
+                className="block h-full rounded-2xl border border-cyan-500/20 bg-gradient-to-br from-cyan-500/10 to-blue-500/10 p-6 hover:scale-[1.02] transition-transform group"
+              >
+                <div className="text-cyan-400 mb-4">
+                  <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
+                  </svg>
+                </div>
+                <h3 className="text-lg font-bold text-white mb-2 group-hover:text-white transition-colors">
+                  Space Stats
+                </h3>
+                <p className="text-slate-300 text-sm leading-relaxed">
+                  Key metrics and statistics about the space industry — launches, satellites, funding, and market data at a glance.
+                </p>
+                <span className="inline-flex items-center gap-1 mt-4 text-sm font-medium text-slate-300 group-hover:gap-2 transition-all">
+                  View Stats
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                  </svg>
+                </span>
+              </Link>
+            </StaggerItem>
+            <StaggerItem>
+              <Link
+                href="/alternatives"
+                className="block h-full rounded-2xl border border-violet-500/20 bg-gradient-to-br from-violet-500/10 to-purple-500/10 p-6 hover:scale-[1.02] transition-transform group"
+              >
+                <div className="text-violet-400 mb-4">
+                  <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 21L3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5" />
+                  </svg>
+                </div>
+                <h3 className="text-lg font-bold text-white mb-2 group-hover:text-white transition-colors">
+                  Alternatives &amp; Comparisons
+                </h3>
+                <p className="text-slate-300 text-sm leading-relaxed">
+                  See how SpaceNexus compares to other space industry tools and platforms. Find the right fit for your needs.
+                </p>
+                <span className="inline-flex items-center gap-1 mt-4 text-sm font-medium text-slate-300 group-hover:gap-2 transition-all">
+                  Compare
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                  </svg>
+                </span>
+              </Link>
+            </StaggerItem>
+          </StaggerContainer>
+        </div>
+      </section>
+
       {/* Final CTA */}
       <section className="py-16 md:py-20">
         <div className="container mx-auto px-4">
