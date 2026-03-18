@@ -9,6 +9,7 @@ import { useSubscription } from '@/components/SubscriptionProvider';
 import { toast } from '@/lib/toast';
 import { extractApiError } from '@/lib/errors';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
+import AnimatedCounter from '@/components/ui/AnimatedCounter';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import FAQSchema from '@/components/seo/FAQSchema';
@@ -654,7 +655,7 @@ function PricingPageContent() {
           </div>
         </ScrollReveal>
 
-        {/* Social Proof Stats */}
+        {/* Social Proof Stats with animated counters */}
         <ScrollReveal>
           <div className="max-w-4xl mx-auto mb-8 text-center">
             <p className="text-sm font-semibold text-white/80 mb-3">
@@ -662,15 +663,15 @@ function PricingPageContent() {
             </p>
             <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm text-slate-400">
               <span className="flex items-center gap-1.5">
-                <span className="text-white font-bold">200+</span> company profiles
+                <span className="text-white font-bold"><AnimatedCounter target={200} />+</span> company profiles
               </span>
               <span className="hidden sm:inline text-slate-600" aria-hidden="true">|</span>
               <span className="flex items-center gap-1.5">
-                <span className="text-white font-bold">30+</span> data modules
+                <span className="text-white font-bold"><AnimatedCounter target={30} />+</span> data modules
               </span>
               <span className="hidden sm:inline text-slate-600" aria-hidden="true">|</span>
               <span className="flex items-center gap-1.5">
-                <span className="text-white font-bold">10,000+</span> data points updated daily
+                <span className="text-white font-bold"><AnimatedCounter target={42} /></span> in-depth articles
               </span>
             </div>
           </div>

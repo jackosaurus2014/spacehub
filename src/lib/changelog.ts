@@ -16,6 +16,26 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '1.6.0',
+    date: '2026-03-17',
+    title: 'Content, Livestreams & Platform Polish',
+    description:
+      'Waves 106-116: 42 blog articles, livestream detection and embedding, glossary expansion, RecentlyViewed dashboard component, LinkedIn post templates, performance and mobile improvements, and honesty-first cleanup.',
+    highlight: '42 articles, 69 glossary terms, livestream embedding',
+    changes: [
+      { type: 'feature', text: '42 blog articles covering space industry trends, launches, and analysis' },
+      { type: 'feature', text: 'Livestream detection and embedding for YouTube and X platforms' },
+      { type: 'feature', text: 'Livestream countdown card on landing page when no stream is active' },
+      { type: 'feature', text: '69 glossary terms added to the space industry glossary' },
+      { type: 'feature', text: 'RecentlyViewed dashboard component for quick navigation to past pages' },
+      { type: 'feature', text: '5 LinkedIn post templates for space industry professionals' },
+      { type: 'improvement', text: 'Preconnect hints for API performance optimization' },
+      { type: 'improvement', text: 'UTM tracking on conversion CTAs for attribution analytics' },
+      { type: 'improvement', text: 'Mobile touch targets increased to 44px minimum for accessibility' },
+      { type: 'fix', text: 'Fabricated testimonials removed in favor of real social proof (honesty first)' },
+    ],
+  },
+  {
     version: '1.5.0',
     date: '2026-03-17',
     title: 'Intelligence & Content Expansion',
