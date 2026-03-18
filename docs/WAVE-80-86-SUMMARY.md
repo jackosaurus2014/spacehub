@@ -4,7 +4,7 @@
 **Total Waves Deployed:** 63 waves (80-143)
 **Total Files Changed:** ~950+
 **Total New Features:** 300+
-**Milestone:** Wave 143 marks the final authority-building wave — 110 blog articles, 590+ routes, comprehensive platform maturity across 63 recursive development waves from the Wave 80 baseline.
+**Milestone:** Wave 143+ marks the final authority-building wave — 125 blog articles, 590+ routes, comprehensive platform maturity across 63 recursive development waves from the Wave 80 baseline.
 
 ---
 
@@ -424,9 +424,21 @@
 - Updated comprehensive Wave 80-143 summary documentation (this file)
 - Blog article count reached 110
 
+## Wave 144: Final Push to 125 Articles
+- Published 5 additional long-form articles to reach 125 total:
+  - "Lunar Gateway: NASA's Orbiting Moon Station Explained" (guide, CTA to /space-stations)
+  - "How SpaceX Catches Rockets with Mechazilla" (technology, CTA to /launch-vehicles)
+  - "Spectrum Management in Space: Who Controls the Frequencies?" (policy, CTA to /spectrum)
+  - "The Rise of Space-as-a-Service: Satellite Platforms for Everyone" (market, CTA to /marketplace)
+  - "Space Exploration Milestones: A Timeline of Human Achievement" (guide, CTA to /timeline)
+- Updated blog page badge from "100+" to "125+"
+- Updated changelog v2.1.0 to reflect 125 articles milestone
+- Added CTA mappings for all 5 new articles
+- Blog article count reached 125
+
 ---
 
-## Final Totals (Full Platform as of Wave 143)
+## Final Totals (Full Platform as of Wave 144)
 
 | Metric | Count |
 |--------|-------|
@@ -440,7 +452,7 @@
 | Total Layout Files | 233+ |
 | Total TypeScript Files | 1,850+ |
 | Documentation Files | 95+ |
-| Blog Articles | 110 |
+| Blog Articles | 125 |
 | Glossary Terms | 69 |
 | SEO Guide Pages | 11 |
 | Educational Learn Pages | 4 |
@@ -458,7 +470,7 @@
 
 ## Content Inventory
 
-### Blog Articles: 110
+### Blog Articles: 125
 1. Why the Space Industry Needs Its Own Bloomberg Terminal
 2. Space Economy 2026: Where the Money Is Going
 3. How to Win Government Space Contracts
@@ -617,7 +629,7 @@ Across 12 categories: Orbital Mechanics, Propulsion, Business, Regulatory, Commu
 - Government Budgets with USAspending.gov integration
 
 ### Content & Media
-- 110 original blog articles across 6 categories (analysis, guide, market, technology, policy, building-in-public)
+- 125 original blog articles across 6 categories (analysis, guide, market, technology, policy, building-in-public)
 - Blog Table of Contents with auto-generated navigation from H2 headings
 - News aggregation from 12+ RSS feeds with AI categorization
 - Podcast feed aggregation (8 feeds) with episode cards

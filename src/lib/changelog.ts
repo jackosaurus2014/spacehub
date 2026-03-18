@@ -18,15 +18,15 @@ export const CHANGELOG: ChangelogEntry[] = [
   {
     version: '2.1.0',
     date: '2026-03-18',
-    title: '120 Articles & Platform Polish',
+    title: '125 Articles & Platform Polish',
     description:
-      'Wave 143 milestone: 120 original blog articles, blog table of contents, topics index, space industry trends dashboard, alternatives comparison, daily quiz, daily digest, 8 podcast feeds, cross-linked data pages, and a polished "Explore the Platform" homepage section. Final authority-building wave.',
-    highlight: '120 articles, 63 waves complete, 590+ routes',
+      'Wave 143+ milestone: 125 original blog articles, blog table of contents, topics index, space industry trends dashboard, alternatives comparison, daily quiz, daily digest, 8 podcast feeds, cross-linked data pages, and a polished "Explore the Platform" homepage section. Final authority-building wave.',
+    highlight: '125 articles, 63 waves complete, 590+ routes',
     changes: [
-      { type: 'feature', text: '120 original blog articles covering the full breadth of the space industry' },
+      { type: 'feature', text: '125 original blog articles covering the full breadth of the space industry' },
       { type: 'feature', text: 'Blog Table of Contents with sticky sidebar navigation for long-form articles' },
       { type: 'feature', text: 'Blog Topics Index page for browsing articles by category and tag' },
-      { type: 'feature', text: '"120+ Articles" badge displayed across the platform' },
+      { type: 'feature', text: '"125+ Articles" badge displayed across the platform' },
       { type: 'feature', text: 'Space Industry Trends dashboard with sector-level growth metrics' },
       { type: 'feature', text: 'Alternatives comparison page positioning SpaceNexus against competing tools' },
       { type: 'feature', text: 'Daily Space Quiz — test your space industry knowledge every day' },
