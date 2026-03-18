@@ -75,6 +75,34 @@ const RESOURCE_CATEGORIES: ResourceCategory[] = [
       { name: 'Blog', href: '/blog', description: 'Analysis and commentary' },
       { name: 'Guides', href: '/guide', description: 'In-depth industry guides' },
       { name: 'Help Center', href: '/help', description: 'FAQs and support resources' },
+      { name: 'Acronyms Dictionary', href: '/acronyms', description: 'Space industry acronyms and abbreviations' },
+      { name: 'Orbit Guide', href: '/orbit-guide', description: 'LEO, MEO, GEO and beyond explained' },
+    ],
+  },
+  {
+    name: 'Comparison & Analysis Tools',
+    icon: '\u2696\uFE0F',
+    description: 'Side-by-side comparison tools for vehicles, companies, and technologies',
+    items: [
+      { name: 'Compare Companies', href: '/compare/companies', description: 'Side-by-side space company comparison' },
+      { name: 'Compare Launch Vehicles', href: '/compare/launch-vehicles', description: 'Rocket specs, cost, and payload comparison' },
+      { name: 'Compare Satellites', href: '/compare/satellites', description: 'Satellite platform and capability comparison' },
+      { name: 'Compare Satellite Buses', href: '/compare/satellite-buses', description: 'Bus platform specifications comparison' },
+      { name: 'Propulsion Comparison', href: '/propulsion-comparison', description: 'Engine and propulsion system comparison' },
+      { name: 'Satellite Bus Comparison', href: '/satellite-bus-comparison', description: 'Detailed bus platform analysis' },
+    ],
+  },
+  {
+    name: 'Featured Blog Articles',
+    icon: '\u270D\uFE0F',
+    description: 'In-depth analysis and commentary from the SpaceNexus team',
+    items: [
+      { name: 'Artemis II Moon Mission', href: '/blog/artemis-ii-moon-mission-everything-you-need-to-know', description: 'Everything you need to know about Artemis II' },
+      { name: 'SpaceX IPO Analysis', href: '/blog/spacex-ipo-what-it-means-for-space-investors', description: 'What a SpaceX IPO means for space investors' },
+      { name: 'Sierra Space & Vast Raises', href: '/blog/sierra-space-vast-billion-dollar-raises-2026', description: 'Billion-dollar space station funding rounds in 2026' },
+      { name: 'State of Space 2026', href: '/report/state-of-space-2026', description: 'Comprehensive annual industry report' },
+      { name: 'Space Economy Investment Guide', href: '/guide/space-economy-investment', description: 'How to invest in the space economy' },
+      { name: 'Space Launch Cost Comparison', href: '/guide/space-launch-cost-comparison', description: 'Launch costs across all major providers' },
     ],
   },
   {
@@ -86,6 +114,19 @@ const RESOURCE_CATEGORIES: ResourceCategory[] = [
       { name: 'Space Talent', href: '/space-talent', description: 'Jobs and workforce data' },
       { name: 'Salary Benchmarks', href: '/salary-benchmarks', description: 'Industry compensation data' },
       { name: 'Executive Moves', href: '/executive-moves', description: 'C-suite changes tracker' },
+    ],
+  },
+  {
+    name: 'External Resources',
+    icon: '\uD83C\uDF10',
+    description: 'Trusted industry sources and space agency portals',
+    items: [
+      { name: 'NASA', href: 'https://www.nasa.gov', description: 'National Aeronautics and Space Administration' },
+      { name: 'ESA', href: 'https://www.esa.int', description: 'European Space Agency portal' },
+      { name: 'SpaceNews', href: 'https://spacenews.com', description: 'Leading space industry news publication' },
+      { name: 'Space.com', href: 'https://www.space.com', description: 'Space science and exploration news' },
+      { name: 'Satellite Industry Association', href: 'https://sia.org', description: 'SIA industry data and advocacy' },
+      { name: 'Space Foundation', href: 'https://www.spacefoundation.org', description: 'Space economy reports and events' },
     ],
   },
 ];
@@ -148,7 +189,7 @@ export default function ResourcesPage() {
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {filtered.map((item) => (
-                  <Link key={item.href} href={item.href} className="group block bg-black/60 border border-white/[0.06] rounded-xl p-5 hover:border-white/15 hover:bg-black/80 transition-all hover:shadow-lg hover:shadow-black/20">
+                  <Link key={item.href} href={item.href} {...(item.href.startsWith('http') ? { target: '_blank', rel: 'noopener noreferrer' } : {})} className="group block bg-black/60 border border-white/[0.06] rounded-xl p-5 hover:border-white/15 hover:bg-black/80 transition-all hover:shadow-lg hover:shadow-black/20">
                     <h3 className="text-base font-semibold text-slate-100 group-hover:text-white transition-colors">{item.name}</h3>
                     <p className="text-xs text-slate-300/70 mt-0.5">{item.category}</p>
                     <p className="text-sm text-slate-400 mt-2 line-clamp-2">{item.description}</p>
@@ -174,12 +215,18 @@ export default function ResourcesPage() {
                   <p className="text-sm text-slate-400 mb-5 ml-10">{category.description}</p>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {category.items.map((item) => (
-                      <Link key={item.href} href={item.href} className="group block bg-black/60 border border-white/[0.06] rounded-xl p-5 hover:border-white/15 hover:bg-black/80 transition-all hover:shadow-lg hover:shadow-black/20">
+                      <Link key={item.href} href={item.href} {...(item.href.startsWith('http') ? { target: '_blank', rel: 'noopener noreferrer' } : {})} className="group block bg-black/60 border border-white/[0.06] rounded-xl p-5 hover:border-white/15 hover:bg-black/80 transition-all hover:shadow-lg hover:shadow-black/20">
                         <div className="flex items-center justify-between mb-2">
                           <h3 className="text-base font-semibold text-slate-100 group-hover:text-white transition-colors">{item.name}</h3>
-                          <svg className="w-4 h-4 text-slate-600 group-hover:text-white transition-all group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                          </svg>
+                          {item.href.startsWith('http') ? (
+                            <svg className="w-4 h-4 text-slate-600 group-hover:text-white transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+                            </svg>
+                          ) : (
+                            <svg className="w-4 h-4 text-slate-600 group-hover:text-white transition-all group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                            </svg>
+                          )}
                         </div>
                         <p className="text-sm text-slate-400 leading-relaxed line-clamp-2">{item.description}</p>
                       </Link>

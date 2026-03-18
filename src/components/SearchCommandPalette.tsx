@@ -302,6 +302,15 @@ const ALL_SEARCH_ITEMS: SearchItem[] = [
   },
 ];
 
+// Popular searches shown when the palette opens with no query
+const POPULAR_SEARCHES = [
+  { label: 'Satellite Tracker', href: '/satellites' },
+  { label: 'SpaceX Company Profile', href: '/company-profiles/spacex' },
+  { label: 'Launch Schedule', href: '/mission-control' },
+  { label: 'Space Stocks', href: '/market-intel' },
+  { label: 'Artemis II', href: '/blog/artemis-ii-moon-mission-everything-you-need-to-know' },
+];
+
 const RECENT_SEARCHES_KEY = 'spacenexus-recent-searches';
 const MAX_RECENT_SEARCHES = 5;
 
@@ -744,6 +753,40 @@ export default function SearchCommandPalette() {
               indexOffset={0}
               onItemCountChange={handleSuggestionCountChange}
             />
+          )}
+
+          {/* Popular Searches -- shown when palette opens with no query */}
+          {!query.trim() && (
+            <div>
+              <div className="px-4 py-2">
+                <span className="text-xs font-semibold uppercase tracking-wider text-white/70/80">
+                  Popular Searches
+                </span>
+              </div>
+              {POPULAR_SEARCHES.map((ps) => (
+                <button
+                  key={ps.href}
+                  onClick={() => {
+                    closePalette();
+                    if (ps.href.startsWith('http')) {
+                      window.open(ps.href, '_blank', 'noopener,noreferrer');
+                    } else {
+                      router.push(ps.href);
+                    }
+                  }}
+                  className="w-full flex items-center gap-4 px-4 py-3 text-left transition-colors border-l-2 border-transparent hover:bg-white/[0.03]"
+                >
+                  <div className="flex-shrink-0 p-2 rounded-lg bg-white/[0.05] text-slate-400">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17.25 8.25L21 12m0 0l-3.75 3.75M21 12H3" />
+                    </svg>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <span className="font-medium text-white/90">{ps.label}</span>
+                  </div>
+                </button>
+              ))}
+            </div>
           )}
 
           {totalItemCount === 0 && query.trim().length >= 2 ? (
