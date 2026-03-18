@@ -119,6 +119,11 @@ const BLOG_CTA_MAP: Record<string, { tool: string; path: string }> = {
   'business-rocket-engines-who-makes-how-work': { tool: 'Launch Vehicles', path: '/launch-vehicles' },
   'spacenexus-guide-how-use-satellite-tracker': { tool: 'Satellite Tracker', path: '/satellites' },
   'spacenexus-guide-how-use-market-intelligence': { tool: 'Market Intelligence', path: '/market-intel' },
+  'complete-list-space-etfs-stocks-2026': { tool: 'Market Intelligence', path: '/market-intel' },
+  'how-to-start-space-company-founders-guide': { tool: 'Business Models', path: '/business-models' },
+  'satellite-constellations-explained-gps-starlink': { tool: 'Constellation Tracker', path: '/constellations' },
+  'space-launch-process-countdown-to-orbit': { tool: 'Mission Control', path: '/mission-control' },
+  'spacenexus-vs-quilty-space-comparison': { tool: 'Alternatives', path: '/alternatives' },
 };
 
 type Props = {
