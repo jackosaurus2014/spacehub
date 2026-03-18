@@ -8,7 +8,7 @@ import ScrollReveal from '@/components/ui/ScrollReveal';
 const typeStyles = {
   feature: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30',
   improvement: 'bg-blue-500/20 text-blue-400 border-blue-500/30',
-  fix: 'bg-amber-500/20 text-amber-400 border-amber-500/30',
+  fix: 'bg-red-500/20 text-red-400 border-red-500/30',
 };
 
 const typeLabels = {
@@ -55,7 +55,7 @@ export default function ChangelogPage() {
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl">
       <AnimatedPageHeader
-        title="Changelog"
+        title="What's New at SpaceNexus"
         subtitle="Track every update, feature, and improvement we ship to SpaceNexus."
         accentColor="cyan"
       />
@@ -76,7 +76,7 @@ export default function ChangelogPage() {
             <div className="text-xs text-slate-400 mt-1">Improvements</div>
           </div>
           <div className="card p-4 text-center">
-            <div className="text-2xl font-bold text-amber-400">{stats.fixes}</div>
+            <div className="text-2xl font-bold text-red-400">{stats.fixes}</div>
             <div className="text-xs text-slate-400 mt-1">Fixes</div>
           </div>
         </div>
@@ -89,7 +89,7 @@ export default function ChangelogPage() {
             { key: 'all' as FilterType, label: `All (${totalChanges})`, color: 'slate' },
             { key: 'feature' as FilterType, label: `Features (${stats.features})`, color: 'emerald' },
             { key: 'improvement' as FilterType, label: `Improvements (${stats.improvements})`, color: 'blue' },
-            { key: 'fix' as FilterType, label: `Fixes (${stats.fixes})`, color: 'amber' },
+            { key: 'fix' as FilterType, label: `Fixes (${stats.fixes})`, color: 'red' },
           ]).map(({ key, label, color }) => (
             <button
               key={key}
@@ -109,7 +109,7 @@ export default function ChangelogPage() {
                             ? 'rgba(16,185,129,0.2)'
                             : color === 'blue'
                               ? 'rgba(59,130,246,0.2)'
-                              : 'rgba(245,158,11,0.2)',
+                              : 'rgba(239,68,68,0.2)',
                       color:
                         color === 'slate'
                           ? '#94a3b8'
@@ -117,7 +117,7 @@ export default function ChangelogPage() {
                             ? '#34d399'
                             : color === 'blue'
                               ? '#60a5fa'
-                              : '#fbbf24',
+                              : '#f87171',
                       borderColor:
                         color === 'slate'
                           ? 'rgba(100,116,139,0.4)'
@@ -125,7 +125,7 @@ export default function ChangelogPage() {
                             ? 'rgba(16,185,129,0.4)'
                             : color === 'blue'
                               ? 'rgba(59,130,246,0.4)'
-                              : 'rgba(245,158,11,0.4)',
+                              : 'rgba(239,68,68,0.4)',
                     }
                   : {}
               }
@@ -210,22 +210,38 @@ export default function ChangelogPage() {
                   })}
                 </div>
 
-                {/* Changes list */}
-                <ul className="space-y-2.5">
-                  {visibleChanges.map((change, i) => (
-                    <li key={i} className="flex items-start gap-3 group">
-                      <span
-                        className={`flex items-center gap-1 text-xs font-bold uppercase px-2 py-0.5 rounded border shrink-0 mt-0.5 ${typeStyles[change.type]}`}
-                      >
-                        {typeIcons[change.type]}
-                        {typeLabels[change.type]}
-                      </span>
-                      <span className="text-sm text-white/70 leading-relaxed group-hover:text-slate-100 transition-colors">
-                        {change.text}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
+                {/* Changes grouped by type */}
+                <div className="space-y-5">
+                  {(['feature', 'improvement', 'fix'] as const).map((type) => {
+                    const changesOfType = visibleChanges.filter((c) => c.type === type);
+                    if (changesOfType.length === 0) return null;
+                    return (
+                      <div key={type}>
+                        <div className="flex items-center gap-2 mb-2">
+                          <span
+                            className={`flex items-center gap-1 text-xs font-bold uppercase px-2 py-0.5 rounded border ${typeStyles[type]}`}
+                          >
+                            {typeIcons[type]}
+                            {typeLabels[type]}
+                          </span>
+                          <div className="flex-1 h-px bg-white/[0.06]" />
+                        </div>
+                        <ul className="space-y-2 pl-1">
+                          {changesOfType.map((change, i) => (
+                            <li key={i} className="flex items-start gap-2 group">
+                              <span className={`w-1.5 h-1.5 rounded-full mt-1.5 shrink-0 ${
+                                type === 'feature' ? 'bg-emerald-400' : type === 'improvement' ? 'bg-blue-400' : 'bg-red-400'
+                              }`} />
+                              <span className="text-sm text-white/70 leading-relaxed group-hover:text-slate-100 transition-colors">
+                                {change.text}
+                              </span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    );
+                  })}
+                </div>
 
                 {/* Show more / less toggle */}
                 {hiddenCount > 0 && (

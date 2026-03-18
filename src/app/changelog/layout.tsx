@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Changelog - Platform Updates & New Features',
+  title: "What's New at SpaceNexus - Platform Updates & New Features",
   description:
     'Track every update, feature, and improvement shipped to SpaceNexus. From company intelligence to marketplace, mobile apps, and 100+ space industry tools.',
   keywords: [
@@ -13,15 +13,15 @@ export const metadata: Metadata = {
     'space intelligence platform',
   ],
   openGraph: {
-    title: 'SpaceNexus Changelog - Platform Updates & New Features',
+    title: "What's New at SpaceNexus - Platform Updates & New Features",
     description:
-      'Track every update, feature, and improvement shipped to SpaceNexus. 11 releases, 100+ features, and continuous improvements.',
+      'Track every update, feature, and improvement shipped to SpaceNexus. 13 releases, 100+ features, and continuous improvements.',
     url: 'https://spacenexus.us/changelog',
   },
-    twitter: {
+  twitter: {
     card: 'summary_large_image',
-    title: 'SpaceNexus Changelog - Platform Updates & New Features',
-    description: 'Track every update, feature, and improvement shipped to SpaceNexus. 11 releases, 100+ features, and continuous improvements.',
+    title: "What's New at SpaceNexus - Platform Updates & New Features",
+    description: 'Track every update, feature, and improvement shipped to SpaceNexus. 13 releases, 100+ features, and continuous improvements.',
     images: ['/og-image.png'],
   },
   alternates: {
