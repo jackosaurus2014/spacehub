@@ -16,6 +16,25 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '2.2.0',
+    date: '2026-03-18',
+    title: 'SpaceNexus — The Definitive Space Industry Platform',
+    description:
+      '70+ waves of recursive development culminating in the most comprehensive space intelligence platform on the internet. 133 blog articles, 600+ routes, newsletter comparison page, content library stats, Year in Review, and final platform polish.',
+    highlight: '133 articles, 70+ waves, 600+ routes, the definitive space platform',
+    changes: [
+      { type: 'feature', text: '133 original blog articles — the largest free space content library on the internet' },
+      { type: 'feature', text: 'Year in Review page showcasing 2026 platform milestones and growth stats' },
+      { type: 'feature', text: 'Newsletter comparison page positioning SpaceNexus against industry newsletters' },
+      { type: 'feature', text: 'Content library stats dashboard tracking article output across categories' },
+      { type: 'feature', text: '600+ routes spanning data, tools, community, marketplace, and content' },
+      { type: 'feature', text: '70+ waves of recursive development from platform launch to industry authority' },
+      { type: 'improvement', text: 'Final changelog v2.2.0 — the definitive release record for SpaceNexus' },
+      { type: 'improvement', text: 'Comprehensive documentation updated with Waves 148-150 and final platform stats' },
+      { type: 'improvement', text: 'The most comprehensive space intelligence platform on the internet' },
+    ],
+  },
+  {
     version: '2.1.0',
     date: '2026-03-18',
     title: '130 Articles & Platform Polish',
