@@ -78,8 +78,9 @@ export default function AboutPage() {
               </h2>
             </div>
             <p className="text-lg text-slate-300 leading-relaxed max-w-4xl">
-              Democratizing access to space industry intelligence. SpaceNexus provides the data, tools,
-              and community that space entrepreneurs, investors, and professionals need to make informed decisions.
+              Democratize space industry intelligence. SpaceNexus provides the data, tools,
+              and community that space entrepreneurs, investors, and professionals need to make informed decisions
+              &mdash; all in one platform, updated in real time.
             </p>
           </div>
         </ScrollReveal>
@@ -146,25 +147,65 @@ export default function AboutPage() {
             </div>
             <div className="space-y-4 max-w-4xl">
               <p className="text-lg text-slate-300 leading-relaxed">
-                SpaceNexus was founded in 2024 to bridge the gap between the rapidly growing commercial space
-                industry and the intelligence tools available to its participants.
+                SpaceNexus was built by space industry professionals who were tired of fragmented data.
+                Launch schedules on one site, satellite tracking on another, market data buried in spreadsheets,
+                government contracts scattered across a dozen portals &mdash; the information existed, but no
+                single platform brought it together.
               </p>
               <p className="text-lg text-slate-300 leading-relaxed">
                 While large defense contractors have access to expensive data terminals and consulting firms,
                 the vast majority of space startups, investors, and professionals lack the same intelligence
-                infrastructure. SpaceNexus levels the playing field.
+                infrastructure. SpaceNexus was created to level that playing field &mdash; giving every
+                participant in the space economy the tools they need to compete.
               </p>
             </div>
           </div>
         </ScrollReveal>
 
-        {/* Contact CTA Section */}
-        <ScrollReveal className="mt-16 mb-16">
-          <div className="text-center">
-            <div className="inline-block hover:scale-[1.02] active:scale-[0.98] transition-transform duration-200">
+        {/* The Team Section */}
+        <ScrollReveal className="mt-16">
+          <div className="card p-8 md:p-12">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-10 h-10 rounded-lg bg-emerald-500/20 flex items-center justify-center">
+                <svg className="w-6 h-6 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" />
+                </svg>
+              </div>
+              <h2 className="text-2xl md:text-3xl font-display font-bold text-white">
+                The Team
+              </h2>
+            </div>
+            <p className="text-lg text-slate-300 leading-relaxed max-w-4xl">
+              SpaceNexus is built by a team of engineers, analysts, and space enthusiasts based in Houston, TX.
+              We combine deep aerospace domain expertise with modern software engineering to deliver intelligence
+              tools that actually move the needle for space industry professionals.
+            </p>
+          </div>
+        </ScrollReveal>
+
+        {/* Register CTA Section */}
+        <ScrollReveal className="mt-16">
+          <div className="card p-8 md:p-12 text-center bg-gradient-to-br from-white/[0.06] to-white/[0.02] border border-white/[0.08]">
+            <h2 className="text-2xl md:text-3xl font-display font-bold text-white mb-4">
+              Ready to explore the space economy?
+            </h2>
+            <p className="text-lg text-slate-300 mb-8 max-w-2xl mx-auto">
+              Join thousands of space industry professionals using SpaceNexus for real-time intelligence,
+              market data, and collaboration tools.
+            </p>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <Link
+                href="/register"
+                className="inline-flex items-center gap-2 px-8 py-4 bg-white hover:bg-slate-100 text-slate-900 font-semibold rounded-xl shadow-lg shadow-black/15 hover:shadow-black/20 transition-all duration-300"
+              >
+                Get Started Free
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                </svg>
+              </Link>
               <Link
                 href="/contact"
-                className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-white to-blue-600 text-white font-semibold rounded-xl shadow-lg shadow-black/15 hover:shadow-black/20 transition-all duration-300"
+                className="inline-flex items-center gap-2 px-8 py-4 bg-white/10 hover:bg-white/15 text-white font-semibold rounded-xl border border-white/10 transition-all duration-300"
               >
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
@@ -174,6 +215,8 @@ export default function AboutPage() {
             </div>
           </div>
         </ScrollReveal>
+
+        <div className="mb-16" />
       </div>
     </div>
   );

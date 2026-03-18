@@ -81,8 +81,15 @@ const CATEGORY_LOGOS: Record<string, string> = {
   'debris': '/logos/logo-news-debris.png',
 };
 
+function estimateReadingTime(article: NewsArticle): number {
+  const text = [article.title, article.summary, article.content].filter(Boolean).join(' ');
+  const wordCount = text.split(/\s+/).filter(Boolean).length;
+  return Math.max(1, Math.round(wordCount / 200));
+}
+
 export default function NewsCard({ article, featured = false, priority = false }: NewsCardProps) {
   const categoryColor = categoryColors[article.category] || 'bg-white';
+  const readingTime = estimateReadingTime(article);
 
   const formatDate = (date: Date) => {
     return new Date(date).toLocaleDateString('en-US', {
@@ -172,6 +179,8 @@ export default function NewsCard({ article, featured = false, priority = false }
               <span>{article.source}</span>
               <span className="text-slate-400/50">·</span>
               <span>{formatDate(article.publishedAt)}</span>
+              <span className="text-slate-400/50">·</span>
+              <span>{readingTime} min read</span>
             </div>
           </div>
         </div>
@@ -246,8 +255,10 @@ export default function NewsCard({ article, featured = false, priority = false }
           {article.companyTags && article.companyTags.length > 0 && (
             <CompanyBadges companies={article.companyTags} />
           )}
-          <div className="flex items-center mt-2 text-slate-500 text-xs">
+          <div className="flex items-center gap-2 mt-2 text-slate-500 text-xs">
             <span>{article.source}</span>
+            <span className="text-slate-600">·</span>
+            <span>{readingTime} min read</span>
           </div>
           <WhyThisMatters
             articleTitle={article.title}

@@ -166,8 +166,9 @@ export default async function BlogPostPage({ params }: Props) {
     headline: post.title,
     description: post.excerpt,
     author: {
-      '@type': 'Person',
-      name: post.author,
+      '@type': 'Organization',
+      name: 'SpaceNexus',
+      url: 'https://spacenexus.us',
     },
     publisher: {
       '@type': 'Organization',
@@ -182,7 +183,7 @@ export default async function BlogPostPage({ params }: Props) {
     dateModified: post.updatedAt || post.publishedAt,
     image: {
       '@type': 'ImageObject',
-      url: 'https://spacenexus.us/og-image.png',
+      url: `https://spacenexus.us/blog/${post.slug}/opengraph-image`,
       width: 1200,
       height: 630,
     },
