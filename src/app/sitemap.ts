@@ -311,6 +311,15 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
 
     // Help Center
     { url: `${BASE_URL}/help`, changeFrequency: 'monthly' as const, priority: 0.6 },
+
+    // Careers
+    { url: `${BASE_URL}/careers`, changeFrequency: 'monthly' as const, priority: 0.5 },
+
+    // Solutions sub-page
+    { url: `${BASE_URL}/solutions/space-professionals`, changeFrequency: 'monthly' as const, priority: 0.7 },
+
+    // Changelog
+    { url: `${BASE_URL}/changelog`, changeFrequency: 'weekly' as const, priority: 0.4 },
   ];
 
   return routes.map(route => ({

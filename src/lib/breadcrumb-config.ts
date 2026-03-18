@@ -239,6 +239,8 @@ export const ROUTE_LABELS: Record<string, string> = {
   '/advertise': 'Advertise',
   '/help': 'Help Center',
   '/checkout/success': 'Checkout Success',
+  '/careers': 'Careers',
+  '/solutions/space-professionals': 'For Space Professionals',
 
   // ── Developer ──
   '/developer': 'Developer Portal',
@@ -265,6 +267,7 @@ export const ROUTE_PARENTS: Record<string, string> = {
   '/solutions/analysts': '/solutions',
   '/solutions/engineers': '/solutions',
   '/solutions/executives': '/solutions',
+  '/solutions/space-professionals': '/solutions',
 
   // Community pages
   '/community/forums': '/community',

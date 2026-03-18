@@ -339,6 +339,10 @@ export const PAGE_RELATIONS: Record<string, RelatedModuleConfig[]> = {
   // ── Community / Event Pages ──
   'satellite-2026': [MODULES.spaceEvents, MODULES.conferences, MODULES.news, MODULES.companyProfiles, MODULES.marketplace],
   'help': [MODULES.glossary, MODULES.learn, MODULES.tools, MODULES.news],
+
+  // ── Careers & Solutions ──
+  'careers': [MODULES.spaceTalent, MODULES.jobs, MODULES.salaryBenchmarks, MODULES.careerGuide, MODULES.educationPathways],
+  'solutions/space-professionals': [MODULES.satellites, MODULES.marketIntel, MODULES.tools, MODULES.companyProfiles, MODULES.spaceCapital],
 };
 
 // Helper to get related modules for a page

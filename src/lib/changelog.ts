@@ -16,8 +16,32 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
-    version: '1.4.0',
+    version: '1.5.0',
     date: '2026-03-17',
+    title: 'Intelligence & Content Expansion',
+    description:
+      'Waves 92-103: Livestream detection and embedding, 38 original blog articles, SpaceX API and EONET integrations, USAspending federal contract data, help center, podcast aggregation, referral program, outreach templates, and comprehensive quality improvements.',
+    highlight: '38 blog articles, 6 API integrations',
+    changes: [
+      { type: 'feature', text: 'Livestream detection and embedding system for live launch coverage' },
+      { type: 'feature', text: '38 original blog articles covering space industry trends, launches, and analysis' },
+      { type: 'feature', text: 'SpaceX API integration for real-time launch and vehicle data' },
+      { type: 'feature', text: 'NASA EONET integration for Earth natural event tracking' },
+      { type: 'feature', text: 'USAspending.gov integration for federal space contract spending data' },
+      { type: 'feature', text: 'Help center with searchable FAQ and troubleshooting guides' },
+      { type: 'feature', text: 'Podcast aggregation system with curated space industry feeds' },
+      { type: 'feature', text: 'Referral program with tracking and reward system' },
+      { type: 'feature', text: 'Outreach templates for partnerships and investor communications' },
+      { type: 'improvement', text: 'Sitemap coverage expanded to all public pages' },
+      { type: 'improvement', text: 'Breadcrumb labels and navigation hierarchy refined' },
+      { type: 'improvement', text: 'Module relationship mappings updated for all new pages' },
+      { type: 'improvement', text: 'Social sharing meta tags optimized for homepage' },
+      { type: 'fix', text: 'Missing pages added to sitemap, breadcrumb config, and module relationships' },
+    ],
+  },
+  {
+    version: '1.4.0',
+    date: '2026-03-14',
     title: 'Major Platform Update',
     description:
       'Waves 80-91: Major expansion with podcast aggregation, SpaceX API, NASA Earth Events, federal spending data, 12 new blog articles, embeddable widgets, API pricing docs, referral program, SATELLITE 2026 conference page, and dozens of fixes and improvements.',
