@@ -57,6 +57,10 @@ const BentoFeatures = nextDynamic(() => import('@/components/landing/BentoFeatur
   ssr: false,
   loading: () => <div className="py-16"><div className="container mx-auto px-4"><div className="animate-pulse"><div className="h-8 bg-white/[0.06] rounded w-1/3 mx-auto mb-8"></div><div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-5xl mx-auto">{[1,2,3,4,5,6,7].map(i => <div key={i} className="h-[180px] bg-white/[0.06] rounded-2xl"></div>)}</div></div></div></div>,
 });
+const ExplorePlatform = nextDynamic(() => import('@/components/landing/ExplorePlatform'), {
+  ssr: false,
+  loading: () => <div className="py-16"><div className="container mx-auto px-4"><div className="animate-pulse"><div className="h-8 bg-white/[0.06] rounded w-1/3 mx-auto mb-8"></div><div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-5xl mx-auto">{[1,2,3,4,5,6,7,8].map(i => <div key={i} className="h-24 bg-white/[0.06] rounded-2xl"></div>)}</div></div></div></div>,
+});
 const DemoShowcase = nextDynamic(() => import('@/components/landing/DemoShowcase'), {
   ssr: false,
   loading: () => <div className="py-16"><div className="container mx-auto px-4 max-w-5xl"><div className="animate-pulse"><div className="h-8 bg-white/[0.06] rounded w-1/3 mx-auto mb-8"></div><div className="h-[420px] bg-white/[0.06] rounded-2xl"></div></div></div></div>,
@@ -212,6 +216,9 @@ export default async function HomePage() {
 
       {/* Platform Feature Showcase — Bento Grid */}
       <BentoFeatures />
+
+      {/* Explore the Platform — 8 key destination cards */}
+      <ExplorePlatform />
 
       {/* Interactive Demo — Tabbed screenshot showcase */}
       <DemoShowcase />
