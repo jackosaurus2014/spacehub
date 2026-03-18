@@ -47,7 +47,7 @@ function AnimatedValue({ value }: { value: string }) {
           const animate = (now: number) => {
             const progress = Math.min((now - start) / duration, 1);
             const eased = 1 - Math.pow(1 - progress, 3);
-            let current = target * eased;
+            const current = target * eased;
             let formatted: string;
 
             if (hasDecimals) {
