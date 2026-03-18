@@ -3,89 +3,10 @@
 import { motion, useInView } from 'framer-motion';
 import { useRef, useEffect, useState, useCallback } from 'react';
 
-const TESTIMONIALS = [
-  {
-    quote: "SpaceNexus replaced three separate tools for our team. The satellite tracking and market intelligence in one platform is exactly what we needed.",
-    name: "Alex R.",
-    title: "Aerospace Analyst",
-    company: "",
-    persona: "Analyst",
-    initials: "AR",
-    gradient: "from-cyan-500 to-blue-600",
-  },
-  {
-    quote: "The regulatory compliance module alone saves us hours of manual research every week. The space industry finally has its own Bloomberg Terminal.",
-    name: "Dr. Sarah M.",
-    title: "Space Policy Consultant",
-    company: "",
-    persona: "Policy",
-    initials: "SM",
-    gradient: "from-rose-500 to-pink-600",
-  },
-  {
-    quote: "As a space startup founder, having 200+ company profiles and funding data at my fingertips has been invaluable for competitive analysis.",
-    name: "James K.",
-    title: "CEO",
-    company: "Orbital Ventures",
-    persona: "Founder",
-    initials: "JK",
-    gradient: "from-amber-500 to-yellow-600",
-  },
-  {
-    quote: "SpaceNexus replaced three different tools we were using. The company intelligence and market data in one place is a game-changer.",
-    name: "Sarah Chen",
-    title: "VP of Strategy",
-    company: "Orbital Systems Inc.",
-    persona: "Executive",
-    initials: "SC",
-    gradient: "from-white to-blue-600",
-  },
-  {
-    quote: "The mission planning calculators saved our team weeks of work. The orbital mechanics and thermal analysis tools are genuinely useful.",
-    name: "Dr. James Rodriguez",
-    title: "Chief Engineer",
-    company: "Nova Space Technologies",
-    persona: "Engineer",
-    initials: "JR",
-    gradient: "from-purple-500 to-indigo-600",
-  },
-  {
-    quote: "As an investor, having real-time deal flow, M&A tracking, and company scoring in one dashboard is exactly what the space industry needed.",
-    name: "Michael Okonkwo",
-    title: "Partner",
-    company: "Horizon Ventures",
-    persona: "Investor",
-    initials: "MO",
-    gradient: "from-emerald-500 to-teal-600",
-  },
-  {
-    quote: "SpaceNexus replaced 3 expensive subscriptions for our space fund. The deal flow intelligence alone pays for itself ten times over.",
-    name: "Alexandra Petrov",
-    title: "VC Partner",
-    company: "Stellar Capital Group",
-    persona: "VC",
-    initials: "AP",
-    gradient: "from-amber-500 to-orange-600",
-  },
-  {
-    quote: "The regulatory intelligence and contract tracking saved us weeks of manual research. Essential tool for any defense contractor in the space sector.",
-    name: "Col. David Park (Ret.)",
-    title: "Director of Space Programs",
-    company: "Meridian Defense Systems",
-    persona: "Defense",
-    initials: "DP",
-    gradient: "from-red-500 to-rose-600",
-  },
-  {
-    quote: "As a bootstrapped space startup, having Bloomberg-level intelligence for free changed everything. We punch way above our weight now.",
-    name: "Priya Narayanan",
-    title: "Founder & CEO",
-    company: "LunarGrid Technologies",
-    persona: "Founder",
-    initials: "PN",
-    gradient: "from-violet-500 to-purple-600",
-  },
-];
+// Testimonials removed — only real, verified testimonials should be displayed here.
+// When real user feedback is collected (via /contact "User Story" submissions),
+// add them to this array with source attribution.
+const TESTIMONIALS: { quote: string; name: string; title: string; company: string; persona: string; initials: string; gradient: string }[] = [];
 
 const STATS = [
   { value: 200, suffix: '+', label: 'Company Profiles', prefix: '' },
@@ -177,107 +98,79 @@ export default function SocialProof() {
   return (
     <section className="py-20 relative z-10">
       <div className="container mx-auto px-4 max-w-6xl">
-        {/* Section Header */}
-        <div className="text-center mb-14">
-          <motion.p
-            className="text-sm font-semibold uppercase tracking-widest text-white/70 mb-3"
-            initial={{ opacity: 0, y: 10 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.4 }}
-          >
-            What Professionals Say
-          </motion.p>
-          <motion.h2
-            className="text-display text-3xl md:text-4xl text-white mb-4"
-            initial={{ opacity: 0, y: 10 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.4, delay: 0.1 }}
-          >
-            What Space Professionals Say
-          </motion.h2>
-          <motion.p
-            className="text-slate-400 text-lg max-w-2xl mx-auto"
-            initial={{ opacity: 0, y: 10 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.4, delay: 0.15 }}
-          >
-            SpaceNexus brings together real-time data, analytics, and tools for every role in the space industry.
-          </motion.p>
-          <div className="hidden" />
-        </div>
+        {/* Testimonial Cards — only shown when real testimonials exist */}
+        {TESTIMONIALS.length > 0 && (
+          <>
+            {/* Section Header */}
+            <div className="text-center mb-14">
+              <motion.h2
+                className="text-display text-3xl md:text-4xl text-white mb-4"
+                initial={{ opacity: 0, y: 10 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.4, delay: 0.1 }}
+              >
+                What Space Professionals Say
+              </motion.h2>
+            </div>
 
-        {/* Testimonial Cards — horizontal swipe on mobile, grid on desktop */}
-        <div
-          ref={scrollRef}
-          className="flex gap-5 overflow-x-auto snap-x snap-mandatory scrollbar-hide pb-2 -mx-4 px-4 md:mx-0 md:px-0 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-7 md:overflow-visible md:snap-none mb-4 md:mb-16"
-        >
-          {TESTIMONIALS.map((t, i) => (
-            <motion.div
-              key={t.name}
-              className="group relative snap-center min-w-[85vw] flex-shrink-0 md:min-w-0 md:flex-shrink md:snap-align-none"
-              custom={i}
-              variants={cardVariants}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, amount: 0.3 }}
-              data-index={i}
+            <div
+              ref={scrollRef}
+              className="flex gap-5 overflow-x-auto snap-x snap-mandatory scrollbar-hide pb-2 -mx-4 px-4 md:mx-0 md:px-0 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-7 md:overflow-visible md:snap-none mb-4 md:mb-16"
             >
-              <div className="relative card-glass p-7 h-full flex flex-col">
-                {/* Large decorative quotation mark */}
-                <div className="absolute top-4 right-5 text-6xl font-serif leading-none text-white/70/[0.07] select-none pointer-events-none">
-                  &ldquo;
-                </div>
-
-                {/* Star rating */}
-                <StarRating />
-
-                {/* Quote */}
-                <p className="text-white/70 leading-relaxed mb-6 flex-1 relative z-10">
-                  <span className="text-white/70 text-xl font-serif">&ldquo;</span>
-                  {t.quote}
-                  <span className="text-white/70 text-xl font-serif">&rdquo;</span>
-                </p>
-
-                {/* Divider */}
-                <div className="h-px bg-gradient-to-r from-transparent via-slate-600/50 to-transparent mb-5" />
-
-                {/* Author */}
-                <div className="flex items-center gap-3">
-                  {/* Avatar with gradient */}
-                  <div className={`w-10 h-10 rounded-full bg-gradient-to-br ${t.gradient} flex items-center justify-center shrink-0 shadow-lg`}>
-                    <span className="text-xs font-bold text-white">{t.initials}</span>
+              {TESTIMONIALS.map((t, i) => (
+                <motion.div
+                  key={t.name}
+                  className="group relative snap-center min-w-[85vw] flex-shrink-0 md:min-w-0 md:flex-shrink md:snap-align-none"
+                  custom={i}
+                  variants={cardVariants}
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={{ once: true, amount: 0.3 }}
+                  data-index={i}
+                >
+                  <div className="relative card-glass p-7 h-full flex flex-col">
+                    <div className="absolute top-4 right-5 text-6xl font-serif leading-none text-white/70/[0.07] select-none pointer-events-none">
+                      &ldquo;
+                    </div>
+                    <StarRating />
+                    <p className="text-white/70 leading-relaxed mb-6 flex-1 relative z-10">
+                      <span className="text-white/70 text-xl font-serif">&ldquo;</span>
+                      {t.quote}
+                      <span className="text-white/70 text-xl font-serif">&rdquo;</span>
+                    </p>
+                    <div className="h-px bg-gradient-to-r from-transparent via-slate-600/50 to-transparent mb-5" />
+                    <div className="flex items-center gap-3">
+                      <div className={`w-10 h-10 rounded-full bg-gradient-to-br ${t.gradient} flex items-center justify-center shrink-0 shadow-lg`}>
+                        <span className="text-xs font-bold text-white">{t.initials}</span>
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm font-semibold text-white truncate">{t.name}</p>
+                        <p className="text-xs text-slate-400 truncate">{t.title}{t.company ? `, ${t.company}` : ''}</p>
+                      </div>
+                    </div>
                   </div>
-                  <div className="min-w-0 flex-1">
-                    <p className="text-sm font-semibold text-white truncate">{t.name}</p>
-                    <p className="text-xs text-slate-400 truncate">{t.title}{t.company ? `, ${t.company}` : ''}</p>
-                  </div>
-                  <span className="text-[10px] font-semibold uppercase tracking-wider px-2 py-1 rounded-full bg-white/5 text-white/70 border border-white/10 shrink-0">
-                    {t.persona}
-                  </span>
-                </div>
-              </div>
-            </motion.div>
-          ))}
-        </div>
+                </motion.div>
+              ))}
+            </div>
 
-        {/* Scroll indicator dots — mobile only */}
-        <div className="flex justify-center gap-2 mb-12 md:hidden" aria-hidden="true">
-          {TESTIMONIALS.map((_, i) => (
-            <button
-              key={i}
-              className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                activeCard === i
-                  ? 'bg-white w-6'
-                  : 'bg-slate-600 hover:bg-slate-500'
-              }`}
-              onClick={() => scrollToCard(i)}
-              aria-label={`Go to testimonial ${i + 1}`}
-            />
-          ))}
-        </div>
+            {/* Scroll indicator dots — mobile only */}
+            <div className="flex justify-center gap-2 mb-12 md:hidden" aria-hidden="true">
+              {TESTIMONIALS.map((_, i) => (
+                <button
+                  key={i}
+                  className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                    activeCard === i
+                      ? 'bg-white w-6'
+                      : 'bg-slate-600 hover:bg-slate-500'
+                  }`}
+                  onClick={() => scrollToCard(i)}
+                  aria-label={`Go to testimonial ${i + 1}`}
+                />
+              ))}
+            </div>
+          </>
+        )}
 
         {/* Industry Logos / Trust Badges */}
         <motion.div

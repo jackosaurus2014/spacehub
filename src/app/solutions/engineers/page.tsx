@@ -167,22 +167,24 @@ export default function EngineersSolutionPage() {
         </div>
       </section>
 
-      {/* Testimonial */}
+      {/* Share Your Story CTA */}
       <section className="py-16 md:py-20">
         <div className="container mx-auto px-4">
           <ScrollReveal>
             <div className="max-w-3xl mx-auto text-center">
               <div className="rounded-2xl border border-white/[0.06] bg-black/50 backdrop-blur-sm p-8 md:p-12">
-                <svg className="w-10 h-10 text-emerald-500/40 mx-auto mb-6" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M4.583 17.321C3.553 16.227 3 15 3 13.011c0-3.5 2.457-6.637 6.03-8.188l.893 1.378c-3.335 1.804-3.987 4.145-4.247 5.621.537-.278 1.24-.375 1.929-.311 1.804.167 3.226 1.648 3.226 3.489a3.5 3.5 0 01-3.5 3.5 3.871 3.871 0 01-2.748-1.179zm10 0C13.553 16.227 13 15 13 13.011c0-3.5 2.457-6.637 6.03-8.188l.893 1.378c-3.335 1.804-3.987 4.145-4.247 5.621.537-.278 1.24-.375 1.929-.311 1.804.167 3.226 1.648 3.226 3.489a3.5 3.5 0 01-3.5 3.5 3.871 3.871 0 01-2.748-1.179z" />
-                </svg>
-                <blockquote className="text-lg md:text-xl text-white/90 italic mb-6 leading-relaxed">
-                  The constellation designer saved our team three months of preliminary design work. We went from concept to optimized Walker constellation in a single afternoon. Honestly can&apos;t believe it&apos;s free.
-                </blockquote>
-                <div>
-                  <p className="text-white font-semibold">Dr. Elena Vasquez</p>
-                  <p className="text-slate-400 text-sm">Senior Satellite Systems Engineer, NovaStar Aerospace</p>
-                </div>
+                <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
+                  Building with SpaceNexus Engineering Tools?
+                </h2>
+                <p className="text-slate-400 text-lg mb-6 max-w-xl mx-auto">
+                  We&apos;d love to hear how SpaceNexus tools are powering your mission design and engineering workflows.
+                </p>
+                <Link
+                  href="/contact"
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-white/[0.1] text-white/90 font-semibold hover:bg-white/[0.04] transition-colors"
+                >
+                  Share your SpaceNexus story &rarr;
+                </Link>
               </div>
             </div>
           </ScrollReveal>

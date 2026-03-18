@@ -28,81 +28,69 @@ export const metadata: Metadata = {
 
 const USE_CASES = [
   {
-    name: 'Sarah Chen',
-    role: 'Partner',
-    company: 'Orbital Ventures',
+    role: 'Space VC Partner',
     companyType: 'Venture Capital',
     avatarColor: 'from-white to-blue-500',
     badgeClass: 'bg-white/5 text-white/90 border-white/10',
     problem:
-      'Sarah evaluates 50+ space startups per quarter. Her team was drowning in fragmented data across pitch decks, SEC filings, and industry reports. Initial screening took two analysts a full week per deal.',
+      'Space-focused VCs evaluate 50+ startups per quarter. Teams often drown in fragmented data across pitch decks, SEC filings, and industry reports. Initial screening can take two analysts a full week per deal.',
     modules: [
       { name: 'Company Profiles', href: '/companies', desc: 'Instant access to 200+ space company dossiers with financials, leadership, and competitive positioning.' },
       { name: 'SpaceNexus Score', href: '/companies', desc: 'Proprietary scoring algorithm to rank startups across technology readiness, market fit, and financial health.' },
       { name: 'Funding Tracker', href: '/market-intel', desc: 'Real-time tracking of every funding round, acquisition, and IPO in the space industry.' },
       { name: 'Deal Flow Pipeline', href: '/market-intel', desc: 'Curated pipeline of emerging opportunities with stage, sector, and geography filters.' },
     ],
-    result: 'Reduced initial screening time by 70%. Identified three portfolio companies that collectively raised $180M in follow-on funding within 18 months.',
-    quote: 'SpaceNexus is the Bloomberg Terminal for space investing. It replaced three analyst subscriptions and gave us an edge our LPs notice.',
+    result: 'Reduce initial screening time by up to 70% and identify high-potential portfolio companies faster with unified data.',
   },
   {
-    name: 'Marcus Webb',
-    role: 'Senior Intelligence Analyst',
-    company: 'U.S. Space Command (Contractor)',
+    role: 'Defense Intelligence Analyst',
     companyType: 'Government / Defense',
     avatarColor: 'from-purple-500 to-indigo-500',
     badgeClass: 'bg-purple-500/10 text-purple-300 border-purple-500/20',
     problem:
-      'Marcus compiles weekly space threat briefings for senior leadership. He was manually aggregating launch data, satellite positions, regulatory changes, and adversary activity from a dozen different classified and unclassified sources.',
+      'Defense analysts compile weekly space threat briefings for senior leadership, manually aggregating launch data, satellite positions, regulatory changes, and adversary activity from a dozen different classified and unclassified sources.',
     modules: [
       { name: 'Satellite Tracker', href: '/satellites', desc: 'Live orbital tracking of 10,000+ objects with operator attribution and orbit classification.' },
       { name: 'Launch Manifest', href: '/launch-manifest', desc: 'Comprehensive database of global launches with vehicle, payload, and outcome data.' },
       { name: 'Space Defense Module', href: '/space-defense', desc: 'Dedicated tracking of military space programs, ASAT tests, and space domain awareness.' },
       { name: 'Regulatory Hub', href: '/compliance', desc: 'Treaties, export controls, ITAR compliance, and international space policy tracking.' },
     ],
-    result: 'Cut weekly briefing preparation time from 16 hours to 4 hours. Briefing quality improved with real-time satellite position data and automated anomaly detection.',
-    quote: 'The unclassified intelligence SpaceNexus aggregates would have taken my team days to compile. Now it is our starting point for every briefing.',
+    result: 'Cut weekly briefing preparation time significantly with real-time satellite position data and automated anomaly detection.',
   },
   {
-    name: 'Dr. Priya Sharma',
     role: 'Principal Systems Engineer',
-    company: 'NovaStar Aerospace',
     companyType: 'Aerospace / Engineering',
     avatarColor: 'from-emerald-500 to-teal-500',
     badgeClass: 'bg-emerald-500/10 text-emerald-300 border-emerald-500/20',
     problem:
-      'Priya leads constellation design for a LEO broadband startup. Her team relied on $50K+ STK licenses and disconnected spreadsheets for orbit design, link budgets, and debris avoidance analysis.',
+      'Engineering teams designing LEO constellations often rely on expensive STK licenses and disconnected spreadsheets for orbit design, link budgets, and debris avoidance analysis.',
     modules: [
       { name: 'Constellation Designer', href: '/constellation-designer', desc: 'Design and optimize Walker constellations with coverage analysis and inter-satellite link planning.' },
       { name: 'Orbital Calculator', href: '/orbital-calculator', desc: 'Delta-v budgets, transfer orbits, and station-keeping calculations for mission design.' },
       { name: 'Satellite Tracker', href: '/satellites', desc: 'Real-time conjunction screening and proximity analysis against the active catalog.' },
       { name: 'Debris Catalog', href: '/debris-catalog', desc: 'Tracked debris objects with historical collision probability data and avoidance maneuver alerts.' },
     ],
-    result: 'Completed preliminary constellation design in 3 weeks instead of 3 months. Saved $120K in first-year tooling costs by replacing two STK seats.',
-    quote: 'We went from concept to optimized 288-satellite constellation in a single sprint. The tools are shockingly good for a web platform.',
+    result: 'Complete preliminary constellation design in weeks instead of months, saving significantly on first-year tooling costs.',
   },
   {
-    name: 'James Park',
-    role: 'Co-Founder & CEO',
-    company: 'Aether Propulsion',
+    role: 'Space Startup Founder',
     companyType: 'Space Startup',
     avatarColor: 'from-amber-500 to-orange-500',
     badgeClass: 'bg-amber-500/10 text-amber-300 border-amber-500/20',
     problem:
-      'James needed market intelligence to refine his business model, set pricing, prepare investor materials, and identify government contract opportunities. As a bootstrapped startup, he couldn&apos;t afford analyst subscriptions or consultants.',
+      'Early-stage space startup founders need market intelligence to refine business models, set pricing, prepare investor materials, and identify government contract opportunities -- often without the budget for analyst subscriptions or consultants.',
     modules: [
       { name: 'Market Intelligence', href: '/market-intel', desc: 'Daily curated industry news, trend analysis, and competitive landscape tracking.' },
       { name: 'Market Sizing', href: '/market-sizing', desc: 'Bottom-up TAM/SAM/SOM analysis for every major space market segment.' },
       { name: 'Contract Awards', href: '/contract-awards', desc: 'Government and commercial contract database with value, competitors, and timeline data.' },
       { name: 'Pricing & Plans', href: '/pricing', desc: 'Subscription plans and feature comparison across tiers.' },
     ],
-    result: 'Closed a $4.2M seed round with data-backed market sizing. Won first government SBIR contract within 6 months using the contract awards module.',
-    quote: 'SpaceNexus gave a two-person startup the market intelligence of a Fortune 500 company. Our investors were blown away by the depth of our market analysis.',
+    result: 'Build data-backed pitch decks with real market sizing and discover government SBIR opportunities through the contract awards module.',
   },
 ];
 
-function PersonaAvatar({ name, gradient }: { name: string; gradient: string }) {
-  const initials = name.split(' ').map((n) => n[0]).join('');
+function RoleIcon({ role, gradient }: { role: string; gradient: string }) {
+  const initials = role.split(' ').map((n) => n[0]).join('').slice(0, 2);
   return (
     <div className={`w-14 h-14 rounded-full bg-gradient-to-br ${gradient} flex items-center justify-center text-white font-bold text-lg shrink-0`}>
       {initials}
@@ -130,7 +118,7 @@ export default function UseCasesPage() {
                 </span>
               </h1>
               <p className="text-lg md:text-xl text-slate-300 max-w-2xl mx-auto">
-                From venture capitalists to satellite engineers, see how real professionals leverage SpaceNexus to gain a competitive edge.
+                From venture capitalists to satellite engineers, see how space professionals can leverage SpaceNexus to gain a competitive edge.
               </p>
             </div>
           </ScrollReveal>
@@ -142,15 +130,14 @@ export default function UseCasesPage() {
         <div className="container mx-auto px-4">
           <div className="space-y-12 max-w-4xl mx-auto">
             {USE_CASES.map((uc, index) => (
-              <ScrollReveal key={uc.name} delay={index * 0.08}>
+              <ScrollReveal key={uc.role} delay={index * 0.08}>
                 <article className="rounded-2xl border border-white/[0.06] bg-white/[0.04] backdrop-blur-sm overflow-hidden">
                   {/* Header */}
                   <div className="p-6 md:p-8 border-b border-white/[0.06]">
                     <div className="flex items-start gap-4">
-                      <PersonaAvatar name={uc.name} gradient={uc.avatarColor} />
+                      <RoleIcon role={uc.role} gradient={uc.avatarColor} />
                       <div>
-                        <h2 className="text-xl font-bold text-white">{uc.name}</h2>
-                        <p className="text-slate-300 text-sm">{uc.role}, {uc.company}</p>
+                        <h2 className="text-xl font-bold text-white">{uc.role}</h2>
                         <span className={`inline-block mt-1 px-2.5 py-0.5 rounded-full text-xs font-medium border ${uc.badgeClass}`}>
                           {uc.companyType}
                         </span>
@@ -187,12 +174,6 @@ export default function UseCasesPage() {
                       <h3 className="text-sm font-semibold uppercase tracking-wider text-slate-300 mb-2">The Result</h3>
                       <p className="text-white/90 text-sm leading-relaxed">{uc.result}</p>
                     </div>
-
-                    {/* Quote */}
-                    <blockquote className="border-l-2 border-white/[0.1] pl-4">
-                      <p className="text-slate-300 text-sm italic leading-relaxed">&ldquo;{uc.quote}&rdquo;</p>
-                      <cite className="text-slate-500 text-xs mt-1 block not-italic">&mdash; {uc.name}, {uc.role}</cite>
-                    </blockquote>
                   </div>
                 </article>
               </ScrollReveal>
@@ -206,9 +187,9 @@ export default function UseCasesPage() {
         <div className="container mx-auto px-4">
           <ScrollReveal>
             <div className="max-w-2xl mx-auto text-center">
-              <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Ready to Write Your Success Story?</h2>
+              <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Ready to Get Started?</h2>
               <p className="text-slate-400 text-lg mb-8">
-                Join thousands of space professionals who rely on SpaceNexus for intelligence, engineering, and strategic decision-making.
+                SpaceNexus brings together intelligence, engineering tools, and strategic data for space professionals.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link
