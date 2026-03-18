@@ -183,6 +183,7 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/market-map`, changeFrequency: 'monthly' as const, priority: 0.6 },
     { url: `${BASE_URL}/regulatory-calendar`, changeFrequency: 'weekly' as const, priority: 0.7 },
     { url: `${BASE_URL}/reports`, changeFrequency: 'weekly' as const, priority: 0.6 },
+    { url: `${BASE_URL}/reports/space-economy-2026`, changeFrequency: 'monthly' as const, priority: 0.7 },
     { url: `${BASE_URL}/resources`, changeFrequency: 'monthly' as const, priority: 0.6 },
     { url: `${BASE_URL}/salary-benchmarks`, changeFrequency: 'weekly' as const, priority: 0.6 },
     { url: `${BASE_URL}/deals`, changeFrequency: 'weekly' as const, priority: 0.6 },

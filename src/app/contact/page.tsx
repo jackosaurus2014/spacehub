@@ -46,6 +46,109 @@ function getFieldError(field: string, value: string): string | null {
   }
 }
 
+function StoryForm() {
+  const [storyData, setStoryData] = useState({ name: '', company: '', story: '' });
+  const [storyStatus, setStoryStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
+
+  const handleStorySubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!storyData.name.trim() || !storyData.story.trim()) return;
+
+    setStoryStatus('submitting');
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: storyData.name,
+          email: `${storyData.name.toLowerCase().replace(/\s+/g, '.')}@story-submission.spacenexus.us`,
+          subject: 'partnership',
+          message: `[User Story Submission]\n\nName: ${storyData.name}\nCompany: ${storyData.company || 'Not specified'}\n\nHow they use SpaceNexus:\n${storyData.story}`,
+        }),
+      });
+      if (!response.ok) throw new Error('Failed to submit');
+      setStoryStatus('success');
+      toast.success('Thank you for sharing your story!');
+      setStoryData({ name: '', company: '', story: '' });
+    } catch {
+      setStoryStatus('error');
+      toast.error('Failed to submit your story. Please try again.');
+    }
+  };
+
+  if (storyStatus === 'success') {
+    return (
+      <div className="text-center py-4">
+        <p className="text-emerald-400 font-medium mb-2">Thank you for sharing your story!</p>
+        <button
+          onClick={() => setStoryStatus('idle')}
+          className="text-xs text-slate-400 hover:text-white transition-colors"
+        >
+          Submit another story
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <form onSubmit={handleStorySubmit} className="space-y-4 mt-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label htmlFor="story-name" className="block text-slate-400 text-sm mb-1">
+            Name <span className="text-red-400">*</span>
+          </label>
+          <input
+            id="story-name"
+            type="text"
+            value={storyData.name}
+            onChange={(e) => setStoryData((prev) => ({ ...prev, name: e.target.value }))}
+            className="input"
+            placeholder="Your name"
+            required
+          />
+        </div>
+        <div>
+          <label htmlFor="story-company" className="block text-slate-400 text-sm mb-1">
+            Company
+          </label>
+          <input
+            id="story-company"
+            type="text"
+            value={storyData.company}
+            onChange={(e) => setStoryData((prev) => ({ ...prev, company: e.target.value }))}
+            className="input"
+            placeholder="Your company (optional)"
+          />
+        </div>
+      </div>
+      <div>
+        <label htmlFor="story-usage" className="block text-slate-400 text-sm mb-1">
+          How do you use SpaceNexus? <span className="text-red-400">*</span>
+        </label>
+        <textarea
+          id="story-usage"
+          value={storyData.story}
+          onChange={(e) => setStoryData((prev) => ({ ...prev, story: e.target.value }))}
+          rows={3}
+          className="input resize-none"
+          placeholder="Tell us how SpaceNexus helps with your space industry work..."
+          required
+        />
+      </div>
+      <button
+        type="submit"
+        disabled={storyStatus === 'submitting'}
+        className="btn-primary w-full py-2.5 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        {storyStatus === 'submitting' ? 'Submitting...' : 'Share Your Story'}
+      </button>
+      {storyStatus === 'error' && (
+        <p className="text-red-400 text-xs text-center">Something went wrong. Please try again.</p>
+      )}
+    </form>
+  );
+}
+
 export default function ContactPage() {
   const [formData, setFormData] = useState<FormData>({
     name: '',
@@ -385,6 +488,33 @@ export default function ContactPage() {
             </div>
           )}
         </div></ScrollReveal>
+
+        {/* Share Your Story Section */}
+        <ScrollReveal>
+          <div className="max-w-2xl mx-auto mt-12">
+            <div className="card p-8 border border-white/[0.08]">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 bg-cyan-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <svg className="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
+                  </svg>
+                </div>
+                <div>
+                  <h2 className="text-lg font-bold text-white">Share Your SpaceNexus Story</h2>
+                  <p className="text-sm text-slate-400">
+                    Using SpaceNexus for your space industry work? We&apos;d love to hear about it.
+                  </p>
+                </div>
+              </div>
+
+              <StoryForm />
+
+              <p className="text-xs text-slate-500 mt-4 text-center">
+                Selected stories may be featured on our website.
+              </p>
+            </div>
+          </div>
+        </ScrollReveal>
       </div>
 
       <StickyMobileCTA

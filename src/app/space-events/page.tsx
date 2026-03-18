@@ -849,6 +849,92 @@ function SpaceEventsPageInner() {
         </StaggerItem>
       </StaggerContainer>
 
+      {/* Key 2026 Industry Conferences */}
+      <ScrollReveal>
+        <div className="card p-6 mb-8 border border-white/[0.08]">
+          <h2 className="text-lg font-semibold text-white mb-1">Upcoming Industry Conferences</h2>
+          <p className="text-xs text-slate-400 mb-5">
+            The most important space industry events of 2026. Plan ahead and join the global space community.
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+            {[
+              {
+                name: 'SATELLITE 2026',
+                date: 'March 23-26, 2026',
+                location: 'Washington, DC',
+                description: 'The premier global event for satellite communications, space, and connectivity. 15,000+ attendees and 300+ exhibitors.',
+                id: 'satellite-2026',
+              },
+              {
+                name: '41st Space Symposium',
+                date: 'April 6-9, 2026',
+                location: 'Colorado Springs, CO',
+                description: 'Flagship gathering for the global space community at The Broadmoor. Features senior military, government, and industry leaders.',
+                id: 'space-symposium-2026',
+              },
+              {
+                name: 'Reuters Events: Space & Satellites USA',
+                date: 'June 8-9, 2026',
+                location: 'Washington, DC',
+                description: 'Business-focused conference for satellite operators, launch providers, investors, and government officials.',
+                id: 'reuters-space-satellites-usa-2026',
+              },
+              {
+                name: 'IAC 2026',
+                date: 'October 1-5, 2026',
+                location: 'Milan, Italy',
+                description: 'The world\'s premier international space event, gathering 10,000+ professionals from 80+ countries.',
+                id: 'iac-2026',
+              },
+              {
+                name: 'SpaceCom 2026',
+                date: 'February 24-25, 2026',
+                location: 'Orlando, FL',
+                description: 'Connecting space technology innovators with industry leaders from energy, maritime, agriculture, and other sectors.',
+                id: 'spacecom-2026',
+              },
+            ].map((conf) => {
+              const eventData = SPACE_EVENTS.find((e) => e.id === conf.id);
+              return (
+                <div
+                  key={conf.id}
+                  className="bg-white/[0.03] rounded-lg p-4 border border-white/[0.06] hover:border-white/[0.12] transition-all cursor-pointer"
+                  onClick={() => {
+                    const el = document.getElementById('events-list');
+                    if (el) el.scrollIntoView({ behavior: 'smooth' });
+                    if (eventData) setSelectedEvent(eventData);
+                  }}
+                >
+                  <h3 className="text-sm font-semibold text-white mb-1">{conf.name}</h3>
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-xs text-cyan-400 font-medium">{conf.date}</span>
+                    <span className="text-xs text-slate-500">|</span>
+                    <span className="text-xs text-slate-400">{conf.location}</span>
+                  </div>
+                  <p className="text-xs text-slate-400 leading-relaxed mb-3">{conf.description}</p>
+                  <div className="flex items-center gap-2">
+                    {eventData?.website && (
+                      <a
+                        href={eventData.website}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={(e) => e.stopPropagation()}
+                        className="text-xs px-2 py-1 rounded bg-white/[0.06] text-slate-300 border border-white/[0.06] hover:border-white/[0.12] transition-all"
+                      >
+                        Official Site
+                      </a>
+                    )}
+                    <span className="text-xs text-slate-500 hover:text-cyan-400 transition-colors">
+                      View on SpaceNexus &rarr;
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </ScrollReveal>
+
       {/* Tab Navigation */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -1016,6 +1102,7 @@ function SpaceEventsPageInner() {
       </motion.div>
 
       {/* Content */}
+      <div id="events-list" />
       <AnimatePresence mode="wait">
         {activeTab === 'calendar' ? (
           <motion.div

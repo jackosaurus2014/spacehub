@@ -132,6 +132,7 @@ const MODULES: Record<string, RelatedModuleConfig> = {
 
   // ── Marketplace ──
   marketplace: { name: 'Marketplace', description: 'Services & products', href: '/marketplace', icon: '🛒' },
+  pricing: { name: 'Pricing', description: 'Plans & pricing', href: '/pricing', icon: '💳' },
 
   // ── Learning & Reference ──
   glossary: { name: 'Glossary', description: 'Industry terms', href: '/glossary', icon: '📖' },
@@ -334,6 +335,10 @@ export const PAGE_RELATIONS: Record<string, RelatedModuleConfig[]> = {
   'newsletter-archive': [MODULES.newsletters, MODULES.newsDigest, MODULES.intelligenceBrief, MODULES.blogs, MODULES.resources],
   'why-spacenexus': [MODULES.marketIntel, MODULES.companyProfiles, MODULES.tools, MODULES.satellites, MODULES.spaceCapital],
   'widgets': [MODULES.satellites, MODULES.spaceWeather, MODULES.launchManifest, MODULES.marketIntel, MODULES.news],
+
+  // ── Community / Event Pages ──
+  'satellite-2026': [MODULES.spaceEvents, MODULES.conferences, MODULES.news, MODULES.companyProfiles, MODULES.marketplace],
+  'help': [MODULES.glossary, MODULES.learn, MODULES.tools, MODULES.news],
 };
 
 // Helper to get related modules for a page

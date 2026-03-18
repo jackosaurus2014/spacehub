@@ -234,6 +234,12 @@ export const ROUTE_LABELS: Record<string, string> = {
   '/reports/space-economy-2026': 'Space Economy 2026 Report',
   '/widgets': 'Widgets',
 
+  // ── New Pages (Wave) ──
+  '/satellite-2026': 'SATELLITE 2026',
+  '/advertise': 'Advertise',
+  '/help': 'Help Center',
+  '/checkout/success': 'Checkout Success',
+
   // ── Developer ──
   '/developer': 'Developer Portal',
   '/developer/docs': 'API Documentation',
@@ -330,6 +336,9 @@ export const ROUTE_PARENTS: Record<string, string> = {
   '/learn/satellite-launch-cost': '/learn',
   '/learn/space-companies-to-watch': '/learn',
   '/learn/space-industry-market-size': '/learn',
+
+  // Checkout pages
+  '/checkout/success': '/pricing',
 
   // Legal pages
   '/legal/dmca': '/terms',
