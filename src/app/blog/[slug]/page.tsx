@@ -139,6 +139,11 @@ const BLOG_CTA_MAP: Record<string, { tool: string; path: string }> = {
   'spectrum-management-space-who-controls-frequencies': { tool: 'Spectrum Intelligence', path: '/spectrum' },
   'rise-space-as-a-service-satellite-platforms': { tool: 'Marketplace', path: '/marketplace' },
   'space-exploration-milestones-timeline-achievement': { tool: 'Space Timeline', path: '/timeline' },
+  'what-is-leo-low-earth-orbit-explained': { tool: 'Satellite Tracker', path: '/satellites' },
+  'space-startup-funding-pre-seed-to-ipo': { tool: 'Funding Tracker', path: '/funding-tracker' },
+  'how-astronauts-train-for-spaceflight': { tool: 'Space Talent Hub', path: '/space-talent' },
+  'business-case-space-solar-power': { tool: 'Space Economy', path: '/space-economy' },
+  'orbital-slots-real-estate-geostationary-orbit': { tool: 'Orbital Slots', path: '/orbital-slots' },
 };
 
 type Props = {
