@@ -13796,6 +13796,297 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 <p><a href="/alternatives">See All SpaceNexus Alternatives and Comparisons</a></p>
 `,
   },
+  {
+    slug: 'orbital-mechanics-101-satellites-stay-orbit',
+    title: 'Orbital Mechanics 101: How Satellites Stay in Orbit',
+    excerpt: 'A clear, practical guide to the physics that keep satellites in orbit — from Newton\'s cannonball thought experiment to Kepler\'s laws, orbital velocity, and the real-world maneuvers that satellite operators use every day.',
+    category: 'guide',
+    author: 'SpaceNexus Team',
+    authorRole: 'Editorial',
+    publishedAt: '2026-03-18T00:00:00Z',
+    readingTime: 7,
+    keywords: ['orbital mechanics', 'how satellites stay in orbit', 'Kepler laws', 'orbital velocity', 'satellite orbits explained', 'LEO MEO GEO orbits', 'delta-v', 'orbital maneuvers'],
+    content: `
+<p>Every satellite in orbit is, in a very real sense, falling. It is falling toward Earth at every moment — but moving forward so quickly that the curve of its fall matches the curve of the planet beneath it. That elegant balance between gravity and velocity is the foundation of orbital mechanics, and understanding it is essential for anyone working in the space industry. This guide walks through the core principles in plain language, with enough technical depth to be genuinely useful.</p>
+
+<h2 id="newtons-cannonball">Newton's Cannonball: The Core Idea</h2>
+
+<p>Isaac Newton imagined a cannon on top of a very tall mountain. Fire a cannonball horizontally, and it arcs toward the ground. Fire it faster, and it travels farther before hitting the surface. Fire it fast enough, and the cannonball falls at exactly the rate the Earth curves away beneath it — it never lands. It just keeps falling around the planet. That is an orbit.</p>
+
+<p>This thought experiment captures the essential insight: an orbit is not about defying gravity. It is about falling with enough sideways speed that you perpetually miss the ground. Gravity provides the centripetal force that bends the satellite's path into a curve; the satellite's velocity determines the shape and size of that curve.</p>
+
+<h2 id="keplers-laws">Kepler's Three Laws of Planetary Motion</h2>
+
+<p>Johannes Kepler described three laws in the early 1600s that still govern every orbit today:</p>
+
+<h3>First Law: Orbits Are Ellipses</h3>
+<p>Every orbit is an ellipse with the central body (Earth, the Sun, etc.) at one of the two foci. A circle is a special case of an ellipse where both foci coincide. Most practical satellite orbits are nearly circular, but transfer orbits, highly elliptical orbits (HEO), and Molniya orbits are deliberately elongated for specific coverage or efficiency reasons.</p>
+
+<h3>Second Law: Equal Areas in Equal Times</h3>
+<p>A line drawn from the satellite to the center of Earth sweeps out equal areas in equal time intervals. The practical consequence: satellites move faster when they are closer to Earth (at perigee) and slower when they are farther away (at apogee). This is why Molniya orbit satellites spend most of their time over high-latitude regions — they slow down near apogee, which is positioned over the coverage area.</p>
+
+<h3>Third Law: Period Squared Proportional to Semi-Major Axis Cubed</h3>
+<p>The orbital period (time for one complete orbit) is related to the size of the orbit by T² = (4π²/GM) × a³, where a is the semi-major axis and GM is Earth's gravitational parameter. This law is what makes geostationary orbit special: at an altitude of approximately 35,786 km, the orbital period is exactly 24 hours, matching Earth's rotation. The satellite appears to hover over a single point on the equator.</p>
+
+<h2 id="orbital-velocity">Orbital Velocity: The Numbers</h2>
+
+<p>For a circular orbit, the required velocity is v = √(GM/r), where r is the distance from the center of Earth. At key altitudes:</p>
+
+<ul>
+<li><strong>LEO (400 km):</strong> ~7.67 km/s (27,600 km/h) — ISS orbital speed. Period: ~92 minutes</li>
+<li><strong>MEO (20,200 km):</strong> ~3.87 km/s — GPS satellite speed. Period: ~12 hours</li>
+<li><strong>GEO (35,786 km):</strong> ~3.07 km/s — geostationary speed. Period: 24 hours</li>
+<li><strong>Escape velocity (surface):</strong> ~11.2 km/s — speed needed to leave Earth's gravitational influence entirely</li>
+</ul>
+
+<p>Notice the counterintuitive relationship: higher orbits require lower velocity. This is because gravitational pull weakens with distance. However, reaching a higher orbit requires more energy overall because you must first climb out of the deeper part of Earth's gravity well.</p>
+
+<h2 id="orbit-types">Common Orbit Types and Their Uses</h2>
+
+<h3>Low Earth Orbit (LEO): 200-2,000 km</h3>
+<p>Used by: Starlink, ISS, Earth observation satellites, most CubeSats. LEO offers low latency (ideal for broadband internet), high-resolution Earth imaging, and lower launch costs. The trade-off is limited coverage per satellite (requiring large constellations) and orbital decay from atmospheric drag, especially below 500 km.</p>
+
+<h3>Medium Earth Orbit (MEO): 2,000-35,786 km</h3>
+<p>Used by: GPS, Galileo, GLONASS, O3b/SES. MEO provides a balance between coverage area and latency. Navigation constellations operate here because 24-30 satellites can provide global coverage with reasonable signal travel times.</p>
+
+<h3>Geostationary Orbit (GEO): 35,786 km</h3>
+<p>Used by: Communications satellites (SES, Intelsat, Viasat), weather satellites (GOES), missile warning systems. A single GEO satellite can see roughly one-third of Earth's surface, and just three can cover nearly the entire planet. The trade-off is high latency (~600ms round trip) and expensive launch costs.</p>
+
+<h3>Sun-Synchronous Orbit (SSO): 600-800 km, ~98° inclination</h3>
+<p>Used by: Earth observation satellites (Planet, Maxar). SSO satellites pass over any given point at the same local solar time on every orbit, providing consistent lighting conditions for imaging. This orbit precesses at exactly the rate Earth orbits the Sun, maintaining its orientation relative to the Sun throughout the year.</p>
+
+<h2 id="orbital-maneuvers">Orbital Maneuvers: How Satellites Change Orbits</h2>
+
+<p>Changing an orbit requires changing velocity — a quantity called <strong>delta-v</strong> (Δv). The most common maneuver is the <strong>Hohmann transfer</strong>, which moves a satellite between two circular orbits using two engine burns:</p>
+
+<ol>
+<li><strong>First burn:</strong> At the starting orbit, fire the engine prograde (in the direction of travel) to raise the opposite side of the orbit to the target altitude. This creates an elliptical transfer orbit.</li>
+<li><strong>Second burn:</strong> At the highest point of the transfer orbit, fire prograde again to circularize at the new altitude.</li>
+</ol>
+
+<p>The Hohmann transfer is the most fuel-efficient two-burn maneuver for coplanar orbit changes. For a transfer from LEO (400 km) to GEO, the total delta-v is approximately 3.9 km/s — a significant fraction of the satellite's total velocity budget.</p>
+
+<p>Other maneuvers include <strong>plane changes</strong> (rotating the orbital plane, extremely expensive in delta-v), <strong>phasing maneuvers</strong> (adjusting position within an orbit), and <strong>station-keeping burns</strong> (small corrections to maintain precise orbital parameters against perturbations).</p>
+
+<h2 id="perturbations">Why Orbits Aren't Perfect: Perturbations</h2>
+
+<p>In reality, orbits are not perfect Keplerian ellipses. Several forces perturb satellite orbits over time:</p>
+
+<ul>
+<li><strong>Atmospheric drag:</strong> In LEO, residual atmosphere creates drag that slowly lowers the orbit. The ISS loses about 2 km of altitude per month and requires regular reboosts. Drag increases dramatically during solar maximum when the atmosphere expands.</li>
+<li><strong>Earth's oblateness (J2):</strong> Earth is not a perfect sphere — it bulges at the equator. This causes orbital planes to precess (rotate) over time. Sun-synchronous orbits deliberately exploit this effect.</li>
+<li><strong>Third-body effects:</strong> Gravitational pull from the Moon and Sun creates long-period perturbations, especially significant for GEO satellites.</li>
+<li><strong>Solar radiation pressure:</strong> Photons from the Sun exert a small but continuous force on satellites, particularly those with large solar arrays or high area-to-mass ratios.</li>
+</ul>
+
+<h2 id="practical-applications">Why This Matters for Space Professionals</h2>
+
+<p>Understanding orbital mechanics is not just academic. It directly affects business decisions in the space industry:</p>
+
+<ul>
+<li><strong>Constellation design:</strong> Choosing the right altitude, inclination, and number of orbital planes determines coverage, latency, and total system cost</li>
+<li><strong>Launch planning:</strong> Orbital mechanics dictates launch windows, trajectory design, and the amount of propellant needed — all of which drive launch costs</li>
+<li><strong>Satellite operations:</strong> Station-keeping budgets, collision avoidance maneuvers, and end-of-life disposal all depend on delta-v calculations</li>
+<li><strong>Spectrum management:</strong> Orbital altitude and constellation geometry affect interference patterns, link budgets, and regulatory coordination</li>
+</ul>
+
+<p>SpaceNexus provides tools to explore these concepts hands-on. Use our Orbital Calculator to compute orbital parameters, velocities, and transfer maneuvers for any orbit.</p>
+
+<p><a href="/orbital-calculator">Try the SpaceNexus Orbital Calculator</a></p>
+`,
+  },
+  {
+    slug: 'outer-space-treaty-foundation-space-law',
+    title: 'The Outer Space Treaty: The Foundation of Space Law',
+    excerpt: 'The 1967 Outer Space Treaty remains the cornerstone of international space law. Here\'s what it says, why it still matters in 2026, and how its principles shape everything from Artemis Accords to commercial space operations.',
+    category: 'policy',
+    author: 'SpaceNexus Team',
+    authorRole: 'Editorial',
+    publishedAt: '2026-03-18T00:00:00Z',
+    readingTime: 8,
+    keywords: ['Outer Space Treaty', 'space law', 'international space law', 'Artemis Accords', 'space governance', 'UN space treaties', 'space policy', 'commercial space law'],
+    content: `
+<p>On January 27, 1967, the United States, the United Kingdom, and the Soviet Union signed the <strong>Treaty on Principles Governing the Activities of States in the Exploration and Use of Outer Space, including the Moon and Other Celestial Bodies</strong> — universally known as the Outer Space Treaty (OST). Nearly six decades later, it remains the foundational document of international space law, ratified by 114 countries and signed by another 23. Every commercial launch license, every satellite deployment, every crewed mission, and every lunar exploration program operates within the framework the OST established. Understanding it is essential for anyone working in the modern space industry.</p>
+
+<h2 id="historical-context">Historical Context: Why the Treaty Exists</h2>
+
+<p>The Outer Space Treaty was born in the Cold War, negotiated through the United Nations Committee on the Peaceful Uses of Outer Space (COPUOS) during the most intense period of the space race. After Sputnik launched in 1957, both superpowers recognized that space could become the ultimate military high ground — or a domain of peaceful cooperation.</p>
+
+<p>Several factors drove the negotiations. The Cuban Missile Crisis in 1962 demonstrated how quickly geopolitical competition could escalate to existential risk. The Limited Nuclear Test Ban Treaty of 1963 had already prohibited nuclear weapons testing in outer space, establishing a precedent. And both the US and USSR had strategic incentives to prevent the other from claiming sovereignty over the Moon or establishing military bases in orbit.</p>
+
+<p>The result was a treaty that established space as a commons — open to all, owned by none — and that created a framework of international norms that has proven remarkably durable despite the transformation of the space industry from a government duopoly to a commercial ecosystem with thousands of participants.</p>
+
+<h2 id="key-principles">The Core Principles</h2>
+
+<h3>Article I: Freedom of Exploration and Use</h3>
+<p>Outer space is free for exploration and use by all nations, without discrimination and on a basis of equality. This principle is what allows companies like SpaceX, Rocket Lab, and Planet to operate — they are authorized by their respective governments under Article VI, but the underlying right of access to space belongs to all humanity. Critically, this article also states that space "shall be the province of all mankind," establishing a collective interest that constrains purely national or commercial claims.</p>
+
+<h3>Article II: No National Appropriation</h3>
+<p>The most consequential provision: "Outer space, including the Moon and other celestial bodies, is not subject to national appropriation by claim of sovereignty, by means of use or occupation, or by any other means." No country can claim the Moon, Mars, or any asteroid as its territory. This prohibition is absolute and has no exceptions.</p>
+
+<p>The contentious modern question is whether Article II prohibits the extraction and ownership of space resources. The US position — codified in the 2015 Commercial Space Launch Competitiveness Act and reinforced by the Artemis Accords — is that extracting resources is "use" (permitted under Article I), not "appropriation" (prohibited under Article II). Not all nations agree, and this remains one of the most actively debated questions in space law.</p>
+
+<h3>Article III: International Law Applies</h3>
+<p>Activities in space must be carried out in accordance with international law, including the United Nations Charter. This means the laws of armed conflict, environmental norms, and other international obligations do not stop at the Karman line.</p>
+
+<h3>Article IV: Peaceful Uses and Demilitarization</h3>
+<p>States shall not place nuclear weapons or other weapons of mass destruction in orbit, install them on celestial bodies, or station them in outer space. The Moon and other celestial bodies shall be used exclusively for peaceful purposes — no military bases, no weapons testing, no military maneuvers. However, Article IV does not prohibit conventional military satellites (reconnaissance, communications, early warning), which is why military space assets are legal under the treaty.</p>
+
+<h3>Article VI: State Responsibility</h3>
+<p>States bear international responsibility for national activities in outer space, whether carried out by governmental agencies or non-governmental entities (i.e., private companies). Non-governmental activities require "authorization and continuing supervision" by the appropriate state. This is the legal basis for national licensing regimes — the FAA licenses launches, the FCC licenses spectrum, and the NOAA licenses remote sensing because the United States is internationally responsible for the activities of its nationals in space.</p>
+
+<h3>Article VII: Liability</h3>
+<p>A launching state is liable for damage caused by its space objects on the surface of the Earth, in air space, or in outer space. This was later elaborated in the 1972 Liability Convention, which establishes absolute liability for damage on the ground and fault-based liability for damage in space. When debris from a Chinese rocket stage fell on a village, or when Russia's ASAT test created thousands of trackable debris fragments, these liability provisions were implicated.</p>
+
+<h3>Article VIII: Jurisdiction and Control</h3>
+<p>A state retains jurisdiction and control over objects launched into space and over any personnel on those objects. Ownership of objects launched into space is not affected by their passage through outer space or their return to Earth. This means a US-registered satellite remains under US jurisdiction wherever it orbits — and if it lands in another country, it remains US property.</p>
+
+<h2 id="modern-relevance">Why the OST Still Matters in 2026</h2>
+
+<p>The space industry looks nothing like it did in 1967. There are now over 10,000 active satellites, commercial companies are building lunar landers, private citizens are flying to space, and multiple nations are planning resource extraction on the Moon. Yet the OST remains the primary legal framework because:</p>
+
+<ul>
+<li><strong>There is no replacement:</strong> Negotiating a new comprehensive treaty among 193 UN member states is practically impossible given current geopolitical tensions. The OST persists because the alternative — no framework at all — is worse for everyone.</li>
+<li><strong>Its principles are broadly accepted:</strong> Even China and Russia, which object to certain US interpretations, do not reject the treaty itself. The prohibition on weapons of mass destruction in orbit and the non-appropriation principle have near-universal support.</li>
+<li><strong>It is flexible by design:</strong> The OST establishes principles, not detailed regulations. This ambiguity — frustrating to lawyers — has allowed the framework to accommodate commercial space, mega-constellations, and space tourism without requiring amendment.</li>
+</ul>
+
+<h2 id="artemis-accords">The Artemis Accords: Building on the OST</h2>
+
+<p>The Artemis Accords, launched by NASA in 2020 and now signed by over 40 countries, are a set of bilateral agreements that interpret and build on the OST for the era of lunar exploration. Key provisions include:</p>
+
+<ul>
+<li><strong>Transparency:</strong> Signatories commit to publicly describing their space policies and exploration plans</li>
+<li><strong>Interoperability:</strong> Systems should use common standards to enable cooperation</li>
+<li><strong>Emergency assistance:</strong> Signatories will render assistance to astronauts in distress</li>
+<li><strong>Space resources:</strong> Extraction and utilization of space resources is consistent with the OST (the US interpretation of Article II)</li>
+<li><strong>Deconfliction:</strong> Signatories will notify others of their activities and coordinate to avoid harmful interference through "safety zones"</li>
+<li><strong>Orbital debris:</strong> Signatories commit to debris mitigation in accordance with existing guidelines</li>
+</ul>
+
+<p>The Artemis Accords are not a treaty — they are political commitments. But they represent the most significant effort to build shared norms for space governance since the OST itself.</p>
+
+<h2 id="gaps-and-challenges">Gaps and Challenges</h2>
+
+<p>The OST has significant gaps that the modern space industry must navigate:</p>
+
+<ul>
+<li><strong>Space traffic management:</strong> The OST says nothing about coordinating the movements of 10,000+ active satellites. The current system — voluntary coordination through entities like the 18th Space Defense Squadron — is straining under the volume.</li>
+<li><strong>Space debris:</strong> There is no binding international obligation to remove debris or to deorbit defunct satellites within a specific timeframe. National regulations (FCC's 5-year rule, for example) are filling this gap piecemeal.</li>
+<li><strong>Resource rights:</strong> The Article II debate will only intensify as lunar mining becomes technically and economically feasible. The lack of consensus creates legal uncertainty for companies investing billions in extraction technology.</li>
+<li><strong>Weapons:</strong> Article IV prohibits WMDs in space but says nothing about conventional weapons, directed-energy weapons, or cyber attacks on space assets. The absence of arms control norms for these capabilities is a growing security concern.</li>
+</ul>
+
+<h2 id="implications-for-industry">What This Means for Space Professionals</h2>
+
+<p>For anyone working in the space industry in 2026, the Outer Space Treaty is not an abstract historical document. It is the legal foundation that determines:</p>
+
+<ul>
+<li>Why your company needs a government license to launch or operate satellites</li>
+<li>Why liability insurance is required and how liability is allocated between states</li>
+<li>Why ITAR and EAR export controls exist (Article VI's "authorization and continuing supervision")</li>
+<li>Why the Artemis Accords matter for lunar commercial operations</li>
+<li>Why space debris mitigation is becoming mandatory, not voluntary</li>
+</ul>
+
+<p>Track regulatory developments, compliance requirements, and policy changes that affect your operations with SpaceNexus. Our Compliance Hub monitors space law and regulation changes across all major jurisdictions.</p>
+
+<p><a href="/compliance">Explore the SpaceNexus Compliance Hub</a></p>
+`,
+  },
+  {
+    slug: 'space-debris-removal-companies-cleaning-orbit',
+    title: 'Space Debris Removal: Companies Cleaning Up Earth\'s Orbit',
+    excerpt: 'With over 36,000 tracked debris objects threatening active satellites, a new industry is emerging to clean up space. Here are the companies, technologies, and business models behind orbital debris removal.',
+    category: 'technology',
+    author: 'SpaceNexus Team',
+    authorRole: 'Editorial',
+    publishedAt: '2026-03-18T00:00:00Z',
+    readingTime: 7,
+    keywords: ['space debris removal', 'orbital debris cleanup', 'active debris removal', 'ADR', 'Astroscale', 'ClearSpace', 'space sustainability', 'Kessler syndrome', 'space junk removal companies'],
+    content: `
+<p>Earth orbit has a pollution problem. The U.S. Space Surveillance Network tracks over <strong>36,000 objects</strong> larger than 10 cm in orbit, including dead satellites, spent rocket stages, and fragments from collisions and explosions. An estimated 130 million smaller pieces — too small to track but large enough to damage or destroy an active satellite — also orbit the planet at velocities exceeding 28,000 km/h. At those speeds, even a 1 cm paint flake carries the kinetic energy of a hand grenade.</p>
+
+<p>The problem is getting worse. With over 10,000 active satellites now in orbit and mega-constellations continuing to grow, the risk of collision — and the cascading chain reaction known as <strong>Kessler syndrome</strong> — is no longer theoretical. A new industry is emerging to address this existential threat to the space economy: active debris removal (ADR). Here are the companies leading the charge and the technologies they are developing.</p>
+
+<h2 id="scale-of-problem">The Scale of the Problem</h2>
+
+<p>To understand why debris removal matters, consider the numbers:</p>
+
+<ul>
+<li><strong>36,500+ tracked objects:</strong> Cataloged by the 18th Space Defense Squadron (formerly 18th Space Control Squadron) using ground-based radar and optical sensors</li>
+<li><strong>~1 million objects 1-10 cm:</strong> Estimated by statistical models based on radar sampling — too small to track individually, large enough to cause catastrophic damage</li>
+<li><strong>~130 million objects 1 mm-1 cm:</strong> Can damage solar panels, optics, and thermal protection systems</li>
+<li><strong>~28,000 km/h:</strong> Average relative velocity in LEO collisions. At this speed, a 10 cm object impacts with roughly the energy of a stick of dynamite</li>
+<li><strong>~30 conjunction alerts per week per satellite:</strong> The average number of close-approach warnings that satellite operators must evaluate</li>
+</ul>
+
+<p>The two single worst debris events in history — the 2007 Chinese ASAT test (which deliberately destroyed the Fengyun-1C weather satellite, creating 3,500+ tracked fragments) and the 2009 collision between Iridium 33 and Cosmos 2251 (creating 2,300+ tracked fragments) — account for roughly one-third of all cataloged debris in LEO. Both events demonstrated that a single incident can contaminate entire orbital shells for decades.</p>
+
+<h2 id="kessler-syndrome">Kessler Syndrome: The Tipping Point</h2>
+
+<p>In 1978, NASA scientist Donald Kessler described a scenario in which the density of objects in LEO becomes high enough that collisions between objects create more fragments than are removed by atmospheric drag. Once this threshold is crossed, a self-sustaining cascade begins — each collision creates more debris, which causes more collisions, which creates more debris. The result is an ever-thickening shell of debris that renders certain orbital altitudes unusable for decades or centuries.</p>
+
+<p>Current modeling by ESA's Space Debris Office suggests that certain altitude bands (particularly 750-900 km, where many Earth observation satellites and the remnants of the Fengyun-1C debris cloud reside) may already be at or near the tipping point. Even if humanity launched no new satellites, the existing debris population in these bands would continue to grow through mutual collisions. Active removal of 5-10 large objects per year is estimated to be the minimum required to stabilize the environment.</p>
+
+<h2 id="companies-and-technologies">Companies Leading Debris Removal</h2>
+
+<h3>Astroscale (Japan/UK)</h3>
+<p>The most advanced commercial debris removal company, Astroscale has been developing ADR capabilities since 2013. Their approach centers on two complementary technologies:</p>
+
+<ul>
+<li><strong>ELSA-d (End-of-Life Services by Astroscale - demonstration):</strong> Launched in 2021, this mission demonstrated magnetic capture of a cooperative target (a client satellite equipped with a docking plate). The servicer successfully captured and released the target multiple times.</li>
+<li><strong>ADRAS-J (Active Debris Removal by Astroscale - Japan):</strong> Launched in 2024, this mission performed the world's first rendezvous and proximity operation with an actual piece of debris — a Japanese H-2A rocket upper stage. ADRAS-J approached within meters and captured detailed imagery of the tumbling, uncooperative object.</li>
+<li><strong>ELSA-M (Multi-client):</strong> The commercial follow-on, designed to remove multiple debris objects in a single mission using a robotic arm capture mechanism. Expected to begin operations in 2026-2027.</li>
+</ul>
+
+<h3>ClearSpace (Switzerland/ESA)</h3>
+<p>ClearSpace was selected by ESA for the <strong>ClearSpace-1</strong> mission, the world's first institutional debris removal mission. The target is a Vega Secondary Payload Adapter (VESPA) left in orbit in 2013 at approximately 800 km altitude. ClearSpace-1 will use a "space claw" — four robotic arms that close around the target to capture it — then perform a controlled deorbit. The mission is scheduled for 2026 and will demonstrate ESA's commitment to "zero debris" by 2030.</p>
+
+<h3>Orbit Fab (United States)</h3>
+<p>While not a debris removal company per se, Orbit Fab is building the <strong>in-space refueling infrastructure</strong> that debris removal services will need to operate economically. Their RAFTI (Rapidly Attachable Fluid Transfer Interface) docking port and fuel depot architecture would allow debris removal vehicles to refuel in orbit, servicing multiple targets per mission rather than deorbiting with each piece of debris. Orbit Fab has already delivered its first fuel depot to orbit and signed agreements with multiple government and commercial customers.</p>
+
+<h3>TransAstra (United States)</h3>
+<p>TransAstra is developing <strong>capture bag technology</strong> for large debris objects. Their approach uses an inflatable bag that envelops the target — avoiding the need for complex robotic grappling of tumbling, oddly-shaped objects. The concept is particularly suited for large rocket bodies, which account for a disproportionate share of collision risk due to their size. TransAstra has received NASA SBIR funding and is developing the technology for both debris removal and asteroid mining applications.</p>
+
+<h3>Neumann Space (Australia)</h3>
+<p>Neumann Space is developing high-efficiency <strong>ion thrusters</strong> that can use recycled space debris as propellant. The concept is elegant: capture a piece of metallic debris, process it into propellant feedstock, and use it to fuel the removal vehicle's ion drive. This approach could make debris removal missions nearly self-sustaining, dramatically reducing costs. While still in early development, the technology has been demonstrated on the ISS.</p>
+
+<h2 id="business-models">Business Models for Debris Removal</h2>
+
+<p>The fundamental challenge for debris removal companies is the <strong>tragedy of the commons</strong>: everyone benefits from a cleaner orbital environment, but no single actor has sufficient incentive to pay for cleanup. Several business models are emerging to address this:</p>
+
+<ul>
+<li><strong>Government contracts:</strong> Space agencies (ESA, JAXA) are funding demonstration missions and planning to procure removal services. ESA's "Zero Debris Charter" creates demand for cleanup of European-origin debris.</li>
+<li><strong>Insurance-driven:</strong> As collision risk increases, satellite insurance premiums rise. Insurance companies may fund debris removal as a lower-cost alternative to paying out collision claims.</li>
+<li><strong>Regulatory compliance:</strong> The FCC's 5-year deorbit rule (reduced from 25 years in 2022) and similar international regulations create a market for end-of-life disposal services. Companies that cannot deorbit their own satellites will need to hire someone to do it.</li>
+<li><strong>Bundled servicing:</strong> Debris removal technology overlaps heavily with satellite servicing (refueling, repair, relocation). Companies like Astroscale are building multi-purpose servicing platforms that can remove debris and service active satellites.</li>
+<li><strong>Orbital sustainability fees:</strong> Some proposals call for per-satellite fees that fund a debris removal fund, similar to how carbon taxes fund environmental remediation.</li>
+</ul>
+
+<h2 id="regulatory-landscape">The Regulatory Landscape</h2>
+
+<p>Space debris regulation is evolving rapidly:</p>
+
+<ul>
+<li><strong>FCC 5-year rule (2022):</strong> All satellites licensed by the FCC must deorbit within 5 years of end of mission, down from the previous 25-year guideline</li>
+<li><strong>ESA Zero Debris Charter (2023):</strong> European commitment to zero debris creation by 2030, with active removal of existing European-origin debris</li>
+<li><strong>UN Long-term Sustainability Guidelines:</strong> Non-binding guidelines adopted by COPUOS that establish debris mitigation norms</li>
+<li><strong>ISO 24113:</strong> International standard for space debris mitigation requirements, increasingly referenced in national licensing conditions</li>
+<li><strong>US ODMSP update (2024):</strong> Updated U.S. Orbital Debris Mitigation Standard Practices with stricter requirements for collision avoidance and post-mission disposal</li>
+</ul>
+
+<h2 id="future-outlook">The Path Forward</h2>
+
+<p>The debris removal industry is at an inflection point. Demonstration missions have proven that rendezvous with uncooperative objects and capture are technically feasible. The regulatory environment is tightening. Insurance costs are rising. And the mega-constellation era means that the economic value of a clean orbital environment is growing exponentially.</p>
+
+<p>Estimates suggest the debris removal market could reach <strong>$2.5 billion annually by 2030</strong>, driven by government contracts, insurance incentives, and regulatory mandates. The companies that solve the technical and business model challenges in the next few years will be positioned to capture a market that is both commercially valuable and existentially important for the future of space.</p>
+
+<p>Monitor space debris conditions, track regulatory changes, and follow the companies building debris removal technology with SpaceNexus.</p>
+
+<p><a href="/space-environment">Explore the SpaceNexus Space Environment Monitor</a></p>
+`,
+  },
 ];
 
 export function getBlogPost(slug: string): OriginalBlogPost | undefined {

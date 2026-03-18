@@ -133,6 +133,48 @@ function BlogListingContent() {
           Latest post: {new Date(BLOG_POSTS.sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime())[0]?.publishedAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric', timeZone: 'UTC' })}
         </p>
 
+        {/* Most Popular Articles - Editor's Picks */}
+        {!selectedCategory && (
+          <ScrollReveal>
+            <div className="mb-12">
+              <h2 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-4 flex items-center gap-2">
+                <svg className="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.562.562 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.562.562 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" />
+                </svg>
+                Most Popular Articles
+              </h2>
+              <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-5">
+                <ol className="space-y-3">
+                  {[
+                    { num: 1, title: 'The Top 50 Space Companies to Watch in 2026', slug: 'top-50-space-companies-to-watch-2026' },
+                    { num: 2, title: 'SpaceX IPO: What a $1.75T Valuation Means', slug: 'spacex-ipo-what-it-means-for-space-investors' },
+                    { num: 3, title: 'How to Track Satellites in Real-Time', slug: 'how-to-track-satellites-real-time-2026-guide' },
+                    { num: 4, title: 'Space Stocks to Watch in 2026', slug: 'space-stocks-to-watch-2026-investors-guide' },
+                    { num: 5, title: 'The Complete Guide to Space ETFs', slug: 'complete-guide-space-etfs-arkx-ufo-ita-2026' },
+                  ].map((item) => (
+                    <li key={item.slug}>
+                      <Link
+                        href={`/blog/${item.slug}`}
+                        className="group flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-white/[0.04] transition-all"
+                      >
+                        <span className="flex items-center justify-center w-6 h-6 rounded-full bg-amber-500/15 text-amber-400 text-xs font-bold shrink-0">
+                          {item.num}
+                        </span>
+                        <span className="text-sm text-slate-300 group-hover:text-white transition-colors font-medium flex-1">
+                          {item.title}
+                        </span>
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-400 border border-amber-500/25 shrink-0">
+                          Editor&apos;s Pick
+                        </span>
+                      </Link>
+                    </li>
+                  ))}
+                </ol>
+              </div>
+            </div>
+          </ScrollReveal>
+        )}
+
         {/* Featured Series */}
         {!selectedCategory && (
           <ScrollReveal>

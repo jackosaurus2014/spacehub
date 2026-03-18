@@ -329,6 +329,75 @@ function QuickStats() {
 // Main Page
 // ---------------------------------------------------------------------------
 
+function EventJsonLd() {
+  const keyEvents = [
+    {
+      name: 'Artemis II Rollout to Pad',
+      startDate: '2026-03-20',
+      endDate: '2026-03-20',
+      location: 'Kennedy Space Center, FL',
+      description: 'SLS/Orion stack rolls out to LC-39B for final preparations for the first crewed Artemis mission.',
+    },
+    {
+      name: 'SATELLITE 2026',
+      startDate: '2026-03-23',
+      endDate: '2026-03-26',
+      location: 'Washington, DC',
+      description: 'The largest satellite industry conference in the world, with 15,000+ attendees from across the global space ecosystem.',
+    },
+    {
+      name: 'Artemis II Launch',
+      startDate: '2026-04-01',
+      endDate: '2026-04-01',
+      location: 'Kennedy Space Center, FL',
+      description: 'First crewed Artemis mission: 4 astronauts on a lunar flyby. First humans beyond LEO since 1972.',
+    },
+    {
+      name: 'Space Symposium',
+      startDate: '2026-04-06',
+      endDate: '2026-04-09',
+      location: 'Colorado Springs, CO',
+      description: '41st annual Space Symposium hosted by Space Foundation.',
+    },
+    {
+      name: 'IAC 2026',
+      startDate: '2026-10-05',
+      endDate: '2026-10-09',
+      location: 'Milan, Italy',
+      description: '77th International Astronautical Congress, the world\'s premier space conference.',
+    },
+  ];
+
+  const jsonLd = keyEvents.map((event) => ({
+    '@context': 'https://schema.org',
+    '@type': 'Event',
+    name: event.name,
+    startDate: event.startDate,
+    endDate: event.endDate,
+    description: event.description,
+    location: {
+      '@type': 'Place',
+      name: event.location,
+      address: event.location,
+    },
+    organizer: {
+      '@type': 'Organization',
+      name: 'SpaceNexus',
+      url: 'https://spacenexus.us',
+    },
+    eventStatus: 'https://schema.org/EventScheduled',
+    eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
+    url: 'https://spacenexus.us/space-calendar',
+  }));
+
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }}
+    />
+  );
+}
+
 export default function SpaceCalendarPage() {
   const [filter, setFilter] = useState<EventCategory | 'all'>('all');
 
@@ -342,6 +411,7 @@ export default function SpaceCalendarPage() {
 
   return (
     <div className="min-h-screen py-8">
+      <EventJsonLd />
       <div className="container mx-auto px-4 max-w-7xl">
 
         <AnimatedPageHeader

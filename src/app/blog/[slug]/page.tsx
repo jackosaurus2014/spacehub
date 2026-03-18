@@ -124,6 +124,9 @@ const BLOG_CTA_MAP: Record<string, { tool: string; path: string }> = {
   'satellite-constellations-explained-gps-starlink': { tool: 'Constellation Tracker', path: '/constellations' },
   'space-launch-process-countdown-to-orbit': { tool: 'Mission Control', path: '/mission-control' },
   'spacenexus-vs-quilty-space-comparison': { tool: 'Alternatives', path: '/alternatives' },
+  'orbital-mechanics-101-satellites-stay-orbit': { tool: 'Orbital Calculator', path: '/orbital-calculator' },
+  'outer-space-treaty-foundation-space-law': { tool: 'Compliance Hub', path: '/compliance' },
+  'space-debris-removal-companies-cleaning-orbit': { tool: 'Space Environment Monitor', path: '/space-environment' },
 };
 
 type Props = {
