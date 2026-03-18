@@ -243,6 +243,9 @@ export const ROUTE_LABELS: Record<string, string> = {
   '/space-map': 'Space Industry Map',
   '/startup-directory': 'Startup Directory',
 
+  // ── Space Industry Statistics ──
+  '/space-stats': 'Space Industry Statistics',
+
   // ── New Pages (Wave) ──
   '/satellite-2026': 'SATELLITE 2026',
   '/advertise': 'Advertise',
@@ -250,6 +253,9 @@ export const ROUTE_LABELS: Record<string, string> = {
   '/checkout/success': 'Checkout Success',
   '/careers': 'Careers',
   '/solutions/space-professionals': 'For Space Professionals',
+
+  // ── Data Sources ──
+  '/data-sources': 'Data Sources',
 
   // ── Developer ──
   '/developer': 'Developer Portal',

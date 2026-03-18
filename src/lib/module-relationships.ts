@@ -134,6 +134,9 @@ const MODULES: Record<string, RelatedModuleConfig> = {
   spaceMap: { name: 'Space Industry Map', description: 'Industry sector map', href: '/space-map', icon: '🗺️' },
   startupDirectory: { name: 'Startup Directory', description: 'Space startups', href: '/startup-directory', icon: '🚀' },
 
+  // ── Transparency ──
+  dataSources: { name: 'Data Sources', description: 'Data transparency', href: '/data-sources', icon: '🔍' },
+
   // ── Marketplace ──
   marketplace: { name: 'Marketplace', description: 'Services & products', href: '/marketplace', icon: '🛒' },
   pricing: { name: 'Pricing', description: 'Plans & pricing', href: '/pricing', icon: '💳' },
@@ -355,6 +358,12 @@ export const PAGE_RELATIONS: Record<string, RelatedModuleConfig[]> = {
   // ── Space Industry Map & Startup Directory ──
   'space-map': [MODULES.ecosystemMap, MODULES.marketMap, MODULES.companyProfiles, MODULES.startupDirectory, MODULES.marketIntel],
   'startup-directory': [MODULES.startupTracker, MODULES.fundingRounds, MODULES.spaceCapital, MODULES.spaceMap, MODULES.companyProfiles],
+
+  // ── Data Sources ──
+  'data-sources': [MODULES.aiInsights, MODULES.news, MODULES.satellites, MODULES.spaceWeather, MODULES.companyProfiles],
+
+  // ── Space Industry Statistics ──
+  'space-stats': [MODULES.spaceEconomy, MODULES.marketIntel, MODULES.industryTrends, MODULES.govBudgets, MODULES.satellites],
 };
 
 // Helper to get related modules for a page

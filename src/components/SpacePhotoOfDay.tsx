@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 
 interface APODData {
   title: string;
@@ -108,12 +109,14 @@ export default function SpacePhotoOfDay() {
             {!imgLoaded && (
               <div className="absolute inset-0 bg-white/[0.06] animate-pulse" />
             )}
-            <img
+            <Image
               src={data.url}
               alt={data.title}
-              className={`w-full h-full object-cover transition-opacity duration-500 ${imgLoaded ? 'opacity-100' : 'opacity-0'}`}
+              fill
+              className={`object-cover transition-opacity duration-500 ${imgLoaded ? 'opacity-100' : 'opacity-0'}`}
               onLoad={() => setImgLoaded(true)}
               loading="lazy"
+              unoptimized
             />
           </>
         )}

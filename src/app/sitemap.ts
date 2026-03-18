@@ -333,6 +333,12 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
     // Space Industry Map & Startup Directory
     { url: `${BASE_URL}/space-map`, changeFrequency: 'weekly' as const, priority: 0.8 },
     { url: `${BASE_URL}/startup-directory`, changeFrequency: 'weekly' as const, priority: 0.7 },
+
+    // Space Industry Statistics
+    { url: `${BASE_URL}/space-stats`, changeFrequency: 'monthly' as const, priority: 0.8 },
+
+    // Data Sources transparency page
+    { url: `${BASE_URL}/data-sources`, changeFrequency: 'monthly' as const, priority: 0.6 },
   ];
 
   return routes.map(route => ({

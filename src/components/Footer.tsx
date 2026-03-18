@@ -65,6 +65,7 @@ const footerLinks = {
       { label: 'FAQ', href: '/faq' },
       { label: 'Blog', href: '/blog' },
       { label: 'AI Insights', href: '/ai-insights' },
+      { label: 'Space Stats', href: '/space-stats' },
       { label: 'Learning Center', href: '/learn' },
       { label: 'Getting Started', href: '/getting-started' },
       { label: 'Help Center', href: '/help' },
@@ -101,6 +102,7 @@ const footerLinks = {
     title: 'Company',
     links: [
       { label: 'About', href: '/about' },
+      { label: 'Data Sources', href: '/data-sources' },
       { label: 'Why SpaceNexus', href: '/why-spacenexus' },
       { label: 'Blog', href: '/blog' },
       { label: 'Contact', href: '/contact' },

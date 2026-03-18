@@ -79,6 +79,7 @@ export default function SpaceIndustrySnapshot() {
     tick();
     const interval = setInterval(tick, 1000);
     return () => clearInterval(interval);
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- only re-run when the launch date changes, not the whole pulse object
   }, [pulse?.nextLaunch?.date]);
 
   const severityColor: Record<string, string> = {

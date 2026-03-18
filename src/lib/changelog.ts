@@ -16,6 +16,28 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '1.8.0',
+    date: '2026-03-17',
+    title: 'Industry Intelligence & Content Milestone',
+    description:
+      'Waves 121-124: Space Industry Scorecard, Calendar, Map, Startup Directory, 55 blog articles, 126 acronyms, NASA APOD integration, Space History Today, event watchlist, feedback button, time tracking, and Data Sources transparency page.',
+    highlight: '55 blog articles, 126 acronyms, Data Sources page, Industry Scorecard',
+    changes: [
+      { type: 'feature', text: 'Space Industry Scorecard with quarterly grades across 6 industry dimensions' },
+      { type: 'feature', text: 'Space Calendar with month-by-month key dates for 2026' },
+      { type: 'feature', text: 'Interactive Space Industry Map showing sector relationships and company positioning' },
+      { type: 'feature', text: 'Startup Directory with curated profiles of 35+ emerging space companies' },
+      { type: 'feature', text: '55 new blog articles covering launches, markets, technology, and analysis' },
+      { type: 'feature', text: '126 space industry acronyms added to the A-Z reference' },
+      { type: 'feature', text: 'NASA APOD (Astronomy Picture of the Day) integration on the dashboard' },
+      { type: 'feature', text: 'Space History Today — daily historical milestones from spaceflight history' },
+      { type: 'feature', text: 'Event watchlist feature for tracking launches and conferences' },
+      { type: 'feature', text: 'Data Sources transparency page listing all 30+ platform data sources' },
+      { type: 'improvement', text: 'Feedback button added for user-submitted feature requests and bug reports' },
+      { type: 'improvement', text: 'Time tracking integration for developer productivity metrics' },
+    ],
+  },
+  {
     version: '1.7.0',
     date: '2026-03-17',
     title: 'Platform Maturity & Content Expansion',

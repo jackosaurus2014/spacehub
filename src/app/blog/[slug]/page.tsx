@@ -72,6 +72,9 @@ const BLOG_CTA_MAP: Record<string, { tool: string; path: string }> = {
   'what-is-itar-space-industry-guide': { tool: 'Compliance Hub', path: '/compliance' },
   'blue-origin-new-glenn-heavy-lift-rocket': { tool: 'Launch Vehicles', path: '/launch-vehicles' },
   'space-insurance-satellite-operators-guide': { tool: 'Space Insurance', path: '/space-insurance' },
+  'how-many-satellites-in-space-2026': { tool: 'Satellite Tracker', path: '/satellites' },
+  'spacex-starlink-everything-you-need-to-know-2026': { tool: 'Constellation Tracker', path: '/constellations' },
+  'space-tourism-2026-who-can-fly-costs': { tool: 'Space Tourism', path: '/space-tourism' },
 };
 
 type Props = {

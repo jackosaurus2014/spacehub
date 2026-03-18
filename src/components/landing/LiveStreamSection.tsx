@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
+import Image from 'next/image';
 
 /* ------------------------------------------------------------------ */
 /*  Types                                                              */
@@ -106,10 +107,12 @@ function StreamSelector({
           {/* Thumbnail */}
           <div className="relative w-20 h-12 rounded-lg overflow-hidden bg-space-800 flex-shrink-0">
             {stream.thumbnailUrl ? (
-              <img
+              <Image
                 src={stream.thumbnailUrl}
                 alt={stream.title}
-                className="w-full h-full object-cover"
+                fill
+                className="object-cover"
+                unoptimized
               />
             ) : (
               <div className="w-full h-full flex items-center justify-center">
