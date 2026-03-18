@@ -55,12 +55,14 @@ interface SpaceChannel {
 const SPACE_CHANNELS: SpaceChannel[] = [
   { name: 'SpaceX',              channelId: 'UCtI0Hodo5o5dUb67FeUjDeA', xHandle: 'SpaceX',           priority: 1 },
   { name: 'NASA',                channelId: 'UCLA_DiR1FfKNvjuUpBHmylQ', xHandle: 'NASA',             priority: 1 },
+  { name: 'NASA STEM',            channelId: 'UCryGec9PdUCLjpJW2mgCuLw', xHandle: 'ABORTSTEM',        priority: 2 },
   { name: 'NASASpaceflight',     channelId: 'UCSUu1lih2RifWkKtDOJdsBA', xHandle: 'NASASpaceflight',  priority: 2 },
-  { name: 'Everyday Astronaut',  channelId: 'UC6uKrU_WqJ1R2HMTY3LIx5Q', xHandle: 'erdaborbit',    priority: 3 },
+  { name: 'Everyday Astronaut',  channelId: 'UC6uKrU_WqJ1R2HMTY3LIx5Q', xHandle: 'erdayastronaut',  priority: 3 },
   { name: 'Blue Origin',         channelId: 'UCVxTHEKKLxNjGcvVaZindlg', xHandle: 'blueorigin',       priority: 2 },
   { name: 'Rocket Lab',          channelId: 'UCsWq7LZaizhIi-c-Yo_bgg',  xHandle: 'RocketLab',        priority: 3 },
   { name: 'ULA',                 channelId: 'UCVrEnvMzkT9oAXUELMfUiuQ', xHandle: 'ulalaunch',        priority: 3 },
   { name: 'ESA',                 channelId: 'UCIBaDdAbGlFDeS33shmlD0A', xHandle: 'esa',              priority: 2 },
+  { name: 'Space Videos',        channelId: 'UCakgsb0w7QB0VHdnCc0CCFA', xHandle: '',                  priority: 3 },
   { name: 'Scott Manley',        channelId: 'UCxzC4EngIsMrPmbm6Nxvb-A', xHandle: 'DJSnM',            priority: 4 },
   { name: 'Marcus House',        channelId: 'UCBNHHEoiSF8pcLgqLKVugOw', xHandle: 'MarcusHouseLive',  priority: 4 },
 ];
@@ -241,33 +243,45 @@ function toActiveLiveStreams(
 // ---------------------------------------------------------------------------
 
 async function detectViaYouTubeAPI(apiKey: string): Promise<ActiveLiveStream[]> {
-  // Step 1: Broad search for any space-related live streams
-  const broadItems = await youtubeSearchLive(apiKey, {
-    q: 'space+launch+live',
-    maxResults: '10',
-  });
-
-  // Track which channel IDs we've already found
-  const foundChannelIds = new Set(broadItems.map((item) => item.snippet.channelId));
-
-  // Step 2: For high-priority channels NOT found in the broad search,
-  // do individual channel searches
-  const highPriorityMissing = SPACE_CHANNELS.filter(
-    (ch) => ch.priority <= HIGH_PRIORITY_THRESHOLD && !foundChannelIds.has(ch.channelId),
-  );
-
-  const channelSearchPromises = highPriorityMissing.map((ch) =>
-    youtubeSearchLive(apiKey, {
-      channelId: ch.channelId,
-      maxResults: '3',
-    }),
-  );
+  // Step 1: Check ALL known space channels for active livestreams
+  // This is the most reliable method — directly query each channel
+  // Cost: 100 units per channel, but we only check priority <= 3 (7 channels = 700 units)
+  const channelSearchPromises = SPACE_CHANNELS
+    .filter((ch) => ch.priority <= HIGH_PRIORITY_THRESHOLD)
+    .map((ch) =>
+      youtubeSearchLive(apiKey, {
+        channelId: ch.channelId,
+        maxResults: '5',
+      }),
+    );
 
   const channelResults = await Promise.all(channelSearchPromises);
-  const additionalItems = channelResults.flat();
+  const channelItems = channelResults.flat();
 
-  // Merge and deduplicate by videoId
-  const allItems = [...broadItems, ...additionalItems];
+  // Step 2: Also do broad searches to catch streams from channels
+  // not in our registry (indie coverage, partner channels, etc.)
+  const [broadSpace, broadISS, broadNASA] = await Promise.all([
+    youtubeSearchLive(apiKey, { q: 'space launch live', maxResults: '5' }),
+    youtubeSearchLive(apiKey, { q: 'ISS live', maxResults: '3' }),
+    youtubeSearchLive(apiKey, { q: 'NASA live', maxResults: '3' }),
+  ]);
+
+  // Step 3: Also check lower-priority channels individually
+  const foundChannelIds = new Set(channelItems.map((item) => item.snippet.channelId));
+  const lowPriorityMissing = SPACE_CHANNELS.filter(
+    (ch) => ch.priority > HIGH_PRIORITY_THRESHOLD && !foundChannelIds.has(ch.channelId),
+  );
+  const lowPriorityResults = await Promise.all(
+    lowPriorityMissing.map((ch) =>
+      youtubeSearchLive(apiKey, { channelId: ch.channelId, maxResults: '2' }),
+    ),
+  );
+  const lowPriorityItems = lowPriorityResults.flat();
+
+  // Merge all results
+  const allItems = [...channelItems, ...broadSpace, ...broadISS, ...broadNASA, ...lowPriorityItems];
+
+  // Deduplicate by videoId
   const seen = new Set<string>();
   const uniqueItems = allItems.filter((item) => {
     if (seen.has(item.id.videoId)) return false;
