@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, Suspense } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
+import Link from 'next/link';
 import PageHeader from '@/components/ui/PageHeader';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
@@ -1130,6 +1131,45 @@ export default function SpaceTourismPage() {
             <div className="flex justify-center py-20">
               <LoadingSpinner size="lg" />
             </div>
+
+            {/* Related Reading */}
+            <ScrollReveal>
+              <div className="mt-12 mb-8 p-6 rounded-xl border border-white/[0.06] bg-white/[0.03]">
+                <h3 className="text-sm font-semibold uppercase tracking-wider text-slate-400 mb-4">Related Reading</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <Link
+                    href="/blog/space-tourism-2026-who-can-fly-costs"
+                    className="group flex items-start gap-3 p-3 rounded-lg hover:bg-white/[0.04] transition-colors"
+                  >
+                    <span className="text-slate-500 mt-0.5 shrink-0">📰</span>
+                    <div>
+                      <p className="text-sm font-medium text-white/80 group-hover:text-white transition-colors">Space Tourism in 2026: Who Can Fly, How Much It Costs, and What to Expect</p>
+                      <p className="text-xs text-slate-500 mt-0.5">Blog article</p>
+                    </div>
+                  </Link>
+                  <Link
+                    href="/blog/how-to-become-astronaut-2026"
+                    className="group flex items-start gap-3 p-3 rounded-lg hover:bg-white/[0.04] transition-colors"
+                  >
+                    <span className="text-slate-500 mt-0.5 shrink-0">📰</span>
+                    <div>
+                      <p className="text-sm font-medium text-white/80 group-hover:text-white transition-colors">How to Become an Astronaut in 2026</p>
+                      <p className="text-xs text-slate-500 mt-0.5">Blog article</p>
+                    </div>
+                  </Link>
+                  <Link
+                    href="/blog/blue-origin-new-glenn-heavy-lift-rocket"
+                    className="group flex items-start gap-3 p-3 rounded-lg hover:bg-white/[0.04] transition-colors"
+                  >
+                    <span className="text-slate-500 mt-0.5 shrink-0">📰</span>
+                    <div>
+                      <p className="text-sm font-medium text-white/80 group-hover:text-white transition-colors">Blue Origin New Glenn: Everything We Know About the Next Heavy-Lift Rocket</p>
+                      <p className="text-xs text-slate-500 mt-0.5">Blog article</p>
+                    </div>
+                  </Link>
+                </div>
+              </div>
+            </ScrollReveal>
 
             <ScrollReveal>
               <RelatedModules

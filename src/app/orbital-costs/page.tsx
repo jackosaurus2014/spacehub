@@ -637,6 +637,35 @@ export default function OrbitalCostsPage() {
         </div>
         </ScrollReveal>
 
+        {/* Related Reading */}
+        <ScrollReveal delay={0.05}>
+          <div className="mt-12 mb-8 p-6 rounded-xl border border-white/[0.06] bg-white/[0.03]">
+            <h3 className="text-sm font-semibold uppercase tracking-wider text-slate-400 mb-4">Related Reading</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <Link
+                href="/blog/economics-satellite-launch-cost-per-kilogram"
+                className="group flex items-start gap-3 p-3 rounded-lg hover:bg-white/[0.04] transition-colors"
+              >
+                <span className="text-slate-500 mt-0.5 shrink-0">📰</span>
+                <div>
+                  <p className="text-sm font-medium text-white/80 group-hover:text-white transition-colors">The Economics of Satellite Launch: Cost Per Kilogram Explained</p>
+                  <p className="text-xs text-slate-500 mt-0.5">Blog article</p>
+                </div>
+              </Link>
+              <Link
+                href="/blog/spacex-blue-origin-rocket-lab-comparison-2026"
+                className="group flex items-start gap-3 p-3 rounded-lg hover:bg-white/[0.04] transition-colors"
+              >
+                <span className="text-slate-500 mt-0.5 shrink-0">📰</span>
+                <div>
+                  <p className="text-sm font-medium text-white/80 group-hover:text-white transition-colors">SpaceX vs Blue Origin vs Rocket Lab: Launch Provider Comparison 2026</p>
+                  <p className="text-xs text-slate-500 mt-0.5">Blog article</p>
+                </div>
+              </Link>
+            </div>
+          </div>
+        </ScrollReveal>
+
         {/* Related Modules */}
         <ScrollReveal delay={0.1}>
         <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">

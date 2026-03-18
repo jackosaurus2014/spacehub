@@ -5,6 +5,7 @@ import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import DataFreshness from '@/components/ui/DataFreshness';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import RelatedModules from '@/components/ui/RelatedModules';
+import SubscribeCTA from '@/components/marketing/SubscribeCTA';
 import { clientLogger } from '@/lib/client-logger';
 import Link from 'next/link';
 
@@ -1111,6 +1112,8 @@ export default function ConstellationTrackerPage() {
                 </div>
               </div>
             </ScrollReveal>
+
+            <SubscribeCTA />
 
             <ScrollReveal>
               <RelatedModules

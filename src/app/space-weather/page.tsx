@@ -1235,6 +1235,47 @@ export default function SpaceWeatherDashboard() {
         )}
 
         {/* ============================================================ */}
+        {/*  Related Reading                                              */}
+        {/* ============================================================ */}
+        <ScrollReveal delay={0.05}>
+          <div className="mt-12 mb-8 p-6 rounded-xl border border-white/[0.06] bg-white/[0.03]">
+            <h3 className="text-sm font-semibold uppercase tracking-wider text-slate-400 mb-4">Related Reading</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <Link
+                href="/blog/space-weather-explained-solar-flares-cmes"
+                className="group flex items-start gap-3 p-3 rounded-lg hover:bg-white/[0.04] transition-colors"
+              >
+                <span className="text-slate-500 mt-0.5 shrink-0">📰</span>
+                <div>
+                  <p className="text-sm font-medium text-white/80 group-hover:text-white transition-colors">Space Weather Explained: Solar Flares, CMEs, and Why They Matter</p>
+                  <p className="text-xs text-slate-500 mt-0.5">Blog article</p>
+                </div>
+              </Link>
+              <Link
+                href="/blog/space-weather-forecasting-predicting-solar-storms"
+                className="group flex items-start gap-3 p-3 rounded-lg hover:bg-white/[0.04] transition-colors"
+              >
+                <span className="text-slate-500 mt-0.5 shrink-0">📰</span>
+                <div>
+                  <p className="text-sm font-medium text-white/80 group-hover:text-white transition-colors">Space Weather Forecasting: Predicting Solar Storms Before They Strike</p>
+                  <p className="text-xs text-slate-500 mt-0.5">Blog article</p>
+                </div>
+              </Link>
+              <Link
+                href="/blog/space-weather-monitoring-business-impact"
+                className="group flex items-start gap-3 p-3 rounded-lg hover:bg-white/[0.04] transition-colors"
+              >
+                <span className="text-slate-500 mt-0.5 shrink-0">📰</span>
+                <div>
+                  <p className="text-sm font-medium text-white/80 group-hover:text-white transition-colors">How to Monitor Space Weather and Why It Matters for Your Business</p>
+                  <p className="text-xs text-slate-500 mt-0.5">Blog article</p>
+                </div>
+              </Link>
+            </div>
+          </div>
+        </ScrollReveal>
+
+        {/* ============================================================ */}
         {/*  Related Links                                                */}
         {/* ============================================================ */}
         <ScrollReveal delay={0.1}>

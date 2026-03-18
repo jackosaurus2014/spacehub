@@ -796,6 +796,45 @@ export default function MarsPlannerPage() {
         </div></ScrollReveal>
       </div>
 
+            {/* Related Reading */}
+            <ScrollReveal>
+              <div className="mt-12 mb-8 p-6 rounded-xl border border-white/[0.06] bg-white/[0.03]">
+                <h3 className="text-sm font-semibold uppercase tracking-wider text-slate-400 mb-4">Related Reading</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <Link
+                    href="/blog/elon-musk-mars-plan-spacex-path-red-planet"
+                    className="group flex items-start gap-3 p-3 rounded-lg hover:bg-white/[0.04] transition-colors"
+                  >
+                    <span className="text-slate-500 mt-0.5 shrink-0">📰</span>
+                    <div>
+                      <p className="text-sm font-medium text-white/80 group-hover:text-white transition-colors">Elon Musk&apos;s Mars Plan: SpaceX&apos;s Path to the Red Planet</p>
+                      <p className="text-xs text-slate-500 mt-0.5">Blog article</p>
+                    </div>
+                  </Link>
+                  <Link
+                    href="/blog/future-of-space-10-predictions-2030"
+                    className="group flex items-start gap-3 p-3 rounded-lg hover:bg-white/[0.04] transition-colors"
+                  >
+                    <span className="text-slate-500 mt-0.5 shrink-0">📰</span>
+                    <div>
+                      <p className="text-sm font-medium text-white/80 group-hover:text-white transition-colors">The Future of Space: 10 Predictions for 2030</p>
+                      <p className="text-xs text-slate-500 mt-0.5">Blog article</p>
+                    </div>
+                  </Link>
+                  <Link
+                    href="/blog/nuclear-propulsion-space-future-deep-space-travel"
+                    className="group flex items-start gap-3 p-3 rounded-lg hover:bg-white/[0.04] transition-colors"
+                  >
+                    <span className="text-slate-500 mt-0.5 shrink-0">📰</span>
+                    <div>
+                      <p className="text-sm font-medium text-white/80 group-hover:text-white transition-colors">Nuclear Propulsion in Space: The Future of Deep Space Travel</p>
+                      <p className="text-xs text-slate-500 mt-0.5">Blog article</p>
+                    </div>
+                  </Link>
+                </div>
+              </div>
+            </ScrollReveal>
+
             <ScrollReveal>
               <RelatedModules
                 modules={[

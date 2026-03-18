@@ -5,6 +5,7 @@ import PageHeader from '@/components/ui/PageHeader';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import RelatedModules from '@/components/ui/RelatedModules';
+import SubscribeCTA from '@/components/marketing/SubscribeCTA';
 import DataFreshness from '@/components/ui/DataFreshness';
 import ExportButton from '@/components/ui/ExportButton';
 import Link from 'next/link';
@@ -1879,6 +1880,8 @@ export default function LaunchVehiclesPage() {
                 </div>
               </div>
             </ScrollReveal>
+
+            <SubscribeCTA />
 
             <ScrollReveal>
               <RelatedModules
