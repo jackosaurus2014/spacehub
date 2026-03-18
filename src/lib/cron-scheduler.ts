@@ -41,6 +41,9 @@ const CRON_JOBS: CronJobDef[] = [
   { schedule: '*/30 * * * *',  path: '/api/refresh?type=space-weather',     label: 'space-weather-refresh',      maxStaleMinutes: 90 },
   { schedule: '*/30 * * * *',  path: '/api/refresh?type=live-streams',      label: 'live-stream-check',          maxStaleMinutes: 90 },
 
+  // Livestream detection
+  { schedule: '*/2 * * * *',   path: '/api/livestreams',                    label: 'livestream-check',           maxStaleMinutes: 10 },
+
   // SpaceX / EONET / Podcasts
   { schedule: '*/30 * * * *',  path: '/api/spacex',                         label: 'spacex-data-refresh',        maxStaleMinutes: 90 },
   { schedule: '0 */2 * * *',   path: '/api/eonet',                          label: 'eonet-events-refresh',       maxStaleMinutes: 300 },

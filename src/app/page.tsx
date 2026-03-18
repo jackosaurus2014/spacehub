@@ -73,6 +73,10 @@ const RecentUpdates = nextDynamic(() => import('@/components/landing/RecentUpdat
   ssr: false,
   loading: () => <div className="py-16"><div className="container mx-auto px-4"><div className="animate-pulse"><div className="h-8 bg-white/[0.06] rounded w-1/3 mx-auto mb-8"></div><div className="space-y-4 max-w-3xl mx-auto">{[1,2,3,4].map(i => <div key={i} className="h-24 bg-white/[0.06] rounded-xl"></div>)}</div></div></div></div>,
 });
+const LiveStreamSection = nextDynamic(() => import('@/components/landing/LiveStreamSection'), {
+  ssr: false,
+  loading: () => null,
+});
 
 // Force dynamic rendering - no static generation at build time
 export const dynamic = 'force-dynamic';
@@ -155,6 +159,9 @@ export default async function HomePage() {
     <div className="min-h-screen">
       {/* Hero Section with Video Background */}
       <LandingHero />
+
+      {/* Live Stream — appears only when a stream is active */}
+      <LiveStreamSection />
 
       {/* Scrolling News Ticker */}
       <NewsTicker />
