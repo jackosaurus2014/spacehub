@@ -9,6 +9,7 @@ import ShareButton from '@/components/ui/ShareButton';
 import BlogViewTracker from '@/components/blog/BlogViewTracker';
 import InlineNewsletterSignup from '@/components/blog/InlineNewsletterSignup';
 import BlogTableOfContents from '@/components/blog/BlogTableOfContents';
+import ReadingProgressBar from '@/components/blog/ReadingProgressBar';
 
 const SAFE_HTML_CONFIG: sanitizeHtml.IOptions = {
   allowedTags: ['b', 'i', 'em', 'strong', 'a', 'p', 'br', 'ul', 'ol', 'li', 'h2', 'h3', 'h4', 'blockquote', 'code', 'pre', 'img', 'span', 'div', 'table', 'thead', 'tbody', 'tr', 'th', 'td'],
@@ -248,6 +249,7 @@ export default async function BlogPostPage({ params }: Props) {
 
   return (
     <div className="min-h-screen pb-12">
+      <ReadingProgressBar />
       <BlogViewTracker slug={slug} />
       <script
         type="application/ld+json"
