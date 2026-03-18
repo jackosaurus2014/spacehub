@@ -16,6 +16,29 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '1.9.0',
+    date: '2026-03-17',
+    title: 'Content Authority & Platform Depth',
+    description:
+      'Waves 125-128: 64 blog articles reaching content authority, newsletter landing page, learning path, media kit, space stats page, data sources page, startup directory, space industry map, industry scorecard, space calendar, event watchlist, daily briefing, and feedback button.',
+    highlight: '64 blog articles, newsletter page, learning path, media kit',
+    changes: [
+      { type: 'feature', text: '64 original blog articles establishing content authority across the space industry' },
+      { type: 'feature', text: 'Newsletter landing page with email capture and past issue archive' },
+      { type: 'feature', text: 'Learning path system for structured space industry education' },
+      { type: 'feature', text: 'Media kit page with brand assets, logos, and press resources' },
+      { type: 'feature', text: 'Space stats page with live industry metrics and growth tracking' },
+      { type: 'feature', text: 'Data sources transparency page listing all platform data origins' },
+      { type: 'feature', text: 'Startup directory with curated profiles of emerging space companies' },
+      { type: 'feature', text: 'Interactive space industry map showing sector relationships and company positioning' },
+      { type: 'feature', text: 'Industry scorecard with quarterly grades across 6 industry dimensions' },
+      { type: 'feature', text: 'Space calendar with month-by-month key dates for 2026' },
+      { type: 'feature', text: 'Event watchlist for tracking launches and conferences' },
+      { type: 'feature', text: 'Daily briefing feature with curated morning space industry updates' },
+      { type: 'improvement', text: 'Feedback button for user-submitted feature requests and bug reports' },
+    ],
+  },
+  {
     version: '1.8.0',
     date: '2026-03-17',
     title: 'Industry Intelligence & Content Milestone',
