@@ -4,7 +4,7 @@ const categories = [
   {
     name: 'Technology',
     slug: 'technology',
-    count: 30,
+    count: 31,
     description:
       'Deep dives into rockets, satellites, propulsion systems, space stations, and the hardware powering the next era of spaceflight.',
     icon: (
@@ -20,7 +20,7 @@ const categories = [
   {
     name: 'Guides',
     slug: 'guide',
-    count: 28,
+    count: 29,
     description:
       'Step-by-step guides for space professionals. Satellite tracking, career paths, procurement, ITAR compliance, and platform walkthroughs.',
     icon: (
@@ -36,7 +36,7 @@ const categories = [
   {
     name: 'Analysis',
     slug: 'analysis',
-    count: 22,
+    count: 23,
     description:
       'Original analysis of industry trends, company strategies, mission outcomes, and the forces shaping the space economy.',
     icon: (
@@ -237,6 +237,34 @@ export default function TopicsPage() {
               </Link>
             ))}
           </div>
+        </section>
+
+        {/* Content Stats */}
+        <section className="mb-16">
+          <h2 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-6">
+            Content Library Stats
+          </h2>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+            {[
+              { label: 'Total Articles', value: '133', sub: 'and growing weekly' },
+              { label: 'Total Word Count', value: '100,000+', sub: 'words of original content' },
+              { label: 'Categories', value: '6', sub: 'topic areas covered' },
+              { label: 'Avg. Reading Time', value: '9 min', sub: 'per article' },
+              { label: 'Published Since', value: 'Mar 2026', sub: 'content updated weekly' },
+            ].map((stat) => (
+              <div
+                key={stat.label}
+                className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-5 text-center"
+              >
+                <div className="text-2xl font-bold text-white mb-1">{stat.value}</div>
+                <div className="text-xs font-semibold text-slate-300 mb-0.5">{stat.label}</div>
+                <div className="text-[10px] text-slate-500">{stat.sub}</div>
+              </div>
+            ))}
+          </div>
+          <p className="text-xs text-slate-500 mt-4 text-center">
+            Every article is original, long-form content written by the SpaceNexus team &mdash; no AI-generated filler, no syndicated press releases.
+          </p>
         </section>
 
         {/* CTA */}

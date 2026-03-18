@@ -144,6 +144,9 @@ const BLOG_CTA_MAP: Record<string, { tool: string; path: string }> = {
   'how-astronauts-train-for-spaceflight': { tool: 'Space Talent Hub', path: '/space-talent' },
   'business-case-space-solar-power': { tool: 'Space Economy', path: '/space-economy' },
   'orbital-slots-real-estate-geostationary-orbit': { tool: 'Orbital Slots', path: '/orbital-slots' },
+  'what-is-meo-medium-earth-orbit-uses': { tool: 'Satellite Tracker', path: '/satellites' },
+  'rideshare-launches-small-satellites-affordably': { tool: 'Launch Vehicles', path: '/launch-vehicles' },
+  'space-foundation-advocating-space-industry': { tool: 'Resources', path: '/resources' },
 };
 
 type Props = {
