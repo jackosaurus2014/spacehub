@@ -97,6 +97,16 @@ const PERSONA_LABELS: Record<UserPersona, string> = {
   legal: 'Legal / Compliance',
 };
 
+// Map personas to their dedicated solution pages
+const PERSONA_SOLUTION_PAGES: Partial<Record<UserPersona, { href: string; label: string }>> = {
+  investor: { href: '/solutions/investors', label: 'Explore all investor tools' },
+  'mission-planner': { href: '/solutions/engineers', label: 'Explore all engineering tools' },
+  executive: { href: '/solutions/executives', label: 'Explore all executive tools' },
+  entrepreneur: { href: '/solutions/space-professionals', label: 'Explore all founder resources' },
+  'supply-chain': { href: '/solutions/space-professionals', label: 'Explore all supply chain tools' },
+  legal: { href: '/solutions/analysts', label: 'Explore all compliance & analysis tools' },
+};
+
 export default function PersonaDashboard() {
   const [persona, setPersona] = useState<UserPersona | null>(null);
   const [mounted, setMounted] = useState(false);
@@ -158,6 +168,21 @@ export default function PersonaDashboard() {
             </Link>
           ))}
         </div>
+
+        {/* Solution page CTA */}
+        {PERSONA_SOLUTION_PAGES[persona] && (
+          <div className="text-center mt-8">
+            <Link
+              href={PERSONA_SOLUTION_PAGES[persona]!.href}
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-white/[0.06] border border-white/[0.10] text-white hover:bg-white/[0.10] hover:border-white/20 transition-all duration-200 ease-smooth text-sm font-semibold"
+            >
+              {PERSONA_SOLUTION_PAGES[persona]!.label}
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+              </svg>
+            </Link>
+          </div>
+        )}
 
         {/* Change persona link */}
         <div className="text-center mt-6">
