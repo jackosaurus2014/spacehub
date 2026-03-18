@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import ShareButton from '@/components/ui/ShareButton';
+import SocialShare from '@/components/ui/SocialShare';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
@@ -505,7 +506,7 @@ export default function IndustryScorecardPage() {
         <ScrollReveal delay={0.25}>
           <div className="card p-6 mb-4">
             <h2 className="text-sm font-semibold text-white/90 mb-2">Methodology</h2>
-            <p className="text-xs text-slate-400 leading-relaxed">
+            <p className="text-xs text-slate-400 leading-relaxed mb-4">
               The Space Industry Scorecard is published quarterly by the SpaceNexus editorial team. Each of the six dimensions
               is graded on a standard A-F scale based on quantitative data (launch counts, funding totals, budget allocations,
               workforce surveys) and qualitative expert assessment (regulatory trajectory, technology maturity, industry sentiment).
@@ -514,6 +515,14 @@ export default function IndustryScorecardPage() {
               the Satellite Industry Association, and public filings. This scorecard is for informational purposes and represents
               the editorial opinion of SpaceNexus.
             </p>
+            <div className="flex items-center gap-2 pt-3 border-t border-white/[0.06]">
+              <span className="text-xs text-slate-500">Share this scorecard:</span>
+              <SocialShare
+                title="Space Industry Scorecard Q1 2026 - SpaceNexus"
+                url="https://spacenexus.us/industry-scorecard"
+                description="Comprehensive quarterly scorecard grading the space industry across 6 dimensions. Overall grade: A-."
+              />
+            </div>
           </div>
         </ScrollReveal>
 

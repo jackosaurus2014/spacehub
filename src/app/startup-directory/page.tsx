@@ -5,6 +5,7 @@ import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import ItemListSchema from '@/components/seo/ItemListSchema';
+import SocialShare from '@/components/ui/SocialShare';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
@@ -233,13 +234,20 @@ export default function StartupDirectoryPage() {
         {/* Overview banner */}
         <ScrollReveal>
           <div className="bg-gradient-to-r from-emerald-500/10 to-blue-500/10 border border-emerald-500/20 rounded-xl p-5 mb-8">
-            <p className="text-white/70 text-sm leading-relaxed">
+            <p className="text-white/70 text-sm leading-relaxed mb-3">
               A curated list of the most notable space startups, from{' '}
               <strong className="text-amber-400">pre-seed</strong> through{' '}
               <strong className="text-emerald-400">Series C+</strong>. Each company includes funding
               raised, founding year, headquarters, and sector classification. Click any startup name to
               view their full company intelligence profile on SpaceNexus.
             </p>
+            <div className="flex items-center gap-2 pt-3 border-t border-emerald-500/10">
+              <SocialShare
+                title="Space Startup Directory - SpaceNexus"
+                url="https://spacenexus.us/startup-directory"
+                description="35 notable space startups across 5 sectors and all funding stages, from pre-seed to Series C+."
+              />
+            </div>
           </div>
         </ScrollReveal>
 

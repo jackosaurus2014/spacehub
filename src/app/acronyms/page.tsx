@@ -4,6 +4,7 @@ import { useState, useMemo } from 'react';
 import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
+import SocialShare from '@/components/ui/SocialShare';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
@@ -291,6 +292,14 @@ export default function AcronymsPage() {
           breadcrumb="Resources"
           accentColor="cyan"
         />
+
+        <div className="flex justify-end mb-4">
+          <SocialShare
+            title="Space Industry Acronyms & Abbreviations - SpaceNexus"
+            url="https://spacenexus.us/acronyms"
+            description="Comprehensive A-Z reference of 126+ acronyms and abbreviations used across the global space industry."
+          />
+        </div>
 
         {/* ---- Search & Category Filter ---- */}
         <ScrollReveal delay={0.1}>

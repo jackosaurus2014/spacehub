@@ -8,6 +8,7 @@ import SocialShare from '@/components/ui/SocialShare';
 import ShareButton from '@/components/ui/ShareButton';
 import BlogViewTracker from '@/components/blog/BlogViewTracker';
 import InlineNewsletterSignup from '@/components/blog/InlineNewsletterSignup';
+import BlogTableOfContents from '@/components/blog/BlogTableOfContents';
 
 const SAFE_HTML_CONFIG: sanitizeHtml.IOptions = {
   allowedTags: ['b', 'i', 'em', 'strong', 'a', 'p', 'br', 'ul', 'ol', 'li', 'h2', 'h3', 'h4', 'blockquote', 'code', 'pre', 'img', 'span', 'div', 'table', 'thead', 'tbody', 'tr', 'th', 'td'],
@@ -16,6 +17,8 @@ const SAFE_HTML_CONFIG: sanitizeHtml.IOptions = {
     'img': ['src', 'alt', 'title', 'width', 'height'],
     'span': ['class'],
     'div': ['class'],
+    'h2': ['id'],
+    'h3': ['id'],
     'td': ['colspan', 'rowspan'],
     'th': ['colspan', 'rowspan'],
   },
@@ -280,6 +283,9 @@ export default async function BlogPostPage({ params }: Props) {
             />
           </div>
         </header>
+
+        {/* Table of Contents — only shows for articles with 3+ H2 headings */}
+        <BlogTableOfContents contentHtml={post.content} />
 
         {/* Content */}
         <div

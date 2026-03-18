@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
+import SocialShare from '@/components/ui/SocialShare';
 
 /* ─── Animated Counter Hook ─────────────────────────────────────────────── */
 function useAnimatedCounter(target: number, duration = 1800, prefix = '', suffix = '') {
@@ -191,9 +192,14 @@ export default function SpaceStatsPage() {
               The definitive collection of space industry data, market figures, and key metrics.
               Updated regularly with the latest available statistics.
             </p>
-            <p className="text-slate-500 text-sm">
+            <p className="text-slate-500 text-sm mb-4">
               Last updated: March 2026 | Sources include Space Foundation, SIA, Bryce Tech, Euroconsult, FAA, NASA
             </p>
+            <SocialShare
+              title="Space Industry Statistics & Facts 2026 - SpaceNexus"
+              url="https://spacenexus.us/space-stats"
+              description="The definitive collection of space industry data: $626B market, 230+ launches, 10,000+ satellites, and more."
+            />
           </div>
 
           {/* Hero Stats - Animated Counters */}

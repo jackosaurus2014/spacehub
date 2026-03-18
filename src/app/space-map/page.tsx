@@ -5,6 +5,7 @@ import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import ItemListSchema from '@/components/seo/ItemListSchema';
+import SocialShare from '@/components/ui/SocialShare';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
@@ -327,13 +328,20 @@ export default function SpaceIndustryMapPage() {
         {/* Overview banner */}
         <ScrollReveal>
           <div className="bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-blue-500/20 rounded-xl p-5 mb-8">
-            <p className="text-white/70 text-sm leading-relaxed">
+            <p className="text-white/70 text-sm leading-relaxed mb-3">
               The space industry spans{' '}
               <strong className="text-blue-400">8 interconnected sectors</strong> from launch vehicles to
               in-space servicing. This map provides a structured view of the key companies driving each
               segment. Click any company name to view their full intelligence profile, or use the filters below
               to focus on specific sectors.
             </p>
+            <div className="flex items-center gap-2 pt-3 border-t border-blue-500/10">
+              <SocialShare
+                title="Space Industry Ecosystem Map - SpaceNexus"
+                url="https://spacenexus.us/space-map"
+                description="Interactive map of the space industry: 8 sectors, 30+ key companies, and market sizing across the $546B space economy."
+              />
+            </div>
           </div>
         </ScrollReveal>
 
