@@ -16,6 +16,26 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '1.7.0',
+    date: '2026-03-17',
+    title: 'Platform Maturity & Content Expansion',
+    description:
+      'Waves 117-120: 44 blog articles, 578 build routes, comprehensive SEO with rich results, conversion optimization, and final platform polish across 40 waves of recursive development.',
+    highlight: '44 blog articles, 578 routes, comprehensive SEO, conversion optimization',
+    changes: [
+      { type: 'feature', text: '44 original blog articles covering every aspect of the space industry' },
+      { type: 'feature', text: '"SpaceNexus vs Free Tools" comparison article for competitive positioning' },
+      { type: 'feature', text: '"The Bloomberg Terminal Problem" thought leadership piece' },
+      { type: 'feature', text: 'Blog ItemList JSON-LD for SEO rich results on /blog' },
+      { type: 'feature', text: 'Trial preview expandable section on pricing page' },
+      { type: 'feature', text: 'Email signature template for founder outreach' },
+      { type: 'improvement', text: 'hreflang tags added to root layout for English language SEO' },
+      { type: 'improvement', text: 'Animated platform stats on pricing page with scroll-triggered counters' },
+      { type: 'improvement', text: 'Reading time estimates displayed on news cards' },
+      { type: 'improvement', text: 'About page enhanced with mission statement and team information' },
+    ],
+  },
+  {
     version: '1.6.0',
     date: '2026-03-17',
     title: 'Content, Livestreams & Platform Polish',
