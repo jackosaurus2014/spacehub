@@ -370,9 +370,12 @@ export function middleware(req: NextRequest) {
       );
     }
 
-    // Proceed with the request, adding rate limit headers
+    // Proceed with the request, adding rate limit + security headers
     const response = NextResponse.next();
     response.headers.set('X-RateLimit-Remaining', String(remaining));
+    response.headers.set('X-Content-Type-Options', 'nosniff');
+    response.headers.set('X-Frame-Options', 'DENY');
+    response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
 
     // Default Cache-Control for GET API requests (routes can override)
     if (req.method === 'GET') {

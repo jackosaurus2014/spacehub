@@ -30,6 +30,19 @@ export default function HelpButton() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [isOpen]);
 
+  /* Close panel on Escape key */
+  useEffect(() => {
+    function handleEscapeKey(event: KeyboardEvent) {
+      if (event.key === 'Escape') {
+        setIsOpen(false);
+      }
+    }
+    if (isOpen) {
+      document.addEventListener('keydown', handleEscapeKey);
+    }
+    return () => document.removeEventListener('keydown', handleEscapeKey);
+  }, [isOpen]);
+
   /* Close on route change */
   useEffect(() => {
     setIsOpen(false);
@@ -42,7 +55,12 @@ export default function HelpButton() {
     <div ref={panelRef} className="fixed bottom-20 right-4 lg:bottom-6 lg:right-6 z-50">
       {/* Expanded panel */}
       {isOpen && (
-        <div className="absolute bottom-14 right-0 w-72 rounded-xl border border-white/[0.1] bg-slate-900/95 backdrop-blur-xl shadow-2xl shadow-black/40 overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-200">
+        <div
+          id="help-panel"
+          role="dialog"
+          aria-label="Help menu"
+          className="absolute bottom-14 right-0 w-72 rounded-xl border border-white/[0.1] bg-slate-900/95 backdrop-blur-xl shadow-2xl shadow-black/40 overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-200"
+        >
           {/* Header */}
           <div className="flex items-center justify-between px-4 py-3 border-b border-white/[0.06]">
             <span className="text-sm font-semibold text-white">Need help?</span>
@@ -117,6 +135,7 @@ export default function HelpButton() {
         }`}
         aria-label={isOpen ? 'Close help' : 'Open help'}
         aria-expanded={isOpen}
+        aria-controls="help-panel"
       >
         {isOpen ? (
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

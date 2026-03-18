@@ -104,7 +104,9 @@ function StoryForm() {
             onChange={(e) => setStoryData((prev) => ({ ...prev, name: e.target.value }))}
             className="input"
             placeholder="Your name"
+            maxLength={200}
             required
+            aria-required="true"
           />
         </div>
         <div>
@@ -118,6 +120,7 @@ function StoryForm() {
             onChange={(e) => setStoryData((prev) => ({ ...prev, company: e.target.value }))}
             className="input"
             placeholder="Your company (optional)"
+            maxLength={200}
           />
         </div>
       </div>
@@ -130,9 +133,11 @@ function StoryForm() {
           value={storyData.story}
           onChange={(e) => setStoryData((prev) => ({ ...prev, story: e.target.value }))}
           rows={3}
+          maxLength={2000}
           className="input resize-none"
           placeholder="Tell us how SpaceNexus helps with your space industry work..."
           required
+          aria-required="true"
         />
       </div>
       <button
@@ -143,7 +148,7 @@ function StoryForm() {
         {storyStatus === 'submitting' ? 'Submitting...' : 'Share Your Story'}
       </button>
       {storyStatus === 'error' && (
-        <p className="text-red-400 text-xs text-center">Something went wrong. Please try again.</p>
+        <p role="alert" className="text-red-400 text-xs text-center">Something went wrong. Please try again.</p>
       )}
     </form>
   );

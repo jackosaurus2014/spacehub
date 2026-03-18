@@ -51,6 +51,8 @@ const BLOG_CTA_MAP: Record<string, { tool: string; path: string }> = {
   'space-stocks-to-watch-2026-investors-guide': { tool: 'Market Intelligence', path: '/market-intel' },
   'space-launch-schedule-2026-complete-guide': { tool: 'Mission Control', path: '/mission-control' },
   'space-industry-careers-guide-2026': { tool: 'Space Talent Hub', path: '/space-talent' },
+  'space-debris-growing-threat-orbital-environment': { tool: 'Space Environment Monitor', path: '/space-environment' },
+  'spacenexus-platform-guide-first-week': { tool: 'Getting Started', path: '/getting-started' },
 };
 
 type Props = {

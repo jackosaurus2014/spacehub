@@ -238,14 +238,16 @@ export default function Satellite2026Page() {
                       type="text"
                       autoComplete="name"
                       enterKeyHint="next"
+                      maxLength={200}
                       value={formData.name}
                       onChange={handleChange}
                       className={`input w-full ${errors.name ? 'border-red-500' : ''}`}
                       placeholder="Your name"
                       aria-required="true"
                       aria-invalid={errors.name ? true : undefined}
+                      aria-describedby={errors.name ? 'sat-name-error' : undefined}
                     />
-                    {errors.name && <p className="text-red-400 text-sm mt-1">{errors.name}</p>}
+                    {errors.name && <p id="sat-name-error" role="alert" className="text-red-400 text-sm mt-1">{errors.name}</p>}
                   </div>
 
                   <div>
@@ -259,14 +261,16 @@ export default function Satellite2026Page() {
                       inputMode="email"
                       autoComplete="email"
                       enterKeyHint="next"
+                      maxLength={320}
                       value={formData.email}
                       onChange={handleChange}
                       className={`input w-full ${errors.email ? 'border-red-500' : ''}`}
                       placeholder="you@company.com"
                       aria-required="true"
                       aria-invalid={errors.email ? true : undefined}
+                      aria-describedby={errors.email ? 'sat-email-error' : undefined}
                     />
-                    {errors.email && <p className="text-red-400 text-sm mt-1">{errors.email}</p>}
+                    {errors.email && <p id="sat-email-error" role="alert" className="text-red-400 text-sm mt-1">{errors.email}</p>}
                   </div>
 
                   <div>
@@ -279,14 +283,16 @@ export default function Satellite2026Page() {
                       type="text"
                       autoComplete="organization"
                       enterKeyHint="next"
+                      maxLength={200}
                       value={formData.company}
                       onChange={handleChange}
                       className={`input w-full ${errors.company ? 'border-red-500' : ''}`}
                       placeholder="Your company"
                       aria-required="true"
                       aria-invalid={errors.company ? true : undefined}
+                      aria-describedby={errors.company ? 'sat-company-error' : undefined}
                     />
-                    {errors.company && <p className="text-red-400 text-sm mt-1">{errors.company}</p>}
+                    {errors.company && <p id="sat-company-error" role="alert" className="text-red-400 text-sm mt-1">{errors.company}</p>}
                   </div>
 
                   <div>
@@ -299,12 +305,14 @@ export default function Satellite2026Page() {
                       value={formData.message}
                       onChange={handleChange}
                       rows={4}
+                      maxLength={2000}
                       className={`input w-full resize-none ${errors.message ? 'border-red-500' : ''}`}
                       placeholder="What topics would you like to discuss? Any specific features you'd like to see?"
                       aria-required="true"
                       aria-invalid={errors.message ? true : undefined}
+                      aria-describedby={errors.message ? 'sat-message-error' : undefined}
                     />
-                    {errors.message && <p className="text-red-400 text-sm mt-1">{errors.message}</p>}
+                    {errors.message && <p id="sat-message-error" role="alert" className="text-red-400 text-sm mt-1">{errors.message}</p>}
                   </div>
 
                   <button

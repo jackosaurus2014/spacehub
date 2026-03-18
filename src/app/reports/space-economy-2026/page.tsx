@@ -94,7 +94,7 @@ export default function SpaceEconomy2026Page() {
           setStatus('success');
         } else {
           setStatus('error');
-          setErrorMessage(data.error || 'Something went wrong. Please try again.');
+          setErrorMessage('Something went wrong. Please try again.');
         }
       }
     } catch {
@@ -225,12 +225,14 @@ export default function SpaceEconomy2026Page() {
                         type="text"
                         autoComplete="name"
                         enterKeyHint="next"
+                        maxLength={200}
                         value={name}
                         onChange={(e) => setName(e.target.value)}
                         placeholder="Jane Smith"
                         className="w-full px-4 py-3 bg-black/80 border border-white/[0.1] rounded-xl text-white placeholder:text-slate-500 focus:outline-none focus:border-white/15 focus:ring-1 focus:ring-white/10 transition-all text-sm"
                         disabled={status === 'loading'}
                         required
+                        aria-required="true"
                       />
                     </div>
                     <div>
@@ -243,17 +245,19 @@ export default function SpaceEconomy2026Page() {
                         inputMode="email"
                         autoComplete="email"
                         enterKeyHint="send"
+                        maxLength={320}
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         placeholder="jane@company.com"
                         className="w-full px-4 py-3 bg-black/80 border border-white/[0.1] rounded-xl text-white placeholder:text-slate-500 focus:outline-none focus:border-white/15 focus:ring-1 focus:ring-white/10 transition-all text-sm"
                         disabled={status === 'loading'}
                         required
+                        aria-required="true"
                       />
                     </div>
 
                     {status === 'error' && errorMessage && (
-                      <p className="text-red-400 text-sm text-center">{errorMessage}</p>
+                      <p role="alert" className="text-red-400 text-sm text-center">{errorMessage}</p>
                     )}
 
                     <button

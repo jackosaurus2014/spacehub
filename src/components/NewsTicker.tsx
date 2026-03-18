@@ -73,12 +73,27 @@ export default function NewsTicker() {
           </span>
         </div>
 
+        {/* Pause/Play button for keyboard/screen reader users */}
+        <button
+          onClick={() => setPaused((p) => !p)}
+          className="shrink-0 px-2 py-2 text-slate-500 hover:text-white transition-colors border-r border-white/[0.08]"
+          aria-label={paused ? 'Resume news ticker' : 'Pause news ticker'}
+        >
+          {paused ? (
+            <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
+          ) : (
+            <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" /></svg>
+          )}
+        </button>
+
         {/* Scrolling ticker area */}
         <div
           ref={tickerRef}
           className="flex-1 overflow-hidden py-2"
           onMouseEnter={() => setPaused(true)}
           onMouseLeave={() => setPaused(false)}
+          onFocus={() => setPaused(true)}
+          onBlur={() => setPaused(false)}
         >
           <div
             className="ticker-scroll flex items-center gap-8 whitespace-nowrap"

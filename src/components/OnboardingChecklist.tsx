@@ -154,7 +154,14 @@ export default function OnboardingChecklist() {
               <span>{completedCount} of {totalCount} completed</span>
               <span>{progressPercent}%</span>
             </div>
-            <div className="h-2 w-full rounded-full bg-white/[0.06] overflow-hidden">
+            <div
+              className="h-2 w-full rounded-full bg-white/[0.06] overflow-hidden"
+              role="progressbar"
+              aria-valuenow={completedCount}
+              aria-valuemin={0}
+              aria-valuemax={totalCount}
+              aria-label={`Onboarding progress: ${completedCount} of ${totalCount} steps completed`}
+            >
               <div
                 className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-green-400 transition-all duration-500 ease-out"
                 style={{ width: `${progressPercent}%` }}
@@ -169,6 +176,8 @@ export default function OnboardingChecklist() {
               return (
                 <li key={item.id} className="flex items-center gap-3 group">
                   <button
+                    role="checkbox"
+                    aria-checked={isChecked}
                     onClick={() => !item.alwaysChecked && toggleItem(item.id)}
                     disabled={item.alwaysChecked}
                     className={`flex-shrink-0 w-5 h-5 rounded border transition-all flex items-center justify-center ${
@@ -176,7 +185,7 @@ export default function OnboardingChecklist() {
                         ? 'bg-emerald-500 border-emerald-500 text-white'
                         : 'border-white/20 hover:border-white/40 bg-transparent'
                     } ${item.alwaysChecked ? 'cursor-default' : 'cursor-pointer'}`}
-                    aria-label={`${isChecked ? 'Uncheck' : 'Check'}: ${item.label}`}
+                    aria-label={item.label}
                   >
                     {isChecked && (
                       <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={3}>
