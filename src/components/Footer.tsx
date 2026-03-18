@@ -51,6 +51,7 @@ const footerLinks = {
       { label: 'Power Budget Calculator', href: '/power-budget-calculator' },
       { label: 'Licensing Checker', href: '/licensing-checker' },
       { label: 'Export Classifications', href: '/export-classifications' },
+      { label: 'Compliance Checklist', href: '/compliance-checklist' },
     ],
   },
   resources: {
@@ -72,6 +73,8 @@ const footerLinks = {
       { label: 'Daily Digest', href: '/daily-digest' },
       { label: 'Space Stats', href: '/space-stats' },
       { label: 'Learning Center', href: '/learn' },
+      { label: 'Satellite Spotting Guide', href: '/satellite-spotting' },
+      { label: 'Aurora Forecast', href: '/aurora-forecast' },
       { label: 'Getting Started', href: '/getting-started' },
       { label: 'Help Center', href: '/help' },
     ],

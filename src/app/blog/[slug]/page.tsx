@@ -152,6 +152,11 @@ const BLOG_CTA_MAP: Record<string, { tool: string; path: string }> = {
   'export-controls-space-hardware-itar-vs-ear': { tool: 'Compliance Hub', path: '/compliance' },
   'noaa-remote-sensing-licensing-satellite-operators': { tool: 'Compliance Hub', path: '/compliance' },
   'wrc-27-preview-spectrum-battles-space-communications': { tool: 'Spectrum Management', path: '/spectrum' },
+  'space-debris-regulations-by-country-comparison': { tool: 'Compliance Hub', path: '/compliance' },
+  'ham-radio-license-satellite-communication': { tool: 'Spectrum Management', path: '/spectrum' },
+  'space-insurance-regulations-required-changing': { tool: 'Space Insurance', path: '/space-insurance' },
+  'photograph-iss-satellites-beginners-guide': { tool: 'Satellite Tracker', path: '/satellites' },
+  'artemis-accords-vs-moon-treaty-difference': { tool: 'Space Law', path: '/space-law' },
 };
 
 type Props = {

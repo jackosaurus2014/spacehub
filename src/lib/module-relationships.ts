@@ -111,6 +111,7 @@ const MODULES: Record<string, RelatedModuleConfig> = {
   licensingChecker: { name: 'Licensing Checker', description: 'License requirements', href: '/licensing-checker', icon: '📋' },
   exportClassifications: { name: 'Export Classifications', description: 'ITAR/EAR reference', href: '/export-classifications', icon: '📦' },
   regulatoryAgencies: { name: 'Regulatory Agencies', description: 'Agency directory', href: '/regulatory-agencies', icon: '🏛️' },
+  complianceChecklist: { name: 'Compliance Checklist', description: 'Regulatory checklist', href: '/compliance-checklist', icon: '✅' },
 
   // ── Solar System Expansion ──
   solarExploration: { name: 'Solar Exploration', description: 'Deep space missions', href: '/solar-exploration', icon: '☀️' },
@@ -124,6 +125,10 @@ const MODULES: Record<string, RelatedModuleConfig> = {
   spaceWeather: { name: 'Space Weather', description: 'Solar conditions', href: '/space-weather', icon: '☀️' },
   spaceEvents: { name: 'Space Events', description: 'Industry events', href: '/space-events', icon: '📅' },
   earthEvents: { name: 'Earth Events', description: 'NASA EONET disasters', href: '/earth-events', icon: '🌎' },
+
+  // ── Enthusiast Guides ──
+  satelliteSpotting: { name: 'Satellite Spotting Guide', description: 'How to see satellites', href: '/satellite-spotting', icon: '&#127776;' },
+  auroraForecast: { name: 'Aurora Forecast', description: 'Northern lights guide', href: '/aurora-forecast', icon: '&#127752;' },
 
   // ── Tourism & Misc ──
   spaceTourism: { name: 'Space Tourism', description: 'Commercial flights', href: '/space-tourism', icon: '✈️' },
@@ -265,6 +270,7 @@ export const PAGE_RELATIONS: Record<string, RelatedModuleConfig[]> = {
   'licensing-checker': [MODULES.compliance, MODULES.exportClassifications, MODULES.regulatoryRisk, MODULES.regulations, MODULES.spaceLaw],
   'export-classifications': [MODULES.compliance, MODULES.licensingChecker, MODULES.regulatoryRisk, MODULES.regulations, MODULES.spaceLaw],
   'regulatory-agencies': [MODULES.compliance, MODULES.regulatoryCalendar, MODULES.regulatoryRisk, MODULES.spaceLaw, MODULES.spaceAgencies],
+  'compliance-checklist': [MODULES.compliance, MODULES.licensingChecker, MODULES.exportClassifications, MODULES.regulatoryRisk, MODULES.spaceLaw],
 
   // ── Solar System Expansion cluster ──
   'solar-exploration': [MODULES.marsPlanner, MODULES.cislunar, MODULES.asteroidWatch, MODULES.isru, MODULES.missionPipeline],
@@ -380,6 +386,10 @@ export const PAGE_RELATIONS: Record<string, RelatedModuleConfig[]> = {
 
   // ── Newsletter ──
   'newsletter': [MODULES.intelligenceBrief, MODULES.newsDigest, MODULES.news, MODULES.newsletters, MODULES.blogs],
+
+  // ── Enthusiast Guide Pages ──
+  'satellite-spotting': [MODULES.satellites, MODULES.spaceWeather, MODULES.learn, MODULES.orbitGuide, MODULES.auroraForecast],
+  'aurora-forecast': [MODULES.spaceWeather, MODULES.spaceEnvironment, MODULES.solarExploration, MODULES.satellites, MODULES.satelliteSpotting],
 
   // ── Alternatives & Competitors ──
   'alternatives': [MODULES.marketIntel, MODULES.companyProfiles, MODULES.tools, MODULES.satellites, MODULES.pricing],

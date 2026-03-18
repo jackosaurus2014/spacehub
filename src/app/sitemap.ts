@@ -358,6 +358,13 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
 
     // Regulatory Agencies Directory
     { url: `${BASE_URL}/regulatory-agencies`, changeFrequency: 'monthly' as const, priority: 0.7 },
+
+    // Compliance Checklist
+    { url: `${BASE_URL}/compliance-checklist`, changeFrequency: 'monthly' as const, priority: 0.7 },
+
+    // Enthusiast guide pages
+    { url: `${BASE_URL}/satellite-spotting`, changeFrequency: 'monthly' as const, priority: 0.7 },
+    { url: `${BASE_URL}/aurora-forecast`, changeFrequency: 'daily' as const, priority: 0.7 },
   ];
 
   return routes.map(route => ({

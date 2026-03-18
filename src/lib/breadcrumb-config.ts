@@ -55,6 +55,8 @@ export const ROUTE_LABELS: Record<string, string> = {
   '/asteroid-watch': 'Asteroid Watch',
   '/space-environment': 'Space Environment',
   '/earth-events': 'Earth Events',
+  '/satellite-spotting': 'Satellite Spotting Guide',
+  '/aurora-forecast': 'Aurora Forecast',
 
   // ── Intelligence ──
   '/market-intel': 'Market Intelligence',
@@ -169,6 +171,7 @@ export const ROUTE_LABELS: Record<string, string> = {
   '/space-law': 'Space Law',
   '/licensing-checker': 'Licensing Requirements Checker',
   '/export-classifications': 'Export Control Classifications',
+  '/compliance-checklist': 'Compliance Checklist',
 
   // ── Space Operations ──
   '/orbital-slots': 'Orbital Slots',
@@ -364,6 +367,10 @@ export const ROUTE_PARENTS: Record<string, string> = {
   '/guide/space-industry-market-size': '/learn',
   '/guide/space-launch-cost-comparison': '/learn',
   '/guide/space-launch-schedule-2026': '/learn',
+
+  // Enthusiast guide pages
+  '/satellite-spotting': '/learn',
+  '/aurora-forecast': '/space-weather',
 
   // Learn sub-pages
   '/learn/how-to-track-satellites': '/learn',
