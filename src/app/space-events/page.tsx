@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo, useCallback, Suspense } from 'react';
+import React, { useState, useMemo, useCallback, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
@@ -68,6 +68,79 @@ function getDaysUntil(dateStr: string): number {
 function isEventPast(event: SpaceEvent): boolean {
   const endDate = event.endDate || event.startDate;
   return getDaysUntil(endDate) < 0;
+}
+
+// ── Watchlist helpers (localStorage-based concept) ──
+
+const WATCHLIST_KEY = 'spacenexus-event-watchlist';
+
+function getWatchlist(): string[] {
+  if (typeof window === 'undefined') return [];
+  try {
+    const stored = localStorage.getItem(WATCHLIST_KEY);
+    return stored ? JSON.parse(stored) : [];
+  } catch {
+    return [];
+  }
+}
+
+function toggleWatchlistItem(eventId: string): string[] {
+  const current = getWatchlist();
+  const idx = current.indexOf(eventId);
+  if (idx >= 0) {
+    current.splice(idx, 1);
+  } else {
+    current.push(eventId);
+  }
+  localStorage.setItem(WATCHLIST_KEY, JSON.stringify(current));
+  return [...current];
+}
+
+function WatchlistButton({
+  eventId,
+  watchlist,
+  onToggle,
+  size = 'sm',
+}: {
+  eventId: string;
+  watchlist: string[];
+  onToggle: (id: string) => void;
+  size?: 'sm' | 'md';
+}) {
+  const isWatched = watchlist.includes(eventId);
+  const sizeClasses = size === 'md'
+    ? 'px-3 py-2 text-xs gap-1.5'
+    : 'px-2 py-1 text-xs gap-1';
+
+  return (
+    <button
+      onClick={(e) => {
+        e.stopPropagation();
+        onToggle(eventId);
+      }}
+      className={`flex items-center rounded-lg border transition-all whitespace-nowrap ${sizeClasses} ${
+        isWatched
+          ? 'bg-amber-500/20 text-amber-400 border-amber-500/30 hover:bg-amber-500/30'
+          : 'bg-white/[0.06] text-slate-400 border-white/[0.06] hover:border-white/[0.1] hover:text-amber-400'
+      }`}
+      title={isWatched ? 'Remove from watchlist' : 'Add to watchlist'}
+    >
+      <svg
+        className={size === 'md' ? 'w-3.5 h-3.5' : 'w-3 h-3'}
+        fill={isWatched ? 'currentColor' : 'none'}
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"
+        />
+      </svg>
+      {isWatched ? 'Watching' : 'Watch'}
+    </button>
+  );
 }
 
 // ── Sub-components ──
@@ -153,7 +226,7 @@ function AddToCalendarDropdown({ event }: { event: SpaceEvent }) {
   );
 }
 
-function HighlightedEvents({ events }: { events: SpaceEvent[] }) {
+function HighlightedEvents({ events, watchlist, onToggleWatch }: { events: SpaceEvent[]; watchlist: string[]; onToggleWatch: (id: string) => void }) {
   if (events.length === 0) return null;
 
   return (
@@ -204,6 +277,7 @@ function HighlightedEvents({ events }: { events: SpaceEvent[] }) {
                 )}
               </div>
               <div className="flex items-center gap-2 mt-3">
+                <WatchlistButton eventId={event.id} watchlist={watchlist} onToggle={onToggleWatch} />
                 <AddToCalendarDropdown event={event} />
                 {event.website && (
                   <a
@@ -234,7 +308,7 @@ function HighlightedEvents({ events }: { events: SpaceEvent[] }) {
   );
 }
 
-function EventListCard({ event, onSelect }: { event: SpaceEvent; onSelect: (e: SpaceEvent) => void }) {
+function EventListCard({ event, onSelect, watchlist, onToggleWatch }: { event: SpaceEvent; onSelect: (e: SpaceEvent) => void; watchlist: string[]; onToggleWatch: (id: string) => void }) {
   const daysUntil = getDaysUntil(event.startDate);
   const isPast = isEventPast(event);
 
@@ -317,6 +391,7 @@ function EventListCard({ event, onSelect }: { event: SpaceEvent; onSelect: (e: S
 
         {/* Actions */}
         <div className="flex sm:flex-col items-center sm:items-end gap-2 flex-shrink-0" onClick={(e) => e.stopPropagation()}>
+          <WatchlistButton eventId={event.id} watchlist={watchlist} onToggle={onToggleWatch} />
           <AddToCalendarDropdown event={event} />
           {event.website && (
             <a
@@ -473,9 +548,13 @@ function CalendarMonth({
 function EventDetailModal({
   event,
   onClose,
+  watchlist,
+  onToggleWatch,
 }: {
   event: SpaceEvent;
   onClose: () => void;
+  watchlist: string[];
+  onToggleWatch: (id: string) => void;
 }) {
   return (
     <motion.div
@@ -588,6 +667,7 @@ function EventDetailModal({
         </div>
 
         <div className="flex items-center gap-3 pt-3 border-t border-white/[0.06] flex-wrap">
+          <WatchlistButton eventId={event.id} watchlist={watchlist} onToggle={onToggleWatch} size="md" />
           <button
             onClick={() => downloadICS(generateICS(event), `${event.id}.ics`)}
             className="flex items-center gap-1.5 text-xs px-3 py-2 rounded-lg bg-white/10 text-slate-300 border border-white/10 hover:bg-slate-100/30 transition-all"
@@ -658,6 +738,18 @@ function SpaceEventsPageInner() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedEvent, setSelectedEvent] = useState<SpaceEvent | null>(null);
   const [calendarYear, setCalendarYear] = useState(2026);
+  const [watchlist, setWatchlist] = useState<string[]>([]);
+  const [showWatchlistOnly, setShowWatchlistOnly] = useState(false);
+
+  // Load watchlist from localStorage on mount
+  useEffect(() => {
+    setWatchlist(getWatchlist());
+  }, []);
+
+  const handleToggleWatch = useCallback((eventId: string) => {
+    const updated = toggleWatchlistItem(eventId);
+    setWatchlist(updated);
+  }, []);
 
   const countries = useMemo(() => getEventCountries(), []);
 
@@ -736,6 +828,11 @@ function SpaceEventsPageInner() {
       );
     }
 
+    // Watchlist filter
+    if (showWatchlistOnly) {
+      events = events.filter((e) => watchlist.includes(e.id));
+    }
+
     // Sort
     if (activeTab === 'past') {
       events.sort((a, b) => b.startDate.localeCompare(a.startDate)); // Most recent first
@@ -744,7 +841,7 @@ function SpaceEventsPageInner() {
     }
 
     return events;
-  }, [activeTab, typeFilter, countryFilter, monthFilter, formatFilter, costFilter, searchQuery, nowStr]);
+  }, [activeTab, typeFilter, countryFilter, monthFilter, formatFilter, costFilter, searchQuery, nowStr, showWatchlistOnly, watchlist]);
 
   const upcomingHighlights = useMemo(() => {
     return SPACE_EVENTS
@@ -772,9 +869,10 @@ function SpaceEventsPageInner() {
     setCostFilter('all');
     setFormatFilter('all');
     setSearchQuery('');
+    setShowWatchlistOnly(false);
   }, []);
 
-  const hasActiveFilters = typeFilter !== 'all' || countryFilter !== 'all' || monthFilter !== 'all' || costFilter !== 'all' || formatFilter !== 'all' || searchQuery.trim() !== '';
+  const hasActiveFilters = typeFilter !== 'all' || countryFilter !== 'all' || monthFilter !== 'all' || costFilter !== 'all' || formatFilter !== 'all' || searchQuery.trim() !== '' || showWatchlistOnly;
 
   // All tags for quick filter reference
   const allTags = useMemo(() => {
@@ -810,7 +908,7 @@ function SpaceEventsPageInner() {
       />
 
       {/* Stats */}
-      <StaggerContainer className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
+      <StaggerContainer className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
         <StaggerItem>
           <div className="card p-4 text-center">
             <div className="text-2xl font-bold text-slate-300">{SPACE_EVENTS.length}</div>
@@ -846,6 +944,22 @@ function SpaceEventsPageInner() {
             </div>
             <div className="text-xs text-slate-400 mt-1">Free Events</div>
           </div>
+        </StaggerItem>
+        <StaggerItem>
+          <button
+            onClick={() => setShowWatchlistOnly(!showWatchlistOnly)}
+            className={`card p-4 text-center w-full transition-all ${showWatchlistOnly ? 'ring-1 ring-amber-500/40 border-amber-500/30' : 'hover:border-white/[0.1]'}`}
+          >
+            <div className={`text-2xl font-bold ${watchlist.length > 0 ? 'text-amber-400' : 'text-slate-500'}`}>
+              {watchlist.length}
+            </div>
+            <div className="text-xs text-slate-400 mt-1 flex items-center justify-center gap-1">
+              <svg className="w-3 h-3" fill={showWatchlistOnly ? 'currentColor' : 'none'} stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+              </svg>
+              Watchlist
+            </div>
+          </button>
         </StaggerItem>
       </StaggerContainer>
 
@@ -975,7 +1089,7 @@ function SpaceEventsPageInner() {
       </motion.div>
 
       {/* Highlighted upcoming events (only on upcoming tab) */}
-      {activeTab === 'upcoming' && <HighlightedEvents events={upcomingHighlights} />}
+      {activeTab === 'upcoming' && <HighlightedEvents events={upcomingHighlights} watchlist={watchlist} onToggleWatch={handleToggleWatch} />}
 
       {/* Controls */}
       <motion.div
@@ -1188,7 +1302,7 @@ function SpaceEventsPageInner() {
               />
             ) : (
               filteredEvents.map((event) => (
-                <EventListCard key={event.id} event={event} onSelect={setSelectedEvent} />
+                <EventListCard key={event.id} event={event} onSelect={setSelectedEvent} watchlist={watchlist} onToggleWatch={handleToggleWatch} />
               ))
             )}
           </motion.div>
@@ -1219,6 +1333,8 @@ function SpaceEventsPageInner() {
           <EventDetailModal
             event={selectedEvent}
             onClose={() => setSelectedEvent(null)}
+            watchlist={watchlist}
+            onToggleWatch={handleToggleWatch}
           />
         )}
       </AnimatePresence>

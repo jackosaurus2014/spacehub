@@ -54,6 +54,7 @@ const footerLinks = {
     title: 'Resources',
     links: [
       { label: 'Glossary', href: '/glossary' },
+      { label: 'Space Acronyms', href: '/acronyms' },
       { label: 'Space Timeline', href: '/timeline' },
       { label: 'Education Pathways', href: '/education-pathways' },
       { label: 'Conferences', href: '/conferences' },

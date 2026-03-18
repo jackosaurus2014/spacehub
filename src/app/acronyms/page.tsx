@@ -149,6 +149,17 @@ const ACRONYMS: Acronym[] = [
   { acronym: 'USSF', fullForm: 'United States Space Force', category: 'Organizations', definition: 'The space service branch of the U.S. Armed Forces, established December 20, 2019, responsible for organizing, training, and equipping space forces to protect U.S. and allied interests in space.' },
   { acronym: 'VLEO', fullForm: 'Very Low Earth Orbit', category: 'Orbits', definition: 'Orbits below approximately 450 km altitude, offering higher resolution imaging and lower latency but requiring more frequent orbit maintenance due to increased atmospheric drag.' },
   { acronym: 'VSAT', fullForm: 'Very Small Aperture Terminal', category: 'Communications', definition: 'A compact satellite ground terminal (typically 0.75-2.4m antenna) used for broadband internet, enterprise networking, and point-of-sale transactions via geostationary satellites.' },
+  { acronym: 'D2D', fullForm: 'Direct-to-Device', category: 'Communications', definition: 'Satellite-based communications technology enabling standard smartphones to connect directly to orbiting satellites without specialized antennas. Pioneered by AST SpaceMobile and supported by Starlink, D2D aims to eliminate cellular dead zones globally.' },
+  { acronym: 'ADR', fullForm: 'Active Debris Removal', category: 'Operations', definition: 'Technologies and missions designed to actively capture and deorbit space debris from crowded orbital regimes. Methods include robotic arms, nets, harpoons, and magnetic capture systems being developed by companies like Astroscale and ClearSpace.' },
+  { acronym: 'CRS', fullForm: 'Commercial Resupply Services', category: 'Business', definition: 'NASA\'s program contracting private companies (SpaceX Dragon and Northrop Grumman Cygnus) to deliver cargo, supplies, and experiments to the International Space Station under fixed-price contracts.' },
+  { acronym: 'CLD', fullForm: 'Commercial LEO Destinations', category: 'Business', definition: 'NASA\'s program to stimulate development of privately owned and operated space stations in low Earth orbit to replace the ISS. Funded partners include Blue Origin (Orbital Reef), Vast (Haven-1), and Northrop Grumman.' },
+  { acronym: 'HLS', fullForm: 'Human Landing System', category: 'Technology', definition: 'The lunar lander component of NASA\'s Artemis program designed to transport astronauts between lunar orbit and the Moon\'s surface. SpaceX\'s Starship HLS was selected for Artemis III, with Blue Origin selected for Artemis V.' },
+  { acronym: 'ESM', fullForm: 'European Service Module', category: 'Technology', definition: 'The propulsion and life support module for NASA\'s Orion spacecraft, built by Airbus Defence and Space for ESA. The ESM provides power, thermal control, water, oxygen, nitrogen, and the main engine for Artemis missions.' },
+  { acronym: 'HALO', fullForm: 'Habitation and Logistics Outpost', category: 'Technology', definition: 'The pressurized living quarters module of NASA\'s Lunar Gateway, based on Northrop Grumman\'s Cygnus design. HALO provides life support, command and control capabilities, and docking ports for visiting vehicles.' },
+  { acronym: 'RPO', fullForm: 'Rendezvous and Proximity Operations', category: 'Operations', definition: 'The set of orbital maneuvers used to bring two spacecraft close together for docking, inspection, or servicing. RPO capabilities are critical for satellite servicing, space station operations, and active debris removal missions.' },
+  { acronym: 'DDTC', fullForm: 'Directorate of Defense Trade Controls', category: 'Regulatory', definition: 'The U.S. State Department office that administers ITAR, processes export license applications, manages the U.S. Munitions List, and enforces compliance with defense trade regulations affecting spacecraft and launch vehicles.' },
+  { acronym: 'STM', fullForm: 'Space Traffic Management', category: 'Operations', definition: 'The planning, coordination, and on-orbit control of space activities to enhance safety, minimize collision risk, and ensure the long-term sustainability of the space environment. STM is increasingly critical as orbital populations grow.' },
+  { acronym: 'SGP4', fullForm: 'Simplified General Perturbations 4', category: 'Technology', definition: 'The standard mathematical model used to propagate Two-Line Element (TLE) orbital data, predicting satellite positions and velocities by accounting for atmospheric drag, Earth\'s oblateness, and lunar/solar gravitational perturbations.' },
 ];
 
 // ---------------------------------------------------------------------------
@@ -274,7 +285,7 @@ export default function AcronymsPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
         {/* ---- Header ---- */}
         <AnimatedPageHeader
-          title="Space Industry Acronyms"
+          title="Space Industry Acronyms & Abbreviations"
           subtitle="A comprehensive A-Z reference of acronyms and abbreviations used across the global space industry — from launch operations to regulatory frameworks."
           icon={<span className="text-4xl">&#128292;</span>}
           breadcrumb="Resources"

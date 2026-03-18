@@ -70,6 +70,8 @@ const BLOG_CTA_MAP: Record<string, { tool: string; path: string }> = {
   'starlink-oneweb-kuiper-mega-constellation-comparison': { tool: 'Constellation Tracker', path: '/constellations' },
   'nasa-budget-2026-breakdown-analysis': { tool: 'Government Budgets', path: '/government-budgets' },
   'what-is-itar-space-industry-guide': { tool: 'Compliance Hub', path: '/compliance' },
+  'blue-origin-new-glenn-heavy-lift-rocket': { tool: 'Launch Vehicles', path: '/launch-vehicles' },
+  'space-insurance-satellite-operators-guide': { tool: 'Space Insurance', path: '/space-insurance' },
 };
 
 type Props = {

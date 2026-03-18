@@ -43,6 +43,9 @@ export const PODCAST_FEEDS: PodcastFeed[] = [
     name: 'Planetary Radio',
     url: 'https://www.omnycontent.com/d/playlist/d95da206-8ee8-4ba5-ba8d-ad1200b4e5a4/cf13d5f5-6040-458d-ab5a-ad200189747d/b75c9f7f-4a63-438e-b506-ad2001897499/podcast.rss',
   },
+  { name: 'Off-Nominal', url: 'https://feeds.simplecast.com/pkL_KYlt' },
+  { name: 'The Space Above Us', url: 'https://thespaceaboveus.libsyn.com/rss' },
+  { name: 'Space Minds', url: 'https://feeds.megaphone.fm/spaceminds' },
 ];
 
 // ---------------------------------------------------------------------------

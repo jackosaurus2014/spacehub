@@ -151,6 +151,7 @@ export const ROUTE_LABELS: Record<string, string> = {
   '/standards-reference': 'Standards Reference',
   '/space-comms': 'Space Communications',
   '/orbit-guide': 'Orbit Guide',
+  '/acronyms': 'Space Acronyms',
   '/glossary': 'Glossary',
 
   // ── Regulatory ──
