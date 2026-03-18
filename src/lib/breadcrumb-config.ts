@@ -234,6 +234,10 @@ export const ROUTE_LABELS: Record<string, string> = {
   '/reports/space-economy-2026': 'Space Economy 2026 Report',
   '/widgets': 'Widgets',
 
+  // ── Industry Scorecard & Calendar ──
+  '/industry-scorecard': 'Industry Scorecard',
+  '/space-calendar': 'Space Calendar',
+
   // ── New Pages (Wave) ──
   '/satellite-2026': 'SATELLITE 2026',
   '/advertise': 'Advertise',

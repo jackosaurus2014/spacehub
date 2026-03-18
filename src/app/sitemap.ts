@@ -325,6 +325,10 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/widgets/market-snapshot`, changeFrequency: 'daily' as const, priority: 0.4 },
     { url: `${BASE_URL}/widgets/next-launch`, changeFrequency: 'daily' as const, priority: 0.4 },
     { url: `${BASE_URL}/widgets/space-weather`, changeFrequency: 'daily' as const, priority: 0.4 },
+
+    // Industry Scorecard & Space Calendar
+    { url: `${BASE_URL}/industry-scorecard`, changeFrequency: 'monthly' as const, priority: 0.8 },
+    { url: `${BASE_URL}/space-calendar`, changeFrequency: 'weekly' as const, priority: 0.7 },
   ];
 
   return routes.map(route => ({

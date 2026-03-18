@@ -7,6 +7,8 @@ import { BLOG_POSTS, BLOG_CATEGORIES, type BlogCategory } from '@/lib/blog-conte
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import ContentEngagementBadge from '@/components/ui/ContentEngagementBadge';
+import LaunchCountdownWidget from '@/components/LaunchCountdownWidget';
+import SpaceHistoryToday from '@/components/SpaceHistoryToday';
 
 function BlogItemListSchema() {
   const jsonLd = {
@@ -197,56 +199,67 @@ function BlogListingContent() {
           })}
         </div>
 
-        {/* Post Grid */}
-        <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredPosts.map((post) => (
-            <StaggerItem key={post.slug}>
-              <Link
-                href={`/blog/${post.slug}`}
-                className="group block bg-white/[0.04] border border-white/[0.06] rounded-xl p-6 hover:border-white/15 transition-all duration-300 h-full"
-              >
-                <div className="flex items-center gap-3 mb-3">
-                  <span
-                    className={`text-xs font-medium px-2.5 py-1 rounded-full border ${categoryColors[post.category]}`}
+        {/* Post Grid + Sidebar Layout */}
+        <div className="flex flex-col lg:flex-row gap-8">
+          {/* Main Content */}
+          <div className="flex-1 min-w-0">
+            <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {filteredPosts.map((post) => (
+                <StaggerItem key={post.slug}>
+                  <Link
+                    href={`/blog/${post.slug}`}
+                    className="group block bg-white/[0.04] border border-white/[0.06] rounded-xl p-6 hover:border-white/15 transition-all duration-300 h-full"
                   >
-                    {BLOG_CATEGORIES.find((c) => c.value === post.category)?.label}
-                  </span>
-                  {isNewPost(post.publishedAt) && (
-                    <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-green-500/20 text-green-400 border border-green-500/30">
-                      New
-                    </span>
-                  )}
-                  {post.featured && (
-                    <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-amber-500/20 text-amber-400 border border-amber-500/30">
-                      Featured
-                    </span>
-                  )}
-                  <ContentEngagementBadge
-                    readTimeMin={post.readingTime}
-                    publishedAt={post.publishedAt}
-                    variant="compact"
-                  />
-                </div>
-                <h3 className="text-lg font-bold text-white group-hover:text-white/70 transition-colors mb-2">
-                  {post.title}
-                </h3>
-                <p className="text-slate-400 text-sm leading-relaxed line-clamp-3 mb-4">
-                  {post.excerpt}
-                </p>
-                <div className="flex items-center justify-between mt-auto pt-4 border-t border-white/[0.06]">
-                  <span className="text-slate-500 text-xs">{post.author}</span>
-                  <span className="text-slate-500 text-xs">{formatDate(post.publishedAt)}</span>
-                </div>
-              </Link>
-            </StaggerItem>
-          ))}
-        </StaggerContainer>
+                    <div className="flex items-center gap-3 mb-3">
+                      <span
+                        className={`text-xs font-medium px-2.5 py-1 rounded-full border ${categoryColors[post.category]}`}
+                      >
+                        {BLOG_CATEGORIES.find((c) => c.value === post.category)?.label}
+                      </span>
+                      {isNewPost(post.publishedAt) && (
+                        <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-green-500/20 text-green-400 border border-green-500/30">
+                          New
+                        </span>
+                      )}
+                      {post.featured && (
+                        <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-amber-500/20 text-amber-400 border border-amber-500/30">
+                          Featured
+                        </span>
+                      )}
+                      <ContentEngagementBadge
+                        readTimeMin={post.readingTime}
+                        publishedAt={post.publishedAt}
+                        variant="compact"
+                      />
+                    </div>
+                    <h3 className="text-lg font-bold text-white group-hover:text-white/70 transition-colors mb-2">
+                      {post.title}
+                    </h3>
+                    <p className="text-slate-400 text-sm leading-relaxed line-clamp-3 mb-4">
+                      {post.excerpt}
+                    </p>
+                    <div className="flex items-center justify-between mt-auto pt-4 border-t border-white/[0.06]">
+                      <span className="text-slate-500 text-xs">{post.author}</span>
+                      <span className="text-slate-500 text-xs">{formatDate(post.publishedAt)}</span>
+                    </div>
+                  </Link>
+                </StaggerItem>
+              ))}
+            </StaggerContainer>
 
-        {filteredPosts.length === 0 && (
-          <div className="text-center py-16">
-            <p className="text-slate-400">No posts found in this category yet.</p>
+            {filteredPosts.length === 0 && (
+              <div className="text-center py-16">
+                <p className="text-slate-400">No posts found in this category yet.</p>
+              </div>
+            )}
           </div>
-        )}
+
+          {/* Sidebar */}
+          <aside className="w-full lg:w-72 xl:w-80 flex-shrink-0 space-y-6">
+            <LaunchCountdownWidget />
+            <SpaceHistoryToday />
+          </aside>
+        </div>
 
         {/* Explore Our Tools */}
         <div className="mt-12 mb-8">

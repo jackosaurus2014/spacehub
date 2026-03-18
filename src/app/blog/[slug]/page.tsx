@@ -64,6 +64,9 @@ const BLOG_CTA_MAP: Record<string, { tool: string; path: string }> = {
   'why-space-professionals-need-data-intelligence-platform': { tool: 'SpaceNexus Platform', path: '/register' },
   'spacenexus-vs-free-tools-comparison': { tool: 'Why SpaceNexus', path: '/why-spacenexus' },
   'space-industry-bloomberg-terminal-problem': { tool: 'SpaceNexus Platform', path: '/register' },
+  'complete-guide-space-etfs-arkx-ufo-ita-2026': { tool: 'Market Intelligence', path: '/market-intel' },
+  'rocket-lab-spacex-competitor-2026': { tool: 'Company Profiles', path: '/company-profiles' },
+  'space-debris-regulations-changes-2026': { tool: 'Compliance Hub', path: '/compliance' },
 };
 
 type Props = {

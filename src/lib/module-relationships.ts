@@ -127,6 +127,8 @@ const MODULES: Record<string, RelatedModuleConfig> = {
   spaceAgencies: { name: 'Space Agencies', description: 'Agency directory', href: '/space-agencies', icon: '🏛️' },
   spaceComms: { name: 'Space Communications', description: 'Comms systems', href: '/space-comms', icon: '📡' },
   sustainability: { name: 'Sustainability', description: 'Environmental scores', href: '/sustainability-scorecard', icon: '🌱' },
+  industryScorecard: { name: 'Industry Scorecard', description: 'Quarterly industry grades', href: '/industry-scorecard', icon: '📊' },
+  spaceCalendar: { name: 'Space Calendar', description: 'Key dates 2026', href: '/space-calendar', icon: '📅' },
   spaceEdge: { name: 'Edge Computing', description: 'In-orbit computing', href: '/space-edge-computing', icon: '💻' },
   spaceInvestors: { name: 'Space Investors', description: 'Active investors', href: '/space-investors', icon: '📈' },
 
@@ -343,6 +345,10 @@ export const PAGE_RELATIONS: Record<string, RelatedModuleConfig[]> = {
   // ── Careers & Solutions ──
   'careers': [MODULES.spaceTalent, MODULES.jobs, MODULES.salaryBenchmarks, MODULES.careerGuide, MODULES.educationPathways],
   'solutions/space-professionals': [MODULES.satellites, MODULES.marketIntel, MODULES.tools, MODULES.companyProfiles, MODULES.spaceCapital],
+
+  // ── Industry Scorecard & Space Calendar ──
+  'industry-scorecard': [MODULES.industryTrends, MODULES.spaceEconomy, MODULES.sustainability, MODULES.marketIntel, MODULES.govBudgets],
+  'space-calendar': [MODULES.spaceEvents, MODULES.conferences, MODULES.launchManifest, MODULES.news, MODULES.industryScorecard],
 };
 
 // Helper to get related modules for a page

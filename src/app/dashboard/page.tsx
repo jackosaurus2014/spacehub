@@ -27,7 +27,13 @@ import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import DashboardRecentlyViewed from '@/components/dashboard/RecentlyViewed';
 import { SkeletonPage } from '@/components/ui/Skeleton';
 import LaunchCountdown from '@/components/widgets/LaunchCountdown';
+import SpaceHistoryToday from '@/components/SpaceHistoryToday';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
+
+const SpacePhotoOfDay = dynamic(
+  () => import('@/components/SpacePhotoOfDay'),
+  { ssr: false }
+);
 import {
   getEffectiveLayout,
   getGridColumnsClass,
@@ -804,6 +810,14 @@ export default function DashboardPage() {
               new
             </span>
             <LaunchCountdown />
+          </div>
+        </ScrollReveal>
+
+        {/* This Day in Space History + Space Photo of the Day */}
+        <ScrollReveal>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+            <SpaceHistoryToday />
+            <SpacePhotoOfDay />
           </div>
         </ScrollReveal>
 

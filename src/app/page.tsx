@@ -77,6 +77,10 @@ const LiveStreamSection = nextDynamic(() => import('@/components/landing/LiveStr
   ssr: false,
   loading: () => null,
 });
+const SpacePhotoOfDay = nextDynamic(() => import('@/components/SpacePhotoOfDay'), {
+  ssr: false,
+  loading: () => <div className="py-12"><div className="container mx-auto px-4 max-w-3xl"><div className="animate-pulse"><div className="aspect-video bg-white/[0.06] rounded-xl mb-4"></div><div className="h-5 bg-white/[0.06] rounded w-2/3 mb-3"></div><div className="h-3 bg-white/[0.04] rounded w-full"></div></div></div></div>,
+});
 
 // Force dynamic rendering - no static generation at build time
 export const dynamic = 'force-dynamic';
@@ -284,6 +288,21 @@ export default async function HomePage() {
           </div>
         </section>
       )}
+
+      {/* Space Photo of the Day — NASA APOD */}
+      <section className="section-spacer-sm relative z-10">
+        <div className="container mx-auto px-4 max-w-3xl">
+          <div className="mb-6 text-center">
+            <h2 className="text-display text-2xl md:text-3xl text-white mb-2">
+              Space Photo of the Day
+            </h2>
+            <p className="text-slate-400 text-sm">
+              Curated daily by NASA&apos;s Astronomy Picture of the Day
+            </p>
+          </div>
+          <SpacePhotoOfDay />
+        </div>
+      </section>
 
       {/* How It Works — 3-step onboarding flow */}
       <HowItWorks />
