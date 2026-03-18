@@ -117,6 +117,104 @@ function BlogListingContent() {
           Latest post: {new Date(BLOG_POSTS.sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime())[0]?.publishedAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric', timeZone: 'UTC' })}
         </p>
 
+        {/* Featured Series */}
+        {!selectedCategory && (
+          <ScrollReveal>
+            <div className="mb-12">
+              <h2 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-4 flex items-center gap-2">
+                <svg className="w-4 h-4 text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 19.5h16.5M5.625 4.5h12.75a1.875 1.875 0 010 3.75H5.625a1.875 1.875 0 010-3.75z" />
+                </svg>
+                Featured Series
+              </h2>
+              <div className="flex gap-4 overflow-x-auto pb-2 -mx-4 px-4 scrollbar-thin scrollbar-thumb-white/10">
+                {/* Space Investment Series */}
+                <div className="flex-shrink-0 w-72 sm:w-80 bg-gradient-to-br from-amber-500/[0.06] to-orange-500/[0.04] border border-amber-500/15 rounded-xl p-5">
+                  <div className="flex items-center gap-2 mb-3">
+                    <span className="text-lg">&#x1F4B0;</span>
+                    <h3 className="text-sm font-bold text-white">Space Investment Series</h3>
+                  </div>
+                  <p className="text-xs text-slate-400 mb-4">Navigate the business side of the final frontier.</p>
+                  <div className="space-y-2">
+                    {[
+                      { title: 'Space Stocks to Watch', slug: 'space-stocks-to-watch-2026-investors-guide' },
+                      { title: 'Complete Guide to Space ETFs', slug: 'complete-guide-space-etfs-arkx-ufo-ita-2026' },
+                      { title: 'SpaceX IPO Analysis', slug: 'spacex-ipo-what-it-means-for-space-investors' },
+                      { title: 'Space Investment Guide 2026', slug: 'space-industry-investment-guide-2026' },
+                    ].map((item) => (
+                      <Link
+                        key={item.slug}
+                        href={`/blog/${item.slug}`}
+                        className="group flex items-center gap-2 px-3 py-2 rounded-lg bg-white/[0.04] border border-white/[0.06] hover:border-amber-500/25 hover:bg-amber-500/[0.06] transition-all"
+                      >
+                        <svg className="w-3.5 h-3.5 text-amber-400/60 group-hover:text-amber-400 transition-colors shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                        </svg>
+                        <span className="text-xs text-slate-300 group-hover:text-white transition-colors truncate">{item.title}</span>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Space Technology Explainers */}
+                <div className="flex-shrink-0 w-72 sm:w-80 bg-gradient-to-br from-blue-500/[0.06] to-cyan-500/[0.04] border border-blue-500/15 rounded-xl p-5">
+                  <div className="flex items-center gap-2 mb-3">
+                    <span className="text-lg">&#x1F680;</span>
+                    <h3 className="text-sm font-bold text-white">Space Technology Explainers</h3>
+                  </div>
+                  <p className="text-xs text-slate-400 mb-4">Deep dives into the hardware and systems powering spaceflight.</p>
+                  <div className="space-y-2">
+                    {[
+                      { title: 'Starship V3: What\'s New', slug: 'spacex-starship-v3-whats-new-most-powerful-rocket' },
+                      { title: 'Falcon 9: The Workhorse Rocket', slug: 'falcon-9-workhorse-rocket-changed-spaceflight' },
+                      { title: 'CubeSats Explained', slug: 'what-is-cubesat-tiny-satellites-revolutionizing-space' },
+                      { title: 'How SpaceX Lands Rockets', slug: 'how-spacex-lands-rockets-engineering-reusability' },
+                    ].map((item) => (
+                      <Link
+                        key={item.slug}
+                        href={`/blog/${item.slug}`}
+                        className="group flex items-center gap-2 px-3 py-2 rounded-lg bg-white/[0.04] border border-white/[0.06] hover:border-blue-500/25 hover:bg-blue-500/[0.06] transition-all"
+                      >
+                        <svg className="w-3.5 h-3.5 text-blue-400/60 group-hover:text-blue-400 transition-colors shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                        </svg>
+                        <span className="text-xs text-slate-300 group-hover:text-white transition-colors truncate">{item.title}</span>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Getting Started */}
+                <div className="flex-shrink-0 w-72 sm:w-80 bg-gradient-to-br from-emerald-500/[0.06] to-teal-500/[0.04] border border-emerald-500/15 rounded-xl p-5">
+                  <div className="flex items-center gap-2 mb-3">
+                    <span className="text-lg">&#x1F31F;</span>
+                    <h3 className="text-sm font-bold text-white">Getting Started</h3>
+                  </div>
+                  <p className="text-xs text-slate-400 mb-4">New to SpaceNexus? Start here to make the most of the platform.</p>
+                  <div className="space-y-2">
+                    {[
+                      { title: 'SpaceNexus Platform Guide', slug: 'spacenexus-platform-guide-first-week' },
+                      { title: '5 Free Tools You Should Use', slug: '5-free-tools-every-space-professional-should-use' },
+                      { title: 'Satellite Tracking for Beginners', slug: 'satellite-tracking-explained-beginners-guide' },
+                    ].map((item) => (
+                      <Link
+                        key={item.slug}
+                        href={`/blog/${item.slug}`}
+                        className="group flex items-center gap-2 px-3 py-2 rounded-lg bg-white/[0.04] border border-white/[0.06] hover:border-emerald-500/25 hover:bg-emerald-500/[0.06] transition-all"
+                      >
+                        <svg className="w-3.5 h-3.5 text-emerald-400/60 group-hover:text-emerald-400 transition-colors shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                        </svg>
+                        <span className="text-xs text-slate-300 group-hover:text-white transition-colors truncate">{item.title}</span>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </ScrollReveal>
+        )}
+
         {/* Featured Posts */}
         {!selectedCategory && featuredPosts.length > 0 && (
           <ScrollReveal>

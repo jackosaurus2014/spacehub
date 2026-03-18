@@ -34,6 +34,10 @@ const SpacePhotoOfDay = dynamic(
   () => import('@/components/SpacePhotoOfDay'),
   { ssr: false }
 );
+const SpaceQuiz = dynamic(
+  () => import('@/components/SpaceQuiz'),
+  { ssr: false }
+);
 import {
   getEffectiveLayout,
   getGridColumnsClass,
@@ -946,6 +950,13 @@ export default function DashboardPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
             <SpaceHistoryToday />
             <SpacePhotoOfDay />
+          </div>
+        </ScrollReveal>
+
+        {/* Daily Space Quiz — gamification / daily engagement */}
+        <ScrollReveal>
+          <div className="mb-8">
+            <SpaceQuiz />
           </div>
         </ScrollReveal>
 

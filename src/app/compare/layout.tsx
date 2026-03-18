@@ -2,32 +2,38 @@ import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: {
-    template: '%s | SpaceNexus vs Competitors',
-    default: 'SpaceNexus Comparison - Bloomberg Terminal, Payload Space, Quilty Analytics Alternatives',
+    template: '%s | SpaceNexus Compare',
+    default: 'Compare Space Industry Players - Launch Vehicles, Satellites, Companies | SpaceNexus',
   },
   description:
-    'See how SpaceNexus compares to Bloomberg Terminal, Payload Space, and Quilty Analytics for space industry intelligence, satellite tracking, and market data.',
+    'Compare space industry players side-by-side: launch vehicles, satellite constellations, companies, and platforms. SpaceX vs Blue Origin, Starlink vs Kuiper, and more data-driven comparisons.',
   keywords: [
+    'space industry comparison',
+    'SpaceX vs Blue Origin',
+    'Starlink vs Kuiper',
+    'launch vehicle comparison',
+    'satellite constellation comparison',
+    'space company comparison',
     'SpaceNexus alternative',
     'Bloomberg Terminal space',
     'Payload Space alternative',
     'Quilty Analytics alternative',
-    'space industry platform comparison',
     'space intelligence tools',
+    'Rocket Lab vs SpaceX',
   ],
   openGraph: {
-    title: 'SpaceNexus Comparison - Bloomberg Terminal, Payload Space, Quilty Analytics Alternatives | SpaceNexus',
+    title: 'Compare Space Industry Players | SpaceNexus',
     description:
-      'See how SpaceNexus compares to Bloomberg Terminal, Payload Space, and Quilty Analytics for space industry intelligence, satellite tracking, and market data.',
+      'Side-by-side comparisons of launch vehicles, satellite constellations, companies, and platforms across the space industry. Data-driven analysis to inform your decisions.',
     type: 'website',
     url: 'https://spacenexus.us/compare',
     siteName: 'SpaceNexus',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'SpaceNexus Comparison - Bloomberg Terminal, Payload Space, Quilty Analytics Alternatives | SpaceNexus',
+    title: 'Compare Space Industry Players | SpaceNexus',
     description:
-      'See how SpaceNexus compares to Bloomberg Terminal, Payload Space, and Quilty Analytics for space industry intelligence, satellite tracking, and market data.',
+      'Side-by-side comparisons of launch vehicles, satellite constellations, companies, and platforms across the space industry.',
   },
   alternates: {
     canonical: 'https://spacenexus.us/compare',

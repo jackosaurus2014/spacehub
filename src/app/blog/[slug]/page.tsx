@@ -84,6 +84,9 @@ const BLOG_CTA_MAP: Record<string, { tool: string; path: string }> = {
   'orbital-debris-tracking-space-fence-25000-objects': { tool: 'Space Environment Monitor', path: '/space-environment' },
   'houston-space-capital-of-the-world': { tool: 'Houston Space Hub', path: '/space-industry/houston' },
   '5-free-tools-every-space-professional-should-use': { tool: 'SpaceNexus Platform', path: '/register' },
+  'spacex-blue-origin-rocket-lab-comparison-2026': { tool: 'Comparison Hub', path: '/compare' },
+  'beginners-guide-understanding-space-missions': { tool: 'Mission Pipeline', path: '/mission-pipeline' },
+  'space-industry-mergers-acquisitions-biggest-deals': { tool: 'Market Intelligence', path: '/market-intel' },
 };
 
 type Props = {
