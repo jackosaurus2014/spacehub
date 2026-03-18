@@ -114,6 +114,7 @@ const footerLinks = {
       { label: 'Developer API', href: '/developer' },
       { label: 'API Access', href: '/api-access' },
       { label: 'Advertise', href: '/advertise' },
+      { label: 'Media Kit', href: '/media-kit' },
       { label: 'SATELLITE 2026', href: '/satellite-2026' },
     ],
   },

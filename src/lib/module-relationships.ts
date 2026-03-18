@@ -359,6 +359,9 @@ export const PAGE_RELATIONS: Record<string, RelatedModuleConfig[]> = {
   'space-map': [MODULES.ecosystemMap, MODULES.marketMap, MODULES.companyProfiles, MODULES.startupDirectory, MODULES.marketIntel],
   'startup-directory': [MODULES.startupTracker, MODULES.fundingRounds, MODULES.spaceCapital, MODULES.spaceMap, MODULES.companyProfiles],
 
+  // ── Media Kit ──
+  'media-kit': [MODULES.companyProfiles, MODULES.marketIntel, MODULES.news, MODULES.blogs, MODULES.dataSources],
+
   // ── Data Sources ──
   'data-sources': [MODULES.aiInsights, MODULES.news, MODULES.satellites, MODULES.spaceWeather, MODULES.companyProfiles],
 

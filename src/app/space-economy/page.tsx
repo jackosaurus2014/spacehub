@@ -5,6 +5,14 @@ import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import RelatedModules from '@/components/ui/RelatedModules';
 import MobileValueProp from '@/components/marketing/MobileValueProp';
+import QuickFacts from '@/components/ui/QuickFacts';
+
+const SPACE_ECONOMY_FACTS = [
+  { value: '$626B', label: 'Global Space Economy (2025)' },
+  { value: '6.4%', label: 'Annual Growth Rate (CAGR)' },
+  { value: '70+', label: 'National Space Agencies' },
+  { value: '10,000+', label: 'Active Satellites in Orbit' },
+];
 
 // ── Data ─────────────────────────────────────────────────────
 const MARKET_SEGMENTS = [
@@ -134,6 +142,8 @@ export default function SpaceEconomyPage() {
         />
 
         <MobileValueProp feature="space economy market data and projections" />
+
+        <QuickFacts facts={SPACE_ECONOMY_FACTS} title="Space Economy at a Glance" />
 
         {/* ── Search / Filter ────────────────────────────── */}
         <div className="mb-8">

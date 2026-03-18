@@ -7164,6 +7164,440 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 <p>Explore space tourism providers, pricing, and mission details with <a href="/space-tourism">SpaceNexus Space Tourism Hub</a>. Compare providers, track upcoming tourist missions, and follow the latest developments in commercial human spaceflight.</p>
 `,
   },
+
+  // ── Article: Top 50 Space Companies to Watch in 2026 ──────────────────
+  {
+    slug: 'top-50-space-companies-to-watch-2026',
+    title: 'The Top 50 Space Companies to Watch in 2026',
+    excerpt: 'The definitive list of the 50 most important space companies in 2026, organized by sector — from launch providers and satellite operators to defense primes and emerging startups reshaping the industry.',
+    category: 'market',
+    author: 'SpaceNexus Team',
+    authorRole: 'Editorial',
+    publishedAt: '2026-03-17T00:00:00Z',
+    readingTime: 15,
+    keywords: ['top space companies', 'space companies to watch', 'best space companies 2026', 'space industry companies', 'space startups', 'commercial space companies', 'space company list'],
+    content: `
+<p>The space industry is no longer a handful of government contractors and a couple of billionaire-backed startups. In 2026, the <strong>$630+ billion global space economy</strong> is powered by hundreds of companies across launch, satellites, defense, manufacturing, and emerging sectors like in-space servicing and space tourism. Here are the <strong>50 most important space companies to watch in 2026</strong> — the organizations shaping the future of the industry.</p>
+
+<h2 id="launch-providers">Launch Providers</h2>
+
+<p>Access to space is the foundation of the entire industry. These companies build and operate the rockets that get everything else into orbit.</p>
+
+<h3>1. SpaceX</h3>
+<p>The dominant force in commercial launch. SpaceX conducted <strong>130+ Falcon 9 missions in 2025</strong>, operates the world\'s largest satellite constellation (Starlink, 7,000+ satellites), and is developing Starship — the largest and most powerful rocket ever built. SpaceX\'s vertical integration, reusability leadership, and sheer launch cadence make it the single most important company in the space industry. The anticipated <strong>Starlink IPO</strong> could be the largest space-related public offering in history.</p>
+
+<h3>2. Rocket Lab</h3>
+<p>The <strong>second most frequently launched U.S. orbital rocket</strong> (Electron) and a rapidly growing space systems business. Rocket Lab is developing the <strong>Neutron medium-lift rocket</strong> to compete directly with Falcon 9 for constellation deployment and national security missions. CEO Peter Beck has built an end-to-end space company — launch, spacecraft buses, components, and mission operations. Publicly traded as <strong>RKLB</strong>, it\'s the top-performing space SPAC graduate.</p>
+
+<h3>3. Blue Origin</h3>
+<p>Jeff Bezos\'s <strong>New Glenn</strong> heavy-lift rocket achieved its maiden flight in early 2025 and is now ramping toward operational cadence. Blue Origin also operates the New Shepard suborbital vehicle for tourism, supplies <strong>BE-4 engines</strong> to ULA\'s Vulcan Centaur, and is building a commercial space station (<strong>Orbital Reef</strong>) and an Artemis lunar lander. With Bezos\'s deep pockets, Blue Origin is playing a long game.</p>
+
+<h3>4. Relativity Space</h3>
+<p>Pioneering <strong>3D-printed rockets</strong> with the Terran R medium-lift vehicle. Relativity\'s approach — printing 85%+ of the rocket using proprietary Stargate metal 3D printers — could drastically reduce manufacturing timelines and costs. Backed by over $1.3 billion in funding, Terran R is designed to compete with Falcon 9 for commercial and government payloads.</p>
+
+<h3>5. Firefly Aerospace</h3>
+<p>Operates the <strong>Alpha small-launch vehicle</strong> and is developing the <strong>MLV (Medium Launch Vehicle)</strong> in partnership with Northrop Grumman. Firefly\'s ability to serve both small dedicated missions and larger constellation deployment payloads makes it a versatile player. The company holds significant U.S. government contracts including a <strong>NASA CLPS lunar lander mission</strong>.</p>
+
+<h3>6. Astra / Stoke Space / ABL Space</h3>
+<p>The small-launch market remains intensely competitive. <strong>Stoke Space</strong> stands out with its fully reusable small launch vehicle design — a technical approach that, if successful, could reshape the economics of small satellite access. Several other small-launch startups continue to iterate on their vehicles.</p>
+
+<h3>7. Arianespace / ArianeGroup</h3>
+<p>Europe\'s flagship launch provider is transitioning from Ariane 5 to <strong>Ariane 6</strong>, which completed its maiden flight in 2024. Ariane 6 is critical for European launch autonomy, serving both institutional (ESA, EU) and commercial customers. The company also operates the Vega-C small launcher.</p>
+
+<h2 id="satellite-operators">Satellite Operators & Services</h2>
+
+<p>These companies build, operate, and derive revenue from satellites — the workhorses of the space economy.</p>
+
+<h3>8. Planet Labs (PL)</h3>
+<p>Operates the <strong>largest fleet of Earth observation satellites</strong> — over 200 Dove, SkySat, and Tanager satellites imaging the entire land surface of Earth daily. Planet\'s data feeds agriculture, forestry, defense, insurance, and climate monitoring applications. Publicly traded, Planet is a leader in making space data accessible.</p>
+
+<h3>9. Spire Global (SPIR)</h3>
+<p>Operates a constellation of <strong>100+ nanosatellites</strong> collecting radio occultation weather data, ship tracking (AIS), and aircraft tracking (ADS-B). Spire\'s space-as-a-service model allows customers to deploy custom payloads on its satellite bus.</p>
+
+<h3>10. Maxar Technologies</h3>
+<p>Now part of <strong>Advent International</strong> (acquired 2023), Maxar is a leading provider of high-resolution commercial Earth imagery and geospatial intelligence. Its <strong>WorldView Legion</strong> constellation represents the next generation of sub-30cm resolution commercial imaging.</p>
+
+<h3>11. BlackSky Technology (BKSY)</h3>
+<p>Combines a growing constellation of high-revisit imaging satellites with an <strong>AI-powered analytics platform</strong> (Spectra AI). BlackSky\'s focus on real-time intelligence and automated monitoring makes it a key player in the geospatial analytics market, particularly for defense and intelligence customers.</p>
+
+<h3>12. AST SpaceMobile (ASTS)</h3>
+<p>Building the world\'s first <strong>space-based cellular broadband network</strong> designed to connect directly to unmodified smartphones. AST\'s BlueWalker 3 test satellite demonstrated the concept, and the company is deploying its first commercial <strong>BlueBird satellites</strong> with the largest-ever commercial phased array antennas. If successful, AST could connect 5+ billion existing phones to satellite broadband.</p>
+
+<h3>13. Iridium Communications (IRDM)</h3>
+<p>Operates the only satellite constellation providing <strong>truly global coverage</strong> (including poles). Iridium\'s 66-satellite LEO constellation supports voice, data, and IoT services used by maritime, aviation, military, and emergency services worldwide. The company is exploring its <strong>Iridium NEXT 2.0</strong> follow-on constellation.</p>
+
+<h3>14. Viasat (VSAT)</h3>
+<p>Following its acquisition of Inmarsat, Viasat operates a <strong>hybrid GEO-LEO network</strong> serving aviation, maritime, government, and residential broadband. The ViaSat-3 constellation of high-capacity GEO satellites is entering service, each providing 1+ Tbps of throughput.</p>
+
+<h3>15. SES</h3>
+<p>Luxembourg-based SES operates a fleet of <strong>GEO and MEO satellites</strong>, including the O3b mPOWER MEO constellation delivering low-latency, high-throughput connectivity. SES serves telcos, governments, maritime, and aviation customers globally.</p>
+
+<h2 id="defense-national-security">Defense & National Security</h2>
+
+<p>Space is now a warfighting domain. These companies build the satellites, sensors, and systems that protect national security interests.</p>
+
+<h3>16. Anduril Industries</h3>
+<p>Palmer Luckey\'s defense technology company is rapidly expanding into <strong>space-based surveillance and autonomous systems</strong>. Anduril\'s Lattice AI platform and its growing portfolio of autonomous drones and sensors position it as a next-generation defense prime. The company is competing for contracts under programs like <strong>Golden Dome</strong> and the SDA\'s proliferated LEO architecture.</p>
+
+<h3>17. L3Harris Technologies (LHX)</h3>
+<p>A top-5 defense contractor with deep space heritage. L3Harris builds <strong>missile warning satellites, weather satellites, and ISR payloads</strong> for the Space Force and intelligence community. The company\'s acquisition of Aerojet Rocketdyne added propulsion to its space capabilities.</p>
+
+<h3>18. Northrop Grumman (NOC)</h3>
+<p>Builds the <strong>James Webb Space Telescope, B-21 Raider</strong>, and multiple classified space programs. Northrop\'s space division produces satellite buses, propulsion systems (via its Orbital ATK heritage), and ground systems. The company\'s <strong>MEP (Mission Extension Pod)</strong> provides in-space satellite servicing.</p>
+
+<h3>19. RTX (formerly Raytheon Technologies)</h3>
+<p>Through its <strong>Raytheon</strong> and <strong>Collins Aerospace</strong> divisions, RTX builds space-based sensors, ground systems, and missile defense interceptors. The company is a key player in the Space Development Agency\'s proliferated LEO tracking layer.</p>
+
+<h3>20. Boeing (BA)</h3>
+<p>Despite challenges with Starliner, Boeing remains deeply embedded in national security space through its <strong>satellite manufacturing, ground systems</strong>, and involvement in programs like SLS and the International Space Station. Boeing\'s defense and space division generates tens of billions in annual revenue.</p>
+
+<h3>21. Lockheed Martin (LMT)</h3>
+<p>The largest defense contractor by revenue and a dominant space prime. Lockheed builds <strong>GPS III satellites, SBIRS missile warning satellites, Orion crew capsule</strong> for Artemis, and next-gen military space systems. Its Space division alone generates $12+ billion annually.</p>
+
+<h3>22. True Anomaly</h3>
+<p>Developing <strong>space domain awareness</strong> and <strong>in-space maneuvering</strong> capabilities for the U.S. Space Force. True Anomaly\'s Jackal autonomous spacecraft are designed for rendezvous and proximity operations — essentially space situational awareness satellites that can inspect other objects in orbit. A critical emerging player in space security.</p>
+
+<h2 id="space-stations-habitats">Space Stations & Habitats</h2>
+
+<p>With the ISS retiring around 2030, a new generation of commercial space stations is under development.</p>
+
+<h3>23. Axiom Space</h3>
+<p>Building the <strong>first commercial modules to attach to the ISS</strong>, which will eventually detach to form a free-flying commercial station. Axiom has flown multiple private astronaut missions and is NASA\'s partner for commercial LEO station development. Valued at $5+ billion.</p>
+
+<h3>24. Vast</h3>
+<p>Jared Isaacman-backed company developing the <strong>Haven-1</strong> single-module station (launching 2025-2026) and the larger <strong>Haven-2</strong> multi-module station. Vast raised <strong>$400M+</strong> in 2025 and secured a SpaceX Starship launch for Haven-2, making it one of the most aggressively funded commercial station ventures.</p>
+
+<h3>25. Sierra Space</h3>
+<p>Developer of the <strong>Dream Chaser spaceplane</strong> (a winged vehicle that launches on a rocket and lands on a runway like the Space Shuttle) and <strong>LIFE habitat</strong> inflatable space station modules. Sierra Space raised a <strong>$1.5 billion round in 2025</strong>, making it one of the best-funded space companies globally. Dream Chaser\'s first cargo mission to ISS is imminent.</p>
+
+<h3>26. Gravitics</h3>
+<p>Building <strong>modular space station segments</strong> and habitat modules optimized for the Starship cargo bay. Gravitics\' approach of manufacturing full habitat modules inside Starship\'s massive payload volume could accelerate station deployment timelines significantly.</p>
+
+<h2 id="in-space-services">In-Space Services & Manufacturing</h2>
+
+<p>An emerging sector focused on doing things IN space — servicing satellites, manufacturing materials, and more.</p>
+
+<h3>27. Redwire (RDW)</h3>
+<p>The leading <strong>in-space manufacturing and infrastructure</strong> company. Redwire\'s products include deployable solar arrays, 3D printing in microgravity, space-grade optics, and biological research payloads. Publicly traded, Redwire is a key supplier to NASA, the DoD, and commercial customers.</p>
+
+<h3>28. Varda Space Industries</h3>
+<p>Pioneering <strong>in-space pharmaceutical manufacturing</strong>. Varda launches small capsules to orbit, manufactures drug crystals in microgravity (which produces superior crystal structures), and returns them to Earth. The company\'s first re-entry capsule successfully returned in 2024, proving the business model. Varda is also providing <strong>re-entry vehicle services</strong> to the DoD.</p>
+
+<h3>29. Impulse Space</h3>
+<p>Founded by former SpaceX Raptor engine lead Tom Mueller, Impulse Space develops <strong>orbital maneuvering vehicles and last-mile delivery</strong> systems. The company\'s Mira vehicle is designed to take payloads from rideshare drop-off orbits to their precise final destinations — solving a key bottleneck in the rideshare launch market.</p>
+
+<h3>30. Astroscale</h3>
+<p>The leading company in <strong>active debris removal and in-space servicing</strong>. Japanese-founded Astroscale has demonstrated rendezvous and proximity operations with debris objects and is developing commercial services to deorbit defunct satellites. As debris regulations tighten, Astroscale is well-positioned.</p>
+
+<h3>31. Orbit Fab</h3>
+<p>Building the <strong>"gas stations of space"</strong> — in-orbit refueling depots and tanker vehicles. Orbit Fab\'s RAFTI (Rapidly Attachable Fluid Transfer Interface) is becoming an industry standard for satellite refueling ports. In-space refueling could extend satellite lifetimes and enable entirely new mission profiles.</p>
+
+<h2 id="satellite-manufacturing">Satellite & Component Manufacturing</h2>
+
+<p>The companies that build the spacecraft and the critical components inside them.</p>
+
+<h3>32. Terran Orbital</h3>
+<p>Now a subsidiary of Lockheed Martin, Terran Orbital is a leading <strong>small satellite manufacturer</strong>. The company builds Earth observation, communications, and national security satellites, including large production orders for the SDA\'s proliferated LEO architecture.</p>
+
+<h3>33. York Space Systems</h3>
+<p>Produces standardized, mass-produced satellite buses for defense and commercial customers. York\'s <strong>S-CLASS platform</strong> enables rapid, affordable satellite manufacturing at scale — critical as DoD demand for proliferated LEO constellations grows.</p>
+
+<h3>34. Sidus Space (SIDU)</h3>
+<p>Builds multi-mission small satellites and provides <strong>AI-enabled space-based data analytics</strong>. Sidus\'s LizzieSat platform combines Earth observation with edge computing for real-time on-orbit data processing.</p>
+
+<h3>35. Aerojet Rocketdyne (now L3Harris)</h3>
+<p>The dominant U.S. producer of <strong>rocket engines and in-space propulsion</strong>. Aerojet\'s engines power SLS, Atlas V, Delta IV, and numerous satellite propulsion systems. Now integrated into L3Harris, it provides propulsion across virtually every major U.S. launch and satellite program.</p>
+
+<h2 id="ground-segment">Ground Segment & Communications</h2>
+
+<p>The terrestrial infrastructure that connects space assets to their users.</p>
+
+<h3>36. Amazon / Project Kuiper</h3>
+<p>Amazon\'s <strong>$10+ billion investment</strong> in a 3,236-satellite LEO broadband constellation. Kuiper\'s first prototype satellites launched in 2023, and the operational constellation is now deploying. With Amazon\'s cloud infrastructure (AWS), logistics, and capital, Kuiper is the only credible competitor to Starlink at scale.</p>
+
+<h3>37. Kratos Defense (KTOS)</h3>
+<p>A leading provider of <strong>satellite ground systems, signal processing, and space electronics</strong>. Kratos\'s OpenSpace platform is modernizing how ground stations communicate with satellites, moving toward software-defined, virtualized ground infrastructure.</p>
+
+<h3>38. Comtech Telecommunications</h3>
+<p>Provides <strong>satellite modems, amplifiers, and ground station equipment</strong> to military, government, and commercial satellite operators. Comtech\'s technology is embedded in satellite ground systems worldwide.</p>
+
+<h2 id="earth-observation-analytics">Earth Observation & Geospatial Analytics</h2>
+
+<p>Turning satellite data into actionable intelligence.</p>
+
+<h3>39. Umbra</h3>
+<p>Operates a growing constellation of <strong>SAR (Synthetic Aperture Radar) satellites</strong> providing all-weather, day-and-night Earth imaging at 16cm resolution. SAR is increasingly valued for defense, maritime monitoring, and infrastructure assessment because it works through clouds and darkness.</p>
+
+<h3>40. Satellogic (SATL)</h3>
+<p>Argentine company building a <strong>high-resolution, high-revisit Earth observation constellation</strong>. Satellogic offers sub-meter multispectral and hyperspectral imaging at price points significantly below legacy providers. Publicly traded, it\'s expanding its constellation and customer base.</p>
+
+<h3>41. HawkEye 360</h3>
+<p>Specializes in <strong>radio frequency (RF) geolocation from space</strong>. HawkEye\'s satellites detect, geolocate, and characterize RF emissions — from ship radars to communication signals — enabling maritime domain awareness, spectrum monitoring, and defense intelligence applications.</p>
+
+<h3>42. Capella Space</h3>
+<p>Operates an all-weather <strong>SAR imaging constellation</strong> delivering high-resolution imagery with rapid revisit. Capella\'s on-demand tasking capability allows customers to image any location on Earth within hours, serving defense, intelligence, and commercial markets.</p>
+
+<h2 id="propulsion-transportation">Propulsion & In-Space Transportation</h2>
+
+<h3>43. Momentus (MNTS)</h3>
+<p>Develops <strong>water-plasma propulsion</strong> for in-space transportation and satellite servicing. Momentus\'s Vigoride orbital transfer vehicle provides last-mile delivery for satellites deployed on rideshare missions.</p>
+
+<h3>44. Phase Four</h3>
+<p>Builds compact <strong>RF thruster propulsion systems</strong> for small satellites. Phase Four\'s Maxwell engine uses radio frequency energy to ionize and accelerate propellant, providing efficient electric propulsion in a small form factor.</p>
+
+<h2 id="emerging-frontier">Emerging & Frontier Companies</h2>
+
+<p>These companies are pushing into new markets and business models that could define the next decade of space.</p>
+
+<h3>45. Muon Space</h3>
+<p>Building a constellation of <strong>multi-sensor Earth observation satellites</strong> focused on climate intelligence. Muon\'s approach combines multiple instrument types (microwave radiometer, GNSS-RO, hyperspectral) on each satellite for comprehensive environmental monitoring.</p>
+
+<h3>46. Phantom Space</h3>
+<p>Developing the <strong>Daytona launch vehicle</strong> for small satellite delivery, with a focus on manufacturability and cost reduction. Phantom aims to bring automotive-style mass production to rocket manufacturing.</p>
+
+<h3>47. ThinkOrbital</h3>
+<p>Developing <strong>in-space welding and construction</strong> technology to build large structures in orbit. ThinkOrbital\'s ThinkPlatform would use robotic welding to construct space stations and platforms from modular components launched on standard rockets.</p>
+
+<h3>48. Starfish Space</h3>
+<p>Building autonomous <strong>satellite servicing vehicles</strong> (Otter) capable of docking with, repositioning, and life-extending existing satellites. Starfish\'s approach could create a new market for satellite lifecycle management in GEO and other orbits.</p>
+
+<h3>49. CesiumAstro</h3>
+<p>Develops <strong>multi-beam, software-defined phased array antennas</strong> for satellites, aircraft, and ground vehicles. CesiumAstro\'s Nightingale communication payloads enable advanced networking in space — a key capability as proliferated constellations demand more sophisticated inter-satellite links.</p>
+
+<h3>50. K2 Space</h3>
+<p>Designing <strong>very large satellites</strong> optimized for next-generation launch vehicles like Starship. While the industry has trended toward small satellites, K2 argues that Starship\'s massive payload capacity enables a return to large, highly capable spacecraft that can carry more payload per dollar to orbit.</p>
+
+<h2 id="key-themes">Key Themes Across the Top 50</h2>
+
+<p>Looking across these 50 companies, several themes define the 2026 space industry:</p>
+
+<ul>
+<li><strong>Reusability is table stakes.</strong> Every new launch vehicle in development incorporates some form of reusability. SpaceX proved the model; now everyone is following.</li>
+<li><strong>Defense spending is a growth engine.</strong> Companies like Anduril, True Anomaly, L3Harris, and many satellite manufacturers are riding a wave of Space Force and SDA spending.</li>
+<li><strong>In-space services are emerging.</strong> Refueling (Orbit Fab), debris removal (Astroscale), manufacturing (Varda), and servicing (Starfish) are creating entirely new space economy sectors.</li>
+<li><strong>Vertical integration wins.</strong> The most successful companies (SpaceX, Rocket Lab) control multiple links in the value chain — launch, spacecraft, components, and operations.</li>
+<li><strong>AI and autonomy are differentiators.</strong> From BlackSky\'s Spectra AI to Anduril\'s Lattice platform, software and AI are as important as hardware.</li>
+<li><strong>Mega-constellations drive volume.</strong> Starlink, Kuiper, SDA, and others are creating unprecedented demand for satellite manufacturing, launch, and ground equipment.</li>
+</ul>
+
+<p>Explore detailed profiles, financial data, and SpaceNexus Scores for all 50 companies and 200+ more on the <a href="/company-profiles">SpaceNexus Company Profiles</a> directory.</p>
+`,
+  },
+
+  // ── Article: ISS Decommission ─────────────────────────────────────────
+  {
+    slug: 'iss-decommission-what-happens-space-station-retires',
+    title: 'ISS Decommission: What Happens When the Space Station Retires',
+    excerpt: 'The International Space Station is scheduled for decommission around 2030. Here\'s the timeline, the deorbit plan, what replaces it, and the science legacy of humanity\'s most ambitious construction project.',
+    category: 'analysis',
+    author: 'SpaceNexus Team',
+    authorRole: 'Editorial',
+    publishedAt: '2026-03-17T00:00:00Z',
+    readingTime: 8,
+    keywords: ['ISS decommission', 'ISS retirement', 'space station deorbit', 'ISS replacement', 'commercial space stations', 'ISS end of life', 'space station 2030'],
+    content: `
+<p>The <strong>International Space Station</strong> — humanity\'s largest and most complex construction project in space — is approaching the end of its operational life. After more than 25 years of continuous human habitation, the ISS is scheduled for <strong>decommission around 2030</strong>, and NASA has a detailed plan for what comes next. Here is everything you need to know about the ISS retirement: the timeline, the deorbit procedure, what will replace it, and the extraordinary scientific legacy it leaves behind.</p>
+
+<h2 id="timeline">The Decommission Timeline</h2>
+
+<p>The ISS has been continuously crewed since <strong>November 2, 2000</strong>, when the Expedition 1 crew — Commander Bill Shepherd and cosmonauts Yuri Gidzenko and Sergei Krikalev — arrived aboard a Soyuz spacecraft. Since then, the station has hosted more than 270 people from 21 countries.</p>
+
+<p>NASA and its international partners have agreed to operate the ISS through <strong>at least 2030</strong>. The current transition plan looks like this:</p>
+
+<ul>
+<li><strong>2024-2027:</strong> Full operations continue. Commercial crew (SpaceX Crew Dragon, Boeing Starliner) and cargo (SpaceX Dragon, Northrop Cygnus) missions maintain a crew of 7. Axiom Space modules begin attaching to the station.</li>
+<li><strong>2027-2028:</strong> Commercial space station demonstrations accelerate. Axiom, Vast, and Sierra Space advance their free-flying station plans. NASA begins transitioning research activities to commercial platforms.</li>
+<li><strong>2028-2030:</strong> Gradual reduction of ISS operations. Non-essential systems are decommissioned. Crew size may reduce. Axiom modules potentially detach to form an independent station.</li>
+<li><strong>~2030:</strong> Final crew departs. Station enters unmanned phase for controlled deorbit preparation.</li>
+<li><strong>~2030-2031:</strong> Controlled deorbit using the <strong>SpaceX Deorbit Vehicle</strong>.</li>
+</ul>
+
+<h2 id="deorbit-plan">The Deorbit Plan: How Do You Bring Down a 420,000 kg Structure?</h2>
+
+<p>Deorbiting the ISS is an engineering challenge on a scale never before attempted. The station spans the area of a <strong>football field</strong>, masses <strong>420,000 kg (925,000 lbs)</strong>, and orbits at approximately 400 km altitude. You can\'t just let it decay naturally — uncontrolled re-entry of an object this size would scatter debris across hundreds of kilometers, posing unacceptable risk to populated areas.</p>
+
+<p>NASA awarded SpaceX a <strong>$843 million contract</strong> in June 2024 to build the <strong>U.S. Deorbit Vehicle (USDV)</strong> — a modified Dragon spacecraft with significantly enhanced propulsion. Here\'s how the deorbit will work:</p>
+
+<ol>
+<li><strong>Orbit lowering:</strong> Over several months, the station\'s altitude is gradually reduced from ~400 km to ~200 km using its own thrusters and visiting cargo vehicles.</li>
+<li><strong>USDV docking:</strong> The SpaceX Deorbit Vehicle docks to the station and performs a series of deorbit burns.</li>
+<li><strong>Final deorbit burn:</strong> A large retrograde burn targets re-entry over the <strong>South Pacific Ocean Uninhabited Area (SPOUA)</strong> — also known as the "spacecraft cemetery" or Point Nemo, the point on Earth farthest from any landmass.</li>
+<li><strong>Atmospheric re-entry:</strong> The station breaks apart during re-entry. Most of the structure burns up, but significant pieces (estimated 20-40% of the total mass) survive to impact the ocean.</li>
+<li><strong>Debris corridor:</strong> The impact zone is a long, narrow corridor across the remote South Pacific. Airspace and maritime traffic are cleared during the re-entry window.</li>
+</ol>
+
+<p>Previous large-object deorbits include Russia\'s <strong>Mir station</strong> (143,000 kg, deorbited 2001) and China\'s <strong>Tiangong-1</strong> (8,500 kg, uncontrolled re-entry 2018). The ISS will be roughly <strong>3x the mass of Mir</strong>, making it the largest deorbit operation in history.</p>
+
+<h2 id="commercial-replacements">What Replaces the ISS? Commercial Space Stations</h2>
+
+<p>NASA is investing in <strong>commercial LEO destinations (CLDs)</strong> to ensure continuous U.S. presence in low-Earth orbit after ISS retirement. The agency has awarded contracts and agreements to several companies:</p>
+
+<ul>
+<li><strong>Axiom Space:</strong> Building modules that attach to the ISS now and will eventually detach to form the <strong>Axiom Station</strong> — a free-flying commercial station. Axiom has flown 4+ private astronaut missions and is the most mature CLD provider.</li>
+<li><strong>Vast:</strong> Developing <strong>Haven-1</strong> (single-module station, launching 2025-2026 on Falcon 9) and <strong>Haven-2</strong> (larger station launching on Starship). Vast is backed by Jared Isaacman and has raised $400M+.</li>
+<li><strong>Sierra Space:</strong> The <strong>LIFE (Large Integrated Flexible Environment)</strong> inflatable habitat and <strong>Dream Chaser</strong> spaceplane form Sierra\'s station concept. Sierra raised $1.5B in 2025.</li>
+<li><strong>Orbital Reef (Blue Origin + Sierra Space):</strong> A joint venture to build a mixed-use commercial station, though the partnership structure has evolved as both companies also pursue independent station programs.</li>
+<li><strong>Starlab (Voyager Space + Airbus):</strong> A joint U.S.-European commercial station concept, though Starlab\'s timeline has faced some uncertainty.</li>
+</ul>
+
+<p>NASA plans to be an <strong>anchor tenant</strong> on commercial stations, purchasing crew time and research access rather than owning and operating the hardware. This public-private model mirrors the successful Commercial Crew and Commercial Cargo programs that produced Dragon and Starliner.</p>
+
+<h2 id="science-legacy">The Science Legacy: 25+ Years of Discovery</h2>
+
+<p>The ISS\'s contribution to science, technology, and international cooperation is staggering:</p>
+
+<ul>
+<li><strong>3,000+ scientific experiments</strong> conducted across microgravity research, human biology, materials science, Earth observation, and fundamental physics</li>
+<li><strong>Key medical discoveries:</strong> Understanding of bone density loss, muscle atrophy, fluid shift, and immune system changes in microgravity — critical for future long-duration missions to Mars</li>
+<li><strong>Materials science:</strong> Production of superior protein crystals, fiber optics (ZBLAN), and semiconductor materials in microgravity</li>
+<li><strong>Earth observation:</strong> Continuous monitoring of Earth\'s surface, atmosphere, and climate from a unique vantage point</li>
+<li><strong>Technology demonstrations:</strong> Testing of life support systems, robotic arms, docking mechanisms, and other technologies needed for deep-space exploration</li>
+<li><strong>Cold atom laboratory:</strong> Creation of the <strong>coldest known spot in the universe</strong> — a Bose-Einstein condensate cooled to billionths of a degree above absolute zero</li>
+<li><strong>Alpha Magnetic Spectrometer:</strong> A $2 billion particle physics experiment searching for dark matter and antimatter from the station\'s exterior</li>
+</ul>
+
+<h2 id="international-implications">International Implications</h2>
+
+<p>The ISS is the most expensive object ever built (<strong>~$150 billion total</strong>) and the most significant example of international space cooperation. Its retirement raises important questions:</p>
+
+<ul>
+<li><strong>Russia\'s role:</strong> Roscosmos has announced plans for its own <strong>Russian Orbital Service Station (ROSS)</strong>, though funding and timelines remain uncertain. Russia\'s departure from the ISS partnership marks a significant shift in space geopolitics.</li>
+<li><strong>China\'s Tiangong:</strong> China\'s <strong>Tiangong space station</strong> (operational since 2022) will be the only government-owned station in orbit after ISS retirement, giving China a unique capability.</li>
+<li><strong>European and Japanese access:</strong> ESA and JAXA will need to secure access to commercial stations or partner with other programs to maintain their crewed spaceflight activities.</li>
+<li><strong>Emerging space nations:</strong> India (Gaganyaan), UAE, and other nations may seek commercial station access for their astronaut programs.</li>
+</ul>
+
+<h2 id="what-to-watch">What to Watch</h2>
+
+<p>The ISS-to-commercial-station transition is one of the most important developments in space over the next 5 years. Key milestones to watch:</p>
+
+<ul>
+<li><strong>2026:</strong> Vast Haven-1 launch, Axiom module operations, Sierra Space Dream Chaser first mission</li>
+<li><strong>2027-2028:</strong> Commercial station demonstrations, NASA transition planning</li>
+<li><strong>2029:</strong> SpaceX Deorbit Vehicle readiness, potential ISS end-of-life preparations</li>
+<li><strong>~2030:</strong> ISS controlled deorbit, commercial stations operational</li>
+</ul>
+
+<p>Track ISS status, commercial station development, and the transition timeline with the <a href="/space-stations">SpaceNexus Space Stations</a> module. Monitor all active and planned orbital habitats in one place.</p>
+`,
+  },
+
+  // ── Article: Space Weather Explained ───────────────────────────────────
+  {
+    slug: 'space-weather-explained-solar-flares-cmes',
+    title: 'Space Weather Explained: Solar Flares, CMEs, and Why They Matter',
+    excerpt: 'A complete guide to space weather: what solar flares and coronal mass ejections are, how they affect satellites, GPS, power grids, and aviation, and why space weather monitoring matters more than ever during solar maximum.',
+    category: 'guide',
+    author: 'SpaceNexus Team',
+    authorRole: 'Editorial',
+    publishedAt: '2026-03-17T00:00:00Z',
+    readingTime: 8,
+    keywords: ['space weather', 'solar flares', 'coronal mass ejections', 'CME', 'solar storm', 'geomagnetic storm', 'space weather effects', 'solar maximum', 'solar cycle'],
+    content: `
+<p>Space weather might sound abstract, but its effects are very real — and increasingly consequential as modern civilization depends on satellites, GPS, power grids, and radio communications that are all vulnerable to solar activity. With the Sun near the peak of <strong>Solar Cycle 25</strong>, understanding space weather has never been more important. Here is your complete guide to <strong>solar flares, coronal mass ejections (CMEs), geomagnetic storms</strong>, and why they matter for the space industry and daily life.</p>
+
+<h2 id="what-is-space-weather">What Is Space Weather?</h2>
+
+<p><strong>Space weather</strong> refers to the variable conditions in the space environment between the Sun and Earth, driven primarily by solar activity. Just as terrestrial weather involves wind, rain, and temperature fluctuations, space weather involves streams of charged particles, magnetic field disturbances, and electromagnetic radiation originating from the Sun.</p>
+
+<p>The Sun is a dynamic, active star. Its surface is a roiling plasma where magnetic field lines constantly emerge, tangle, and reconnect. When these magnetic structures become unstable, they release enormous bursts of energy — and that energy propagates through the solar system as space weather.</p>
+
+<p>The three main types of space weather events are:</p>
+
+<ul>
+<li><strong>Solar flares:</strong> Intense bursts of electromagnetic radiation (X-rays, UV, radio waves) that travel at the speed of light, reaching Earth in ~8 minutes</li>
+<li><strong>Coronal mass ejections (CMEs):</strong> Massive clouds of magnetized plasma ejected from the Sun, traveling at 250-3,000 km/s and reaching Earth in 15-72 hours</li>
+<li><strong>Solar wind streams:</strong> Continuous flows of charged particles from the Sun, with variable speed and density, that interact with Earth\'s magnetosphere</li>
+</ul>
+
+<h2 id="solar-flares">Solar Flares: The Speed-of-Light Threat</h2>
+
+<p>A solar flare occurs when magnetic energy stored in the Sun\'s atmosphere is suddenly released. The result is an intense flash of radiation across the electromagnetic spectrum — from radio waves to X-rays and gamma rays.</p>
+
+<p>Solar flares are classified by their X-ray brightness:</p>
+
+<ul>
+<li><strong>A, B, C-class:</strong> Minor flares with minimal Earth effects</li>
+<li><strong>M-class:</strong> Moderate flares that can cause brief radio blackouts at high latitudes and minor satellite effects</li>
+<li><strong>X-class:</strong> Major flares that can cause widespread radio blackouts, satellite anomalies, and GPS degradation. X-class flares above X10 are considered extreme events.</li>
+</ul>
+
+<p>Because flares travel at the speed of light, there is essentially <strong>no warning time</strong> — the radiation arrives at Earth simultaneously with the observation. This makes flare prediction (rather than detection) critically important.</p>
+
+<h2 id="cmes">Coronal Mass Ejections: The Big Ones</h2>
+
+<p>While solar flares are bursts of radiation, <strong>coronal mass ejections (CMEs)</strong> are massive clouds of magnetized plasma — billions of tons of solar material launched into space. CMEs are the primary drivers of severe geomagnetic storms on Earth.</p>
+
+<p>When a CME is directed toward Earth (called an <strong>Earth-directed or geoeffective CME</strong>), it typically takes <strong>1-3 days</strong> to arrive. Upon reaching Earth, the CME\'s magnetic field interacts with Earth\'s magnetosphere. If the CME\'s magnetic field is oriented southward (opposite to Earth\'s northward field), it can <strong>"open up" the magnetosphere</strong>, allowing solar particles to pour in and drive a geomagnetic storm.</p>
+
+<p>Geomagnetic storms are rated on the <strong>Kp index</strong> (0-9) and the <strong>G-scale</strong> (G1-G5):</p>
+
+<ul>
+<li><strong>G1 (Minor):</strong> Weak power grid fluctuations, minor satellite orientation issues, aurora visible at high latitudes</li>
+<li><strong>G2 (Moderate):</strong> High-latitude power systems may need voltage corrections, HF radio fadouts at high latitudes</li>
+<li><strong>G3 (Strong):</strong> Voltage corrections required, HF radio intermittent, GPS degradation, aurora visible at mid-latitudes</li>
+<li><strong>G4 (Severe):</strong> Widespread voltage control problems, HF radio blackout for hours, GPS degraded for hours, aurora at low latitudes</li>
+<li><strong>G5 (Extreme):</strong> Possible power grid collapse, HF radio blackout for days, GPS unusable, satellite damage risk, aurora visible near the equator</li>
+</ul>
+
+<h2 id="effects-on-technology">How Space Weather Affects Modern Technology</h2>
+
+<h3>Satellites</h3>
+<p>Satellites are on the front line of space weather impacts. Solar energetic particles can cause <strong>single-event upsets (SEUs)</strong> — bit flips in computer memory that can corrupt data or trigger anomalous behavior. Prolonged exposure to elevated radiation degrades solar panels, optics, and electronics. During severe storms, satellite operators may need to put spacecraft into <strong>"safe mode"</strong> — shutting down non-essential systems and orienting the vehicle to minimize exposure. The May 2024 G5 storm caused <strong>temporary anomalies in multiple Starlink satellites</strong> and required orientation adjustments across several constellations.</p>
+
+<h3>GPS and Navigation</h3>
+<p>Space weather disrupts GPS accuracy by altering the <strong>ionosphere</strong> — the layer of charged particles in Earth\'s upper atmosphere that GPS signals must pass through. During storms, ionospheric disturbances can degrade GPS accuracy from meters to <strong>tens of meters or worse</strong>, affecting aviation, precision agriculture, surveying, and autonomous vehicles. The FAA\'s WAAS (Wide Area Augmentation System) can be rendered unreliable during severe storms.</p>
+
+<h3>Power Grids</h3>
+<p>Geomagnetic storms induce <strong>geomagnetically induced currents (GICs)</strong> in long conductors — including power transmission lines, pipelines, and undersea cables. GICs can saturate power transformers, causing overheating and potential failure. The most famous example is the <strong>1989 Quebec blackout</strong>, when a G5 geomagnetic storm collapsed the Hydro-Quebec power grid, leaving 6 million people without power for 9 hours. A repeat of the <strong>1859 Carrington Event</strong> — the most powerful geomagnetic storm in recorded history — could cause trillions of dollars in damage to modern electrical infrastructure.</p>
+
+<h3>Aviation</h3>
+<p>Airlines reroute polar flights during severe space weather events because <strong>HF radio communications</strong> (the only option over polar regions where satellite coverage is limited) are disrupted, and radiation exposure to crew and passengers increases at high latitudes and altitudes. A single severe storm can cost airlines millions in rerouting costs.</p>
+
+<h3>Human Spaceflight</h3>
+<p>Astronauts on the ISS receive enhanced radiation warnings during solar events. In severe cases, they shelter in more heavily shielded sections of the station. For future <strong>lunar and Mars missions</strong>, space weather protection is a critical design requirement — beyond Earth\'s magnetic field, crews will be exposed to the full force of solar energetic particles.</p>
+
+<h2 id="solar-cycle">The Solar Cycle and Solar Maximum</h2>
+
+<p>The Sun operates on an approximately <strong>11-year activity cycle</strong>. During <strong>solar minimum</strong>, the Sun is relatively quiet — few sunspots, flares, and CMEs. During <strong>solar maximum</strong>, activity peaks with frequent, powerful events.</p>
+
+<p><strong>Solar Cycle 25</strong> began in December 2019 and has been significantly more active than initially predicted. The cycle is now near or at its peak (2024-2026), with sunspot numbers and flare frequencies running well above forecast levels. The <strong>May 2024 geomagnetic superstorm</strong> (the strongest in 20+ years, reaching G5) demonstrated that Cycle 25 is capable of producing extreme events.</p>
+
+<p>As the cycle peaks, expect:</p>
+<ul>
+<li>More frequent X-class flares and Earth-directed CMEs</li>
+<li>Increased satellite anomalies and GPS disruptions</li>
+<li>More spectacular aurora displays at lower latitudes</li>
+<li>Greater risk of power grid impacts, especially at high latitudes</li>
+</ul>
+
+<h2 id="monitoring">How Space Weather Is Monitored</h2>
+
+<p>A global network of observatories and spacecraft monitors space weather:</p>
+
+<ul>
+<li><strong>NOAA Space Weather Prediction Center (SWPC):</strong> The U.S. government\'s official source for space weather forecasts, watches, warnings, and alerts</li>
+<li><strong>NASA SDO (Solar Dynamics Observatory):</strong> Provides continuous, high-resolution images of the Sun in multiple wavelengths</li>
+<li><strong>SOHO (Solar and Heliospheric Observatory):</strong> A joint NASA-ESA spacecraft at the L1 point, monitoring the Sun and detecting CMEs</li>
+<li><strong>DSCOVR (Deep Space Climate Observatory):</strong> Positioned at the L1 Lagrange point (~1.5 million km from Earth), DSCOVR provides 15-60 minute advance warning of incoming solar wind and CME conditions</li>
+<li><strong>STEREO (Solar Terrestrial Relations Observatory):</strong> Twin spacecraft providing stereoscopic views of the Sun to track CMEs in 3D</li>
+</ul>
+
+<h2 id="why-it-matters">Why Space Weather Matters More Than Ever</h2>
+
+<p>Three trends are increasing space weather\'s impact on the economy and daily life:</p>
+
+<ol>
+<li><strong>Satellite dependency:</strong> With 10,000+ active satellites — and mega-constellations like Starlink growing rapidly — the total asset value in orbit exposed to space weather is in the hundreds of billions of dollars.</li>
+<li><strong>GPS-dependent infrastructure:</strong> From financial trading (which uses GPS timing) to autonomous vehicles to precision agriculture, GPS dependency is embedded in critical systems that most people don\'t associate with space.</li>
+<li><strong>Grid vulnerability:</strong> As power grids become more interconnected and stressed by renewable energy intermittency, their vulnerability to GICs may actually be increasing.</li>
+</ol>
+
+<p>Space weather monitoring is no longer just for scientists — it\'s operational intelligence for satellite operators, airlines, power utilities, and anyone who depends on GPS-based services.</p>
+
+<p>Track real-time solar conditions, flare alerts, geomagnetic storm forecasts, and satellite impact assessments with the <a href="/space-weather">SpaceNexus Space Weather</a> module. Stay ahead of solar events that can affect your operations.</p>
+`,
+  },
 ];
 
 export function getBlogPost(slug: string): OriginalBlogPost | undefined {

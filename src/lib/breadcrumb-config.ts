@@ -220,6 +220,7 @@ export const ROUTE_LABELS: Record<string, string> = {
   '/use-cases': 'Use Cases',
   '/case-studies': 'Case Studies',
   '/press': 'Press',
+  '/media-kit': 'Media Kit',
   '/security': 'Security',
 
   // ── Legal ──
@@ -360,6 +361,9 @@ export const ROUTE_PARENTS: Record<string, string> = {
 
   // Legal pages
   '/legal/dmca': '/terms',
+
+  // Media Kit → Press parent
+  '/media-kit': '/press',
 
   // Blog
   '/blog': '/blogs',

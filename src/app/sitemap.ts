@@ -160,6 +160,7 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/contact`, changeFrequency: 'monthly' as const, priority: 0.4 },
     { url: `${BASE_URL}/faq`, changeFrequency: 'monthly' as const, priority: 0.4 },
     { url: `${BASE_URL}/press`, changeFrequency: 'monthly' as const, priority: 0.4 },
+    { url: `${BASE_URL}/media-kit`, changeFrequency: 'monthly' as const, priority: 0.4 },
 
     // Legal pages
     { url: `${BASE_URL}/privacy`, changeFrequency: 'monthly' as const, priority: 0.3 },

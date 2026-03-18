@@ -142,6 +142,7 @@ const BUSINESS_ITEMS: DropdownItem[] = [
   { label: 'Book a Demo', href: '/book-demo', description: 'Schedule a personalized walkthrough' },
   { label: 'API Access', href: '/api-access', description: 'REST API for space intelligence data' },
   { label: 'Advertise', href: '/advertise', description: 'Sponsorship tiers for space industry brands' },
+  { label: 'Media Kit', href: '/media-kit', description: 'Brand assets, logos & press materials' },
 ];
 
 const TOOLS_ITEMS: DropdownItem[] = [
