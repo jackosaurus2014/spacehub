@@ -40,7 +40,7 @@ export default function TrialBanner() {
             Try SpaceNexus Professional free for 14 days &mdash; no credit card required
           </p>
           <Link
-            href="/register?trial=true"
+            href="/register?trial=true&utm_source=website&utm_medium=trial_banner&utm_campaign=trial"
             className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-white text-indigo-700 text-xs font-semibold hover:bg-white/90 transition-colors whitespace-nowrap"
           >
             Start Free Trial

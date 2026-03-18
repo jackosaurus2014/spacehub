@@ -60,6 +60,7 @@ const BLOG_CTA_MAP: Record<string, { tool: string; path: string }> = {
   'weekly-digest-march-10-17-2026': { tool: 'Space News', path: '/news' },
   'how-to-watch-artemis-ii-complete-viewing-guide': { tool: 'Live Coverage', path: '/live' },
   'space-industry-jobs-companies-hiring-2026': { tool: 'Space Talent Hub', path: '/space-talent' },
+  'state-of-space-economy-2026-overview': { tool: 'Space Economy', path: '/space-economy' },
 };
 
 type Props = {

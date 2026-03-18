@@ -69,7 +69,7 @@ export default function FloatingCTA() {
 
             <div className="flex items-center gap-3">
               <Link
-                href="/register"
+                href="/register?utm_source=website&utm_medium=floating_cta&utm_campaign=homepage"
                 className="inline-flex items-center gap-1.5 bg-white text-slate-900 font-medium text-xs sm:text-sm py-2 px-5 rounded-lg transition-all duration-200 ease-smooth hover:bg-slate-100 active:scale-[0.98] whitespace-nowrap"
               >
                 Start free
