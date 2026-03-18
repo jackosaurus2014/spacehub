@@ -146,6 +146,22 @@ export default function StructuredData() {
     screenshot: 'https://spacenexus.us/og-image.png',
   };
 
+  const webApplicationSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'WebApplication',
+    name: 'SpaceNexus',
+    url: 'https://spacenexus.us',
+    applicationCategory: 'BusinessApplication',
+    operatingSystem: 'Web',
+    offers: {
+      '@type': 'Offer',
+      price: '0',
+      priceCurrency: 'USD',
+    },
+    description:
+      'Space industry intelligence platform providing real-time launch tracking, satellite monitoring, market data, 200+ company profiles, and business opportunities across the global space economy.',
+  };
+
   return (
     <>
       <script
@@ -164,6 +180,12 @@ export default function StructuredData() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify(softwareApplicationSchema).replace(/</g, '\\u003c'),
+        }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(webApplicationSchema).replace(/</g, '\\u003c'),
         }}
       />
     </>

@@ -913,6 +913,8 @@ export default function GlossaryPage() {
         </ScrollReveal>
 
         <RelatedModules modules={PAGE_RELATIONS['glossary']} />
+
+        <p className="text-center text-xs text-slate-500 mt-12 mb-4">Last updated March 2026</p>
       </div>
     </div>
   );

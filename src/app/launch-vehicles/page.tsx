@@ -1862,6 +1862,7 @@ export default function LaunchVehiclesPage() {
               />
             </ScrollReveal>
 
+      <p className="text-center text-xs text-slate-500 mt-12 mb-4">Last updated March 2026</p>
     </div>
   );
 }
