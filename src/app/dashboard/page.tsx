@@ -24,7 +24,7 @@ const TrendingTopics = dynamic(
 import DashboardLayoutSelector from '@/components/DashboardLayoutSelector';
 import ModuleConfigurator from '@/components/ModuleConfigurator';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
-import RecentlyViewed from '@/components/ui/RecentlyViewed';
+import DashboardRecentlyViewed from '@/components/dashboard/RecentlyViewed';
 import { SkeletonPage } from '@/components/ui/Skeleton';
 import LaunchCountdown from '@/components/widgets/LaunchCountdown';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
@@ -843,6 +843,13 @@ export default function DashboardPage() {
           </div>
         </ScrollReveal>
 
+        {/* Continue Where You Left Off — recently viewed pages */}
+        <ScrollReveal>
+          <div className="mb-8">
+            <DashboardRecentlyViewed />
+          </div>
+        </ScrollReveal>
+
         {/* Space Industry Snapshot -- live data from /api/pulse */}
         <ScrollReveal>
           <SpaceIndustrySnapshot />
@@ -851,24 +858,6 @@ export default function DashboardPage() {
         {/* Space Industry Health Index -- composite score teaser */}
         <ScrollReveal>
           <SpaceIndustryHealthIndex />
-        </ScrollReveal>
-
-        {/* Recently Viewed Section */}
-        <ScrollReveal>
-          <div className="mb-8">
-            <div className="card p-5">
-              <div className="flex items-center justify-between mb-3">
-                <h2 className="text-sm font-semibold text-slate-300 flex items-center gap-2">
-                  <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  Recently Viewed
-                </h2>
-                <RecentlyViewed />
-              </div>
-              <RecentlyViewedInline />
-            </div>
-          </div>
         </ScrollReveal>
 
         {/* Exploration Progress */}
@@ -999,52 +988,3 @@ export default function DashboardPage() {
   );
 }
 
-/** Inline recently viewed list for the dashboard card */
-function RecentlyViewedInline() {
-  const [items, setItems] = useState<Array<{ path: string; title: string; timestamp: number }>>([]);
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-    try {
-      const raw = localStorage.getItem('spacenexus-recently-viewed');
-      if (raw) {
-        const parsed = JSON.parse(raw);
-        if (Array.isArray(parsed)) {
-          setItems(parsed.slice(0, 6));
-        }
-      }
-    } catch {
-      // ignore
-    }
-  }, []);
-
-  if (!mounted) {
-    return <div className="h-10 bg-white/[0.06] rounded animate-pulse" />;
-  }
-
-  if (items.length === 0) {
-    return (
-      <p className="text-xs text-slate-500">
-        Pages you visit will appear here for quick access.
-      </p>
-    );
-  }
-
-  return (
-    <div className="flex flex-wrap gap-2">
-      {items.map((item) => (
-        <Link
-          key={item.path}
-          href={item.path}
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/[0.06] border border-white/[0.06] text-xs text-slate-300 hover:text-white hover:border-white/10 hover:bg-white/[0.08] transition-all"
-        >
-          <svg className="w-3 h-3 text-slate-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-          </svg>
-          <span className="truncate max-w-[180px]">{item.title}</span>
-        </Link>
-      ))}
-    </div>
-  );
-}

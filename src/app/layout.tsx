@@ -168,6 +168,12 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="https://celestrak.org" />
         <link rel="preconnect" href="https://images2.imgbox.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://images2.imgbox.com" />
+        <link rel="preconnect" href="https://www.googleapis.com" />
+        <link rel="dns-prefetch" href="https://www.googleapis.com" />
+        <link rel="preconnect" href="https://api.spacexdata.com" />
+        <link rel="dns-prefetch" href="https://api.spacexdata.com" />
+        <link rel="preconnect" href="https://eonet.gsfc.nasa.gov" />
+        <link rel="dns-prefetch" href="https://eonet.gsfc.nasa.gov" />
         <StructuredData />
         {/* Inline service worker registration for PWA crawlers (PWABuilder, Lighthouse) */}
         {/* The full SW lifecycle management is in ServiceWorkerRegistration component */}
