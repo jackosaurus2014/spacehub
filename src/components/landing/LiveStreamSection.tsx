@@ -16,6 +16,8 @@ interface ActiveLiveStream {
   viewerCount: number;
   startedAt: string;
   embedUrl: string;
+  platform?: 'youtube' | 'x';
+  watchUrl?: string;
 }
 
 interface ChatMessage {
@@ -134,23 +136,39 @@ function StreamSelector({
 
           {/* Info */}
           <div className="text-left min-w-0">
-            <div className="text-xs font-medium text-white truncate max-w-[140px]">
+            <div className="text-xs font-medium text-white truncate max-w-[140px] flex items-center gap-1.5">
               {stream.channelName}
+              {/* Platform badge */}
+              {stream.platform === 'x' ? (
+                <svg className="w-3 h-3 text-white/60 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                </svg>
+              ) : (
+                <svg className="w-3 h-3 text-red-400/60 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814z" />
+                </svg>
+              )}
             </div>
             <div className="text-[11px] text-slate-400 flex items-center gap-1 mt-0.5">
-              <svg
-                className="w-3 h-3"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-              >
-                <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
-                <path
-                  fillRule="evenodd"
-                  d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z"
-                  clipRule="evenodd"
-                />
-              </svg>
-              {formatViewerCount(stream.viewerCount)}
+              {stream.platform === 'x' ? (
+                <span>on X</span>
+              ) : (
+                <>
+                  <svg
+                    className="w-3 h-3"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                    <path
+                      fillRule="evenodd"
+                      d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                  {formatViewerCount(stream.viewerCount)}
+                </>
+              )}
             </div>
           </div>
         </button>
@@ -470,17 +488,49 @@ export default function LiveStreamSection() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
           {/* Video Column (2/3 on desktop) */}
           <div className="lg:col-span-2 space-y-4">
-            {/* 16:9 YouTube embed */}
+            {/* Stream embed — YouTube or X */}
             <div className="relative w-full bg-space-900 rounded-xl overflow-hidden border border-white/[0.08] shadow-lg shadow-black/20">
-              <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
-                <iframe
-                  src={`https://www.youtube.com/embed/${currentStream.videoId}?autoplay=1&mute=1`}
-                  title={currentStream.title}
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                  className="absolute inset-0 w-full h-full"
-                />
-              </div>
+              {currentStream.platform === 'x' ? (
+                /* X/Twitter stream — link-based since X restricts embeds */
+                <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
+                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-slate-900 to-black p-6">
+                    <div className="mb-4">
+                      {/* X logo */}
+                      <svg className="w-12 h-12 text-white" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                      </svg>
+                    </div>
+                    <p className="text-white text-lg font-semibold mb-1 text-center line-clamp-2">
+                      {currentStream.title}
+                    </p>
+                    <p className="text-slate-400 text-sm mb-4">
+                      Live on X from @{currentStream.channelId}
+                    </p>
+                    <a
+                      href={currentStream.watchUrl || currentStream.embedUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-white text-black font-semibold hover:bg-white/90 transition-colors"
+                    >
+                      <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                      </svg>
+                      Watch on X
+                    </a>
+                  </div>
+                </div>
+              ) : (
+                /* YouTube stream — iframe embed */
+                <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
+                  <iframe
+                    src={`https://www.youtube.com/embed/${currentStream.videoId}?autoplay=1&mute=1`}
+                    title={currentStream.title}
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                    className="absolute inset-0 w-full h-full"
+                  />
+                </div>
+              )}
 
               {/* LIVE overlay badge */}
               <div className="absolute top-3 left-3 z-10 flex items-center gap-2">
@@ -488,6 +538,14 @@ export default function LiveStreamSection() {
                   <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" />
                   LIVE
                 </span>
+                {currentStream.platform === 'x' && (
+                  <span className="flex items-center gap-1 px-2 py-1 rounded-md bg-black/80 text-white text-xs font-medium">
+                    <svg className="w-3 h-3" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                    </svg>
+                    X
+                  </span>
+                )}
               </div>
             </div>
 
@@ -500,21 +558,48 @@ export default function LiveStreamSection() {
                 <span className="font-medium text-white/70">
                   {currentStream.channelName}
                 </span>
-                <span className="flex items-center gap-1">
-                  <svg
-                    className="w-3.5 h-3.5"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
+                {currentStream.platform === 'youtube' && (
+                  <span className="flex items-center gap-1">
+                    <svg
+                      className="w-3.5 h-3.5"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                      <path
+                        fillRule="evenodd"
+                        d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                    {formatViewerCount(currentStream.viewerCount)} watching
+                  </span>
+                )}
+                {/* Watch on platform link */}
+                {currentStream.watchUrl && (
+                  <a
+                    href={currentStream.watchUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-1 text-white/50 hover:text-white transition-colors"
                   >
-                    <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
-                    <path
-                      fillRule="evenodd"
-                      d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                  {formatViewerCount(currentStream.viewerCount)} watching
-                </span>
+                    {currentStream.platform === 'x' ? (
+                      <>
+                        <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                        </svg>
+                        Watch on X
+                      </>
+                    ) : (
+                      <>
+                        <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814z" />
+                        </svg>
+                        Watch on YouTube
+                      </>
+                    )}
+                  </a>
+                )}
               </div>
             </div>
           </div>

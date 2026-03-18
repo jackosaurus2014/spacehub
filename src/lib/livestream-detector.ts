@@ -32,6 +32,10 @@ export interface ActiveLiveStream {
   viewerCount: number;
   startedAt: string;
   embedUrl: string;
+  /** 'youtube' | 'x' — determines embed strategy */
+  platform: 'youtube' | 'x';
+  /** Direct URL to watch on the original platform */
+  watchUrl: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -41,22 +45,24 @@ export interface ActiveLiveStream {
 interface SpaceChannel {
   name: string;
   channelId: string;
+  /** X (Twitter) handle for this channel (without @) */
+  xHandle: string;
   /** Lower number = higher priority. Channels with priority <= 3 get
    *  individual API checks if not found in the broad search. */
   priority: number;
 }
 
 const SPACE_CHANNELS: SpaceChannel[] = [
-  { name: 'SpaceX',              channelId: 'UCtI0Hodo5o5dUb67FeUjDeA', priority: 1 },
-  { name: 'NASA',                channelId: 'UCLA_DiR1FfKNvjuUpBHmylQ', priority: 1 },
-  { name: 'NASASpaceflight',     channelId: 'UCSUu1lih2RifWkKtDOJdsBA', priority: 2 },
-  { name: 'Everyday Astronaut',  channelId: 'UC6uKrU_WqJ1R2HMTY3LIx5Q', priority: 3 },
-  { name: 'Blue Origin',         channelId: 'UCVxTHEKKLxNjGcvVaZindlg', priority: 2 },
-  { name: 'Rocket Lab',          channelId: 'UCsWq7LZaizhIi-c-Yo_bgg',  priority: 3 },
-  { name: 'ULA',                 channelId: 'UCVrEnvMzkT9oAXUELMfUiuQ', priority: 3 },
-  { name: 'ESA',                 channelId: 'UCIBaDdAbGlFDeS33shmlD0A', priority: 2 },
-  { name: 'Scott Manley',        channelId: 'UCxzC4EngIsMrPmbm6Nxvb-A', priority: 4 },
-  { name: 'Marcus House',        channelId: 'UCBNHHEoiSF8pcLgqLKVugOw', priority: 4 },
+  { name: 'SpaceX',              channelId: 'UCtI0Hodo5o5dUb67FeUjDeA', xHandle: 'SpaceX',           priority: 1 },
+  { name: 'NASA',                channelId: 'UCLA_DiR1FfKNvjuUpBHmylQ', xHandle: 'NASA',             priority: 1 },
+  { name: 'NASASpaceflight',     channelId: 'UCSUu1lih2RifWkKtDOJdsBA', xHandle: 'NASASpaceflight',  priority: 2 },
+  { name: 'Everyday Astronaut',  channelId: 'UC6uKrU_WqJ1R2HMTY3LIx5Q', xHandle: 'erdaborbit',    priority: 3 },
+  { name: 'Blue Origin',         channelId: 'UCVxTHEKKLxNjGcvVaZindlg', xHandle: 'blueorigin',       priority: 2 },
+  { name: 'Rocket Lab',          channelId: 'UCsWq7LZaizhIi-c-Yo_bgg',  xHandle: 'RocketLab',        priority: 3 },
+  { name: 'ULA',                 channelId: 'UCVrEnvMzkT9oAXUELMfUiuQ', xHandle: 'ulalaunch',        priority: 3 },
+  { name: 'ESA',                 channelId: 'UCIBaDdAbGlFDeS33shmlD0A', xHandle: 'esa',              priority: 2 },
+  { name: 'Scott Manley',        channelId: 'UCxzC4EngIsMrPmbm6Nxvb-A', xHandle: 'DJSnM',            priority: 4 },
+  { name: 'Marcus House',        channelId: 'UCBNHHEoiSF8pcLgqLKVugOw', xHandle: 'MarcusHouseLive',  priority: 4 },
 ];
 
 /** Map channelId -> channel name for fast lookups. */
@@ -224,6 +230,8 @@ function toActiveLiveStreams(
       viewerCount,
       startedAt,
       embedUrl: `https://www.youtube.com/embed/${videoId}`,
+      platform: 'youtube' as const,
+      watchUrl: `https://www.youtube.com/watch?v=${videoId}`,
     };
   });
 }
@@ -359,6 +367,8 @@ async function detectViaDatabase(): Promise<ActiveLiveStream[]> {
           ? new Date(event.launchDate).toISOString()
           : now.toISOString(),
         embedUrl: `https://www.youtube.com/embed/${videoId}`,
+        platform: 'youtube' as const,
+        watchUrl: `https://www.youtube.com/watch?v=${videoId}`,
       });
     }
 
@@ -373,6 +383,134 @@ async function detectViaDatabase(): Promise<ActiveLiveStream[]> {
     });
     return [];
   }
+}
+
+// ---------------------------------------------------------------------------
+// X (Twitter) livestream detection
+// ---------------------------------------------------------------------------
+
+/**
+ * Detect livestreams on X (Twitter) from known space industry accounts.
+ *
+ * Uses the X API v2 to search for recent tweets from space accounts that
+ * contain video/broadcast content and live-related keywords.
+ *
+ * Requires X_BEARER_TOKEN env var (Twitter/X API Bearer token).
+ */
+async function detectViaXApi(bearerToken: string): Promise<ActiveLiveStream[]> {
+  const streams: ActiveLiveStream[] = [];
+
+  // Build a search query for live/streaming tweets from space accounts
+  // X API v2 recent search: find tweets with video from known handles mentioning "live"
+  const handles = SPACE_CHANNELS.filter(ch => ch.xHandle && ch.priority <= 3)
+    .map(ch => `from:${ch.xHandle}`)
+    .join(' OR ');
+
+  const query = `(${handles}) (live OR launch OR streaming OR webcast) has:videos -is:retweet`;
+  const params = new URLSearchParams({
+    query,
+    'tweet.fields': 'created_at,attachments,entities,author_id',
+    'expansions': 'attachments.media_keys,author_id',
+    'media.fields': 'type,url,preview_image_url,duration_ms',
+    'user.fields': 'name,username,profile_image_url',
+    max_results: '10',
+  });
+
+  try {
+    const res = await fetch(
+      `https://api.x.com/2/tweets/search/recent?${params.toString()}`,
+      {
+        headers: { Authorization: `Bearer ${bearerToken}` },
+        signal: AbortSignal.timeout(10_000),
+      },
+    );
+
+    if (!res.ok) {
+      const body = await res.text().catch(() => '');
+      logger.warn('[LivestreamDetector] X API search error', {
+        status: res.status,
+        body: body.slice(0, 300),
+      });
+      return [];
+    }
+
+    const data = await res.json();
+    const tweets = data.data ?? [];
+    const includes = data.includes ?? {};
+    const media = includes.media ?? [];
+    const users = includes.users ?? [];
+
+    // Build lookup maps
+    const userMap = new Map<string, { name: string; username: string; profile_image_url?: string }>();
+    for (const u of users) {
+      userMap.set(u.id, u);
+    }
+
+    const mediaMap = new Map<string, { type: string; url?: string; preview_image_url?: string }>();
+    for (const m of media) {
+      mediaMap.set(m.media_key, m);
+    }
+
+    for (const tweet of tweets) {
+      // Only include tweets from the last 4 hours (likely still live)
+      const tweetAge = Date.now() - new Date(tweet.created_at).getTime();
+      if (tweetAge > 4 * 60 * 60 * 1000) continue;
+
+      // Check if tweet has video media
+      const mediaKeys = tweet.attachments?.media_keys ?? [];
+      const hasVideo = mediaKeys.some((key: string) => {
+        const m = mediaMap.get(key);
+        return m && (m.type === 'video' || m.type === 'animated_gif');
+      });
+
+      if (!hasVideo) continue;
+
+      const author = userMap.get(tweet.author_id);
+      const channelName = author?.name || 'Unknown';
+      const xHandle = author?.username || '';
+
+      // Find matching channel for thumbnail
+      const matchedChannel = SPACE_CHANNELS.find(
+        ch => ch.xHandle.toLowerCase() === xHandle.toLowerCase(),
+      );
+
+      // Get thumbnail from first video media
+      let thumbnailUrl = '';
+      for (const key of mediaKeys) {
+        const m = mediaMap.get(key);
+        if (m?.preview_image_url) {
+          thumbnailUrl = m.preview_image_url;
+          break;
+        }
+      }
+
+      const tweetUrl = `https://x.com/${xHandle}/status/${tweet.id}`;
+
+      streams.push({
+        videoId: tweet.id, // Use tweet ID as the identifier
+        title: tweet.text?.slice(0, 120) || `${channelName} Live`,
+        channelName: matchedChannel?.name || channelName,
+        channelId: xHandle,
+        thumbnailUrl: thumbnailUrl || author?.profile_image_url || '',
+        viewerCount: 0, // X doesn't expose viewer counts in v2 API
+        startedAt: tweet.created_at || new Date().toISOString(),
+        embedUrl: tweetUrl, // X embeds use tweet URL
+        platform: 'x' as const,
+        watchUrl: tweetUrl,
+      });
+    }
+
+    logger.info('[LivestreamDetector] X API detection complete', {
+      found: streams.length,
+      accounts: streams.map(s => s.channelName),
+    });
+  } catch (err) {
+    logger.warn('[LivestreamDetector] X API detection failed', {
+      error: err instanceof Error ? err.message : String(err),
+    });
+  }
+
+  return streams;
 }
 
 // ---------------------------------------------------------------------------
@@ -394,21 +532,69 @@ export async function detectLiveStreams(): Promise<ActiveLiveStream[]> {
   return withCache<ActiveLiveStream[]>(
     'livestreams:active',
     async () => {
-      const apiKey = process.env.YOUTUBE_API_KEY;
+      const youtubeKey = process.env.YOUTUBE_API_KEY;
+      const xBearerToken = process.env.X_BEARER_TOKEN;
 
-      if (apiKey) {
-        try {
-          const streams = await detectViaYouTubeAPI(apiKey);
-          return streams;
-        } catch (err) {
-          logger.error('[LivestreamDetector] YouTube API detection failed, trying DB fallback', {
-            error: err instanceof Error ? err.message : String(err),
-          });
-          // Fall through to database fallback
+      // Run YouTube and X detection in parallel
+      const [youtubeStreams, xStreams] = await Promise.all([
+        // YouTube detection
+        (async (): Promise<ActiveLiveStream[]> => {
+          if (youtubeKey) {
+            try {
+              return await detectViaYouTubeAPI(youtubeKey);
+            } catch (err) {
+              logger.error('[LivestreamDetector] YouTube API detection failed', {
+                error: err instanceof Error ? err.message : String(err),
+              });
+            }
+          }
+          // Fall back to database for YouTube streams
+          return detectViaDatabase();
+        })(),
+
+        // X detection
+        (async (): Promise<ActiveLiveStream[]> => {
+          if (xBearerToken) {
+            try {
+              return await detectViaXApi(xBearerToken);
+            } catch (err) {
+              logger.warn('[LivestreamDetector] X API detection failed', {
+                error: err instanceof Error ? err.message : String(err),
+              });
+            }
+          }
+          return [];
+        })(),
+      ]);
+
+      // Merge YouTube and X streams, deduplicate by channelName
+      // (if same company is live on both, keep the YouTube one since it's embeddable)
+      const merged: ActiveLiveStream[] = [...youtubeStreams];
+      const seenChannels = new Set(youtubeStreams.map(s => s.channelName.toLowerCase()));
+
+      for (const xStream of xStreams) {
+        if (!seenChannels.has(xStream.channelName.toLowerCase())) {
+          merged.push(xStream);
+          seenChannels.add(xStream.channelName.toLowerCase());
         }
       }
 
-      return detectViaDatabase();
+      // Sort: YouTube first (embeddable), then by viewerCount descending
+      merged.sort((a, b) => {
+        // Prefer YouTube (embeddable) over X (link only)
+        if (a.platform !== b.platform) {
+          return a.platform === 'youtube' ? -1 : 1;
+        }
+        return b.viewerCount - a.viewerCount;
+      });
+
+      logger.info('[LivestreamDetector] Combined detection complete', {
+        youtube: youtubeStreams.length,
+        x: xStreams.length,
+        total: merged.length,
+      });
+
+      return merged;
     },
     {
       ttlSeconds: LIVESTREAM_CACHE_TTL,
