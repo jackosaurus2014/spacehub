@@ -95,6 +95,11 @@ const BLOG_CTA_MAP: Record<string, { tool: string; path: string }> = {
   'nuclear-propulsion-space-future-deep-space-travel': { tool: 'Engineering Toolkit', path: '/tools' },
   'in-space-manufacturing-building-products-zero-gravity': { tool: 'Space Manufacturing', path: '/space-manufacturing' },
   'space-sustainability-industry-going-green': { tool: 'Space Environment', path: '/space-environment' },
+  'earth-observation-satellites-monitor-planet-space': { tool: 'Satellite Tracker', path: '/satellites' },
+  'space-startups-to-watch-2026-top-15': { tool: 'Startup Directory', path: '/startup-directory' },
+  'history-of-spaceflight-sputnik-to-starship': { tool: 'Space Timeline', path: '/timeline' },
+  'cislunar-economy-100-billion-opportunity': { tool: 'Cislunar Ecosystem', path: '/cislunar' },
+  'space-cybersecurity-protecting-satellites-hackers': { tool: 'Space Security', path: '/security' },
 };
 
 type Props = {
