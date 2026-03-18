@@ -5510,6 +5510,100 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 <p><a href="/why-spacenexus">See why space professionals are switching to SpaceNexus</a> and start consolidating your intelligence workflow today.</p>
 `,
   },
+  {
+    slug: 'space-industry-bloomberg-terminal-problem',
+    title: 'The Space Industry\'s Bloomberg Terminal Problem (And How We\'re Solving It)',
+    excerpt: 'Every maturing industry eventually gets its intelligence platform. Finance has Bloomberg. Legal has Westlaw. Real estate has CoStar. The space industry — now a $630 billion market growing at 9% annually — still doesn\'t have one. Here\'s why that\'s a problem and what we\'re building to fix it.',
+    category: 'analysis',
+    author: 'SpaceNexus Team',
+    authorRole: 'Founders',
+    publishedAt: '2026-03-17T20:00:00Z',
+    readingTime: 7,
+    featured: true,
+    keywords: [
+      'space industry intelligence',
+      'bloomberg terminal for space',
+      'space data platform',
+      'space industry fragmentation',
+      'spacenexus vision',
+      'space economy tools',
+      'space industry data aggregation',
+    ],
+    content: `
+<p>We started SpaceNexus because of a spreadsheet. A sprawling, 47-tab monstrosity that one of our co-founders maintained to track the space industry for his day job. One tab for launch schedules scraped from provider websites. Another for satellite positions pulled from CelesTrak. A third for space stock prices copied from Yahoo Finance. Government contracts from SAM.gov. Regulatory filings from the FCC. News clippings from a dozen trade publications.</p>
+
+<p>Every Monday morning, updating that spreadsheet took <strong>three hours</strong>. By Wednesday, half the data was stale. By Friday, critical developments had been missed entirely because they fell between the cracks of manual monitoring.</p>
+
+<p>If this sounds familiar, you are not alone. The space industry has a Bloomberg Terminal problem.</p>
+
+<h2 id="what-bloomberg-did-for-finance">What Bloomberg Did for Finance</h2>
+
+<p>In 1981, Michael Bloomberg left Salomon Brothers with a $10 million severance and a simple insight: Wall Street was drowning in data but starving for information. Bond prices were scattered across broker desks. Corporate filings lived in filing cabinets. Market news arrived via ticker tape. No one had a unified view of the financial landscape.</p>
+
+<p>Bloomberg's terminal changed everything. Not by generating new data — most of it was already public — but by <strong>aggregating, structuring, and contextualizing</strong> information that previously existed in silos. A trader could see a bond's price, the issuer's credit rating, related news, and comparable securities on a single screen. That integration created analytical capabilities that simply did not exist before.</p>
+
+<p>The result? Bloomberg Terminal became so essential that 325,000 professionals pay $24,000 per year for access. Not because the underlying data is secret, but because the <strong>integration is irreplaceable</strong>.</p>
+
+<h2 id="the-space-industrys-data-problem">The Space Industry's Data Problem</h2>
+
+<p>The space industry in 2026 faces the same fragmentation that finance faced in 1981 — but arguably worse. Consider the daily intelligence requirements of a space industry professional:</p>
+
+<ul>
+<li><strong>Launch schedules</strong> — scattered across SpaceX, ULA, Arianespace, Rocket Lab, ISRO, and a dozen other provider websites with no standard format</li>
+<li><strong>Satellite tracking</strong> — available through Space-Track.org and CelesTrak, but requiring specialized tools to interpret TLE data</li>
+<li><strong>Market data</strong> — space stocks trade alongside thousands of other equities with no sector-specific dashboard or context</li>
+<li><strong>Government contracts</strong> — buried in SAM.gov alongside millions of non-space opportunities, requiring space-specific keyword expertise to surface</li>
+<li><strong>Regulatory filings</strong> — distributed across the FCC, FAA, ITU, NOAA, and national licensing bodies in multiple countries</li>
+<li><strong>Company intelligence</strong> — funding rounds reported on Crunchbase, executive moves on LinkedIn, financial results in SEC filings, technical capabilities in press releases</li>
+<li><strong>Industry news</strong> — SpaceNews, Ars Technica, NASASpaceflight, Payload Space, The War Zone, and dozens of niche publications</li>
+</ul>
+
+<p>A single analyst maintaining situational awareness across these domains keeps <strong>15 to 20 browser tabs</strong> open at all times. There is no cross-referencing. No automated correlation. No AI-assisted analysis connecting a new FCC filing to a stock price movement to an upcoming launch.</p>
+
+<h2 id="why-existing-solutions-fall-short">Why Existing Solutions Fall Short</h2>
+
+<p>The space industry is not entirely without intelligence tools. But every existing solution falls into one of two categories: <strong>too expensive</strong> or <strong>too narrow</strong>.</p>
+
+<h3>Too Expensive</h3>
+<p>Enterprise research platforms like BryceTech, Quilty Space, and Euroconsult produce outstanding analysis. Their reports are rigorous, detailed, and authoritative. They also cost anywhere from <strong>$5,000 to $50,000 per year</strong> — pricing that makes sense for large defense contractors and government agencies but is completely inaccessible to startups, small consultancies, individual analysts, investors running lean operations, and the vast majority of professionals who need space industry intelligence.</p>
+
+<h3>Too Narrow</h3>
+<p>Free and low-cost tools tend to excel in a single domain. CelesTrak is exceptional for orbital data. n2yo provides excellent satellite visualization. Gunter's Space Page is an invaluable reference for launch vehicles. NASA's public APIs serve world-class mission data. But each tool is an island. None of them talk to each other. The analyst must be the integration layer — manually connecting dots across a dozen disconnected interfaces.</p>
+
+<p>The result is a gap in the market wide enough to fly a Starship through. Below the $5,000 per year threshold, there is no comprehensive space intelligence platform. The professionals who need cross-domain intelligence the most — startup founders, emerging market analysts, academic researchers, early-career professionals — are the ones least able to afford it.</p>
+
+<h2 id="what-were-building-differently">What We're Building Differently</h2>
+
+<p>SpaceNexus is built on three principles that differentiate it from both the expensive incumbents and the free point solutions:</p>
+
+<h3>1. Aggregation as a First Principle</h3>
+<p>We integrate <strong>50+ data sources</strong> into a unified platform — not as a collection of widgets, but as an interconnected intelligence layer. When you view a launch, you see the vehicle specifications, the operator's company profile, the mission's market implications, related government contracts, and breaking news — all on a single page. When a satellite changes orbit, the platform surfaces the operator's recent regulatory filings and stock performance. The connections between data points are where insight lives, and our architecture makes those connections automatic.</p>
+
+<h3>2. Accessible Pricing</h3>
+<p>We offer a <strong>free tier</strong> that provides genuine utility — not a crippled demo, but a real intelligence tool with access to news, basic satellite tracking, launch schedules, and mission countdowns. Our Professional plan at <strong>$19.99 per month</strong> unlocks the full platform: unlimited news, complete satellite catalog, market intelligence, deal flow tracking, executive move monitoring, and data export. That is roughly <strong>1/20th the cost</strong> of the cheapest enterprise alternative.</p>
+
+<h3>3. AI-Powered Analysis</h3>
+<p>Raw data aggregation is table stakes. The real value is in <strong>contextual intelligence</strong> — understanding what data means, not just what it says. Our AI engine categorizes news by impact area, identifies emerging trends across multiple data sources, and generates briefings that synthesize information from different domains. When a launch anomaly occurs, the system automatically surfaces the operator's insurance exposure, competing vehicle availability, historical anomaly data, and stock price impact — the kind of multi-dimensional analysis that would take a human analyst hours to compile.</p>
+
+<h2 id="the-vision">The Vision: Intelligence for Everyone</h2>
+
+<p>We believe the space industry's next phase of growth depends on <strong>democratizing access to intelligence</strong>. The commercial space revolution has already democratized access to space itself — launch costs have dropped 90% in a decade, and hundreds of new companies are building everything from satellite broadband to orbital manufacturing. But the intelligence infrastructure has not kept pace. The tools available to a startup founder making a $10 million launch decision are fundamentally inferior to those available to a defense prime making the same decision.</p>
+
+<p>That asymmetry constrains innovation. When a small company cannot efficiently monitor government contract opportunities, it misses bids. When an investor cannot track the full competitive landscape, capital flows to the most visible companies rather than the most capable. When a researcher cannot correlate regulatory changes with market movements, analytical insights go undiscovered.</p>
+
+<p>SpaceNexus exists to close that gap. We are building the connective tissue between the space industry's data sources — the integration layer that turns fragmented information into actionable intelligence. Our roadmap includes real-time alerting, custom analytical dashboards, API access for programmatic integration, and collaborative tools that let teams share intelligence workflows.</p>
+
+<p>We are not trying to replace the excellent point solutions that already exist. CelesTrak will always be the gold standard for orbital data. SpaceNews will always produce outstanding journalism. NASA's APIs will always be the authoritative source for mission data. What we are building is the <strong>platform that ties them all together</strong> — the space industry's intelligence operating system.</p>
+
+<h2 id="join-us">Join the Founding Community</h2>
+
+<p>SpaceNexus is live and growing. Every week we ship new modules, integrate new data sources, and refine our analysis engine based on feedback from the community of space professionals who use the platform daily.</p>
+
+<p>If you have ever spent a Monday morning updating a spreadsheet of space industry data, if you have ever missed a contract opportunity because SAM.gov's search did not surface it, if you have ever wished that someone would just build a Bloomberg Terminal for space — <a href="/register">create your free account</a> and see what we are building.</p>
+
+<p>The space industry deserves the same caliber of intelligence tooling that every other major industry takes for granted. We intend to build it.</p>
+`,
+  },
 ];
 
 export function getBlogPost(slug: string): OriginalBlogPost | undefined {

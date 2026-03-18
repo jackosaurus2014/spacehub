@@ -8,6 +8,27 @@ import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import ContentEngagementBadge from '@/components/ui/ContentEngagementBadge';
 
+function BlogItemListSchema() {
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    itemListElement: BLOG_POSTS
+      .sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime())
+      .map((post, index) => ({
+        '@type': 'ListItem',
+        position: index + 1,
+        url: `https://spacenexus.us/blog/${post.slug}`,
+      })),
+  };
+
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }}
+    />
+  );
+}
+
 function formatDate(iso: string): string {
   const d = new Date(iso);
   return d.toLocaleDateString('en-US', {
@@ -83,6 +104,7 @@ function BlogListingContent() {
 
   return (
     <div className="min-h-screen pb-12">
+      <BlogItemListSchema />
       <div className="container mx-auto px-4">
         <AnimatedPageHeader
           title="SpaceNexus Blog"

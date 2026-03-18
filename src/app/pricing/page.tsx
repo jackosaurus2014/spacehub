@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, Suspense, Fragment } from 'react';
+import { useState, useEffect, Suspense, Fragment, useCallback } from 'react';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import { useSearchParams } from 'next/navigation';
@@ -31,6 +31,54 @@ function TrialDaysLeft(trialEndsAt: Date | null): number {
   if (!trialEndsAt) return 0;
   const diff = new Date(trialEndsAt).getTime() - Date.now();
   return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
+}
+
+const TRIAL_FEATURES = [
+  'Unlimited news access',
+  'Full satellite tracking',
+  'Market intelligence dashboard',
+  'CSV data export',
+  'Ad-free experience',
+];
+
+function TrialPreview() {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <div className="mt-1">
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full flex items-center justify-center gap-1.5 text-xs text-slate-400 hover:text-white transition-colors py-1"
+        aria-expanded={isOpen}
+      >
+        What&apos;s included in your trial?
+        <svg
+          className={`w-3.5 h-3.5 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          strokeWidth={2}
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+      <div
+        className={`overflow-hidden transition-all duration-200 ${isOpen ? 'max-h-48 opacity-100' : 'max-h-0 opacity-0'}`}
+      >
+        <ul className="space-y-1.5 pt-2 pb-1 px-1">
+          {TRIAL_FEATURES.map((feature) => (
+            <li key={feature} className="flex items-center gap-2 text-xs text-slate-300">
+              <span className="text-green-400 text-[10px]">&#10003;</span>
+              {feature}
+            </li>
+          ))}
+        </ul>
+        <p className="text-[10px] text-slate-500 text-center mt-1 pb-1">
+          No credit card required &middot; Cancel anytime
+        </p>
+      </div>
+    </div>
+  );
 }
 
 function PricingCard({
@@ -179,6 +227,7 @@ function PricingCard({
           >
             {isStartingTrial ? 'Starting Trial...' : `Start ${plan.trialDays}-Day Free Trial`}
           </button>
+          {plan.highlighted && <TrialPreview />}
           <button
             onClick={() => onSubscribe(plan.id, isYearly ? 'year' : 'month')}
             disabled={isCheckingOut}

@@ -63,6 +63,7 @@ const BLOG_CTA_MAP: Record<string, { tool: string; path: string }> = {
   'state-of-space-economy-2026-overview': { tool: 'Space Economy', path: '/space-economy' },
   'why-space-professionals-need-data-intelligence-platform': { tool: 'SpaceNexus Platform', path: '/register' },
   'spacenexus-vs-free-tools-comparison': { tool: 'Why SpaceNexus', path: '/why-spacenexus' },
+  'space-industry-bloomberg-terminal-problem': { tool: 'SpaceNexus Platform', path: '/register' },
 };
 
 type Props = {
