@@ -174,6 +174,8 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="https://api.spacexdata.com" />
         <link rel="preconnect" href="https://eonet.gsfc.nasa.gov" />
         <link rel="dns-prefetch" href="https://eonet.gsfc.nasa.gov" />
+        <link rel="alternate" hrefLang="en" href="https://spacenexus.us" />
+        <link rel="alternate" hrefLang="x-default" href="https://spacenexus.us" />
         <StructuredData />
         {/* Inline service worker registration for PWA crawlers (PWABuilder, Lighthouse) */}
         {/* The full SW lifecycle management is in ServiceWorkerRegistration component */}

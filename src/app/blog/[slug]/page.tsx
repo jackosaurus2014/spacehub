@@ -62,6 +62,7 @@ const BLOG_CTA_MAP: Record<string, { tool: string; path: string }> = {
   'space-industry-jobs-companies-hiring-2026': { tool: 'Space Talent Hub', path: '/space-talent' },
   'state-of-space-economy-2026-overview': { tool: 'Space Economy', path: '/space-economy' },
   'why-space-professionals-need-data-intelligence-platform': { tool: 'SpaceNexus Platform', path: '/register' },
+  'spacenexus-vs-free-tools-comparison': { tool: 'Why SpaceNexus', path: '/why-spacenexus' },
 };
 
 type Props = {
