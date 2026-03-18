@@ -166,10 +166,7 @@ function LeaderboardRow({
                 {getDimensionScore(entry, highlightDim)}/200
               </span>
               <span className="text-xs text-slate-500 capitalize">{highlightDim}</span>
-            
-
-        <RelatedModules modules={PAGE_RELATIONS['space-score']} />
-      </div>
+            </div>
           )}
 
           {/* Mini dimension bar */}
@@ -639,6 +636,8 @@ function SpaceScoreContent() {
           {activeTab === 'methodology' && <MethodologyTab />}
         </motion.div>
       </AnimatePresence>
+
+      <RelatedModules modules={PAGE_RELATIONS['space-score']} />
     </div>
   );
 }

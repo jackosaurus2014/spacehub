@@ -59,6 +59,7 @@ const BLOG_CTA_MAP: Record<string, { tool: string; path: string }> = {
   'spacex-starship-v3-whats-new-most-powerful-rocket': { tool: 'Launch Vehicles', path: '/launch-vehicles' },
   'weekly-digest-march-10-17-2026': { tool: 'Space News', path: '/news' },
   'how-to-watch-artemis-ii-complete-viewing-guide': { tool: 'Live Coverage', path: '/live' },
+  'space-industry-jobs-companies-hiring-2026': { tool: 'Space Talent Hub', path: '/space-talent' },
 };
 
 type Props = {

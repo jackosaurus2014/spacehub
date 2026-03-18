@@ -5057,6 +5057,142 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 <p><a href="/register">Create your free SpaceNexus account</a> to get Artemis II countdown notifications and real-time mission updates delivered directly to your inbox and dashboard.</p>
 `,
   },
+  {
+    slug: 'space-industry-jobs-companies-hiring-2026',
+    title: 'Space Industry Jobs: 10 Companies Hiring Right Now in 2026',
+    excerpt: 'The space industry is adding thousands of jobs in 2026 across engineering, manufacturing, software, and operations. Here are 10 companies actively hiring and what it\'s like to work at each one.',
+    category: 'guide',
+    author: 'SpaceNexus Team',
+    authorRole: 'Editorial',
+    publishedAt: '2026-03-17T18:00:00Z',
+    readingTime: 10,
+    keywords: ['space industry jobs', 'space careers', 'aerospace hiring', 'SpaceX jobs', 'Blue Origin careers', 'Rocket Lab hiring', 'space engineer jobs', 'space industry careers 2026', 'aerospace employment', 'NewSpace jobs'],
+    content: `
+<p>The space industry is in the middle of the largest hiring wave in its history. Global space employment now exceeds <strong>500,000 workers</strong> across government and commercial sectors, and the pace of hiring is accelerating. With launch cadence at all-time highs, mega-constellations scaling to tens of thousands of satellites, and defense budgets pouring billions into space capabilities, companies across the industry are competing fiercely for talent.</p>
+
+<p>Whether you are an aerospace engineer, a software developer, a manufacturing technician, or a business operations professional, there has never been a better time to enter or advance in the space sector. Here are <strong>10 companies actively hiring right now</strong>, what makes each one a compelling place to work, and the types of roles they are looking to fill.</p>
+
+<h2 id="spacex">1. SpaceX</h2>
+
+<p><strong>Headquarters:</strong> Hawthorne, California | <strong>Employees:</strong> 13,000+</p>
+
+<p>SpaceX remains the most sought-after employer in the space industry. The company is simultaneously scaling Starlink to over 10,000 satellites, developing the Starship super-heavy launch system at its Starbase facility in South Texas, and maintaining a Falcon 9 launch cadence that exceeded 130 missions in 2025. The pace is relentless, and SpaceX is constantly hiring to keep up.</p>
+
+<p><strong>Roles they hire:</strong> Propulsion engineers, avionics engineers, software engineers (flight software, ground systems, Starlink network), manufacturing technicians, test engineers, launch operations specialists, and materials engineers.</p>
+
+<p><strong>Why work here:</strong> SpaceX offers an unmatched pace of execution. You will see your work fly, often within months. The engineering culture is fast-moving and vertically integrated \u2014 SpaceX designs, builds, launches, and operates its own vehicles. Compensation includes equity in one of the most valuable private companies in the world.</p>
+
+<h2 id="blue-origin">2. Blue Origin</h2>
+
+<p><strong>Headquarters:</strong> Kent, Washington | <strong>Employees:</strong> 11,000+</p>
+
+<p>Blue Origin is ramping aggressively for its <strong>New Glenn</strong> orbital launch vehicle, the <strong>Blue Moon</strong> lunar lander for NASA Artemis, and the <strong>BE-4</strong> engine program that also powers ULA\'s Vulcan Centaur. After years of development, Blue Origin is entering a phase of rapid operational expansion, and hiring reflects that transition.</p>
+
+<p><strong>Roles they hire:</strong> Systems engineers, propulsion engineers, structural engineers, guidance and navigation engineers, mission managers, quality engineers, and supply chain specialists.</p>
+
+<p><strong>Why work here:</strong> Blue Origin offers the opportunity to work on deep-space human exploration hardware. The lunar lander program connects directly to NASA\'s Artemis surface missions. Compensation and benefits are strong, and the pace has accelerated significantly under CEO Dave Limp.</p>
+
+<h2 id="rocket-lab">3. Rocket Lab</h2>
+
+<p><strong>Headquarters:</strong> Long Beach, California | <strong>Employees:</strong> 2,000+</p>
+
+<p>Rocket Lab has evolved from a small-launch provider into an integrated space company. Its <strong>Electron</strong> rocket is the most frequently launched U.S. vehicle after Falcon 9, the medium-lift <strong>Neutron</strong> is in development, and the company builds satellite buses, solar panels, reaction wheels, and separation systems through its Space Systems division. Rocket Lab is publicly traded (RKLB) and growing revenue at 50%+ annually.</p>
+
+<p><strong>Roles they hire:</strong> Composite technicians, propulsion engineers, embedded software engineers, mission operations analysts, satellite integration engineers, and program managers.</p>
+
+<p><strong>Why work here:</strong> Rocket Lab combines startup energy with public-company stability. The team is smaller than SpaceX or Blue Origin, meaning individual contributors have outsized impact. The Neutron program offers the chance to be part of a new vehicle development from the ground up. International offices in New Zealand and the U.S. provide unique location options.</p>
+
+<h2 id="planet-labs">4. Planet Labs</h2>
+
+<p><strong>Headquarters:</strong> San Francisco, California | <strong>Employees:</strong> 900+</p>
+
+<p>Planet Labs operates the largest constellation of Earth observation satellites, imaging the entire landmass of the planet every single day. The company serves agriculture, forestry, government intelligence, insurance, and climate monitoring customers with a data platform that turns satellite imagery into actionable analytics.</p>
+
+<p><strong>Roles they hire:</strong> Machine learning engineers, geospatial data scientists, satellite operations engineers, product managers, cloud infrastructure engineers, and sales engineers.</p>
+
+<p><strong>Why work here:</strong> Planet Labs is at the intersection of space and data science. If you are interested in applying AI and machine learning to satellite imagery at planetary scale, few companies offer a more compelling mission. The work directly contributes to climate monitoring, food security, and disaster response.</p>
+
+<h2 id="anduril">5. Anduril Industries</h2>
+
+<p><strong>Headquarters:</strong> Costa Mesa, California | <strong>Employees:</strong> 4,000+</p>
+
+<p>Anduril is a defense technology company that has expanded rapidly into space. Its <strong>Lattice</strong> command-and-control platform is designed for multi-domain operations, and the company is building autonomous systems and sensor platforms with space-based components. Anduril has won significant contracts from the U.S. Space Force and is one of the fastest-growing defense technology firms in the country.</p>
+
+<p><strong>Roles they hire:</strong> Software engineers (C++, Rust, Python), systems architects, autonomy engineers, RF engineers, hardware engineers, DevSecOps engineers, and mission planners.</p>
+
+<p><strong>Why work here:</strong> Anduril offers Silicon Valley-speed product development applied to national security problems. The company\'s approach to defense \u2014 software-defined, AI-first, rapidly iterable \u2014 is fundamentally different from traditional primes. Compensation is highly competitive, with significant equity upside as a late-stage private company.</p>
+
+<h2 id="l3harris">6. L3Harris Technologies</h2>
+
+<p><strong>Headquarters:</strong> Melbourne, Florida | <strong>Employees:</strong> 47,000+</p>
+
+<p>L3Harris is one of the largest defense and space contractors in the United States, building satellite payloads, ground systems, ISR (intelligence, surveillance, and reconnaissance) platforms, and communication systems. The company is a prime contractor on multiple classified and unclassified space programs for the U.S. Space Force, NRO, and NASA.</p>
+
+<p><strong>Roles they hire:</strong> RF and antenna engineers, systems engineers, satellite payload engineers, software developers, program managers, cybersecurity engineers, and field service technicians.</p>
+
+<p><strong>Why work here:</strong> L3Harris provides the stability of a major defense contractor with deep involvement in the most critical national security space programs. The company offers strong benefits, tuition assistance, and internal mobility across a wide range of space, aviation, and defense programs.</p>
+
+<h2 id="northrop-grumman">7. Northrop Grumman</h2>
+
+<p><strong>Headquarters:</strong> Falls Church, Virginia | <strong>Employees:</strong> 95,000+</p>
+
+<p>Northrop Grumman is a major player across every segment of the space industry. The company builds the solid rocket boosters for NASA\'s SLS, operates the <strong>Cygnus</strong> cargo spacecraft for ISS resupply, produces satellite buses and payloads, and runs the <strong>Mission Extension Vehicle (MEV)</strong> program that services satellites in geostationary orbit. Northrop is also a key contractor on next-generation missile warning and tracking satellite constellations.</p>
+
+<p><strong>Roles they hire:</strong> Spacecraft engineers, propulsion engineers, orbital mechanics analysts, integration and test engineers, satellite command and control operators, and business development managers.</p>
+
+<p><strong>Why work here:</strong> Northrop Grumman offers unmatched program diversity. You can work on human spaceflight, national security satellites, on-orbit servicing, or solid rocket propulsion \u2014 all within the same company. The scale of operations means deep resources and long-duration programs with job stability.</p>
+
+<h2 id="sierra-space">8. Sierra Space</h2>
+
+<p><strong>Headquarters:</strong> Louisville, Colorado | <strong>Employees:</strong> 1,500+</p>
+
+<p>Sierra Space is developing the <strong>Dream Chaser</strong> spaceplane for ISS cargo delivery and the <strong>Orbital Reef</strong> commercial space station in partnership with Blue Origin. The company raised <strong>$1.5 billion</strong> in 2025 at a $5.3 billion valuation, making it one of the best-funded private space companies in the world. Dream Chaser\'s first flight to the ISS is imminent, and station development is accelerating.</p>
+
+<p><strong>Roles they hire:</strong> Thermal engineers, structures engineers, avionics engineers, flight software developers, environmental control and life support (ECLSS) engineers, and mission operations analysts.</p>
+
+<p><strong>Why work here:</strong> Sierra Space is at the forefront of two defining programs: the only winged vehicle flying to the ISS and one of the leading commercial space station programs. The company is growing rapidly and offers the chance to work on next-generation crewed spaceflight hardware at a pivotal moment.</p>
+
+<h2 id="axiom-space">9. Axiom Space</h2>
+
+<p><strong>Headquarters:</strong> Houston, Texas | <strong>Employees:</strong> 900+</p>
+
+<p>Axiom Space is building the first commercial space station, starting with modules that will attach to the ISS before detaching to form a free-flying station. The company has already flown multiple private astronaut missions to the ISS (Ax-1 through Ax-4) and is developing next-generation spacesuits for NASA\'s Artemis lunar surface missions. Axiom raised over <strong>$500 million</strong> and is scaling rapidly.</p>
+
+<p><strong>Roles they hire:</strong> Spacesuit engineers, life support engineers, space station systems engineers, mission directors, EVA (extravehicular activity) specialists, and payload integration engineers.</p>
+
+<p><strong>Why work here:</strong> Axiom offers the rare opportunity to design and build a space station from scratch. The spacesuit program connects directly to Artemis lunar surface EVAs. Located in Houston near NASA Johnson Space Center, the company draws on the deep talent pool of the human spaceflight community.</p>
+
+<h2 id="redwire">10. Redwire Corporation</h2>
+
+<p><strong>Headquarters:</strong> Jacksonville, Florida | <strong>Employees:</strong> 800+</p>
+
+<p>Redwire is a publicly traded (RDW) space infrastructure company that specializes in in-space manufacturing, deployable structures, sensors, and avionics. The company has flown 3D bioprinters and manufacturing experiments to the ISS and provides critical components \u2014 solar arrays, booms, and antennas \u2014 for major satellite programs. Redwire is also developing on-orbit servicing and manufacturing capabilities.</p>
+
+<p><strong>Roles they hire:</strong> Mechanical engineers, additive manufacturing engineers, embedded systems engineers, quality assurance engineers, test engineers, and business development managers.</p>
+
+<p><strong>Why work here:</strong> Redwire sits at the cutting edge of in-space manufacturing and servicing \u2014 technologies that will define the next decade of the industry. The company is publicly traded, providing equity-based compensation with liquidity. Its diverse portfolio means you can work on everything from ISS payloads to next-generation satellite components.</p>
+
+<h2 id="how-to-get-hired">How to Break Into the Space Industry</h2>
+
+<p>The space industry has never been more accessible to new entrants. Here are practical tips for landing your first space job:</p>
+
+<ul>
+<li><strong>Transferable skills matter.</strong> Software engineers, data scientists, supply chain professionals, and project managers from adjacent industries are in high demand. You do not need an aerospace degree to work in space.</li>
+<li><strong>Security clearances open doors.</strong> Many space positions \u2014 especially at defense contractors \u2014 require or prefer candidates with active U.S. security clearances. If you can obtain one, it significantly expands your options.</li>
+<li><strong>Location flexibility helps.</strong> Major space hubs include the Space Coast (Florida), Houston, Los Angeles, Seattle, Denver/Colorado Springs, and the DC/Northern Virginia corridor. Being willing to relocate increases your chances dramatically.</li>
+<li><strong>Build a portfolio.</strong> Open-source contributions to space-related projects, personal satellite tracking tools, or involvement in university CubeSat programs demonstrate genuine interest and capability.</li>
+<li><strong>Network at conferences.</strong> Events like SATELLITE, SpaceCom, and the Small Satellite Conference are prime networking opportunities where companies actively recruit.</li>
+</ul>
+
+<h2 id="explore-opportunities">Explore Space Career Opportunities</h2>
+
+<p>The companies listed above represent a fraction of the space industry\'s hiring activity. Hundreds of additional companies \u2014 from launch providers to satellite operators to ground segment builders \u2014 are actively recruiting across all functions and experience levels.</p>
+
+<p>Visit the <a href="/space-talent">SpaceNexus Talent Hub</a> to explore open roles across the space industry, set up job alerts for your preferred companies and skill areas, and access salary benchmarking data for space industry positions. The industry is growing at 9% annually, and the talent pipeline cannot keep up \u2014 making this an exceptional time to launch or accelerate your space career.</p>
+
+<p><a href="/register">Create your free SpaceNexus account</a> to access the full Talent Hub, track hiring trends at the companies you care about, and get notified when new roles matching your profile are posted.</p>
+`,
+  },
 ];
 
 export function getBlogPost(slug: string): OriginalBlogPost | undefined {

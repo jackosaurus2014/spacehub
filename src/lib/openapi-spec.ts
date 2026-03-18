@@ -666,6 +666,267 @@ export const API_CATEGORIES: EndpointCategory[] = [
       },
     ],
   },
+
+  // ==================== SpaceX ====================
+  {
+    name: 'SpaceX',
+    description: 'Real-time SpaceX launch data, rocket fleet information, and Starlink constellation statistics sourced from the SpaceX API.',
+    slug: 'spacex',
+    endpoints: [
+      {
+        operationId: 'getSpaceX',
+        method: 'GET',
+        path: '/spacex',
+        summary: 'Get SpaceX launch and fleet data',
+        description:
+          'Returns SpaceX upcoming and recent launches, rocket fleet details, the latest launch, and current Starlink satellite count. Data is cached for 5 minutes and sourced from the SpaceX public API.',
+        tags: ['SpaceX'],
+        tier: 'All',
+        parameters: [],
+        responseSchema: {
+          launches: 'Launch[]',
+          latestLaunch: 'Launch | null',
+          rockets: 'Rocket[]',
+          starlinkCount: 'number',
+          fetchedAt: 'string (ISO date)',
+        },
+        exampleResponse: {
+          launches: [
+            {
+              id: '61d5ea5b',
+              name: 'Starlink Group 12-5',
+              date_utc: '2026-03-20T14:30:00.000Z',
+              success: null,
+              rocket: 'Falcon 9',
+              launchpad: 'KSC LC-39A',
+            },
+          ],
+          latestLaunch: {
+            id: '61d5ea4a',
+            name: 'Starlink Group 12-4',
+            date_utc: '2026-03-15T09:12:00.000Z',
+            success: true,
+            rocket: 'Falcon 9',
+          },
+          rockets: [
+            { id: '5e9d0d95eda69955f709bf9d', name: 'Falcon 9', type: 'rocket', active: true },
+          ],
+          starlinkCount: 7284,
+          fetchedAt: '2026-03-17T12:00:00.000Z',
+        },
+        codeExamples: buildCodeExamples('GET', '/spacex'),
+      },
+    ],
+  },
+
+  // ==================== Podcasts ====================
+  {
+    name: 'Podcasts',
+    description: 'Aggregated space industry podcast episodes from leading shows, with titles, descriptions, and direct listen links.',
+    slug: 'podcasts',
+    endpoints: [
+      {
+        operationId: 'getPodcasts',
+        method: 'GET',
+        path: '/podcasts',
+        summary: 'List space industry podcast episodes',
+        description:
+          'Returns the latest episodes from curated space industry podcasts including show metadata, episode titles, descriptions, publication dates, audio URLs, and duration. Results are sorted by publication date descending.',
+        tags: ['Podcasts'],
+        tier: 'All',
+        parameters: [],
+        responseSchema: {
+          episodes: 'PodcastEpisode[]',
+          total: 'number',
+        },
+        exampleResponse: {
+          episodes: [
+            {
+              title: 'The Future of Reusable Launch Vehicles',
+              show: 'The Space Show',
+              publishedAt: '2026-03-16T08:00:00.000Z',
+              duration: '1:12:34',
+              url: 'https://example.com/episode-123',
+              description: 'Dr. Jane Smith discusses advances in reusable launch vehicle technology...',
+            },
+          ],
+          total: 48,
+        },
+        codeExamples: buildCodeExamples('GET', '/podcasts'),
+      },
+    ],
+  },
+
+  // ==================== EONET ====================
+  {
+    name: 'Earth Events (EONET)',
+    description: 'NASA Earth Observatory Natural Event Tracker data including wildfires, severe storms, volcanic activity, and other natural events relevant to satellite operations.',
+    slug: 'eonet',
+    endpoints: [
+      {
+        operationId: 'getEONET',
+        method: 'GET',
+        path: '/eonet',
+        summary: 'Get NASA EONET natural events',
+        description:
+          'Returns active natural events from NASA\'s Earth Observatory Natural Event Tracker (EONET), including wildfires, severe storms, volcanic eruptions, and sea/lake ice events. Useful for satellite tasking, ground station impact assessment, and situational awareness. Data is cached for 30 minutes.',
+        tags: ['EONET'],
+        tier: 'All',
+        parameters: [],
+        responseSchema: {
+          events: 'EONETEvent[]',
+          total: 'number',
+          categories: 'string[]',
+        },
+        exampleResponse: {
+          events: [
+            {
+              id: 'EONET_6423',
+              title: 'Wildfire - California, USA',
+              category: 'Wildfires',
+              source: 'InciWeb',
+              link: 'https://inciweb.wildfire.gov/incident-information/cabnf-example',
+              date: '2026-03-15T00:00:00Z',
+              coordinates: [-118.24, 34.05],
+            },
+          ],
+          total: 23,
+          categories: ['Wildfires', 'Severe Storms', 'Volcanoes', 'Sea and Lake Ice'],
+        },
+        codeExamples: buildCodeExamples('GET', '/eonet'),
+      },
+    ],
+  },
+
+  // ==================== Pulse ====================
+  {
+    name: 'Pulse',
+    description: 'A single-call snapshot of the current state of the space industry: latest news, next launch, market status, space weather, and active satellite count.',
+    slug: 'pulse',
+    endpoints: [
+      {
+        operationId: 'getPulse',
+        method: 'GET',
+        path: '/pulse',
+        summary: 'Get space industry pulse summary',
+        description:
+          'Returns a real-time snapshot of key space industry indicators in a single request. Includes the latest headline, next upcoming launch, stock market status for space companies, current space weather conditions, and active satellite count. Ideal for dashboards and status displays.',
+        tags: ['Pulse'],
+        tier: 'All',
+        parameters: [],
+        responseSchema: {
+          latestNews: '{ title, source, url, publishedAt } | null',
+          nextLaunch: '{ name, date, agency, location, status } | null',
+          marketStatus: '{ status, summary }',
+          spaceWeather: '{ kpIndex, solarFlareRisk, geomagneticStorm }',
+          activeSatellites: 'number',
+        },
+        exampleResponse: {
+          latestNews: {
+            title: 'SpaceX launches 60 Starlink satellites from Cape Canaveral',
+            source: 'SpaceNews',
+            url: 'https://spacenews.com/example',
+            publishedAt: '2026-03-17T10:30:00Z',
+          },
+          nextLaunch: {
+            name: 'Falcon 9 | Starlink Group 12-5',
+            date: '2026-03-20T14:30:00Z',
+            agency: 'SpaceX',
+            location: 'Cape Canaveral SLC-40',
+            status: 'Go',
+          },
+          marketStatus: {
+            status: 'up',
+            summary: 'Space sector up 1.2% today led by RKLB (+3.4%)',
+          },
+          spaceWeather: {
+            kpIndex: 3,
+            solarFlareRisk: 'Low',
+            geomagneticStorm: false,
+          },
+          activeSatellites: 10847,
+        },
+        codeExamples: buildCodeExamples('GET', '/pulse'),
+      },
+    ],
+  },
+
+  // ==================== Stats ====================
+  {
+    name: 'Platform Stats',
+    description: 'High-level SpaceNexus platform statistics including data coverage metrics, company profiles tracked, and content counts.',
+    slug: 'stats',
+    endpoints: [
+      {
+        operationId: 'getStats',
+        method: 'GET',
+        path: '/stats',
+        summary: 'Get platform statistics',
+        description:
+          'Returns aggregate platform statistics including total company profiles, news articles tracked, blog posts published, RSS source count, and data module counts. Useful for understanding SpaceNexus data coverage and freshness.',
+        tags: ['Stats'],
+        tier: 'All',
+        parameters: [],
+        responseSchema: {
+          companyProfiles: 'number',
+          newsArticles: 'number',
+          totalBlogArticles: 'number',
+          totalRssSources: 'number',
+          dataModules: 'number',
+        },
+        exampleResponse: {
+          companyProfiles: 127,
+          newsArticles: 4893,
+          totalBlogArticles: 28,
+          totalRssSources: 97,
+          dataModules: 35,
+        },
+        codeExamples: buildCodeExamples('GET', '/stats'),
+      },
+    ],
+  },
+
+  // ==================== Livestreams ====================
+  {
+    name: 'Livestreams',
+    description: 'Detect and list active space-related livestreams from YouTube and other platforms, including launch webcasts and ISS feeds.',
+    slug: 'livestreams',
+    endpoints: [
+      {
+        operationId: 'getLivestreams',
+        method: 'GET',
+        path: '/livestreams',
+        summary: 'Get active space livestreams',
+        description:
+          'Detects currently active space-related livestreams from major channels including SpaceX, NASA, Rocket Lab, and community streamers. Returns stream metadata including title, channel, viewer count, and embed URL. Data is cached for 2 minutes.',
+        tags: ['Livestreams'],
+        tier: 'All',
+        parameters: [],
+        responseSchema: {
+          streams: 'LiveStream[]',
+          count: 'number',
+          hasLive: 'boolean',
+        },
+        exampleResponse: {
+          streams: [
+            {
+              id: 'yt_abc123',
+              title: 'SpaceX Starlink Group 12-5 Launch',
+              channel: 'SpaceX',
+              platform: 'youtube',
+              url: 'https://www.youtube.com/watch?v=abc123',
+              viewers: 142000,
+              startedAt: '2026-03-17T14:00:00Z',
+              thumbnail: 'https://i.ytimg.com/vi/abc123/maxresdefault.jpg',
+            },
+          ],
+          count: 1,
+          hasLive: true,
+        },
+        codeExamples: buildCodeExamples('GET', '/livestreams'),
+      },
+    ],
+  },
 ];
 
 // ---------------------------------------------------------------------------
