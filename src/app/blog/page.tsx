@@ -372,6 +372,37 @@ function BlogListingContent() {
           <aside className="w-full lg:w-72 xl:w-80 flex-shrink-0 space-y-6">
             <LaunchCountdownWidget />
             <SpaceHistoryToday />
+
+            {/* Trending Articles */}
+            {featuredPosts.length > 0 && (
+              <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-5">
+                <h3 className="text-sm font-semibold text-slate-300 uppercase tracking-wider mb-4 flex items-center gap-2">
+                  <svg className="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15.362 5.214A8.252 8.252 0 0112 21 8.25 8.25 0 016.038 7.048 6.75 6.75 0 009 18.75a6.75 6.75 0 006.362-13.536z" />
+                  </svg>
+                  Trending Articles
+                </h3>
+                <div className="space-y-3">
+                  {featuredPosts.slice(0, 5).map((post, idx) => (
+                    <Link
+                      key={post.slug}
+                      href={`/blog/${post.slug}`}
+                      className="group flex items-start gap-3 py-2 border-b border-white/[0.04] last:border-0 last:pb-0"
+                    >
+                      <span className="text-xs font-bold text-slate-600 mt-0.5 w-5 text-right flex-shrink-0">{idx + 1}</span>
+                      <div className="min-w-0">
+                        <p className="text-sm text-slate-300 group-hover:text-white transition-colors leading-snug line-clamp-2 font-medium">
+                          {post.title}
+                        </p>
+                        <span className="text-[11px] text-slate-500 mt-1 block">
+                          {post.readingTime} min read
+                        </span>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
           </aside>
         </div>
 
