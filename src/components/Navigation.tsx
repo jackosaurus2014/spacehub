@@ -111,6 +111,8 @@ const INTELLIGENCE_ITEMS: DropdownItem[] = [
   { label: 'Market Segments', href: '/market-segments', description: 'Space industry market segment analysis' },
   { label: 'Patent Landscape', href: '/patent-landscape', description: 'Patent analytics & IP landscape mapping' },
   { label: 'Workforce Analytics', href: '/workforce-analytics', description: 'Space workforce trends & talent data' },
+  { label: 'Space Industry Map', href: '/space-map', description: 'Interactive sector map of the space industry' },
+  { label: 'Startup Directory', href: '/startup-directory', description: 'Curated directory of 35+ space startups' },
 ];
 
 const BUSINESS_ITEMS: DropdownItem[] = [

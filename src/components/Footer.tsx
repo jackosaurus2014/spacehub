@@ -31,6 +31,8 @@ const footerLinks = {
       { label: 'Executive Moves', href: '/executive-moves' },
       { label: 'Industry Trends', href: '/industry-trends' },
       { label: 'Industry Scorecard', href: '/industry-scorecard' },
+      { label: 'Space Industry Map', href: '/space-map' },
+      { label: 'Startup Directory', href: '/startup-directory' },
       { label: 'Space Economy', href: '/space-economy' },
       { label: 'Procurement', href: '/procurement' },
     ],

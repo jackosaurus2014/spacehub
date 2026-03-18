@@ -58,6 +58,7 @@ import OnboardingChecklist from '@/components/OnboardingChecklist';
 import ReferralWidget from '@/components/ReferralWidget';
 import NewsTicker from '@/components/NewsTicker';
 import { useSubscription } from '@/components/SubscriptionProvider';
+import { trackTimeOnPage } from '@/lib/analytics';
 
 /* ------------------------------------------------------------------ */
 /*  Quick Action items for the 6-button grid                          */
@@ -325,6 +326,123 @@ function ModuleSection({ title, icon, modules, sizeClasses, delay }: {
   );
 }
 
+/* ------------------------------------------------------------------ */
+/*  Today's Briefing card — daily engagement summary                   */
+/* ------------------------------------------------------------------ */
+
+function TodaysBriefing() {
+  const today = new Date();
+  const formatted = today.toLocaleDateString('en-US', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+
+  // Data points — sourced from pulse API when available, with sensible defaults
+  const [briefingData, setBriefingData] = useState({
+    launchesThisMonth: 8,
+    trendingTopic: 'Starship Flight Test',
+    spaceWeather: 'Nominal',
+  });
+
+  useEffect(() => {
+    const controller = new AbortController();
+    async function fetchBriefing() {
+      try {
+        const res = await fetch('/api/pulse', { signal: controller.signal });
+        if (!res.ok) return;
+        const data = await res.json();
+        if (data.launchesThisMonth || data.trendingTopic || data.spaceWeather) {
+          setBriefingData((prev) => ({
+            launchesThisMonth: data.launchesThisMonth ?? prev.launchesThisMonth,
+            trendingTopic: data.trendingTopic ?? prev.trendingTopic,
+            spaceWeather: data.spaceWeather ?? prev.spaceWeather,
+          }));
+        }
+      } catch {
+        // Silently fail — defaults are fine
+      }
+    }
+    fetchBriefing();
+    return () => controller.abort();
+  }, []);
+
+  const weatherColor =
+    briefingData.spaceWeather === 'Nominal'
+      ? 'text-emerald-400'
+      : briefingData.spaceWeather === 'Moderate'
+        ? 'text-amber-400'
+        : 'text-red-400';
+
+  return (
+    <div className="card p-5 mb-8 border border-indigo-500/15 bg-gradient-to-br from-indigo-500/[0.06] to-violet-500/[0.04]">
+      <div className="flex items-start justify-between mb-4">
+        <div>
+          <h2 className="text-sm font-semibold text-white flex items-center gap-2">
+            <svg className="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 7.5h1.5m-1.5 3h1.5m-7.5 3h7.5m-7.5 3h7.5m3-9h3.375c.621 0 1.125.504 1.125 1.125V18a2.25 2.25 0 01-2.25 2.25M16.5 7.5V18a2.25 2.25 0 002.25 2.25M16.5 7.5V4.875c0-.621-.504-1.125-1.125-1.125H4.125C3.504 3.75 3 4.254 3 4.875V18a2.25 2.25 0 002.25 2.25h13.5M6 7.5h3v3H6v-3z" />
+            </svg>
+            Today&apos;s Briefing
+          </h2>
+          <p className="text-xs text-slate-500 mt-0.5">{formatted}</p>
+        </div>
+        <Link
+          href="/intelligence-brief"
+          className="inline-flex items-center gap-1 text-xs text-indigo-400 hover:text-indigo-300 font-medium transition-colors shrink-0"
+        >
+          Read full briefing
+          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+          </svg>
+        </Link>
+      </div>
+
+      <div className="grid grid-cols-3 gap-3">
+        {/* Launches this month */}
+        <div className="rounded-lg bg-white/[0.04] border border-white/[0.06] p-3">
+          <div className="flex items-center gap-1.5 mb-1">
+            <svg className="w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15.59 14.37a6 6 0 01-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 006.16-12.12A14.98 14.98 0 009.631 8.41m5.96 5.96a14.926 14.926 0 01-5.841 2.58" />
+            </svg>
+            <span className="text-[10px] uppercase tracking-wider text-slate-500 font-medium">Launches</span>
+          </div>
+          <p className="text-lg font-bold text-white">{briefingData.launchesThisMonth}</p>
+          <p className="text-[10px] text-slate-500">this month</p>
+        </div>
+
+        {/* Trending topic */}
+        <div className="rounded-lg bg-white/[0.04] border border-white/[0.06] p-3">
+          <div className="flex items-center gap-1.5 mb-1">
+            <svg className="w-3.5 h-3.5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941" />
+            </svg>
+            <span className="text-[10px] uppercase tracking-wider text-slate-500 font-medium">Trending</span>
+          </div>
+          <p className="text-sm font-semibold text-white truncate" title={briefingData.trendingTopic}>
+            {briefingData.trendingTopic}
+          </p>
+          <p className="text-[10px] text-slate-500">top topic</p>
+        </div>
+
+        {/* Space weather */}
+        <div className="rounded-lg bg-white/[0.04] border border-white/[0.06] p-3">
+          <div className="flex items-center gap-1.5 mb-1">
+            <svg className="w-3.5 h-3.5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />
+            </svg>
+            <span className="text-[10px] uppercase tracking-wider text-slate-500 font-medium">Space Wx</span>
+          </div>
+          <p className={`text-sm font-semibold ${weatherColor}`}>
+            {briefingData.spaceWeather}
+          </p>
+          <p className="text-[10px] text-slate-500">conditions</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 const TRIAL_BANNER_DISMISS_KEY = 'spacenexus_dash_trial_dismissed';
 
 /** Dashboard-inline trial expiration warning — shows when trial has < 3 days left */
@@ -580,6 +698,11 @@ export default function DashboardPage() {
   // Module search state
   const [moduleSearch, setModuleSearch] = useState('');
 
+  // Track time spent on the dashboard page
+  useEffect(() => {
+    return trackTimeOnPage('/dashboard');
+  }, []);
+
   // Load layout on mount
   const loadLayout = useCallback(() => {
     const layout = getEffectiveLayout();
@@ -777,6 +900,11 @@ export default function DashboardPage() {
               </StaggerItem>
             ))}
           </StaggerContainer>
+        </ScrollReveal>
+
+        {/* Today's Briefing — daily engagement summary */}
+        <ScrollReveal>
+          <TodaysBriefing />
         </ScrollReveal>
 
         {/* Quick Actions */}

@@ -26,6 +26,7 @@ import { NewsArticle } from '@/types';
 import RelatedModules from '@/components/ui/RelatedModules';
 import TrendingSidebar from '@/components/TrendingSidebar';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
+import { trackTimeOnPage } from '@/lib/analytics';
 
 function NewsContent() {
   const searchParams = useSearchParams();
@@ -33,6 +34,11 @@ function NewsContent() {
   const pathname = usePathname();
   const initialCategory = searchParams.get('category');
   const { remainingArticles } = useSubscription();
+
+  // Track time spent on the news page
+  useEffect(() => {
+    return trackTimeOnPage('/news');
+  }, []);
 
   const [articles, setArticles] = useState<NewsArticle[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(

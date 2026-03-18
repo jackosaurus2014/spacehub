@@ -120,6 +120,50 @@ export function trackPageView(path: string, title?: string): void {
 }
 
 /**
+ * Track time spent on a page.
+ *
+ * Call this inside a useEffect at the top of a page component. It records the
+ * arrival timestamp and, on unmount (or page hide), sends a `page_engagement`
+ * custom event to GA4 with the duration in seconds.
+ *
+ * Usage (React):
+ * ```ts
+ * useEffect(() => {
+ *   return trackTimeOnPage('/dashboard');
+ * }, []);
+ * ```
+ *
+ * @param pagePath - The page path to associate with the engagement event
+ * @returns A cleanup function that sends the engagement event
+ */
+export function trackTimeOnPage(pagePath: string): () => void {
+  const startTime = Date.now();
+
+  // Also fire on visibilitychange / pagehide so we capture tab-closes
+  const sendEngagement = () => {
+    const seconds = Math.round((Date.now() - startTime) / 1000);
+    if (seconds < 1) return; // ignore sub-second visits
+    trackGA4Event('page_engagement', {
+      page_path: pagePath,
+      engagement_time_seconds: seconds,
+    });
+  };
+
+  const handleVisibilityChange = () => {
+    if (document.visibilityState === 'hidden') {
+      sendEngagement();
+    }
+  };
+
+  document.addEventListener('visibilitychange', handleVisibilityChange);
+
+  return () => {
+    document.removeEventListener('visibilitychange', handleVisibilityChange);
+    sendEngagement();
+  };
+}
+
+/**
  * Initialize the data layer for Google Analytics
  * This should be called before loading the gtag.js script
  */

@@ -18,6 +18,7 @@ import { clientLogger } from '@/lib/client-logger';
 import FAQSchema from '@/components/seo/FAQSchema';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { getCompanyProfileUrl } from '@/lib/company-links';
+import { trackTimeOnPage } from '@/lib/analytics';
 
 interface StockData {
   ticker: string;
@@ -248,6 +249,11 @@ function MarketIntelContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
+
+  // Track time spent on the market intel page
+  useEffect(() => {
+    return trackTimeOnPage('/market-intel');
+  }, []);
 
   const [companies, setCompanies] = useState<SpaceCompany[]>([]);
   const [stats, setStats] = useState<{

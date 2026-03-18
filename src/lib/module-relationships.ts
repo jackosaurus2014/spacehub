@@ -131,6 +131,8 @@ const MODULES: Record<string, RelatedModuleConfig> = {
   spaceCalendar: { name: 'Space Calendar', description: 'Key dates 2026', href: '/space-calendar', icon: '📅' },
   spaceEdge: { name: 'Edge Computing', description: 'In-orbit computing', href: '/space-edge-computing', icon: '💻' },
   spaceInvestors: { name: 'Space Investors', description: 'Active investors', href: '/space-investors', icon: '📈' },
+  spaceMap: { name: 'Space Industry Map', description: 'Industry sector map', href: '/space-map', icon: '🗺️' },
+  startupDirectory: { name: 'Startup Directory', description: 'Space startups', href: '/startup-directory', icon: '🚀' },
 
   // ── Marketplace ──
   marketplace: { name: 'Marketplace', description: 'Services & products', href: '/marketplace', icon: '🛒' },
@@ -349,6 +351,10 @@ export const PAGE_RELATIONS: Record<string, RelatedModuleConfig[]> = {
   // ── Industry Scorecard & Space Calendar ──
   'industry-scorecard': [MODULES.industryTrends, MODULES.spaceEconomy, MODULES.sustainability, MODULES.marketIntel, MODULES.govBudgets],
   'space-calendar': [MODULES.spaceEvents, MODULES.conferences, MODULES.launchManifest, MODULES.news, MODULES.industryScorecard],
+
+  // ── Space Industry Map & Startup Directory ──
+  'space-map': [MODULES.ecosystemMap, MODULES.marketMap, MODULES.companyProfiles, MODULES.startupDirectory, MODULES.marketIntel],
+  'startup-directory': [MODULES.startupTracker, MODULES.fundingRounds, MODULES.spaceCapital, MODULES.spaceMap, MODULES.companyProfiles],
 };
 
 // Helper to get related modules for a page

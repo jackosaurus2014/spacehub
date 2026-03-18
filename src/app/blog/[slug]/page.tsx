@@ -67,6 +67,9 @@ const BLOG_CTA_MAP: Record<string, { tool: string; path: string }> = {
   'complete-guide-space-etfs-arkx-ufo-ita-2026': { tool: 'Market Intelligence', path: '/market-intel' },
   'rocket-lab-spacex-competitor-2026': { tool: 'Company Profiles', path: '/company-profiles' },
   'space-debris-regulations-changes-2026': { tool: 'Compliance Hub', path: '/compliance' },
+  'starlink-oneweb-kuiper-mega-constellation-comparison': { tool: 'Constellation Tracker', path: '/constellations' },
+  'nasa-budget-2026-breakdown-analysis': { tool: 'Government Budgets', path: '/government-budgets' },
+  'what-is-itar-space-industry-guide': { tool: 'Compliance Hub', path: '/compliance' },
 };
 
 type Props = {
