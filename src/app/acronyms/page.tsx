@@ -572,6 +572,32 @@ export default function AcronymsPage() {
 
         <RelatedModules modules={PAGE_RELATIONS['acronyms']} />
       </div>
+
+      {/* ─── Schema.org Structured Data ─────────────────────────────────── */}
+      <script
+        type="application/ld+json"
+        suppressHydrationWarning
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'DefinedTermSet',
+            name: 'Space Industry Acronyms',
+            description: 'Comprehensive reference of 126 space industry acronyms covering organizations, technology, orbits, propulsion, communications, military/defense, business, regulatory, and operations.',
+            url: 'https://spacenexus.us/acronyms',
+            publisher: {
+              '@type': 'Organization',
+              name: 'SpaceNexus',
+              url: 'https://spacenexus.us',
+            },
+            hasDefinedTerm: ACRONYMS.map((a) => ({
+              '@type': 'DefinedTerm',
+              name: a.acronym,
+              description: `${a.fullForm} — ${a.definition}`,
+              inDefinedTermSet: 'https://spacenexus.us/acronyms',
+            })),
+          }),
+        }}
+      />
     </div>
   );
 }

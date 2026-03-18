@@ -916,6 +916,32 @@ export default function GlossaryPage() {
 
         <p className="text-center text-xs text-slate-500 mt-12 mb-4">Last updated March 2026</p>
       </div>
+
+      {/* ─── Schema.org Structured Data ─────────────────────────────────── */}
+      <script
+        type="application/ld+json"
+        suppressHydrationWarning
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'DefinedTermSet',
+            name: 'Space Industry Glossary',
+            description: 'Comprehensive glossary of 69 space industry terms covering orbital mechanics, propulsion, business, regulatory, communications, and more.',
+            url: 'https://spacenexus.us/glossary',
+            publisher: {
+              '@type': 'Organization',
+              name: 'SpaceNexus',
+              url: 'https://spacenexus.us',
+            },
+            hasDefinedTerm: GLOSSARY_TERMS.map((t) => ({
+              '@type': 'DefinedTerm',
+              name: t.term,
+              description: t.definition,
+              inDefinedTermSet: 'https://spacenexus.us/glossary',
+            })),
+          }),
+        }}
+      />
     </div>
   );
 }

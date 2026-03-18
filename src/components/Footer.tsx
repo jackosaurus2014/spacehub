@@ -66,6 +66,7 @@ const footerLinks = {
       { label: 'FAQ', href: '/faq' },
       { label: 'Blog', href: '/blog' },
       { label: 'AI Insights', href: '/ai-insights' },
+      { label: 'Daily Digest', href: '/daily-digest' },
       { label: 'Space Stats', href: '/space-stats' },
       { label: 'Learning Center', href: '/learn' },
       { label: 'Getting Started', href: '/getting-started' },

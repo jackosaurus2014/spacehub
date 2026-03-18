@@ -57,6 +57,7 @@ const EXPLORE_ITEMS: DropdownItem[] = [
   { label: 'Space Glossary', href: '/glossary', description: 'Definitions of key space industry terms' },
   { label: 'Space Timeline', href: '/timeline', description: 'History and milestones of space exploration' },
   { label: 'Daily Digest', href: '/news-digest', description: 'Quick-scan daily space headlines' },
+  { label: 'Daily Digest (New)', href: '/daily-digest', description: 'Curated daily space industry digest' },
   { label: 'Orbit Guide', href: '/orbit-guide', description: 'Visual guide to orbital mechanics & orbit types' },
   { label: 'Career Guide', href: '/career-guide', description: 'Space industry career paths & salary data' },
   { label: 'Acronyms', href: '/acronyms', description: 'A-Z space industry acronym reference' },

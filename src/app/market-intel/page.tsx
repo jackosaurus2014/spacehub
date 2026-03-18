@@ -1277,6 +1277,99 @@ function MarketIntelContent() {
           </div>
         )}
 
+        {/* ─── Space Industry Trends Dashboard ──────────────────────── */}
+        <div className="mt-8 mb-8">
+          <div className="bg-gradient-to-br from-white/[0.04] to-white/[0.01] border border-white/[0.08] rounded-2xl p-6">
+            <div className="flex items-center justify-between mb-5">
+              <div className="flex items-center gap-3">
+                <span className="text-2xl">📈</span>
+                <div>
+                  <h3 className="text-lg font-bold text-white">Space Industry Trends</h3>
+                  <p className="text-xs text-slate-500">Key directional indicators updated Q1 2026</p>
+                </div>
+              </div>
+              <Link
+                href="/industry-trends"
+                className="text-xs text-blue-400 hover:text-blue-300 transition-colors flex items-center gap-1"
+              >
+                Full Analysis
+                <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                </svg>
+              </Link>
+            </div>
+            <div className="space-y-3">
+              {[
+                {
+                  trend: 'Launch Cadence',
+                  direction: 'up' as const,
+                  label: 'Up 15% YoY',
+                  detail: '250+ launches projected for 2026, led by SpaceX Falcon 9 and Starship V3 flight tests.',
+                  blogHref: '/blog/space-launch-cadence-2026',
+                  blogLabel: 'Launch Cadence Report',
+                },
+                {
+                  trend: 'Satellite Insurance',
+                  direction: 'up' as const,
+                  label: 'Premiums rising',
+                  detail: 'Mega-constellation deployments and debris concerns pushing premiums up 8-12% across underwriters.',
+                  blogHref: '/blog/satellite-insurance-market-trends',
+                  blogLabel: 'Insurance Market Trends',
+                },
+                {
+                  trend: 'VC Funding',
+                  direction: 'up' as const,
+                  label: '$10B+ in 2025',
+                  detail: 'Defense-tech crossover and SpaceX IPO anticipation driving record investor interest.',
+                  blogHref: '/blog/space-vc-funding-2025-review',
+                  blogLabel: 'VC Funding Review',
+                },
+                {
+                  trend: 'Launch Costs ($/kg)',
+                  direction: 'down' as const,
+                  label: 'Down 18% (Falcon 9)',
+                  detail: 'Reuse cadence and competition from Neutron and New Glenn compressing per-kg costs further.',
+                  blogHref: '/blog/launch-cost-trends-analysis',
+                  blogLabel: 'Launch Cost Analysis',
+                },
+                {
+                  trend: 'Regulatory Complexity',
+                  direction: 'stable' as const,
+                  label: 'Stable — evolving',
+                  detail: 'FCC 5-year deorbit rule in effect; WRC-27 spectrum decisions still pending. ITAR reform stalled.',
+                  blogHref: '/blog/space-regulatory-outlook-2026',
+                  blogLabel: 'Regulatory Outlook',
+                },
+              ].map((item) => {
+                const dirIcon = item.direction === 'up' ? '\u2191' : item.direction === 'down' ? '\u2193' : '\u2192';
+                const dirColor = item.direction === 'up' ? 'text-emerald-400' : item.direction === 'down' ? 'text-red-400' : 'text-slate-400';
+                const dirBg = item.direction === 'up' ? 'bg-emerald-500/10' : item.direction === 'down' ? 'bg-red-500/10' : 'bg-slate-500/10';
+
+                return (
+                  <div key={item.trend} className="flex items-start gap-3 p-3 bg-white/[0.03] rounded-xl hover:bg-white/[0.05] transition-colors group">
+                    <span className={`inline-flex items-center justify-center w-7 h-7 rounded-lg text-sm font-bold shrink-0 ${dirBg} ${dirColor}`}>
+                      {dirIcon}
+                    </span>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="text-sm font-medium text-white">{item.trend}</span>
+                        <span className={`text-xs font-medium ${dirColor}`}>{dirIcon} {item.label}</span>
+                      </div>
+                      <p className="text-xs text-slate-400 mt-0.5 leading-relaxed">{item.detail}</p>
+                    </div>
+                    <Link
+                      href={item.blogHref}
+                      className="text-[10px] text-blue-400 hover:text-blue-300 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap"
+                    >
+                      {item.blogLabel} &rarr;
+                    </Link>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+
         <RelatedModules modules={[
           { name: 'Company Profiles', description: '200+ detailed company pages', href: '/company-profiles', icon: '\u{1F3E2}' },
           { name: 'Space Capital', description: 'Investment tracking and VC data', href: '/space-capital', icon: '\u{1F4B0}' },

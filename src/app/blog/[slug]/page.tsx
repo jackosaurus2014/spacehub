@@ -87,6 +87,9 @@ const BLOG_CTA_MAP: Record<string, { tool: string; path: string }> = {
   'spacex-blue-origin-rocket-lab-comparison-2026': { tool: 'Comparison Hub', path: '/compare' },
   'beginners-guide-understanding-space-missions': { tool: 'Mission Pipeline', path: '/mission-pipeline' },
   'space-industry-mergers-acquisitions-biggest-deals': { tool: 'Market Intelligence', path: '/market-intel' },
+  'what-is-geostationary-orbit-geo-explained': { tool: 'Satellite Tracker', path: '/satellites' },
+  'elon-musk-mars-plan-spacex-path-red-planet': { tool: 'Mars Mission Planner', path: '/mars-planner' },
+  'space-force-explained-what-does-us-space-force-do': { tool: 'Space Defense', path: '/space-defense' },
 };
 
 type Props = {

@@ -369,8 +369,14 @@ export const PAGE_RELATIONS: Record<string, RelatedModuleConfig[]> = {
   // ── Space Industry Statistics ──
   'space-stats': [MODULES.spaceEconomy, MODULES.marketIntel, MODULES.industryTrends, MODULES.govBudgets, MODULES.satellites],
 
+  // ── Daily Digest ──
+  'daily-digest': [MODULES.newsDigest, MODULES.intelligenceBrief, MODULES.news, MODULES.aiInsights, MODULES.blogs],
+
   // ── Newsletter ──
   'newsletter': [MODULES.intelligenceBrief, MODULES.newsDigest, MODULES.news, MODULES.newsletters, MODULES.blogs],
+
+  // ── Alternatives & Competitors ──
+  'alternatives': [MODULES.marketIntel, MODULES.companyProfiles, MODULES.tools, MODULES.satellites, MODULES.pricing],
 };
 
 // Helper to get related modules for a page
