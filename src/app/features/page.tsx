@@ -3,6 +3,7 @@ import ScrollReveal from '@/components/ui/ScrollReveal';
 import { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { getRelatedModules } from '@/lib/module-relationships';
+import SocialShare from '@/components/ui/SocialShare';
 
 /* ─── Module data ────────────────────────────────────────────────────── */
 
@@ -357,6 +358,22 @@ export default function FeaturesPage() {
               >
                 Compare Plans
               </Link>
+            </div>
+          </div>
+        </ScrollReveal>
+      </section>
+
+      {/* ── Share This Page ── */}
+      <section className="container mx-auto px-4 pb-8">
+        <ScrollReveal>
+          <div className="flex justify-center">
+            <div className="inline-flex items-center gap-3 px-6 py-3 rounded-xl border border-white/[0.06] bg-white/[0.04]">
+              <span className="text-sm text-slate-400">Share this page:</span>
+              <SocialShare
+                title="SpaceNexus Features — Everything You Need for Space Industry Intelligence"
+                url="https://spacenexus.us/features"
+                description="30+ modules, one platform — from mission planning to market analysis, satellite tracking to regulatory compliance."
+              />
             </div>
           </div>
         </ScrollReveal>

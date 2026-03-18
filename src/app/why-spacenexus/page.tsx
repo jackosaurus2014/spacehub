@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
+import SocialShare from '@/components/ui/SocialShare';
 
 const COMPARISON_FEATURES = [
   {
@@ -475,6 +476,20 @@ export default function WhySpaceNexusPage() {
               </div>
             </div>
           </section>
+        </ScrollReveal>
+
+        {/* Share This Page */}
+        <ScrollReveal delay={0.4}>
+          <div className="flex justify-center mb-8">
+            <div className="card px-6 py-3 inline-flex items-center gap-3">
+              <span className="text-sm text-slate-400">Found this helpful?</span>
+              <SocialShare
+                title="Why SpaceNexus? — Compare Space Industry Intelligence Platforms"
+                url="https://spacenexus.us/why-spacenexus"
+                description="Compare SpaceNexus vs Quilty Space vs SpaceNews vs free tools for space industry intelligence."
+              />
+            </div>
+          </div>
         </ScrollReveal>
 
         {/* Back Links */}

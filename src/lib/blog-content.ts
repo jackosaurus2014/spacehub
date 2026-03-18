@@ -4522,6 +4522,209 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 <p>Stay ahead of every trend, funding round, and market shift with SpaceNexus. Explore <a href="/market-intel">Market Intelligence</a> for real-time sector analysis, track capital flows with the <a href="/space-capital">Space Capital Tracker</a>, and monitor defense programs through <a href="/space-defense">Space Defense</a>.</p>
 `,
   },
+  {
+    slug: 'artemis-ii-rollout-live-coverage-march-2026',
+    title: 'Artemis II Rolls to the Pad: Live Coverage Guide for March 20',
+    excerpt: 'NASA\'s Artemis II is rolling out to Launch Complex 39B on March 20, 2026. Here is your complete guide to watching the rollout live, what happens during the journey, and the pre-launch timeline leading to humanity\'s return to deep space.',
+    category: 'guide',
+    author: 'SpaceNexus Team',
+    authorRole: 'Editorial',
+    publishedAt: '2026-03-17T00:00:00Z',
+    readingTime: 7,
+    featured: true,
+    keywords: ['Artemis II rollout', 'Artemis II launch', 'NASA Artemis', 'SLS rocket', 'Orion spacecraft', 'Pad 39B', 'moon mission 2026', 'how to watch Artemis II'],
+    content: `
+<p>After years of development, testing, and anticipation, <strong>Artemis II is rolling to the pad</strong>. On March 20, 2026, NASA will transport the fully stacked Space Launch System (SLS) rocket and Orion spacecraft from the Vehicle Assembly Building (VAB) to Launch Complex 39B at Kennedy Space Center. This rollout marks one of the final major milestones before the first crewed Artemis mission sends four astronauts around the Moon and back.</p>
+
+<p>This guide covers everything you need to know: how to watch the rollout live, what happens during the journey, who is on the crew, and the pre-launch timeline that follows.</p>
+
+<h2 id="how-to-watch">How to Watch the Rollout Live</h2>
+
+<p>NASA will provide extensive live coverage of the Artemis II rollout. Here are the best ways to follow along in real time:</p>
+
+<ul>
+<li><strong>NASA TV:</strong> The primary live stream will be available at <a href="https://www.nasa.gov/nasatv" target="_blank" rel="noopener noreferrer">nasa.gov/nasatv</a> and on the NASA app. Coverage typically begins several hours before the rollout starts and continues until the vehicle is secured at the pad.</li>
+<li><strong>NASA YouTube:</strong> The NASA YouTube channel streams all major events live and archives the footage for later viewing.</li>
+<li><strong>SpaceNexus Live Stream:</strong> When available, SpaceNexus will provide supplementary coverage through our <a href="/live">live stream page</a> with expert commentary and real-time data overlays from Mission Control.</li>
+<li><strong>SpaceNexus Mission Control:</strong> Track the rollout status, countdown clock, and mission timeline on the <a href="/mission-control">Mission Control dashboard</a>, which aggregates live telemetry and schedule updates.</li>
+<li><strong>X (Twitter):</strong> Follow <a href="https://twitter.com/NASA" target="_blank" rel="noopener noreferrer">@NASA</a>, <a href="https://twitter.com/NASAArtemis" target="_blank" rel="noopener noreferrer">@NASAArtemis</a>, and <a href="https://twitter.com/NASAKennedy" target="_blank" rel="noopener noreferrer">@NASAKennedy</a> for real-time photo and video updates from the ground.</li>
+</ul>
+
+<h2 id="what-is-rolling-out">What Exactly Is Rolling Out?</h2>
+
+<p>The Artemis II stack consists of the <strong>322-foot-tall Space Launch System (SLS) Block 1 rocket</strong> topped by the <strong>Orion crew vehicle</strong> and its launch abort system. The entire assembly sits atop NASA\'s <strong>Mobile Launcher 1 (ML-1)</strong>, which serves as the launch platform and provides umbilical connections for power, data, and propellant.</p>
+
+<p>The stack is transported by the <strong>Crawler-Transporter 2 (CT-2)</strong>, one of two massive tracked vehicles originally built for the Apollo program and later modified for the Space Shuttle and SLS. The crawler moves at a top speed of about <strong>1 mile per hour</strong> while carrying the 17-million-pound combined load of the rocket, mobile launcher, and crawler itself.</p>
+
+<h2 id="rollout-timeline">What Happens During the Rollout</h2>
+
+<p>The 4.2-mile journey from the VAB to Pad 39B is a carefully choreographed operation that takes approximately <strong>8 to 12 hours</strong>, depending on weather and technical factors. Here is the general sequence:</p>
+
+<ol>
+<li><strong>Rollout begins:</strong> The crawler lifts the mobile launcher off its pedestals inside the VAB and begins the slow journey along the crawlerway. Engineers walk alongside to monitor clearances and vehicle stability.</li>
+<li><strong>Crawlerway transit:</strong> The vehicle travels along the dual-lane gravel crawlerway, which is 130 feet wide and built atop compacted river rock. Laser alignment systems keep the platform level throughout the journey, especially during the 5% grade approaching the pad.</li>
+<li><strong>Pad approach and ascent:</strong> The crawler climbs the ramp to the pad surface, carefully positioning the mobile launcher over the flame deflector and exhaust trench.</li>
+<li><strong>Hard-down:</strong> The crawler lowers the mobile launcher onto the pad\'s support pedestals and retracts. At this point the vehicle is "hard down" and pad operations can begin.</li>
+<li><strong>Umbilical connections:</strong> Ground crews connect the tail service mast umbilicals and verify all pad-to-vehicle interfaces for propellant, electrical, and data systems.</li>
+</ol>
+
+<h2 id="artemis-ii-crew">The Artemis II Crew</h2>
+
+<p>Artemis II will carry four astronauts on a roughly 10-day mission around the Moon. The crew includes:</p>
+
+<ul>
+<li><strong>Commander Reid Wiseman</strong> (NASA) \u2014 A Navy test pilot and veteran of ISS Expedition 41</li>
+<li><strong>Pilot Victor Glover</strong> (NASA) \u2014 A Navy aviator who served as pilot on SpaceX Crew-1, the first operational Crew Dragon mission</li>
+<li><strong>Mission Specialist Christina Koch</strong> (NASA) \u2014 Holds the record for the longest single spaceflight by a woman (328 days on the ISS) and participated in the first all-female spacewalk</li>
+<li><strong>Mission Specialist Jeremy Hansen</strong> (CSA) \u2014 A Canadian Space Agency astronaut and former CF-18 fighter pilot, making this the first Canadian to venture beyond low Earth orbit</li>
+</ul>
+
+<h2 id="pre-launch-timeline">Pre-Launch Timeline After Rollout</h2>
+
+<p>Once the SLS is secured at the pad, a series of final checkouts and preparations must be completed before launch. The typical pre-launch timeline includes:</p>
+
+<ul>
+<li><strong>Days 1\u20133 after rollout:</strong> Pad interface verification tests, umbilical connection checks, and ground support equipment activation.</li>
+<li><strong>Week 1\u20132:</strong> Integrated systems testing, flight software verification, and communication checks between Orion, Mission Control, and the tracking network.</li>
+<li><strong>Wet Dress Rehearsal (if required):</strong> A full propellant loading and countdown demonstration, stopping just before engine ignition. NASA may or may not require a WDR for Artemis II, depending on lessons learned from Artemis I.</li>
+<li><strong>Final countdown:</strong> The terminal count begins approximately 2 days before launch with propellant loading commencing on launch day. The crew enters Orion several hours before liftoff.</li>
+</ul>
+
+<p>NASA has not yet announced a firm launch date, but the rollout to the pad on March 20 signals that the agency is in the final stretch of preparations. A launch window in spring or early summer 2026 is the current target.</p>
+
+<h2 id="background">Background: What Is Artemis II?</h2>
+
+<p>Artemis II is the first crewed flight of the Artemis program, NASA\'s initiative to return humans to the Moon and establish a sustainable presence for long-term exploration. The mission profile is a free-return trajectory around the Moon \u2014 similar to Apollo 8 and Apollo 13 \u2014 that will take the crew farther from Earth than any human has traveled since Apollo 17 in 1972.</p>
+
+<p>Unlike the uncrewed Artemis I test flight in 2022, Artemis II will validate all crew life support systems, manual piloting capabilities, and deep space communication links with astronauts aboard. The data from this mission is essential for planning Artemis III, which will land astronauts on the lunar surface.</p>
+
+<p>For a comprehensive overview of the mission objectives, vehicle specifications, and program history, read our in-depth article: <a href="/blog/artemis-ii-moon-mission-everything-you-need-to-know">Artemis II Moon Mission: Everything You Need to Know</a>.</p>
+
+<h2 id="follow-along">Follow Along With SpaceNexus</h2>
+
+<p>SpaceNexus will provide comprehensive coverage of the Artemis II rollout, pad operations, and eventual launch. Set up <a href="/alerts">custom alerts</a> to receive notifications for every major milestone, and track the mission timeline on our <a href="/mission-control">Mission Control dashboard</a>.</p>
+
+<p><a href="/register">Create your free account</a> to get launch alerts and real-time mission updates delivered to your inbox.</p>
+`,
+  },
+  {
+    slug: 'spacex-starship-v3-whats-new-most-powerful-rocket',
+    title: 'SpaceX Starship V3: What\'s New in the Most Powerful Rocket Ever Built',
+    excerpt: 'Standing 408 feet tall with Raptor V3 engines delivering 50% more thrust, Starship V3 is the most powerful launch vehicle ever constructed. Here is a deep technical breakdown of the upgrades, capabilities, and implications for the space industry.',
+    category: 'technology',
+    author: 'SpaceNexus Team',
+    authorRole: 'Editorial',
+    publishedAt: '2026-03-17T00:00:00Z',
+    readingTime: 10,
+    keywords: ['Starship V3', 'SpaceX Starship', 'Raptor V3', 'Super Heavy booster', 'most powerful rocket', 'Mechazilla', 'Starship heat shield', 'reusable rocket', 'Starship payload capacity'],
+    content: `
+<p>SpaceX has never been content with incremental improvement. From Falcon 1 to Falcon 9 to the original Starship prototypes that landed (and occasionally exploded) at Boca Chica, the company\'s development philosophy is one of <strong>rapid iteration driven by flight data</strong>. Starship V3 is the culmination of that approach \u2014 a vehicle that takes the lessons learned from 11 previous Starship flights and transforms them into the <strong>most powerful and capable launch vehicle ever built</strong>.</p>
+
+<p>Standing <strong>408 feet tall</strong> (124 meters), Starship V3 is not just taller than its predecessors. It is a fundamentally more capable vehicle, with new engines, a redesigned thermal protection system, increased propellant volume, and a payload capacity that redefines what is economically viable in orbit. With Flight 12 imminent, here is everything that has changed and why it matters.</p>
+
+<h2 id="raptor-v3-engines">Raptor V3: 50% More Thrust, Radically Simplified</h2>
+
+<p>The heart of the Starship V3 upgrade is the <strong>Raptor V3 engine</strong>. While Raptor has always been a full-flow staged combustion engine burning liquid methane and liquid oxygen, the V3 variant represents a generational leap in performance and manufacturability:</p>
+
+<ul>
+<li><strong>Thrust:</strong> Each Raptor V3 produces approximately <strong>330 tons-force (725,000 lbf)</strong> at sea level, compared to roughly 230 tf for the Raptor 2 engines used on earlier flights. That is a <strong>50% increase in per-engine thrust</strong>.</li>
+<li><strong>Specific impulse:</strong> Sea-level Isp has improved to approximately 350 seconds, with vacuum-optimized variants exceeding 380 seconds. Higher Isp means more delta-V per kilogram of propellant.</li>
+<li><strong>Part count reduction:</strong> SpaceX has reduced the Raptor part count by over 40% compared to Raptor 2, continuing the design philosophy of eliminating complexity. Fewer parts mean faster production, lower cost, and higher reliability.</li>
+<li><strong>Chamber pressure:</strong> Raptor V3 operates at chamber pressures exceeding <strong>350 bar</strong>, making it one of the highest-pressure rocket engines ever flown. Higher chamber pressure enables a more compact, efficient engine with better thrust-to-weight ratio.</li>
+<li><strong>Production rate:</strong> SpaceX is targeting production of one Raptor V3 engine per day at its Hawthorne and McGregor facilities, a pace necessary to support the planned Starship flight rate.</li>
+</ul>
+
+<p>The Super Heavy booster for Starship V3 carries <strong>33 Raptor V3 engines</strong>, giving it a combined liftoff thrust of approximately <strong>10,900 tons-force (24 million lbf)</strong> \u2014 roughly double the thrust of the Saturn V and significantly exceeding the SLS Block 1\'s 8.8 million pounds of thrust. This makes Starship V3 the most powerful rocket stage ever to fly.</p>
+
+<h2 id="vehicle-dimensions">408 Feet Tall: The Stretched Vehicle</h2>
+
+<p>Starship V3 is physically larger than its predecessors:</p>
+
+<ul>
+<li><strong>Overall height:</strong> 408 feet (124 meters), compared to approximately 397 feet for the V2 configuration. The increase comes from stretched propellant tanks on both the Super Heavy booster and the Starship upper stage.</li>
+<li><strong>Diameter:</strong> 30 feet (9 meters), unchanged from previous versions.</li>
+<li><strong>Propellant mass:</strong> The stretched tanks allow Starship V3 to carry approximately <strong>5,400 tons of liquid methane and liquid oxygen</strong>, an increase of roughly 10% over V2. Combined with the more efficient engines, this translates directly into higher payload capacity.</li>
+<li><strong>Dry mass optimization:</strong> Despite the larger tanks, SpaceX has continued to optimize structural mass through thinner tank walls, improved welding techniques, and redesigned internal structures. The dry mass fraction remains competitive with or better than the V2 configuration.</li>
+</ul>
+
+<h2 id="payload-capacity">100+ Tons to LEO: Redefining Heavy Lift</h2>
+
+<p>The combination of more powerful engines, increased propellant volume, and structural optimization gives Starship V3 a <strong>payload capacity exceeding 100 metric tons to low Earth orbit</strong> in a fully reusable configuration. In expendable mode (which SpaceX does not plan to use regularly), the capacity could exceed 200 tons.</p>
+
+<p>For context, here is how Starship V3 compares to other heavy-lift vehicles:</p>
+
+<ul>
+<li><strong>Starship V3 (reusable):</strong> 100+ tons to LEO</li>
+<li><strong>Starship V2 (reusable):</strong> ~50\u201380 tons to LEO (estimated)</li>
+<li><strong>SLS Block 1:</strong> 95 tons to LEO (expendable)</li>
+<li><strong>Falcon Heavy (reusable):</strong> 30 tons to LEO</li>
+<li><strong>Saturn V:</strong> 130 tons to LEO (expendable, retired)</li>
+<li><strong>New Glenn:</strong> 45 tons to LEO (partially reusable)</li>
+</ul>
+
+<p>The critical distinction is that Starship V3 achieves its 100+ ton capacity while being <strong>fully reusable</strong>. Saturn V could lift 130 tons but was thrown away after every flight. Starship V3 is designed to fly, return, and fly again within days \u2014 potentially reducing per-kilogram launch costs to under $100, compared to $2,700/kg on Falcon 9 and $20,000+/kg on most other vehicles.</p>
+
+<p>This cost reduction does not just make existing missions cheaper. It enables entirely new categories of space activity: orbital manufacturing at scale, large space station construction, Mars cargo pre-positioning, and satellite constellations with tens of thousands of large satellites.</p>
+
+<h2 id="heat-shield">Redesigned Heat Shield: Solving the Reentry Challenge</h2>
+
+<p>Thermal protection has been one of the most challenging aspects of Starship development. The vehicle re-enters the atmosphere belly-first at approximately <strong>Mach 25 (17,500 mph)</strong>, generating surface temperatures exceeding <strong>1,400\u00b0C (2,600\u00b0F)</strong> on the windward side. Early Starship flights experienced significant heat shield tile damage and loss, threatening the vehicle\'s structural integrity during reentry.</p>
+
+<p>Starship V3 addresses this with a comprehensively redesigned thermal protection system:</p>
+
+<ul>
+<li><strong>Gen 3 heat shield tiles:</strong> The hexagonal tiles have been redesigned with improved bonding mechanisms that resist the aerodynamic forces during reentry. The tile attachment system has been simplified, reducing both installation time and the probability of tile loss.</li>
+<li><strong>Transpiration cooling:</strong> SpaceX has integrated active transpiration cooling in the highest-heat areas, particularly around the leading edges of the forward flaps. Liquid propellant (methane) is pumped through microporous surfaces, creating a film of gas that absorbs heat before it reaches the vehicle structure.</li>
+<li><strong>Metallic TPS elements:</strong> In select high-stress areas, SpaceX has replaced ceramic tiles with metallic thermal protection elements that can withstand repeated thermal cycling without the brittleness issues of ceramic materials.</li>
+<li><strong>Improved gap fillers:</strong> The gaps between tiles have been sealed with next-generation gap filler material that prevents hot gas penetration \u2014 one of the primary failure modes observed on earlier flights.</li>
+</ul>
+
+<p>The results from recent flights have been encouraging, with significantly less tile damage observed during post-flight inspections compared to earlier Starship configurations.</p>
+
+<h2 id="mechazilla-tower-2">Second Mechazilla: Doubling the Catch Capacity</h2>
+
+<p>SpaceX\'s booster catch system \u2014 officially the Orbital Launch Mount and Tower, colloquially known as <strong>Mechazilla</strong> \u2014 was one of the most audacious engineering feats in launch history when it first caught a returning Super Heavy booster in 2025. Now, SpaceX is nearly done building a <strong>second Mechazilla tower</strong> at the Starbase facility in Boca Chica, Texas.</p>
+
+<ul>
+<li><strong>Why two towers?</strong> A single tower can only support one launch-and-catch cycle at a time, including post-catch inspections, propellant recycling, and vehicle restacking. With two operational towers, SpaceX can prepare one vehicle for launch while processing a recently returned booster on the other tower, effectively doubling the potential launch cadence from Starbase.</li>
+<li><strong>Construction status:</strong> The second tower\'s structural steel is largely complete, and the mechanical "chopstick" catch arms are in the process of being installed and tested. Integration with the propellant farm and ground support equipment is underway.</li>
+<li><strong>KSC pad:</strong> SpaceX is also developing a Starship launch facility at Kennedy Space Center\'s Launch Complex 39A, which will add a third launch site and is particularly important for missions requiring higher-inclination orbits and for NASA Artemis HLS missions.</li>
+</ul>
+
+<p>The second tower is a critical element of SpaceX\'s ambition to achieve <strong>aircraft-like flight rates</strong> for Starship. Elon Musk has stated a long-term goal of launching Starship multiple times per day, and while that timeline is aspirational, the infrastructure investment signals genuine intent to push launch cadence far beyond anything achieved in the history of spaceflight.</p>
+
+<h2 id="flight-12">Flight 12: What to Expect</h2>
+
+<p>With Starship V3 Flight 12 imminent, SpaceX is expected to demonstrate several key capabilities:</p>
+
+<ul>
+<li><strong>Full Raptor V3 performance:</strong> All 33 booster engines and 6 upper-stage engines operating at full V3 thrust levels during ascent.</li>
+<li><strong>Booster catch attempt:</strong> Another attempt to catch the returning Super Heavy booster with the Mechazilla tower arms, building on successful catches from previous flights.</li>
+<li><strong>Upper stage controlled reentry:</strong> Continued refinement of the belly-flop reentry maneuver with the redesigned heat shield, targeting a controlled splashdown or potentially a landing attempt.</li>
+<li><strong>Payload deployment demonstration:</strong> Possible deployment of test payload masses or Starlink V3 satellites to validate the enlarged payload bay and deployment mechanism.</li>
+</ul>
+
+<h2 id="industry-implications">What Starship V3 Means for the Industry</h2>
+
+<p>Starship V3 is not just a SpaceX product upgrade. It is a potential <strong>inflection point for the entire space industry</strong>. If SpaceX achieves its cost and cadence targets, the downstream effects ripple through every sector:</p>
+
+<ul>
+<li><strong>Satellite operators</strong> can design larger, more capable satellites without being constrained by fairing size or mass limits, fundamentally changing spacecraft design philosophy.</li>
+<li><strong>Space station developers</strong> (Axiom, Vast, Orbital Reef) can launch station modules that are dramatically larger and heavier than what any other vehicle can deliver, accelerating the post-ISS commercial station era.</li>
+<li><strong>Lunar and Mars programs</strong> benefit from the ability to pre-position massive amounts of cargo, hardware, and propellant. Starship is already selected as NASA\'s Human Landing System for Artemis III and beyond.</li>
+<li><strong>Competing launch providers</strong> face an existential pricing challenge. If Starship achieves even a fraction of its cost targets, the per-kilogram economics make it extremely difficult for expendable or partially reusable vehicles to compete on price.</li>
+<li><strong>In-space manufacturing</strong> companies can plan for regular, affordable cargo delivery that makes orbital factories economically viable for the first time.</li>
+</ul>
+
+<p>The space industry has been anticipating Starship for years. With V3, the vehicle is finally approaching the performance envelope that could deliver on SpaceX\'s most ambitious promises.</p>
+
+<h2 id="track-starship">Track Starship Launches on SpaceNexus</h2>
+
+<p>Follow every Starship flight test on SpaceNexus. Our <a href="/mission-control">Mission Control dashboard</a> provides real-time launch tracking, countdown timers, and post-flight analysis. Set up <a href="/alerts">launch alerts</a> to get notified before every Starship flight, and explore the <a href="/launch-vehicles">Launch Vehicles database</a> for detailed specifications and flight history for Starship, Falcon 9, and every other active rocket.</p>
+
+<p><a href="/register">Create your free account</a> to track Starship V3 and every other launch in real time.</p>
+`,
+  },
 ];
 
 export function getBlogPost(slug: string): OriginalBlogPost | undefined {

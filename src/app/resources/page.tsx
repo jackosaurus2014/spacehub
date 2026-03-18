@@ -74,6 +74,7 @@ const RESOURCE_CATEGORIES: ResourceCategory[] = [
       { name: 'Podcasts', href: '/podcasts', description: 'Space industry podcast directory' },
       { name: 'Blog', href: '/blog', description: 'Analysis and commentary' },
       { name: 'Guides', href: '/guide', description: 'In-depth industry guides' },
+      { name: 'Help Center', href: '/help', description: 'FAQs and support resources' },
     ],
   },
   {
