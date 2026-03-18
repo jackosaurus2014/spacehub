@@ -33,10 +33,16 @@ interface GlossaryTerm {
 }
 
 // ---------------------------------------------------------------------------
-// Data  (55+ terms, sorted alphabetically by term)
+// Data  (69 terms, sorted alphabetically by term)
 // ---------------------------------------------------------------------------
 
 const GLOSSARY_TERMS: GlossaryTerm[] = [
+  {
+    term: 'Active Debris Removal (ADR)',
+    definition:
+      'Technologies and missions designed to physically capture and deorbit defunct satellites, spent rocket stages, and other large debris objects from Earth orbit. ADR approaches include robotic arms, harpoons, nets, magnetic capture, and laser ablation. Key programs include ESA\'s ClearSpace-1 mission (planned to remove a Vespa upper stage), Astroscale\'s ADRAS-J rendezvous and proximity operations demonstrator, and various DARPA-funded concepts. ADR is considered essential to preventing the Kessler Syndrome and maintaining the long-term sustainability of the orbital environment.',
+    category: 'Space Environment',
+  },
   {
     term: 'Apogee',
     definition:
@@ -48,6 +54,12 @@ const GLOSSARY_TERMS: GlossaryTerm[] = [
     definition:
       'A set of bilateral agreements between the United States and partner nations establishing practical principles for the peaceful exploration and use of the Moon, Mars, and other celestial bodies. Rooted in the Outer Space Treaty of 1967, the Accords address topics such as transparency, interoperability, emergency assistance, registration of space objects, release of scientific data, protecting heritage sites, space resources, and deconfliction of activities.',
     category: 'Regulatory',
+  },
+  {
+    term: 'Artemis Program',
+    definition:
+      'NASA\'s flagship lunar exploration program aimed at returning humans to the Moon and establishing a sustainable long-term presence. Artemis uses the Space Launch System (SLS) rocket and Orion spacecraft. Artemis I (2022) was an uncrewed test flight, Artemis II (2025) will carry astronauts around the Moon, and Artemis III will land the first woman and first person of color on the lunar surface using SpaceX\'s Starship HLS. The program also includes the Gateway lunar space station and international partnerships through the Artemis Accords.',
+    category: 'Exploration',
   },
   {
     term: 'Cislunar Space',
@@ -98,16 +110,34 @@ const GLOSSARY_TERMS: GlossaryTerm[] = [
     category: 'Spacecraft',
   },
   {
+    term: 'Commercial Space Station',
+    definition:
+      'A privately developed and operated orbital habitat designed to succeed the International Space Station (ISS), which is scheduled for deorbit around 2030. NASA\'s Commercial LEO Destinations (CLD) program has awarded contracts to Axiom Space, Vast, Blue Origin (Orbital Reef), and Starlab (a Voyager Space and Airbus venture). These stations will serve government astronauts, private researchers, and space tourists, creating a new commercial market for microgravity services valued at an estimated $8-12 billion annually.',
+    category: 'Business',
+  },
+  {
     term: 'Delta-V',
     definition:
       'A scalar measure of the change in velocity required to perform a specific orbital maneuver, expressed in meters per second (m/s). Delta-V budgets are fundamental to mission design and determine how much propellant a spacecraft needs. For example, reaching LEO from Earth\'s surface requires roughly 9,400 m/s of delta-V.',
     category: 'Orbital Mechanics',
   },
   {
+    term: 'Direct-to-Device (D2D)',
+    definition:
+      'A satellite connectivity architecture that enables standard, unmodified smartphones and IoT devices to communicate directly with orbiting satellites without requiring specialized ground hardware. D2D services provide emergency SOS messaging, basic text connectivity, and increasingly voice and broadband data in areas without terrestrial cell coverage. Key players include AST SpaceMobile (broadband from space), SpaceX/T-Mobile (Starlink direct-to-cell), and Apple/Globalstar (emergency SOS on iPhones). D2D is considered the next major frontier in satellite communications.',
+    category: 'Communications',
+  },
+  {
     term: 'Deorbit',
     definition:
       'A deliberate maneuver to lower a spacecraft\'s orbit so that it re-enters Earth\'s atmosphere and either burns up or lands in a controlled manner (typically in the South Pacific Oceanic Uninhabited Area). Deorbiting is a critical component of space debris mitigation guidelines, which recommend disposal within 5 years of mission end (updated from 25 years).',
     category: 'Orbital Mechanics',
+  },
+  {
+    term: 'Electric Propulsion',
+    definition:
+      'A class of spacecraft propulsion systems that use electrical energy to accelerate propellant, achieving much higher specific impulse (1,500-10,000+ seconds) than chemical rockets but at lower thrust levels. Major types include Hall-effect thrusters (used by Starlink satellites and Maxar spacecraft), gridded ion engines (Dawn, GOCE), pulsed plasma thrusters, and electrospray systems. Electric propulsion is the dominant technology for station-keeping, orbit raising, and deep-space missions, dramatically reducing propellant mass requirements.',
+    category: 'Propulsion',
   },
   {
     term: 'EAR (Export Administration Regulations)',
@@ -248,6 +278,12 @@ const GLOSSARY_TERMS: GlossaryTerm[] = [
     category: 'Defense & Security',
   },
   {
+    term: 'On-Orbit Servicing (OOS)',
+    definition:
+      'The capability to inspect, refuel, repair, upgrade, or reposition satellites and other spacecraft while in orbit, extending their operational lifetime and reducing the need for costly replacements. Technologies include robotic arms, autonomous docking, and in-space refueling. Key programs include Northrop Grumman\'s Mission Extension Vehicle (MEV), which has successfully docked with and extended the life of GEO satellites, Astroscale\'s ELSA-d debris removal demonstrator, and DARPA\'s RSGS program. OOS is a rapidly growing market projected to reach $4.5 billion by 2030.',
+    category: 'Spacecraft',
+  },
+  {
     term: 'Orbital Period',
     definition:
       'The time a satellite takes to complete one full orbit around Earth. Orbital period is determined by the semi-major axis of the orbit per Kepler\'s third law. A satellite in LEO at 400 km has a period of about 92 minutes, while a GEO satellite has a period of 23 hours 56 minutes (one sidereal day). Orbital period is a fundamental parameter in constellation design.',
@@ -314,9 +350,21 @@ const GLOSSARY_TERMS: GlossaryTerm[] = [
     category: 'Space Environment',
   },
   {
+    term: 'Space Economy',
+    definition:
+      'The full range of commercial, governmental, and academic activities that generate value from space-related resources, infrastructure, and data. The global space economy was valued at approximately $626 billion in 2025, with commercial activities accounting for roughly 80% of total revenue. Major segments include satellite communications, Earth observation, launch services, ground equipment manufacturing, space tourism, and downstream data analytics. Investment banks and consulting firms project the space economy will surpass $1 trillion by 2030-2035, driven by mega-constellations, in-space manufacturing, and cislunar commerce.',
+    category: 'Business',
+  },
+  {
     term: 'Space Act Agreement',
     definition:
       'A legal instrument authorized by the Space Act of 1958 that allows NASA to enter into agreements with other government agencies, private companies, academic institutions, and international organizations. Funded Space Act Agreements (SAAs) involve NASA funding to the partner; unfunded SAAs involve no exchange of funds; reimbursable SAAs involve the partner funding NASA. The Commercial Crew and CLPS programs use SAAs.',
+    category: 'Business',
+  },
+  {
+    term: 'Space Tourism',
+    definition:
+      'Commercial human spaceflight experiences offered to private individuals, ranging from brief suborbital flights to multi-day orbital missions and planned lunar flybys. Blue Origin\'s New Shepard and Virgin Galactic\'s SpaceShipTwo provide suborbital flights reaching the edge of space (80-100 km altitude) for approximately $250,000-$450,000 per seat. SpaceX has conducted orbital tourism missions (Inspiration4, Polaris Dawn) and plans lunar flybys with Starship. Axiom Space arranges private astronaut missions to the ISS. The space tourism market is projected to grow to $8 billion annually by 2030.',
     category: 'Business',
   },
   {
@@ -338,6 +386,12 @@ const GLOSSARY_TERMS: GlossaryTerm[] = [
     category: 'Space Environment',
   },
   {
+    term: 'Spaceflight Safety',
+    definition:
+      'The discipline encompassing all practices, regulations, and technologies aimed at protecting human life, spacecraft, and the orbital environment during space missions. This includes launch range safety (flight termination systems, exclusion zones), crew safety (abort systems, life support redundancy), and orbital safety (conjunction assessment, collision avoidance maneuvers). The FAA\'s Office of Commercial Space Transportation (AST) oversees launch and re-entry safety for U.S. commercial missions, while NASA maintains human-rating standards for crewed vehicles.',
+    category: 'Regulatory',
+  },
+  {
     term: 'Specific Impulse (Isp)',
     definition:
       'A measure of propulsion efficiency defined as the thrust produced per unit weight of propellant consumed per second, expressed in seconds. Higher Isp means more efficient propellant use. Chemical rockets achieve 200-460s (hydrolox engines like RS-25 reach ~450s), ion thrusters achieve 1,500-10,000s, and Hall-effect thrusters typically achieve 1,500-3,000s. Isp is the single most important metric for comparing propulsion systems.',
@@ -354,6 +408,12 @@ const GLOSSARY_TERMS: GlossaryTerm[] = [
     definition:
       'A near-polar, slightly retrograde orbit (typically 97-99 deg inclination, 600-800 km altitude) in which the orbital plane precesses at the same rate as Earth orbits the Sun, maintaining a consistent angle between the orbital plane and the Sun. This ensures consistent lighting conditions for Earth observation, making SSO the preferred orbit for optical imaging, environmental monitoring, and meteorological satellites.',
     category: 'Orbital Mechanics',
+  },
+  {
+    term: 'Starship',
+    definition:
+      'SpaceX\'s fully reusable, super-heavy-lift launch system consisting of the Super Heavy first-stage booster and the Starship upper stage/spacecraft. Standing approximately 121 meters tall, it is the largest and most powerful rocket ever built, with a payload capacity of 100-150 tonnes to low Earth orbit. Starship is powered by Raptor engines burning liquid methane and liquid oxygen. It is designed for a wide range of missions including Starlink deployment, lunar landings (NASA HLS contract for Artemis), Mars colonization, point-to-point Earth transport, and in-space refueling. SpaceX has conducted multiple test flights from Starbase in Boca Chica, Texas.',
+    category: 'Launch',
   },
   {
     term: 'Stage Separation',

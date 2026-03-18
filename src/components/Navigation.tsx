@@ -11,6 +11,7 @@ import { useHighContrast } from '@/hooks/useHighContrast';
 import NotificationCenter from './NotificationCenter';
 import NotificationBell from '@/components/ui/NotificationBell';
 import RecentlyViewed from './ui/RecentlyViewed';
+import { usePlatformModifier } from '@/hooks/useKeyboardShortcut';
 
 interface DropdownItem {
   label: string;
@@ -353,6 +354,8 @@ export default function Navigation() {
   const { isPro } = useSubscription();
   const { isHighContrast, toggleHighContrast } = useHighContrast();
   const pathname = usePathname();
+  const platformModifier = usePlatformModifier();
+  const shortcutKey = platformModifier === 'meta' ? 'Cmd' : 'Ctrl';
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [scrolled, setScrolled] = useState(false);
@@ -572,7 +575,8 @@ export default function Navigation() {
                 }
               }}
               className="relative flex items-center gap-2 px-3 py-1.5 min-h-[44px] rounded-lg text-slate-400 hover:text-white hover:bg-white/[0.05] transition-colors ease-smooth border border-white/[0.08] hover:border-white/[0.12]"
-              aria-label="Search (Ctrl+K)"
+              aria-label={`Search (${shortcutKey}+K)`}
+              title={`Press ${shortcutKey}+K to search`}
             >
               <svg
                 className="w-4 h-4"
@@ -584,9 +588,9 @@ export default function Navigation() {
               >
                 <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
               </svg>
-              <span className="text-xs text-slate-500">Search</span>
-              <kbd className="hidden xl:inline-flex items-center gap-0.5 ml-1 px-1.5 py-0.5 bg-white/[0.03] border border-white/[0.08] rounded text-[10px] font-mono text-slate-500">
-                Ctrl+K
+              <span className="hidden lg:inline text-xs text-slate-500">Search</span>
+              <kbd className="hidden md:inline-flex items-center gap-0.5 ml-1 px-1.5 py-0.5 bg-white/[0.03] border border-white/[0.08] rounded text-[10px] font-mono text-slate-500">
+                {shortcutKey}+K
               </kbd>
             </button>
             {/* Keyboard Shortcuts */}
