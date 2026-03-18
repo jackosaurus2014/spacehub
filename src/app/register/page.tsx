@@ -450,6 +450,41 @@ function RegisterPageContent() {
             </p>
           </div>
 
+          {/* Recommended Plans — set expectations + upsell */}
+          {!isFounding && !isTrial && (
+            <div className="mt-6 p-4 rounded-xl border border-white/[0.08] bg-white/[0.03]">
+              <p className="text-sm font-semibold text-white mb-3">Included with your free account:</p>
+              <ul className="space-y-2">
+                <li className="flex items-center gap-2 text-sm text-slate-300">
+                  <svg className="w-4 h-4 text-emerald-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                  </svg>
+                  10 news articles per day
+                </li>
+                <li className="flex items-center gap-2 text-sm text-slate-300">
+                  <svg className="w-4 h-4 text-emerald-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                  </svg>
+                  50 satellite tracking
+                </li>
+                <li className="flex items-center gap-2 text-sm text-slate-300">
+                  <svg className="w-4 h-4 text-emerald-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                  </svg>
+                  Mission Control countdown
+                </li>
+              </ul>
+              <div className="mt-3 pt-3 border-t border-white/[0.06]">
+                <p className="text-xs text-slate-400">
+                  Want more?{' '}
+                  <Link href="/pricing" className="text-white/90 hover:text-white transition-colors font-medium underline underline-offset-2">
+                    Upgrade to Professional for $19.99/month
+                  </Link>
+                </p>
+              </div>
+            </div>
+          )}
+
           {/* Social proof */}
           <div className="mt-6 text-center">
             <p className="text-slate-400 text-sm">
