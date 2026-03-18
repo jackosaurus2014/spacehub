@@ -57,6 +57,7 @@ const BLOG_CTA_MAP: Record<string, { tool: string; path: string }> = {
   'five-space-industry-trends-defining-2026': { tool: 'Market Intelligence', path: '/market-intel' },
   'artemis-ii-rollout-live-coverage-march-2026': { tool: 'Mission Control', path: '/mission-control' },
   'spacex-starship-v3-whats-new-most-powerful-rocket': { tool: 'Launch Vehicles', path: '/launch-vehicles' },
+  'weekly-digest-march-10-17-2026': { tool: 'Space News', path: '/news' },
 };
 
 type Props = {

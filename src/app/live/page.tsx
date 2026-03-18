@@ -30,6 +30,121 @@ interface StreamsData {
   liveNow: LiveStream[];
 }
 
+// Static upcoming launches data for when no live streams are available
+const UPCOMING_LAUNCHES = [
+  {
+    id: 'artemis-ii',
+    mission: 'Artemis II',
+    provider: 'NASA / SLS',
+    date: '2026-04-25T00:00:00Z',
+    description: 'First crewed Artemis mission. Four astronauts will fly around the Moon and return to Earth in a 10-day mission aboard Orion.',
+    blogSlug: 'artemis-ii-moon-mission-everything-you-need-to-know',
+  },
+  {
+    id: 'starship-flight-12',
+    mission: 'Starship Flight 12',
+    provider: 'SpaceX',
+    date: '2026-04-01T00:00:00Z',
+    description: 'First flight of the Starship V3 configuration with Raptor V3 engines. Full-stack booster catch attempt and upper stage reentry.',
+  },
+  {
+    id: 'kuiper-protoflight-2',
+    mission: 'Kuiper Protoflight 2',
+    provider: 'Amazon / ULA Vulcan',
+    date: '2026-04-10T00:00:00Z',
+    description: 'Second prototype batch of Amazon Project Kuiper broadband satellites, launching on ULA Vulcan Centaur.',
+  },
+  {
+    id: 'dream-chaser-2',
+    mission: 'Dream Chaser CRS-2',
+    provider: 'Sierra Space / Vulcan',
+    date: '2026-05-15T00:00:00Z',
+    description: 'Sierra Space Dream Chaser second cargo resupply mission to the International Space Station.',
+  },
+  {
+    id: 'new-glenn-3',
+    mission: 'New Glenn Flight 3',
+    provider: 'Blue Origin',
+    date: '2026-05-20T00:00:00Z',
+    description: 'Blue Origin New Glenn third flight carrying customer payloads to orbit with first stage landing attempt.',
+  },
+];
+
+function useCountdownTimer(targetDate: string) {
+  const [display, setDisplay] = useState('');
+
+  useEffect(() => {
+    const update = () => {
+      const now = Date.now();
+      const diff = new Date(targetDate).getTime() - now;
+      if (diff <= 0) {
+        setDisplay('Imminent');
+        return;
+      }
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+      if (days > 0) setDisplay(`${days}d ${hours}h ${minutes}m`);
+      else if (hours > 0) setDisplay(`${hours}h ${minutes}m ${seconds}s`);
+      else setDisplay(`${minutes}m ${seconds}s`);
+    };
+    update();
+    const interval = setInterval(update, 1000);
+    return () => clearInterval(interval);
+  }, [targetDate]);
+
+  return display;
+}
+
+function UpcomingLaunchCard({ launch }: { launch: typeof UPCOMING_LAUNCHES[number] }) {
+  const countdown = useCountdownTimer(launch.date);
+  const launchDate = new Date(launch.date);
+
+  return (
+    <div className="card p-5 hover:border-white/15 transition-all group">
+      <div className="flex items-start justify-between mb-3">
+        <span className="px-2.5 py-1 rounded-full bg-white/[0.06] text-white/70 text-xs font-medium border border-white/[0.06]">
+          {launch.provider}
+        </span>
+        <Link
+          href="/alerts"
+          className="text-xs text-slate-500 hover:text-cyan-400 transition-colors flex items-center gap-1 opacity-0 group-hover:opacity-100"
+        >
+          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+          </svg>
+          Set Reminder
+        </Link>
+      </div>
+      <h3 className="text-white font-semibold text-lg mb-1">{launch.mission}</h3>
+      <p className="text-slate-400 text-sm mb-4 line-clamp-2">{launch.description}</p>
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2 text-xs text-slate-400">
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+          </svg>
+          {launchDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+        </div>
+        <div className="text-sm font-semibold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400">
+          T-{countdown}
+        </div>
+      </div>
+      {launch.blogSlug && (
+        <Link
+          href={`/blog/${launch.blogSlug}`}
+          className="mt-3 inline-flex items-center gap-1 text-xs text-cyan-400/70 hover:text-cyan-400 transition-colors"
+        >
+          Read mission guide
+          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
+        </Link>
+      )}
+    </div>
+  );
+}
+
 function LiveHubContent() {
   const [data, setData] = useState<StreamsData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -172,12 +287,30 @@ function LiveHubContent() {
                 provider={selectedStream.provider}
               />
             ) : (
-              <div className="aspect-video bg-space-900 rounded-xl flex items-center justify-center border border-white/[0.06]">
-                <div className="text-center">
+              <div className="aspect-video bg-space-900 rounded-xl flex items-center justify-center border border-white/[0.06] relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 via-transparent to-purple-500/5" />
+                <div className="text-center relative z-10 px-6">
                   <svg className="w-16 h-16 text-slate-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
                   </svg>
-                  <p className="text-slate-400">No streams scheduled</p>
+                  <p className="text-white font-semibold text-lg mb-2">No Active Streams Right Now</p>
+                  <p className="text-slate-400 text-sm mb-4 max-w-sm mx-auto">
+                    Check out the upcoming launches below, or set up alerts so you never miss a live stream.
+                  </p>
+                  <div className="flex gap-3 justify-center">
+                    <Link
+                      href="/alerts"
+                      className="px-4 py-2 text-sm font-medium bg-white/[0.08] hover:bg-white/[0.12] text-white rounded-lg transition-colors border border-white/[0.08]"
+                    >
+                      Set Up Alerts
+                    </Link>
+                    <Link
+                      href="/blog/artemis-ii-moon-mission-everything-you-need-to-know"
+                      className="px-4 py-2 text-sm font-medium bg-gradient-to-r from-cyan-500/20 to-purple-500/20 hover:from-cyan-500/30 hover:to-purple-500/30 text-white rounded-lg transition-colors border border-white/[0.08]"
+                    >
+                      Read: Artemis II Guide
+                    </Link>
+                  </div>
                 </div>
               </div>
             )}
@@ -233,35 +366,28 @@ function LiveHubContent() {
 
         </ScrollReveal>
 
-        {/* Upcoming Launches Section */}
-        <ScrollReveal delay={0.1}>
-        <div className="mb-8">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-display font-bold text-white flex items-center gap-2">
-              <svg className="w-6 h-6 text-white/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
-              Upcoming Launch Streams
-            </h2>
-            <Link
-              href="/mission-control"
-              className="text-white/70 hover:text-white text-sm font-medium transition-colors flex items-center gap-1"
-            >
-              View All Missions
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </Link>
-          </div>
-
-          {upcomingStreams.length === 0 ? (
-            <div className="card p-8 text-center">
-              <svg className="w-12 h-12 text-slate-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-              </svg>
-              <p className="text-slate-400">No upcoming streams scheduled</p>
+        {/* Upcoming Launch Streams (from API) */}
+        {upcomingStreams.length > 0 && (
+          <ScrollReveal delay={0.1}>
+          <div className="mb-8">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-xl font-display font-bold text-white flex items-center gap-2">
+                <svg className="w-6 h-6 text-white/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                Upcoming Launch Streams
+              </h2>
+              <Link
+                href="/mission-control"
+                className="text-white/70 hover:text-white text-sm font-medium transition-colors flex items-center gap-1"
+              >
+                View All Missions
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </Link>
             </div>
-          ) : (
+
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {upcomingStreams.map((stream) => (
                 <button
@@ -304,9 +430,70 @@ function LiveHubContent() {
                 </button>
               ))}
             </div>
-          )}
-        </div>
+          </div>
+          </ScrollReveal>
+        )}
 
+        {/* Upcoming Launches Section - always visible, especially valuable when no streams are active */}
+        <ScrollReveal delay={0.1}>
+        <div className="mb-8">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-xl font-display font-bold text-white flex items-center gap-2">
+              <svg className="w-6 h-6 text-cyan-400/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+              </svg>
+              Upcoming Launches
+            </h2>
+            <Link
+              href="/alerts"
+              className="text-cyan-400/70 hover:text-cyan-400 text-sm font-medium transition-colors flex items-center gap-1"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+              </svg>
+              Get Launch Alerts
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {UPCOMING_LAUNCHES.map((launch) => (
+              <UpcomingLaunchCard key={launch.id} launch={launch} />
+            ))}
+          </div>
+        </div>
+        </ScrollReveal>
+
+        {/* Artemis II Feature Banner */}
+        <ScrollReveal delay={0.15}>
+        <Link
+          href="/blog/artemis-ii-moon-mission-everything-you-need-to-know"
+          className="block mb-8 card-elevated p-6 hover:border-white/15 transition-all group relative overflow-hidden"
+        >
+          <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/5 via-transparent to-purple-500/5 group-hover:from-cyan-500/10 group-hover:to-purple-500/10 transition-all" />
+          <div className="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-500/20 to-purple-500/20 flex items-center justify-center flex-shrink-0 border border-white/[0.08]">
+                <svg className="w-6 h-6 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                </svg>
+              </div>
+              <div>
+                <h3 className="text-white font-semibold text-lg group-hover:text-cyan-50 transition-colors">
+                  Artemis II: Humanity Returns to the Moon
+                </h3>
+                <p className="text-slate-400 text-sm mt-0.5">
+                  FRR complete. Rollout March 20. Read our comprehensive mission guide covering everything from crew profiles to mission trajectory.
+                </p>
+              </div>
+            </div>
+            <span className="text-sm font-medium text-cyan-400/70 group-hover:text-cyan-400 transition-colors whitespace-nowrap flex items-center gap-1">
+              Read Full Guide
+              <svg className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </span>
+          </div>
+        </Link>
         </ScrollReveal>
 
         {/* Related Links */}

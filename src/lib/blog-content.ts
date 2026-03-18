@@ -4725,6 +4725,102 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 <p><a href="/register">Create your free account</a> to track Starship V3 and every other launch in real time.</p>
 `,
   },
+  {
+    slug: 'weekly-digest-march-10-17-2026',
+    title: 'SpaceNexus Weekly Digest: March 10-17, 2026',
+    excerpt: 'This week\'s biggest space stories: Artemis II FRR complete with rollout set for March 20, SpaceX hits 10,000 active Starlink satellites, Sierra Space and Vast raise nearly $1.1 billion combined, and SATELLITE 2026 is just days away.',
+    category: 'analysis',
+    author: 'SpaceNexus Team',
+    authorRole: 'Editorial',
+    publishedAt: '2026-03-17T12:00:00Z',
+    readingTime: 6,
+    keywords: ['weekly digest', 'space news roundup', 'Artemis II', 'Starlink', 'Sierra Space', 'Vast', 'Space Force', 'SATELLITE 2026', 'space industry news'],
+    content: `
+<p>It has been one of the most consequential weeks in the space industry this year. From a historic NASA milestone to billion-dollar fundraises, here is everything you need to know from March 10-17, 2026.</p>
+
+<h2 id="artemis-ii-frr">1. Artemis II Flight Readiness Review Complete -- Rollout March 20</h2>
+
+<p>NASA wrapped up the <strong>Artemis II Flight Readiness Review (FRR)</strong> on March 14, officially clearing the Space Launch System and Orion spacecraft for rollout from the Vehicle Assembly Building to Launch Complex 39B at Kennedy Space Center. The crawler transport is now scheduled for <strong>March 20</strong>, with the 4.2-mile journey expected to take approximately 8-10 hours.</p>
+
+<p>This is the final major programmatic gate before launch. The FRR board, which included senior leadership from NASA, Lockheed Martin, Boeing, Northrop Grumman, and the European Space Agency, reviewed vehicle readiness, ground systems status, flight software verification, crew training completion, and range safety. All open items were either closed or dispositioned as acceptable risk.</p>
+
+<p>The four-person crew -- Commander Reid Wiseman, Pilot Victor Glover, Mission Specialists Christina Koch and Jeremy Hansen -- have completed their final round of integrated simulations. If the launch window holds, Artemis II will lift off in late April, sending humans beyond low Earth orbit for the first time since Apollo 17 in 1972.</p>
+
+<p>Read our comprehensive guide: <a href="/blog/artemis-ii-moon-mission-everything-you-need-to-know">Artemis II Moon Mission: Everything You Need to Know</a>.</p>
+
+<h2 id="starlink-10000">2. SpaceX Hits 10,000 Active Starlink Satellites</h2>
+
+<p>SpaceX quietly crossed a remarkable threshold this week: <strong>10,000 active Starlink satellites</strong> in orbit. The milestone was reached following a Falcon 9 launch from Vandenberg Space Force Base on March 12 that deployed another batch of 23 V2 Mini satellites.</p>
+
+<p>To put that number in perspective, when SpaceX launched its first Starlink batch in May 2019, there were approximately 2,000 active satellites total across all operators worldwide. SpaceX now operates <strong>five times that number</strong> by itself. The constellation serves over 4 million subscribers in more than 75 countries, generating an estimated $6.6 billion in annual revenue.</p>
+
+<p>The next chapter is Starlink V3 satellites, which are significantly larger and more capable, designed to launch aboard Starship. These next-generation satellites will deliver direct-to-cell connectivity and dramatically higher per-satellite bandwidth. SpaceX has FCC authorization for up to 12,000 satellites in its first-generation constellation and has applied for approval of an additional 30,000.</p>
+
+<h2 id="sierra-space-raise">3. Sierra Space Raises $550M at $8B Valuation</h2>
+
+<p>Sierra Space, the commercial space subsidiary spun out of Sierra Nevada Corporation, closed a <strong>$550 million Series B round</strong> this week, valuing the company at approximately <strong>$8 billion</strong>. The round was led by Coatue Management with participation from General Atlantic, Sequoia Capital, and Moore Strategic Ventures.</p>
+
+<p>The funding will accelerate development of the <strong>Dream Chaser spaceplane</strong>, which completed its first ISS cargo resupply mission in early 2026, and the company\'s <strong>LIFE (Large Integrated Flexible Environment) habitat</strong>, a commercial space station module designed to be inflatable and significantly larger than traditional rigid structures. Sierra Space is positioning itself as a vertically integrated space transportation and destination company -- building both the vehicle to get to orbit and the place to work once there.</p>
+
+<p>CEO Tom Vice said the raise reflects "strong market validation of the integrated transportation-plus-destination model" and confirmed that Sierra Space is targeting an IPO in 2027.</p>
+
+<h2 id="vast-raise">4. Vast Raises $500M for Commercial Space Station Program</h2>
+
+<p>In what is shaping up to be a banner week for commercial space station funding, <strong>Vast</strong> announced a <strong>$500 million raise</strong> to accelerate its Haven-1 and Haven-2 space station programs. The round brings Vast\'s total funding to over $700 million.</p>
+
+<p>Vast, founded by cryptocurrency entrepreneur Jed McCaleb, is taking an unconventional approach to commercial stations. Rather than building modular stations assembled over years (the Axiom and Orbital Reef approach), Vast is designing <strong>single-launch monolithic stations</strong> that deploy as complete, functional habitats. Haven-1, the company\'s first station, is designed to launch aboard a single SpaceX Starship and provide a shirt-sleeve environment for up to four crew members.</p>
+
+<p>The company has a <strong>SpaceX crew launch agreement</strong> for initial Haven-1 missions and is targeting a 2027 launch. Haven-2 will be significantly larger, leveraging the full Starship payload volume to create the largest pressurized space station module ever launched.</p>
+
+<p>Between Sierra Space and Vast, the commercial space station sector raised over <strong>$1 billion in a single week</strong> -- a clear signal that investors see the post-ISS commercial station market as one of the defining opportunities of the next decade.</p>
+
+<h2 id="space-force-missile-warning">5. Space Force Advances Next-Gen Missile Warning Constellation</h2>
+
+<p>The U.S. Space Force awarded <strong>two development contracts</strong> this week under the Next-Generation Overhead Persistent Infrared (Next-Gen OPIR) program, advancing the replacement for the aging SBIRS missile warning satellite constellation. The contracts, worth a combined $1.2 billion, went to Lockheed Martin for the geosynchronous component and Northrop Grumman for the polar orbit component.</p>
+
+<p>The Next-Gen OPIR system is designed to detect and track ballistic missiles, hypersonic glide vehicles, and other advanced threats that the current SBIRS constellation was not designed to handle. The new satellites feature <strong>wider field-of-view sensors, on-board processing</strong> for faster threat characterization, and <strong>resilient communications links</strong> that are harder to jam or spoof.</p>
+
+<p>This procurement is part of a broader Space Force strategy to transition from a small number of exquisite, expensive satellites to a <strong>more distributed, resilient architecture</strong> that can survive in a contested space environment. First launches are planned for 2028, with full operational capability targeted for 2030.</p>
+
+<h2 id="satellite-2026-preview">6. SATELLITE 2026 Preview: March 23-26 in Washington, D.C.</h2>
+
+<p>The space industry\'s largest annual conference, <strong>SATELLITE 2026</strong>, kicks off next week at the Walter E. Washington Convention Center in Washington, D.C. Running March 23-26, this year\'s conference is expected to draw over 15,000 attendees from 100+ countries.</p>
+
+<p>Key themes to watch:</p>
+
+<ul>
+<li><strong>Direct-to-device:</strong> The hottest topic in satellite communications. Panels will feature AST SpaceMobile, SpaceX (Starlink Direct to Cell), and Lynk Global discussing the technical and regulatory path to replacing cell towers with satellites.</li>
+<li><strong>NGSO constellation economics:</strong> With Starlink, Kuiper, OneWeb, and Telesat Lightspeed all in various stages of deployment, expect heated debate about whether the market can support multiple mega-constellations.</li>
+<li><strong>Space sustainability:</strong> Debris mitigation, spectrum sharing, and responsible orbital operations will feature prominently, driven by the sheer number of new satellites being launched.</li>
+<li><strong>Defense and national security:</strong> With the Space Force\'s budget request for FY2027 expected shortly after the conference, defense-focused panels will draw significant attention.</li>
+<li><strong>AI in satellite operations:</strong> From autonomous collision avoidance to AI-driven spectrum management, artificial intelligence is becoming embedded in every aspect of satellite operations.</li>
+</ul>
+
+<p>SpaceNexus will be covering SATELLITE 2026 with daily summaries and key takeaway analysis. Follow our <a href="/news">News feed</a> for real-time updates from the conference floor.</p>
+
+<h2 id="quick-hits">Quick Hits</h2>
+
+<ul>
+<li><strong>Rocket Lab</strong> successfully launched its 55th Electron mission, deploying a synthetic aperture radar satellite for Synspective. Neutron medium-lift vehicle remains on track for a late 2026 first flight.</li>
+<li><strong>Relativity Space</strong> announced a partnership with Impulse Space to offer integrated launch-plus-last-mile delivery services, combining Terran R with Impulse\'s orbital transfer vehicles.</li>
+<li><strong>India\'s ISRO</strong> completed a critical hot-fire test of the CE-20 cryogenic engine for the LVM3 Mark III upgrade, which will increase the vehicle\'s GTO capacity to 6 tons.</li>
+<li><strong>Planet Labs</strong> reported Q4 2025 revenue of $61 million, up 18% year-over-year, driven by growing defense and intelligence community contracts.</li>
+</ul>
+
+<h2 id="looking-ahead">Looking Ahead: Week of March 17-24</h2>
+
+<ul>
+<li><strong>March 20:</strong> Artemis II rollout to Launch Complex 39B</li>
+<li><strong>March 21:</strong> SpaceX Falcon 9 Starlink launch from Cape Canaveral (Group 12-8)</li>
+<li><strong>March 23-26:</strong> SATELLITE 2026 conference in Washington, D.C.</li>
+<li><strong>March 24:</strong> Blue Origin New Glenn second flight window opens</li>
+</ul>
+
+<p>Stay on top of every launch, funding round, and policy development with SpaceNexus. Visit our <a href="/news">News feed</a> for real-time coverage, and set up <a href="/alerts">custom alerts</a> so you never miss what matters to you.</p>
+
+<p><a href="/register">Create your free account</a> to get weekly digests and breaking space industry news delivered to your inbox.</p>
+`,
+  },
 ];
 
 export function getBlogPost(slug: string): OriginalBlogPost | undefined {

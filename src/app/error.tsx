@@ -22,7 +22,11 @@ export default function Error({
   return (
     <div className="min-h-screen flex items-center justify-center px-4">
       <div className="text-center max-w-md">
-        <div className="text-5xl mb-4">⚠️</div>
+        <div className="w-16 h-16 mx-auto mb-5 rounded-2xl bg-red-500/10 border border-red-500/20 flex items-center justify-center">
+          <svg className="w-8 h-8 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+          </svg>
+        </div>
         <h2 className="text-xl font-bold text-white mb-2">Something went wrong</h2>
         <p className="text-sm text-slate-400 mb-6">
           An unexpected error occurred while rendering this page. Please try again or return to the home page.
@@ -44,6 +48,13 @@ export default function Error({
         {error.digest && (
           <p className="text-xs text-slate-600 mt-4">Error ID: {error.digest}</p>
         )}
+        <p className="text-sm text-slate-500 mt-6">
+          Still having trouble?{' '}
+          <Link href="/help" className="text-slate-300 hover:text-white underline underline-offset-2 transition-colors">
+            Visit our Help Center
+          </Link>{' '}
+          for support.
+        </p>
       </div>
     </div>
   );
