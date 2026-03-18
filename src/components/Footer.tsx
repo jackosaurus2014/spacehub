@@ -118,6 +118,7 @@ const footerLinks = {
       { label: 'Advertise', href: '/advertise' },
       { label: 'Media Kit', href: '/media-kit' },
       { label: 'SATELLITE 2026', href: '/satellite-2026' },
+      { label: 'Alternatives', href: '/alternatives' },
     ],
   },
 };

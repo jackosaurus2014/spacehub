@@ -17,13 +17,13 @@ export interface ChangelogEntry {
 export const CHANGELOG: ChangelogEntry[] = [
   {
     version: '2.0.0',
-    date: '2026-03-17',
+    date: '2026-03-18',
     title: 'SpaceNexus 2.0 — The Complete Space Intelligence Platform',
     description:
-      'Major milestone: 70 original blog articles, 30+ modules, 600+ routes, 200+ company profiles, and every tool a space professional needs — all in one platform. SpaceNexus 2.0 is the most comprehensive free space intelligence platform on the internet.',
-    highlight: '70 articles, 200+ companies, 30+ modules, 600+ routes',
+      'Major milestone: 80 original blog articles, 30+ modules, 600+ routes, 200+ company profiles, and every tool a space professional needs — all in one platform. SpaceNexus 2.0 is the most comprehensive free space intelligence platform on the internet.',
+    highlight: '80 articles, 200+ companies, 30+ modules, 600+ routes',
     changes: [
-      { type: 'feature', text: '70 original blog articles covering every corner of the space industry — from orbital debris tracking to asteroid mining economics' },
+      { type: 'feature', text: '80 original blog articles covering every corner of the space industry — from the ISS and GPS to Kessler Syndrome and commercial crew' },
       { type: 'feature', text: 'Industry Scorecard with quarterly grades across 6 dimensions: Launch, Satellite, Investment, Policy, Workforce, and Innovation' },
       { type: 'feature', text: 'Space Calendar with month-by-month key dates, launches, and conferences for 2026' },
       { type: 'feature', text: 'Interactive Space Industry Map showing sector relationships and company positioning across the ecosystem' },

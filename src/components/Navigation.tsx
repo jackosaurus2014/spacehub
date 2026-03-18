@@ -80,6 +80,7 @@ const EXPLORE_ITEMS: DropdownItem[] = [
   { label: 'Data Sources', href: '/data-sources', description: 'Transparency in our data pipeline' },
   { label: 'Space Industry Statistics', href: '/space-stats', description: 'Comprehensive space industry stats & facts 2026' },
   { label: 'Getting Started', href: '/getting-started', description: 'New to SpaceNexus? Start here' },
+  { label: 'Alternatives', href: '/alternatives', description: 'SpaceNexus vs other space data platforms' },
 ];
 
 const INTELLIGENCE_ITEMS: DropdownItem[] = [
