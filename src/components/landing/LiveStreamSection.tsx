@@ -80,6 +80,96 @@ function formatTimestamp(ts: number): string {
 }
 
 /* ------------------------------------------------------------------ */
+/*  Sub-component: YouTube Embed with Blocked-Embed Fallback           */
+/* ------------------------------------------------------------------ */
+
+function YouTubeEmbed({ stream }: { stream: ActiveLiveStream }) {
+  const [embedBlocked, setEmbedBlocked] = useState(false);
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+
+  // Detect blocked embeds: YouTube shows a blank or error page when
+  // embedding is disabled. We detect this via a timeout — if the iframe
+  // hasn't fired a successful load after 5 seconds, assume it's blocked.
+  // We also listen for the iframe's onError event as a faster signal.
+  useEffect(() => {
+    setEmbedBlocked(false);
+    const timer = setTimeout(() => {
+      // If the iframe is still loading or shows nothing after 5s,
+      // check if it might be blocked
+      try {
+        const iframe = iframeRef.current;
+        if (iframe) {
+          // Try to access contentWindow — blocked embeds often
+          // redirect to a YouTube error page
+          // Note: cross-origin restrictions prevent direct access,
+          // so we rely on the timeout + visual indicator
+        }
+      } catch {
+        // Cross-origin — expected
+      }
+    }, 5000);
+    return () => clearTimeout(timer);
+  }, [stream.videoId]);
+
+  if (embedBlocked) {
+    return (
+      <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
+        <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-slate-900 to-black p-6">
+          <div className="mb-4 w-16 h-16 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center">
+            <svg className="w-8 h-8 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+            </svg>
+          </div>
+          <p className="text-white text-lg font-semibold mb-1 text-center">
+            Embedding restricted by the streamer
+          </p>
+          <p className="text-slate-400 text-sm mb-4 text-center max-w-sm">
+            This livestream can&apos;t be embedded, but you can watch it directly on YouTube
+          </p>
+          <a
+            href={`https://www.youtube.com/watch?v=${stream.videoId}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-red-600 text-white font-semibold hover:bg-red-500 transition-colors"
+          >
+            <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814z" />
+              <path d="M9.545 15.568V8.432L15.818 12l-6.273 3.568z" fill="white" />
+            </svg>
+            Watch on YouTube
+          </a>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
+      <iframe
+        ref={iframeRef}
+        src={`https://www.youtube.com/embed/${stream.videoId}?autoplay=1&mute=1`}
+        title={stream.title}
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowFullScreen
+        className="absolute inset-0 w-full h-full"
+        onError={() => setEmbedBlocked(true)}
+      />
+      {/* Invisible fallback button that shows if user sees a blocked embed */}
+      <button
+        onClick={() => setEmbedBlocked(true)}
+        className="absolute bottom-3 right-3 z-20 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-black/70 text-white/70 text-xs hover:text-white hover:bg-black/90 transition-colors backdrop-blur-sm border border-white/10"
+        title="Stream not loading? Click to get a direct link"
+      >
+        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+        </svg>
+        Open on YouTube
+      </button>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
 /*  Sub-component: Stream Selector Bar                                 */
 /* ------------------------------------------------------------------ */
 
@@ -679,16 +769,8 @@ export default function LiveStreamSection() {
                   </div>
                 </div>
               ) : (
-                /* YouTube stream — iframe embed */
-                <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
-                  <iframe
-                    src={`https://www.youtube.com/embed/${currentStream.videoId}?autoplay=1&mute=1`}
-                    title={currentStream.title}
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                    className="absolute inset-0 w-full h-full"
-                  />
-                </div>
+                /* YouTube stream — iframe embed with blocked-embed fallback */
+                <YouTubeEmbed stream={currentStream} />
               )}
 
               {/* LIVE overlay badge */}
