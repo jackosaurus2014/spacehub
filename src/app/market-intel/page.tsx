@@ -17,6 +17,7 @@ import DataFreshnessBadge from '@/components/ui/DataFreshnessBadge';
 import { clientLogger } from '@/lib/client-logger';
 import FAQSchema from '@/components/seo/FAQSchema';
 import RelatedModules from '@/components/ui/RelatedModules';
+import SubscribeCTA from '@/components/marketing/SubscribeCTA';
 import { getCompanyProfileUrl } from '@/lib/company-links';
 import { trackTimeOnPage } from '@/lib/analytics';
 
@@ -1369,6 +1370,8 @@ function MarketIntelContent() {
             </div>
           </div>
         </div>
+
+        <SubscribeCTA />
 
         <RelatedModules modules={[
           { name: 'Company Profiles', description: '200+ detailed company pages', href: '/company-profiles', icon: '\u{1F3E2}' },

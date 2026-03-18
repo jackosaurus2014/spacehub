@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import RelatedModules from '@/components/ui/RelatedModules';
+import SubscribeCTA from '@/components/marketing/SubscribeCTA';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import WatchButton from '@/components/watchlist/WatchButton';
 import SaveSearchButton from '@/components/watchlist/SaveSearchButton';
@@ -714,6 +715,8 @@ export default function CompanyProfilesPage() {
       {/* Footer Ad */}
       <div className="mt-8">
         <AdSlot position="footer" module="company-profiles" />
+
+            <SubscribeCTA />
 
             <ScrollReveal>
               <RelatedModules

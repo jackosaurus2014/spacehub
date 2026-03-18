@@ -12843,6 +12843,457 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 <p><a href="/space-economy">Explore the Space Economy on SpaceNexus</a></p>
 `,
   },
+  {
+    slug: 'satellite-propulsion-systems-ion-hall-chemical',
+    title: 'Satellite Propulsion Systems: Ion Drives, Hall Thrusters, and Chemical Engines',
+    excerpt: 'Every satellite needs a way to maneuver in orbit. From traditional chemical rockets to cutting-edge electric propulsion, here\'s how satellite engines work, who builds them, and which technologies are winning.',
+    category: 'technology',
+    author: 'SpaceNexus Team',
+    authorRole: 'Editorial',
+    publishedAt: '2026-03-18T00:00:00Z',
+    readingTime: 8,
+    keywords: ['satellite propulsion', 'ion drive', 'hall thruster', 'electric propulsion', 'satellite engines', 'spacecraft propulsion systems', 'chemical propulsion space'],
+    content: `
+<p>A satellite without propulsion is a satellite at the mercy of orbital mechanics. While some small CubeSats launch with no engines at all, any satellite that needs to <strong>maintain its orbit, avoid debris, change its ground track, or deorbit at end of life</strong> requires a propulsion system. The choice of propulsion technology is one of the most consequential design decisions in spacecraft engineering — it affects mission lifetime, payload capacity, responsiveness, and total cost.</p>
+
+<p>The satellite propulsion market is growing rapidly, projected to exceed <strong>$8 billion annually by 2030</strong> as mega-constellations, in-orbit servicing, and deep-space missions drive demand for more capable and efficient engines.</p>
+
+<h2 id="chemical-propulsion">Chemical Propulsion: The Workhorse</h2>
+
+<p>Chemical propulsion has powered spacecraft since the dawn of the space age. It works by <strong>combusting or decomposing a propellant</strong> to produce hot gas that is expelled through a nozzle, generating thrust via Newton\'s third law. Chemical engines produce high thrust — they can make large orbital changes quickly — but they are relatively inefficient in terms of propellant consumption.</p>
+
+<h3>Monopropellant Systems</h3>
+<p>The simplest chemical thrusters use a single propellant — typically <strong>hydrazine (N2H4)</strong> — that decomposes exothermically when passed over a catalyst. Monopropellant systems are reliable and well-understood, making them the default choice for satellite station-keeping and attitude control for decades. However, hydrazine is extremely toxic, requiring expensive handling procedures on the ground. Newer "green" monopropellants like <strong>AF-M315E (developed by the Air Force Research Lab)</strong> and <strong>LMP-103S (by Bradford ECAPS)</strong> offer comparable performance with significantly reduced toxicity.</p>
+
+<h3>Bipropellant Systems</h3>
+<p>For missions requiring more delta-v, bipropellant engines combine a fuel and oxidizer — commonly <strong>monomethylhydrazine (MMH) and nitrogen tetroxide (NTO)</strong>. These systems deliver higher specific impulse (around 310-320 seconds) than monopropellants (~220 seconds) and are used for large orbit-raising maneuvers, such as transferring a GEO satellite from its initial transfer orbit to its operational slot. Companies like <strong>Aerojet Rocketdyne</strong> and <strong>Northrop Grumman</strong> supply bipropellant systems for large GEO communications satellites.</p>
+
+<h3>Cold Gas Thrusters</h3>
+<p>The simplest propulsion of all: compressed gas (nitrogen, argon, or even water vapor) released through a nozzle. Cold gas systems produce very low thrust but are lightweight, simple, and safe. They are popular for CubeSat attitude control and fine pointing maneuvers. Companies like <strong>VACCO Industries</strong> and <strong>Benchmark Space Systems</strong> supply cold gas systems for the small satellite market.</p>
+
+<h2 id="electric-propulsion">Electric Propulsion: The Efficiency Champion</h2>
+
+<p>Electric propulsion (EP) uses electrical energy — typically from solar panels — to <strong>accelerate propellant to extremely high exhaust velocities</strong>. The result is dramatically better fuel efficiency: where a chemical thruster might achieve a specific impulse of 220-320 seconds, an electric thruster can reach <strong>1,500-5,000+ seconds</strong>. The trade-off is thrust: electric engines produce millinewtons to newtons of force, compared to hundreds or thousands of newtons from chemical engines. This means orbital maneuvers take weeks or months instead of minutes.</p>
+
+<h3>Hall Effect Thrusters (HET)</h3>
+<p>The most widely deployed electric propulsion technology, Hall thrusters use a magnetic field to trap electrons in a circular "Hall current," which ionizes xenon propellant gas. The resulting ions are electrostatically accelerated to exhaust velocities of 15-30 km/s. Hall thrusters deliver <strong>specific impulse of 1,200-3,000 seconds</strong> with moderate thrust levels (40-600 mN), making them ideal for orbit raising, station-keeping, and end-of-life deorbiting.</p>
+
+<p><strong>Starlink\'s krypton-fueled Hall thrusters</strong> are the most mass-produced electric propulsion systems in history, with over 6,000 units flying. Traditional manufacturers include <strong>Safran (PPS-1350)</strong>, <strong>Busek</strong>, <strong>Aerojet Rocketdyne (XR-5)</strong>, and <strong>Fakel (SPT series, Russian)</strong>. The shift from xenon to krypton propellant (pioneered by SpaceX) has reduced costs, though krypton offers slightly lower efficiency.</p>
+
+<h3>Gridded Ion Engines</h3>
+<p>Ion engines use electrostatic grids to accelerate ions to even higher exhaust velocities than Hall thrusters, achieving <strong>specific impulse of 2,000-5,000+ seconds</strong>. NASA\'s <strong>NSTAR</strong> engine powered the Dawn mission to Vesta and Ceres, operating for over 50,000 hours. The European <strong>T6 ion engine</strong> (by QinetiQ) powers the BepiColombo Mercury mission. For commercial applications, <strong>L3Harris</strong> and <strong>Northrop Grumman</strong> supply ion engines for GEO satellite orbit-raising.</p>
+
+<p>The higher efficiency of ion engines comes at the cost of complexity and lower thrust compared to Hall thrusters. They are preferred for deep-space missions and high-delta-v GEO applications where maximizing propellant efficiency justifies the longer maneuver times.</p>
+
+<h3>Electrospray and Colloid Thrusters</h3>
+<p>An emerging technology that accelerates charged liquid droplets or ions using strong electric fields. <strong>Accion Systems (now part of Benchmark Space Systems)</strong> has commercialized electrospray thrusters for CubeSats and small satellites. These systems are extremely compact, have no moving parts, and can be manufactured using MEMS (microelectromechanical systems) fabrication techniques. The trade-off is very low thrust — they are suitable for precision pointing, formation flying, and drag compensation, but not for large orbit changes.</p>
+
+<h2 id="emerging-technologies">Emerging Propulsion Technologies</h2>
+
+<h3>Water-Based Propulsion</h3>
+<p>Several companies are developing propulsion systems that use <strong>water as propellant</strong> — either decomposed into hydrogen and oxygen for chemical combustion, or vaporized for resistojet operation. Water is non-toxic, cheap, and potentially available in space (from asteroid mining or lunar ice). <strong>Momentus</strong> developed a water plasma thruster (Vigoride), and <strong>Tethers Unlimited\'s HYDROS</strong> system electrolyzes water for bipropellant thrust.</p>
+
+<h3>Pulsed Plasma Thrusters (PPT)</h3>
+<p>PPTs ablate a solid propellant (typically Teflon) with an electric arc, creating a plasma that is electromagnetically accelerated. They are simple, reliable, and have heritage dating back to 1964. Modern PPTs from <strong>Mars Space (UK)</strong> and <strong>CU Aerospace</strong> target the growing small satellite market.</p>
+
+<h3>Nuclear Propulsion</h3>
+<p>For deep-space missions, nuclear thermal propulsion (NTP) and nuclear electric propulsion (NEP) offer transformative performance. NASA\'s <strong>DRACO program</strong> (in partnership with DARPA and Lockheed Martin) is developing a nuclear thermal rocket for potential Mars missions, with a target demonstration in the late 2020s. NTP can achieve specific impulse of ~900 seconds — roughly double chemical rockets — dramatically reducing transit times for crewed missions to Mars.</p>
+
+<h2 id="market-landscape">The Propulsion Market Landscape</h2>
+
+<p>The satellite propulsion market is undergoing rapid transformation:</p>
+
+<ul>
+<li><strong>Volume leader:</strong> SpaceX (in-house Hall thrusters for Starlink) produces more satellite thrusters per year than all other manufacturers combined</li>
+<li><strong>Traditional players:</strong> Aerojet Rocketdyne, Safran, Northrop Grumman, and L3Harris dominate high-power systems for large GEO satellites and government missions</li>
+<li><strong>New space innovators:</strong> Busek, Phase Four, Benchmark Space Systems, Orbion Space Technology, and ExoTerra Resources are targeting the small satellite and mega-constellation markets</li>
+<li><strong>Vertical integration trend:</strong> Large satellite manufacturers (Airbus, Thales, Boeing) are increasingly developing propulsion in-house or acquiring propulsion startups</li>
+</ul>
+
+<h2 id="choosing-propulsion">How Operators Choose a Propulsion System</h2>
+
+<p>The selection depends on several mission parameters:</p>
+
+<ul>
+<li><strong>Delta-v budget:</strong> How much total velocity change the mission requires. High delta-v favors electric propulsion</li>
+<li><strong>Time constraints:</strong> If maneuvers must happen quickly (collision avoidance, military responsiveness), chemical propulsion is preferred</li>
+<li><strong>Power availability:</strong> Electric propulsion requires significant electrical power — typically 0.5-20 kW — which constrains options for small satellites with limited solar array area</li>
+<li><strong>Propellant storage:</strong> Mission duration and propellant volume/mass budgets determine how much maneuvering capability is available over the satellite\'s lifetime</li>
+<li><strong>Cost:</strong> For mega-constellations deploying thousands of satellites, propulsion cost per unit is a critical competitive factor</li>
+</ul>
+
+<h2 id="explore-tools">Explore Propulsion Data on SpaceNexus</h2>
+
+<p>SpaceNexus provides detailed specifications, comparison tools, and market analysis for satellite propulsion systems through our <a href="/tools">Engineering Toolkit</a>. Compare thruster types, calculate delta-v budgets, and track propulsion technology developments across the industry.</p>
+
+<p><a href="/tools">Explore Engineering Tools on SpaceNexus</a></p>
+`,
+  },
+  {
+    slug: 'space-weather-forecasting-predicting-solar-storms',
+    title: 'Space Weather Forecasting: Predicting Solar Storms Before They Strike',
+    excerpt: 'Solar storms can disable satellites, disrupt GPS, and trigger geomagnetic storms on Earth. Here\'s how space weather forecasting works, why it matters for the space industry, and how predictions are improving.',
+    category: 'technology',
+    author: 'SpaceNexus Team',
+    authorRole: 'Editorial',
+    publishedAt: '2026-03-18T00:00:00Z',
+    readingTime: 8,
+    keywords: ['space weather forecasting', 'solar storms', 'solar flare prediction', 'geomagnetic storm', 'satellite space weather', 'coronal mass ejection', 'space weather impact'],
+    content: `
+<p>In October 2003, a series of powerful solar storms — dubbed the "Halloween Storms" — caused <strong>$600 million in satellite damages</strong>, knocked out high-frequency radio communications across the planet, forced airline reroutes away from polar regions, and triggered power grid disturbances in Sweden and South Africa. In 2024, the strongest geomagnetic storm in two decades (G5-class) created spectacular aurora visible as far south as Florida and caused GPS accuracy degradation that affected precision agriculture worldwide.</p>
+
+<p>As the space economy grows — with over 10,000 active satellites, expanding mega-constellations, and increasing dependence on GPS and satellite communications — the economic impact of space weather is rising proportionally. The ability to <strong>predict solar storms before they strike</strong> is becoming a critical infrastructure challenge.</p>
+
+<h2 id="what-is-space-weather">What Is Space Weather?</h2>
+
+<p>Space weather refers to conditions in the space environment driven by the Sun\'s activity. The key phenomena include:</p>
+
+<ul>
+<li><strong>Solar flares:</strong> Intense bursts of electromagnetic radiation (X-rays and UV) from the Sun\'s surface. They travel at the speed of light and affect Earth within ~8 minutes</li>
+<li><strong>Coronal Mass Ejections (CMEs):</strong> Massive eruptions of magnetized plasma from the Sun\'s corona. CMEs travel at 300-3,000 km/s and take 1-3 days to reach Earth</li>
+<li><strong>Solar Energetic Particles (SEPs):</strong> High-energy protons and ions accelerated by solar flares and CME shock waves. They arrive within minutes to hours and pose radiation risks</li>
+<li><strong>Solar wind:</strong> The continuous stream of charged particles flowing from the Sun, with periodic high-speed streams that can disturb Earth\'s magnetosphere</li>
+<li><strong>Geomagnetic storms:</strong> Disturbances in Earth\'s magnetic field caused by CME impacts or high-speed solar wind streams</li>
+</ul>
+
+<h2 id="impacts">How Space Weather Affects the Space Industry</h2>
+
+<h3>Satellite Operations</h3>
+<p>Space weather is the <strong>leading cause of satellite anomalies and failures</strong> outside of manufacturing defects. During geomagnetic storms, the upper atmosphere expands and increases drag on LEO satellites, causing unplanned orbital decay. The Starlink constellation lost <strong>38 satellites in a single incident</strong> in February 2022 when a geomagnetic storm increased atmospheric drag during deployment, causing the satellites to reenter before reaching their operational orbit. Solar energetic particles cause single-event upsets in satellite electronics, while surface charging from energetic electrons can trigger electrostatic discharges that damage components.</p>
+
+<h3>GPS and Navigation</h3>
+<p>Geomagnetic storms create irregularities in the ionosphere — the layer of charged particles at 60-1,000 km altitude through which GPS signals travel. These irregularities cause signal scintillation (rapid fluctuations) that can degrade positioning accuracy from meters to tens of meters, or cause complete signal loss. This affects aviation, maritime navigation, precision agriculture, surveying, and autonomous vehicles.</p>
+
+<h3>Communications</h3>
+<p>Solar flares cause immediate ionospheric disturbances that can black out high-frequency (HF) radio communications — still used by aviation over oceans and in polar regions. CME-driven storms disrupt satellite communications by altering signal propagation paths and increasing noise levels.</p>
+
+<h3>Human Spaceflight</h3>
+<p>Astronauts on the ISS or future commercial space stations face <strong>elevated radiation exposure during solar particle events</strong>. During extreme events, crew must shelter in the most shielded parts of the station. For future lunar surface operations (Artemis) and Mars transit missions, space weather forecasting is literally life-critical.</p>
+
+<h3>Power Grids</h3>
+<p>Geomagnetically induced currents (GICs) during severe storms can overwhelm transformers in electrical power grids. The 1989 Quebec blackout — caused by a geomagnetic storm — left 6 million people without power for 9 hours. Modern grid operators now monitor space weather and take protective measures during storm warnings.</p>
+
+<h2 id="how-forecasting-works">How Space Weather Forecasting Works</h2>
+
+<h3>Solar Observation</h3>
+<p>Forecasting begins with monitoring the Sun. NASA\'s <strong>Solar Dynamics Observatory (SDO)</strong> provides continuous high-resolution imaging of the solar disk, tracking sunspot evolution and active regions. <strong>SOHO</strong> (Solar and Heliospheric Observatory) at the L1 Lagrange point monitors CME eruptions with its coronagraph instruments. Ground-based solar observatories like the new <strong>Daniel K. Inouye Solar Telescope (DKIST)</strong> in Hawaii provide unprecedented detail of solar magnetic field structures.</p>
+
+<h3>In-Situ Monitoring</h3>
+<p>NOAA\'s <strong>DSCOVR</strong> satellite at the L1 point (1.5 million km sunward of Earth) measures the solar wind in real time, providing <strong>15-60 minutes of advance warning</strong> before a CME or solar wind enhancement reaches Earth. This is the last line of defense — the "weather station" sitting upstream in the solar wind.</p>
+
+<h3>Modeling and Prediction</h3>
+<p>NOAA\'s Space Weather Prediction Center (SWPC) runs numerical models that simulate CME propagation through the heliosphere. The <strong>WSA-Enlil model</strong> is the primary operational tool, taking coronagraph observations of a CME and predicting its arrival time, speed, and magnetic field orientation at Earth. Accuracy has improved significantly — arrival time predictions are now within <strong>6-12 hours for typical events</strong> — but predicting the magnetic field orientation (which determines storm severity) remains challenging.</p>
+
+<h3>AI and Machine Learning</h3>
+<p>Machine learning is transforming space weather prediction. NASA\'s <strong>DAGGER (Deep Learning Geomagnetic Perturbation)</strong> model can predict geomagnetic disturbances 30 minutes ahead with high accuracy. Companies like <strong>SpaceX</strong> have developed internal models to predict atmospheric drag on Starlink satellites during storms. Academic groups at institutions like the <strong>University of Michigan</strong> and <strong>Imperial College London</strong> are developing AI models that outperform traditional physics-based forecasting for certain event types.</p>
+
+<h2 id="improving-forecasts">The Future of Space Weather Prediction</h2>
+
+<p>Several initiatives are pushing forecasting capability forward:</p>
+
+<ul>
+<li><strong>ESA\'s Vigil mission (2031):</strong> A spacecraft positioned at the L5 Lagrange point that will provide a side-view of CMEs heading toward Earth, dramatically improving arrival time and structure predictions</li>
+<li><strong>GOES-U (now GOES-19):</strong> The latest geostationary weather satellite includes a new compact coronagraph instrument for real-time CME detection</li>
+<li><strong>Heliophysics Big Year:</strong> NASA\'s coordinated observation campaign during the current Solar Cycle 25 maximum, leveraging multiple spacecraft for unprecedented multi-point solar observation</li>
+<li><strong>Commercial space weather services:</strong> Companies are emerging to provide tailored forecasts for satellite operators, airlines, and power grid operators, translating raw data into actionable operational guidance</li>
+</ul>
+
+<h2 id="economic-value">The Economic Value of Better Forecasting</h2>
+
+<p>A 2017 study by the American Meteorological Society estimated that a single extreme space weather event could cause <strong>$1-2 trillion in economic damage</strong> in the first year alone. Even routine storm-level events cause tens of millions in operational impacts across the satellite, aviation, and power sectors. Improving forecast lead time from hours to days — and forecast accuracy from 50% to 80%+ — has enormous economic value.</p>
+
+<p>The space insurance industry is particularly invested in better forecasting. Solar storms are a <strong>systemic risk</strong> — unlike a launch failure that affects one satellite, a severe storm can damage dozens of satellites simultaneously, creating correlated losses across an insurance portfolio.</p>
+
+<h2 id="monitor-space-weather">Monitor Space Weather on SpaceNexus</h2>
+
+<p>SpaceNexus integrates real-time space weather data from NOAA, NASA, and ESA through our <a href="/space-weather">Space Weather</a> module. Monitor solar activity, geomagnetic storm forecasts, and radiation belt conditions — with alerts when conditions exceed thresholds that could affect satellite operations.</p>
+
+<p><a href="/space-weather">Explore Space Weather on SpaceNexus</a></p>
+`,
+  },
+  {
+    slug: 'business-rocket-engines-who-makes-how-work',
+    title: 'The Business of Rocket Engines: Who Makes Them and How They Work',
+    excerpt: 'Rocket engines are the heart of the launch industry. From SpaceX\'s Raptor to Blue Origin\'s BE-4, here\'s who builds the world\'s rocket engines, how they work, and the business dynamics shaping the market.',
+    category: 'analysis',
+    author: 'SpaceNexus Team',
+    authorRole: 'Editorial',
+    publishedAt: '2026-03-18T00:00:00Z',
+    readingTime: 8,
+    keywords: ['rocket engines', 'raptor engine', 'BE-4 engine', 'merlin engine', 'rocket propulsion business', 'launch vehicle engines', 'rocket engine manufacturers'],
+    content: `
+<p>If launch vehicles are the trucks of the space economy, rocket engines are their powertrains — and like the automotive industry, <strong>who controls engine technology controls the competitive landscape</strong>. The rocket engine market is one of the most technically demanding and strategically important segments of the space industry, with a handful of companies controlling the technology that makes spaceflight possible.</p>
+
+<p>The global rocket engine market is valued at approximately <strong>$8-10 billion annually</strong>, encompassing development, production, testing, and aftermarket services. But the market\'s importance far exceeds its direct revenue — every dollar of launch services, satellite deployment, and human spaceflight depends on reliable, performant engines.</p>
+
+<h2 id="how-rocket-engines-work">How Rocket Engines Work: A Quick Primer</h2>
+
+<p>All chemical rocket engines work on the same basic principle: <strong>combust propellants to produce high-temperature, high-pressure gas, then expand that gas through a nozzle to generate thrust</strong>. The key engineering variables are:</p>
+
+<ul>
+<li><strong>Specific impulse (Isp):</strong> A measure of fuel efficiency — how much thrust per unit of propellant consumed. Higher is better. Measured in seconds</li>
+<li><strong>Thrust:</strong> The raw force output, measured in kilonewtons (kN) or pounds-force (lbf). First-stage engines need high thrust; upper-stage engines prioritize efficiency</li>
+<li><strong>Propellant combination:</strong> The choice of fuel and oxidizer determines performance, complexity, and operational characteristics</li>
+<li><strong>Engine cycle:</strong> How propellants are fed to the combustion chamber — gas generator, staged combustion, full-flow staged combustion, or expander cycle</li>
+</ul>
+
+<h2 id="major-players">The Major Rocket Engine Manufacturers</h2>
+
+<h3>SpaceX — Vertical Integration King</h3>
+<p>SpaceX builds all its engines in-house, a vertically integrated approach that gives the company complete control over its supply chain, costs, and development timeline.</p>
+
+<ul>
+<li><strong>Merlin 1D:</strong> The kerosene-LOX (RP-1/LOX) gas-generator engine powering Falcon 9. Nine Merlin engines on the first stage produce ~7,600 kN combined thrust. Merlin has become the most frequently flown rocket engine in history, with a reliability record exceeding 99.8% across thousands of engine-flights</li>
+<li><strong>Raptor:</strong> The full-flow staged combustion methalox (CH4/LOX) engine powering Starship. Raptor is arguably the most advanced rocket engine ever built — it\'s the first operational FFSC engine, operating at extreme chamber pressures (~300 bar). Each Starship Super Heavy booster uses 33 Raptor engines. SpaceX is producing Raptors at a rate of one engine per day, targeting costs under $1 million per engine</li>
+<li><strong>Draco/SuperDraco:</strong> Hypergolic thrusters for Crew Dragon spacecraft maneuvering and abort capability</li>
+</ul>
+
+<h3>Blue Origin — The BE Engine Family</h3>
+<p>Blue Origin\'s engine division is a significant business in its own right, supplying engines both to Blue Origin vehicles and external customers.</p>
+
+<ul>
+<li><strong>BE-3:</strong> A liquid hydrogen/LOX engine powering the New Shepard suborbital vehicle. Throttleable and restartable, optimized for vertical landing</li>
+<li><strong>BE-4:</strong> An oxygen-rich staged combustion methalox engine producing ~2,400 kN thrust. BE-4 powers both Blue Origin\'s New Glenn rocket and ULA\'s Vulcan Centaur — making it one of the few modern engines sold to external customers. The engine\'s development took longer than expected but successfully debuted on Vulcan\'s maiden flight</li>
+<li><strong>BE-7:</strong> A hydrogen/LOX engine designed for the Blue Moon lunar lander, optimized for deep-throttling capability needed for precision lunar landing</li>
+</ul>
+
+<h3>Aerojet Rocketdyne (now part of L3Harris)</h3>
+<p>The largest pure-play rocket engine company in the United States, with heritage dating back to the Apollo program.</p>
+
+<ul>
+<li><strong>RS-25:</strong> The Space Shuttle Main Engine, now powering NASA\'s SLS core stage. Each SLS uses four RS-25s. Currently being adapted for expendable use (RS-25E) with cost reductions</li>
+<li><strong>RL10:</strong> One of the most reliable upper-stage engines ever built, powering Centaur stages on Atlas V and Vulcan. Over 500 flights across six decades</li>
+<li><strong>AR1:</strong> An oxygen-rich staged combustion kerosene engine that was developed as a domestic alternative to the Russian RD-180, though its future is uncertain with Vulcan\'s adoption of BE-4</li>
+</ul>
+
+<h3>Rocket Lab — Rutherford and Archimedes</h3>
+<ul>
+<li><strong>Rutherford:</strong> The first flight-qualified engine to use electric pump feeds (instead of turbopumps), powering the Electron small launch vehicle. 3D-printed and produced at high volume. Over 350 engines flown successfully</li>
+<li><strong>Archimedes:</strong> A gas-generator cycle LOX/methane engine under development for the Neutron medium-lift vehicle. Designed for reusability and cost-effective production</li>
+</ul>
+
+<h3>European Manufacturers</h3>
+<ul>
+<li><strong>ArianeGroup (Safran/Airbus joint venture):</strong> Builds the Vulcain 2.1 (hydrogen/LOX) and Vinci upper-stage engines for Ariane 6, plus the Prometheus reusable methalox engine under development</li>
+<li><strong>Avio:</strong> Produces the P120C solid rocket boosters for Ariane 6 and the Zefiro motors for the Vega-C rocket</li>
+</ul>
+
+<h3>Russian Legacy Engines</h3>
+<ul>
+<li><strong>NPO Energomash:</strong> Producer of the legendary RD-180 (Atlas V first stage) and RD-170/171 family. The RD-180 was considered the best kerosene engine in the world for decades, but geopolitical sanctions have effectively ended Western purchases</li>
+<li><strong>KBKhA:</strong> Manufacturer of the RD-0124 and other upper-stage engines for Soyuz and Angara rockets</li>
+</ul>
+
+<h2 id="business-dynamics">Business Dynamics of Rocket Engines</h2>
+
+<h3>Make vs. Buy</h3>
+<p>The industry is split between companies that build engines for their own vehicles (SpaceX, Rocket Lab) and those that sell to external customers (Blue Origin selling BE-4 to ULA, Aerojet Rocketdyne selling RL10). <strong>The trend is toward vertical integration</strong> — companies that control their engine supply chain can iterate faster, reduce costs, and avoid dependency on external suppliers. SpaceX\'s ability to rapidly iterate Raptor designs is a direct consequence of building engines in-house.</p>
+
+<h3>The Methane Revolution</h3>
+<p>A clear industry shift is underway from kerosene (RP-1) and hydrogen to <strong>methane (CH4) as the preferred fuel</strong>. Raptor, BE-4, Archimedes, Prometheus, and China\'s Tianque engines all use methane. The advantages: methane is cleaner-burning (enabling reuse without extensive refurbishment), has good performance, is widely available, and can theoretically be produced on Mars from atmospheric CO2 — a key factor in SpaceX\'s long-term vision.</p>
+
+<h3>Reusability Changes the Equation</h3>
+<p>When engines are expendable, total production volume is the key cost driver. When engines are reused, <strong>lifetime and maintenance costs become critical</strong>. SpaceX\'s Merlin engines have demonstrated 20+ flights per engine. Raptor is designed for 100+ reuses. This shifts the economic optimization from minimizing production cost to maximizing total impulse delivered per engine across its lifetime.</p>
+
+<h3>Production Scale</h3>
+<p>SpaceX produces more rocket engines annually than the rest of the world combined — over 500 Raptor engines per year at current production rates. This scale provides learning-curve cost reductions and supply chain leverage that smaller producers cannot match. For new entrants, achieving competitive engine costs requires either comparable production scale or fundamentally different manufacturing approaches (like Rocket Lab\'s 3D-printed Rutherford).</p>
+
+<h2 id="future-outlook">Future Outlook</h2>
+
+<p>The rocket engine market is evolving rapidly:</p>
+
+<ul>
+<li><strong>3D printing:</strong> Additive manufacturing is revolutionizing engine production, reducing part counts by 80%+ and enabling geometries impossible with traditional machining. Relativity Space, Ursa Major, and Launcher have all bet on 3D-printed engines</li>
+<li><strong>Detonation engines:</strong> Rotating detonation engines (RDEs) promise 10-15% efficiency improvements over conventional combustion. DARPA and several startups are pursuing this technology</li>
+<li><strong>Nuclear thermal:</strong> DARPA\'s DRACO program is developing a nuclear thermal engine with Lockheed Martin, targeting 2028 demonstration</li>
+<li><strong>Standardized engines:</strong> Ursa Major\'s business model is to be the "engine supplier to the industry" — selling standardized modular engines that multiple vehicle manufacturers can integrate</li>
+</ul>
+
+<h2 id="track-engines">Track Launch Vehicles on SpaceNexus</h2>
+
+<p>SpaceNexus provides detailed specifications, performance data, and market analysis for rocket engines and launch vehicles through our <a href="/launch-vehicles">Launch Vehicles</a> module. Compare engine specifications, track development programs, and analyze the competitive dynamics of the propulsion market.</p>
+
+<p><a href="/launch-vehicles">Explore Launch Vehicles on SpaceNexus</a></p>
+`,
+  },
+  {
+    slug: 'spacenexus-guide-how-use-satellite-tracker',
+    title: 'SpaceNexus Guide: How to Use the Satellite Tracker',
+    excerpt: 'A step-by-step walkthrough of the SpaceNexus Satellite Tracker — from filtering by orbit type and operator to monitoring the ISS in real time and exporting data for your own analysis.',
+    category: 'guide',
+    author: 'SpaceNexus Team',
+    authorRole: 'Editorial',
+    publishedAt: '2026-03-18T00:00:00Z',
+    readingTime: 6,
+    keywords: ['spacenexus satellite tracker guide', 'how to track satellites', 'satellite tracker tutorial', 'satellite monitoring tool', 'space situational awareness', 'satellite database'],
+    content: `
+<p>The <a href="/satellites">SpaceNexus Satellite Tracker</a> gives you a comprehensive view of the orbital environment — from the International Space Station to the latest Starlink deployment. Whether you\'re a satellite operator monitoring your fleet, a journalist researching a story, a student learning about orbital mechanics, or an analyst tracking constellation growth, this guide will help you get the most out of the tool.</p>
+
+<h2 id="getting-started">Getting Started: The Overview Tab</h2>
+
+<p>When you first open the Satellite Tracker, you\'ll see the <strong>Overview tab</strong> — a high-level snapshot of the orbital environment:</p>
+
+<ul>
+<li><strong>Quick Stats Banner:</strong> Total tracked satellites, active count, and breakdown by orbit type (LEO, MEO, GEO) at a glance</li>
+<li><strong>ISS Highlight Card:</strong> Real-time position, altitude, velocity, and orbital period of the International Space Station. The "Track Live on N2YO" and "Spot the Station" links let you follow the ISS in your sky</li>
+<li><strong>Distribution Charts:</strong> Visual breakdowns by orbit type and by purpose (Communications, Navigation, Earth Observation, etc.) showing what share of the orbital population each category represents</li>
+<li><strong>Notable Satellites:</strong> Curated highlights of significant spacecraft — flagship missions, recently launched satellites, and noteworthy objects</li>
+</ul>
+
+<p>The Overview tab is designed to give you <strong>situational awareness in 30 seconds</strong> — the current state of the orbital environment without needing to dig into individual records.</p>
+
+<h2 id="browsing-satellites">Browsing All Satellites</h2>
+
+<p>Switch to the <strong>All Satellites tab</strong> to explore the full catalog. Here you have powerful filtering tools:</p>
+
+<ul>
+<li><strong>Search:</strong> Type any satellite name, NORAD ID, or operator name to find specific satellites. Searching "Starlink" shows all Starlink satellites; searching "25544" finds the ISS by its NORAD catalog number</li>
+<li><strong>Orbit Filter:</strong> Narrow results to a specific orbit type — LEO, MEO, GEO, HEO, SSO, or Polar. Useful when you want to see only geostationary communications satellites or only low-Earth-orbit imaging spacecraft</li>
+<li><strong>Status Filter:</strong> Show only Active, Inactive, or Deorbited satellites. Filter to "Active" for operational spacecraft, or "Deorbited" to see historical entries</li>
+</ul>
+
+<p>Results display as <strong>satellite cards</strong> showing the name, operator, orbit type, altitude, inclination, and purpose for each satellite. The clear-filters button resets everything back to the full catalog view.</p>
+
+<h2 id="operators">Analyzing by Operator</h2>
+
+<p>The <strong>By Operator tab</strong> ranks satellite operators by fleet size, showing the percentage of the total tracked population each operator controls. This view answers questions like:</p>
+
+<ul>
+<li>How many satellites does SpaceX operate compared to Planet Labs?</li>
+<li>What share of tracked objects belong to military operators?</li>
+<li>Which operators are growing their constellations fastest?</li>
+</ul>
+
+<p>For deeper fleet analysis, the tab links to the <strong>Orbital Slots</strong> page, which provides detailed operator fleet compositions, growth projections, and orbital distribution data.</p>
+
+<h2 id="use-cases">Common Use Cases</h2>
+
+<h3>For Satellite Operators</h3>
+<p>Monitor your fleet\'s orbital status alongside competitors. Use orbit and operator filters to create a focused view of your constellation and neighboring objects. The Related Tools section links to Space Weather data for monitoring conditions that could affect your satellites.</p>
+
+<h3>For Analysts and Researchers</h3>
+<p>Use the purpose and orbit breakdowns to understand how the orbital population is distributed. Track the growth of mega-constellations over time. The data sources section lists our upstream providers (CelesTrak, Space-Track.org, UCS Database, NASA catalogs) for cross-referencing.</p>
+
+<h3>For Students and Enthusiasts</h3>
+<p>Start with the ISS Highlight Card — it\'s the most tangible connection to space. Use the "Spot the Station" link to find when the ISS passes over your location. Browse Notable Satellites to learn about significant spacecraft and their missions.</p>
+
+<h2 id="tips-tricks">Tips and Tricks</h2>
+
+<ul>
+<li><strong>Bookmark filtered views:</strong> Filter settings are saved in the URL, so you can bookmark a specific filtered view (e.g., all GEO communications satellites) and return to it later</li>
+<li><strong>Pull to refresh:</strong> On mobile, pull down on the page to refresh satellite data to the latest available positions</li>
+<li><strong>Data freshness badge:</strong> The badge in the page header shows when data was last updated and allows manual refresh. Satellite orbital data updates every 6 hours from CelesTrak</li>
+<li><strong>Related reading:</strong> The bottom of the page links to in-depth articles about satellite tracking, Starlink, and mega-constellations for deeper context</li>
+</ul>
+
+<h2 id="whats-next">What\'s Next</h2>
+
+<p>We\'re continuously improving the Satellite Tracker. Upcoming features include 3D orbital visualization, conjunction alerts, pass prediction for your location, and historical orbit data. <a href="/register">Create a free account</a> to get notified when new capabilities launch.</p>
+
+<p><a href="/satellites">Open the Satellite Tracker</a></p>
+`,
+  },
+  {
+    slug: 'spacenexus-guide-how-use-market-intelligence',
+    title: 'SpaceNexus Guide: How to Use Market Intelligence',
+    excerpt: 'A complete walkthrough of the SpaceNexus Market Intelligence module — tracking space stocks, ETFs, funding rounds, and industry trends to stay ahead of market movements.',
+    category: 'guide',
+    author: 'SpaceNexus Team',
+    authorRole: 'Editorial',
+    publishedAt: '2026-03-18T00:00:00Z',
+    readingTime: 6,
+    keywords: ['spacenexus market intelligence guide', 'space stocks tracker', 'space ETF monitor', 'space industry market data', 'space investment tracking', 'space market analysis tool'],
+    content: `
+<p>The <a href="/market-intel">SpaceNexus Market Intelligence</a> module is your dashboard for the financial side of the space economy — tracking public company stock performance, ETF movements, private funding rounds, and market trends in one unified view. Whether you\'re an investor evaluating space stocks, an analyst writing a market report, or a company executive benchmarking against peers, this guide will help you extract maximum value.</p>
+
+<h2 id="market-overview">The Market Overview</h2>
+
+<p>When you open Market Intelligence, the top of the page presents <strong>key market metrics</strong>:</p>
+
+<ul>
+<li><strong>Total companies tracked:</strong> The number of space companies in our database with financial data</li>
+<li><strong>Combined market cap:</strong> The aggregate market capitalization of publicly traded space companies we track</li>
+<li><strong>Top movers:</strong> Companies with the largest stock price changes (positive and negative) in the current trading session</li>
+<li><strong>Funding activity:</strong> Recent private funding rounds, with total capital raised</li>
+</ul>
+
+<p>This snapshot gives you the <strong>pulse of the space market in seconds</strong> — are space stocks up or down? Who raised money this week? Which company is making headlines?</p>
+
+<h2 id="company-tracking">Tracking Space Companies</h2>
+
+<p>The main section displays <strong>company cards</strong> with real-time data for each tracked company:</p>
+
+<ul>
+<li><strong>Stock price and change:</strong> Current price, daily change, and percentage move for publicly traded companies</li>
+<li><strong>Mini chart:</strong> A 30-day price sparkline showing recent trend direction at a glance</li>
+<li><strong>Market cap:</strong> Current market capitalization for public companies; last known valuation for private companies</li>
+<li><strong>Focus areas:</strong> Technology and market tags showing what each company does (launch, satellites, Earth observation, etc.)</li>
+<li><strong>Country flag:</strong> Headquarters location for geographic analysis</li>
+</ul>
+
+<h3>Filtering and Search</h3>
+<p>Use the filter controls to narrow the company list:</p>
+
+<ul>
+<li><strong>Focus Area filter:</strong> Show only companies in specific segments — Launch, Satellite Manufacturing, Earth Observation, Communications, Analytics, or other categories</li>
+<li><strong>Country filter:</strong> Show companies from specific countries to analyze regional market dynamics</li>
+<li><strong>Search:</strong> Type any company name or ticker symbol to find it instantly</li>
+<li><strong>Sort:</strong> Order by market cap, daily change, or alphabetically to see rankings from different angles</li>
+</ul>
+
+<h2 id="etf-tracking">Space ETF Tracking</h2>
+
+<p>The ETF section tracks the major space-focused exchange-traded funds:</p>
+
+<ul>
+<li><strong>UFO (Procure Space ETF):</strong> The first pure-play space ETF, tracking the S-Network Space Index</li>
+<li><strong>ARKX (ARK Space Exploration & Innovation ETF):</strong> Cathie Wood\'s space-focused fund with a broader technology mandate</li>
+<li><strong>ROKT (SPDR Kensho Final Frontiers ETF):</strong> Tracks companies involved in space and deep sea exploration</li>
+<li><strong>ITA and XAR:</strong> Aerospace and defense ETFs with significant space exposure</li>
+</ul>
+
+<p>For each ETF, you\'ll see the current price, daily change, and performance metrics. ETFs are useful for gauging overall sector sentiment — if all space ETFs are down, it\'s likely a sector-wide move rather than company-specific news.</p>
+
+<h2 id="funding-rounds">Private Funding Rounds</h2>
+
+<p>Not all space companies are public. The funding section tracks <strong>recent private capital raises</strong> — Series A through late-stage rounds, debt financing, and SPAC activity. Each entry shows:</p>
+
+<ul>
+<li>Company name and description</li>
+<li>Round size and type (Series A, B, C, etc.)</li>
+<li>Key investors</li>
+<li>Post-money valuation (when disclosed)</li>
+</ul>
+
+<p>This data helps you spot emerging companies before they go public and understand where venture capital is flowing within the space sector.</p>
+
+<h2 id="use-cases">Common Use Cases</h2>
+
+<h3>For Investors</h3>
+<p>Start each day with the Market Overview to see overnight moves. Use focus area filters to analyze specific segments (e.g., "which Earth observation companies are trading at attractive valuations?"). Click through to Company Profiles for deeper fundamental analysis including revenue trends, contract backlogs, and competitive positioning.</p>
+
+<h3>For Analysts</h3>
+<p>Use the combined market cap metric and ETF performance to write market commentary. Filter by country to analyze geographic distribution of the space economy. Track funding rounds to identify trends in private capital allocation.</p>
+
+<h3>For Executives</h3>
+<p>Benchmark your company\'s market performance against peers using the focus area filter. Monitor competitor funding rounds and valuations. Track ETF compositions to understand how the market categorizes and values space companies.</p>
+
+<h2 id="tips">Tips for Power Users</h2>
+
+<ul>
+<li><strong>Check after earnings:</strong> Space companies report quarterly earnings on different schedules — bookmark Market Intelligence and check after major earnings announcements for immediate market reaction data</li>
+<li><strong>Cross-reference with news:</strong> Unusual price moves often correlate with news events. Use SpaceNexus News alongside Market Intelligence to connect price action with catalysts</li>
+<li><strong>Watch the funding pipeline:</strong> A surge in private funding rounds often precedes IPO activity 12-18 months later</li>
+<li><strong>Related modules:</strong> Link to Space Capital for deeper investment analysis, Funding Tracker for historical round data, and Company Profiles for fundamental research</li>
+</ul>
+
+<h2 id="get-started">Start Tracking the Space Market</h2>
+
+<p>The Market Intelligence module is available on all SpaceNexus plans, with additional analytics and export capabilities on Pro and Enterprise tiers. <a href="/market-intel">Open Market Intelligence now</a> to see what the space market is doing today.</p>
+
+<p><a href="/market-intel">Explore Market Intelligence on SpaceNexus</a></p>
+`,
+  },
 ];
 
 export function getBlogPost(slug: string): OriginalBlogPost | undefined {

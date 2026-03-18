@@ -114,6 +114,11 @@ const BLOG_CTA_MAP: Record<string, { tool: string; path: string }> = {
   'why-space-companies-moving-texas': { tool: 'Houston Space Hub', path: '/space-industry/houston' },
   'satellite-imagery-explained-see-earth-space': { tool: 'Satellite Tracker', path: '/satellites' },
   'space-economy-2030-trillion-dollar-industry': { tool: 'Space Economy', path: '/space-economy' },
+  'satellite-propulsion-systems-ion-hall-chemical': { tool: 'Engineering Toolkit', path: '/tools' },
+  'space-weather-forecasting-predicting-solar-storms': { tool: 'Space Weather', path: '/space-weather' },
+  'business-rocket-engines-who-makes-how-work': { tool: 'Launch Vehicles', path: '/launch-vehicles' },
+  'spacenexus-guide-how-use-satellite-tracker': { tool: 'Satellite Tracker', path: '/satellites' },
+  'spacenexus-guide-how-use-market-intelligence': { tool: 'Market Intelligence', path: '/market-intel' },
 };
 
 type Props = {

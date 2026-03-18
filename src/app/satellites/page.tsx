@@ -18,6 +18,7 @@ import EmptyState from '@/components/ui/EmptyState';
 import { clientLogger } from '@/lib/client-logger';
 import FAQSchema from '@/components/seo/FAQSchema';
 import RelatedModules from '@/components/ui/RelatedModules';
+import SubscribeCTA from '@/components/marketing/SubscribeCTA';
 
 // Types
 interface SatelliteData {
@@ -677,6 +678,8 @@ function SatelliteTrackerContent() {
           </div>
         </div>
         </ScrollReveal>
+
+        <SubscribeCTA />
 
         <RelatedModules modules={[
           { name: 'Space Environment', description: 'Debris tracking and space weather', href: '/space-environment', icon: '\u{1F321}\u{FE0F}' },
