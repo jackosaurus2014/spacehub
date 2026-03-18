@@ -3,6 +3,7 @@ import ScrollReveal from '@/components/ui/ScrollReveal';
 import { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { getRelatedModules } from '@/lib/module-relationships';
+import PersonalizedWelcome from '@/components/onboarding/PersonalizedWelcome';
 
 const QUICK_START_STEPS = [
   {
@@ -209,6 +210,9 @@ export default function GettingStartedPage() {
           </ScrollReveal>
         </div>
       </section>
+
+      {/* Personalized role-based recommendations (client component, reads localStorage) */}
+      <PersonalizedWelcome />
 
       {/* 3-Step Quick Start */}
       <section className="py-12 md:py-16">

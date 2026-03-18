@@ -133,8 +133,22 @@ function LoginContent() {
         setError(result.error);
         toast.error('Invalid email or password');
       } else {
-        toast.success('Welcome back!');
-        router.push('/dashboard');
+        // Detect first login and redirect new users to onboarding
+        let isFirstLogin = false;
+        try {
+          isFirstLogin = localStorage.getItem('spacenexus-first-login') === 'true';
+          if (isFirstLogin) {
+            localStorage.removeItem('spacenexus-first-login');
+          }
+        } catch { /* localStorage not available */ }
+
+        if (isFirstLogin) {
+          toast.success('Welcome to SpaceNexus! Let\u2019s get you started.');
+          router.push('/getting-started');
+        } else {
+          toast.success('Welcome back!');
+          router.push('/dashboard');
+        }
         router.refresh();
       }
     } catch {

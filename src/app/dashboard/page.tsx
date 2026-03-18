@@ -38,6 +38,107 @@ import ReferralWidget from '@/components/ReferralWidget';
 import NewsTicker from '@/components/NewsTicker';
 import { useSubscription } from '@/components/SubscriptionProvider';
 
+/* ------------------------------------------------------------------ */
+/*  Quick Action items for the 6-button grid                          */
+/* ------------------------------------------------------------------ */
+
+const QUICK_ACTION_ITEMS = [
+  {
+    label: 'Track a Launch',
+    href: '/mission-control',
+    color: 'from-emerald-500/20 to-teal-500/20 border-emerald-500/30 hover:border-emerald-400/50',
+    icon: (
+      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M15.59 14.37a6 6 0 01-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 006.16-12.12A14.98 14.98 0 009.631 8.41m5.96 5.96a14.926 14.926 0 01-5.841 2.58m-.119-8.54a6 6 0 00-7.381 5.84h4.8m2.58-5.84a14.927 14.927 0 00-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 01-2.448-2.448 14.9 14.9 0 01.06-.312m-2.24 2.39a4.493 4.493 0 00-1.757 4.306 4.493 4.493 0 004.306-1.758M16.5 9a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z" />
+      </svg>
+    ),
+  },
+  {
+    label: 'Check Space Weather',
+    href: '/space-weather',
+    color: 'from-amber-500/20 to-yellow-500/20 border-amber-500/30 hover:border-amber-400/50',
+    icon: (
+      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />
+      </svg>
+    ),
+  },
+  {
+    label: 'Read Latest News',
+    href: '/news',
+    color: 'from-blue-500/20 to-indigo-500/20 border-blue-500/30 hover:border-blue-400/50',
+    icon: (
+      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 7.5h1.5m-1.5 3h1.5m-7.5 3h7.5m-7.5 3h7.5m3-9h3.375c.621 0 1.125.504 1.125 1.125V18a2.25 2.25 0 01-2.25 2.25M16.5 7.5V18a2.25 2.25 0 002.25 2.25M16.5 7.5V4.875c0-.621-.504-1.125-1.125-1.125H4.125C3.504 3.75 3 4.254 3 4.875V18a2.25 2.25 0 002.25 2.25h13.5M6 7.5h3v3H6v-3z" />
+      </svg>
+    ),
+  },
+  {
+    label: 'Browse Companies',
+    href: '/company-profiles',
+    color: 'from-purple-500/20 to-pink-500/20 border-purple-500/30 hover:border-purple-400/50',
+    icon: (
+      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21" />
+      </svg>
+    ),
+  },
+  {
+    label: 'View Satellites',
+    href: '/satellites',
+    color: 'from-cyan-500/20 to-sky-500/20 border-cyan-500/30 hover:border-cyan-400/50',
+    icon: (
+      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 3.75H6A2.25 2.25 0 003.75 6v1.5M16.5 3.75H18A2.25 2.25 0 0120.25 6v1.5m0 9V18A2.25 2.25 0 0118 20.25h-1.5m-9 0H6A2.25 2.25 0 013.75 18v-1.5M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+      </svg>
+    ),
+  },
+  {
+    label: 'Market Intel',
+    href: '/market-intel',
+    color: 'from-orange-500/20 to-red-500/20 border-orange-500/30 hover:border-orange-400/50',
+    icon: (
+      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
+      </svg>
+    ),
+  },
+];
+
+/* ------------------------------------------------------------------ */
+/*  Pulse data types (mirrors /api/pulse response)                    */
+/* ------------------------------------------------------------------ */
+
+interface PulseData {
+  latestNews: {
+    title: string;
+    source: string;
+    url: string;
+    publishedAt: string;
+  } | null;
+  nextLaunch: {
+    name: string;
+    date: string;
+    agency: string | null;
+    location: string | null;
+    status: string | null;
+  } | null;
+  spaceWeather: {
+    alertCount: number;
+    severity: 'quiet' | 'minor' | 'moderate' | 'severe';
+    summary: string;
+  };
+  activeSatellites: number;
+  generatedAt: string;
+}
+
+/* ------------------------------------------------------------------ */
+/*  New-user welcome state detection key                              */
+/* ------------------------------------------------------------------ */
+
+const WELCOME_DISMISSED_KEY = 'spacenexus-welcome-dismissed';
+const USER_INTERACTED_KEY = 'spacenexus-recently-viewed';
+
 /** Returns a time-of-day greeting with the user's name */
 function getTimeGreeting(name: string): string {
   const hour = new Date().getHours();
@@ -317,6 +418,334 @@ function TrialExpirationWarning() {
   );
 }
 
+/* ------------------------------------------------------------------ */
+/*  Space Industry Snapshot -- fetches live data from /api/pulse       */
+/* ------------------------------------------------------------------ */
+
+function SpaceIndustrySnapshot() {
+  const [pulse, setPulse] = useState<PulseData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [countdown, setCountdown] = useState('');
+
+  useEffect(() => {
+    const controller = new AbortController();
+    async function fetchPulse() {
+      try {
+        const res = await fetch('/api/pulse', { signal: controller.signal });
+        if (!res.ok) throw new Error('Pulse fetch failed');
+        const json = await res.json();
+        if (json.success && json.data) {
+          setPulse(json.data);
+        }
+      } catch (err) {
+        if (err instanceof DOMException && err.name === 'AbortError') return;
+      } finally {
+        if (!controller.signal.aborted) setLoading(false);
+      }
+    }
+    fetchPulse();
+    return () => controller.abort();
+  }, []);
+
+  // Live countdown timer
+  useEffect(() => {
+    if (!pulse?.nextLaunch?.date) return;
+    function tick() {
+      const target = new Date(pulse!.nextLaunch!.date).getTime();
+      const now = Date.now();
+      const diff = target - now;
+      if (diff <= 0) {
+        setCountdown('Launching now!');
+        return;
+      }
+      const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const h = Math.floor((diff / (1000 * 60 * 60)) % 24);
+      const m = Math.floor((diff / (1000 * 60)) % 60);
+      const s = Math.floor((diff / 1000) % 60);
+      if (d > 0) {
+        setCountdown(`${d}d ${h}h ${m}m`);
+      } else {
+        setCountdown(`${h}h ${m}m ${s}s`);
+      }
+    }
+    tick();
+    const interval = setInterval(tick, 1000);
+    return () => clearInterval(interval);
+  }, [pulse?.nextLaunch?.date]);
+
+  const severityColor: Record<string, string> = {
+    quiet: 'text-emerald-400',
+    minor: 'text-yellow-400',
+    moderate: 'text-orange-400',
+    severe: 'text-red-400',
+  };
+
+  const severityBg: Record<string, string> = {
+    quiet: 'bg-emerald-500/10',
+    minor: 'bg-yellow-500/10',
+    moderate: 'bg-orange-500/10',
+    severe: 'bg-red-500/10',
+  };
+
+  if (loading) {
+    return (
+      <div className="card p-5 mb-8 animate-pulse">
+        <div className="h-4 w-48 bg-white/[0.08] rounded mb-4" />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="h-16 bg-white/[0.06] rounded-lg" />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (!pulse) return null;
+
+  return (
+    <div className="card p-5 mb-8 border border-white/[0.08] bg-gradient-to-br from-white/[0.04] to-indigo-500/[0.04]">
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-sm font-semibold text-slate-300 flex items-center gap-2">
+          <svg className="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
+          </svg>
+          Space Industry Snapshot
+          <span className="relative flex h-2 w-2">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400" />
+          </span>
+        </h2>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+        {/* Latest Headline */}
+        <div className="rounded-lg bg-white/[0.04] border border-white/[0.06] p-3">
+          <div className="flex items-center gap-1.5 mb-2">
+            <svg className="w-3.5 h-3.5 text-blue-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 7.5h1.5m-1.5 3h1.5m-7.5 3h7.5m-7.5 3h7.5m3-9h3.375c.621 0 1.125.504 1.125 1.125V18a2.25 2.25 0 01-2.25 2.25M16.5 7.5V18a2.25 2.25 0 002.25 2.25M16.5 7.5V4.875c0-.621-.504-1.125-1.125-1.125H4.125C3.504 3.75 3 4.254 3 4.875V18a2.25 2.25 0 002.25 2.25h13.5M6 7.5h3v3H6v-3z" />
+            </svg>
+            <span className="text-[10px] text-slate-500 uppercase tracking-wider font-medium">Latest Headline</span>
+          </div>
+          {pulse.latestNews ? (
+            <Link href={pulse.latestNews.url || '/news'} className="block group">
+              <p className="text-xs text-slate-300 group-hover:text-white transition-colors line-clamp-2 leading-relaxed">
+                {pulse.latestNews.title}
+              </p>
+              <p className="text-[10px] text-slate-500 mt-1">{pulse.latestNews.source}</p>
+            </Link>
+          ) : (
+            <p className="text-xs text-slate-500">No recent headlines</p>
+          )}
+        </div>
+
+        {/* Next Launch */}
+        <div className="rounded-lg bg-white/[0.04] border border-white/[0.06] p-3">
+          <div className="flex items-center gap-1.5 mb-2">
+            <svg className="w-3.5 h-3.5 text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15.59 14.37a6 6 0 01-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 006.16-12.12A14.98 14.98 0 009.631 8.41m5.96 5.96a14.926 14.926 0 01-5.841 2.58m-.119-8.54a6 6 0 00-7.381 5.84h4.8m2.58-5.84a14.927 14.927 0 00-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 01-2.448-2.448 14.9 14.9 0 01.06-.312m-2.24 2.39a4.493 4.493 0 00-1.757 4.306 4.493 4.493 0 004.306-1.758M16.5 9a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z" />
+            </svg>
+            <span className="text-[10px] text-slate-500 uppercase tracking-wider font-medium">Next Launch</span>
+          </div>
+          {pulse.nextLaunch ? (
+            <Link href="/mission-control" className="block group">
+              <p className="text-xs text-slate-300 group-hover:text-white transition-colors truncate">
+                {pulse.nextLaunch.name}
+              </p>
+              <p className="text-sm font-bold text-emerald-400 mt-1 tabular-nums">{countdown}</p>
+            </Link>
+          ) : (
+            <p className="text-xs text-slate-500">No upcoming launches</p>
+          )}
+        </div>
+
+        {/* Space Weather */}
+        <div className="rounded-lg bg-white/[0.04] border border-white/[0.06] p-3">
+          <div className="flex items-center gap-1.5 mb-2">
+            <svg className="w-3.5 h-3.5 text-amber-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />
+            </svg>
+            <span className="text-[10px] text-slate-500 uppercase tracking-wider font-medium">Space Weather</span>
+          </div>
+          <Link href="/space-weather" className="block group">
+            <div className="flex items-center gap-2">
+              <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase ${severityColor[pulse.spaceWeather.severity]} ${severityBg[pulse.spaceWeather.severity]}`}>
+                {pulse.spaceWeather.severity}
+              </span>
+              {pulse.spaceWeather.alertCount > 0 && (
+                <span className="text-[10px] text-slate-500">{pulse.spaceWeather.alertCount} alert{pulse.spaceWeather.alertCount > 1 ? 's' : ''}</span>
+              )}
+            </div>
+            <p className="text-xs text-slate-400 group-hover:text-slate-300 mt-1.5 transition-colors line-clamp-1">
+              {pulse.spaceWeather.summary}
+            </p>
+          </Link>
+        </div>
+
+        {/* Active Satellites */}
+        <div className="rounded-lg bg-white/[0.04] border border-white/[0.06] p-3">
+          <div className="flex items-center gap-1.5 mb-2">
+            <svg className="w-3.5 h-3.5 text-cyan-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 3.75H6A2.25 2.25 0 003.75 6v1.5M16.5 3.75H18A2.25 2.25 0 0120.25 6v1.5m0 9V18A2.25 2.25 0 0118 20.25h-1.5m-9 0H6A2.25 2.25 0 013.75 18v-1.5M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+            <span className="text-[10px] text-slate-500 uppercase tracking-wider font-medium">Active Satellites</span>
+          </div>
+          <Link href="/satellites" className="block group">
+            <p className="text-xl font-bold text-white group-hover:text-cyan-300 transition-colors">
+              {pulse.activeSatellites.toLocaleString()}
+            </p>
+            <p className="text-[10px] text-slate-500 mt-0.5">tracked in database</p>
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Welcome state for brand-new users                                 */
+/* ------------------------------------------------------------------ */
+
+function NewUserWelcome() {
+  const [show, setShow] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    try {
+      // User has dismissed the welcome card
+      const dismissed = localStorage.getItem(WELCOME_DISMISSED_KEY);
+      if (dismissed === 'true') return;
+
+      // Check if user has interacted (has recently viewed items or onboarding progress)
+      const recentlyViewed = localStorage.getItem(USER_INTERACTED_KEY);
+      const onboarding = localStorage.getItem('spacenexus-onboarding');
+
+      let hasRecentlyViewed = false;
+      try {
+        hasRecentlyViewed = !!recentlyViewed && JSON.parse(recentlyViewed).length > 0;
+      } catch { /* ignore */ }
+
+      let hasOnboardingProgress = false;
+      try {
+        // > 1 because 'create-account' is the default
+        hasOnboardingProgress = !!onboarding && JSON.parse(onboarding).length > 1;
+      } catch { /* ignore */ }
+
+      if (!hasRecentlyViewed && !hasOnboardingProgress) {
+        setShow(true);
+      }
+    } catch {
+      // localStorage not available
+    }
+  }, []);
+
+  const handleDismiss = () => {
+    setShow(false);
+    try {
+      localStorage.setItem(WELCOME_DISMISSED_KEY, 'true');
+    } catch {
+      // ignore
+    }
+  };
+
+  if (!mounted || !show) return null;
+
+  const suggestedActions = [
+    {
+      icon: (
+        <svg className="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M15.59 14.37a6 6 0 01-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 006.16-12.12A14.98 14.98 0 009.631 8.41m5.96 5.96a14.926 14.926 0 01-5.841 2.58m-.119-8.54a6 6 0 00-7.381 5.84h4.8m2.58-5.84a14.927 14.927 0 00-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 01-2.448-2.448 14.9 14.9 0 01.06-.312m-2.24 2.39a4.493 4.493 0 00-1.757 4.306 4.493 4.493 0 004.306-1.758M16.5 9a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z" />
+        </svg>
+      ),
+      title: 'Track your first launch',
+      description: 'See upcoming rocket launches and set countdown alerts',
+      href: '/mission-control',
+    },
+    {
+      icon: (
+        <svg className="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21" />
+        </svg>
+      ),
+      title: 'Explore space companies',
+      description: 'Browse profiles of 200+ companies across the industry',
+      href: '/company-profiles',
+    },
+    {
+      icon: (
+        <svg className="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M12 7.5h1.5m-1.5 3h1.5m-7.5 3h7.5m-7.5 3h7.5m3-9h3.375c.621 0 1.125.504 1.125 1.125V18a2.25 2.25 0 01-2.25 2.25M16.5 7.5V18a2.25 2.25 0 002.25 2.25M16.5 7.5V4.875c0-.621-.504-1.125-1.125-1.125H4.125C3.504 3.75 3 4.254 3 4.875V18a2.25 2.25 0 002.25 2.25h13.5M6 7.5h3v3H6v-3z" />
+        </svg>
+      ),
+      title: 'Read the latest news',
+      description: 'Catch up on space industry headlines and analysis',
+      href: '/news',
+    },
+  ];
+
+  return (
+    <div className="relative card p-6 mb-8 border border-indigo-500/20 bg-gradient-to-br from-indigo-500/[0.08] via-white/[0.04] to-purple-500/[0.06] animate-fade-in">
+      {/* Dismiss button */}
+      <button
+        onClick={handleDismiss}
+        className="absolute top-3 right-3 text-slate-500 hover:text-white transition-colors p-1 rounded-lg hover:bg-white/[0.06]"
+        aria-label="Dismiss welcome card"
+      >
+        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+
+      <div className="mb-5 pr-8">
+        <h3 className="text-lg font-bold text-white mb-1.5 flex items-center gap-2">
+          Welcome to your SpaceNexus Dashboard!
+        </h3>
+        <p className="text-sm text-slate-400">
+          Here are some things to explore to get started:
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
+        {suggestedActions.map((action) => (
+          <Link
+            key={action.href}
+            href={action.href}
+            className="group flex items-start gap-3 p-3.5 rounded-xl bg-white/[0.04] border border-white/[0.06] hover:border-white/15 hover:bg-white/[0.08] transition-all"
+          >
+            <div className="shrink-0 mt-0.5">{action.icon}</div>
+            <div className="min-w-0">
+              <h4 className="text-sm font-semibold text-white group-hover:text-white transition-colors">
+                {action.title}
+              </h4>
+              <p className="text-xs text-slate-400 mt-0.5 line-clamp-2">
+                {action.description}
+              </p>
+            </div>
+          </Link>
+        ))}
+      </div>
+
+      <div className="flex items-center gap-4">
+        <Link
+          href="/getting-started"
+          className="inline-flex items-center gap-1.5 text-xs text-indigo-400 hover:text-indigo-300 font-medium transition-colors"
+        >
+          View the full Getting Started guide
+          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+          </svg>
+        </Link>
+        <button
+          onClick={handleDismiss}
+          className="text-xs text-slate-500 hover:text-slate-300 transition-colors"
+        >
+          Skip for now
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export default function DashboardPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
@@ -438,6 +867,9 @@ export default function DashboardPage() {
         {/* Onboarding Checklist for new users */}
         <OnboardingChecklist />
 
+        {/* Welcome state for brand-new users (no interaction history) */}
+        <NewUserWelcome />
+
         {/* Referral Widget */}
         <ScrollReveal>
           <div className="mb-8">
@@ -555,7 +987,10 @@ export default function DashboardPage() {
 
         {/* Launch Countdown Widget */}
         <ScrollReveal>
-          <div className="mb-8">
+          <div className="mb-8 relative">
+            <span className="absolute -top-2 -right-1 z-10 inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+              new
+            </span>
             <LaunchCountdown />
           </div>
         </ScrollReveal>
@@ -570,6 +1005,12 @@ export default function DashboardPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.879 16.121A3 3 0 1012.015 11L11 14H9c0 .768.293 1.536.879 2.121z" />
                 </svg>
                 Trending in Space This Week
+                <span
+                  className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-white/[0.08] border border-white/[0.1] text-[10px] text-slate-400 cursor-help shrink-0"
+                  title="These are the hottest topics in the space industry right now, updated weekly based on news volume and community interest."
+                >
+                  ?
+                </span>
               </h2>
               <div className="space-y-2">
                 {[
@@ -603,6 +1044,42 @@ export default function DashboardPage() {
           </div>
         </ScrollReveal>
 
+        {/* Quick Actions Grid -- 6 shortcut buttons */}
+        <ScrollReveal>
+          <div className="mb-8">
+            <h2 className="text-sm font-semibold text-slate-300 flex items-center gap-2 mb-3">
+              <svg className="w-4 h-4 text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
+              </svg>
+              Quick Actions
+            </h2>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-2.5">
+              {QUICK_ACTION_ITEMS.map((action) => (
+                <Link
+                  key={action.href}
+                  href={action.href}
+                  className={`group flex items-center gap-3 px-4 py-3 rounded-xl bg-gradient-to-r ${action.color} border transition-all hover:shadow-lg hover:shadow-black/20 hover:scale-[1.02] active:scale-[0.98]`}
+                >
+                  <span className="text-white/80 group-hover:text-white group-hover:scale-110 transition-all shrink-0">
+                    {action.icon}
+                  </span>
+                  <span className="text-sm font-medium text-white/90 group-hover:text-white transition-colors truncate">
+                    {action.label}
+                  </span>
+                  <svg className="w-3.5 h-3.5 text-white/30 group-hover:text-white/70 ml-auto transition-colors shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                  </svg>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </ScrollReveal>
+
+        {/* Space Industry Snapshot -- live data from /api/pulse */}
+        <ScrollReveal>
+          <SpaceIndustrySnapshot />
+        </ScrollReveal>
+
         {/* Recently Viewed Section */}
         <ScrollReveal>
           <div className="mb-8">
@@ -623,7 +1100,10 @@ export default function DashboardPage() {
 
         {/* Exploration Progress */}
         <ScrollReveal>
-          <div className="mb-8">
+          <div className="mb-8 relative">
+            <span className="absolute -top-2 -right-1 z-10 inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+              new
+            </span>
             <ExplorationProgress variant="card" />
           </div>
         </ScrollReveal>

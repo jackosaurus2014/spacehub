@@ -125,6 +125,8 @@ function RegisterPageContent() {
       if (role) {
         try { localStorage.setItem('spacenexus-user-role', role); } catch { /* ignore */ }
       }
+      // Flag first login so the login page can redirect to /getting-started
+      try { localStorage.setItem('spacenexus-first-login', 'true'); } catch { /* ignore */ }
       toast.success('Account created! Please check your email to verify.');
       // Preserve plan context so the user can subscribe after login
       const loginParams = new URLSearchParams({ registered: 'true' });
