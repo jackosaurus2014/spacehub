@@ -379,6 +379,25 @@ export default function FeaturesPage() {
         </ScrollReveal>
       </section>
 
+      {/* ── Mobile App CTA ── */}
+      <section className="container mx-auto px-4 pb-12">
+        <ScrollReveal>
+          <div className="max-w-3xl mx-auto text-center p-6 rounded-2xl border border-cyan-500/20 bg-white/[0.02]">
+            <p className="text-white font-semibold mb-1">All features. On the go.</p>
+            <p className="text-slate-400 text-sm mb-4">SpaceNexus is available on Android — same platform, native experience.</p>
+            <Link
+              href="/app"
+              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-white/[0.06] hover:bg-white/[0.1] border border-white/[0.1] rounded-lg transition-colors"
+            >
+              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M3.609 1.814L13.792 12 3.61 22.186a.996.996 0 01-.61-.92V2.734a1 1 0 01.609-.92zm10.89 10.893l2.302 2.302-10.937 6.333 8.635-8.635zm3.199-1.4l2.453 1.42a1 1 0 010 1.546l-2.453 1.42-2.537-2.386 2.537-2zm-3.906-2.093L5.157 1.58l10.937 6.333-2.302 2.301z" />
+              </svg>
+              Get SpaceNexus on Google Play
+            </Link>
+          </div>
+        </ScrollReveal>
+      </section>
+
       {/* ── Breadcrumb Schema + Related Modules ── */}
       <div className="container mx-auto px-4 pb-16">
         <RelatedModules modules={related} title="Explore More" />

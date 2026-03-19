@@ -524,9 +524,19 @@
   - Updated wave summary documentation
 - Waves completed (80-160): 80
 
+## Waves 161-162: Cross-Promotion + Web Share Target
+- **Wave 161: Android app cross-promotion on key pages**
+  - Added mobile app CTA section to /features page
+  - Updated blog article count badge from "155+" to "160+"
+  - Added "Get the Android App" link to pricing page help section
+- **Wave 162: Web Share Target + manifest improvements**
+  - Added `share_target` to web manifest (Android users can share content TO SpaceNexus via search)
+  - Build verified clean
+- Waves completed (80-162): 82
+
 ---
 
-## Final Totals (Full Platform as of Wave 160 — Definitive Record)
+## Final Totals (Full Platform as of Wave 162 — Definitive Record)
 
 | Metric | Count |
 |--------|-------|
@@ -552,7 +562,7 @@
 | Community Forum Categories | 6+ |
 | Marketplace Features | 10+ |
 | Changelog Versions | 16+ |
-| Waves Completed (80-160) | 80 |
+| Waves Completed (80-162) | 82 |
 
 ---
 

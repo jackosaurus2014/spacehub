@@ -180,6 +180,15 @@
       }
     }
   ],
+  "share_target": {
+    "action": "/search",
+    "method": "GET",
+    "params": {
+      "title": "q",
+      "text": "q",
+      "url": "q"
+    }
+  },
   "handle_links": "preferred",
   "launch_handler": {
     "client_mode": "navigate-existing"

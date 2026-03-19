@@ -894,6 +894,13 @@ function PricingPageContent() {
               >
                 Email Support
               </Link>
+              <span className="text-slate-700">&bull;</span>
+              <Link
+                href="/app"
+                className="text-sm text-slate-400 hover:text-white transition-colors"
+              >
+                Get the Android App
+              </Link>
             </div>
           </div>
         </ScrollReveal>
