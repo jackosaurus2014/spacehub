@@ -180,6 +180,7 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/integrations`, changeFrequency: 'monthly' as const, priority: 0.5 },
     { url: `${BASE_URL}/testimonials`, changeFrequency: 'monthly' as const, priority: 0.5 },
     { url: `${BASE_URL}/discover`, changeFrequency: 'weekly' as const, priority: 0.7 },
+    { url: `${BASE_URL}/this-day-in-space`, changeFrequency: 'daily' as const, priority: 0.6 },
 
     // Community
     { url: `${BASE_URL}/community`, changeFrequency: 'weekly' as const, priority: 0.7 },

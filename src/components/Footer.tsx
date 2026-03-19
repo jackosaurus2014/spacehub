@@ -76,6 +76,7 @@ const footerLinks = {
       { label: 'Satellite Spotting Guide', href: '/satellite-spotting' },
       { label: 'Aurora Forecast', href: '/aurora-forecast' },
       { label: 'Discover', href: '/discover' },
+      { label: 'This Day in Space', href: '/this-day-in-space' },
       { label: 'Getting Started', href: '/getting-started' },
       { label: 'Help Center', href: '/help' },
       { label: 'Legal Resources', href: '/legal-resources' },
