@@ -330,6 +330,38 @@ export default function NewsletterPage() {
         </div>
       </section>
 
+      {/* Platform Stats + App CTA */}
+      <section className="container mx-auto px-4 pb-8">
+        <div className="max-w-3xl mx-auto">
+          <div className="grid grid-cols-3 gap-3 text-center mb-6">
+            <div className="card p-3">
+              <p className="text-lg font-bold text-white">175+</p>
+              <p className="text-slate-500 text-xs">Original Articles</p>
+            </div>
+            <div className="card p-3">
+              <p className="text-lg font-bold text-white">50+</p>
+              <p className="text-slate-500 text-xs">Data Sources</p>
+            </div>
+            <div className="card p-3">
+              <p className="text-lg font-bold text-white">30+</p>
+              <p className="text-slate-500 text-xs">Automated Jobs</p>
+            </div>
+          </div>
+          <div className="text-center">
+            <p className="text-slate-400 text-sm mb-2">Also available on Android</p>
+            <Link
+              href="/app"
+              className="inline-flex items-center gap-2 px-4 py-2 text-sm text-white bg-white/[0.06] hover:bg-white/[0.1] border border-white/[0.1] rounded-lg transition-colors"
+            >
+              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M3.609 1.814L13.792 12 3.61 22.186a.996.996 0 01-.61-.92V2.734a1 1 0 01.609-.92zm10.89 10.893l2.302 2.302-10.937 6.333 8.635-8.635zm3.199-1.4l2.453 1.42a1 1 0 010 1.546l-2.453 1.42-2.537-2.386 2.537-2zm-3.906-2.093L5.157 1.58l10.937 6.333-2.302 2.301z" />
+              </svg>
+              Get it on Google Play
+            </Link>
+          </div>
+        </div>
+      </section>
+
       {/* Related Modules */}
       {relatedModules.length > 0 && (
         <section className="container mx-auto px-4 pb-16">

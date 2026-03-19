@@ -189,6 +189,11 @@ const BLOG_CTA_MAP: Record<string, { tool: string; path: string }> = {
   'why-space-industry-professionals-need-alerts': { tool: 'Alerts', path: '/alerts' },
   'commercial-space-stations-who-will-replace-iss': { tool: 'Space Stations', path: '/space-stations' },
   'space-debris-problem-explained-solutions-2026': { tool: 'Space Environment', path: '/space-environment' },
+  'what-is-new-space-commercial-space-revolution': { tool: 'Company Profiles', path: '/company-profiles' },
+  'how-gps-satellites-work-space-navigation': { tool: 'Constellation Tracker', path: '/constellations' },
+  'space-industry-supply-chain-explained': { tool: 'Supply Chain Intel', path: '/supply-chain' },
+  'fcc-satellite-licensing-guide-2026': { tool: 'Compliance Hub', path: '/compliance' },
+  'space-economy-value-chain-2026': { tool: 'Space Economy', path: '/space-economy' },
 };
 
 type Props = {

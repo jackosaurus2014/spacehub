@@ -121,7 +121,7 @@ function BlogListingContent() {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
               </svg>
             </span>
-            <span className="text-sm font-semibold text-white">175+ Original Articles</span>
+            <span className="text-sm font-semibold text-white">180+ Original Articles</span>
             <span className="text-xs text-slate-400">|</span>
             <Link href="/blog/topics" className="text-xs text-violet-400 hover:text-violet-300 transition-colors font-medium">
               Explore Topics

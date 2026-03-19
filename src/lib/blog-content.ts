@@ -19115,6 +19115,252 @@ ISS (ZARYA)
 <p>Monitor orbital debris and remediation efforts at <a href="/space-environment">SpaceNexus Space Environment</a>.</p>
 `,
   },
+  {
+    slug: 'what-is-new-space-commercial-space-revolution',
+    title: 'What Is NewSpace? The Commercial Space Revolution Explained',
+    excerpt: 'NewSpace refers to the wave of private companies transforming the space industry. Learn how it differs from traditional aerospace and why it matters.',
+    category: 'guide',
+    author: 'SpaceNexus Team',
+    authorRole: 'Editorial',
+    publishedAt: '2026-03-19T10:00:00Z',
+    readingTime: 5,
+    keywords: ['newspace', 'commercial space', 'private space companies', 'space industry revolution'],
+    content: `
+<p>The term "NewSpace" describes the commercial space industry wave driven by private investment, entrepreneurial companies, and a fundamentally different approach to building and operating in space. It stands in contrast to "OldSpace" — the traditional model of government-funded programs executed by large prime contractors like Lockheed Martin, Boeing, and Northrop Grumman.</p>
+
+<h2 id="what-defines-newspace">What Defines NewSpace</h2>
+
+<ul>
+<li><strong>Private capital:</strong> Companies funded by venture capital, private equity, and billionaire founders rather than solely by government contracts</li>
+<li><strong>Speed over perfection:</strong> Iterative development with rapid prototyping (SpaceX's "test, fail, fix" approach) vs. years of design review before first flight</li>
+<li><strong>Vertical integration:</strong> Companies like SpaceX build engines, vehicles, and ground systems in-house rather than subcontracting each component</li>
+<li><strong>Cost reduction focus:</strong> Reusable rockets, mass-produced satellites, and commercial off-the-shelf components to drive down per-kilogram launch costs</li>
+<li><strong>Commercial markets:</strong> Serving consumer broadband (Starlink), commercial imaging (Planet), and private astronaut missions (Axiom) alongside government customers</li>
+</ul>
+
+<h2 id="key-companies">Key NewSpace Companies</h2>
+
+<ul>
+<li><strong>SpaceX</strong> (2002) — Reusable rockets, Starlink constellation, crew transport. The company that proved commercial space could work at scale</li>
+<li><strong>Rocket Lab</strong> (2006) — Small launch vehicle (Electron) and satellite manufacturing. Publicly traded</li>
+<li><strong>Planet Labs</strong> (2010) — Largest Earth observation constellation with 200+ satellites imaging the entire planet daily</li>
+<li><strong>Relativity Space</strong> (2015) — 3D-printed rockets aimed at radically simplifying manufacturing</li>
+<li><strong>Vast</strong> (2021) — Commercial space station development, $1.7B in funding</li>
+</ul>
+
+<h2 id="impact">Impact on the Industry</h2>
+
+<p>NewSpace has fundamentally changed the economics of space. The cost to launch a kilogram to LEO has dropped from ~$54,000 (Space Shuttle) to ~$2,700 (Falcon 9) — a 20x reduction. This cost collapse has enabled mega-constellations, commercial space stations, and a growing space economy projected to reach $1.8 trillion by 2035.</p>
+
+<p>Explore company profiles and funding data at <a href="/company-profiles">SpaceNexus Company Profiles</a>.</p>
+`,
+  },
+  {
+    slug: 'how-gps-satellites-work-space-navigation',
+    title: 'How GPS Satellites Work: The Space Infrastructure Behind Navigation',
+    excerpt: 'GPS is powered by 31 satellites in MEO orbit. Learn how the system works, who operates it, and why it matters beyond turn-by-turn directions.',
+    category: 'technology',
+    author: 'SpaceNexus Team',
+    authorRole: 'Engineering',
+    publishedAt: '2026-03-19T11:00:00Z',
+    readingTime: 6,
+    keywords: ['gps satellites', 'how gps works', 'gps constellation', 'satellite navigation', 'gnss'],
+    content: `
+<p>Every time you open a map app, hail a ride, or check a timestamp on a financial transaction, you're relying on a constellation of 31 satellites orbiting 20,200 km above Earth. The Global Positioning System (GPS) is one of the most impactful space technologies ever built — and most people have no idea how it works.</p>
+
+<h2 id="the-constellation">The Constellation</h2>
+
+<p>GPS is operated by the US Space Force's 2nd Space Operations Squadron (2 SOPS) at Schriever Space Force Base, Colorado. The constellation consists of:</p>
+
+<ul>
+<li><strong>31 operational satellites</strong> in 6 orbital planes</li>
+<li><strong>MEO orbit at 20,200 km</strong> — high enough for wide coverage, low enough for reasonable signal strength</li>
+<li><strong>12-hour orbital period</strong> — each satellite completes 2 orbits per day</li>
+<li><strong>24/7 global coverage</strong> — at least 4 satellites visible from any point on Earth at any time</li>
+</ul>
+
+<h2 id="how-positioning-works">How Positioning Works</h2>
+
+<p>GPS uses a principle called <strong>trilateration</strong>. Each satellite continuously broadcasts its precise position and the exact time (from onboard atomic clocks accurate to nanoseconds). Your receiver:</p>
+
+<ol>
+<li>Receives signals from 4+ satellites simultaneously</li>
+<li>Measures the time delay of each signal (speed of light × time = distance)</li>
+<li>Calculates your position as the intersection point of 4+ spheres of distance</li>
+<li>The 4th satellite corrects for receiver clock error (your phone doesn't have an atomic clock)</li>
+</ol>
+
+<p>Accuracy: Standard GPS provides ~3-5 meter accuracy. Military GPS (encrypted P(Y) code) provides ~1 meter. Differential GPS and RTK techniques can achieve centimeter accuracy.</p>
+
+<h2 id="beyond-navigation">Beyond Navigation</h2>
+
+<p>GPS is critical infrastructure for far more than maps:</p>
+
+<ul>
+<li><strong>Financial systems:</strong> Stock exchanges and banking networks use GPS timing for transaction timestamps</li>
+<li><strong>Power grids:</strong> Electrical grid synchronization depends on GPS timing signals</li>
+<li><strong>Agriculture:</strong> Precision farming uses RTK GPS for centimeter-accurate planting and harvesting</li>
+<li><strong>Telecommunications:</strong> Cell networks use GPS for time synchronization across base stations</li>
+<li><strong>Aviation:</strong> GPS-based approaches are replacing ground-based navigation aids at airports worldwide</li>
+</ul>
+
+<h2 id="other-gnss">Other GNSS Systems</h2>
+
+<p>GPS isn't the only satellite navigation system. Other nations operate their own:</p>
+
+<ul>
+<li><strong>GLONASS</strong> (Russia) — 24 satellites, operational since 1993</li>
+<li><strong>Galileo</strong> (EU) — 30 satellites planned, provides sub-meter accuracy to civilians</li>
+<li><strong>BeiDou</strong> (China) — 35+ satellites, full global coverage since 2020</li>
+<li><strong>NavIC</strong> (India) — Regional system covering India and surrounding areas</li>
+</ul>
+
+<p>Track navigation and other satellite constellations at <a href="/constellations">SpaceNexus Constellation Tracker</a>.</p>
+`,
+  },
+  {
+    slug: 'space-industry-supply-chain-explained',
+    title: 'Space Industry Supply Chain: From Raw Materials to Orbit',
+    excerpt: 'Building a satellite or rocket requires thousands of components from hundreds of suppliers. Understand the space supply chain from materials to launch.',
+    category: 'market',
+    author: 'SpaceNexus Team',
+    authorRole: 'Editorial',
+    publishedAt: '2026-03-19T12:00:00Z',
+    readingTime: 6,
+    keywords: ['space supply chain', 'satellite manufacturing', 'space industry components', 'aerospace suppliers'],
+    content: `
+<p>A modern communications satellite contains over 100,000 individual components sourced from hundreds of suppliers across dozens of countries. A launch vehicle like Falcon 9 has approximately 5,000 major parts. Understanding the space supply chain is essential for anyone working in procurement, manufacturing, or investment in the sector.</p>
+
+<h2 id="tiers">Supply Chain Tiers</h2>
+
+<ul>
+<li><strong>Tier 1 — System Integrators:</strong> Companies that assemble complete satellites or rockets (Airbus Defence and Space, Lockheed Martin, SpaceX, Maxar)</li>
+<li><strong>Tier 2 — Subsystem Providers:</strong> Companies supplying major subsystems like solar arrays, propulsion modules, or avionics packages (L3Harris, Honeywell, Moog)</li>
+<li><strong>Tier 3 — Component Manufacturers:</strong> Companies making individual components like reaction wheels, star trackers, transponders, or solar cells</li>
+<li><strong>Tier 4 — Raw Materials and Processing:</strong> Specialty metals (titanium, Inconel), composite materials (carbon fiber), and semiconductor fabrication</li>
+</ul>
+
+<h2 id="critical-components">Critical Components</h2>
+
+<ul>
+<li><strong>Radiation-hardened electronics:</strong> Space-grade processors and memory that can withstand the orbital radiation environment. Limited suppliers (BAE Systems, Microchip/Microsemi). Long lead times (12-18 months)</li>
+<li><strong>Solar cells:</strong> Triple-junction gallium arsenide cells achieving 30%+ efficiency. Primary suppliers: SolAero (US), Azur Space (Germany)</li>
+<li><strong>Reaction wheels:</strong> Attitude control devices spinning at 5,000+ RPM. Suppliers: Honeywell, Collins Aerospace, Bradford Space</li>
+<li><strong>Star trackers:</strong> Cameras that determine spacecraft orientation by matching star patterns. Suppliers: Ball Aerospace, Leonardo, Sodern</li>
+<li><strong>Propulsion:</strong> Chemical (hydrazine, bipropellant) or electric (Hall-effect, ion) thrusters. Electric propulsion market growing rapidly</li>
+</ul>
+
+<h2 id="challenges">Supply Chain Challenges</h2>
+
+<ul>
+<li><strong>ITAR restrictions:</strong> US-origin space components are subject to export controls, limiting international supply chain flexibility</li>
+<li><strong>Single points of failure:</strong> Some critical components have only 1-2 qualified suppliers worldwide</li>
+<li><strong>Long lead times:</strong> Rad-hard components and specialty materials can take 12-24 months to deliver</li>
+<li><strong>Quality requirements:</strong> Space-grade components undergo extensive testing (vibration, thermal vacuum, radiation) that adds cost and time</li>
+</ul>
+
+<p>Monitor space industry supply chain data at <a href="/supply-chain">SpaceNexus Supply Chain Intelligence</a>.</p>
+`,
+  },
+  {
+    slug: 'fcc-satellite-licensing-guide-2026',
+    title: 'FCC Satellite Licensing: A Complete Guide for Operators in 2026',
+    excerpt: 'Every satellite communicating with the US needs FCC authorization. Learn about the licensing process, spectrum allocation, and the new 5-year deorbit rule.',
+    category: 'policy',
+    author: 'SpaceNexus Team',
+    authorRole: 'Editorial',
+    publishedAt: '2026-03-19T13:00:00Z',
+    readingTime: 6,
+    keywords: ['fcc satellite license', 'satellite spectrum licensing', 'fcc space regulations 2026', 'orbital debris rule'],
+    content: `
+<p>The Federal Communications Commission (FCC) regulates all radio-frequency emissions from satellites operating in or communicating with the United States. If your satellite downlinks to a US ground station or serves US customers, you need FCC authorization. Here's how the process works in 2026.</p>
+
+<h2 id="license-types">License Types</h2>
+
+<ul>
+<li><strong>Space Station License:</strong> Required for the satellite itself. Covers orbital parameters, frequencies, power levels, and operational procedures</li>
+<li><strong>Earth Station License:</strong> Required for ground terminals communicating with the satellite. Blanket licenses available for large-scale consumer terminals (like Starlink dishes)</li>
+<li><strong>Market Access (Non-US Operators):</strong> Foreign-licensed satellites seeking to serve the US market must file for market access through the FCC's International Bureau</li>
+<li><strong>Experimental License:</strong> For testing and demonstration missions. Faster approval but limited duration and scope</li>
+</ul>
+
+<h2 id="application-process">Application Process</h2>
+
+<ol>
+<li><strong>Pre-filing consultation:</strong> Meet with FCC staff to discuss your application. Not required but strongly recommended for novel systems</li>
+<li><strong>Filing:</strong> Submit via the International Bureau Filing System (IBFS). Include technical parameters, orbital debris mitigation plan, and spectrum coordination</li>
+<li><strong>Public notice period:</strong> 30 days for comments and petitions from other operators or the public</li>
+<li><strong>Technical review:</strong> FCC engineers evaluate interference potential and compliance with technical rules</li>
+<li><strong>Grant:</strong> Typical timeline is 6-18 months, depending on complexity and any disputes</li>
+</ol>
+
+<h2 id="deorbit-rule">The 5-Year Deorbit Rule</h2>
+
+<p>In September 2022, the FCC adopted a rule requiring all LEO satellites licensed after the effective date to deorbit within 5 years of end-of-life. This replaced the previous 25-year guideline. Key implications:</p>
+
+<ul>
+<li>All new FCC applications must include a specific deorbit plan</li>
+<li>Satellites without propulsion must demonstrate passive deorbit capability within 5 years</li>
+<li>Higher-altitude LEO missions may need propulsion to comply</li>
+<li>Operators must post a performance bond or demonstrate financial responsibility for deorbit</li>
+</ul>
+
+<h2 id="spectrum-considerations">Spectrum Considerations</h2>
+
+<p>The FCC allocates spectrum in bands defined by the ITU Radio Regulations. Key satellite bands:</p>
+
+<ul>
+<li><strong>L-band (1-2 GHz):</strong> Mobile satellite services, GPS</li>
+<li><strong>S-band (2-4 GHz):</strong> Satellite radio, weather radar</li>
+<li><strong>C-band (4-8 GHz):</strong> Traditional satellite TV (being repurposed for 5G in some markets)</li>
+<li><strong>Ku-band (12-18 GHz):</strong> Satellite broadband, DTH television</li>
+<li><strong>Ka-band (26-40 GHz):</strong> High-throughput satellite broadband (Starlink, Kuiper)</li>
+<li><strong>V-band (40-75 GHz):</strong> Next-generation broadband (SpaceX has V-band authorization)</li>
+</ul>
+
+<p>Track regulatory filings and licensing at <a href="/compliance">SpaceNexus Compliance Hub</a>.</p>
+`,
+  },
+  {
+    slug: 'space-economy-value-chain-2026',
+    title: 'The Space Economy Value Chain: Where $630 Billion Flows',
+    excerpt: 'The global space economy is worth $630B. Understand where the money flows — from launch services to satellite operations to ground equipment and services.',
+    category: 'market',
+    author: 'SpaceNexus Team',
+    authorRole: 'Editorial',
+    publishedAt: '2026-03-19T14:00:00Z',
+    readingTime: 6,
+    keywords: ['space economy 2026', 'space industry value chain', 'space market size', 'satellite services market'],
+    content: `
+<p>The global space economy reached approximately $630 billion in 2025, according to the Space Foundation's annual report. But that headline number obscures a complex value chain where revenue concentrates in surprising places. Understanding where money actually flows is critical for investors, entrepreneurs, and policymakers.</p>
+
+<h2 id="breakdown">Market Breakdown</h2>
+
+<p>The space economy breaks down into four major segments:</p>
+
+<ul>
+<li><strong>Satellite Services (~$130B):</strong> The largest segment. Includes satellite TV (declining), satellite broadband (growing rapidly), Earth observation data, and mobile satellite services. Starlink alone is projected to generate $6-7B in 2026 revenue</li>
+<li><strong>Ground Equipment (~$150B):</strong> Consumer satellite TV dishes, GPS receivers in phones and cars, satellite ground stations, VSAT terminals. This segment includes the GPS chips in every smartphone</li>
+<li><strong>Government Space Budgets (~$110B):</strong> Military, civil, and intelligence space spending. The US accounts for ~$60B, followed by China (~$12B estimated), Europe (~$10B combined). NASA's 2026 budget is approximately $25B</li>
+<li><strong>Commercial Infrastructure (~$240B):</strong> Satellite manufacturing (~$15B), launch services (~$8B), space insurance, satellite operations, ground segment infrastructure, and downstream analytics</li>
+</ul>
+
+<h2 id="growth-areas">Fastest-Growing Segments</h2>
+
+<ul>
+<li><strong>Satellite broadband:</strong> Growing 30%+ annually as Starlink, OneWeb, and soon Kuiper expand service. Expected to reach $40B+ by 2030</li>
+<li><strong>Earth observation analytics:</strong> Growing 20%+ annually. Companies like Planet, Maxar, and BlackSky sell imagery and derived analytics to agriculture, insurance, defense, and ESG compliance customers</li>
+<li><strong>Space defense:</strong> Growing 15%+ annually. Missile warning, SSA, satellite communications for military, and proliferated LEO sensing architectures</li>
+<li><strong>In-space services:</strong> Nascent but growing. Satellite servicing, debris removal, and in-orbit manufacturing represent a potential $5B+ market by 2030</li>
+</ul>
+
+<h2 id="investment-landscape">Investment Landscape</h2>
+
+<p>Private investment in space companies reached $15B+ in 2025, with notable rounds including Sierra Space ($1.5B), Vast ($1.7B), and multiple $100M+ rounds for launch and satellite companies. Venture capital focus has shifted from launch (largely solved by SpaceX) to applications — data analytics, in-space infrastructure, and defense technology.</p>
+
+<p>Track market data and funding rounds at <a href="/space-economy">SpaceNexus Space Economy Dashboard</a>.</p>
+`,
+  },
 ];
 
 export function getBlogPost(slug: string): OriginalBlogPost | undefined {
