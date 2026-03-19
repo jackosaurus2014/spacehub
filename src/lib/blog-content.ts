@@ -18537,6 +18537,319 @@ ISS (ZARYA)
 <p><a href="/space-weather">Monitor Space Weather on SpaceNexus</a></p>
 `,
   },
+  {
+    slug: 'spacenexus-product-roadmap-2026',
+    title: 'SpaceNexus Product Roadmap 2026: What We\'re Building Next',
+    excerpt: 'From iOS launch to WebSocket feeds to AI predictions — here\'s our public roadmap for the rest of 2026 and what it means for space professionals.',
+    category: 'building-in-public',
+    author: 'SpaceNexus Team',
+    authorRole: 'Product',
+    publishedAt: '2026-03-19T00:00:00Z',
+    readingTime: 4,
+    keywords: ['spacenexus roadmap', 'space platform features', 'space industry tools 2026', 'spacenexus updates'],
+    content: `
+<p>Transparency is a core value at SpaceNexus. We believe the space industry professionals who use our platform should know exactly what we're building and why. Here's our public roadmap for the rest of 2026.</p>
+
+<h2 id="shipped-q1">Already Shipped (Q1 2026)</h2>
+
+<p>In just the first quarter of 2026, we've deployed 84+ waves of recursive development including:</p>
+
+<ul>
+<li><strong>165+ original articles</strong> — the largest free space content library online</li>
+<li><strong>Android app on Google Play</strong> — full platform with push notifications and offline support</li>
+<li><strong>AI Insights pipeline</strong> — daily AI-generated analysis with fact-checking</li>
+<li><strong>Engineering tools suite</strong> — orbital, thermal, radiation, power, and link budget calculators</li>
+<li><strong>Community forums and marketplace</strong> — threaded discussions, procurement, and RFQ system</li>
+<li><strong>Developer API v1</strong> — 11 public endpoints with OpenAPI documentation</li>
+</ul>
+
+<h2 id="in-progress">In Progress (Q2 2026)</h2>
+
+<ul>
+<li><strong>Push notification channels:</strong> Subscribe to specific alert types instead of all-or-nothing. Choose launches, funding rounds, space weather, or regulatory updates</li>
+<li><strong>iOS App Store launch:</strong> SpaceNexus for iPhone and iPad with the same full-platform experience as Android</li>
+</ul>
+
+<h2 id="planned">Planned (Q2-Q3 2026)</h2>
+
+<ul>
+<li><strong>Home screen widgets:</strong> Glanceable countdown timers and market snapshots for Android</li>
+<li><strong>Real-time WebSocket feeds:</strong> Live streaming data for launch events and market changes</li>
+<li><strong>Team workspaces:</strong> Shared dashboards and collaborative watchlists for organizations</li>
+<li><strong>API v2 with GraphQL:</strong> Flexible queries for developers building on our data</li>
+</ul>
+
+<h2 id="exploring">Exploring (H2 2026)</h2>
+
+<ul>
+<li><strong>Multi-language support</strong> starting with Spanish, Mandarin, and French</li>
+<li><strong>Wearable integration</strong> for smartwatch alerts</li>
+<li><strong>AI-powered market predictions</strong> for funding and launch trends</li>
+<li><strong>Satellite imagery integration</strong> for in-platform analysis</li>
+</ul>
+
+<p>See the full interactive roadmap at <a href="/roadmap">spacenexus.us/roadmap</a>. Have a feature request? <a href="/contact">Let us know</a>.</p>
+`,
+  },
+  {
+    slug: 'space-industry-conferences-guide-2026',
+    title: 'Space Industry Conferences Worth Attending in 2026: The Complete Guide',
+    excerpt: 'From SATELLITE to IAC to SmallSat — a curated guide to the most valuable space industry conferences, trade shows, and summits in 2026.',
+    category: 'guide',
+    author: 'SpaceNexus Team',
+    authorRole: 'Editorial',
+    publishedAt: '2026-03-19T01:00:00Z',
+    readingTime: 6,
+    keywords: ['space industry conferences 2026', 'satellite conference', 'space tech summit', 'iac 2026', 'smallsat conference'],
+    content: `
+<p>In-person events remain one of the best ways to build relationships, close deals, and stay current in the space industry. But with dozens of conferences competing for your time and budget, which ones deliver the most value? Here's our curated guide for 2026.</p>
+
+<h2 id="tier-1">Tier 1: Must-Attend Events</h2>
+
+<ul>
+<li><strong>SATELLITE 2026</strong> (March, Washington DC) — The largest commercial space conference in the world. 15,000+ attendees, 300+ exhibitors. Essential for connectivity, broadcasting, and Earth observation professionals. <a href="/satellite-2026">SpaceNexus conference coverage</a></li>
+<li><strong>Space Symposium</strong> (April, Colorado Springs) — Premier military and government space event. 10,000+ attendees from defense, intelligence, and civil space agencies. Best for government contracting and defense space</li>
+<li><strong>International Astronautical Congress (IAC)</strong> (October, Milan) — The global space community gathering. 5,000+ papers, representation from 70+ countries. Best for international partnerships and academic research</li>
+</ul>
+
+<h2 id="tier-2">Tier 2: High-Value Specialized Events</h2>
+
+<ul>
+<li><strong>SmallSat Conference</strong> (August, Logan UT) — The small satellite community's home event. Excellent for CubeSat builders, university programs, and new space startups</li>
+<li><strong>SpaceCom</strong> (November, Orlando) — Focused on commercial space applications and enterprise customers. Growing rapidly as commercial space expands</li>
+<li><strong>NewSpace Conference</strong> (June, Seattle) — Venture-backed space startup ecosystem. Best for founders, investors, and early-stage companies</li>
+<li><strong>Space Tech Expo</strong> (May, Long Beach CA) — Hardware and manufacturing focus. Supply chain, components, and subsystems. Best for engineers and procurement teams</li>
+</ul>
+
+<h2 id="tier-3">Tier 3: Niche Events Worth Knowing</h2>
+
+<ul>
+<li><strong>World Satellite Business Week</strong> (September, Paris) — C-suite focused, invitation-heavy. Best for satellite operator executives and investors</li>
+<li><strong>Global MilSatCom</strong> (November, London) — Military satellite communications. Defense-focused with classified sessions</li>
+<li><strong>Satellite Innovation</strong> (October, Silicon Valley) — Technology-forward event bridging space and tech industries</li>
+<li><strong>AMOS Conference</strong> (September, Maui) — Space domain awareness and SSA. Academic and government focused</li>
+</ul>
+
+<h2 id="tips">Conference Tips for Space Professionals</h2>
+
+<ul>
+<li><strong>Book early:</strong> Hotel blocks near major events sell out months in advance, especially for Space Symposium and SATELLITE</li>
+<li><strong>Pre-schedule meetings:</strong> Use conference apps and LinkedIn to book 1-on-1s before you arrive. The hallway conversations are often more valuable than panels</li>
+<li><strong>Bring business cards:</strong> Yes, still. The space industry skews traditional, and international attendees especially expect them</li>
+<li><strong>Use SpaceNexus as prep:</strong> Research companies and executives before meetings using our <a href="/company-profiles">company profiles</a> and <a href="/executive-moves">executive moves tracker</a></li>
+</ul>
+
+<p>Track all upcoming space events on our <a href="/space-calendar">Space Calendar</a>.</p>
+`,
+  },
+  {
+    slug: 'what-is-space-situational-awareness-ssa-guide',
+    title: 'What Is Space Situational Awareness (SSA)? A Complete Guide',
+    excerpt: 'Space Situational Awareness tracks every object in orbit to prevent collisions. Learn how SSA works, who runs it, and why it matters for every satellite operator.',
+    category: 'technology',
+    author: 'SpaceNexus Team',
+    authorRole: 'Engineering',
+    publishedAt: '2026-03-19T02:00:00Z',
+    readingTime: 7,
+    keywords: ['space situational awareness', 'ssa space', 'space domain awareness', 'satellite collision avoidance', 'space debris tracking'],
+    content: `
+<p>With over 10,000 active satellites and millions of debris fragments in orbit, knowing what's where in space has never been more critical. Space Situational Awareness (SSA) — the ability to track, characterize, and predict the behavior of objects in Earth orbit — is the foundation of safe space operations.</p>
+
+<h2 id="what-is-ssa">What SSA Covers</h2>
+
+<p>SSA encompasses three domains:</p>
+
+<ul>
+<li><strong>Space Object Tracking:</strong> Detecting, cataloging, and maintaining orbital data for every trackable object in space. The US Space Command tracks ~47,000 objects larger than 10 cm</li>
+<li><strong>Space Weather Monitoring:</strong> Tracking solar activity that affects satellite electronics, orbital drag, and communication links</li>
+<li><strong>Conjunction Assessment:</strong> Predicting close approaches between objects and issuing collision avoidance warnings. The 18th Space Defense Squadron issues ~100 conjunction warnings per day</li>
+</ul>
+
+<h2 id="who-does-ssa">Who Provides SSA</h2>
+
+<ul>
+<li><strong>US Space Command / 18th SDS:</strong> The primary global SSA provider. Operates the Space Surveillance Network (SSN) — a global network of radars and telescopes. Provides free conjunction data messages (CDMs) to all satellite operators via Space-Track.org</li>
+<li><strong>EU Space Surveillance and Tracking (EU SST):</strong> European consortium providing independent SSA for EU member states</li>
+<li><strong>Commercial SSA Providers:</strong> LeoLabs, ExoAnalytic, Numerica, and others offer higher-accuracy tracking data and faster conjunction warnings than government sources</li>
+<li><strong>National Agencies:</strong> ISRO (India), JAXA (Japan), and others maintain their own tracking networks for domestic satellite protection</li>
+</ul>
+
+<h2 id="how-tracking-works">How Satellite Tracking Works</h2>
+
+<p>Objects are tracked using two primary methods:</p>
+
+<ul>
+<li><strong>Radar:</strong> Ground-based radars (like the AN/FPS-85 in Florida or the Space Fence on Kwajalein Atoll) emit radio pulses and measure reflections. Radars are essential for detecting small debris and objects in LEO. The Space Fence can track objects as small as 10 cm</li>
+<li><strong>Optical Telescopes:</strong> Passive sensors that detect sunlight reflected off objects. Better for GEO and MEO tracking where objects are further away. The Ground-based Electro-Optical Deep Space Surveillance (GEODSS) system is a key optical SSA asset</li>
+</ul>
+
+<p>Tracking data is converted into Two-Line Element sets (TLEs) or more precise ephemeris data, which operators use to predict satellite positions and plan maneuvers.</p>
+
+<h2 id="conjunction-assessment">Conjunction Assessment in Practice</h2>
+
+<p>When two objects are predicted to pass within a certain distance threshold (typically 1 km), operators receive a Conjunction Data Message (CDM) containing:</p>
+
+<ul>
+<li>Time of closest approach (TCA)</li>
+<li>Miss distance and probability of collision</li>
+<li>Position and velocity covariance for both objects</li>
+<li>Object identification and characteristics</li>
+</ul>
+
+<p>Operators must then decide whether to perform an avoidance maneuver. The ISS performs ~2-3 debris avoidance maneuvers per year. Starlink satellites perform thousands of automated maneuvers annually.</p>
+
+<h2 id="future-of-ssa">The Future of SSA</h2>
+
+<p>As mega-constellations grow and space debris accumulates, SSA must evolve:</p>
+
+<ul>
+<li><strong>Space Traffic Management (STM):</strong> Formal traffic rules for orbit, analogous to air traffic control. Currently under international discussion</li>
+<li><strong>AI-powered tracking:</strong> Machine learning to improve orbit prediction accuracy and reduce false conjunction warnings</li>
+<li><strong>In-orbit sensors:</strong> Satellites with SSA payloads can observe the space environment from orbit, covering blind spots invisible from the ground</li>
+<li><strong>Debris remediation:</strong> Active debris removal missions (like ClearSpace-1) to reduce collision risk for everyone</li>
+</ul>
+
+<p>Monitor the space environment and track debris in real time on <a href="/space-environment">SpaceNexus Space Environment</a>.</p>
+`,
+  },
+  {
+    slug: 'how-to-fundraise-for-space-startup',
+    title: 'How to Fundraise for a Space Startup: From Pre-Seed to Series A',
+    excerpt: 'Space startups raised $15B+ in 2025. Learn how to navigate the unique fundraising landscape — from SBIR grants to VC rounds to strategic investors.',
+    category: 'market',
+    author: 'SpaceNexus Team',
+    authorRole: 'Editorial',
+    publishedAt: '2026-03-19T03:00:00Z',
+    readingTime: 7,
+    keywords: ['space startup fundraising', 'space venture capital', 'sbir space', 'space startup investors', 'space company funding'],
+    content: `
+<p>The space industry attracted over $15 billion in private investment in 2025, with mega-rounds from Sierra Space ($1.5B) and Vast ($1.7B) grabbing headlines. But for most space startups, the fundraising journey starts much smaller — and navigating it requires understanding a landscape unlike any other sector.</p>
+
+<h2 id="pre-seed">Pre-Seed & SBIR: $100K - $2M</h2>
+
+<p>Most space startups begin with one of two paths:</p>
+
+<ul>
+<li><strong>SBIR/STTR Grants:</strong> The Small Business Innovation Research program is the space industry's secret weapon. Phase I awards ($150K-250K) fund feasibility studies. Phase II ($750K-1.5M) funds prototyping. NASA, DoD, and DOE all run space-relevant SBIR topics. Unlike VC funding, SBIRs are non-dilutive — you keep all your equity. Track opportunities at <a href="/procurement">SpaceNexus Procurement</a></li>
+<li><strong>Angel Investors:</strong> Space-savvy angels often come from the industry itself — former NASA engineers, satellite company execs, or defense tech entrepreneurs. Typical angel checks: $25K-$250K</li>
+</ul>
+
+<h2 id="seed">Seed Round: $2M - $10M</h2>
+
+<p>At seed stage, you need more than a concept — you need a technical proof point and a credible team. Space seed investors look for:</p>
+
+<ul>
+<li><strong>Technical differentiation:</strong> What can your technology do that existing solutions can't? Patents help but aren't required</li>
+<li><strong>Government traction:</strong> An SBIR Phase II, a CRADA with a national lab, or letters of intent from government customers signal demand and de-risk technology</li>
+<li><strong>Market timing:</strong> Why now? Mega-constellation growth, in-space servicing, lunar economy — articulate which wave you're riding</li>
+</ul>
+
+<p>Key seed-stage space investors: Space Capital, Seraphim Capital, Starburst Ventures, E2MC, Airbus Ventures.</p>
+
+<h2 id="series-a">Series A: $10M - $50M</h2>
+
+<p>Series A in space usually requires revenue or at minimum contracted revenue (government contracts count). What investors want to see:</p>
+
+<ul>
+<li><strong>Product-market fit evidence:</strong> Paying customers, repeat contracts, or binding LOIs</li>
+<li><strong>Clear unit economics path:</strong> Space hardware has long development cycles — show how margins improve at scale</li>
+<li><strong>Defensible competitive position:</strong> IP, regulatory licenses (FCC, NOAA), flight heritage, or exclusive data access</li>
+<li><strong>Capital efficiency narrative:</strong> Space is capital-intensive. Show you can hit milestones with less money than competitors</li>
+</ul>
+
+<h2 id="strategic-investors">Strategic Investors & Corporate Ventures</h2>
+
+<p>Space startups have a unique advantage: large primes and defense companies actively invest in their supply chain. Key strategic investors:</p>
+
+<ul>
+<li><strong>Lockheed Martin Ventures</strong> — Focuses on early-stage defense and space technology</li>
+<li><strong>Boeing HorizonX</strong> — Invests across the aerospace value chain</li>
+<li><strong>Airbus Ventures</strong> — European perspective, strong in Earth observation and connectivity</li>
+<li><strong>In-Q-Tel</strong> — CIA's venture arm, invests in intelligence-relevant space tech</li>
+<li><strong>AFWERX / SpaceWERX</strong> — Air Force and Space Force innovation programs with direct SBIR-to-contract pathways</li>
+</ul>
+
+<h2 id="common-mistakes">Common Fundraising Mistakes in Space</h2>
+
+<ul>
+<li><strong>Over-indexing on technology, under-indexing on market:</strong> VCs fund businesses, not science projects. Lead with the market opportunity</li>
+<li><strong>Ignoring non-dilutive funding:</strong> Every dollar of SBIR money is a dollar you don't give away in equity. Apply aggressively</li>
+<li><strong>Long development timelines without milestones:</strong> Break your roadmap into fundable stages with clear value inflection points</li>
+<li><strong>Pitching to generalist VCs first:</strong> Start with space-specific investors who understand the market and timelines</li>
+</ul>
+
+<p>Track space industry funding rounds, investor profiles, and deal flow at <a href="/space-capital">SpaceNexus Space Capital</a>.</p>
+`,
+  },
+  {
+    slug: 'satellite-internet-starlink-kuiper-comparison-2026',
+    title: 'Satellite Internet in 2026: Starlink vs Kuiper vs OneWeb — Who\'s Winning?',
+    excerpt: 'The satellite internet race is heating up. Compare Starlink, Amazon Kuiper, OneWeb, and Telesat in coverage, speed, pricing, and market strategy.',
+    category: 'analysis',
+    author: 'SpaceNexus Team',
+    authorRole: 'Editorial',
+    publishedAt: '2026-03-19T04:00:00Z',
+    readingTime: 6,
+    keywords: ['satellite internet 2026', 'starlink vs kuiper', 'satellite broadband comparison', 'oneweb coverage', 'leo internet'],
+    content: `
+<p>Satellite internet has gone from a niche backup solution to a global connectivity revolution. With SpaceX's Starlink serving millions of users, Amazon's Kuiper launching its first constellation, and OneWeb expanding enterprise coverage, the market is entering its most competitive phase yet.</p>
+
+<h2 id="starlink">Starlink (SpaceX)</h2>
+
+<ul>
+<li><strong>Satellites in orbit:</strong> 6,000+ (as of March 2026)</li>
+<li><strong>Coverage:</strong> Global (including polar regions with V2 Mini)</li>
+<li><strong>Consumer speeds:</strong> 50-250 Mbps download, 10-40 Mbps upload</li>
+<li><strong>Latency:</strong> 25-60 ms (comparable to terrestrial broadband)</li>
+<li><strong>Pricing:</strong> $120/month residential, $500/month business, $250-$5,000/month maritime</li>
+<li><strong>Market position:</strong> First-mover advantage with massive installed base. 3M+ active subscribers. Direct-to-cell partnership with T-Mobile. Government contracts with DoD and allied militaries</li>
+</ul>
+
+<h2 id="kuiper">Project Kuiper (Amazon)</h2>
+
+<ul>
+<li><strong>Satellites in orbit:</strong> ~100 (early deployment phase)</li>
+<li><strong>Planned constellation:</strong> 3,236 satellites in LEO</li>
+<li><strong>Expected speeds:</strong> Up to 400 Mbps (claimed)</li>
+<li><strong>Launch strategy:</strong> Using ULA Vulcan, Blue Origin New Glenn, and Arianespace</li>
+<li><strong>Market position:</strong> Deep pockets (Amazon committed $10B+), integrated with AWS for enterprise and government cloud connectivity. Focus on underserved markets and enterprise IoT</li>
+<li><strong>Differentiator:</strong> Tight integration with Amazon ecosystem — AWS, Prime, Whole Foods, fulfillment centers</li>
+</ul>
+
+<h2 id="oneweb">OneWeb (Eutelsat)</h2>
+
+<ul>
+<li><strong>Satellites in orbit:</strong> 634 (Gen 1 constellation complete)</li>
+<li><strong>Coverage:</strong> Global (including Arctic — unique advantage)</li>
+<li><strong>Target market:</strong> Enterprise, government, maritime, aviation. Not consumer-focused</li>
+<li><strong>Pricing:</strong> Enterprise contracts (not direct-to-consumer)</li>
+<li><strong>Market position:</strong> Merged with Eutelsat to create integrated LEO/GEO operator. Strong relationships with telcos as distribution partners. Indian government investment via Bharti</li>
+</ul>
+
+<h2 id="comparison">Head-to-Head Comparison</h2>
+
+<p>The three providers are pursuing different strategies:</p>
+
+<ul>
+<li><strong>Starlink</strong> dominates consumer broadband with scale and brand recognition. Its direct-to-cell capability could be transformative</li>
+<li><strong>Kuiper</strong> is playing the long game with enterprise and government — AWS integration makes it compelling for cloud-native applications</li>
+<li><strong>OneWeb</strong> is the enterprise B2B play — selling through telco partners rather than direct to consumers. The Eutelsat merger gives it GEO assets for hybrid architectures</li>
+</ul>
+
+<h2 id="whats-next">What's Next</h2>
+
+<p>The satellite internet market is expected to reach $40B+ by 2030. Key trends to watch:</p>
+
+<ul>
+<li><strong>Direct-to-device:</strong> Starlink's T-Mobile partnership and AST SpaceMobile are racing to connect standard smartphones directly to satellites</li>
+<li><strong>Optical inter-satellite links:</strong> Laser links between satellites reduce latency and increase capacity — Starlink V2 includes these</li>
+<li><strong>Gen 2 constellations:</strong> All three providers are planning larger, more capable second-generation satellites</li>
+<li><strong>Regulatory battles:</strong> Spectrum allocation, debris rules, and market access regulations will shape competition</li>
+</ul>
+
+<p>Track constellation deployments and satellite counts in real-time at <a href="/constellations">SpaceNexus Constellation Tracker</a>.</p>
+`,
+  },
 ];
 
 export function getBlogPost(slug: string): OriginalBlogPost | undefined {

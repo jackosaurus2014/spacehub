@@ -179,6 +179,11 @@ const BLOG_CTA_MAP: Record<string, { tool: string; path: string }> = {
   'best-space-industry-apps-2026': { tool: 'Get the App', path: '/app' },
   'space-industry-data-sources-where-to-find-information': { tool: 'Data Sources', path: '/data-sources' },
   'how-to-monitor-space-weather-for-satellite-operators': { tool: 'Space Weather', path: '/space-weather' },
+  'spacenexus-product-roadmap-2026': { tool: 'Product Roadmap', path: '/roadmap' },
+  'space-industry-conferences-guide-2026': { tool: 'Space Calendar', path: '/space-calendar' },
+  'what-is-space-situational-awareness-ssa-guide': { tool: 'Space Environment', path: '/space-environment' },
+  'how-to-fundraise-for-space-startup': { tool: 'Space Capital', path: '/space-capital' },
+  'satellite-internet-starlink-kuiper-comparison-2026': { tool: 'Constellation Tracker', path: '/constellations' },
 };
 
 type Props = {

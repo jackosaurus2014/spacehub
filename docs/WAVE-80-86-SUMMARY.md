@@ -550,13 +550,37 @@
 - Blog article count: 165
 - Waves completed (80-164): 84
 
+## Waves 165-168: Roadmap, Integrations, Content Push to 170
+- **Wave 165: Product Roadmap page**
+  - Created `/roadmap` with timeline-based layout: Q1 shipped, Q2 in-progress/planned, H2 exploring
+  - 19 roadmap items with color-coded status badges
+  - Feature request CTA with forum link
+- **Wave 166: Integrations page**
+  - Created `/integrations` showcasing 20+ data source integrations
+  - Organized by category: Launch, Satellite, Weather, Government, News, AI, Infrastructure
+  - Integration type badges (API/RSS) with refresh frequency
+  - Developer Portal CTA
+- **Wave 167: Blog content push — 5 articles (170 total)**
+  - "SpaceNexus Product Roadmap 2026" (building-in-public)
+  - "Space Industry Conferences Worth Attending in 2026" (guide)
+  - "What Is Space Situational Awareness (SSA)?" (technology)
+  - "How to Fundraise for a Space Startup" (market)
+  - "Satellite Internet: Starlink vs Kuiper vs OneWeb" (analysis)
+  - Added CTA mappings for all 5 articles
+- **Wave 168: Register + newsletter enhancement**
+  - Added platform stats (260+ pages, 170+ articles, 50+ sources) to register page social proof
+  - Updated blog badge to "170+ Original Articles"
+  - Added roadmap + integrations to footer and sitemap
+- Blog article count: 170
+- Waves completed (80-168): 88
+
 ---
 
-## Final Totals (Full Platform as of Wave 164 — Definitive Record)
+## Final Totals (Full Platform as of Wave 168 — Definitive Record)
 
 | Metric | Count |
 |--------|-------|
-| Total Pages (page.tsx) | 258+ |
+| Total Pages (page.tsx) | 260+ |
 | Total API Routes (route.ts) | 317 |
 | Total Build Routes | 600+ |
 | Total Components (.tsx) | 286+ |
@@ -566,7 +590,7 @@
 | Total Layout Files | 235+ |
 | Total TypeScript Files | 1,870+ |
 | Documentation Files | 95+ |
-| Blog Articles | 165 |
+| Blog Articles | 170 |
 | Glossary Terms | 69 |
 | SEO Guide Pages | 11 |
 | Educational Learn Pages | 4 |
@@ -578,7 +602,7 @@
 | Community Forum Categories | 6+ |
 | Marketplace Features | 10+ |
 | Changelog Versions | 16+ |
-| Waves Completed (80-164) | 84 |
+| Waves Completed (80-168) | 88 |
 
 ---
 

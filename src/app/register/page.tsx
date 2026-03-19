@@ -501,6 +501,22 @@ function RegisterPageContent() {
             <p className="text-slate-500 text-xs mt-2 italic">
               &ldquo;The most comprehensive space industry intelligence platform I&apos;ve used.&rdquo;
             </p>
+            <div className="flex items-center justify-center gap-3 mt-3 pt-3 border-t border-white/[0.06]">
+              <div className="text-center">
+                <p className="text-white text-sm font-bold">260+</p>
+                <p className="text-slate-500 text-[10px]">Pages</p>
+              </div>
+              <div className="w-px h-6 bg-white/[0.06]" />
+              <div className="text-center">
+                <p className="text-white text-sm font-bold">170+</p>
+                <p className="text-slate-500 text-[10px]">Articles</p>
+              </div>
+              <div className="w-px h-6 bg-white/[0.06]" />
+              <div className="text-center">
+                <p className="text-white text-sm font-bold">50+</p>
+                <p className="text-slate-500 text-[10px]">Data Sources</p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
