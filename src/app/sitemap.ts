@@ -184,6 +184,7 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/beginners`, changeFrequency: 'monthly' as const, priority: 0.6 },
     { url: `${BASE_URL}/night-sky-guide`, changeFrequency: 'monthly' as const, priority: 0.6 },
     { url: `${BASE_URL}/space-quiz`, changeFrequency: 'monthly' as const, priority: 0.5 },
+    { url: `${BASE_URL}/vs`, changeFrequency: 'monthly' as const, priority: 0.6 },
 
     // Community
     { url: `${BASE_URL}/community`, changeFrequency: 'weekly' as const, priority: 0.7 },
