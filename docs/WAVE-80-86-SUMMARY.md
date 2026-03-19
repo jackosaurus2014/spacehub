@@ -514,9 +514,19 @@
   - Blog article count: 162
 - Waves completed (80-158): 78
 
+## Waves 159-160: Play Store Quality Polish + Conversion
+- **Wave 159: Reusable PlayStoreBadge component**
+  - Created `PlayStoreBadge` and `PlayStoreInternalBadge` components (sm/md/lg sizes, UTM tracking)
+  - Added mobile-only Google Play CTA section to homepage (between newsletter and floating CTA)
+  - Added "Get the App" tile to 404 page popular pages grid
+- **Wave 160: Build verification + docs**
+  - Build verified clean
+  - Updated wave summary documentation
+- Waves completed (80-160): 80
+
 ---
 
-## Final Totals (Full Platform as of Wave 158 — Definitive Record)
+## Final Totals (Full Platform as of Wave 160 — Definitive Record)
 
 | Metric | Count |
 |--------|-------|
@@ -542,7 +552,7 @@
 | Community Forum Categories | 6+ |
 | Marketplace Features | 10+ |
 | Changelog Versions | 16+ |
-| Waves Completed (80-158) | 78 |
+| Waves Completed (80-160) | 80 |
 
 ---
 
