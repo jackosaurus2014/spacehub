@@ -162,6 +162,13 @@ const BLOG_CTA_MAP: Record<string, { tool: string; path: string }> = {
   'fcc-5-year-deorbit-rule-satellite-operators': { tool: 'Compliance Hub', path: '/compliance' },
   'space-traffic-management-who-controls-traffic-orbit': { tool: 'Space Environment Monitor', path: '/space-environment' },
   'how-to-value-space-company-metrics-multiples': { tool: 'Company Profiles', path: '/company-profiles' },
+  'satellite-frequency-bands-explained-l-s-c-x-ku-ka': { tool: 'Spectrum Management', path: '/spectrum' },
+  'space-sustainability-ratings-how-companies-scored': { tool: 'Sustainability Scorecard', path: '/sustainability-scorecard' },
+  'how-to-build-satellite-concept-to-orbit': { tool: 'Engineering Toolkit', path: '/tools' },
+  'space-force-budget-where-30-billion-goes': { tool: 'Government Budgets', path: '/government-budgets' },
+  'space-industry-conferences-worth-attending-2026': { tool: 'Space Calendar', path: '/space-calendar' },
+  'interplanetary-internet-nasa-communicates-mars': { tool: 'Mars Mission Planner', path: '/mars-planner' },
+  'space-workforce-crisis-industry-find-enough-talent': { tool: 'Space Talent Hub', path: '/space-talent' },
 };
 
 type Props = {

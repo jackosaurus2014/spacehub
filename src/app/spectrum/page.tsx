@@ -2367,6 +2367,7 @@ function SpectrumContent() {
 
 export default function SpectrumPage() {
   return (
+    <>
     <Suspense
       fallback={
         <div className="min-h-screen">
@@ -2386,5 +2387,32 @@ export default function SpectrumPage() {
     >
       <SpectrumContent />
     </Suspense>
+
+    {/* Related Reading */}
+    <div className="container mx-auto px-4 mt-10 mb-8">
+      <h3 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-4 flex items-center gap-2">
+        <svg className="w-4 h-4 text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
+        </svg>
+        Related Reading
+      </h3>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {[
+          { title: 'Satellite Frequency Bands Explained: L, S, C, X, Ku, Ka', slug: 'satellite-frequency-bands-explained-l-s-c-x-ku-ka' },
+          { title: 'FCC Satellite Licensing: Spectrum & Orbital Slots', slug: 'fcc-satellite-licensing-spectrum-orbital-slots' },
+          { title: 'WRC-27 Preview: Spectrum Battles for Space Communications', slug: 'wrc-27-preview-spectrum-battles-space-communications' },
+        ].map((article) => (
+          <Link
+            key={article.slug}
+            href={`/blog/${article.slug}`}
+            className="group block p-4 bg-white/[0.04] border border-white/[0.06] rounded-xl hover:border-violet-500/25 hover:bg-violet-500/[0.04] transition-all"
+          >
+            <p className="text-sm text-slate-300 group-hover:text-white transition-colors font-medium leading-snug">{article.title}</p>
+            <span className="text-xs text-violet-400 mt-2 block">Read article &rarr;</span>
+          </Link>
+        ))}
+      </div>
+    </div>
+    </>
   );
 }
