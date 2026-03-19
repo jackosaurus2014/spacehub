@@ -638,13 +638,27 @@
 - Blog article count: 200
 - Waves completed (80-190): 110
 
+## Waves 191-200: Conversion + Enthusiast UX (CEO/CTO/Product hat)
+- **Wave 191-194: /beginners page (enthusiast entry point)**
+  - Created `/beginners` — "Space for Beginners" landing page
+  - 6 beginner-friendly topics: Watch Launches, Spot Satellites, Check Aurora, Learn History, Understand Industry, Test Knowledge
+  - Each topic links to tools + relevant articles
+  - CTA to register and Android app
+- **Wave 195-196: Hero stats + sitemap**
+  - Updated LandingHero: 264+ pages, 200+ articles
+  - Added /beginners to sitemap and footer
+- **Wave 197-200: Changelog v2.5.0 + build verification**
+  - Build verified clean
+  - Documentation updated
+- Waves completed (80-200): 120
+
 ---
 
-## Final Totals (Full Platform as of Wave 190 — Definitive Record)
+## Final Totals (Full Platform as of Wave 200 — Definitive Record)
 
 | Metric | Count |
 |--------|-------|
-| Total Pages (page.tsx) | 264+ |
+| Total Pages (page.tsx) | 266+ |
 | Total API Routes (route.ts) | 317 |
 | Total Build Routes | 600+ |
 | Total Components (.tsx) | 286+ |
@@ -666,7 +680,7 @@
 | Community Forum Categories | 6+ |
 | Marketplace Features | 10+ |
 | Changelog Versions | 16+ |
-| Waves Completed (80-190) | 110 |
+| Waves Completed (80-200) | 120 |
 
 ---
 

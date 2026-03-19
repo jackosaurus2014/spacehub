@@ -44,8 +44,8 @@ function useCountUp(end: number, duration = 2000, startDelay = 0) {
 /*  Platform stat definitions                                          */
 /* ------------------------------------------------------------------ */
 const PLATFORM_STATS = [
-  { value: 257, suffix: '+', label: 'Pages & Tools', icon: '\uD83D\uDCCA' },
-  { value: 162, suffix: '+', label: 'Original Articles', icon: '\uD83D\uDCDD' },
+  { value: 264, suffix: '+', label: 'Pages & Tools', icon: '\uD83D\uDCCA' },
+  { value: 200, suffix: '+', label: 'Original Articles', icon: '\uD83D\uDCDD' },
   { value: 50, suffix: '+', label: 'Data Sources', icon: '\uD83D\uDE80' },
   { value: 600, suffix: '+', label: 'Routes', icon: '\u2705' },
 ];
