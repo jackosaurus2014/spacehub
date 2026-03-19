@@ -390,8 +390,6 @@ const TRUST_AUDIENCES = [
   { label: 'Startups', icon: '🚀' },
 ];
 
-const PRICING_TESTIMONIALS: { quote: string; name: string; title: string }[] = [];
-
 function SocialProofSection() {
   return (
     <div className="max-w-4xl mx-auto">
@@ -409,26 +407,6 @@ function SocialProofSection() {
           ))}
         </div>
       </div>
-
-      {/* Testimonials — only rendered when real testimonials are available */}
-      {PRICING_TESTIMONIALS.length > 0 && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {PRICING_TESTIMONIALS.map((t) => (
-            <div key={t.name} className="p-5 rounded-xl bg-white/[0.04] border border-white/[0.06]">
-              <svg className="w-6 h-6 text-slate-300/40 mb-3" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M4.583 17.321C3.553 16.227 3 15 3 13.011c0-3.5 2.457-6.637 6.03-8.188l.893 1.378c-3.335 1.804-3.987 4.145-4.247 5.621.537-.278 1.24-.375 1.929-.311 1.804.167 3.226 1.648 3.226 3.489a3.5 3.5 0 01-3.5 3.5c-1.073 0-2.099-.49-2.748-1.179zm10 0C13.553 16.227 13 15 13 13.011c0-3.5 2.457-6.637 6.03-8.188l.893 1.378c-3.335 1.804-3.987 4.145-4.247 5.621.537-.278 1.24-.375 1.929-.311 1.804.167 3.226 1.648 3.226 3.489a3.5 3.5 0 01-3.5 3.5c-1.073 0-2.099-.49-2.748-1.179z" />
-              </svg>
-              <p className="text-slate-300 text-sm leading-relaxed mb-4 italic">
-                &ldquo;{t.quote}&rdquo;
-              </p>
-              <div>
-                <p className="text-white text-sm font-semibold">{t.name}</p>
-                <p className="text-slate-400 text-xs">{t.title}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
     </div>
   );
 }

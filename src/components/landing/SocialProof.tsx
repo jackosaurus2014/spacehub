@@ -3,9 +3,8 @@
 import { motion, useInView } from 'framer-motion';
 import { useRef, useEffect, useState, useCallback } from 'react';
 
-// Testimonials removed — only real, verified testimonials should be displayed here.
-// When real user feedback is collected (via /contact "User Story" submissions),
-// add them to this array with source attribution.
+// Testimonial section is conditionally rendered — only shown when real, verified
+// user feedback is collected. Array intentionally empty until real quotes are available.
 const TESTIMONIALS: { quote: string; name: string; title: string; company: string; persona: string; initials: string; gradient: string }[] = [];
 
 const STATS = [
