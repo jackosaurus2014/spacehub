@@ -3,6 +3,7 @@
 import { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
+import SubscribeCTA from '@/components/marketing/SubscribeCTA';
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -506,6 +507,8 @@ export default function RegulatoryAgenciesPage() {
             ))}
           </div>
         )}
+
+        <SubscribeCTA />
 
         {/* Related modules */}
         {relatedModules.length > 0 && (

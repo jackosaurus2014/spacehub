@@ -168,7 +168,11 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/privacy`, changeFrequency: 'monthly' as const, priority: 0.3 },
     { url: `${BASE_URL}/terms`, changeFrequency: 'monthly' as const, priority: 0.3 },
     { url: `${BASE_URL}/cookies`, changeFrequency: 'monthly' as const, priority: 0.3 },
+    { url: `${BASE_URL}/data-safety`, changeFrequency: 'monthly' as const, priority: 0.4 },
     { url: `${BASE_URL}/legal/dmca`, changeFrequency: 'monthly' as const, priority: 0.3 },
+
+    // App download
+    { url: `${BASE_URL}/app`, changeFrequency: 'monthly' as const, priority: 0.6 },
 
     // Community
     { url: `${BASE_URL}/community`, changeFrequency: 'weekly' as const, priority: 0.7 },

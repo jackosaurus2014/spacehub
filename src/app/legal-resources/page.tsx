@@ -7,6 +7,7 @@ import ScrollReveal from '@/components/ui/ScrollReveal';
 import SocialShare from '@/components/ui/SocialShare';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
+import SubscribeCTA from '@/components/marketing/SubscribeCTA';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -641,6 +642,8 @@ export default function LegalResourcesPage() {
         <div className="mt-10 flex justify-center">
           <SocialShare title="Space Industry Legal Resources" url="https://spacenexus.us/legal-resources" />
         </div>
+
+        <SubscribeCTA />
 
         {/* Related Modules */}
         {PAGE_RELATIONS['legal-resources'] && (

@@ -169,6 +169,11 @@ const BLOG_CTA_MAP: Record<string, { tool: string; path: string }> = {
   'space-industry-conferences-worth-attending-2026': { tool: 'Space Calendar', path: '/space-calendar' },
   'interplanetary-internet-nasa-communicates-mars': { tool: 'Mars Mission Planner', path: '/mars-planner' },
   'space-workforce-crisis-industry-find-enough-talent': { tool: 'Space Talent Hub', path: '/space-talent' },
+  'satellite-deorbiting-end-of-life-rules-changing': { tool: 'Compliance Hub', path: '/compliance' },
+  'spacenexus-platform-tips-10-power-user-features': { tool: 'All Features', path: '/features' },
+  'dual-use-space-technology-commercial-meets-military': { tool: 'Space Defense Intelligence', path: '/space-defense' },
+  'business-earth-observation-imagery-to-insights': { tool: 'Satellite Intelligence', path: '/satellites' },
+  'how-to-read-satellite-tle-two-line-element-decoded': { tool: 'Orbital Calculator', path: '/orbital-calculator' },
 };
 
 type Props = {

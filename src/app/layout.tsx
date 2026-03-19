@@ -39,6 +39,7 @@ const PushOptInBanner = dynamic(() => import('@/components/mobile/PushOptInBanne
 const WhatsNew = dynamic(() => import('@/components/mobile/WhatsNew').then(m => ({ default: m.default })), { ssr: false });
 const ReferralPrompt = dynamic(() => import('@/components/marketing/ReferralPrompt'), { ssr: false });
 const AppRatingPrompt = dynamic(() => import('@/components/mobile/AppRatingPrompt'), { ssr: false });
+const AndroidInstallBanner = dynamic(() => import('@/components/mobile/AndroidInstallBanner'), { ssr: false });
 const MobileSocialProofBar = dynamic(() => import('@/components/marketing/MobileSocialProofBar'), { ssr: false });
 const HelpButton = dynamic(() => import('@/components/HelpButton'), { ssr: false });
 const FeedbackButton = dynamic(() => import('@/components/FeedbackButton'), { ssr: false });
@@ -252,6 +253,7 @@ export default function RootLayout({
               <WebVitals />
               <InstallPrompt />
               <IOSInstallPrompt />
+              <AndroidInstallBanner />
               <PushOptInBanner />
               <WhatsNew />
               <ReferralPrompt />

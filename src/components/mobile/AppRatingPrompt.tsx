@@ -63,11 +63,11 @@ function detectPlatform(): Platform {
 }
 
 function getRatingUrl(platform: Platform): string {
-  // Placeholder store URLs -- replace with real App Store / Play Store links when available
   switch (platform) {
-    case 'ios':
-      return 'https://spacenexus.us/feedback';
     case 'android':
+      return 'https://play.google.com/store/apps/details?id=com.spacenexus.app';
+    case 'ios':
+      // Update with App Store link when available
       return 'https://spacenexus.us/feedback';
     default:
       return '/feedback';

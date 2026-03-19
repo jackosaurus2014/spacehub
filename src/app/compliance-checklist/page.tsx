@@ -5,6 +5,7 @@ import Link from 'next/link';
 import AutoBreadcrumb from '@/components/ui/AutoBreadcrumb';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
+import SubscribeCTA from '@/components/marketing/SubscribeCTA';
 
 // ─── Checklist Data ──────────────────────────────────────────────────────────
 
@@ -492,6 +493,8 @@ export default function ComplianceChecklistPage() {
             </Link>
           </div>
         </div>
+
+        <SubscribeCTA />
 
         {/* Related Modules */}
         <div className="mt-8">

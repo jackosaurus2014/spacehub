@@ -98,7 +98,36 @@
       "purpose": "maskable"
     }
   ],
-  "screenshots": [],
+  "screenshots": [
+    {
+      "src": "/play-store/nb-phone-screenshot-1.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "SpaceNexus Mission Control dashboard"
+    },
+    {
+      "src": "/play-store/nb-phone-screenshot-2.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Satellite tracking and orbit visualization"
+    },
+    {
+      "src": "/play-store/nb-phone-screenshot-3.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Market intelligence and space stocks"
+    },
+    {
+      "src": "/play-store/nb-tablet-screenshot-1.png",
+      "sizes": "2048x1536",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "SpaceNexus dashboard on tablet"
+    }
+  ],
   "shortcuts": [
     {
       "name": "Mission Control",
@@ -136,7 +165,7 @@
       "id": "com.spacenexus.app"
     }
   ],
-  "prefer_related_applications": false,
+  "prefer_related_applications": true,
   "scope_extensions": [
     { "origin": "*.spacenexus.us" },
     { "origin": "*.railway.app" }

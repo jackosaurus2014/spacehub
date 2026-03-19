@@ -6,6 +6,7 @@ import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
+import SubscribeCTA from '@/components/marketing/SubscribeCTA';
 import EmptyState from '@/components/ui/EmptyState';
 
 // ---------------------------------------------------------------------------
@@ -699,6 +700,8 @@ export default function ExportClassificationsPage() {
             </Link>
           </div>
         </ScrollReveal>
+
+        <SubscribeCTA />
 
         {/* Related Modules */}
         <div className="mt-10">
