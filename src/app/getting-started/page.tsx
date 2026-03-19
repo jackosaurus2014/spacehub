@@ -566,6 +566,34 @@ export default function GettingStartedPage() {
         </div>
       </section>
 
+      {/* Mobile App CTA */}
+      <section className="container mx-auto px-4 pb-12">
+        <ScrollReveal>
+          <div className="max-w-3xl mx-auto card p-6 border border-cyan-500/20 text-center">
+            <div className="flex items-center justify-center gap-3 mb-3">
+              <div className="w-10 h-10 rounded-xl bg-cyan-500/10 flex items-center justify-center">
+                <svg className="w-5 h-5 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 006 3.75v16.5a2.25 2.25 0 002.25 2.25h7.5A2.25 2.25 0 0018 20.25V3.75a2.25 2.25 0 00-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-semibold text-white">Take SpaceNexus On the Go</h3>
+            </div>
+            <p className="text-slate-400 text-sm mb-4 max-w-md mx-auto">
+              Get the full SpaceNexus experience on your Android device. Track launches, monitor markets, and receive real-time alerts.
+            </p>
+            <Link
+              href="/app"
+              className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-medium text-slate-900 bg-white hover:bg-slate-100 rounded-lg transition-colors"
+            >
+              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M3.609 1.814L13.792 12 3.61 22.186a.996.996 0 01-.61-.92V2.734a1 1 0 01.609-.92zm10.89 10.893l2.302 2.302-10.937 6.333 8.635-8.635zm3.199-1.4l2.453 1.42a1 1 0 010 1.546l-2.453 1.42-2.537-2.386 2.537-2zm-3.906-2.093L5.157 1.58l10.937 6.333-2.302 2.301z" />
+              </svg>
+              Get it on Google Play
+            </Link>
+          </div>
+        </ScrollReveal>
+      </section>
+
       {/* Related Modules */}
       <section className="container mx-auto px-4 pb-16">
         <RelatedModules modules={getRelatedModules('getting-started')} />

@@ -16,6 +16,25 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '2.4.0',
+    date: '2026-03-18',
+    title: 'Play Store Launch Readiness — Android App & Data Safety',
+    description:
+      'SpaceNexus is now ready for Google Play. New Data Safety disclosure page, dedicated app download landing page, smart Android install banner, Play Store rating integration, and manifest updates for app store discoverability.',
+    highlight: 'Android app ready for Google Play, 160+ articles, 600+ routes',
+    changes: [
+      { type: 'feature', text: 'Data Safety page — transparent disclosure of data collection, sharing, security practices (Google Play requirement)' },
+      { type: 'feature', text: 'App download landing page with Google Play badge, feature highlights, and screenshot gallery' },
+      { type: 'feature', text: 'Android smart install banner — prompts mobile web users to install from Google Play' },
+      { type: 'feature', text: '"Get the App" added to navigation, footer, and getting-started page' },
+      { type: 'improvement', text: 'App rating prompt now links to real Google Play Store listing' },
+      { type: 'improvement', text: 'Web manifest updated: prefer_related_applications enabled, screenshots populated with form_factor labels' },
+      { type: 'improvement', text: 'Sitemap updated with /data-safety and /app routes' },
+      { type: 'feature', text: 'SubscribeCTA added to 5 regulatory pages (licensing, export, compliance, legal resources, agencies)' },
+      { type: 'improvement', text: '160 blog articles — the largest free space content library on the internet' },
+    ],
+  },
+  {
     version: '2.3.0',
     date: '2026-03-18',
     title: 'Regulatory & Business Depth — 138 Articles, Legal Resources Directory',

@@ -18170,6 +18170,170 @@ ISS (ZARYA)
 <p><a href="/orbital-calculator">Explore SpaceNexus Orbital Calculator</a></p>
 `,
   },
+  {
+    slug: 'spacenexus-now-on-google-play-android-app',
+    title: 'SpaceNexus Is Now on Google Play: Space Intelligence in Your Pocket',
+    excerpt: 'The SpaceNexus Android app brings the full power of our space industry intelligence platform to your phone. Track launches, monitor markets, and receive real-time alerts — all from Google Play.',
+    category: 'building-in-public',
+    author: 'SpaceNexus Team',
+    authorRole: 'Editorial',
+    publishedAt: '2026-03-18T18:00:00Z',
+    readingTime: 5,
+    featured: true,
+    keywords: ['spacenexus android app', 'google play space app', 'space industry mobile app', 'satellite tracking app', 'launch tracking android'],
+    content: `
+<p>Today we're excited to announce that <strong>SpaceNexus is now available on Google Play</strong>. After 76 waves of recursive development and 160+ articles published, we're bringing the full SpaceNexus experience to Android devices.</p>
+
+<h2 id="why-mobile-matters">Why Mobile Matters for Space Intelligence</h2>
+
+<p>Space doesn't operate on a 9-to-5 schedule. Launches happen at 3 AM. Solar flares can impact satellite operations without warning. Funding rounds close while you're away from your desk. Having space intelligence in your pocket means you never miss a critical moment.</p>
+
+<p>The SpaceNexus Android app isn't a stripped-down mobile version — it's the <strong>full platform</strong>, optimized for mobile with native features like push notifications, offline caching, and app shortcuts.</p>
+
+<h2 id="what-you-get">What You Get</h2>
+
+<ul>
+<li><strong>Live Launch Tracking:</strong> Real-time countdowns and mission status for every orbital launch worldwide. Get push notifications before liftoff</li>
+<li><strong>Satellite Tracker:</strong> Track 10,000+ satellites including Starlink, ISS, and classified payloads in real time</li>
+<li><strong>Market Intelligence:</strong> Space stocks, funding rounds, M&A deals, and sector trends at your fingertips</li>
+<li><strong>Space Weather Alerts:</strong> Solar flare notifications, geomagnetic storm tracking, and aurora forecasts</li>
+<li><strong>160+ Original Articles:</strong> The largest free space content library on the internet, from investment guides to engineering deep-dives</li>
+<li><strong>Offline Mode:</strong> Cached data lets you browse even without connectivity — essential for conference halls and remote locations</li>
+</ul>
+
+<h2 id="technical-approach">Our Technical Approach</h2>
+
+<p>Rather than building a separate native app that would lag behind our web platform, we chose a <strong>Trusted Web Activity (TWA)</strong> approach. This wraps our existing Progressive Web App (PWA) in a lightweight Android shell that:</p>
+
+<ul>
+<li>Launches instantly with no URL bar — it looks and feels like a native app</li>
+<li>Automatically stays in sync with every web deployment</li>
+<li>Supports push notifications via service workers</li>
+<li>Caches aggressively for offline use with TTL-aware caching strategies</li>
+<li>Weighs only ~3.4 MB to install</li>
+</ul>
+
+<p>This means that when we ship improvements to spacenexus.us, Android users get them immediately — no app store update required.</p>
+
+<h2 id="data-safety">Data Safety & Privacy</h2>
+
+<p>We've published a comprehensive <a href="/data-safety">Data Safety</a> page that details exactly what data we collect, how it's used, and your choices. Key commitments: we never sell your data, all transmissions are encrypted, and you can delete your account at any time.</p>
+
+<h2 id="whats-next">What's Next</h2>
+
+<p>The Android launch is just the beginning. We're working on:</p>
+
+<ul>
+<li><strong>Push notification channels:</strong> Subscribe to specific alert types (launches, funding rounds, space weather)</li>
+<li><strong>Home screen widgets:</strong> At-a-glance countdown timers and market snapshots</li>
+<li><strong>iOS App Store submission:</strong> Bringing SpaceNexus to iPhone and iPad</li>
+<li><strong>Wearable integration:</strong> Launch alerts on your smartwatch</li>
+</ul>
+
+<p>Download SpaceNexus from Google Play today and take space intelligence everywhere you go.</p>
+
+<p><a href="/app">Get SpaceNexus on Google Play</a></p>
+`,
+  },
+  {
+    slug: 'play-store-launch-checklist-pwa-twa-android',
+    title: 'Publishing a PWA on Google Play: The Complete TWA Checklist for 2026',
+    excerpt: 'A step-by-step guide to publishing your Progressive Web App on Google Play using Trusted Web Activities. Covers signing keys, Digital Asset Links, Play Store requirements, and lessons learned from shipping SpaceNexus.',
+    category: 'technology',
+    author: 'SpaceNexus Team',
+    authorRole: 'Engineering',
+    publishedAt: '2026-03-18T19:00:00Z',
+    readingTime: 7,
+    keywords: ['pwa to play store', 'trusted web activity', 'twa android', 'pwa google play', 'digital asset links', 'bubblewrap'],
+    content: `
+<p>You've built a great PWA. It has a service worker, a manifest, offline support, and passes all the Lighthouse checks. Now you want to put it on Google Play. Here's exactly how we did it with SpaceNexus — and what we learned along the way.</p>
+
+<h2 id="why-twa">Why TWA Over Capacitor or React Native</h2>
+
+<p>There are three common approaches to getting a web app on the Play Store:</p>
+
+<ul>
+<li><strong>Trusted Web Activity (TWA):</strong> A lightweight Android wrapper that opens your PWA in a full-screen Chrome Custom Tab. No URL bar, no webview — it's Chrome rendering your site natively. The AAB is typically 2-4 MB</li>
+<li><strong>Capacitor/Cordova:</strong> Embeds a WebView and provides native plugin bridges. More control, but you manage a separate build pipeline and the WebView may not match Chrome's capabilities</li>
+<li><strong>React Native / Flutter:</strong> Full native rebuild. Maximum control, maximum effort. Usually only justified if you need hardware APIs that web can't provide</li>
+</ul>
+
+<p>We chose TWA because SpaceNexus is a data-heavy platform that's already optimized for mobile web. A TWA lets us ship one codebase with zero feature lag between web and app.</p>
+
+<h2 id="prerequisites">Prerequisites Checklist</h2>
+
+<p>Before you start, make sure you have:</p>
+
+<ul>
+<li>A <strong>Google Play Developer account</strong> ($25 one-time fee)</li>
+<li>Your PWA passing Chrome's <strong>installability criteria</strong>: valid manifest, registered service worker, served over HTTPS</li>
+<li>A <strong>signing key</strong> (Java keystore) — you'll use this for every release</li>
+<li>A <strong>privacy policy URL</strong> (required for all Play Store apps)</li>
+<li>Play Store <strong>screenshots</strong>: minimum 2 phone, recommended 2 tablet</li>
+<li>A <strong>feature graphic</strong>: 1024x500 px</li>
+<li>A <strong>hi-res icon</strong>: 512x512 px with no transparency</li>
+</ul>
+
+<h2 id="step-by-step">Step-by-Step Process</h2>
+
+<h3>1. Generate Your Signing Key</h3>
+
+<p>Use keytool to create a Java keystore. Store the passwords securely — you'll need them for every future release:</p>
+
+<pre><code>keytool -genkeypair -alias spacenexus -keyalg RSA -keysize 2048 \\
+  -validity 10000 -keystore spacenexus.keystore</code></pre>
+
+<p>Extract the SHA-256 fingerprint — you'll need this for Digital Asset Links:</p>
+
+<pre><code>keytool -list -v -keystore spacenexus.keystore -alias spacenexus</code></pre>
+
+<h3>2. Configure Digital Asset Links</h3>
+
+<p>Create <code>.well-known/assetlinks.json</code> at your domain root. This file proves to Android that your app and website belong to the same entity:</p>
+
+<pre><code>[{
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "com.yourapp.package",
+    "sha256_cert_fingerprints": ["YOUR:SHA256:FINGERPRINT:HERE"]
+  }
+}]</code></pre>
+
+<p>Serve it with <code>Content-Type: application/json</code>. Verify it works with Google's <a href="https://developers.google.com/digital-asset-links/tools/generator">Asset Links tool</a>.</p>
+
+<h3>3. Build the TWA with Bubblewrap or PWABuilder</h3>
+
+<p>We recommend <strong>PWABuilder</strong> (pwabuilder.com) for the simplest path. Upload your manifest URL, configure your signing key, and it generates a ready-to-upload AAB. Alternatively, use the Bubblewrap CLI for more control.</p>
+
+<h3>4. Complete the Play Console Listing</h3>
+
+<p>Fill out the store listing: title (50 chars), short description (80 chars), full description (4000 chars), screenshots, feature graphic, and icon. Set your content rating via the IARC questionnaire — most data/news apps qualify as "Everyone."</p>
+
+<h3>5. Configure Data Safety</h3>
+
+<p>Google Play requires a Data Safety section. Disclose what data you collect, whether it's shared, and your security practices. We created a dedicated <a href="/data-safety">/data-safety page</a> that mirrors the Play Store disclosure format.</p>
+
+<h3>6. Submit to Internal Testing First</h3>
+
+<p>Always start with the Internal Testing track. This lets you verify the app works on real devices before going public. Check that: the URL bar is hidden (Digital Asset Links working), the app opens correctly, push notifications function, and offline mode works.</p>
+
+<h2 id="common-pitfalls">Common Pitfalls</h2>
+
+<ul>
+<li><strong>URL bar still showing:</strong> Your assetlinks.json is misconfigured or the fingerprint doesn't match. Double-check with the Digital Asset Links validator</li>
+<li><strong>App crashes on launch:</strong> Usually a CORS or CSP issue. Make sure your headers allow the TWA origin</li>
+<li><strong>Slow cold start:</strong> Ensure your service worker precaches critical assets. Users expect near-instant launch from the home screen</li>
+<li><strong>Push notifications not working:</strong> TWAs use the web Push API, not FCM directly. Make sure your VAPID keys are configured and service worker handles push events</li>
+</ul>
+
+<h2 id="results">Our Results</h2>
+
+<p>SpaceNexus shipped as a 3.4 MB AAB with a verified Digital Asset Links configuration. The app launches in standalone mode (no URL bar), supports offline browsing via a TTL-aware service worker cache, and delivers push notifications for launch alerts and space weather events. Every deployment to our web platform is instantly available in the app — zero app store review delay.</p>
+
+<p><a href="/app">Download SpaceNexus on Google Play</a></p>
+`,
+  },
 ];
 
 export function getBlogPost(slug: string): OriginalBlogPost | undefined {

@@ -174,6 +174,8 @@ const BLOG_CTA_MAP: Record<string, { tool: string; path: string }> = {
   'dual-use-space-technology-commercial-meets-military': { tool: 'Space Defense Intelligence', path: '/space-defense' },
   'business-earth-observation-imagery-to-insights': { tool: 'Satellite Intelligence', path: '/satellites' },
   'how-to-read-satellite-tle-two-line-element-decoded': { tool: 'Orbital Calculator', path: '/orbital-calculator' },
+  'spacenexus-now-on-google-play-android-app': { tool: 'Get the App', path: '/app' },
+  'play-store-launch-checklist-pwa-twa-android': { tool: 'Get the App', path: '/app' },
 };
 
 type Props = {

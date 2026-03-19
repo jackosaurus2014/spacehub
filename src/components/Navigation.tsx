@@ -83,6 +83,7 @@ const EXPLORE_ITEMS: DropdownItem[] = [
   { label: 'Space Industry Statistics', href: '/space-stats', description: 'Comprehensive space industry stats & facts 2026' },
   { label: 'Getting Started', href: '/getting-started', description: 'New to SpaceNexus? Start here' },
   { label: 'Alternatives', href: '/alternatives', description: 'SpaceNexus vs other space data platforms' },
+  { label: '📱 Get the App', href: '/app', description: 'Download SpaceNexus for Android on Google Play' },
 ];
 
 const INTELLIGENCE_ITEMS: DropdownItem[] = [

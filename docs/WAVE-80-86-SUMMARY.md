@@ -502,9 +502,21 @@
 - **Updated sitemap** — added /data-safety and /app routes
 - Build verified clean with both new routes compiled
 
+## Waves 157-158: Play Store Discoverability + Content
+- **Wave 157: Navigation & Changelog**
+  - Added "Get the App" link to Explore navigation dropdown
+  - Added Google Play CTA section to /getting-started page
+  - Added changelog v2.4.0 covering Play Store readiness wave
+- **Wave 158: Blog Content + CTA Mappings**
+  - Published "SpaceNexus Is Now on Google Play: Space Intelligence in Your Pocket" (building-in-public, ~800 words)
+  - Published "Publishing a PWA on Google Play: The Complete TWA Checklist for 2026" (technology, ~900 words)
+  - Added CTA mappings for both new articles → /app
+  - Blog article count: 162
+- Waves completed (80-158): 78
+
 ---
 
-## Final Totals (Full Platform as of Wave 156 — Definitive Record)
+## Final Totals (Full Platform as of Wave 158 — Definitive Record)
 
 | Metric | Count |
 |--------|-------|
@@ -518,7 +530,7 @@
 | Total Layout Files | 235+ |
 | Total TypeScript Files | 1,870+ |
 | Documentation Files | 95+ |
-| Blog Articles | 160 |
+| Blog Articles | 162 |
 | Glossary Terms | 69 |
 | SEO Guide Pages | 11 |
 | Educational Learn Pages | 4 |
@@ -529,8 +541,8 @@
 | RSS/Content Sources | 26+ |
 | Community Forum Categories | 6+ |
 | Marketplace Features | 10+ |
-| Changelog Versions | 15+ |
-| Waves Completed (80-156) | 76 |
+| Changelog Versions | 16+ |
+| Waves Completed (80-158) | 78 |
 
 ---
 
