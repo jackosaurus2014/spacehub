@@ -18850,6 +18850,271 @@ ISS (ZARYA)
 <p>Track constellation deployments and satellite counts in real-time at <a href="/constellations">SpaceNexus Constellation Tracker</a>.</p>
 `,
   },
+  {
+    slug: 'how-spacenexus-uses-ai-generate-insights',
+    title: 'How SpaceNexus Uses AI to Generate Daily Space Industry Insights',
+    excerpt: 'Behind the scenes of our AI insights pipeline: how we use Claude to analyze space industry trends, fact-check with a second AI pass, and deliver actionable intelligence daily.',
+    category: 'building-in-public',
+    author: 'SpaceNexus Team',
+    authorRole: 'Engineering',
+    publishedAt: '2026-03-19T05:00:00Z',
+    readingTime: 5,
+    keywords: ['ai space insights', 'claude ai analysis', 'automated intelligence', 'spacenexus ai pipeline'],
+    content: `
+<p>Every morning at 1:00 AM UTC, an automated pipeline scans the previous 36 hours of space industry news, cross-references it with recent blog posts and regulatory updates, and generates an original analysis piece. Here's how it works.</p>
+
+<h2 id="the-pipeline">The Pipeline</h2>
+
+<p>Our AI insights system runs as a scheduled cron job with these stages:</p>
+
+<ul>
+<li><strong>Data Collection:</strong> Fetch recent news (36 hours), blog posts (48 hours), and legal/regulatory updates (72 hours) from our database</li>
+<li><strong>Analysis Generation:</strong> Send the aggregated content to Claude with a prompt designed to identify trends, connections, and implications that humans might miss across disparate sources</li>
+<li><strong>Fact-Check Pass:</strong> A second AI call reviews the generated analysis for factual accuracy, flagging any claims that can't be supported by the source material</li>
+<li><strong>Editorial Queue:</strong> The analysis is saved as "pending review" and an email is sent to our editorial team for human approval before publishing</li>
+<li><strong>Retry Logic:</strong> If the 1 AM run fails, a retry fires at 7 AM UTC. The watchdog monitors both runs</li>
+</ul>
+
+<h2 id="why-ai-plus-human">Why AI + Human Review</h2>
+
+<p>We deliberately chose not to auto-publish AI content. Every insight requires manual admin approval because:</p>
+
+<ul>
+<li>AI can hallucinate facts about specific companies, funding amounts, or timelines</li>
+<li>The space industry has classified and export-controlled topics that require careful handling</li>
+<li>Tone and framing matter — analysis should be objective, not sensational</li>
+<li>Our readers trust SpaceNexus as an authoritative source; that trust requires human judgment</li>
+</ul>
+
+<h2 id="what-it-produces">What It Produces</h2>
+
+<p>The pipeline generates analysis covering: emerging trends across multiple news stories, connection patterns between funding events and policy changes, weekly intelligence briefs, and forward-looking implications for different industry segments.</p>
+
+<p>Browse our AI-generated insights at <a href="/ai-insights">spacenexus.us/ai-insights</a>.</p>
+`,
+  },
+  {
+    slug: 'space-industry-glossary-essential-terms',
+    title: 'Space Industry Glossary: 69 Essential Terms Every Professional Should Know',
+    excerpt: 'From apogee to zero-gravity, from ITAR to TRL — the definitive glossary of space industry terms for professionals, investors, and enthusiasts.',
+    category: 'guide',
+    author: 'SpaceNexus Team',
+    authorRole: 'Editorial',
+    publishedAt: '2026-03-19T06:00:00Z',
+    readingTime: 5,
+    keywords: ['space glossary', 'space industry terms', 'aerospace terminology', 'satellite terms explained', 'space acronyms'],
+    content: `
+<p>The space industry has its own language. Whether you're joining from finance, tech, or policy, mastering the terminology is essential for credibility and efficiency. Here are the 69 terms you'll encounter most often.</p>
+
+<h2 id="orbital-mechanics">Orbital Mechanics</h2>
+
+<ul>
+<li><strong>LEO (Low Earth Orbit):</strong> 200-2,000 km altitude. Home to ISS, Starlink, and most Earth observation satellites. Orbital period: ~90 minutes</li>
+<li><strong>MEO (Medium Earth Orbit):</strong> 2,000-35,786 km. GPS and navigation constellations operate here</li>
+<li><strong>GEO (Geostationary Earth Orbit):</strong> 35,786 km. Satellites appear stationary over one point. Used for communications and weather</li>
+<li><strong>TLE (Two-Line Element):</strong> Standardized format for describing a satellite's orbit. Used by the SGP4 propagation model</li>
+<li><strong>Delta-V:</strong> Change in velocity needed for an orbital maneuver. The fundamental currency of spaceflight</li>
+<li><strong>Apogee/Perigee:</strong> Highest/lowest point in an elliptical orbit around Earth</li>
+</ul>
+
+<h2 id="business-terms">Business & Investment</h2>
+
+<ul>
+<li><strong>NewSpace:</strong> The commercial space industry wave driven by private investment and entrepreneurial companies (vs. traditional government/prime contractors)</li>
+<li><strong>Space Economy:</strong> All economic activity related to space — currently ~$630B and growing at 9% annually</li>
+<li><strong>SBIR:</strong> Small Business Innovation Research — non-dilutive government grants for technology development</li>
+<li><strong>TRL (Technology Readiness Level):</strong> NASA's 1-9 scale for technology maturity. TRL 1 = basic research. TRL 9 = flight-proven</li>
+<li><strong>Flight Heritage:</strong> Proven track record of a technology or component operating successfully in space</li>
+</ul>
+
+<h2 id="regulatory">Regulatory & Compliance</h2>
+
+<ul>
+<li><strong>ITAR:</strong> International Traffic in Arms Regulations — US export controls on defense-related space technology</li>
+<li><strong>EAR:</strong> Export Administration Regulations — US controls on dual-use commercial space technology</li>
+<li><strong>FCC:</strong> Federal Communications Commission — licenses satellite spectrum and orbital slots for US operators</li>
+<li><strong>ITU:</strong> International Telecommunication Union — coordinates global spectrum allocation</li>
+</ul>
+
+<p>Explore the full interactive glossary with 69 terms across 12 categories at <a href="/glossary">SpaceNexus Glossary</a>. Or browse our <a href="/acronyms">Space Acronyms directory</a> with 126+ entries.</p>
+`,
+  },
+  {
+    slug: 'why-space-industry-professionals-need-alerts',
+    title: 'Why Space Industry Professionals Need Real-Time Alerts in 2026',
+    excerpt: 'From launch scrubs to solar storms to funding announcements — the space industry moves 24/7. Here\'s why real-time alerts are no longer optional.',
+    category: 'analysis',
+    author: 'SpaceNexus Team',
+    authorRole: 'Editorial',
+    publishedAt: '2026-03-19T07:00:00Z',
+    readingTime: 5,
+    keywords: ['space industry alerts', 'launch notifications', 'space weather alerts', 'satellite monitoring alerts'],
+    content: `
+<p>On February 4, 2022, SpaceX launched 49 Starlink satellites into a geomagnetic storm. The increased atmospheric drag caused 40 of them to deorbit and burn up. Operators who had space weather alerts configured could have predicted the risk. Those who didn't lost satellites worth millions.</p>
+
+<p>The space industry operates around the clock across every time zone. Here's why real-time alerts have become essential infrastructure for professionals.</p>
+
+<h2 id="launch-alerts">Launch Alerts</h2>
+
+<p>Launch schedules change constantly. A scrub at T-minus 10 minutes can cascade through mission timelines, spectrum coordination windows, and ground station bookings. Real-time launch alerts help:</p>
+
+<ul>
+<li>Ground station operators coordinate tracking passes</li>
+<li>Spectrum coordinators manage interference windows</li>
+<li>Insurance underwriters track mission status</li>
+<li>Investors monitor competitor deployment cadence</li>
+</ul>
+
+<h2 id="space-weather-alerts">Space Weather Alerts</h2>
+
+<p>Solar events can impact satellite operations within minutes (flares) or days (CMEs). Operators need advance warning to:</p>
+
+<ul>
+<li>Safe-mode vulnerable spacecraft before a storm hits</li>
+<li>Suspend orbit determination during atmospheric density anomalies</li>
+<li>Protect science instruments from energetic particle damage</li>
+<li>Warn GPS-dependent customers about degraded accuracy</li>
+</ul>
+
+<h2 id="market-alerts">Market & Funding Alerts</h2>
+
+<p>Space investors and business development teams track:</p>
+
+<ul>
+<li>Funding round announcements (who raised, how much, from whom)</li>
+<li>M&A activity and strategic partnerships</li>
+<li>Government contract awards (SAM.gov, USAspending)</li>
+<li>Regulatory changes that affect licensing or compliance</li>
+</ul>
+
+<h2 id="how-spacenexus-helps">How SpaceNexus Alerts Work</h2>
+
+<p>SpaceNexus provides configurable alerts across all these categories. Set up watchlists for specific companies, create rules for launch providers, and subscribe to space weather thresholds. Alerts are delivered via push notification on the <a href="/app">Android app</a> and email.</p>
+
+<p>Configure your alerts at <a href="/alerts">spacenexus.us/alerts</a>.</p>
+`,
+  },
+  {
+    slug: 'commercial-space-stations-who-will-replace-iss',
+    title: 'Commercial Space Stations: Who Will Replace the ISS After 2030?',
+    excerpt: 'NASA has selected four companies to build the next generation of space stations. Meet the contenders: Axiom, Vast, Orbital Reef, and Starlab.',
+    category: 'analysis',
+    author: 'SpaceNexus Team',
+    authorRole: 'Editorial',
+    publishedAt: '2026-03-19T08:00:00Z',
+    readingTime: 6,
+    keywords: ['commercial space stations 2026', 'iss replacement', 'axiom station', 'vast haven', 'orbital reef', 'starlab'],
+    content: `
+<p>The International Space Station has been continuously occupied since November 2000, but its operational life is winding down. NASA plans to deorbit ISS around 2030-2031, and the agency is investing in commercial replacements. Four companies are competing to build the next generation of human habitats in orbit.</p>
+
+<h2 id="axiom">Axiom Space</h2>
+
+<ul>
+<li><strong>Station:</strong> Axiom Station — initially attaches to ISS, then detaches as a free-flying station</li>
+<li><strong>Status:</strong> Module 1 (Hab1) scheduled for 2026 launch. Will connect to ISS Node 2</li>
+<li><strong>Funding:</strong> $1.5B+ raised, NASA CLD agreement</li>
+<li><strong>Approach:</strong> Incremental build — first modules attach to ISS for testing, then separate when ISS retires. Offers private astronaut missions to ISS as revenue bridge</li>
+<li><strong>Differentiator:</strong> Only company with modules going to ISS first, providing operational experience before going free-flying</li>
+</ul>
+
+<h2 id="vast">Vast</h2>
+
+<ul>
+<li><strong>Station:</strong> Haven-1 (single-module prototype) → Haven-2 (multi-module station)</li>
+<li><strong>Status:</strong> Haven-1 targeting 2025-2026 launch on Falcon 9. The world's first commercial single-module station</li>
+<li><strong>Funding:</strong> $1.7B raised — the largest private space station investment</li>
+<li><strong>Approach:</strong> Artificial gravity via rotation is a long-term vision. Haven-1 validates core systems. SpaceX Crew Dragon for crew transport</li>
+<li><strong>Differentiator:</strong> Fastest path to an independent commercial station. Jared Isaacman (Shift4) founded and funds the company</li>
+</ul>
+
+<h2 id="orbital-reef">Orbital Reef (Blue Origin + Sierra Space)</h2>
+
+<ul>
+<li><strong>Station:</strong> Orbital Reef — mixed-use space business park</li>
+<li><strong>Partners:</strong> Blue Origin, Sierra Space, Boeing, Redwire, Genesis Engineering</li>
+<li><strong>Status:</strong> Development phase. Sierra Space Dream Chaser vehicle is a key component for crew/cargo transport</li>
+<li><strong>Approach:</strong> Multi-tenant model — rent space for research, manufacturing, tourism, and media</li>
+<li><strong>Differentiator:</strong> The broadest partnership coalition. Dream Chaser provides independent crew access (not dependent on SpaceX)</li>
+</ul>
+
+<h2 id="starlab">Starlab (Voyager Space + Airbus)</h2>
+
+<ul>
+<li><strong>Station:</strong> Starlab — single-launch, inflatable-module station</li>
+<li><strong>Partners:</strong> Voyager Space, Airbus Defence and Space, Mitsubishi, and others</li>
+<li><strong>Status:</strong> Development phase. Targeting late 2020s launch</li>
+<li><strong>Approach:</strong> European partnership brings ESA customer base. Single-launch deployment simplifies logistics</li>
+<li><strong>Differentiator:</strong> Strongest international partnership. Airbus brings decades of ISS module experience (Columbus)</li>
+</ul>
+
+<h2 id="what-it-means">What This Means for the Industry</h2>
+
+<p>The transition from government-owned to commercially-operated stations represents a fundamental shift. It opens LEO to manufacturing, media production, pharmaceutical research, and space tourism at scale. Whoever succeeds will control the most valuable real estate above Earth.</p>
+
+<p>Track space station developments at <a href="/space-stations">SpaceNexus Space Stations</a>.</p>
+`,
+  },
+  {
+    slug: 'space-debris-problem-explained-solutions-2026',
+    title: 'The Space Debris Problem: 36,000 Objects and Counting',
+    excerpt: 'There are 36,000+ tracked objects in orbit and millions more too small to detect. Understanding the debris problem is critical for every satellite operator.',
+    category: 'technology',
+    author: 'SpaceNexus Team',
+    authorRole: 'Engineering',
+    publishedAt: '2026-03-19T09:00:00Z',
+    readingTime: 6,
+    keywords: ['space debris problem', 'orbital debris 2026', 'kessler syndrome', 'space debris solutions', 'satellite collision risk'],
+    content: `
+<p>Every object humanity has ever launched into space is still up there — or its fragments are. The US Space Command tracks over 36,000 objects larger than 10 cm, but models estimate there are 130 million fragments between 1 mm and 1 cm that are too small to track but large enough to damage spacecraft.</p>
+
+<h2 id="scale">The Scale of the Problem</h2>
+
+<ul>
+<li><strong>Tracked objects:</strong> ~36,500 (as of 2026)</li>
+<li><strong>Active satellites:</strong> ~10,000</li>
+<li><strong>Defunct satellites:</strong> ~4,000</li>
+<li><strong>Rocket bodies:</strong> ~2,500</li>
+<li><strong>Mission debris:</strong> ~20,000 fragments from breakups and collisions</li>
+<li><strong>Untracked fragments (1-10 cm):</strong> ~1 million estimated</li>
+<li><strong>Untracked fragments (&lt;1 cm):</strong> ~130 million estimated</li>
+</ul>
+
+<h2 id="major-events">Major Debris-Generating Events</h2>
+
+<ul>
+<li><strong>2007 China ASAT test:</strong> Intentional destruction of Fengyun-1C created 3,500+ tracked fragments — the single worst debris event in history. Most fragments remain in orbit today</li>
+<li><strong>2009 Iridium-Cosmos collision:</strong> First accidental hypervelocity collision between two intact satellites. Created 2,300+ tracked fragments</li>
+<li><strong>2021 Russia ASAT test:</strong> Destruction of Cosmos 1408 created 1,500+ tracked fragments, directly threatening ISS crew</li>
+</ul>
+
+<h2 id="kessler">The Kessler Syndrome</h2>
+
+<p>In 1978, NASA scientist Donald Kessler proposed that above a certain density of objects in orbit, collisions would generate more debris than natural decay removes, creating a cascading chain reaction. Current models suggest some altitude bands (particularly 700-1,000 km) may already be approaching this threshold.</p>
+
+<p>The concern isn't that orbit becomes impassable overnight — it's that specific altitude bands become increasingly expensive to operate in due to the growing number of avoidance maneuvers required.</p>
+
+<h2 id="solutions">Current Solutions</h2>
+
+<ul>
+<li><strong>Collision avoidance:</strong> The 18th SDS issues ~100 conjunction warnings daily. Starlink performs thousands of automated maneuvers per year</li>
+<li><strong>Deorbit requirements:</strong> The FCC now requires LEO satellites to deorbit within 5 years of end-of-life (down from 25 years)</li>
+<li><strong>Active debris removal:</strong> ESA's ClearSpace-1 mission (targeting 2026 launch) will demonstrate capture and deorbit of a rocket body. Astroscale is testing magnetic capture technology</li>
+<li><strong>Debris tracking improvements:</strong> The Space Fence radar can track objects as small as 10 cm. Commercial providers like LeoLabs offer even higher-fidelity data</li>
+<li><strong>Design for demise:</strong> New satellites are designed to completely burn up on reentry, reducing ground casualty risk</li>
+</ul>
+
+<h2 id="what-operators-should-do">What Satellite Operators Should Do</h2>
+
+<ul>
+<li>Register with Space-Track.org for free conjunction data messages</li>
+<li>Design propulsion capability for end-of-life deorbit into every mission</li>
+<li>Monitor the space environment continuously using tools like <a href="/space-environment">SpaceNexus Space Environment</a></li>
+<li>Track regulatory developments — debris rules are tightening globally</li>
+</ul>
+
+<p>Monitor orbital debris and remediation efforts at <a href="/space-environment">SpaceNexus Space Environment</a>.</p>
+`,
+  },
 ];
 
 export function getBlogPost(slug: string): OriginalBlogPost | undefined {

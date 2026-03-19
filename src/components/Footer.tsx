@@ -121,6 +121,7 @@ const footerLinks = {
       { label: 'Privacy Policy', href: '/privacy' },
       { label: 'Terms of Service', href: '/terms' },
       { label: 'Data Safety', href: '/data-safety' },
+      { label: 'Testimonials', href: '/testimonials' },
       { label: 'Roadmap', href: '/roadmap' },
       { label: 'Integrations', href: '/integrations' },
       { label: 'Platform Status', href: '/status' },

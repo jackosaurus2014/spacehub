@@ -184,6 +184,11 @@ const BLOG_CTA_MAP: Record<string, { tool: string; path: string }> = {
   'what-is-space-situational-awareness-ssa-guide': { tool: 'Space Environment', path: '/space-environment' },
   'how-to-fundraise-for-space-startup': { tool: 'Space Capital', path: '/space-capital' },
   'satellite-internet-starlink-kuiper-comparison-2026': { tool: 'Constellation Tracker', path: '/constellations' },
+  'how-spacenexus-uses-ai-generate-insights': { tool: 'AI Insights', path: '/ai-insights' },
+  'space-industry-glossary-essential-terms': { tool: 'Glossary', path: '/glossary' },
+  'why-space-industry-professionals-need-alerts': { tool: 'Alerts', path: '/alerts' },
+  'commercial-space-stations-who-will-replace-iss': { tool: 'Space Stations', path: '/space-stations' },
+  'space-debris-problem-explained-solutions-2026': { tool: 'Space Environment', path: '/space-environment' },
 };
 
 type Props = {
