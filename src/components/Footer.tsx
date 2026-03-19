@@ -78,6 +78,8 @@ const footerLinks = {
       { label: 'Discover', href: '/discover' },
       { label: 'This Day in Space', href: '/this-day-in-space' },
       { label: 'Space for Beginners', href: '/beginners' },
+      { label: 'Night Sky Guide', href: '/night-sky-guide' },
+      { label: 'Space Quiz', href: '/space-quiz' },
       { label: 'Getting Started', href: '/getting-started' },
       { label: 'Help Center', href: '/help' },
       { label: 'Legal Resources', href: '/legal-resources' },

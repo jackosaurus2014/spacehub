@@ -29,7 +29,7 @@ const byRole = [
       { label: 'Launch Schedule', href: '/mission-control' },
       { label: 'Satellite Spotter Guide', href: '/satellite-spotting' },
       { label: 'Aurora Forecast', href: '/aurora-forecast' },
-      { label: 'Space Quiz', href: '/dashboard' },
+      { label: 'Space Quiz', href: '/space-quiz' },
       { label: 'Space Timeline', href: '/timeline' },
       { label: 'Glossary', href: '/glossary' },
     ],
