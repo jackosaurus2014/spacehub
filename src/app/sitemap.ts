@@ -179,6 +179,7 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/roadmap`, changeFrequency: 'monthly' as const, priority: 0.5 },
     { url: `${BASE_URL}/integrations`, changeFrequency: 'monthly' as const, priority: 0.5 },
     { url: `${BASE_URL}/testimonials`, changeFrequency: 'monthly' as const, priority: 0.5 },
+    { url: `${BASE_URL}/discover`, changeFrequency: 'weekly' as const, priority: 0.7 },
 
     // Community
     { url: `${BASE_URL}/community`, changeFrequency: 'weekly' as const, priority: 0.7 },

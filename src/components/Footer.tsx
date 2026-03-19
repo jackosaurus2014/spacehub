@@ -75,6 +75,7 @@ const footerLinks = {
       { label: 'Learning Center', href: '/learn' },
       { label: 'Satellite Spotting Guide', href: '/satellite-spotting' },
       { label: 'Aurora Forecast', href: '/aurora-forecast' },
+      { label: 'Discover', href: '/discover' },
       { label: 'Getting Started', href: '/getting-started' },
       { label: 'Help Center', href: '/help' },
       { label: 'Legal Resources', href: '/legal-resources' },
