@@ -174,6 +174,9 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
     // App download
     { url: `${BASE_URL}/app`, changeFrequency: 'monthly' as const, priority: 0.6 },
 
+    // Platform status
+    { url: `${BASE_URL}/status`, changeFrequency: 'daily' as const, priority: 0.4 },
+
     // Community
     { url: `${BASE_URL}/community`, changeFrequency: 'weekly' as const, priority: 0.7 },
     { url: `${BASE_URL}/community/forums`, changeFrequency: 'weekly' as const, priority: 0.7 },

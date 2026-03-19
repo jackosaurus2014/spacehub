@@ -176,6 +176,9 @@ const BLOG_CTA_MAP: Record<string, { tool: string; path: string }> = {
   'how-to-read-satellite-tle-two-line-element-decoded': { tool: 'Orbital Calculator', path: '/orbital-calculator' },
   'spacenexus-now-on-google-play-android-app': { tool: 'Get the App', path: '/app' },
   'play-store-launch-checklist-pwa-twa-android': { tool: 'Get the App', path: '/app' },
+  'best-space-industry-apps-2026': { tool: 'Get the App', path: '/app' },
+  'space-industry-data-sources-where-to-find-information': { tool: 'Data Sources', path: '/data-sources' },
+  'how-to-monitor-space-weather-for-satellite-operators': { tool: 'Space Weather', path: '/space-weather' },
 };
 
 type Props = {

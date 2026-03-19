@@ -121,6 +121,7 @@ const footerLinks = {
       { label: 'Privacy Policy', href: '/privacy' },
       { label: 'Terms of Service', href: '/terms' },
       { label: 'Data Safety', href: '/data-safety' },
+      { label: 'Platform Status', href: '/status' },
       { label: 'Get the App', href: '/app' },
       { label: 'Developer API', href: '/developer' },
       { label: 'API Access', href: '/api-access' },
