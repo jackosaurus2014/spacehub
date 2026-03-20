@@ -80,6 +80,9 @@ const CRON_JOBS: CronJobDef[] = [
   { schedule: '0 9 * * 1',     path: '/api/refresh?type=company-digests',         label: 'company-digests',            maxStaleMinutes: 11520 },
   { schedule: '0 10 * * 0,3',  path: '/api/refresh?type=opportunities-analysis',  label: 'opportunities-analysis',     maxStaleMinutes: 7200 },
   { schedule: '0 6 * * 2',     path: '/api/refresh?type=market-commentary',       label: 'market-commentary-generation', maxStaleMinutes: 11520 },
+
+  // Win-back emails for inactive users (daily at 10am UTC)
+  { schedule: '0 10 * * *',   path: '/api/winback',                              label: 'winback-emails',             maxStaleMinutes: 1560 },
 ];
 
 // Critical jobs that get auto-recovered by the watchdog

@@ -11,9 +11,8 @@ const STORAGE_KEYS = {
 const MIN_PAGE_VIEWS = 5;
 const DISMISS_COOLDOWN = 14 * 24 * 60 * 60 * 1000; // 14 days
 
-// A hardcoded VAPID public key placeholder.
-// In production, replace with your actual VAPID public key.
-const VAPID_PUBLIC_KEY = '';
+// VAPID public key for web push notifications (from env)
+const VAPID_PUBLIC_KEY = process.env.NEXT_PUBLIC_VAPID_KEY || '';
 
 /** Convert a URL-safe base64 string to a Uint8Array for applicationServerKey */
 function urlBase64ToUint8Array(base64String: string): Uint8Array {

@@ -114,6 +114,87 @@ model User {
   persona              String?  // investor, entrepreneur, mission-planner, executive, supply-chain, legal
   onboardingCompleted  Boolean  @default(false)
   onboardingStep       Int      @default(0)
+
+  // Space Tycoon game profile
+  gameProfile          GameProfile?
+}
+
+// ─── Space Tycoon: Multiplayer Game Models ──────────────────────────────────
+
+model GameProfile {
+  id                String   @id @default(cuid())
+  userId            String   @unique
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  companyName       String   @default("Untitled Aerospace")
+  title             String?
+
+  money             Float    @default(0)
+  totalEarned       Float    @default(0)
+  totalSpent        Float    @default(0)
+  netWorth          Float    @default(0)
+  buildingCount     Int      @default(0)
+  researchCount     Int      @default(0)
+  serviceCount      Int      @default(0)
+  locationsUnlocked Int      @default(0)
+  gameYear          Int      @default(2025)
+
+  resources         Json     @default("{}")
+  achievements      String[] @default([])
+
+  lastSyncAt        DateTime @default(now())
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  marketOrders      MarketOrder[]
+
+  @@index([netWorth])
+  @@index([totalEarned])
+  @@index([researchCount])
+  @@index([lastSyncAt])
+}
+
+model MarketResource {
+  id              String   @id @default(cuid())
+  slug            String   @unique
+  name            String
+  description     String   @default("")
+  category        String
+  basePrice       Float
+  currentPrice    Float
+  priceHistory    Json     @default("[]")
+  totalSupply     Float    @default(0)
+  totalDemand     Float    @default(0)
+  volatility      Float    @default(0.05)
+  minPrice        Float
+  maxPrice        Float
+  updatedAt       DateTime @updatedAt
+  createdAt       DateTime @default(now())
+
+  orders          MarketOrder[]
+
+  @@index([slug])
+  @@index([category])
+}
+
+model MarketOrder {
+  id              String       @id @default(cuid())
+  profileId       String
+  profile         GameProfile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  resourceId      String
+  resource        MarketResource @relation(fields: [resourceId], references: [id])
+
+  type            String       // "buy" | "sell"
+  quantity        Float
+  pricePerUnit    Float
+  totalCost       Float
+  status          String       @default("completed")
+
+  createdAt       DateTime     @default(now())
+
+  @@index([profileId])
+  @@index([resourceId])
+  @@index([createdAt])
 }
 
 model PasswordResetToken {
