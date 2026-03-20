@@ -14,7 +14,7 @@ export function getNewGameState(): GameState {
     totalEarned: 0,
     totalSpent: 0,
     gameDate: { year: STARTING_YEAR, month: 1 },
-    tickSpeed: 0, // Start paused
+    tickSpeed: 1, // Always runs at 1x for fairness
     buildings: [],
     completedResearch: [],
     activeResearch: null,
@@ -69,6 +69,7 @@ export function loadGame(): GameState | null {
     if (!state.activeEffects) state.activeEffects = [];
     if (!state.incomeHistory) state.incomeHistory = [];
     if (state.pendingChoice === undefined) state.pendingChoice = null;
+    state.tickSpeed = 1; // Always 1x for fairness
     return state;
   } catch {
     return null;

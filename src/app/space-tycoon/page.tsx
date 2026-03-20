@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import type { GameState, GameTab, TickSpeed } from '@/lib/game/types';
+import type { GameState, GameTab } from '@/lib/game/types';
 import { processFullTick } from '@/lib/game/game-engine';
 import { getNewGameState, saveGame, loadGame, deleteSave } from '@/lib/game/save-load';
 import { TICK_INTERVALS, AUTO_SAVE_INTERVAL_MS } from '@/lib/game/constants';
@@ -344,9 +344,7 @@ export default function SpaceTycoonPage() {
     return () => { if (autoSaveRef.current) clearInterval(autoSaveRef.current); };
   }, [hasState]);
 
-  const handleSpeedChange = useCallback((speed: TickSpeed) => {
-    setState(prev => prev ? { ...prev, tickSpeed: speed } : prev);
-  }, []);
+  // Speed is locked at 1x for all players (fairness)
 
   const handleBuild = useCallback((buildingId: string, locationId: string) => {
     playSound('build_start');
@@ -542,7 +540,7 @@ export default function SpaceTycoonPage() {
   return (
     <div className="min-h-screen bg-space-900 flex flex-col">
       {/* Resource Bar */}
-      <ResourceBar state={state} onSpeedChange={handleSpeedChange} />
+      <ResourceBar state={state} />
 
       {/* Tab Navigation */}
       <div className="bg-black/40 border-b border-white/[0.06] px-4 py-1 flex items-center gap-1 overflow-x-auto">

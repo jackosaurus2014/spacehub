@@ -1,15 +1,14 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import type { GameState, TickSpeed } from '@/lib/game/types';
+import type { GameState } from '@/lib/game/types';
 import { formatMoney, formatGameDate } from '@/lib/game/formulas';
 import { BUILDING_MAP } from '@/lib/game/buildings';
 import { SERVICE_MAP } from '@/lib/game/services';
-import { playSound, toggleMute, isMuted, initAudio } from '@/lib/game/sound-engine';
+import { toggleMute, isMuted, initAudio, toggleAmbient, isAmbientPlaying } from '@/lib/game/sound-engine';
 
 interface ResourceBarProps {
   state: GameState;
-  onSpeedChange: (s: TickSpeed) => void;
 }
 
 /** Animated number that rolls to target value */
@@ -48,13 +47,13 @@ function AnimatedMoney({ value, className }: { value: number; className?: string
   return <span className={className}>{formatMoney(display)}</span>;
 }
 
-export default function ResourceBar({ state, onSpeedChange }: ResourceBarProps) {
-  const speeds: TickSpeed[] = [0, 1, 2, 5, 10];
-  const speedLabels: Record<number, string> = { 0: '⏸', 1: '1x', 2: '2x', 5: '5x', 10: '10x' };
+export default function ResourceBar({ state }: ResourceBarProps) {
   const [muted, setMuted] = useState(true);
+  const [ambient, setAmbient] = useState(false);
 
   useEffect(() => {
     setMuted(isMuted());
+    setAmbient(isAmbientPlaying());
   }, []);
 
   // Calculate net income
@@ -68,16 +67,16 @@ export default function ResourceBar({ state, onSpeedChange }: ResourceBarProps) 
   }
   const net = Math.round(revenue - costs);
 
-  const handleSpeedChange = (s: TickSpeed) => {
-    initAudio();
-    playSound('click');
-    onSpeedChange(s);
-  };
-
   const handleToggleMute = () => {
     initAudio();
     const nowMuted = toggleMute();
     setMuted(nowMuted);
+  };
+
+  const handleToggleAmbient = () => {
+    initAudio();
+    toggleAmbient();
+    setAmbient(isAmbientPlaying());
   };
 
   return (
@@ -98,39 +97,33 @@ export default function ResourceBar({ state, onSpeedChange }: ResourceBarProps) 
           </div>
         </div>
 
-        {/* Date */}
-        <div className="flex items-center gap-1.5">
-          <svg className="w-3.5 h-3.5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
-          </svg>
-          <span className="text-slate-300 font-mono text-xs sm:text-sm">{formatGameDate(state.gameDate)}</span>
+        {/* Date + Live indicator */}
+        <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5">
+            <svg className="w-3.5 h-3.5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
+            </svg>
+            <span className="text-slate-300 font-mono text-xs sm:text-sm">{formatGameDate(state.gameDate)}</span>
+          </div>
+          <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-cyan-500/10 border border-cyan-500/20">
+            <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
+            <span className="text-[9px] text-cyan-400 font-medium">LIVE</span>
+          </div>
         </div>
 
-        {/* Speed Controls + Mute */}
+        {/* Audio Controls */}
         <div className="flex items-center gap-1">
-          {speeds.map(s => (
-            <button
-              key={s}
-              onClick={() => handleSpeedChange(s)}
-              className={`relative px-2 py-1 rounded-md text-[10px] sm:text-xs font-bold transition-all duration-200 ${
-                state.tickSpeed === s
-                  ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 shadow-[0_0_8px_rgba(6,182,212,0.3)]'
-                  : 'bg-white/[0.04] text-slate-500 hover:text-white hover:bg-white/[0.08] border border-transparent'
-              }`}
-            >
-              {state.tickSpeed === s && s > 0 && (
-                <span className="absolute inset-0 rounded-md animate-pulse bg-cyan-500/10" />
-              )}
-              <span className="relative">{speedLabels[s]}</span>
-            </button>
-          ))}
-
-          <div className="w-px h-4 bg-white/[0.06] mx-1" />
-
+          <button
+            onClick={handleToggleAmbient}
+            className={`px-1.5 py-1 text-xs transition-colors rounded ${ambient ? 'text-purple-400' : 'text-slate-600 hover:text-slate-400'}`}
+            title={ambient ? 'Ambient: On' : 'Ambient: Off'}
+          >
+            🎵
+          </button>
           <button
             onClick={handleToggleMute}
             className="px-1.5 py-1 text-xs text-slate-500 hover:text-white transition-colors"
-            title={muted ? 'Unmute' : 'Mute'}
+            title={muted ? 'Unmute SFX' : 'Mute SFX'}
           >
             {muted ? '🔇' : '🔊'}
           </button>
