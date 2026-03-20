@@ -19,13 +19,13 @@ export const BUILDINGS: BuildingDefinition[] = [
 
   // ─── GROUND ───────────────────────────────────────────────────────────
   { id: 'ground_station', name: 'Ground Station', category: 'ground_station', tier: 1,
-    description: 'Antenna complex for satellite communications and tracking.',
+    description: 'Antenna complex for satellite comms and tracking. Generates revenue from tracking services.',
     baseCost: 30_000_000, buildTimeMonths: 4, maintenanceCostPerMonth: 300_000,
-    requiredResearch: [], requiredLocation: 'earth_surface', enabledServices: [] },
+    requiredResearch: [], requiredLocation: 'earth_surface', enabledServices: ['svc_ground_tracking'] },
   { id: 'mission_control', name: 'Mission Control Center', category: 'ground_station', tier: 1,
-    description: 'Command center for managing space operations.',
+    description: 'Command center for space ops. Generates revenue from mission management contracts.',
     baseCost: 80_000_000, buildTimeMonths: 8, maintenanceCostPerMonth: 800_000,
-    requiredResearch: [], requiredLocation: 'earth_surface', enabledServices: [] },
+    requiredResearch: [], requiredLocation: 'earth_surface', enabledServices: ['svc_mission_ops'] },
 
   // ─── SATELLITES (LEO) ─────────────────────────────────────────────────
   { id: 'sat_telecom', name: 'LEO Telecom Satellite', category: 'satellite', tier: 1,

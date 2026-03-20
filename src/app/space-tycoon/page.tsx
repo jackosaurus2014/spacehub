@@ -69,11 +69,29 @@ function BuildPanel({ state, onBuild }: { state: GameState; onBuild: (buildingId
                   <h4 className="text-white text-sm font-semibold">{bld.name}</h4>
                   <span className="text-xs text-slate-500">Tier {bld.tier}</span>
                 </div>
-                <p className="text-slate-400 text-xs mb-3">{bld.description}</p>
+                <p className="text-slate-400 text-xs mb-2">{bld.description}</p>
+                {/* Revenue preview */}
+                {bld.enabledServices.length > 0 && (() => {
+                  const svc = SERVICE_MAP.get(bld.enabledServices[0]);
+                  if (!svc) return null;
+                  const net = svc.revenuePerMonth - svc.operatingCostPerMonth - bld.maintenanceCostPerMonth;
+                  return (
+                    <div className="flex items-center gap-1 mb-2 text-[10px]">
+                      <span className="text-green-400/70">Earns {formatMoney(svc.revenuePerMonth)}/mo</span>
+                      <span className="text-slate-600">→</span>
+                      <span className={net >= 0 ? 'text-green-400' : 'text-red-400'}>
+                        Net {formatMoney(net)}/mo
+                      </span>
+                    </div>
+                  );
+                })()}
+                {bld.enabledServices.length === 0 && (
+                  <p className="text-slate-600 text-[10px] mb-2">Support building — no direct revenue</p>
+                )}
                 <div className="flex items-center justify-between">
                   <div className="text-xs">
                     <span className={canAfford ? 'text-green-400' : 'text-red-400'}>{formatMoney(cost)}</span>
-                    <span className="text-slate-500 ml-2">{bld.buildTimeMonths}mo</span>
+                    <span className="text-slate-500 ml-2">{bld.buildTimeMonths}mo build</span>
                   </div>
                   <button
                     onClick={() => onBuild(bld.id, selectedLocation)}
@@ -459,8 +477,15 @@ export default function SpaceTycoonPage() {
           </button>
         ))}
         <div className="flex-1" />
+        <Link
+          href="/space-tycoon/faq"
+          className="px-2 py-1 text-[10px] text-slate-500 hover:text-cyan-400 transition-colors"
+          title="How to Play"
+        >
+          ❓ FAQ
+        </Link>
         <button
-          onClick={() => { saveGame(state); }}
+          onClick={() => { saveGame(state); playSound('click'); }}
           className="px-2 py-1 text-[10px] text-slate-500 hover:text-white transition-colors"
           title="Save Game"
         >

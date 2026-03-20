@@ -3,6 +3,16 @@
 import type { ServiceDefinition } from './types';
 
 export const SERVICES: ServiceDefinition[] = [
+  // ─── GROUND SERVICES ───────────────────────────────────────────────────
+  { id: 'svc_ground_tracking', name: 'Satellite Tracking Services', type: 'sensor_service', tier: 1,
+    description: 'Sell antenna time and tracking data to other satellite operators.',
+    revenuePerMonth: 3_000_000, operatingCostPerMonth: 800_000,
+    requiredBuildings: ['ground_station'], requiredResearch: [] },
+  { id: 'svc_mission_ops', name: 'Mission Operations Contracts', type: 'sensor_service', tier: 1,
+    description: 'Manage missions for government and commercial customers.',
+    revenuePerMonth: 6_000_000, operatingCostPerMonth: 2_000_000,
+    requiredBuildings: ['mission_control'], requiredResearch: [] },
+
   // ─── LAUNCH SERVICES ──────────────────────────────────────────────────
   { id: 'svc_launch_small', name: 'Small Launch Services', type: 'launch_payload', tier: 1,
     description: 'Offer payload capacity on small rockets (up to 5 tons to LEO).',
