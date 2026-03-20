@@ -37,7 +37,7 @@ export interface ContractInstance {
 
 // ─── Contract Pool ──────────────────────────────────────────────────────────
 
-const CONTRACT_POOL: ContractDefinition[] = [
+export const CONTRACT_POOL: ContractDefinition[] = [
   // Tier 1 — Early game
   {
     id: 'c_first_launch', name: 'Launch Provider Contract', icon: '🚀', client: 'National Space Agency',

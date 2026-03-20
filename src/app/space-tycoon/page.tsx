@@ -22,8 +22,10 @@ import AchievementsModal from '@/components/game/AchievementsModal';
 import { checkAchievements } from '@/lib/game/achievements';
 import { useGameSync } from '@/hooks/useGameSync';
 import SolarSystemCanvas from '@/components/game/SolarSystemCanvas';
+import ContractsPanel from '@/components/game/ContractsPanel';
 import EventChoiceModal from '@/components/game/EventChoiceModal';
 import { RANDOM_EVENTS, applyEventEffect } from '@/lib/game/random-events';
+import { CONTRACT_POOL, isContractComplete, applyContractReward } from '@/lib/game/contracts';
 
 // ─── Build Panel ────────────────────────────────────────────────────────────
 
@@ -553,6 +555,31 @@ export default function SpaceTycoonPage() {
       playSound('milestone');
       setUnlockedAchievements(prev => [...prev, ...newlyUnlocked.map(a => a.id)]);
     }
+
+    // Check active contracts for completion
+    const activeContractIds = state.activeContracts || [];
+    for (const cId of activeContractIds) {
+      const cDef = CONTRACT_POOL.find(c => c.id === cId);
+      if (cDef && isContractComplete(state, cDef) && !(state.completedContracts || []).includes(cId)) {
+        playSound('milestone');
+        setState(prev => {
+          if (!prev) return prev;
+          const rewarded = applyContractReward(prev, cDef);
+          return {
+            ...rewarded,
+            activeContracts: (prev.activeContracts || []).filter(id => id !== cId),
+            completedContracts: [...(prev.completedContracts || []), cId],
+            eventLog: [{
+              id: generateId(),
+              date: prev.gameDate,
+              type: 'milestone' as const,
+              title: `📋 Contract Complete: ${cDef.name}`,
+              description: `Reward: ${formatMoney(cDef.reward.money || 0)}`,
+            }, ...prev.eventLog].slice(0, 50),
+          };
+        });
+      }
+    }
   }, [state?.money, state?.buildings.length, state?.completedResearch.length, state?.unlockedLocations.length, state?.activeServices.length, unlockedAchievements]);
 
   // Resource sell handler (must be before early return)
@@ -615,6 +642,7 @@ export default function SpaceTycoonPage() {
     { id: 'map', label: 'Map', icon: '🗺️' },
     { id: 'services', label: 'Services', icon: '💰' },
     { id: 'market', label: 'Market', icon: '📈' },
+    { id: 'contracts', label: 'Contracts', icon: '📋' },
     { id: 'leaderboard', label: 'Ranks', icon: '🏆' },
   ];
 
@@ -684,6 +712,16 @@ export default function SpaceTycoonPage() {
         {tab === 'map' && <SolarSystemCanvas state={state} onUnlock={handleUnlockLocation} />}
         {tab === 'services' && <ServicesPanel state={state} />}
         {tab === 'market' && <MarketPanel state={state} onSellResource={handleSellResource} onBuyResource={handleBuyResource} />}
+        {tab === 'contracts' && <ContractsPanel state={state} onAcceptContract={(contractId) => {
+          playSound('click');
+          setState(prev => {
+            if (!prev) return prev;
+            const activeContracts = [...(prev.activeContracts || [])];
+            if (activeContracts.includes(contractId)) return prev;
+            activeContracts.push(contractId);
+            return { ...prev, activeContracts };
+          });
+        }} />}
         {tab === 'leaderboard' && <LeaderboardPanel state={state} />}
       </div>
 

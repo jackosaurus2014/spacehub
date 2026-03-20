@@ -256,4 +256,4 @@ export interface GameState {
 
 // ─── UI Tabs ────────────────────────────────────────────────────────────────
 
-export type GameTab = 'dashboard' | 'build' | 'research' | 'map' | 'services' | 'market' | 'leaderboard';
+export type GameTab = 'dashboard' | 'build' | 'research' | 'map' | 'services' | 'market' | 'contracts' | 'leaderboard';
