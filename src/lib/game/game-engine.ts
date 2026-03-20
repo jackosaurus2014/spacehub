@@ -4,7 +4,8 @@ import type { GameState, GameEvent } from './types';
 import { BUILDING_MAP } from './buildings';
 import { SERVICE_MAP } from './services';
 import { RESEARCH_MAP } from './research-tree';
-import { advanceDate, compareDates, generateId, revenueMultiplier } from './formulas';
+import { MINING_PRODUCTION } from './resources';
+import { advanceDate, generateId, revenueMultiplier } from './formulas';
 import { MAX_EVENT_LOG } from './constants';
 
 /**
@@ -132,7 +133,17 @@ export function processTick(state: GameState): GameState {
     }
   }
 
-  // ─── 6. Trim event log ────────────────────────────────────────────
+  // ─── 6. Resource production from mining/fabrication services ──────
+  const resources = { ...(state.resources || {}) };
+  for (const svc of activeServices) {
+    const production = MINING_PRODUCTION[svc.definitionId];
+    if (!production) continue;
+    for (const { resource, amountPerMonth } of production) {
+      resources[resource] = (resources[resource] || 0) + amountPerMonth;
+    }
+  }
+
+  // ─── 7. Trim event log ────────────────────────────────────────────
   const eventLog = [...events, ...state.eventLog].slice(0, MAX_EVENT_LOG);
 
   return {
@@ -145,6 +156,7 @@ export function processTick(state: GameState): GameState {
     completedResearch,
     activeResearch,
     activeServices,
+    resources,
     eventLog,
     stats,
     lastTickAt: Date.now(),

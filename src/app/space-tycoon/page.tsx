@@ -16,6 +16,10 @@ import ResourceBar from '@/components/game/ResourceBar';
 import GameStartMenu from '@/components/game/GameStartMenu';
 import DashboardPanel from '@/components/game/DashboardPanel';
 import DailyBonusModal from '@/components/game/DailyBonusModal';
+import LeaderboardPanel from '@/components/game/LeaderboardPanel';
+import MarketPanel from '@/components/game/MarketPanel';
+import AchievementsModal from '@/components/game/AchievementsModal';
+import { checkAchievements } from '@/lib/game/achievements';
 
 // ─── Build Panel ────────────────────────────────────────────────────────────
 
@@ -285,6 +289,8 @@ export default function SpaceTycoonPage() {
   const [state, setState] = useState<GameState | null>(null);
   const [tab, setTab] = useState<GameTab>('dashboard');
   const [showMenu, setShowMenu] = useState(false);
+  const [showAchievements, setShowAchievements] = useState(false);
+  const [unlockedAchievements, setUnlockedAchievements] = useState<string[]>([]);
   const tickRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const autoSaveRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -465,12 +471,46 @@ export default function SpaceTycoonPage() {
   }
 
   // ─── Game UI ──────────────────────────────────────────────────────────
+  // Check achievements periodically
+  useEffect(() => {
+    if (!state) return;
+    const newlyUnlocked = checkAchievements(state, unlockedAchievements);
+    if (newlyUnlocked.length > 0) {
+      playSound('milestone');
+      setUnlockedAchievements(prev => [...prev, ...newlyUnlocked.map(a => a.id)]);
+    }
+  }, [state?.money, state?.buildings.length, state?.completedResearch.length, state?.unlockedLocations.length, state?.activeServices.length]);
+
+  // Resource sell handler
+  const handleSellResource = useCallback((resourceId: string, quantity: number, revenue: number) => {
+    setState(prev => {
+      if (!prev) return prev;
+      const currentQty = prev.resources[resourceId] || 0;
+      if (currentQty < quantity) return prev;
+      return {
+        ...prev,
+        money: prev.money + revenue,
+        totalEarned: prev.totalEarned + revenue,
+        resources: { ...prev.resources, [resourceId]: currentQty - quantity },
+        eventLog: [{
+          id: generateId(),
+          date: prev.gameDate,
+          type: 'milestone' as const,
+          title: `Sold ${quantity} units for ${formatMoney(revenue)}`,
+          description: `${resourceId} sold on the market.`,
+        }, ...prev.eventLog].slice(0, 50),
+      };
+    });
+  }, []);
+
   const tabs: { id: GameTab; label: string; icon: string }[] = [
     { id: 'dashboard', label: 'Dashboard', icon: '📊' },
     { id: 'build', label: 'Build', icon: '🏗️' },
     { id: 'research', label: 'Research', icon: '🔬' },
     { id: 'map', label: 'Map', icon: '🗺️' },
     { id: 'services', label: 'Services', icon: '💰' },
+    { id: 'market', label: 'Market', icon: '📈' },
+    { id: 'leaderboard', label: 'Ranks', icon: '🏆' },
   ];
 
   return (
@@ -502,6 +542,13 @@ export default function SpaceTycoonPage() {
           ❓ FAQ
         </Link>
         <button
+          onClick={() => { playSound('click'); setShowAchievements(true); }}
+          className="px-2 py-1 text-[10px] text-slate-500 hover:text-amber-400 transition-colors"
+          title="Achievements"
+        >
+          🏆 {unlockedAchievements.length}
+        </button>
+        <button
           onClick={() => { saveGame(state); playSound('click'); }}
           className="px-2 py-1 text-[10px] text-slate-500 hover:text-white transition-colors"
           title="Save Game"
@@ -531,6 +578,8 @@ export default function SpaceTycoonPage() {
         {tab === 'research' && <ResearchPanel state={state} onStartResearch={handleStartResearch} />}
         {tab === 'map' && <SolarSystemMap state={state} onUnlock={handleUnlockLocation} />}
         {tab === 'services' && <ServicesPanel state={state} />}
+        {tab === 'market' && <MarketPanel state={state} onSellResource={handleSellResource} />}
+        {tab === 'leaderboard' && <LeaderboardPanel />}
       </div>
 
       {/* Daily Login Bonus */}
@@ -550,6 +599,15 @@ export default function SpaceTycoonPage() {
           } : prev);
         }}
       />
+
+      {/* Achievements Modal */}
+      {showAchievements && (
+        <AchievementsModal
+          state={state}
+          unlockedIds={unlockedAchievements}
+          onClose={() => setShowAchievements(false)}
+        />
+      )}
     </div>
   );
 }

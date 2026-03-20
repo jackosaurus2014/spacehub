@@ -194,11 +194,16 @@ export interface GameState {
   activeResearch: ActiveResearch | null;
   activeServices: ServiceInstance[];
   unlockedLocations: string[];
+  resources: Record<string, number>; // ResourceId → quantity
 
   eventLog: GameEvent[];
   stats: GameStats;
+
+  // Multiplayer (synced to server)
+  companyName?: string;
+  lastSyncAt?: number;
 }
 
 // ─── UI Tabs ────────────────────────────────────────────────────────────────
 
-export type GameTab = 'dashboard' | 'build' | 'research' | 'map' | 'services';
+export type GameTab = 'dashboard' | 'build' | 'research' | 'map' | 'services' | 'market' | 'leaderboard';

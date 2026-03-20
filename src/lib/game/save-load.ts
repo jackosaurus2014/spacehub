@@ -19,6 +19,7 @@ export function getNewGameState(): GameState {
     activeResearch: null,
     activeServices: [],
     unlockedLocations: ['earth_surface', 'leo'],
+    resources: {},
     eventLog: [{
       id: 'start',
       date: { year: STARTING_YEAR, month: 1 },
