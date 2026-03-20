@@ -420,11 +420,15 @@ export default function SpaceTycoonPage() {
   }, []);
 
   // Tick loop
+  const tickSpeed = state?.tickSpeed ?? 0;
+  const hasState = !!state;
+
+  // Tick loop
   useEffect(() => {
     if (tickRef.current) clearInterval(tickRef.current);
-    if (!state || state.tickSpeed === 0) return;
+    if (!hasState || tickSpeed === 0) return;
 
-    const interval = TICK_INTERVALS[state.tickSpeed];
+    const interval = TICK_INTERVALS[tickSpeed];
     if (!interval) return;
 
     tickRef.current = setInterval(() => {
@@ -432,12 +436,12 @@ export default function SpaceTycoonPage() {
     }, interval);
 
     return () => { if (tickRef.current) clearInterval(tickRef.current); };
-  }, [state?.tickSpeed]);
+  }, [tickSpeed, hasState]);
 
   // Auto-save
   useEffect(() => {
     if (autoSaveRef.current) clearInterval(autoSaveRef.current);
-    if (!state) return;
+    if (!hasState) return;
 
     autoSaveRef.current = setInterval(() => {
       setState(prev => {
@@ -447,7 +451,7 @@ export default function SpaceTycoonPage() {
     }, AUTO_SAVE_INTERVAL_MS);
 
     return () => { if (autoSaveRef.current) clearInterval(autoSaveRef.current); };
-  }, [!!state]);
+  }, [hasState]);
 
   const handleSpeedChange = useCallback((speed: TickSpeed) => {
     setState(prev => prev ? { ...prev, tickSpeed: speed } : prev);

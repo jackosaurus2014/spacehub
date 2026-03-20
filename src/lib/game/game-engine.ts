@@ -63,7 +63,7 @@ export function processTick(state: GameState): GameState {
 
   // ─── 4. Research progress ─────────────────────────────────────────
   let activeResearch = state.activeResearch;
-  let completedResearch = [...state.completedResearch];
+  const completedResearch = [...state.completedResearch];
 
   if (activeResearch) {
     const progress = activeResearch.progressMonths + 1;

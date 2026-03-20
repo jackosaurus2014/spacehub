@@ -31,7 +31,7 @@ export function compareDates(a: GameDate, b: GameDate): number {
 
 /** Advance a game date by N months */
 export function advanceDate(date: GameDate, months: number): GameDate {
-  let totalMonths = (date.year * 12 + date.month - 1) + months;
+  const totalMonths = (date.year * 12 + date.month - 1) + months;
   const year = Math.floor(totalMonths / 12);
   const month = (totalMonths % 12) + 1;
   return { year, month };

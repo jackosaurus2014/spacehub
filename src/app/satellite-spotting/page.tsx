@@ -355,7 +355,7 @@ export default function SatelliteSpottingPage() {
               <div className="border-t border-white/[0.06] pt-5">
                 <h3 className="text-white font-semibold text-sm uppercase tracking-wider mb-2">Flares &amp; Fading</h3>
                 <p className="text-slate-400 text-sm leading-relaxed">
-                  Some satellites briefly brighten dramatically — these are called <strong className="text-white">"flares"</strong>.
+                  Some satellites briefly brighten dramatically — these are called <strong className="text-white">&ldquo;flares&rdquo;</strong>.
                   They occur when a flat, reflective surface (like a solar panel) catches the sun at just the right angle.
                   Satellites can also abruptly disappear mid-pass as they enter Earth&apos;s shadow — a fascinating sight that proves
                   you&apos;re watching something in orbit, not an airplane.
@@ -485,7 +485,7 @@ export default function SatelliteSpottingPage() {
                   <h3 className="text-white font-semibold mb-2">ISS Transit Photography</h3>
                   <p className="text-slate-400 text-sm leading-relaxed">
                     Advanced photographers capture the ISS transiting the Moon or Sun using a telescope and high-speed
-                    camera. These "ISS transits" reveal the station&apos;s structure — solar panels and modules — in stunning
+                    camera. These &ldquo;ISS transits&rdquo; reveal the station&apos;s structure — solar panels and modules — in stunning
                     silhouette. Use transit-finder.com to predict events for your location.
                   </p>
                 </div>
