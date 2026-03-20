@@ -1,5 +1,7 @@
 import { Metadata } from 'next';
 import JsonLd, { toolJsonLd } from '@/components/seo/JsonLd';
+import FAQSchema from '@/components/seo/FAQSchema';
+import { TOOL_FAQS } from '@/lib/tool-faqs';
 
 export const metadata: Metadata = {
   title: 'Spacecraft Thermal Analysis Calculator',
@@ -50,6 +52,7 @@ export default function ThermalCalculatorLayout({
         description: 'Calculate spacecraft equilibrium temperatures across orbital configurations. Evaluate surface materials and thermal control strategies.',
         url: 'https://spacenexus.us/thermal-calculator',
       })} />
+      {TOOL_FAQS['thermal-calculator'] && <FAQSchema items={TOOL_FAQS['thermal-calculator']} />}
       {children}
     </>
   );

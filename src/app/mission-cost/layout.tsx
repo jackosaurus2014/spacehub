@@ -1,5 +1,7 @@
 import { Metadata } from 'next';
 import JsonLd, { toolJsonLd } from '@/components/seo/JsonLd';
+import FAQSchema from '@/components/seo/FAQSchema';
+import { TOOL_FAQS } from '@/lib/tool-faqs';
 
 export const metadata: Metadata = {
   title: 'Mission Planning - Launch Cost Estimation & Analysis',
@@ -37,6 +39,7 @@ export default function MissionCostLayout({ children }: { children: React.ReactN
         description: 'Plan space missions with detailed cost estimation, launch vehicle comparison, insurance analysis, and orbital mechanics tools.',
         url: 'https://spacenexus.us/mission-cost',
       })} />
+      {TOOL_FAQS['mission-cost'] && <FAQSchema items={TOOL_FAQS['mission-cost']} />}
       {children}
     </>
   );

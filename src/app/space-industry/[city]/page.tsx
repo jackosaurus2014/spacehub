@@ -275,10 +275,11 @@ export default function CityPage({ params }: Props) {
               <Link
                 key={c.slug}
                 href={`/space-industry/${c.slug}`}
-                className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-3 text-center hover:border-white/15 transition-colors"
+                className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-3 text-center hover:border-cyan-500/20 hover:bg-white/[0.06] transition-all"
               >
-                <div className="text-white text-sm font-medium">{c.name}</div>
-                <div className="text-slate-500 text-xs">{c.state}</div>
+                <div className="text-white text-sm font-medium">{c.name}, {c.state}</div>
+                <div className="text-cyan-400 text-xs font-mono mt-0.5">{c.stats[0]?.value} companies</div>
+                <div className="text-slate-500 text-[10px]">{c.jobMarket.openPositions} jobs · {c.jobMarket.avgSalary} avg</div>
               </Link>
             ))}
           </div>

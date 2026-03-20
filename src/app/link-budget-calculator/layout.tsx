@@ -1,5 +1,7 @@
 import { Metadata } from 'next';
 import JsonLd, { toolJsonLd } from '@/components/seo/JsonLd';
+import FAQSchema from '@/components/seo/FAQSchema';
+import { TOOL_FAQS } from '@/lib/tool-faqs';
 
 export const metadata: Metadata = {
   title: 'Link Budget Calculator',
@@ -27,6 +29,7 @@ export default function LinkBudgetCalculatorLayout({ children }: { children: Rea
         description: 'Calculate satellite communication link budgets including path loss, antenna gain, and signal-to-noise ratios.',
         url: 'https://spacenexus.us/link-budget-calculator',
       })} />
+      {TOOL_FAQS['link-budget-calculator'] && <FAQSchema items={TOOL_FAQS['link-budget-calculator']} />}
       {children}
     </>
   );

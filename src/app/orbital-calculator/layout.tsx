@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
 import JsonLd, { toolJsonLd } from '@/components/seo/JsonLd';
+import FAQSchema from '@/components/seo/FAQSchema';
+import { TOOL_FAQS } from '@/lib/tool-faqs';
 
 export const metadata: Metadata = {
   title: 'Orbital Mechanics Calculator - Delta-V, Period & Escape Velocity',
@@ -28,6 +30,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         description: 'Calculate Hohmann transfer delta-v, orbital periods, escape velocities, and satellite orbital decay.',
         url: 'https://spacenexus.us/orbital-calculator',
       })} />
+      {TOOL_FAQS['orbital-calculator'] && <FAQSchema items={TOOL_FAQS['orbital-calculator']} />}
       {children}
     </>
   );
