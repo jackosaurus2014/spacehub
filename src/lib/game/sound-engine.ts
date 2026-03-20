@@ -13,7 +13,11 @@ type SoundName =
   | 'milestone'
   | 'tick'
   | 'error'
-  | 'money';
+  | 'money'
+  | 'notification'
+  | 'trade'
+  | 'rival_overtake'
+  | 'ambient_ping';
 
 let audioCtx: AudioContext | null = null;
 let masterGain: GainNode | null = null;
@@ -147,6 +151,29 @@ export function playSound(name: SoundName): void {
     case 'money':
       playTone(4000, 0.03, 'triangle', { gainStart: 0.1 });
       break;
+
+    case 'notification':
+      // Gentle bell — two triangle tones, distinct from other sounds
+      playTone(1500, 0.15, 'triangle', { gainStart: 0.12 });
+      playTone(2000, 0.15, 'triangle', { delay: 0.1, gainStart: 0.1 });
+      break;
+
+    case 'trade':
+      // Ka-ching double tap
+      playTone(3000, 0.04, 'triangle', { gainStart: 0.15 });
+      playTone(3500, 0.04, 'triangle', { delay: 0.06, gainStart: 0.12 });
+      break;
+
+    case 'rival_overtake':
+      // Tense two-note descending motif
+      playTone(600, 0.15, 'sawtooth', { freqEnd: 400, gainStart: 0.08 });
+      playTone(500, 0.2, 'sawtooth', { delay: 0.12, freqEnd: 300, gainStart: 0.06 });
+      break;
+
+    case 'ambient_ping':
+      // Subtle ethereal ping for atmosphere
+      playTone(1200, 0.4, 'sine', { freqEnd: 800, gainStart: 0.03 });
+      break;
   }
 }
 
@@ -184,4 +211,103 @@ function savePrefs() {
 /** Initialize audio on first user interaction */
 export function initAudio(): void {
   getContext();
+}
+
+// ─── Ambient Audio System ───────────────────────────────────────────────────
+
+let ambientNodes: { osc: OscillatorNode; gain: GainNode }[] = [];
+let ambientPlaying = false;
+let ambientTimer: ReturnType<typeof setTimeout> | null = null;
+
+/** Start ambient space soundscape — low drones + occasional shimmer */
+export function startAmbient(): void {
+  const ctx = getContext();
+  if (!ctx || !masterGain || ambientPlaying || _muted) return;
+
+  ambientPlaying = true;
+
+  // Base drone (40-55Hz sine, very quiet)
+  const droneOsc = ctx.createOscillator();
+  const droneGain = ctx.createGain();
+  droneOsc.type = 'sine';
+  droneOsc.frequency.setValueAtTime(45, ctx.currentTime);
+  droneGain.gain.setValueAtTime(0, ctx.currentTime);
+  droneGain.gain.linearRampToValueAtTime(0.025, ctx.currentTime + 3); // Fade in over 3s
+  droneOsc.connect(droneGain);
+  droneGain.connect(masterGain);
+  droneOsc.start();
+  ambientNodes.push({ osc: droneOsc, gain: droneGain });
+
+  // Slow LFO on drone frequency
+  const lfo = ctx.createOscillator();
+  const lfoGain = ctx.createGain();
+  lfo.type = 'sine';
+  lfo.frequency.setValueAtTime(0.03, ctx.currentTime); // Very slow: 1 cycle per ~33 seconds
+  lfoGain.gain.setValueAtTime(8, ctx.currentTime); // Modulates drone by ±8Hz
+  lfo.connect(lfoGain);
+  lfoGain.connect(droneOsc.frequency);
+  lfo.start();
+
+  // Harmonic pad (110Hz + 165Hz, even quieter)
+  const padOsc1 = ctx.createOscillator();
+  const padOsc2 = ctx.createOscillator();
+  const padGain = ctx.createGain();
+  padOsc1.type = 'sine';
+  padOsc1.frequency.setValueAtTime(110, ctx.currentTime);
+  padOsc2.type = 'sine';
+  padOsc2.frequency.setValueAtTime(165, ctx.currentTime);
+  padGain.gain.setValueAtTime(0, ctx.currentTime);
+  padGain.gain.linearRampToValueAtTime(0.012, ctx.currentTime + 5);
+  padOsc1.connect(padGain);
+  padOsc2.connect(padGain);
+  padGain.connect(masterGain);
+  padOsc1.start();
+  padOsc2.start();
+  ambientNodes.push({ osc: padOsc1, gain: padGain });
+  ambientNodes.push({ osc: padOsc2, gain: padGain });
+
+  // Random shimmer pings every 15-40 seconds
+  function scheduleShimmer() {
+    if (!ambientPlaying) return;
+    const delay = 15000 + Math.random() * 25000;
+    ambientTimer = setTimeout(() => {
+      if (!ambientPlaying || _muted) { scheduleShimmer(); return; }
+      playSound('ambient_ping');
+      scheduleShimmer();
+    }, delay);
+  }
+  scheduleShimmer();
+}
+
+/** Stop ambient audio with fade-out */
+export function stopAmbient(): void {
+  const ctx = getContext();
+  if (!ctx) return;
+
+  ambientPlaying = false;
+  if (ambientTimer) { clearTimeout(ambientTimer); ambientTimer = null; }
+
+  for (const node of ambientNodes) {
+    try {
+      node.gain.gain.linearRampToValueAtTime(0, ctx.currentTime + 1);
+      setTimeout(() => {
+        try { node.osc.stop(); node.osc.disconnect(); node.gain.disconnect(); } catch { /* ignore */ }
+      }, 1500);
+    } catch { /* ignore */ }
+  }
+  ambientNodes = [];
+}
+
+export function isAmbientPlaying(): boolean {
+  return ambientPlaying;
+}
+
+/** Toggle ambient on/off */
+export function toggleAmbient(): boolean {
+  if (ambientPlaying) {
+    stopAmbient();
+  } else {
+    startAmbient();
+  }
+  return ambientPlaying;
 }

@@ -17,9 +17,10 @@ interface MarketPrices {
 interface MarketPanelProps {
   state: GameState;
   onSellResource: (resourceId: string, quantity: number, revenue: number) => void;
+  onBuyResource?: (resourceId: string, quantity: number, cost: number) => void;
 }
 
-export default function MarketPanel({ state, onSellResource }: MarketPanelProps) {
+export default function MarketPanel({ state, onSellResource, onBuyResource }: MarketPanelProps) {
   const [prices, setPrices] = useState<MarketPrices>({});
   const [selectedResource, setSelectedResource] = useState<string | null>(null);
   const [sellQty, setSellQty] = useState(1);
@@ -188,13 +189,23 @@ export default function MarketPanel({ state, onSellResource }: MarketPanelProps)
                     <span className="text-slate-600 text-[10px] ml-1.5">{r.category}</span>
                   </div>
                 </div>
-                <div className="text-right">
-                  <span className="text-white text-xs font-mono">{formatMoney(current)}</span>
-                  <span className={`text-[10px] font-mono ml-1.5 ${
-                    change > 0 ? 'text-green-400' : change < 0 ? 'text-red-400' : 'text-slate-500'
-                  }`}>
-                    {change > 0 ? '+' : ''}{change}%
-                  </span>
+                <div className="flex items-center gap-2">
+                  <div className="text-right">
+                    <span className="text-white text-xs font-mono">{formatMoney(current)}</span>
+                    <span className={`text-[10px] font-mono ml-1.5 ${
+                      change > 0 ? 'text-green-400' : change < 0 ? 'text-red-400' : 'text-slate-500'
+                    }`}>
+                      {change > 0 ? '+' : ''}{change}%
+                    </span>
+                  </div>
+                  {onBuyResource && state.money >= current && (
+                    <button
+                      onClick={() => { playSound('trade'); onBuyResource(r.id, 1, current); }}
+                      className="px-2 py-0.5 text-[9px] font-medium bg-cyan-600/20 text-cyan-400 border border-cyan-600/30 rounded hover:bg-cyan-600/30 transition-colors"
+                    >
+                      Buy 1
+                    </button>
+                  )}
                 </div>
               </div>
             );

@@ -207,6 +207,11 @@ export interface GameState {
   // NPC companies
   npcCompanies?: import('./npc-companies').NPCCompanyState[];
   npcMarketPressure?: Record<string, number>;
+
+  // Random events & economy
+  activeEffects?: { eventId: string; label: string; expiresAtMonth: number; revenueMultiplier: number; costMultiplier: number }[];
+  pendingChoice?: { eventId: string; eventName: string; eventIcon: string; eventDescription: string; choices: { label: string; description: string }[] } | null;
+  incomeHistory?: number[];
 }
 
 // ─── UI Tabs ────────────────────────────────────────────────────────────────

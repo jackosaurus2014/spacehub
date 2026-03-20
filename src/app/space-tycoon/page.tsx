@@ -21,6 +21,8 @@ import MarketPanel from '@/components/game/MarketPanel';
 import AchievementsModal from '@/components/game/AchievementsModal';
 import { checkAchievements } from '@/lib/game/achievements';
 import { useGameSync } from '@/hooks/useGameSync';
+import EventChoiceModal from '@/components/game/EventChoiceModal';
+import { RANDOM_EVENTS, applyEventEffect } from '@/lib/game/random-events';
 
 // ─── Build Panel ────────────────────────────────────────────────────────────
 
@@ -507,6 +509,27 @@ export default function SpaceTycoonPage() {
     });
   }, []);
 
+  const handleBuyResource = useCallback((resourceId: string, quantity: number, cost: number) => {
+    playSound('money');
+    setState(prev => {
+      if (!prev) return prev;
+      if (prev.money < cost) { playSound('error'); return prev; }
+      return {
+        ...prev,
+        money: prev.money - cost,
+        totalSpent: prev.totalSpent + cost,
+        resources: { ...prev.resources, [resourceId]: (prev.resources[resourceId] || 0) + quantity },
+        eventLog: [{
+          id: generateId(),
+          date: prev.gameDate,
+          type: 'milestone' as const,
+          title: `Bought ${quantity} units for ${formatMoney(cost)}`,
+          description: `${resourceId} purchased from market.`,
+        }, ...prev.eventLog].slice(0, 50),
+      };
+    });
+  }, []);
+
   const tabs: { id: GameTab; label: string; icon: string }[] = [
     { id: 'dashboard', label: 'Dashboard', icon: '📊' },
     { id: 'build', label: 'Build', icon: '🏗️' },
@@ -575,14 +598,14 @@ export default function SpaceTycoonPage() {
         </button>
       </div>
 
-      {/* Panel Content */}
-      <div className="flex-1 overflow-y-auto p-4 max-w-5xl mx-auto w-full">
+      {/* Panel Content — key={tab} triggers reveal animation on tab switch */}
+      <div key={tab} className="flex-1 overflow-y-auto p-4 max-w-5xl mx-auto w-full animate-reveal-up">
         {tab === 'dashboard' && <DashboardPanel state={state} />}
         {tab === 'build' && <BuildPanel state={state} onBuild={handleBuild} />}
         {tab === 'research' && <ResearchPanel state={state} onStartResearch={handleStartResearch} />}
         {tab === 'map' && <SolarSystemMap state={state} onUnlock={handleUnlockLocation} />}
         {tab === 'services' && <ServicesPanel state={state} />}
-        {tab === 'market' && <MarketPanel state={state} onSellResource={handleSellResource} />}
+        {tab === 'market' && <MarketPanel state={state} onSellResource={handleSellResource} onBuyResource={handleBuyResource} />}
         {tab === 'leaderboard' && <LeaderboardPanel state={state} />}
       </div>
 
@@ -610,6 +633,27 @@ export default function SpaceTycoonPage() {
           state={state}
           unlockedIds={unlockedAchievements}
           onClose={() => setShowAchievements(false)}
+        />
+      )}
+
+      {/* Random Event Choice Modal */}
+      {state.pendingChoice && (
+        <EventChoiceModal
+          eventName={state.pendingChoice.eventName}
+          eventIcon={state.pendingChoice.eventIcon}
+          eventDescription={state.pendingChoice.eventDescription}
+          choices={state.pendingChoice.choices}
+          onChoose={(choiceIndex) => {
+            playSound('click');
+            setState(prev => {
+              if (!prev?.pendingChoice) return prev;
+              const eventDef = RANDOM_EVENTS.find(e => e.id === prev.pendingChoice!.eventId);
+              const choice = eventDef?.choices?.[choiceIndex];
+              if (!choice) return { ...prev, pendingChoice: null };
+              const newState = applyEventEffect(prev, choice.effect, eventDef!.name);
+              return { ...newState, pendingChoice: null };
+            });
+          }}
         />
       )}
     </div>

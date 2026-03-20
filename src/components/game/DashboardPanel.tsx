@@ -7,6 +7,7 @@ import { BUILDING_MAP } from '@/lib/game/buildings';
 import { SERVICE_MAP } from '@/lib/game/services';
 import { RESEARCH } from '@/lib/game/research-tree';
 import { LOCATION_MAP } from '@/lib/game/solar-system';
+import IncomeChart from '@/components/game/IncomeChart';
 
 /** Live countdown timer for research (purple) */
 function ResearchCountdown({ startedAtMs, durationSeconds }: { startedAtMs: number; durationSeconds: number }) {
@@ -183,6 +184,29 @@ export default function DashboardPanel({ state }: { state: GameState }) {
         </div>
         <MiniSparkline positive={financials.net >= 0} />
       </div>
+
+      {/* Income History Chart */}
+      {state.incomeHistory && state.incomeHistory.length >= 2 && (
+        <IncomeChart data={state.incomeHistory} />
+      )}
+
+      {/* Active Effects (from random events) */}
+      {state.activeEffects && state.activeEffects.length > 0 && (
+        <div className="flex flex-wrap gap-2">
+          {state.activeEffects.map((eff, i) => (
+            <div key={i} className={`px-2.5 py-1 rounded-lg text-[10px] font-medium border ${
+              eff.revenueMultiplier > 1 ? 'bg-green-500/10 text-green-400 border-green-500/20' :
+              eff.costMultiplier > 1 ? 'bg-red-500/10 text-red-400 border-red-500/20' :
+              eff.revenueMultiplier < 1 ? 'bg-amber-500/10 text-amber-400 border-amber-500/20' :
+              'bg-white/[0.04] text-slate-400 border-white/[0.06]'
+            }`}>
+              {eff.label}
+              {eff.revenueMultiplier !== 1 && ` (${eff.revenueMultiplier > 1 ? '+' : ''}${Math.round((eff.revenueMultiplier - 1) * 100)}% rev)`}
+              {eff.costMultiplier !== 1 && ` (${eff.costMultiplier > 1 ? '+' : ''}${Math.round((eff.costMultiplier - 1) * 100)}% cost)`}
+            </div>
+          ))}
+        </div>
+      )}
 
       {/* Active Research with real-time countdown */}
       {state.activeResearch && (() => {

@@ -8,6 +8,7 @@ import { MINING_PRODUCTION } from './resources';
 import { advanceDate, generateId, revenueMultiplier } from './formulas';
 import { MAX_EVENT_LOG } from './constants';
 import { processNPCTick, applyNPCMarketActions } from './npc-engine';
+import { rollRandomEvent, applyEventEffect, getActiveMultipliers, cleanupExpiredEffects } from './random-events';
 
 /**
  * Process a single game tick (1 in-game month).
@@ -21,15 +22,22 @@ export function processTick(state: GameState): GameState {
   let totalSpent = state.totalSpent;
   const stats = { ...state.stats };
 
-  // ─── 1. Revenue collection from active services ───────────────────
+  // Get active effect multipliers (from random events)
+  const multipliers = getActiveMultipliers(state);
+
+  // ─── 1. Revenue collection from active services (with effect multipliers) ─
+  let monthlyRevenue = 0;
+  let monthlyCosts = 0;
   for (const svc of state.activeServices) {
     const def = SERVICE_MAP.get(svc.definitionId);
     if (!def) continue;
-    const revenue = Math.round(def.revenuePerMonth * svc.revenueMultiplier);
-    const cost = def.operatingCostPerMonth;
+    const revenue = Math.round(def.revenuePerMonth * svc.revenueMultiplier * multipliers.revenueMultiplier);
+    const cost = Math.round(def.operatingCostPerMonth * multipliers.costMultiplier);
     money += revenue - cost;
     totalEarned += revenue;
     totalSpent += cost;
+    monthlyRevenue += revenue;
+    monthlyCosts += cost;
   }
 
   // ─── 2. Maintenance costs for completed buildings ─────────────────
@@ -37,8 +45,10 @@ export function processTick(state: GameState): GameState {
     if (!bld.isComplete) continue;
     const def = BUILDING_MAP.get(bld.definitionId);
     if (!def) continue;
-    money -= def.maintenanceCostPerMonth;
-    totalSpent += def.maintenanceCostPerMonth;
+    const maint = Math.round(def.maintenanceCostPerMonth * multipliers.costMultiplier);
+    money -= maint;
+    totalSpent += maint;
+    monthlyCosts += maint;
   }
 
   // ─── 3. Construction completion check (real wall-clock time) ──────
@@ -144,7 +154,53 @@ export function processTick(state: GameState): GameState {
     }
   }
 
-  // ─── 7. Trim event log ────────────────────────────────────────────
+  // ─── 7. Random events (8% chance per tick if no pending choice) ───
+  let pendingChoice = state.pendingChoice || null;
+  if (!pendingChoice && Math.random() < 0.08) {
+    const event = rollRandomEvent(state);
+    if (event) {
+      if (event.category === 'choice' && event.choices) {
+        pendingChoice = {
+          eventId: event.id,
+          eventName: event.name,
+          eventIcon: event.icon,
+          eventDescription: event.description,
+          choices: event.choices.map(c => ({ label: c.label, description: c.description })),
+        };
+        events.push({
+          id: generateId(), date: newDate, type: 'random_event',
+          title: `${event.icon} ${event.name}`,
+          description: 'Decision required — check your alerts.',
+        });
+      } else if (event.effect) {
+        // Auto-apply non-choice events
+        const effectResult = applyEventEffect(
+          { ...state, money, totalEarned, totalSpent, resources, gameDate: newDate },
+          event.effect,
+          event.name,
+        );
+        money = effectResult.money;
+        totalEarned = effectResult.totalEarned;
+        totalSpent = effectResult.totalSpent;
+        Object.assign(resources, effectResult.resources);
+
+        events.push({
+          id: generateId(), date: newDate, type: 'random_event',
+          title: `${event.icon} ${event.name}`,
+          description: event.description,
+        });
+      }
+    }
+  }
+
+  // ─── 8. Clean up expired effects ────────────────────────────────
+  const activeEffects = cleanupExpiredEffects({ ...state, gameDate: newDate });
+
+  // ─── 9. Track income history (last 24 months) ──────────────────
+  const netIncome = Math.round(monthlyRevenue - monthlyCosts);
+  const incomeHistory = [...(state.incomeHistory || []), netIncome].slice(-24);
+
+  // ─── 10. Trim event log ───────────────────────────────────────────
   const eventLog = [...events, ...state.eventLog].slice(0, MAX_EVENT_LOG);
 
   return {
@@ -158,6 +214,9 @@ export function processTick(state: GameState): GameState {
     activeResearch,
     activeServices,
     resources,
+    activeEffects,
+    pendingChoice,
+    incomeHistory,
     eventLog,
     stats,
     lastTickAt: Date.now(),
