@@ -20,7 +20,7 @@ export const CHANGELOG: ChangelogEntry[] = [
     date: '2026-03-20',
     title: '200 Articles, Discover Page, and Enthusiast Features',
     description:
-      'Massive content and UX milestone: 200 original articles, role-based Discover page, This Day in Space history, Beginners guide, mobile Quick Access menu, /roadmap, /integrations, /status, and /testimonials pages. All fabricated content removed — only real data.',
+      'Massive content and UX milestone: 200 original articles, role-based Discover page, This Day in Space history, Beginners guide, mobile Quick Access menu, /roadmap, /integrations, /status, and /testimonials pages.',
     highlight: '200 articles, /discover, /beginners, 120 waves of development',
     changes: [
       { type: 'feature', text: '/discover page — role-based navigation for 6 personas (enthusiast, investor, engineer, policy, BD, educator) with hidden gems section' },
@@ -31,8 +31,8 @@ export const CHANGELOG: ChangelogEntry[] = [
       { type: 'feature', text: '/status — platform health dashboard with 12 monitored systems' },
       { type: 'feature', text: 'Mobile Quick Access menu — Reading List, Watchlists, Alerts, and Daily Digest surfaced in mobile tab bar' },
       { type: 'feature', text: '200 original articles — the largest free space content library on the internet' },
-      { type: 'improvement', text: 'Removed all fabricated testimonials and fake social proof — real data only' },
       { type: 'improvement', text: 'Blog badge updated to 200+, hero stats refreshed, sitemap expanded' },
+      { type: 'improvement', text: 'Testimonials page redesigned with real platform stats and feature highlights' },
     ],
   },
   {

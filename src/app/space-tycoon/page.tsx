@@ -1,160 +1,20 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import type { GameState, GameTab, TickSpeed, GameDate } from '@/lib/game/types';
+import type { GameState, GameTab, TickSpeed } from '@/lib/game/types';
 import { processTick } from '@/lib/game/game-engine';
 import { getNewGameState, saveGame, loadGame, deleteSave } from '@/lib/game/save-load';
 import { TICK_INTERVALS, AUTO_SAVE_INTERVAL_MS } from '@/lib/game/constants';
 import { formatMoney, formatGameDate, advanceDate, generateId, scaledBuildingCost, scaledResearchTime } from '@/lib/game/formulas';
 import { BUILDINGS, BUILDING_MAP } from '@/lib/game/buildings';
 import { RESEARCH, RESEARCH_MAP, RESEARCH_CATEGORIES } from '@/lib/game/research-tree';
-import { SERVICES, SERVICE_MAP } from '@/lib/game/services';
+import { SERVICE_MAP } from '@/lib/game/services';
 import { LOCATIONS, LOCATION_MAP } from '@/lib/game/solar-system';
+import { playSound, initAudio } from '@/lib/game/sound-engine';
 import Link from 'next/link';
-
-// ─── Resource Bar ───────────────────────────────────────────────────────────
-
-function ResourceBar({ state, onSpeedChange }: { state: GameState; onSpeedChange: (s: TickSpeed) => void }) {
-  const speeds: TickSpeed[] = [0, 1, 2, 5, 10];
-  const speedLabels: Record<number, string> = { 0: '⏸', 1: '1x', 2: '2x', 5: '5x', 10: '10x' };
-
-  // Calculate net income
-  let revenue = 0, costs = 0;
-  for (const svc of state.activeServices) {
-    const def = SERVICE_MAP.get(svc.definitionId);
-    if (def) { revenue += def.revenuePerMonth * svc.revenueMultiplier; costs += def.operatingCostPerMonth; }
-  }
-  for (const bld of state.buildings) {
-    if (bld.isComplete) { const def = BUILDING_MAP.get(bld.definitionId); if (def) costs += def.maintenanceCostPerMonth; }
-  }
-  const net = Math.round(revenue - costs);
-
-  return (
-    <div className="bg-black/80 border-b border-white/[0.06] px-4 py-2 flex items-center justify-between gap-4 text-sm flex-wrap">
-      <div className="flex items-center gap-4">
-        <span className="text-white font-bold">{formatMoney(state.money)}</span>
-        <span className={`text-xs font-mono ${net >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-          {net >= 0 ? '+' : ''}{formatMoney(net)}/mo
-        </span>
-      </div>
-      <span className="text-slate-400 font-mono text-xs">{formatGameDate(state.gameDate)}</span>
-      <div className="flex items-center gap-1">
-        {speeds.map(s => (
-          <button
-            key={s}
-            onClick={() => onSpeedChange(s)}
-            className={`px-2 py-1 rounded text-xs font-medium transition-colors ${
-              state.tickSpeed === s
-                ? 'bg-cyan-500 text-white'
-                : 'bg-white/[0.06] text-slate-400 hover:text-white hover:bg-white/[0.1]'
-            }`}
-          >
-            {speedLabels[s]}
-          </button>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-// ─── Dashboard Panel ────────────────────────────────────────────────────────
-
-function DashboardPanel({ state }: { state: GameState }) {
-  const completedBuildings = state.buildings.filter(b => b.isComplete);
-  const inProgress = state.buildings.filter(b => !b.isComplete);
-
-  return (
-    <div className="space-y-4">
-      {/* Stats Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        {[
-          { label: 'Total Earned', value: formatMoney(state.totalEarned), color: 'text-green-400' },
-          { label: 'Total Spent', value: formatMoney(state.totalSpent), color: 'text-red-400' },
-          { label: 'Buildings', value: `${completedBuildings.length}`, color: 'text-cyan-400' },
-          { label: 'Research', value: `${state.completedResearch.length}/${RESEARCH.length}`, color: 'text-purple-400' },
-        ].map(s => (
-          <div key={s.label} className="card p-3 text-center">
-            <p className={`text-lg font-bold ${s.color}`}>{s.value}</p>
-            <p className="text-slate-500 text-xs">{s.label}</p>
-          </div>
-        ))}
-      </div>
-
-      {/* Active Services */}
-      <div className="card p-4">
-        <h3 className="text-white font-semibold text-sm mb-3">Active Services ({state.activeServices.length})</h3>
-        {state.activeServices.length === 0 ? (
-          <p className="text-slate-500 text-xs">Build infrastructure to enable revenue-generating services.</p>
-        ) : (
-          <div className="space-y-1">
-            {state.activeServices.map((svc, i) => {
-              const def = SERVICE_MAP.get(svc.definitionId);
-              return def ? (
-                <div key={i} className="flex items-center justify-between text-xs py-1">
-                  <span className="text-slate-300">{def.name}</span>
-                  <span className="text-green-400 font-mono">+{formatMoney(Math.round(def.revenuePerMonth * svc.revenueMultiplier))}/mo</span>
-                </div>
-              ) : null;
-            })}
-          </div>
-        )}
-      </div>
-
-      {/* In Progress */}
-      {inProgress.length > 0 && (
-        <div className="card p-4">
-          <h3 className="text-white font-semibold text-sm mb-3">Under Construction ({inProgress.length})</h3>
-          <div className="space-y-2">
-            {inProgress.map(bld => {
-              const def = BUILDING_MAP.get(bld.definitionId);
-              return (
-                <div key={bld.instanceId} className="text-xs flex items-center justify-between">
-                  <span className="text-slate-300">{def?.name || bld.definitionId}</span>
-                  <span className="text-slate-500">Done {formatGameDate(bld.completionDate)}</span>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
-      {/* Research Progress */}
-      {state.activeResearch && (
-        <div className="card p-4">
-          <h3 className="text-white font-semibold text-sm mb-2">Researching</h3>
-          {(() => {
-            const def = RESEARCH_MAP.get(state.activeResearch!.definitionId);
-            const pct = Math.round((state.activeResearch!.progressMonths / state.activeResearch!.totalMonths) * 100);
-            return (
-              <div>
-                <div className="flex justify-between text-xs mb-1">
-                  <span className="text-slate-300">{def?.name}</span>
-                  <span className="text-purple-400">{pct}%</span>
-                </div>
-                <div className="h-1.5 bg-white/[0.06] rounded-full">
-                  <div className="h-1.5 bg-purple-500 rounded-full transition-all" style={{ width: `${pct}%` }} />
-                </div>
-              </div>
-            );
-          })()}
-        </div>
-      )}
-
-      {/* Event Log */}
-      <div className="card p-4">
-        <h3 className="text-white font-semibold text-sm mb-3">Event Log</h3>
-        <div className="space-y-1 max-h-48 overflow-y-auto">
-          {state.eventLog.slice(0, 15).map(evt => (
-            <div key={evt.id} className="text-xs flex gap-2">
-              <span className="text-slate-500 font-mono shrink-0">{formatGameDate(evt.date)}</span>
-              <span className="text-slate-300">{evt.title}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
+import ResourceBar from '@/components/game/ResourceBar';
+import GameStartMenu from '@/components/game/GameStartMenu';
+import DashboardPanel from '@/components/game/DashboardPanel';
 
 // ─── Build Panel ────────────────────────────────────────────────────────────
 
@@ -458,13 +318,14 @@ export default function SpaceTycoonPage() {
   }, []);
 
   const handleBuild = useCallback((buildingId: string, locationId: string) => {
+    playSound('build_start');
     setState(prev => {
       if (!prev) return prev;
       const def = BUILDING_MAP.get(buildingId);
       if (!def) return prev;
       const count = prev.buildings.filter(b => b.definitionId === buildingId && b.locationId === locationId).length;
       const cost = scaledBuildingCost(def.baseCost, count);
-      if (prev.money < cost) return prev;
+      if (prev.money < cost) { playSound('error'); return prev; }
 
       const completionDate = advanceDate(prev.gameDate, def.buildTimeMonths);
       return {
@@ -491,10 +352,11 @@ export default function SpaceTycoonPage() {
   }, []);
 
   const handleStartResearch = useCallback((researchId: string) => {
+    playSound('research_start');
     setState(prev => {
       if (!prev || prev.activeResearch) return prev;
       const def = RESEARCH_MAP.get(researchId);
-      if (!def || prev.money < def.baseCostMoney) return prev;
+      if (!def || prev.money < def.baseCostMoney) { playSound('error'); return prev; }
 
       return {
         ...prev,
@@ -518,10 +380,11 @@ export default function SpaceTycoonPage() {
   }, []);
 
   const handleUnlockLocation = useCallback((locId: string) => {
+    playSound('location_unlock');
     setState(prev => {
       if (!prev) return prev;
       const loc = LOCATION_MAP.get(locId);
-      if (!loc || prev.money < loc.unlockCost) return prev;
+      if (!loc || prev.money < loc.unlockCost) { playSound('error'); return prev; }
 
       return {
         ...prev,
@@ -540,6 +403,8 @@ export default function SpaceTycoonPage() {
   }, []);
 
   const handleNewGame = useCallback(() => {
+    initAudio();
+    playSound('milestone');
     const newState = getNewGameState();
     setState(newState);
     saveGame(newState);
@@ -554,38 +419,13 @@ export default function SpaceTycoonPage() {
     }
   }, []);
 
-  // ─── Start Menu ─────────────────────────────────────────────────────
+  // ─── Start Menu (cinematic) ─────────────────────────────────────────
   if (showMenu || !state) {
     return (
-      <div className="min-h-screen bg-space-900 flex items-center justify-center px-4">
-        <div className="text-center max-w-md">
-          <div className="text-6xl mb-4">🚀</div>
-          <h1 className="text-3xl font-bold text-white mb-2">Space Tycoon</h1>
-          <p className="text-slate-400 text-sm mb-8">
-            Build your space empire from launch pads to interplanetary mining.
-            Research technologies, deploy satellites, and expand across the solar system.
-          </p>
-          <div className="flex flex-col gap-3">
-            <button
-              onClick={handleNewGame}
-              className="w-full py-3 text-sm font-semibold text-slate-900 bg-white hover:bg-slate-100 rounded-xl transition-colors"
-            >
-              New Game
-            </button>
-            {loadGame() && (
-              <button
-                onClick={() => { setState(loadGame()!); setShowMenu(false); }}
-                className="w-full py-3 text-sm font-semibold text-white border border-white/10 hover:border-white/20 rounded-xl transition-colors"
-              >
-                Continue Saved Game
-              </button>
-            )}
-          </div>
-          <Link href="/discover" className="text-slate-500 text-xs hover:text-slate-300 mt-6 inline-block">
-            Back to SpaceNexus
-          </Link>
-        </div>
-      </div>
+      <GameStartMenu
+        onNewGame={handleNewGame}
+        onContinue={() => { const saved = loadGame(); if (saved) { setState(saved); setShowMenu(false); } }}
+      />
     );
   }
 
