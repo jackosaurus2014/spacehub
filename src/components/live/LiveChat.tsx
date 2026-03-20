@@ -14,20 +14,7 @@ interface ChatMessage {
 const STORAGE_KEY = 'spacenexus-live-chat';
 const USERNAME_KEY = 'spacenexus-chat-username';
 
-// System messages to add atmosphere
-const SYSTEM_MESSAGES = [
-  { message: 'Welcome to SpaceNexus Live Chat!', delay: 0 },
-];
-
-// Simulated chat messages for atmosphere when chat is empty
-const SIMULATED_MESSAGES = [
-  { username: 'SpaceEnthusiast42', message: 'Excited for this launch!' },
-  { username: 'RocketWatcher', message: 'Weather looking good at the launch site' },
-  { username: 'OrbitFan', message: 'Anyone know the payload mass?' },
-  { username: 'LaunchTracker', message: 'T-2 hours and counting!' },
-  { username: 'SatelliteNerd', message: 'This booster has flown 15 times before' },
-  { username: 'AstroFan2024', message: 'Love watching these live streams' },
-];
+// No simulated/fake messages — only real user messages
 
 export default function LiveChat() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -91,23 +78,7 @@ export default function LiveChat() {
     scrollToBottom();
   }, [messages, scrollToBottom]);
 
-  // Add simulated messages periodically for atmosphere
-  useEffect(() => {
-    if (messages.length < 3) {
-      const interval = setInterval(() => {
-        const randomMsg = SIMULATED_MESSAGES[Math.floor(Math.random() * SIMULATED_MESSAGES.length)];
-        const simulatedMessage: ChatMessage = {
-          id: `sim-${Date.now()}`,
-          username: randomMsg.username,
-          message: randomMsg.message,
-          timestamp: Date.now(),
-        };
-        setMessages((prev) => [...prev, simulatedMessage]);
-      }, 15000); // Add a simulated message every 15 seconds
-
-      return () => clearInterval(interval);
-    }
-  }, [messages.length]);
+  // No simulated messages — only real user content
 
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
@@ -238,6 +209,16 @@ export default function LiveChat() {
         ref={chatContainerRef}
         className="flex-1 overflow-y-auto p-4 space-y-3"
       >
+        {/* Empty state — no messages yet */}
+        {messages.filter(m => !m.isSystem).length === 0 && (
+          <div className="flex flex-col items-center justify-center h-full text-center py-8">
+            <span className="text-3xl mb-3">💬</span>
+            <p className="text-white text-sm font-medium mb-1">Start the discussion</p>
+            <p className="text-slate-500 text-xs max-w-[200px]">
+              {username ? 'Be the first to say something!' : 'Set a username below to join the conversation.'}
+            </p>
+          </div>
+        )}
         {messages.map((msg) => (
           <div
             key={msg.id}
