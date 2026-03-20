@@ -21,6 +21,7 @@ import MarketPanel from '@/components/game/MarketPanel';
 import AchievementsModal from '@/components/game/AchievementsModal';
 import { checkAchievements } from '@/lib/game/achievements';
 import { useGameSync } from '@/hooks/useGameSync';
+import SolarSystemCanvas from '@/components/game/SolarSystemCanvas';
 import EventChoiceModal from '@/components/game/EventChoiceModal';
 import { RANDOM_EVENTS, applyEventEffect } from '@/lib/game/random-events';
 
@@ -600,7 +601,7 @@ export default function SpaceTycoonPage() {
         {tab === 'dashboard' && <DashboardPanel state={state} />}
         {tab === 'build' && <BuildPanel state={state} onBuild={handleBuild} />}
         {tab === 'research' && <ResearchPanel state={state} onStartResearch={handleStartResearch} />}
-        {tab === 'map' && <SolarSystemMap state={state} onUnlock={handleUnlockLocation} />}
+        {tab === 'map' && <SolarSystemCanvas state={state} onUnlock={handleUnlockLocation} />}
         {tab === 'services' && <ServicesPanel state={state} />}
         {tab === 'market' && <MarketPanel state={state} onSellResource={handleSellResource} onBuyResource={handleBuyResource} />}
         {tab === 'leaderboard' && <LeaderboardPanel state={state} />}

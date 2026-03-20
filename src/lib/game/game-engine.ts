@@ -234,28 +234,33 @@ function formatRevenue(amount: number): string {
  * This is the function called by the game loop in page.tsx.
  */
 export function processFullTick(state: GameState): GameState {
+  // 1. Process player tick (must succeed)
+  let newState: GameState;
   try {
-  // 1. Process player tick
-  let newState = processTick(state);
+    newState = processTick(state);
+  } catch (err) {
+    console.error('processTick error:', err);
+    return { ...state, lastTickAt: Date.now() };
+  }
 
-  // 2. Process NPC companies
-  if (newState.npcCompanies && newState.npcCompanies.length > 0) {
-    const npcResult = processNPCTick(newState.npcCompanies, newState.gameDate);
-    newState = {
-      ...newState,
-      npcCompanies: npcResult.npcs,
-      eventLog: [...npcResult.events, ...newState.eventLog].slice(0, MAX_EVENT_LOG),
-      npcMarketPressure: applyNPCMarketActions(
-        newState.npcMarketPressure || {},
-        npcResult.marketActions,
-      ),
-    };
+  // 2. Process NPC companies (can fail safely without losing player state)
+  try {
+    if (newState.npcCompanies && newState.npcCompanies.length > 0) {
+      const npcResult = processNPCTick(newState.npcCompanies, newState.gameDate);
+      newState = {
+        ...newState,
+        npcCompanies: npcResult.npcs,
+        eventLog: [...npcResult.events, ...newState.eventLog].slice(0, MAX_EVENT_LOG),
+        npcMarketPressure: applyNPCMarketActions(
+          newState.npcMarketPressure || {},
+          npcResult.marketActions,
+        ),
+      };
+    }
+  } catch (err) {
+    console.error('NPC tick error (non-fatal):', err);
+    // NPC failure doesn't affect player state — just skip NPC processing
   }
 
   return newState;
-  } catch (err) {
-    // Safety: if tick processing fails, return state unchanged rather than crashing
-    console.error('processFullTick error:', err);
-    return { ...state, lastTickAt: Date.now() };
-  }
 }
