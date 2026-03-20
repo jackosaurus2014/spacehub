@@ -181,6 +181,12 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
     // App download
     { url: `${BASE_URL}/app`, changeFrequency: 'monthly' as const, priority: 0.6 },
 
+    // Satellite tools
+    { url: `${BASE_URL}/whats-overhead`, changeFrequency: 'daily' as const, priority: 0.7 },
+
+    // Reports
+    { url: `${BASE_URL}/report/monthly`, changeFrequency: 'monthly' as const, priority: 0.7 },
+
     // Platform status
     { url: `${BASE_URL}/status`, changeFrequency: 'daily' as const, priority: 0.4 },
     { url: `${BASE_URL}/roadmap`, changeFrequency: 'monthly' as const, priority: 0.5 },
