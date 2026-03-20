@@ -31,7 +31,15 @@ import { calculateOfflineIncome, applyOfflineIncome } from '@/lib/game/offline-i
 import type { OfflineEarnings } from '@/lib/game/offline-income';
 import GameStyles from '@/components/game/GameStyles';
 import FleetPanel from '@/components/game/FleetPanel';
+import CraftingPanel from '@/components/game/CraftingPanel';
+import WorkforcePanel from '@/components/game/WorkforcePanel';
+import PrestigeModal from '@/components/game/PrestigeModal';
+import WeeklyChallengeWidget from '@/components/game/WeeklyChallengeWidget';
 import { SHIP_MAP, getTravelTime, generateShipName } from '@/lib/game/ships';
+import { CHAIN_MAP } from '@/lib/game/production-chains';
+import { getHireCost } from '@/lib/game/workforce';
+import type { WorkforceState } from '@/lib/game/workforce';
+import { calculatePrestigeRewards, DEFAULT_PRESTIGE } from '@/lib/game/prestige';
 
 // ─── Build Panel ────────────────────────────────────────────────────────────
 
@@ -352,6 +360,7 @@ export default function SpaceTycoonPage() {
   const [showAchievements, setShowAchievements] = useState(false);
   const [unlockedAchievements, setUnlockedAchievements] = useState<string[]>([]);
   const [offlineEarnings, setOfflineEarnings] = useState<OfflineEarnings | null>(null);
+  const [showPrestige, setShowPrestige] = useState(false);
   const tickRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const autoSaveRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -654,6 +663,8 @@ export default function SpaceTycoonPage() {
     { id: 'map', label: 'Map', icon: '🗺️' },
     { id: 'services', label: 'Services', icon: '💰' },
     { id: 'fleet', label: 'Fleet', icon: '🚀' },
+    { id: 'crafting', label: 'Craft', icon: '🔨' },
+    { id: 'workforce', label: 'Crew', icon: '👷' },
     { id: 'market', label: 'Market', icon: '📈' },
     { id: 'contracts', label: 'Contracts', icon: '📋' },
     { id: 'leaderboard', label: 'Ranks', icon: '🏆' },
@@ -694,6 +705,13 @@ export default function SpaceTycoonPage() {
           title="Achievements"
         >
           🏆 {unlockedAchievements.length}
+        </button>
+        <button
+          onClick={() => { playSound('click'); setShowPrestige(true); }}
+          className="px-2 py-1 text-[10px] text-slate-500 hover:text-purple-400 transition-colors"
+          title="Prestige"
+        >
+          ⭐ Prestige
         </button>
         <button
           onClick={() => { saveGame(state); playSound('click'); }}
@@ -806,6 +824,45 @@ export default function SpaceTycoonPage() {
             });
           }}
         />}
+        {tab === 'crafting' && <CraftingPanel state={state} onStartCrafting={(recipeId) => {
+          const recipe = CHAIN_MAP.get(recipeId);
+          if (!recipe) return;
+          playSound('build_start');
+          setState(prev => {
+            if (!prev || prev.activeRefining) return prev;
+            const allRes = { ...(prev.resources || {}), ...(prev.craftedProducts || {}) };
+            for (const [resId, qty] of Object.entries(recipe.inputs)) {
+              if ((allRes[resId] || 0) < qty) { playSound('error'); return prev; }
+            }
+            // Deduct inputs from resources or craftedProducts
+            const newRes = { ...prev.resources };
+            const newProducts = { ...(prev.craftedProducts || {}) };
+            for (const [resId, qty] of Object.entries(recipe.inputs)) {
+              if (newRes[resId] !== undefined && newRes[resId] >= qty) { newRes[resId] -= qty; }
+              else if (newProducts[resId] !== undefined) { newProducts[resId] -= qty; }
+            }
+            // Add outputs immediately (simplified — no wait for completion)
+            newProducts[recipe.outputId] = (newProducts[recipe.outputId] || 0) + recipe.outputQuantity;
+            return {
+              ...prev,
+              resources: newRes,
+              craftedProducts: newProducts,
+              activeRefining: { recipeId, startedAtMs: Date.now(), durationSeconds: recipe.timeSeconds },
+              eventLog: [{ id: generateId(), date: prev.gameDate, type: 'build_complete' as const, title: `Crafting: ${recipe.name}`, description: `Producing ${recipe.outputQuantity}x ${recipe.outputId.replace(/_/g, ' ')}.` }, ...prev.eventLog].slice(0, 50),
+            };
+          });
+        }} />}
+        {tab === 'workforce' && <WorkforcePanel state={state} onHire={(workerType) => {
+          const cost = getHireCost(workerType as 'engineer' | 'scientist' | 'miner' | 'operator');
+          setState(prev => {
+            if (!prev || prev.money < cost) { playSound('error'); return prev; }
+            playSound('click');
+            const workforce = { ...(prev.workforce || { engineers: 0, scientists: 0, miners: 0, operators: 0 }) };
+            const key = `${workerType}s` as keyof WorkforceState;
+            workforce[key] = (workforce[key] || 0) + 1;
+            return { ...prev, money: prev.money - cost, totalSpent: prev.totalSpent + cost, workforce };
+          });
+        }} />}
         {tab === 'market' && <MarketPanel state={state} onSellResource={handleSellResource} onBuyResource={handleBuyResource} />}
         {tab === 'contracts' && <ContractsPanel state={state} onAcceptContract={(contractId) => {
           playSound('click');
@@ -844,6 +901,28 @@ export default function SpaceTycoonPage() {
           state={state}
           unlockedIds={unlockedAchievements}
           onClose={() => setShowAchievements(false)}
+        />
+      )}
+
+      {/* Prestige Modal */}
+      {showPrestige && (
+        <PrestigeModal
+          state={state}
+          onClose={() => setShowPrestige(false)}
+          onPrestige={() => {
+            const cp = { ...DEFAULT_PRESTIGE };
+            cp.level = state.prestige?.level || 0;
+            cp.legacyPoints = state.prestige?.legacyPoints || 0;
+            const newPrestige = calculatePrestigeRewards(cp);
+            const freshState = getNewGameState();
+            setState({
+              ...freshState,
+              money: newPrestige.permanentBonuses.startingMoney,
+              prestige: newPrestige,
+            });
+            saveGame({ ...freshState, money: newPrestige.permanentBonuses.startingMoney, prestige: newPrestige });
+            setShowPrestige(false);
+          }}
         />
       )}
 

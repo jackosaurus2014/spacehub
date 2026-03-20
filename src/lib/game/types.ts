@@ -282,7 +282,7 @@ export interface GameState {
   }[];
 
   // Prestige
-  prestige?: { level: number; legacyPoints: number; permanentBonuses: Record<string, number> };
+  prestige?: { level: number; legacyPoints: number; permanentBonuses: { revenueMultiplier: number; buildSpeedMultiplier: number; researchSpeedMultiplier: number; miningMultiplier: number; startingMoney: number } };
 
   // Weekly events
   currentWeekId?: number;
@@ -294,4 +294,4 @@ export interface GameState {
 
 // ─── UI Tabs ────────────────────────────────────────────────────────────────
 
-export type GameTab = 'dashboard' | 'build' | 'research' | 'map' | 'services' | 'fleet' | 'market' | 'contracts' | 'leaderboard';
+export type GameTab = 'dashboard' | 'build' | 'research' | 'map' | 'services' | 'fleet' | 'crafting' | 'workforce' | 'market' | 'contracts' | 'leaderboard';

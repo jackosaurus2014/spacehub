@@ -8,6 +8,7 @@ import { SERVICE_MAP } from '@/lib/game/services';
 import { RESEARCH } from '@/lib/game/research-tree';
 import { LOCATION_MAP } from '@/lib/game/solar-system';
 import IncomeChart from '@/components/game/IncomeChart';
+import WeeklyChallengeWidget from '@/components/game/WeeklyChallengeWidget';
 
 /** Live countdown timer for research (purple) */
 function ResearchCountdown({ startedAtMs, durationSeconds }: { startedAtMs: number; durationSeconds: number }) {
@@ -189,6 +190,9 @@ export default function DashboardPanel({ state }: { state: GameState }) {
       {state.incomeHistory && state.incomeHistory.length >= 2 && (
         <IncomeChart data={state.incomeHistory} />
       )}
+
+      {/* Weekly Challenge */}
+      <WeeklyChallengeWidget />
 
       {/* Active Effects (from random events) */}
       {state.activeEffects && state.activeEffects.length > 0 && (
