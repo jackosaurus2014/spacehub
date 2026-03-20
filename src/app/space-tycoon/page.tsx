@@ -40,6 +40,7 @@ import { CHAIN_MAP } from '@/lib/game/production-chains';
 import { getHireCost } from '@/lib/game/workforce';
 import type { WorkforceState } from '@/lib/game/workforce';
 import { calculatePrestigeRewards, DEFAULT_PRESTIGE } from '@/lib/game/prestige';
+import GameTutorial from '@/components/game/GameTutorial';
 
 // ─── Build Panel ────────────────────────────────────────────────────────────
 
@@ -656,19 +657,29 @@ export default function SpaceTycoonPage() {
     );
   }
 
-  const tabs: { id: GameTab; label: string; icon: string }[] = [
+  const allTabs: { id: GameTab; label: string; icon: string }[] = [
     { id: 'dashboard', label: 'Dashboard', icon: '📊' },
     { id: 'build', label: 'Build', icon: '🏗️' },
     { id: 'research', label: 'Research', icon: '🔬' },
     { id: 'map', label: 'Map', icon: '🗺️' },
-    { id: 'services', label: 'Services', icon: '💰' },
-    { id: 'fleet', label: 'Fleet', icon: '🚀' },
-    { id: 'crafting', label: 'Craft', icon: '🔨' },
-    { id: 'workforce', label: 'Crew', icon: '👷' },
-    { id: 'market', label: 'Market', icon: '📈' },
-    { id: 'contracts', label: 'Contracts', icon: '📋' },
-    { id: 'leaderboard', label: 'Ranks', icon: '🏆' },
   ];
+
+  // Progressive disclosure: unlock tabs as player progresses
+  const completedBuildings = state.buildings.filter(b => b.isComplete).length;
+  const hasServices = state.activeServices.length > 0;
+  const hasResearch = state.completedResearch.length > 0;
+  const hasResources = Object.values(state.resources || {}).some(q => q > 0);
+  const hasFabrication = state.buildings.some(b => b.isComplete && (b.definitionId === 'fabrication_orbital' || b.definitionId === 'fabrication_lunar'));
+
+  if (hasServices) allTabs.push({ id: 'services', label: 'Services', icon: '💰' });
+  if (hasResearch) allTabs.push({ id: 'fleet', label: 'Fleet', icon: '🚀' });
+  if (hasFabrication) allTabs.push({ id: 'crafting', label: 'Craft', icon: '🔨' });
+  if (completedBuildings >= 3) allTabs.push({ id: 'workforce', label: 'Crew', icon: '👷' });
+  if (hasResources) allTabs.push({ id: 'market', label: 'Market', icon: '📈' });
+  if (completedBuildings >= 2) allTabs.push({ id: 'contracts', label: 'Contracts', icon: '📋' });
+  allTabs.push({ id: 'leaderboard', label: 'Ranks', icon: '🏆' });
+
+  const tabs = allTabs;
 
   return (
     <div className="min-h-screen bg-space-900 flex flex-col">
@@ -903,6 +914,9 @@ export default function SpaceTycoonPage() {
           onClose={() => setShowAchievements(false)}
         />
       )}
+
+      {/* Tutorial */}
+      <GameTutorial onSetTab={(t) => setTab(t as GameTab)} />
 
       {/* Prestige Modal */}
       {showPrestige && (

@@ -105,6 +105,10 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/space-industry/huntsville`, changeFrequency: 'monthly' as const, priority: 0.6 },
     { url: `${BASE_URL}/space-industry/tucson`, changeFrequency: 'monthly' as const, priority: 0.6 },
     { url: `${BASE_URL}/space-industry/seattle`, changeFrequency: 'monthly' as const, priority: 0.6 },
+    { url: `${BASE_URL}/space-industry/san-francisco`, changeFrequency: 'monthly' as const, priority: 0.6 },
+    { url: `${BASE_URL}/space-industry/denver`, changeFrequency: 'monthly' as const, priority: 0.6 },
+    { url: `${BASE_URL}/space-industry/albuquerque`, changeFrequency: 'monthly' as const, priority: 0.6 },
+    { url: `${BASE_URL}/space-industry/vandenberg`, changeFrequency: 'monthly' as const, priority: 0.6 },
 
     // Content and tools
     { url: `${BASE_URL}/blogs`, changeFrequency: 'daily' as const, priority: 0.6 },
