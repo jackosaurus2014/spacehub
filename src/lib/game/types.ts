@@ -34,6 +34,8 @@ export interface BuildingDefinition {
   tier: number;
   /** Real-time seconds to build (wall clock). Tier 1 ≈ 5 min, max ≈ 24 hr */
   realBuildSeconds: number;
+  /** Resource costs to build (in addition to money). Optional for tier 1. */
+  resourceCost?: Record<string, number>;
 }
 
 export interface BuildingInstance {
@@ -75,6 +77,8 @@ export interface ResearchDefinition {
   unlocks: string[];
   /** Real-time seconds to research (wall clock). Tier 1 ≈ 10 min, max ≈ 24 hr */
   realResearchSeconds: number;
+  /** Resource costs for research (optional, primarily tier 3+) */
+  resourceCost?: Record<string, number>;
 }
 
 export interface ActiveResearch {

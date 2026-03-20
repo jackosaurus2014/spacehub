@@ -83,7 +83,11 @@ function BuildPanel({ state, onBuild }: { state: GameState; onBuild: (buildingId
           {availableBuildings.map(bld => {
             const count = countAtLocation(bld.id);
             const cost = scaledBuildingCost(bld.baseCost, count);
-            const canAfford = state.money >= cost;
+            const canAffordMoney = state.money >= cost;
+            const hasResources = !bld.resourceCost || Object.entries(bld.resourceCost).every(
+              ([resId, qty]) => (state.resources[resId] || 0) >= qty
+            );
+            const canAfford = canAffordMoney && hasResources;
 
             return (
               <div key={bld.id} className="card p-4">
@@ -109,6 +113,22 @@ function BuildPanel({ state, onBuild }: { state: GameState; onBuild: (buildingId
                 })()}
                 {bld.enabledServices.length === 0 && (
                   <p className="text-slate-600 text-[10px] mb-2">Support building — no direct revenue</p>
+                )}
+                {/* Resource costs */}
+                {bld.resourceCost && Object.keys(bld.resourceCost).length > 0 && (
+                  <div className="flex flex-wrap gap-1 mb-2">
+                    {Object.entries(bld.resourceCost).map(([resId, qty]) => {
+                      const have = state.resources[resId] || 0;
+                      const enough = have >= qty;
+                      return (
+                        <span key={resId} className={`text-[9px] px-1.5 py-0.5 rounded border ${
+                          enough ? 'text-slate-400 border-white/[0.06] bg-white/[0.02]' : 'text-red-400 border-red-500/20 bg-red-500/5'
+                        }`}>
+                          {resId.replace(/_/g, ' ')} {have}/{qty}
+                        </span>
+                      );
+                    })}
+                  </div>
                 )}
                 <div className="flex items-center justify-between">
                   <div className="text-xs">
@@ -154,7 +174,10 @@ function ResearchPanel({ state, onStartResearch }: { state: GameState; onStartRe
                 const completed = state.completedResearch.includes(r.id);
                 const active = state.activeResearch?.definitionId === r.id;
                 const prereqsMet = r.prerequisites.every(p => state.completedResearch.includes(p));
-                const canStart = !completed && !active && !state.activeResearch && prereqsMet && state.money >= r.baseCostMoney;
+                const hasResCost = !r.resourceCost || Object.entries(r.resourceCost).every(
+                  ([resId, qty]) => (state.resources[resId] || 0) >= qty
+                );
+                const canStart = !completed && !active && !state.activeResearch && prereqsMet && state.money >= r.baseCostMoney && hasResCost;
                 const locked = !prereqsMet && !completed;
 
                 return (
@@ -173,6 +196,18 @@ function ResearchPanel({ state, onStartResearch }: { state: GameState; onStartRe
                       {active && <span className="text-purple-400 text-[10px] animate-pulse">Researching...</span>}
                     </div>
                     <p className="text-slate-500 text-[10px] mb-2">{r.effect}</p>
+                    {!completed && !active && r.resourceCost && Object.keys(r.resourceCost).length > 0 && (
+                      <div className="flex flex-wrap gap-1 mb-1.5">
+                        {Object.entries(r.resourceCost).map(([resId, qty]) => {
+                          const have = state.resources[resId] || 0;
+                          return (
+                            <span key={resId} className={`text-[8px] px-1 py-0.5 rounded border ${
+                              have >= qty ? 'text-slate-400 border-white/[0.06]' : 'text-red-400 border-red-500/20'
+                            }`}>{resId.replace(/_/g, ' ')} {have}/{qty}</span>
+                          );
+                        })}
+                      </div>
+                    )}
                     {!completed && !active && (
                       <div className="flex items-center justify-between">
                         <span className="text-slate-500 text-[10px]">{formatMoney(r.baseCostMoney)} · {formatDuration(r.realResearchSeconds)}</span>
@@ -370,12 +405,28 @@ export default function SpaceTycoonPage() {
       const cost = scaledBuildingCost(def.baseCost, count);
       if (prev.money < cost) { playSound('error'); return prev; }
 
+      // Check resource costs
+      if (def.resourceCost) {
+        for (const [resId, qty] of Object.entries(def.resourceCost)) {
+          if ((prev.resources[resId] || 0) < qty) { playSound('error'); return prev; }
+        }
+      }
+
+      // Deduct resources
+      const newResources = { ...prev.resources };
+      if (def.resourceCost) {
+        for (const [resId, qty] of Object.entries(def.resourceCost)) {
+          newResources[resId] = (newResources[resId] || 0) - qty;
+        }
+      }
+
       const completionDate = advanceDate(prev.gameDate, def.buildTimeMonths);
       const realDuration = scaledBuildTime(def.realBuildSeconds, count);
       return {
         ...prev,
         money: prev.money - cost,
         totalSpent: prev.totalSpent + cost,
+        resources: newResources,
         buildings: [...prev.buildings, {
           instanceId: generateId(),
           definitionId: buildingId,
@@ -404,11 +455,27 @@ export default function SpaceTycoonPage() {
       const def = RESEARCH_MAP.get(researchId);
       if (!def || prev.money < def.baseCostMoney) { playSound('error'); return prev; }
 
+      // Check resource costs
+      if (def.resourceCost) {
+        for (const [resId, qty] of Object.entries(def.resourceCost)) {
+          if ((prev.resources[resId] || 0) < qty) { playSound('error'); return prev; }
+        }
+      }
+
+      // Deduct resources
+      const newResources = { ...prev.resources };
+      if (def.resourceCost) {
+        for (const [resId, qty] of Object.entries(def.resourceCost)) {
+          newResources[resId] = (newResources[resId] || 0) - qty;
+        }
+      }
+
       const realDuration = def.realResearchSeconds;
       return {
         ...prev,
         money: prev.money - def.baseCostMoney,
         totalSpent: prev.totalSpent + def.baseCostMoney,
+        resources: newResources,
         activeResearch: {
           definitionId: researchId,
           startDate: prev.gameDate,

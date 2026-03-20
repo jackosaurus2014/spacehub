@@ -11,7 +11,16 @@ const TIER_RESEARCH_SECONDS: Record<number, number> = {
   5: 43200,   // 12 hours
 };
 
-type RawResearch = Omit<ResearchDefinition, 'realResearchSeconds'>;
+/** Resource costs by research tier (cumulative with money cost) */
+const TIER_RESEARCH_RESOURCES: Record<number, Record<string, number>> = {
+  1: {},  // Tier 1: money only
+  2: {},  // Tier 2: money only
+  3: { rare_earth: 15, titanium: 30 },
+  4: { rare_earth: 40, titanium: 60, platinum_group: 10 },
+  5: { rare_earth: 100, platinum_group: 30, exotic_materials: 5, helium3: 3 },
+};
+
+type RawResearch = Omit<ResearchDefinition, 'realResearchSeconds' | 'resourceCost'>;
 
 const RAW_RESEARCH: RawResearch[] = [
   // ─── ROCKETRY ─────────────────────────────────────────────────────────
@@ -181,11 +190,15 @@ const RAW_RESEARCH: RawResearch[] = [
     baseCostMoney: 500_000_000_000, baseTimeMonths: 72, prerequisites: ['solar_sails_adv', 'fusion_drive'], unlocks: [] },
 ];
 
-// Apply real-time durations from tier mapping
-export const RESEARCH: ResearchDefinition[] = RAW_RESEARCH.map(r => ({
-  ...r,
-  realResearchSeconds: TIER_RESEARCH_SECONDS[r.tier] || 600,
-}));
+// Apply real-time durations and resource costs from tier mapping
+export const RESEARCH: ResearchDefinition[] = RAW_RESEARCH.map(r => {
+  const resCost = TIER_RESEARCH_RESOURCES[r.tier] || {};
+  return {
+    ...r,
+    realResearchSeconds: TIER_RESEARCH_SECONDS[r.tier] || 600,
+    resourceCost: Object.keys(resCost).length > 0 ? resCost : undefined,
+  };
+});
 
 export const RESEARCH_MAP = new Map(RESEARCH.map(r => [r.id, r]));
 
