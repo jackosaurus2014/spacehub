@@ -12,6 +12,7 @@ import ExportButton from '@/components/ui/ExportButton';
 import EmptyState from '@/components/ui/EmptyState';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
+import FeatureTeaser from '@/components/marketing/FeatureTeaser';
 
 interface ExecutiveMove {
   id: string;
@@ -583,6 +584,15 @@ function ExecutiveMovesContent() {
                             <span className="text-slate-500 ml-1">({move.fromTitle})</span>
                           )}
 
+        <FeatureTeaser
+          featureName="Executive Moves"
+          description="Track C-suite hiring, departures, and board changes across 200+ space companies. Stay ahead of industry leadership shifts."
+          requiredTier="pro"
+          freePreviewCount={3}
+          totalCount={100}
+        >
+          <div />
+        </FeatureTeaser>
         <RelatedModules modules={PAGE_RELATIONS['executive-moves']} />
                         </div>
                       </div>

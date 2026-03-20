@@ -7,6 +7,7 @@ import ScrollReveal from '@/components/ui/ScrollReveal';
 import EmptyState from '@/components/ui/EmptyState';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
+import FeatureTeaser from '@/components/marketing/FeatureTeaser';
 
 // ── Types ────────────────────────────────────────────────────────────
 
@@ -834,6 +835,15 @@ export default function DealFlowPage() {
                     )}
                   </div>
 
+        <FeatureTeaser
+          featureName="Deal Flow"
+          description="Track all space industry deals, funding rounds, and M&A activity in real time. Filter by sector, stage, and value."
+          requiredTier="pro"
+          freePreviewCount={3}
+          totalCount={50}
+        >
+          <div />
+        </FeatureTeaser>
         <RelatedModules modules={PAGE_RELATIONS['deal-flow']} />
                 </div>
               </div>

@@ -8,6 +8,7 @@ import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import RelatedModules from '@/components/ui/RelatedModules';
 import SubscribeCTA from '@/components/marketing/SubscribeCTA';
+import FeatureTeaser from '@/components/marketing/FeatureTeaser';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import WatchButton from '@/components/watchlist/WatchButton';
 import SaveSearchButton from '@/components/watchlist/SaveSearchButton';
@@ -716,6 +717,15 @@ export default function CompanyProfilesPage() {
       <div className="mt-8">
         <AdSlot position="footer" module="company-profiles" />
 
+            <FeatureTeaser
+              featureName="Company Profiles"
+              description="Unlock full access to 200+ company profiles with funding data, executive teams, SpaceNexus Score ratings, and competitive analysis."
+              requiredTier="pro"
+              freePreviewCount={5}
+              totalCount={200}
+            >
+              <div />
+            </FeatureTeaser>
             <SubscribeCTA />
 
             <ScrollReveal>
