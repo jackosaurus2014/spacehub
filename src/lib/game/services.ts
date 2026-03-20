@@ -102,6 +102,32 @@ export const SERVICES: ServiceDefinition[] = [
     description: 'Build components from lunar materials for local use or export.',
     revenuePerMonth: 18_000_000, operatingCostPerMonth: 7_000_000,
     requiredBuildings: ['fabrication_lunar'], requiredResearch: ['orbital_assembly', 'regolith_processing'] },
+
+  // ─── NEW BUSINESS TYPES ─────────────────────────────────────────────
+  { id: 'svc_propellant_depot', name: 'Propellant Depot Services', type: 'fabrication_output', tier: 2,
+    description: 'Sell rocket fuel produced from water ice. The gas station of space.',
+    revenuePerMonth: 25_000_000, operatingCostPerMonth: 8_000_000,
+    requiredBuildings: ['mining_lunar_ice'], requiredResearch: ['resource_prospecting', 'regolith_processing'] },
+  { id: 'svc_debris_removal', name: 'Debris Removal Contracts', type: 'sensor_service', tier: 2,
+    description: 'Government and commercial contracts to remove orbital debris.',
+    revenuePerMonth: 15_000_000, operatingCostPerMonth: 6_000_000,
+    requiredBuildings: ['space_station_small'], requiredResearch: ['autonomous_docking'] },
+  { id: 'svc_navigation', name: 'Navigation Services (GPS)', type: 'telecom_service', tier: 2,
+    description: 'Positioning, navigation, and timing services for Earth and cislunar space.',
+    revenuePerMonth: 20_000_000, operatingCostPerMonth: 5_000_000,
+    requiredBuildings: ['sat_telecom_geo'], requiredResearch: ['high_power_comms'] },
+  { id: 'svc_space_insurance', name: 'Space Insurance Underwriting', type: 'sensor_service', tier: 2,
+    description: 'Underwrite launch and satellite insurance policies. Passive income.',
+    revenuePerMonth: 10_000_000, operatingCostPerMonth: 2_000_000,
+    requiredBuildings: ['mission_control'], requiredResearch: ['sar_imaging'] },
+  { id: 'svc_asteroid_survey', name: 'Asteroid Survey Data', type: 'sensor_service', tier: 3,
+    description: 'Sell prospecting data to mining companies. Precursor to mining operations.',
+    revenuePerMonth: 35_000_000, operatingCostPerMonth: 12_000_000,
+    requiredBuildings: ['sat_sensor'], requiredResearch: ['resource_prospecting', 'quantum_sensors'] },
+  { id: 'svc_propellant_brokerage', name: 'Propellant Brokerage', type: 'launch_payload', tier: 3,
+    description: 'Buy cheap fuel at Moon, sell at premium to Mars/Jupiter-bound missions.',
+    revenuePerMonth: 50_000_000, operatingCostPerMonth: 18_000_000,
+    requiredBuildings: ['mining_lunar_ice'], requiredResearch: ['interplanetary_cruisers'] },
 ];
 
 export const SERVICE_MAP = new Map(SERVICES.map(s => [s.id, s]));

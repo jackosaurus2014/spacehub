@@ -250,8 +250,37 @@ export interface GameState {
   // Competitive milestones
   claimedMilestones?: Record<string, string>;
 
-  // Refining
+  // Refining / Production
   activeRefining?: { recipeId: string; startedAtMs: number; durationSeconds: number } | null;
+  craftedProducts?: Record<string, number>; // Product inventory (steel_ingots, etc.)
+
+  // Workforce
+  workforce?: { engineers: number; scientists: number; miners: number; operators: number };
+
+  // Ships
+  ships?: {
+    instanceId: string;
+    definitionId: string;
+    status: 'idle' | 'in_transit' | 'loading';
+    currentLocation: string;
+    route?: {
+      from: string;
+      to: string;
+      departedAtMs: number;
+      arrivalAtMs: number;
+      cargo: Record<string, number>;
+    };
+  }[];
+
+  // Prestige
+  prestige?: { level: number; legacyPoints: number; permanentBonuses: Record<string, number> };
+
+  // Weekly events
+  currentWeekId?: number;
+  weeklyProgress?: Record<string, number>; // metric → value this week
+
+  // Market events
+  activeMarketEvents?: { eventId: string; name: string; icon: string; affectedResources: string[]; priceMultiplier: number; startedAtMs: number; expiresAtMs: number }[];
 }
 
 // ─── UI Tabs ────────────────────────────────────────────────────────────────
