@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import type { GameState, GameTab, TickSpeed } from '@/lib/game/types';
-import { processTick } from '@/lib/game/game-engine';
+import { processFullTick } from '@/lib/game/game-engine';
 import { getNewGameState, saveGame, loadGame, deleteSave } from '@/lib/game/save-load';
 import { TICK_INTERVALS, AUTO_SAVE_INTERVAL_MS } from '@/lib/game/constants';
 import { formatMoney, formatGameDate, formatDuration, formatCountdown, advanceDate, generateId, scaledBuildingCost, scaledResearchTime } from '@/lib/game/formulas';
@@ -321,7 +321,7 @@ export default function SpaceTycoonPage() {
     if (!interval) return;
 
     tickRef.current = setInterval(() => {
-      setState(prev => prev ? processTick(prev) : prev);
+      setState(prev => prev ? processFullTick(prev) : prev);
     }, interval);
 
     return () => { if (tickRef.current) clearInterval(tickRef.current); };
@@ -583,7 +583,7 @@ export default function SpaceTycoonPage() {
         {tab === 'map' && <SolarSystemMap state={state} onUnlock={handleUnlockLocation} />}
         {tab === 'services' && <ServicesPanel state={state} />}
         {tab === 'market' && <MarketPanel state={state} onSellResource={handleSellResource} />}
-        {tab === 'leaderboard' && <LeaderboardPanel />}
+        {tab === 'leaderboard' && <LeaderboardPanel state={state} />}
       </div>
 
       {/* Daily Login Bonus */}

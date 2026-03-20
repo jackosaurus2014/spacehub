@@ -7,6 +7,7 @@ import { RESEARCH_MAP } from './research-tree';
 import { MINING_PRODUCTION } from './resources';
 import { advanceDate, generateId, revenueMultiplier } from './formulas';
 import { MAX_EVENT_LOG } from './constants';
+import { processNPCTick, applyNPCMarketActions } from './npc-engine';
 
 /**
  * Process a single game tick (1 in-game month).
@@ -167,4 +168,29 @@ function formatRevenue(amount: number): string {
   if (amount >= 1_000_000) return `$${(amount / 1_000_000).toFixed(0)}M`;
   if (amount >= 1_000) return `$${(amount / 1_000).toFixed(0)}K`;
   return `$${amount}`;
+}
+
+/**
+ * Full tick: processes player state + NPC companies in lockstep.
+ * This is the function called by the game loop in page.tsx.
+ */
+export function processFullTick(state: GameState): GameState {
+  // 1. Process player tick
+  let newState = processTick(state);
+
+  // 2. Process NPC companies
+  if (newState.npcCompanies && newState.npcCompanies.length > 0) {
+    const npcResult = processNPCTick(newState.npcCompanies, newState.gameDate);
+    newState = {
+      ...newState,
+      npcCompanies: npcResult.npcs,
+      eventLog: [...npcResult.events, ...newState.eventLog].slice(0, MAX_EVENT_LOG),
+      npcMarketPressure: applyNPCMarketActions(
+        newState.npcMarketPressure || {},
+        npcResult.marketActions,
+      ),
+    };
+  }
+
+  return newState;
 }

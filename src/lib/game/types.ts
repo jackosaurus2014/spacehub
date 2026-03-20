@@ -153,7 +153,8 @@ export type GameEventType =
   | 'service_started'
   | 'location_unlocked'
   | 'milestone'
-  | 'random_event';
+  | 'random_event'
+  | 'npc_activity';
 
 export interface GameEvent {
   id: string;
@@ -202,6 +203,10 @@ export interface GameState {
   // Multiplayer (synced to server)
   companyName?: string;
   lastSyncAt?: number;
+
+  // NPC companies
+  npcCompanies?: import('./npc-companies').NPCCompanyState[];
+  npcMarketPressure?: Record<string, number>;
 }
 
 // ─── UI Tabs ────────────────────────────────────────────────────────────────

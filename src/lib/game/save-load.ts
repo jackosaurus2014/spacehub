@@ -2,6 +2,7 @@
 
 import type { GameState } from './types';
 import { SAVE_KEY, SAVE_VERSION, STARTING_MONEY, STARTING_YEAR } from './constants';
+import { createAllNPCs } from './npc-companies';
 
 /** Create a fresh new game state */
 export function getNewGameState(): GameState {
@@ -36,6 +37,8 @@ export function getNewGameState(): GameState {
       missionsToMars: 0,
       missionsToOuterPlanets: 0,
     },
+    npcCompanies: createAllNPCs(),
+    npcMarketPressure: {},
   };
 }
 
@@ -57,7 +60,15 @@ export function loadGame(): GameState | null {
     if (!raw) return null;
     const state = JSON.parse(raw) as GameState;
     if (!state || typeof state.version !== 'number') return null;
-    // Future: add migration logic here if state.version < SAVE_VERSION
+    // Migration: add NPCs to saves that don't have them
+    if (!state.npcCompanies || state.npcCompanies.length === 0) {
+      state.npcCompanies = createAllNPCs();
+      state.npcMarketPressure = {};
+    }
+    // Migration: add resources to saves that don't have them
+    if (!state.resources) {
+      state.resources = {};
+    }
     return state;
   } catch {
     return null;

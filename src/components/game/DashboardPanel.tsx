@@ -275,19 +275,23 @@ export default function DashboardPanel({ state }: { state: GameState }) {
           Event Log
         </h3>
         <div className="space-y-1 max-h-52 overflow-y-auto scrollbar-thin scrollbar-thumb-white/10">
-          {state.eventLog.slice(0, 20).map((evt, i) => (
-            <div
-              key={evt.id}
-              className="flex gap-2 text-[11px] py-1 border-b border-white/[0.03] last:border-0"
-              style={{ animation: i === 0 ? 'reveal-up 0.3s ease-out' : 'none' }}
-            >
-              <span className="text-slate-600 font-mono shrink-0 w-16">{formatGameDate(evt.date)}</span>
-              <div>
-                <span className="text-slate-300">{evt.title}</span>
-                {evt.description && <span className="text-slate-600 ml-1">— {evt.description}</span>}
+          {state.eventLog.slice(0, 20).map((evt, i) => {
+            const isNPC = evt.type === 'npc_activity';
+            return (
+              <div
+                key={evt.id}
+                className={`flex gap-2 text-[11px] py-1 border-b border-white/[0.03] last:border-0 ${isNPC ? 'opacity-70' : ''}`}
+                style={{ animation: i === 0 ? 'reveal-up 0.3s ease-out' : 'none' }}
+              >
+                <span className="text-slate-600 font-mono shrink-0 w-16">{formatGameDate(evt.date)}</span>
+                <div>
+                  {isNPC && <span className="text-red-400/60 mr-1">🤖</span>}
+                  <span className={isNPC ? 'text-slate-500' : 'text-slate-300'}>{evt.title}</span>
+                  {evt.description && <span className="text-slate-600 ml-1">— {evt.description}</span>}
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
 
