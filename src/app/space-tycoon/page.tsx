@@ -429,8 +429,18 @@ export default function SpaceTycoonPage() {
     setShowMenu(false);
   }, []);
 
+  const handleRestartGame = useCallback(() => {
+    if (confirm('Restart the game? Your current progress will be erased and a new game will begin.')) {
+      playSound('milestone');
+      deleteSave();
+      const newState = getNewGameState();
+      setState(newState);
+      saveGame(newState);
+    }
+  }, []);
+
   const handleDeleteSave = useCallback(() => {
-    if (confirm('Delete your save? This cannot be undone.')) {
+    if (confirm('Delete your save and return to the main menu? This cannot be undone.')) {
       deleteSave();
       setState(null);
       setShowMenu(true);
@@ -492,11 +502,18 @@ export default function SpaceTycoonPage() {
           💾 Save
         </button>
         <button
+          onClick={handleRestartGame}
+          className="px-2 py-1 text-[10px] text-slate-500 hover:text-amber-400 transition-colors"
+          title="Restart Game"
+        >
+          🔄 Restart
+        </button>
+        <button
           onClick={handleDeleteSave}
           className="px-2 py-1 text-[10px] text-slate-500 hover:text-red-400 transition-colors"
-          title="Delete Save"
+          title="Quit to Menu"
         >
-          🗑️
+          🚪 Quit
         </button>
       </div>
 
