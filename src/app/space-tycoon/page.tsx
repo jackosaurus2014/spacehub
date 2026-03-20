@@ -15,6 +15,7 @@ import Link from 'next/link';
 import ResourceBar from '@/components/game/ResourceBar';
 import GameStartMenu from '@/components/game/GameStartMenu';
 import DashboardPanel from '@/components/game/DashboardPanel';
+import DailyBonusModal from '@/components/game/DailyBonusModal';
 
 // ─── Build Panel ────────────────────────────────────────────────────────────
 
@@ -531,6 +532,24 @@ export default function SpaceTycoonPage() {
         {tab === 'map' && <SolarSystemMap state={state} onUnlock={handleUnlockLocation} />}
         {tab === 'services' && <ServicesPanel state={state} />}
       </div>
+
+      {/* Daily Login Bonus */}
+      <DailyBonusModal
+        onClaim={(amount) => {
+          setState(prev => prev ? {
+            ...prev,
+            money: prev.money + amount,
+            totalEarned: prev.totalEarned + amount,
+            eventLog: [{
+              id: generateId(),
+              date: prev.gameDate,
+              type: 'milestone' as const,
+              title: `Daily Bonus: +${formatMoney(amount)}`,
+              description: 'Come back tomorrow for an even bigger reward!',
+            }, ...prev.eventLog].slice(0, 50),
+          } : prev);
+        }}
+      />
     </div>
   );
 }

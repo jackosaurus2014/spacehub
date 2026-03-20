@@ -41,6 +41,8 @@ const ReferralPrompt = dynamic(() => import('@/components/marketing/ReferralProm
 const AppRatingPrompt = dynamic(() => import('@/components/mobile/AppRatingPrompt'), { ssr: false });
 const AndroidInstallBanner = dynamic(() => import('@/components/mobile/AndroidInstallBanner'), { ssr: false });
 const MobileSocialProofBar = dynamic(() => import('@/components/marketing/MobileSocialProofBar'), { ssr: false });
+const UsageLimitBanner = dynamic(() => import('@/components/marketing/UsageLimitBanner'), { ssr: false });
+const StreakNotification = dynamic(() => import('@/components/marketing/StreakNotification'), { ssr: false });
 const HelpButton = dynamic(() => import('@/components/HelpButton'), { ssr: false });
 const FeedbackButton = dynamic(() => import('@/components/FeedbackButton'), { ssr: false });
 const BackToTop = dynamic(() => import('@/components/ui/BackToTop'), { ssr: false });
@@ -260,6 +262,8 @@ export default function RootLayout({
               <AppRatingPrompt />
               <ErrorReporter />
               <FeedbackButton />
+              <UsageLimitBanner />
+              <StreakNotification />
               <HelpButton />
               <BackToTop />
               <ScrollProgress />
