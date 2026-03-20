@@ -466,18 +466,7 @@ export default function SpaceTycoonPage() {
     }
   }, []);
 
-  // ─── Start Menu (cinematic) ─────────────────────────────────────────
-  if (showMenu || !state) {
-    return (
-      <GameStartMenu
-        onNewGame={handleNewGame}
-        onContinue={() => { const saved = loadGame(); if (saved) { setState(saved); setShowMenu(false); } }}
-      />
-    );
-  }
-
-  // ─── Game UI ──────────────────────────────────────────────────────────
-  // Check achievements periodically
+  // Check achievements periodically (must be before any early returns — React hooks rules)
   useEffect(() => {
     if (!state) return;
     const newlyUnlocked = checkAchievements(state, unlockedAchievements);
@@ -485,9 +474,9 @@ export default function SpaceTycoonPage() {
       playSound('milestone');
       setUnlockedAchievements(prev => [...prev, ...newlyUnlocked.map(a => a.id)]);
     }
-  }, [state?.money, state?.buildings.length, state?.completedResearch.length, state?.unlockedLocations.length, state?.activeServices.length]);
+  }, [state?.money, state?.buildings.length, state?.completedResearch.length, state?.unlockedLocations.length, state?.activeServices.length, unlockedAchievements]);
 
-  // Resource sell handler
+  // Resource sell handler (must be before early return)
   const handleSellResource = useCallback((resourceId: string, quantity: number, revenue: number) => {
     setState(prev => {
       if (!prev) return prev;
@@ -529,6 +518,16 @@ export default function SpaceTycoonPage() {
       };
     });
   }, []);
+
+  // ─── Start Menu (cinematic) ─────────────────────────────────────────
+  if (showMenu || !state) {
+    return (
+      <GameStartMenu
+        onNewGame={handleNewGame}
+        onContinue={() => { const saved = loadGame(); if (saved) { setState(saved); setShowMenu(false); } }}
+      />
+    );
+  }
 
   const tabs: { id: GameTab; label: string; icon: string }[] = [
     { id: 'dashboard', label: 'Dashboard', icon: '📊' },
