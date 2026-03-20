@@ -182,12 +182,30 @@ export default function PushOptInBanner() {
               subscribeOptions.applicationServerKey = urlBase64ToUint8Array(VAPID_PUBLIC_KEY);
             }
 
-            await registration.pushManager.subscribe(subscribeOptions);
+            const subscription = await registration.pushManager.subscribe(subscribeOptions);
+
+            // Send subscription to server for storage
+            if (subscription) {
+              const subJson = subscription.toJSON();
+              try {
+                await fetch('/api/push-subscribe', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                    endpoint: subJson.endpoint,
+                    keys: {
+                      p256dh: subJson.keys?.p256dh,
+                      auth: subJson.keys?.auth,
+                    },
+                  }),
+                });
+              } catch (saveErr) {
+                console.warn('[PushOptIn] Failed to save subscription:', saveErr);
+              }
+            }
           }
         } catch (subscribeError) {
           // Push subscription failed but notification permission was granted.
-          // This can happen if VAPID key is not configured, which is fine
-          // for the client-side opt-in UX. Log it but don't show an error.
           console.warn('[PushOptIn] Push subscription error:', subscribeError);
         }
 
