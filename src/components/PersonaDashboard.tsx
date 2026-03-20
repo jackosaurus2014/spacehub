@@ -123,7 +123,45 @@ export default function PersonaDashboard() {
     return () => window.removeEventListener('persona-changed', handleChange);
   }, []);
 
-  if (!mounted || !persona) return null;
+  if (!mounted) return null;
+
+  // Show role picker for first-time visitors
+  if (!persona) {
+    return (
+      <section className="section-spacer-sm relative z-10">
+        <div className="container mx-auto px-4">
+          <div className="mb-8 text-center">
+            <h2 className="text-display text-2xl md:text-3xl text-white mb-2">
+              What brings you here?
+            </h2>
+            <p className="text-slate-400 text-sm max-w-lg mx-auto">
+              Select your role to get personalized quick-access tools
+            </p>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 max-w-3xl mx-auto">
+            {(Object.entries(PERSONA_LABELS) as [UserPersona, string][]).map(([key, label]) => (
+              <button
+                key={key}
+                onClick={() => {
+                  localStorage.setItem(PERSONA_KEY, key);
+                  setPersona(key);
+                  window.dispatchEvent(new Event('persona-changed'));
+                }}
+                className="group flex flex-col items-center gap-2 p-4 rounded-xl border border-white/[0.06] bg-white/[0.02] hover:bg-white/[0.06] hover:border-white/[0.12] transition-all duration-200 text-center"
+              >
+                <span className="text-2xl">
+                  {key === 'investor' ? '\u{1F4B0}' : key === 'entrepreneur' ? '\u{1F680}' : key === 'mission-planner' ? '\u{1F6F0}\uFE0F' : key === 'executive' ? '\u{1F4CA}' : key === 'supply-chain' ? '\u{1F517}' : '\u2696\uFE0F'}
+                </span>
+                <span className="text-xs sm:text-sm font-medium text-white/80 group-hover:text-white transition-colors">
+                  {label}
+                </span>
+              </button>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   const config = PERSONA_CONFIG[persona];
   if (!config) return null;

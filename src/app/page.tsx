@@ -168,36 +168,6 @@ export default async function HomePage() {
       {/* Hero Section with Video Background */}
       <LandingHero />
 
-      {/* Space Tycoon Game Promo */}
-      <section className="relative z-10 py-4">
-        <div className="container mx-auto px-4">
-          <Link
-            href="/space-tycoon"
-            className="group block card-glass relative overflow-hidden rounded-2xl"
-          >
-            <div className="absolute inset-0 bg-gradient-to-r from-purple-500/[0.06] via-cyan-500/[0.04] to-purple-500/[0.06] group-hover:from-purple-500/[0.1] group-hover:via-cyan-500/[0.06] group-hover:to-purple-500/[0.1] transition-all duration-500" />
-            <div className="relative flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-5 py-4 px-6">
-              <div className="flex items-center gap-3">
-                <span className="text-2xl sm:text-3xl">🚀</span>
-                <div>
-                  <div className="flex items-center gap-2">
-                    <h3 className="text-white font-semibold text-sm sm:text-base">Space Tycoon</h3>
-                    <span className="px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-gradient-to-r from-purple-500 to-cyan-500 text-white rounded">New</span>
-                  </div>
-                  <p className="text-slate-400 text-xs sm:text-sm">Build rockets, deploy satellites, research tech, and expand your space empire across the solar system</p>
-                </div>
-              </div>
-              <span className="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-white bg-white/[0.08] group-hover:bg-white/[0.14] border border-white/[0.08] group-hover:border-white/[0.15] rounded-lg transition-all duration-200 shrink-0">
-                Play Now
-                <svg className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                </svg>
-              </span>
-            </div>
-          </Link>
-        </div>
-      </section>
-
       {/* Live Stream — appears only when a stream is active */}
       <LiveStreamSection />
 
@@ -207,48 +177,41 @@ export default async function HomePage() {
       {/* Space Industry KPIs — Animated Counter Strip */}
       <KPIStrip />
 
-      {/* Coming Soon — Mobile App Banner */}
-      <section className="relative z-10 py-4">
-        <div className="container mx-auto px-4">
-          <div className="card-glass relative overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-r from-white/[0.02] to-blue-500/[0.02]" />
-            <div className="relative flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-5 py-4 px-6">
-              <div className="flex items-center gap-2">
-                <span className="relative flex h-2.5 w-2.5">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75" />
-                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-white" />
-                </span>
-                <span className="text-sm font-semibold text-white/90 uppercase tracking-wider">Coming Soon</span>
-              </div>
-              <p className="text-sm text-slate-300 text-center sm:text-left">
-                SpaceNexus is coming to the <span className="font-semibold text-white">App Store</span> and <span className="font-semibold text-white">Google Play</span> &mdash; space intelligence in your pocket.
-              </p>
-              <div className="flex items-center gap-3">
-                {/* Apple App Store badge */}
-                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/[0.03] border border-white/[0.06] text-slate-400">
-                  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z" />
-                  </svg>
-                  <span className="text-xs font-medium">iOS</span>
-                </div>
-                {/* Google Play badge */}
-                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/[0.03] border border-white/[0.06] text-slate-400">
-                  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M3.609 1.814L13.792 12 3.61 22.186a.996.996 0 01-.61-.92V2.734a1 1 0 01.609-.92zm10.89 10.893l2.302 2.302-10.937 6.333 8.635-8.635zm3.199-3.199l2.302 2.302a1 1 0 010 1.38l-2.302 2.302L15.4 13.194l2.3-2.3v-.002l-2.3-2.3 2.298-2.084zM5.864 2.658L16.8 8.99l-2.302 2.302L5.864 2.658z" />
-                  </svg>
-                  <span className="text-xs font-medium">Android</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* Platform Feature Showcase — Bento Grid */}
       <BentoFeatures />
 
       {/* Explore the Platform — 8 key destination cards */}
       <ExplorePlatform />
+
+      {/* Space Tycoon Game Promo — below the fold after core platform features */}
+      <section className="relative z-10 py-4">
+        <div className="container mx-auto px-4 max-w-4xl">
+          <Link
+            href="/space-tycoon"
+            className="group block card-glass relative overflow-hidden rounded-2xl"
+          >
+            <div className="absolute inset-0 bg-gradient-to-r from-purple-500/[0.04] via-cyan-500/[0.02] to-purple-500/[0.04] group-hover:from-purple-500/[0.08] group-hover:via-cyan-500/[0.04] group-hover:to-purple-500/[0.08] transition-all duration-500" />
+            <div className="relative flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-5 py-3 px-5">
+              <div className="flex items-center gap-3">
+                <span className="text-xl sm:text-2xl">🎮</span>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-white font-medium text-sm">Space Tycoon</h3>
+                    <span className="px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider bg-gradient-to-r from-purple-500/80 to-cyan-500/80 text-white rounded">Free</span>
+                  </div>
+                  <p className="text-slate-400 text-xs">Build your space empire — rockets, satellites, mining &amp; more</p>
+                </div>
+              </div>
+              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-white bg-white/[0.06] group-hover:bg-white/[0.12] border border-white/[0.06] group-hover:border-white/[0.12] rounded-lg transition-all duration-200 shrink-0">
+                Play Now
+                <svg className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                </svg>
+              </span>
+            </div>
+          </Link>
+        </div>
+      </section>
 
       {/* Interactive Demo — Tabbed screenshot showcase */}
       <DemoShowcase />
@@ -341,29 +304,31 @@ export default async function HomePage() {
         </div>
       </section>
 
+      {/* Persona-Based Quick Access — helps users find what's relevant */}
+      <PersonaDashboard />
+
       {/* How It Works — 3-step onboarding flow */}
       <HowItWorks />
+
+      {/* Modular Content Area */}
+      <section className="section-spacer-sm">
+        <div className="container mx-auto px-4">
+          <div className="mb-8 text-center">
+            <h2 className="text-display text-3xl md:text-4xl text-white mb-4">Your Dashboard</h2>
+          </div>
+          <ModuleContainer initialModules={modules} />
+        </div>
+      </section>
 
       {/* What's New — Recent platform updates */}
       <RecentUpdates />
 
-      {/* Persona-Based Quick Access Dashboard */}
-      <PersonaDashboard />
-
-      {/* Value Proposition Sections */}
-      <LandingValueProp />
-
-      {/* Competitive Comparison Table */}
-      <CompetitiveComparison />
-
       {/* Space Industry at a Glance — Key Metrics */}
       <IndustrySnapshot />
 
-      {/* Trust Signals & Data Sources */}
+      {/* Value Proposition + Trust — consolidated pitch */}
+      <LandingValueProp />
       <TrustSignals />
-
-      {/* Social Proof — Testimonials & Stats */}
-      <SocialProof />
 
       {/* Live Stats Section */}
       <section className="py-8 relative z-10">
@@ -372,16 +337,11 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Modular Content Area */}
-      <section className="section-spacer-sm">
-        <div className="container mx-auto px-4">
-          {/* Section heading with gradient rule */}
-          <div className="mb-8 text-center">
-            <h2 className="text-display text-3xl md:text-4xl text-white mb-4">Your Dashboard</h2>
-          </div>
-          <ModuleContainer initialModules={modules} />
-        </div>
-      </section>
+      {/* Social Proof — Stats */}
+      <SocialProof />
+
+      {/* Competitive Comparison Table */}
+      <CompetitiveComparison />
 
       {/* Ad Banner Section */}
       <section className="py-8">

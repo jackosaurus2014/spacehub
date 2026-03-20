@@ -57,7 +57,7 @@ export default function FloatingCTA() {
 
   return (
     <div
-      className="fixed bottom-0 left-0 right-0 z-50 pointer-events-none"
+      className="fixed bottom-0 left-0 right-0 z-50 pointer-events-none hidden md:block"
       style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
     >
       <div className="pointer-events-auto bg-black/80 backdrop-blur-md border-t border-white/[0.08]">
