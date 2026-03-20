@@ -9,6 +9,8 @@ import { advanceDate, generateId, revenueMultiplier } from './formulas';
 import { MAX_EVENT_LOG } from './constants';
 import { processNPCTick, applyNPCMarketActions } from './npc-engine';
 import { rollRandomEvent, applyEventEffect, getActiveMultipliers, cleanupExpiredEffects } from './random-events';
+import { checkMilestones } from './milestones';
+import { getRevenueMultiplier as getUpgradeRevenueMultiplier, getMaintenanceMultiplier } from './upgrades';
 
 /**
  * Process a single game tick (1 in-game month).
@@ -31,7 +33,10 @@ export function processTick(state: GameState): GameState {
   for (const svc of state.activeServices) {
     const def = SERVICE_MAP.get(svc.definitionId);
     if (!def) continue;
-    const revenue = Math.round(def.revenuePerMonth * svc.revenueMultiplier * multipliers.revenueMultiplier);
+    // Find linked building upgrade level for revenue boost
+    const linkedBld = state.buildings.find(b => b.isComplete && b.locationId === svc.locationId && BUILDING_MAP.get(b.definitionId)?.enabledServices.includes(svc.definitionId));
+    const upgradeBoost = getUpgradeRevenueMultiplier(linkedBld?.upgradeLevel || 0);
+    const revenue = Math.round(def.revenuePerMonth * svc.revenueMultiplier * multipliers.revenueMultiplier * upgradeBoost);
     const cost = Math.round(def.operatingCostPerMonth * multipliers.costMultiplier);
     money += revenue - cost;
     totalEarned += revenue;
@@ -40,12 +45,13 @@ export function processTick(state: GameState): GameState {
     monthlyCosts += cost;
   }
 
-  // ─── 2. Maintenance costs for completed buildings ─────────────────
+  // ─── 2. Maintenance costs for completed buildings (with upgrade reduction) ─
   for (const bld of state.buildings) {
     if (!bld.isComplete) continue;
     const def = BUILDING_MAP.get(bld.definitionId);
     if (!def) continue;
-    const maint = Math.round(def.maintenanceCostPerMonth * multipliers.costMultiplier);
+    const maintMult = getMaintenanceMultiplier(bld.upgradeLevel || 0);
+    const maint = Math.round(def.maintenanceCostPerMonth * multipliers.costMultiplier * maintMult);
     money -= maint;
     totalSpent += maint;
     monthlyCosts += maint;
@@ -260,6 +266,82 @@ export function processFullTick(state: GameState): GameState {
   } catch (err) {
     console.error('NPC tick error (non-fatal):', err);
     // NPC failure doesn't affect player state — just skip NPC processing
+  }
+
+  // 3. Check competitive milestones
+  try {
+    const claimedMilestones = { ...(newState.claimedMilestones || {}) };
+    const newClaims = checkMilestones(newState, claimedMilestones);
+    if (newClaims.length > 0) {
+      let milestoneReward = 0;
+      const milestoneEvents: typeof newState.eventLog = [];
+      for (const claim of newClaims) {
+        claimedMilestones[claim.id] = claim.claimedBy;
+        if (claim.isPlayer) {
+          milestoneReward += claim.reward;
+          milestoneEvents.push({
+            id: generateId(),
+            date: newState.gameDate,
+            type: 'milestone',
+            title: `🏆 Milestone: ${claim.claimedBy} — First to achieve "${claim.id.replace(/_/g, ' ')}"!`,
+            description: `Reward: +$${(claim.reward / 1_000_000).toFixed(0)}M`,
+          });
+        } else {
+          milestoneEvents.push({
+            id: generateId(),
+            date: newState.gameDate,
+            type: 'npc_activity',
+            title: `🏆 ${claim.claimedBy} claimed "${claim.id.replace(/_/g, ' ')}"`,
+            description: 'An NPC beat you to this milestone.',
+          });
+        }
+      }
+      newState = {
+        ...newState,
+        claimedMilestones,
+        money: newState.money + milestoneReward,
+        totalEarned: newState.totalEarned + milestoneReward,
+        eventLog: [...milestoneEvents, ...newState.eventLog].slice(0, MAX_EVENT_LOG),
+      };
+    }
+  } catch (err) {
+    console.error('Milestone check error (non-fatal):', err);
+  }
+
+  // 4. Check refining completion
+  try {
+    if (newState.activeRefining) {
+      const elapsed = (Date.now() - newState.activeRefining.startedAtMs) / 1000;
+      if (elapsed >= newState.activeRefining.durationSeconds) {
+        // Refining complete — outputs are applied when started (inputs deducted)
+        // We just clear the active refining slot
+        newState = { ...newState, activeRefining: null };
+      }
+    }
+  } catch (err) {
+    console.error('Refining check error (non-fatal):', err);
+  }
+
+  // 5. Check building upgrade completion
+  try {
+    const upgradedBuildings = newState.buildings.map(bld => {
+      if (!bld.upgradeStartedAtMs || !bld.upgradeDurationSeconds) return bld;
+      const elapsed = (Date.now() - bld.upgradeStartedAtMs) / 1000;
+      if (elapsed >= bld.upgradeDurationSeconds) {
+        return {
+          ...bld,
+          upgradeLevel: (bld.upgradeLevel || 0) + 1,
+          upgradeStartedAtMs: undefined,
+          upgradeDurationSeconds: undefined,
+        };
+      }
+      return bld;
+    });
+    if (upgradedBuildings !== newState.buildings) {
+      newState = { ...newState, buildings: upgradedBuildings };
+    }
+  } catch (err) {
+    console.error('Upgrade check error (non-fatal):', err);
   }
 
   return newState;

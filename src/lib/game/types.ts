@@ -49,6 +49,11 @@ export interface BuildingInstance {
   startedAtMs: number;
   /** Real-time seconds required for this instance */
   realDurationSeconds: number;
+  /** Building upgrade level: 0=Standard, 1=Advanced, 2=Elite */
+  upgradeLevel?: number;
+  /** If currently upgrading, when it started and how long */
+  upgradeStartedAtMs?: number;
+  upgradeDurationSeconds?: number;
 }
 
 // ─── Research ───────────────────────────────────────────────────────────────
@@ -235,6 +240,18 @@ export interface GameState {
   activeEffects?: { eventId: string; label: string; expiresAtMonth: number; revenueMultiplier: number; costMultiplier: number }[];
   pendingChoice?: { eventId: string; eventName: string; eventIcon: string; eventDescription: string; choices: { label: string; description: string }[] } | null;
   incomeHistory?: number[];
+
+  // Contracts
+  availableContracts?: string[];
+  activeContracts?: string[];
+  completedContracts?: string[];
+  lastContractRefresh?: number;
+
+  // Competitive milestones
+  claimedMilestones?: Record<string, string>;
+
+  // Refining
+  activeRefining?: { recipeId: string; startedAtMs: number; durationSeconds: number } | null;
 }
 
 // ─── UI Tabs ────────────────────────────────────────────────────────────────
