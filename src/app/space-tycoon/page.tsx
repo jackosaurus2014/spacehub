@@ -20,6 +20,7 @@ import LeaderboardPanel from '@/components/game/LeaderboardPanel';
 import MarketPanel from '@/components/game/MarketPanel';
 import AchievementsModal from '@/components/game/AchievementsModal';
 import { checkAchievements } from '@/lib/game/achievements';
+import { useGameSync } from '@/hooks/useGameSync';
 
 // ─── Build Panel ────────────────────────────────────────────────────────────
 
@@ -293,6 +294,9 @@ export default function SpaceTycoonPage() {
   const [unlockedAchievements, setUnlockedAchievements] = useState<string[]>([]);
   const tickRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const autoSaveRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  // Sync to server for leaderboard (every 60s, fails gracefully if not logged in)
+  const syncStatus = useGameSync(state);
 
   // Load or show new game prompt
   useEffect(() => {
