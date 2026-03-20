@@ -26,6 +26,9 @@ import ContractsPanel from '@/components/game/ContractsPanel';
 import EventChoiceModal from '@/components/game/EventChoiceModal';
 import { RANDOM_EVENTS, applyEventEffect } from '@/lib/game/random-events';
 import { CONTRACT_POOL, isContractComplete, applyContractReward } from '@/lib/game/contracts';
+import WelcomeBackModal from '@/components/game/WelcomeBackModal';
+import { calculateOfflineIncome, applyOfflineIncome } from '@/lib/game/offline-income';
+import type { OfflineEarnings } from '@/lib/game/offline-income';
 
 // ─── Build Panel ────────────────────────────────────────────────────────────
 
@@ -345,6 +348,7 @@ export default function SpaceTycoonPage() {
   const [showMenu, setShowMenu] = useState(false);
   const [showAchievements, setShowAchievements] = useState(false);
   const [unlockedAchievements, setUnlockedAchievements] = useState<string[]>([]);
+  const [offlineEarnings, setOfflineEarnings] = useState<OfflineEarnings | null>(null);
   const tickRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const autoSaveRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -355,6 +359,11 @@ export default function SpaceTycoonPage() {
   useEffect(() => {
     const saved = loadGame();
     if (saved) {
+      // Check for offline income
+      const earnings = calculateOfflineIncome(saved);
+      if (earnings && earnings.moneyEarned > 0) {
+        setOfflineEarnings(earnings);
+      }
       setState(saved);
     } else {
       setShowMenu(true);
@@ -749,6 +758,17 @@ export default function SpaceTycoonPage() {
           state={state}
           unlockedIds={unlockedAchievements}
           onClose={() => setShowAchievements(false)}
+        />
+      )}
+
+      {/* Offline Income Modal */}
+      {offlineEarnings && (
+        <WelcomeBackModal
+          earnings={offlineEarnings}
+          onCollect={() => {
+            setState(prev => prev ? applyOfflineIncome(prev, offlineEarnings) : prev);
+            setOfflineEarnings(null);
+          }}
         />
       )}
 
