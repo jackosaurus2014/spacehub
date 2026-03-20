@@ -191,11 +191,11 @@ Composite score 0-100 for each tracked company, updated weekly:
 
 | # | Project | Status | Started | Completed |
 |---|---------|--------|---------|-----------|
-| 1 | Space Company Health Index | 🔨 Building | 2026-03-20 | |
-| 2 | Live Launch Webcast Hub | 🔨 Building | 2026-03-20 | |
-| 3 | "What's Overhead Now" | 📋 Planned | | |
-| 4 | Monthly Report (Gated PDF) | 📋 Planned | | |
-| 5 | Intelligence Brief Enhancement | 📋 Planned | | |
+| 1 | Space Company Health Index | ✅ Built | 2026-03-20 | 2026-03-20 |
+| 2 | Live Launch Webcast Hub | ✅ Built | 2026-03-20 | 2026-03-20 |
+| 3 | "What's Overhead Now" | ✅ Built | 2026-03-20 | 2026-03-20 |
+| 4 | Monthly Report (Gated PDF) | ✅ Built | 2026-03-20 | 2026-03-20 |
+| 5 | Intelligence Brief Enhancement | ✅ Built | 2026-03-20 | 2026-03-20 |
 
 ---
 
