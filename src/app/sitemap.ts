@@ -127,6 +127,9 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/guide/space-business-opportunities`, changeFrequency: 'monthly' as const, priority: 0.7 },
     { url: `${BASE_URL}/guide/space-regulatory-compliance`, changeFrequency: 'monthly' as const, priority: 0.7 },
     { url: `${BASE_URL}/guide/space-economy-investment`, changeFrequency: 'monthly' as const, priority: 0.7 },
+    { url: `${BASE_URL}/guide/space-mining-guide`, changeFrequency: 'monthly' as const, priority: 0.7 },
+    { url: `${BASE_URL}/guide/space-companies-directory`, changeFrequency: 'monthly' as const, priority: 0.7 },
+    { url: `${BASE_URL}/guide/satellite-companies`, changeFrequency: 'monthly' as const, priority: 0.7 },
 
     // Learning Center
     { url: `${BASE_URL}/learn`, changeFrequency: 'monthly' as const, priority: 0.7 },
