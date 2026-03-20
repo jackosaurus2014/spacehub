@@ -1,17 +1,78 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import type { GameState } from '@/lib/game/types';
-import { formatMoney, formatGameDate } from '@/lib/game/formulas';
+import { formatMoney, formatGameDate, formatCountdown } from '@/lib/game/formulas';
 import { BUILDING_MAP } from '@/lib/game/buildings';
 import { SERVICE_MAP } from '@/lib/game/services';
 import { RESEARCH } from '@/lib/game/research-tree';
 import { LOCATION_MAP } from '@/lib/game/solar-system';
 
-/** Animated count-up number */
-function CountUp({ value, prefix = '', suffix = '' }: { value: number; prefix?: string; suffix?: string }) {
+/** Live countdown timer for research (purple) */
+function ResearchCountdown({ startedAtMs, durationSeconds }: { startedAtMs: number; durationSeconds: number }) {
+  const [remaining, setRemaining] = useState(() => {
+    const elapsed = (Date.now() - startedAtMs) / 1000;
+    return Math.max(0, durationSeconds - elapsed);
+  });
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      const elapsed = (Date.now() - startedAtMs) / 1000;
+      setRemaining(Math.max(0, durationSeconds - elapsed));
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [startedAtMs, durationSeconds]);
+
+  const pct = Math.min(100, ((durationSeconds - remaining) / durationSeconds) * 100);
+
   return (
-    <span className="font-mono tabular-nums">{prefix}{typeof value === 'number' && value >= 1000 ? formatMoney(value) : value}{suffix}</span>
+    <div className="flex items-center gap-2">
+      <div className="flex-1 h-2 bg-purple-500/10 rounded-full overflow-hidden">
+        <div
+          className="h-full bg-gradient-to-r from-purple-600 to-purple-400 rounded-full transition-all duration-1000 relative"
+          style={{ width: `${pct}%` }}
+        >
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-[shimmer_2s_infinite]" />
+        </div>
+      </div>
+      <span className="text-purple-400 font-mono text-xs shrink-0 tabular-nums w-14 text-right">
+        {formatCountdown(remaining)}
+      </span>
+    </div>
+  );
+}
+
+/** Live countdown timer that ticks every second */
+function Countdown({ startedAtMs, durationSeconds }: { startedAtMs: number; durationSeconds: number }) {
+  const [remaining, setRemaining] = useState(() => {
+    const elapsed = (Date.now() - startedAtMs) / 1000;
+    return Math.max(0, durationSeconds - elapsed);
+  });
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      const elapsed = (Date.now() - startedAtMs) / 1000;
+      const rem = Math.max(0, durationSeconds - elapsed);
+      setRemaining(rem);
+      if (rem <= 0) clearInterval(timer);
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [startedAtMs, durationSeconds]);
+
+  const pct = Math.min(100, ((durationSeconds - remaining) / durationSeconds) * 100);
+
+  return (
+    <div className="flex items-center gap-2">
+      <div className="flex-1 h-1.5 bg-white/[0.06] rounded-full overflow-hidden">
+        <div
+          className="h-full bg-amber-500 rounded-full transition-all duration-1000"
+          style={{ width: `${pct}%` }}
+        />
+      </div>
+      <span className="text-amber-400 font-mono text-[10px] shrink-0 tabular-nums w-12 text-right">
+        {formatCountdown(remaining)}
+      </span>
+    </div>
   );
 }
 
@@ -123,10 +184,10 @@ export default function DashboardPanel({ state }: { state: GameState }) {
         <MiniSparkline positive={financials.net >= 0} />
       </div>
 
-      {/* Active Research */}
+      {/* Active Research with real-time countdown */}
       {state.activeResearch && (() => {
         const def = RESEARCH.find(r => r.id === state.activeResearch!.definitionId);
-        const pct = Math.round((state.activeResearch!.progressMonths / state.activeResearch!.totalMonths) * 100);
+        const hasRealTime = state.activeResearch!.startedAtMs && state.activeResearch!.realDurationSeconds;
         return (
           <div className="rounded-xl border border-purple-500/20 bg-purple-500/5 p-4">
             <div className="flex items-center justify-between mb-2">
@@ -136,16 +197,17 @@ export default function DashboardPanel({ state }: { state: GameState }) {
                 </div>
                 <span className="text-white text-sm font-medium">Researching: {def?.name}</span>
               </div>
-              <span className="text-purple-400 text-xs font-mono">{pct}%</span>
             </div>
-            <div className="h-2 bg-purple-500/10 rounded-full overflow-hidden">
-              <div
-                className="h-full bg-gradient-to-r from-purple-600 to-purple-400 rounded-full transition-all duration-500 relative"
-                style={{ width: `${pct}%` }}
-              >
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-[shimmer_2s_infinite]" />
+            {hasRealTime ? (
+              <ResearchCountdown
+                startedAtMs={state.activeResearch!.startedAtMs!}
+                durationSeconds={state.activeResearch!.realDurationSeconds!}
+              />
+            ) : (
+              <div className="h-2 bg-purple-500/10 rounded-full overflow-hidden">
+                <div className="h-full bg-gradient-to-r from-purple-600 to-purple-400 rounded-full" style={{ width: '50%' }} />
               </div>
-            </div>
+            )}
             <p className="text-slate-500 text-[10px] mt-1">{def?.effect}</p>
           </div>
         );
@@ -163,12 +225,18 @@ export default function DashboardPanel({ state }: { state: GameState }) {
               const def = BUILDING_MAP.get(bld.definitionId);
               const loc = LOCATION_MAP.get(bld.locationId);
               return (
-                <div key={bld.instanceId} className="flex items-center justify-between text-xs">
-                  <div>
-                    <span className="text-white">{def?.name}</span>
-                    <span className="text-slate-600 ml-1.5">@ {loc?.name}</span>
+                <div key={bld.instanceId} className="space-y-1">
+                  <div className="flex items-center justify-between text-xs">
+                    <div>
+                      <span className="text-white">{def?.name}</span>
+                      <span className="text-slate-600 ml-1.5">@ {loc?.name}</span>
+                    </div>
                   </div>
-                  <span className="text-amber-400/70 font-mono">{formatGameDate(bld.completionDate)}</span>
+                  {bld.startedAtMs && bld.realDurationSeconds ? (
+                    <Countdown startedAtMs={bld.startedAtMs} durationSeconds={bld.realDurationSeconds} />
+                  ) : (
+                    <span className="text-amber-400/70 font-mono text-[10px]">{formatGameDate(bld.completionDate)}</span>
+                  )}
                 </div>
               );
             })}

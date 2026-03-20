@@ -2,7 +2,18 @@
 
 import type { ResearchDefinition } from './types';
 
-export const RESEARCH: ResearchDefinition[] = [
+/** Real-time research duration by tier: T1=10min, T2=30min, T3=90min, T4=4hr, T5=12hr */
+const TIER_RESEARCH_SECONDS: Record<number, number> = {
+  1: 600,     // 10 minutes
+  2: 1800,    // 30 minutes
+  3: 5400,    // 90 minutes
+  4: 14400,   // 4 hours
+  5: 43200,   // 12 hours
+};
+
+type RawResearch = Omit<ResearchDefinition, 'realResearchSeconds'>;
+
+const RAW_RESEARCH: RawResearch[] = [
   // ─── ROCKETRY ─────────────────────────────────────────────────────────
   { id: 'reusable_boosters', name: 'Reusable Boosters', category: 'rocketry', tier: 1,
     description: 'Land and refly first-stage boosters, reducing launch cost by 40%.',
@@ -169,6 +180,12 @@ export const RESEARCH: ResearchDefinition[] = [
     effect: 'Enables interstellar precursor missions',
     baseCostMoney: 500_000_000_000, baseTimeMonths: 72, prerequisites: ['solar_sails_adv', 'fusion_drive'], unlocks: [] },
 ];
+
+// Apply real-time durations from tier mapping
+export const RESEARCH: ResearchDefinition[] = RAW_RESEARCH.map(r => ({
+  ...r,
+  realResearchSeconds: TIER_RESEARCH_SECONDS[r.tier] || 600,
+}));
 
 export const RESEARCH_MAP = new Map(RESEARCH.map(r => [r.id, r]));
 

@@ -32,6 +32,8 @@ export interface BuildingDefinition {
   requiredLocation: string;
   enabledServices: string[];
   tier: number;
+  /** Real-time seconds to build (wall clock). Tier 1 ≈ 5 min, max ≈ 24 hr */
+  realBuildSeconds: number;
 }
 
 export interface BuildingInstance {
@@ -41,6 +43,10 @@ export interface BuildingInstance {
   buildStartDate: GameDate;
   completionDate: GameDate;
   isComplete: boolean;
+  /** Unix ms timestamp when construction started (real clock) */
+  startedAtMs: number;
+  /** Real-time seconds required for this instance */
+  realDurationSeconds: number;
 }
 
 // ─── Research ───────────────────────────────────────────────────────────────
@@ -67,6 +73,8 @@ export interface ResearchDefinition {
   prerequisites: string[];
   tier: number;
   unlocks: string[];
+  /** Real-time seconds to research (wall clock). Tier 1 ≈ 10 min, max ≈ 24 hr */
+  realResearchSeconds: number;
 }
 
 export interface ActiveResearch {
@@ -74,6 +82,10 @@ export interface ActiveResearch {
   startDate: GameDate;
   progressMonths: number;
   totalMonths: number;
+  /** Unix ms timestamp when research started (real clock) */
+  startedAtMs: number;
+  /** Real-time seconds required */
+  realDurationSeconds: number;
 }
 
 // ─── Services ───────────────────────────────────────────────────────────────

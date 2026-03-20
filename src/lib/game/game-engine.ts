@@ -39,17 +39,20 @@ export function processTick(state: GameState): GameState {
     totalSpent += def.maintenanceCostPerMonth;
   }
 
-  // ─── 3. Construction completion check ─────────────────────────────
+  // ─── 3. Construction completion check (real wall-clock time) ──────
+  const now = Date.now();
   const buildings = state.buildings.map((bld) => {
     if (bld.isComplete) return bld;
-    if (compareDates(newDate, bld.completionDate) >= 0) {
+    // Check real-time timer
+    const elapsed = (now - (bld.startedAtMs || 0)) / 1000;
+    if (elapsed >= (bld.realDurationSeconds || 0)) {
       const def = BUILDING_MAP.get(bld.definitionId);
       events.push({
         id: generateId(),
         date: newDate,
         type: 'build_complete',
         title: `${def?.name || 'Building'} Complete`,
-        description: `Construction finished. Ready for operation.`,
+        description: 'Construction finished. Ready for operation.',
       });
 
       // Update stats
@@ -61,13 +64,13 @@ export function processTick(state: GameState): GameState {
     return bld;
   });
 
-  // ─── 4. Research progress ─────────────────────────────────────────
+  // ─── 4. Research progress (real wall-clock time) ─────────────────
   let activeResearch = state.activeResearch;
   const completedResearch = [...state.completedResearch];
 
   if (activeResearch) {
-    const progress = activeResearch.progressMonths + 1;
-    if (progress >= activeResearch.totalMonths) {
+    const researchElapsed = (now - (activeResearch.startedAtMs || 0)) / 1000;
+    if (researchElapsed >= (activeResearch.realDurationSeconds || 0)) {
       // Research complete
       completedResearch.push(activeResearch.definitionId);
       stats.researchCompleted++;
@@ -81,7 +84,10 @@ export function processTick(state: GameState): GameState {
       });
       activeResearch = null;
     } else {
-      activeResearch = { ...activeResearch, progressMonths: progress };
+      // Update progress for display (as percentage of real time)
+      const totalMonths = activeResearch.totalMonths || 1;
+      const pctDone = researchElapsed / (activeResearch.realDurationSeconds || 1);
+      activeResearch = { ...activeResearch, progressMonths: Math.round(pctDone * totalMonths) };
     }
   }
 

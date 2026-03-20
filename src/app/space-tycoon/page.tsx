@@ -5,8 +5,8 @@ import type { GameState, GameTab, TickSpeed } from '@/lib/game/types';
 import { processTick } from '@/lib/game/game-engine';
 import { getNewGameState, saveGame, loadGame, deleteSave } from '@/lib/game/save-load';
 import { TICK_INTERVALS, AUTO_SAVE_INTERVAL_MS } from '@/lib/game/constants';
-import { formatMoney, formatGameDate, advanceDate, generateId, scaledBuildingCost, scaledResearchTime } from '@/lib/game/formulas';
-import { BUILDINGS, BUILDING_MAP } from '@/lib/game/buildings';
+import { formatMoney, formatGameDate, formatDuration, formatCountdown, advanceDate, generateId, scaledBuildingCost, scaledResearchTime } from '@/lib/game/formulas';
+import { BUILDINGS, BUILDING_MAP, scaledBuildTime } from '@/lib/game/buildings';
 import { RESEARCH, RESEARCH_MAP, RESEARCH_CATEGORIES } from '@/lib/game/research-tree';
 import { SERVICE_MAP } from '@/lib/game/services';
 import { LOCATIONS, LOCATION_MAP } from '@/lib/game/solar-system';
@@ -91,7 +91,7 @@ function BuildPanel({ state, onBuild }: { state: GameState; onBuild: (buildingId
                 <div className="flex items-center justify-between">
                   <div className="text-xs">
                     <span className={canAfford ? 'text-green-400' : 'text-red-400'}>{formatMoney(cost)}</span>
-                    <span className="text-slate-500 ml-2">{bld.buildTimeMonths}mo build</span>
+                    <span className="text-slate-500 ml-2">{formatDuration(scaledBuildTime(bld.realBuildSeconds, count))}</span>
                   </div>
                   <button
                     onClick={() => onBuild(bld.id, selectedLocation)}
@@ -153,7 +153,7 @@ function ResearchPanel({ state, onStartResearch }: { state: GameState; onStartRe
                     <p className="text-slate-500 text-[10px] mb-2">{r.effect}</p>
                     {!completed && !active && (
                       <div className="flex items-center justify-between">
-                        <span className="text-slate-500 text-[10px]">{formatMoney(r.baseCostMoney)} · {r.baseTimeMonths}mo</span>
+                        <span className="text-slate-500 text-[10px]">{formatMoney(r.baseCostMoney)} · {formatDuration(r.realResearchSeconds)}</span>
                         {canStart && (
                           <button
                             onClick={() => onStartResearch(r.id)}
@@ -346,6 +346,7 @@ export default function SpaceTycoonPage() {
       if (prev.money < cost) { playSound('error'); return prev; }
 
       const completionDate = advanceDate(prev.gameDate, def.buildTimeMonths);
+      const realDuration = scaledBuildTime(def.realBuildSeconds, count);
       return {
         ...prev,
         money: prev.money - cost,
@@ -357,13 +358,15 @@ export default function SpaceTycoonPage() {
           buildStartDate: prev.gameDate,
           completionDate,
           isComplete: false,
+          startedAtMs: Date.now(),
+          realDurationSeconds: realDuration,
         }],
         eventLog: [{
           id: generateId(),
           date: prev.gameDate,
           type: 'build_complete' as const,
           title: `Construction Started: ${def.name}`,
-          description: `Completion expected ${formatGameDate(completionDate)}. Cost: ${formatMoney(cost)}.`,
+          description: `Ready in ${formatDuration(realDuration)}. Cost: ${formatMoney(cost)}.`,
         }, ...prev.eventLog].slice(0, 50),
       };
     });
@@ -376,6 +379,7 @@ export default function SpaceTycoonPage() {
       const def = RESEARCH_MAP.get(researchId);
       if (!def || prev.money < def.baseCostMoney) { playSound('error'); return prev; }
 
+      const realDuration = def.realResearchSeconds;
       return {
         ...prev,
         money: prev.money - def.baseCostMoney,
@@ -385,13 +389,15 @@ export default function SpaceTycoonPage() {
           startDate: prev.gameDate,
           progressMonths: 0,
           totalMonths: scaledResearchTime(def.baseTimeMonths, def.tier),
+          startedAtMs: Date.now(),
+          realDurationSeconds: realDuration,
         },
         eventLog: [{
           id: generateId(),
           date: prev.gameDate,
           type: 'research_complete' as const,
           title: `Research Started: ${def.name}`,
-          description: `Estimated ${def.baseTimeMonths} months. Cost: ${formatMoney(def.baseCostMoney)}.`,
+          description: `Ready in ${formatDuration(realDuration)}. Cost: ${formatMoney(def.baseCostMoney)}.`,
         }, ...prev.eventLog].slice(0, 50),
       };
     });

@@ -52,6 +52,29 @@ export function formatMoney(amount: number): string {
   return `$${amount.toFixed(0)}`;
 }
 
+/** Format seconds into human-readable duration (e.g. "5m 30s", "2h 15m") */
+export function formatDuration(totalSeconds: number): string {
+  if (totalSeconds < 60) return `${Math.round(totalSeconds)}s`;
+  if (totalSeconds < 3600) {
+    const m = Math.floor(totalSeconds / 60);
+    const s = Math.round(totalSeconds % 60);
+    return s > 0 ? `${m}m ${s}s` : `${m}m`;
+  }
+  const h = Math.floor(totalSeconds / 3600);
+  const m = Math.round((totalSeconds % 3600) / 60);
+  return m > 0 ? `${h}h ${m}m` : `${h}h`;
+}
+
+/** Format remaining seconds as countdown (e.g. "4:32", "1:23:45") */
+export function formatCountdown(remainingSeconds: number): string {
+  if (remainingSeconds <= 0) return 'Done!';
+  const h = Math.floor(remainingSeconds / 3600);
+  const m = Math.floor((remainingSeconds % 3600) / 60);
+  const s = Math.floor(remainingSeconds % 60);
+  if (h > 0) return `${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+  return `${m}:${String(s).padStart(2, '0')}`;
+}
+
 /** Generate a simple unique ID */
 export function generateId(): string {
   return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`;
