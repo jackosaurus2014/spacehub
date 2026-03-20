@@ -6,16 +6,29 @@ import { sendPushToAll } from './web-push-sender';
 import prisma from './db';
 import { logger } from './logger';
 
-// In-memory cooldown to prevent push spam (resets on deploy)
+// Anti-spam: 2-hour minimum between pushes + max 3 per day
 let lastPushSentAt = 0;
-const MIN_PUSH_INTERVAL_MS = 30 * 60 * 1000; // 30 minutes between push notifications
+let pushesSentToday = 0;
+let pushDayStart = 0;
+const MIN_PUSH_INTERVAL_MS = 2 * 60 * 60 * 1000; // 2 hours between notifications
+const MAX_PUSHES_PER_DAY = 3;
 
 function canSendPush(): boolean {
-  return Date.now() - lastPushSentAt > MIN_PUSH_INTERVAL_MS;
+  const now = Date.now();
+  // Reset daily counter at midnight
+  const todayStart = new Date().setHours(0, 0, 0, 0);
+  if (todayStart !== pushDayStart) {
+    pushDayStart = todayStart;
+    pushesSentToday = 0;
+  }
+  if (pushesSentToday >= MAX_PUSHES_PER_DAY) return false;
+  if (now - lastPushSentAt < MIN_PUSH_INTERVAL_MS) return false;
+  return true;
 }
 
 function recordPushSent(): void {
   lastPushSentAt = Date.now();
+  pushesSentToday++;
 }
 
 /**

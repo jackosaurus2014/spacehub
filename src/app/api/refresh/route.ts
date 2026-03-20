@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/db';
+import { checkLaunchAlerts, checkSpaceWeatherAlerts } from '@/lib/push-triggers';
 import { fetchSpaceflightNews } from '@/lib/news-fetcher';
 import { fetchLaunchLibraryEvents } from '@/lib/events-fetcher';
 import { fetchBlogPosts, initializeBlogSources } from '@/lib/blogs-fetcher';
@@ -141,6 +142,8 @@ export async function POST(request: Request) {
     if (!type || type === 'events') {
       const eventsResults = await refreshEvents();
       Object.assign(results, eventsResults);
+      // Check for launch alerts after events refresh (non-blocking)
+      checkLaunchAlerts().catch(() => {});
     }
 
     if (!type || type === 'blogs') {
@@ -166,6 +169,8 @@ export async function POST(request: Request) {
         donkiEventTypes: donkiUpdated,
         totalUpdated: swpcUpdated + donkiUpdated,
       };
+      // Check for severe space weather alerts (non-blocking)
+      checkSpaceWeatherAlerts().catch(() => {});
     }
 
     if (type === 'ai-research') {
