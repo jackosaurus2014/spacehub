@@ -36,56 +36,58 @@ export interface NPCSeedData {
   description: string;
 }
 
+// NPC speeds are intentionally slow (0.1-0.3x) so players easily outpace them.
+// NPCs exist primarily to mine resources and influence market prices.
 export const NPC_SEEDS: NPCSeedData[] = [
   {
     id: 'npc_orbital_dynamics', name: 'Orbital Dynamics Corp', strategy: 'aggressive',
-    progressionSpeed: 1.3, riskTolerance: 0.9, miningFocus: 0.3, sellThreshold: 50,
-    description: 'Early mover. Spends big on launch infrastructure.',
+    progressionSpeed: 0.25, riskTolerance: 0.5, miningFocus: 0.6, sellThreshold: 80,
+    description: 'Small launch provider. Sells tracking data.',
   },
   {
     id: 'npc_stellar', name: 'Stellar Industries', strategy: 'balanced',
-    progressionSpeed: 1.0, riskTolerance: 0.5, miningFocus: 0.5, sellThreshold: 100,
-    description: 'Steady diversified growth across all sectors.',
+    progressionSpeed: 0.2, riskTolerance: 0.3, miningFocus: 0.7, sellThreshold: 120,
+    description: 'Diversified miner and manufacturer.',
   },
   {
     id: 'npc_nova', name: 'Nova Aerospace', strategy: 'aggressive',
-    progressionSpeed: 1.4, riskTolerance: 0.8, miningFocus: 0.2, sellThreshold: 30,
-    description: 'All-in on launch services. Fast but fragile.',
+    progressionSpeed: 0.3, riskTolerance: 0.4, miningFocus: 0.5, sellThreshold: 60,
+    description: 'Scrappy launch startup. Sells surplus fuel.',
   },
   {
     id: 'npc_titan_mining', name: 'Titan Mining Collective', strategy: 'conservative',
-    progressionSpeed: 0.8, riskTolerance: 0.3, miningFocus: 0.9, sellThreshold: 200,
-    description: 'Slow start, dominates mining late-game. Hoards resources.',
+    progressionSpeed: 0.15, riskTolerance: 0.2, miningFocus: 0.95, sellThreshold: 150,
+    description: 'Pure mining operation. Major market supplier.',
   },
   {
     id: 'npc_artemis', name: 'Artemis Ventures', strategy: 'balanced',
-    progressionSpeed: 1.1, riskTolerance: 0.6, miningFocus: 0.4, sellThreshold: 80,
-    description: 'Lunar-focused. Tourism and Moon economy.',
+    progressionSpeed: 0.2, riskTolerance: 0.3, miningFocus: 0.6, sellThreshold: 100,
+    description: 'Lunar-focused mining and tourism.',
   },
   {
     id: 'npc_deep_space', name: 'Deep Space Holdings', strategy: 'conservative',
-    progressionSpeed: 0.7, riskTolerance: 0.4, miningFocus: 0.7, sellThreshold: 150,
-    description: 'Very slow, but pushes to outer system first.',
+    progressionSpeed: 0.1, riskTolerance: 0.2, miningFocus: 0.8, sellThreshold: 200,
+    description: 'Long-term mining investor. Slow and steady.',
   },
   {
     id: 'npc_cislunar', name: 'Cislunar Partners', strategy: 'aggressive',
-    progressionSpeed: 1.2, riskTolerance: 0.7, miningFocus: 0.5, sellThreshold: 60,
-    description: 'Aggressive in the Earth-Moon corridor.',
+    progressionSpeed: 0.25, riskTolerance: 0.4, miningFocus: 0.7, sellThreshold: 70,
+    description: 'Earth-Moon corridor mining and logistics.',
   },
   {
     id: 'npc_helios', name: 'Helios Energy', strategy: 'balanced',
-    progressionSpeed: 1.0, riskTolerance: 0.5, miningFocus: 0.3, sellThreshold: 100,
-    description: 'Solar and power-focused. Steady income.',
+    progressionSpeed: 0.2, riskTolerance: 0.3, miningFocus: 0.5, sellThreshold: 100,
+    description: 'Solar energy provider. Sells excess power credits.',
   },
   {
     id: 'npc_frontier', name: 'Frontier Spacecraft', strategy: 'balanced',
-    progressionSpeed: 0.9, riskTolerance: 0.4, miningFocus: 0.4, sellThreshold: 120,
-    description: 'Spacecraft design research leader. Tech-focused.',
+    progressionSpeed: 0.15, riskTolerance: 0.2, miningFocus: 0.6, sellThreshold: 130,
+    description: 'Spacecraft manufacturer. Mines raw materials.',
   },
   {
     id: 'npc_quantum', name: 'Quantum Launch Systems', strategy: 'aggressive',
-    progressionSpeed: 1.5, riskTolerance: 0.85, miningFocus: 0.2, sellThreshold: 25,
-    description: 'Fastest early. Burns cash, slows down mid-game.',
+    progressionSpeed: 0.3, riskTolerance: 0.5, miningFocus: 0.5, sellThreshold: 50,
+    description: 'Budget launch provider. Sells whatever they mine.',
   },
 ];
 
@@ -95,15 +97,15 @@ export function createNPCFromSeed(seed: NPCSeedData): NPCCompanyState {
     id: seed.id,
     name: seed.name,
     strategy: seed.strategy,
-    money: 300_000_000 + Math.random() * 400_000_000, // $300M-$700M starting
+    money: 100_000_000 + Math.random() * 150_000_000, // $100M-$250M starting (much less than player's $500M)
     totalEarned: 0,
     totalSpent: 0,
     currentTier: 1,
     completedResearch: [],
-    activeServiceIds: ['svc_launch_small'], // All NPCs start with launch service
-    unlockedLocations: ['earth_surface', 'leo'],
+    activeServiceIds: ['svc_ground_tracking'], // NPCs start with just tracking (less than player)
+    unlockedLocations: ['earth_surface'],       // Only Earth — player starts with LEO too
     resources: {},
-    buildingCount: 2,
+    buildingCount: 1,
     monthsPlayed: 0,
     progressionSpeed: seed.progressionSpeed,
     riskTolerance: seed.riskTolerance,

@@ -60,10 +60,8 @@ export function loadGame(): GameState | null {
     if (!raw) return null;
     const state = JSON.parse(raw) as GameState;
     if (!state || typeof state.version !== 'number') return null;
-    // Migration: ensure all fields exist for old saves
-    if (!state.npcCompanies || state.npcCompanies.length === 0) {
-      state.npcCompanies = createAllNPCs();
-    }
+    // Always reset NPCs to latest balanced version on load
+    state.npcCompanies = createAllNPCs();
     if (!state.npcMarketPressure) state.npcMarketPressure = {};
     if (!state.resources) state.resources = {};
     if (!state.activeEffects) state.activeEffects = [];
