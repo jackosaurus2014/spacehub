@@ -60,15 +60,15 @@ export function loadGame(): GameState | null {
     if (!raw) return null;
     const state = JSON.parse(raw) as GameState;
     if (!state || typeof state.version !== 'number') return null;
-    // Migration: add NPCs to saves that don't have them
+    // Migration: ensure all fields exist for old saves
     if (!state.npcCompanies || state.npcCompanies.length === 0) {
       state.npcCompanies = createAllNPCs();
-      state.npcMarketPressure = {};
     }
-    // Migration: add resources to saves that don't have them
-    if (!state.resources) {
-      state.resources = {};
-    }
+    if (!state.npcMarketPressure) state.npcMarketPressure = {};
+    if (!state.resources) state.resources = {};
+    if (!state.activeEffects) state.activeEffects = [];
+    if (!state.incomeHistory) state.incomeHistory = [];
+    if (state.pendingChoice === undefined) state.pendingChoice = null;
     return state;
   } catch {
     return null;

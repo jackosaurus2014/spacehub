@@ -234,6 +234,7 @@ function formatRevenue(amount: number): string {
  * This is the function called by the game loop in page.tsx.
  */
 export function processFullTick(state: GameState): GameState {
+  try {
   // 1. Process player tick
   let newState = processTick(state);
 
@@ -252,4 +253,9 @@ export function processFullTick(state: GameState): GameState {
   }
 
   return newState;
+  } catch (err) {
+    // Safety: if tick processing fails, return state unchanged rather than crashing
+    console.error('processFullTick error:', err);
+    return { ...state, lastTickAt: Date.now() };
+  }
 }
