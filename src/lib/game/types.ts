@@ -204,8 +204,27 @@ export interface GameState {
   companyName?: string;
   lastSyncAt?: number;
 
-  // NPC companies
-  npcCompanies?: import('./npc-companies').NPCCompanyState[];
+  // NPC companies (NPCCompanyState defined in npc-companies.ts)
+  // Using inline shape to avoid circular import issues with webpack
+  npcCompanies?: {
+    id: string;
+    name: string;
+    strategy: 'aggressive' | 'balanced' | 'conservative';
+    money: number;
+    totalEarned: number;
+    totalSpent: number;
+    currentTier: number;
+    completedResearch: string[];
+    activeServiceIds: string[];
+    unlockedLocations: string[];
+    resources: Record<string, number>;
+    buildingCount: number;
+    monthsPlayed: number;
+    progressionSpeed: number;
+    riskTolerance: number;
+    miningFocus: number;
+    sellThreshold: number;
+  }[];
   npcMarketPressure?: Record<string, number>;
 
   // Random events & economy
