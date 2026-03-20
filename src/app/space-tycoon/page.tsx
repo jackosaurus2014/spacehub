@@ -29,6 +29,7 @@ import { CONTRACT_POOL, isContractComplete, applyContractReward } from '@/lib/ga
 import WelcomeBackModal from '@/components/game/WelcomeBackModal';
 import { calculateOfflineIncome, applyOfflineIncome } from '@/lib/game/offline-income';
 import type { OfflineEarnings } from '@/lib/game/offline-income';
+import GameStyles from '@/components/game/GameStyles';
 
 // ─── Build Panel ────────────────────────────────────────────────────────────
 
@@ -657,6 +658,7 @@ export default function SpaceTycoonPage() {
 
   return (
     <div className="min-h-screen bg-space-900 flex flex-col">
+      <GameStyles />
       {/* Resource Bar */}
       <ResourceBar state={state} />
 
@@ -668,7 +670,7 @@ export default function SpaceTycoonPage() {
             onClick={() => setTab(t.id)}
             className={`px-3 py-2 rounded-lg text-xs font-medium transition-colors whitespace-nowrap ${
               tab === t.id
-                ? 'bg-white/[0.08] text-white'
+                ? 'bg-white/[0.08] text-white game-tab-active'
                 : 'text-slate-400 hover:text-white hover:bg-white/[0.04]'
             }`}
           >
@@ -714,7 +716,7 @@ export default function SpaceTycoonPage() {
       </div>
 
       {/* Panel Content — key={tab} triggers reveal animation on tab switch */}
-      <div key={tab} className="flex-1 overflow-y-auto p-4 max-w-5xl mx-auto w-full animate-reveal-up">
+      <div key={tab} className="flex-1 overflow-y-auto p-4 max-w-5xl mx-auto w-full animate-reveal-up game-scroll">
         {tab === 'dashboard' && <DashboardPanel state={state} />}
         {tab === 'build' && <BuildPanel state={state} onBuild={handleBuild} />}
         {tab === 'research' && <ResearchPanel state={state} onStartResearch={handleStartResearch} />}
