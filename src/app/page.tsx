@@ -168,6 +168,36 @@ export default async function HomePage() {
       {/* Hero Section with Video Background */}
       <LandingHero />
 
+      {/* Space Tycoon Game Promo */}
+      <section className="relative z-10 py-4">
+        <div className="container mx-auto px-4">
+          <Link
+            href="/space-tycoon"
+            className="group block card-glass relative overflow-hidden rounded-2xl"
+          >
+            <div className="absolute inset-0 bg-gradient-to-r from-purple-500/[0.06] via-cyan-500/[0.04] to-purple-500/[0.06] group-hover:from-purple-500/[0.1] group-hover:via-cyan-500/[0.06] group-hover:to-purple-500/[0.1] transition-all duration-500" />
+            <div className="relative flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-5 py-4 px-6">
+              <div className="flex items-center gap-3">
+                <span className="text-2xl sm:text-3xl">🚀</span>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-white font-semibold text-sm sm:text-base">Space Tycoon</h3>
+                    <span className="px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-gradient-to-r from-purple-500 to-cyan-500 text-white rounded">New</span>
+                  </div>
+                  <p className="text-slate-400 text-xs sm:text-sm">Build rockets, deploy satellites, research tech, and expand your space empire across the solar system</p>
+                </div>
+              </div>
+              <span className="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-white bg-white/[0.08] group-hover:bg-white/[0.14] border border-white/[0.08] group-hover:border-white/[0.15] rounded-lg transition-all duration-200 shrink-0">
+                Play Now
+                <svg className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                </svg>
+              </span>
+            </div>
+          </Link>
+        </div>
+      </section>
+
       {/* Live Stream — appears only when a stream is active */}
       <LiveStreamSection />
 
