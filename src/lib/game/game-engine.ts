@@ -11,6 +11,7 @@ import { processNPCTick, applyNPCMarketActions } from './npc-engine';
 import { rollRandomEvent, applyEventEffect, getActiveMultipliers, cleanupExpiredEffects } from './random-events';
 import { checkMilestones } from './milestones';
 import { getRevenueMultiplier as getUpgradeRevenueMultiplier, getMaintenanceMultiplier } from './upgrades';
+import { SHIP_MAP } from './ships';
 
 /**
  * Process a single game tick (1 in-game month).
@@ -342,6 +343,45 @@ export function processFullTick(state: GameState): GameState {
     }
   } catch (err) {
     console.error('Upgrade check error (non-fatal):', err);
+  }
+
+  // 6. Process ships (build completion, mining production, transit arrival)
+  try {
+    if (newState.ships && newState.ships.length > 0) {
+      const now = Date.now();
+      const resources = { ...(newState.resources || {}) };
+      const updatedShips = newState.ships.map(ship => {
+        // Build completion
+        if (!ship.isBuilt && ship.buildStartedAtMs && ship.buildDurationSeconds) {
+          const elapsed = (now - ship.buildStartedAtMs) / 1000;
+          if (elapsed >= ship.buildDurationSeconds) {
+            return { ...ship, isBuilt: true, status: 'idle' as const, buildStartedAtMs: undefined, buildDurationSeconds: undefined };
+          }
+        }
+
+        // Mining production
+        if (ship.isBuilt && ship.status === 'mining' && ship.miningOperation) {
+          const shipDef = SHIP_MAP.get(ship.definitionId);
+          if (shipDef?.miningRate) {
+            // Produce resources every tick based on mining rate
+            const resId = ship.miningOperation.resourceId;
+            resources[resId] = (resources[resId] || 0) + Math.round(shipDef.miningRate * 0.5); // Per tick production
+          }
+        }
+
+        // Transit arrival
+        if (ship.status === 'in_transit' && ship.route) {
+          if (now >= ship.route.arrivalAtMs) {
+            return { ...ship, status: 'idle' as const, currentLocation: ship.route.to, route: undefined };
+          }
+        }
+
+        return ship;
+      });
+      newState = { ...newState, ships: updatedShips, resources };
+    }
+  } catch (err) {
+    console.error('Ship processing error (non-fatal):', err);
   }
 
   return newState;

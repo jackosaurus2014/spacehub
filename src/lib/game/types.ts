@@ -261,14 +261,23 @@ export interface GameState {
   ships?: {
     instanceId: string;
     definitionId: string;
-    status: 'idle' | 'in_transit' | 'loading';
+    name: string;
+    status: 'idle' | 'in_transit' | 'loading' | 'mining' | 'refining' | 'building';
     currentLocation: string;
+    isBuilt: boolean;
+    buildStartedAtMs?: number;
+    buildDurationSeconds?: number;
     route?: {
       from: string;
       to: string;
       departedAtMs: number;
       arrivalAtMs: number;
       cargo: Record<string, number>;
+    };
+    miningOperation?: {
+      resourceId: string;
+      startedAtMs: number;
+      locationId: string;
     };
   }[];
 
@@ -285,4 +294,4 @@ export interface GameState {
 
 // ─── UI Tabs ────────────────────────────────────────────────────────────────
 
-export type GameTab = 'dashboard' | 'build' | 'research' | 'map' | 'services' | 'market' | 'contracts' | 'leaderboard';
+export type GameTab = 'dashboard' | 'build' | 'research' | 'map' | 'services' | 'fleet' | 'market' | 'contracts' | 'leaderboard';

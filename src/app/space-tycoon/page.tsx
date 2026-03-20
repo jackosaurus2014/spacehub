@@ -30,6 +30,8 @@ import WelcomeBackModal from '@/components/game/WelcomeBackModal';
 import { calculateOfflineIncome, applyOfflineIncome } from '@/lib/game/offline-income';
 import type { OfflineEarnings } from '@/lib/game/offline-income';
 import GameStyles from '@/components/game/GameStyles';
+import FleetPanel from '@/components/game/FleetPanel';
+import { SHIP_MAP, getTravelTime, generateShipName } from '@/lib/game/ships';
 
 // ─── Build Panel ────────────────────────────────────────────────────────────
 
@@ -651,6 +653,7 @@ export default function SpaceTycoonPage() {
     { id: 'research', label: 'Research', icon: '🔬' },
     { id: 'map', label: 'Map', icon: '🗺️' },
     { id: 'services', label: 'Services', icon: '💰' },
+    { id: 'fleet', label: 'Fleet', icon: '🚀' },
     { id: 'market', label: 'Market', icon: '📈' },
     { id: 'contracts', label: 'Contracts', icon: '📋' },
     { id: 'leaderboard', label: 'Ranks', icon: '🏆' },
@@ -722,6 +725,87 @@ export default function SpaceTycoonPage() {
         {tab === 'research' && <ResearchPanel state={state} onStartResearch={handleStartResearch} />}
         {tab === 'map' && <SolarSystemCanvas state={state} onUnlock={handleUnlockLocation} />}
         {tab === 'services' && <ServicesPanel state={state} />}
+        {tab === 'fleet' && <FleetPanel
+          state={state}
+          onBuildShip={(shipDefId, locationId) => {
+            const def = SHIP_MAP.get(shipDefId);
+            if (!def) return;
+            playSound('build_start');
+            setState(prev => {
+              if (!prev || prev.money < def.baseCost) { playSound('error'); return prev; }
+              // Check resources
+              for (const [resId, qty] of Object.entries(def.resourceCost)) {
+                if ((prev.resources[resId] || 0) < qty) { playSound('error'); return prev; }
+              }
+              const newResources = { ...prev.resources };
+              for (const [resId, qty] of Object.entries(def.resourceCost)) {
+                newResources[resId] = (newResources[resId] || 0) - qty;
+              }
+              const newShip = {
+                instanceId: generateId(),
+                definitionId: shipDefId,
+                name: generateShipName(def.role),
+                status: 'building' as const,
+                currentLocation: locationId,
+                isBuilt: false,
+                buildStartedAtMs: Date.now(),
+                buildDurationSeconds: def.buildTimeSeconds,
+              };
+              return {
+                ...prev,
+                money: prev.money - def.baseCost,
+                totalSpent: prev.totalSpent + def.baseCost,
+                resources: newResources,
+                ships: [...(prev.ships || []), newShip],
+                eventLog: [{ id: generateId(), date: prev.gameDate, type: 'build_complete' as const, title: `Ship ordered: ${newShip.name}`, description: `${def.name} — ready in ${formatDuration(def.buildTimeSeconds)}.` }, ...prev.eventLog].slice(0, 50),
+              };
+            });
+          }}
+          onStartMining={(shipInstanceId, resourceId) => {
+            setState(prev => {
+              if (!prev) return prev;
+              const ships = (prev.ships || []).map(s =>
+                s.instanceId === shipInstanceId
+                  ? { ...s, status: 'mining' as const, miningOperation: { resourceId, startedAtMs: Date.now(), locationId: s.currentLocation } }
+                  : s
+              );
+              return { ...prev, ships };
+            });
+          }}
+          onStopMining={(shipInstanceId) => {
+            setState(prev => {
+              if (!prev) return prev;
+              const ships = (prev.ships || []).map(s =>
+                s.instanceId === shipInstanceId
+                  ? { ...s, status: 'idle' as const, miningOperation: undefined }
+                  : s
+              );
+              return { ...prev, ships };
+            });
+          }}
+          onStartTransport={(shipInstanceId, toLocation, cargo) => {
+            setState(prev => {
+              if (!prev) return prev;
+              const ships = (prev.ships || []).map(s => {
+                if (s.instanceId !== shipInstanceId) return s;
+                const travelTime = getTravelTime(s.currentLocation, toLocation);
+                return {
+                  ...s,
+                  status: 'in_transit' as const,
+                  miningOperation: undefined,
+                  route: {
+                    from: s.currentLocation,
+                    to: toLocation,
+                    departedAtMs: Date.now(),
+                    arrivalAtMs: Date.now() + travelTime * 1000,
+                    cargo: cargo || {},
+                  },
+                };
+              });
+              return { ...prev, ships };
+            });
+          }}
+        />}
         {tab === 'market' && <MarketPanel state={state} onSellResource={handleSellResource} onBuyResource={handleBuyResource} />}
         {tab === 'contracts' && <ContractsPanel state={state} onAcceptContract={(contractId) => {
           playSound('click');
