@@ -40,30 +40,43 @@ function BuildPanel({ state, onBuild }: { state: GameState; onBuild: (buildingId
 
   return (
     <div className="space-y-4">
-      {/* Location Selector */}
-      <div className="flex flex-wrap gap-2">
-        {state.unlockedLocations.map(locId => {
-          const loc = LOCATION_MAP.get(locId);
-          return (
-            <button
-              key={locId}
-              onClick={() => setSelectedLocation(locId)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                selectedLocation === locId
-                  ? 'bg-cyan-500 text-white'
-                  : 'bg-white/[0.06] text-slate-400 hover:text-white'
-              }`}
-            >
-              {loc?.name || locId}
-            </button>
-          );
-        })}
+      {/* Location Selector — shows building count per location */}
+      <div>
+        <p className="text-slate-500 text-[10px] mb-1.5">Select a location to see available buildings:</p>
+        <div className="flex flex-wrap gap-2">
+          {state.unlockedLocations.map(locId => {
+            const loc = LOCATION_MAP.get(locId);
+            const buildableCount = BUILDINGS.filter(b =>
+              b.requiredLocation === locId &&
+              b.requiredResearch.every(r => state.completedResearch.includes(r))
+            ).length;
+            return (
+              <button
+                key={locId}
+                onClick={() => setSelectedLocation(locId)}
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                  selectedLocation === locId
+                    ? 'bg-cyan-500 text-white'
+                    : 'bg-white/[0.06] text-slate-400 hover:text-white'
+                }`}
+              >
+                {loc?.name || locId}
+                {buildableCount > 0 && (
+                  <span className={`ml-1.5 px-1 py-0.5 rounded text-[9px] ${
+                    selectedLocation === locId ? 'bg-white/20' : 'bg-cyan-500/20 text-cyan-400'
+                  }`}>{buildableCount}</span>
+                )}
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       {/* Building Cards */}
       {availableBuildings.length === 0 ? (
         <div className="card p-6 text-center">
-          <p className="text-slate-500 text-sm">No buildings available at this location. Research new technologies to unlock more.</p>
+          <p className="text-slate-500 text-sm">No buildings available at this location yet.</p>
+          <p className="text-slate-600 text-xs mt-1">Research new technologies or try a different location above.</p>
         </div>
       ) : (
         <div className="grid md:grid-cols-2 gap-3">
