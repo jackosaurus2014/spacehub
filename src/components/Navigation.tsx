@@ -84,6 +84,7 @@ const EXPLORE_ITEMS: DropdownItem[] = [
   { label: '🔭 Discover', href: '/discover', description: 'Find the right tools for your role' },
   { label: 'Getting Started', href: '/getting-started', description: 'New to SpaceNexus? Start here' },
   { label: 'Alternatives', href: '/alternatives', description: 'SpaceNexus vs other space data platforms' },
+  { label: '🎮 Space Tycoon', href: '/space-tycoon', description: 'Build your space empire — free browser game' },
   { label: '📱 Get the App', href: '/app', description: 'Download SpaceNexus for Android on Google Play' },
 ];
 

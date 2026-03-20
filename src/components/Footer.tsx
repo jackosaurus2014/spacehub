@@ -80,6 +80,7 @@ const footerLinks = {
       { label: 'Space for Beginners', href: '/beginners' },
       { label: 'Night Sky Guide', href: '/night-sky-guide' },
       { label: 'Space Quiz', href: '/space-quiz' },
+      { label: 'Space Tycoon Game', href: '/space-tycoon' },
       { label: 'Launch Alerts', href: '/launch-alerts' },
       { label: 'Getting Started', href: '/getting-started' },
       { label: 'Help Center', href: '/help' },
