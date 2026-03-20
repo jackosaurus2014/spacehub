@@ -41,6 +41,7 @@ import { getHireCost } from '@/lib/game/workforce';
 import type { WorkforceState } from '@/lib/game/workforce';
 import { calculatePrestigeRewards, DEFAULT_PRESTIGE } from '@/lib/game/prestige';
 import GameTutorial from '@/components/game/GameTutorial';
+import ProUpgradeBanner from '@/components/game/ProUpgradeBanner';
 
 // ─── Build Panel ────────────────────────────────────────────────────────────
 
@@ -917,6 +918,7 @@ export default function SpaceTycoonPage() {
 
       {/* Tutorial */}
       <GameTutorial onSetTab={(t) => setTab(t as GameTab)} />
+      <ProUpgradeBanner completedResearch={state.completedResearch.length} />
 
       {/* Prestige Modal */}
       {showPrestige && (

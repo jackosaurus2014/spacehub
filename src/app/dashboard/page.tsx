@@ -38,6 +38,14 @@ const SpaceQuiz = dynamic(
   () => import('@/components/SpaceQuiz'),
   { ssr: false }
 );
+const RecentSignals = dynamic(
+  () => import('@/components/modules/RecentSignals'),
+  { ssr: false }
+);
+const SpaceWeatherImpact = dynamic(
+  () => import('@/components/modules/SpaceWeatherImpact'),
+  { ssr: false }
+);
 import {
   getEffectiveLayout,
   getGridColumnsClass,
@@ -957,6 +965,20 @@ export default function DashboardPage() {
         <ScrollReveal>
           <div className="mb-8">
             <SpaceQuiz />
+          </div>
+        </ScrollReveal>
+
+        {/* Industry Signals — cross-module data widget */}
+        <ScrollReveal>
+          <div className="mb-8">
+            <RecentSignals />
+          </div>
+        </ScrollReveal>
+
+        {/* Space Weather Impact — actionable assessment */}
+        <ScrollReveal>
+          <div className="mb-8">
+            <SpaceWeatherImpact />
           </div>
         </ScrollReveal>
 
