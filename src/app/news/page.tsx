@@ -181,8 +181,13 @@ function NewsContent() {
           icon={<span className="text-4xl">🔭</span>}
           title="No articles found"
           description={selectedCategory
-            ? `No articles in ${selectedCategory} category yet.`
+            ? `No articles in ${selectedCategory} category yet. Try a different category or browse our blog.`
             : 'No articles available. Try refreshing the page.'}
+          suggestions={[
+            { label: 'Blog & Analysis', href: '/blog' },
+            { label: 'Daily Digest', href: '/daily-digest' },
+            { label: 'AI Insights', href: '/ai-insights' },
+          ]}
         />
       ) : (
         <>

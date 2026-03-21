@@ -1,13 +1,22 @@
 'use client';
 
+import Link from 'next/link';
+
+interface Suggestion {
+  label: string;
+  href: string;
+}
+
 interface EmptyStateProps {
   icon: React.ReactNode;
   title: string;
   description: string;
   action?: React.ReactNode;
+  /** Optional quick-nav suggestions shown below the description */
+  suggestions?: Suggestion[];
 }
 
-export default function EmptyState({ icon, title, description, action }: EmptyStateProps) {
+export default function EmptyState({ icon, title, description, action, suggestions }: EmptyStateProps) {
   return (
     <div className="relative overflow-hidden rounded-xl card">
       <div className="absolute inset-0 overflow-hidden">
@@ -22,6 +31,25 @@ export default function EmptyState({ icon, title, description, action }: EmptySt
         <h3 className="text-white font-semibold text-lg mb-2">{title}</h3>
         <p className="text-slate-400 text-sm max-w-md mx-auto leading-relaxed">{description}</p>
         {action && <div className="mt-4 md:mt-6 [&>a]:w-full [&>a]:md:w-auto [&>button]:w-full [&>button]:md:w-auto">{action}</div>}
+        {suggestions && suggestions.length > 0 && (
+          <div className="mt-5 pt-4 border-t border-white/[0.04]">
+            <p className="text-slate-500 text-xs mb-2">Try instead:</p>
+            <div className="flex flex-wrap justify-center gap-2">
+              {suggestions.map((s) => (
+                <Link
+                  key={s.href}
+                  href={s.href}
+                  className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-white/[0.04] border border-white/[0.06] hover:bg-white/[0.08] hover:border-white/[0.1] text-xs text-slate-300 hover:text-white transition-all"
+                >
+                  {s.label}
+                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                  </svg>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
