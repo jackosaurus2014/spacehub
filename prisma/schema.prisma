@@ -115,8 +115,14 @@ model User {
   onboardingCompleted  Boolean  @default(false)
   onboardingStep       Int      @default(0)
 
+  // Login tracking (for winback emails)
+  lastLoginAt          DateTime?
+
   // Space Tycoon game profile
   gameProfile          GameProfile?
+
+  // Community badges
+  badges               UserBadge[]
 }
 
 // ─── Space Tycoon: Multiplayer Game Models ──────────────────────────────────
@@ -4125,4 +4131,41 @@ model BlogPostView {
   updatedAt   DateTime @updatedAt
 
   @@index([viewCount])
+}
+
+// ---------------------------------------------------------------------------
+// Community Badges
+// ---------------------------------------------------------------------------
+
+model UserBadge {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  badgeType String   // first_post, helpful_10, expert, top_contributor, space_authority
+  awardedAt DateTime @default(now())
+
+  @@unique([userId, badgeType])
+  @@index([userId])
+}
+
+// ---------------------------------------------------------------------------
+// Video Content
+// ---------------------------------------------------------------------------
+
+model VideoContent {
+  id           String   @id @default(cuid())
+  slug         String   @unique
+  title        String
+  description  String   @db.Text
+  youtubeId    String?
+  thumbnailUrl String?
+  duration     Int?     // seconds
+  category     String   // tutorial, launch-replay, interview, explainer
+  tags         String[]
+  featured     Boolean  @default(false)
+  publishedAt  DateTime @default(now())
+  createdAt    DateTime @default(now())
+
+  @@index([category])
+  @@index([publishedAt])
 }

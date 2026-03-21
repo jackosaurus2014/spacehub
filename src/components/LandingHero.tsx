@@ -1,54 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-
-/* ------------------------------------------------------------------ */
-/*  Animated counter hook — counts from 0 to `end` when visible       */
-/* ------------------------------------------------------------------ */
-function useCountUp(end: number, duration = 2000, startDelay = 0) {
-  const [count, setCount] = useState(0);
-  const ref = useRef<HTMLSpanElement>(null);
-  const started = useRef(false);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting && !started.current) {
-          started.current = true;
-          const startTime = performance.now() + startDelay;
-          const step = (now: number) => {
-            const elapsed = Math.max(0, now - startTime);
-            const progress = Math.min(elapsed / duration, 1);
-            // ease-out cubic
-            const eased = 1 - Math.pow(1 - progress, 3);
-            setCount(Math.round(eased * end));
-            if (progress < 1) requestAnimationFrame(step);
-          };
-          requestAnimationFrame(step);
-        }
-      },
-      { threshold: 0.3 },
-    );
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [end, duration, startDelay]);
-
-  return { count, ref };
-}
-
-/* ------------------------------------------------------------------ */
-/*  Platform stat definitions                                          */
-/* ------------------------------------------------------------------ */
-const PLATFORM_STATS = [
-  { value: 264, suffix: '+', label: 'Pages & Tools', icon: '\uD83D\uDCCA' },
-  { value: 200, suffix: '+', label: 'Original Articles', icon: '\uD83D\uDCDD' },
-  { value: 50, suffix: '+', label: 'Data Sources', icon: '\uD83D\uDE80' },
-  { value: 600, suffix: '+', label: 'Routes', icon: '\u2705' },
-];
 
 /* Staggered entrance: each child gets an increasing delay */
 function HeroReveal({ children, delay, className = '' }: { children: React.ReactNode; delay: number; className?: string }) {
@@ -62,7 +14,30 @@ function HeroReveal({ children, delay, className = '' }: { children: React.React
   );
 }
 
-export default function LandingHero() {
+/** Platform stat constants — exported so pricing/register pages can reuse them */
+export const PLATFORM_STATS = [
+  { value: '264+', label: 'Pages & Tools' },
+  { value: '200+', label: 'Original Articles' },
+  { value: '50+', label: 'Data Sources' },
+  { value: '600+', label: 'Routes' },
+];
+
+interface HeroContentCard {
+  type: 'blog' | 'news';
+  title: string;
+  snippet: string;
+  href: string;
+  source?: string;
+}
+
+interface LandingHeroProps {
+  /** Top blog article to feature */
+  featuredArticle?: HeroContentCard | null;
+  /** Trending news item */
+  trendingNews?: HeroContentCard | null;
+}
+
+export default function LandingHero({ featuredArticle, trendingNews }: LandingHeroProps) {
   return (
     <section className="relative min-h-[85vh] md:min-h-screen flex items-center justify-center overflow-hidden">
       {/* Gradient Mesh Background — replaces video for faster load and modern aesthetic */}
@@ -136,36 +111,64 @@ export default function LandingHero() {
             </p>
           </HeroReveal>
 
-          {/* Secondary links */}
-          <HeroReveal delay={0.85} className="mb-16">
-            <div className="flex gap-6 justify-center">
-              <Link
-                href="/register?utm_source=homepage&utm_medium=hero&utm_campaign=signup"
-                className="text-slate-500 hover:text-white text-sm transition-colors duration-200"
-              >
-                Create Free Account
-              </Link>
-              <span className="text-slate-700">·</span>
-              <Link
-                href="/news?utm_source=homepage&utm_medium=hero&utm_campaign=news"
-                className="text-slate-500 hover:text-white text-sm transition-colors duration-200"
-              >
-                Browse News
-              </Link>
-            </div>
-          </HeroReveal>
-
-          {/* Animated Platform Stats — glassmorphism cards */}
-          <HeroReveal delay={1.0}>
-            <div
-              className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 max-w-3xl mx-auto"
-              role="list"
-              aria-label="Platform statistics"
-            >
-              {PLATFORM_STATS.map((stat, i) => (
-                <StatCounter key={stat.label} stat={stat} index={i} />
-              ))}
-            </div>
+          {/* Featured Content Cards — replaces stat counters */}
+          <HeroReveal delay={0.9} className="mb-16">
+            {(featuredArticle || trendingNews) ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-2xl mx-auto">
+                {featuredArticle && (
+                  <Link
+                    href={featuredArticle.href}
+                    className="group card-glass p-4 text-left hover:border-white/[0.12] transition-all"
+                  >
+                    <div className="flex items-center gap-1.5 mb-2">
+                      <span className="w-1.5 h-1.5 rounded-full bg-purple-400" />
+                      <span className="text-[10px] font-semibold uppercase tracking-wider text-purple-400">Trending Article</span>
+                    </div>
+                    <h3 className="text-white text-sm font-medium line-clamp-2 group-hover:text-white/90 transition-colors leading-snug">
+                      {featuredArticle.title}
+                    </h3>
+                    <p className="text-slate-500 text-xs mt-1.5 line-clamp-2">{featuredArticle.snippet}</p>
+                  </Link>
+                )}
+                {trendingNews && (
+                  <Link
+                    href={trendingNews.href}
+                    className="group card-glass p-4 text-left hover:border-white/[0.12] transition-all"
+                  >
+                    <div className="flex items-center gap-1.5 mb-2">
+                      <span className="relative flex h-1.5 w-1.5">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                        <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-400" />
+                      </span>
+                      <span className="text-[10px] font-semibold uppercase tracking-wider text-emerald-400">Breaking News</span>
+                    </div>
+                    <h3 className="text-white text-sm font-medium line-clamp-2 group-hover:text-white/90 transition-colors leading-snug">
+                      {trendingNews.title}
+                    </h3>
+                    <p className="text-slate-500 text-xs mt-1.5 line-clamp-1">
+                      {trendingNews.source && <span>{trendingNews.source} &middot; </span>}
+                      {trendingNews.snippet}
+                    </p>
+                  </Link>
+                )}
+              </div>
+            ) : (
+              <div className="flex gap-6 justify-center">
+                <Link
+                  href="/register?utm_source=homepage&utm_medium=hero&utm_campaign=signup"
+                  className="text-slate-500 hover:text-white text-sm transition-colors duration-200"
+                >
+                  Create Free Account
+                </Link>
+                <span className="text-slate-700">&middot;</span>
+                <Link
+                  href="/news?utm_source=homepage&utm_medium=hero&utm_campaign=news"
+                  className="text-slate-500 hover:text-white text-sm transition-colors duration-200"
+                >
+                  Browse News
+                </Link>
+              </div>
+            )}
           </HeroReveal>
         </div>
       </div>
@@ -212,36 +215,5 @@ export default function LandingHero() {
         </div>
       </div>
     </section>
-  );
-}
-
-/* ------------------------------------------------------------------ */
-/*  Individual stat counter tile — glassmorphism style                  */
-/* ------------------------------------------------------------------ */
-function StatCounter({
-  stat,
-  index,
-}: {
-  stat: (typeof PLATFORM_STATS)[number];
-  index: number;
-}) {
-  const { count, ref } = useCountUp(stat.value, 2200, index * 150);
-
-  return (
-    <div
-      role="listitem"
-      className="card-glass px-4 py-5 text-center"
-    >
-      <span className="text-lg mb-1 block" aria-hidden="true">{stat.icon}</span>
-      <span
-        ref={ref}
-        className="text-2xl md:text-3xl font-semibold font-mono text-white tracking-tight"
-      >
-        {count.toLocaleString()}{stat.suffix}
-      </span>
-      <span className="block text-xs text-slate-500 mt-1">
-        {stat.label}
-      </span>
-    </div>
   );
 }

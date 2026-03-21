@@ -93,6 +93,40 @@ export default async function HomePage() {
   // Get default module configuration for SSR
   const modules = await getDefaultModulePreferences();
 
+  // Fetch hero content: top blog article + latest news
+  let featuredArticle: { type: 'blog'; title: string; snippet: string; href: string } | null = null;
+  let trendingNews: { type: 'news'; title: string; snippet: string; href: string; source?: string } | null = null;
+
+  try {
+    // Top blog article (most recent or featured)
+    const topPost = BLOG_POSTS[0]; // Already sorted by publishedAt desc
+    if (topPost) {
+      featuredArticle = {
+        type: 'blog',
+        title: topPost.title,
+        snippet: topPost.excerpt.slice(0, 120),
+        href: `/blog/${topPost.slug}`,
+      };
+    }
+  } catch { /* non-critical */ }
+
+  try {
+    // Latest news article from DB
+    const latestNews = await prisma.newsArticle.findFirst({
+      select: { title: true, url: true, source: true, summary: true },
+      orderBy: { publishedAt: 'desc' },
+    });
+    if (latestNews) {
+      trendingNews = {
+        type: 'news',
+        title: latestNews.title,
+        snippet: (latestNews.summary || '').slice(0, 100),
+        href: '/news',
+        source: latestNews.source || undefined,
+      };
+    }
+  } catch { /* non-critical */ }
+
   // Fetch latest content for the "Latest from SpaceNexus" section
   // Merge AI insights + blog posts into one chronologically-sorted list
   interface ContentCard {
@@ -165,8 +199,8 @@ export default async function HomePage() {
 
   return (
     <div className="min-h-screen">
-      {/* Hero Section with Video Background */}
-      <LandingHero />
+      {/* Hero Section with featured content */}
+      <LandingHero featuredArticle={featuredArticle} trendingNews={trendingNews} />
 
       {/* Live Stream — appears only when a stream is active */}
       <LiveStreamSection />

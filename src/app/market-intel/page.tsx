@@ -16,6 +16,7 @@ import EmptyState from '@/components/ui/EmptyState';
 import DataFreshnessBadge from '@/components/ui/DataFreshnessBadge';
 import { clientLogger } from '@/lib/client-logger';
 import FAQSchema from '@/components/seo/FAQSchema';
+import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import RelatedModules from '@/components/ui/RelatedModules';
 import SubscribeCTA from '@/components/marketing/SubscribeCTA';
 import { getCompanyProfileUrl } from '@/lib/company-links';
@@ -1415,6 +1416,10 @@ function MarketIntelContent() {
 export default function MarketIntelPage() {
   return (
     <>
+    <BreadcrumbSchema items={[
+      { name: 'Home', href: '/' },
+      { name: 'Market Intel', href: '/market-intel' },
+    ]} />
     <FAQSchema items={[
       { question: 'Where does SpaceNexus get its space market data?', answer: 'SpaceNexus aggregates data from SEC filings, public earnings reports, press releases, industry reports from organizations like SIA and Euroconsult, and real-time stock market data for publicly traded space companies.' },
       { question: 'How often is space market intelligence updated?', answer: 'Stock prices and ETF data update throughout trading hours. Company financial data, funding rounds, and industry metrics are updated daily from multiple verified sources.' },

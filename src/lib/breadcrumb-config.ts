@@ -235,6 +235,7 @@ export const ROUTE_LABELS: Record<string, string> = {
   '/terms': 'Terms of Service',
   '/cookies': 'Cookie Policy',
   '/legal/dmca': 'DMCA',
+  '/accessibility': 'Accessibility Statement',
 
   // ── New Pages ──
   '/api-access': 'API Access',

@@ -682,24 +682,25 @@ function PricingPageContent() {
           </div>
         </ScrollReveal>
 
-        {/* Social Proof Stats with animated counters */}
+        {/* Platform Scale — reason to subscribe */}
         <ScrollReveal>
-          <div className="max-w-4xl mx-auto mb-8 text-center">
-            <p className="text-sm font-semibold text-white/80 mb-3">
-              Trusted by space professionals worldwide
+          <div className="max-w-3xl mx-auto mb-8">
+            <p className="text-sm font-semibold text-white/80 mb-4 text-center">
+              The most comprehensive space intelligence platform on the internet
             </p>
-            <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm text-slate-400">
-              <span className="flex items-center gap-1.5">
-                <span className="text-white font-bold"><AnimatedCounter target={200} />+</span> company profiles
-              </span>
-              <span className="hidden sm:inline text-slate-600" aria-hidden="true">|</span>
-              <span className="flex items-center gap-1.5">
-                <span className="text-white font-bold"><AnimatedCounter target={30} />+</span> data modules
-              </span>
-              <span className="hidden sm:inline text-slate-600" aria-hidden="true">|</span>
-              <span className="flex items-center gap-1.5">
-                <span className="text-white font-bold"><AnimatedCounter target={42} /></span> in-depth articles
-              </span>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              {[
+                { value: '264+', label: 'Pages & Tools', icon: '📊' },
+                { value: '200+', label: 'Original Articles', icon: '📝' },
+                { value: '50+', label: 'Data Sources', icon: '🚀' },
+                { value: '600+', label: 'Routes', icon: '✅' },
+              ].map(s => (
+                <div key={s.label} className="text-center p-3 rounded-xl bg-white/[0.03] border border-white/[0.06]">
+                  <span className="text-lg block mb-1">{s.icon}</span>
+                  <span className="text-white font-bold text-lg block">{s.value}</span>
+                  <span className="text-slate-500 text-xs">{s.label}</span>
+                </div>
+              ))}
             </div>
           </div>
         </ScrollReveal>

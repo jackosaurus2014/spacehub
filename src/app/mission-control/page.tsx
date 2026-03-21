@@ -15,6 +15,8 @@ import AlertNudge from '@/components/ui/AlertNudge';
 import { clientLogger } from '@/lib/client-logger';
 import { getCompanyProfileUrl } from '@/lib/company-links';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
+import DataFreshnessBadge from '@/components/ui/DataFreshnessBadge';
+import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import RelatedModules from '@/components/ui/RelatedModules';
 import NewsTicker from '@/components/NewsTicker';
 import { BLUR_PLACEHOLDER_1_1 } from '@/lib/blur-placeholder';
@@ -964,6 +966,7 @@ function MissionControlContent() {
   const [events, setEvents] = useState<SpaceEvent[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const [selectedType, setSelectedType] = useState<SpaceEventType | 'all'>(
     (searchParams.get('type') as SpaceEventType | 'all') || 'all'
   );
@@ -1005,6 +1008,7 @@ function MissionControlContent() {
       const res = await fetch(`/api/events?${params}`);
       const data = await res.json();
       setEvents(data.events || []);
+      setLastUpdated(new Date());
     } catch (error) {
       clientLogger.error('Failed to fetch events', { error: error instanceof Error ? error.message : String(error) });
       setError('Failed to load data.');
@@ -1100,6 +1104,15 @@ function MissionControlContent() {
         <AnimatedPageHeader title="Mission Control" subtitle="Explore all upcoming space missions, launches, and events" icon="🚀" accentColor="cyan" />
 
         <AlertNudge moduleName="Mission Control" alertType="launch" ctaHref="/alerts" className="mb-4" />
+
+        <div className="mb-4">
+          <DataFreshnessBadge
+            lastUpdated={lastUpdated}
+            source="Space Events"
+            refreshInterval="every 2 min"
+            onRefresh={handleRefresh}
+          />
+        </div>
 
         {/* ═══════ Artemis II Countdown Card ═══════ */}
         <ScrollReveal>
@@ -1513,14 +1526,20 @@ function MissionControlContent() {
 
 export default function MissionControlPage() {
   return (
-    <Suspense
-      fallback={
-        <div className="min-h-screen flex items-center justify-center py-20">
-          <LoadingSpinner size="lg" />
-        </div>
-      }
-    >
-      <MissionControlContent />
-    </Suspense>
+    <>
+      <BreadcrumbSchema items={[
+        { name: 'Home', href: '/' },
+        { name: 'Mission Control', href: '/mission-control' },
+      ]} />
+      <Suspense
+        fallback={
+          <div className="min-h-screen flex items-center justify-center py-20">
+            <LoadingSpinner size="lg" />
+          </div>
+        }
+      >
+        <MissionControlContent />
+      </Suspense>
+    </>
   );
 }

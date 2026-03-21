@@ -22,6 +22,7 @@ import { clientLogger } from '@/lib/client-logger';
 import Link from 'next/link';
 import { BLOG_POSTS } from '@/lib/blog-content';
 import ItemListSchema from '@/components/seo/ItemListSchema';
+import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import { NewsArticle } from '@/types';
 import RelatedModules from '@/components/ui/RelatedModules';
 import TrendingSidebar from '@/components/TrendingSidebar';
@@ -242,6 +243,10 @@ function NewsContent() {
 export default function NewsPage() {
   return (
     <div className="min-h-screen">
+      <BreadcrumbSchema items={[
+        { name: 'Home', href: '/' },
+        { name: 'Space News', href: '/news' },
+      ]} />
       <ItemListSchema
         name="Space Industry News"
         description="Breaking space industry news covering launches, satellite deployments, space policy, and commercial spaceflight."

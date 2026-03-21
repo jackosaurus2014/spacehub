@@ -17,6 +17,7 @@ import DataFreshnessBadge from '@/components/ui/DataFreshnessBadge';
 import EmptyState from '@/components/ui/EmptyState';
 import { clientLogger } from '@/lib/client-logger';
 import FAQSchema from '@/components/seo/FAQSchema';
+import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import RelatedModules from '@/components/ui/RelatedModules';
 import SubscribeCTA from '@/components/marketing/SubscribeCTA';
 
@@ -697,6 +698,10 @@ function SatelliteTrackerContent() {
 export default function SatellitesPage() {
   return (
     <>
+    <BreadcrumbSchema items={[
+      { name: 'Home', href: '/' },
+      { name: 'Satellite Tracker', href: '/satellites' },
+    ]} />
     <FAQSchema items={[
       { question: 'How accurate is SpaceNexus satellite tracking?', answer: 'SpaceNexus uses NORAD Two-Line Element (TLE) data updated multiple times per day, providing positional accuracy within a few kilometers for most active satellites in LEO, MEO, and GEO orbits.' },
       { question: 'Can I track the International Space Station in real-time?', answer: 'Yes. The ISS position card on our Satellite Tracker page shows its current latitude, longitude, altitude, and velocity, updated every few seconds using live orbital data.' },

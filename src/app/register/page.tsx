@@ -497,8 +497,13 @@ function RegisterPageContent() {
               </div>
               <div className="w-px h-6 bg-white/[0.06]" />
               <div className="text-center">
-                <p className="text-white text-sm font-bold">175+</p>
+                <p className="text-white text-sm font-bold">200+</p>
                 <p className="text-slate-500 text-[10px]">Articles</p>
+              </div>
+              <div className="w-px h-6 bg-white/[0.06]" />
+              <div className="text-center">
+                <p className="text-white text-sm font-bold">264+</p>
+                <p className="text-slate-500 text-[10px]">Pages & Tools</p>
               </div>
               <div className="w-px h-6 bg-white/[0.06]" />
               <div className="text-center">
