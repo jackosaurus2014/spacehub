@@ -1,12 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/db';
-import { logger } from '@/lib/logger';
 
 export const dynamic = 'force-dynamic';
 
 /**
  * GET /api/space-tycoon/leaderboard?sort=netWorth&limit=50
- * Public endpoint — no auth required.
+ * Returns the global leaderboard with alliance tags and real player data.
  */
 export async function GET(request: NextRequest) {
   try {
@@ -21,13 +20,23 @@ export async function GET(request: NextRequest) {
       orderBy: { [sortField]: 'desc' },
       take: limit,
       select: {
+        id: true,
         companyName: true,
         title: true,
         netWorth: true,
         totalEarned: true,
         buildingCount: true,
         researchCount: true,
+        serviceCount: true,
         locationsUnlocked: true,
+        gameYear: true,
+        lastSyncAt: true,
+        allianceMembership: {
+          select: {
+            role: true,
+            alliance: { select: { tag: true, name: true } },
+          },
+        },
       },
     });
 
@@ -39,12 +48,23 @@ export async function GET(request: NextRequest) {
       totalEarned: p.totalEarned,
       buildingCount: p.buildingCount,
       researchCount: p.researchCount,
+      serviceCount: p.serviceCount,
       locationsUnlocked: p.locationsUnlocked,
+      gameYear: p.gameYear,
+      allianceTag: p.allianceMembership?.alliance?.tag || null,
+      allianceName: p.allianceMembership?.alliance?.name || null,
+      isOnline: (Date.now() - new Date(p.lastSyncAt).getTime()) < 5 * 60 * 1000, // synced in last 5 min
     }));
 
-    return NextResponse.json({ entries });
+    // Also get alliance leaderboard
+    const alliances = await prisma.alliance.findMany({
+      orderBy: { totalNetWorth: 'desc' },
+      take: 10,
+      select: { name: true, tag: true, memberCount: true, totalNetWorth: true },
+    });
+
+    return NextResponse.json({ entries, alliances });
   } catch (error) {
-    logger.error('Leaderboard error', { error: String(error) });
-    return NextResponse.json({ entries: [] });
+    return NextResponse.json({ entries: [], alliances: [] });
   }
 }

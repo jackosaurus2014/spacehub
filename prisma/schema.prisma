@@ -153,6 +153,11 @@ model GameProfile {
   updatedAt         DateTime @updatedAt
 
   marketOrders      MarketOrder[]
+  postedBounties    ResourceBounty[]   @relation("postedBounties")
+  filledBounties    ResourceBounty[]   @relation("filledBounties")
+  globalMilestones  GlobalMilestone[]
+  allianceMembership AllianceMember?
+  activityLogs      PlayerActivity[]
 
   @@index([netWorth])
   @@index([totalEarned])
@@ -4168,4 +4173,87 @@ model VideoContent {
 
   @@index([category])
   @@index([publishedAt])
+}
+
+// ---------------------------------------------------------------------------
+// Space Tycoon: Multiplayer Systems
+// ---------------------------------------------------------------------------
+
+// Server-validated "first to" milestones — only one player can claim each
+model GlobalMilestone {
+  id          String      @id @default(cuid())
+  milestoneId String      @unique  // matches milestones.ts ID (first_orbit, first_moon, etc.)
+  claimedById String
+  claimedBy   GameProfile @relation(fields: [claimedById], references: [id], onDelete: Cascade)
+  companyName String
+  reward      Float
+  claimedAt   DateTime    @default(now())
+
+  @@index([milestoneId])
+}
+
+// Player-to-player resource bounties (contracts marketplace)
+model ResourceBounty {
+  id            String       @id @default(cuid())
+  posterId      String
+  poster        GameProfile  @relation("postedBounties", fields: [posterId], references: [id], onDelete: Cascade)
+  resourceSlug  String       // iron, titanium, etc.
+  quantity      Int
+  pricePerUnit  Float        // what poster will pay per unit
+  totalBudget   Float        // quantity * pricePerUnit (escrowed)
+  filledQty     Int          @default(0)
+  status        String       @default("open") // open, partial, filled, cancelled
+  fillerId      String?
+  filler        GameProfile? @relation("filledBounties", fields: [fillerId], references: [id])
+  filledAt      DateTime?
+  createdAt     DateTime     @default(now())
+  expiresAt     DateTime     // auto-expire after 24h
+
+  @@index([status])
+  @@index([resourceSlug])
+  @@index([createdAt])
+}
+
+// Player alliances for shared bonuses
+model Alliance {
+  id          String            @id @default(cuid())
+  name        String            @unique
+  tag         String            @unique // 3-5 char tag like [SOL], [MARS]
+  description String?
+  leaderId    String
+  memberCount Int               @default(1)
+  totalNetWorth Float           @default(0)
+  bonusRevenue Float            @default(0.05) // +5% revenue per alliance member (capped)
+  members     AllianceMember[]
+  createdAt   DateTime          @default(now())
+
+  @@index([totalNetWorth])
+}
+
+model AllianceMember {
+  id          String      @id @default(cuid())
+  allianceId  String
+  alliance    Alliance    @relation(fields: [allianceId], references: [id], onDelete: Cascade)
+  profileId   String      @unique
+  profile     GameProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  role        String      @default("member") // leader, officer, member
+  joinedAt    DateTime    @default(now())
+
+  @@index([allianceId])
+}
+
+// Global activity feed — visible to all players
+model PlayerActivity {
+  id          String      @id @default(cuid())
+  profileId   String
+  profile     GameProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  companyName String
+  type        String      // milestone_claimed, big_trade, alliance_created, bounty_posted, prestige
+  title       String
+  description String?
+  metadata    Json?       // extra data (resource, quantity, price, etc.)
+  createdAt   DateTime    @default(now())
+
+  @@index([type])
+  @@index([createdAt])
 }
