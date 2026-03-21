@@ -11,7 +11,9 @@ import { RESEARCH, RESEARCH_MAP, RESEARCH_CATEGORIES } from '@/lib/game/research
 import { SERVICE_MAP } from '@/lib/game/services';
 import { LOCATIONS, LOCATION_MAP } from '@/lib/game/solar-system';
 import { playSound, initAudio } from '@/lib/game/sound-engine';
+import { getBuildingAsset, LOCATION_ASSETS } from '@/lib/game/assets';
 import Link from 'next/link';
+import Image from 'next/image';
 import ResourceBar from '@/components/game/ResourceBar';
 import GameStartMenu from '@/components/game/GameStartMenu';
 import DashboardPanel from '@/components/game/DashboardPanel';
@@ -72,15 +74,18 @@ function BuildPanel({ state, onBuild }: { state: GameState; onBuild: (buildingId
               <button
                 key={locId}
                 onClick={() => setSelectedLocation(locId)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                className={`relative px-3 py-1.5 rounded-lg text-xs font-medium transition-colors overflow-hidden ${
                   selectedLocation === locId
                     ? 'bg-cyan-500 text-white'
                     : 'bg-white/[0.06] text-slate-400 hover:text-white'
                 }`}
               >
-                {loc?.name || locId}
+                {LOCATION_ASSETS[locId] && (
+                  <Image src={LOCATION_ASSETS[locId]} alt="" width={80} height={40} className="absolute inset-0 w-full h-full object-cover opacity-20 pointer-events-none" />
+                )}
+                <span className="relative">{loc?.name || locId}</span>
                 {buildableCount > 0 && (
-                  <span className={`ml-1.5 px-1 py-0.5 rounded text-[9px] ${
+                  <span className={`relative ml-1.5 px-1 py-0.5 rounded text-[9px] ${
                     selectedLocation === locId ? 'bg-white/20' : 'bg-cyan-500/20 text-cyan-400'
                   }`}>{buildableCount}</span>
                 )}
@@ -108,7 +113,18 @@ function BuildPanel({ state, onBuild }: { state: GameState; onBuild: (buildingId
             const canAfford = canAffordMoney && hasResources;
 
             return (
-              <div key={bld.id} className="card p-4">
+              <div key={bld.id} className="card p-4 relative overflow-hidden">
+                {/* Building art thumbnail */}
+                <div className="absolute top-0 right-0 w-20 h-20 opacity-15 pointer-events-none">
+                  <Image
+                    src={getBuildingAsset(bld.id, bld.category)}
+                    alt=""
+                    width={80}
+                    height={80}
+                    className="w-full h-full object-cover rounded-bl-xl"
+                  />
+                </div>
+                <div className="relative">
                 <div className="flex justify-between items-start mb-2">
                   <h4 className="text-white text-sm font-semibold">{bld.name}</h4>
                   <span className="text-xs text-slate-500">Tier {bld.tier}</span>
@@ -166,6 +182,7 @@ function BuildPanel({ state, onBuild }: { state: GameState; onBuild: (buildingId
                   </button>
                 </div>
                 {count > 0 && <p className="text-slate-500 text-[10px] mt-1">Built: {count}</p>}
+                </div>{/* close relative wrapper */}
               </div>
             );
           })}
@@ -683,7 +700,15 @@ export default function SpaceTycoonPage() {
   const tabs = allTabs;
 
   return (
-    <div className="min-h-screen bg-space-900 flex flex-col">
+    <div className="min-h-screen bg-space-900 flex flex-col relative">
+      {/* Subtle starfield background */}
+      <Image
+        src="/game/bg-starfield.webp"
+        alt=""
+        fill
+        className="absolute inset-0 object-cover opacity-10 pointer-events-none"
+        priority={false}
+      />
       <GameStyles />
       {/* Resource Bar */}
       <ResourceBar state={state} />

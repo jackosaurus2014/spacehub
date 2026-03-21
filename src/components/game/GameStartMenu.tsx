@@ -2,7 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { loadGame } from '@/lib/game/save-load';
+import { BG_ASSETS } from '@/lib/game/assets';
 
 interface GameStartMenuProps {
   onNewGame: () => void;
@@ -21,6 +23,15 @@ export default function GameStartMenu({ onNewGame, onContinue }: GameStartMenuPr
 
   return (
     <div className="min-h-screen bg-[#050510] flex items-center justify-center px-4 relative overflow-hidden">
+      {/* Background art */}
+      <Image
+        src={BG_ASSETS.loadingScreen}
+        alt=""
+        fill
+        className="absolute inset-0 object-cover opacity-30 pointer-events-none"
+        priority
+      />
+
       {/* Animated star field */}
       {mounted && (
         <>

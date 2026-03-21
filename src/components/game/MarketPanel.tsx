@@ -5,6 +5,8 @@ import type { GameState } from '@/lib/game/types';
 import { RESOURCES, RESOURCE_MAP } from '@/lib/game/resources';
 import { formatMoney } from '@/lib/game/formulas';
 import { playSound } from '@/lib/game/sound-engine';
+import { RESOURCE_ASSETS } from '@/lib/game/assets';
+import Image from 'next/image';
 
 interface MarketPrices {
   [resourceId: string]: {
@@ -100,8 +102,12 @@ export default function MarketPanel({ state, onSellResource, onBuyResource }: Ma
                       : 'bg-white/[0.03] border border-white/[0.04] hover:border-white/[0.1]'
                   }`}
                 >
-                  <div className="flex items-center gap-1.5 mb-1">
-                    <span className="text-sm">{def.icon}</span>
+                  <div className="flex items-center gap-2 mb-1">
+                    {RESOURCE_ASSETS[id] ? (
+                      <Image src={RESOURCE_ASSETS[id]} alt="" width={28} height={28} className="w-7 h-7 rounded object-cover flex-shrink-0" />
+                    ) : (
+                      <span className="text-sm">{def.icon}</span>
+                    )}
                     <span className="text-white text-xs font-medium truncate">{def.name}</span>
                   </div>
                   <p className="text-amber-400 text-xs font-mono">{qty.toLocaleString()} units</p>
@@ -183,7 +189,11 @@ export default function MarketPanel({ state, onSellResource, onBuyResource }: Ma
             return (
               <div key={r.id} className="flex items-center justify-between py-1.5 px-2 rounded-lg hover:bg-white/[0.02] transition-colors">
                 <div className="flex items-center gap-2">
-                  <span className="text-sm">{r.icon}</span>
+                  {RESOURCE_ASSETS[r.id] ? (
+                    <Image src={RESOURCE_ASSETS[r.id]} alt="" width={24} height={24} className="w-6 h-6 rounded object-cover flex-shrink-0" />
+                  ) : (
+                    <span className="text-sm">{r.icon}</span>
+                  )}
                   <div>
                     <span className="text-white text-xs">{r.name}</span>
                     <span className="text-slate-600 text-[10px] ml-1.5">{r.category}</span>

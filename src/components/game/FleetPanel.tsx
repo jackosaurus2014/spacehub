@@ -8,6 +8,8 @@ import { LOCATIONS, LOCATION_MAP } from '@/lib/game/solar-system';
 import { RESOURCE_MAP } from '@/lib/game/resources';
 import { formatMoney, formatCountdown, formatDuration } from '@/lib/game/formulas';
 import { playSound } from '@/lib/game/sound-engine';
+import { getShipAsset } from '@/lib/game/assets';
+import Image from 'next/image';
 
 interface FleetPanelProps {
   state: GameState;
@@ -75,7 +77,7 @@ export default function FleetPanel({ state, onBuildShip, onStartMining, onStopMi
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <span className="text-lg">{def.icon}</span>
+                      <Image src={getShipAsset(def.id)} alt="" width={32} height={32} className="w-8 h-8 rounded object-cover flex-shrink-0" />
                       <div>
                         <p className="text-white text-xs font-medium">{ship.name}</p>
                         <p className="text-slate-500 text-[10px]">{def.name} · {loc?.name || ship.currentLocation}</p>
@@ -226,7 +228,7 @@ export default function FleetPanel({ state, onBuildShip, onStartMining, onStopMi
               return (
                 <div key={ship.id} className="p-3 rounded-lg bg-white/[0.02] border border-white/[0.04]">
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="text-lg">{ship.icon}</span>
+                    <Image src={getShipAsset(ship.id)} alt="" width={32} height={32} className="w-8 h-8 rounded object-cover flex-shrink-0" />
                     <div>
                       <h4 className="text-white text-xs font-semibold">{ship.name}</h4>
                       <span className={`text-[9px] px-1 py-0.5 rounded ${
