@@ -262,7 +262,7 @@ export interface GameState {
     instanceId: string;
     definitionId: string;
     name: string;
-    status: 'idle' | 'in_transit' | 'loading' | 'mining' | 'refining' | 'building';
+    status: 'idle' | 'in_transit' | 'loading' | 'mining' | 'refining' | 'building' | 'surveying';
     currentLocation: string;
     isBuilt: boolean;
     buildStartedAtMs?: number;
@@ -278,6 +278,11 @@ export interface GameState {
       resourceId: string;
       startedAtMs: number;
       locationId: string;
+    };
+    surveyExpedition?: {
+      targetLocation: string;
+      startedAtMs: number;
+      durationSeconds: number;
     };
   }[];
 

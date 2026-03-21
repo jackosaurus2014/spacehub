@@ -384,13 +384,17 @@ export function processFullTick(state: GameState): GameState {
     console.error('Upgrade check error (non-fatal):', err);
   }
 
-  // 6. Process ships (build completion, mining with workforce bonus, transit with cargo delivery)
+  // 6. Process ships (build, mine, transit, survey expeditions, fleet maintenance)
   try {
     if (newState.ships && newState.ships.length > 0) {
       const now = Date.now();
       const resources = { ...(newState.resources || {}) };
+      let shipMoney = newState.money;
+      let shipTotalSpent = newState.totalSpent;
       const wfBonuses = getWorkforceBonuses(newState.workforce || { engineers: 0, scientists: 0, miners: 0, operators: 0 });
       const shipMiningMult = (1 + wfBonuses.miningOutput) * ((newState.prestige?.permanentBonuses?.miningMultiplier) || 1);
+      const shipEvents: typeof newState.eventLog = [];
+      const shipsToRemove: string[] = []; // For consumed survey probes
 
       const updatedShips = newState.ships.map(ship => {
         // Build completion
@@ -398,6 +402,15 @@ export function processFullTick(state: GameState): GameState {
           const elapsed = (now - ship.buildStartedAtMs) / 1000;
           if (elapsed >= ship.buildDurationSeconds) {
             return { ...ship, isBuilt: true, status: 'idle' as const, buildStartedAtMs: undefined, buildDurationSeconds: undefined };
+          }
+        }
+
+        // Fleet maintenance (per built ship, per tick)
+        if (ship.isBuilt) {
+          const shipDef = SHIP_MAP.get(ship.definitionId);
+          if (shipDef && shipDef.maintenancePerMonth > 0) {
+            shipMoney -= shipDef.maintenancePerMonth;
+            shipTotalSpent += shipDef.maintenancePerMonth;
           }
         }
 
@@ -413,7 +426,6 @@ export function processFullTick(state: GameState): GameState {
         // Transit arrival — deliver cargo to destination
         if (ship.status === 'in_transit' && ship.route) {
           if (now >= ship.route.arrivalAtMs) {
-            // Deposit cargo at destination (merge into global resources)
             if (ship.route.cargo) {
               for (const [resId, qty] of Object.entries(ship.route.cargo)) {
                 resources[resId] = (resources[resId] || 0) + qty;
@@ -423,9 +435,55 @@ export function processFullTick(state: GameState): GameState {
           }
         }
 
+        // Survey expedition completion — probe is consumed, discovery applied
+        if (ship.isBuilt && ship.status === 'surveying' && ship.surveyExpedition) {
+          const elapsed = (now - ship.surveyExpedition.startedAtMs) / 1000;
+          if (elapsed >= ship.surveyExpedition.durationSeconds) {
+            const { rollSurveyDiscovery } = require('./ships');
+            const discovery = rollSurveyDiscovery(ship.surveyExpedition.targetLocation);
+            if (discovery) {
+              // Apply discovery rewards
+              if (discovery.rewards.money) {
+                shipMoney += discovery.rewards.money;
+              }
+              if (discovery.rewards.resources) {
+                for (const [resId, qty] of Object.entries(discovery.rewards.resources)) {
+                  resources[resId] = (resources[resId] || 0) + (qty as number);
+                }
+              }
+              shipEvents.push({
+                id: generateId(),
+                date: newState.gameDate,
+                type: 'random_event',
+                title: `📡 Survey Discovery: ${discovery.title}`,
+                description: discovery.description,
+              });
+              // TODO: Apply miningBonus to location (store in game state for duration)
+            }
+            // Probe is consumed after expedition
+            shipsToRemove.push(ship.instanceId);
+            return ship; // Will be filtered out below
+          }
+        }
+
         return ship;
       });
-      newState = { ...newState, ships: updatedShips, resources };
+
+      // Remove consumed probes
+      const finalShips = shipsToRemove.length > 0
+        ? updatedShips.filter(s => !shipsToRemove.includes(s.instanceId))
+        : updatedShips;
+
+      newState = {
+        ...newState,
+        ships: finalShips,
+        resources,
+        money: shipMoney,
+        totalSpent: shipTotalSpent,
+        eventLog: shipEvents.length > 0
+          ? [...shipEvents, ...newState.eventLog].slice(0, MAX_EVENT_LOG)
+          : newState.eventLog,
+      };
     }
   } catch (err) {
     console.error('Ship processing error (non-fatal):', err);
