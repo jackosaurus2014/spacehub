@@ -148,4 +148,26 @@ export const LOCATIONS: SolarSystemLocation[] = [
   },
 ];
 
-export const LOCATION_MAP = new Map(LOCATIONS.map(l => [l.id, l]));
+// ─── Expanded Colony Locations ────────────────────────────────────────────────
+// Import colony locations and merge into the main LOCATIONS array.
+// These add 14 new colonizable bodies to the existing 11 locations.
+
+import { EXPANDED_LOCATIONS } from './colonies';
+
+const COLONY_LOCATIONS_AS_BASE: SolarSystemLocation[] = EXPANDED_LOCATIONS.map(col => ({
+  id: col.id,
+  name: col.name,
+  type: col.type as SolarSystemLocation['type'],
+  description: col.description,
+  distanceFromEarthAU: col.distanceFromEarthAU,
+  deltaVFromLEO: col.deltaVFromLEO,
+  travelTimeMonths: col.travelTimeMonths,
+  unlockCost: col.unlockCost,
+  requiredResearch: col.requiredResearch,
+  availableBuildings: col.availableBuildings,
+  tier: col.tier,
+}));
+
+export const ALL_LOCATIONS = [...LOCATIONS, ...COLONY_LOCATIONS_AS_BASE];
+
+export const LOCATION_MAP = new Map(ALL_LOCATIONS.map(l => [l.id, l]));

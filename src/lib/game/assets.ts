@@ -32,6 +32,19 @@ export const LOCATION_ASSETS: Record<string, string> = {
   jupiter_system: `${BASE}/location-jupiter-system.webp`,
   saturn_system: `${BASE}/location-saturn-system.webp`,
   outer_system: `${BASE}/location-outer-system.webp`,
+  // Colony locations (reuse closest existing art until dedicated assets are created)
+  mercury_surface: `${BASE}/location-mars-surface.webp`,
+  venus_orbit: `${BASE}/location-geo.webp`,
+  ceres_surface: `${BASE}/location-asteroid-belt.webp`,
+  io_surface: `${BASE}/location-mars-surface.webp`,
+  europa_surface: `${BASE}/location-lunar-surface.webp`,
+  ganymede_surface: `${BASE}/location-lunar-surface.webp`,
+  callisto_surface: `${BASE}/location-lunar-orbit.webp`,
+  titan_surface: `${BASE}/location-saturn-system.webp`,
+  enceladus_surface: `${BASE}/location-lunar-surface.webp`,
+  titania_surface: `${BASE}/location-outer-system.webp`,
+  triton_surface: `${BASE}/location-outer-system.webp`,
+  pluto_surface: `${BASE}/location-outer-system.webp`,
 };
 
 // ─── RESOURCE ASSETS ─────────────────────────────────────────────────────────

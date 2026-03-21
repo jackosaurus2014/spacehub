@@ -138,7 +138,11 @@ export type LocationType =
   | 'asteroid_belt'
   | 'jupiter'
   | 'saturn'
-  | 'outer_system';
+  | 'outer_system'
+  | 'mercury'
+  | 'venus'
+  | 'uranus'
+  | 'neptune';
 
 export interface SolarSystemLocation {
   id: string;

@@ -242,18 +242,44 @@ export const SHIPS: ShipDefinition[] = [
 export const SHIP_MAP = new Map(SHIPS.map(s => [s.id, s]));
 
 // Travel times between locations (in real seconds)
+// Expanded to include all colony locations
 export const TRAVEL_TIMES: Record<string, Record<string, number>> = {
-  earth_surface: { leo: 30, geo: 60, lunar_orbit: 180, lunar_surface: 240 },
-  leo: { earth_surface: 30, geo: 45, lunar_orbit: 150, lunar_surface: 210, mars_orbit: 600 },
+  // Inner system
+  earth_surface: { leo: 30, geo: 60, lunar_orbit: 180, lunar_surface: 240, venus_orbit: 360, mercury_surface: 480 },
+  leo: { earth_surface: 30, geo: 45, lunar_orbit: 150, lunar_surface: 210, mars_orbit: 600, venus_orbit: 300, mercury_surface: 420 },
   geo: { earth_surface: 60, leo: 45, lunar_orbit: 180 },
+  venus_orbit: { leo: 300, earth_surface: 360, mercury_surface: 240 },
+  mercury_surface: { venus_orbit: 240, leo: 420, earth_surface: 480 },
+
+  // Moon
   lunar_orbit: { leo: 150, lunar_surface: 60, earth_surface: 180 },
   lunar_surface: { lunar_orbit: 60, leo: 210, earth_surface: 240 },
-  mars_orbit: { leo: 600, mars_surface: 120, asteroid_belt: 300 },
+
+  // Mars
+  mars_orbit: { leo: 600, mars_surface: 120, asteroid_belt: 300, ceres_surface: 240 },
   mars_surface: { mars_orbit: 120 },
-  asteroid_belt: { mars_orbit: 300, leo: 900, jupiter_system: 600 },
-  jupiter_system: { asteroid_belt: 600, saturn_system: 900 },
-  saturn_system: { jupiter_system: 900, outer_system: 1200 },
-  outer_system: { saturn_system: 1200 },
+
+  // Asteroid Belt
+  asteroid_belt: { mars_orbit: 300, leo: 900, jupiter_system: 600, ceres_surface: 60 },
+  ceres_surface: { asteroid_belt: 60, mars_orbit: 240, jupiter_system: 540 },
+
+  // Jupiter System — individual moons
+  jupiter_system: { asteroid_belt: 600, saturn_system: 900, io_surface: 30, europa_surface: 45, ganymede_surface: 60, callisto_surface: 90 },
+  io_surface: { jupiter_system: 30, europa_surface: 30, ganymede_surface: 45, callisto_surface: 75 },
+  europa_surface: { jupiter_system: 45, io_surface: 30, ganymede_surface: 30, callisto_surface: 60 },
+  ganymede_surface: { jupiter_system: 60, europa_surface: 30, callisto_surface: 45 },
+  callisto_surface: { jupiter_system: 90, ganymede_surface: 45, saturn_system: 840 },
+
+  // Saturn System — individual moons
+  saturn_system: { jupiter_system: 900, outer_system: 1200, titan_surface: 30, enceladus_surface: 45 },
+  titan_surface: { saturn_system: 30, enceladus_surface: 30 },
+  enceladus_surface: { saturn_system: 45, titan_surface: 30 },
+
+  // Uranus/Neptune
+  titania_surface: { saturn_system: 1200, triton_surface: 1500 },
+  outer_system: { saturn_system: 1200, titania_surface: 300, triton_surface: 1500, pluto_surface: 1800 },
+  triton_surface: { outer_system: 1500, titania_surface: 1500, pluto_surface: 900 },
+  pluto_surface: { triton_surface: 900, outer_system: 1800 },
 };
 
 /** Get travel time between two locations in seconds */
