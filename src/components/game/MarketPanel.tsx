@@ -127,8 +127,13 @@ export default function MarketPanel({ state, onSellResource, onBuyResource }: Ma
         if (!def) return null;
         return (
           <div className="rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-4">
-            <h3 className="text-white text-sm font-semibold mb-2">
-              Sell {def.icon} {def.name}
+            <h3 className="text-white text-sm font-semibold mb-2 flex items-center gap-2">
+              {RESOURCE_ASSETS[selectedResource] ? (
+                <Image src={RESOURCE_ASSETS[selectedResource]} alt="" width={24} height={24} className="w-6 h-6 rounded object-cover" />
+              ) : (
+                <span>{def.icon}</span>
+              )}
+              Sell {def.name}
             </h3>
             <div className="flex items-center gap-3 mb-3">
               <div className="flex items-center gap-1">
