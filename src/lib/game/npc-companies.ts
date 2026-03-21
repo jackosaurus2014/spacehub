@@ -36,57 +36,57 @@ export interface NPCSeedData {
   description: string;
 }
 
-// NPC speeds are intentionally slow (0.1-0.3x) so players easily outpace them.
-// NPCs exist primarily to mine resources and influence market prices.
+// NPC speeds are slow (0.2-0.45x) so players outpace them, but they provide
+// real competitive pressure for milestones and market influence.
 export const NPC_SEEDS: NPCSeedData[] = [
   {
     id: 'npc_orbital_dynamics', name: 'Orbital Dynamics Corp', strategy: 'aggressive',
-    progressionSpeed: 0.25, riskTolerance: 0.5, miningFocus: 0.6, sellThreshold: 80,
+    progressionSpeed: 0.35, riskTolerance: 0.5, miningFocus: 0.6, sellThreshold: 80,
     description: 'Small launch provider. Sells tracking data.',
   },
   {
     id: 'npc_stellar', name: 'Stellar Industries', strategy: 'balanced',
-    progressionSpeed: 0.2, riskTolerance: 0.3, miningFocus: 0.7, sellThreshold: 120,
+    progressionSpeed: 0.3, riskTolerance: 0.3, miningFocus: 0.7, sellThreshold: 120,
     description: 'Diversified miner and manufacturer.',
   },
   {
     id: 'npc_nova', name: 'Nova Aerospace', strategy: 'aggressive',
-    progressionSpeed: 0.3, riskTolerance: 0.4, miningFocus: 0.5, sellThreshold: 60,
+    progressionSpeed: 0.4, riskTolerance: 0.4, miningFocus: 0.5, sellThreshold: 60,
     description: 'Scrappy launch startup. Sells surplus fuel.',
   },
   {
     id: 'npc_titan_mining', name: 'Titan Mining Collective', strategy: 'conservative',
-    progressionSpeed: 0.15, riskTolerance: 0.2, miningFocus: 0.95, sellThreshold: 150,
+    progressionSpeed: 0.25, riskTolerance: 0.2, miningFocus: 0.95, sellThreshold: 150,
     description: 'Pure mining operation. Major market supplier.',
   },
   {
     id: 'npc_artemis', name: 'Artemis Ventures', strategy: 'balanced',
-    progressionSpeed: 0.2, riskTolerance: 0.3, miningFocus: 0.6, sellThreshold: 100,
+    progressionSpeed: 0.3, riskTolerance: 0.3, miningFocus: 0.6, sellThreshold: 100,
     description: 'Lunar-focused mining and tourism.',
   },
   {
     id: 'npc_deep_space', name: 'Deep Space Holdings', strategy: 'conservative',
-    progressionSpeed: 0.1, riskTolerance: 0.2, miningFocus: 0.8, sellThreshold: 200,
+    progressionSpeed: 0.2, riskTolerance: 0.2, miningFocus: 0.8, sellThreshold: 200,
     description: 'Long-term mining investor. Slow and steady.',
   },
   {
     id: 'npc_cislunar', name: 'Cislunar Partners', strategy: 'aggressive',
-    progressionSpeed: 0.25, riskTolerance: 0.4, miningFocus: 0.7, sellThreshold: 70,
+    progressionSpeed: 0.35, riskTolerance: 0.4, miningFocus: 0.7, sellThreshold: 70,
     description: 'Earth-Moon corridor mining and logistics.',
   },
   {
     id: 'npc_helios', name: 'Helios Energy', strategy: 'balanced',
-    progressionSpeed: 0.2, riskTolerance: 0.3, miningFocus: 0.5, sellThreshold: 100,
+    progressionSpeed: 0.3, riskTolerance: 0.3, miningFocus: 0.5, sellThreshold: 100,
     description: 'Solar energy provider. Sells excess power credits.',
   },
   {
     id: 'npc_frontier', name: 'Frontier Spacecraft', strategy: 'balanced',
-    progressionSpeed: 0.15, riskTolerance: 0.2, miningFocus: 0.6, sellThreshold: 130,
+    progressionSpeed: 0.25, riskTolerance: 0.2, miningFocus: 0.6, sellThreshold: 130,
     description: 'Spacecraft manufacturer. Mines raw materials.',
   },
   {
     id: 'npc_quantum', name: 'Quantum Launch Systems', strategy: 'aggressive',
-    progressionSpeed: 0.3, riskTolerance: 0.5, miningFocus: 0.5, sellThreshold: 50,
+    progressionSpeed: 0.45, riskTolerance: 0.5, miningFocus: 0.5, sellThreshold: 50,
     description: 'Budget launch provider. Sells whatever they mine.',
   },
 ];
@@ -97,7 +97,7 @@ export function createNPCFromSeed(seed: NPCSeedData): NPCCompanyState {
     id: seed.id,
     name: seed.name,
     strategy: seed.strategy,
-    money: 100_000_000 + Math.random() * 150_000_000, // $100M-$250M starting (much less than player's $500M)
+    money: 150_000_000 + Math.random() * 200_000_000, // $150M-$350M starting (comparable to player's $200M)
     totalEarned: 0,
     totalSpent: 0,
     currentTier: 1,

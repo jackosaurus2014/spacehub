@@ -12,13 +12,13 @@ export interface DailyBonusState {
 
 /** Bonus amounts by streak day (cycles after day 7) */
 const BONUS_SCHEDULE = [
-  5_000_000,   // Day 1: $5M
-  8_000_000,   // Day 2: $8M
-  12_000_000,  // Day 3: $12M
-  18_000_000,  // Day 4: $18M
-  25_000_000,  // Day 5: $25M
-  35_000_000,  // Day 6: $35M
-  50_000_000,  // Day 7: $50M (jackpot!)
+  10_000_000,  // Day 1: $10M
+  18_000_000,  // Day 2: $18M
+  30_000_000,  // Day 3: $30M
+  50_000_000,  // Day 4: $50M
+  80_000_000,  // Day 5: $80M
+  120_000_000, // Day 6: $120M
+  200_000_000, // Day 7: $200M (jackpot!)
 ];
 
 function getToday(): string {

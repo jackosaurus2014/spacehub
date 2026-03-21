@@ -67,12 +67,12 @@ export const BUILDINGS: BuildingDefinition[] = [
   { id: 'space_station_lunar', name: 'Lunar Gateway', category: 'space_station', tier: 2,
     description: 'Orbital station around the Moon. Staging point for surface operations.',
     baseCost: 2_000_000_000, buildTimeMonths: 24, maintenanceCostPerMonth: 8_000_000,
-    requiredResearch: ['modular_spacecraft', 'reusable_boosters'], requiredLocation: 'lunar_orbit', enabledServices: [],
+    requiredResearch: ['modular_spacecraft', 'reusable_boosters'], requiredLocation: 'lunar_orbit', enabledServices: ['svc_tourism_lunar_gateway'],
     realBuildSeconds: 1200, resourceCost: { aluminum: 100, titanium: 40, iron: 80 } }, // 20 min
   { id: 'space_station_mars', name: 'Mars Orbital Station', category: 'space_station', tier: 3,
     description: 'Permanent crewed station in Mars orbit.',
     baseCost: 10_000_000_000, buildTimeMonths: 36, maintenanceCostPerMonth: 15_000_000,
-    requiredResearch: ['interplanetary_cruisers'], requiredLocation: 'mars_orbit', enabledServices: [],
+    requiredResearch: ['interplanetary_cruisers'], requiredLocation: 'mars_orbit', enabledServices: ['svc_mars_station_ops'],
     realBuildSeconds: 3600, resourceCost: { titanium: 100, aluminum: 200, rare_earth: 30, iron: 300 } }, // 1 hr
 
   // ─── DATA CENTERS ─────────────────────────────────────────────────────
@@ -91,12 +91,12 @@ export const BUILDINGS: BuildingDefinition[] = [
   { id: 'solar_farm_orbital', name: 'Orbital Solar Farm', category: 'solar_farm', tier: 1,
     description: 'Large solar array providing power to orbital facilities.',
     baseCost: 100_000_000, buildTimeMonths: 6, maintenanceCostPerMonth: 500_000,
-    requiredResearch: ['triple_junction'], requiredLocation: 'leo', enabledServices: [],
+    requiredResearch: ['triple_junction'], requiredLocation: 'leo', enabledServices: ['svc_power_orbital'],
     realBuildSeconds: 300 }, // 5 min
   { id: 'solar_farm_lunar', name: 'Lunar Solar Farm', category: 'solar_farm', tier: 2,
     description: 'Solar arrays on the lunar surface. Powers mining and fabrication.',
     baseCost: 400_000_000, buildTimeMonths: 10, maintenanceCostPerMonth: 800_000,
-    requiredResearch: ['triple_junction'], requiredLocation: 'lunar_surface', enabledServices: [],
+    requiredResearch: ['triple_junction'], requiredLocation: 'lunar_surface', enabledServices: ['svc_power_lunar'],
     realBuildSeconds: 900 }, // 15 min
 
   // ─── MINING ───────────────────────────────────────────────────────────

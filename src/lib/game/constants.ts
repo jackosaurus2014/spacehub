@@ -1,7 +1,7 @@
 // ─── Space Tycoon: Game Constants ───────────────────────────────────────────
 
-/** Starting cash for new game (well-funded space startup) */
-export const STARTING_MONEY = 500_000_000;
+/** Starting cash for new game (seed-funded space startup) */
+export const STARTING_MONEY = 200_000_000;
 
 /** Starting year */
 export const STARTING_YEAR = 2025;
