@@ -97,6 +97,33 @@ const MORE_MENU_CATEGORIES: MenuCategory[] = [
 
 const ALL_MORE_HREFS = MORE_MENU_CATEGORIES.flatMap((c) => c.items.map((i) => i.href));
 
+// Persona-based category priority order for the "More" menu
+const PERSONA_CATEGORY_ORDER: Record<string, string[]> = {
+  // Enthusiast: exploration first, then operations, then quick access
+  'mission-planner': ['Exploration & Environment', 'Space Operations', 'Quick Access', 'Mission Planning', 'Market Intelligence', 'Business & Talent', 'Regulatory & Compliance'],
+  // Investor: market intel first, then business
+  'investor': ['Market Intelligence', 'Business & Talent', 'Quick Access', 'Mission Planning', 'Space Operations', 'Exploration & Environment', 'Regulatory & Compliance'],
+  // Professional personas: business & tools first
+  'executive': ['Quick Access', 'Market Intelligence', 'Business & Talent', 'Regulatory & Compliance', 'Mission Planning', 'Space Operations', 'Exploration & Environment'],
+  'supply-chain': ['Business & Talent', 'Market Intelligence', 'Quick Access', 'Regulatory & Compliance', 'Mission Planning', 'Space Operations', 'Exploration & Environment'],
+  'legal': ['Regulatory & Compliance', 'Business & Talent', 'Quick Access', 'Market Intelligence', 'Mission Planning', 'Space Operations', 'Exploration & Environment'],
+  'entrepreneur': ['Quick Access', 'Business & Talent', 'Market Intelligence', 'Mission Planning', 'Space Operations', 'Exploration & Environment', 'Regulatory & Compliance'],
+};
+
+function getOrderedCategories(): MenuCategory[] {
+  if (typeof window === 'undefined') return MORE_MENU_CATEGORIES;
+  const persona = localStorage.getItem('spacenexus-user-persona');
+  if (!persona || !PERSONA_CATEGORY_ORDER[persona]) return MORE_MENU_CATEGORIES;
+
+  const order = PERSONA_CATEGORY_ORDER[persona];
+  const sorted = [...MORE_MENU_CATEGORIES].sort((a, b) => {
+    const aIdx = order.indexOf(a.title);
+    const bIdx = order.indexOf(b.title);
+    return (aIdx === -1 ? 99 : aIdx) - (bIdx === -1 ? 99 : bIdx);
+  });
+  return sorted;
+}
+
 // ─── Icon component (same SVGs as original) ────────────────────────────────
 
 function NavIcon({ icon, className = 'w-6 h-6' }: { icon: string; className?: string }) {
@@ -265,7 +292,7 @@ export default function MobileTabBar() {
 
               {/* Category sections */}
               <div className="px-4 pb-6 pt-2 space-y-5">
-                {MORE_MENU_CATEGORIES.map((category) => (
+                {getOrderedCategories().map((category) => (
                   <div key={category.title}>
                     <h3 className="text-xs font-semibold text-white/80 uppercase tracking-wider mb-2 px-1">
                       {category.title}
