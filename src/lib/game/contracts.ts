@@ -43,25 +43,25 @@ export const CONTRACT_POOL: ContractDefinition[] = [
     id: 'c_first_launch', name: 'Launch Provider Contract', icon: '🚀', client: 'National Space Agency',
     description: 'Demonstrate launch capability by operating a launch pad.', tier: 1,
     requirements: [{ type: 'services_active', target: 2, label: '2 active services' }],
-    reward: { money: 30_000_000 }, durationMonths: 12,
+    reward: { money: 60_000_000 }, durationMonths: 12,
   },
   {
     id: 'c_satellite_net', name: 'Satellite Network Deployment', icon: '📡', client: 'Global Telecom Corp',
     description: 'Deploy a telecom satellite constellation.', tier: 1,
     requirements: [{ type: 'buildings_completed', target: 5, label: '5 completed buildings' }],
-    reward: { money: 50_000_000 }, durationMonths: 18,
+    reward: { money: 100_000_000 }, durationMonths: 18,
   },
   {
     id: 'c_research_push', name: 'Technology Development Grant', icon: '🔬', client: 'Space Research Foundation',
     description: 'Advance space technology by completing research.', tier: 1,
     requirements: [{ type: 'research_completed', target: 3, label: '3 completed research' }],
-    reward: { money: 40_000_000, resources: { rare_earth: 10 } }, durationMonths: 24,
+    reward: { money: 80_000_000, resources: { rare_earth: 15 } }, durationMonths: 24,
   },
   {
     id: 'c_revenue_target', name: 'Revenue Milestone', icon: '💰', client: 'Board of Directors',
     description: 'Prove the business model by earning revenue.', tier: 1,
     requirements: [{ type: 'money_earned', target: 100_000_000, label: '$100M total earned' }],
-    reward: { money: 20_000_000 }, durationMonths: 24,
+    reward: { money: 50_000_000 }, durationMonths: 24,
   },
 
   // Tier 2 — Mid game
@@ -145,9 +145,13 @@ export function generateContracts(state: GameState): ContractDefinition[] {
   const completedIds = (state.completedContracts || []);
   const available = eligible.filter(c => !completedIds.includes(c.id));
 
-  // Shuffle and take up to 4
-  const shuffled = available.sort(() => Math.random() - 0.5);
-  return shuffled.slice(0, 4);
+  // Fisher-Yates shuffle and take up to 4
+  const arr = [...available];
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr.slice(0, 4);
 }
 
 /** Apply contract reward to game state */

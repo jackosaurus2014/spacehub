@@ -12,6 +12,7 @@ import { rollRandomEvent, applyEventEffect, getActiveMultipliers, cleanupExpired
 import { checkMilestones } from './milestones';
 import { getRevenueMultiplier as getUpgradeRevenueMultiplier, getMaintenanceMultiplier } from './upgrades';
 import { SHIP_MAP } from './ships';
+import { getWorkforceBonuses, getMonthlyPayroll } from './workforce';
 
 /**
  * Process a single game tick (1 in-game month).
@@ -28,16 +29,27 @@ export function processTick(state: GameState): GameState {
   // Get active effect multipliers (from random events)
   const multipliers = getActiveMultipliers(state);
 
-  // ─── 1. Revenue collection from active services (with effect multipliers) ─
+  // Get workforce bonuses (build speed, research speed, mining output, revenue)
+  const workforce = state.workforce || { engineers: 0, scientists: 0, miners: 0, operators: 0 };
+  const wfBonuses = getWorkforceBonuses(workforce);
+
+  // ─── 0. Workforce payroll ─────────────────────────────────────────
+  const payroll = getMonthlyPayroll(workforce);
+  if (payroll > 0) {
+    money -= payroll;
+    totalSpent += payroll;
+  }
+
+  // ─── 1. Revenue collection from active services (with effect + workforce multipliers) ─
   let monthlyRevenue = 0;
   let monthlyCosts = 0;
   for (const svc of state.activeServices) {
     const def = SERVICE_MAP.get(svc.definitionId);
     if (!def) continue;
     // Find linked building upgrade level for revenue boost
-    const linkedBld = state.buildings.find(b => b.isComplete && b.locationId === svc.locationId && BUILDING_MAP.get(b.definitionId)?.enabledServices.includes(svc.definitionId));
+    const linkedBld = state.buildings.find(b => b.isComplete && b.locationId === svc.locationId && BUILDING_MAP.get(b.definitionId)?.enabledServices?.includes(svc.definitionId));
     const upgradeBoost = getUpgradeRevenueMultiplier(linkedBld?.upgradeLevel || 0);
-    const revenue = Math.round(def.revenuePerMonth * svc.revenueMultiplier * multipliers.revenueMultiplier * upgradeBoost);
+    const revenue = Math.round(def.revenuePerMonth * svc.revenueMultiplier * multipliers.revenueMultiplier * upgradeBoost * (1 + wfBonuses.serviceRevenue));
     const cost = Math.round(def.operatingCostPerMonth * multipliers.costMultiplier);
     money += revenue - cost;
     totalEarned += revenue;
@@ -151,13 +163,14 @@ export function processTick(state: GameState): GameState {
     }
   }
 
-  // ─── 6. Resource production from mining/fabrication services ──────
+  // ─── 6. Resource production from mining/fabrication services (with workforce bonus) ──
   const resources = { ...(state.resources || {}) };
+  const miningMult = 1 + wfBonuses.miningOutput;
   for (const svc of activeServices) {
     const production = MINING_PRODUCTION[svc.definitionId];
     if (!production) continue;
     for (const { resource, amountPerMonth } of production) {
-      resources[resource] = (resources[resource] || 0) + amountPerMonth;
+      resources[resource] = (resources[resource] || 0) + Math.round(amountPerMonth * miningMult);
     }
   }
 

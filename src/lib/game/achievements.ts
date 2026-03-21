@@ -115,7 +115,7 @@ export const ACHIEVEMENTS: Achievement[] = [
   // ─── MILESTONES ───────────────────────────────────────────────────────
   { id: 'break_even', name: 'Break Even', icon: '📊', category: 'milestone',
     description: 'Reach positive net monthly income.',
-    check: (s) => s.activeServices.length > 0 },
+    check: (s) => s.activeServices.length > 0 && s.totalEarned > s.totalSpent },
   { id: 'five_services', name: 'Service Provider', icon: '🔧', category: 'milestone',
     title: 'Service Provider',
     description: 'Run 5 active services simultaneously.',

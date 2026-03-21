@@ -56,19 +56,13 @@ export function getUpgradeCost(baseBuildingCost: number, targetLevel: number): n
 /** Get revenue multiplier for a building's upgrade level */
 export function getRevenueMultiplier(upgradeLevel: number): number {
   if (upgradeLevel === 0) return 1.0;
-  let multiplier = 1.0;
-  for (const u of UPGRADE_LEVELS) {
-    if (u.level <= upgradeLevel) multiplier = u.revenueBoost;
-  }
-  return multiplier;
+  const upgrade = UPGRADE_LEVELS.find(u => u.level === upgradeLevel);
+  return upgrade?.revenueBoost || 1.0;
 }
 
 /** Get maintenance multiplier for a building's upgrade level */
 export function getMaintenanceMultiplier(upgradeLevel: number): number {
   if (upgradeLevel === 0) return 1.0;
-  let multiplier = 1.0;
-  for (const u of UPGRADE_LEVELS) {
-    if (u.level <= upgradeLevel) multiplier = u.maintenanceReduction;
-  }
-  return multiplier;
+  const upgrade = UPGRADE_LEVELS.find(u => u.level === upgradeLevel);
+  return upgrade?.maintenanceReduction || 1.0;
 }

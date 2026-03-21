@@ -137,7 +137,9 @@ export const RANDOM_EVENTS: RandomEventDefinition[] = [
 
 /** Roll for a random event this tick. Returns null if no event triggers. */
 export function rollRandomEvent(state: GameState): RandomEventDefinition | null {
-  const currentTier = Math.max(1, ...state.unlockedLocations.map(() => 1)); // Simplified tier check
+  // Calculate player tier from unlocked locations count
+  const locCount = state.unlockedLocations.length;
+  const currentTier = locCount >= 8 ? 4 : locCount >= 5 ? 3 : locCount >= 3 ? 2 : 1;
   const eligible = RANDOM_EVENTS.filter(e => e.minTier <= currentTier);
 
   for (const event of eligible) {
