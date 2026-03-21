@@ -1,93 +1,92 @@
-// ─── Space Tycoon: Market Engine ────────────────────────────────────────────
-// Dynamic pricing based on aggregate supply/demand from all players.
-// Prices move toward equilibrium with bounded volatility.
+// ─── Space Tycoon: Server-Side Dynamic Market Pricing Engine ─────────────────
+// All players share the same global market. Prices stored in PostgreSQL.
+// Buys push prices up. Sells and mining push prices down.
+// Prices decay toward base price when idle.
+
+import { RESOURCES, RESOURCE_MAP } from './resources';
+import type { ResourceId } from './resources';
+
+// ─── Price Impact Calculations ───────────────────────────────────────────────
 
 /**
- * Calculate a new price based on supply/demand imbalance.
- *
- * @param currentPrice - Current price per unit
- * @param basePrice - Equilibrium price (prices decay toward this when idle)
- * @param totalSupply - Aggregate units available from sellers
- * @param totalDemand - Aggregate units wanted by buyers
- * @param volatility - Sensitivity factor (0.01 = stable, 0.15 = volatile)
- * @param minPrice - Price floor
- * @param maxPrice - Price ceiling
- * @param minutesSinceLastOrder - For idle decay
+ * Market depth: how many units to move price by ~100% of base.
+ * Inversely proportional to volatility.
  */
-export function calculateNewPrice(
+export function getMarketDepth(volatility: number): number {
+  return Math.max(10, Math.round(10 / volatility));
+}
+
+/**
+ * Calculate new price after a trade.
+ * Buys push price up; sells push price down.
+ */
+export function calculatePriceAfterTrade(
   currentPrice: number,
   basePrice: number,
-  totalSupply: number,
-  totalDemand: number,
+  quantity: number,
+  isBuy: boolean,
   volatility: number,
   minPrice: number,
   maxPrice: number,
-  minutesSinceLastOrder: number = 0,
 ): number {
-  // Supply/demand pressure
-  const ratio = totalDemand / Math.max(totalSupply, 1);
-  const pressure = Math.max(-0.5, Math.min(0.5, ratio - 1.0));
-  let newPrice = currentPrice * (1 + pressure * volatility);
-
-  // Decay toward base price when market is idle (no orders in 30+ min)
-  if (minutesSinceLastOrder > 30) {
-    const decay = Math.min(0.2, 0.01 * minutesSinceLastOrder / 60);
-    newPrice = newPrice + (basePrice - newPrice) * decay;
-  }
-
-  // Clamp to bounds
+  const depth = getMarketDepth(volatility);
+  const impactPct = (quantity / depth) * volatility * 10;
+  const direction = isBuy ? 1 : -1;
+  const newPrice = currentPrice * (1 + impactPct * direction);
   return Math.max(minPrice, Math.min(maxPrice, Math.round(newPrice)));
 }
 
 /**
- * Process a trade order and calculate price impact.
- *
- * @param type - "buy" or "sell"
- * @param quantity - Number of units
- * @param currentPrice - Current price per unit
- * @param totalSupply - Current supply
- * @param totalDemand - Current demand
- * @returns New supply/demand values and order cost
+ * Apply mining supply pressure (gentler than direct trades).
+ * Mining adds 1/3 of normal sell pressure per unit mined.
  */
-export function processTradeOrder(
-  type: 'buy' | 'sell',
-  quantity: number,
+export function calculatePriceAfterMining(
   currentPrice: number,
-  totalSupply: number,
-  totalDemand: number,
-): {
-  totalCost: number;
-  newSupply: number;
-  newDemand: number;
-} {
-  const totalCost = Math.round(quantity * currentPrice);
-
-  if (type === 'buy') {
-    return {
-      totalCost,
-      newSupply: Math.max(0, totalSupply - quantity),
-      newDemand: totalDemand + quantity,
-    };
-  } else {
-    return {
-      totalCost,
-      newSupply: totalSupply + quantity,
-      newDemand: Math.max(0, totalDemand - quantity),
-    };
-  }
+  basePrice: number,
+  quantity: number,
+  volatility: number,
+  minPrice: number,
+  maxPrice: number,
+): number {
+  const depth = getMarketDepth(volatility);
+  const impactPct = (quantity / depth) * volatility * 10 * 0.33; // 1/3 of trade impact
+  const newPrice = currentPrice * (1 - impactPct);
+  return Math.max(minPrice, Math.min(maxPrice, Math.round(newPrice)));
 }
 
 /**
- * Calculate net worth from resources at market prices.
+ * Decay price toward base price when idle.
+ * Called periodically (e.g., every few minutes by cron).
  */
-export function calculateResourceValue(
-  resources: Record<string, number>,
-  prices: Record<string, number>,
+export function calculateIdleDecay(
+  currentPrice: number,
+  basePrice: number,
+  minutesSinceLastTrade: number,
+  minPrice: number,
+  maxPrice: number,
 ): number {
-  let total = 0;
-  for (const [resourceId, quantity] of Object.entries(resources)) {
-    const price = prices[resourceId] || 0;
-    total += quantity * price;
-  }
-  return Math.round(total);
+  if (minutesSinceLastTrade < 5) return currentPrice; // No decay in first 5 minutes
+  // 0.5% per minute of idle, capped at 10% per call
+  const decayRate = Math.min(0.10, 0.005 * minutesSinceLastTrade);
+  const newPrice = currentPrice + (basePrice - currentPrice) * decayRate;
+  return Math.max(minPrice, Math.min(maxPrice, Math.round(newPrice)));
 }
+
+// ─── Balance Reference ───────────────────────────────────────────────────────
+//
+// RESOURCE          BASE      DEPTH    MINING/MO    SELL IMPACT/MO
+// iron              $5K       500      750          -$225/unit (gentle)
+// aluminum          $8K       333      80           -$640/unit
+// titanium          $25K      200      35           -$1.5K/unit
+// lunar_water       $50K      333      300          -$2.5K/unit
+// platinum_group    $500K     125      10           -$13K/unit
+// gold              $300K     167      15           -$5.4K/unit
+// rare_earth        $200K     143      23           -$3.2K/unit
+// methane           $15K      250      300          -$600/unit
+// ethane            $20K      200      150          -$1K/unit
+// exotic_materials  $2M       67       5            -$150K/unit
+// helium3           $5M       83       2            -$200K/unit
+//
+// Key insight: abundant resources (iron, methane) have high depth so
+// large mining volumes barely move price. Rare resources (exotic, he3)
+// have low depth so even small volumes cause big swings.
