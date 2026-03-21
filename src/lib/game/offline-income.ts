@@ -9,6 +9,7 @@ import { MINING_PRODUCTION } from './resources';
 import { getActiveMultipliers } from './random-events';
 import { getRevenueMultiplier as getUpgradeRevenueMultiplier, getMaintenanceMultiplier } from './upgrades';
 import { formatMoney } from './formulas';
+import { getMonthlyPayroll } from './workforce';
 
 const MAX_OFFLINE_HOURS = 8;
 const MAX_OFFLINE_MS = MAX_OFFLINE_HOURS * 60 * 60 * 1000;
@@ -62,6 +63,10 @@ export function calculateOfflineIncome(state: GameState): OfflineEarnings | null
     const maintMult = getMaintenanceMultiplier(bld.upgradeLevel || 0);
     costsPerTick += Math.round(def.maintenanceCostPerMonth * multipliers.costMultiplier * maintMult);
   }
+
+  // Include workforce payroll in costs
+  const payroll = getMonthlyPayroll(state.workforce || { engineers: 0, scientists: 0, miners: 0, operators: 0 });
+  costsPerTick += payroll;
 
   const netPerTick = revenuePerTick - costsPerTick;
   const moneyEarned = Math.max(0, netPerTick * ticksProcessed); // Don't lose money offline

@@ -1,4 +1,6 @@
 // ─── Space Tycoon: Save/Load System ─────────────────────────────────────────
+// 200-cycle polish: initialize all game subsystems, persist NPC state,
+// initialize prestige/workforce/milestones/achievements on load.
 
 import type { GameState } from './types';
 import { SAVE_KEY, SAVE_VERSION, STARTING_MONEY, STARTING_YEAR } from './constants';
@@ -14,7 +16,7 @@ export function getNewGameState(): GameState {
     totalEarned: 0,
     totalSpent: 0,
     gameDate: { year: STARTING_YEAR, month: 1 },
-    tickSpeed: 1, // Always runs at 1x for fairness
+    tickSpeed: 1,
     buildings: [],
     completedResearch: [],
     activeResearch: null,
@@ -39,6 +41,30 @@ export function getNewGameState(): GameState {
     },
     npcCompanies: createAllNPCs(),
     npcMarketPressure: {},
+    // Initialize all subsystems
+    activeEffects: [],
+    incomeHistory: [],
+    pendingChoice: null,
+    activeRefining: null,
+    activeMarketEvents: [],
+    claimedMilestones: {},
+    earnedAchievements: [],
+    playerTitle: null,
+    ships: [],
+    workforce: { engineers: 0, scientists: 0, miners: 0, operators: 0 },
+    prestige: {
+      level: 0,
+      legacyPoints: 0,
+      permanentBonuses: {
+        revenueMultiplier: 1,
+        buildSpeedMultiplier: 1,
+        researchSpeedMultiplier: 1,
+        miningMultiplier: 1,
+        startingMoney: STARTING_MONEY,
+      },
+    },
+    completedContracts: [],
+    activeContracts: [],
   };
 }
 
@@ -53,22 +79,41 @@ export function saveGame(state: GameState): boolean {
   }
 }
 
-/** Load game state from localStorage */
+/** Load game state from localStorage — migrates missing fields */
 export function loadGame(): GameState | null {
   try {
     const raw = localStorage.getItem(SAVE_KEY);
     if (!raw) return null;
     const state = JSON.parse(raw) as GameState;
     if (!state || typeof state.version !== 'number') return null;
+
     // Restore NPCs from save, or create fresh if missing/corrupt
     if (!Array.isArray(state.npcCompanies) || state.npcCompanies.length === 0) {
       state.npcCompanies = createAllNPCs();
     }
+
+    // Migrate missing fields (backwards compatibility)
     if (!state.npcMarketPressure) state.npcMarketPressure = {};
     if (!state.resources) state.resources = {};
     if (!state.activeEffects) state.activeEffects = [];
     if (!state.incomeHistory) state.incomeHistory = [];
     if (state.pendingChoice === undefined) state.pendingChoice = null;
+    if (state.activeRefining === undefined) state.activeRefining = null;
+    if (!state.activeMarketEvents) state.activeMarketEvents = [];
+    if (!state.claimedMilestones) state.claimedMilestones = {};
+    if (!state.earnedAchievements) state.earnedAchievements = [];
+    if (!state.playerTitle) state.playerTitle = null;
+    if (!state.ships) state.ships = [];
+    if (!state.workforce) state.workforce = { engineers: 0, scientists: 0, miners: 0, operators: 0 };
+    if (!state.prestige) {
+      state.prestige = {
+        level: 0, legacyPoints: 0,
+        permanentBonuses: { revenueMultiplier: 1, buildSpeedMultiplier: 1, researchSpeedMultiplier: 1, miningMultiplier: 1, startingMoney: STARTING_MONEY },
+      };
+    }
+    if (!state.completedContracts) state.completedContracts = [];
+    if (!state.activeContracts) state.activeContracts = [];
+
     state.tickSpeed = 1; // Always 1x for fairness
     return state;
   } catch {

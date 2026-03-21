@@ -109,7 +109,8 @@ export function processNPCTick(
       const baseMonthsNeeded = 6 + researchIndex * 4; // Each subsequent research takes longer
       const actualMonths = Math.round(baseMonthsNeeded / n.progressionSpeed);
 
-      if (n.monthsPlayed >= actualMonths + (n.completedResearch.length * 3)) {
+      // Research completes when enough months have passed (no cumulative penalty)
+      if (n.monthsPlayed >= actualMonths) {
         const researchCost = 50_000_000 * (1 + researchIndex * 0.5);
         if (n.money >= researchCost * n.riskTolerance) {
           n.completedResearch = [...n.completedResearch, nextResearch];
@@ -151,8 +152,8 @@ export function processNPCTick(
       const scaledCost = loc.cost * (1 - n.riskTolerance * 0.3); // Aggressive NPCs pay less (take risk)
       if (n.money >= scaledCost) {
         n.unlockedLocations = [...n.unlockedLocations, loc.id];
-        n.money -= loc.cost;
-        n.totalSpent += loc.cost;
+        n.money -= scaledCost;
+        n.totalSpent += scaledCost;
         events.push({
           id: generateId(), date: gameDate, type: 'npc_activity' as GameEvent['type'],
           title: `${n.name} expanded operations`,

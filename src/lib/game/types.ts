@@ -290,6 +290,10 @@ export interface GameState {
 
   // Market events
   activeMarketEvents?: { eventId: string; name: string; icon: string; affectedResources: string[]; priceMultiplier: number; startedAtMs: number; expiresAtMs: number }[];
+
+  // Achievements
+  earnedAchievements?: string[];
+  playerTitle?: string | null;
 }
 
 // ─── UI Tabs ────────────────────────────────────────────────────────────────

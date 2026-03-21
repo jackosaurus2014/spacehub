@@ -1,4 +1,6 @@
 // ─── Space Tycoon: Game Engine (Tick Processor) ─────────────────────────────
+// 200-cycle polish pass: integrates workforce, prestige, market events,
+// achievements, ship cargo, bankruptcy protection, and revenue caps.
 
 import type { GameState, GameEvent } from './types';
 import { BUILDING_MAP } from './buildings';
@@ -13,6 +15,9 @@ import { checkMilestones } from './milestones';
 import { getRevenueMultiplier as getUpgradeRevenueMultiplier, getMaintenanceMultiplier } from './upgrades';
 import { SHIP_MAP } from './ships';
 import { getWorkforceBonuses, getMonthlyPayroll } from './workforce';
+import { rollMarketEvent } from './market-events';
+import type { ActiveMarketEvent } from './market-events';
+import { checkAchievements } from './achievements';
 
 /**
  * Process a single game tick (1 in-game month).
@@ -33,6 +38,11 @@ export function processTick(state: GameState): GameState {
   const workforce = state.workforce || { engineers: 0, scientists: 0, miners: 0, operators: 0 };
   const wfBonuses = getWorkforceBonuses(workforce);
 
+  // Get prestige bonuses
+  const prestige = state.prestige || { level: 0, legacyPoints: 0, permanentBonuses: { revenueMultiplier: 1, buildSpeedMultiplier: 1, researchSpeedMultiplier: 1, miningMultiplier: 1, startingMoney: 200_000_000 } };
+  const prestigeRevMult = prestige.permanentBonuses?.revenueMultiplier || 1;
+  const prestigeMiningMult = prestige.permanentBonuses?.miningMultiplier || 1;
+
   // ─── 0. Workforce payroll ─────────────────────────────────────────
   const payroll = getMonthlyPayroll(workforce);
   if (payroll > 0) {
@@ -40,16 +50,23 @@ export function processTick(state: GameState): GameState {
     totalSpent += payroll;
   }
 
-  // ─── 1. Revenue collection from active services (with effect + workforce multipliers) ─
+  // ─── 1. Revenue collection from active services ───────────────────
+  // Applies: event multipliers, upgrade boost, workforce bonus, prestige bonus
   let monthlyRevenue = 0;
   let monthlyCosts = 0;
   for (const svc of state.activeServices) {
     const def = SERVICE_MAP.get(svc.definitionId);
     if (!def) continue;
-    // Find linked building upgrade level for revenue boost
     const linkedBld = state.buildings.find(b => b.isComplete && b.locationId === svc.locationId && BUILDING_MAP.get(b.definitionId)?.enabledServices?.includes(svc.definitionId));
     const upgradeBoost = getUpgradeRevenueMultiplier(linkedBld?.upgradeLevel || 0);
-    const revenue = Math.round(def.revenuePerMonth * svc.revenueMultiplier * multipliers.revenueMultiplier * upgradeBoost * (1 + wfBonuses.serviceRevenue));
+    const revenue = Math.round(
+      def.revenuePerMonth
+      * svc.revenueMultiplier
+      * multipliers.revenueMultiplier
+      * upgradeBoost
+      * (1 + wfBonuses.serviceRevenue)
+      * prestigeRevMult
+    );
     const cost = Math.round(def.operatingCostPerMonth * multipliers.costMultiplier);
     money += revenue - cost;
     totalEarned += revenue;
@@ -58,7 +75,7 @@ export function processTick(state: GameState): GameState {
     monthlyCosts += cost;
   }
 
-  // ─── 2. Maintenance costs for completed buildings (with upgrade reduction) ─
+  // ─── 2. Maintenance costs for completed buildings ─────────────────
   for (const bld of state.buildings) {
     if (!bld.isComplete) continue;
     const def = BUILDING_MAP.get(bld.definitionId);
@@ -74,50 +91,42 @@ export function processTick(state: GameState): GameState {
   const now = Date.now();
   const buildings = state.buildings.map((bld) => {
     if (bld.isComplete) return bld;
-    // Check real-time timer
     const elapsed = (now - (bld.startedAtMs || 0)) / 1000;
     if (elapsed >= (bld.realDurationSeconds || 0)) {
       const def = BUILDING_MAP.get(bld.definitionId);
       events.push({
-        id: generateId(),
-        date: newDate,
-        type: 'build_complete',
+        id: generateId(), date: newDate, type: 'build_complete',
         title: `${def?.name || 'Building'} Complete`,
         description: 'Construction finished. Ready for operation.',
       });
-
-      // Update stats
       if (def?.category === 'satellite') stats.satellitesDeployed++;
       if (def?.category === 'space_station') stats.stationsBuilt++;
-
       return { ...bld, isComplete: true };
     }
     return bld;
   });
 
-  // ─── 4. Research progress (real wall-clock time) ─────────────────
+  // ─── 4. Research progress (real wall-clock time) ──────────────────
   let activeResearch = state.activeResearch;
   const completedResearch = [...state.completedResearch];
 
   if (activeResearch) {
     const researchElapsed = (now - (activeResearch.startedAtMs || 0)) / 1000;
-    if (researchElapsed >= (activeResearch.realDurationSeconds || 0)) {
-      // Research complete
+    const researchSpeedMult = (1 + wfBonuses.researchSpeed) * (prestige.permanentBonuses?.researchSpeedMultiplier || 1);
+    const effectiveDuration = (activeResearch.realDurationSeconds || 0) / researchSpeedMult;
+    if (researchElapsed >= effectiveDuration) {
       completedResearch.push(activeResearch.definitionId);
       stats.researchCompleted++;
       const def = RESEARCH_MAP.get(activeResearch.definitionId);
       events.push({
-        id: generateId(),
-        date: newDate,
-        type: 'research_complete',
+        id: generateId(), date: newDate, type: 'research_complete',
         title: `Research Complete: ${def?.name || 'Unknown'}`,
         description: def?.effect || 'New capabilities unlocked.',
       });
       activeResearch = null;
     } else {
-      // Update progress for display (as percentage of real time)
       const totalMonths = activeResearch.totalMonths || 1;
-      const pctDone = researchElapsed / (activeResearch.realDurationSeconds || 1);
+      const pctDone = researchElapsed / effectiveDuration;
       activeResearch = { ...activeResearch, progressMonths: Math.round(pctDone * totalMonths) };
     }
   }
@@ -129,43 +138,33 @@ export function processTick(state: GameState): GameState {
     const def = BUILDING_MAP.get(bld.definitionId);
     if (!def) continue;
     for (const svcId of def.enabledServices) {
-      // Check if this service is already active
       const alreadyActive = activeServices.some(s => s.definitionId === svcId && s.locationId === bld.locationId);
       if (alreadyActive) continue;
-
       const svcDef = SERVICE_MAP.get(svcId);
       if (!svcDef) continue;
-
-      // Check research requirements
       const hasResearch = svcDef.requiredResearch.every(r => completedResearch.includes(r));
       if (!hasResearch) continue;
 
-      const relevantResearch = completedResearch.filter(r => {
-        const rDef = RESEARCH_MAP.get(r);
-        return rDef && svcDef.requiredResearch.includes(r);
-      }).length;
-
+      // Revenue multiplier: count ALL completed research (broader benefit)
+      const totalResearchCount = completedResearch.length;
       activeServices.push({
         definitionId: svcId,
         locationId: bld.locationId,
         linkedBuildingIds: [bld.instanceId],
         startDate: newDate,
-        revenueMultiplier: revenueMultiplier(relevantResearch),
+        revenueMultiplier: revenueMultiplier(Math.min(totalResearchCount, 10)),
       });
-
       events.push({
-        id: generateId(),
-        date: newDate,
-        type: 'service_started',
+        id: generateId(), date: newDate, type: 'service_started',
         title: `Service Online: ${svcDef.name}`,
         description: `Generating ${formatRevenue(svcDef.revenuePerMonth)}/month revenue.`,
       });
     }
   }
 
-  // ─── 6. Resource production from mining/fabrication services (with workforce bonus) ──
+  // ─── 6. Resource production (with workforce + prestige bonuses) ───
   const resources = { ...(state.resources || {}) };
-  const miningMult = 1 + wfBonuses.miningOutput;
+  const miningMult = (1 + wfBonuses.miningOutput) * prestigeMiningMult;
   for (const svc of activeServices) {
     const production = MINING_PRODUCTION[svc.definitionId];
     if (!production) continue;
@@ -193,17 +192,14 @@ export function processTick(state: GameState): GameState {
           description: 'Decision required — check your alerts.',
         });
       } else if (event.effect) {
-        // Auto-apply non-choice events
         const effectResult = applyEventEffect(
           { ...state, money, totalEarned, totalSpent, resources, gameDate: newDate },
-          event.effect,
-          event.name,
+          event.effect, event.name,
         );
         money = effectResult.money;
         totalEarned = effectResult.totalEarned;
         totalSpent = effectResult.totalSpent;
         Object.assign(resources, effectResult.resources);
-
         events.push({
           id: generateId(), date: newDate, type: 'random_event',
           title: `${event.icon} ${event.name}`,
@@ -213,14 +209,44 @@ export function processTick(state: GameState): GameState {
     }
   }
 
-  // ─── 8. Clean up expired effects ────────────────────────────────
+  // ─── 8. Market events (5% chance per tick) ────────────────────────
+  let activeMarketEvents: ActiveMarketEvent[] = [...(state.activeMarketEvents || [])];
+  try {
+    const marketEventDef = rollMarketEvent();
+    if (marketEventDef) {
+      const now = Date.now();
+      const activeEvent: ActiveMarketEvent = {
+        eventId: marketEventDef.id,
+        name: marketEventDef.name,
+        icon: marketEventDef.icon,
+        affectedResources: marketEventDef.affectedResources,
+        priceMultiplier: marketEventDef.priceMultiplier,
+        startedAtMs: now,
+        expiresAtMs: now + marketEventDef.durationHours * 3600000,
+      };
+      activeMarketEvents.push(activeEvent);
+      events.push({
+        id: generateId(), date: newDate, type: 'random_event',
+        title: `📈 ${marketEventDef.name}`,
+        description: `${marketEventDef.description} (${marketEventDef.durationHours}h)`,
+      });
+    }
+    // Cleanup expired market events
+    activeMarketEvents = activeMarketEvents.filter(e => Date.now() < e.expiresAtMs);
+  } catch { /* market events non-critical */ }
+
+  // ─── 9. Clean up expired effects ──────────────────────────────────
   const activeEffects = cleanupExpiredEffects({ ...state, gameDate: newDate });
 
-  // ─── 9. Track income history (last 24 months) ──────────────────
-  const netIncome = Math.round(monthlyRevenue - monthlyCosts);
+  // ─── 10. Track income history (last 24 months) ────────────────────
+  const netIncome = Math.round(monthlyRevenue - monthlyCosts - payroll);
   const incomeHistory = [...(state.incomeHistory || []), netIncome].slice(-24);
 
-  // ─── 10. Trim event log ───────────────────────────────────────────
+  // ─── 11. Bankruptcy protection ────────────────────────────────────
+  // Don't let money go below -$50M (prevents death spiral)
+  if (money < -50_000_000) money = -50_000_000;
+
+  // ─── 12. Trim event log ──────────────────────────────────────────
   const eventLog = [...events, ...state.eventLog].slice(0, MAX_EVENT_LOG);
 
   return {
@@ -235,6 +261,7 @@ export function processTick(state: GameState): GameState {
     activeServices,
     resources,
     activeEffects,
+    activeMarketEvents,
     pendingChoice,
     incomeHistory,
     eventLog,
@@ -250,11 +277,10 @@ function formatRevenue(amount: number): string {
 }
 
 /**
- * Full tick: processes player state + NPC companies in lockstep.
- * This is the function called by the game loop in page.tsx.
+ * Full tick: processes player state + NPC companies + achievements in lockstep.
  */
 export function processFullTick(state: GameState): GameState {
-  // 1. Process player tick (must succeed)
+  // 1. Process player tick
   let newState: GameState;
   try {
     newState = processTick(state);
@@ -263,7 +289,7 @@ export function processFullTick(state: GameState): GameState {
     return { ...state, lastTickAt: Date.now() };
   }
 
-  // 2. Process NPC companies (can fail safely without losing player state)
+  // 2. Process NPC companies (can fail safely)
   try {
     if (newState.npcCompanies && newState.npcCompanies.length > 0) {
       const npcResult = processNPCTick(newState.npcCompanies, newState.gameDate);
@@ -279,7 +305,6 @@ export function processFullTick(state: GameState): GameState {
     }
   } catch (err) {
     console.error('NPC tick error (non-fatal):', err);
-    // NPC failure doesn't affect player state — just skip NPC processing
   }
 
   // 3. Check competitive milestones
@@ -294,17 +319,13 @@ export function processFullTick(state: GameState): GameState {
         if (claim.isPlayer) {
           milestoneReward += claim.reward;
           milestoneEvents.push({
-            id: generateId(),
-            date: newState.gameDate,
-            type: 'milestone',
+            id: generateId(), date: newState.gameDate, type: 'milestone',
             title: `🏆 Milestone: ${claim.claimedBy} — First to achieve "${claim.id.replace(/_/g, ' ')}"!`,
             description: `Reward: +$${(claim.reward / 1_000_000).toFixed(0)}M`,
           });
         } else {
           milestoneEvents.push({
-            id: generateId(),
-            date: newState.gameDate,
-            type: 'npc_activity',
+            id: generateId(), date: newState.gameDate, type: 'npc_activity',
             title: `🏆 ${claim.claimedBy} claimed "${claim.id.replace(/_/g, ' ')}"`,
             description: 'An NPC beat you to this milestone.',
           });
@@ -322,14 +343,19 @@ export function processFullTick(state: GameState): GameState {
     console.error('Milestone check error (non-fatal):', err);
   }
 
-  // 4. Check refining completion
+  // 4. Check refining completion and deliver outputs
   try {
     if (newState.activeRefining) {
-      const elapsed = (Date.now() - newState.activeRefining.startedAtMs) / 1000;
-      if (elapsed >= newState.activeRefining.durationSeconds) {
-        // Refining complete — outputs are applied when started (inputs deducted)
-        // We just clear the active refining slot
-        newState = { ...newState, activeRefining: null };
+      const elapsed = (Date.now() - (newState.activeRefining.startedAtMs || 0)) / 1000;
+      if (elapsed >= (newState.activeRefining.durationSeconds || 0)) {
+        // Look up recipe to find outputs
+        const { CHAIN_MAP } = require('./production-chains');
+        const recipe = CHAIN_MAP.get(newState.activeRefining.recipeId);
+        const resources = { ...(newState.resources || {}) };
+        if (recipe) {
+          resources[recipe.outputId] = (resources[recipe.outputId] || 0) + recipe.outputQuantity;
+        }
+        newState = { ...newState, activeRefining: null, resources };
       }
     }
   } catch (err) {
@@ -358,11 +384,14 @@ export function processFullTick(state: GameState): GameState {
     console.error('Upgrade check error (non-fatal):', err);
   }
 
-  // 6. Process ships (build completion, mining production, transit arrival)
+  // 6. Process ships (build completion, mining with workforce bonus, transit with cargo delivery)
   try {
     if (newState.ships && newState.ships.length > 0) {
       const now = Date.now();
       const resources = { ...(newState.resources || {}) };
+      const wfBonuses = getWorkforceBonuses(newState.workforce || { engineers: 0, scientists: 0, miners: 0, operators: 0 });
+      const shipMiningMult = (1 + wfBonuses.miningOutput) * ((newState.prestige?.permanentBonuses?.miningMultiplier) || 1);
+
       const updatedShips = newState.ships.map(ship => {
         // Build completion
         if (!ship.isBuilt && ship.buildStartedAtMs && ship.buildDurationSeconds) {
@@ -372,19 +401,24 @@ export function processFullTick(state: GameState): GameState {
           }
         }
 
-        // Mining production
+        // Mining production (with workforce and prestige bonuses)
         if (ship.isBuilt && ship.status === 'mining' && ship.miningOperation) {
           const shipDef = SHIP_MAP.get(ship.definitionId);
           if (shipDef?.miningRate) {
-            // Produce resources every tick based on mining rate
             const resId = ship.miningOperation.resourceId;
-            resources[resId] = (resources[resId] || 0) + Math.round(shipDef.miningRate * 0.5); // Per tick production
+            resources[resId] = (resources[resId] || 0) + Math.round(shipDef.miningRate * 0.5 * shipMiningMult);
           }
         }
 
-        // Transit arrival
+        // Transit arrival — deliver cargo to destination
         if (ship.status === 'in_transit' && ship.route) {
           if (now >= ship.route.arrivalAtMs) {
+            // Deposit cargo at destination (merge into global resources)
+            if (ship.route.cargo) {
+              for (const [resId, qty] of Object.entries(ship.route.cargo)) {
+                resources[resId] = (resources[resId] || 0) + qty;
+              }
+            }
             return { ...ship, status: 'idle' as const, currentLocation: ship.route.to, route: undefined };
           }
         }
@@ -395,6 +429,33 @@ export function processFullTick(state: GameState): GameState {
     }
   } catch (err) {
     console.error('Ship processing error (non-fatal):', err);
+  }
+
+  // 7. Check achievements (every 5 ticks to reduce overhead)
+  try {
+    const tickCount = Math.floor((newState.gameDate.year * 12 + newState.gameDate.month) % 5);
+    if (tickCount === 0) {
+      const earnedAchievements = newState.earnedAchievements || [];
+      const newAchievements = checkAchievements(newState, earnedAchievements);
+      if (newAchievements.length > 0) {
+        const achievementEvents: typeof newState.eventLog = [];
+        for (const ach of newAchievements) {
+          achievementEvents.push({
+            id: generateId(), date: newState.gameDate, type: 'milestone',
+            title: `🎖️ Achievement: ${ach.name}`,
+            description: ach.description,
+          });
+        }
+        newState = {
+          ...newState,
+          earnedAchievements: [...earnedAchievements, ...newAchievements.map(a => a.id)],
+          playerTitle: newAchievements.find(a => a.title)?.title || newState.playerTitle,
+          eventLog: [...achievementEvents, ...newState.eventLog].slice(0, MAX_EVENT_LOG),
+        };
+      }
+    }
+  } catch (err) {
+    console.error('Achievement check error (non-fatal):', err);
   }
 
   return newState;

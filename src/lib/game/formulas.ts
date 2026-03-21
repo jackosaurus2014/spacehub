@@ -18,9 +18,9 @@ export function scaledResearchTime(baseMonths: number, tier: number): number {
   return Math.ceil(baseMonths * Math.pow(tier, RESEARCH_TIME_TIER_EXPONENT));
 }
 
-/** Revenue multiplier from completed relevant research */
+/** Revenue multiplier from completed relevant research (capped at 2.0x) */
 export function revenueMultiplier(relevantResearchCount: number): number {
-  return 1.0 + relevantResearchCount * RESEARCH_REVENUE_BONUS;
+  return Math.min(2.0, 1.0 + relevantResearchCount * RESEARCH_REVENUE_BONUS);
 }
 
 /** Compare two game dates: returns negative if a < b, 0 if equal, positive if a > b */
