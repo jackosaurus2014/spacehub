@@ -108,6 +108,16 @@ export default function OnboardingTour() {
     }
   }, []);
 
+  // Map persona to a starting destination so the tour ends with a clear next step
+  const PERSONA_DESTINATIONS: Record<UserPersona, { href: string; label: string }> = {
+    investor: { href: '/market-intel', label: 'Open Market Intelligence' },
+    entrepreneur: { href: '/funding-opportunities', label: 'Browse Funding Opportunities' },
+    'mission-planner': { href: '/tools', label: 'Explore Engineering Tools' },
+    executive: { href: '/mission-control', label: 'Open Mission Control' },
+    'supply-chain': { href: '/supply-chain', label: 'View Supply Chain Map' },
+    legal: { href: '/compliance', label: 'Open Regulatory Hub' },
+  };
+
   const handleComplete = useCallback(() => {
     if (selectedPersona) {
       localStorage.setItem(PERSONA_KEY, selectedPersona);
@@ -119,6 +129,10 @@ export default function OnboardingTour() {
     setIsOpen(false);
     // Notify other components that persona was set
     window.dispatchEvent(new Event('persona-changed'));
+    // Navigate to persona's primary module
+    if (selectedPersona && PERSONA_DESTINATIONS[selectedPersona]) {
+      window.location.href = PERSONA_DESTINATIONS[selectedPersona].href;
+    }
   }, [selectedPersona]);
 
   const handleNext = useCallback(() => {
@@ -293,7 +307,11 @@ export default function OnboardingTour() {
                   : 'bg-white hover:bg-slate-100 text-slate-900'
             }`}
           >
-            {step === TOUR_STEPS.length ? 'Get Started' : 'Next'}
+            {step === TOUR_STEPS.length
+              ? (selectedPersona && PERSONA_DESTINATIONS[selectedPersona]
+                ? PERSONA_DESTINATIONS[selectedPersona].label
+                : 'Get Started')
+              : 'Next'}
           </button>
         </div>
       </div>

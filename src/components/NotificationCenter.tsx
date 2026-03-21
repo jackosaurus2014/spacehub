@@ -276,15 +276,33 @@ export default function NotificationCenter() {
           {/* Notifications List */}
           <div className="overflow-y-auto max-h-[360px]">
             {notifications.length === 0 ? (
-              /* Empty State */
-              <div className="flex flex-col items-center justify-center py-12 px-4">
-                <div className="w-16 h-16 rounded-full bg-white/[0.08] flex items-center justify-center mb-4">
-                  <BellIcon className="w-8 h-8 text-slate-400" />
+              /* Empty State — actionable guidance */
+              <div className="flex flex-col items-center justify-center py-10 px-5">
+                <div className="w-14 h-14 rounded-full bg-white/[0.06] flex items-center justify-center mb-4">
+                  <BellIcon className="w-7 h-7 text-slate-500" />
                 </div>
-                <p className="text-slate-400 text-sm text-center">No notifications yet</p>
-                <p className="text-slate-400 text-xs text-center mt-1">
-                  We&apos;ll notify you about launches, price alerts, and news
+                <p className="text-white/80 text-sm font-medium text-center mb-1">No notifications yet</p>
+                <p className="text-slate-500 text-xs text-center mb-5 max-w-[240px]">
+                  Set up alerts to get notified about launches, price changes, and breaking news.
                 </p>
+                <div className="flex flex-col gap-2 w-full max-w-[220px]">
+                  <Link
+                    href="/my-watchlists"
+                    onClick={() => setIsOpen(false)}
+                    className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/[0.04] border border-white/[0.06] hover:bg-white/[0.08] hover:border-white/[0.1] transition-all text-xs text-slate-300 hover:text-white"
+                  >
+                    <EyeIcon className="w-3.5 h-3.5 flex-shrink-0" />
+                    Create a watchlist
+                  </Link>
+                  <Link
+                    href="/alerts"
+                    onClick={() => setIsOpen(false)}
+                    className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/[0.04] border border-white/[0.06] hover:bg-white/[0.08] hover:border-white/[0.1] transition-all text-xs text-slate-300 hover:text-white"
+                  >
+                    <RocketIcon className="w-3.5 h-3.5 flex-shrink-0" />
+                    Set up launch alerts
+                  </Link>
+                </div>
               </div>
             ) : (
               <div className="divide-y divide-white/[0.06]">

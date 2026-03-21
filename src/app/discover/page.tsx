@@ -128,6 +128,17 @@ export default function DiscoverPage() {
         </AnimatedPageHeader>
 
         <div className="max-w-5xl mx-auto space-y-10">
+          {/* Search hint — encourages users to use Ctrl+K */}
+          <div className="text-center">
+            <p className="text-slate-500 text-sm">
+              Looking for something specific? Press{' '}
+              <kbd className="px-1.5 py-0.5 rounded bg-white/[0.06] border border-white/[0.08] text-slate-300 text-xs font-mono">Ctrl</kbd>
+              {' + '}
+              <kbd className="px-1.5 py-0.5 rounded bg-white/[0.06] border border-white/[0.08] text-slate-300 text-xs font-mono">K</kbd>
+              {' '}to search 260+ pages instantly.
+            </p>
+          </div>
+
           {/* Quick Start Grid */}
           <ScrollReveal>
             <h2 className="text-lg font-semibold text-white mb-4">Jump In</h2>
@@ -175,35 +186,38 @@ export default function DiscoverPage() {
             </div>
           </ScrollReveal>
 
-          {/* Hidden Gems */}
+          {/* Worth Exploring */}
           <ScrollReveal>
-            <h2 className="text-lg font-semibold text-white mb-1">Hidden Gems</h2>
-            <p className="text-slate-500 text-sm mb-4">Features you might not have found yet</p>
+            <h2 className="text-lg font-semibold text-white mb-1">Worth Exploring</h2>
+            <p className="text-slate-500 text-sm mb-4">Popular features you might not have found yet</p>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               {hiddenGems.map((gem) => (
                 <Link
                   key={gem.href}
                   href={gem.href}
-                  className="p-3 rounded-xl bg-white/[0.02] border border-white/[0.04] hover:border-cyan-500/20 hover:bg-white/[0.04] transition-all text-center"
+                  className="p-3 rounded-xl bg-white/[0.02] border border-white/[0.04] hover:border-cyan-500/20 hover:bg-white/[0.04] transition-all text-center group"
                 >
-                  <p className="text-white text-sm font-medium">{gem.label}</p>
+                  <p className="text-white text-sm font-medium group-hover:text-cyan-300 transition-colors">{gem.label}</p>
                   <p className="text-slate-500 text-xs mt-0.5">{gem.description}</p>
                 </Link>
               ))}
             </div>
           </ScrollReveal>
 
-          {/* Search + Browse All */}
+          {/* Quick Actions */}
           <ScrollReveal>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2">
               <Link
                 href="/features"
                 className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-medium text-slate-900 bg-white hover:bg-slate-100 rounded-lg transition-colors"
               >
-                Browse All 260+ Pages
+                Browse All 260+ Features
               </Link>
-              <Link href="/search" className="text-sm text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
-                Search the platform
+              <Link
+                href="/getting-started"
+                className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-medium text-white bg-white/[0.06] hover:bg-white/[0.1] border border-white/[0.08] hover:border-white/[0.12] rounded-lg transition-colors"
+              >
+                Getting Started Guide
               </Link>
               <Link href="/app" className="text-sm text-slate-400 hover:text-slate-300 underline underline-offset-2">
                 Get the Android app
