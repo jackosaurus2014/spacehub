@@ -326,13 +326,18 @@ function renderCellValue(value: boolean | string) {
 function FeatureComparisonTable() {
   return (
     <div className="max-w-5xl mx-auto">
-      <h2 className="text-2xl font-bold text-white text-center mb-8 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
-        Full Feature Comparison
-      </h2>
-      <p className="text-xs text-slate-500 text-center mb-3 md:hidden">
+      <div className="section-header mb-6">
+        <div className="flex items-center">
+          <div className="section-header__bar bg-gradient-to-b from-cyan-400 to-cyan-600" />
+          <h2 className="section-header__title">Feature Comparison</h2>
+        </div>
+        <span className="section-header__meta">All tiers</span>
+      </div>
+      <p className="text-xs text-slate-500 mb-3 md:hidden ml-7">
         Swipe left/right to compare all plans
       </p>
-      <div className="overflow-x-auto rounded-xl border border-white/[0.06] bg-black/50 scroll-smooth">
+      <div className="card-terminal"><div className="card-terminal__header"><div className="flex items-center gap-2"><div className="card-terminal__dots"><div className="card-terminal__dot card-terminal__dot--red" /><div className="card-terminal__dot card-terminal__dot--amber" /><div className="card-terminal__dot card-terminal__dot--green" /></div><span className="card-terminal__path">spacenexus:~/features</span></div></div>
+      <div className="overflow-x-auto scroll-smooth">
         <table className="w-full min-w-[520px] text-left">
           <thead className="sticky top-0 z-10 bg-[#0a0a0a]/95 backdrop-blur-sm">
             <tr className="border-b border-white/[0.06]">
@@ -376,6 +381,7 @@ function FeatureComparisonTable() {
             ))}
           </tbody>
         </table>
+      </div>
       </div>
     </div>
   );
@@ -705,7 +711,16 @@ function PricingPageContent() {
           </div>
         </ScrollReveal>
 
-        <AnimatedPageHeader title="Choose Your Plan" subtitle="Unlock the full power of space intelligence" icon="💎" accentColor="purple" />
+        <div className="max-w-5xl mx-auto mb-6 mt-8">
+          <div className="section-header">
+            <div className="flex items-center">
+              <div className="section-header__bar bg-gradient-to-b from-indigo-400 to-indigo-600" />
+              <h2 className="section-header__title">Select Your Clearance Level</h2>
+            </div>
+            <span className="section-header__meta">3 tiers</span>
+          </div>
+          <p className="section-header__desc">Full platform access. Scale as you grow.</p>
+        </div>
 
         {/* Audience strip */}
         <ScrollReveal>
@@ -801,11 +816,13 @@ function PricingPageContent() {
 
         {/* FAQ Accordion Section */}
         <ScrollReveal className="mt-16">
-          <div className="text-center mb-8">
-            <h2 className="text-2xl font-bold text-white mb-2 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
-              Frequently Asked Questions
-            </h2>
-            <p className="text-slate-400 text-sm">Everything you need to know about SpaceNexus</p>
+          <div className="max-w-3xl mx-auto mb-6">
+            <div className="section-header">
+              <div className="flex items-center">
+                <div className="section-header__bar bg-gradient-to-b from-amber-400 to-amber-600" />
+                <h2 className="section-header__title">Frequently Asked Questions</h2>
+              </div>
+            </div>
           </div>
         </ScrollReveal>
         <div className="max-w-3xl mx-auto space-y-3">
