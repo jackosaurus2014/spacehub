@@ -70,6 +70,10 @@ const DemoShowcase = nextDynamic(() => import('@/components/landing/DemoShowcase
   ssr: false,
   loading: () => <div className="py-16"><div className="container mx-auto px-4 max-w-5xl"><div className="animate-pulse"><div className="h-8 bg-white/[0.06] rounded w-1/3 mx-auto mb-8"></div><div className="h-[420px] bg-white/[0.06] rounded-2xl"></div></div></div></div>,
 });
+const PersonaPicker = nextDynamic(() => import('@/components/landing/PersonaPicker'), {
+  ssr: false,
+  loading: () => null,
+});
 const FloatingCTA = nextDynamic(() => import('@/components/landing/FloatingCTA'), {
   ssr: false,
   loading: () => null,
@@ -209,6 +213,9 @@ export default async function HomePage() {
 
       {/* Hero Section with featured content */}
       <LandingHero featuredArticle={featuredArticle} trendingNews={trendingNews} />
+
+      {/* V3 Persona Picker — first-visit only, customizes the experience */}
+      <PersonaPicker />
 
       {/* Live Stream — appears only when a stream is active */}
       <LiveStreamSection />

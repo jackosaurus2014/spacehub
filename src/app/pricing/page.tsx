@@ -8,6 +8,7 @@ import { SUBSCRIPTION_PLANS, SubscriptionTier } from '@/types';
 import { useSubscription } from '@/components/SubscriptionProvider';
 import { toast } from '@/lib/toast';
 import { extractApiError } from '@/lib/errors';
+import PricingCardV3 from '@/components/pricing/PricingCardV3';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import AnimatedCounter from '@/components/ui/AnimatedCounter';
 import ScrollReveal from '@/components/ui/ScrollReveal';
@@ -788,25 +789,38 @@ function PricingPageContent() {
           </div>
         </ScrollReveal>
 
-        {/* Pricing Cards */}
-        <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto" staggerDelay={0.15}>
-          {SUBSCRIPTION_PLANS.map((plan) => (
-            <StaggerItem key={plan.id}>
-              <PricingCard
-                plan={plan}
-                isYearly={isYearly}
-                currentTier={tier}
-                isTrialing={isTrialing}
-                trialEndsAt={trialEndsAt}
-                onStartTrial={handleStartTrial}
-                onSubscribe={handleSubscribe}
-                isStartingTrial={isStartingTrial}
-                isCheckingOut={isCheckingOut}
-                isLoggedIn={!!session?.user}
-                hasPaymentMethod={hasPaymentMethod}
-              />
-            </StaggerItem>
-          ))}
+        {/* Pricing Cards — V3 Observer/Operator/Commander */}
+        <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto" staggerDelay={0.15}>
+          {SUBSCRIPTION_PLANS.map((plan) => {
+            const p = isYearly ? plan.priceYearly : plan.price;
+            const savings = isYearly && plan.price > 0
+              ? Math.round((1 - plan.priceYearly / (plan.price * 12)) * 100) : 0;
+            const daysLeft = plan.id === tier && isTrialing && trialEndsAt
+              ? Math.max(0, Math.ceil((new Date(trialEndsAt).getTime() - Date.now()) / 86400000)) : 0;
+            return (
+              <StaggerItem key={plan.id}>
+                <PricingCardV3
+                  planId={plan.id}
+                  planName={plan.name}
+                  price={p}
+                  period={isYearly ? '/year' : '/month'}
+                  features={plan.features}
+                  highlighted={plan.highlighted}
+                  savings={savings}
+                  trialDays={plan.trialDays}
+                  isCurrentPlan={plan.id === tier}
+                  isTrialing={isTrialing}
+                  daysLeft={daysLeft}
+                  isLoggedIn={!!session?.user}
+                  isStartingTrial={isStartingTrial}
+                  isCheckingOut={isCheckingOut}
+                  onStartTrial={handleStartTrial}
+                  onSubscribe={handleSubscribe}
+                  isYearly={isYearly}
+                />
+              </StaggerItem>
+            );
+          })}
         </StaggerContainer>
 
         {/* Social Proof */}
