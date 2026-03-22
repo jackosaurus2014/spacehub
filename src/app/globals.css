@@ -442,33 +442,226 @@ body::after {
   transform: translateY(-1px);
 }
 
-/* Focus ring — indigo, all focusable cards */
+/* Focus ring — indigo, all focusable elements */
 .card-interactive:focus-visible,
 .card:focus-visible,
-.card-elevated:focus-visible {
+.card-elevated:focus-visible,
+.card-data:focus-visible,
+.card-content:focus-visible,
+.card-terminal:focus-visible {
   outline: 2px solid var(--accent-primary);
   outline-offset: 2px;
 }
 
-/* Colored Card Variants — subtle tinted borders */
+/* ═══════════════════════════════════════════════════════════════════
+   V3 CARD TYPE A: Data Card — metrics, KPIs, live values
+   Tight padding. Monospace values. Status-dot optional.
+   ═══════════════════════════════════════════════════════════════════ */
+.card-data {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  padding: 16px;
+  transition: border-color 0.15s var(--ease-smooth);
+}
+.card-data:hover {
+  border-color: var(--border-default);
+}
+.card-data__label {
+  font-size: 10px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-tertiary);
+  margin-bottom: 4px;
+}
+.card-data__value {
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-variant-numeric: tabular-nums;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: 0;
+  line-height: 1.2;
+}
+.card-data__sub {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  margin-top: 2px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   V3 CARD TYPE B: Content Card — articles, insights, descriptions
+   No border at rest. Comfortable padding. Border appears on hover.
+   ═══════════════════════════════════════════════════════════════════ */
+.card-content {
+  background: var(--bg-surface);
+  border: 1px solid transparent;
+  border-radius: 12px;
+  padding: 24px;
+  transition: border-color 0.15s var(--ease-smooth), background 0.15s var(--ease-smooth);
+}
+.card-content:hover {
+  border-color: var(--border-subtle);
+  background: var(--bg-elevated);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   V3 CARD TYPE D: Terminal Panel — data tables, status, live feeds
+   Chrome header with traffic lights. Edge-to-edge content.
+   ═══════════════════════════════════════════════════════════════════ */
+.card-terminal {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.card-terminal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 16px;
+  border-bottom: 1px solid var(--border-subtle);
+  background: var(--bg-void);
+}
+.card-terminal__dots {
+  display: flex;
+  gap: 6px;
+}
+.card-terminal__dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+.card-terminal__dot--red { background: rgba(255, 59, 48, 0.4); }
+.card-terminal__dot--amber { background: rgba(255, 159, 10, 0.4); }
+.card-terminal__dot--green { background: rgba(48, 209, 88, 0.4); }
+.card-terminal__path {
+  font-family: var(--font-mono, monospace);
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--text-muted);
+  margin-left: 8px;
+}
+.card-terminal__body {
+  /* Content fills to edges — no padding here, let children handle it */
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   V3 SECTION HEADER — Left-aligned with accent bar
+   ═══════════════════════════════════════════════════════════════════ */
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+.section-header__bar {
+  width: 2px;
+  height: 24px;
+  border-radius: 1px;
+  flex-shrink: 0;
+}
+.section-header__title {
+  font-family: var(--font-display, 'Satoshi', sans-serif);
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
+  margin-left: 12px;
+}
+.section-header__meta {
+  font-size: 9px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--text-muted);
+}
+.section-header__desc {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-left: 26px; /* Aligns with title (2px bar + 12px gap + 12px icon-ish offset) */
+  margin-top: 2px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   V3 BADGE SYSTEM — Standardized status indicators
+   ═══════════════════════════════════════════════════════════════════ */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 8px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+.badge-live {
+  background: rgba(86, 240, 0, 0.1);
+  color: #56F000;
+  border: 1px solid rgba(86, 240, 0, 0.2);
+}
+.badge-live::before {
+  content: '';
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #56F000;
+  animation: live-pulse 2s ease-in-out infinite;
+}
+.badge-pro {
+  background: linear-gradient(135deg, #6366f1, #4f46e5);
+  color: #ffffff;
+  border: none;
+  box-shadow: 0 0 8px rgba(99, 102, 241, 0.2);
+}
+.badge-new {
+  background: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
+  border: 1px solid rgba(59, 130, 246, 0.2);
+}
+.badge-beta {
+  background: rgba(168, 85, 247, 0.1);
+  color: #a855f7;
+  border: 1px solid rgba(168, 85, 247, 0.2);
+}
+.badge-free {
+  background: rgba(45, 204, 255, 0.1);
+  color: #2DCCFF;
+  border: 1px solid rgba(45, 204, 255, 0.2);
+}
+
+/* Backward compat — old badge classes map to new */
+.pro-badge { @apply badge badge-pro; }
+.live-badge { @apply badge badge-live; }
+
+/* Legacy colored card variants */
 .card-nebula {
-  @apply rounded-xl transition-all duration-200;
+  @apply rounded-lg;
   background: rgba(20, 16, 35, 0.7);
   border: 1px solid rgba(139, 92, 246, 0.15);
+  transition: border-color 0.15s var(--ease-smooth);
 }
 .card-nebula:hover { border-color: rgba(139, 92, 246, 0.25); }
 
 .card-cyan {
-  @apply rounded-xl transition-all duration-200;
-  background: rgba(15, 23, 42, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  @apply rounded-lg;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  transition: border-color 0.15s var(--ease-smooth);
 }
-.card-cyan:hover { border-color: rgba(255, 255, 255, 0.12); }
+.card-cyan:hover { border-color: var(--border-default); }
 
 .card-amber {
-  @apply rounded-xl transition-all duration-200;
+  @apply rounded-lg;
   background: rgba(25, 20, 12, 0.7);
   border: 1px solid rgba(245, 158, 11, 0.15);
+  transition: border-color 0.15s var(--ease-smooth);
 }
 .card-amber:hover { border-color: rgba(245, 158, 11, 0.25); }
 

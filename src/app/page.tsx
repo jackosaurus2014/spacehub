@@ -258,21 +258,25 @@ export default async function HomePage() {
       {topContent.length > 0 && (
         <section className="section-spacer-sm relative z-10">
           <div className="container mx-auto px-4">
-            <div className="mb-8 text-center">
-              <h2 className="text-display text-3xl md:text-4xl text-white mb-3">
-                Latest from SpaceNexus
-              </h2>
-              <p className="text-slate-400 text-lg max-w-2xl mx-auto">
-                Original analysis and insights you won&apos;t find anywhere else
+            <div className="max-w-5xl mx-auto mb-8">
+              <div className="section-header">
+                <div className="flex items-center">
+                  <div className="section-header__bar bg-gradient-to-b from-blue-400 to-blue-600" />
+                  <h2 className="section-header__title">Latest from SpaceNexus</h2>
+                </div>
+                <span className="section-header__meta">Original content</span>
+              </div>
+              <p className="section-header__desc">
+                Analysis and insights you won&apos;t find anywhere else
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-5xl mx-auto">
               {topContent.map((card) => (
                 <Link
                   key={card.slug}
                   href={card.href}
-                  className="group card-glass p-6"
+                  className="group card-content"
                 >
                   <div className="flex items-center gap-2 mb-3">
                     <span className={`text-xs font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full border ${CATEGORY_COLORS[card.category] || 'bg-slate-500/20 text-slate-400 border-slate-500/30'}`}>
@@ -330,13 +334,14 @@ export default async function HomePage() {
       {/* Space Photo of the Day — NASA APOD */}
       <section className="section-spacer-sm relative z-10">
         <div className="container mx-auto px-4 max-w-3xl">
-          <div className="mb-6 text-center">
-            <h2 className="text-display text-2xl md:text-3xl text-white mb-2">
-              Space Photo of the Day
-            </h2>
-            <p className="text-slate-400 text-sm">
-              Curated daily by NASA&apos;s Astronomy Picture of the Day
-            </p>
+          <div className="mb-6">
+            <div className="section-header">
+              <div className="flex items-center">
+                <div className="section-header__bar bg-gradient-to-b from-amber-400 to-amber-600" />
+                <h2 className="section-header__title text-lg">Space Photo of the Day</h2>
+              </div>
+              <span className="section-header__meta">NASA APOD</span>
+            </div>
           </div>
           <SpacePhotoOfDay />
         </div>
@@ -351,8 +356,14 @@ export default async function HomePage() {
       {/* Modular Content Area */}
       <section className="section-spacer-sm">
         <div className="container mx-auto px-4">
-          <div className="mb-8 text-center">
-            <h2 className="text-display text-3xl md:text-4xl text-white mb-4">Your Dashboard</h2>
+          <div className="mb-8">
+            <div className="section-header">
+              <div className="flex items-center">
+                <div className="section-header__bar bg-gradient-to-b from-cyan-400 to-cyan-600" />
+                <h2 className="section-header__title">Your Dashboard</h2>
+              </div>
+              <span className="section-header__meta">Personalized</span>
+            </div>
           </div>
           <ModuleContainer initialModules={modules} />
         </div>

@@ -101,18 +101,17 @@ export default function KPIStrip() {
   return (
     <section ref={containerRef} className="py-4 md:py-6 relative z-10">
       <div className="container mx-auto px-4">
-        <div className="card-glass overflow-hidden">
-          {/* Terminal header bar */}
-          <div className="flex items-center justify-between px-4 py-1.5 border-b border-white/[0.04] bg-white/[0.01]">
+        <div className="card-terminal">
+          <div className="card-terminal__header">
             <div className="flex items-center gap-2">
-              <div className="flex gap-1">
-                <div className="w-2 h-2 rounded-full bg-red-500/40" />
-                <div className="w-2 h-2 rounded-full bg-amber-500/40" />
-                <div className="w-2 h-2 rounded-full bg-emerald-500/40" />
+              <div className="card-terminal__dots">
+                <div className="card-terminal__dot card-terminal__dot--red" />
+                <div className="card-terminal__dot card-terminal__dot--amber" />
+                <div className="card-terminal__dot card-terminal__dot--green" />
               </div>
-              <span className="text-[9px] uppercase tracking-[0.15em] text-slate-600 font-mono">spacenexus:~/market-data</span>
+              <span className="card-terminal__path">spacenexus:~/market-data</span>
             </div>
-            <span className="live-badge text-[7px]">LIVE</span>
+            <span className="badge badge-live">LIVE</span>
           </div>
           <div className="overflow-x-auto md:overflow-x-visible scrollbar-hide">
             <div className="grid grid-cols-3 md:grid-cols-6 min-w-0 divide-x divide-white/[0.04]">
