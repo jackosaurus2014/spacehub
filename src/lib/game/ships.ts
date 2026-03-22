@@ -11,6 +11,8 @@ export interface ShipDefinition {
   icon: string;
   role: ShipRole;
   description: string;
+  /** Detailed tooltip explaining gameplay purpose, when to build, and ROI */
+  tooltip: string;
   cargoCapacity: number;
   miningRate?: number; // Resources mined per real minute (mining ships only)
   miningTargets?: string[]; // Resource IDs this ship can mine
@@ -154,6 +156,7 @@ export const SHIPS: ShipDefinition[] = [
   {
     id: 'cargo_shuttle', name: 'Cargo Shuttle', icon: '🚀', role: 'transport',
     description: 'Basic orbital transport. Moves resources between Earth surface, LEO, and GEO.',
+    tooltip: 'WHY BUILD: Move resources you mine at one location to where you need them. For example, mine iron on the Lunar Surface and shuttle it to LEO for building space stations. Also useful for fulfilling resource bounties that require delivery to specific locations. At 50 units capacity and $200K/mo maintenance, this is your affordable early workhorse. Build 2-3 once you start mining.',
     cargoCapacity: 50, baseCost: 20_000_000,
     resourceCost: { aluminum: 20, iron: 30 },
     requiredResearch: ['reusable_boosters'], buildTimeSeconds: 300, tier: 1,
@@ -162,6 +165,7 @@ export const SHIPS: ShipDefinition[] = [
   {
     id: 'freighter', name: 'Space Freighter', icon: '🚢', role: 'transport',
     description: 'Mid-range hauler. Can reach the Moon with 200 units of cargo.',
+    tooltip: 'WHY BUILD: Your first serious bulk hauler. With 200-unit capacity (4x a Cargo Shuttle), it makes lunar supply runs efficient. Move large quantities of lunar water, iron, and aluminum between your Moon mining operations and LEO/Earth facilities. Essential once you have multiple mining operations producing resources faster than shuttles can move them. The $800K/mo maintenance is easily justified by mid-game resource volumes.',
     cargoCapacity: 200, baseCost: 100_000_000,
     resourceCost: { titanium: 30, aluminum: 50, iron: 80 },
     requiredResearch: ['modular_spacecraft'], buildTimeSeconds: 600, tier: 2,
@@ -170,6 +174,7 @@ export const SHIPS: ShipDefinition[] = [
   {
     id: 'heavy_transport', name: 'Heavy Transport', icon: '🏗️', role: 'transport',
     description: 'Massive hauler for Mars and asteroid belt routes. 500 unit capacity.',
+    tooltip: 'WHY BUILD: The only ship with enough cargo capacity (500 units) to make Mars and asteroid belt supply runs worthwhile. Long travel times to these destinations mean you want to move as much as possible per trip. Critical for delivering titanium, rare earth, and platinum from the asteroid belt back to your inner system facilities. Also needed to supply Mars colonies with equipment. Build when you expand beyond the Moon.',
     cargoCapacity: 500, baseCost: 500_000_000,
     resourceCost: { titanium: 80, aluminum: 100, rare_earth: 20 },
     requiredResearch: ['interplanetary_cruisers'], buildTimeSeconds: 1200, tier: 3,
@@ -180,6 +185,7 @@ export const SHIPS: ShipDefinition[] = [
   {
     id: 'fuel_tanker', name: 'Fuel Tanker', icon: '⛽', role: 'tanker',
     description: 'Specialized for water and fuel transport. 2x capacity for liquids. Boosts propellant depot revenue by 15% when stationed.',
+    tooltip: 'WHY BUILD: Carries 300 units with 2x effective capacity for water and fuel (effectively 600 units of liquids). Park one at your lunar mining operation to shuttle water efficiently. When stationed at a location with a Propellant Depot, it boosts depot service revenue by 15%. Cheaper than a Freighter ($80M vs $100M) with better liquid capacity. Build once you have lunar water mining active.',
     cargoCapacity: 300, baseCost: 80_000_000,
     resourceCost: { iron: 60, aluminum: 40 },
     requiredResearch: ['resource_prospecting'], buildTimeSeconds: 480, tier: 2,
@@ -190,7 +196,8 @@ export const SHIPS: ShipDefinition[] = [
   {
     id: 'mining_drone', name: 'Mining Drone', icon: '⛏️', role: 'mining',
     description: 'Automated mining vessel. Extracts iron and aluminum. Cheap and reliable.',
-    cargoCapacity: 30, miningRate: 8, // Buffed from 5 → 8 for better early ROI
+    tooltip: 'WHY BUILD: Your cheapest way to produce iron and aluminum — the two resources you need for almost every building and ship. At 8 units/minute and only $150K/mo maintenance, the ROI is excellent. Send it to any location where you have mining operations and set it to mine. Iron sells for $5K/unit and aluminum for $8K/unit on the market. Each drone generates ~$40-64K/minute in resources. Build 2-3 early to stockpile building materials.',
+    cargoCapacity: 30, miningRate: 8,
     miningTargets: ['iron', 'aluminum'],
     baseCost: 15_000_000,
     resourceCost: { iron: 15, aluminum: 10 },
@@ -200,7 +207,8 @@ export const SHIPS: ShipDefinition[] = [
   {
     id: 'ore_harvester', name: 'Ore Harvester', icon: '🔩', role: 'mining',
     description: 'Dedicated mining vessel for the Moon and Mars. Mines metals, water, and titanium.',
-    cargoCapacity: 100, miningRate: 15, // Buffed from 12 → 15
+    tooltip: 'WHY BUILD: The first ship that can mine titanium ($25K/unit) and lunar/Mars water ($50-80K/unit). At 15 units/minute, it produces high-value resources much faster than facility-based mining alone. Titanium is required for most mid-to-late-game buildings and ships. Water is needed for life support and can be refined into fuel. Deploy at the Lunar Surface or Mars Surface for best results. One Ore Harvester mining titanium generates ~$375K/minute in resources.',
+    cargoCapacity: 100, miningRate: 15,
     miningTargets: ['iron', 'aluminum', 'titanium', 'lunar_water', 'mars_water'],
     baseCost: 80_000_000,
     resourceCost: { titanium: 20, iron: 50, aluminum: 30 },
@@ -210,7 +218,8 @@ export const SHIPS: ShipDefinition[] = [
   {
     id: 'asteroid_miner', name: 'Asteroid Mining Ship', icon: '☄️', role: 'mining',
     description: 'Heavy mining vessel for the asteroid belt. Extracts precious metals and rare earth elements.',
-    cargoCapacity: 200, miningRate: 10, // Buffed from 8 → 10
+    tooltip: 'WHY BUILD: The only ship-based way to mine platinum ($500K/unit), gold ($300K/unit), and rare earth ($200K/unit). These high-value resources are needed for Tier 3-5 research and endgame buildings. At 10 units/minute mining platinum, you generate $5M/minute in resource value. Even at $2M/mo maintenance, the payback period is minutes, not months. Essential for anyone pushing into late-game content. Deploy at the Asteroid Belt.',
+    cargoCapacity: 200, miningRate: 10,
     miningTargets: ['iron', 'titanium', 'platinum_group', 'gold', 'rare_earth'],
     baseCost: 300_000_000,
     resourceCost: { titanium: 60, rare_earth: 15, aluminum: 40 },
@@ -220,7 +229,8 @@ export const SHIPS: ShipDefinition[] = [
   {
     id: 'deep_space_miner', name: 'Deep Space Miner', icon: '🌌', role: 'mining',
     description: 'Nuclear-powered mining vessel for Jupiter, Saturn, and beyond. Mines exotic materials and He-3.',
-    cargoCapacity: 200, miningRate: 6, // Buffed from 4 → 6, cargo from 150 → 200
+    tooltip: 'WHY BUILD: The only way to mine exotic materials ($2M/unit) and helium-3 ($5M/unit) — the two rarest and most valuable resources in the game. These are required for Tier 5 research and endgame construction (including fusion reactors and generation ships). At 6 units/minute mining He-3, you generate $30M/minute. Despite $5M/mo maintenance, a single Deep Space Miner can fund your entire late-game progression. Deploy at Jupiter or Saturn system.',
+    cargoCapacity: 200, miningRate: 6,
     miningTargets: ['exotic_materials', 'helium3', 'methane', 'ethane'],
     baseCost: 1_000_000_000,
     resourceCost: { titanium: 100, rare_earth: 40, platinum_group: 10 },
@@ -232,10 +242,11 @@ export const SHIPS: ShipDefinition[] = [
   {
     id: 'survey_probe', name: 'Survey Probe', icon: '📡', role: 'survey',
     description: 'Single-use probe. Send to any location to discover resource deposits, anomalies, and mining bonuses. Consumed after expedition.',
-    cargoCapacity: 0, baseCost: 25_000_000, // Reduced from 30M → 25M (it's single-use)
+    tooltip: 'WHY BUILD: Cheap ($25M) single-use probes that discover hidden rewards at any location. Possible discoveries include: resource caches (free resources), mining bonuses (+15-50% mining output at a location for months), cash windfalls ($10M-$1B depending on location), and rare anomalies. Higher-tier locations yield bigger rewards — a probe sent to the Outer System can discover $1B+ in value. Build several and send them to every new location you unlock. The probe is consumed after one expedition.',
+    cargoCapacity: 0, baseCost: 25_000_000,
     resourceCost: { rare_earth: 5, aluminum: 10 },
-    requiredResearch: ['high_res_optical'], buildTimeSeconds: 180, tier: 1, // Faster build (3 min)
-    maintenancePerMonth: 0, // No maintenance (consumed on use)
+    requiredResearch: ['high_res_optical'], buildTimeSeconds: 180, tier: 1,
+    maintenancePerMonth: 0,
   },
 ];
 

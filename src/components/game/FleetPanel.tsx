@@ -258,13 +258,24 @@ export default function FleetPanel({ state, onBuildShip, onStartMining, onStopMi
                       }`}>{ship.role}</span>
                     </div>
                   </div>
-                  <p className="text-slate-500 text-[10px] mb-2">{ship.description}</p>
+                  <p className="text-slate-500 text-[10px] mb-1">{ship.description}</p>
+
+                  {/* Tooltip — expandable gameplay guidance */}
+                  <details className="mb-2 group/tip">
+                    <summary className="text-[9px] text-cyan-400/70 cursor-pointer hover:text-cyan-400 transition-colors select-none">
+                      Why build this? ▾
+                    </summary>
+                    <div className="mt-1.5 p-2 rounded-md bg-cyan-500/5 border border-cyan-500/10 text-[10px] text-slate-300 leading-relaxed">
+                      {ship.tooltip}
+                    </div>
+                  </details>
 
                   {/* Stats */}
                   <div className="flex gap-3 text-[9px] text-slate-400 mb-2">
                     <span>Cargo: {ship.cargoCapacity}</span>
                     {ship.miningRate && <span>Mining: {ship.miningRate}/min</span>}
-                    <span>{formatDuration(ship.buildTimeSeconds)}</span>
+                    <span>Build: {formatDuration(ship.buildTimeSeconds)}</span>
+                    {ship.maintenancePerMonth > 0 && <span>Maint: {formatMoney(ship.maintenancePerMonth)}/mo</span>}
                   </div>
 
                   {/* Resource costs */}
