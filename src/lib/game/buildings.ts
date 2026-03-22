@@ -149,6 +149,90 @@ export const BUILDINGS: BuildingDefinition[] = [
     baseCost: 15_000_000_000, buildTimeMonths: 36, maintenanceCostPerMonth: 12_000_000,
     requiredResearch: ['interplanetary_cruisers', 'regolith_processing'], requiredLocation: 'mars_surface', enabledServices: ['svc_tourism_mars'],
     realBuildSeconds: 3600, resourceCost: { titanium: 120, aluminum: 150, iron: 200, mars_water: 50, rare_earth: 25 } }, // 1 hr
+
+  // ─── GEO INFRASTRUCTURE ─────────────────────────────────────────────
+  { id: 'solar_farm_geo', name: 'GEO Solar Power Platform', category: 'solar_farm', tier: 2,
+    description: 'High-power solar farm in geostationary orbit for space-based solar power.',
+    baseCost: 300_000_000, buildTimeMonths: 10, maintenanceCostPerMonth: 1_500_000,
+    requiredResearch: ['triple_junction', 'high_power_comms'], requiredLocation: 'geo', enabledServices: ['svc_navigation'],
+    realBuildSeconds: 600, resourceCost: { aluminum: 40, rare_earth: 10 } }, // 10 min
+
+  // ─── RELAY SATELLITES ───────────────────────────────────────────────
+  { id: 'sat_lunar_relay', name: 'Lunar Relay Satellite', category: 'satellite', tier: 2,
+    description: 'Communication relay for cislunar operations and debris tracking.',
+    baseCost: 200_000_000, buildTimeMonths: 6, maintenanceCostPerMonth: 800_000,
+    requiredResearch: ['reusable_boosters'], requiredLocation: 'lunar_orbit', enabledServices: ['svc_debris_removal', 'svc_space_insurance'],
+    realBuildSeconds: 420, resourceCost: { aluminum: 15, rare_earth: 5 } }, // 7 min
+  { id: 'sat_mars_relay', name: 'Mars Relay Satellite', category: 'satellite', tier: 3,
+    description: 'Deep-space communications relay for Mars operations.',
+    baseCost: 1_000_000_000, buildTimeMonths: 12, maintenanceCostPerMonth: 2_000_000,
+    requiredResearch: ['super_heavy_lift', 'ion_drives'], requiredLocation: 'mars_orbit', enabledServices: ['svc_propellant_brokerage'],
+    realBuildSeconds: 900, resourceCost: { titanium: 20, rare_earth: 10 } }, // 15 min
+
+  // ─── MARS SURFACE INFRASTRUCTURE ────────────────────────────────────
+  { id: 'fabrication_mars', name: 'Mars Manufacturing Plant', category: 'fabrication_facility', tier: 3,
+    description: 'Manufacture components using Martian resources. Key to Mars self-sufficiency.',
+    baseCost: 8_000_000_000, buildTimeMonths: 28, maintenanceCostPerMonth: 6_000_000,
+    requiredResearch: ['orbital_assembly', 'regolith_processing'], requiredLocation: 'mars_surface', enabledServices: ['svc_propellant_depot'],
+    realBuildSeconds: 2400, resourceCost: { titanium: 80, aluminum: 100, iron: 150, mars_water: 40 } }, // 40 min
+  { id: 'solar_farm_mars', name: 'Mars Solar Farm', category: 'solar_farm', tier: 3,
+    description: 'Large solar array on the Martian surface. Lower efficiency than Earth but essential.',
+    baseCost: 2_000_000_000, buildTimeMonths: 14, maintenanceCostPerMonth: 2_000_000,
+    requiredResearch: ['triple_junction', 'resource_prospecting'], requiredLocation: 'mars_surface', enabledServices: [],
+    realBuildSeconds: 1200, resourceCost: { aluminum: 60, iron: 80, rare_earth: 15 } }, // 20 min
+
+  // ─── ASTEROID BELT INFRASTRUCTURE ───────────────────────────────────
+  { id: 'fabrication_asteroid', name: 'Asteroid Refinery', category: 'fabrication_facility', tier: 3,
+    description: 'Process asteroid materials in-situ. Reduces transport costs dramatically.',
+    baseCost: 12_000_000_000, buildTimeMonths: 30, maintenanceCostPerMonth: 8_000_000,
+    requiredResearch: ['asteroid_capture', 'orbital_assembly'], requiredLocation: 'asteroid_belt', enabledServices: ['svc_asteroid_survey'],
+    realBuildSeconds: 2700, resourceCost: { titanium: 100, iron: 200, platinum_group: 10, rare_earth: 30 } }, // 45 min
+  { id: 'space_station_belt', name: 'Ceres Station', category: 'space_station', tier: 3,
+    description: 'Deep-space outpost at Ceres. Hub for asteroid belt operations.',
+    baseCost: 15_000_000_000, buildTimeMonths: 36, maintenanceCostPerMonth: 10_000_000,
+    requiredResearch: ['asteroid_capture', 'modular_spacecraft'], requiredLocation: 'asteroid_belt', enabledServices: [],
+    realBuildSeconds: 3600, resourceCost: { titanium: 150, aluminum: 200, iron: 300, rare_earth: 40 } }, // 1 hr
+
+  // ─── JUPITER SYSTEM INFRASTRUCTURE ──────────────────────────────────
+  { id: 'space_station_jupiter', name: 'Jovian Station', category: 'space_station', tier: 4,
+    description: 'Orbital research platform in Jupiter system. Supports Europa operations.',
+    baseCost: 50_000_000_000, buildTimeMonths: 48, maintenanceCostPerMonth: 30_000_000,
+    requiredResearch: ['nuclear_thermal', 'interplanetary_cruisers'], requiredLocation: 'jupiter_system', enabledServices: [],
+    realBuildSeconds: 7200, resourceCost: { titanium: 200, platinum_group: 25, rare_earth: 60, exotic_materials: 3 } }, // 2 hr
+  { id: 'datacenter_jupiter', name: 'Jupiter Relay Hub', category: 'datacenter', tier: 4,
+    description: 'Deep-space data relay and edge computing center for outer system.',
+    baseCost: 20_000_000_000, buildTimeMonths: 36, maintenanceCostPerMonth: 15_000_000,
+    requiredResearch: ['nuclear_thermal', 'edge_ai'], requiredLocation: 'jupiter_system', enabledServices: [],
+    realBuildSeconds: 5400, resourceCost: { titanium: 100, rare_earth: 50, platinum_group: 15 } }, // 90 min
+
+  // ─── SATURN SYSTEM INFRASTRUCTURE ───────────────────────────────────
+  { id: 'space_station_saturn', name: 'Kronos Station', category: 'space_station', tier: 4,
+    description: 'Saturn orbital platform. Staging for Titan and Enceladus operations.',
+    baseCost: 80_000_000_000, buildTimeMonths: 60, maintenanceCostPerMonth: 40_000_000,
+    requiredResearch: ['nuclear_thermal', 'interplanetary_cruisers', 'deep_drilling'], requiredLocation: 'saturn_system', enabledServices: [],
+    realBuildSeconds: 7200, resourceCost: { titanium: 300, platinum_group: 40, rare_earth: 80, exotic_materials: 5 } }, // 2 hr
+  { id: 'fabrication_titan', name: 'Titan Chemical Plant', category: 'fabrication_facility', tier: 4,
+    description: 'Process Titan hydrocarbons into rocket fuel and industrial chemicals.',
+    baseCost: 25_000_000_000, buildTimeMonths: 36, maintenanceCostPerMonth: 18_000_000,
+    requiredResearch: ['deep_drilling', 'orbital_assembly'], requiredLocation: 'saturn_system', enabledServices: [],
+    realBuildSeconds: 5400, resourceCost: { titanium: 150, rare_earth: 60, platinum_group: 20, methane: 100 } }, // 90 min
+
+  // ─── OUTER SYSTEM INFRASTRUCTURE ────────────────────────────────────
+  { id: 'outpost_outer', name: 'Deep Space Outpost', category: 'space_station', tier: 5,
+    description: 'Humanity\'s farthest permanent settlement. Research and exploration hub.',
+    baseCost: 200_000_000_000, buildTimeMonths: 96, maintenanceCostPerMonth: 60_000_000,
+    requiredResearch: ['fusion_drive', 'generation_ships'], requiredLocation: 'outer_system', enabledServices: [],
+    realBuildSeconds: 14400, resourceCost: { titanium: 500, platinum_group: 100, exotic_materials: 20, helium3: 10 } }, // 4 hr
+  { id: 'mining_kuiper', name: 'Kuiper Belt Mining Platform', category: 'mining_enterprise', tier: 5,
+    description: 'Extract exotic materials and volatiles from Kuiper Belt objects.',
+    baseCost: 150_000_000_000, buildTimeMonths: 72, maintenanceCostPerMonth: 50_000_000,
+    requiredResearch: ['fusion_drive', 'automated_mining_fleet'], requiredLocation: 'outer_system', enabledServices: [],
+    realBuildSeconds: 10800, resourceCost: { titanium: 400, platinum_group: 80, exotic_materials: 15 } }, // 3 hr
+  { id: 'deep_space_relay', name: 'Deep Space Communication Relay', category: 'satellite', tier: 5,
+    description: 'Long-range communication relay for outer system operations.',
+    baseCost: 50_000_000_000, buildTimeMonths: 48, maintenanceCostPerMonth: 20_000_000,
+    requiredResearch: ['fusion_drive'], requiredLocation: 'outer_system', enabledServices: [],
+    realBuildSeconds: 7200, resourceCost: { titanium: 200, rare_earth: 80, exotic_materials: 10 } }, // 2 hr
 ];
 
 export const BUILDING_MAP = new Map(BUILDINGS.map(b => [b.id, b]));

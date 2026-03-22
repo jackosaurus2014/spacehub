@@ -314,6 +314,13 @@ export interface GameState {
   // Achievements
   earnedAchievements?: string[];
   playerTitle?: string | null;
+
+  // Speed boosts (earned from contracts)
+  availableBoosts?: { id: string; type: 'construction' | 'research'; multiplier: number; durationSeconds: number; source: string; label: string }[];
+  activeBoosts?: { boostId: string; type: 'construction' | 'research'; multiplier: number; activatedAtMs: number; expiresAtMs: number; label: string }[];
+
+  // Dynamic service pricing (from server — multiplier per service ID)
+  servicePriceMultipliers?: Record<string, number>;
 }
 
 // ─── UI Tabs ────────────────────────────────────────────────────────────────

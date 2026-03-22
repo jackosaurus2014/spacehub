@@ -24,9 +24,9 @@ export const WORKER_TYPES: WorkerDefinition[] = [
     bonus: { buildSpeed: 0.1, serviceRevenue: 0.05 },
   },
   {
-    type: 'scientist', name: 'Scientist', icon: '🔬', salary: 600_000,
+    type: 'scientist', name: 'Scientist', icon: '🔬', salary: 500_000,
     description: 'Accelerates research and improves AI datacenter output.',
-    bonus: { researchSpeed: 0.15, serviceRevenue: 0.03 },
+    bonus: { researchSpeed: 0.15, serviceRevenue: 0.05 },
   },
   {
     type: 'miner', name: 'Miner', icon: '⛏️', salary: 400_000,

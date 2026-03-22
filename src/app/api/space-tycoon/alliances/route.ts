@@ -6,35 +6,101 @@ import { logger } from '@/lib/logger';
 
 /**
  * GET /api/space-tycoon/alliances
- * Returns all alliances with member counts and net worth.
+ * Returns the player's alliance (if any) as myAlliance,
+ * and a list of other alliances as listings.
  */
 export async function GET() {
   try {
-    const alliances = await prisma.alliance.findMany({
+    // Identify the current user so we can find their alliance
+    const session = await getServerSession(authOptions);
+    let myProfileId: string | null = null;
+    if (session?.user?.id) {
+      const profile = await prisma.gameProfile.findUnique({
+        where: { userId: session.user.id },
+        select: { id: true },
+      });
+      myProfileId = profile?.id ?? null;
+    }
+
+    // Check if user is in an alliance
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let myAlliance: Record<string, any> | null = null;
+    if (myProfileId) {
+      const membership = await prisma.allianceMember.findUnique({
+        where: { profileId: myProfileId },
+        select: { allianceId: true, role: true },
+      });
+
+      if (membership) {
+        const alliance = await prisma.alliance.findUnique({
+          where: { id: membership.allianceId },
+          include: {
+            members: {
+              select: {
+                role: true,
+                profileId: true,
+                joinedAt: true,
+                profile: { select: { companyName: true, netWorth: true } },
+              },
+            },
+          },
+        });
+
+        if (alliance) {
+          const bonusRevenue = Math.min(0.25, 0.05 * alliance.memberCount);
+          myAlliance = {
+            id: alliance.id,
+            name: alliance.name,
+            tag: alliance.tag,
+            memberCount: alliance.memberCount,
+            totalNetWorth: alliance.totalNetWorth,
+            createdAt: alliance.createdAt.getTime(),
+            members: alliance.members.map(m => ({
+              companyName: m.profile.companyName,
+              role: m.role,
+              netWorth: m.profile.netWorth,
+              joinedAt: m.joinedAt.getTime(),
+              isYou: m.profileId === myProfileId,
+            })),
+            bonuses: [
+              { label: 'Revenue', icon: '💰', value: Math.round(bonusRevenue * 100), type: 'revenue' },
+              { label: 'Mining', icon: '⛏️', value: Math.round(bonusRevenue * 50), type: 'mining' },
+              { label: 'Research', icon: '🔬', value: Math.round(bonusRevenue * 30), type: 'research' },
+            ],
+            sharedFacilities: [],
+          };
+        }
+      }
+    }
+
+    // Get all alliances for the listings (excluding user's own)
+    const allAlliances = await prisma.alliance.findMany({
       orderBy: { totalNetWorth: 'desc' },
       take: 50,
       select: {
         id: true,
         name: true,
         tag: true,
-        description: true,
         memberCount: true,
         totalNetWorth: true,
-        bonusRevenue: true,
-        leaderId: true,
-        members: {
-          select: {
-            role: true,
-            profile: { select: { companyName: true, netWorth: true } },
-          },
-          take: 10,
-        },
       },
     });
 
-    return NextResponse.json({ alliances });
+    const listings = allAlliances
+      .filter(a => !myAlliance || a.id !== myAlliance.id)
+      .map(a => ({
+        id: a.id,
+        name: a.name,
+        tag: a.tag,
+        memberCount: a.memberCount,
+        totalNetWorth: a.totalNetWorth,
+        isOpen: a.memberCount < 20,
+      }));
+
+    return NextResponse.json({ myAlliance, listings });
   } catch (error) {
-    return NextResponse.json({ alliances: [] });
+    logger.error('Alliance fetch error', { error: String(error) });
+    return NextResponse.json({ myAlliance: null, listings: [] });
   }
 }
 

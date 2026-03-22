@@ -202,13 +202,8 @@ export function processNPCTick(
       }
     }
 
-    if (marketActions.length > 0 && Math.random() < 0.3) { // Only log 30% of market activity
-      events.push({
-        id: generateId(), date: gameDate, type: 'npc_activity' as GameEvent['type'],
-        title: `${n.name} market activity`,
-        description: `${marketActions.length} trade${marketActions.length > 1 ? 's' : ''} on the market.`,
-      });
-    }
+    // NPC market trades are silent — they affect prices but don't spam the event log.
+    // Only meaningful NPC actions (research, expansion) create events.
 
     // ─── 7. Tier Progression (very slow — capped at tier 3) ───────
     if (n.currentTier < 3 && n.monthsPlayed * n.progressionSpeed >= [0, 0, 60, 150][n.currentTier + 1]) {

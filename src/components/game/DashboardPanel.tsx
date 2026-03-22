@@ -5,8 +5,10 @@ import type { GameState } from '@/lib/game/types';
 import { formatMoney, formatGameDate, formatCountdown } from '@/lib/game/formulas';
 import { BUILDING_MAP } from '@/lib/game/buildings';
 import { SERVICE_MAP } from '@/lib/game/services';
-import { RESEARCH } from '@/lib/game/research-tree';
+import { RESEARCH, getResearchBonuses } from '@/lib/game/research-tree';
 import { LOCATION_MAP } from '@/lib/game/solar-system';
+import { getWorkforceBonuses, getMonthlyPayroll } from '@/lib/game/workforce';
+import { getRevenueMultiplier as getUpgradeRevenueMultiplier, getMaintenanceMultiplier } from '@/lib/game/upgrades';
 import IncomeChart from '@/components/game/IncomeChart';
 import WeeklyChallengeWidget from '@/components/game/WeeklyChallengeWidget';
 
@@ -97,18 +99,47 @@ export default function DashboardPanel({ state }: { state: GameState }) {
   const completedBuildings = state.buildings.filter(b => b.isComplete);
   const inProgress = state.buildings.filter(b => !b.isComplete);
 
-  // Calculate financials
+  // Calculate financials — matches game engine logic exactly
   const financials = useMemo(() => {
-    let revenue = 0, costs = 0;
+    const workforce = state.workforce || { engineers: 0, scientists: 0, miners: 0, operators: 0 };
+    const wfBonuses = getWorkforceBonuses(workforce);
+    const resBonuses = getResearchBonuses(state.completedResearch);
+    const payroll = getMonthlyPayroll(workforce);
+
+    const priceMults = state.servicePriceMultipliers || {};
+    let revenue = 0, opCosts = 0, maintenance = 0;
     for (const svc of state.activeServices) {
       const def = SERVICE_MAP.get(svc.definitionId);
-      if (def) { revenue += Math.round(def.revenuePerMonth * svc.revenueMultiplier); costs += def.operatingCostPerMonth; }
+      if (!def) continue;
+      const linkedBld = state.buildings.find(b => b.isComplete && b.locationId === svc.locationId && BUILDING_MAP.get(b.definitionId)?.enabledServices?.includes(svc.definitionId));
+      const upgradeBoost = getUpgradeRevenueMultiplier(linkedBld?.upgradeLevel || 0);
+      const supplyMult = priceMults[svc.definitionId] ?? 1.0;
+      revenue += Math.round(
+        def.revenuePerMonth
+        * svc.revenueMultiplier
+        * upgradeBoost
+        * (1 + wfBonuses.serviceRevenue)
+        * (1 + resBonuses.serviceRevenueBonus)
+        * supplyMult
+      );
+      opCosts += def.operatingCostPerMonth;
     }
     for (const bld of state.buildings) {
-      if (bld.isComplete) { const def = BUILDING_MAP.get(bld.definitionId); if (def) costs += def.maintenanceCostPerMonth; }
+      if (!bld.isComplete) continue;
+      const def = BUILDING_MAP.get(bld.definitionId);
+      if (!def) continue;
+      const maintMult = getMaintenanceMultiplier(bld.upgradeLevel || 0);
+      maintenance += Math.round(def.maintenanceCostPerMonth * maintMult * (1 - resBonuses.maintenanceReduction));
     }
-    return { revenue, costs, net: revenue - costs };
-  }, [state.activeServices, state.buildings]);
+    // Check if any services are supply-impacted
+    const hasSupplyPenalty = Object.values(priceMults).some(m => m < 0.99);
+    const avgSupplyMult = Object.keys(priceMults).length > 0
+      ? Object.values(priceMults).reduce((a, b) => a + b, 0) / Object.values(priceMults).length
+      : 1.0;
+
+    const costs = opCosts + maintenance + payroll;
+    return { revenue, costs, opCosts, maintenance, payroll, net: revenue - costs, wfBonuses, resBonuses, hasSupplyPenalty, avgSupplyMult };
+  }, [state.activeServices, state.buildings, state.workforce, state.completedResearch, state.servicePriceMultipliers]);
 
   return (
     <div className="space-y-4">
@@ -186,6 +217,57 @@ export default function DashboardPanel({ state }: { state: GameState }) {
         <MiniSparkline positive={financials.net >= 0} />
       </div>
 
+      {/* Cost Breakdown — so players see workforce, research bonuses, and all line items */}
+      {(financials.payroll > 0 || financials.wfBonuses.serviceRevenue > 0 || financials.resBonuses.serviceRevenueBonus > 0) && (
+        <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-3">
+          <h3 className="text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-2">Income Breakdown</h3>
+          <div className="space-y-1 text-[11px]">
+            <div className="flex justify-between">
+              <span className="text-slate-400">Base service revenue</span>
+              <span className="text-slate-300 font-mono">
+                {formatMoney(state.activeServices.reduce((sum, s) => {
+                  const def = SERVICE_MAP.get(s.definitionId);
+                  return sum + (def ? Math.round(def.revenuePerMonth * s.revenueMultiplier) : 0);
+                }, 0))}
+              </span>
+            </div>
+            {financials.wfBonuses.serviceRevenue > 0 && (
+              <div className="flex justify-between">
+                <span className="text-cyan-400/80">+ Workforce bonus</span>
+                <span className="text-cyan-400 font-mono">+{Math.round(financials.wfBonuses.serviceRevenue * 100)}%</span>
+              </div>
+            )}
+            {financials.resBonuses.serviceRevenueBonus > 0 && (
+              <div className="flex justify-between">
+                <span className="text-purple-400/80">+ Research bonus</span>
+                <span className="text-purple-400 font-mono">+{Math.round(financials.resBonuses.serviceRevenueBonus * 100)}%</span>
+              </div>
+            )}
+            {financials.hasSupplyPenalty && (
+              <div className="flex justify-between">
+                <span className="text-amber-400/80">- Market supply pressure</span>
+                <span className="text-amber-400 font-mono">{Math.round((financials.avgSupplyMult - 1) * 100)}%</span>
+              </div>
+            )}
+            <div className="border-t border-white/[0.04] my-1" />
+            <div className="flex justify-between">
+              <span className="text-slate-400">Operating costs</span>
+              <span className="text-red-400/70 font-mono">-{formatMoney(financials.opCosts)}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-slate-400">Maintenance{financials.resBonuses.maintenanceReduction > 0 ? ` (-${Math.round(financials.resBonuses.maintenanceReduction * 100)}% research)` : ''}</span>
+              <span className="text-red-400/70 font-mono">-{formatMoney(financials.maintenance)}</span>
+            </div>
+            {financials.payroll > 0 && (
+              <div className="flex justify-between">
+                <span className="text-slate-400">Crew payroll</span>
+                <span className="text-red-400/70 font-mono">-{formatMoney(financials.payroll)}</span>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Income History Chart */}
       {state.incomeHistory && state.incomeHistory.length >= 2 && (
         <IncomeChart data={state.incomeHistory} />
@@ -193,6 +275,56 @@ export default function DashboardPanel({ state }: { state: GameState }) {
 
       {/* Weekly Challenge */}
       <WeeklyChallengeWidget />
+
+      {/* Speed Boosts — available and active */}
+      {((state.availableBoosts && state.availableBoosts.length > 0) || (state.activeBoosts && state.activeBoosts.length > 0)) && (
+        <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 p-3">
+          <h3 className="text-amber-400 text-[10px] font-bold uppercase tracking-wider mb-2 flex items-center gap-1">
+            <span>⚡</span> Speed Boosts
+          </h3>
+          {/* Active boosts with countdown */}
+          {state.activeBoosts && state.activeBoosts.filter(b => b.expiresAtMs > Date.now()).map(b => (
+            <div key={b.boostId} className="flex items-center justify-between text-[11px] mb-1">
+              <span className="text-green-400">{b.label}</span>
+              <span className="text-green-400/70 font-mono">
+                {Math.max(0, Math.round((b.expiresAtMs - Date.now()) / 60000))}m left
+              </span>
+            </div>
+          ))}
+          {/* Available boosts to activate */}
+          {state.availableBoosts && state.availableBoosts.length > 0 && (
+            <div className="space-y-1 mt-1">
+              {state.availableBoosts.slice(0, 5).map(b => (
+                <div key={b.id} className="flex items-center justify-between text-[11px]">
+                  <span className="text-slate-300">{b.label}</span>
+                  <button
+                    onClick={() => {
+                      // Move from available to active
+                      const now = Date.now();
+                      const activeBoost = {
+                        boostId: b.id,
+                        type: b.type,
+                        multiplier: b.multiplier,
+                        activatedAtMs: now,
+                        expiresAtMs: now + b.durationSeconds * 1000,
+                        label: b.label,
+                      };
+                      // This requires a setState callback from the parent — use window event
+                      window.dispatchEvent(new CustomEvent('activate-boost', { detail: { boostId: b.id, activeBoost } }));
+                    }}
+                    className="px-2 py-0.5 text-[9px] font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/30 rounded hover:bg-amber-500/30 transition-colors"
+                  >
+                    Activate
+                  </button>
+                </div>
+              ))}
+              {state.availableBoosts.length > 5 && (
+                <p className="text-slate-600 text-[9px]">+{state.availableBoosts.length - 5} more</p>
+              )}
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Active Effects (from random events) */}
       {state.activeEffects && state.activeEffects.length > 0 && (
@@ -285,7 +417,15 @@ export default function DashboardPanel({ state }: { state: GameState }) {
             {state.activeServices.map((svc, i) => {
               const def = SERVICE_MAP.get(svc.definitionId);
               if (!def) return null;
-              const rev = Math.round(def.revenuePerMonth * svc.revenueMultiplier);
+              const linkedBld = state.buildings.find(b => b.isComplete && b.locationId === svc.locationId && BUILDING_MAP.get(b.definitionId)?.enabledServices?.includes(svc.definitionId));
+              const upgradeBoost = getUpgradeRevenueMultiplier(linkedBld?.upgradeLevel || 0);
+              const supplyMult = (state.servicePriceMultipliers || {})[svc.definitionId] ?? 1.0;
+              const rev = Math.round(
+                def.revenuePerMonth * svc.revenueMultiplier * upgradeBoost
+                * (1 + financials.wfBonuses.serviceRevenue)
+                * (1 + financials.resBonuses.serviceRevenueBonus)
+                * supplyMult
+              );
               return (
                 <div key={i} className="flex items-center justify-between text-xs py-1 px-2 rounded-lg hover:bg-white/[0.02] transition-colors">
                   <span className="text-slate-300">{def.name}</span>
@@ -303,7 +443,10 @@ export default function DashboardPanel({ state }: { state: GameState }) {
           Event Log
         </h3>
         <div className="space-y-1 max-h-52 overflow-y-auto scrollbar-thin scrollbar-thumb-white/10">
-          {state.eventLog.slice(0, 20).map((evt, i) => {
+          {state.eventLog
+            .filter(evt => !(evt.type === 'npc_activity' && evt.title?.includes('market activity')))
+            .slice(0, 20)
+            .map((evt, i) => {
             const isNPC = evt.type === 'npc_activity';
             return (
               <div

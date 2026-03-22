@@ -30,6 +30,7 @@ import ContractsPanel from '@/components/game/ContractsPanel';
 import EventChoiceModal from '@/components/game/EventChoiceModal';
 import { RANDOM_EVENTS, applyEventEffect } from '@/lib/game/random-events';
 import { CONTRACT_POOL, isContractComplete, applyContractReward } from '@/lib/game/contracts';
+import { createContractBoost } from '@/lib/game/speed-boosts';
 import WelcomeBackModal from '@/components/game/WelcomeBackModal';
 import { calculateOfflineIncome, applyOfflineIncome } from '@/lib/game/offline-income';
 import type { OfflineEarnings } from '@/lib/game/offline-income';
@@ -162,10 +163,26 @@ function BuildPanel({ state, onBuild, onSellBuilding }: { state: GameState; onBu
                       const have = state.resources[resId] || 0;
                       const enough = have >= qty;
                       return (
-                        <span key={resId} className={`text-[9px] px-1.5 py-0.5 rounded border ${
+                        <span key={resId} className={`group relative text-[9px] px-1.5 py-0.5 rounded border cursor-help ${
                           enough ? 'text-slate-400 border-white/[0.06] bg-white/[0.02]' : 'text-red-400 border-red-500/20 bg-red-500/5'
                         }`}>
                           {resId.replace(/_/g, ' ')} {have}/{qty}
+                          {/* Resource acquisition tooltip */}
+                          {!enough && (
+                            <span className="invisible group-hover:visible absolute z-50 bottom-full left-1/2 -translate-x-1/2 mb-1.5 w-52 p-2.5 rounded-lg bg-[#0a0a14]/95 border border-cyan-500/20 shadow-lg shadow-black/50 text-[10px] leading-relaxed text-left pointer-events-none">
+                              <span className="block text-cyan-400 font-semibold mb-1">How to get {resId.replace(/_/g, ' ')}:</span>
+                              {(resId === 'iron' || resId === 'aluminum' || resId === 'titanium') ? (
+                                <span className="block text-slate-300">Build a <span className="text-amber-300">Mining Outpost</span> on the Lunar Surface and activate the <span className="text-amber-300">Lunar Mining</span> service. Resources will accumulate over time. Once you have resources, the <span className="text-cyan-300">Market tab</span> will unlock for buying &amp; selling.</span>
+                              ) : (resId === 'lunar_water' || resId === 'mars_water') ? (
+                                <span className="block text-slate-300">Water is mined from the <span className="text-amber-300">Lunar Surface</span> or <span className="text-amber-300">Mars Surface</span>. Build mining infrastructure and activate mining services at those locations.</span>
+                              ) : (resId === 'rare_earth' || resId === 'platinum_group' || resId === 'gold') ? (
+                                <span className="block text-slate-300">Rare materials require <span className="text-amber-300">Asteroid Belt</span> mining operations. Unlock the Asteroid Belt location, build mining facilities, and activate the asteroid mining service.</span>
+                              ) : (
+                                <span className="block text-slate-300">This resource is produced by <span className="text-amber-300">mining services</span>. Build mining facilities at the appropriate location, then activate the mining service. Check the <span className="text-cyan-300">Map tab</span> to see which locations yield this resource.</span>
+                              )}
+                              <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-[#0a0a14]/95 border-b border-r border-cyan-500/20 rotate-45"></span>
+                            </span>
+                          )}
                         </span>
                       );
                     })}
@@ -560,7 +577,16 @@ export default function SpaceTycoonPage() {
   const autoSaveRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // Sync to server for leaderboard (every 60s, fails gracefully if not logged in)
-  const syncStatus = useGameSync(state);
+  // Also receives dynamic service pricing multipliers from the server
+  const syncStatus = useGameSync(state, 60_000, (serverData) => {
+    setState(prev => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        servicePriceMultipliers: serverData.servicePriceMultipliers || prev.servicePriceMultipliers,
+      };
+    });
+  });
 
   // Load or show new game prompt
   useEffect(() => {
@@ -799,22 +825,42 @@ export default function SpaceTycoonPage() {
         setState(prev => {
           if (!prev) return prev;
           const rewarded = applyContractReward(prev, cDef.reward);
+          // Award a speed boost for completing the contract
+          const boost = createContractBoost(cDef.tier, cDef.id);
           return {
             ...rewarded,
             activeContracts: (prev.activeContracts || []).filter(id => id !== cId),
             completedContracts: [...(prev.completedContracts || []), cId],
+            availableBoosts: [...(prev.availableBoosts || []), boost],
             eventLog: [{
               id: generateId(),
               date: prev.gameDate,
               type: 'milestone' as const,
               title: `📋 Contract Complete: ${cDef.name}`,
-              description: `Reward: ${formatMoney(cDef.reward.money || 0)}`,
+              description: `Reward: ${formatMoney(cDef.reward.money || 0)} + ${boost.label}`,
             }, ...prev.eventLog].slice(0, 50),
           };
         });
       }
     }
   }, [state?.money, state?.buildings.length, state?.completedResearch.length, state?.unlockedLocations.length, state?.activeServices.length, unlockedAchievements]);
+
+  // Speed boost activation listener
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const { boostId, activeBoost } = (e as CustomEvent).detail;
+      setState(prev => {
+        if (!prev) return prev;
+        return {
+          ...prev,
+          availableBoosts: (prev.availableBoosts || []).filter(b => b.id !== boostId),
+          activeBoosts: [...(prev.activeBoosts || []), activeBoost],
+        };
+      });
+    };
+    window.addEventListener('activate-boost', handler);
+    return () => window.removeEventListener('activate-boost', handler);
+  }, []);
 
   // Resource sell handler (must be before early return)
   const handleSellResource = useCallback((resourceId: string, quantity: number, revenue: number) => {

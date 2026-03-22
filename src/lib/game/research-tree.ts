@@ -346,6 +346,110 @@ export const RESEARCH: ResearchDefinition[] = RAW_RESEARCH.map(r => {
 
 export const RESEARCH_MAP = new Map(RESEARCH.map(r => [r.id, r]));
 
+// ─── Research Bonuses ────────────────────────────────────────────────────────
+// Each completed research provides category-specific gameplay bonuses.
+// Bonuses scale by tier: T1=2%, T2=4%, T3=6%, T4=8%, T5=10% per research.
+
+export interface ResearchBonuses {
+  buildCostReduction: number;    // % less building cost
+  buildSpeedBonus: number;       // % faster construction
+  miningOutputBonus: number;     // % more resources from mining
+  serviceRevenueBonus: number;   // % more service revenue
+  researchSpeedBonus: number;    // % faster research
+  maintenanceReduction: number;  // % less maintenance cost
+}
+
+/** Aggregate gameplay bonuses from all completed research */
+export function getResearchBonuses(completedResearchIds: string[]): ResearchBonuses {
+  let buildCostReduction = 0;
+  let buildSpeedBonus = 0;
+  let miningOutputBonus = 0;
+  let serviceRevenueBonus = 0;
+  let researchSpeedBonus = 0;
+  let maintenanceReduction = 0;
+
+  for (const resId of completedResearchIds) {
+    const def = RESEARCH_MAP.get(resId);
+    if (!def) continue;
+
+    // Each research gives a bonus based on its tier (T1=2%, T2=4%, T3=6%, T4=8%, T5=10%)
+    const tierBonus = def.tier * 0.02;
+
+    switch (def.category) {
+      case 'rocketry':
+        buildCostReduction += tierBonus;
+        break;
+      case 'propulsion':
+        buildCostReduction += tierBonus * 0.5;
+        buildSpeedBonus += tierBonus * 0.5;
+        break;
+      case 'mining':
+        miningOutputBonus += tierBonus;
+        break;
+      case 'materials':
+        miningOutputBonus += tierBonus * 0.5;
+        maintenanceReduction += tierBonus * 0.5;
+        break;
+      case 'spacecraft':
+        maintenanceReduction += tierBonus;
+        break;
+      case 'infrastructure':
+        maintenanceReduction += tierBonus * 0.5;
+        buildSpeedBonus += tierBonus * 0.5;
+        break;
+      case 'solar_arrays':
+        serviceRevenueBonus += tierBonus;
+        break;
+      case 'services':
+        serviceRevenueBonus += tierBonus;
+        break;
+      case 'economy':
+        serviceRevenueBonus += tierBonus * 0.5;
+        maintenanceReduction += tierBonus * 0.5;
+        break;
+      case 'sensors':
+        serviceRevenueBonus += tierBonus * 0.7;
+        researchSpeedBonus += tierBonus * 0.3;
+        break;
+      case 'ai_chips':
+        researchSpeedBonus += tierBonus * 0.7;
+        serviceRevenueBonus += tierBonus * 0.3;
+        break;
+      case 'satellite_components':
+        serviceRevenueBonus += tierBonus;
+        break;
+      case 'crew':
+        buildSpeedBonus += tierBonus * 0.5;
+        maintenanceReduction += tierBonus * 0.5;
+        break;
+      case 'ships':
+        buildSpeedBonus += tierBonus * 0.5;
+        miningOutputBonus += tierBonus * 0.5;
+        break;
+      case 'defense':
+        maintenanceReduction += tierBonus;
+        break;
+      case 'exploration':
+        miningOutputBonus += tierBonus * 0.5;
+        serviceRevenueBonus += tierBonus * 0.5;
+        break;
+      case 'terraforming':
+        serviceRevenueBonus += tierBonus * 0.5;
+        miningOutputBonus += tierBonus * 0.5;
+        break;
+    }
+  }
+
+  return {
+    buildCostReduction: Math.min(buildCostReduction, 0.50),    // Cap 50%
+    buildSpeedBonus: Math.min(buildSpeedBonus, 0.50),          // Cap 50%
+    miningOutputBonus: Math.min(miningOutputBonus, 1.0),       // Cap 100%
+    serviceRevenueBonus: Math.min(serviceRevenueBonus, 0.50),  // Cap 50%
+    researchSpeedBonus: Math.min(researchSpeedBonus, 0.50),    // Cap 50%
+    maintenanceReduction: Math.min(maintenanceReduction, 0.50), // Cap 50%
+  };
+}
+
 export const RESEARCH_CATEGORIES = [
   { id: 'rocketry', name: 'Rocketry', icon: '🚀' },
   { id: 'spacecraft', name: 'Spacecraft Design', icon: '🛸' },

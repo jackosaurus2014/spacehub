@@ -5,7 +5,7 @@
 import type { GameState, GameEvent } from './types';
 import { BUILDING_MAP } from './buildings';
 import { SERVICE_MAP } from './services';
-import { RESEARCH_MAP } from './research-tree';
+import { RESEARCH_MAP, getResearchBonuses } from './research-tree';
 import { MINING_PRODUCTION } from './resources';
 import { advanceDate, generateId, revenueMultiplier } from './formulas';
 import { MAX_EVENT_LOG, TICKS_PER_GAME_MONTH } from './constants';
@@ -16,6 +16,8 @@ import { checkMilestones } from './milestones';
 import { getRevenueMultiplier as getUpgradeRevenueMultiplier, getMaintenanceMultiplier } from './upgrades';
 import { SHIP_MAP } from './ships';
 import { getWorkforceBonuses, getMonthlyPayroll } from './workforce';
+import { getActiveBoostMultiplier, cleanupExpiredBoosts } from './speed-boosts';
+import type { ActiveBoost } from './speed-boosts';
 import { rollMarketEvent } from './market-events';
 import type { ActiveMarketEvent } from './market-events';
 import { checkAchievements } from './achievements';
@@ -48,6 +50,9 @@ export function processTick(state: GameState): GameState {
   const workforce = state.workforce || { engineers: 0, scientists: 0, miners: 0, operators: 0 };
   const wfBonuses = getWorkforceBonuses(workforce);
 
+  // Get research bonuses (category-specific bonuses from completed research)
+  const resBonuses = getResearchBonuses(state.completedResearch);
+
   // Get prestige bonuses
   const prestige = state.prestige || { level: 0, legacyPoints: 0, permanentBonuses: { revenueMultiplier: 1, buildSpeedMultiplier: 1, researchSpeedMultiplier: 1, miningMultiplier: 1, startingMoney: 200_000_000 } };
   const prestigeRevMult = prestige.permanentBonuses?.revenueMultiplier || 1;
@@ -69,13 +74,17 @@ export function processTick(state: GameState): GameState {
     if (!def) continue;
     const linkedBld = state.buildings.find(b => b.isComplete && b.locationId === svc.locationId && BUILDING_MAP.get(b.definitionId)?.enabledServices?.includes(svc.definitionId));
     const upgradeBoost = getUpgradeRevenueMultiplier(linkedBld?.upgradeLevel || 0);
+    // Dynamic service pricing: server-reported multiplier based on global supply
+    const supplyMult = (state.servicePriceMultipliers || {})[svc.definitionId] ?? 1.0;
     const revenue = Math.round(
       def.revenuePerMonth * fraction
       * svc.revenueMultiplier
       * multipliers.revenueMultiplier
       * upgradeBoost
       * (1 + wfBonuses.serviceRevenue)
+      * (1 + resBonuses.serviceRevenueBonus)
       * prestigeRevMult
+      * supplyMult
     );
     const cost = Math.round(def.operatingCostPerMonth * fraction * multipliers.costMultiplier);
     money += revenue - cost;
@@ -91,7 +100,7 @@ export function processTick(state: GameState): GameState {
     const def = BUILDING_MAP.get(bld.definitionId);
     if (!def) continue;
     const maintMult = getMaintenanceMultiplier(bld.upgradeLevel || 0);
-    const maint = Math.round(def.maintenanceCostPerMonth * fraction * multipliers.costMultiplier * maintMult);
+    const maint = Math.round(def.maintenanceCostPerMonth * fraction * multipliers.costMultiplier * maintMult * (1 - resBonuses.maintenanceReduction));
     money -= maint;
     totalSpent += maint;
     monthlyCosts += maint;
@@ -99,10 +108,14 @@ export function processTick(state: GameState): GameState {
 
   // ─── 3. Construction completion check (real wall-clock time) ──────
   const now = Date.now();
+  const activeBoosts: ActiveBoost[] = (state.activeBoosts || []) as ActiveBoost[];
+  const buildBoostMult = getActiveBoostMultiplier(activeBoosts, 'construction');
   const buildings = state.buildings.map((bld) => {
     if (bld.isComplete) return bld;
     const elapsed = (now - (bld.startedAtMs || 0)) / 1000;
-    if (elapsed >= (bld.realDurationSeconds || 0)) {
+    // Speed boosts reduce effective duration
+    const effectiveDuration = (bld.realDurationSeconds || 0) / buildBoostMult;
+    if (elapsed >= effectiveDuration) {
       const def = BUILDING_MAP.get(bld.definitionId);
       events.push({
         id: generateId(), date: newDate, type: 'build_complete',
@@ -122,7 +135,8 @@ export function processTick(state: GameState): GameState {
 
   if (activeResearch) {
     const researchElapsed = (now - (activeResearch.startedAtMs || 0)) / 1000;
-    const researchSpeedMult = (1 + wfBonuses.researchSpeed) * (prestige.permanentBonuses?.researchSpeedMultiplier || 1);
+    const researchBoostMult = getActiveBoostMultiplier(activeBoosts, 'research');
+    const researchSpeedMult = (1 + wfBonuses.researchSpeed) * (1 + resBonuses.researchSpeedBonus) * (prestige.permanentBonuses?.researchSpeedMultiplier || 1) * researchBoostMult;
     const effectiveDuration = (activeResearch.realDurationSeconds || 0) / researchSpeedMult;
     if (researchElapsed >= effectiveDuration) {
       completedResearch.push(activeResearch.definitionId);
@@ -174,7 +188,7 @@ export function processTick(state: GameState): GameState {
 
   // ─── 6. Resource production (fractional per tick, with bonuses) ───
   const resources = { ...(state.resources || {}) };
-  const miningMult = (1 + wfBonuses.miningOutput) * prestigeMiningMult;
+  const miningMult = (1 + wfBonuses.miningOutput) * (1 + resBonuses.miningOutputBonus) * prestigeMiningMult;
   for (const svc of activeServices) {
     const production = MINING_PRODUCTION[svc.definitionId];
     if (!production) continue;
@@ -252,8 +266,9 @@ export function processTick(state: GameState): GameState {
     activeMarketEvents = activeMarketEvents.filter(e => Date.now() < e.expiresAtMs);
   } catch { /* market events non-critical */ }
 
-  // ─── 9. Clean up expired effects ──────────────────────────────────
+  // ─── 9. Clean up expired effects and boosts ─────────────────────
   const activeEffects = cleanupExpiredEffects({ ...state, gameDate: newDate });
+  const cleanedBoosts = cleanupExpiredBoosts(activeBoosts);
 
   // ─── 10. Track income history (last 24 months) ────────────────────
   const netIncome = Math.round(monthlyRevenue - monthlyCosts - payroll);
@@ -280,6 +295,7 @@ export function processTick(state: GameState): GameState {
     resources,
     activeEffects,
     activeMarketEvents,
+    activeBoosts: cleanedBoosts,
     pendingChoice,
     incomeHistory,
     eventLog,

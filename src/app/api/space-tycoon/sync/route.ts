@@ -4,6 +4,7 @@ import { authOptions } from '@/lib/auth';
 import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
 import { getGlobalGameDate, formatServerDate } from '@/lib/game/server-time';
+import { getAllServicePriceMultipliers } from '@/lib/game/service-pricing';
 
 /**
  * POST /api/space-tycoon/sync
@@ -178,6 +179,26 @@ export async function POST(request: Request) {
     // Include canonical server game date so clients stay in sync
     const serverGameDate = getGlobalGameDate();
 
+    // Compute global service counts for dynamic pricing
+    // Count how many instances of each service exist across ALL players
+    let servicePriceMultipliers: Record<string, number> = {};
+    try {
+      const allProfiles = await prisma.gameProfile.findMany({
+        select: { activeServicesData: true },
+        where: { lastSyncAt: { gt: new Date(Date.now() - 7 * 24 * 3600_000) } }, // Active in last 7 days
+      });
+      const globalServiceCounts: Record<string, number> = {};
+      for (const p of allProfiles) {
+        const services = (p.activeServicesData as { definitionId: string }[] | null) || [];
+        for (const svc of services) {
+          if (svc.definitionId) {
+            globalServiceCounts[svc.definitionId] = (globalServiceCounts[svc.definitionId] || 0) + 1;
+          }
+        }
+      }
+      servicePriceMultipliers = getAllServicePriceMultipliers(globalServiceCounts);
+    } catch { /* non-critical — fall back to no adjustment */ }
+
     return NextResponse.json({
       success: true,
       profileId: profile.id,
@@ -189,6 +210,7 @@ export async function POST(request: Request) {
       allianceTag,
       openBounties,
       globalMilestones,
+      servicePriceMultipliers,
       // Global game date — all players must use this
       serverGameDate: {
         year: serverGameDate.year,
