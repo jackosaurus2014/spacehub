@@ -5,61 +5,73 @@ import AnimatedCounter from '@/components/ui/AnimatedCounter';
 
 const VALUE_PILLARS = [
   {
-    icon: '\u{1F4E1}',
-    title: 'Real-Time Data',
+    icon: '📡',
+    title: 'Real-Time Data Feeds',
     description:
-      'Continuously updated from government APIs and curated sources \u2014 not annual reports published months after collection.',
+      'Continuously updated from 50+ government APIs and curated sources — not annual reports published months after collection.',
+    badge: 'LIVE',
+    badgeColor: 'emerald',
   },
   {
-    icon: '\u{1F6E0}\uFE0F',
-    title: 'Interactive Tools',
+    icon: '🛠️',
+    title: '264+ Interactive Tools',
     description:
-      'Satellite trackers, mission cost calculators, market sizing analysis, AI investment thesis generators, and deal rooms \u2014 not just articles to read.',
+      'Satellite trackers, mission calculators, market analysis, AI investment thesis generators, deal rooms, and constellation designers.',
+    badge: null,
+    badgeColor: null,
   },
   {
-    icon: '\u{1F4B0}',
-    title: 'Affordable Access',
+    icon: '💰',
+    title: 'Starts at $0/month',
     description:
-      'Designed for individual professionals and startups \u2014 not $3,000\u2013$10,000 consulting reports locked behind enterprise paywalls.',
+      'Full platform access for individual professionals and startups — not $3,000–$10,000 consulting reports locked behind enterprise paywalls.',
+    badge: 'FREE',
+    badgeColor: 'blue',
   },
 ];
 
 const AUDIENCES = [
   {
-    icon: '\u{1F680}',
+    icon: '🚀',
     title: 'Entrepreneurs & Founders',
     description:
       'Find grants and SBIR funding, build business models, discover customers, and track regulatory risks.',
+    tier: null,
   },
   {
-    icon: '\u{1F4B8}',
+    icon: '💸',
     title: 'Investors & VCs',
     description:
       'AI-powered investment theses, market sizing analysis, live funding tracker, and secure deal rooms.',
+    tier: 'PRO',
   },
   {
-    icon: '\u{1F4CA}',
+    icon: '📊',
     title: 'CEOs & Executives',
     description:
       'Single-screen view of the space economy with real-time market data and competitive intelligence.',
+    tier: 'PRO',
   },
   {
-    icon: '\u{1F9ED}',
+    icon: '🧭',
     title: 'Mission Planners',
     description:
       'Compare launch vehicles, calculate mission costs, track launch windows and orbital parameters.',
+    tier: null,
   },
   {
-    icon: '\u{1F517}',
+    icon: '🔗',
     title: 'Supply Chain Professionals',
     description:
       'Map the space supply chain, identify suppliers, and track resource exchange markets.',
+    tier: 'PRO',
   },
   {
-    icon: '\u{2696}\uFE0F',
+    icon: '⚖️',
     title: 'Lawyers & Compliance',
     description:
       'Track space treaties, monitor FCC/FAA/ITU filings, navigate ITAR/EAR export controls.',
+    tier: null,
   },
 ];
 
@@ -88,12 +100,21 @@ export default function LandingValueProp() {
             </div>
           </ScrollReveal>
 
-          <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+          <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-5xl mx-auto">
             {VALUE_PILLARS.map((pillar) => (
               <StaggerItem key={pillar.title}>
-                <div className="card-glass p-8 text-center h-full">
-                  <div className="text-4xl mb-4">{pillar.icon}</div>
-                  <h3 className="text-xl font-semibold text-white mb-3">
+                <div className="card-glass p-6 md:p-8 text-center h-full relative overflow-hidden group hover:border-white/[0.12] transition-all">
+                  {pillar.badge && (
+                    <span className={`absolute top-3 right-3 text-[8px] font-bold uppercase tracking-wider px-2 py-0.5 rounded ${
+                      pillar.badgeColor === 'emerald' ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/20' :
+                      pillar.badgeColor === 'blue' ? 'bg-blue-500/15 text-blue-400 border border-blue-500/20' :
+                      'bg-white/[0.06] text-slate-400 border border-white/[0.08]'
+                    }`}>
+                      {pillar.badge}
+                    </span>
+                  )}
+                  <div className="text-3xl mb-3">{pillar.icon}</div>
+                  <h3 className="text-lg font-semibold text-white mb-2">
                     {pillar.title}
                   </h3>
                   <p className="text-slate-400 text-sm leading-relaxed">
@@ -143,17 +164,20 @@ export default function LandingValueProp() {
             </div>
           </ScrollReveal>
 
-          <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 max-w-5xl mx-auto" staggerDelay={0.08}>
+          <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-5xl mx-auto" staggerDelay={0.08}>
             {AUDIENCES.map((audience) => (
               <StaggerItem key={audience.title}>
-                <div className="card-glass p-6 h-full">
-                  <div className="flex items-start gap-4">
-                    <span className="text-2xl flex-shrink-0 mt-1">{audience.icon}</span>
+                <div className="card-glass p-5 h-full relative overflow-hidden hover:border-white/[0.12] transition-all">
+                  {audience.tier && (
+                    <span className="absolute top-3 right-3 pro-badge">{audience.tier}</span>
+                  )}
+                  <div className="flex items-start gap-3">
+                    <span className="text-xl flex-shrink-0 mt-0.5">{audience.icon}</span>
                     <div>
-                      <h3 className="font-semibold text-white mb-1.5">
+                      <h3 className="font-semibold text-white mb-1 text-sm">
                         {audience.title}
                       </h3>
-                      <p className="text-slate-400 text-sm leading-relaxed">
+                      <p className="text-slate-400 text-xs leading-relaxed">
                         {audience.description}
                       </p>
                     </div>
