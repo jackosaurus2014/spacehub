@@ -1010,6 +1010,8 @@ export default function SpaceTycoonPage() {
         priority={false}
       />
       <GameStyles />
+      {/* Animated nebula background — subtle color drift behind game content */}
+      <div className="game-nebula-bg" />
       {/* Resource Bar */}
       <ResourceBar state={state} />
 
