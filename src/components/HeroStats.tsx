@@ -223,7 +223,18 @@ export default function HeroStats() {
   };
 
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8" role="region" aria-label="Key space industry metrics">
+    <div className="mb-8" role="region" aria-label="Key space industry metrics">
+    {/* Terminal-style header */}
+    <div className="flex items-center justify-between mb-3 px-1">
+      <div className="flex items-center gap-2">
+        <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+        <span className="text-[10px] uppercase tracking-[0.15em] text-slate-500 font-semibold">Live Market Data</span>
+      </div>
+      <span className="text-[9px] text-slate-600 font-mono tabular-nums">
+        Updated {new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
+      </span>
+    </div>
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
       <span className="sr-only">
         {`Dashboard overview: ${launch ? `Next launch ${launch.name} by ${launch.provider} in ${launch.timeUntil}` : 'No upcoming launches'}. ${
           market?.type === 'ipo' && market.ipoCompany
@@ -236,10 +247,13 @@ export default function HeroStats() {
         }.`}
       </span>
       {/* Next Launch */}
-      <Link href="/mission-control" className="card-glass p-4 group">
-        <div className="flex items-center gap-2 mb-2">
-          <span className="text-xl">🚀</span>
-          <span className="text-xs uppercase tracking-wider text-white/70 font-medium">Next Launch</span>
+      <Link href="/mission-control" className="card-glass p-4 group relative overflow-hidden">
+        <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center gap-2">
+            <span className="text-lg">🚀</span>
+            <span className="text-[10px] uppercase tracking-[0.12em] text-slate-500 font-semibold">Next Launch</span>
+          </div>
+          <span className="live-badge text-[7px]">LIVE</span>
         </div>
         {launch ? (
           <>
@@ -257,12 +271,15 @@ export default function HeroStats() {
       </Link>
 
       {/* Market Highlight */}
-      <Link href="/market-intel" className="card-glass p-4 group">
-        <div className="flex items-center gap-2 mb-2">
-          <span className="text-xl">{market?.type === 'ipo' ? '🔔' : '📈'}</span>
-          <span className="text-xs uppercase tracking-wider text-white/70 font-medium">
-            {market?.type === 'ipo' ? 'Upcoming IPO' : 'Top Performer'}
-          </span>
+      <Link href="/market-intel" className="card-glass p-4 group relative overflow-hidden">
+        <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center gap-2">
+            <span className="text-lg">{market?.type === 'ipo' ? '🔔' : '📈'}</span>
+            <span className="text-[10px] uppercase tracking-[0.12em] text-slate-500 font-semibold">
+              {market?.type === 'ipo' ? 'Upcoming IPO' : 'Top Performer'}
+            </span>
+          </div>
+          <span className="pro-badge">PRO</span>
         </div>
         {market ? (
           market.type === 'ipo' && market.ipoCompany ? (
@@ -296,10 +313,13 @@ export default function HeroStats() {
       </Link>
 
       {/* Breaking News */}
-      <Link href="/news" className="card p-4 hover:border-white/15 transition-all group col-span-1 lg:col-span-1 !bg-black/95">
-        <div className="flex items-center gap-2 mb-2">
-          <span className="text-xl">📰</span>
-          <span className="text-xs uppercase tracking-wider text-white/70 font-medium">Latest News</span>
+      <Link href="/news" className="card-glass p-4 group relative overflow-hidden">
+        <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center gap-2">
+            <span className="text-lg">📰</span>
+            <span className="text-[10px] uppercase tracking-[0.12em] text-slate-500 font-semibold">Latest News</span>
+          </div>
+          <span className="live-badge text-[7px]">LIVE</span>
         </div>
         {news ? (
           <>
@@ -314,10 +334,13 @@ export default function HeroStats() {
       </Link>
 
       {/* Solar Activity */}
-      <Link href="/space-environment" className="card-glass p-4 group">
-        <div className="flex items-center gap-2 mb-2">
-          <span className="text-xl">☀️</span>
-          <span className="text-xs uppercase tracking-wider text-white/70 font-medium">Space Weather</span>
+      <Link href="/space-environment" className="card-glass p-4 group relative overflow-hidden">
+        <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center gap-2">
+            <span className="text-lg">☀️</span>
+            <span className="text-[10px] uppercase tracking-[0.12em] text-slate-500 font-semibold">Space Weather</span>
+          </div>
+          <span className="live-badge text-[7px]">LIVE</span>
         </div>
         {solar ? (
           <>
@@ -335,6 +358,7 @@ export default function HeroStats() {
           <p className="text-slate-400">Loading solar data...</p>
         )}
       </Link>
+    </div>
     </div>
   );
 }
