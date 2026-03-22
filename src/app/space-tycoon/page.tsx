@@ -390,8 +390,11 @@ function ResearchPanel({ state, onStartResearch }: { state: GameState; onStartRe
                   const hasResCost = !r.resourceCost || Object.entries(r.resourceCost).every(
                     ([resId, qty]) => (state.resources[resId] || 0) >= qty
                   );
-                  const canStart = !completed && !active && !state.activeResearch && prereqsMet && state.money >= r.baseCostMoney && hasResCost;
+                  const canAffordMoney = state.money >= r.baseCostMoney;
+                  const canStart = !completed && !active && !state.activeResearch && prereqsMet && canAffordMoney && hasResCost;
                   const locked = !prereqsMet && !completed;
+                  // Unlocked (prereqs met) but missing money or resources
+                  const unlockedCantAfford = !completed && !active && prereqsMet && (!canAffordMoney || !hasResCost);
 
                   return (
                     <div
@@ -400,7 +403,8 @@ function ResearchPanel({ state, onStartResearch }: { state: GameState; onStartRe
                         completed ? 'border-green-500/20 bg-green-500/5' :
                         active ? 'border-purple-500/30 bg-purple-500/10 game-glow-pulse' :
                         locked ? 'border-white/[0.03] bg-white/[0.01] opacity-40' :
-                        canStart ? 'border-purple-500/20 bg-white/[0.03] hover:border-purple-500/40 hover:bg-purple-500/5 cursor-pointer' :
+                        canStart ? 'border-purple-500/30 bg-purple-500/5 hover:border-purple-500/50 hover:bg-purple-500/10 cursor-pointer ring-1 ring-purple-500/10' :
+                        unlockedCantAfford ? 'border-amber-500/15 bg-amber-500/[0.03]' :
                         'border-white/[0.06] bg-white/[0.02]'
                       }`}
                       onClick={() => { if (canStart) onStartResearch(r.id); }}
@@ -410,13 +414,30 @@ function ResearchPanel({ state, onStartResearch }: { state: GameState; onStartRe
                           {completed && <span className="text-green-400 text-xs">✓</span>}
                           {active && <span className="text-purple-400 text-xs animate-pulse">◉</span>}
                           {locked && <span className="text-slate-600 text-xs">🔒</span>}
-                          <span className={`text-xs font-medium ${completed ? 'text-green-300' : locked ? 'text-slate-500' : 'text-white'}`}>{r.name}</span>
+                          {canStart && <span className="text-purple-400 text-xs">▶</span>}
+                          {unlockedCantAfford && <span className="text-amber-400/70 text-xs">◎</span>}
+                          <span className={`text-xs font-medium ${
+                            completed ? 'text-green-300' :
+                            locked ? 'text-slate-500' :
+                            canStart ? 'text-purple-200' :
+                            unlockedCantAfford ? 'text-amber-200/80' :
+                            'text-white'
+                          }`}>{r.name}</span>
                         </div>
-                        <span className={`text-[9px] px-1.5 py-0.5 rounded-full ${
-                          completed ? 'bg-green-500/20 text-green-400' :
-                          active ? 'bg-purple-500/20 text-purple-400' :
-                          `bg-white/[0.04] text-slate-500`
-                        }`}>T{r.tier}</span>
+                        <div className="flex items-center gap-1">
+                          {canStart && !state.activeResearch && (
+                            <span className="text-[8px] px-1.5 py-0.5 rounded-full bg-purple-500/20 text-purple-300 font-semibold">READY</span>
+                          )}
+                          {unlockedCantAfford && (
+                            <span className="text-[8px] px-1.5 py-0.5 rounded-full bg-amber-500/15 text-amber-400/70 font-medium">NEED $</span>
+                          )}
+                          <span className={`text-[9px] px-1.5 py-0.5 rounded-full ${
+                            completed ? 'bg-green-500/20 text-green-400' :
+                            active ? 'bg-purple-500/20 text-purple-400' :
+                            canStart ? 'bg-purple-500/15 text-purple-300' :
+                            `bg-white/[0.04] text-slate-500`
+                          }`}>T{r.tier}</span>
+                        </div>
                       </div>
                       <p className="text-slate-400 text-[10px] mb-1.5 leading-relaxed">{r.effect}</p>
                       {/* Prerequisites */}
@@ -451,10 +472,19 @@ function ResearchPanel({ state, onStartResearch }: { state: GameState; onStartRe
                       {/* Cost & action */}
                       {!completed && !active && !locked && (
                         <div className="flex items-center justify-between">
-                          <span className="text-slate-500 text-[10px]">{formatMoney(r.baseCostMoney)} · {formatDuration(r.realResearchSeconds)}</span>
+                          <div className="flex items-center gap-2 text-[10px]">
+                            <span className={canAffordMoney ? 'text-green-400/80' : 'text-red-400/80'}>{formatMoney(r.baseCostMoney)}</span>
+                            <span className="text-slate-600">·</span>
+                            <span className="text-slate-500">{formatDuration(r.realResearchSeconds)}</span>
+                          </div>
                           {canStart && (
-                            <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-purple-600 text-white">
+                            <span className="px-2.5 py-1 rounded text-[10px] font-semibold bg-purple-600 text-white hover:bg-purple-500 transition-colors">
                               Research
+                            </span>
+                          )}
+                          {unlockedCantAfford && !canAffordMoney && (
+                            <span className="text-[9px] text-amber-400/60">
+                              Need {formatMoney(r.baseCostMoney - state.money)} more
                             </span>
                           )}
                         </div>
