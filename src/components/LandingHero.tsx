@@ -114,7 +114,7 @@ export default function LandingHero({ featuredArticle, trendingNews }: LandingHe
           {/* Featured Content Cards — replaces stat counters */}
           <HeroReveal delay={0.9} className="mb-6">
             {(featuredArticle || trendingNews) ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-2xl mx-auto">
+              <div id="hero-content-cards" className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-2xl mx-auto">
                 {featuredArticle && (
                   <Link
                     href={featuredArticle.href}

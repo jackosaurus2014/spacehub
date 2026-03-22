@@ -4,6 +4,7 @@ import nextDynamic from 'next/dynamic';
 import { ModuleContainer } from '@/components/modules';
 import { getDefaultModulePreferences } from '@/lib/module-preferences';
 import LandingHero from '@/components/LandingHero';
+import HomeScrollManager from '@/components/landing/HomeScrollManager';
 import prisma from '@/lib/db';
 import { BLOG_POSTS } from '@/lib/blog-content';
 import { logger } from '@/lib/logger';
@@ -199,6 +200,9 @@ export default async function HomePage() {
 
   return (
     <div className="min-h-screen">
+      {/* Scroll manager: non-subscribers see top, subscribers see content */}
+      <HomeScrollManager />
+
       {/* Hero Section with featured content */}
       <LandingHero featuredArticle={featuredArticle} trendingNews={trendingNews} />
 
