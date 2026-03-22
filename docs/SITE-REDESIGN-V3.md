@@ -2,20 +2,122 @@
 
 > **Aesthetic direction**: Futuristic mission control — the Bloomberg terminal you'd use to run a space program. Ultra-clean, high-contrast, data-dense, functionally beautiful. Real aerospace UI patterns, not sci-fi cosplay.
 
-> **Design philosophy**: Every pixel serves a purpose. Color means something. Data is the decoration. Restraint is luxury.
+> **Design philosophy**: Every pixel serves a purpose. Color means something. Data is the decoration. Restraint is luxury. The user is in command — they decide what they see.
 
 ---
 
 ## Table of Contents
 
+0. [User-First Design & Persona System](#user-first)
 1. [Design Principles](#design-principles)
 2. [Phase 1: Foundation — Color, Typography, Spacing](#phase-1-foundation)
 3. [Phase 2: Hero & Landing Page](#phase-2-hero)
 4. [Phase 3: Data Panels & Card System](#phase-3-data-panels)
 5. [Phase 4: Pricing & Conversion Pages](#phase-4-pricing)
-6. [Phase 5: Navigation & Footer](#phase-5-navigation)
-7. [Anti-Patterns — What to Avoid](#anti-patterns)
-8. [Implementation Reference](#implementation-reference)
+6. [Phase 5: Navigation & Footer — Complete Overhaul](#phase-5-navigation)
+7. [Phase 6: Customizable Module Layouts](#phase-6-customizable-modules)
+8. [Phase 7: Space Tycoon Enthusiast Experience](#phase-7-space-tycoon)
+9. [Phase 8: Scrollbars, Links, Toolbars — Interaction Design Overhaul](#phase-8-interaction-design)
+10. [Anti-Patterns — What to Avoid](#anti-patterns)
+11. [Implementation Reference](#implementation-reference)
+
+---
+
+## User-First Design & Persona System {#user-first}
+
+### The Three Users
+
+Every design decision filters through three personas. They share the same platform but need different defaults, density levels, and highlighted features.
+
+| Persona | Primary Need | Density | Key Modules | Default View |
+|---------|-------------|---------|-------------|--------------|
+| **Enthusiast** | Explore, learn, play | Low-medium | Space Tycoon, News, Launch Manifest, Podcasts, APOD, Blog, Night Sky | Discovery feed with Space Tycoon promo prominent |
+| **Professional** | Data, tools, compliance | High | Satellite Tracker, Regulatory Hub, Supply Chain, Engineering Tools, Workforce Analytics | Dashboard with customizable data panels |
+| **Investor / Founder** | Market intelligence, deals | Medium-high | Market Intel, Funding Tracker, Company Profiles, Deal Room, Startup Directory, Investment Thesis AI | Portfolio view with alerts and funding feed |
+
+### Persona Selection — First 10 Seconds
+
+On first visit, before anything else, the user picks their path. Not a form — a single click.
+
+```
+┌──────────────────────────────────────────────────────────────┐
+│                                                              │
+│        Welcome to SpaceNexus. How do you use space?          │
+│                                                              │
+│   ┌──────────────┐  ┌──────────────┐  ┌──────────────┐      │
+│   │   🔭         │  │   📊         │  │   💰         │      │
+│   │  Enthusiast  │  │ Professional │  │   Investor   │      │
+│   │              │  │              │  │   & Founder  │      │
+│   │  Launches,   │  │  Data tools, │  │  Funding,    │      │
+│   │  news, game  │  │  compliance  │  │  deal flow   │      │
+│   └──────────────┘  └──────────────┘  └──────────────┘      │
+│                                                              │
+│              Skip — show me everything                       │
+└──────────────────────────────────────────────────────────────┘
+```
+
+**What persona selection does:**
+- Sets the **default sidebar modules** and their order
+- Sets the **homepage section order** (e.g., enthusiasts see Space Tycoon above market data)
+- Sets the **navigation item priority** (which items appear first in menus)
+- Sets the **data density default** (enthusiast = spacious, professional = dense)
+- Stored in `localStorage` with a `persona` key. Changeable anytime from Settings or profile dropdown.
+
+**What it does NOT do:**
+- Gate or hide content. All users can access everything.
+- Require signup. Persona selection works for anonymous visitors.
+- Create a permanent commitment. One click to change.
+
+### Customization Philosophy
+
+**"Start opinionated, let them adjust."**
+
+Every module defaults to a curated view based on persona, but every data panel within a module can be:
+- **Collapsed** (header-only, takes one line)
+- **Expanded** (full content)
+- **Removed** (hidden from this module's view)
+- **Reordered** (drag or menu-driven)
+
+A persistent "Customize View" button (gear icon) in each module's toolbar reveals toggle switches for each data panel. Preferences save to `localStorage` per module.
+
+```
+┌─ Satellite Tracker ─────────────────────── [⚙ Customize] ─┐
+│                                                              │
+│  ┌─ Orbital Map ────────────────────────────── [−] [×] ─┐   │
+│  │  (full panel content)                                 │   │
+│  └───────────────────────────────────────────────────────┘   │
+│                                                              │
+│  ┌─ Conjunction Alerts ────────────────────── [−] [×] ─┐    │
+│  │  (collapsed — header only with count badge)          │    │
+│  └──────────────────────────────────────────────────────┘    │
+│                                                              │
+│  ┌─ Tracking Table ────────────────────────── [−] [×] ─┐    │
+│  │  (full panel content)                                │    │
+│  └──────────────────────────────────────────────────────┘    │
+│                                                              │
+│  + Add Panel: [Decay Predictions] [TLE Data] [Statistics]    │
+└──────────────────────────────────────────────────────────────┘
+```
+
+**Panel controls:**
+- `[−]` = Collapse to header-only (saves vertical space)
+- `[×]` = Remove from view (re-add from "Add Panel" strip at bottom)
+- `[≡]` = Drag handle for reordering (visible on hover only)
+
+**State persistence:**
+```typescript
+// Per-module layout stored in localStorage
+interface ModuleLayout {
+  moduleId: string;
+  panels: {
+    panelId: string;
+    visible: boolean;
+    collapsed: boolean;
+    order: number;
+  }[];
+  lastModified: number;
+}
+```
 
 ---
 
@@ -467,55 +569,642 @@ Replace generic trust signals with mission-control-style confidence builders:
 
 ---
 
-## Phase 5: Navigation & Footer {#phase-5-navigation}
+## Phase 5: Navigation & Footer — Complete Overhaul {#phase-5-navigation}
 
-### 5.1 Top Navigation
+### The Problem (Audit Results)
 
-**Current problem**: Heavy glassmorphism nav with 4 mega-dropdowns containing 146 items. Information overload.
+The current navigation has **191 items across 4 mega-dropdowns**, a left sidebar with 30+ items, a mobile tab bar with 40+ items, a sequential module navbar, and breadcrumbs. Five separate navigation systems competing for attention. Users don't know which one to use.
 
-**New direction**: Minimal persistent nav with search-first architecture.
+### 5.1 New Navigation Architecture: Search-First, Persona-Aware
+
+**Principle**: The fastest navigation is search. The cleanest navigation is fewer choices. The best navigation remembers what you use.
+
+#### Top Navigation Bar (56px height)
 
 ```
-┌──────────────────────────────────────────────────────────────┐
-│  [Logo]   Modules   Intelligence   Pricing   ⌘K    [Sign In]│
-└──────────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────────┐
+│  [Logo]    Home    Modules ▾    Game    Pricing    ⌘K   [Avatar]│
+└──────────────────────────────────────────────────────────────────┘
+```
+
+**5 items maximum** on the top bar:
+1. **Home** — back to homepage/dashboard
+2. **Modules** — single dropdown, persona-filtered
+3. **Game** — direct link to Space Tycoon (visible for enthusiasts)
+4. **Pricing** — conversion link
+5. **⌘K Search** — the primary navigation method for power users
+
+**The Modules dropdown** replaces all 4 current mega-menus. Organized by:
+- **Your Recent** (top 5 recently visited, pulled from localStorage)
+- **Recommended** (6-8 items based on persona)
+- **All Modules** (searchable A-Z list, hidden behind "Browse All" button)
+
+```
+┌─ Modules ──────────────────────────────────────┐
+│                                                  │
+│  RECENT                                          │
+│  ○ Satellite Tracker          visited 2m ago     │
+│  ○ Market Intel               visited 15m ago    │
+│  ○ Launch Manifest            visited 1h ago     │
+│                                                  │
+│  ─────────────────────────────────────────────   │
+│                                                  │
+│  RECOMMENDED FOR YOU                             │
+│  ○ Company Profiles           PRO                │
+│  ○ Funding Tracker            PRO                │
+│  ○ Engineering Hub                               │
+│  ○ Space Weather              LIVE               │
+│  ○ Regulatory Hub                                │
+│  ○ Constellation Designer                        │
+│                                                  │
+│  ─────────────────────────────────────────────   │
+│  Browse all 264+ modules...                      │
+└──────────────────────────────────────────────────┘
+```
+
+**Max 14 items visible** in the dropdown. No scrolling needed. "Browse All" opens the full module directory if they need to explore.
+
+#### Dropdown Behavior
+- Opens on click (not hover — hover-open on desktop is an accessibility problem)
+- Closes on click-outside, Escape, or selection
+- Keyboard navigable (arrow keys, Enter to select, type-ahead to filter)
+- No glassmorphism. Solid `var(--bg-elevated)` background with `var(--border-default)` border.
+- 300ms fade-in with `var(--ease-spring)` easing
+
+#### Nav Background
+- Solid `var(--bg-void)` with 1px bottom border `var(--border-subtle)`
+- **No backdrop-blur** — solid is cleaner and performs better
+- Fixed position, not sticky (always visible)
+- On scroll: subtle 1px shadow appears (`0 1px 0 var(--border-subtle)`)
+
+### 5.2 Left Sidebar — Streamlined
+
+**Current**: 30+ modules, 10 footer links, collapsible tree structure.
+
+**New design**: Persona-driven favorites bar. Not a full module directory.
+
+```
+┌──────┐
+│ ☰    │  ← Toggle expand/collapse
+│      │
+│ 🏠   │  Home
+│ 📡   │  Satellites       ← Your top 8 modules
+│ 📊   │  Market Intel      (based on persona + usage)
+│ 🚀   │  Launches
+│ 🛰️   │  Companies
+│ ⚖️   │  Regulatory
+│ 🔬   │  Research
+│ 📈   │  Funding
+│ 🎮   │  Space Tycoon
+│      │
+│ ───  │
+│ ⚙️   │  Settings
+│ ❓   │  Help
+└──────┘
 ```
 
 Key changes:
-- **Reduce to 3 nav items** + search + auth (from 4 mega-menus)
-- **Merge "Explore" and "Tools" into "Modules"** — one dropdown
-- **Keep "Intelligence"** — the premium-feeling dropdown
-- **Promote search** (⌘K) — Bloomberg users navigate by search, not menus
-- **Remove "Business" dropdown** — merge into Intelligence and footer links
-- Nav background: `var(--bg-void)` with 1px bottom border. No backdrop-blur.
-- Height: 56px (from 72px — tighter, more technical)
+- **8 module slots** (not 30+). Default set by persona. User can pin/unpin.
+- **Icon-only collapsed state** (48px wide). Icon + label expanded (200px wide).
+- Active module: **Indigo left bar (2px)** + white icon. Not background highlight.
+- No sub-module trees. If you need a sub-page, navigate there from the module.
+- **Drag to reorder** icons in the sidebar. Preferences persist in localStorage.
+- Bottom section: Settings + Help only (not 10 links).
 
-### 5.2 Left Sidebar
+#### Expanded State
+When expanded (click toggle or hover-and-hold):
+```
+┌───────────────────────┐
+│ ☰  SpaceNexus         │
+│                       │
+│ 🏠  Home              │
+│ 📡  Satellite Tracker │
+│ 📊  Market Intel   PRO│
+│ 🚀  Launch Manifest   │
+│ 🛰️  Companies      PRO│
+│ ⚖️  Regulatory Hub    │
+│ 🔬  Research Asst  PRO│
+│ 📈  Funding Tracker   │
+│ 🎮  Space Tycoon  FREE│
+│                       │
+│ ─── ─── ─── ─── ───  │
+│ ⚙️  Settings          │
+│ ❓  Help Center       │
+│                       │
+│ [+ Edit Shortcuts]    │
+└───────────────────────┘
+```
 
-Keep the collapsible sidebar but refine:
-- Active module: Indigo left border (2px), not background highlight
-- Section labels: Label-sm style (9px uppercase tracking)
-- Icons: 16px, zinc-500 default, white when active
-- Width: 56px collapsed, 240px expanded
+"Edit Shortcuts" opens a modal where users pick their 8 sidebar modules from the full list (similar to iOS home screen editing).
 
-### 5.3 Footer
+### 5.3 Mobile Navigation — Bottom Tab Bar Redesign
 
-**Current**: Comprehensive 5-column footer with 50+ links.
+**Current**: 4-5 contextual tabs + "More" with 40+ items in 8 categories.
 
-**New direction**: Three-zone footer.
+**New design**: 5 fixed tabs with persona-aware "More" panel.
 
-Zone 1 — Brand + newsletter (left-aligned, not centered)
-Zone 2 — Four link columns (Platform, Intelligence, Resources, Company)
-Zone 3 — Legal strip with version number
+```
+┌──────────────────────────────────────────┐
+│  🏠     📡      🎮      🔍      ≡      │
+│ Home  Modules   Game   Search   More    │
+└──────────────────────────────────────────┘
+```
 
-Add:
-- Platform version: `v3.0.0` in monospace
-- Status indicator: Green dot + "All systems operational"
-- Uptime: `99.9% uptime` (if tracked)
+- **Home**: Dashboard
+- **Modules**: Opens the persona-filtered module list (same content as desktop dropdown)
+- **Game**: Direct to Space Tycoon (enthusiasts love quick access)
+- **Search**: Opens command palette (⌘K equivalent)
+- **More**: Profile, Settings, Pricing, Help, All Modules
+
+The "More" panel shows **maximum 12 items** in a 3x4 grid. Not 40+.
+
+### 5.4 Module Navigation Bar — Simplified
+
+**Current**: Previous/Next arrows, module selector dropdown, progress dots.
+
+**New**: Minimal breadcrumb-style module header that shows where you are.
+
+```
+┌──────────────────────────────────────────────────────────────────┐
+│  Satellite Tracker                      [⚙ Customize] [↗ Share] │
+│  Space Operations › Satellite Tracking                           │
+└──────────────────────────────────────────────────────────────────┘
+```
+
+- Module name (Satoshi SemiBold 18px)
+- Category breadcrumb (DM Sans 12px, tertiary color)
+- Customize button (opens panel layout editor)
+- Share button (copy link to module)
+- **Remove**: Previous/Next arrows (use sidebar or search to navigate between modules)
+- **Remove**: Progress dots (low utility, adds visual clutter)
+
+### 5.5 Breadcrumbs
+
+Keep but simplify:
+- Show only on 3+ depth pages
+- Max 3 segments visible (collapse middle segments with "...")
+- Positioned inside module header, not as a separate bar
+
+### 5.6 Footer — Three-Zone Design
+
+```
+┌──────────────────────────────────────────────────────────────────┐
+│                                                                  │
+│  SpaceNexus                    Platform    Intelligence          │
+│  The terminal for              ─────────  ────────────          │
+│  space business.               Home        Market Intel          │
+│                                Satellites  Funding Tracker       │
+│  [Subscribe to newsletter]     Launches    Company Profiles      │
+│  [email input] [→]             Companies   Deal Room             │
+│                                Regulatory  Investment AI         │
+│                                Blog        Startup Directory     │
+│                                                                  │
+│                                Resources   Company               │
+│                                ─────────   ────────              │
+│                                Help Center About                 │
+│                                API Docs    Pricing               │
+│                                Changelog   Careers               │
+│                                Community   Contact               │
+│                                                                  │
+│──────────────────────────────────────────────────────────────────│
+│  © 2026 SpaceNexus   Privacy  Terms  Status  v3.0  ● Operational│
+└──────────────────────────────────────────────────────────────────┘
+```
+
+- Left-aligned brand + newsletter (not centered)
+- 4 link columns (max 6 links each = 24 total, down from 50+)
+- Legal strip with monospace version number and green status dot
+- No social media icons in footer (they belong in the header or About page)
+
+---
+
+## Phase 6: Customizable Module Layouts {#phase-6-customizable-modules}
+
+### The Problem
+
+Currently, every module page renders a fixed layout. Users can't adjust what data they see. A satellite analyst and a policy researcher visiting the same module see identical content — even though they need different things.
+
+### 6.1 Module Layout System
+
+Every module page becomes a **container for customizable data panels**. Each panel is an independent widget that can be shown, hidden, collapsed, or reordered.
+
+#### Panel States
+```
+┌─ Panel Title ──────────────────────── [−] [×] ─┐
+│                                                  │  EXPANDED (full content)
+│  (panel content renders here)                    │
+│                                                  │
+└──────────────────────────────────────────────────┘
+
+┌─ Panel Title ──── (3 items) ────────── [+] [×] ─┐  COLLAPSED (header only)
+└──────────────────────────────────────────────────┘
+
+                                                      HIDDEN (removed from view)
+```
+
+Panel controls:
+- **[−]** collapse to header-only
+- **[+]** expand from collapsed
+- **[×]** remove from view entirely
+- **[≡]** drag handle (visible on hover) for reordering
+
+#### Customize Mode
+
+Clicking "⚙ Customize" in the module toolbar enters edit mode:
+
+```
+┌─ Satellite Tracker ────────── CUSTOMIZING ── [Done] ─┐
+│                                                        │
+│  ┌─ ≡ Orbital Map ─────────────── ON ──── [toggle] ─┐ │
+│  ┌─ ≡ Conjunction Alerts ──────── ON ──── [toggle] ─┐ │
+│  ┌─ ≡ Tracking Table ─────────── ON ──── [toggle] ─┐ │
+│  ┌─ ≡ Decay Predictions ──────── OFF ─── [toggle] ─┐ │
+│  ┌─ ≡ TLE Data ───────────────── OFF ─── [toggle] ─┐ │
+│  ┌─ ≡ Statistics ──────────────── OFF ─── [toggle] ─┐ │
+│                                                        │
+│  [Reset to Default]                                    │
+└────────────────────────────────────────────────────────┘
+```
+
+- Toggle switches (ON/OFF) for each available panel
+- Drag handles (≡) for reordering
+- "Reset to Default" restores persona-based defaults
+- "Done" exits customize mode and saves to localStorage
+
+#### Default Layouts by Persona
+
+Each module has 3 preset layouts. Persona selection auto-picks the right one:
+
+| Module | Enthusiast Default | Professional Default | Investor Default |
+|--------|-------------------|---------------------|-----------------|
+| Mission Control | News Feed, Next Launch, APOD, Space Tycoon Promo | Event Timeline, DSN Status, Orbital Stats | News Feed, Funding Alert, Market Snapshot |
+| Satellite Tracker | Map View, Fun Facts, ISS Tracker | Full Table, Conjunction Alerts, Decay | Company Filter, Constellation Count |
+| Market Intel | Headlines, Trending | Full Feed, Alerts, Funding Table | Deal Flow, Funding Rounds, M&A |
+
+### 6.2 Data Density Toggle
+
+A global setting (accessible from nav avatar menu) controls information density:
+
+| Setting | Card padding | Font size | Panels per row | Who wants this |
+|---------|-------------|-----------|----------------|---------------|
+| **Comfortable** | 24px | 15px body | 1-2 | Enthusiasts, mobile |
+| **Standard** | 16px | 14px body | 2-3 | Default for all |
+| **Compact** | 12px | 13px body | 3-4 | Professionals, analysts |
+
+The density setting adjusts CSS custom properties globally:
+```css
+[data-density="comfortable"] { --panel-padding: 24px; --body-size: 15px; }
+[data-density="standard"]    { --panel-padding: 16px; --body-size: 14px; }
+[data-density="compact"]     { --panel-padding: 12px; --body-size: 13px; }
+```
+
+### 6.3 State Management
+
+```typescript
+interface UserPreferences {
+  persona: 'enthusiast' | 'professional' | 'investor';
+  density: 'comfortable' | 'standard' | 'compact';
+  sidebarModules: string[];          // 8 pinned module IDs
+  sidebarExpanded: boolean;
+  moduleLayouts: Record<string, {    // Per-module panel configs
+    panels: { id: string; visible: boolean; collapsed: boolean; order: number }[];
+  }>;
+}
+```
+
+Stored in `localStorage` under key `spacenexus_prefs`. Synced to server profile for logged-in users (so preferences follow across devices).
+
+---
+
+## Phase 7: Space Tycoon Enthusiast Experience {#phase-7-space-tycoon}
+
+### The Problem
+
+Space Tycoon is a unique differentiator — no other space intelligence platform has a multiplayer browser game. But it's currently buried in the sidebar. Enthusiasts who would love it don't know it exists.
+
+### 7.1 Enthusiast Homepage Experience
+
+When persona is "Enthusiast", the homepage reorders to put Space Tycoon front and center:
+
+```
+1. Hero (same for all)
+2. ★ Space Tycoon Feature Card (large, prominent, above the fold)
+3. Live Data Strip (launches, space weather)
+4. Latest News & Content
+5. Platform Modules
+6. Everything else
+```
+
+The Space Tycoon card is a **full-width hero-style promo**, not a small inline link:
+
+```
+┌──────────────────────────────────────────────────────────────┐
+│                                                              │
+│  🎮  SPACE TYCOON                               FREE        │
+│                                                              │
+│  Build your space empire.                                    │
+│  Mine asteroids. Deploy satellites. Compete globally.        │
+│                                                              │
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐    │
+│  │ 🏗️ Build │  │ 🔬 Rsrch │  │ ⛏️ Mine  │  │ 🏆 Rank  │    │
+│  │ 39 types │  │ 240 tech │  │ 12 res.  │  │ Global   │    │
+│  └──────────┘  └──────────┘  └──────────┘  └──────────┘    │
+│                                                              │
+│  [Play Now — It's Free]                                      │
+│                                                              │
+└──────────────────────────────────────────────────────────────┘
+```
+
+### 7.2 Game Access Points
+
+Space Tycoon should be accessible from **3 obvious places**:
+1. **Top nav** — "Game" link (always visible, all personas)
+2. **Left sidebar** — Pinned by default for enthusiasts (slot 8 of 8)
+3. **Mobile tab bar** — Dedicated "Game" tab (center position, all personas)
+
+### 7.3 In-Game Navigation
+
+The Space Tycoon game itself needs clean internal navigation. Current tab bar has 13 tabs that overflow on mobile. Redesign:
+
+**Primary tabs** (always visible): Dashboard, Build, Research, Map
+**Secondary tabs** (in a "More" overflow): Services, Fleet, Crafting, Crew, Market, Contracts, Alliance, Bounties, Leaderboard
+
+```
+┌──────────────────────────────────────────────────┐
+│  📊 Dashboard  🏗️ Build  🔬 Research  🗺️ Map  •••│
+└──────────────────────────────────────────────────┘
+```
+
+The "•••" button reveals the secondary tabs in a clean dropdown, not a horizontal scroll.
+
+---
+
+## Phase 8: Scrollbars, Links, Toolbars — Interaction Design Overhaul {#phase-8-interaction-design}
+
+### 8.1 Scrollbar Design
+
+**Current**: Mostly hidden scrollbars with `.scrollbar-hide` or default browser styles. When visible, thin white thumb at 20% opacity.
+
+**New design**: Minimal but visible custom scrollbars on all scrollable containers.
+
+```css
+/* Global scrollbar — all scrollable containers */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-subtle);     /* #27272a — visible but quiet */
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--border-default);    /* #3f3f46 — brighter on hover */
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-subtle) transparent;
+}
+```
+
+**Rules**:
+- Scrollbars are **always visible** on scrollable containers (no hide-on-idle)
+- 6px width (not 4px — needs to be grabbable)
+- Track is transparent (no visible track background)
+- Thumb matches `--border-subtle` (consistent with card borders)
+- Thumb brightens on hover (feedback that it's interactive)
+- Rounded 3px corners (matches `--radius-sm`)
+
+### 8.2 Link Styling
+
+**Current**: Links use standard text color changes and occasional underlines.
+
+**New design**: Clear, consistent link hierarchy.
+
+#### Link Types
+
+**1. Navigation Links** (sidebar, nav, breadcrumbs)
+```css
+.link-nav {
+  color: var(--text-secondary);         /* #a1a1aa */
+  text-decoration: none;
+  transition: color 0.15s var(--ease-smooth);
+}
+.link-nav:hover {
+  color: var(--text-primary);           /* #ededea */
+}
+.link-nav[aria-current="page"] {
+  color: var(--text-primary);
+  font-weight: 500;
+}
+```
+No underlines. Color change only. Active state uses weight, not background.
+
+**2. Content Links** (within articles, descriptions, body text)
+```css
+.link-content {
+  color: var(--accent-primary);         /* #6366f1 — indigo */
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.15s var(--ease-smooth);
+}
+.link-content:hover {
+  border-bottom-color: var(--accent-primary);
+}
+```
+Indigo text, underline appears on hover (not always visible — cleaner).
+
+**3. Card Links** (entire card is clickable)
+```css
+.link-card {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.15s var(--ease-smooth);
+}
+.link-card:hover {
+  border-color: var(--border-hover);    /* Subtle border brightening */
+}
+```
+No text decoration changes. Border brightening is the only hover signal.
+
+**4. External Links** (leave the site)
+```css
+.link-external::after {
+  content: '↗';
+  display: inline-block;
+  margin-left: 3px;
+  font-size: 0.8em;
+  opacity: 0.5;
+}
+```
+Tiny arrow icon suffix signals "this leaves SpaceNexus."
+
+### 8.3 Toolbar Design
+
+**Current**: Various action bars scattered across modules with inconsistent styling.
+
+**New design**: One toolbar pattern, used everywhere.
+
+#### Module Toolbar (top of every module page)
+```
+┌──────────────────────────────────────────────────────────────┐
+│  Module Name                                                  │
+│  Category › Subcategory             [⚙] [↗] [⤓] [?]  LIVE  │
+└──────────────────────────────────────────────────────────────┘
+```
+
+Toolbar actions (right side, icon-only with tooltips):
+- **⚙** Customize View — opens panel layout editor
+- **↗** Share — copies module URL to clipboard
+- **⤓** Export — download data as CSV (PRO feature)
+- **?** Help — contextual help for this module
+- **LIVE** badge — appears only on real-time data modules
+
+Styling:
+```css
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border-subtle);
+  background: var(--bg-surface);
+}
+.toolbar-action {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);      /* 4px */
+  color: var(--text-tertiary);
+  transition: color 0.15s, background 0.15s;
+}
+.toolbar-action:hover {
+  color: var(--text-primary);
+  background: var(--bg-hover);
+}
+```
+
+#### Floating Action Bar (mobile)
+On mobile, the toolbar actions move to a floating action button (FAB) in the bottom-right corner:
+
+```
+                                    ┌─────┐
+                                    │  ⚙  │
+                                    └─────┘
+```
+
+Tap to expand into a radial or vertical menu of actions.
+
+### 8.4 Button Hierarchy
+
+Three button levels, clearly distinct:
+
+**Primary** (one per view — the main action)
+```css
+.btn-primary {
+  background: var(--accent-primary);    /* Indigo */
+  color: #ffffff;
+  font-weight: 600;
+  padding: 10px 20px;
+  border-radius: var(--radius-sm);      /* 4px — sharp, technical */
+  border: none;
+  transition: background 0.15s, box-shadow 0.15s;
+}
+.btn-primary:hover {
+  background: var(--accent-primary-bright);
+  box-shadow: 0 0 20px rgba(99, 102, 241, 0.25);  /* Subtle glow */
+}
+```
+
+**Secondary** (supporting actions)
+```css
+.btn-secondary {
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-default);
+  padding: 10px 20px;
+  border-radius: var(--radius-sm);
+}
+.btn-secondary:hover {
+  color: var(--text-primary);
+  border-color: var(--border-hover);
+  background: var(--bg-hover);
+}
+```
+
+**Ghost** (tertiary, inline actions)
+```css
+.btn-ghost {
+  background: transparent;
+  color: var(--text-tertiary);
+  border: none;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+}
+.btn-ghost:hover {
+  color: var(--text-primary);
+  background: var(--bg-hover);
+}
+```
+
+### 8.5 Focus States
+
+All interactive elements must have a visible focus indicator for keyboard navigation:
+
+```css
+*:focus-visible {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+```
+
+Indigo outline, 2px offset. Visible, beautiful, consistent. No `outline: none` anywhere.
+
+### 8.6 Transitions & Easing
+
+All interactive state changes use the same timing:
+
+```css
+/* Standard interactive transition */
+--transition-fast: 0.1s var(--ease-smooth);     /* Hover states */
+--transition-base: 0.15s var(--ease-smooth);    /* Most transitions */
+--transition-slow: 0.3s var(--ease-spring);     /* Panel open/close */
+--transition-page: 0.5s var(--ease-spring);     /* Page-level animations */
+```
+
+**Never** use `transition-all` — specify exact properties (`transition: color 0.15s, background 0.15s`). This prevents accidental layout thrashing.
 
 ---
 
 ## Anti-Patterns — What to Avoid {#anti-patterns}
+
+### Navigation
+- ~~191 items in 4 mega-dropdowns~~ → Max 14 items in one dropdown, persona-filtered
+- ~~5 competing navigation systems~~ → 3 clear systems (top nav, sidebar favorites, search)
+- ~~Flat lists within categories~~ → Recent + Recommended + Browse All hierarchy
+- ~~Sidebar with 30+ modules~~ → 8 pinned favorites, user-customizable
+- ~~Mobile "More" with 40+ items~~ → 12-item grid, persona-ordered
+- ~~Hidden scrollbars~~ → Visible, styled, grabbable scrollbars everywhere
+- ~~`transition-all`~~ → Explicit property transitions only
+- ~~`hover:bg-white/[0.05]` everywhere~~ → Distinct hover patterns per element type
+- ~~Multiple nav paths to same place~~ → One obvious path per destination
+
+### Data Density
+- ~~Same layout for all users~~ → Persona-based defaults with per-module customization
+- ~~Fixed panel layouts~~ → Collapsible, removable, reorderable panels
+- ~~One density fits all~~ → Comfortable / Standard / Compact toggle
+- ~~All data visible at once~~ → Progressive disclosure (summary → detail on demand)
 
 ### Typography
 - ~~Inter as the only font~~ → Satoshi + DM Sans + JetBrains Mono
