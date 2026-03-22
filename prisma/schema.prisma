@@ -4257,3 +4257,30 @@ model PlayerActivity {
   @@index([type])
   @@index([createdAt])
 }
+
+// ---------------------------------------------------------------------------
+// Executive Moves (Leadership tracking)
+// ---------------------------------------------------------------------------
+
+model ExecutiveMove {
+  id            String   @id @default(cuid())
+  personName    String
+  fromCompany   String?
+  fromTitle     String?
+  toCompany     String?
+  toTitle       String?
+  moveType      String   // hired, departed, promoted, appointed, board_joined
+  date          DateTime
+  source        String?
+  sourceUrl     String?
+  summary       String?  @db.Text
+  companySlug   String?
+  verified      Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([personName])
+  @@index([companySlug])
+  @@index([date])
+  @@index([moveType])
+}

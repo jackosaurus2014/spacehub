@@ -83,6 +83,12 @@ const CRON_JOBS: CronJobDef[] = [
 
   // Win-back emails for inactive users (daily at 10am UTC)
   { schedule: '0 10 * * *',   path: '/api/winback',                              label: 'winback-emails',             maxStaleMinutes: 1560 },
+
+  // ─── New Real-Time Data Feed Integrations ────────────────────────────
+  { schedule: '0 */6 * * *',  path: '/api/refresh?type=conjunction-alerts',       label: 'conjunction-alerts',          maxStaleMinutes: 480 },
+  { schedule: '0 14 * * *',   path: '/api/refresh?type=executive-moves',          label: 'executive-moves-refresh',     maxStaleMinutes: 1560 },
+  { schedule: '0 13 * * *',   path: '/api/refresh?type=funding-signals',          label: 'funding-signal-detection',    maxStaleMinutes: 1560 },
+  { schedule: '0 */4 * * *',  path: '/api/refresh?type=sam-gov-active',           label: 'sam-gov-active-refresh',      maxStaleMinutes: 360 },
 ];
 
 // Critical jobs that get auto-recovered by the watchdog

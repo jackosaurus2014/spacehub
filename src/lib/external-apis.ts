@@ -99,7 +99,15 @@ export const EXTERNAL_APIS = {
   },
   FCC_ECFS: {
     baseUrl: 'https://efiling.fcc.gov/solr/ecfs/select',
-    rateLimit: { requests: 50, period: 3600 }, // Conservative — be polite
+    rateLimit: { requests: 50, period: 3600 },
+  },
+  SPACE_TRACK: {
+    baseUrl: 'https://www.space-track.org/basicspacedata/query',
+    rateLimit: { requests: 30, period: 60 }, // 30 req/min for individual accounts
+  },
+  ROCKETLAUNCH_LIVE: {
+    baseUrl: 'https://fdo.rocketlaunch.live/json',
+    rateLimit: { requests: 30, period: 3600 },
   },
   // ─── NEW APIs (v0.8.0) ─────────────────────────────────────────────────
   NASA_EPIC: {
