@@ -7,6 +7,7 @@ import ScrollReveal from '@/components/ui/ScrollReveal';
 import EmptyState from '@/components/ui/EmptyState';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
+import DataFreshnessBadge from '@/components/ui/DataFreshnessBadge';
 
 // ────────────────────────────────────────
 // Types
@@ -463,6 +464,24 @@ export default function IndustryTrendsPage() {
           breadcrumb="Market Intelligence"
         />
 
+        {/* Data Source & Freshness */}
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-6 p-4 bg-cyan-500/5 border border-cyan-500/15 rounded-xl">
+          <div className="flex items-center gap-2 text-sm text-cyan-300/90">
+            <svg className="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            Analysis based on Euroconsult, Bryce Tech, Space Capital reports, and public filings
+          </div>
+          <div className="sm:ml-auto flex-shrink-0">
+            <DataFreshnessBadge
+              lastUpdated="2026-03-01"
+              source="Industry reports"
+              refreshInterval="quarterly"
+              variant="pill"
+            />
+          </div>
+        </div>
+
         {/* Summary Stats */}
         <ScrollReveal>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
@@ -773,6 +792,7 @@ export default function IndustryTrendsPage() {
               Bryce Tech, Space Capital), government budget documents, patent filings, conference proceedings, and
               primary interviews. Impact levels reflect a composite assessment of market size, rate of adoption,
               and potential to restructure existing value chains. Data is updated quarterly.
+              Last updated: Q1 2026.
             </p>
           </div>
         </ScrollReveal>

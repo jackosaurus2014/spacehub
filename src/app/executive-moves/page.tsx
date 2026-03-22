@@ -13,6 +13,7 @@ import EmptyState from '@/components/ui/EmptyState';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
 import FeatureTeaser from '@/components/marketing/FeatureTeaser';
+import DataFreshnessBadge from '@/components/ui/DataFreshnessBadge';
 
 interface ExecutiveMove {
   id: string;
@@ -241,6 +242,15 @@ function ExecutiveMovesContent() {
         subtitle="Track C-suite and VP-level leadership changes across the space industry — hiring, departures, promotions, and appointments"
         icon="👔"
       />
+
+      {/* Data Freshness */}
+      <div className="mb-4">
+        <DataFreshnessBadge
+          lastUpdated={moves.length > 0 ? moves[0].date : null}
+          source="SpaceNexus Database"
+          refreshInterval="daily"
+        />
+      </div>
 
       {/* Stats Bar */}
       <motion.div

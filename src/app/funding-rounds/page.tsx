@@ -5,6 +5,7 @@ import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
+import DataFreshnessBadge from '@/components/ui/DataFreshnessBadge';
 
 // ────────────────────────────────────────
 // Types
@@ -558,6 +559,24 @@ export default function FundingRoundsPage() {
           subtitle="Comprehensive database of venture capital, private equity, and institutional investments in the space industry. Track funding rounds, valuations, and investor activity."
           accentColor="cyan"
         />
+
+        {/* Data Freshness */}
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-6 p-4 bg-cyan-500/5 border border-cyan-500/15 rounded-xl">
+          <div className="flex items-center gap-2 text-sm text-cyan-300/90">
+            <svg className="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            Data refreshed from SEC filings, press releases, and news analysis
+          </div>
+          <div className="sm:ml-auto flex-shrink-0">
+            <DataFreshnessBadge
+              lastUpdated="2026-02-20"
+              source="Public filings & news"
+              refreshInterval="weekly"
+              variant="pill"
+            />
+          </div>
+        </div>
 
         {/* ── Summary Stats ── */}
         <StaggerContainer className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
@@ -1133,9 +1152,9 @@ export default function FundingRoundsPage() {
 
         {/* Footer note */}
         <div className="text-center text-xs text-slate-600 py-6">
-          Data compiled from public disclosures, SEC filings, and press releases.
+          Data compiled from public disclosures, SEC filings, Crunchbase, PitchBook, and press releases.
           Valuations are estimated and may not reflect current market conditions.
-          Last updated: February 2026.
+          Last updated: March 2026.
         </div>
       </div>
     </div>

@@ -8,6 +8,7 @@ import ItemListSchema from '@/components/seo/ItemListSchema';
 import SocialShare from '@/components/ui/SocialShare';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
+import DataFreshnessBadge from '@/components/ui/DataFreshnessBadge';
 
 // ────────────────────────────────────────────────────────────────
 // Types
@@ -230,6 +231,24 @@ export default function StartupDirectoryPage() {
           icon="S"
           accentColor="green"
         />
+
+        {/* Data Freshness */}
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-6 p-4 bg-emerald-500/5 border border-emerald-500/15 rounded-xl">
+          <div className="flex items-center gap-2 text-sm text-emerald-300/90">
+            <svg className="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            Data sourced from Crunchbase, PitchBook, SEC filings, and company announcements
+          </div>
+          <div className="sm:ml-auto flex-shrink-0">
+            <DataFreshnessBadge
+              lastUpdated="2026-03-01"
+              source="Public filings & news"
+              refreshInterval="monthly"
+              variant="pill"
+            />
+          </div>
+        </div>
 
         {/* Overview banner */}
         <ScrollReveal>

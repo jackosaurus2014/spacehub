@@ -19,6 +19,8 @@ import GameStartMenu from '@/components/game/GameStartMenu';
 import DashboardPanel from '@/components/game/DashboardPanel';
 import DailyBonusModal from '@/components/game/DailyBonusModal';
 import LeaderboardPanel from '@/components/game/LeaderboardPanel';
+import AlliancePanel from '@/components/game/AlliancePanel';
+import BountyPanel from '@/components/game/BountyPanel';
 import MarketPanel from '@/components/game/MarketPanel';
 import AchievementsModal from '@/components/game/AchievementsModal';
 import { checkAchievements } from '@/lib/game/achievements';
@@ -1049,6 +1051,8 @@ export default function SpaceTycoonPage() {
             return { ...prev, activeContracts };
           });
         }} />}
+        {tab === 'alliance' && <AlliancePanel state={state} />}
+        {tab === 'bounties' && <BountyPanel state={state} />}
         {tab === 'leaderboard' && <LeaderboardPanel state={state} />}
       </div>
 
