@@ -67,7 +67,15 @@ export type ResearchCategory =
   | 'solar_arrays'
   | 'mining'
   | 'infrastructure'
-  | 'propulsion';
+  | 'propulsion'
+  | 'crew'
+  | 'services'
+  | 'ships'
+  | 'terraforming'
+  | 'materials'
+  | 'defense'
+  | 'exploration'
+  | 'economy';
 
 export interface ResearchDefinition {
   id: string;

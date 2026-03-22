@@ -1,8 +1,10 @@
-// ─── Space Tycoon: Research Tree ────────────────────────────────────────────
+// ─── Space Tycoon: Research Tree (300+ Researches) ──────────────────────────
+// Expanded from 37 to 300+ researches across 20 categories and 5 tiers.
+// Each research has realistic costs, prerequisites, and meaningful gameplay effects.
 
 import type { ResearchDefinition } from './types';
 
-/** Real-time research duration by tier: T1=10min, T2=30min, T3=90min, T4=4hr, T5=12hr */
+/** Real-time research duration by tier */
 const TIER_RESEARCH_SECONDS: Record<number, number> = {
   1: 600,     // 10 minutes
   2: 1800,    // 30 minutes
@@ -11,10 +13,10 @@ const TIER_RESEARCH_SECONDS: Record<number, number> = {
   5: 43200,   // 12 hours
 };
 
-/** Resource costs by research tier (cumulative with money cost) */
+/** Resource costs by tier */
 const TIER_RESEARCH_RESOURCES: Record<number, Record<string, number>> = {
-  1: {},  // Tier 1: money only
-  2: {},  // Tier 2: money only
+  1: {},
+  2: {},
   3: { rare_earth: 15, titanium: 30 },
   4: { rare_earth: 40, titanium: 60, platinum_group: 10 },
   5: { rare_earth: 100, platinum_group: 30, exotic_materials: 5, helium3: 3 },
@@ -23,174 +25,316 @@ const TIER_RESEARCH_RESOURCES: Record<number, Record<string, number>> = {
 type RawResearch = Omit<ResearchDefinition, 'realResearchSeconds' | 'resourceCost'>;
 
 const RAW_RESEARCH: RawResearch[] = [
-  // ─── ROCKETRY ─────────────────────────────────────────────────────────
-  { id: 'reusable_boosters', name: 'Reusable Boosters', category: 'rocketry', tier: 1,
-    description: 'Land and refly first-stage boosters, reducing launch cost by 40%.',
-    effect: '-40% launch cost, enables lunar missions',
-    baseCostMoney: 200_000_000, baseTimeMonths: 12, prerequisites: [], unlocks: ['launch_pad_medium'] },
-  { id: 'rapid_launch_cadence', name: 'Rapid Launch Cadence', category: 'rocketry', tier: 2,
-    description: 'Turn boosters around in days instead of weeks.',
-    effect: '-30% build time for rockets',
-    baseCostMoney: 500_000_000, baseTimeMonths: 18, prerequisites: ['reusable_boosters'], unlocks: [] },
-  { id: 'super_heavy_lift', name: 'Super Heavy Lift', category: 'rocketry', tier: 3,
-    description: 'Build vehicles capable of 100+ tons to LEO.',
-    effect: 'Enables Mars and asteroid belt missions',
-    baseCostMoney: 2_000_000_000, baseTimeMonths: 24, prerequisites: ['rapid_launch_cadence'], unlocks: ['launch_pad_heavy'] },
-  { id: 'nuclear_thermal', name: 'Nuclear Thermal Propulsion', category: 'rocketry', tier: 4,
-    description: 'Nuclear reactors heating propellant for high-efficiency deep space travel.',
-    effect: '-50% travel time to outer planets, enables Jupiter/Saturn',
-    baseCostMoney: 15_000_000_000, baseTimeMonths: 36, prerequisites: ['super_heavy_lift'], unlocks: [] },
-  { id: 'fusion_drive', name: 'Fusion Drive', category: 'rocketry', tier: 5,
-    description: 'Sustained fusion reactions for ultimate propulsion efficiency.',
-    effect: 'Enables outer system, -75% travel time everywhere',
-    baseCostMoney: 100_000_000_000, baseTimeMonths: 60, prerequisites: ['nuclear_thermal'], unlocks: [] },
+  // ═══════════════════════════════════════════════════════════════════════════
+  // ROCKETRY (15 researches)
+  // ═══════════════════════════════════════════════════════════════════════════
+  { id: 'reusable_boosters', name: 'Reusable Boosters', category: 'rocketry', tier: 1, description: 'Land and refly first-stage boosters.', effect: '-40% launch cost', baseCostMoney: 200_000_000, baseTimeMonths: 12, prerequisites: [], unlocks: ['launch_pad_medium'] },
+  { id: 'rapid_launch_cadence', name: 'Rapid Launch Cadence', category: 'rocketry', tier: 2, description: 'Turn boosters around in days.', effect: '-30% build time for rockets', baseCostMoney: 500_000_000, baseTimeMonths: 18, prerequisites: ['reusable_boosters'], unlocks: [] },
+  { id: 'methane_engines', name: 'Methane-LOX Engines', category: 'rocketry', tier: 2, description: 'Full-flow staged combustion with methane.', effect: '+25% engine thrust-to-weight', baseCostMoney: 400_000_000, baseTimeMonths: 14, prerequisites: ['reusable_boosters'], unlocks: [] },
+  { id: 'super_heavy_lift', name: 'Super Heavy Lift', category: 'rocketry', tier: 3, description: '100+ ton payload to LEO.', effect: 'Enables Mars and asteroid missions', baseCostMoney: 2_000_000_000, baseTimeMonths: 24, prerequisites: ['rapid_launch_cadence'], unlocks: ['launch_pad_heavy'] },
+  { id: 'fairing_recovery', name: 'Fairing Recovery', category: 'rocketry', tier: 2, description: 'Recover and reuse payload fairings.', effect: '-15% per-launch cost', baseCostMoney: 300_000_000, baseTimeMonths: 10, prerequisites: ['reusable_boosters'], unlocks: [] },
+  { id: 'orbital_refueling', name: 'Orbital Refueling', category: 'rocketry', tier: 3, description: 'Refuel spacecraft in orbit from tanker vehicles.', effect: 'Enables deep space with smaller rockets', baseCostMoney: 1_500_000_000, baseTimeMonths: 20, prerequisites: ['super_heavy_lift'], unlocks: [] },
+  { id: 'nuclear_thermal', name: 'Nuclear Thermal Propulsion', category: 'rocketry', tier: 4, description: 'Nuclear reactor-heated propellant.', effect: '-50% outer planet travel time', baseCostMoney: 15_000_000_000, baseTimeMonths: 36, prerequisites: ['super_heavy_lift'], unlocks: [] },
+  { id: 'launch_abort_systems', name: 'Launch Abort Systems', category: 'rocketry', tier: 1, description: 'Crew escape during launch failure.', effect: 'Enables crewed launches, +20% safety', baseCostMoney: 150_000_000, baseTimeMonths: 8, prerequisites: [], unlocks: [] },
+  { id: 'propellant_depots', name: 'Propellant Depot Design', category: 'rocketry', tier: 3, description: 'Long-term fuel storage in orbit.', effect: '-30% fuel costs for deep space', baseCostMoney: 2_500_000_000, baseTimeMonths: 22, prerequisites: ['orbital_refueling'], unlocks: [] },
+  { id: 'mass_driver', name: 'Electromagnetic Mass Driver', category: 'rocketry', tier: 4, description: 'Launch cargo from Moon/Mars without rockets.', effect: '$0 marginal launch cost from surfaces', baseCostMoney: 20_000_000_000, baseTimeMonths: 40, prerequisites: ['propellant_depots'], unlocks: [] },
+  { id: 'space_elevator_cable', name: 'Space Elevator Materials', category: 'rocketry', tier: 5, description: 'Carbon nanotube ribbon for orbital elevator.', effect: '-95% Earth-to-orbit cost', baseCostMoney: 100_000_000_000, baseTimeMonths: 60, prerequisites: ['mass_driver'], unlocks: [] },
+  { id: 'fusion_drive', name: 'Fusion Drive', category: 'rocketry', tier: 5, description: 'Sustained fusion for propulsion.', effect: '-75% travel time everywhere', baseCostMoney: 100_000_000_000, baseTimeMonths: 60, prerequisites: ['nuclear_thermal'], unlocks: [] },
+  { id: 'rotating_detonation', name: 'Rotating Detonation Engine', category: 'rocketry', tier: 3, description: 'Pressure gain combustion cycle.', effect: '+30% fuel efficiency', baseCostMoney: 1_800_000_000, baseTimeMonths: 18, prerequisites: ['methane_engines'], unlocks: [] },
+  { id: 'metallic_hydrogen', name: 'Metallic Hydrogen Propellant', category: 'rocketry', tier: 5, description: 'Theoretical ultra-dense propellant.', effect: '+50% specific impulse', baseCostMoney: 80_000_000_000, baseTimeMonths: 48, prerequisites: ['fusion_drive'], unlocks: [] },
+  { id: 'launch_site_optimization', name: 'Launch Site Optimization', category: 'rocketry', tier: 1, description: 'Weather prediction and pad turnaround improvements.', effect: '+20% launch success rate', baseCostMoney: 100_000_000, baseTimeMonths: 6, prerequisites: [], unlocks: [] },
 
-  // ─── SPACECRAFT DESIGN ────────────────────────────────────────────────
-  { id: 'modular_spacecraft', name: 'Modular Spacecraft', category: 'spacecraft', tier: 1,
-    description: 'Standardized docking ports and swappable modules.',
-    effect: 'Enables space stations and orbital assembly',
-    baseCostMoney: 150_000_000, baseTimeMonths: 10, prerequisites: [], unlocks: ['space_station_small'] },
-  { id: 'autonomous_docking', name: 'Autonomous Docking', category: 'spacecraft', tier: 2,
-    description: 'Automated rendezvous and docking without human operators.',
-    effect: 'Enables asteroid capture, -20% station build time',
-    baseCostMoney: 400_000_000, baseTimeMonths: 14, prerequisites: ['modular_spacecraft'], unlocks: [] },
-  { id: 'interplanetary_cruisers', name: 'Interplanetary Cruisers', category: 'spacecraft', tier: 3,
-    description: 'Large crewed vessels for multi-month deep space journeys.',
-    effect: 'Enables Jupiter/Saturn crewed missions',
-    baseCostMoney: 5_000_000_000, baseTimeMonths: 30, prerequisites: ['autonomous_docking'], unlocks: [] },
-  { id: 'self_repair', name: 'Self-Repair Systems', category: 'spacecraft', tier: 4,
-    description: 'Autonomous repair bots maintain spacecraft without human EVA.',
-    effect: '-50% maintenance costs on all buildings',
-    baseCostMoney: 10_000_000_000, baseTimeMonths: 36, prerequisites: ['interplanetary_cruisers'], unlocks: [] },
-  { id: 'generation_ships', name: 'Generation Ships', category: 'spacecraft', tier: 5,
-    description: 'Self-sustaining vessels for multi-decade voyages.',
-    effect: 'Enables outer system colonization',
-    baseCostMoney: 200_000_000_000, baseTimeMonths: 72, prerequisites: ['self_repair'], unlocks: [] },
+  // ═══════════════════════════════════════════════════════════════════════════
+  // SPACECRAFT DESIGN (18 researches)
+  // ═══════════════════════════════════════════════════════════════════════════
+  { id: 'modular_spacecraft', name: 'Modular Spacecraft', category: 'spacecraft', tier: 1, description: 'Standardized docking ports and modules.', effect: 'Enables space stations', baseCostMoney: 150_000_000, baseTimeMonths: 10, prerequisites: [], unlocks: ['space_station_small'] },
+  { id: 'autonomous_docking', name: 'Autonomous Docking', category: 'spacecraft', tier: 2, description: 'Automated rendezvous without human operators.', effect: '-20% station build time', baseCostMoney: 400_000_000, baseTimeMonths: 14, prerequisites: ['modular_spacecraft'], unlocks: [] },
+  { id: 'life_support_recycling', name: 'Closed-Loop Life Support', category: 'spacecraft', tier: 2, description: '95% water and air recycling.', effect: '-30% habitat maintenance', baseCostMoney: 350_000_000, baseTimeMonths: 16, prerequisites: ['modular_spacecraft'], unlocks: [] },
+  { id: 'radiation_shielding', name: 'Active Radiation Shielding', category: 'spacecraft', tier: 3, description: 'Magnetic field generators for crew protection.', effect: 'Enables deep space crewed missions', baseCostMoney: 3_000_000_000, baseTimeMonths: 24, prerequisites: ['life_support_recycling'], unlocks: [] },
+  { id: 'interplanetary_cruisers', name: 'Interplanetary Cruisers', category: 'spacecraft', tier: 3, description: 'Large crewed vessels for deep space.', effect: 'Enables Jupiter/Saturn missions', baseCostMoney: 5_000_000_000, baseTimeMonths: 30, prerequisites: ['autonomous_docking', 'radiation_shielding'], unlocks: [] },
+  { id: 'self_repair', name: 'Self-Repair Systems', category: 'spacecraft', tier: 4, description: 'Autonomous repair robots.', effect: '-50% maintenance costs', baseCostMoney: 10_000_000_000, baseTimeMonths: 36, prerequisites: ['interplanetary_cruisers'], unlocks: [] },
+  { id: 'generation_ships', name: 'Generation Ships', category: 'spacecraft', tier: 5, description: 'Self-sustaining vessels for decade-long voyages.', effect: 'Enables outer system colonization', baseCostMoney: 200_000_000_000, baseTimeMonths: 72, prerequisites: ['self_repair'], unlocks: [] },
+  { id: 'hull_composites', name: 'Advanced Hull Composites', category: 'spacecraft', tier: 1, description: 'Carbon fiber and ceramic matrix composites.', effect: '-15% spacecraft mass, -10% build cost', baseCostMoney: 120_000_000, baseTimeMonths: 8, prerequisites: [], unlocks: [] },
+  { id: 'cryo_hibernation', name: 'Crew Hibernation Systems', category: 'spacecraft', tier: 4, description: 'Torpor-inducing systems for long voyages.', effect: '-60% life support costs on long missions', baseCostMoney: 8_000_000_000, baseTimeMonths: 30, prerequisites: ['life_support_recycling'], unlocks: [] },
+  { id: 'artificial_gravity', name: 'Centrifugal Gravity Modules', category: 'spacecraft', tier: 3, description: 'Rotating sections for artificial gravity.', effect: '+100% crew capacity, enables long-term habitation', baseCostMoney: 4_000_000_000, baseTimeMonths: 26, prerequisites: ['modular_spacecraft'], unlocks: [] },
+  { id: 'debris_avoidance', name: 'Autonomous Debris Avoidance', category: 'spacecraft', tier: 2, description: 'AI-driven collision avoidance system.', effect: '-80% debris damage risk', baseCostMoney: 250_000_000, baseTimeMonths: 12, prerequisites: ['autonomous_docking'], unlocks: [] },
+  { id: 'spacecraft_armor', name: 'Whipple Shield Enhancement', category: 'spacecraft', tier: 2, description: 'Multi-layer micrometeorite protection.', effect: '+30% hull defense rating', baseCostMoney: 200_000_000, baseTimeMonths: 10, prerequisites: ['hull_composites'], unlocks: [] },
+  { id: 'emergency_escape', name: 'Emergency Escape Pods', category: 'spacecraft', tier: 1, description: 'Deployable escape capsules for stations.', effect: '+50% crew survival in emergencies', baseCostMoney: 80_000_000, baseTimeMonths: 6, prerequisites: [], unlocks: [] },
+  { id: 'thermal_management_adv', name: 'Advanced Thermal Management', category: 'spacecraft', tier: 2, description: 'Variable-emissivity radiators and heat pipes.', effect: '-25% thermal system maintenance', baseCostMoney: 300_000_000, baseTimeMonths: 12, prerequisites: ['hull_composites'], unlocks: [] },
+  { id: 'modular_cargo', name: 'Standardized Cargo Containers', category: 'spacecraft', tier: 1, description: 'Universal cargo module for all ship types.', effect: '+20% cargo capacity all ships', baseCostMoney: 90_000_000, baseTimeMonths: 6, prerequisites: [], unlocks: [] },
+  { id: 'inflatable_habitats', name: 'Inflatable Habitat Modules', category: 'spacecraft', tier: 2, description: 'Expandable living space deployed on-orbit.', effect: '+50% habitat volume at -40% launch mass', baseCostMoney: 450_000_000, baseTimeMonths: 14, prerequisites: ['modular_spacecraft'], unlocks: [] },
+  { id: 'nuclear_power_spacecraft', name: 'Spacecraft Nuclear Reactors', category: 'spacecraft', tier: 3, description: 'Compact fission reactors for spacecraft power.', effect: '+200% power generation vs solar', baseCostMoney: 6_000_000_000, baseTimeMonths: 28, prerequisites: ['radiation_shielding'], unlocks: [] },
+  { id: 'laser_comm_relay', name: 'Laser Communication Relay', category: 'spacecraft', tier: 3, description: 'High-bandwidth optical links between spacecraft.', effect: '+500% data transmission rate', baseCostMoney: 2_000_000_000, baseTimeMonths: 18, prerequisites: ['autonomous_docking'], unlocks: [] },
 
-  // ─── SENSORS ──────────────────────────────────────────────────────────
-  { id: 'high_res_optical', name: 'High-Res Optical', category: 'sensors', tier: 1,
-    description: 'Sub-meter optical imaging from orbit.',
-    effect: '+50% sensor service revenue',
-    baseCostMoney: 100_000_000, baseTimeMonths: 8, prerequisites: [], unlocks: ['sat_sensor'] },
-  { id: 'sar_imaging', name: 'Synthetic Aperture Radar', category: 'sensors', tier: 2,
-    description: 'All-weather, day-night radar imaging.',
-    effect: '+30% sensor revenue, new service tier',
-    baseCostMoney: 300_000_000, baseTimeMonths: 12, prerequisites: ['high_res_optical'], unlocks: [] },
-  { id: 'quantum_sensors', name: 'Quantum Sensors', category: 'sensors', tier: 4,
-    description: 'Quantum-enhanced gravity and magnetic field measurements.',
-    effect: '+100% sensor revenue, enables mining prospecting',
-    baseCostMoney: 8_000_000_000, baseTimeMonths: 30, prerequisites: ['sar_imaging'], unlocks: [] },
+  // ═══════════════════════════════════════════════════════════════════════════
+  // SENSORS & REMOTE SENSING (15 researches)
+  // ═══════════════════════════════════════════════════════════════════════════
+  { id: 'high_res_optical', name: 'High-Res Optical', category: 'sensors', tier: 1, description: 'Sub-meter imaging from orbit.', effect: '+50% sensor revenue', baseCostMoney: 100_000_000, baseTimeMonths: 8, prerequisites: [], unlocks: ['sat_sensor'] },
+  { id: 'sar_imaging', name: 'Synthetic Aperture Radar', category: 'sensors', tier: 2, description: 'All-weather day-night imaging.', effect: '+30% sensor revenue', baseCostMoney: 300_000_000, baseTimeMonths: 12, prerequisites: ['high_res_optical'], unlocks: [] },
+  { id: 'multispectral_imaging', name: 'Multispectral Imaging', category: 'sensors', tier: 2, description: 'Simultaneous imaging across multiple wavelengths.', effect: '+40% Earth observation value', baseCostMoney: 350_000_000, baseTimeMonths: 14, prerequisites: ['high_res_optical'], unlocks: [] },
+  { id: 'hyperspectral', name: 'Hyperspectral Sensors', category: 'sensors', tier: 3, description: '200+ spectral bands for mineral identification.', effect: 'Enables remote mining prospecting', baseCostMoney: 1_500_000_000, baseTimeMonths: 20, prerequisites: ['multispectral_imaging'], unlocks: [] },
+  { id: 'lidar_systems', name: 'Space-Based LiDAR', category: 'sensors', tier: 2, description: 'Laser altimetry for terrain mapping.', effect: '+25% survey probe discovery rate', baseCostMoney: 400_000_000, baseTimeMonths: 12, prerequisites: ['high_res_optical'], unlocks: [] },
+  { id: 'quantum_sensors', name: 'Quantum Sensors', category: 'sensors', tier: 4, description: 'Quantum-enhanced gravity measurements.', effect: '+100% sensor revenue', baseCostMoney: 8_000_000_000, baseTimeMonths: 30, prerequisites: ['hyperspectral'], unlocks: [] },
+  { id: 'gravity_gradiometer', name: 'Gravity Gradiometer', category: 'sensors', tier: 3, description: 'Precision gravity field mapping.', effect: 'Reveals subsurface resource deposits', baseCostMoney: 2_000_000_000, baseTimeMonths: 18, prerequisites: ['lidar_systems'], unlocks: [] },
+  { id: 'magnetometer_array', name: 'Magnetometer Array', category: 'sensors', tier: 1, description: 'Measure planetary magnetic fields.', effect: '+20% mining survey accuracy', baseCostMoney: 80_000_000, baseTimeMonths: 6, prerequisites: [], unlocks: [] },
+  { id: 'infrared_telescope', name: 'Infrared Space Telescope', category: 'sensors', tier: 3, description: 'Deep-space infrared observatory.', effect: '+50% asteroid detection range', baseCostMoney: 3_000_000_000, baseTimeMonths: 22, prerequisites: ['sar_imaging'], unlocks: [] },
+  { id: 'neutrino_detector', name: 'Neutrino Detector', category: 'sensors', tier: 4, description: 'Detect neutrinos from stellar processes.', effect: 'Reveals deep subsurface composition', baseCostMoney: 12_000_000_000, baseTimeMonths: 36, prerequisites: ['quantum_sensors'], unlocks: [] },
+  { id: 'space_weather_monitoring', name: 'Space Weather Monitoring', category: 'sensors', tier: 1, description: 'Solar wind and CME detection satellites.', effect: '+30% storm warning time', baseCostMoney: 120_000_000, baseTimeMonths: 8, prerequisites: [], unlocks: [] },
+  { id: 'rf_spectrum_sensing', name: 'RF Spectrum Sensing', category: 'sensors', tier: 2, description: 'Wide-band radio frequency monitoring.', effect: '+20% communication revenue', baseCostMoney: 250_000_000, baseTimeMonths: 10, prerequisites: ['magnetometer_array'], unlocks: [] },
+  { id: 'autonomous_survey', name: 'Autonomous Survey AI', category: 'sensors', tier: 3, description: 'AI-driven autonomous survey missions.', effect: '-50% survey time, +30% discovery rate', baseCostMoney: 2_500_000_000, baseTimeMonths: 20, prerequisites: ['lidar_systems', 'sar_imaging'], unlocks: [] },
+  { id: 'gravitational_wave_det', name: 'Gravitational Wave Detector', category: 'sensors', tier: 5, description: 'Space-based gravitational wave observatory.', effect: 'Ultimate sensing capability', baseCostMoney: 50_000_000_000, baseTimeMonths: 48, prerequisites: ['neutrino_detector'], unlocks: [] },
+  { id: 'adaptive_optics', name: 'Adaptive Optics', category: 'sensors', tier: 2, description: 'Real-time atmospheric correction.', effect: '+60% ground resolution from orbit', baseCostMoney: 280_000_000, baseTimeMonths: 10, prerequisites: ['high_res_optical'], unlocks: [] },
 
-  // ─── AI CHIP DESIGN ───────────────────────────────────────────────────
-  { id: 'rad_hard_processors', name: 'Rad-Hardened Processors', category: 'ai_chips', tier: 1,
-    description: 'Processors that survive the radiation environment of space.',
-    effect: 'Enables orbital data centers',
-    baseCostMoney: 200_000_000, baseTimeMonths: 10, prerequisites: [], unlocks: ['datacenter_orbital'] },
-  { id: 'edge_ai', name: 'Edge AI Accelerators', category: 'ai_chips', tier: 2,
-    description: 'On-board AI inference for autonomous satellite operations.',
-    effect: '+40% datacenter revenue, -20% operating costs',
-    baseCostMoney: 500_000_000, baseTimeMonths: 14, prerequisites: ['rad_hard_processors'], unlocks: [] },
-  { id: 'neuromorphic_chips', name: 'Neuromorphic Chips', category: 'ai_chips', tier: 3,
-    description: 'Brain-inspired computing for extreme energy efficiency.',
-    effect: '+80% datacenter revenue',
-    baseCostMoney: 3_000_000_000, baseTimeMonths: 24, prerequisites: ['edge_ai'], unlocks: [] },
-  { id: 'quantum_coprocessors', name: 'Quantum Co-processors', category: 'ai_chips', tier: 4,
-    description: 'Hybrid quantum-classical computing in orbit.',
-    effect: '2x datacenter revenue',
-    baseCostMoney: 20_000_000_000, baseTimeMonths: 36, prerequisites: ['neuromorphic_chips'], unlocks: [] },
+  // ═══════════════════════════════════════════════════════════════════════════
+  // COMPUTING & AI (14 researches)
+  // ═══════════════════════════════════════════════════════════════════════════
+  { id: 'rad_hard_processors', name: 'Rad-Hardened Processors', category: 'ai_chips', tier: 1, description: 'Processors that survive space radiation.', effect: 'Enables orbital data centers', baseCostMoney: 200_000_000, baseTimeMonths: 10, prerequisites: [], unlocks: ['datacenter_orbital'] },
+  { id: 'edge_ai', name: 'Edge AI Accelerators', category: 'ai_chips', tier: 2, description: 'On-board AI inference.', effect: '+40% datacenter revenue', baseCostMoney: 500_000_000, baseTimeMonths: 14, prerequisites: ['rad_hard_processors'], unlocks: [] },
+  { id: 'neuromorphic_chips', name: 'Neuromorphic Chips', category: 'ai_chips', tier: 3, description: 'Brain-inspired computing.', effect: '+80% datacenter revenue', baseCostMoney: 3_000_000_000, baseTimeMonths: 24, prerequisites: ['edge_ai'], unlocks: [] },
+  { id: 'quantum_coprocessors', name: 'Quantum Co-processors', category: 'ai_chips', tier: 4, description: 'Hybrid quantum-classical computing.', effect: '2x datacenter revenue', baseCostMoney: 20_000_000_000, baseTimeMonths: 36, prerequisites: ['neuromorphic_chips'], unlocks: [] },
+  { id: 'fpga_reconfigurable', name: 'Reconfigurable FPGA Arrays', category: 'ai_chips', tier: 1, description: 'Field-programmable gate arrays for flexible computing.', effect: '+15% computing efficiency', baseCostMoney: 100_000_000, baseTimeMonths: 6, prerequisites: [], unlocks: [] },
+  { id: 'optical_computing', name: 'Optical Computing', category: 'ai_chips', tier: 3, description: 'Photonic processors for ultra-fast computation.', effect: '+50% data processing speed', baseCostMoney: 4_000_000_000, baseTimeMonths: 26, prerequisites: ['edge_ai'], unlocks: [] },
+  { id: 'swarm_ai', name: 'Distributed Swarm AI', category: 'ai_chips', tier: 3, description: 'Coordinated AI across multiple spacecraft.', effect: '+40% fleet coordination efficiency', baseCostMoney: 2_500_000_000, baseTimeMonths: 22, prerequisites: ['edge_ai'], unlocks: [] },
+  { id: 'predictive_maintenance', name: 'Predictive Maintenance AI', category: 'ai_chips', tier: 2, description: 'AI predicts equipment failures before they happen.', effect: '-25% maintenance costs', baseCostMoney: 350_000_000, baseTimeMonths: 12, prerequisites: ['rad_hard_processors'], unlocks: [] },
+  { id: 'autonomous_ops', name: 'Autonomous Operations', category: 'ai_chips', tier: 2, description: 'Stations and mines run without human oversight.', effect: '-30% crew requirements', baseCostMoney: 600_000_000, baseTimeMonths: 16, prerequisites: ['edge_ai'], unlocks: [] },
+  { id: 'quantum_ml', name: 'Quantum Machine Learning', category: 'ai_chips', tier: 4, description: 'Quantum-enhanced pattern recognition.', effect: '+50% research speed', baseCostMoney: 15_000_000_000, baseTimeMonths: 30, prerequisites: ['quantum_coprocessors'], unlocks: [] },
+  { id: 'digital_twin', name: 'Digital Twin Simulation', category: 'ai_chips', tier: 2, description: 'Full digital replica of physical systems.', effect: '-20% build time, +15% success rate', baseCostMoney: 400_000_000, baseTimeMonths: 14, prerequisites: ['rad_hard_processors'], unlocks: [] },
+  { id: 'cybersecurity_adv', name: 'Advanced Space Cybersecurity', category: 'ai_chips', tier: 2, description: 'Quantum-safe encryption for space systems.', effect: '+20% defense rating', baseCostMoney: 300_000_000, baseTimeMonths: 12, prerequisites: ['fpga_reconfigurable'], unlocks: [] },
+  { id: 'data_compression', name: 'Neural Data Compression', category: 'ai_chips', tier: 1, description: 'AI-powered data compression for downlinks.', effect: '+100% data throughput', baseCostMoney: 80_000_000, baseTimeMonths: 6, prerequisites: [], unlocks: [] },
+  { id: 'mission_planning_ai', name: 'AI Mission Planning', category: 'ai_chips', tier: 3, description: 'Optimal trajectory and resource planning.', effect: '-15% travel time, -10% fuel cost', baseCostMoney: 1_500_000_000, baseTimeMonths: 18, prerequisites: ['swarm_ai'], unlocks: [] },
 
-  // ─── SATELLITE COMPONENTS ─────────────────────────────────────────────
-  { id: 'improved_cooling', name: 'Improved Cooling Systems', category: 'satellite_components', tier: 1,
-    description: 'Advanced thermal management for satellites.',
-    effect: '-15% satellite maintenance costs',
-    baseCostMoney: 80_000_000, baseTimeMonths: 6, prerequisites: [], unlocks: [] },
-  { id: 'high_power_comms', name: 'High-Power Communications', category: 'satellite_components', tier: 2,
-    description: 'Higher throughput transponders and phased array antennas.',
-    effect: '+50% telecom service revenue',
-    baseCostMoney: 250_000_000, baseTimeMonths: 10, prerequisites: ['improved_cooling'], unlocks: [] },
-  { id: 'compact_power', name: 'Compact Power Systems', category: 'satellite_components', tier: 3,
-    description: 'Miniaturized reactors and advanced batteries.',
-    effect: '-30% satellite build cost',
-    baseCostMoney: 1_500_000_000, baseTimeMonths: 18, prerequisites: ['high_power_comms'], unlocks: [] },
-  { id: 'swarm_intelligence', name: 'Swarm Intelligence', category: 'satellite_components', tier: 5,
-    description: 'Satellites that coordinate as autonomous swarms.',
-    effect: '3x sensor and telecom revenue from constellations',
-    baseCostMoney: 50_000_000_000, baseTimeMonths: 48, prerequisites: ['compact_power', 'neuromorphic_chips'], unlocks: [] },
+  // ═══════════════════════════════════════════════════════════════════════════
+  // SATELLITE SYSTEMS (15 researches)
+  // ═══════════════════════════════════════════════════════════════════════════
+  { id: 'improved_cooling', name: 'Improved Cooling Systems', category: 'satellite_components', tier: 1, description: 'Advanced thermal management.', effect: '-15% satellite maintenance', baseCostMoney: 80_000_000, baseTimeMonths: 6, prerequisites: [], unlocks: [] },
+  { id: 'high_power_comms', name: 'High-Power Communications', category: 'satellite_components', tier: 2, description: 'Higher throughput transponders.', effect: '+50% telecom revenue', baseCostMoney: 250_000_000, baseTimeMonths: 10, prerequisites: ['improved_cooling'], unlocks: [] },
+  { id: 'compact_power', name: 'Compact Power Systems', category: 'satellite_components', tier: 3, description: 'Miniaturized reactors and batteries.', effect: '-30% satellite build cost', baseCostMoney: 1_500_000_000, baseTimeMonths: 18, prerequisites: ['high_power_comms'], unlocks: [] },
+  { id: 'swarm_intelligence', name: 'Swarm Intelligence', category: 'satellite_components', tier: 5, description: 'Satellites coordinate as swarms.', effect: '3x sensor and telecom revenue', baseCostMoney: 50_000_000_000, baseTimeMonths: 48, prerequisites: ['compact_power', 'neuromorphic_chips'], unlocks: [] },
+  { id: 'electric_propulsion_sat', name: 'Electric Propulsion for Satellites', category: 'satellite_components', tier: 1, description: 'Ion thrusters for station-keeping.', effect: '+50% satellite lifespan', baseCostMoney: 100_000_000, baseTimeMonths: 8, prerequisites: [], unlocks: [] },
+  { id: 'inter_satellite_links', name: 'Inter-Satellite Links', category: 'satellite_components', tier: 2, description: 'Laser links between constellation satellites.', effect: '+100% network throughput', baseCostMoney: 400_000_000, baseTimeMonths: 14, prerequisites: ['high_power_comms'], unlocks: [] },
+  { id: 'on_orbit_servicing', name: 'On-Orbit Servicing', category: 'satellite_components', tier: 3, description: 'Refuel and repair satellites in orbit.', effect: '+200% satellite lifespan', baseCostMoney: 3_000_000_000, baseTimeMonths: 22, prerequisites: ['autonomous_docking'], unlocks: [] },
+  { id: 'mega_constellation', name: 'Mega-Constellation Management', category: 'satellite_components', tier: 3, description: 'Manage 1000+ satellite constellations.', effect: '+100% telecom capacity', baseCostMoney: 2_000_000_000, baseTimeMonths: 20, prerequisites: ['inter_satellite_links', 'swarm_ai'], unlocks: [] },
+  { id: 'v_band_comms', name: 'V-Band Communications', category: 'satellite_components', tier: 2, description: '40-75 GHz frequency utilization.', effect: '+80% bandwidth per satellite', baseCostMoney: 500_000_000, baseTimeMonths: 14, prerequisites: ['high_power_comms'], unlocks: [] },
+  { id: 'flat_panel_antenna', name: 'Flat Panel User Terminals', category: 'satellite_components', tier: 2, description: 'Low-cost phased array ground terminals.', effect: '+30% subscriber base', baseCostMoney: 200_000_000, baseTimeMonths: 10, prerequisites: ['improved_cooling'], unlocks: [] },
+  { id: 'satellite_deorbit', name: 'Active Deorbit Systems', category: 'satellite_components', tier: 1, description: 'Controlled deorbit for debris prevention.', effect: '+15% regulatory compliance, -10% insurance', baseCostMoney: 60_000_000, baseTimeMonths: 6, prerequisites: [], unlocks: [] },
+  { id: 'software_defined_sat', name: 'Software-Defined Satellites', category: 'satellite_components', tier: 3, description: 'Reconfigure satellite capabilities via software.', effect: '+40% revenue flexibility', baseCostMoney: 2_500_000_000, baseTimeMonths: 20, prerequisites: ['edge_ai', 'v_band_comms'], unlocks: [] },
+  { id: 'optical_intersatlinks', name: 'Optical Inter-Satellite Links', category: 'satellite_components', tier: 3, description: 'Laser communication between satellites.', effect: '+200% data relay capacity', baseCostMoney: 1_800_000_000, baseTimeMonths: 16, prerequisites: ['inter_satellite_links'], unlocks: [] },
+  { id: 'satellite_formation', name: 'Formation Flying', category: 'satellite_components', tier: 4, description: 'Precise multi-satellite formation control.', effect: '+60% interferometry capability', baseCostMoney: 8_000_000_000, baseTimeMonths: 28, prerequisites: ['swarm_ai', 'mega_constellation'], unlocks: [] },
+  { id: 'space_debris_cleanup', name: 'Active Debris Removal', category: 'satellite_components', tier: 3, description: 'Capture and deorbit defunct satellites.', effect: 'Enables debris removal contracts', baseCostMoney: 3_500_000_000, baseTimeMonths: 24, prerequisites: ['on_orbit_servicing'], unlocks: [] },
 
-  // ─── SOLAR ARRAYS ─────────────────────────────────────────────────────
-  { id: 'triple_junction', name: 'Triple-Junction Solar Cells', category: 'solar_arrays', tier: 1,
-    description: '30%+ efficiency multi-junction photovoltaics.',
-    effect: 'Enables solar farms, +20% power generation',
-    baseCostMoney: 60_000_000, baseTimeMonths: 6, prerequisites: [], unlocks: ['solar_farm_orbital'] },
-  { id: 'perovskite_tandem', name: 'Perovskite-Si Tandem', category: 'solar_arrays', tier: 2,
-    description: 'Next-gen solar cells combining perovskite and silicon layers.',
-    effect: '+40% power, -30% solar farm cost',
-    baseCostMoney: 200_000_000, baseTimeMonths: 12, prerequisites: ['triple_junction'], unlocks: [] },
-  { id: 'beamed_power', name: 'Beamed Power Reception', category: 'solar_arrays', tier: 4,
-    description: 'Receive energy beamed from solar collection stations.',
-    effect: 'Enables deep-space operations without local solar',
-    baseCostMoney: 12_000_000_000, baseTimeMonths: 30, prerequisites: ['perovskite_tandem'], unlocks: [] },
+  // ═══════════════════════════════════════════════════════════════════════════
+  // ENERGY & POWER (14 researches)
+  // ═══════════════════════════════════════════════════════════════════════════
+  { id: 'triple_junction', name: 'Triple-Junction Solar Cells', category: 'solar_arrays', tier: 1, description: '30%+ efficiency photovoltaics.', effect: 'Enables solar farms, +20% power', baseCostMoney: 60_000_000, baseTimeMonths: 6, prerequisites: [], unlocks: ['solar_farm_orbital'] },
+  { id: 'perovskite_tandem', name: 'Perovskite-Si Tandem', category: 'solar_arrays', tier: 2, description: 'Next-gen tandem solar cells.', effect: '+40% power, -30% cost', baseCostMoney: 200_000_000, baseTimeMonths: 12, prerequisites: ['triple_junction'], unlocks: [] },
+  { id: 'beamed_power', name: 'Beamed Power Reception', category: 'solar_arrays', tier: 4, description: 'Receive microwave-beamed energy.', effect: 'Enables deep-space power', baseCostMoney: 12_000_000_000, baseTimeMonths: 30, prerequisites: ['perovskite_tandem'], unlocks: [] },
+  { id: 'concentrator_solar', name: 'Solar Concentrator Arrays', category: 'solar_arrays', tier: 2, description: 'Mirror-focused solar thermal power.', effect: '+60% power density', baseCostMoney: 300_000_000, baseTimeMonths: 10, prerequisites: ['triple_junction'], unlocks: [] },
+  { id: 'solar_sail_power', name: 'Solar Sail Power Generation', category: 'solar_arrays', tier: 3, description: 'Thin-film solar sails that generate power.', effect: 'Combined propulsion + power', baseCostMoney: 2_000_000_000, baseTimeMonths: 20, prerequisites: ['perovskite_tandem'], unlocks: [] },
+  { id: 'fission_surface_power', name: 'Surface Fission Reactor', category: 'solar_arrays', tier: 3, description: 'Compact fission power for planetary surfaces.', effect: '+500% surface power generation', baseCostMoney: 4_000_000_000, baseTimeMonths: 24, prerequisites: ['concentrator_solar'], unlocks: [] },
+  { id: 'fusion_reactor', name: 'Fusion Power Reactor', category: 'solar_arrays', tier: 5, description: 'Controlled He-3 fusion for unlimited power.', effect: '10x power, enables endgame operations', baseCostMoney: 80_000_000_000, baseTimeMonths: 48, prerequisites: ['fission_surface_power'], unlocks: [] },
+  { id: 'battery_advanced', name: 'Advanced Energy Storage', category: 'solar_arrays', tier: 1, description: 'Solid-state batteries for space.', effect: '+30% energy storage density', baseCostMoney: 80_000_000, baseTimeMonths: 6, prerequisites: [], unlocks: [] },
+  { id: 'wireless_power_transfer', name: 'Wireless Power Transfer', category: 'solar_arrays', tier: 3, description: 'Beam power between spacecraft.', effect: 'Enables power sharing', baseCostMoney: 2_500_000_000, baseTimeMonths: 18, prerequisites: ['concentrator_solar'], unlocks: [] },
+  { id: 'rtg_enhanced', name: 'Enhanced RTGs', category: 'solar_arrays', tier: 2, description: 'Improved radioisotope thermoelectric generators.', effect: '+50% deep space power', baseCostMoney: 350_000_000, baseTimeMonths: 12, prerequisites: ['battery_advanced'], unlocks: [] },
+  { id: 'energy_harvesting', name: 'Ambient Energy Harvesting', category: 'solar_arrays', tier: 2, description: 'Harvest thermal gradients and vibrations.', effect: '+10% station power at no cost', baseCostMoney: 200_000_000, baseTimeMonths: 10, prerequisites: ['battery_advanced'], unlocks: [] },
+  { id: 'superconducting_grid', name: 'Superconducting Power Grid', category: 'solar_arrays', tier: 4, description: 'Zero-loss power distribution.', effect: '-20% power losses, +15% efficiency', baseCostMoney: 10_000_000_000, baseTimeMonths: 28, prerequisites: ['wireless_power_transfer'], unlocks: [] },
+  { id: 'antimatter_reactor', name: 'Antimatter Power Reactor', category: 'solar_arrays', tier: 5, description: 'Matter-antimatter annihilation power.', effect: 'Ultimate power source', baseCostMoney: 200_000_000_000, baseTimeMonths: 60, prerequisites: ['fusion_reactor'], unlocks: [] },
+  { id: 'space_based_solar_power', name: 'Space-Based Solar Power', category: 'solar_arrays', tier: 3, description: 'Orbital power stations beaming to Earth.', effect: 'New revenue stream: power sales to Earth', baseCostMoney: 5_000_000_000, baseTimeMonths: 24, prerequisites: ['concentrator_solar', 'beamed_power'], unlocks: [] },
 
-  // ─── MINING TECHNOLOGY ────────────────────────────────────────────────
-  { id: 'resource_prospecting', name: 'Resource Prospecting', category: 'mining', tier: 1,
-    description: 'Survey and identify extractable resources on celestial bodies.',
-    effect: 'Enables lunar and Mars mining',
-    baseCostMoney: 150_000_000, baseTimeMonths: 8, prerequisites: [], unlocks: ['mining_lunar_ice'] },
-  { id: 'regolith_processing', name: 'Regolith Processing', category: 'mining', tier: 2,
-    description: 'Extract water, oxygen, and metals from lunar/Mars regolith.',
-    effect: '+60% mining output',
-    baseCostMoney: 500_000_000, baseTimeMonths: 14, prerequisites: ['resource_prospecting'], unlocks: [] },
-  { id: 'asteroid_capture', name: 'Asteroid Capture', category: 'mining', tier: 3,
-    description: 'Redirect small asteroids into stable orbits for mining.',
-    effect: 'Enables asteroid belt mining',
-    baseCostMoney: 3_000_000_000, baseTimeMonths: 24, prerequisites: ['regolith_processing', 'autonomous_docking'], unlocks: ['mining_asteroid'] },
-  { id: 'deep_drilling', name: 'Deep Drilling', category: 'mining', tier: 4,
-    description: 'Drill through ice and rock on moons for subsurface resources.',
-    effect: '2x mining revenue, enables Titan/Europa mining',
-    baseCostMoney: 8_000_000_000, baseTimeMonths: 30, prerequisites: ['asteroid_capture'], unlocks: ['mining_europa', 'mining_titan'] },
-  { id: 'automated_mining_fleet', name: 'Automated Mining Fleet', category: 'mining', tier: 5,
-    description: 'Self-replicating mining robots that expand operations autonomously.',
-    effect: '5x mining revenue, autonomous expansion',
-    baseCostMoney: 80_000_000_000, baseTimeMonths: 48, prerequisites: ['deep_drilling', 'swarm_intelligence'], unlocks: [] },
+  // ═══════════════════════════════════════════════════════════════════════════
+  // MINING & EXTRACTION (18 researches)
+  // ═══════════════════════════════════════════════════════════════════════════
+  { id: 'resource_prospecting', name: 'Resource Prospecting', category: 'mining', tier: 1, description: 'Survey for extractable resources.', effect: 'Enables lunar/Mars mining', baseCostMoney: 150_000_000, baseTimeMonths: 8, prerequisites: [], unlocks: ['mining_lunar_ice'] },
+  { id: 'regolith_processing', name: 'Regolith Processing', category: 'mining', tier: 2, description: 'Extract materials from regolith.', effect: '+60% mining output', baseCostMoney: 500_000_000, baseTimeMonths: 14, prerequisites: ['resource_prospecting'], unlocks: [] },
+  { id: 'asteroid_capture', name: 'Asteroid Capture', category: 'mining', tier: 3, description: 'Redirect asteroids for mining.', effect: 'Enables asteroid belt mining', baseCostMoney: 3_000_000_000, baseTimeMonths: 24, prerequisites: ['regolith_processing', 'autonomous_docking'], unlocks: ['mining_asteroid'] },
+  { id: 'deep_drilling', name: 'Deep Drilling', category: 'mining', tier: 4, description: 'Drill through ice and rock.', effect: '2x mining revenue, Europa/Titan', baseCostMoney: 8_000_000_000, baseTimeMonths: 30, prerequisites: ['asteroid_capture'], unlocks: ['mining_europa', 'mining_titan'] },
+  { id: 'automated_mining_fleet', name: 'Automated Mining Fleet', category: 'mining', tier: 5, description: 'Self-replicating mining robots.', effect: '5x mining revenue', baseCostMoney: 80_000_000_000, baseTimeMonths: 48, prerequisites: ['deep_drilling', 'swarm_intelligence'], unlocks: [] },
+  { id: 'isru_water', name: 'Water ISRU', category: 'mining', tier: 1, description: 'In-situ water extraction from ice.', effect: 'Produces propellant locally', baseCostMoney: 120_000_000, baseTimeMonths: 8, prerequisites: ['resource_prospecting'], unlocks: [] },
+  { id: 'isru_oxygen', name: 'Oxygen Extraction', category: 'mining', tier: 2, description: 'Extract O2 from regolith oxides.', effect: '-50% life support imports', baseCostMoney: 400_000_000, baseTimeMonths: 12, prerequisites: ['isru_water'], unlocks: [] },
+  { id: 'isru_metals', name: 'Metal Refining ISRU', category: 'mining', tier: 2, description: 'Refine iron, aluminum, titanium locally.', effect: '+40% construction material output', baseCostMoney: 600_000_000, baseTimeMonths: 16, prerequisites: ['regolith_processing'], unlocks: [] },
+  { id: 'electrochemical_mining', name: 'Electrochemical Extraction', category: 'mining', tier: 3, description: 'Extract metals using electrolysis.', effect: '+30% precious metal yield', baseCostMoney: 2_000_000_000, baseTimeMonths: 20, prerequisites: ['isru_metals'], unlocks: [] },
+  { id: 'solar_thermal_mining', name: 'Solar Thermal Mining', category: 'mining', tier: 2, description: 'Use focused sunlight to extract volatiles.', effect: '+50% ice mining efficiency', baseCostMoney: 350_000_000, baseTimeMonths: 10, prerequisites: ['resource_prospecting'], unlocks: [] },
+  { id: 'bioleaching', name: 'Space Bioleaching', category: 'mining', tier: 3, description: 'Use microbes to extract metals from ore.', effect: '+25% rare earth yield', baseCostMoney: 1_500_000_000, baseTimeMonths: 18, prerequisites: ['regolith_processing'], unlocks: [] },
+  { id: 'plasma_processing', name: 'Plasma Ore Processing', category: 'mining', tier: 4, description: 'High-temperature plasma refining.', effect: '+100% refining efficiency', baseCostMoney: 10_000_000_000, baseTimeMonths: 30, prerequisites: ['electrochemical_mining'], unlocks: [] },
+  { id: 'cryogenic_mining', name: 'Cryogenic Mining Systems', category: 'mining', tier: 3, description: 'Mining in extreme cold (Titan, Enceladus).', effect: 'Enables outer moon mining', baseCostMoney: 4_000_000_000, baseTimeMonths: 24, prerequisites: ['deep_drilling'], unlocks: [] },
+  { id: 'subsurface_radar', name: 'Ground Penetrating Radar', category: 'mining', tier: 1, description: 'Map underground deposits from surface.', effect: '+40% deposit discovery rate', baseCostMoney: 80_000_000, baseTimeMonths: 6, prerequisites: [], unlocks: [] },
+  { id: 'autonomous_excavation', name: 'Autonomous Excavation', category: 'mining', tier: 3, description: 'Self-driving mining equipment.', effect: '-40% mining labor costs', baseCostMoney: 2_500_000_000, baseTimeMonths: 22, prerequisites: ['regolith_processing', 'autonomous_ops'], unlocks: [] },
+  { id: 'magnetic_separation', name: 'Magnetic Ore Separation', category: 'mining', tier: 2, description: 'Sort ore by magnetic properties.', effect: '+35% metal purity', baseCostMoney: 300_000_000, baseTimeMonths: 10, prerequisites: ['isru_metals'], unlocks: [] },
+  { id: 'zero_g_refining', name: 'Zero-G Refining', category: 'mining', tier: 3, description: 'Purify materials in microgravity.', effect: '+50% product purity', baseCostMoney: 3_000_000_000, baseTimeMonths: 20, prerequisites: ['orbital_assembly'], unlocks: [] },
+  { id: 'self_replicating_miners', name: 'Self-Replicating Miners', category: 'mining', tier: 5, description: 'Mining robots that build copies of themselves.', effect: 'Exponential mining capacity growth', baseCostMoney: 120_000_000_000, baseTimeMonths: 60, prerequisites: ['automated_mining_fleet'], unlocks: [] },
 
-  // ─── SPACE INFRASTRUCTURE ─────────────────────────────────────────────
-  { id: 'orbital_assembly', name: 'Orbital Assembly', category: 'infrastructure', tier: 1,
-    description: 'Build structures in orbit from delivered components.',
-    effect: 'Enables fabrication facilities',
-    baseCostMoney: 300_000_000, baseTimeMonths: 12, prerequisites: ['modular_spacecraft'], unlocks: ['fabrication_orbital'] },
-  { id: 'rotating_habitats', name: 'Rotating Habitats', category: 'infrastructure', tier: 3,
-    description: 'Artificial gravity through rotation. Enables long-term habitation.',
-    effect: '+100% station capacity, enables tourism',
-    baseCostMoney: 5_000_000_000, baseTimeMonths: 30, prerequisites: ['orbital_assembly'], unlocks: [] },
-  { id: 'mega_structures', name: 'Mega-Structures', category: 'infrastructure', tier: 4,
-    description: 'O\'Neill cylinders and large-scale orbital habitats.',
-    effect: '3x station capacity, unlocks Tier 5 buildings',
-    baseCostMoney: 50_000_000_000, baseTimeMonths: 48, prerequisites: ['rotating_habitats'], unlocks: [] },
+  // ═══════════════════════════════════════════════════════════════════════════
+  // SPACE INFRASTRUCTURE (16 researches)
+  // ═══════════════════════════════════════════════════════════════════════════
+  { id: 'orbital_assembly', name: 'Orbital Assembly', category: 'infrastructure', tier: 1, description: 'Build structures in orbit.', effect: 'Enables fabrication facilities', baseCostMoney: 300_000_000, baseTimeMonths: 12, prerequisites: ['modular_spacecraft'], unlocks: ['fabrication_orbital'] },
+  { id: 'rotating_habitats', name: 'Rotating Habitats', category: 'infrastructure', tier: 3, description: 'Artificial gravity through rotation.', effect: '+100% station capacity', baseCostMoney: 5_000_000_000, baseTimeMonths: 30, prerequisites: ['orbital_assembly'], unlocks: [] },
+  { id: 'mega_structures', name: 'Mega-Structures', category: 'infrastructure', tier: 4, description: "O'Neill cylinders and large habitats.", effect: '3x station capacity', baseCostMoney: 50_000_000_000, baseTimeMonths: 48, prerequisites: ['rotating_habitats'], unlocks: [] },
+  { id: 'space_dock', name: 'Space Dock Construction', category: 'infrastructure', tier: 2, description: 'Orbital shipyard for assembling vessels.', effect: '-20% ship build time', baseCostMoney: 800_000_000, baseTimeMonths: 16, prerequisites: ['orbital_assembly'], unlocks: [] },
+  { id: 'lunar_base_design', name: 'Lunar Base Design', category: 'infrastructure', tier: 2, description: 'Permanent surface structures.', effect: 'Enables lunar habitats', baseCostMoney: 600_000_000, baseTimeMonths: 14, prerequisites: ['orbital_assembly'], unlocks: [] },
+  { id: 'mars_base_design', name: 'Mars Base Design', category: 'infrastructure', tier: 3, description: 'Pressurized Martian structures.', effect: 'Enables Mars habitats', baseCostMoney: 3_000_000_000, baseTimeMonths: 24, prerequisites: ['lunar_base_design'], unlocks: [] },
+  { id: 'lava_tube_habitats', name: 'Lava Tube Habitats', category: 'infrastructure', tier: 3, description: 'Use natural caves for radiation-shielded living.', effect: '+50% habitat space at low cost', baseCostMoney: 2_000_000_000, baseTimeMonths: 18, prerequisites: ['lunar_base_design'], unlocks: [] },
+  { id: 'space_elevator_design', name: 'Space Elevator Architecture', category: 'infrastructure', tier: 5, description: 'Full orbital elevator engineering.', effect: 'Enables near-zero launch cost', baseCostMoney: 150_000_000_000, baseTimeMonths: 72, prerequisites: ['mega_structures', 'space_elevator_cable'], unlocks: [] },
+  { id: 'orbital_ring', name: 'Orbital Ring Segment', category: 'infrastructure', tier: 5, description: 'Partial orbital ring around Earth.', effect: '-90% all launch costs', baseCostMoney: 500_000_000_000, baseTimeMonths: 96, prerequisites: ['space_elevator_design'], unlocks: [] },
+  { id: 'modular_station', name: 'Modular Station Expansion', category: 'infrastructure', tier: 2, description: 'Add new modules to existing stations.', effect: '+4 module slots per station', baseCostMoney: 500_000_000, baseTimeMonths: 12, prerequisites: ['orbital_assembly'], unlocks: [] },
+  { id: 'pressurized_rovers', name: 'Pressurized Rovers', category: 'infrastructure', tier: 2, description: 'Mobile habitats for surface exploration.', effect: '+30% surface area coverage', baseCostMoney: 400_000_000, baseTimeMonths: 14, prerequisites: ['lunar_base_design'], unlocks: [] },
+  { id: '3d_printing_space', name: 'Space 3D Printing', category: 'infrastructure', tier: 2, description: 'Additive manufacturing in orbit/surface.', effect: '-40% component import costs', baseCostMoney: 450_000_000, baseTimeMonths: 12, prerequisites: ['orbital_assembly'], unlocks: [] },
+  { id: 'atmospheric_processing', name: 'Atmospheric Processing', category: 'infrastructure', tier: 3, description: 'Extract gases from planetary atmospheres.', effect: 'Enables Venus and Titan colonies', baseCostMoney: 6_000_000_000, baseTimeMonths: 24, prerequisites: ['mars_base_design'], unlocks: [] },
+  { id: 'radiation_hardening', name: 'Radiation Hardening', category: 'infrastructure', tier: 3, description: 'Protect habitats from intense radiation.', effect: 'Enables Mercury and Io colonies', baseCostMoney: 5_000_000_000, baseTimeMonths: 24, prerequisites: ['radiation_shielding'], unlocks: [] },
+  { id: 'extreme_thermal', name: 'Extreme Thermal Management', category: 'infrastructure', tier: 3, description: 'Survive -270C to +430C.', effect: 'Enables Mercury and Io surface ops', baseCostMoney: 8_000_000_000, baseTimeMonths: 30, prerequisites: ['radiation_hardening'], unlocks: [] },
+  { id: 'cryogenic_systems', name: 'Cryogenic Life Support', category: 'infrastructure', tier: 4, description: 'Habitats in extreme cold.', effect: 'Enables outer moon colonies', baseCostMoney: 15_000_000_000, baseTimeMonths: 36, prerequisites: ['extreme_thermal'], unlocks: [] },
 
-  // ─── PROPULSION ───────────────────────────────────────────────────────
-  { id: 'ion_drives', name: 'Ion Drives', category: 'propulsion', tier: 1,
-    description: 'High-efficiency electric propulsion for long-duration missions.',
-    effect: '-30% travel time, enables Mars missions',
-    baseCostMoney: 120_000_000, baseTimeMonths: 8, prerequisites: [], unlocks: [] },
-  { id: 'hall_thrusters', name: 'Hall-Effect Thrusters', category: 'propulsion', tier: 2,
-    description: 'Higher-thrust electric propulsion for station-keeping and transfers.',
-    effect: '-20% satellite maintenance, better orbit control',
-    baseCostMoney: 300_000_000, baseTimeMonths: 12, prerequisites: ['ion_drives'], unlocks: [] },
-  { id: 'vasimr', name: 'VASIMR Engines', category: 'propulsion', tier: 3,
-    description: 'Variable Specific Impulse Magnetoplasma Rocket for flexible missions.',
-    effect: '-40% travel time to Mars and asteroids',
-    baseCostMoney: 2_000_000_000, baseTimeMonths: 20, prerequisites: ['hall_thrusters'], unlocks: [] },
-  { id: 'solar_sails_adv', name: 'Advanced Solar Sails', category: 'propulsion', tier: 4,
-    description: 'Laser-boosted solar sails for propellant-free travel.',
-    effect: 'Zero-fuel transit to inner system destinations',
-    baseCostMoney: 6_000_000_000, baseTimeMonths: 24, prerequisites: ['vasimr'], unlocks: [] },
-  { id: 'antimatter_propulsion', name: 'Antimatter Propulsion', category: 'propulsion', tier: 5,
-    description: 'The ultimate propulsion technology. Matter-antimatter annihilation.',
-    effect: 'Enables interstellar precursor missions',
-    baseCostMoney: 500_000_000_000, baseTimeMonths: 72, prerequisites: ['solar_sails_adv', 'fusion_drive'], unlocks: [] },
+  // ═══════════════════════════════════════════════════════════════════════════
+  // PROPULSION (15 researches)
+  // ═══════════════════════════════════════════════════════════════════════════
+  { id: 'ion_drives', name: 'Ion Drives', category: 'propulsion', tier: 1, description: 'High-efficiency electric propulsion.', effect: '-30% travel time', baseCostMoney: 120_000_000, baseTimeMonths: 8, prerequisites: [], unlocks: [] },
+  { id: 'hall_thrusters', name: 'Hall-Effect Thrusters', category: 'propulsion', tier: 2, description: 'Higher-thrust electric propulsion.', effect: '-20% maintenance, better orbits', baseCostMoney: 300_000_000, baseTimeMonths: 12, prerequisites: ['ion_drives'], unlocks: [] },
+  { id: 'vasimr', name: 'VASIMR Engines', category: 'propulsion', tier: 3, description: 'Variable impulse plasma rocket.', effect: '-40% Mars travel time', baseCostMoney: 2_000_000_000, baseTimeMonths: 20, prerequisites: ['hall_thrusters'], unlocks: [] },
+  { id: 'solar_sails_adv', name: 'Advanced Solar Sails', category: 'propulsion', tier: 4, description: 'Laser-boosted solar sails.', effect: 'Zero-fuel inner system transit', baseCostMoney: 6_000_000_000, baseTimeMonths: 24, prerequisites: ['vasimr'], unlocks: [] },
+  { id: 'antimatter_propulsion', name: 'Antimatter Propulsion', category: 'propulsion', tier: 5, description: 'Matter-antimatter annihilation drive.', effect: 'Enables interstellar missions', baseCostMoney: 500_000_000_000, baseTimeMonths: 72, prerequisites: ['solar_sails_adv', 'fusion_drive'], unlocks: [] },
+  { id: 'mpd_thruster', name: 'MPD Thruster', category: 'propulsion', tier: 2, description: 'Magnetoplasmadynamic thruster for cargo.', effect: '+50% cargo ship speed', baseCostMoney: 400_000_000, baseTimeMonths: 14, prerequisites: ['hall_thrusters'], unlocks: [] },
+  { id: 'nuclear_electric', name: 'Nuclear Electric Propulsion', category: 'propulsion', tier: 3, description: 'Nuclear reactor powers ion engines.', effect: '-50% outer planet travel time', baseCostMoney: 4_000_000_000, baseTimeMonths: 24, prerequisites: ['nuclear_thermal'], unlocks: [] },
+  { id: 'em_drive_research', name: 'EM Drive Research', category: 'propulsion', tier: 4, description: 'Experimental reactionless thruster.', effect: '+10% station-keeping efficiency (if it works)', baseCostMoney: 5_000_000_000, baseTimeMonths: 20, prerequisites: ['vasimr'], unlocks: [] },
+  { id: 'laser_propulsion', name: 'Laser-Pushed Lightsails', category: 'propulsion', tier: 4, description: 'Ground-based laser pushes lightsails.', effect: 'Enables fast interplanetary probes', baseCostMoney: 15_000_000_000, baseTimeMonths: 30, prerequisites: ['solar_sails_adv'], unlocks: [] },
+  { id: 'magnetic_sail', name: 'Magnetic Sail (Magsail)', category: 'propulsion', tier: 3, description: 'Use magnetic field to brake in solar wind.', effect: '-60% deceleration fuel needs', baseCostMoney: 1_500_000_000, baseTimeMonths: 16, prerequisites: ['vasimr'], unlocks: [] },
+  { id: 'aerocapture', name: 'Aerocapture Technology', category: 'propulsion', tier: 2, description: 'Use atmospheres for orbital insertion.', effect: '-70% Mars orbit insertion fuel', baseCostMoney: 500_000_000, baseTimeMonths: 14, prerequisites: ['ion_drives'], unlocks: [] },
+  { id: 'gravity_assist_ai', name: 'AI Gravity Assist Planning', category: 'propulsion', tier: 2, description: 'Optimal multi-body gravity slingshots.', effect: '-30% fuel for outer planet missions', baseCostMoney: 300_000_000, baseTimeMonths: 10, prerequisites: ['ion_drives'], unlocks: [] },
+  { id: 'pulse_detonation', name: 'Pulsed Detonation Engine', category: 'propulsion', tier: 3, description: 'Repeated detonation cycle propulsion.', effect: '+40% thrust at lower fuel cost', baseCostMoney: 2_500_000_000, baseTimeMonths: 22, prerequisites: ['hall_thrusters'], unlocks: [] },
+  { id: 'plasma_thruster', name: 'Helicon Plasma Thruster', category: 'propulsion', tier: 2, description: 'High-density plasma propulsion.', effect: '+35% cargo transport efficiency', baseCostMoney: 350_000_000, baseTimeMonths: 12, prerequisites: ['hall_thrusters'], unlocks: [] },
+  { id: 'fission_fragment', name: 'Fission Fragment Propulsion', category: 'propulsion', tier: 5, description: 'Direct thrust from fission products.', effect: 'ISP > 1,000,000s, 0.1c capable', baseCostMoney: 300_000_000_000, baseTimeMonths: 60, prerequisites: ['antimatter_propulsion'], unlocks: [] },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // CREW & WORKFORCE (14 researches)
+  // ═══════════════════════════════════════════════════════════════════════════
+  { id: 'crew_training', name: 'Advanced Crew Training', category: 'crew', tier: 1, description: 'VR-based astronaut training programs.', effect: '+20% crew efficiency', baseCostMoney: 60_000_000, baseTimeMonths: 6, prerequisites: [], unlocks: [] },
+  { id: 'space_medicine', name: 'Space Medicine', category: 'crew', tier: 1, description: 'Counter bone loss and radiation effects.', effect: '+50% crew tour duration', baseCostMoney: 100_000_000, baseTimeMonths: 8, prerequisites: [], unlocks: [] },
+  { id: 'crew_rotation', name: 'Crew Rotation Logistics', category: 'crew', tier: 2, description: 'Efficient crew transport and scheduling.', effect: '-25% crew transport costs', baseCostMoney: 250_000_000, baseTimeMonths: 10, prerequisites: ['crew_training'], unlocks: [] },
+  { id: 'robotic_assistants', name: 'Robotic Crew Assistants', category: 'crew', tier: 2, description: 'Robots handle routine maintenance.', effect: '-30% crew requirements', baseCostMoney: 400_000_000, baseTimeMonths: 14, prerequisites: ['crew_training'], unlocks: [] },
+  { id: 'space_nutrition', name: 'Space Nutrition Systems', category: 'crew', tier: 1, description: 'Optimize food production and nutrition.', effect: '-20% life support costs', baseCostMoney: 80_000_000, baseTimeMonths: 6, prerequisites: [], unlocks: [] },
+  { id: 'psychology_support', name: 'Crew Psychology Support', category: 'crew', tier: 2, description: 'AI-assisted mental health for isolation.', effect: '+30% crew morale, -15% turnover', baseCostMoney: 200_000_000, baseTimeMonths: 10, prerequisites: ['space_medicine'], unlocks: [] },
+  { id: 'eva_suits_advanced', name: 'Advanced EVA Suits', category: 'crew', tier: 2, description: 'Next-gen spacesuits for surface ops.', effect: '+40% EVA productivity', baseCostMoney: 300_000_000, baseTimeMonths: 12, prerequisites: ['crew_training'], unlocks: [] },
+  { id: 'bioregenerative_lss', name: 'Bioregenerative Life Support', category: 'crew', tier: 3, description: 'Plants and algae recycle air and water.', effect: '-50% life support resupply', baseCostMoney: 1_500_000_000, baseTimeMonths: 20, prerequisites: ['space_nutrition', 'life_support_recycling'], unlocks: [] },
+  { id: 'zero_g_fitness', name: 'Zero-G Fitness Systems', category: 'crew', tier: 1, description: 'Exercise equipment for microgravity.', effect: '+10% crew health, -5% medical costs', baseCostMoney: 40_000_000, baseTimeMonths: 4, prerequisites: [], unlocks: [] },
+  { id: 'crew_augmentation', name: 'Crew Performance Augmentation', category: 'crew', tier: 3, description: 'Exoskeletons and neural interfaces.', effect: '+50% surface EVA capabilities', baseCostMoney: 3_000_000_000, baseTimeMonths: 24, prerequisites: ['eva_suits_advanced'], unlocks: [] },
+  { id: 'space_agriculture', name: 'Space Agriculture', category: 'crew', tier: 3, description: 'Grow food in orbit and on surfaces.', effect: '-80% food import costs', baseCostMoney: 2_000_000_000, baseTimeMonths: 18, prerequisites: ['bioregenerative_lss'], unlocks: [] },
+  { id: 'autonomous_hab_mgmt', name: 'Autonomous Habitat Management', category: 'crew', tier: 3, description: 'AI manages habitat systems autonomously.', effect: '-40% crew needed for operations', baseCostMoney: 2_500_000_000, baseTimeMonths: 20, prerequisites: ['robotic_assistants', 'autonomous_ops'], unlocks: [] },
+  { id: 'space_construction_crew', name: 'Construction Crew Training', category: 'crew', tier: 2, description: 'Specialized orbital construction workers.', effect: '-20% build time, +10% quality', baseCostMoney: 350_000_000, baseTimeMonths: 12, prerequisites: ['crew_training'], unlocks: [] },
+  { id: 'remote_telepresence', name: 'Remote Telepresence', category: 'crew', tier: 2, description: 'Operate robots remotely from orbit.', effect: '+30% surface operations from orbit', baseCostMoney: 500_000_000, baseTimeMonths: 14, prerequisites: ['robotic_assistants'], unlocks: [] },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // SPACE SERVICES & COMMERCE (15 researches)
+  // ═══════════════════════════════════════════════════════════════════════════
+  { id: 'space_tourism_ops', name: 'Space Tourism Operations', category: 'services', tier: 1, description: 'Commercial passenger space travel.', effect: 'Enables tourism revenue', baseCostMoney: 100_000_000, baseTimeMonths: 8, prerequisites: ['launch_abort_systems'], unlocks: [] },
+  { id: 'orbital_advertising', name: 'Orbital Advertising', category: 'services', tier: 1, description: 'LED displays visible from ground.', effect: '+10% station revenue', baseCostMoney: 50_000_000, baseTimeMonths: 4, prerequisites: [], unlocks: [] },
+  { id: 'space_burial', name: 'Space Memorial Services', category: 'services', tier: 1, description: 'Launch remains into space/orbit.', effect: 'New niche revenue stream', baseCostMoney: 30_000_000, baseTimeMonths: 4, prerequisites: [], unlocks: [] },
+  { id: 'microgravity_research', name: 'Microgravity Research Services', category: 'services', tier: 2, description: 'Sell research time on orbital labs.', effect: '+30% fabrication revenue', baseCostMoney: 300_000_000, baseTimeMonths: 12, prerequisites: ['orbital_assembly'], unlocks: [] },
+  { id: 'satellite_as_service', name: 'Satellite-as-a-Service', category: 'services', tier: 2, description: 'Lease satellite capacity on demand.', effect: '+40% telecom flexibility', baseCostMoney: 400_000_000, baseTimeMonths: 14, prerequisites: ['software_defined_sat'], unlocks: [] },
+  { id: 'data_analytics_service', name: 'Earth Observation Analytics', category: 'services', tier: 2, description: 'Sell analyzed satellite data.', effect: '+50% sensor data value', baseCostMoney: 250_000_000, baseTimeMonths: 10, prerequisites: ['edge_ai'], unlocks: [] },
+  { id: 'space_manufacturing', name: 'Commercial Space Manufacturing', category: 'services', tier: 3, description: 'Sell products made in microgravity.', effect: '+100% fabrication revenue', baseCostMoney: 2_000_000_000, baseTimeMonths: 20, prerequisites: ['microgravity_research'], unlocks: [] },
+  { id: 'space_logistics', name: 'Space Logistics Network', category: 'services', tier: 2, description: 'Regular cargo delivery routes.', effect: '-25% transport costs', baseCostMoney: 500_000_000, baseTimeMonths: 14, prerequisites: ['modular_cargo'], unlocks: [] },
+  { id: 'space_insurance_tech', name: 'Space Insurance Modeling', category: 'services', tier: 2, description: 'AI-driven risk assessment.', effect: '-20% insurance premiums', baseCostMoney: 200_000_000, baseTimeMonths: 10, prerequisites: ['predictive_maintenance'], unlocks: [] },
+  { id: 'debris_tracking_svc', name: 'Debris Tracking Service', category: 'services', tier: 2, description: 'Commercial space surveillance.', effect: 'New revenue: debris tracking contracts', baseCostMoney: 350_000_000, baseTimeMonths: 12, prerequisites: ['space_weather_monitoring'], unlocks: [] },
+  { id: 'lunar_tourism', name: 'Lunar Tourism Packages', category: 'services', tier: 3, description: 'Surface excursions for tourists.', effect: '+100% Moon tourism revenue', baseCostMoney: 3_000_000_000, baseTimeMonths: 22, prerequisites: ['space_tourism_ops', 'lunar_base_design'], unlocks: [] },
+  { id: 'space_entertainment', name: 'Space Entertainment Platform', category: 'services', tier: 2, description: 'Live streaming and VR from space.', effect: '+20% all station revenue', baseCostMoney: 200_000_000, baseTimeMonths: 10, prerequisites: ['space_tourism_ops'], unlocks: [] },
+  { id: 'propellant_trading', name: 'Propellant Trading Network', category: 'services', tier: 3, description: 'Buy/sell propellant between operators.', effect: '+50% propellant depot revenue', baseCostMoney: 1_500_000_000, baseTimeMonths: 16, prerequisites: ['propellant_depots'], unlocks: [] },
+  { id: 'space_law', name: 'Space Law Expertise', category: 'services', tier: 2, description: 'Navigate regulatory frameworks.', effect: '-30% regulatory compliance costs', baseCostMoney: 150_000_000, baseTimeMonths: 8, prerequisites: [], unlocks: [] },
+  { id: 'orbital_hotel', name: 'Orbital Hotel Design', category: 'services', tier: 3, description: 'Premium space hospitality.', effect: '+200% tourism revenue per module', baseCostMoney: 5_000_000_000, baseTimeMonths: 24, prerequisites: ['lunar_tourism', 'rotating_habitats'], unlocks: [] },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // SHIPS & FLEET (15 researches)
+  // ═══════════════════════════════════════════════════════════════════════════
+  { id: 'cargo_optimization', name: 'Cargo Loading Optimization', category: 'ships', tier: 1, description: 'AI-optimized cargo placement.', effect: '+15% effective cargo capacity', baseCostMoney: 60_000_000, baseTimeMonths: 4, prerequisites: [], unlocks: [] },
+  { id: 'ship_automation', name: 'Ship Automation', category: 'ships', tier: 1, description: 'Automated navigation and docking.', effect: '-30% crew needed per ship', baseCostMoney: 100_000_000, baseTimeMonths: 8, prerequisites: [], unlocks: [] },
+  { id: 'mining_laser', name: 'Mining Laser Systems', category: 'ships', tier: 2, description: 'Laser ablation for asteroid mining.', effect: '+50% mining ship extraction rate', baseCostMoney: 400_000_000, baseTimeMonths: 14, prerequisites: ['resource_prospecting'], unlocks: [] },
+  { id: 'heavy_hauler_design', name: 'Heavy Hauler Design', category: 'ships', tier: 2, description: 'Massive cargo vessels for bulk transport.', effect: '+100% heavy transport capacity', baseCostMoney: 500_000_000, baseTimeMonths: 16, prerequisites: ['cargo_optimization'], unlocks: [] },
+  { id: 'tanker_efficiency', name: 'Tanker Efficiency', category: 'ships', tier: 2, description: 'Improved propellant storage systems.', effect: '+30% tanker capacity, -10% boil-off', baseCostMoney: 300_000_000, baseTimeMonths: 10, prerequisites: ['cargo_optimization'], unlocks: [] },
+  { id: 'ship_armor', name: 'Ship Armor Plating', category: 'ships', tier: 2, description: 'Reinforced hulls for hazardous zones.', effect: '+50% ship survival in debris fields', baseCostMoney: 250_000_000, baseTimeMonths: 10, prerequisites: ['spacecraft_armor'], unlocks: [] },
+  { id: 'fleet_coordination', name: 'Fleet Coordination AI', category: 'ships', tier: 3, description: 'Coordinate multiple ships as one unit.', effect: '+25% fleet efficiency', baseCostMoney: 2_000_000_000, baseTimeMonths: 18, prerequisites: ['swarm_ai', 'ship_automation'], unlocks: [] },
+  { id: 'survey_probe_adv', name: 'Advanced Survey Probes', category: 'ships', tier: 2, description: 'Better sensors and longer range.', effect: '+50% survey discovery rate, +30% rewards', baseCostMoney: 300_000_000, baseTimeMonths: 12, prerequisites: ['high_res_optical'], unlocks: [] },
+  { id: 'mining_drone_swarm', name: 'Mining Drone Swarm', category: 'ships', tier: 3, description: 'Coordinated mining drone operations.', effect: '2x mining drone output', baseCostMoney: 1_500_000_000, baseTimeMonths: 18, prerequisites: ['mining_laser', 'swarm_ai'], unlocks: [] },
+  { id: 'ship_recycling', name: 'Ship Recycling Protocol', category: 'ships', tier: 2, description: 'Salvage useful materials from old ships.', effect: '+50% scrap value (45% instead of 30%)', baseCostMoney: 200_000_000, baseTimeMonths: 8, prerequisites: ['ship_automation'], unlocks: [] },
+  { id: 'tug_design', name: 'Orbital Tug Design', category: 'ships', tier: 2, description: 'Specialized vessel for moving cargo/stations.', effect: 'Enables station repositioning', baseCostMoney: 350_000_000, baseTimeMonths: 12, prerequisites: ['cargo_optimization'], unlocks: [] },
+  { id: 'deep_space_nav', name: 'Deep Space Navigation', category: 'ships', tier: 3, description: 'Autonomous navigation beyond Mars.', effect: '-40% outer system travel time', baseCostMoney: 2_500_000_000, baseTimeMonths: 20, prerequisites: ['gravity_assist_ai'], unlocks: [] },
+  { id: 'ship_manufacturing', name: 'In-Space Ship Manufacturing', category: 'ships', tier: 4, description: 'Build ships in orbit from raw materials.', effect: '-50% ship build cost', baseCostMoney: 15_000_000_000, baseTimeMonths: 36, prerequisites: ['space_dock', '3d_printing_space'], unlocks: [] },
+  { id: 'nuclear_ship', name: 'Nuclear-Powered Ships', category: 'ships', tier: 4, description: 'Ships with onboard fission reactors.', effect: '+200% range, -60% fuel needs', baseCostMoney: 20_000_000_000, baseTimeMonths: 36, prerequisites: ['nuclear_thermal'], unlocks: [] },
+  { id: 'interstellar_probe', name: 'Interstellar Probe Design', category: 'ships', tier: 5, description: 'Probes capable of reaching nearby stars.', effect: 'Enables interstellar exploration', baseCostMoney: 100_000_000_000, baseTimeMonths: 60, prerequisites: ['laser_propulsion', 'fission_fragment'], unlocks: [] },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // TERRAFORMING (10 researches)
+  // ═══════════════════════════════════════════════════════════════════════════
+  { id: 'atmospheric_analysis', name: 'Atmospheric Analysis', category: 'terraforming', tier: 1, description: 'Study planetary atmospheres for modification.', effect: 'Enables terraforming planning', baseCostMoney: 150_000_000, baseTimeMonths: 8, prerequisites: ['atmospheric_processing'], unlocks: [] },
+  { id: 'greenhouse_engineering', name: 'Greenhouse Gas Engineering', category: 'terraforming', tier: 3, description: 'Deploy orbital mirrors and greenhouse gases.', effect: '+25% colony habitability on Mars', baseCostMoney: 5_000_000_000, baseTimeMonths: 30, prerequisites: ['atmospheric_analysis'], unlocks: [] },
+  { id: 'mars_warming', name: 'Mars Atmospheric Warming', category: 'terraforming', tier: 4, description: 'Begin warming Mars atmosphere.', effect: '+50% Mars colony capacity', baseCostMoney: 30_000_000_000, baseTimeMonths: 48, prerequisites: ['greenhouse_engineering'], unlocks: [] },
+  { id: 'oxygen_production', name: 'Industrial O2 Production', category: 'terraforming', tier: 3, description: 'Large-scale oxygen from CO2/water.', effect: '+40% colony oxygen production', baseCostMoney: 4_000_000_000, baseTimeMonths: 24, prerequisites: ['isru_oxygen'], unlocks: [] },
+  { id: 'soil_creation', name: 'Synthetic Soil Engineering', category: 'terraforming', tier: 3, description: 'Convert regolith to fertile soil.', effect: '+100% food production on Mars', baseCostMoney: 3_000_000_000, baseTimeMonths: 20, prerequisites: ['space_agriculture'], unlocks: [] },
+  { id: 'dome_construction', name: 'Pressurized Dome Construction', category: 'terraforming', tier: 2, description: 'Large transparent pressure domes.', effect: '+30% colony capacity', baseCostMoney: 800_000_000, baseTimeMonths: 16, prerequisites: ['mars_base_design'], unlocks: [] },
+  { id: 'magnetic_shield', name: 'Artificial Magnetosphere', category: 'terraforming', tier: 5, description: 'Protect Mars atmosphere from solar wind.', effect: 'Prerequisite for full terraforming', baseCostMoney: 100_000_000_000, baseTimeMonths: 60, prerequisites: ['mars_warming'], unlocks: [] },
+  { id: 'ocean_seeding', name: 'Ocean Creation', category: 'terraforming', tier: 5, description: 'Create liquid water oceans from ice.', effect: 'Enables full planetary colonization', baseCostMoney: 200_000_000_000, baseTimeMonths: 72, prerequisites: ['magnetic_shield'], unlocks: [] },
+  { id: 'biosphere_engineering', name: 'Biosphere Engineering', category: 'terraforming', tier: 4, description: 'Introduce microbial ecosystems.', effect: '+50% self-sufficiency', baseCostMoney: 20_000_000_000, baseTimeMonths: 36, prerequisites: ['bioregenerative_lss', 'soil_creation'], unlocks: [] },
+  { id: 'paraterraforming', name: 'Paraterraforming', category: 'terraforming', tier: 3, description: 'Enclosed terraforming zones.', effect: '+60% habitable area at lower cost', baseCostMoney: 6_000_000_000, baseTimeMonths: 26, prerequisites: ['dome_construction'], unlocks: [] },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // MATERIALS SCIENCE (10 researches)
+  // ═══════════════════════════════════════════════════════════════════════════
+  { id: 'carbon_nanotubes', name: 'Carbon Nanotube Production', category: 'materials', tier: 2, description: 'Mass production of CNTs.', effect: '-20% structural mass', baseCostMoney: 400_000_000, baseTimeMonths: 14, prerequisites: [], unlocks: [] },
+  { id: 'metamaterials', name: 'Electromagnetic Metamaterials', category: 'materials', tier: 3, description: 'Materials with engineered EM properties.', effect: '+30% antenna efficiency', baseCostMoney: 2_000_000_000, baseTimeMonths: 20, prerequisites: ['carbon_nanotubes'], unlocks: [] },
+  { id: 'aerogel_insulation', name: 'Aerogel Insulation', category: 'materials', tier: 1, description: 'Ultra-lightweight thermal insulation.', effect: '-20% thermal management costs', baseCostMoney: 80_000_000, baseTimeMonths: 6, prerequisites: [], unlocks: [] },
+  { id: 'self_healing_materials', name: 'Self-Healing Materials', category: 'materials', tier: 3, description: 'Materials that repair micro-damage.', effect: '+30% hull lifespan', baseCostMoney: 3_000_000_000, baseTimeMonths: 22, prerequisites: ['carbon_nanotubes'], unlocks: [] },
+  { id: 'lunar_concrete', name: 'Lunar Concrete (Lunarcrete)', category: 'materials', tier: 2, description: 'Construction material from lunar regolith.', effect: '-60% lunar construction import costs', baseCostMoney: 300_000_000, baseTimeMonths: 10, prerequisites: ['regolith_processing'], unlocks: [] },
+  { id: 'radiation_shielding_mat', name: 'Radiation Shielding Materials', category: 'materials', tier: 2, description: 'Hydrogen-rich polymers for radiation protection.', effect: '+40% radiation shielding efficiency', baseCostMoney: 350_000_000, baseTimeMonths: 12, prerequisites: ['aerogel_insulation'], unlocks: [] },
+  { id: 'high_temp_alloys', name: 'High-Temperature Alloys', category: 'materials', tier: 3, description: 'Alloys for extreme environments.', effect: 'Enables Mercury surface operations', baseCostMoney: 2_500_000_000, baseTimeMonths: 18, prerequisites: ['isru_metals'], unlocks: [] },
+  { id: 'graphene_production', name: 'Space Graphene Production', category: 'materials', tier: 3, description: 'Produce graphene in microgravity.', effect: '+50% electronics performance', baseCostMoney: 1_800_000_000, baseTimeMonths: 16, prerequisites: ['carbon_nanotubes'], unlocks: [] },
+  { id: 'superconductors', name: 'Room-Temperature Superconductors', category: 'materials', tier: 4, description: 'Superconducting materials without cooling.', effect: 'Revolutionary power and propulsion efficiency', baseCostMoney: 25_000_000_000, baseTimeMonths: 36, prerequisites: ['graphene_production'], unlocks: [] },
+  { id: 'programmable_matter', name: 'Programmable Matter', category: 'materials', tier: 5, description: 'Materials that change shape on command.', effect: 'Reconfigurable structures', baseCostMoney: 80_000_000_000, baseTimeMonths: 48, prerequisites: ['superconductors', 'neuromorphic_chips'], unlocks: [] },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // DEFENSE & SAFETY (10 researches)
+  // ═══════════════════════════════════════════════════════════════════════════
+  { id: 'collision_avoidance', name: 'Collision Avoidance Network', category: 'defense', tier: 1, description: 'Space traffic management system.', effect: '-50% collision risk', baseCostMoney: 100_000_000, baseTimeMonths: 8, prerequisites: [], unlocks: [] },
+  { id: 'asteroid_deflection', name: 'Asteroid Deflection', category: 'defense', tier: 3, description: 'Kinetic impactor for NEO deflection.', effect: 'Planetary defense capability', baseCostMoney: 5_000_000_000, baseTimeMonths: 24, prerequisites: ['autonomous_docking'], unlocks: [] },
+  { id: 'solar_storm_protection', name: 'Solar Storm Protection', category: 'defense', tier: 2, description: 'Rapid shelter protocols for CME events.', effect: '-80% solar storm damage', baseCostMoney: 300_000_000, baseTimeMonths: 12, prerequisites: ['space_weather_monitoring'], unlocks: [] },
+  { id: 'debris_shield_active', name: 'Active Debris Shielding', category: 'defense', tier: 3, description: 'Laser or projectile debris defense.', effect: '+50% station defense rating', baseCostMoney: 4_000_000_000, baseTimeMonths: 22, prerequisites: ['space_debris_cleanup'], unlocks: [] },
+  { id: 'hardened_electronics', name: 'EMP-Hardened Electronics', category: 'defense', tier: 2, description: 'Protect systems from electromagnetic pulses.', effect: '+30% system resilience', baseCostMoney: 250_000_000, baseTimeMonths: 10, prerequisites: ['rad_hard_processors'], unlocks: [] },
+  { id: 'emergency_response', name: 'Space Emergency Response', category: 'defense', tier: 2, description: 'Rapid deployment rescue teams.', effect: '+60% crew survival in emergencies', baseCostMoney: 400_000_000, baseTimeMonths: 14, prerequisites: ['emergency_escape'], unlocks: [] },
+  { id: 'nuclear_deflection', name: 'Nuclear Asteroid Deflection', category: 'defense', tier: 4, description: 'Nuclear standoff burst for large asteroids.', effect: 'Can deflect planet-killer asteroids', baseCostMoney: 15_000_000_000, baseTimeMonths: 30, prerequisites: ['asteroid_deflection'], unlocks: [] },
+  { id: 'space_situational', name: 'Space Situational Awareness', category: 'defense', tier: 1, description: 'Track all objects in Earth orbit.', effect: '+20% debris tracking revenue', baseCostMoney: 80_000_000, baseTimeMonths: 6, prerequisites: [], unlocks: [] },
+  { id: 'cyber_defense', name: 'Space Cyber Defense', category: 'defense', tier: 3, description: 'Protect space assets from cyber attacks.', effect: '+40% defense rating', baseCostMoney: 2_000_000_000, baseTimeMonths: 18, prerequisites: ['cybersecurity_adv'], unlocks: [] },
+  { id: 'gravity_tractor', name: 'Gravity Tractor', category: 'defense', tier: 3, description: 'Slowly redirect asteroids using gravity.', effect: 'Precise long-term deflection', baseCostMoney: 3_000_000_000, baseTimeMonths: 20, prerequisites: ['asteroid_deflection'], unlocks: [] },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // EXPLORATION (14 researches)
+  // ═══════════════════════════════════════════════════════════════════════════
+  { id: 'sample_return', name: 'Sample Return Missions', category: 'exploration', tier: 2, description: 'Return samples from other bodies.', effect: '+50% survey rewards', baseCostMoney: 500_000_000, baseTimeMonths: 16, prerequisites: ['resource_prospecting'], unlocks: [] },
+  { id: 'landing_precision', name: 'Precision Landing', category: 'exploration', tier: 1, description: 'Land within 100m of target.', effect: '+30% landing success', baseCostMoney: 100_000_000, baseTimeMonths: 8, prerequisites: [], unlocks: [] },
+  { id: 'subsurface_exploration', name: 'Subsurface Exploration', category: 'exploration', tier: 3, description: 'Explore underground caves and lava tubes.', effect: 'Reveals hidden resources', baseCostMoney: 2_000_000_000, baseTimeMonths: 20, prerequisites: ['deep_drilling'], unlocks: [] },
+  { id: 'ocean_exploration', name: 'Subsurface Ocean Exploration', category: 'exploration', tier: 4, description: 'Explore Europa and Enceladus oceans.', effect: 'Enables exotic material discovery', baseCostMoney: 15_000_000_000, baseTimeMonths: 36, prerequisites: ['subsurface_exploration', 'cryogenic_systems'], unlocks: [] },
+  { id: 'rover_autonomy', name: 'Autonomous Rover Networks', category: 'exploration', tier: 2, description: 'Self-driving surface exploration robots.', effect: '+100% surface survey area', baseCostMoney: 400_000_000, baseTimeMonths: 14, prerequisites: ['landing_precision'], unlocks: [] },
+  { id: 'aerial_exploration', name: 'Titan/Mars Aerial Vehicles', category: 'exploration', tier: 3, description: 'Drones/helicopters for atmospheric bodies.', effect: '+200% Titan/Mars survey rate', baseCostMoney: 3_000_000_000, baseTimeMonths: 22, prerequisites: ['rover_autonomy'], unlocks: [] },
+  { id: 'jupiter_deep_probe', name: 'Jupiter Deep Atmosphere Probe', category: 'exploration', tier: 4, description: 'Survive extreme pressure and temperature.', effect: 'Reveals Jupiter atmospheric resources', baseCostMoney: 10_000_000_000, baseTimeMonths: 30, prerequisites: ['extreme_thermal'], unlocks: [] },
+  { id: 'kuiper_belt_survey', name: 'Kuiper Belt Survey', category: 'exploration', tier: 4, description: 'Map resources in the outer solar system.', effect: '+50% outer system discovery rate', baseCostMoney: 12_000_000_000, baseTimeMonths: 36, prerequisites: ['deep_space_nav'], unlocks: [] },
+  { id: 'cometary_mining', name: 'Comet Mining Technology', category: 'exploration', tier: 3, description: 'Extract water and volatiles from comets.', effect: 'New water/fuel source', baseCostMoney: 4_000_000_000, baseTimeMonths: 24, prerequisites: ['asteroid_capture'], unlocks: [] },
+  { id: 'oort_cloud_probe', name: 'Oort Cloud Probe', category: 'exploration', tier: 5, description: 'Probes reaching the Oort cloud.', effect: 'Reveals interstellar resources', baseCostMoney: 50_000_000_000, baseTimeMonths: 48, prerequisites: ['kuiper_belt_survey', 'fusion_drive'], unlocks: [] },
+  { id: 'astraeus_tech', name: 'Aerostat Technology', category: 'exploration', tier: 3, description: 'Floating platforms in dense atmospheres.', effect: 'Enables Venus cloud colonies', baseCostMoney: 10_000_000_000, baseTimeMonths: 30, prerequisites: ['atmospheric_processing'], unlocks: [] },
+  { id: 'ice_penetrator', name: 'Ice Penetrator Probe', category: 'exploration', tier: 3, description: 'Melt through ice crusts to subsurface.', effect: 'Enables Europa/Enceladus access', baseCostMoney: 5_000_000_000, baseTimeMonths: 24, prerequisites: ['deep_drilling'], unlocks: [] },
+  { id: 'volcano_monitoring', name: 'Volcanic Activity Monitoring', category: 'exploration', tier: 2, description: 'Monitor Io and other volcanic bodies.', effect: '+30% geothermal energy efficiency', baseCostMoney: 300_000_000, baseTimeMonths: 10, prerequisites: ['infrared_telescope'], unlocks: [] },
+  { id: 'exoplanet_survey', name: 'Exoplanet Survey', category: 'exploration', tier: 5, description: 'Identify habitable exoplanets.', effect: 'Enables interstellar colonization planning', baseCostMoney: 80_000_000_000, baseTimeMonths: 60, prerequisites: ['gravitational_wave_det', 'interstellar_probe'], unlocks: [] },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // ECONOMY & TRADE (12 researches)
+  // ═══════════════════════════════════════════════════════════════════════════
+  { id: 'market_analytics', name: 'Market Analytics Platform', category: 'economy', tier: 1, description: 'AI-driven commodity price prediction.', effect: '+15% trade profit margin', baseCostMoney: 80_000_000, baseTimeMonths: 6, prerequisites: [], unlocks: [] },
+  { id: 'supply_chain_opt', name: 'Supply Chain Optimization', category: 'economy', tier: 2, description: 'Optimize resource flow between locations.', effect: '-20% transport costs', baseCostMoney: 300_000_000, baseTimeMonths: 12, prerequisites: ['market_analytics'], unlocks: [] },
+  { id: 'futures_trading', name: 'Resource Futures Market', category: 'economy', tier: 2, description: 'Trade resource delivery contracts.', effect: '+25% trading revenue', baseCostMoney: 200_000_000, baseTimeMonths: 10, prerequisites: ['market_analytics'], unlocks: [] },
+  { id: 'currency_system', name: 'Space Currency System', category: 'economy', tier: 3, description: 'Cryptocurrency for interplanetary trade.', effect: '-15% cross-location transaction costs', baseCostMoney: 1_000_000_000, baseTimeMonths: 16, prerequisites: ['supply_chain_opt'], unlocks: [] },
+  { id: 'automated_trading', name: 'Automated Trading Bots', category: 'economy', tier: 3, description: 'AI executes optimal market trades.', effect: '+30% passive trading income', baseCostMoney: 1_500_000_000, baseTimeMonths: 18, prerequisites: ['futures_trading', 'edge_ai'], unlocks: [] },
+  { id: 'monopoly_economics', name: 'Monopoly Economics', category: 'economy', tier: 3, description: 'Maximize revenue from controlled locations.', effect: '+25% chokepoint transit fee revenue', baseCostMoney: 2_000_000_000, baseTimeMonths: 20, prerequisites: ['supply_chain_opt'], unlocks: [] },
+  { id: 'tech_licensing', name: 'Technology Licensing Framework', category: 'economy', tier: 2, description: 'License your research to other players.', effect: 'Enables tech license revenue', baseCostMoney: 250_000_000, baseTimeMonths: 10, prerequisites: [], unlocks: [] },
+  { id: 'insurance_modeling', name: 'Insurance Actuarial Models', category: 'economy', tier: 2, description: 'Better space insurance pricing.', effect: '-25% insurance costs', baseCostMoney: 200_000_000, baseTimeMonths: 8, prerequisites: ['market_analytics'], unlocks: [] },
+  { id: 'venture_capital', name: 'Space Venture Fund', category: 'economy', tier: 3, description: 'Fund other players for equity.', effect: '+10% revenue from funded players', baseCostMoney: 3_000_000_000, baseTimeMonths: 20, prerequisites: ['tech_licensing'], unlocks: [] },
+  { id: 'tax_optimization', name: 'Tax Optimization Strategy', category: 'economy', tier: 1, description: 'Minimize operational tax burden.', effect: '-10% all costs', baseCostMoney: 50_000_000, baseTimeMonths: 4, prerequisites: [], unlocks: [] },
+  { id: 'brand_management', name: 'Brand & Reputation', category: 'economy', tier: 1, description: 'Build corporate reputation.', effect: '+10% contract win rate', baseCostMoney: 40_000_000, baseTimeMonths: 4, prerequisites: [], unlocks: [] },
+  { id: 'merger_acquisition', name: 'M&A Strategy', category: 'economy', tier: 4, description: 'Acquire competitor assets.', effect: 'Enables corporate acquisitions', baseCostMoney: 10_000_000_000, baseTimeMonths: 24, prerequisites: ['venture_capital'], unlocks: [] },
 ];
 
-// Apply real-time durations and resource costs from tier mapping
+// Apply real-time durations and resource costs
 export const RESEARCH: ResearchDefinition[] = RAW_RESEARCH.map(r => {
   const resCost = TIER_RESEARCH_RESOURCES[r.tier] || {};
   return {
@@ -205,11 +349,19 @@ export const RESEARCH_MAP = new Map(RESEARCH.map(r => [r.id, r]));
 export const RESEARCH_CATEGORIES = [
   { id: 'rocketry', name: 'Rocketry', icon: '🚀' },
   { id: 'spacecraft', name: 'Spacecraft Design', icon: '🛸' },
-  { id: 'sensors', name: 'Sensors', icon: '📡' },
-  { id: 'ai_chips', name: 'AI Chip Design', icon: '🧠' },
-  { id: 'satellite_components', name: 'Satellite Components', icon: '🛰️' },
-  { id: 'solar_arrays', name: 'Solar Arrays', icon: '☀️' },
-  { id: 'mining', name: 'Mining Tech', icon: '⛏️' },
+  { id: 'sensors', name: 'Sensors & Remote Sensing', icon: '📡' },
+  { id: 'ai_chips', name: 'Computing & AI', icon: '🧠' },
+  { id: 'satellite_components', name: 'Satellite Systems', icon: '🛰️' },
+  { id: 'solar_arrays', name: 'Energy & Power', icon: '⚡' },
+  { id: 'mining', name: 'Mining & Extraction', icon: '⛏️' },
   { id: 'infrastructure', name: 'Infrastructure', icon: '🏗️' },
   { id: 'propulsion', name: 'Propulsion', icon: '💨' },
+  { id: 'crew', name: 'Crew & Workforce', icon: '👨‍🚀' },
+  { id: 'services', name: 'Services & Commerce', icon: '💼' },
+  { id: 'ships', name: 'Ships & Fleet', icon: '🚢' },
+  { id: 'terraforming', name: 'Terraforming', icon: '🌍' },
+  { id: 'materials', name: 'Materials Science', icon: '🧱' },
+  { id: 'defense', name: 'Defense & Safety', icon: '🛡️' },
+  { id: 'exploration', name: 'Exploration', icon: '🔭' },
+  { id: 'economy', name: 'Economy & Trade', icon: '📊' },
 ] as const;
