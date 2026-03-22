@@ -52,6 +52,25 @@ export function useGameSync(state: GameState | null, intervalMs: number = 60_000
         gameYear: state.gameDate.year,
         gameMonth: state.gameDate.month,
         companyName: state.companyName || 'Untitled Aerospace',
+        // Full state for multiplayer visibility
+        buildings: state.buildings.map(b => ({
+          definitionId: b.definitionId,
+          locationId: b.locationId,
+          isComplete: b.isComplete,
+          upgradeLevel: b.upgradeLevel || 0,
+        })),
+        activeServices: state.activeServices.map(s => ({
+          definitionId: s.definitionId,
+          locationId: s.locationId,
+        })),
+        unlockedLocations: state.unlockedLocations,
+        completedResearch: state.completedResearch,
+        ships: (state.ships || []).map(s => ({
+          definitionId: s.definitionId,
+          status: s.status,
+          currentLocation: s.currentLocation,
+        })),
+        workforce: state.workforce || null,
       };
 
       const res = await fetch('/api/space-tycoon/sync', {

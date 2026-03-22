@@ -577,6 +577,24 @@ export default function SpaceTycoonPage() {
       const loc = LOCATION_MAP.get(locId);
       if (!loc || prev.money < loc.unlockCost) { playSound('error'); return prev; }
 
+      // Claim colony slot on server (non-blocking)
+      fetch('/api/space-tycoon/colonies', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ locationId: locId, companyName: prev.companyName || 'Untitled Aerospace' }),
+      }).catch(() => {}); // Non-blocking — claim is best-effort
+
+      // Also try to claim milestone
+      fetch('/api/space-tycoon/milestones', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          milestoneId: locId === 'lunar_surface' ? 'first_moon' : locId === 'mars_orbit' ? 'first_mars' : locId === 'jupiter_system' ? 'first_jupiter' : locId === 'outer_system' ? 'first_outer_system' : null,
+          companyName: prev.companyName || 'Untitled Aerospace',
+          reward: 0,
+        }),
+      }).catch(() => {});
+
       return {
         ...prev,
         money: prev.money - loc.unlockCost,

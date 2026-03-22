@@ -158,11 +158,34 @@ model GameProfile {
   globalMilestones  GlobalMilestone[]
   allianceMembership AllianceMember?
   activityLogs      PlayerActivity[]
+  colonyClaims      ColonyClaim[]
+
+  // Full game state for multiplayer visibility
+  buildingsData          Json      @default("[]")
+  activeServicesData     Json      @default("[]")
+  unlockedLocationsList  String[]  @default([])
+  completedResearchList  String[]  @default([])
+  shipsData              Json      @default("[]")
+  workforceData          Json?
 
   @@index([netWorth])
   @@index([totalEarned])
   @@index([researchCount])
   @@index([lastSyncAt])
+}
+
+// Colony claims — tracks who occupies which location slots
+model ColonyClaim {
+  id          String      @id @default(cuid())
+  locationId  String
+  profileId   String
+  profile     GameProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  companyName String
+  claimedAt   DateTime    @default(now())
+
+  @@unique([locationId, profileId])
+  @@index([locationId])
+  @@index([profileId])
 }
 
 model MarketResource {

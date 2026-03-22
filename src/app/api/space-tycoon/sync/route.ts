@@ -27,9 +27,16 @@ export async function POST(request: Request) {
       serviceCount = 0,
       locationsUnlocked = 0,
       resources = {},
-      gameYear = 2025,
+      gameYear = 2026,
       companyName = 'Untitled Aerospace',
       minedThisTick = {},
+      // Full state for multiplayer visibility
+      buildings = [],
+      activeServices = [],
+      unlockedLocations = [],
+      completedResearch = [],
+      ships = [],
+      workforce = null,
     } = body;
 
     // Calculate net worth using live market prices
@@ -56,7 +63,14 @@ export async function POST(request: Request) {
     }
     const netWorth = money + resourceValue;
 
-    // Upsert game profile
+    // Sanitize arrays for storage
+    const safeBuildings = Array.isArray(buildings) ? buildings.slice(0, 200) : [];
+    const safeServices = Array.isArray(activeServices) ? activeServices.slice(0, 100) : [];
+    const safeLocations = Array.isArray(unlockedLocations) ? unlockedLocations.filter((l: unknown) => typeof l === 'string').slice(0, 30) : [];
+    const safeResearch = Array.isArray(completedResearch) ? completedResearch.filter((r: unknown) => typeof r === 'string').slice(0, 500) : [];
+    const safeShips = Array.isArray(ships) ? ships.slice(0, 50) : [];
+
+    // Upsert game profile with full state
     const profile = await prisma.gameProfile.upsert({
       where: { userId: session.user.id },
       create: {
@@ -65,6 +79,12 @@ export async function POST(request: Request) {
         money, totalEarned, totalSpent, netWorth,
         buildingCount, researchCount, serviceCount, locationsUnlocked, gameYear,
         resources: resources as object,
+        buildingsData: safeBuildings,
+        activeServicesData: safeServices,
+        unlockedLocationsList: safeLocations,
+        completedResearchList: safeResearch,
+        shipsData: safeShips,
+        workforceData: workforce,
         lastSyncAt: new Date(),
       },
       update: {
@@ -72,6 +92,12 @@ export async function POST(request: Request) {
         money, totalEarned, totalSpent, netWorth,
         buildingCount, researchCount, serviceCount, locationsUnlocked, gameYear,
         resources: resources as object,
+        buildingsData: safeBuildings,
+        activeServicesData: safeServices,
+        unlockedLocationsList: safeLocations,
+        completedResearchList: safeResearch,
+        shipsData: safeShips,
+        workforceData: workforce,
         lastSyncAt: new Date(),
       },
     });
