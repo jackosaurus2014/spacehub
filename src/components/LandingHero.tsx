@@ -1,9 +1,10 @@
 'use client';
 
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
 
-/* Staggered entrance: each child gets an increasing delay */
-function HeroReveal({ children, delay, className = '' }: { children: React.ReactNode; delay: number; className?: string }) {
+/* Staggered entrance */
+function Reveal({ children, delay, className = '' }: { children: React.ReactNode; delay: number; className?: string }) {
   return (
     <div
       className={`animate-reveal-up ${className}`}
@@ -31,195 +32,214 @@ interface HeroContentCard {
 }
 
 interface LandingHeroProps {
-  /** Top blog article to feature */
   featuredArticle?: HeroContentCard | null;
-  /** Trending news item */
   trendingNews?: HeroContentCard | null;
 }
 
-export default function LandingHero({ featuredArticle, trendingNews }: LandingHeroProps) {
+/** Mini live data card for the right panel */
+function DataCard({ label, value, sub, live, delay }: { label: string; value: string; sub?: string; live?: boolean; delay: number }) {
   return (
-    <section className="relative min-h-[75vh] md:min-h-[85vh] flex items-center justify-center overflow-hidden">
-      {/* Gradient Mesh Background — replaces video for faster load and modern aesthetic */}
-      <div className="absolute inset-0 z-0 hero-gradient-mesh hero-noise" />
+    <Reveal delay={delay}>
+      <div className="p-3 rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-elevated)] hover:border-[var(--border-default)] transition-colors">
+        <div className="flex items-center justify-between mb-1">
+          <span className="text-[10px] uppercase tracking-[0.1em] text-[var(--text-tertiary)] font-medium">{label}</span>
+          {live && (
+            <span className="flex items-center gap-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#56F000] animate-pulse" />
+              <span className="text-[8px] text-[#56F000] font-semibold tracking-wider">LIVE</span>
+            </span>
+          )}
+        </div>
+        <p className="text-lg font-bold font-mono tabular-nums text-[var(--text-primary)]">{value}</p>
+        {sub && <p className="text-[10px] text-[var(--text-tertiary)] mt-0.5">{sub}</p>}
+      </div>
+    </Reveal>
+  );
+}
 
-      {/* Grid pattern overlay for depth */}
+export default function LandingHero({ featuredArticle, trendingNews }: LandingHeroProps) {
+  // Fetch a live metric for the data preview
+  const [nextLaunch, setNextLaunch] = useState<string>('—');
+  const [launchName, setLaunchName] = useState<string>('');
+
+  useEffect(() => {
+    fetch('/api/events?limit=1')
+      .then(r => r.json())
+      .then(data => {
+        if (data.events?.[0]) {
+          const evt = data.events[0];
+          const diff = new Date(evt.launchDate).getTime() - Date.now();
+          if (diff > 0) {
+            const d = Math.floor(diff / 86400000);
+            const h = Math.floor((diff % 86400000) / 3600000);
+            setNextLaunch(d > 0 ? `T-${d}d ${h}h` : `T-${h}h`);
+          } else {
+            setNextLaunch('Launched');
+          }
+          setLaunchName(evt.name?.slice(0, 30) || '');
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  return (
+    <section className="relative min-h-[80vh] md:min-h-[88vh] flex items-center overflow-hidden">
+      {/* Single accent glow — one intentional light source at 8% opacity */}
       <div
-        className="absolute inset-0 z-[1] pointer-events-none opacity-[0.03]"
+        className="absolute pointer-events-none z-0"
         style={{
-          backgroundImage: 'linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)',
-          backgroundSize: '64px 64px',
+          top: '20%',
+          left: '35%',
+          width: '800px',
+          height: '600px',
+          background: 'radial-gradient(ellipse at center, rgba(99, 102, 241, 0.08), transparent 70%)',
         }}
       />
 
-      {/* Subtle atmospheric accent orbs */}
-      <div className="absolute top-1/4 left-1/3 w-[500px] h-[500px] bg-blue-500/[0.04] rounded-full blur-[150px] pointer-events-none z-[1]" />
-      <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-violet-500/[0.03] rounded-full blur-[120px] pointer-events-none z-[1]" />
+      {/* Content — asymmetric 60/40 layout */}
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
 
-      {/* Content */}
-      <div className="container mx-auto px-4 relative z-10">
-        <div className="text-center max-w-4xl mx-auto">
-          {/* Badge */}
-          <HeroReveal delay={0.2} className="mb-6">
-            <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full border border-white/[0.08] bg-white/[0.03] backdrop-blur-sm">
-              <span className="live-badge">LIVE</span>
-              <span className="text-xs text-slate-400 font-medium tracking-wide">Real-time data from 50+ sources</span>
-            </div>
-          </HeroReveal>
-
-          {/* Headline — clean Inter, tight tracking, display style */}
-          <HeroReveal delay={0.35} className="mb-4">
-            <h1 className="text-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-white">
-              The Terminal for<br />Space Business
-            </h1>
-          </HeroReveal>
-
-          {/* Sub-tagline — market positioning */}
-          <HeroReveal delay={0.45} className="mb-8">
-            <p className="text-sm md:text-base text-slate-500 uppercase tracking-[0.2em] font-medium">
-              Intelligence &middot; Analytics &middot; Tools &middot; Market Data
-            </p>
-          </HeroReveal>
-
-          {/* Subtitle — condensed value proposition */}
-          <HeroReveal delay={0.5} className="mb-10">
-            <p className="text-base md:text-lg text-slate-400 max-w-2xl mx-auto leading-relaxed">
-              Track launches, monitor satellites, analyze funding rounds, and research companies — the most comprehensive space industry platform on the internet.
-            </p>
-          </HeroReveal>
-
-          {/* CTA Buttons — clean, minimal */}
-          <HeroReveal delay={0.65} className="mb-6">
-            <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              <Link
-                href="/mission-control?utm_source=homepage&utm_medium=hero&utm_campaign=explore"
-                className="bg-white text-slate-900 font-medium text-sm py-3 px-8 rounded-lg transition-all duration-200 ease-smooth hover:bg-slate-100 hover:shadow-lg hover:shadow-white/[0.05] active:scale-[0.98] inline-flex items-center justify-center ring-glow"
-              >
-                Get Started
-                <svg className="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>
-              </Link>
-              <Link
-                href="/pricing?utm_source=homepage&utm_medium=hero&utm_campaign=freetrial"
-                className="border border-white/20 text-white font-medium text-sm py-3 px-8 rounded-lg transition-all duration-200 ease-smooth hover:bg-white/10 hover:border-white/30 active:scale-[0.98] inline-flex items-center justify-center ring-glow"
-              >
-                View Pricing
-              </Link>
-            </div>
-          </HeroReveal>
-
-          {/* Trust micro-copy */}
-          <HeroReveal delay={0.75} className="mb-10">
-            <p className="text-xs text-slate-500 flex items-center justify-center gap-2">
-              <svg className="w-3.5 h-3.5 text-emerald-400/80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-              </svg>
-              No credit card required &middot; 14-day free trial &middot; Cancel anytime
-            </p>
-          </HeroReveal>
-
-          {/* Featured Content Cards — replaces stat counters */}
-          <HeroReveal delay={0.9} className="mb-6">
-            {(featuredArticle || trendingNews) ? (
-              <div id="hero-content-cards" className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-2xl mx-auto">
-                {featuredArticle && (
-                  <Link
-                    href={featuredArticle.href}
-                    className="group card-glass p-4 text-left hover:border-white/[0.12] transition-all"
-                  >
-                    <div className="flex items-center gap-1.5 mb-2">
-                      <span className="w-1.5 h-1.5 rounded-full bg-purple-400" />
-                      <span className="text-[10px] font-semibold uppercase tracking-wider text-purple-400">Trending Article</span>
-                    </div>
-                    <h3 className="text-white text-sm font-medium line-clamp-2 group-hover:text-white/90 transition-colors leading-snug">
-                      {featuredArticle.title}
-                    </h3>
-                    <p className="text-slate-500 text-xs mt-1.5 line-clamp-2">{featuredArticle.snippet}</p>
-                  </Link>
-                )}
-                {trendingNews && (
-                  <Link
-                    href={trendingNews.href}
-                    className="group card-glass p-4 text-left hover:border-white/[0.12] transition-all"
-                  >
-                    <div className="flex items-center gap-1.5 mb-2">
-                      <span className="relative flex h-1.5 w-1.5">
-                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                        <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-400" />
-                      </span>
-                      <span className="text-[10px] font-semibold uppercase tracking-wider text-emerald-400">Breaking News</span>
-                    </div>
-                    <h3 className="text-white text-sm font-medium line-clamp-2 group-hover:text-white/90 transition-colors leading-snug">
-                      {trendingNews.title}
-                    </h3>
-                    <p className="text-slate-500 text-xs mt-1.5 line-clamp-1">
-                      {trendingNews.source && <span>{trendingNews.source} &middot; </span>}
-                      {trendingNews.snippet}
-                    </p>
-                  </Link>
-                )}
+          {/* Left column — 7/12 on desktop */}
+          <div className="lg:col-span-7">
+            {/* Status badge */}
+            <Reveal delay={0.15} className="mb-8">
+              <div className="inline-flex items-center gap-2.5 px-3 py-1.5 rounded border border-[var(--border-subtle)] bg-[var(--bg-surface)]">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#56F000] animate-pulse" />
+                <span className="text-[11px] text-[var(--text-secondary)] font-medium tracking-wide">50+ live data sources connected</span>
               </div>
-            ) : (
-              <div className="flex gap-6 justify-center">
+            </Reveal>
+
+            {/* Headline — Satoshi Black, left-aligned, intentional line breaks */}
+            <Reveal delay={0.3} className="mb-6">
+              <h1 className="text-display text-[clamp(2.5rem,5vw+1rem,4.5rem)] text-[var(--text-primary)]">
+                The terminal<br className="hidden sm:block" />
+                for space<br className="hidden sm:block" />
+                business.
+              </h1>
+            </Reveal>
+
+            {/* Value prop */}
+            <Reveal delay={0.45} className="mb-10">
+              <p className="text-base md:text-lg text-[var(--text-secondary)] max-w-lg leading-relaxed">
+                Track launches, monitor satellites, analyze funding rounds, and research 200+ companies. Real-time intelligence for the space industry.
+              </p>
+            </Reveal>
+
+            {/* Single primary CTA — indigo, not white */}
+            <Reveal delay={0.55} className="mb-6">
+              <div className="flex flex-col sm:flex-row items-start gap-4">
                 <Link
-                  href="/register?utm_source=homepage&utm_medium=hero&utm_campaign=signup"
-                  className="text-slate-500 hover:text-white text-sm transition-colors duration-200"
+                  href="/mission-control"
+                  className="inline-flex items-center gap-2 px-7 py-3.5 rounded text-sm font-semibold text-white transition-all duration-150"
+                  style={{
+                    background: 'var(--accent-primary)',
+                    boxShadow: '0 0 0 0 rgba(99, 102, 241, 0)',
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.background = 'var(--accent-primary-bright)'; e.currentTarget.style.boxShadow = '0 0 24px rgba(99, 102, 241, 0.25)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'var(--accent-primary)'; e.currentTarget.style.boxShadow = '0 0 0 0 rgba(99, 102, 241, 0)'; }}
                 >
-                  Create Free Account
+                  Get Started — Free
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                  </svg>
                 </Link>
-                <span className="text-slate-700">&middot;</span>
                 <Link
-                  href="/news?utm_source=homepage&utm_medium=hero&utm_campaign=news"
-                  className="text-slate-500 hover:text-white text-sm transition-colors duration-200"
+                  href="/pricing"
+                  className="text-sm text-[var(--text-tertiary)] hover:text-[var(--text-primary)] transition-colors font-medium py-3.5"
                 >
-                  Browse News
+                  View pricing →
                 </Link>
+              </div>
+            </Reveal>
+
+            {/* Trust line */}
+            <Reveal delay={0.65}>
+              <p className="text-xs text-[var(--text-muted)]">
+                Instant access. No credit card. 14-day full trial.
+              </p>
+            </Reveal>
+          </div>
+
+          {/* Right column — 5/12 on desktop: live data preview */}
+          <div className="lg:col-span-5 hidden lg:block">
+            <Reveal delay={0.5}>
+              <div className="rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-surface)] overflow-hidden">
+                {/* Terminal chrome */}
+                <div className="flex items-center justify-between px-4 py-2 border-b border-[var(--border-subtle)] bg-[var(--bg-void)]">
+                  <div className="flex items-center gap-2">
+                    <div className="flex gap-1.5">
+                      <div className="w-2.5 h-2.5 rounded-full bg-[#FF3B30]/40" />
+                      <div className="w-2.5 h-2.5 rounded-full bg-[#FF9F0A]/40" />
+                      <div className="w-2.5 h-2.5 rounded-full bg-[#30D158]/40" />
+                    </div>
+                    <span className="text-[9px] font-mono text-[var(--text-muted)] tracking-wider uppercase">spacenexus:~/dashboard</span>
+                  </div>
+                  <span className="live-badge text-[7px]">LIVE</span>
+                </div>
+
+                {/* Data cards grid */}
+                <div className="p-3 grid grid-cols-2 gap-2.5">
+                  <DataCard label="Next Launch" value={nextLaunch} sub={launchName} live delay={0.65} />
+                  <DataCard label="Active Sats" value="10,200+" sub="+180 this month" delay={0.7} />
+                  <DataCard label="Space Economy" value="$546B" sub="▲ 8.2% YoY" delay={0.75} />
+                  <DataCard label="VC Funding Q1" value="$2.1B" sub="▲ 12% QoQ" delay={0.8} />
+                </div>
+
+                {/* Bottom strip */}
+                <div className="px-4 py-2 border-t border-[var(--border-subtle)] flex items-center justify-between">
+                  <span className="text-[9px] text-[var(--text-muted)] font-mono">264 modules · 50+ sources</span>
+                  <Link href="/mission-control" className="text-[10px] text-[var(--accent-primary)] hover:text-[var(--accent-primary-bright)] font-medium transition-colors">
+                    Open Dashboard →
+                  </Link>
+                </div>
+              </div>
+            </Reveal>
+
+            {/* Featured content below the terminal */}
+            {(featuredArticle || trendingNews) && (
+              <div className="mt-3 grid grid-cols-1 gap-2">
+                {trendingNews && (
+                  <Reveal delay={0.9}>
+                    <Link
+                      href={trendingNews.href}
+                      className="group flex items-start gap-3 p-3 rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-surface)] hover:border-[var(--border-default)] transition-colors"
+                    >
+                      <span className="flex-shrink-0 mt-1">
+                        <span className="relative flex h-2 w-2">
+                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                          <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400" />
+                        </span>
+                      </span>
+                      <div className="min-w-0">
+                        <span className="text-[9px] font-semibold uppercase tracking-wider text-emerald-400">Breaking</span>
+                        <p className="text-xs text-[var(--text-primary)] font-medium line-clamp-1 mt-0.5">{trendingNews.title}</p>
+                      </div>
+                    </Link>
+                  </Reveal>
+                )}
+                {featuredArticle && (
+                  <Reveal delay={0.95}>
+                    <Link
+                      href={featuredArticle.href}
+                      className="group flex items-start gap-3 p-3 rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-surface)] hover:border-[var(--border-default)] transition-colors"
+                    >
+                      <span className="w-2 h-2 rounded-full bg-[var(--accent-primary)] flex-shrink-0 mt-1.5" />
+                      <div className="min-w-0">
+                        <span className="text-[9px] font-semibold uppercase tracking-wider text-[var(--accent-primary)]">Trending</span>
+                        <p className="text-xs text-[var(--text-primary)] font-medium line-clamp-1 mt-0.5">{featuredArticle.title}</p>
+                      </div>
+                    </Link>
+                  </Reveal>
+                )}
               </div>
             )}
-          </HeroReveal>
-        </div>
-      </div>
-
-      {/* Scroll indicator */}
-      <div
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-float animate-reveal-up"
-        style={{ animationDelay: '1.4s', animationFillMode: 'both' }}
-      >
-        <div className="w-6 h-10 border border-white/10 rounded-full flex items-start justify-center p-1.5">
-          <div className="w-1 h-2 bg-white/50 rounded-full animate-pulse" />
-        </div>
-      </div>
-
-      {/* Bottom gradient divider */}
-      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-black to-transparent z-[2]" />
-
-      {/* Live Stats Ticker Bar — above the fold, below hero content */}
-      <div className="absolute bottom-0 left-0 right-0 z-10">
-        <div className="bg-white/[0.03] backdrop-blur-sm border-t border-white/[0.06]">
-          <div className="container mx-auto px-4">
-            <div className="flex items-center justify-center divide-x divide-white/[0.08] py-3">
-              {[
-                { value: '30+', label: 'Modules' },
-                { value: '200+', label: 'Companies' },
-                { value: '10,000+', label: 'Data Points' },
-                { value: '', label: 'Updated Every 5 Minutes', pulse: true },
-              ].map((item) => (
-                <div key={item.label} className="flex items-center gap-2 px-4 sm:px-6 md:px-8">
-                  {item.pulse && (
-                    <span className="relative flex h-1.5 w-1.5">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                      <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-400" />
-                    </span>
-                  )}
-                  {item.value && (
-                    <span className="text-white font-semibold text-xs sm:text-sm">{item.value}</span>
-                  )}
-                  <span className="text-slate-400 text-[10px] sm:text-xs tracking-wide">{item.label}</span>
-                </div>
-              ))}
-            </div>
           </div>
         </div>
       </div>
+
+      {/* Bottom gradient fade to page bg */}
+      <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-[var(--bg-void)] to-transparent z-[2]" />
     </section>
   );
 }
