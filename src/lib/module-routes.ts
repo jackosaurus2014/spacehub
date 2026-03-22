@@ -111,6 +111,9 @@ export const MODULE_ROUTES: Record<string, string> = {
   // (These also have redirects in next.config.js for direct URL access)
   'news-intelligence': '/news',
   'compliance-spectrum': '/compliance',
+
+  // ── Game ──
+  'space-tycoon': '/space-tycoon',
 };
 
 // Helper to get module route

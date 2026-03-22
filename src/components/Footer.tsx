@@ -68,6 +68,7 @@ const footerLinks = {
       { label: 'Data Sources', href: '/data-sources' },
       { label: 'Get the App', href: '/app' },
       { label: 'Help Center', href: '/help' },
+      { label: 'Send Feedback', href: '/feedback' },
       { label: 'Platform Status', href: '/status' },
       { label: 'Accessibility', href: '/accessibility' },
       { label: 'Getting Started', href: '/getting-started' },

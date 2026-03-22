@@ -44,7 +44,7 @@ const MobileSocialProofBar = dynamic(() => import('@/components/marketing/Mobile
 const UsageLimitBanner = dynamic(() => import('@/components/marketing/UsageLimitBanner'), { ssr: false });
 const StreakNotification = dynamic(() => import('@/components/marketing/StreakNotification'), { ssr: false });
 const HelpButton = dynamic(() => import('@/components/HelpButton'), { ssr: false });
-const FeedbackButton = dynamic(() => import('@/components/FeedbackButton'), { ssr: false });
+// FeedbackButton removed — replaced with /feedback page to avoid blocking left nav
 const BackToTop = dynamic(() => import('@/components/ui/BackToTop'), { ssr: false });
 const ScrollProgress = dynamic(() => import('@/components/ui/ScrollProgress'), { ssr: false });
 const WebVitals = dynamic(() => import('@/components/analytics/WebVitals'), { ssr: false });
@@ -276,7 +276,6 @@ export default function RootLayout({
               <ReferralPrompt />
               <AppRatingPrompt />
               <ErrorReporter />
-              <FeedbackButton />
               <UsageLimitBanner />
               <StreakNotification />
               <HelpButton />

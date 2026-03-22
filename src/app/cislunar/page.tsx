@@ -117,7 +117,17 @@ interface InternationalPartner {
 // Data: Fetched from /api/content/cislunar
 // ────────────────────────────────────────
 
-let ARTEMIS_MISSIONS: ArtemisMission[] = [];
+// Seed data so the timeline is never empty
+const ARTEMIS_SEED: ArtemisMission[] = [
+  { id: 'a1', name: 'Artemis I', date: 'Nov 2022', status: 'completed', vehicle: 'SLS Block 1 / Orion', crew: 0, objectives: ['Uncrewed test flight around the Moon', 'Validate Orion heat shield at lunar return speed', 'Test SLS performance'], description: 'Successful uncrewed test flight. Orion traveled 1.4 million miles over 25.5 days, farther than any spacecraft designed to carry humans.' },
+  { id: 'a2', name: 'Artemis II', date: 'Sep 2025', status: 'upcoming', vehicle: 'SLS Block 1 / Orion', crew: 4, objectives: ['First crewed flight around the Moon since Apollo 17', 'Test Orion life support with crew', 'Validate deep space navigation'], description: 'First crewed lunar flyby in over 50 years. 4 astronauts will orbit the Moon and return to Earth over ~10 days.' },
+  { id: 'a3', name: 'Artemis III', date: '2026', status: 'planned', vehicle: 'SLS Block 1 / Orion', hls: 'SpaceX Starship HLS', crew: 4, objectives: ['First crewed lunar landing since 1972', 'Land near lunar south pole', 'Collect samples from permanently shadowed regions'], description: 'Will land the first woman and next man on the Moon using SpaceX Starship as the Human Landing System.' },
+  { id: 'a4', name: 'Artemis IV', date: '2028', status: 'planned', vehicle: 'SLS Block 1B / Orion', hls: 'SpaceX Starship HLS', crew: 4, objectives: ['First crew visit to Lunar Gateway', 'Deliver I-Hab module', 'Extended lunar surface operations'], description: 'First mission to dock with the Lunar Gateway station in NRHO. Will include international habitat module.' },
+  { id: 'a5', name: 'Artemis V', date: '2030', status: 'planned', vehicle: 'SLS Block 1B / Orion', hls: 'Blue Origin Blue Moon', crew: 4, objectives: ['Blue Origin HLS first crewed landing', 'Deliver ESPRIT refueling module to Gateway', 'Establish sustained lunar presence'], description: 'First mission using Blue Origin\'s Blue Moon lander. Focus on establishing permanent infrastructure.' },
+  { id: 'a6', name: 'Artemis VI', date: '2031', status: 'planned', vehicle: 'SLS Block 2 / Orion', crew: 4, objectives: ['Extended surface stays (30+ days)', 'Deploy surface power system', 'Begin ISRU demonstrations'], description: 'Extended duration missions with focus on living off the land. In-situ resource utilization tests.' },
+];
+
+let ARTEMIS_MISSIONS: ArtemisMission[] = ARTEMIS_SEED;
 let CLPS_MISSIONS: CLPSMission[] = [];
 let ISRU_PROGRAMS: ISRUProgram[] = [];
 let INFRASTRUCTURE: InfrastructureElement[] = [];
@@ -1543,7 +1553,8 @@ function CislunarEcosystemContent() {
           return [];
         };
 
-        ARTEMIS_MISSIONS = safeArray(results[0]?.data, 'name');
+        const apiMissions = safeArray(results[0]?.data, 'name');
+        ARTEMIS_MISSIONS = apiMissions.length > 0 ? apiMissions : ARTEMIS_SEED;
         CLPS_MISSIONS = safeArray(results[1]?.data, 'name');
         ISRU_PROGRAMS = safeArray(results[2]?.data, 'name');
         INFRASTRUCTURE = safeArray(results[3]?.data, 'name');

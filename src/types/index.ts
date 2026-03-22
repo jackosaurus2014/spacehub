@@ -796,6 +796,16 @@ export const AVAILABLE_MODULES: ModuleConfig[] = [
     isPremium: true,
     parentModuleId: 'solar-system-expansion',
   },
+  {
+    moduleId: 'space-tycoon',
+    name: 'Space Tycoon',
+    icon: '🎮',
+    description: 'Build your space empire — multiplayer competitive economy game',
+    section: 'explore',
+    defaultEnabled: true,
+    defaultPosition: 39,
+    isPremium: false,
+  },
 ];
 
 // Helper: Get only parent modules + standalone modules (for sidebar top-level)
