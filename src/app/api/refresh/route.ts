@@ -351,6 +351,36 @@ export async function POST(request: Request) {
       results.patentsMarketIntel = { sectionsUpdated };
     }
 
+    // ─── New Data Feed Integrations ──────────────────────────────────
+    if (type === 'conjunction-alerts') {
+      const { fetchConjunctionAlerts } = await import('@/lib/fetchers/space-track-fetcher');
+      const alertCount = await fetchConjunctionAlerts();
+      results.conjunctionAlerts = { count: alertCount };
+    }
+
+    if (type === 'executive-moves') {
+      const { fetchAndStoreExecutiveMoves } = await import('@/lib/fetchers/executive-moves-fetcher');
+      const moveResults = await fetchAndStoreExecutiveMoves();
+      results.executiveMoves = moveResults;
+    }
+
+    if (type === 'funding-signals') {
+      const { detectAndStoreFundingSignals } = await import('@/lib/fetchers/funding-signal-detector');
+      const fundingResults = await detectAndStoreFundingSignals();
+      results.fundingSignals = fundingResults;
+    }
+
+    if (type === 'sam-gov-active') {
+      // Re-use existing SAM.gov fetcher with active-only filter
+      try {
+        const { fetchAndStoreSpaceProcurement } = await import('@/lib/fetchers/business-opportunities-fetcher');
+        const opCount = await fetchAndStoreSpaceProcurement();
+        results.samGovActive = { count: opCount };
+      } catch {
+        results.samGovActive = { count: 0, note: 'SAM.gov fetcher not available' };
+      }
+    }
+
     logger.info(`Data refresh completed (type=${type || 'all'})`, results);
 
     return NextResponse.json({
