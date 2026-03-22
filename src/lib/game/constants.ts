@@ -1,11 +1,11 @@
 // ─── Space Tycoon: Game Constants ───────────────────────────────────────────
 
-/** Starting cash for new game — intentionally low for slow early game feel.
- *  Players must carefully choose their first 1-2 buildings.
- *  Pro subscribers get +50%, Enterprise gets +100%. */
-export const STARTING_MONEY = 75_000_000;
-export const STARTING_MONEY_PRO = 110_000_000;
-export const STARTING_MONEY_ENTERPRISE = 150_000_000;
+/** Starting cash — sim-validated at $100M for balanced early progression.
+ *  Players can afford 2-3 tier 1 buildings, then must earn more.
+ *  Pro subscribers get +35%, Enterprise gets +70%. */
+export const STARTING_MONEY = 100_000_000;
+export const STARTING_MONEY_PRO = 135_000_000;
+export const STARTING_MONEY_ENTERPRISE = 170_000_000;
 
 /** Starting year */
 export const STARTING_YEAR = 2025;
