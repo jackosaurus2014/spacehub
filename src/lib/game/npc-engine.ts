@@ -1,12 +1,20 @@
 // ─── Space Tycoon: NPC AI Engine ────────────────────────────────────────────
-// Pure function that processes one game-month tick for all NPC companies.
-// NPCs mine resources, earn revenue, research, expand, and sell on the market.
+// NPCs exist to ADD FLAVOR AND MARKET ACTIVITY, not to compete with players.
+//
+// DESIGN RULES:
+// 1. NPCs progress at 1/10th player speed (research, building)
+// 2. NPCs NEVER claim rare/unique locations (no Pluto, Triton, Enceladus, etc.)
+// 3. NPCs only mine COMMON resources (iron, aluminum, water, methane)
+// 4. NPCs buy and sell to gently nudge market prices (not crash them)
+// 5. NPCs NEVER claim competitive milestones
+// 6. NPCs provide background activity and make the world feel alive
 
 import type { GameEvent, GameDate } from './types';
 import type { NPCCompanyState } from './npc-companies';
 import { SERVICE_MAP } from './services';
 import { MINING_PRODUCTION } from './resources';
 import { generateId, formatMoney } from './formulas';
+import { TICKS_PER_GAME_MONTH } from './constants';
 
 export interface NPCMarketAction {
   npcId: string;
@@ -15,61 +23,45 @@ export interface NPCMarketAction {
   quantity: number;
 }
 
-// Research order by strategy (simplified — NPCs auto-complete these in sequence)
-const RESEARCH_ORDER: Record<string, string[]> = {
-  aggressive: [
-    'reusable_boosters', 'high_res_optical', 'rad_hard_processors', 'rapid_launch_cadence',
-    'modular_spacecraft', 'triple_junction', 'ion_drives', 'super_heavy_lift',
-    'resource_prospecting', 'edge_ai', 'regolith_processing', 'autonomous_docking',
-    'hall_thrusters', 'orbital_assembly', 'asteroid_capture', 'interplanetary_cruisers',
-    'nuclear_thermal', 'deep_drilling',
-  ],
-  balanced: [
-    'reusable_boosters', 'high_res_optical', 'modular_spacecraft', 'triple_junction',
-    'rad_hard_processors', 'resource_prospecting', 'ion_drives', 'improved_cooling',
-    'rapid_launch_cadence', 'edge_ai', 'regolith_processing', 'orbital_assembly',
-    'autonomous_docking', 'hall_thrusters', 'super_heavy_lift', 'asteroid_capture',
-    'interplanetary_cruisers', 'nuclear_thermal', 'deep_drilling',
-  ],
-  conservative: [
-    'triple_junction', 'high_res_optical', 'resource_prospecting', 'improved_cooling',
-    'modular_spacecraft', 'reusable_boosters', 'ion_drives', 'regolith_processing',
-    'rad_hard_processors', 'perovskite_tandem', 'orbital_assembly', 'rapid_launch_cadence',
-    'autonomous_docking', 'hall_thrusters', 'asteroid_capture', 'super_heavy_lift',
-    'interplanetary_cruisers', 'deep_drilling', 'nuclear_thermal',
-  ],
-};
-
-// Services NPCs activate as they progress (in order)
-const SERVICE_PROGRESSION: string[] = [
-  'svc_launch_small', 'svc_ground_tracking', 'svc_mission_ops',
-  'svc_telecom_leo', 'svc_sensor_leo', 'svc_ai_datacenter',
-  'svc_telecom_geo', 'svc_tourism_leo', 'svc_launch_medium',
-  'svc_fabrication_orbital', 'svc_mining_lunar', 'svc_tourism_moon',
-  'svc_sensor_geo', 'svc_launch_heavy', 'svc_mining_mars',
-  'svc_mining_asteroid', 'svc_ai_mars', 'svc_fabrication_lunar',
-  'svc_tourism_mars', 'svc_mining_europa', 'svc_mining_titan',
+// NPCs only research these BASIC techs (no endgame/exotic research)
+const NPC_RESEARCH_POOL = [
+  'reusable_boosters', 'high_res_optical', 'modular_spacecraft',
+  'triple_junction', 'ion_drives', 'resource_prospecting',
+  'rad_hard_processors', 'improved_cooling',
+  'rapid_launch_cadence', 'regolith_processing',
 ];
 
-// Location unlock progression
-const LOCATION_PROGRESSION: { id: string; tier: number; cost: number }[] = [
-  { id: 'geo', tier: 1, cost: 50_000_000 },
-  { id: 'lunar_orbit', tier: 2, cost: 1_000_000_000 },
-  { id: 'lunar_surface', tier: 2, cost: 2_000_000_000 },
-  { id: 'mars_orbit', tier: 3, cost: 10_000_000_000 },
-  { id: 'mars_surface', tier: 3, cost: 25_000_000_000 },
-  { id: 'asteroid_belt', tier: 3, cost: 15_000_000_000 },
-  { id: 'jupiter_system', tier: 4, cost: 100_000_000_000 },
-  { id: 'saturn_system', tier: 4, cost: 200_000_000_000 },
-  { id: 'outer_system', tier: 5, cost: 500_000_000_000 },
+// NPCs only activate these BASIC services (no exotic mining, no endgame)
+const NPC_SERVICE_POOL = [
+  'svc_ground_tracking', 'svc_mission_ops',
+  'svc_launch_small', 'svc_telecom_leo', 'svc_telecom_geo',
+  'svc_sensor_leo', 'svc_power_orbital',
+  'svc_launch_medium', 'svc_mining_lunar',
+  'svc_fabrication_orbital', 'svc_mining_mars',
 ];
 
-// Tier milestones (base months to reach each tier)
-const TIER_THRESHOLDS = [0, 0, 18, 48, 96, 180]; // Index = tier, value = base months
+// NPCs can ONLY unlock these common locations (never rare colonies)
+const NPC_ALLOWED_LOCATIONS: { id: string; cost: number }[] = [
+  { id: 'geo', cost: 50_000_000 },
+  { id: 'lunar_orbit', cost: 1_000_000_000 },
+  { id: 'lunar_surface', cost: 2_000_000_000 },
+  { id: 'mars_orbit', cost: 10_000_000_000 },
+  { id: 'mars_surface', cost: 25_000_000_000 },
+  // NPCs NEVER unlock: asteroid_belt, jupiter, saturn, outer_system, colonies
+];
+
+// Resources NPCs are allowed to mine (no exotics, no rare materials)
+const NPC_ALLOWED_RESOURCES = new Set([
+  'iron', 'aluminum', 'titanium', 'lunar_water', 'mars_water',
+  'methane', 'ethane',
+]);
+
+// Resources NPCs will buy from the market (to create buy pressure)
+const NPC_BUY_RESOURCES = ['iron', 'aluminum', 'titanium', 'lunar_water'];
 
 /**
  * Process one game-month tick for all NPC companies.
- * Pure function — takes NPCs in, returns updated NPCs + events + market actions.
+ * NPCs are throttled to 1/10th player speed and restricted from rare content.
  */
 export function processNPCTick(
   npcs: NPCCompanyState[],
@@ -82,43 +74,34 @@ export function processNPCTick(
     const n = { ...npc, monthsPlayed: npc.monthsPlayed + 1 };
     const events: GameEvent[] = [];
 
-    // ─── 1. Revenue Collection ──────────────────────────────────────
+    // ─── 1. Revenue (normal — NPCs earn from their services) ──────
     let monthlyRevenue = 0;
     let monthlyCosts = 0;
     for (const svcId of n.activeServiceIds) {
       const svc = SERVICE_MAP.get(svcId);
       if (!svc) continue;
-      monthlyRevenue += svc.revenuePerMonth * n.progressionSpeed;
+      monthlyRevenue += svc.revenuePerMonth * 0.5; // NPCs earn 50% of service revenue
       monthlyCosts += svc.operatingCostPerMonth;
     }
-    // Estimated maintenance
-    monthlyCosts += n.buildingCount * 500_000;
+    monthlyCosts += n.buildingCount * 300_000;
 
     const netIncome = Math.round(monthlyRevenue - monthlyCosts);
     n.money += netIncome;
     if (netIncome > 0) n.totalEarned += netIncome;
-    if (netIncome < 0) n.totalSpent += Math.abs(netIncome);
 
-    // ─── 2. Research Progression ────────────────────────────────────
-    const researchOrder = RESEARCH_ORDER[n.strategy] || RESEARCH_ORDER.balanced;
-    const nextResearch = researchOrder.find(r => !n.completedResearch.includes(r));
-
-    if (nextResearch) {
-      // Research completes based on months played vs. progression speed
-      const researchIndex = researchOrder.indexOf(nextResearch);
-      const baseMonthsNeeded = 6 + researchIndex * 4; // Each subsequent research takes longer
-      const actualMonths = Math.round(baseMonthsNeeded / n.progressionSpeed);
-
-      // Research completes when enough months have passed (no cumulative penalty)
-      if (n.monthsPlayed >= actualMonths) {
-        const researchCost = 50_000_000 * (1 + researchIndex * 0.5);
-        if (n.money >= researchCost * n.riskTolerance) {
+    // ─── 2. Research (1/10th speed — very slow) ───────────────────
+    // NPCs complete one research every ~60-100 game months (vs ~6-10 for players)
+    const researchInterval = Math.round(60 / n.progressionSpeed);
+    if (n.monthsPlayed > 0 && n.monthsPlayed % researchInterval === 0) {
+      const nextResearch = NPC_RESEARCH_POOL.find(r => !n.completedResearch.includes(r));
+      if (nextResearch) {
+        const researchCost = 30_000_000 * (1 + n.completedResearch.length * 0.3);
+        if (n.money >= researchCost) {
           n.completedResearch = [...n.completedResearch, nextResearch];
           n.money -= researchCost;
           n.totalSpent += researchCost;
 
-          // Only log significant research milestones
-          if (n.completedResearch.length % 5 === 0 || researchIndex < 3) {
+          if (n.completedResearch.length % 3 === 0) {
             events.push({
               id: generateId(), date: gameDate, type: 'npc_activity' as GameEvent['type'],
               title: `${n.name} completed research`,
@@ -129,14 +112,15 @@ export function processNPCTick(
       }
     }
 
-    // ─── 3. Service/Building Progression ────────────────────────────
-    const serviceInterval = Math.round(8 / n.progressionSpeed);
-    if (n.monthsPlayed > 0 && n.monthsPlayed % serviceInterval === 0) {
-      const nextService = SERVICE_PROGRESSION.find(s => !n.activeServiceIds.includes(s));
-      if (nextService) {
+    // ─── 3. Service/Building (1/10th speed) ───────────────────────
+    // NPCs add one service every ~30-50 game months (vs ~3-5 for players)
+    const serviceInterval = Math.round(30 / n.progressionSpeed);
+    if (n.monthsPlayed > 10 && n.monthsPlayed % serviceInterval === 0) {
+      const nextService = NPC_SERVICE_POOL.find(s => !n.activeServiceIds.includes(s));
+      if (nextService && n.activeServiceIds.length < 8) { // Cap at 8 services
         const svc = SERVICE_MAP.get(nextService);
-        const buildCost = 50_000_000 * (1 + n.activeServiceIds.length * 0.3);
-        if (svc && n.money >= buildCost * n.riskTolerance) {
+        const buildCost = 30_000_000 * (1 + n.activeServiceIds.length * 0.2);
+        if (svc && n.money >= buildCost) {
           n.activeServiceIds = [...n.activeServiceIds, nextService];
           n.buildingCount += 1;
           n.money -= buildCost;
@@ -145,81 +129,87 @@ export function processNPCTick(
       }
     }
 
-    // ─── 4. Location Unlock ─────────────────────────────────────────
-    for (const loc of LOCATION_PROGRESSION) {
-      if (n.unlockedLocations.includes(loc.id)) continue;
-      if (n.currentTier < loc.tier) break;
-      const scaledCost = loc.cost * (1 - n.riskTolerance * 0.3); // Aggressive NPCs pay less (take risk)
-      if (n.money >= scaledCost) {
-        n.unlockedLocations = [...n.unlockedLocations, loc.id];
-        n.money -= scaledCost;
-        n.totalSpent += scaledCost;
-        events.push({
-          id: generateId(), date: gameDate, type: 'npc_activity' as GameEvent['type'],
-          title: `${n.name} expanded operations`,
-          description: `Unlocked ${loc.id.replace(/_/g, ' ')}.`,
-        });
-        break; // Only unlock one per tick
+    // ─── 4. Location Unlock (restricted to common locations) ──────
+    // NPCs only unlock basic locations — NEVER rare colonies
+    if (n.monthsPlayed > 30 && n.monthsPlayed % 40 === 0) {
+      for (const loc of NPC_ALLOWED_LOCATIONS) {
+        if (n.unlockedLocations.includes(loc.id)) continue;
+        if (n.money >= loc.cost * 0.8) {
+          n.unlockedLocations = [...n.unlockedLocations, loc.id];
+          n.money -= loc.cost * 0.8;
+          n.totalSpent += loc.cost * 0.8;
+          events.push({
+            id: generateId(), date: gameDate, type: 'npc_activity' as GameEvent['type'],
+            title: `${n.name} expanded to ${loc.id.replace(/_/g, ' ')}`,
+            description: 'Background expansion to common locations.',
+          });
+          break;
+        }
       }
     }
 
-    // ─── 5. Tier Progression ────────────────────────────────────────
-    const nextTier = n.currentTier + 1;
-    if (nextTier <= 5) {
-      const threshold = TIER_THRESHOLDS[nextTier];
-      if (threshold && n.monthsPlayed * n.progressionSpeed >= threshold) {
-        n.currentTier = nextTier;
-        events.push({
-          id: generateId(), date: gameDate, type: 'npc_activity' as GameEvent['type'],
-          title: `${n.name} reached Tier ${nextTier}`,
-          description: `A competitor is advancing. Net worth: ${formatMoney(n.money)}.`,
-        });
-      }
-    }
-
-    // ─── 6. Resource Production ─────────────────────────────────────
+    // ─── 5. Resource Production (common resources only) ───────────
     n.resources = { ...n.resources };
     for (const svcId of n.activeServiceIds) {
       const production = MINING_PRODUCTION[svcId];
       if (!production) continue;
       for (const { resource, amountPerMonth } of production) {
-        const amount = Math.round(amountPerMonth * n.miningFocus * n.progressionSpeed);
-        n.resources[resource] = (n.resources[resource] || 0) + amount;
+        // Only produce allowed resources
+        if (!NPC_ALLOWED_RESOURCES.has(resource)) continue;
+        const amount = Math.round(amountPerMonth * n.miningFocus * 0.3); // 30% of player rate
+        if (amount > 0) {
+          n.resources[resource] = (n.resources[resource] || 0) + amount;
+        }
       }
     }
 
-    // ─── 7. Market Selling ──────────────────────────────────────────
+    // ─── 6. Market Activity (gentle nudges, not crashes) ──────────
     const marketActions: NPCMarketAction[] = [];
-    // Only sell on staggered months to prevent all NPCs dumping at once
-    const sellMonth = n.monthsPlayed % 3 === (NPC_SEEDS_INDEX.get(n.id) || 0) % 3;
+
+    // Sell excess resources (staggered to prevent dumps)
+    const sellMonth = n.monthsPlayed % 5 === (NPC_SEEDS_INDEX.get(n.id) || 0) % 5;
     if (sellMonth) {
       for (const [resourceId, qty] of Object.entries(n.resources)) {
-        if (qty > n.sellThreshold) {
-          const sellQty = Math.round((qty - n.sellThreshold * 0.5) * 0.7);
-          if (sellQty > 0) {
-            marketActions.push({
-              npcId: n.id,
-              npcName: n.name,
-              resourceId,
-              quantity: sellQty,
-            });
+        if (!NPC_ALLOWED_RESOURCES.has(resourceId)) continue;
+        // Only sell when well above threshold (gentle trickle, not dump)
+        if (qty > n.sellThreshold * 2) {
+          const sellQty = Math.round((qty - n.sellThreshold) * 0.3); // Sell 30% of excess
+          if (sellQty > 0 && sellQty < 100) { // Cap sells to prevent price crashes
+            marketActions.push({ npcId: n.id, npcName: n.name, resourceId, quantity: sellQty });
             n.resources[resourceId] = qty - sellQty;
-            // Revenue from selling (estimated at base price)
-            const estimatedPrice = getBasePrice(resourceId);
-            const revenue = sellQty * estimatedPrice;
+            const revenue = sellQty * getBasePrice(resourceId);
             n.money += revenue;
             n.totalEarned += revenue;
           }
         }
       }
+    }
 
-      if (marketActions.length > 0) {
-        events.push({
-          id: generateId(), date: gameDate, type: 'npc_activity' as GameEvent['type'],
-          title: `${n.name} sold resources`,
-          description: `${marketActions.length} resource type${marketActions.length > 1 ? 's' : ''} on the market.`,
-        });
+    // Occasionally BUY resources (creates buy pressure, stabilizes prices)
+    if (n.monthsPlayed % 7 === (NPC_SEEDS_INDEX.get(n.id) || 0) % 7 && n.money > 10_000_000) {
+      const buyResource = NPC_BUY_RESOURCES[n.monthsPlayed % NPC_BUY_RESOURCES.length];
+      const buyQty = Math.round(5 + Math.random() * 15); // Buy 5-20 units
+      const cost = buyQty * getBasePrice(buyResource);
+      if (n.money > cost * 3) { // Only buy if we can easily afford it
+        n.resources[buyResource] = (n.resources[buyResource] || 0) + buyQty;
+        n.money -= cost;
+        n.totalSpent += cost;
+        // Create a "buy" market action (negative quantity = buy pressure)
+        marketActions.push({ npcId: n.id, npcName: n.name, resourceId: buyResource, quantity: -buyQty });
       }
+    }
+
+    if (marketActions.length > 0 && Math.random() < 0.3) { // Only log 30% of market activity
+      events.push({
+        id: generateId(), date: gameDate, type: 'npc_activity' as GameEvent['type'],
+        title: `${n.name} market activity`,
+        description: `${marketActions.length} trade${marketActions.length > 1 ? 's' : ''} on the market.`,
+      });
+    }
+
+    // ─── 7. Tier Progression (very slow — capped at tier 3) ───────
+    if (n.currentTier < 3 && n.monthsPlayed * n.progressionSpeed >= [0, 0, 60, 150][n.currentTier + 1]) {
+      n.currentTier = n.currentTier + 1;
     }
 
     allEvents.push(...events);
@@ -227,13 +217,25 @@ export function processNPCTick(
     return n;
   });
 
-  // Limit events: only keep the 2 most significant NPC events per tick
-  const limitedEvents = allEvents.slice(0, 2);
+  // Limit NPC events to 1 per tick (reduce log spam)
+  const limitedEvents = allEvents.slice(0, 1);
 
   return { npcs: updatedNpcs, events: limitedEvents, marketActions: allMarketActions };
 }
 
-// Helper: index lookup for staggered selling
+/** Apply NPC market actions to global pressure tracking */
+export function applyNPCMarketActions(
+  currentPressure: Record<string, number>,
+  actions: NPCMarketAction[],
+): Record<string, number> {
+  const updated = { ...currentPressure };
+  for (const action of actions) {
+    updated[action.resourceId] = (updated[action.resourceId] || 0) + action.quantity;
+  }
+  return updated;
+}
+
+// Helper: index lookup for staggered activity
 import { NPC_SEEDS } from './npc-companies';
 const NPC_SEEDS_INDEX = new Map(NPC_SEEDS.map((s, i) => [s.id, i]));
 
@@ -241,23 +243,7 @@ const NPC_SEEDS_INDEX = new Map(NPC_SEEDS.map((s, i) => [s.id, i]));
 function getBasePrice(resourceId: string): number {
   const prices: Record<string, number> = {
     lunar_water: 50_000, mars_water: 80_000, iron: 5_000, aluminum: 8_000,
-    titanium: 25_000, platinum_group: 500_000, gold: 300_000, rare_earth: 200_000,
-    methane: 15_000, ethane: 20_000, exotic_materials: 2_000_000, helium3: 5_000_000,
+    titanium: 25_000, methane: 15_000, ethane: 20_000,
   };
-  return prices[resourceId] || 10_000;
-}
-
-/**
- * Apply NPC market sell actions to the market pressure tracker.
- * Returns updated pressure record (cumulative supply from NPCs).
- */
-export function applyNPCMarketActions(
-  currentPressure: Record<string, number>,
-  actions: NPCMarketAction[],
-): Record<string, number> {
-  const pressure = { ...currentPressure };
-  for (const action of actions) {
-    pressure[action.resourceId] = (pressure[action.resourceId] || 0) + action.quantity;
-  }
-  return pressure;
+  return prices[resourceId] || 5_000;
 }

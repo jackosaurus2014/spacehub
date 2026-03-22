@@ -803,7 +803,7 @@ export const AVAILABLE_MODULES: ModuleConfig[] = [
     description: 'Build your space empire — multiplayer competitive economy game',
     section: 'explore',
     defaultEnabled: true,
-    defaultPosition: 39,
+    defaultPosition: 1, // Right below Mission Control
     isPremium: false,
   },
 ];

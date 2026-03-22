@@ -561,6 +561,12 @@ export default function Navigation() {
               isPro={isPro}
             />
             <Link
+              href="/space-tycoon"
+              className="text-white/90 hover:text-white transition-colors text-sm font-medium flex items-center gap-1"
+            >
+              <span>🎮</span> Space Tycoon
+            </Link>
+            <Link
               href="/pricing"
               className="text-white/90 hover:text-white transition-colors text-sm font-medium"
             >
