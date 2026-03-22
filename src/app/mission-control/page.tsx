@@ -1330,7 +1330,7 @@ function MissionControlContent() {
 
         {/* Ad between timeline and dynamic content */}
         <div className="my-8">
-          <AdSlot position="in_feed" module="mission-control" />
+          <AdSlot position="in_feed" module="mission-control" adsenseSlot="in_feed_mc" adsenseFormat="rectangle" />
         </div>
 
         {/* ════════════════════════════════════════ */}
@@ -1477,7 +1477,7 @@ function MissionControlContent() {
 
         {/* Footer Ad */}
         <div className="mt-8">
-          <AdSlot position="footer" module="mission-control" />
+          <AdSlot position="footer" module="mission-control" adsenseSlot="footer_mc" adsenseFormat="horizontal" />
         </div>
 
         {/* Related Intelligence */}

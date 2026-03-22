@@ -754,7 +754,7 @@ function DealsPageContent() {
                     <DealCard deal={deal} index={i} />
                     {(i + 1) % 12 === 0 && i + 1 < deals.length && (
                       <div className="py-1">
-                        <AdSlot position="in_feed" module="deals" />
+                        <AdSlot position="in_feed" module="deals" adsenseSlot="in_feed_deals" adsenseFormat="rectangle" />
                       </div>
                     )}
                   </React.Fragment>
@@ -837,7 +837,7 @@ function DealsPageContent() {
 
         {/* Footer Ad */}
         <div className="mt-8">
-          <AdSlot position="footer" module="deals" />
+          <AdSlot position="footer" module="deals" adsenseSlot="footer_deals" adsenseFormat="horizontal" />
         </div>
       </div>
     </div>

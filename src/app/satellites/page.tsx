@@ -411,7 +411,7 @@ function SatelliteTrackerContent() {
 
                 {/* Ad between sections */}
                 <div className="my-6">
-                  <AdSlot position="in_feed" module="satellite-tracker" />
+                  <AdSlot position="in_feed" module="satellite-tracker" adsenseSlot="in_feed_sats" adsenseFormat="rectangle" />
                 </div>
 
                 {/* Notable Satellites */}
@@ -438,7 +438,7 @@ function SatelliteTrackerContent() {
 
                 {/* Footer Ad */}
                 <div className="my-6">
-                  <AdSlot position="footer" module="satellite-tracker" />
+                  <AdSlot position="footer" module="satellite-tracker" adsenseSlot="footer_sats" adsenseFormat="horizontal" />
                 </div>
 
                 {/* Data Sources */}

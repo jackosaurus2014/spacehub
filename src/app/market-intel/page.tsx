@@ -760,7 +760,7 @@ function MarketIntelContent() {
 
             {/* Ad between ETFs and company tables */}
             <div className="mb-8">
-              <AdSlot position="in_feed" module="market-intel" />
+              <AdSlot position="in_feed" module="market-intel" adsenseSlot="in_feed_market" adsenseFormat="rectangle" />
             </div>
 
             {/* Filters */}
@@ -1383,7 +1383,7 @@ function MarketIntelContent() {
 
         {/* Footer Ad */}
         <div className="mt-8">
-          <AdSlot position="footer" module="market-intel" />
+          <AdSlot position="footer" module="market-intel" adsenseSlot="footer_market" adsenseFormat="horizontal" />
         </div>
 
         {/* Info Note */}

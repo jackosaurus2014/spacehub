@@ -202,7 +202,7 @@ function NewsContent() {
               if ((index + 1) % 6 === 0 && index + 1 < articles.length) {
                 items.push(
                   <div key={`ad-${index}`} className="col-span-1 md:col-span-2 lg:col-span-3">
-                    <AdSlot position="in_feed" module="news-feed" />
+                    <AdSlot position="in_feed" module="news-feed" adsenseSlot="in_feed_news" adsenseFormat="rectangle" />
                   </div>
                 );
               }
@@ -212,7 +212,7 @@ function NewsContent() {
 
           {/* Footer Ad */}
           <div className="mt-12">
-            <AdSlot position="footer" module="news-feed" />
+            <AdSlot position="footer" module="news-feed" adsenseSlot="footer_news" adsenseFormat="horizontal" />
           </div>
 
           {/* Load More */}

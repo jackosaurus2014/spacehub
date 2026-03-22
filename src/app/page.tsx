@@ -30,6 +30,10 @@ const AdBanner = nextDynamic(() => import('@/components/ads').then(mod => ({ def
   ssr: false,
   loading: () => null,
 });
+const AdSlot = nextDynamic(() => import('@/components/ads/AdSlot'), {
+  ssr: false,
+  loading: () => null,
+});
 const CompetitiveComparison = nextDynamic(() => import('@/components/landing/CompetitiveComparison'), {
   ssr: false,
   loading: () => <div className="py-16"><div className="container mx-auto px-4"><div className="animate-pulse h-96 bg-white/[0.06] rounded-xl"></div></div></div>,
@@ -430,10 +434,10 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Ad Banner Section */}
-      <section className="py-8">
-        <div className="container mx-auto px-4">
-          <AdBanner slot="homepage-banner-1" format="horizontal" />
+      {/* Ad — subscriber-gated via AdSlot */}
+      <section className="py-6">
+        <div className="container mx-auto px-4 max-w-5xl">
+          <AdSlot position="footer" module="homepage" adsenseSlot="footer_homepage" adsenseFormat="horizontal" />
         </div>
       </section>
 

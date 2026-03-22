@@ -364,7 +364,7 @@ function BlogsContent() {
                 </StaggerItem>
                 {(index + 1) % 4 === 0 && index + 1 < posts.length && (
                   <div className="col-span-1 lg:col-span-2">
-                    <AdSlot position="in_feed" module="blogs-articles" />
+                    <AdSlot position="in_feed" module="blogs-articles" adsenseSlot="in_feed_blog" adsenseFormat="rectangle" />
                   </div>
                 )}
               </React.Fragment>
@@ -395,7 +395,7 @@ function BlogsContent() {
 
       {/* Footer Ad */}
       <div className="mt-12">
-        <AdSlot position="footer" module="blogs-articles" />
+        <AdSlot position="footer" module="blogs-articles" adsenseSlot="footer_blog" adsenseFormat="horizontal" />
       </div>
 
       {/* Info Card */}

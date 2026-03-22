@@ -1683,7 +1683,7 @@ function SpaceTalentHubContent() {
                       </StaggerItem>
                       {(index + 1) % 6 === 0 && index + 1 < talent.length && (
                         <div className="col-span-1 md:col-span-2 lg:col-span-3">
-                          <AdSlot position="in_feed" module="space-talent" />
+                          <AdSlot position="in_feed" module="space-talent" adsenseSlot="in_feed_talent" adsenseFormat="rectangle" />
                         </div>
                       )}
                     </React.Fragment>
@@ -2673,7 +2673,7 @@ export default function SpaceTalentHubPage() {
 
         {/* Footer Ad */}
         <div className="mt-12">
-          <AdSlot position="footer" module="space-talent" />
+          <AdSlot position="footer" module="space-talent" adsenseSlot="footer_talent" adsenseFormat="horizontal" />
         </div>
       </div>
     </div>

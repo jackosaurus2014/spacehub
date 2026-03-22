@@ -5,6 +5,7 @@ import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
+import AdSlot from '@/components/ads/AdSlot';
 
 // =============================================================================
 // TYPES
@@ -278,6 +279,9 @@ function StatsSummary({ launches }: { launches: Launch[] }) {
         <p className="text-2xl font-bold text-amber-400 text-lg">{topSite?.[0] || 'N/A'}</p>
         <p className="text-xs text-slate-500 mt-1">{topSite?.[1] || 0} launches</p>
 
+        <div className="mt-4">
+          <AdSlot position="footer" module="launch-manifest" adsenseSlot="footer_launches" adsenseFormat="rectangle" />
+        </div>
         <RelatedModules modules={PAGE_RELATIONS['launch-manifest']} />
       </div>
     </div>

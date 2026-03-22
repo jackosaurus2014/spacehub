@@ -10,6 +10,7 @@ import BlogViewTracker from '@/components/blog/BlogViewTracker';
 import InlineNewsletterSignup from '@/components/blog/InlineNewsletterSignup';
 import BlogTableOfContents from '@/components/blog/BlogTableOfContents';
 import ReadingProgressBar from '@/components/blog/ReadingProgressBar';
+import AdSlot from '@/components/ads/AdSlot';
 
 const SAFE_HTML_CONFIG: sanitizeHtml.IOptions = {
   allowedTags: ['b', 'i', 'em', 'strong', 'a', 'p', 'br', 'ul', 'ol', 'li', 'h2', 'h3', 'h4', 'blockquote', 'code', 'pre', 'img', 'span', 'div', 'table', 'thead', 'tbody', 'tr', 'th', 'td'],
@@ -485,6 +486,11 @@ export default async function BlogPostPage({ params }: Props) {
             </div>
           </div>
         )}
+
+        {/* Ad — between article and recommended reading */}
+        <div className="mt-8 mb-4">
+          <AdSlot position="in_feed" module="blog-article" adsenseSlot="in_feed_blog_article" adsenseFormat="horizontal" />
+        </div>
 
         {/* Recommended Reading */}
         {recommendedPosts.length > 0 && (

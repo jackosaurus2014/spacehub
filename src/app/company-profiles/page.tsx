@@ -608,7 +608,7 @@ export default function CompanyProfilesPage() {
                 <CompanyCardComponent company={company} index={i} />
                 {(i + 1) % 9 === 0 && i + 1 < companies.length && (
                   <div className="col-span-1 md:col-span-2 xl:col-span-3">
-                    <AdSlot position="in_feed" module="company-profiles" />
+                    <AdSlot position="in_feed" module="company-profiles" adsenseSlot="in_feed_companies" adsenseFormat="rectangle" />
                   </div>
                 )}
               </React.Fragment>
@@ -733,7 +733,7 @@ export default function CompanyProfilesPage() {
 
       {/* Footer Ad */}
       <div className="mt-8">
-        <AdSlot position="footer" module="company-profiles" />
+        <AdSlot position="footer" module="company-profiles" adsenseSlot="footer_companies" adsenseFormat="horizontal" />
 
             {/* FeatureTeaser moved inline above the company grid */}
             <SubscribeCTA />

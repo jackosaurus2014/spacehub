@@ -434,7 +434,7 @@ function StartupTrackerContent() {
 
         {/* Ad Slot */}
         <div className="mb-6">
-          <AdSlot position="in_feed" module="startup-tracker" />
+          <AdSlot position="in_feed" module="startup-tracker" adsenseSlot="in_feed_startups" adsenseFormat="rectangle" />
         </div>
 
         {/* Filters */}
@@ -615,7 +615,7 @@ function StartupTrackerContent() {
 
         {/* Footer Ad */}
         <div className="mt-8">
-          <AdSlot position="footer" module="startup-tracker" />
+          <AdSlot position="footer" module="startup-tracker" adsenseSlot="footer_startups" adsenseFormat="horizontal" />
         </div>
 
         {/* Disclaimer */}

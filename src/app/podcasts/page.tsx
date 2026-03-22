@@ -1,4 +1,5 @@
 import { fetchPodcasts, PODCAST_FEEDS, PodcastEpisode } from '@/lib/podcast-fetcher';
+import AdSlot from '@/components/ads/AdSlot';
 
 export const dynamic = 'force-dynamic';
 
@@ -228,6 +229,11 @@ export default async function PodcastsPage() {
             ))}
           </div>
         )}
+
+        {/* Ad — after episodes grid */}
+        <div className="mt-8">
+          <AdSlot position="footer" module="podcasts" adsenseSlot="footer_podcasts" adsenseFormat="horizontal" />
+        </div>
 
         {/* Info card */}
         <div className="card p-6 mt-12 border-dashed">

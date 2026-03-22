@@ -210,7 +210,7 @@ export default function MarketplacePage() {
 
         {/* Ad between listings and RFQs */}
         <div>
-          <AdSlot position="in_feed" module="marketplace" />
+          <AdSlot position="in_feed" module="marketplace" adsenseSlot="in_feed_mktplace" adsenseFormat="rectangle" />
         </div>
 
         {/* Recent RFQs */}
@@ -325,7 +325,7 @@ export default function MarketplacePage() {
 
         {/* Footer Ad */}
         <div>
-          <AdSlot position="footer" module="marketplace" />
+          <AdSlot position="footer" module="marketplace" adsenseSlot="footer_mktplace" adsenseFormat="horizontal" />
         </div>
 
         {/* CTA */}
