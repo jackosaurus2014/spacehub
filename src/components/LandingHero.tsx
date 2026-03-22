@@ -16,10 +16,10 @@ function HeroReveal({ children, delay, className = '' }: { children: React.React
 
 /** Platform stat constants — exported so pricing/register pages can reuse them */
 export const PLATFORM_STATS = [
-  { value: '264+', label: 'Pages & Tools' },
-  { value: '200+', label: 'Original Articles' },
-  { value: '50+', label: 'Data Sources' },
-  { value: '600+', label: 'Routes' },
+  { value: '264+', label: 'Modules & Tools' },
+  { value: '250+', label: 'Original Articles' },
+  { value: '50+', label: 'Live Data Sources' },
+  { value: '10K+', label: 'Tracked Objects' },
 ];
 
 interface HeroContentCard {
@@ -61,24 +61,30 @@ export default function LandingHero({ featuredArticle, trendingNews }: LandingHe
         <div className="text-center max-w-4xl mx-auto">
           {/* Badge */}
           <HeroReveal delay={0.2} className="mb-6">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-white/[0.08] bg-white/[0.03] backdrop-blur-sm">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-              <span className="text-xs text-slate-400 font-medium tracking-wide">Live data from 50+ sources</span>
+            <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full border border-white/[0.08] bg-white/[0.03] backdrop-blur-sm">
+              <span className="live-badge">LIVE</span>
+              <span className="text-xs text-slate-400 font-medium tracking-wide">Real-time data from 50+ sources</span>
             </div>
           </HeroReveal>
 
           {/* Headline — clean Inter, tight tracking, display style */}
-          <HeroReveal delay={0.35} className="mb-6">
+          <HeroReveal delay={0.35} className="mb-4">
             <h1 className="text-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-white">
-              Space Industry<br />Intelligence Platform
+              The Terminal for<br />Space Business
             </h1>
+          </HeroReveal>
+
+          {/* Sub-tagline — market positioning */}
+          <HeroReveal delay={0.45} className="mb-8">
+            <p className="text-sm md:text-base text-slate-500 uppercase tracking-[0.2em] font-medium">
+              Intelligence &middot; Analytics &middot; Tools &middot; Market Data
+            </p>
           </HeroReveal>
 
           {/* Subtitle — condensed value proposition */}
           <HeroReveal delay={0.5} className="mb-10">
-            <p className="text-base md:text-lg text-slate-400 max-w-xl mx-auto leading-relaxed">
-              Real-time data, interactive tools, regulatory intelligence, and market
-              analytics — all in one platform for space industry professionals.
+            <p className="text-base md:text-lg text-slate-400 max-w-2xl mx-auto leading-relaxed">
+              Track launches, monitor satellites, analyze funding rounds, and research companies — the most comprehensive space industry platform on the internet.
             </p>
           </HeroReveal>
 

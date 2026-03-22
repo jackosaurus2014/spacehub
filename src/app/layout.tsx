@@ -45,6 +45,7 @@ const UsageLimitBanner = dynamic(() => import('@/components/marketing/UsageLimit
 const StreakNotification = dynamic(() => import('@/components/marketing/StreakNotification'), { ssr: false });
 const HelpButton = dynamic(() => import('@/components/HelpButton'), { ssr: false });
 // FeedbackButton removed — replaced with /feedback page to avoid blocking left nav
+const IndustryTicker = dynamic(() => import('@/components/ui/IndustryTicker'), { ssr: false });
 const BackToTop = dynamic(() => import('@/components/ui/BackToTop'), { ssr: false });
 const ScrollProgress = dynamic(() => import('@/components/ui/ScrollProgress'), { ssr: false });
 const WebVitals = dynamic(() => import('@/components/analytics/WebVitals'), { ssr: false });
@@ -245,6 +246,7 @@ export default function RootLayout({
               <TrialBanner />
               <AnnouncementBanner />
               <Navigation />
+              <IndustryTicker />
               <QuickAccessSidebar />
               <main id="main-content" className="flex-1 lg:pl-16 pb-[calc(4rem+env(safe-area-inset-bottom,0px))] lg:pb-0" tabIndex={-1}>
                 <ModuleNavBar />
