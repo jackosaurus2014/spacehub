@@ -137,7 +137,18 @@ function BuildPanel({ state, onBuild, onSellBuilding }: { state: GameState; onBu
                   </div>
                 </div>
                 <div className="p-3">
-                <p className="text-slate-400 text-[11px] mb-2 leading-relaxed">{bld.description}</p>
+                <p className="text-slate-400 text-[11px] mb-1 leading-relaxed">{bld.description}</p>
+                {/* Strategy tooltip */}
+                {bld.tooltip && (
+                  <details className="mb-2 group/tip">
+                    <summary className="text-[9px] text-cyan-400/70 cursor-pointer hover:text-cyan-400 transition-colors select-none">
+                      Why build this? ▾
+                    </summary>
+                    <div className="mt-1 p-2 rounded-md bg-cyan-500/5 border border-cyan-500/10 text-[10px] text-slate-300 leading-relaxed">
+                      {bld.tooltip}
+                    </div>
+                  </details>
+                )}
                 {/* Revenue preview */}
                 {bld.enabledServices.length > 0 && (() => {
                   const svc = SERVICE_MAP.get(bld.enabledServices[0]);

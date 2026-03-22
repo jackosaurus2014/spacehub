@@ -25,6 +25,8 @@ export interface BuildingDefinition {
   name: string;
   category: BuildingCategory;
   description: string;
+  /** Detailed tooltip explaining gameplay purpose, when to build, revenue, and strategy */
+  tooltip?: string;
   baseCost: number;
   buildTimeMonths: number;
   maintenanceCostPerMonth: number;
