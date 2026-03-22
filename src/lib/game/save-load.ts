@@ -3,7 +3,7 @@
 // initialize prestige/workforce/milestones/achievements on load.
 
 import type { GameState } from './types';
-import { SAVE_KEY, SAVE_VERSION, STARTING_MONEY, STARTING_YEAR } from './constants';
+import { SAVE_KEY, SAVE_VERSION, STARTING_MONEY, STARTING_YEAR, STARTING_MONEY_PRO, STARTING_MONEY_ENTERPRISE } from './constants';
 import { createAllNPCs } from './npc-companies';
 
 /** Create a fresh new game state */
