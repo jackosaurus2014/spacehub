@@ -17,9 +17,10 @@ interface FleetPanelProps {
   onStartMining: (shipInstanceId: string, resourceId: string) => void;
   onStopMining: (shipInstanceId: string) => void;
   onStartTransport: (shipInstanceId: string, toLocation: string, cargo: Record<string, number>) => void;
+  onScrapShip?: (shipInstanceId: string) => void;
 }
 
-export default function FleetPanel({ state, onBuildShip, onStartMining, onStopMining, onStartTransport }: FleetPanelProps) {
+export default function FleetPanel({ state, onBuildShip, onStartMining, onStopMining, onStartTransport, onScrapShip }: FleetPanelProps) {
   const [selectedShipyard, setSelectedShipyard] = useState('earth_surface');
   const [selectedShip, setSelectedShip] = useState<string | null>(null);
 
@@ -188,6 +189,24 @@ export default function FleetPanel({ state, onBuildShip, onStartMining, onStopMi
                 })}
             </div>
           </div>}
+
+          {/* Scrap ship (only idle ships) */}
+          {selectedShipInstance.status === 'idle' && onScrapShip && (
+            <div className="mt-3 pt-3 border-t border-white/[0.06]">
+              <button
+                onClick={() => {
+                  const scrapValue = Math.round(selectedShipDef.baseCost * 0.3);
+                  if (confirm(`Scrap ${selectedShipInstance.name} for ${formatMoney(scrapValue)}? (30% of build cost) This cannot be undone.`)) {
+                    onScrapShip(selectedShipInstance.instanceId);
+                    setSelectedShip(null);
+                  }
+                }}
+                className="w-full px-3 py-1.5 text-[10px] font-medium bg-red-500/10 text-red-400 border border-red-500/20 rounded-lg hover:bg-red-500/20 transition-colors"
+              >
+                Scrap Ship (recover {formatMoney(Math.round(selectedShipDef.baseCost * 0.3))})
+              </button>
+            </div>
+          )}
         </div>
       )}
 

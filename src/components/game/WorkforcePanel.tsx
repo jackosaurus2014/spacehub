@@ -8,9 +8,10 @@ import { playSound } from '@/lib/game/sound-engine';
 interface WorkforcePanelProps {
   state: GameState;
   onHire: (workerType: string) => void;
+  onDismiss?: (workerType: string) => void;
 }
 
-export default function WorkforcePanel({ state, onHire }: WorkforcePanelProps) {
+export default function WorkforcePanel({ state, onHire, onDismiss }: WorkforcePanelProps) {
   const workforce = state.workforce || { engineers: 0, scientists: 0, miners: 0, operators: 0 };
   const payroll = getMonthlyPayroll(workforce);
   const bonuses = getWorkforceBonuses(workforce);
@@ -93,17 +94,27 @@ export default function WorkforcePanel({ state, onHire }: WorkforcePanelProps) {
                     </div>
                   </div>
                 </div>
-                <button
-                  onClick={() => { if (canAfford) { playSound('click'); onHire(worker.type); } }}
-                  disabled={!canAfford}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors shrink-0 ${
-                    canAfford
-                      ? 'bg-cyan-600 text-white hover:bg-cyan-500'
-                      : 'bg-white/[0.04] text-slate-600 cursor-not-allowed'
-                  }`}
-                >
-                  Hire {formatMoney(hireCost)}
-                </button>
+                <div className="flex gap-1.5 shrink-0">
+                  <button
+                    onClick={() => { if (canAfford) { playSound('click'); onHire(worker.type); } }}
+                    disabled={!canAfford}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                      canAfford
+                        ? 'bg-cyan-600 text-white hover:bg-cyan-500'
+                        : 'bg-white/[0.04] text-slate-600 cursor-not-allowed'
+                    }`}
+                  >
+                    Hire {formatMoney(hireCost)}
+                  </button>
+                  {onDismiss && count > 0 && (
+                    <button
+                      onClick={() => { playSound('click'); onDismiss(worker.type); }}
+                      className="px-2 py-1.5 rounded-lg text-[10px] font-medium bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20 transition-colors"
+                    >
+                      Dismiss
+                    </button>
+                  )}
+                </div>
               </div>
             );
           })}

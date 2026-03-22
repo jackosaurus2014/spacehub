@@ -47,7 +47,7 @@ import ProUpgradeBanner from '@/components/game/ProUpgradeBanner';
 
 // ─── Build Panel ────────────────────────────────────────────────────────────
 
-function BuildPanel({ state, onBuild }: { state: GameState; onBuild: (buildingId: string, locationId: string) => void }) {
+function BuildPanel({ state, onBuild, onSellBuilding }: { state: GameState; onBuild: (buildingId: string, locationId: string) => void; onSellBuilding?: (instanceId: string) => void }) {
   const [selectedLocation, setSelectedLocation] = useState(state.unlockedLocations[0] || 'earth_surface');
 
   const availableBuildings = BUILDINGS.filter(b => {
@@ -188,6 +188,37 @@ function BuildPanel({ state, onBuild }: { state: GameState; onBuild: (buildingId
           })}
         </div>
       )}
+
+      {/* Built structures at this location — with sell option */}
+      {(() => {
+        const builtHere = state.buildings.filter(b => b.isComplete && b.locationId === selectedLocation);
+        if (builtHere.length === 0) return null;
+        return (
+          <div className="mt-4 rounded-xl border border-white/[0.06] bg-white/[0.02] p-3">
+            <h4 className="text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-2">Built at {LOCATION_MAP.get(selectedLocation)?.name || selectedLocation}</h4>
+            <div className="space-y-1">
+              {builtHere.map(bld => {
+                const def = BUILDING_MAP.get(bld.definitionId);
+                if (!def) return null;
+                const sellPrice = Math.round(def.baseCost * 0.4);
+                return (
+                  <div key={bld.instanceId} className="flex items-center justify-between py-1 px-2 rounded hover:bg-white/[0.02]">
+                    <span className="text-white text-xs">{def.name}</span>
+                    {onSellBuilding && (
+                      <button
+                        onClick={() => { if (confirm(`Sell ${def.name} for ${formatMoney(sellPrice)}? (40% of build cost)`)) onSellBuilding(bld.instanceId); }}
+                        className="text-[9px] px-2 py-0.5 rounded bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20 transition-colors"
+                      >
+                        Sell ({formatMoney(sellPrice)})
+                      </button>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        );
+      })()}
     </div>
   );
 }
@@ -644,6 +675,110 @@ export default function SpaceTycoonPage() {
     });
   }, []);
 
+  // ─── Sell Building ───────────────────────────────────────────────────
+  const handleSellBuilding = useCallback((instanceId: string) => {
+    playSound('money');
+    setState(prev => {
+      if (!prev) return prev;
+      const bldIdx = prev.buildings.findIndex(b => b.instanceId === instanceId);
+      if (bldIdx === -1) return prev;
+      const bld = prev.buildings[bldIdx];
+      if (!bld.isComplete) { playSound('error'); return prev; } // Can't sell under construction
+
+      const def = BUILDING_MAP.get(bld.definitionId);
+      if (!def) return prev;
+
+      // Sell for 40% of original cost (depreciation)
+      const sellPrice = Math.round(def.baseCost * 0.4);
+
+      // Remove building and any services linked to it
+      const newBuildings = prev.buildings.filter(b => b.instanceId !== instanceId);
+      const newServices = prev.activeServices.filter(s => {
+        // Remove services that were linked to this building
+        if (!s.linkedBuildingIds) return true;
+        return !s.linkedBuildingIds.includes(instanceId);
+      });
+
+      return {
+        ...prev,
+        money: prev.money + sellPrice,
+        totalEarned: prev.totalEarned + sellPrice,
+        buildings: newBuildings,
+        activeServices: newServices,
+        eventLog: [{
+          id: generateId(),
+          date: prev.gameDate,
+          type: 'milestone' as const,
+          title: `Sold: ${def.name}`,
+          description: `Recovered ${formatMoney(sellPrice)} (40% of build cost).`,
+        }, ...prev.eventLog].slice(0, 50),
+      };
+    });
+  }, []);
+
+  // ─── Dismiss Worker ────────────────────────────────────────────────
+  const handleDismissWorker = useCallback((workerType: string) => {
+    playSound('click');
+    setState(prev => {
+      if (!prev) return prev;
+      const workforce = { ...(prev.workforce || { engineers: 0, scientists: 0, miners: 0, operators: 0 }) };
+      const key = `${workerType}s` as keyof typeof workforce;
+      if ((workforce[key] || 0) <= 0) { playSound('error'); return prev; }
+
+      // Severance pay: 2 months salary
+      const salaries: Record<string, number> = { engineer: 500000, scientist: 600000, miner: 400000, operator: 450000 };
+      const severance = (salaries[workerType] || 500000) * 2;
+
+      workforce[key] = workforce[key] - 1;
+      return {
+        ...prev,
+        money: prev.money - severance,
+        totalSpent: prev.totalSpent + severance,
+        workforce,
+        eventLog: [{
+          id: generateId(),
+          date: prev.gameDate,
+          type: 'milestone' as const,
+          title: `Dismissed ${workerType}`,
+          description: `Severance paid: ${formatMoney(severance)}.`,
+        }, ...prev.eventLog].slice(0, 50),
+      };
+    });
+  }, []);
+
+  // ─── Scrap Ship ────────────────────────────────────────────────────
+  const handleScrapShip = useCallback((shipInstanceId: string) => {
+    playSound('money');
+    setState(prev => {
+      if (!prev || !prev.ships) return prev;
+      const shipIdx = prev.ships.findIndex(s => s.instanceId === shipInstanceId);
+      if (shipIdx === -1) return prev;
+      const ship = prev.ships[shipIdx];
+      if (!ship.isBuilt) { playSound('error'); return prev; } // Can't scrap under construction
+      if (ship.status !== 'idle') { playSound('error'); return prev; } // Must be idle
+
+      const shipDef = SHIP_MAP.get(ship.definitionId);
+      if (!shipDef) return prev;
+
+      // Scrap for 30% of original cost
+      const scrapValue = Math.round(shipDef.baseCost * 0.3);
+
+      return {
+        ...prev,
+        money: prev.money + scrapValue,
+        totalEarned: prev.totalEarned + scrapValue,
+        ships: prev.ships.filter(s => s.instanceId !== shipInstanceId),
+        eventLog: [{
+          id: generateId(),
+          date: prev.gameDate,
+          type: 'milestone' as const,
+          title: `Scrapped: ${ship.name}`,
+          description: `Recovered ${formatMoney(scrapValue)} in salvage (30% of build cost).`,
+        }, ...prev.eventLog].slice(0, 50),
+      };
+    });
+  }, []);
+
   const handleBuyResource = useCallback((resourceId: string, quantity: number, cost: number) => {
     playSound('money');
     setState(prev => {
@@ -776,7 +911,7 @@ export default function SpaceTycoonPage() {
       {/* Panel Content — key={tab} triggers reveal animation on tab switch */}
       <div key={tab} className="flex-1 overflow-y-auto p-4 max-w-5xl mx-auto w-full animate-reveal-up game-scroll">
         {tab === 'dashboard' && <DashboardPanel state={state} />}
-        {tab === 'build' && <BuildPanel state={state} onBuild={handleBuild} />}
+        {tab === 'build' && <BuildPanel state={state} onBuild={handleBuild} onSellBuilding={handleSellBuilding} />}
         {tab === 'research' && <ResearchPanel state={state} onStartResearch={handleStartResearch} />}
         {tab === 'map' && <SolarSystemCanvas state={state} onUnlock={handleUnlockLocation} />}
         {tab === 'services' && <ServicesPanel state={state} />}
@@ -860,6 +995,7 @@ export default function SpaceTycoonPage() {
               return { ...prev, ships };
             });
           }}
+          onScrapShip={handleScrapShip}
         />}
         {tab === 'crafting' && <CraftingPanel state={state} onStartCrafting={(recipeId) => {
           const recipe = CHAIN_MAP.get(recipeId);
@@ -899,7 +1035,7 @@ export default function SpaceTycoonPage() {
             workforce[key] = (workforce[key] || 0) + 1;
             return { ...prev, money: prev.money - cost, totalSpent: prev.totalSpent + cost, workforce };
           });
-        }} />}
+        }} onDismiss={handleDismissWorker} />}
         {tab === 'market' && <MarketPanel state={state} onSellResource={handleSellResource} onBuyResource={handleBuyResource} />}
         {tab === 'contracts' && <ContractsPanel state={state} onAcceptContract={(contractId) => {
           playSound('click');
