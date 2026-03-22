@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
+import { getGlobalGameDate, formatServerDate } from '@/lib/game/server-time';
 
 /**
  * POST /api/space-tycoon/sync
@@ -148,6 +149,9 @@ export async function POST(request: Request) {
       globalMilestones = Object.fromEntries(claimed.map(m => [m.milestoneId, m.companyName]));
     } catch { /* non-critical */ }
 
+    // Include canonical server game date so clients stay in sync
+    const serverGameDate = getGlobalGameDate();
+
     return NextResponse.json({
       success: true,
       profileId: profile.id,
@@ -159,6 +163,12 @@ export async function POST(request: Request) {
       allianceTag,
       openBounties,
       globalMilestones,
+      // Global game date — all players must use this
+      serverGameDate: {
+        year: serverGameDate.year,
+        month: serverGameDate.month,
+        formatted: formatServerDate(serverGameDate),
+      },
     });
   } catch (error) {
     logger.error('Game sync error', { error: String(error) });

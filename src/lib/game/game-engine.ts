@@ -9,6 +9,7 @@ import { RESEARCH_MAP } from './research-tree';
 import { MINING_PRODUCTION } from './resources';
 import { advanceDate, generateId, revenueMultiplier } from './formulas';
 import { MAX_EVENT_LOG, TICKS_PER_GAME_MONTH } from './constants';
+import { getGlobalGameDate } from './server-time';
 import { processNPCTick, applyNPCMarketActions } from './npc-engine';
 import { rollRandomEvent, applyEventEffect, getActiveMultipliers, cleanupExpiredEffects } from './random-events';
 import { checkMilestones } from './milestones';
@@ -24,11 +25,14 @@ import { checkAchievements } from './achievements';
  * Pure function: takes state, returns new state. Never mutates input.
  */
 export function processTick(state: GameState): GameState {
-  // Track sub-month ticks. Calendar advances only every TICKS_PER_GAME_MONTH ticks.
-  // Revenue/costs are applied fractionally each tick (1/N of monthly value).
-  const tickCount = (state.tickCount || 0) + 1;
-  const isMonthEnd = tickCount >= TICKS_PER_GAME_MONTH;
-  const newDate = isMonthEnd ? advanceDate(state.gameDate, 1) : state.gameDate;
+  // Global server time: all players share the same game date.
+  // The calendar is derived from real wall-clock time (server epoch),
+  // NOT from tick counting. Revenue/costs apply fractionally each tick.
+  const globalDate = getGlobalGameDate();
+  const prevTotalMonths = state.gameDate.year * 12 + state.gameDate.month - 1 - (2025 * 12);
+  const isMonthEnd = globalDate.totalMonths > prevTotalMonths;
+  const newDate = { year: globalDate.year, month: globalDate.month };
+  const tickCount = isMonthEnd ? 0 : (state.tickCount || 0) + 1;
   const fraction = 1 / TICKS_PER_GAME_MONTH; // Fraction of monthly revenue/cost per tick
 
   const events: GameEvent[] = [];
