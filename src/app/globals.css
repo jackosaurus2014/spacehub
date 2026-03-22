@@ -37,39 +37,115 @@ html {
 }
 
 :root {
-  --foreground-rgb: 250, 250, 250;
-  --background-start-rgb: 0, 0, 0;
-  --background-end-rgb: 0, 0, 0;
+  --foreground-rgb: 237, 237, 234;
+  --background-start-rgb: 9, 9, 11;
+  --background-end-rgb: 9, 9, 11;
 
-  /* ——— V2 Redesign: True Black palette ——— */
-  --v2-bg-void: #000000;
-  --v2-bg-surface: #0a0a0a;
-  --v2-bg-elevated: #141414;
-  --v2-bg-hover: #1a1a1a;
-  --v2-bg-active: #222222;
-  --v2-text-primary: #fafafa;
-  --v2-text-secondary: #a1a1a1;
-  --v2-text-tertiary: #666666;
-  --v2-border-subtle: rgba(255, 255, 255, 0.06);
-  --v2-border-default: rgba(255, 255, 255, 0.10);
-  --v2-border-hover: rgba(255, 255, 255, 0.15);
-  --v2-border-focus: rgba(255, 255, 255, 0.25);
+  /* ═══════════════════════════════════════════════════════════════════
+     V3 REDESIGN: Mission Control Color System
+     Based on Zinc neutral scale + Astro UXDS aerospace status palette.
+     No pure black. No pure white. Warm off-blacks with no blue undertone.
+     ═══════════════════════════════════════════════════════════════════ */
 
-  /* ——— Fluid typography scale (320px → 1200px viewport) ——— */
+  /* Background scale — Zinc-based warm off-blacks */
+  --bg-void:        #09090b;    /* Page background */
+  --bg-surface:     #131316;    /* Section backgrounds, containers */
+  --bg-elevated:    #1c1c21;    /* Cards, panels, popovers */
+  --bg-hover:       #252529;    /* Hover states on surfaces */
+  --bg-active:      #2e2e33;    /* Active/pressed states */
+
+  /* Text scale — off-white primary, zinc secondaries */
+  --text-primary:   #ededea;    /* Primary content (SpaceX off-white) */
+  --text-secondary: #a1a1aa;    /* Descriptions, secondary (Zinc 400) */
+  --text-tertiary:  #71717a;    /* Disabled, hints, timestamps (Zinc 500) */
+  --text-muted:     #52525b;    /* Barely-there labels (Zinc 600) */
+
+  /* Border scale — solid zinc values, not rgba */
+  --border-subtle:  #27272a;    /* Card edges, dividers (Zinc 800) */
+  --border-default: #3f3f46;    /* Visible borders (Zinc 700) */
+  --border-hover:   #52525b;    /* Hover emphasis (Zinc 600) */
+  --border-focus:   #6366f1;    /* Focus rings (Indigo) */
+
+  /* Accent colors */
+  --accent-primary:        #6366f1;  /* Indigo 500 — brand, interactive */
+  --accent-primary-bright: #818cf8;  /* Indigo 400 — hover */
+  --accent-secondary:      #22d3ee;  /* Cyan 400 — data, tech energy */
+
+  /* Status colors — Astro UXDS aerospace standard */
+  --status-nominal:   #56F000;  /* Bright green — GO/nominal/live */
+  --status-standby:   #2DCCFF;  /* Cyan — standby/available */
+  --status-caution:   #FCE83A;  /* Yellow — watch/unstable */
+  --status-serious:   #FFB302;  /* Amber — error/attention */
+  --status-critical:  #FF3838;  /* Red — alert/emergency */
+  --status-off:       #71717a;  /* Zinc 500 — off/disabled */
+
+  /* Easing */
+  --ease-smooth: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* V2 backward compat aliases (migrate gradually) */
+  --v2-bg-void: var(--bg-void);
+  --v2-bg-surface: var(--bg-surface);
+  --v2-bg-elevated: var(--bg-elevated);
+  --v2-bg-hover: var(--bg-hover);
+  --v2-bg-active: var(--bg-active);
+  --v2-text-primary: var(--text-primary);
+  --v2-text-secondary: var(--text-secondary);
+  --v2-text-tertiary: var(--text-tertiary);
+  --v2-border-subtle: var(--border-subtle);
+  --v2-border-default: var(--border-default);
+  --v2-border-hover: var(--border-hover);
+  --v2-border-focus: var(--border-focus);
+
+  /* Fluid typography scale (320px → 1200px viewport) */
   --fs-display: clamp(2.25rem, 1.818vw + 1.636rem, 3.25rem);
   --fs-h1: clamp(2rem, 1.818vw + 1.636rem, 3rem);
   --fs-h2: clamp(1.5rem, 0.909vw + 1.318rem, 2rem);
   --fs-h3: clamp(1.25rem, 0.455vw + 1.159rem, 1.5rem);
 
-  /* Text hierarchy — 3 levels for clear visual hierarchy */
-  --hc-text-primary: #f1f5f9;     /* slate-100 */
-  --hc-text-secondary: #94a3b8;   /* slate-400 */
-  --hc-text-tertiary: #64748b;    /* slate-500 — timestamps, metadata, captions */
-  --hc-text-muted: #94a3b8;       /* slate-400 — improved contrast for muted text */
-  --hc-border-default: rgba(148, 163, 184, 0.15);  /* slate-400/15 */
+  /* High-contrast text hierarchy */
+  --hc-text-primary: #f1f5f9;
+  --hc-text-secondary: #94a3b8;
+  --hc-text-tertiary: #64748b;
+  --hc-text-muted: #94a3b8;
+  --hc-border-default: rgba(148, 163, 184, 0.15);
   --hc-border-strong: rgba(148, 163, 184, 0.3);
   --hc-card-bg-alpha: 0.9;
-  --hc-btn-border: rgba(148, 163, 184, 0.3);    /* slate-400/30 */
+  --hc-btn-border: rgba(148, 163, 184, 0.3);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   V3 FONT FACES — Satoshi (display), DM Sans (body via Google), JetBrains Mono (data via Google)
+   ═══════════════════════════════════════════════════════════════════ */
+@font-face {
+  font-family: 'Satoshi';
+  src: url('/fonts/Satoshi-Light.woff2') format('woff2');
+  font-weight: 300;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Satoshi';
+  src: url('/fonts/Satoshi-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Satoshi';
+  src: url('/fonts/Satoshi-Medium.woff2') format('woff2');
+  font-weight: 500;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Satoshi';
+  src: url('/fonts/Satoshi-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Satoshi';
+  src: url('/fonts/Satoshi-Black.woff2') format('woff2');
+  font-weight: 900;
+  font-display: swap;
 }
 
 /* High-contrast mode overrides */
@@ -196,16 +272,29 @@ html {
 }
 
 ::selection {
-  background: rgba(255, 255, 255, 0.2);
-  color: #fafafa;
+  background: rgba(99, 102, 241, 0.3);
+  color: var(--text-primary);
 }
 
 body {
-  color: rgb(var(--foreground-rgb));
-  background: var(--v2-bg-void, #000000);
+  color: var(--text-primary, #ededea);
+  background: var(--bg-void, #09090b);
   min-height: 100dvh;
-  font-family: 'Inter', sans-serif;
+  font-family: var(--font-body, 'DM Sans', 'Inter', sans-serif);
+  letter-spacing: 0.015em;
   position: relative;
+}
+
+/* V3: Noise texture overlay for tactile depth */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  mix-blend-mode: overlay;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -318,40 +407,46 @@ body {
          hover:bg-slate-800/50 hover:text-slate-200;
 }
 
-/* Card Styles — Clean, minimal, professional */
+/* ═══════════════════════════════════════════════════════════════════
+   V3 CARD SYSTEM — Four card types for different content
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* Base card — data, metrics */
 .card {
-  @apply rounded-xl transition-all duration-200;
-  background: var(--v2-bg-surface, #0a0a0a);
-  border: 1px solid var(--v2-border-subtle, rgba(255, 255, 255, 0.06));
+  @apply rounded-lg;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  transition: border-color 0.15s var(--ease-smooth);
 }
-
 .card:hover {
-  border-color: var(--v2-border-default, rgba(255, 255, 255, 0.1));
+  border-color: var(--border-default);
 }
 
+/* Elevated card — panels, popovers */
 .card-elevated {
-  @apply rounded-xl transition-all duration-200;
-  background: var(--v2-bg-elevated, #141414);
-  border: 1px solid var(--v2-border-default, rgba(255, 255, 255, 0.08));
+  @apply rounded-lg;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-default);
+  transition: border-color 0.15s var(--ease-smooth);
 }
 
+/* Interactive card — clickable modules */
 .card-interactive {
-  @apply rounded-xl transition-all duration-200 cursor-pointer;
-  background: var(--v2-bg-surface, #0a0a0a);
-  border: 1px solid var(--v2-border-subtle, rgba(255, 255, 255, 0.06));
+  @apply rounded-lg cursor-pointer;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  transition: border-color 0.15s var(--ease-smooth), transform 0.15s var(--ease-smooth);
 }
-
 .card-interactive:hover {
-  background: var(--v2-bg-elevated, #141414);
-  border-color: var(--v2-border-hover, rgba(255, 255, 255, 0.12));
-  box-shadow: 0 8px 32px -8px rgba(0, 0, 0, 0.4);
+  border-color: var(--accent-primary);
+  transform: translateY(-1px);
 }
 
-/* Keyboard focus ring — visible on focus-visible only */
+/* Focus ring — indigo, all focusable cards */
 .card-interactive:focus-visible,
 .card:focus-visible,
 .card-elevated:focus-visible {
-  outline: 2px solid rgba(148, 163, 184, 0.5);
+  outline: 2px solid var(--accent-primary);
   outline-offset: 2px;
 }
 
@@ -517,22 +612,24 @@ body {
   box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1);
 }
 
-/* Custom Scrollbar — minimal */
+/* V3: Global scrollbars — visible, grabbable, zinc-colored */
 ::-webkit-scrollbar {
   width: 6px;
+  height: 6px;
 }
-
 ::-webkit-scrollbar-track {
   background: transparent;
 }
-
 ::-webkit-scrollbar-thumb {
-  background: rgba(148, 163, 184, 0.2);
+  background: var(--border-subtle, #27272a);
   border-radius: 3px;
 }
-
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(148, 163, 184, 0.35);
+  background: var(--border-default, #3f3f46);
+}
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-subtle, #27272a) transparent;
 }
 
 /* Gradient Text — muted, professional */
@@ -1227,31 +1324,38 @@ pre {
   z-index: 1;
 }
 
-/* ——— 2026 Redesign: Card Glass (V2: opaque surfaces on true black) ——— */
+/* V3: Card glass — solid surface, subtle border, clean hover */
 .card-glass {
-  background: var(--v2-bg-surface, #0a0a0a);
-  border: 1px solid var(--v2-border-default, rgba(255, 255, 255, 0.08));
-  border-radius: 16px;
-  transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  transition: border-color 0.15s var(--ease-smooth), background 0.15s var(--ease-smooth);
 }
 
 .card-glass:hover {
-  background: var(--v2-bg-elevated, #111111);
-  border-color: var(--v2-border-hover, rgba(255, 255, 255, 0.12));
-  transform: translateY(-1px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  background: var(--bg-elevated);
+  border-color: var(--border-default);
 }
 
-/* ——— 2026 Redesign: Typography Refinements ——— */
+/* V3: Typography — Satoshi for display, DM Sans for body */
 .text-display {
-  letter-spacing: -0.03em;
-  line-height: 1.08;
-  font-weight: 500;
+  font-family: var(--font-display, 'Satoshi'), system-ui, sans-serif;
+  letter-spacing: -0.025em;
+  line-height: 1.1;
+  font-weight: 700;
 }
 
 .text-heading {
-  letter-spacing: -0.015em;
-  line-height: 1.2;
+  font-family: var(--font-display, 'Satoshi'), system-ui, sans-serif;
+  letter-spacing: -0.01em;
+  line-height: 1.25;
+  font-weight: 600;
+}
+
+.font-data {
+  font-family: var(--font-mono, 'JetBrains Mono'), monospace;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.01em;
 }
 
 /* ——— 2026 Redesign: Standardized Easing ——— */

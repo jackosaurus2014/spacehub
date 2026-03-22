@@ -9,53 +9,75 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // V2 neutral palette — true black foundation
+        // V3 — Zinc-based warm off-blacks (no blue undertone)
+        surface: {
+          void: '#09090b',
+          base: '#131316',
+          elevated: '#1c1c21',
+          hover: '#252529',
+          active: '#2e2e33',
+        },
+        // Legacy aliases mapped to V3 values
         space: {
-          1000: '#000000',
-          975: '#050505',
-          950: '#0a0a0a',
-          900: '#0f0f0f',
-          850: '#141414',
-          800: '#1a1a1a',
-          700: '#262626',
-          600: '#333333',
-          500: '#525252',
+          1000: '#09090b',
+          975: '#0e0e11',
+          950: '#131316',
+          900: '#18181c',
+          850: '#1c1c21',
+          800: '#252529',
+          700: '#2e2e33',
+          600: '#3f3f46',
+          500: '#52525b',
         },
         star: {
-          50: '#fafafa',
-          100: '#e5e5e5',
-          200: '#d4d4d4',
-          300: '#a1a1a1',
-          400: '#666666',
+          50: '#ededea',
+          100: '#d4d4d8',
+          200: '#a1a1aa',
+          300: '#71717a',
+          400: '#52525b',
         },
-        // Legacy tokens — mapped to V2 neutrals for backward compat (migrate in Phase 4)
         nebula: {
-          600: '#333333',
-          500: '#404040',
-          400: '#525252',
-          300: '#a1a1a1',
-          200: '#d4d4d4',
+          600: '#3f3f46',
+          500: '#52525b',
+          400: '#71717a',
+          300: '#a1a1aa',
+          200: '#d4d4d8',
         },
         rocket: {
-          500: '#a1a1a1',
-          400: '#b5b5b5',
-          300: '#d4d4d4',
+          500: '#a1a1aa',
+          400: '#b5b5bd',
+          300: '#d4d4d8',
         },
         plasma: {
-          500: '#737373',
-          400: '#a1a1a1',
-          300: '#d4d4d4',
+          500: '#71717a',
+          400: '#a1a1aa',
+          300: '#d4d4d8',
         },
       },
       fontFamily: {
-        display: ['Inter', 'sans-serif'],
-        body: ['Inter', 'sans-serif'],
+        display: ['Satoshi', 'var(--font-body)', 'system-ui', 'sans-serif'],
+        body: ['var(--font-body)', 'DM Sans', 'system-ui', 'sans-serif'],
+        mono: ['var(--font-mono)', 'JetBrains Mono', 'monospace'],
       },
       fontSize: {
-        'display-xl': ['4.5rem', { lineHeight: '1.05', fontWeight: '600', letterSpacing: '-0.035em' }],
-        'display-lg': ['3.5rem', { lineHeight: '1.08', fontWeight: '600', letterSpacing: '-0.03em' }],
-        'display-md': ['2.5rem', { lineHeight: '1.15', fontWeight: '500', letterSpacing: '-0.03em' }],
-        'display-sm': ['1.875rem', { lineHeight: '1.25', fontWeight: '500', letterSpacing: '-0.025em' }],
+        // V3 display scale — Satoshi
+        'display-xl': ['4.5rem', { lineHeight: '1.0', fontWeight: '900', letterSpacing: '-0.03em' }],
+        'display-lg': ['3rem', { lineHeight: '1.1', fontWeight: '800', letterSpacing: '-0.025em' }],
+        'display-md': ['2.25rem', { lineHeight: '1.15', fontWeight: '700', letterSpacing: '-0.02em' }],
+        'display-sm': ['1.75rem', { lineHeight: '1.2', fontWeight: '700', letterSpacing: '-0.015em' }],
+        // V3 heading scale
+        'heading-lg': ['1.375rem', { lineHeight: '1.25', fontWeight: '600', letterSpacing: '-0.01em' }],
+        'heading-md': ['1.125rem', { lineHeight: '1.3', fontWeight: '600', letterSpacing: '-0.005em' }],
+        // V3 label scale — uppercase
+        'label-lg': ['0.8125rem', { lineHeight: '1.4', fontWeight: '500', letterSpacing: '0.08em' }],
+        'label-md': ['0.6875rem', { lineHeight: '1.4', fontWeight: '500', letterSpacing: '0.1em' }],
+        'label-sm': ['0.5625rem', { lineHeight: '1.4', fontWeight: '600', letterSpacing: '0.12em' }],
+      },
+      borderRadius: {
+        'sm': '4px',
+        'md': '8px',
+        'lg': '12px',
+        'xl': '16px',
       },
       animation: {
         'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',

@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
-import { Inter, Orbitron } from 'next/font/google';
+import { DM_Sans, JetBrains_Mono } from 'next/font/google';
+import localFont from 'next/font/local';
 import './globals.css';
 import Navigation from '@/components/Navigation';
 import AuthProvider from '@/components/AuthProvider';
@@ -53,8 +54,27 @@ const ErrorReporter = dynamic(() => import('@/components/ErrorReporter'), { ssr:
 import ModuleNavBar from '@/components/ModuleNavBar';
 import AutoBreadcrumb from '@/components/ui/AutoBreadcrumb';
 
-const inter = Inter({ subsets: ['latin'], display: 'swap' });
-const orbitron = Orbitron({ subsets: ['latin'], variable: '--font-orbitron', display: 'optional' });
+const dmSans = DM_Sans({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-body',
+});
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-mono',
+});
+const satoshi = localFont({
+  src: [
+    { path: '../../public/fonts/Satoshi-Light.woff2', weight: '300', style: 'normal' },
+    { path: '../../public/fonts/Satoshi-Regular.woff2', weight: '400', style: 'normal' },
+    { path: '../../public/fonts/Satoshi-Medium.woff2', weight: '500', style: 'normal' },
+    { path: '../../public/fonts/Satoshi-Bold.woff2', weight: '700', style: 'normal' },
+    { path: '../../public/fonts/Satoshi-Black.woff2', weight: '900', style: 'normal' },
+  ],
+  variable: '--font-display',
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://spacenexus.us'),
@@ -232,7 +252,7 @@ export default function RootLayout({
           />
         )}
       </head>
-      <body className={inter.className}>
+      <body className={`${dmSans.variable} ${jetbrainsMono.variable} ${satoshi.variable} ${dmSans.className}`}>
         <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[9999] focus:bg-white focus:text-slate-900 focus:px-4 focus:py-2 focus:rounded-lg focus:outline-none">
           Skip to main content
         </a>
