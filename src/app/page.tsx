@@ -209,9 +209,6 @@ export default async function HomePage() {
       {/* Live Stream — appears only when a stream is active */}
       <LiveStreamSection />
 
-      {/* Scrolling News Ticker */}
-      <NewsTicker />
-
       {/* Space Industry KPIs — Animated Counter Strip */}
       <KPIStrip />
 
@@ -292,10 +289,10 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Interactive Demo — Tabbed screenshot showcase */}
-      <DemoShowcase />
+      {/* Space Industry Market Overview — Key Metrics with sparklines */}
+      <IndustrySnapshot />
 
-      {/* Latest from SpaceNexus — Original Content Showcase (above value prop) */}
+      {/* Latest from SpaceNexus — Original Content Showcase */}
       {topContent.length > 0 && (
         <section className="section-spacer-sm relative z-10">
           <div className="container mx-auto px-4">
@@ -372,7 +369,33 @@ export default async function HomePage() {
         </section>
       )}
 
-      {/* Space Photo of the Day — NASA APOD */}
+      {/* Interactive Demo — Tabbed screenshot showcase */}
+      <DemoShowcase />
+
+      {/* How It Works — 3-step onboarding flow */}
+      <HowItWorks />
+
+      {/* Competitive Comparison Table */}
+      <CompetitiveComparison />
+
+      {/* Value Proposition + Trust — consolidated pitch */}
+      <LandingValueProp />
+      <TrustSignals />
+
+      {/* Live Stats Section */}
+      <section className="py-8 relative z-10">
+        <div className="container mx-auto px-4">
+          <HeroStats />
+        </div>
+      </section>
+
+      {/* What's New — Recent platform updates */}
+      <RecentUpdates />
+
+      {/* Social Proof — Stats */}
+      <SocialProof />
+
+      {/* Space Photo of the Day — NASA APOD (moved below conversion content) */}
       <section className="section-spacer-sm relative z-10">
         <div className="container mx-auto px-4 max-w-3xl">
           <div className="mb-6">
@@ -388,11 +411,8 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Persona-Based Quick Access — helps users find what's relevant */}
+      {/* Persona-Based Quick Access */}
       <PersonaDashboard />
-
-      {/* How It Works — 3-step onboarding flow */}
-      <HowItWorks />
 
       {/* Modular Content Area */}
       <section className="section-spacer-sm">
@@ -409,29 +429,6 @@ export default async function HomePage() {
           <ModuleContainer initialModules={modules} />
         </div>
       </section>
-
-      {/* What's New — Recent platform updates */}
-      <RecentUpdates />
-
-      {/* Space Industry at a Glance — Key Metrics */}
-      <IndustrySnapshot />
-
-      {/* Value Proposition + Trust — consolidated pitch */}
-      <LandingValueProp />
-      <TrustSignals />
-
-      {/* Live Stats Section */}
-      <section className="py-8 relative z-10">
-        <div className="container mx-auto px-4">
-          <HeroStats />
-        </div>
-      </section>
-
-      {/* Social Proof — Stats */}
-      <SocialProof />
-
-      {/* Competitive Comparison Table */}
-      <CompetitiveComparison />
 
       {/* Ad Banner Section */}
       <section className="py-8">

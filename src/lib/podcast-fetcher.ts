@@ -53,10 +53,10 @@ export const PODCAST_FEEDS: PodcastFeed[] = [
 // ---------------------------------------------------------------------------
 
 const parser = new RSSParser({
-  timeout: 15_000,
+  timeout: 25_000, // Increased from 15s — some feeds are slow
   headers: {
-    'User-Agent': 'SpaceNexus/1.0 (Space Industry Podcast Aggregator)',
-    Accept: 'application/rss+xml, application/xml, text/xml',
+    'User-Agent': 'Mozilla/5.0 (compatible; SpaceNexus/2.0; +https://spacenexus.us)',
+    Accept: 'application/rss+xml, application/xml, text/xml, */*',
   },
   customFields: {
     item: [['itunes:duration', 'itunesDuration']],
@@ -93,44 +93,58 @@ function extractDuration(item: RSSParser.Item & Record<string, unknown>): string
   return null;
 }
 
-async function fetchSingleFeed(feed: PodcastFeed): Promise<PodcastEpisode[]> {
-  try {
-    const parsed = await parser.parseURL(feed.url);
-    const items = (parsed.items || []).slice(0, 10); // Latest 10 per feed
+async function fetchSingleFeed(feed: PodcastFeed, retries = 2): Promise<PodcastEpisode[]> {
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      const parsed = await parser.parseURL(feed.url);
+      const items = (parsed.items || []).slice(0, 10);
 
-    return items
-      .filter((item) => item.title)
-      .map((item) => {
-        const rawDescription =
-          item.contentSnippet || item.content || item.summary || '';
-        const description = sanitizeHtml(rawDescription, {
-          allowedTags: [],
-          allowedAttributes: {},
-        })
-          .replace(/\s+/g, ' ')
-          .trim()
-          .slice(0, 400);
+      const episodes = items
+        .filter((item) => item.title)
+        .map((item) => {
+          const rawDescription =
+            item.contentSnippet || item.content || item.summary || '';
+          const description = sanitizeHtml(rawDescription, {
+            allowedTags: [],
+            allowedAttributes: {},
+          })
+            .replace(/\s+/g, ' ')
+            .trim()
+            .slice(0, 400);
 
-        return {
-          title: item.title!,
-          description,
-          pubDate: item.pubDate
-            ? new Date(item.pubDate).toISOString()
-            : new Date().toISOString(),
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          audioUrl: extractAudioUrl(item as any),
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          duration: extractDuration(item as any),
-          podcastName: feed.name,
-          link: item.link || null,
-        };
+          return {
+            title: item.title!,
+            description,
+            pubDate: item.pubDate
+              ? new Date(item.pubDate).toISOString()
+              : new Date().toISOString(),
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            audioUrl: extractAudioUrl(item as any),
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            duration: extractDuration(item as any),
+            podcastName: feed.name,
+            link: item.link || null,
+          };
+        });
+
+      if (episodes.length > 0) return episodes;
+      // If parsed but empty, don't retry — feed is legitimately empty
+      logger.info(`[Podcasts] Feed ${feed.name} returned 0 episodes`);
+      return [];
+    } catch (error) {
+      if (attempt < retries) {
+        // Wait 2s before retry, then 4s
+        await new Promise(r => setTimeout(r, (attempt + 1) * 2000));
+        logger.info(`[Podcasts] Retrying feed ${feed.name} (attempt ${attempt + 2}/${retries + 1})`);
+        continue;
+      }
+      logger.warn(`[Podcasts] Failed to fetch feed after ${retries + 1} attempts: ${feed.name}`, {
+        error: error instanceof Error ? error.message : String(error),
       });
-  } catch (error) {
-    logger.warn(`[Podcasts] Failed to fetch feed: ${feed.name}`, {
-      error: error instanceof Error ? error.message : String(error),
-    });
-    return [];
+      return [];
+    }
   }
+  return [];
 }
 
 // ---------------------------------------------------------------------------

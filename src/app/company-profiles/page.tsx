@@ -9,6 +9,7 @@ import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/Scr
 import RelatedModules from '@/components/ui/RelatedModules';
 import SubscribeCTA from '@/components/marketing/SubscribeCTA';
 import FeatureTeaser from '@/components/marketing/FeatureTeaser';
+import { useSubscription } from '@/components/SubscriptionProvider';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import WatchButton from '@/components/watchlist/WatchButton';
 import SaveSearchButton from '@/components/watchlist/SaveSearchButton';
@@ -306,6 +307,10 @@ function StatCard({ label, value, icon, color }: { label: string; value: string;
 }
 
 export default function CompanyProfilesPage() {
+  const { tier: subTier } = useSubscription();
+  const isFreeUser = subTier === 'free';
+  const FREE_PREVIEW_LIMIT = 6;
+
   const [companies, setCompanies] = useState<CompanyCard[]>([]);
   const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState(true);
@@ -595,9 +600,10 @@ export default function CompanyProfilesPage() {
           description="Try adjusting your search or filters to find matching companies."
         />
       ) : viewMode === 'grid' ? (
+        <>
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 stagger-grid">
           <AnimatePresence mode="popLayout">
-            {companies.map((company, i) => (
+            {(isFreeUser ? companies.slice(0, FREE_PREVIEW_LIMIT) : companies).map((company, i) => (
               <React.Fragment key={company.id}>
                 <CompanyCardComponent company={company} index={i} />
                 {(i + 1) % 9 === 0 && i + 1 < companies.length && (
@@ -609,6 +615,18 @@ export default function CompanyProfilesPage() {
             ))}
           </AnimatePresence>
         </div>
+        {isFreeUser && companies.length > FREE_PREVIEW_LIMIT && (
+          <FeatureTeaser
+            featureName="Company Profiles"
+            description="Unlock full access to 200+ company profiles with funding data, executive teams, SpaceNexus Score ratings, and competitive analysis."
+            requiredTier="pro"
+            freePreviewCount={FREE_PREVIEW_LIMIT}
+            totalCount={companies.length}
+          >
+            <div />
+          </FeatureTeaser>
+        )}
+        </>
       ) : (
         <div className="space-y-2">
           {/* Sticky column header */}
@@ -717,15 +735,7 @@ export default function CompanyProfilesPage() {
       <div className="mt-8">
         <AdSlot position="footer" module="company-profiles" />
 
-            <FeatureTeaser
-              featureName="Company Profiles"
-              description="Unlock full access to 200+ company profiles with funding data, executive teams, SpaceNexus Score ratings, and competitive analysis."
-              requiredTier="pro"
-              freePreviewCount={5}
-              totalCount={200}
-            >
-              <div />
-            </FeatureTeaser>
+            {/* FeatureTeaser moved inline above the company grid */}
             <SubscribeCTA />
 
             <ScrollReveal>
