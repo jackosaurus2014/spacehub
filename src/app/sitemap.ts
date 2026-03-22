@@ -199,7 +199,11 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/space-quiz`, changeFrequency: 'monthly' as const, priority: 0.5 },
     { url: `${BASE_URL}/vs`, changeFrequency: 'monthly' as const, priority: 0.6 },
     { url: `${BASE_URL}/launch-alerts`, changeFrequency: 'monthly' as const, priority: 0.6 },
-    { url: `${BASE_URL}/space-tycoon`, changeFrequency: 'monthly' as const, priority: 0.7 },
+    { url: `${BASE_URL}/space-tycoon`, changeFrequency: 'weekly' as const, priority: 0.8 },
+    { url: `${BASE_URL}/space-tycoon/faq`, changeFrequency: 'monthly' as const, priority: 0.6 },
+    { url: `${BASE_URL}/feedback`, changeFrequency: 'monthly' as const, priority: 0.4 },
+    { url: `${BASE_URL}/videos`, changeFrequency: 'weekly' as const, priority: 0.5 },
+    { url: `${BASE_URL}/accessibility`, changeFrequency: 'yearly' as const, priority: 0.3 },
 
     // Community
     { url: `${BASE_URL}/community`, changeFrequency: 'weekly' as const, priority: 0.7 },
