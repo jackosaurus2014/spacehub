@@ -31,16 +31,16 @@ const CURRENT_VERSION = 1;
 /** Default sidebar modules per persona */
 const PERSONA_SIDEBAR_DEFAULTS: Record<Persona, string[]> = {
   enthusiast: [
-    '/mission-control', '/space-tycoon', '/launches', '/news',
-    '/podcasts', '/blog', '/night-sky', '/space-weather',
+    '/mission-control', '/space-tycoon', '/launch-manifest', '/news',
+    '/podcasts', '/blog', '/night-sky-guide', '/space-weather',
   ],
   professional: [
     '/mission-control', '/satellites', '/launch-manifest', '/compliance',
-    '/space-weather', '/engineering-hub', '/workforce-analytics', '/space-tycoon',
+    '/space-weather', '/tools', '/workforce-analytics', '/space-tycoon',
   ],
   investor: [
     '/mission-control', '/market-intel', '/company-profiles', '/funding-tracker',
-    '/startup-directory', '/deal-room', '/investment-thesis', '/space-tycoon',
+    '/startup-directory', '/deal-rooms', '/investment-thesis', '/space-tycoon',
   ],
 };
 

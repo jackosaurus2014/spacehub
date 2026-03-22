@@ -19654,7 +19654,7 @@ ISS (ZARYA)
 <li><strong>Deployment verification:</strong> Solar array, antenna, and appendage deployments in the first hours after separation</li>
 </ul>
 
-<p>Use <a href="/launches">SpaceNexus Launch Tracker</a> to monitor your launch vehicle's manifest position and upcoming launch windows. Our <a href="/satellites">Satellite Tracking module</a> can help you identify your spacecraft's early orbit TLE data after launch.</p>
+<p>Use <a href="/launch-manifest">SpaceNexus Launch Tracker</a> to monitor your launch vehicle's manifest position and upcoming launch windows. Our <a href="/satellites">Satellite Tracking module</a> can help you identify your spacecraft's early orbit TLE data after launch.</p>
 `,
   },
   {
@@ -19712,7 +19712,7 @@ ISS (ZARYA)
 <li><strong>White Rabbit protocol:</strong> A Precision Time Protocol extension used in scientific facilities and increasingly in telecom networks for sub-nanosecond synchronization without relying on GPS</li>
 </ul>
 
-<p>Track PNT-related satellite launches and constellation developments in <a href="/satellites">SpaceNexus Satellite Tracking</a> and monitor government PNT policy through the <a href="/regulatory">Regulatory Hub</a>.</p>
+<p>Track PNT-related satellite launches and constellation developments in <a href="/satellites">SpaceNexus Satellite Tracking</a> and monitor government PNT policy through the <a href="/compliance">Regulatory Hub</a>.</p>
 `,
   },
   {
@@ -19774,7 +19774,7 @@ ISS (ZARYA)
 
 <p>Multiple jurisdictions are moving toward mandatory sustainability requirements that effectively codify SSR-style criteria. The UK Space Agency's orbital sustainability licensing conditions, the FCC's 5-year deorbit rule, and ESA's Zero Debris Charter represent regulatory pressure converging with the voluntary SSR framework. Operators that earn high SSR ratings today are well positioned as these requirements harden.</p>
 
-<p>Monitor regulatory developments and compliance timelines in the <a href="/regulatory">SpaceNexus Regulatory Hub</a>.</p>
+<p>Monitor regulatory developments and compliance timelines in the <a href="/compliance">SpaceNexus Regulatory Hub</a>.</p>
 `,
   },
   {
@@ -19904,7 +19904,7 @@ ISS (ZARYA)
 
 <p>The critical enabler for price reduction is Starship achieving high flight rates. SpaceX has stated aspirational marginal launch costs in the tens of millions of dollars for Starship, which would transform the orbital tourism economics if demonstrated in practice.</p>
 
-<p>Track space tourism launches and operator news in <a href="/space-tourism">SpaceNexus Space Tourism</a> and monitor market developments in the <a href="/market">Market Intelligence module</a>.</p>
+<p>Track space tourism launches and operator news in <a href="/space-tourism">SpaceNexus Space Tourism</a> and monitor market developments in the <a href="/market-intel">Market Intelligence module</a>.</p>
 `,
   },
   {
@@ -20101,7 +20101,7 @@ ISS (ZARYA)
 <li>Seasonal weather patterns at the launch site</li>
 </ul>
 
-<p>Follow the full launch manifest and real-time schedule updates in <a href="/launches">SpaceNexus Launch Tracker</a>. Our <a href="/launch-windows">Launch Windows module</a> provides orbital mechanics-based window analysis for any target orbit.</p>
+<p>Follow the full launch manifest and real-time schedule updates in <a href="/launch-manifest">SpaceNexus Launch Tracker</a>. Our <a href="/launch-windows">Launch Windows module</a> provides orbital mechanics-based window analysis for any target orbit.</p>
 `,
   },
   {
@@ -20210,7 +20210,7 @@ ISS (ZARYA)
 
 <p>On-orbit servicing introduces regulatory questions that existing frameworks do not fully address. Who is liable if a servicer vehicle damages the target? What spectrum licensing applies? How do national registries handle a satellite operating under a foreign servicer's control?</p>
 
-<p>The FCC, ITU, and national regulators are actively developing guidance, but the rules are still evolving. Operators considering servicing contracts should engage regulatory counsel early. SpaceNexus tracks FCC and ITU filings relevant to servicing operations in our <a href="/market">Market Intelligence</a> module.</p>
+<p>The FCC, ITU, and national regulators are actively developing guidance, but the rules are still evolving. Operators considering servicing contracts should engage regulatory counsel early. SpaceNexus tracks FCC and ITU filings relevant to servicing operations in our <a href="/market-intel">Market Intelligence</a> module.</p>
 
 <h2>Outlook</h2>
 
@@ -20440,7 +20440,7 @@ ISS (ZARYA)
 
 <p>Industry observers increasingly believe that at least one credible CLD will be operational by the early 2030s, though likely not before ISS deorbit. The most advanced program — Axiom's module attachment strategy — has a realistic path to having attached modules operating before 2030, but full independent station capability is a later milestone.</p>
 
-<p>For space investors and operators, the key metrics to watch are: NASA CLD funding in annual appropriations, commercial partner financing milestones, module manufacturing progress, and any changes to the ISS deorbit timeline. SpaceNexus covers CLD-related government contracts and policy developments in our <a href="/market">Market Intelligence</a> module.</p>
+<p>For space investors and operators, the key metrics to watch are: NASA CLD funding in annual appropriations, commercial partner financing milestones, module manufacturing progress, and any changes to the ISS deorbit timeline. SpaceNexus covers CLD-related government contracts and policy developments in our <a href="/market-intel">Market Intelligence</a> module.</p>
 `,
 },
 {
@@ -20499,7 +20499,7 @@ ISS (ZARYA)
 
 <p>Direct-to-device satellite service is one of the most technically interesting developments in the satellite industry in a decade. The combination of commercial scale, standardized air interfaces (3GPP NTN), and global smartphone penetration creates a potentially large market. Near-term growth will be driven by supplemental coverage agreements with MNOs; longer-term, full broadband D2D has transformative potential for underserved markets.</p>
 
-<p>Track satellite launches and constellation deployments relevant to D2D networks at <a href="/launches">SpaceNexus Launch Tracker</a> and <a href="/satellites">Satellite Tracker</a>.</p>
+<p>Track satellite launches and constellation deployments relevant to D2D networks at <a href="/launch-manifest">SpaceNexus Launch Tracker</a> and <a href="/satellites">Satellite Tracker</a>.</p>
 `,
 },
 {
@@ -20552,7 +20552,7 @@ ISS (ZARYA)
 
 <p>This is a classic public goods problem. The orbital environment benefits everyone who uses space, but the cost of maintaining it is not borne by those who benefit. Governments — particularly NASA, ESA, JAXA, and the UK Space Agency — have recognized this market failure and are funding early ADR demonstrations. But sustained commercial ADR at the scale needed to stabilize the orbital environment will require either regulatory requirements (such as mandatory end-of-life removal bonds), direct government procurement programs, or liability frameworks that price debris creation more accurately.</p>
 
-<p>Policy developments in orbital sustainability are tracked in our <a href="/market">Market Intelligence</a> module, including relevant FCC and FAA regulatory updates.</p>
+<p>Policy developments in orbital sustainability are tracked in our <a href="/market-intel">Market Intelligence</a> module, including relevant FCC and FAA regulatory updates.</p>
 `,
 },
 {
@@ -20715,7 +20715,7 @@ ISS (ZARYA)
 <li><strong>Mobility (aviation, maritime) is the fastest-growing segment:</strong> Commercial aviation Wi-Fi via LEO is ramping rapidly. Airlines that have signed with Starlink include Delta, United, and others; Kuiper has signed agreements with additional carriers.</li>
 </ul>
 
-<p>Track active constellation satellites, orbital parameters, and recent launch activity at <a href="/satellites">SpaceNexus Satellite Tracker</a> and <a href="/launches">Launch Tracker</a>.</p>
+<p>Track active constellation satellites, orbital parameters, and recent launch activity at <a href="/satellites">SpaceNexus Satellite Tracker</a> and <a href="/launch-manifest">Launch Tracker</a>.</p>
 `,
 },
 {
@@ -20777,7 +20777,7 @@ ISS (ZARYA)
 <li><strong>Nuclear electric propulsion (NEP):</strong> Reactor-powered electric thrusters. Lower thrust than NTP but potentially higher Isp (for electric thrusters) with continuous operation. Kilopower and other fission surface power programs are advancing the reactor technology needed for NEP.</li>
 </ul>
 
-<p>Nuclear propulsion represents one of the most technically significant areas to follow for anyone interested in long-duration human spaceflight. SpaceNexus tracks related government contract awards and regulatory filings at <a href="/market">Market Intelligence</a>.</p>
+<p>Nuclear propulsion represents one of the most technically significant areas to follow for anyone interested in long-duration human spaceflight. SpaceNexus tracks related government contract awards and regulatory filings at <a href="/market-intel">Market Intelligence</a>.</p>
 `,
 },
 {
@@ -20852,7 +20852,7 @@ ISS (ZARYA)
 
 <p>Companies building space hardware should establish an export compliance program early — ideally before the first international customer inquiry arrives. The cost of compliance is real but manageable; the cost of a violation is potentially existential.</p>
 
-<p>SpaceNexus tracks regulatory filings, policy developments, and government contract opportunities relevant to space industry compliance at <a href="/market">Market Intelligence</a>.</p>
+<p>SpaceNexus tracks regulatory filings, policy developments, and government contract opportunities relevant to space industry compliance at <a href="/market-intel">Market Intelligence</a>.</p>
 `,
 },
 {
@@ -21191,7 +21191,7 @@ ISS (ZARYA)
 <li>Tourism and scientific access services</li>
 </ul>
 
-<p>Track cislunar mission progress and emerging commercial players through the <a href="/cislunar">SpaceNexus Cislunar module</a> and the <a href="/launches">launch manifest</a>.</p>
+<p>Track cislunar mission progress and emerging commercial players through the <a href="/cislunar">SpaceNexus Cislunar module</a> and the <a href="/launch-manifest">launch manifest</a>.</p>
 `,
 },
 {
@@ -21480,7 +21480,7 @@ ISS (ZARYA)
 
 <p>Hyperspectral data requires more sophisticated processing than multispectral imagery. Atmospheric correction is essential and technically demanding — water vapor, aerosols, and mixed pixels all degrade spectral fidelity. Radiometric calibration must be maintained throughout the mission lifetime. And the sheer data volume demands efficient compression and cloud-native processing pipelines.</p>
 
-<p>Track satellite-based Earth observation assets and monitor the hyperspectral data market through the <a href="/satellites">SpaceNexus satellite tracker</a> and <a href="/market">market intelligence module</a>.</p>
+<p>Track satellite-based Earth observation assets and monitor the hyperspectral data market through the <a href="/satellites">SpaceNexus satellite tracker</a> and <a href="/market-intel">market intelligence module</a>.</p>
 `,
 },
 {
@@ -21548,7 +21548,7 @@ ISS (ZARYA)
 
 <p>Reuse has compressed launch prices for customers and raised the bar for new entrants. A company that cannot achieve meaningful reuse is competing against SpaceX's marginal cost — a very difficult position. The result is industry consolidation pressure, with only well-capitalized entrants with technically credible reuse architectures likely to succeed at scale.</p>
 
-<p>For satellite operators, lower launch costs change mission economics: smaller constellations become viable, lifetime extensions matter less when replacement is cheaper, and new orbital regimes become accessible. Track launch pricing trends and vehicle comparison data through <a href="/launches">SpaceNexus launch intelligence</a> and the <a href="/tools">mission planning tools</a>.</p>
+<p>For satellite operators, lower launch costs change mission economics: smaller constellations become viable, lifetime extensions matter less when replacement is cheaper, and new orbital regimes become accessible. Track launch pricing trends and vehicle comparison data through <a href="/launch-manifest">SpaceNexus launch intelligence</a> and the <a href="/tools">mission planning tools</a>.</p>
 `,
 },
 {
@@ -21599,7 +21599,7 @@ ISS (ZARYA)
 
 <p>SBSP becomes economically plausible under a combination of conditions: dramatic reductions in launch cost (sub-$100/kg to LEO), mature in-space manufacturing reducing the mass of solar arrays and structural elements, and continued advancement in power electronics efficiency. None of these are impossible — but achieving all three simultaneously at the required scale is a multi-decade engineering program.</p>
 
-<p>Track government space energy investments and emerging SBSP companies through <a href="/market">SpaceNexus market intelligence</a> and the <a href="/launches">launch database</a> as demonstration missions begin to appear on manifests.</p>
+<p>Track government space energy investments and emerging SBSP companies through <a href="/market-intel">SpaceNexus market intelligence</a> and the <a href="/launch-manifest">launch database</a> as demonstration missions begin to appear on manifests.</p>
 `,
 },
 {
@@ -21663,7 +21663,7 @@ ISS (ZARYA)
 
 <p>Satellite IoT operators compete on coverage, latency, data rates, power consumption at the device, and pricing. Pure IoT constellation operators face growing competition from broadband LEO providers offering IoT as a service tier — though broadband satellites are optimized for different link budgets than the ultra-low-power devices that form the core of many IoT deployments.</p>
 
-<p>Monitor the satellite IoT segment and track constellation deployments through <a href="/satellites">SpaceNexus satellite tracking</a> and the <a href="/market">market intelligence module</a>.</p>
+<p>Monitor the satellite IoT segment and track constellation deployments through <a href="/satellites">SpaceNexus satellite tracking</a> and the <a href="/market-intel">market intelligence module</a>.</p>
 `,
 },
 {
@@ -21727,7 +21727,7 @@ ISS (ZARYA)
 
 <p>Cyber risk is increasingly a factor in space insurance underwriting. Operators that can demonstrate robust cybersecurity practices — including third-party audits, incident response plans, and technical controls — may qualify for better terms. The Viasat incident underscored that cyber incidents affecting satellites can trigger significant claims not just for the satellite operator but for downstream users across multiple industries.</p>
 
-<p>Explore <a href="/compliance">SpaceNexus regulatory and compliance intelligence</a> for the latest updates on space cybersecurity policy, and monitor the <a href="/market">market module</a> for cybersecurity sector developments affecting space companies.</p>
+<p>Explore <a href="/compliance">SpaceNexus regulatory and compliance intelligence</a> for the latest updates on space cybersecurity policy, and monitor the <a href="/market-intel">market module</a> for cybersecurity sector developments affecting space companies.</p>
 `,
 },
 {
@@ -21776,7 +21776,7 @@ ISS (ZARYA)
 
 <p>Additive manufacturing in space faces environmental challenges that don't exist in Earth-based facilities: microgravity affects material flow and layer deposition; vacuum removes the atmospheric pressure that some processes rely on; thermal cycling is more extreme; and radiation affects certain feedstock materials over time. Qualification and certification of in-space manufactured components for flight-critical applications also remains an open challenge — standards bodies and agencies are only beginning to develop frameworks for this.</p>
 
-<p>Track companies advancing additive manufacturing in space through the <a href="/market">SpaceNexus market module</a> and company profiles, and monitor related launch manifests via the <a href="/launches">launch tracker</a>.</p>
+<p>Track companies advancing additive manufacturing in space through the <a href="/market-intel">SpaceNexus market module</a> and company profiles, and monitor related launch manifests via the <a href="/launch-manifest">launch tracker</a>.</p>
 `,
 },
 {
@@ -21911,7 +21911,7 @@ ISS (ZARYA)
 
 <p>Market segments with particularly strong opportunity characteristics include: emissions monitoring (driven by carbon regulation and ESG reporting requirements), precision agriculture in emerging markets, maritime intelligence, and disaster response services. Companies able to deliver automated, subscription-based analytics derived from EO data — requiring no satellite expertise from the customer — are better positioned for scale than those selling raw imagery.</p>
 
-<p>Track Earth observation companies, constellations, and market activity through <a href="/satellites">SpaceNexus satellite intelligence</a> and the <a href="/market">market module</a>.</p>
+<p>Track Earth observation companies, constellations, and market activity through <a href="/satellites">SpaceNexus satellite intelligence</a> and the <a href="/market-intel">market module</a>.</p>
 `,
 },
 {
@@ -22164,7 +22164,7 @@ ISS (ZARYA)
 
 <p>For constellation operators building out networks of tens or hundreds of satellites, the economics of rideshare are compelling for initial deployment. Replenishment and targeted orbital slot filling, however, favor dedicated launch — a dynamic that keeps both market segments viable.</p>
 
-<p>Track upcoming launch opportunities in the SpaceNexus <a href="/launches">launch schedule tracker</a>, and compare mission planning parameters using our <a href="/tools">mission planning tools</a>.</p>
+<p>Track upcoming launch opportunities in the SpaceNexus <a href="/launch-manifest">launch schedule tracker</a>, and compare mission planning parameters using our <a href="/tools">mission planning tools</a>.</p>
 `,
 },
 {
@@ -22351,7 +22351,7 @@ ISS (ZARYA)
 
 <p>Space agencies including NASA, ESA, JAXA, and ISRO coordinate climate monitoring missions through the Committee on Earth Observation Satellites (CEOS), ensuring that the global observation system covers key variables across multiple sensors and providers.</p>
 
-<p>Explore Earth observation satellite capabilities and coverage on the SpaceNexus <a href="/satellites">satellite tracker</a>, and track market developments in the commercial Earth observation sector through our <a href="/market">market intelligence module</a>.</p>
+<p>Explore Earth observation satellite capabilities and coverage on the SpaceNexus <a href="/satellites">satellite tracker</a>, and track market developments in the commercial Earth observation sector through our <a href="/market-intel">market intelligence module</a>.</p>
 `,
 },
 {
@@ -22411,7 +22411,7 @@ ISS (ZARYA)
 
 <p>The defense space market presents opportunities for both traditional prime contractors and new commercial entrants. The shift toward proliferated architectures and commercial integration is opening doors for companies that previously had limited defense exposure. However, security clearances, ITAR compliance, and the complexity of DoD procurement remain significant barriers to entry.</p>
 
-<p>Track defense-relevant procurement opportunities and government contract awards through the SpaceNexus <a href="/market">market intelligence module</a>, and monitor company profiles for defense-focused space contractors in our <a href="/tools">company intelligence tools</a>.</p>
+<p>Track defense-relevant procurement opportunities and government contract awards through the SpaceNexus <a href="/market-intel">market intelligence module</a>, and monitor company profiles for defense-focused space contractors in our <a href="/tools">company intelligence tools</a>.</p>
 `,
 },
 {
@@ -22462,7 +22462,7 @@ ISS (ZARYA)
 
 <p>Satellite data analytics is not without limitations. Optical imagery remains cloud-limited despite growing SAR availability. Ground resolution — even at 30 cm for the best commercial systems — constrains what can be reliably detected and classified. Training data quality determines model performance, and domain shift between training imagery and operational imagery is a persistent challenge. Interpretation errors can have significant downstream consequences in intelligence and decision support applications.</p>
 
-<p>Track satellite capabilities and Earth observation market developments through the SpaceNexus <a href="/satellites">satellite intelligence module</a>, and explore market data for analytics companies in our <a href="/market">market intelligence platform</a>.</p>
+<p>Track satellite capabilities and Earth observation market developments through the SpaceNexus <a href="/satellites">satellite intelligence module</a>, and explore market data for analytics companies in our <a href="/market-intel">market intelligence platform</a>.</p>
 `,
 },
 {
@@ -22575,7 +22575,7 @@ ISS (ZARYA)
 
 <p>Harvest-now-decrypt-later attacks — where adversaries collect encrypted traffic today with the intent to decrypt it once quantum computers are available — are a particular concern for long-lived secrets, driving government interest in transitioning critical communications infrastructure to quantum-safe methods now.</p>
 
-<p>Track satellite technology developments and emerging space technology programs through the SpaceNexus <a href="/satellites">satellite intelligence module</a> and <a href="/market">market intelligence tools</a>.</p>
+<p>Track satellite technology developments and emerging space technology programs through the SpaceNexus <a href="/satellites">satellite intelligence module</a> and <a href="/market-intel">market intelligence tools</a>.</p>
 `,
 },
 {
@@ -22631,7 +22631,7 @@ ISS (ZARYA)
 
 <p>The most likely near-term developments include increased operator self-coordination through industry bodies, continued FCC and ITU rulemaking on spectrum efficiency and debris mitigation, and national licensing authorities adding more prescriptive technical requirements as a condition of authorization. Binding international agreement on STM and liability modernization remains a longer-term prospect, dependent on diplomatic progress that has proved elusive.</p>
 
-<p>Stay current on regulatory filings, FCC proceedings, and compliance requirements relevant to satellite operations through the SpaceNexus <a href="/tools">regulatory compliance module</a>, and track spectrum coordination developments in our <a href="/market">market intelligence platform</a>.</p>
+<p>Stay current on regulatory filings, FCC proceedings, and compliance requirements relevant to satellite operations through the SpaceNexus <a href="/tools">regulatory compliance module</a>, and track spectrum coordination developments in our <a href="/market-intel">market intelligence platform</a>.</p>
 `,
 },
 
