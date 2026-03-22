@@ -830,6 +830,8 @@ export default function SpaceTycoonPage() {
   if (completedBuildings >= 3) allTabs.push({ id: 'workforce', label: 'Crew', icon: '👷' });
   if (hasResources) allTabs.push({ id: 'market', label: 'Market', icon: '📈' });
   if (completedBuildings >= 2) allTabs.push({ id: 'contracts', label: 'Contracts', icon: '📋' });
+  if (completedBuildings >= 5) allTabs.push({ id: 'alliance', label: 'Alliance', icon: '🤝' });
+  if (hasResources) allTabs.push({ id: 'bounties', label: 'Bounties', icon: '📦' });
   allTabs.push({ id: 'leaderboard', label: 'Ranks', icon: '🏆' });
 
   const tabs = allTabs;
@@ -848,19 +850,19 @@ export default function SpaceTycoonPage() {
       {/* Resource Bar */}
       <ResourceBar state={state} />
 
-      {/* Tab Navigation */}
-      <div className="bg-black/40 border-b border-white/[0.06] px-4 py-1 flex items-center gap-1 overflow-x-auto">
+      {/* Tab Navigation — scrollable on mobile, compact touch targets */}
+      <div className="bg-black/40 border-b border-white/[0.06] px-2 sm:px-4 py-1 flex items-center gap-0.5 sm:gap-1 overflow-x-auto scrollbar-hide" style={{ WebkitOverflowScrolling: 'touch' }}>
         {tabs.map(t => (
           <button
             key={t.id}
             onClick={() => setTab(t.id)}
-            className={`px-3 py-2 rounded-lg text-xs font-medium transition-colors whitespace-nowrap ${
+            className={`px-2 sm:px-3 py-2 rounded-lg text-[10px] sm:text-xs font-medium transition-colors whitespace-nowrap min-h-[36px] ${
               tab === t.id
                 ? 'bg-white/[0.08] text-white game-tab-active'
                 : 'text-slate-400 hover:text-white hover:bg-white/[0.04]'
             }`}
           >
-            <span className="mr-1">{t.icon}</span>{t.label}
+            <span className="mr-0.5 sm:mr-1">{t.icon}</span><span className="hidden sm:inline">{t.label}</span>
           </button>
         ))}
         <div className="flex-1" />
@@ -909,7 +911,7 @@ export default function SpaceTycoonPage() {
       </div>
 
       {/* Panel Content — key={tab} triggers reveal animation on tab switch */}
-      <div key={tab} className="flex-1 overflow-y-auto p-4 max-w-5xl mx-auto w-full animate-reveal-up game-scroll">
+      <div key={tab} className="flex-1 overflow-y-auto p-2 sm:p-4 max-w-5xl mx-auto w-full animate-reveal-up game-scroll">
         {tab === 'dashboard' && <DashboardPanel state={state} />}
         {tab === 'build' && <BuildPanel state={state} onBuild={handleBuild} onSellBuilding={handleSellBuilding} />}
         {tab === 'research' && <ResearchPanel state={state} onStartResearch={handleStartResearch} />}
