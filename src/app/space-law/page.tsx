@@ -250,7 +250,7 @@ const SPACE_LAW_ENTRIES: SpaceLawEntry[] = [
       'Commitment to mitigate orbital debris',
     ],
     significance: 'The most significant multilateral space governance initiative of the 21st century. Led by NASA, the Accords create a practical framework for lunar and deep-space exploration that sidesteps the Moon Agreement. Growing signatory list demonstrates broadening international consensus on space resource utilization norms.',
-    description: 'Initiated by NASA and the US State Department, the Artemis Accords establish a political framework for civil space exploration based on the Outer Space Treaty. As of 2024, 43 nations have signed. The Accords are notable for their pragmatic approach to space resources, heritage preservation, and safety zones without requiring a new binding treaty.',
+    description: 'Initiated by NASA and the US State Department, the Artemis Accords establish a political framework for civil space exploration based on the Outer Space Treaty. As of 2024, 61 nations have signed. The Accords are notable for their pragmatic approach to space resources, heritage preservation, and safety zones without requiring a new binding treaty.',
     category: 'international',
     governingBody: 'NASA / US State Department',
   },

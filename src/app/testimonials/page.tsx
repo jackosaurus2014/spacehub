@@ -12,12 +12,12 @@ export const metadata: Metadata = {
 export const revalidate = 86400;
 
 const platformHighlights = [
-  { stat: '262+', label: 'Pages & Tools', description: 'Dashboards, calculators, trackers, and reference pages' },
-  { stat: '175+', label: 'Original Articles', description: 'Guides, analysis, market reports, and technical deep-dives' },
+  { stat: '525+', label: 'Pages & Tools', description: 'Dashboards, calculators, trackers, and reference pages' },
+  { stat: '198+', label: 'Original Articles', description: 'Guides, analysis, market reports, and technical deep-dives' },
   { stat: '50+', label: 'Data Sources', description: 'NASA, NOAA, SpaceX, CelesTrak, USAspending, and more' },
-  { stat: '317', label: 'API Routes', description: 'Backend data endpoints powering the platform' },
-  { stat: '30+', label: 'Cron Jobs', description: 'Automated data refresh every 2-60 minutes' },
-  { stat: '11', label: 'Public API Endpoints', description: 'Open developer API with OpenAPI docs' },
+  { stat: '39+', label: 'Cron Jobs', description: 'Automated data refresh every 2-60 minutes' },
+  { stat: '19', label: 'Tradeable Resources', description: 'Dynamic global market in Space Tycoon' },
+  { stat: '1,000', label: 'Research Items', description: 'Procedural tech tree across 25 categories' },
 ];
 
 const featureHighlights = [

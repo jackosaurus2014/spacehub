@@ -120,11 +120,11 @@ interface InternationalPartner {
 // Seed data so the timeline is never empty
 const ARTEMIS_SEED: ArtemisMission[] = [
   { id: 'a1', name: 'Artemis I', date: 'Nov 2022', status: 'completed', vehicle: 'SLS Block 1 / Orion', crew: 0, objectives: ['Uncrewed test flight around the Moon', 'Validate Orion heat shield at lunar return speed', 'Test SLS performance'], description: 'Successful uncrewed test flight. Orion traveled 1.4 million miles over 25.5 days, farther than any spacecraft designed to carry humans.' },
-  { id: 'a2', name: 'Artemis II', date: 'Sep 2025', status: 'upcoming', vehicle: 'SLS Block 1 / Orion', crew: 4, objectives: ['First crewed flight around the Moon since Apollo 17', 'Test Orion life support with crew', 'Validate deep space navigation'], description: 'First crewed lunar flyby in over 50 years. 4 astronauts will orbit the Moon and return to Earth over ~10 days.' },
-  { id: 'a3', name: 'Artemis III', date: '2026', status: 'planned', vehicle: 'SLS Block 1 / Orion', hls: 'SpaceX Starship HLS', crew: 4, objectives: ['First crewed lunar landing since 1972', 'Land near lunar south pole', 'Collect samples from permanently shadowed regions'], description: 'Will land the first woman and next man on the Moon using SpaceX Starship as the Human Landing System.' },
-  { id: 'a4', name: 'Artemis IV', date: '2028', status: 'planned', vehicle: 'SLS Block 1B / Orion', hls: 'SpaceX Starship HLS', crew: 4, objectives: ['First crew visit to Lunar Gateway', 'Deliver I-Hab module', 'Extended lunar surface operations'], description: 'First mission to dock with the Lunar Gateway station in NRHO. Will include international habitat module.' },
-  { id: 'a5', name: 'Artemis V', date: '2030', status: 'planned', vehicle: 'SLS Block 1B / Orion', hls: 'Blue Origin Blue Moon', crew: 4, objectives: ['Blue Origin HLS first crewed landing', 'Deliver ESPRIT refueling module to Gateway', 'Establish sustained lunar presence'], description: 'First mission using Blue Origin\'s Blue Moon lander. Focus on establishing permanent infrastructure.' },
-  { id: 'a6', name: 'Artemis VI', date: '2031', status: 'planned', vehicle: 'SLS Block 2 / Orion', crew: 4, objectives: ['Extended surface stays (30+ days)', 'Deploy surface power system', 'Begin ISRU demonstrations'], description: 'Extended duration missions with focus on living off the land. In-situ resource utilization tests.' },
+  { id: 'a2', name: 'Artemis II', date: 'Late 2025 (targeted)', status: 'upcoming', vehicle: 'SLS Block 1 / Orion', crew: 4, objectives: ['First crewed flight around the Moon since Apollo 17', 'Test Orion life support with crew', 'Validate deep space navigation'], description: 'First crewed lunar flyby in over 50 years. 4 astronauts will orbit the Moon and return to Earth over ~10 days.' },
+  { id: 'a3', name: 'Artemis III', date: '2026-2027 (targeted)', status: 'planned', vehicle: 'SLS Block 1 / Orion', hls: 'SpaceX Starship HLS', crew: 4, objectives: ['First crewed lunar landing since 1972', 'Land near lunar south pole', 'Collect samples from permanently shadowed regions'], description: 'Planned first crewed landing using SpaceX Starship as the Human Landing System. Timeline dependent on Starship readiness.' },
+  { id: 'a4', name: 'Artemis IV', date: '~2028 (planned)', status: 'planned', vehicle: 'SLS Block 1B / Orion', hls: 'SpaceX Starship HLS', crew: 4, objectives: ['First crew visit to Lunar Gateway', 'Deliver I-Hab module', 'Extended lunar surface operations'], description: 'Planned first mission to dock with the Lunar Gateway station in NRHO. Will include international habitat module.' },
+  { id: 'a5', name: 'Artemis V', date: '~2030 (planned)', status: 'planned', vehicle: 'SLS Block 1B / Orion', hls: 'Blue Origin Blue Moon', crew: 4, objectives: ['Blue Origin HLS first crewed landing', 'Deliver ESPRIT refueling module to Gateway', 'Establish sustained lunar presence'], description: 'Planned first mission using Blue Origin\'s Blue Moon lander. Focus on establishing permanent infrastructure.' },
+  { id: 'a6', name: 'Artemis VI', date: '~2031 (planned)', status: 'planned', vehicle: 'SLS Block 2 / Orion', crew: 4, objectives: ['Extended surface stays (30+ days)', 'Deploy surface power system', 'Begin ISRU demonstrations'], description: 'Planned extended duration missions with focus on in-situ resource utilization and sustained surface presence.' },
 ];
 
 let ARTEMIS_MISSIONS: ArtemisMission[] = ARTEMIS_SEED;
@@ -257,7 +257,7 @@ function HeroStats() {
     { label: 'Artemis Missions', value: '6+', icon: '🚀', sub: 'Planned through 2030s' },
     { label: 'CLPS Deliveries', value: `${CLPS_MISSIONS.length}`, icon: '🌙', sub: 'Missions awarded' },
     { label: 'Cislunar Investment', value: '$93B+', icon: '💰', sub: 'NASA Artemis total' },
-    { label: 'Accords Signatories', value: '43', icon: '🌐', sub: 'Nations as of 2025' },
+    { label: 'Accords Signatories', value: '61', icon: '🌐', sub: 'Nations as of 2026' },
   ];
 
   return (

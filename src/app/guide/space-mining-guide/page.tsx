@@ -19,7 +19,7 @@ export const metadata: Metadata = {
 export const revalidate = 86400;
 
 const faqs = [
-  { question: 'Is space mining legal?', answer: 'Yes. The 2015 US Commercial Space Launch Competitiveness Act grants US companies the right to own and sell resources extracted from asteroids and other celestial bodies. The Artemis Accords (signed by 39 nations) support this principle.' },
+  { question: 'Is space mining legal?', answer: 'Yes. The 2015 US Commercial Space Launch Competitiveness Act grants US companies the right to own and sell resources extracted from asteroids and other celestial bodies. The Artemis Accords (signed by 61 nations) support this principle.' },
   { question: 'What resources can be mined in space?', answer: 'Water ice (from the Moon and Mars), platinum group metals and gold (from asteroids), iron, nickel, and titanium (from asteroids and Mars), Helium-3 (from lunar regolith for fusion fuel), and methane/ethane (from Titan).' },
   { question: 'Which companies are working on space mining?', answer: 'AstroForge (asteroid mining), TransAstra (optical mining), ispace (lunar resources), Intuitive Machines (lunar landers for resource prospecting), and Planetary Resources (acquired by ConsenSys). NASA\'s VIPER rover is mapping lunar ice deposits.' },
   { question: 'How much is an asteroid worth?', answer: 'A single metallic asteroid like 16 Psyche contains an estimated $10,000 quadrillion in metals at terrestrial prices. However, actually mining and returning these resources would collapse commodity markets, so real economic value depends on space-based demand.' },

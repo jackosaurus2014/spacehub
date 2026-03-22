@@ -205,7 +205,7 @@ export default function SpaceStatsPage() {
           {/* Hero Stats - Animated Counters */}
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mt-12 max-w-6xl mx-auto">
             <HeroStat target={626} prefix="$" suffix="B" label="Market Size (2025)" color="blue" />
-            <HeroStat target={230} suffix="+" label="Orbital Launches (2024)" color="green" />
+            <HeroStat target={320} suffix="+" label="Orbital Launches (2025)" color="green" />
             <HeroStat target={10000} suffix="+" label="Active Satellites" color="purple" />
             <HeroStat target={95} prefix="$" suffix="B+" label="Gov. Spending" color="amber" />
             <HeroStat target={360} suffix="K+" label="US Workforce" color="rose" />
@@ -292,11 +292,11 @@ export default function SpaceStatsPage() {
         <SectionHeader icon="🚀" title="Launch Statistics" id="launch-stats" />
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <StatCard
-            number="230+"
-            label="Orbital Launches (2024)"
-            description="Over 230 orbital launch attempts globally in 2024, more than double the pace of five years ago. This represents an all-time annual record."
+            number="320+"
+            label="Orbital Launches (2025)"
+            description="Over 320 orbital launch attempts globally in 2025, more than double the pace of five years ago. This represents an all-time annual record."
             source="Space Launch Report"
-            year="2024"
+            year="2025"
             color="green"
           />
           <StatCard
@@ -304,15 +304,15 @@ export default function SpaceStatsPage() {
             label="Overall Launch Success Rate"
             description="The global orbital launch success rate has reached approximately 96%, reflecting improvements in vehicle reliability and manufacturing quality."
             source="FAA / AST"
-            year="2024"
+            year="2025"
             color="green"
           />
           <StatCard
-            number="130+"
+            number="165+"
             label="SpaceX Falcon 9 Launches"
-            description="SpaceX alone launched over 130 Falcon 9 missions in 2024, achieving unprecedented reuse cadence with individual boosters flying 20+ times."
+            description="SpaceX alone launched over 165 Falcon 9 missions in 2025, achieving unprecedented reuse cadence with individual boosters flying 20+ times."
             source="SpaceX"
-            year="2024"
+            year="2025"
             color="green"
           />
           <StatCard
