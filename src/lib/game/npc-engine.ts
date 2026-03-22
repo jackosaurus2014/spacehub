@@ -87,6 +87,8 @@ export function processNPCTick(
 
     const netIncome = Math.round(monthlyRevenue - monthlyCosts);
     n.money += netIncome;
+    // Never go below zero — NPCs don't take on debt
+    if (n.money < 0) n.money = 0;
     if (netIncome > 0) n.totalEarned += netIncome;
 
     // ─── 2. Research (1/10th speed — very slow) ───────────────────
@@ -134,10 +136,11 @@ export function processNPCTick(
     if (n.monthsPlayed > 30 && n.monthsPlayed % 40 === 0) {
       for (const loc of NPC_ALLOWED_LOCATIONS) {
         if (n.unlockedLocations.includes(loc.id)) continue;
-        if (n.money >= loc.cost * 0.8) {
+        const locCost = Math.round(loc.cost * 0.8);
+        if (n.money >= locCost && n.money - locCost >= 0) {
           n.unlockedLocations = [...n.unlockedLocations, loc.id];
-          n.money -= loc.cost * 0.8;
-          n.totalSpent += loc.cost * 0.8;
+          n.money -= locCost;
+          n.totalSpent += locCost;
           events.push({
             id: generateId(), date: gameDate, type: 'npc_activity' as GameEvent['type'],
             title: `${n.name} expanded to ${loc.id.replace(/_/g, ' ')}`,

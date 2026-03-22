@@ -655,7 +655,7 @@ export default function SpaceTycoonPage() {
         playSound('milestone');
         setState(prev => {
           if (!prev) return prev;
-          const rewarded = applyContractReward(prev, cDef);
+          const rewarded = applyContractReward(prev, cDef.reward);
           return {
             ...rewarded,
             activeContracts: (prev.activeContracts || []).filter(id => id !== cId),
