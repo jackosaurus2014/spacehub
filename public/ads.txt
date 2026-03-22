@@ -1,4 +1,1 @@
-# SpaceNexus ads.txt
-# Replace YOUR_PUBLISHER_ID with your actual Google AdSense publisher ID after approval
-# Format: google.com, pub-XXXXXXXXXXXXXXXX, DIRECT, f08c47fec0942fa0
-google.com, pub-XXXXXXXXXXXXXXXX, DIRECT, f08c47fec0942fa0
+google.com, pub-8192058569820929, DIRECT, f08c47fec0942fa0
