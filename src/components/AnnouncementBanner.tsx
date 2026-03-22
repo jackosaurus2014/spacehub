@@ -4,11 +4,11 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 
 const ANNOUNCEMENT = {
-  id: 'mar-2026-redesign', // bump this to show new announcements
-  text: 'New: Mobile-first redesign with 236+ pages, AI marketplace copilot, and 101 company profiles',
-  cta: 'See what\u2019s new',
-  href: '/features',
-  emoji: '\u2728',
+  id: 'play-store-internal-test-2026', // bump this to show new announcements
+  text: 'SpaceNexus is now on Google Play (internal test)! Get the full site + Space Tycoon on mobile. Email owner@spacenexus.us to join.',
+  cta: 'Learn more',
+  href: '/app',
+  emoji: '📱',
 };
 
 export default function AnnouncementBanner() {
