@@ -74,6 +74,10 @@ const PersonaPicker = nextDynamic(() => import('@/components/landing/PersonaPick
   ssr: false,
   loading: () => null,
 });
+const PersonaAwareSpaceTycoon = nextDynamic(() => import('@/components/landing/PersonaAwareSpaceTycoon'), {
+  ssr: false,
+  loading: () => null,
+});
 const FloatingCTA = nextDynamic(() => import('@/components/landing/FloatingCTA'), {
   ssr: false,
   loading: () => null,
@@ -229,7 +233,8 @@ export default async function HomePage() {
       {/* Explore the Platform — 8 key destination cards */}
       <ExplorePlatform />
 
-      {/* Space Tycoon — V3 prominent feature card */}
+      {/* Space Tycoon — V3 prominent feature card (enthusiasts see "Featured for You" badge) */}
+      <PersonaAwareSpaceTycoon>
       <section className="relative z-10 py-6">
         <div className="container mx-auto px-4 max-w-5xl">
           <Link
@@ -299,6 +304,7 @@ export default async function HomePage() {
           </Link>
         </div>
       </section>
+      </PersonaAwareSpaceTycoon>
 
       {/* Space Industry Market Overview — Key Metrics with sparklines */}
       <IndustrySnapshot />

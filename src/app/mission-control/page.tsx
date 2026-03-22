@@ -11,6 +11,7 @@ import ExportButton from '@/components/ui/ExportButton';
 import MissionStream, { extractYouTubeId } from '@/components/live/MissionStream';
 import PullToRefresh from '@/components/ui/PullToRefresh';
 import AdSlot from '@/components/ads/AdSlot';
+import CollapsiblePanel from '@/components/ui/CollapsiblePanel';
 import AlertNudge from '@/components/ui/AlertNudge';
 import { clientLogger } from '@/lib/client-logger';
 import { getCompanyProfileUrl } from '@/lib/company-links';
@@ -1345,13 +1346,8 @@ function MissionControlContent() {
           <>
             {/* Earth from Space - EPIC Earth Images */}
             {epicEarthImages.length > 0 && (
-              <div className="mb-8">
-                <h2 className="text-xl font-display font-bold text-white mb-4 flex items-center gap-2">
-                  <span className="text-2xl">🌍</span>
-                  Earth from Space
-                  <span className="ml-2 text-slate-400 text-sm font-normal">NASA EPIC</span>
-                </h2>
-                <div className="overflow-x-auto pb-4">
+              <CollapsiblePanel panelId="mc-epic-earth" title="🌍 Earth from Space — NASA EPIC" count={epicEarthImages.length} className="mb-4">
+                <div className="overflow-x-auto pb-2">
                   <div className="flex gap-4 min-w-max">
                     {epicEarthImages.map((img) => (
                       <div key={img.identifier} className="card overflow-hidden w-72 flex-shrink-0">
@@ -1387,17 +1383,12 @@ function MissionControlContent() {
                     ))}
                   </div>
                 </div>
-              </div>
+              </CollapsiblePanel>
             )}
 
             {/* NASA Image Gallery */}
             {nasaImages.length > 0 && (
-              <div className="mb-8">
-                <h2 className="text-xl font-display font-bold text-white mb-4 flex items-center gap-2">
-                  <span className="text-2xl">📸</span>
-                  NASA Image Gallery
-                  <span className="ml-2 text-slate-400 text-sm font-normal">Image & Video Library</span>
-                </h2>
+              <CollapsiblePanel panelId="mc-nasa-images" title="📸 NASA Image Gallery" count={nasaImages.length} className="mb-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 stagger-grid">
                   {nasaImages.map((img) => (
                     <div key={img.nasa_id} className="card overflow-hidden">
@@ -1431,17 +1422,12 @@ function MissionControlContent() {
                     </div>
                   ))}
                 </div>
-              </div>
+              </CollapsiblePanel>
             )}
 
             {/* Deep Space Network Status */}
             {dsnAntennas.length > 0 && (
-              <div className="mb-8">
-                <h2 className="text-xl font-display font-bold text-white mb-4 flex items-center gap-2">
-                  <span className="text-2xl">📡</span>
-                  Deep Space Network Status
-                  <span className="ml-2 text-slate-400 text-sm font-normal">Antenna Activity</span>
-                </h2>
+              <CollapsiblePanel panelId="mc-dsn" title="📡 Deep Space Network Status" count={dsnAntennas.filter(a => a.is_active).length} className="mb-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                   {dsnAntennas.map((antenna) => (
                     <div key={antenna.dish_name} className="card p-4">
@@ -1470,7 +1456,7 @@ function MissionControlContent() {
                     </div>
                   ))}
                 </div>
-              </div>
+              </CollapsiblePanel>
             )}
           </>
         )}

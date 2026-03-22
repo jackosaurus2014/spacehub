@@ -9,6 +9,7 @@ import { usePathname } from 'next/navigation';
 import { useSubscription } from './SubscriptionProvider';
 import { useHighContrast } from '@/hooks/useHighContrast';
 import NotificationCenter from './NotificationCenter';
+import DensityToggle from '@/components/ui/DensityToggle';
 import NotificationBell from '@/components/ui/NotificationBell';
 import RecentlyViewed from './ui/RecentlyViewed';
 import { usePlatformModifier } from '@/hooks/useKeyboardShortcut';
@@ -690,6 +691,8 @@ export default function Navigation() {
               <div className="w-8 h-8 border-2 border-slate-400 border-t-transparent rounded-full animate-spin" />
             ) : session ? (
               <div className="flex items-center space-x-3">
+                <DensityToggle />
+                <div className="w-px h-4 bg-zinc-700" />
                 {isPro && (
                   <span className="text-xs font-semibold px-2 py-0.5 rounded bg-white/10 text-white/70 border border-white/10">
                     PRO
