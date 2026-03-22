@@ -220,12 +220,21 @@ export default function Footer() {
             ))}
           </div>
 
-          {/* Bottom bar */}
-          <div className="border-t border-white/[0.06] py-5 flex flex-col md:flex-row items-center justify-between gap-4 pb-24 lg:pb-5">
-            {/* Copyright */}
-            <p className="text-slate-400 text-xs">
-              &copy; {new Date().getFullYear()} SpaceNexus LLC. All rights reserved.
-            </p>
+          {/* Bottom bar — V3 with version and status */}
+          <div className="border-t py-5 flex flex-col md:flex-row items-center justify-between gap-4 pb-24 lg:pb-5" style={{ borderColor: 'var(--border-subtle)' }}>
+            {/* Copyright + version + status */}
+            <div className="flex items-center gap-3">
+              <p className="text-zinc-500 text-xs">
+                &copy; {new Date().getFullYear()} SpaceNexus LLC
+              </p>
+              <span className="text-zinc-700">·</span>
+              <span className="text-zinc-600 text-[10px] font-mono">v3.0</span>
+              <span className="text-zinc-700">·</span>
+              <span className="flex items-center gap-1.5 text-[10px] text-zinc-500">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                Operational
+              </span>
+            </div>
 
             {/* Legal links */}
             <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1">

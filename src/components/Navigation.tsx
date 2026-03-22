@@ -334,8 +334,8 @@ function DropdownMenu({
           role="menu"
           aria-label={`${label} submenu`}
           onKeyDown={handleMenuKeyDown}
-          className={`absolute top-full left-0 mt-3 backdrop-blur-xl border border-white/[0.06] rounded-2xl overflow-hidden animate-fade-in-down z-50 ${items.length > 12 ? 'w-[32rem]' : 'w-72'}`}
-          style={{ background: 'rgba(0, 0, 0, 0.95)', boxShadow: '0 8px 32px -4px rgba(0, 0, 0, 0.5)' }}
+          className={`absolute top-full left-0 mt-2 border rounded-lg overflow-hidden animate-fade-in-down z-50 ${items.length > 12 ? 'w-[32rem]' : 'w-72'}`}
+          style={{ background: 'var(--bg-elevated)', borderColor: 'var(--border-default)', boxShadow: '0 8px 32px -4px rgba(0, 0, 0, 0.5)' }}
         >
           <div className={`p-2 max-h-[70vh] overflow-y-auto scrollbar-hide ${items.length > 12 ? 'grid grid-cols-2 gap-x-1' : ''}`}>
             {items.map((item, index) => (
@@ -502,21 +502,14 @@ export default function Navigation() {
   return (
     <nav
       aria-label="Main navigation"
-      className={`nav-persistent sticky top-0 z-50 transition-all duration-300 backdrop-blur-xl safe-area-pt ${navHidden ? '-translate-y-full' : 'translate-y-0'}`}
+      className={`nav-persistent sticky top-0 z-50 transition-all duration-200 safe-area-pt ${navHidden ? '-translate-y-full' : 'translate-y-0'}`}
       style={{
-        background: scrolled
-          ? 'rgba(0, 0, 0, 0.95)'
-          : 'rgba(0, 0, 0, 0.85)',
-        boxShadow: scrolled
-          ? '0 4px 24px -4px rgba(0, 0, 0, 0.4)'
-          : 'none'
+        background: 'var(--bg-void, #09090b)',
+        borderBottom: '1px solid var(--border-subtle, #27272a)',
       }}
     >
-      {/* Bottom gradient border */}
-      <div className="absolute bottom-0 left-0 right-0 h-px bg-white/[0.06]" />
-
       <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-[72px]">
+        <div className="flex items-center justify-between h-14">
           {/* Logo + Home */}
           <Link href="/" className="flex items-center gap-2 opacity-90 hover:opacity-100 transition-opacity">
             <Image
@@ -781,7 +774,7 @@ export default function Navigation() {
         {isMenuOpen && createPortal(
           <div className="lg:hidden fixed inset-0 top-[72px] z-[60] animate-fade-in">
             <div className="absolute inset-0 bg-black/50" onClick={() => setIsMenuOpen(false)} role="presentation" aria-hidden="true" />
-            <div className="absolute right-0 top-0 h-full w-80 max-w-[85vw] backdrop-blur-xl border-l border-white/[0.06] overflow-y-auto animate-slide-in-right" style={{ background: 'rgba(0, 0, 0, 0.97)', boxShadow: '-8px 0 32px -4px rgba(0, 0, 0, 0.5)' }}>
+            <div className="absolute right-0 top-0 h-full w-80 max-w-[85vw] overflow-y-auto animate-slide-in-right" style={{ background: 'var(--bg-surface)', borderLeft: '1px solid var(--border-subtle)', boxShadow: '-8px 0 32px -4px rgba(0, 0, 0, 0.5)' }}>
               <div className="p-6 space-y-4">
                 {/* Mobile Search Input */}
                 <div className="relative">

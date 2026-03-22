@@ -268,7 +268,7 @@ export default function RootLayout({
               <Navigation />
               <IndustryTicker />
               <QuickAccessSidebar />
-              <main id="main-content" className="flex-1 lg:pl-16 pb-[calc(4rem+env(safe-area-inset-bottom,0px))] lg:pb-0" tabIndex={-1}>
+              <main id="main-content" className="flex-1 lg:pl-14 pb-[calc(4rem+env(safe-area-inset-bottom,0px))] lg:pb-0" tabIndex={-1}>
                 <ModuleNavBar />
                 <AutoBreadcrumb />
                 <TrialCountdownBanner />

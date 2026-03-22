@@ -148,12 +148,12 @@ export default function QuickAccessSidebar() {
     <>
       {/* Sidebar - hidden on mobile */}
       <aside
-        className={`fixed left-0 top-[72px] h-[calc(100dvh-72px)] z-[45] hidden lg:flex flex-col transition-all duration-300 ${
-          isExpanded ? 'w-80' : 'w-16'
+        className={`fixed left-0 top-14 h-[calc(100dvh-3.5rem)] z-[45] hidden lg:flex flex-col transition-all duration-200 ${
+          isExpanded ? 'w-64' : 'w-14'
         }`}
         style={{
-          background: 'rgba(0, 0, 0, 0.98)',
-          boxShadow: 'inset -1px 0 0 rgba(255, 255, 255, 0.06)',
+          background: 'var(--bg-void)',
+          borderRight: '1px solid var(--border-subtle)',
         }}
         onMouseEnter={() => setIsExpanded(true)}
         onMouseLeave={() => setIsExpanded(false)}
@@ -209,8 +209,8 @@ export default function QuickAccessSidebar() {
                           onClick={() => toggleParent(module.moduleId)}
                           className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 w-full text-left ${
                             active
-                              ? 'bg-white/[0.08] text-white'
-                              : 'text-white/70 hover:bg-white/[0.05] hover:text-white'
+                              ? 'border-l-2 border-l-indigo-500 bg-white/[0.04] text-white'
+                              : 'border-l-2 border-l-transparent text-zinc-400 hover:bg-white/[0.03] hover:text-white'
                           }`}
                         >
                           {/* Icon */}
@@ -247,8 +247,8 @@ export default function QuickAccessSidebar() {
                           href={getModuleRoute(module.moduleId)}
                           className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 w-full ${
                             active
-                              ? 'bg-white/[0.08] text-white'
-                              : 'text-white/70 hover:bg-white/[0.05] hover:text-white'
+                              ? 'border-l-2 border-l-indigo-500 bg-white/[0.04] text-white'
+                              : 'border-l-2 border-l-transparent text-zinc-400 hover:bg-white/[0.03] hover:text-white'
                           }`}
                         >
                           {/* Icon */}
