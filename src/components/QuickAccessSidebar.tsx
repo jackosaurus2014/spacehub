@@ -118,12 +118,21 @@ export default function QuickAccessSidebar() {
   })();
 
   // Sort modules: pinned first, then by configured position
+  // Force Space Tycoon to position 1 (right after Mission Control) regardless of saved config
+  const FORCED_TOP_IDS = ['mission-control', 'space-tycoon'];
   const sortedModules = [...SIDEBAR_TOP_LEVEL].sort((a, b) => {
+    const aForced = FORCED_TOP_IDS.indexOf(a.moduleId);
+    const bForced = FORCED_TOP_IDS.indexOf(b.moduleId);
+    // Forced-top items always come first, in order
+    if (aForced >= 0 && bForced >= 0) return aForced - bForced;
+    if (aForced >= 0) return -1;
+    if (bForced >= 0) return 1;
+    // Then pinned items
     const aPinned = pinnedModules.includes(a.moduleId);
     const bPinned = pinnedModules.includes(b.moduleId);
     if (aPinned && !bPinned) return -1;
     if (!aPinned && bPinned) return 1;
-    // Use configured position from moduleConfig, falling back to defaultPosition
+    // Then by configured position
     const aConfig = moduleConfig.find(c => c.moduleId === a.moduleId);
     const bConfig = moduleConfig.find(c => c.moduleId === b.moduleId);
     const aPos = aConfig?.position ?? a.defaultPosition;
