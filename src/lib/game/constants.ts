@@ -7,8 +7,8 @@ export const STARTING_MONEY = 100_000_000;
 export const STARTING_MONEY_PRO = 135_000_000;
 export const STARTING_MONEY_ENTERPRISE = 170_000_000;
 
-/** Starting year */
-export const STARTING_YEAR = 2025;
+/** Starting year — matches real-world present */
+export const STARTING_YEAR = 2026;
 
 /** Cost scaling exponent per duplicate building at same location */
 export const BUILDING_COST_SCALE = 1.15;

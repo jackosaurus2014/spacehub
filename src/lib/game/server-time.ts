@@ -32,8 +32,8 @@ export const SERVER_EPOCH_MS = new Date('2026-03-22T00:00:00Z').getTime();
  */
 export const REAL_SECONDS_PER_GAME_MONTH = 21_600; // 6 hours
 
-/** Starting game year */
-export const GAME_START_YEAR = 2025;
+/** Starting game year — matches real-world present */
+export const GAME_START_YEAR = 2026;
 
 /** Game date type */
 export interface ServerGameDate {
