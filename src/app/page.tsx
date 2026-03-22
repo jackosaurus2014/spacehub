@@ -221,31 +221,72 @@ export default async function HomePage() {
       {/* Explore the Platform — 8 key destination cards */}
       <ExplorePlatform />
 
-      {/* Space Tycoon Game Promo — below the fold after core platform features */}
-      <section className="relative z-10 py-4">
-        <div className="container mx-auto px-4 max-w-4xl">
+      {/* Space Tycoon — V3 prominent feature card */}
+      <section className="relative z-10 py-6">
+        <div className="container mx-auto px-4 max-w-5xl">
           <Link
             href="/space-tycoon"
-            className="group block card-glass relative overflow-hidden rounded-2xl"
+            className="group block card-terminal relative overflow-hidden"
           >
-            <div className="absolute inset-0 bg-gradient-to-r from-purple-500/[0.04] via-cyan-500/[0.02] to-purple-500/[0.04] group-hover:from-purple-500/[0.08] group-hover:via-cyan-500/[0.04] group-hover:to-purple-500/[0.08] transition-all duration-500" />
-            <div className="relative flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-5 py-3 px-5">
-              <div className="flex items-center gap-3">
-                <span className="text-xl sm:text-2xl">🎮</span>
-                <div>
-                  <div className="flex items-center gap-2">
-                    <h3 className="text-white font-medium text-sm">Space Tycoon</h3>
-                    <span className="px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider bg-gradient-to-r from-purple-500/80 to-cyan-500/80 text-white rounded">Free</span>
+            {/* Terminal chrome */}
+            <div className="card-terminal__header">
+              <div className="flex items-center gap-2">
+                <div className="card-terminal__dots">
+                  <div className="card-terminal__dot card-terminal__dot--red" />
+                  <div className="card-terminal__dot card-terminal__dot--amber" />
+                  <div className="card-terminal__dot card-terminal__dot--green" />
+                </div>
+                <span className="card-terminal__path">spacenexus:~/space-tycoon</span>
+              </div>
+              <span className="badge badge-free">FREE</span>
+            </div>
+
+            {/* Content */}
+            <div className="relative p-6 md:p-8">
+              {/* Accent glow */}
+              <div className="absolute top-0 right-0 w-64 h-64 bg-purple-500/[0.06] rounded-full blur-[100px] pointer-events-none" />
+
+              <div className="relative flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+                <div className="flex-1">
+                  <div className="flex items-center gap-3 mb-3">
+                    <span className="text-3xl">🎮</span>
+                    <div>
+                      <h3 className="text-display text-xl md:text-2xl">Space Tycoon</h3>
+                      <p className="text-[10px] uppercase tracking-[0.12em] text-zinc-500 font-medium">Multiplayer Space Economy Game</p>
+                    </div>
                   </div>
-                  <p className="text-slate-400 text-xs">Build your space empire — rockets, satellites, mining &amp; more</p>
+                  <p className="text-[var(--text-secondary)] text-sm leading-relaxed max-w-lg mb-4">
+                    Build your space empire from the ground up. Launch rockets, deploy satellites, mine asteroids, research 240+ technologies, and compete with players worldwide.
+                  </p>
+                  {/* Feature stats */}
+                  <div className="flex flex-wrap gap-3">
+                    {[
+                      { icon: '🏗️', label: 'Buildings', value: '39' },
+                      { icon: '🔬', label: 'Research', value: '240+' },
+                      { icon: '⛏️', label: 'Resources', value: '12' },
+                      { icon: '🏆', label: 'Ranking', value: 'Global' },
+                    ].map(s => (
+                      <div key={s.label} className="flex items-center gap-2 px-3 py-1.5 rounded border" style={{ borderColor: 'var(--border-subtle)', background: 'var(--bg-elevated)' }}>
+                        <span className="text-sm">{s.icon}</span>
+                        <div>
+                          <span className="text-xs font-bold font-mono text-[var(--text-primary)]">{s.value}</span>
+                          <span className="text-[9px] text-zinc-500 ml-1">{s.label}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* CTA */}
+                <div className="flex-shrink-0">
+                  <span className="inline-flex items-center gap-2 px-6 py-3 rounded text-sm font-semibold text-white group-hover:shadow-lg group-hover:shadow-purple-500/20 transition-all duration-200" style={{ background: 'var(--accent-primary)' }}>
+                    Play Now
+                    <svg className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                    </svg>
+                  </span>
                 </div>
               </div>
-              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-white bg-white/[0.06] group-hover:bg-white/[0.12] border border-white/[0.06] group-hover:border-white/[0.12] rounded-lg transition-all duration-200 shrink-0">
-                Play Now
-                <svg className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                </svg>
-              </span>
             </div>
           </Link>
         </div>
