@@ -115,23 +115,28 @@ function BuildPanel({ state, onBuild, onSellBuilding }: { state: GameState; onBu
             const canAfford = canAffordMoney && hasResources;
 
             return (
-              <div key={bld.id} className="card p-4 relative overflow-hidden">
-                {/* Building art thumbnail */}
-                <div className="absolute top-0 right-0 w-20 h-20 opacity-15 pointer-events-none">
+              <div key={bld.id} className={`rounded-xl border overflow-hidden transition-all game-card ${
+                canAfford ? 'border-cyan-500/20 hover:border-cyan-500/40' : 'border-white/[0.06]'
+              }`}>
+                {/* Building art — prominent, not hidden */}
+                <div className="relative h-20 sm:h-24 bg-gradient-to-br from-white/[0.03] to-transparent overflow-hidden">
                   <Image
                     src={getBuildingAsset(bld.id, bld.category)}
-                    alt=""
-                    width={80}
-                    height={80}
-                    className="w-full h-full object-cover rounded-bl-xl"
+                    alt={bld.name}
+                    width={256}
+                    height={96}
+                    className="absolute inset-0 w-full h-full object-cover opacity-40"
                   />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
+                  <div className="absolute bottom-2 left-3 right-3">
+                    <div className="flex justify-between items-end">
+                      <h4 className="text-white text-sm font-bold drop-shadow-lg">{bld.name}</h4>
+                      <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-white/10 text-slate-300 backdrop-blur-sm">T{bld.tier}</span>
+                    </div>
+                  </div>
                 </div>
-                <div className="relative">
-                <div className="flex justify-between items-start mb-2">
-                  <h4 className="text-white text-sm font-semibold">{bld.name}</h4>
-                  <span className="text-xs text-slate-500">Tier {bld.tier}</span>
-                </div>
-                <p className="text-slate-400 text-xs mb-2">{bld.description}</p>
+                <div className="p-3">
+                <p className="text-slate-400 text-[11px] mb-2 leading-relaxed">{bld.description}</p>
                 {/* Revenue preview */}
                 {bld.enabledServices.length > 0 && (() => {
                   const svc = SERVICE_MAP.get(bld.enabledServices[0]);
@@ -225,74 +230,212 @@ function BuildPanel({ state, onBuild, onSellBuilding }: { state: GameState; onBu
   );
 }
 
-// ─── Research Panel ─────────────────────────────────────────────────────────
+// ─── Research Panel (redesigned — collapsible categories, search, progress) ──
 
 function ResearchPanel({ state, onStartResearch }: { state: GameState; onStartResearch: (id: string) => void }) {
-  return (
-    <div className="space-y-6">
-      {RESEARCH_CATEGORIES.map(cat => {
-        const items = RESEARCH.filter(r => r.category === cat.id);
-        return (
-          <div key={cat.id}>
-            <h3 className="text-white font-semibold text-sm mb-3 flex items-center gap-2">
-              <span>{cat.icon}</span> {cat.name}
-            </h3>
-            <div className="grid md:grid-cols-2 gap-2">
-              {items.map(r => {
-                const completed = state.completedResearch.includes(r.id);
-                const active = state.activeResearch?.definitionId === r.id;
-                const prereqsMet = r.prerequisites.every(p => state.completedResearch.includes(p));
-                const hasResCost = !r.resourceCost || Object.entries(r.resourceCost).every(
-                  ([resId, qty]) => (state.resources[resId] || 0) >= qty
-                );
-                const canStart = !completed && !active && !state.activeResearch && prereqsMet && state.money >= r.baseCostMoney && hasResCost;
-                const locked = !prereqsMet && !completed;
+  const [expandedCat, setExpandedCat] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filterMode, setFilterMode] = useState<'all' | 'available' | 'completed'>('all');
 
-                return (
-                  <div
-                    key={r.id}
-                    className={`p-3 rounded-xl border transition-colors ${
-                      completed ? 'border-green-500/30 bg-green-500/5' :
-                      active ? 'border-purple-500/30 bg-purple-500/5' :
-                      locked ? 'border-white/[0.04] bg-white/[0.01] opacity-50' :
-                      'border-white/[0.06] bg-white/[0.02] hover:border-white/[0.12]'
-                    }`}
-                  >
-                    <div className="flex justify-between items-start mb-1">
-                      <span className="text-white text-xs font-medium">{r.name}</span>
-                      {completed && <span className="text-green-400 text-[10px]">Done</span>}
-                      {active && <span className="text-purple-400 text-[10px] animate-pulse">Researching...</span>}
-                    </div>
-                    <p className="text-slate-500 text-[10px] mb-2">{r.effect}</p>
-                    {!completed && !active && r.resourceCost && Object.keys(r.resourceCost).length > 0 && (
-                      <div className="flex flex-wrap gap-1 mb-1.5">
-                        {Object.entries(r.resourceCost).map(([resId, qty]) => {
-                          const have = state.resources[resId] || 0;
-                          return (
-                            <span key={resId} className={`text-[8px] px-1 py-0.5 rounded border ${
-                              have >= qty ? 'text-slate-400 border-white/[0.06]' : 'text-red-400 border-red-500/20'
-                            }`}>{resId.replace(/_/g, ' ')} {have}/{qty}</span>
-                          );
-                        })}
-                      </div>
-                    )}
-                    {!completed && !active && (
-                      <div className="flex items-center justify-between">
-                        <span className="text-slate-500 text-[10px]">{formatMoney(r.baseCostMoney)} · {formatDuration(r.realResearchSeconds)}</span>
-                        {canStart && (
-                          <button
-                            onClick={() => onStartResearch(r.id)}
-                            className="px-2 py-0.5 rounded text-[10px] font-medium bg-purple-600 text-white hover:bg-purple-500 transition-colors"
-                          >
-                            Start
-                          </button>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
+  const totalResearch = RESEARCH.length;
+  const completedCount = state.completedResearch.length;
+  const progressPct = Math.round((completedCount / totalResearch) * 100);
+
+  return (
+    <div className="space-y-4">
+      {/* Active Research Banner */}
+      {state.activeResearch && (() => {
+        const def = RESEARCH_MAP.get(state.activeResearch.definitionId);
+        if (!def) return null;
+        const elapsed = (Date.now() - (state.activeResearch.startedAtMs || 0)) / 1000;
+        const pct = Math.min(100, Math.round((elapsed / (state.activeResearch.realDurationSeconds || 1)) * 100));
+        return (
+          <div className="rounded-xl border border-purple-500/30 bg-gradient-to-r from-purple-500/10 to-cyan-500/5 p-4">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2">
+                <span className="text-lg animate-pulse">🔬</span>
+                <div>
+                  <span className="text-white text-sm font-semibold">{def.name}</span>
+                  <span className="text-purple-400 text-xs ml-2">{pct}%</span>
+                </div>
+              </div>
+              <span className="text-slate-400 text-xs">{formatCountdown(Math.max(0, (state.activeResearch.realDurationSeconds || 0) - elapsed))}</span>
             </div>
+            <div className="h-2 bg-white/[0.06] rounded-full overflow-hidden">
+              <div className="h-full bg-gradient-to-r from-purple-500 to-cyan-500 rounded-full transition-all duration-1000 game-progress-shimmer" style={{ width: `${pct}%` }} />
+            </div>
+            <p className="text-slate-500 text-[10px] mt-1.5">{def.effect}</p>
+          </div>
+        );
+      })()}
+
+      {/* Overall Progress */}
+      <div className="flex items-center gap-3 px-1">
+        <div className="flex-1">
+          <div className="flex items-center justify-between mb-1">
+            <span className="text-slate-400 text-xs">{completedCount} / {totalResearch} researched</span>
+            <span className="text-white text-xs font-mono">{progressPct}%</span>
+          </div>
+          <div className="h-1.5 bg-white/[0.06] rounded-full overflow-hidden">
+            <div className="h-full bg-gradient-to-r from-green-500 to-emerald-400 rounded-full" style={{ width: `${progressPct}%` }} />
+          </div>
+        </div>
+      </div>
+
+      {/* Search & Filter */}
+      <div className="flex gap-2">
+        <input
+          type="text"
+          value={searchQuery}
+          onChange={e => setSearchQuery(e.target.value)}
+          placeholder="Search research..."
+          className="flex-1 px-3 py-1.5 rounded-lg bg-white/[0.03] border border-white/[0.06] text-white text-xs placeholder-slate-500 focus:outline-none focus:border-purple-500/30"
+        />
+        <div className="flex gap-1">
+          {(['all', 'available', 'completed'] as const).map(mode => (
+            <button
+              key={mode}
+              onClick={() => setFilterMode(mode)}
+              className={`px-2 py-1.5 rounded-lg text-[10px] font-medium transition-colors ${
+                filterMode === mode ? 'bg-purple-500/20 text-purple-400 border border-purple-500/30' : 'text-slate-500 hover:text-white'
+              }`}
+            >
+              {mode === 'all' ? 'All' : mode === 'available' ? 'Available' : 'Done'}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Category Accordion */}
+      {RESEARCH_CATEGORIES.map(cat => {
+        const allItems = RESEARCH.filter(r => r.category === cat.id);
+        const catCompleted = allItems.filter(r => state.completedResearch.includes(r.id)).length;
+        const catPct = allItems.length > 0 ? Math.round((catCompleted / allItems.length) * 100) : 0;
+        const isExpanded = expandedCat === cat.id;
+
+        // Filter items
+        let items = allItems;
+        if (searchQuery) {
+          const q = searchQuery.toLowerCase();
+          items = items.filter(r => r.name.toLowerCase().includes(q) || r.effect.toLowerCase().includes(q));
+        }
+        if (filterMode === 'available') {
+          items = items.filter(r => !state.completedResearch.includes(r.id) && r.prerequisites.every(p => state.completedResearch.includes(p)));
+        } else if (filterMode === 'completed') {
+          items = items.filter(r => state.completedResearch.includes(r.id));
+        }
+
+        if (searchQuery && items.length === 0) return null;
+
+        return (
+          <div key={cat.id} className="rounded-xl border border-white/[0.06] overflow-hidden">
+            {/* Category Header (clickable to expand/collapse) */}
+            <button
+              onClick={() => setExpandedCat(isExpanded ? null : cat.id)}
+              className="w-full flex items-center justify-between p-3 bg-white/[0.02] hover:bg-white/[0.04] transition-colors text-left"
+            >
+              <div className="flex items-center gap-2">
+                <span className="text-lg">{cat.icon}</span>
+                <div>
+                  <span className="text-white text-sm font-semibold">{cat.name}</span>
+                  <span className="text-slate-500 text-xs ml-2">{catCompleted}/{allItems.length}</span>
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                {/* Mini progress bar */}
+                <div className="w-16 h-1.5 bg-white/[0.06] rounded-full overflow-hidden hidden sm:block">
+                  <div className={`h-full rounded-full ${catPct === 100 ? 'bg-green-500' : 'bg-purple-500'}`} style={{ width: `${catPct}%` }} />
+                </div>
+                <svg className={`w-4 h-4 text-slate-500 transition-transform ${isExpanded ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </div>
+            </button>
+
+            {/* Expanded Content */}
+            {(isExpanded || searchQuery) && items.length > 0 && (
+              <div className="p-2 grid md:grid-cols-2 gap-2">
+                {items.map(r => {
+                  const completed = state.completedResearch.includes(r.id);
+                  const active = state.activeResearch?.definitionId === r.id;
+                  const prereqsMet = r.prerequisites.every(p => state.completedResearch.includes(p));
+                  const hasResCost = !r.resourceCost || Object.entries(r.resourceCost).every(
+                    ([resId, qty]) => (state.resources[resId] || 0) >= qty
+                  );
+                  const canStart = !completed && !active && !state.activeResearch && prereqsMet && state.money >= r.baseCostMoney && hasResCost;
+                  const locked = !prereqsMet && !completed;
+
+                  return (
+                    <div
+                      key={r.id}
+                      className={`p-3 rounded-lg border transition-all game-card ${
+                        completed ? 'border-green-500/20 bg-green-500/5' :
+                        active ? 'border-purple-500/30 bg-purple-500/10 game-glow-pulse' :
+                        locked ? 'border-white/[0.03] bg-white/[0.01] opacity-40' :
+                        canStart ? 'border-purple-500/20 bg-white/[0.03] hover:border-purple-500/40 hover:bg-purple-500/5 cursor-pointer' :
+                        'border-white/[0.06] bg-white/[0.02]'
+                      }`}
+                      onClick={() => { if (canStart) onStartResearch(r.id); }}
+                    >
+                      <div className="flex justify-between items-start mb-1">
+                        <div className="flex items-center gap-1.5">
+                          {completed && <span className="text-green-400 text-xs">✓</span>}
+                          {active && <span className="text-purple-400 text-xs animate-pulse">◉</span>}
+                          {locked && <span className="text-slate-600 text-xs">🔒</span>}
+                          <span className={`text-xs font-medium ${completed ? 'text-green-300' : locked ? 'text-slate-500' : 'text-white'}`}>{r.name}</span>
+                        </div>
+                        <span className={`text-[9px] px-1.5 py-0.5 rounded-full ${
+                          completed ? 'bg-green-500/20 text-green-400' :
+                          active ? 'bg-purple-500/20 text-purple-400' :
+                          `bg-white/[0.04] text-slate-500`
+                        }`}>T{r.tier}</span>
+                      </div>
+                      <p className="text-slate-400 text-[10px] mb-1.5 leading-relaxed">{r.effect}</p>
+                      {/* Prerequisites */}
+                      {locked && r.prerequisites.length > 0 && (
+                        <div className="flex flex-wrap gap-1 mb-1.5">
+                          {r.prerequisites.map(p => {
+                            const pDef = RESEARCH_MAP.get(p);
+                            const pDone = state.completedResearch.includes(p);
+                            return (
+                              <span key={p} className={`text-[8px] px-1.5 py-0.5 rounded ${
+                                pDone ? 'bg-green-500/10 text-green-400' : 'bg-red-500/10 text-red-400'
+                              }`}>
+                                {pDone ? '✓' : '✗'} {pDef?.name || p}
+                              </span>
+                            );
+                          })}
+                        </div>
+                      )}
+                      {/* Resource costs */}
+                      {!completed && !active && r.resourceCost && Object.keys(r.resourceCost).length > 0 && (
+                        <div className="flex flex-wrap gap-1 mb-1.5">
+                          {Object.entries(r.resourceCost).map(([resId, qty]) => {
+                            const have = state.resources[resId] || 0;
+                            return (
+                              <span key={resId} className={`text-[8px] px-1 py-0.5 rounded border ${
+                                have >= qty ? 'text-slate-400 border-white/[0.06]' : 'text-red-400 border-red-500/20'
+                              }`}>{resId.replace(/_/g, ' ')} {have}/{qty}</span>
+                            );
+                          })}
+                        </div>
+                      )}
+                      {/* Cost & action */}
+                      {!completed && !active && !locked && (
+                        <div className="flex items-center justify-between">
+                          <span className="text-slate-500 text-[10px]">{formatMoney(r.baseCostMoney)} · {formatDuration(r.realResearchSeconds)}</span>
+                          {canStart && (
+                            <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-purple-600 text-white">
+                              Research
+                            </span>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
         );
       })}
