@@ -28,14 +28,22 @@ export const MAX_EVENT_LOG = 50;
 /** Auto-save interval in real-time milliseconds */
 export const AUTO_SAVE_INTERVAL_MS = 30_000;
 
-/** Tick interval in ms by speed setting */
+/** Tick interval in ms by speed setting.
+ *  Each tick processes revenue/costs but the calendar advances based on
+ *  TICKS_PER_GAME_MONTH. At 1x speed with 30 ticks/month:
+ *  1 game month = 60 seconds, 1 game year = 12 minutes, 10 years = 2 hours.
+ *  A casual player logging in daily for 30 min progresses ~2.5 years/month.
+ *  Construction/research timers use real wall-clock time (unaffected). */
 export const TICK_INTERVALS: Record<number, number> = {
   0: 0,      // Paused
-  1: 2000,   // 1x = 2s per month
-  2: 1000,   // 2x = 1s per month
-  5: 400,    // 5x
-  10: 200,   // 10x
+  1: 2000,   // 1x = 2s per tick
 };
+
+/** How many ticks equal one game month.
+ *  Higher = slower calendar progression.
+ *  30 ticks × 2s = 60 seconds per game month = 12 min/year.
+ *  Revenue and costs are divided by this number per tick. */
+export const TICKS_PER_GAME_MONTH = 30;
 
 /** Game save version for migration support */
 export const SAVE_VERSION = 1;

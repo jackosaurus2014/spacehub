@@ -8,7 +8,7 @@ import { SERVICE_MAP } from './services';
 import { RESEARCH_MAP } from './research-tree';
 import { MINING_PRODUCTION } from './resources';
 import { advanceDate, generateId, revenueMultiplier } from './formulas';
-import { MAX_EVENT_LOG } from './constants';
+import { MAX_EVENT_LOG, TICKS_PER_GAME_MONTH } from './constants';
 import { processNPCTick, applyNPCMarketActions } from './npc-engine';
 import { rollRandomEvent, applyEventEffect, getActiveMultipliers, cleanupExpiredEffects } from './random-events';
 import { checkMilestones } from './milestones';
@@ -24,7 +24,13 @@ import { checkAchievements } from './achievements';
  * Pure function: takes state, returns new state. Never mutates input.
  */
 export function processTick(state: GameState): GameState {
-  const newDate = advanceDate(state.gameDate, 1);
+  // Track sub-month ticks. Calendar advances only every TICKS_PER_GAME_MONTH ticks.
+  // Revenue/costs are applied fractionally each tick (1/N of monthly value).
+  const tickCount = (state.tickCount || 0) + 1;
+  const isMonthEnd = tickCount >= TICKS_PER_GAME_MONTH;
+  const newDate = isMonthEnd ? advanceDate(state.gameDate, 1) : state.gameDate;
+  const fraction = 1 / TICKS_PER_GAME_MONTH; // Fraction of monthly revenue/cost per tick
+
   const events: GameEvent[] = [];
   let money = state.money;
   let totalEarned = state.totalEarned;
@@ -43,8 +49,8 @@ export function processTick(state: GameState): GameState {
   const prestigeRevMult = prestige.permanentBonuses?.revenueMultiplier || 1;
   const prestigeMiningMult = prestige.permanentBonuses?.miningMultiplier || 1;
 
-  // ─── 0. Workforce payroll ─────────────────────────────────────────
-  const payroll = getMonthlyPayroll(workforce);
+  // ─── 0. Workforce payroll (fractional per tick) ──────────────────
+  const payroll = Math.round(getMonthlyPayroll(workforce) * fraction);
   if (payroll > 0) {
     money -= payroll;
     totalSpent += payroll;
@@ -60,14 +66,14 @@ export function processTick(state: GameState): GameState {
     const linkedBld = state.buildings.find(b => b.isComplete && b.locationId === svc.locationId && BUILDING_MAP.get(b.definitionId)?.enabledServices?.includes(svc.definitionId));
     const upgradeBoost = getUpgradeRevenueMultiplier(linkedBld?.upgradeLevel || 0);
     const revenue = Math.round(
-      def.revenuePerMonth
+      def.revenuePerMonth * fraction
       * svc.revenueMultiplier
       * multipliers.revenueMultiplier
       * upgradeBoost
       * (1 + wfBonuses.serviceRevenue)
       * prestigeRevMult
     );
-    const cost = Math.round(def.operatingCostPerMonth * multipliers.costMultiplier);
+    const cost = Math.round(def.operatingCostPerMonth * fraction * multipliers.costMultiplier);
     money += revenue - cost;
     totalEarned += revenue;
     totalSpent += cost;
@@ -81,7 +87,7 @@ export function processTick(state: GameState): GameState {
     const def = BUILDING_MAP.get(bld.definitionId);
     if (!def) continue;
     const maintMult = getMaintenanceMultiplier(bld.upgradeLevel || 0);
-    const maint = Math.round(def.maintenanceCostPerMonth * multipliers.costMultiplier * maintMult);
+    const maint = Math.round(def.maintenanceCostPerMonth * fraction * multipliers.costMultiplier * maintMult);
     money -= maint;
     totalSpent += maint;
     monthlyCosts += maint;
@@ -162,20 +168,27 @@ export function processTick(state: GameState): GameState {
     }
   }
 
-  // ─── 6. Resource production (with workforce + prestige bonuses) ───
+  // ─── 6. Resource production (fractional per tick, with bonuses) ───
   const resources = { ...(state.resources || {}) };
   const miningMult = (1 + wfBonuses.miningOutput) * prestigeMiningMult;
   for (const svc of activeServices) {
     const production = MINING_PRODUCTION[svc.definitionId];
     if (!production) continue;
     for (const { resource, amountPerMonth } of production) {
-      resources[resource] = (resources[resource] || 0) + Math.round(amountPerMonth * miningMult);
+      // Accumulate fractional amounts — only add whole units
+      const fractionalAmount = amountPerMonth * fraction * miningMult;
+      if (fractionalAmount >= 1) {
+        resources[resource] = (resources[resource] || 0) + Math.round(fractionalAmount);
+      } else if (isMonthEnd) {
+        // On month boundary, add at least the monthly total
+        resources[resource] = (resources[resource] || 0) + Math.round(amountPerMonth * miningMult);
+      }
     }
   }
 
-  // ─── 7. Random events (8% chance per tick if no pending choice) ───
+  // ─── 7. Random events (8% chance per MONTH, only on month boundary) ───
   let pendingChoice = state.pendingChoice || null;
-  if (!pendingChoice && Math.random() < 0.08) {
+  if (isMonthEnd && !pendingChoice && Math.random() < 0.08) {
     const event = rollRandomEvent(state);
     if (event) {
       if (event.category === 'choice' && event.choices) {
@@ -209,10 +222,10 @@ export function processTick(state: GameState): GameState {
     }
   }
 
-  // ─── 8. Market events (5% chance per tick) ────────────────────────
+  // ─── 8. Market events (5% chance per MONTH, only on month boundary) ──
   let activeMarketEvents: ActiveMarketEvent[] = [...(state.activeMarketEvents || [])];
   try {
-    const marketEventDef = rollMarketEvent();
+    const marketEventDef = isMonthEnd ? rollMarketEvent() : null;
     if (marketEventDef) {
       const now = Date.now();
       const activeEvent: ActiveMarketEvent = {
@@ -252,6 +265,7 @@ export function processTick(state: GameState): GameState {
   return {
     ...state,
     gameDate: newDate,
+    tickCount: isMonthEnd ? 0 : tickCount,
     money,
     totalEarned,
     totalSpent,

@@ -109,6 +109,18 @@ export const EXTERNAL_APIS = {
     baseUrl: 'https://fdo.rocketlaunch.live/json',
     rateLimit: { requests: 30, period: 3600 },
   },
+  GRANTS_GOV: {
+    baseUrl: 'https://api.grants.gov/v1/api',
+    rateLimit: { requests: 50, period: 3600 }, // No published limit, be polite
+  },
+  SAM_AWARDS: {
+    baseUrl: 'https://api.sam.gov/prod/contractdata/v1',
+    rateLimit: { requests: 100, period: 86400 }, // Uses SAM_GOV_API_KEY
+  },
+  SAM_ENTITY: {
+    baseUrl: 'https://api.sam.gov/entity-information/v3',
+    rateLimit: { requests: 100, period: 86400 }, // Uses SAM_GOV_API_KEY
+  },
   // ─── NEW APIs (v0.8.0) ─────────────────────────────────────────────────
   NASA_EPIC: {
     baseUrl: 'https://epic.gsfc.nasa.gov/api',

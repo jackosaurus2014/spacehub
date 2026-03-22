@@ -381,6 +381,24 @@ export async function POST(request: Request) {
       }
     }
 
+    if (type === 'grants-gov') {
+      const { fetchSpaceGrants } = await import('@/lib/fetchers/grants-gov-fetcher');
+      const grantCount = await fetchSpaceGrants();
+      results.grantsGov = { count: grantCount };
+    }
+
+    if (type === 'sam-awards') {
+      const { fetchSpaceContractAwards } = await import('@/lib/fetchers/sam-awards-fetcher');
+      const awardCount = await fetchSpaceContractAwards();
+      results.samAwards = { count: awardCount };
+    }
+
+    if (type === 'sam-entities') {
+      const { fetchSpaceEntityData } = await import('@/lib/fetchers/sam-entity-fetcher');
+      const entityCount = await fetchSpaceEntityData();
+      results.samEntities = { count: entityCount };
+    }
+
     logger.info(`Data refresh completed (type=${type || 'all'})`, results);
 
     return NextResponse.json({

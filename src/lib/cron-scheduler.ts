@@ -89,6 +89,9 @@ const CRON_JOBS: CronJobDef[] = [
   { schedule: '0 14 * * *',   path: '/api/refresh?type=executive-moves',          label: 'executive-moves-refresh',     maxStaleMinutes: 1560 },
   { schedule: '0 13 * * *',   path: '/api/refresh?type=funding-signals',          label: 'funding-signal-detection',    maxStaleMinutes: 1560 },
   { schedule: '0 */4 * * *',  path: '/api/refresh?type=sam-gov-active',           label: 'sam-gov-active-refresh',      maxStaleMinutes: 360 },
+  { schedule: '0 11 * * *',   path: '/api/refresh?type=grants-gov',               label: 'grants-gov-refresh',          maxStaleMinutes: 1560 },
+  { schedule: '0 16 * * 1',   path: '/api/refresh?type=sam-awards',               label: 'sam-awards-refresh',          maxStaleMinutes: 10080 },
+  { schedule: '0 17 1 * *',   path: '/api/refresh?type=sam-entities',             label: 'sam-entities-refresh',        maxStaleMinutes: 43200 },
 ];
 
 // Critical jobs that get auto-recovered by the watchdog
