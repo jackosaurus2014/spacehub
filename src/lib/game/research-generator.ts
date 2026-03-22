@@ -88,17 +88,19 @@ interface TierConfig {
   era: string;                // Flavor text
 }
 
+// Designed for 1-2 YEAR play sessions. T1-T5 reachable in weeks. T6-T8 in months. T9-T10 = year+ endgame.
+// Revenue scales with colony expansion, so late-game income ($1B+/mo) makes T8-T10 achievable.
 const TIER_CONFIGS: TierConfig[] = [
   { tier: 1, costMultiplier: 1, timeMultiplier: 1, resourceTier: {}, era: 'Near-Term (2025-2030)' },
   { tier: 2, costMultiplier: 3, timeMultiplier: 2, resourceTier: {}, era: 'Development (2030-2035)' },
   { tier: 3, costMultiplier: 10, timeMultiplier: 4, resourceTier: { rare_earth: 15, titanium: 30 }, era: 'Expansion (2035-2040)' },
   { tier: 4, costMultiplier: 30, timeMultiplier: 8, resourceTier: { rare_earth: 40, titanium: 60, platinum_group: 10 }, era: 'Consolidation (2040-2050)' },
-  { tier: 5, costMultiplier: 100, timeMultiplier: 16, resourceTier: { rare_earth: 80, platinum_group: 25, exotic_materials: 5, helium3: 3 }, era: 'Deep Space (2050-2060)' },
-  { tier: 6, costMultiplier: 300, timeMultiplier: 24, resourceTier: { rare_earth: 150, platinum_group: 50, exotic_materials: 15, helium3: 8, deuterium: 3 }, era: 'Advanced (2060-2075)' },
-  { tier: 7, costMultiplier: 1000, timeMultiplier: 36, resourceTier: { platinum_group: 80, exotic_materials: 30, helium3: 15, deuterium: 8, bio_samples: 5 }, era: 'Frontier (2075-2090)' },
-  { tier: 8, costMultiplier: 3000, timeMultiplier: 48, resourceTier: { exotic_materials: 60, helium3: 30, deuterium: 15, bio_samples: 10, antimatter_precursors: 3 }, era: 'Breakthrough (2090-2100)' },
-  { tier: 9, costMultiplier: 10000, timeMultiplier: 72, resourceTier: { exotic_materials: 100, deuterium: 30, bio_samples: 20, antimatter_precursors: 10 }, era: 'Paradigm (2100-2150)' },
-  { tier: 10, costMultiplier: 50000, timeMultiplier: 96, resourceTier: { antimatter_precursors: 50, deuterium: 50, exotic_materials: 200, helium3: 100 }, era: 'Transcendence (2150+)' },
+  { tier: 5, costMultiplier: 80, timeMultiplier: 14, resourceTier: { rare_earth: 80, platinum_group: 25, exotic_materials: 5, helium3: 3 }, era: 'Deep Space (2050-2060)' },
+  { tier: 6, costMultiplier: 200, timeMultiplier: 22, resourceTier: { rare_earth: 120, platinum_group: 40, exotic_materials: 12, helium3: 6, deuterium: 2 }, era: 'Advanced (2060-2075)' },
+  { tier: 7, costMultiplier: 500, timeMultiplier: 32, resourceTier: { platinum_group: 60, exotic_materials: 25, helium3: 12, deuterium: 6, bio_samples: 3 }, era: 'Frontier (2075-2090)' },
+  { tier: 8, costMultiplier: 1200, timeMultiplier: 44, resourceTier: { exotic_materials: 50, helium3: 25, deuterium: 12, bio_samples: 8, antimatter_precursors: 2 }, era: 'Breakthrough (2090-2100)' },
+  { tier: 9, costMultiplier: 3000, timeMultiplier: 60, resourceTier: { exotic_materials: 80, deuterium: 25, bio_samples: 15, antimatter_precursors: 8 }, era: 'Paradigm (2100-2150)' },
+  { tier: 10, costMultiplier: 8000, timeMultiplier: 80, resourceTier: { antimatter_precursors: 30, deuterium: 40, exotic_materials: 150, helium3: 60 }, era: 'Transcendence (2150+)' },
 ];
 
 // ─── Research Definitions per Category ───────────────────────────────────────
