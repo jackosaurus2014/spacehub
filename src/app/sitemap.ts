@@ -167,6 +167,24 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/compare/iridium-vs-globalstar`, changeFrequency: 'monthly' as const, priority: 0.6 },
     { url: `${BASE_URL}/compare/spacex-vs-ula`, changeFrequency: 'monthly' as const, priority: 0.7 },
 
+    // Sector directory pages (programmatic SEO)
+    { url: `${BASE_URL}/sectors`, changeFrequency: 'weekly' as const, priority: 0.8 },
+    { url: `${BASE_URL}/sectors/launch-services`, changeFrequency: 'monthly' as const, priority: 0.7 },
+    { url: `${BASE_URL}/sectors/satellite-communications`, changeFrequency: 'monthly' as const, priority: 0.7 },
+    { url: `${BASE_URL}/sectors/earth-observation`, changeFrequency: 'monthly' as const, priority: 0.7 },
+    { url: `${BASE_URL}/sectors/defense-intelligence`, changeFrequency: 'monthly' as const, priority: 0.7 },
+    { url: `${BASE_URL}/sectors/satellite-manufacturing`, changeFrequency: 'monthly' as const, priority: 0.6 },
+    { url: `${BASE_URL}/sectors/ground-segment`, changeFrequency: 'monthly' as const, priority: 0.6 },
+    { url: `${BASE_URL}/sectors/space-tourism`, changeFrequency: 'monthly' as const, priority: 0.6 },
+    { url: `${BASE_URL}/sectors/space-situational-awareness`, changeFrequency: 'monthly' as const, priority: 0.6 },
+    { url: `${BASE_URL}/sectors/on-orbit-servicing`, changeFrequency: 'monthly' as const, priority: 0.6 },
+    { url: `${BASE_URL}/sectors/propulsion-systems`, changeFrequency: 'monthly' as const, priority: 0.6 },
+    { url: `${BASE_URL}/sectors/space-debris-removal`, changeFrequency: 'monthly' as const, priority: 0.6 },
+    { url: `${BASE_URL}/sectors/in-space-manufacturing`, changeFrequency: 'monthly' as const, priority: 0.6 },
+    { url: `${BASE_URL}/sectors/space-mining`, changeFrequency: 'monthly' as const, priority: 0.6 },
+    { url: `${BASE_URL}/sectors/climate-tech`, changeFrequency: 'monthly' as const, priority: 0.6 },
+    { url: `${BASE_URL}/sectors/space-logistics`, changeFrequency: 'monthly' as const, priority: 0.6 },
+
     // Marketplace
     { url: `${BASE_URL}/marketplace`, changeFrequency: 'daily' as const, priority: 0.7 },
     { url: `${BASE_URL}/marketplace/search`, changeFrequency: 'daily' as const, priority: 0.6 },
