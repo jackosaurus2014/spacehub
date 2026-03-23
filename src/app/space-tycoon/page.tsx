@@ -46,6 +46,7 @@ import { getHireCost } from '@/lib/game/workforce';
 import type { WorkforceState } from '@/lib/game/workforce';
 import { calculatePrestigeRewards, DEFAULT_PRESTIGE } from '@/lib/game/prestige';
 import GameTutorial from '@/components/game/GameTutorial';
+import FeatureUnlockToast from '@/components/game/FeatureUnlockToast';
 import ProUpgradeBanner from '@/components/game/ProUpgradeBanner';
 
 // ─── Build Panel ────────────────────────────────────────────────────────────
@@ -1381,8 +1382,12 @@ export default function SpaceTycoonPage() {
         />
       )}
 
-      {/* Tutorial */}
+      {/* Tutorial + Feature Unlock Notifications */}
       <GameTutorial onSetTab={(t) => setTab(t as GameTab)} />
+      <FeatureUnlockToast
+        availableTabs={allTabs.map(t => t.id)}
+        onNavigateToTab={(t) => setTab(t as GameTab)}
+      />
       <ProUpgradeBanner completedResearch={state.completedResearch.length} />
 
       {/* Prestige Modal */}
