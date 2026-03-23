@@ -838,6 +838,12 @@ export default function SpaceTycoonPage() {
     setState(newState);
     saveGame(newState);
     setShowMenu(false);
+    // Reset tutorial so it shows for new games
+    try {
+      localStorage.removeItem('spacetycoon_tutorial_complete');
+      localStorage.removeItem('spacetycoon_tutorial_step');
+      localStorage.removeItem('spacetycoon_unlocked_features');
+    } catch {}
   }, []);
 
   const handleRestartGame = useCallback(() => {
@@ -847,6 +853,12 @@ export default function SpaceTycoonPage() {
       const newState = getNewGameState();
       setState(newState);
       saveGame(newState);
+      // Reset tutorial so it shows again
+      try {
+        localStorage.removeItem('spacetycoon_tutorial_complete');
+        localStorage.removeItem('spacetycoon_tutorial_step');
+        localStorage.removeItem('spacetycoon_unlocked_features');
+      } catch {}
     }
   }, []);
 
