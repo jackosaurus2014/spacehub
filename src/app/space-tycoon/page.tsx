@@ -236,20 +236,26 @@ function BuildPanel({ state, onBuild, onSellBuilding }: { state: GameState; onBu
                 )}
                 <div className="flex items-center justify-between">
                   <div className="text-xs">
-                    <span className={canAfford ? 'text-green-400' : 'text-red-400'}>{formatMoney(cost)}</span>
+                    <span className={canAffordMoney ? 'text-green-400' : 'text-red-400'}>{formatMoney(cost)}</span>
                     <span className="text-slate-500 ml-2">{formatDuration(scaledBuildTime(bld.realBuildSeconds, count))}</span>
                   </div>
-                  <button
-                    onClick={() => onBuild(bld.id, selectedLocation)}
-                    disabled={!canAfford}
-                    className={`px-3 py-1 rounded text-xs font-medium transition-colors ${
-                      canAfford
-                        ? 'bg-cyan-600 text-white hover:bg-cyan-500 active:scale-95'
-                        : 'bg-white/[0.04] text-slate-600 cursor-not-allowed'
-                    }`}
-                  >
-                    Build
-                  </button>
+                  {!slotsAvailable && canAffordMoney && hasResources ? (
+                    <span className="px-3 py-1 rounded text-[10px] font-medium" style={{ background: 'rgba(255,179,2,0.1)', color: '#FFB302', border: '1px solid rgba(255,179,2,0.2)' }}>
+                      Queue Full
+                    </span>
+                  ) : (
+                    <button
+                      onClick={() => onBuild(bld.id, selectedLocation)}
+                      disabled={!canAfford}
+                      className={`px-3 py-1 rounded text-xs font-medium transition-colors ${
+                        canAfford
+                          ? 'bg-cyan-600 text-white hover:bg-cyan-500 active:scale-95'
+                          : 'bg-white/[0.04] text-slate-600 cursor-not-allowed'
+                      }`}
+                    >
+                      Build
+                    </button>
+                  )}
                 </div>
                 {count > 0 && <p className="text-slate-500 text-[10px] mt-1">Built: {count}</p>}
                 </div>{/* close relative wrapper */}

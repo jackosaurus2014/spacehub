@@ -42,12 +42,12 @@ const TUTORIAL_STEPS: TutorialStep[] = [
     phase: 'early',
   },
   {
-    title: 'Stack Your Income',
-    description: 'While your Ground Station builds, add a Small Launch Pad ($50M, 5 min) for $2.5M/month net income. Then build 2-3 LEO Telecom Satellites ($15M each) in LEO. Each satellite earns $2.3M/month — cheap and fast.',
+    title: 'Stack Your Income (Construction Limit)',
+    description: 'Important: You can only have 2 construction projects running at the same time to start. You\'ll see a "Construction Queues" bar at the top of the Build tab showing your slots. Build a Small Launch Pad ($50M) as your second slot. Once either build finishes, queue up LEO Telecom Satellites ($15M each) — they earn $2.3M/month and are cheap and fast.',
     icon: '💰',
-    action: 'Build a Small Launch Pad + LEO Telecom Satellites',
+    action: 'Build a Small Launch Pad (your 2nd slot), then satellites after a slot opens',
     tab: 'build',
-    tip: 'Buildings get 1.15x more expensive for each duplicate at the same location. Diversify across locations as you unlock them.',
+    tip: 'You start with 2 construction slots. Research "Orbital Assembly", "Space Dock", and "3D Printing in Space" to unlock up to 5 slots total. If all slots are full, build buttons are disabled — wait for a build to finish, then queue the next one.',
     phase: 'early',
   },
   {
