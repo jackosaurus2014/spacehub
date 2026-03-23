@@ -60,8 +60,17 @@ const TUTORIAL_STEPS: TutorialStep[] = [
     phase: 'early',
   },
   {
+    title: 'Earn Cash from Contracts',
+    description: 'Once you have 2 completed buildings, the Contracts tab unlocks. Go there now and look for "Launch Provider Certification" — it requires 2 active services, which you should already have from your Ground Station and Launch Pad. Accept it! When completed, it awards $60M cash — a huge boost toward your first research.',
+    icon: '📋',
+    action: 'Open Contracts tab → Accept "Launch Provider Certification"',
+    tab: 'contracts',
+    tip: 'You can have multiple contracts active at the same time, so accept every contract you qualify for. Check back often — new contracts appear as you progress. Contracts also reward speed boosts that accelerate construction and research.',
+    phase: 'early',
+  },
+  {
     title: 'Start Research',
-    description: 'Go to the Research tab. Open the "Rocketry" category dropdown and look for "Reusable Boosters" ($200M) — it unlocks the Medium Launch Pad and Moon access. Research is expensive, so you may need to wait for your buildings to generate enough revenue first. Check the suggested researches at the top of the tab for affordable options while you save up.',
+    description: 'Now go to the Research tab. With your $60M contract reward, you\'re closer to affording research. Open the "Rocketry" category dropdown and look for "Reusable Boosters" ($200M) — it unlocks the Medium Launch Pad and Moon access. Research is expensive, so you may need to wait for more revenue. Check the suggested researches at the top for affordable options.',
     icon: '🔬',
     action: 'Open Rocketry category → Start "Reusable Boosters" when you can afford it',
     tab: 'research',
