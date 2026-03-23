@@ -907,6 +907,33 @@ body::after {
   --card-gap: 8px;
 }
 
+/* ═══════════════════════════════════════════════════════════════════
+   V3 CORE WEB VITALS OPTIMIZATIONS
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* CLS: Reserve space for ad containers */
+.ad-container {
+  min-height: 90px;
+  contain: layout;
+}
+
+/* CLS: Prevent layout shift on image containers */
+img:not([width]):not([height]) {
+  aspect-ratio: 16/9;
+}
+
+/* INP: Reduce paint complexity on non-critical transitions.
+   Instead of blanket transition-all, components should specify properties.
+   This override catches the most common hover performance hog. */
+.card-glass,
+.card,
+.card-data,
+.card-content,
+.card-interactive,
+.card-terminal {
+  contain: layout style;
+}
+
 /* V3: Global scrollbars — visible, grabbable, zinc-colored */
 ::-webkit-scrollbar {
   width: 6px;

@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import { DM_Sans, JetBrains_Mono } from 'next/font/google';
+import Script from 'next/script';
 import localFont from 'next/font/local';
 import './globals.css';
 import Navigation from '@/components/Navigation';
@@ -243,16 +244,19 @@ export default function RootLayout({
           measurementId="G-6N63DLGQMJ"
           enabled={true}
         />
-        {/* Google AdSense — loaded only when NEXT_PUBLIC_ADSENSE_CLIENT_ID is set */}
+        {/* Preload critical fonts for LCP */}
+        <link rel="preload" href="/fonts/Satoshi-Bold.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
+        <link rel="preload" href="/fonts/Satoshi-Black.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
+      </head>
+      <body className={`${dmSans.variable} ${jetbrainsMono.variable} ${satoshi.variable} ${dmSans.className}`}>
+        {/* Google AdSense — lazyOnload prevents blocking LCP/INP */}
         {process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID && (
-          <script
-            async
+          <Script
             src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID}`}
+            strategy="lazyOnload"
             crossOrigin="anonymous"
           />
         )}
-      </head>
-      <body className={`${dmSans.variable} ${jetbrainsMono.variable} ${satoshi.variable} ${dmSans.className}`}>
         <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[9999] focus:bg-white focus:text-slate-900 focus:px-4 focus:py-2 focus:rounded-lg focus:outline-none">
           Skip to main content
         </a>

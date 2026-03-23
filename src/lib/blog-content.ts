@@ -1209,7 +1209,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 
 <ul>
 <li><strong>TRL assessment:</strong> NASA\'s Technology Readiness Level (TRL) scale (1-9) provides a standardized framework. TRL 1-3 is basic research. TRL 4-6 is development and testing. TRL 7-9 is flight-proven. Ask: what TRL is the core technology, and what evidence supports that claim?</li>
-<li><strong>Patent portfolio:</strong> Review patent filings using the <a href="/patents">SpaceNexus Patent Intelligence module</a>. Patent activity indicates genuine R&amp;D investment and can reveal technical direction. Look for granted patents (not just applications) and assess whether the IP is core to the business model.</li>
+<li><strong>Patent portfolio:</strong> Review <a href="/patent-tracker">patent filings</a> using the <a href="/patents">SpaceNexus Patent Intelligence module</a>. Patent activity indicates genuine R&amp;D investment and can reveal technical direction. Look for granted patents (not just applications) and assess whether the IP is core to the business model.</li>
 <li><strong>Test and launch track record:</strong> For launch providers, examine success rates, cadence improvement, and anomaly resolution. For satellite operators, assess on-orbit performance, mission life vs. design life, and failure rates.</li>
 <li><strong>Technical team credentials:</strong> Evaluate the depth of the engineering team. Key hires from SpaceX, Blue Origin, JPL, or major aerospace primes signal technical credibility. Check the <a href="/executive-moves">Executive Moves tracker</a> for recent leadership changes.</li>
 </ul>
@@ -1559,7 +1559,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 
 <h3>2. Technology Readiness (Weight: 20%)</h3>
 
-<p>Technology readiness evaluates the maturity and credibility of a company\'s core technology and its intellectual property position.</p>
+<p>Technology readiness evaluates the maturity and credibility of a company\'s core technology and its <a href="/patent-tracker">intellectual property</a> position.</p>
 
 <ul>
 <li><strong>Technology Readiness Level (TRL)</strong> — Assessed on NASA\'s 1-9 scale based on publicly available test data, mission results, and technical publications. Flight-proven technology (TRL 8-9) scores highest.</li>
@@ -2046,7 +2046,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
   {
     slug: 'golden-dome-space-missile-defense-program',
     title: 'Golden Dome: Inside the $13.4 Billion Space Missile Defense Program',
-    excerpt: 'The Pentagon\'s Golden Dome initiative is the largest space-defense program since the original Star Wars. With $13.4 billion in FY2026 funding, SpaceX and Blue Origin competing for constellation contracts, and Space Force reaching a critical design milestone, here\'s what it means for commercial space and defense investors.',
+    excerpt: 'The Pentagon\'s Golden Dome initiative is the largest space-defense program since the original Star Wars. With $13.4 billion in FY2026 funding, <a href="/compare/spacex-vs-blue-origin">SpaceX and Blue Origin</a> competing for constellation contracts, and Space Force reaching a critical design milestone, here\'s what it means for commercial space and defense investors.',
     category: 'analysis',
     author: 'SpaceNexus Team',
     authorRole: 'Market Intelligence',
@@ -2166,7 +2166,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 
 <p>For space industry professionals and investors, Golden Dome is the single most important program to watch in 2026. The contracts flowing from this program will shape the defense-space industrial base for the next decade.</p>
 
-<p>Track Golden Dome contracts, defense-space company profiles, and related procurement opportunities through the SpaceNexus <a href="/space-defense">Space Defense</a> module. Monitor defense-space stocks and funding rounds in <a href="/market-intel">Market Intelligence</a>, and follow contract awards in <a href="/procurement">Procurement Intelligence</a>.</p>
+<p>Track Golden Dome contracts, defense-<a href="/company-profiles">space company profiles</a>, and related procurement opportunities through the SpaceNexus <a href="/space-defense">Space Defense</a> module. Monitor defense-space stocks and funding rounds in <a href="/market-intel">Market Intelligence</a>, and follow contract awards in <a href="/procurement">Procurement Intelligence</a>.</p>
 `,
   },
   {
@@ -2614,7 +2614,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
     publishedAt: '2026-03-14T00:00:00Z',
     readingTime: 12,
     featured: true,
-    keywords: ['space investment', 'space stocks 2026', 'space industry ETF', 'space SPAC', 'satellite stocks', 'Rocket Lab stock', 'space venture capital', 'space portfolio', 'space economy investing', 'space industry funding'],
+    keywords: ['space investment', 'space stocks 2026', 'space industry ETF', 'space SPAC', 'satellite stocks', 'Rocket Lab stock', 'space venture capital', 'space portfolio', 'space economy investing', '<a href="/funding-tracker">space industry funding</a>'],
     content: `
 <p>The space economy is no longer a niche investment thesis — it's a <strong>$630+ billion market</strong> growing at 9% annually toward a projected $1.8 trillion by 2035. From Rocket Lab's ascent as a multi-billion-dollar pure-play to the explosion of private funding in Earth observation AI, the space sector is offering investors more opportunities — and more complexity — than ever before.</p>
 
@@ -4043,7 +4043,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
     publishedAt: '2026-03-17T00:00:00Z',
     readingTime: 8,
     featured: false,
-    keywords: ['SpaceNexus guide', 'space industry platform', 'space intelligence tools', 'getting started SpaceNexus', 'space dashboard', 'satellite tracking platform', 'space market data'],
+    keywords: ['SpaceNexus guide', 'space industry platform', 'space intelligence tools', 'getting started SpaceNexus', 'space dashboard', '<a href="/satellites">satellite tracking platform</a>', 'space market data'],
     content: `
 <p>You just signed up for SpaceNexus. Now what? With 10+ intelligence modules, real-time data feeds, and tools built for everyone from satellite engineers to space investors, the platform can feel like a lot to take in at first.</p>
 
@@ -5357,7 +5357,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 <p>When launch data, market data, procurement data, and news all live in the same system, the platform can surface correlations that no human would find manually. A launch failure's impact on the operator's stock price, the resulting shift in insurance premiums, the effect on competing launch providers' manifest demand — these cascading connections become visible and queryable.</p>
 
 <h3>Real-Time Situational Awareness</h3>
-<p>Instead of checking 20 sources sequentially, a unified dashboard presents the current state of the space industry at a glance. Upcoming launches, market movements, breaking news, new contract opportunities, and space weather conditions — all updated in real time, all in one view. The cognitive overhead of context-switching between sources disappears.</p>
+<p>Instead of checking 20 sources sequentially, a unified dashboard presents the current state of the space industry at a glance. Upcoming launches, market movements, breaking news, new contract opportunities, and <a href="/space-weather">space weather conditions</a> — all updated in real time, all in one view. The cognitive overhead of context-switching between sources disappears.</p>
 
 <h3>Personalized Intelligence</h3>
 <p>Not every space professional needs the same data. A satellite operator cares about orbital conjunction alerts and space weather. A defense contractor cares about procurement opportunities and regulatory changes. An investor cares about funding rounds and market multiples. A unified platform can tailor its intelligence feed to each user's role, interests, and portfolio — delivering signal, not noise.</p>
@@ -6090,7 +6090,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
   },
   {
     slug: 'starlink-oneweb-kuiper-mega-constellation-comparison',
-    title: 'Starlink vs. OneWeb vs. Kuiper: The Mega-Constellation Wars Explained',
+    title: '<a href="/compare/starlink-vs-oneweb">Starlink vs. OneWeb</a> vs. Kuiper: The Mega-Constellation Wars Explained',
     excerpt: 'SpaceX Starlink, Eutelsat OneWeb, and Amazon Kuiper are racing to blanket Earth in broadband from orbit. We compare satellite counts, coverage, speeds, pricing, partnerships, and military contracts to determine who is winning \u2014 and why.',
     category: 'analysis',
     author: 'SpaceNexus Team',
@@ -9283,7 +9283,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 <li><strong>Space weather monitor</strong> — solar flare alerts, geomagnetic storm forecasts, and solar wind data from NOAA</li>
 <li><strong>Government contracts</strong> — searchable database of space-related procurements from SAM.gov and USAspending.gov</li>
 <li><strong>70 original articles</strong> — deep-dive analysis on everything from Artemis to asteroid mining, written for professionals</li>
-<li><strong>Company profiles</strong> — 200+ space company profiles with financials, satellite assets, leadership, and news</li>
+<li><strong>Company profiles</strong> — 200+ <a href="/company-profiles">space company profiles</a> with financials, satellite assets, leadership, and news</li>
 </ul>
 
 <p><strong>Best for:</strong> Anyone who wants a single homepage for the space industry instead of 15 browser tabs. Analysts, investors, students, journalists, and engineers all benefit from the consolidated view.</p>
@@ -17795,7 +17795,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 
 <ul>
 <li><strong>Internal training academies:</strong> SpaceX, L3Harris, and Northrop Grumman run structured programs that train new graduates in space-specific skills, reducing the experience requirement for entry-level hires</li>
-<li><strong>Apprenticeship programs:</strong> Companies like Rocket Lab and Relativity Space have established manufacturing apprenticeships, training technicians without requiring four-year degrees</li>
+<li><strong>Apprenticeship programs:</strong> Companies like <a href="/compare/rocket-lab-vs-relativity-space">Rocket Lab and Relativity</a> Space have established manufacturing apprenticeships, training technicians without requiring four-year degrees</li>
 <li><strong>Remote and hybrid work:</strong> Where classification allows, companies are offering remote positions to access talent outside traditional aerospace geographies</li>
 <li><strong>Veteran transition programs:</strong> Military space professionals leaving the Space Force or Space Command bring clearances and domain knowledge; structured transition programs help them adapt to commercial environments</li>
 <li><strong>University partnerships:</strong> Sponsored capstone projects, co-op programs, and funded research labs create early exposure and talent pipelines</li>
@@ -18368,7 +18368,7 @@ ISS (ZARYA)
 
 <ul>
 <li><strong>SpaceNexus Space Weather</strong> — Solar flare alerts, Kp index, CME tracking, and aurora forecasts integrated into the main platform</li>
-<li><strong>SpaceWeatherLive</strong> — Dedicated solar activity monitoring with push alerts for geomagnetic storms</li>
+<li><strong>SpaceWeatherLive</strong> — Dedicated <a href="/space-weather">solar activity monitoring</a> with push alerts for geomagnetic storms</li>
 <li><strong>My Aurora Forecast</strong> — Northern lights predictions with location-based Kp alerts</li>
 <li><strong>Stellarium</strong> — Planetarium app for identifying objects in the night sky</li>
 </ul>
@@ -18524,7 +18524,7 @@ ISS (ZARYA)
 
 <h2 id="operational-procedures">Operational Response Procedures</h2>
 
-<p>When space weather conditions deteriorate, satellite operators should consider:</p>
+<p>When <a href="/space-weather">space weather conditions</a> deteriorate, satellite operators should consider:</p>
 
 <ul>
 <li><strong>Kp 5-6 (G1-G2 storm):</strong> Increase monitoring cadence. Postpone non-essential maneuvers. Review telemetry for anomalies</li>
