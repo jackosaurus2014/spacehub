@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import type { GameState, GameTab } from '@/lib/game/types';
 import { processFullTick } from '@/lib/game/game-engine';
 import { getNewGameState, saveGame, loadGame, deleteSave } from '@/lib/game/save-load';
@@ -47,6 +47,12 @@ import type { WorkforceState } from '@/lib/game/workforce';
 import { calculatePrestigeRewards, DEFAULT_PRESTIGE } from '@/lib/game/prestige';
 import GameTutorial from '@/components/game/GameTutorial';
 import FeatureUnlockToast from '@/components/game/FeatureUnlockToast';
+
+/** Stable wrapper — passes tab IDs as a comma string to avoid array reference instability */
+function FeatureUnlockToastMemo({ tabIds, onNavigateToTab }: { tabIds: string; onNavigateToTab: (tab: string) => void }) {
+  const tabs = useMemo(() => tabIds.split(',').filter(Boolean), [tabIds]);
+  return <FeatureUnlockToast availableTabs={tabs} onNavigateToTab={onNavigateToTab} />;
+}
 import ProUpgradeBanner from '@/components/game/ProUpgradeBanner';
 
 // ─── Build Panel ────────────────────────────────────────────────────────────
@@ -1392,8 +1398,8 @@ export default function SpaceTycoonPage() {
 
       {/* Tutorial + Feature Unlock Notifications */}
       <GameTutorial onSetTab={(t) => setTab(t as GameTab)} />
-      <FeatureUnlockToast
-        availableTabs={allTabs.map(t => t.id)}
+      <FeatureUnlockToastMemo
+        tabIds={allTabs.map(t => t.id).join(',')}
         onNavigateToTab={(t) => setTab(t as GameTab)}
       />
       <ProUpgradeBanner completedResearch={state.completedResearch.length} />
