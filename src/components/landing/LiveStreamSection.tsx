@@ -87,28 +87,29 @@ function YouTubeEmbed({ stream }: { stream: ActiveLiveStream }) {
   const [embedBlocked, setEmbedBlocked] = useState(false);
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
-  // Detect blocked embeds: YouTube shows a blank or error page when
-  // embedding is disabled. We detect this via a timeout — if the iframe
-  // hasn't fired a successful load after 5 seconds, assume it's blocked.
-  // We also listen for the iframe's onError event as a faster signal.
+  // Detect blocked/unavailable embeds via postMessage from YouTube iframe API
+  // and a visibility fallback button. YouTube geo-restricted videos load the
+  // iframe but display an error page inside it that we can't detect cross-origin.
   useEffect(() => {
     setEmbedBlocked(false);
-    const timer = setTimeout(() => {
-      // If the iframe is still loading or shows nothing after 5s,
-      // check if it might be blocked
+
+    // Listen for YouTube iframe API messages indicating playback errors
+    const handleMessage = (event: MessageEvent) => {
       try {
-        const iframe = iframeRef.current;
-        if (iframe) {
-          // Try to access contentWindow — blocked embeds often
-          // redirect to a YouTube error page
-          // Note: cross-origin restrictions prevent direct access,
-          // so we rely on the timeout + visual indicator
+        if (typeof event.data === 'string') {
+          const data = JSON.parse(event.data);
+          // YouTube sends error codes via postMessage
+          if (data?.event === 'onError' || data?.info?.playerState === -1) {
+            setEmbedBlocked(true);
+          }
         }
       } catch {
-        // Cross-origin — expected
+        // Not a YouTube message — ignore
       }
-    }, 5000);
-    return () => clearTimeout(timer);
+    };
+
+    window.addEventListener('message', handleMessage);
+    return () => window.removeEventListener('message', handleMessage);
   }, [stream.videoId]);
 
   if (embedBlocked) {
@@ -154,17 +155,29 @@ function YouTubeEmbed({ stream }: { stream: ActiveLiveStream }) {
         className="absolute inset-0 w-full h-full"
         onError={() => setEmbedBlocked(true)}
       />
-      {/* Invisible fallback button that shows if user sees a blocked embed */}
-      <button
-        onClick={() => setEmbedBlocked(true)}
-        className="absolute bottom-3 right-3 z-20 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-black/70 text-white/70 text-xs hover:text-white hover:bg-black/90 transition-colors backdrop-blur-sm border border-white/10"
-        title="Stream not loading? Click to get a direct link"
-      >
-        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-        </svg>
-        Open on YouTube
-      </button>
+      {/* Visible fallback button — always shown so users with geo-blocked embeds can escape */}
+      <div className="absolute bottom-3 left-3 right-3 z-20 flex items-center justify-between">
+        <button
+          onClick={() => setEmbedBlocked(true)}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-black/80 text-white/80 text-xs hover:text-white hover:bg-black/95 transition-colors border border-white/10"
+        >
+          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
+          </svg>
+          Video not loading?
+        </button>
+        <a
+          href={`https://www.youtube.com/watch?v=${stream.videoId}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-600/90 text-white text-xs font-medium hover:bg-red-500 transition-colors"
+        >
+          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+          </svg>
+          Watch on YouTube
+        </a>
+      </div>
     </div>
   );
 }
