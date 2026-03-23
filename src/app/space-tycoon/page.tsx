@@ -658,7 +658,15 @@ export default function SpaceTycoonPage() {
     if (!interval) return;
 
     tickRef.current = setInterval(() => {
-      setState(prev => prev ? processFullTick(prev) : prev);
+      setState(prev => {
+        if (!prev) return prev;
+        try {
+          return processFullTick(prev);
+        } catch (err) {
+          console.error('Game tick error (recovered):', err);
+          return prev; // Return unchanged state instead of crashing
+        }
+      });
     }, interval);
 
     return () => { if (tickRef.current) clearInterval(tickRef.current); };

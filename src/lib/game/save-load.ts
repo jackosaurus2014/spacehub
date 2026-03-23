@@ -65,6 +65,10 @@ export function getNewGameState(): GameState {
     },
     completedContracts: [],
     activeContracts: [],
+    // V3 fields
+    availableBoosts: [],
+    activeBoosts: [],
+    servicePriceMultipliers: {},
   };
 }
 
@@ -113,6 +117,10 @@ export function loadGame(): GameState | null {
     }
     if (!state.completedContracts) state.completedContracts = [];
     if (!state.activeContracts) state.activeContracts = [];
+    // V3 fields — speed boosts and service pricing
+    if (!state.availableBoosts) state.availableBoosts = [];
+    if (!state.activeBoosts) state.activeBoosts = [];
+    if (!state.servicePriceMultipliers) state.servicePriceMultipliers = {};
 
     state.tickSpeed = 1; // Always 1x for fairness
     return state;
