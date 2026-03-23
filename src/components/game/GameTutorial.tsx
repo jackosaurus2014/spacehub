@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { playSound } from '@/lib/game/sound-engine';
 
 interface TutorialStep {
@@ -181,10 +181,45 @@ export default function GameTutorial({ onSetTab }: GameTutorialProps) {
   const [step, setStep] = useState(0);
   const [visible, setVisible] = useState(false);
 
+  // Drag state
+  const [position, setPosition] = useState<{ x: number; y: number } | null>(null);
+  const dragRef = useRef<HTMLDivElement>(null);
+  const isDragging = useRef(false);
+  const dragOffset = useRef({ x: 0, y: 0 });
+
+  const handlePointerDown = useCallback((e: React.PointerEvent) => {
+    // Only drag from the header area
+    const target = e.target as HTMLElement;
+    if (target.closest('button') || target.closest('a')) return;
+
+    isDragging.current = true;
+    const rect = dragRef.current?.getBoundingClientRect();
+    if (rect) {
+      dragOffset.current = { x: e.clientX - rect.left, y: e.clientY - rect.top };
+    }
+    (e.target as HTMLElement).setPointerCapture(e.pointerId);
+  }, []);
+
+  const handlePointerMove = useCallback((e: React.PointerEvent) => {
+    if (!isDragging.current) return;
+    const x = e.clientX - dragOffset.current.x;
+    const y = e.clientY - dragOffset.current.y;
+    // Clamp to viewport
+    const maxX = window.innerWidth - (dragRef.current?.offsetWidth || 420);
+    const maxY = window.innerHeight - (dragRef.current?.offsetHeight || 300);
+    setPosition({
+      x: Math.max(0, Math.min(x, maxX)),
+      y: Math.max(0, Math.min(y, maxY)),
+    });
+  }, []);
+
+  const handlePointerUp = useCallback(() => {
+    isDragging.current = false;
+  }, []);
+
   useEffect(() => {
     try {
       if (localStorage.getItem(STORAGE_KEY) === 'true') return;
-      // Resume from last step if player closed and reopened
       const savedStep = localStorage.getItem(TUTORIAL_STEP_KEY);
       if (savedStep) setStep(parseInt(savedStep, 10) || 0);
       const timer = setTimeout(() => setVisible(true), 2000);
@@ -238,10 +273,19 @@ export default function GameTutorial({ onSetTab }: GameTutorialProps) {
   const phaseColors = { early: '#2DCCFF', mid: '#56F000', late: '#FFB302' };
 
   return (
-    <div className="fixed bottom-20 left-4 right-4 md:left-auto md:right-4 md:w-[420px] z-50 animate-reveal-up">
+    <div
+      ref={dragRef}
+      className={`fixed z-50 ${position ? '' : 'bottom-20 left-4 right-4 md:left-auto md:right-4'} md:w-[420px] ${!position ? 'animate-reveal-up' : ''}`}
+      style={position ? { left: position.x, top: position.y, right: 'auto', bottom: 'auto' } : undefined}
+    >
       <div className="card-terminal shadow-2xl shadow-black/60">
-        {/* Terminal chrome */}
-        <div className="card-terminal__header">
+        {/* Terminal chrome — draggable handle */}
+        <div
+          className="card-terminal__header cursor-grab active:cursor-grabbing select-none"
+          onPointerDown={handlePointerDown}
+          onPointerMove={handlePointerMove}
+          onPointerUp={handlePointerUp}
+        >
           <div className="flex items-center gap-2">
             <div className="card-terminal__dots">
               <div className="card-terminal__dot card-terminal__dot--red" />
