@@ -46,13 +46,7 @@ import { getHireCost } from '@/lib/game/workforce';
 import type { WorkforceState } from '@/lib/game/workforce';
 import { calculatePrestigeRewards, DEFAULT_PRESTIGE } from '@/lib/game/prestige';
 import GameTutorial from '@/components/game/GameTutorial';
-import FeatureUnlockToast from '@/components/game/FeatureUnlockToast';
-
-/** Stable wrapper — passes tab IDs as a comma string to avoid array reference instability */
-function FeatureUnlockToastMemo({ tabIds, onNavigateToTab }: { tabIds: string; onNavigateToTab: (tab: string) => void }) {
-  const tabs = useMemo(() => tabIds.split(',').filter(Boolean), [tabIds]);
-  return <FeatureUnlockToast availableTabs={tabs} onNavigateToTab={onNavigateToTab} />;
-}
+// FeatureUnlockToast disabled — caused React #310 infinite re-render. TODO: fix and re-enable.
 import ProUpgradeBanner from '@/components/game/ProUpgradeBanner';
 
 // ─── Build Panel ────────────────────────────────────────────────────────────
@@ -1398,10 +1392,7 @@ export default function SpaceTycoonPage() {
 
       {/* Tutorial + Feature Unlock Notifications */}
       <GameTutorial onSetTab={(t) => setTab(t as GameTab)} />
-      <FeatureUnlockToastMemo
-        tabIds={allTabs.map(t => t.id).join(',')}
-        onNavigateToTab={(t) => setTab(t as GameTab)}
-      />
+      {/* FeatureUnlockToast removed — was causing React error #310 infinite re-render loop */}
       <ProUpgradeBanner completedResearch={state.completedResearch.length} />
 
       {/* Prestige Modal */}
