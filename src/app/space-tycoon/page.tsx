@@ -261,6 +261,69 @@ function BuildPanel({ state, onBuild, onSellBuilding }: { state: GameState; onBu
 
 // ─── Research Panel (redesigned — collapsible categories, search, progress) ──
 
+/** Pick up to 3 suggested researches that unlock progression and the player can start */
+function getSuggestedResearch(state: GameState): typeof RESEARCH[number][] {
+  const completed = new Set(state.completedResearch);
+  const activeId = state.activeResearch?.definitionId;
+
+  // All researches the player could potentially start (prereqs met, not completed, not active)
+  const available = RESEARCH.filter(r =>
+    !completed.has(r.id) &&
+    r.id !== activeId &&
+    r.prerequisites.every(p => completed.has(p))
+  );
+
+  // Count how many OTHER researches depend on each research (gateway value)
+  const dependentCount = new Map<string, number>();
+  for (const r of RESEARCH) {
+    for (const prereq of r.prerequisites) {
+      dependentCount.set(prereq, (dependentCount.get(prereq) || 0) + 1);
+    }
+  }
+
+  // Count how many buildings each research unlocks
+  const buildingUnlockCount = new Map<string, number>();
+  for (const bld of BUILDINGS) {
+    for (const reqRes of bld.requiredResearch || []) {
+      buildingUnlockCount.set(reqRes, (buildingUnlockCount.get(reqRes) || 0) + 1);
+    }
+  }
+
+  // Score each available research
+  const scored = available.map(r => {
+    let score = 0;
+
+    // Can afford (money + resources) — strong signal
+    const canAffordMoney = state.money >= r.baseCostMoney;
+    const hasResources = !r.resourceCost || Object.entries(r.resourceCost).every(
+      ([resId, qty]) => (state.resources[resId] || 0) >= qty
+    );
+    if (canAffordMoney && hasResources) score += 50;
+    else if (canAffordMoney) score += 20; // Has money but not resources
+
+    // Unlocks buildings directly (unlocks field)
+    if (r.unlocks && r.unlocks.length > 0) score += 30;
+
+    // Is a prerequisite for other research (gateway tech)
+    score += (dependentCount.get(r.id) || 0) * 8;
+
+    // Unlocks buildings via requiredResearch (buildings that need this)
+    score += (buildingUnlockCount.get(r.id) || 0) * 10;
+
+    // Lower tier = easier to do = more immediately useful
+    score += (6 - r.tier) * 5;
+
+    // Cheaper = more actionable
+    if (r.baseCostMoney <= state.money * 0.5) score += 10;
+
+    return { research: r, score, canAfford: canAffordMoney && hasResources };
+  });
+
+  // Sort by score descending, take top 3
+  scored.sort((a, b) => b.score - a.score);
+  return scored.slice(0, 3).map(s => s.research);
+}
+
 function ResearchPanel({ state, onStartResearch }: { state: GameState; onStartResearch: (id: string) => void }) {
   const [expandedCat, setExpandedCat] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -270,8 +333,75 @@ function ResearchPanel({ state, onStartResearch }: { state: GameState; onStartRe
   const completedCount = state.completedResearch.length;
   const progressPct = Math.round((completedCount / totalResearch) * 100);
 
+  // Get 3 suggested researches
+  const suggestions = useMemo(() => getSuggestedResearch(state), [
+    state.completedResearch.length, state.money, state.activeResearch?.definitionId,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    JSON.stringify(state.resources),
+  ]);
+
   return (
     <div className="space-y-4">
+      {/* Suggested Research — top 3 picks for progression */}
+      {!state.activeResearch && suggestions.length > 0 && (
+        <div className="rounded-xl border border-indigo-500/20 bg-indigo-500/5 p-4">
+          <div className="flex items-center gap-2 mb-3">
+            <span className="text-sm">💡</span>
+            <h3 className="text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--accent-primary)' }}>Suggested Research</h3>
+            <span className="text-[9px]" style={{ color: 'var(--text-muted)' }}>— best for your current progress</span>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+            {suggestions.map(r => {
+              const canAffordMoney = state.money >= r.baseCostMoney;
+              const hasRes = !r.resourceCost || Object.entries(r.resourceCost).every(
+                ([resId, qty]) => (state.resources[resId] || 0) >= qty
+              );
+              const canStart = canAffordMoney && hasRes && !state.activeResearch;
+              const unlocksText = r.unlocks && r.unlocks.length > 0
+                ? r.unlocks.map(u => BUILDING_MAP.get(u)?.name || u.replace(/_/g, ' ')).join(', ')
+                : null;
+
+              return (
+                <button
+                  key={r.id}
+                  onClick={() => { if (canStart) onStartResearch(r.id); }}
+                  disabled={!canStart}
+                  className={`text-left p-3 rounded-lg border transition-all ${
+                    canStart
+                      ? 'border-indigo-500/30 bg-indigo-500/5 hover:bg-indigo-500/10 hover:border-indigo-500/50 cursor-pointer'
+                      : 'border-white/[0.06] bg-white/[0.02] opacity-70'
+                  }`}
+                >
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-xs font-semibold" style={{ color: 'var(--text-primary)' }}>{r.name}</span>
+                    <span className="text-[9px] px-1.5 py-0.5 rounded-full" style={{
+                      background: canStart ? 'rgba(99,102,241,0.15)' : 'rgba(255,179,2,0.1)',
+                      color: canStart ? '#818cf8' : '#FFB302',
+                    }}>
+                      {canStart ? 'READY' : 'NEED $'}
+                    </span>
+                  </div>
+                  <p className="text-[10px] mb-1.5" style={{ color: 'var(--text-tertiary)' }}>{r.effect}</p>
+                  {unlocksText && (
+                    <p className="text-[9px] font-medium" style={{ color: '#56F000' }}>
+                      Unlocks: {unlocksText}
+                    </p>
+                  )}
+                  <div className="flex items-center justify-between mt-1.5">
+                    <span className={`text-[10px] font-mono ${canAffordMoney ? 'text-green-400/80' : 'text-red-400/80'}`}>
+                      {formatMoney(r.baseCostMoney)}
+                    </span>
+                    <span className="text-[10px]" style={{ color: 'var(--text-muted)' }}>
+                      T{r.tier} · {formatDuration(r.realResearchSeconds)}
+                    </span>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
       {/* Active Research Banner */}
       {state.activeResearch && (() => {
         const def = RESEARCH_MAP.get(state.activeResearch.definitionId);
