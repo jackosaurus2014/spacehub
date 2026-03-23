@@ -1084,7 +1084,14 @@ export default function SpaceTycoonPage() {
   if (hasResources) allTabs.push({ id: 'bounties', label: 'Bounties', icon: '📦' });
   allTabs.push({ id: 'leaderboard', label: 'Ranks', icon: '🏆' });
 
-  const tabs = allTabs;
+  // V3: Split tabs into primary (always visible) and secondary (overflow dropdown)
+  const PRIMARY_TAB_IDS: GameTab[] = ['dashboard', 'build', 'research', 'map'];
+  const primaryTabs = allTabs.filter(t => PRIMARY_TAB_IDS.includes(t.id));
+  const secondaryTabs = allTabs.filter(t => !PRIMARY_TAB_IDS.includes(t.id));
+  const [showMoreTabs, setShowMoreTabs] = useState(false);
+
+  // Check if active tab is in secondary — if so, show its label in the More button
+  const activeInSecondary = secondaryTabs.find(t => t.id === tab);
 
   return (
     <div className="min-h-screen bg-space-900 flex flex-col relative">
@@ -1102,12 +1109,13 @@ export default function SpaceTycoonPage() {
       {/* Resource Bar */}
       <ResourceBar state={state} />
 
-      {/* Tab Navigation — scrollable on mobile, compact touch targets */}
-      <div className="bg-black/40 border-b border-white/[0.06] px-2 sm:px-4 py-1 flex items-center gap-0.5 sm:gap-1 overflow-x-auto scrollbar-hide" style={{ WebkitOverflowScrolling: 'touch' }}>
-        {tabs.map(t => (
+      {/* Tab Navigation — V3: 4 primary tabs + overflow dropdown */}
+      <div className="bg-black/40 border-b border-white/[0.06] px-2 sm:px-4 py-1 flex items-center gap-0.5 sm:gap-1" style={{ WebkitOverflowScrolling: 'touch' }}>
+        {/* Primary tabs — always visible */}
+        {primaryTabs.map(t => (
           <button
             key={t.id}
-            onClick={() => setTab(t.id)}
+            onClick={() => { setTab(t.id); setShowMoreTabs(false); }}
             className={`px-2 sm:px-3 py-2 rounded-lg text-[10px] sm:text-xs font-medium transition-colors whitespace-nowrap min-h-[36px] ${
               tab === t.id
                 ? 'bg-white/[0.08] text-white game-tab-active'
@@ -1117,6 +1125,46 @@ export default function SpaceTycoonPage() {
             <span className="mr-0.5 sm:mr-1">{t.icon}</span><span className="hidden sm:inline">{t.label}</span>
           </button>
         ))}
+
+        {/* More dropdown — contains secondary tabs */}
+        {secondaryTabs.length > 0 && (
+          <div className="relative">
+            <button
+              onClick={() => setShowMoreTabs(!showMoreTabs)}
+              className={`px-2 sm:px-3 py-2 rounded-lg text-[10px] sm:text-xs font-medium transition-colors whitespace-nowrap min-h-[36px] ${
+                activeInSecondary
+                  ? 'bg-white/[0.08] text-white game-tab-active'
+                  : 'text-slate-400 hover:text-white hover:bg-white/[0.04]'
+              }`}
+            >
+              {activeInSecondary ? (
+                <><span className="mr-0.5 sm:mr-1">{activeInSecondary.icon}</span><span className="hidden sm:inline">{activeInSecondary.label}</span></>
+              ) : (
+                <><span className="mr-0.5">•••</span><span className="hidden sm:inline">More</span></>
+              )}
+              <svg className={`inline-block w-3 h-3 ml-1 transition-transform ${showMoreTabs ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+            {showMoreTabs && (
+              <div className="absolute top-full left-0 mt-1 py-1 rounded-lg shadow-xl z-50 min-w-[180px]" style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border-default)' }}>
+                {secondaryTabs.map(t => (
+                  <button
+                    key={t.id}
+                    onClick={() => { setTab(t.id); setShowMoreTabs(false); }}
+                    className={`w-full text-left px-3 py-2 text-xs flex items-center gap-2 transition-colors ${
+                      tab === t.id ? 'text-white bg-white/[0.06]' : 'text-slate-400 hover:text-white hover:bg-white/[0.04]'
+                    }`}
+                  >
+                    <span>{t.icon}</span>
+                    <span>{t.label}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
         <div className="flex-1" />
         <Link
           href="/space-tycoon/faq"

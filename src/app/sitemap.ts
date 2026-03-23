@@ -156,6 +156,16 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/compare/starlink-vs-oneweb`, changeFrequency: 'monthly' as const, priority: 0.7 },
     { url: `${BASE_URL}/compare/planet-labs-vs-maxar`, changeFrequency: 'monthly' as const, priority: 0.7 },
     { url: `${BASE_URL}/compare/spacenexus-vs-bryce-tech`, changeFrequency: 'monthly' as const, priority: 0.7 },
+    { url: `${BASE_URL}/compare/spacex-vs-rocket-lab`, changeFrequency: 'monthly' as const, priority: 0.7 },
+    { url: `${BASE_URL}/compare/starlink-vs-kuiper`, changeFrequency: 'monthly' as const, priority: 0.7 },
+    { url: `${BASE_URL}/compare/boeing-vs-lockheed-space`, changeFrequency: 'monthly' as const, priority: 0.7 },
+    { url: `${BASE_URL}/compare/virgin-galactic-vs-blue-origin`, changeFrequency: 'monthly' as const, priority: 0.7 },
+    { url: `${BASE_URL}/compare/relativity-space-vs-firefly`, changeFrequency: 'monthly' as const, priority: 0.6 },
+    { url: `${BASE_URL}/compare/maxar-vs-airbus-defence-space`, changeFrequency: 'monthly' as const, priority: 0.6 },
+    { url: `${BASE_URL}/compare/astra-vs-virgin-orbit`, changeFrequency: 'monthly' as const, priority: 0.6 },
+    { url: `${BASE_URL}/compare/northrop-grumman-vs-l3harris-space`, changeFrequency: 'monthly' as const, priority: 0.6 },
+    { url: `${BASE_URL}/compare/iridium-vs-globalstar`, changeFrequency: 'monthly' as const, priority: 0.6 },
+    { url: `${BASE_URL}/compare/spacex-vs-ula`, changeFrequency: 'monthly' as const, priority: 0.7 },
 
     // Marketplace
     { url: `${BASE_URL}/marketplace`, changeFrequency: 'daily' as const, priority: 0.7 },
