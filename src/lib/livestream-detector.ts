@@ -358,16 +358,38 @@ async function detectViaYouTubeAPI(apiKey: string): Promise<ActiveLiveStream[]> 
   const videoIds = uniqueItems.map((item) => item.id.videoId);
   const videoDetails = await youtubeVideoDetails(apiKey, videoIds);
 
-  // Step 4: Convert and sort by viewerCount descending
-  const streams = toActiveLiveStreams(uniqueItems, videoDetails);
-  streams.sort((a, b) => b.viewerCount - a.viewerCount);
+  // Step 4: Convert and filter — only keep videos that are ACTUALLY live
+  // The page scraper can return stale videos that are no longer streaming.
+  // A video is confirmed live if it has concurrentViewers in liveStreamingDetails.
+  // Videos with 0 concurrent viewers or no liveStreamingDetails are likely ended.
+  const allStreams = toActiveLiveStreams(uniqueItems, videoDetails);
 
-  logger.info('[LivestreamDetector] YouTube API detection complete', {
-    found: streams.length,
-    channels: streams.map((s) => s.channelName),
+  const confirmedLive = allStreams.filter((stream) => {
+    const detail = videoDetails.get(stream.videoId);
+    // Must have liveStreamingDetails with concurrentViewers to be confirmed live
+    if (!detail?.liveStreamingDetails?.concurrentViewers) {
+      logger.info('[LivestreamDetector] Filtering out non-live video', {
+        videoId: stream.videoId,
+        channel: stream.channelName,
+        title: stream.title,
+        reason: 'No concurrentViewers — likely ended or not yet started',
+      });
+      return false;
+    }
+    const viewers = parseInt(detail.liveStreamingDetails.concurrentViewers, 10);
+    // Require at least 1 concurrent viewer as proof of active stream
+    return viewers > 0;
   });
 
-  return streams;
+  confirmedLive.sort((a, b) => b.viewerCount - a.viewerCount);
+
+  logger.info('[LivestreamDetector] YouTube API detection complete', {
+    found: confirmedLive.length,
+    filtered: allStreams.length - confirmedLive.length,
+    channels: confirmedLive.map((s) => s.channelName),
+  });
+
+  return confirmedLive;
 }
 
 // ---------------------------------------------------------------------------
