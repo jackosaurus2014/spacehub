@@ -33,6 +33,15 @@ const TUTORIAL_STEPS: TutorialStep[] = [
     phase: 'early',
   },
   {
+    title: 'Track Your Progress',
+    description: 'Your building is now under construction! Go to the Dashboard tab to see it. The Dashboard shows everything at a glance: construction countdowns, active research timers, your income breakdown, net worth, and the Empire Overview bar showing how far across the solar system you\'ve expanded.',
+    icon: '📊',
+    action: 'Switch to the Dashboard to watch your building progress',
+    tab: 'dashboard',
+    tip: 'The Dashboard is your command center. Check it often — it shows revenue/costs, speed boosts you can activate, active effects, and your event log.',
+    phase: 'early',
+  },
+  {
     title: 'Stack Your Income',
     description: 'While your Ground Station builds, add a Small Launch Pad ($50M, 5 min) for $2.5M/month net income. Then build 2-3 LEO Telecom Satellites ($15M each) in LEO. Each satellite earns $2.3M/month — cheap and fast.',
     icon: '💰',
