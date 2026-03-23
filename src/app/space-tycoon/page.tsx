@@ -615,6 +615,7 @@ export default function SpaceTycoonPage() {
   const [unlockedAchievements, setUnlockedAchievements] = useState<string[]>([]);
   const [offlineEarnings, setOfflineEarnings] = useState<OfflineEarnings | null>(null);
   const [showPrestige, setShowPrestige] = useState(false);
+  const [showMoreTabs, setShowMoreTabs] = useState(false);
   const tickRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const autoSaveRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -1097,8 +1098,6 @@ export default function SpaceTycoonPage() {
   const PRIMARY_TAB_IDS: GameTab[] = ['dashboard', 'build', 'research', 'map'];
   const primaryTabs = allTabs.filter(t => PRIMARY_TAB_IDS.includes(t.id));
   const secondaryTabs = allTabs.filter(t => !PRIMARY_TAB_IDS.includes(t.id));
-  const [showMoreTabs, setShowMoreTabs] = useState(false);
-
   // Check if active tab is in secondary — if so, show its label in the More button
   const activeInSecondary = secondaryTabs.find(t => t.id === tab);
 
