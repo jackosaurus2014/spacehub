@@ -1402,7 +1402,7 @@ export default function SpaceTycoonPage() {
       )}
 
       {/* Tutorial + Feature Unlock Notifications */}
-      <GameTutorial onSetTab={(t) => setTab(t as GameTab)} />
+      <GameTutorial key={state.createdAt} onSetTab={(t) => setTab(t as GameTab)} />
       {/* FeatureUnlockToast removed — was causing React error #310 infinite re-render loop */}
       <ProUpgradeBanner completedResearch={state.completedResearch.length} />
 
