@@ -95,6 +95,89 @@ function MiniSparkline({ positive }: { positive: boolean }) {
   );
 }
 
+/** Empire Overview — visual summary of the player's space empire */
+function EmpireOverview({ state }: { state: GameState }) {
+  const completedBuildings = state.buildings.filter(b => b.isComplete).length;
+  const locations = state.unlockedLocations.length;
+  const research = state.completedResearch.length;
+  const ships = (state.ships || []).filter(s => s.isBuilt).length;
+  const services = state.activeServices.length;
+  const resources = Object.values(state.resources || {}).reduce((a, b) => a + b, 0);
+  const workers = state.workforce ? state.workforce.engineers + state.workforce.scientists + state.workforce.miners + state.workforce.operators : 0;
+
+  // Determine empire tier based on progress
+  const tier = completedBuildings >= 30 ? 'Megacorp' :
+    completedBuildings >= 15 ? 'Corporation' :
+    completedBuildings >= 8 ? 'Enterprise' :
+    completedBuildings >= 3 ? 'Startup' : 'Founded';
+
+  const tierColors: Record<string, string> = {
+    Founded: '#71717a',
+    Startup: '#2DCCFF',
+    Enterprise: '#56F000',
+    Corporation: '#FFB302',
+    Megacorp: '#FF3838',
+  };
+
+  const metrics = [
+    { icon: '🏗️', value: completedBuildings, label: 'Buildings' },
+    { icon: '🗺️', value: locations, label: 'Locations' },
+    { icon: '🔬', value: research, label: 'Research' },
+    { icon: '💰', value: services, label: 'Services' },
+    { icon: '🚢', value: ships, label: 'Ships' },
+    { icon: '👷', value: workers, label: 'Crew' },
+  ];
+
+  return (
+    <div className="rounded-lg overflow-hidden mb-4" style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-subtle)' }}>
+      {/* Empire header */}
+      <div className="flex items-center justify-between px-4 py-2.5" style={{ background: 'var(--bg-void)', borderBottom: '1px solid var(--border-subtle)' }}>
+        <div className="flex items-center gap-2">
+          <span className="text-sm font-bold" style={{ color: tierColors[tier] || '#71717a' }}>{tier}</span>
+          <span className="text-[9px] uppercase tracking-wider font-mono" style={{ color: 'var(--text-muted)' }}>
+            {state.companyName || 'Your Company'}
+          </span>
+        </div>
+        <span className="text-[9px] font-mono" style={{ color: 'var(--text-muted)' }}>
+          {formatGameDate(state.gameDate)}
+        </span>
+      </div>
+
+      {/* Visual metrics grid */}
+      <div className="grid grid-cols-6 divide-x" style={{ borderColor: 'var(--border-subtle)' }}>
+        {metrics.map(m => (
+          <div key={m.label} className="flex flex-col items-center py-2.5 px-1">
+            <span className="text-sm mb-0.5">{m.icon}</span>
+            <span className="text-sm font-bold font-mono" style={{ color: 'var(--text-primary)' }}>{m.value}</span>
+            <span className="text-[8px] uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>{m.label}</span>
+          </div>
+        ))}
+      </div>
+
+      {/* Location progress bar — visual of how far across the solar system */}
+      <div className="px-4 py-2" style={{ borderTop: '1px solid var(--border-subtle)' }}>
+        <div className="flex items-center gap-1">
+          {['earth_surface', 'leo', 'geo', 'lunar_orbit', 'lunar_surface', 'mars_orbit', 'mars_surface', 'asteroid_belt', 'jupiter_system', 'saturn_system', 'outer_system'].map(loc => {
+            const unlocked = state.unlockedLocations.includes(loc);
+            return (
+              <div
+                key={loc}
+                className="flex-1 h-1.5 rounded-full transition-colors"
+                style={{ background: unlocked ? 'var(--accent-primary)' : 'var(--border-subtle)' }}
+                title={loc.replace(/_/g, ' ')}
+              />
+            );
+          })}
+        </div>
+        <div className="flex justify-between mt-1">
+          <span className="text-[7px]" style={{ color: 'var(--text-muted)' }}>Earth</span>
+          <span className="text-[7px]" style={{ color: 'var(--text-muted)' }}>Outer System</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function DashboardPanel({ state }: { state: GameState }) {
   const completedBuildings = state.buildings.filter(b => b.isComplete);
   const inProgress = state.buildings.filter(b => !b.isComplete);
@@ -143,6 +226,9 @@ export default function DashboardPanel({ state }: { state: GameState }) {
 
   return (
     <div className="space-y-4">
+      {/* Empire Overview — visual summary at the top */}
+      <EmpireOverview state={state} />
+
       {/* Hero Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         {[
