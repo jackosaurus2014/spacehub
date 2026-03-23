@@ -61,11 +61,11 @@ const TUTORIAL_STEPS: TutorialStep[] = [
   },
   {
     title: 'Start Research',
-    description: 'Go to the Research tab. Research "Reusable Boosters" first — it unlocks the Medium Launch Pad ($11M/month net!) and is required for Moon access. Cards with a purple "READY" badge can be started immediately.',
+    description: 'Go to the Research tab. Open the "Rocketry" category dropdown and look for "Reusable Boosters" ($200M) — it unlocks the Medium Launch Pad and Moon access. Research is expensive, so you may need to wait for your buildings to generate enough revenue first. Check the suggested researches at the top of the tab for affordable options while you save up.',
     icon: '🔬',
-    action: 'Start researching Reusable Boosters',
+    action: 'Open Rocketry category → Start "Reusable Boosters" when you can afford it',
     tab: 'research',
-    tip: 'Amber "NEED $" cards show you\'ve unlocked the research but can\'t afford it yet. They display exactly how much more money you need.',
+    tip: 'Research is organized into categories (Rocketry, Mining, Spacecraft, etc.). Click any category to expand it. If you can\'t afford Reusable Boosters yet, try cheaper researches like Triple Junction ($60M) or High-Res Optical ($100M) — they unlock new buildings too.',
     phase: 'early',
   },
   {
