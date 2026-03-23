@@ -48,11 +48,15 @@ import { calculatePrestigeRewards, DEFAULT_PRESTIGE } from '@/lib/game/prestige'
 import GameTutorial from '@/components/game/GameTutorial';
 // FeatureUnlockToast disabled — caused React #310 infinite re-render. TODO: fix and re-enable.
 import ProUpgradeBanner from '@/components/game/ProUpgradeBanner';
+import { getConstructionSlots, getActiveConstructions, canStartConstruction, getSlotBreakdown } from '@/lib/game/construction-slots';
 
 // ─── Build Panel ────────────────────────────────────────────────────────────
 
 function BuildPanel({ state, onBuild, onSellBuilding }: { state: GameState; onBuild: (buildingId: string, locationId: string) => void; onSellBuilding?: (instanceId: string) => void }) {
   const [selectedLocation, setSelectedLocation] = useState(state.unlockedLocations[0] || 'earth_surface');
+  const totalSlots = getConstructionSlots(state);
+  const activeBuilds = getActiveConstructions(state);
+  const slotsAvailable = canStartConstruction(state);
 
   const availableBuildings = BUILDINGS.filter(b => {
     if (b.requiredLocation !== selectedLocation) return false;
@@ -64,6 +68,36 @@ function BuildPanel({ state, onBuild, onSellBuilding }: { state: GameState; onBu
 
   return (
     <div className="space-y-4">
+      {/* Construction Slots indicator */}
+      <div className="flex items-center justify-between px-3 py-2 rounded-lg" style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
+        <div className="flex items-center gap-2">
+          <span className="text-xs font-semibold" style={{ color: 'var(--text-primary)' }}>Construction Queues</span>
+          <div className="flex gap-1">
+            {Array.from({ length: totalSlots }).map((_, i) => (
+              <div
+                key={i}
+                className="w-5 h-2 rounded-sm transition-colors"
+                style={{ background: i < activeBuilds ? 'var(--accent-primary)' : 'var(--border-subtle)' }}
+                title={i < activeBuilds ? 'Active build' : 'Open slot'}
+              />
+            ))}
+          </div>
+          <span className="text-[10px] font-mono" style={{ color: activeBuilds >= totalSlots ? '#FFB302' : 'var(--text-tertiary)' }}>
+            {activeBuilds}/{totalSlots}
+          </span>
+        </div>
+        {!slotsAvailable && (
+          <span className="text-[9px] font-medium px-2 py-0.5 rounded" style={{ background: 'rgba(255,179,2,0.1)', color: '#FFB302', border: '1px solid rgba(255,179,2,0.2)' }}>
+            QUEUE FULL — wait for a build to finish
+          </span>
+        )}
+        {totalSlots < 5 && slotsAvailable && (
+          <span className="text-[9px]" style={{ color: 'var(--text-muted)' }}>
+            Research to unlock more slots
+          </span>
+        )}
+      </div>
+
       {/* Location Selector — shows building count per location */}
       <div>
         <p className="text-slate-500 text-[10px] mb-1.5">Select a location to see available buildings:</p>
@@ -114,7 +148,7 @@ function BuildPanel({ state, onBuild, onSellBuilding }: { state: GameState; onBu
             const hasResources = !bld.resourceCost || Object.entries(bld.resourceCost).every(
               ([resId, qty]) => (state.resources[resId] || 0) >= qty
             );
-            const canAfford = canAffordMoney && hasResources;
+            const canAfford = canAffordMoney && hasResources && slotsAvailable;
 
             return (
               <div key={bld.id} className={`rounded-xl border overflow-hidden transition-all game-card ${

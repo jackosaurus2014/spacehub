@@ -22,6 +22,10 @@ export const RESEARCH_COST_TIER_EXPONENT = 1.5;
 /** Research time multiplier per tier */
 export const RESEARCH_TIME_TIER_EXPONENT = 0.8;
 
+/** Construction queue — max simultaneous builds */
+export const BASE_CONSTRUCTION_SLOTS = 2;
+export const MAX_CONSTRUCTION_SLOTS = 5;
+
 /** Max events in the log before trimming */
 export const MAX_EVENT_LOG = 50;
 
