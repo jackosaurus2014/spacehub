@@ -99,10 +99,10 @@ const TUTORIAL_STEPS: TutorialStep[] = [
   },
   {
     title: 'Start Mining Resources',
-    description: 'Research "Resource Prospecting" to unlock Lunar Ice Mining. Unlock the Lunar Surface ($2B) and build a mine there. Mining produces resources (water, iron, titanium) you need for advanced buildings — and unlocks the Market tab.',
+    description: 'Research "Resource Prospecting" to unlock Lunar Ice Mining. Unlock the Lunar Surface ($2B) and build a mine there. The mine requires iron, aluminum, and titanium — buy these on the Market tab first! Mining then produces resources every game month.',
     icon: '⛏️',
-    action: 'Work toward Lunar Surface mining operations',
-    tip: 'Once you have resources, hover over red resource costs on buildings to see exactly how to get what you need.',
+    action: 'Buy resources on the Market, then build a Lunar Ice Mine',
+    tip: 'The Market tab opens once you have any resources OR enough buildings. Buy the 80 iron + 40 aluminum + 15 titanium needed for the Lunar Ice Mine. Prices vary by supply — buy when cheap!',
     phase: 'mid',
   },
   {

@@ -1,12 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
-import { calculatePriceAfterTrade } from '@/lib/game/market-engine';
+import { calculatePriceAfterTrade, getSupplyPriceMultiplier, MINIMUM_MARKET_SUPPLY } from '@/lib/game/market-engine';
+import { RESOURCE_MAP } from '@/lib/game/resources';
 
 /**
  * POST /api/space-tycoon/market/trade
  * Execute a buy or sell trade on the global market.
  * Updates the shared price for all players.
+ *
+ * Supply-demand pricing:
+ * - Buying removes from market supply → price goes up
+ * - Selling adds to market supply → price goes down
+ * - Always at least MINIMUM_MARKET_SUPPLY available, but at scarcity premium
+ * - Supply below baseline → prices spike (scarcity)
+ * - Supply above baseline → prices drop (abundance)
  *
  * Body: { type: "buy"|"sell", resourceSlug: string, quantity: number, profileId?: string }
  */
@@ -31,12 +39,29 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: `Resource "${resourceSlug}" not found` }, { status: 404 });
     }
 
+    const resDef = RESOURCE_MAP.get(resourceSlug);
+    const baselineSupply = resDef?.startingSupply || 1000;
     const isBuy = type === 'buy';
-    const pricePerUnit = resource.currentPrice;
+
+    // For buys: calculate supply-adjusted price (scarcity premium)
+    const supplyMult = getSupplyPriceMultiplier(resource.totalSupply, baselineSupply);
+    const effectivePrice = Math.round(resource.currentPrice * supplyMult);
+    const pricePerUnit = isBuy ? effectivePrice : resource.currentPrice;
     const totalCost = Math.round(pricePerUnit * quantity);
 
-    // Calculate new price after trade
-    const newPrice = calculatePriceAfterTrade(
+    // For buys: check available supply (always at least MINIMUM_MARKET_SUPPLY)
+    if (isBuy) {
+      const available = Math.max(MINIMUM_MARKET_SUPPLY, resource.totalSupply);
+      if (quantity > available) {
+        return NextResponse.json({
+          error: `Only ${available} ${resourceSlug} available on the market`,
+          available,
+        }, { status: 400 });
+      }
+    }
+
+    // Calculate new price after trade (trade impact on base price)
+    const newBasePrice = calculatePriceAfterTrade(
       resource.currentPrice,
       resource.basePrice,
       quantity,
@@ -46,7 +71,7 @@ export async function POST(request: NextRequest) {
       resource.maxPrice,
     );
 
-    // Update supply/demand and price atomically
+    // Update supply: buys decrease, sells increase
     const newSupply = isBuy
       ? Math.max(0, resource.totalSupply - quantity)
       : resource.totalSupply + quantity;
@@ -54,15 +79,19 @@ export async function POST(request: NextRequest) {
       ? resource.totalDemand + quantity
       : Math.max(0, resource.totalDemand - quantity);
 
+    // The new effective price factors in updated supply
+    const newSupplyMult = getSupplyPriceMultiplier(newSupply, baselineSupply);
+    const newEffectivePrice = Math.round(newBasePrice * newSupplyMult);
+
     // Build price history (keep last 50 entries)
     const history = Array.isArray(resource.priceHistory) ? resource.priceHistory as number[] : [];
-    const updatedHistory = [...history, newPrice].slice(-50);
+    const updatedHistory = [...history, newEffectivePrice].slice(-50);
 
-    // Update resource price
+    // Update resource state atomically
     await prisma.marketResource.update({
       where: { id: resource.id },
       data: {
-        currentPrice: newPrice,
+        currentPrice: newBasePrice, // Store base price (supply mult applied at read time)
         totalSupply: newSupply,
         totalDemand: newDemand,
         priceHistory: updatedHistory,
@@ -88,11 +117,14 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    const change = Math.round(((newPrice / resource.basePrice) - 1) * 100);
+    const change = Math.round(((newEffectivePrice / resource.basePrice) - 1) * 100);
 
     logger.info('Market trade executed', {
       type, resource: resourceSlug, quantity,
-      oldPrice: pricePerUnit, newPrice, change: `${change}%`,
+      pricePerUnit, newBasePrice, newEffectivePrice,
+      supply: `${resource.totalSupply} → ${newSupply}`,
+      supplyMultiplier: newSupplyMult.toFixed(2),
+      change: `${change}%`,
     });
 
     return NextResponse.json({
@@ -103,7 +135,9 @@ export async function POST(request: NextRequest) {
         quantity,
         pricePerUnit,
         totalCost,
-        newPrice,
+        newPrice: newEffectivePrice,
+        supply: newSupply,
+        supplyMultiplier: Math.round(newSupplyMult * 100) / 100,
         change,
       },
     });

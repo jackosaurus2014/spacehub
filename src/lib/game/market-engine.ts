@@ -72,6 +72,77 @@ export function calculateIdleDecay(
   return Math.max(minPrice, Math.min(maxPrice, Math.round(newPrice)));
 }
 
+// ─── Supply-Based Pricing ──────────────────────────────────────────────────
+
+/** Minimum units always available on the market (at extreme scarcity premium) */
+export const MINIMUM_MARKET_SUPPLY = 100;
+
+/**
+ * Calculate price multiplier based on current supply vs baseline.
+ * Low supply → high multiplier (scarcity premium).
+ * High supply → low multiplier (abundance discount).
+ *
+ * At baseline supply: 1.0x
+ * At 50% supply: ~1.4x
+ * At 25% supply: ~2.0x
+ * At minimum (100 units for rare, proportionally lower for common): ~3-5x
+ * At 200% supply: ~0.7x
+ * At 500% supply: ~0.45x
+ */
+export function getSupplyPriceMultiplier(
+  currentSupply: number,
+  baselineSupply: number,
+): number {
+  if (baselineSupply <= 0) return 1;
+  // Ensure supply never goes below minimum for pricing purposes
+  const effectiveSupply = Math.max(currentSupply, 1);
+  // Inverse square root scaling — gentler than pure inverse, steeper than linear
+  const ratio = baselineSupply / effectiveSupply;
+  const multiplier = Math.sqrt(ratio);
+  // Clamp between 0.3x (massive oversupply) and 10x (extreme scarcity)
+  return Math.max(0.3, Math.min(10.0, multiplier));
+}
+
+/**
+ * Get the effective market price accounting for supply levels.
+ */
+export function getSupplyAdjustedPrice(
+  basePrice: number,
+  currentSupply: number,
+  baselineSupply: number,
+  minPrice: number,
+  maxPrice: number,
+): number {
+  const supplyMult = getSupplyPriceMultiplier(currentSupply, baselineSupply);
+  const adjusted = Math.round(basePrice * supplyMult);
+  return Math.max(minPrice, Math.min(maxPrice, adjusted));
+}
+
+/**
+ * Calculate available quantity for purchase. Always at least MINIMUM_MARKET_SUPPLY
+ * but anything below actual supply is at extreme premium pricing.
+ */
+export function getAvailableForPurchase(currentSupply: number): number {
+  return Math.max(MINIMUM_MARKET_SUPPLY, currentSupply);
+}
+
+/**
+ * Calculate NPC restock amount based on time elapsed and restock rate.
+ * NPC restocking is gradual — prevents market from going permanently dry.
+ * Supply is capped at 2x the baseline to prevent infinite buildup.
+ */
+export function calculateNPCRestock(
+  currentSupply: number,
+  baselineSupply: number,
+  restockPerHour: number,
+  hoursElapsed: number,
+): number {
+  const maxSupply = baselineSupply * 2; // Cap at 2x baseline
+  if (currentSupply >= maxSupply) return 0;
+  const restock = Math.floor(restockPerHour * hoursElapsed);
+  return Math.min(restock, maxSupply - currentSupply);
+}
+
 // ─── Balance Reference ───────────────────────────────────────────────────────
 //
 // RESOURCE          BASE      DEPTH    MINING/MO    SELL IMPACT/MO

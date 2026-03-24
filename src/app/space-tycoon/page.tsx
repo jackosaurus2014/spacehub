@@ -1334,7 +1334,7 @@ export default function SpaceTycoonPage() {
   if (hasResearch) allTabs.push({ id: 'fleet', label: 'Fleet', icon: '🚀' });
   if (hasFabrication) allTabs.push({ id: 'crafting', label: 'Craft', icon: '🔨' });
   if (completedBuildings >= 3) allTabs.push({ id: 'workforce', label: 'Crew', icon: '👷' });
-  if (hasResources) allTabs.push({ id: 'market', label: 'Market', icon: '📈' });
+  if (hasResources || completedBuildings >= 2) allTabs.push({ id: 'market', label: 'Market', icon: '📈' });
   if (completedBuildings >= 2) allTabs.push({ id: 'contracts', label: 'Contracts', icon: '📋' });
   if (completedBuildings >= 5) allTabs.push({ id: 'alliance', label: 'Alliance', icon: '🤝' });
   if (hasResources) allTabs.push({ id: 'bounties', label: 'Bounties', icon: '📦' });

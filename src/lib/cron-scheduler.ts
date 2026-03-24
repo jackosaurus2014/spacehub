@@ -104,6 +104,8 @@ const CRON_JOBS: CronJobDef[] = [
   { schedule: '5 0 * * 1',    path: '/api/space-tycoon/leagues/process-week',      label: 'tycoon-league-processing',    maxStaleMinutes: 11520 },
   // Alliance deep system processing — every 2 hours (activity, streaks, power score, research/project completion, perk expiry)
   { schedule: '0 */2 * * *',  path: '/api/space-tycoon/alliance-cron',             label: 'tycoon-alliance-processing',  maxStaleMinutes: 180 },
+  // Market NPC restocking — every hour (gradually replenishes supply toward baseline)
+  { schedule: '0 * * * *',    path: '/api/space-tycoon/market/restock',             label: 'tycoon-market-restock',       maxStaleMinutes: 120 },
 ];
 
 // Critical jobs that get auto-recovered by the watchdog
