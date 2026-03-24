@@ -2,9 +2,14 @@
 
 import { useEffect, useRef, useState } from 'react';
 import type { GameState } from '@/lib/game/types';
-import { formatMoney, formatGameDate } from '@/lib/game/formulas';
+import { formatMoney, formatGameDate, revenueMultiplier } from '@/lib/game/formulas';
 import { BUILDING_MAP } from '@/lib/game/buildings';
 import { SERVICE_MAP } from '@/lib/game/services';
+import { getWorkforceBonuses, getMonthlyPayroll } from '@/lib/game/workforce';
+import { getResearchBonuses } from '@/lib/game/research-tree';
+import { getRevenueMultiplier as getUpgradeRevenueMultiplier, getMaintenanceMultiplier } from '@/lib/game/upgrades';
+import { getActiveMultipliers } from '@/lib/game/random-events';
+import { SHIP_MAP } from '@/lib/game/ships';
 import { toggleMute, isMuted, initAudio, toggleAmbient, isAmbientPlaying } from '@/lib/game/sound-engine';
 
 interface ResourceBarProps {
@@ -56,14 +61,38 @@ export default function ResourceBar({ state }: ResourceBarProps) {
     setAmbient(isAmbientPlaying());
   }, []);
 
-  // Calculate net income
+  // Calculate net income — must match game engine exactly
+  const workforce = state.workforce || { engineers: 0, scientists: 0, miners: 0, operators: 0 };
+  const wfBonuses = getWorkforceBonuses(workforce);
+  const resBonuses = getResearchBonuses(state.completedResearch);
+  const prestigeRevMult = state.prestige?.permanentBonuses?.revenueMultiplier || 1;
+  const multipliers = getActiveMultipliers(state);
+
   let revenue = 0, costs = 0;
   for (const svc of state.activeServices) {
     const def = SERVICE_MAP.get(svc.definitionId);
-    if (def) { revenue += def.revenuePerMonth * svc.revenueMultiplier; costs += def.operatingCostPerMonth; }
+    if (!def) continue;
+    const linkedBld = state.buildings.find(b => b.isComplete && b.locationId === svc.locationId && BUILDING_MAP.get(b.definitionId)?.enabledServices?.includes(svc.definitionId));
+    const upgradeBoost = getUpgradeRevenueMultiplier(linkedBld?.upgradeLevel || 0);
+    const supplyMult = (state.servicePriceMultipliers || {})[svc.definitionId] ?? 1.0;
+    revenue += def.revenuePerMonth * svc.revenueMultiplier * multipliers.revenueMultiplier * upgradeBoost
+      * (1 + wfBonuses.serviceRevenue) * (1 + resBonuses.serviceRevenueBonus) * prestigeRevMult * supplyMult;
+    costs += def.operatingCostPerMonth * multipliers.costMultiplier;
   }
   for (const bld of state.buildings) {
-    if (bld.isComplete) { const def = BUILDING_MAP.get(bld.definitionId); if (def) costs += def.maintenanceCostPerMonth; }
+    if (!bld.isComplete) continue;
+    const def = BUILDING_MAP.get(bld.definitionId);
+    if (!def) continue;
+    const maintMult = getMaintenanceMultiplier(bld.upgradeLevel || 0);
+    costs += def.maintenanceCostPerMonth * multipliers.costMultiplier * maintMult * (1 - resBonuses.maintenanceReduction);
+  }
+  // Workforce payroll
+  costs += getMonthlyPayroll(workforce);
+  // Ship maintenance
+  for (const ship of (state.ships || [])) {
+    if (!ship.isBuilt) continue;
+    const shipDef = SHIP_MAP.get(ship.definitionId);
+    if (shipDef?.maintenancePerMonth) costs += shipDef.maintenancePerMonth;
   }
   const net = Math.round(revenue - costs);
 
