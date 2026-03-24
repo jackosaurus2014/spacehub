@@ -5,6 +5,13 @@ import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
 import { getGlobalGameDate, formatServerDate } from '@/lib/game/server-time';
 import { getAllServicePriceMultipliers } from '@/lib/game/service-pricing';
+import {
+  calculateMetricScore,
+  getMetricDefinition,
+  getWeeklyMetric,
+  getLeagueDefinition,
+} from '@/lib/game/league-system';
+import { getCurrentWeekId } from '@/lib/game/weekly-events';
 
 /**
  * POST /api/space-tycoon/sync
@@ -103,6 +110,14 @@ export async function POST(request: Request) {
       },
     });
 
+    // ── Ghost Rivals: Update peakNetWorth ──
+    if (netWorth > (profile.peakNetWorth ?? 0)) {
+      await prisma.gameProfile.update({
+        where: { id: profile.id },
+        data: { peakNetWorth: netWorth },
+      });
+    }
+
     // Apply mining pressure to global market (if resources were mined this tick)
     if (minedThisTick && typeof minedThisTick === 'object') {
       try {
@@ -125,6 +140,93 @@ export async function POST(request: Request) {
       } catch { /* mining pressure is non-critical */ }
     }
 
+    // ── League Metric Tracking ──────────────────────────────────────────────
+    // Update the player's active LeagueBracketEntry with their latest metric value.
+    let leagueInfo: {
+      league: number;
+      leagueName: string;
+      leagueColor: string;
+      leagueIcon: string;
+      bracketRank: number | null;
+      bracketSize: number;
+      metricSlug: string;
+      metricName: string;
+      score: number;
+      timeRemainingMs: number;
+    } | null = null;
+
+    try {
+      const weekId = getCurrentWeekId();
+      const weekMetric = getWeeklyMetric(weekId);
+
+      // Find the player's active bracket entry
+      const activeSeason = await prisma.leagueSeason.findFirst({
+        where: { isActive: true },
+      });
+
+      if (activeSeason) {
+        const bracketEntry = await prisma.leagueBracketEntry.findFirst({
+          where: {
+            profileId: profile.id,
+            bracket: { seasonId: activeSeason.id },
+          },
+          include: { bracket: true },
+        });
+
+        if (bracketEntry) {
+          // Determine current metric value from profile fields
+          const metricDef = getMetricDefinition(activeSeason.metricSlug);
+          let currentMetricValue = 0;
+          switch (metricDef?.profileField) {
+            case 'netWorth': currentMetricValue = netWorth; break;
+            case 'totalEarned': currentMetricValue = totalEarned; break;
+            case 'buildingCount': currentMetricValue = buildingCount; break;
+            case 'researchCount': currentMetricValue = researchCount; break;
+            case 'serviceCount': currentMetricValue = serviceCount; break;
+            case 'locationsUnlocked': currentMetricValue = locationsUnlocked; break;
+            default: currentMetricValue = netWorth;
+          }
+
+          const score = metricDef
+            ? calculateMetricScore(metricDef, bracketEntry.startValue, currentMetricValue)
+            : 0;
+
+          await prisma.leagueBracketEntry.update({
+            where: { id: bracketEntry.id },
+            data: {
+              currentValue: currentMetricValue,
+              score: Math.max(0, score),
+            },
+          });
+
+          // Get bracket rank
+          const higherScoreCount = await prisma.leagueBracketEntry.count({
+            where: {
+              bracketId: bracketEntry.bracketId,
+              score: { gt: Math.max(0, score) },
+            },
+          });
+          const bracketPlayerCount = await prisma.leagueBracketEntry.count({
+            where: { bracketId: bracketEntry.bracketId },
+          });
+
+          const leagueDef = getLeagueDefinition(bracketEntry.bracket.league);
+          leagueInfo = {
+            league: bracketEntry.bracket.league,
+            leagueName: leagueDef.name,
+            leagueColor: leagueDef.color,
+            leagueIcon: leagueDef.icon,
+            bracketRank: higherScoreCount + 1,
+            bracketSize: bracketPlayerCount,
+            metricSlug: activeSeason.metricSlug,
+            metricName: weekMetric.name,
+            score: Math.max(0, score),
+            timeRemainingMs: activeSeason.endsAt.getTime() - Date.now(),
+          };
+        }
+      }
+    } catch { /* league tracking is non-critical */ }
+
     // Get player's rank
     const rank = await prisma.gameProfile.count({
       where: { netWorth: { gt: netWorth } },
@@ -132,19 +234,90 @@ export async function POST(request: Request) {
 
     const totalPlayers = await prisma.gameProfile.count();
 
-    // Get alliance bonus if member
+    // Get alliance bonus if member — deep alliance system aggregation
     let allianceBonus = 0;
     let allianceName: string | null = null;
     let allianceTag: string | null = null;
+    let allianceBonuses: { revenueBonus: number; miningBonus: number; researchBonus: number; buildSpeedBonus: number } | null = null;
     try {
       const membership = await prisma.allianceMember.findUnique({
         where: { profileId: profile.id },
         include: { alliance: true },
       });
       if (membership?.alliance) {
-        allianceBonus = membership.alliance.bonusRevenue;
-        allianceName = membership.alliance.name;
-        allianceTag = membership.alliance.tag;
+        const ally = membership.alliance;
+        allianceName = ally.name;
+        allianceTag = ally.tag;
+
+        // 1. Member count bonus (existing — legacy field)
+        allianceBonus = ally.bonusRevenue;
+
+        // 2. Tier bonus (from alliance-events.ts)
+        const { getAllianceTier } = await import('@/lib/game/alliance-events');
+        const tierInfo = getAllianceTier(ally.powerScore);
+
+        // 3. Research bonuses (from completed AllianceResearch)
+        const { getAllianceResearchBonuses } = await import('@/lib/game/alliance-research');
+        const completedResearch = await prisma.allianceResearch.findMany({
+          where: { allianceId: ally.id, status: 'completed' },
+          select: { bonusType: true, bonusValue: true },
+        });
+        const researchBonuses = getAllianceResearchBonuses(completedResearch);
+
+        // 4. Perk bonuses (from active AlliancePerk)
+        const { getActivePerks, getPerkBonuses } = await import('@/lib/game/alliance-treasury');
+        const activePerks = await getActivePerks(prisma, ally.id);
+        const perkBonuses = getPerkBonuses(activePerks);
+
+        // 5. Project bonuses (from completed AllianceProject)
+        const completedProjects = await prisma.allianceProject.findMany({
+          where: { allianceId: ally.id, status: 'completed' },
+          select: { bonuses: true },
+        });
+        let projectRevenueBonus = 0;
+        let projectMiningBonus = 0;
+        let projectResearchBonus = 0;
+        let projectBuildSpeedBonus = 0;
+        for (const proj of completedProjects) {
+          const b = proj.bonuses as Record<string, number> | null;
+          if (b) {
+            projectRevenueBonus += b.revenueBonus ?? 0;
+            projectMiningBonus += b.miningBonus ?? 0;
+            projectResearchBonus += b.researchBonus ?? 0;
+            projectBuildSpeedBonus += b.buildSpeedBonus ?? 0;
+          }
+        }
+
+        // Aggregate all bonus sources
+        allianceBonuses = {
+          revenueBonus:
+            allianceBonus +
+            tierInfo.perks.revenueBonus +
+            researchBonuses.revenueBonus +
+            perkBonuses.revenueBonus +
+            projectRevenueBonus,
+          miningBonus:
+            tierInfo.perks.miningBonus +
+            researchBonuses.miningBonus +
+            perkBonuses.miningBonus +
+            projectMiningBonus,
+          researchBonus:
+            tierInfo.perks.researchBonus +
+            researchBonuses.researchBonus +
+            perkBonuses.researchBonus +
+            projectResearchBonus,
+          buildSpeedBonus:
+            tierInfo.perks.buildSpeedBonus +
+            researchBonuses.buildSpeedBonus +
+            perkBonuses.buildSpeedBonus +
+            projectBuildSpeedBonus,
+        };
+
+        // Update member's lastActiveAt
+        await prisma.allianceMember.update({
+          where: { profileId: profile.id },
+          data: { lastActiveAt: new Date(), status: 'active' },
+        });
 
         // Update alliance total net worth
         const members = await prisma.allianceMember.findMany({
@@ -199,6 +372,33 @@ export async function POST(request: Request) {
       servicePriceMultipliers = getAllServicePriceMultipliers(globalServiceCounts);
     } catch { /* non-critical — fall back to no adjustment */ }
 
+    // ── Ghost Rivals: Lightweight summary for dashboard widget ──
+    let rivalsSummary: { activeCount: number; topRivalScore: number | null; topRivalName: string | null; hasNewEvents: boolean } = {
+      activeCount: 0,
+      topRivalScore: null,
+      topRivalName: null,
+      hasNewEvents: false,
+    };
+    try {
+      const activeRivals = await prisma.rivalAssignment.findMany({
+        where: { playerId: profile.id, isActive: true },
+        include: {
+          rival: { select: { companyName: true } },
+          events: { where: { notified: false }, select: { id: true }, take: 1 },
+        },
+        orderBy: { rivalryScore: 'desc' },
+      });
+      if (activeRivals.length > 0) {
+        const top = activeRivals[0];
+        rivalsSummary = {
+          activeCount: activeRivals.length,
+          topRivalScore: Math.round(top.rivalryScore),
+          topRivalName: top.rival.companyName,
+          hasNewEvents: activeRivals.some((r) => r.events.length > 0),
+        };
+      }
+    } catch { /* rivals summary non-critical */ }
+
     return NextResponse.json({
       success: true,
       profileId: profile.id,
@@ -208,9 +408,12 @@ export async function POST(request: Request) {
       allianceBonus,
       allianceName,
       allianceTag,
+      allianceBonuses,
       openBounties,
       globalMilestones,
       servicePriceMultipliers,
+      rivals: rivalsSummary,
+      leagueInfo,
       // Global game date — all players must use this
       serverGameDate: {
         year: serverGameDate.year,

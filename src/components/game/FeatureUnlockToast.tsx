@@ -73,6 +73,8 @@ const FEATURE_UNLOCKS: Record<string, UnlockInfo> = {
 const STORAGE_KEY = 'spacetycoon_unlocked_features';
 
 interface FeatureUnlockToastProps {
+  /** Pass a stable, sorted, joined string of tab IDs to avoid re-render loops */
+  availableTabsKey: string;
   availableTabs: string[];
   onNavigateToTab?: (tab: string) => void;
 }
@@ -80,12 +82,14 @@ interface FeatureUnlockToastProps {
 /**
  * Shows a toast notification when a new game feature/tab unlocks.
  * Only shows each unlock once (tracked in localStorage).
+ *
+ * IMPORTANT: availableTabsKey must be a stable string (e.g., allTabs.map(t=>t.id).join(','))
+ * to avoid the React hooks infinite re-render issue (#310).
  */
-export default function FeatureUnlockToast({ availableTabs, onNavigateToTab }: FeatureUnlockToastProps) {
+export default function FeatureUnlockToast({ availableTabsKey, availableTabs, onNavigateToTab }: FeatureUnlockToastProps) {
   const [currentUnlock, setCurrentUnlock] = useState<UnlockInfo | null>(null);
   const [visible, setVisible] = useState(false);
   const previousTabsRef = useRef<Set<string>>(new Set());
-  const shownRef = useRef(false);
 
   useEffect(() => {
     // Load previously seen unlocks
@@ -98,29 +102,26 @@ export default function FeatureUnlockToast({ availableTabs, onNavigateToTab }: F
     const currentTabs = new Set(availableTabs);
     const prevTabs = previousTabsRef.current;
 
-    // Find newly available tabs
-    for (const tab of availableTabs) {
-      if (!prevTabs.has(tab) && !seen.includes(tab) && FEATURE_UNLOCKS[tab] && prevTabs.size > 0) {
-        // New tab just unlocked!
-        const unlock = FEATURE_UNLOCKS[tab];
-        setCurrentUnlock(unlock);
-        setVisible(true);
-        playSound('milestone');
+    // Find newly available tabs (only if we have a previous state to compare against)
+    if (prevTabs.size > 0) {
+      for (const tab of availableTabs) {
+        if (!prevTabs.has(tab) && !seen.includes(tab) && FEATURE_UNLOCKS[tab]) {
+          const unlock = FEATURE_UNLOCKS[tab];
+          setCurrentUnlock(unlock);
+          setVisible(true);
+          playSound('milestone');
 
-        // Mark as seen
-        seen.push(tab);
-        try { localStorage.setItem(STORAGE_KEY, JSON.stringify(seen)); } catch {}
+          seen.push(tab);
+          try { localStorage.setItem(STORAGE_KEY, JSON.stringify(seen)); } catch {}
 
-        // Auto-hide after 6 seconds
-        const timer = setTimeout(() => setVisible(false), 6000);
-
-        // Only show one unlock at a time
-        break;
+          setTimeout(() => setVisible(false), 6000);
+          break;
+        }
       }
     }
 
     previousTabsRef.current = currentTabs;
-  }, [availableTabs]);
+  }, [availableTabsKey]); // Depend on stable string key, not array reference
 
   if (!visible || !currentUnlock) return null;
 

@@ -1,7 +1,8 @@
 'use client';
 
 import type { GameState } from '@/lib/game/types';
-import { WORKER_TYPES, getMonthlyPayroll, getWorkforceBonuses, getHireCost } from '@/lib/game/workforce';
+import { WORKER_TYPES, getMonthlyPayroll, getWorkforceBonuses, getHireCost, getCrewCapacity, canHireWorker } from '@/lib/game/workforce';
+import type { WorkerType } from '@/lib/game/workforce';
 import { formatMoney } from '@/lib/game/formulas';
 import { playSound } from '@/lib/game/sound-engine';
 
@@ -16,6 +17,8 @@ export default function WorkforcePanel({ state, onHire, onDismiss }: WorkforcePa
   const payroll = getMonthlyPayroll(workforce);
   const bonuses = getWorkforceBonuses(workforce);
   const totalWorkers = workforce.engineers + workforce.scientists + workforce.miners + workforce.operators;
+  const completedBuildings = state.buildings.filter(b => b.isComplete).length;
+  const capacity = getCrewCapacity(completedBuildings, state.unlockedLocations.length, state.completedResearch.length);
 
   return (
     <div className="space-y-4">
@@ -68,6 +71,22 @@ export default function WorkforcePanel({ state, onHire, onDismiss }: WorkforcePa
         </div>
       )}
 
+      {/* Crew Capacity */}
+      <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-3 mb-4">
+        <div className="flex items-center justify-between mb-2">
+          <span className="text-white text-xs font-bold uppercase tracking-wider">Crew Capacity</span>
+          <span className="text-cyan-400 text-xs font-mono">{totalWorkers}/{capacity.total}</span>
+        </div>
+        <div className="w-full h-2 bg-zinc-800 rounded-full overflow-hidden mb-2">
+          <div className="h-full bg-cyan-500 rounded-full transition-all" style={{ width: `${Math.min(100, (totalWorkers / Math.max(1, capacity.total)) * 100)}%` }} />
+        </div>
+        <div className="flex flex-wrap gap-x-3 gap-y-0.5">
+          {capacity.breakdown.map(b => (
+            <span key={b.source} className="text-zinc-500 text-[9px]">+{b.amount} from {b.source}</span>
+          ))}
+        </div>
+      </div>
+
       {/* Hire Workers */}
       <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
         <h3 className="text-white text-xs font-bold uppercase tracking-wider mb-3">Hire Crew</h3>
@@ -76,6 +95,8 @@ export default function WorkforcePanel({ state, onHire, onDismiss }: WorkforcePa
             const count = workforce[`${worker.type}s` as keyof typeof workforce] || 0;
             const hireCost = getHireCost(worker.type);
             const canAfford = state.money >= hireCost;
+            const hireCheck = canHireWorker(workforce, worker.type as WorkerType, completedBuildings, state.unlockedLocations.length, state.completedResearch.length);
+            const canHire = canAfford && hireCheck.allowed;
 
             return (
               <div key={worker.type} className="flex items-center justify-between p-3 rounded-lg bg-white/[0.02] border border-white/[0.04]">
@@ -96,15 +117,16 @@ export default function WorkforcePanel({ state, onHire, onDismiss }: WorkforcePa
                 </div>
                 <div className="flex gap-1.5 shrink-0">
                   <button
-                    onClick={() => { if (canAfford) { playSound('click'); onHire(worker.type); } }}
-                    disabled={!canAfford}
+                    onClick={() => { if (canHire) { playSound('click'); onHire(worker.type); } }}
+                    disabled={!canHire}
+                    title={!hireCheck.allowed ? hireCheck.reason : !canAfford ? 'Insufficient funds' : undefined}
                     className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                      canAfford
+                      canHire
                         ? 'bg-cyan-600 text-white hover:bg-cyan-500'
                         : 'bg-white/[0.04] text-slate-600 cursor-not-allowed'
                     }`}
                   >
-                    Hire {formatMoney(hireCost)}
+                    {!hireCheck.allowed ? 'Full' : `Hire ${formatMoney(hireCost)}`}
                   </button>
                   {onDismiss && count > 0 && (
                     <button

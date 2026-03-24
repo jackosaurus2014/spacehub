@@ -21,6 +21,7 @@ import type { ActiveBoost } from './speed-boosts';
 import { rollMarketEvent } from './market-events';
 import type { ActiveMarketEvent } from './market-events';
 import { checkAchievements } from './achievements';
+import { rollTimedEvent, calculateEventReward, EVENT_TEMPLATES } from './timed-events';
 
 /**
  * Process a single game tick (1 in-game month).
@@ -156,14 +157,19 @@ export function processTick(state: GameState): GameState {
   }
 
   // ─── 5. Automatically activate services for newly completed buildings ─
+  // Each completed building gets its own service instance. Multiple satellites
+  // of the same type = multiple service instances = more revenue (constellation).
   const activeServices = [...state.activeServices];
   for (const bld of buildings) {
     if (!bld.isComplete) continue;
     const def = BUILDING_MAP.get(bld.definitionId);
     if (!def) continue;
     for (const svcId of def.enabledServices) {
-      const alreadyActive = activeServices.some(s => s.definitionId === svcId && s.locationId === bld.locationId);
-      if (alreadyActive) continue;
+      // Check if THIS SPECIFIC BUILDING already has a linked service
+      const alreadyLinked = activeServices.some(s =>
+        s.definitionId === svcId && s.linkedBuildingIds.includes(bld.instanceId)
+      );
+      if (alreadyLinked) continue;
       const svcDef = SERVICE_MAP.get(svcId);
       if (!svcDef) continue;
       const hasResearch = svcDef.requiredResearch.every(r => completedResearch.includes(r));
@@ -548,6 +554,82 @@ export function processFullTick(state: GameState): GameState {
     }
   } catch (err) {
     console.error('Achievement check error (non-fatal):', err);
+  }
+
+  // 8. Timed competitive events — spawn, check completion, expire
+  try {
+    const now = Date.now();
+    const activeTimedEvents = [...(newState.activeTimedEvents || [])];
+    const timedEventLog: typeof newState.eventLog = [];
+    let timedReward = 0;
+
+    // Check completion and expiration of active events
+    for (let i = activeTimedEvents.length - 1; i >= 0; i--) {
+      const evt = activeTimedEvents[i];
+      if (evt.completed) continue;
+
+      // Check expiration
+      if (now >= evt.expiresAtMs) {
+        activeTimedEvents.splice(i, 1);
+        continue;
+      }
+
+      // Check completion
+      const template = EVENT_TEMPLATES.find(t => t.id === evt.templateId);
+      if (template) {
+        const progress = template.getProgress(newState);
+        if (progress >= evt.target) {
+          activeTimedEvents[i] = { ...evt, completed: true, completedAtMs: now };
+          timedReward += evt.rewardAmount;
+          timedEventLog.push({
+            id: generateId(), date: newState.gameDate, type: 'milestone',
+            title: `${evt.icon} Event Complete: ${evt.name}`,
+            description: `Reward: +$${(evt.rewardAmount / 1_000_000).toFixed(1)}M`,
+          });
+        }
+      }
+    }
+
+    // Spawn new event every 2-4 hours (if < 3 active)
+    const SPAWN_INTERVAL_MS = 2 * 60 * 60 * 1000; // 2 hours minimum
+    const lastSpawn = newState.lastTimedEventSpawnMs || 0;
+    const nonCompletedEvents = activeTimedEvents.filter(e => !e.completed);
+    if (nonCompletedEvents.length < 3 && (now - lastSpawn) >= SPAWN_INTERVAL_MS) {
+      const template = rollTimedEvent();
+      const reward = calculateEventReward(template, newState);
+      activeTimedEvents.push({
+        templateId: template.id,
+        name: template.name,
+        icon: template.icon,
+        category: template.category,
+        description: template.description,
+        targetLabel: template.targetLabel,
+        target: template.getTarget(newState),
+        startedAtMs: now,
+        expiresAtMs: now + template.durationHours * 60 * 60 * 1000,
+        rewardAmount: reward,
+        boostReward: template.boostReward,
+      });
+      newState = { ...newState, lastTimedEventSpawnMs: now };
+    }
+
+    // Remove completed events older than 1 hour (give player time to see result)
+    const cleanedEvents = activeTimedEvents.filter(e => {
+      if (e.completed && e.completedAtMs && (now - e.completedAtMs) > 3600000) return false;
+      return true;
+    });
+
+    newState = {
+      ...newState,
+      activeTimedEvents: cleanedEvents,
+      money: newState.money + timedReward,
+      totalEarned: newState.totalEarned + timedReward,
+      eventLog: timedEventLog.length > 0
+        ? [...timedEventLog, ...newState.eventLog].slice(0, MAX_EVENT_LOG)
+        : newState.eventLog,
+    };
+  } catch (err) {
+    console.error('Timed event error (non-fatal):', err);
   }
 
   return newState;

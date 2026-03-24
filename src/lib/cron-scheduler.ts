@@ -92,6 +92,18 @@ const CRON_JOBS: CronJobDef[] = [
   { schedule: '0 11 * * *',   path: '/api/refresh?type=grants-gov',               label: 'grants-gov-refresh',          maxStaleMinutes: 1560 },
   { schedule: '0 16 * * 1',   path: '/api/refresh?type=sam-awards',               label: 'sam-awards-refresh',          maxStaleMinutes: 10080 },
   { schedule: '0 17 1 * *',   path: '/api/refresh?type=sam-entities',             label: 'sam-entities-refresh',        maxStaleMinutes: 43200 },
+
+  // ─── Space Tycoon: Competitive Multiplayer Cron Jobs ─────────────────
+  // Rival snapshots — every 4 hours (captures stats, updates rivalry scores)
+  { schedule: '0 */4 * * *',  path: '/api/space-tycoon/rivals/snapshot',           label: 'tycoon-rival-snapshots',      maxStaleMinutes: 360 },
+  // Contract bidding resolution — every 6 hours (resolves expired bids, generates new contracts)
+  { schedule: '0 */6 * * *',  path: '/api/space-tycoon/bidding/resolve',           label: 'tycoon-bidding-resolve',      maxStaleMinutes: 480 },
+  // Zone influence recalculation — daily at 1am UTC (decay, recalculate shares, resolve challenges)
+  { schedule: '0 1 * * *',    path: '/api/space-tycoon/zones/update',              label: 'tycoon-zone-influence',       maxStaleMinutes: 1560 },
+  // League week processing — Monday at 00:05 UTC (finalize brackets, promote/demote, create new week)
+  { schedule: '5 0 * * 1',    path: '/api/space-tycoon/leagues/process-week',      label: 'tycoon-league-processing',    maxStaleMinutes: 11520 },
+  // Alliance deep system processing — every 2 hours (activity, streaks, power score, research/project completion, perk expiry)
+  { schedule: '0 */2 * * *',  path: '/api/space-tycoon/alliance-cron',             label: 'tycoon-alliance-processing',  maxStaleMinutes: 180 },
 ];
 
 // Critical jobs that get auto-recovered by the watchdog

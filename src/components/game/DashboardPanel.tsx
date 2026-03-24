@@ -11,6 +11,8 @@ import { getWorkforceBonuses, getMonthlyPayroll } from '@/lib/game/workforce';
 import { getRevenueMultiplier as getUpgradeRevenueMultiplier, getMaintenanceMultiplier } from '@/lib/game/upgrades';
 import IncomeChart from '@/components/game/IncomeChart';
 import WeeklyChallengeWidget from '@/components/game/WeeklyChallengeWidget';
+import MiniActivitiesWidget from '@/components/game/MiniActivitiesWidget';
+import type { MiniActivityReward } from '@/lib/game/mini-activities';
 
 /** Live countdown timer for research (purple) */
 function ResearchCountdown({ startedAtMs, durationSeconds }: { startedAtMs: number; durationSeconds: number }) {
@@ -358,6 +360,16 @@ export default function DashboardPanel({ state }: { state: GameState }) {
       {state.incomeHistory && state.incomeHistory.length >= 2 && (
         <IncomeChart data={state.incomeHistory} />
       )}
+
+      {/* Mini-Activities — quick money-earning actions */}
+      <MiniActivitiesWidget
+        state={state}
+        onExecute={(activityId: string, reward: MiniActivityReward) => {
+          window.dispatchEvent(new CustomEvent('mini-activity-execute', {
+            detail: { activityId, reward },
+          }));
+        }}
+      />
 
       {/* Weekly Challenge */}
       <WeeklyChallengeWidget />

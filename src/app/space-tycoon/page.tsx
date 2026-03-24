@@ -20,6 +20,7 @@ import DashboardPanel from '@/components/game/DashboardPanel';
 import DailyBonusModal from '@/components/game/DailyBonusModal';
 import LeaderboardPanel from '@/components/game/LeaderboardPanel';
 import AlliancePanel from '@/components/game/AlliancePanel';
+import AllianceHubPanel from '@/components/game/AllianceHubPanel';
 import BountyPanel from '@/components/game/BountyPanel';
 import MarketPanel from '@/components/game/MarketPanel';
 import AchievementsModal from '@/components/game/AchievementsModal';
@@ -38,6 +39,18 @@ import GameStyles from '@/components/game/GameStyles';
 import FleetPanel from '@/components/game/FleetPanel';
 import CraftingPanel from '@/components/game/CraftingPanel';
 import WorkforcePanel from '@/components/game/WorkforcePanel';
+import LeaguePanel from '@/components/game/LeaguePanel';
+import RivalsPanel from '@/components/game/RivalsPanel';
+import BiddingPanel from '@/components/game/BiddingPanel';
+import SeasonPanel from '@/components/game/SeasonPanel';
+import AllianceEventsPanel from '@/components/game/AllianceEventsPanel';
+import AllianceProjectsPanel from '@/components/game/AllianceProjectsPanel';
+import MarketOrderBook from '@/components/game/MarketOrderBook';
+import MarketPriceChart from '@/components/game/MarketPriceChart';
+import TerritoryPanel from '@/components/game/TerritoryPanel';
+import SpeedRunPanel from '@/components/game/SpeedRunPanel';
+import EspionagePanel from '@/components/game/EspionagePanel';
+import MegaProjectPanel from '@/components/game/MegaProjectPanel';
 import PrestigeModal from '@/components/game/PrestigeModal';
 import WeeklyChallengeWidget from '@/components/game/WeeklyChallengeWidget';
 import { SHIP_MAP, getTravelTime, generateShipName } from '@/lib/game/ships';
@@ -46,7 +59,7 @@ import { getHireCost } from '@/lib/game/workforce';
 import type { WorkforceState } from '@/lib/game/workforce';
 import { calculatePrestigeRewards, DEFAULT_PRESTIGE } from '@/lib/game/prestige';
 import GameTutorial from '@/components/game/GameTutorial';
-// FeatureUnlockToast disabled — caused React #310 infinite re-render. TODO: fix and re-enable.
+import FeatureUnlockToast from '@/components/game/FeatureUnlockToast';
 import ProUpgradeBanner from '@/components/game/ProUpgradeBanner';
 import { getConstructionSlots, getActiveConstructions, canStartConstruction, getSlotBreakdown } from '@/lib/game/construction-slots';
 
@@ -725,22 +738,40 @@ function SolarSystemMap({ state, onUnlock }: { state: GameState; onUnlock: (locI
 
 function ServicesPanel({ state }: { state: GameState }) {
   let totalRevenue = 0, totalCost = 0;
-  const rows = state.activeServices.map((svc, i) => {
+
+  // Group services by definitionId + locationId for cleaner display
+  const serviceGroups = new Map<string, { def: typeof SERVICE_MAP extends Map<string, infer V> ? V : never; loc: string; count: number; totalRev: number; totalCostGroup: number }>();
+  for (const svc of state.activeServices) {
     const def = SERVICE_MAP.get(svc.definitionId);
-    if (!def) return null;
+    if (!def) continue;
     const rev = Math.round(def.revenuePerMonth * svc.revenueMultiplier);
     totalRevenue += rev;
     totalCost += def.operatingCostPerMonth;
-    const loc = LOCATION_MAP.get(svc.locationId);
+    const key = `${svc.definitionId}:${svc.locationId}`;
+    const existing = serviceGroups.get(key);
+    if (existing) {
+      existing.count++;
+      existing.totalRev += rev;
+      existing.totalCostGroup += def.operatingCostPerMonth;
+    } else {
+      serviceGroups.set(key, { def, loc: svc.locationId, count: 1, totalRev: rev, totalCostGroup: def.operatingCostPerMonth });
+    }
+  }
+
+  const rows = Array.from(serviceGroups.entries()).map(([key, group]) => {
+    const loc = LOCATION_MAP.get(group.loc);
     return (
-      <div key={i} className="flex items-center justify-between py-2 border-b border-white/[0.04] last:border-0">
+      <div key={key} className="flex items-center justify-between py-2 border-b border-white/[0.04] last:border-0">
         <div>
-          <p className="text-white text-sm">{def.name}</p>
-          <p className="text-slate-500 text-xs">{loc?.name || svc.locationId}</p>
+          <p className="text-white text-sm">
+            {group.def.name}
+            {group.count > 1 && <span className="text-cyan-400 ml-1.5 text-xs font-mono">x{group.count}</span>}
+          </p>
+          <p className="text-slate-500 text-xs">{loc?.name || group.loc}</p>
         </div>
         <div className="text-right">
-          <p className="text-green-400 text-xs font-mono">+{formatMoney(rev)}/mo</p>
-          <p className="text-red-400/60 text-[10px] font-mono">-{formatMoney(def.operatingCostPerMonth)}/mo</p>
+          <p className="text-green-400 text-xs font-mono">+{formatMoney(group.totalRev)}/mo</p>
+          <p className="text-red-400/60 text-[10px] font-mono">-{formatMoney(group.totalCostGroup)}/mo</p>
         </div>
       </div>
     );
@@ -1095,6 +1126,39 @@ export default function SpaceTycoonPage() {
     return () => window.removeEventListener('activate-boost', handler);
   }, []);
 
+  // Mini-activity execution listener
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const { activityId, reward } = (e as CustomEvent).detail;
+      playSound('click');
+      setState(prev => {
+        if (!prev) return prev;
+        return {
+          ...prev,
+          money: prev.money + (reward.money || 0),
+          totalEarned: prev.totalEarned + (reward.money || 0),
+          miniActivityCooldowns: {
+            ...(prev.miniActivityCooldowns || {}),
+            [activityId]: Date.now(),
+          },
+          // Apply resource bonus if present
+          resources: reward.bonus?.type === 'resource_find'
+            ? { ...prev.resources, iron: (prev.resources.iron || 0) + (reward.bonus.value || 0) }
+            : prev.resources,
+          eventLog: [{
+            id: generateId(),
+            date: prev.gameDate,
+            type: 'milestone' as const,
+            title: `Activity: ${reward.message.split(' — ')[0] || 'Activity complete'}`,
+            description: reward.message,
+          }, ...prev.eventLog].slice(0, 50),
+        };
+      });
+    };
+    window.addEventListener('mini-activity-execute', handler);
+    return () => window.removeEventListener('mini-activity-execute', handler);
+  }, []);
+
   // Resource sell handler (must be before early return)
   const handleSellResource = useCallback((resourceId: string, quantity: number, revenue: number) => {
     setState(prev => {
@@ -1275,6 +1339,19 @@ export default function SpaceTycoonPage() {
   if (completedBuildings >= 5) allTabs.push({ id: 'alliance', label: 'Alliance', icon: '🤝' });
   if (hasResources) allTabs.push({ id: 'bounties', label: 'Bounties', icon: '📦' });
   allTabs.push({ id: 'leaderboard', label: 'Ranks', icon: '🏆' });
+
+  // Competitive multiplayer tabs (progressive unlock)
+  allTabs.push({ id: 'leagues', label: 'Leagues', icon: '🏅' });
+  allTabs.push({ id: 'rivals', label: 'Rivals', icon: '⚔️' });
+  if (completedBuildings >= 2) allTabs.push({ id: 'bidding', label: 'Bidding', icon: '🎯' });
+  allTabs.push({ id: 'seasons', label: 'Seasons', icon: '🌟' });
+  allTabs.push({ id: 'megaproject', label: 'Mega-Project', icon: '🌍' });
+  if (completedBuildings >= 3) allTabs.push({ id: 'territory', label: 'Territory', icon: '🗺️' });
+  if (state.prestige && state.prestige.level >= 1) allTabs.push({ id: 'speedruns', label: 'Speed Run', icon: '⏱️' });
+  if (completedBuildings >= 5) allTabs.push({ id: 'espionage', label: 'Intel', icon: '🕵️' });
+
+  // Stable key for FeatureUnlockToast (avoids infinite re-render from array reference)
+  const tabIdsKey = allTabs.map(t => t.id).join(',');
 
   // V3: Split tabs into primary (always visible) and secondary (overflow dropdown)
   const PRIMARY_TAB_IDS: GameTab[] = ['dashboard', 'build', 'research', 'map'];
@@ -1528,7 +1605,13 @@ export default function SpaceTycoonPage() {
             return { ...prev, money: prev.money - cost, totalSpent: prev.totalSpent + cost, workforce };
           });
         }} onDismiss={handleDismissWorker} />}
-        {tab === 'market' && <MarketPanel state={state} onSellResource={handleSellResource} onBuyResource={handleBuyResource} />}
+        {tab === 'market' && (
+          <div className="space-y-4">
+            <MarketPanel state={state} onSellResource={handleSellResource} onBuyResource={handleBuyResource} />
+            <MarketPriceChart />
+            <MarketOrderBook state={state} />
+          </div>
+        )}
         {tab === 'contracts' && <ContractsPanel state={state} onAcceptContract={(contractId) => {
           playSound('click');
           setState(prev => {
@@ -1539,9 +1622,19 @@ export default function SpaceTycoonPage() {
             return { ...prev, activeContracts };
           });
         }} />}
-        {tab === 'alliance' && <AlliancePanel state={state} />}
+        {tab === 'alliance' && <AllianceHubPanel state={state} />}
         {tab === 'bounties' && <BountyPanel state={state} />}
         {tab === 'leaderboard' && <LeaderboardPanel state={state} />}
+
+        {/* Competitive Multiplayer Panels */}
+        {tab === 'leagues' && <LeaguePanel />}
+        {tab === 'rivals' && <RivalsPanel />}
+        {tab === 'bidding' && <BiddingPanel state={state} />}
+        {tab === 'seasons' && <SeasonPanel state={state} />}
+        {tab === 'territory' && <TerritoryPanel state={state} />}
+        {tab === 'speedruns' && <SpeedRunPanel state={state} />}
+        {tab === 'espionage' && <EspionagePanel state={state} />}
+        {tab === 'megaproject' && <MegaProjectPanel state={state} />}
       </div>
 
       {/* Daily Login Bonus */}
@@ -1573,7 +1666,11 @@ export default function SpaceTycoonPage() {
 
       {/* Tutorial + Feature Unlock Notifications */}
       <GameTutorial key={state.createdAt} onSetTab={(t) => setTab(t as GameTab)} />
-      {/* FeatureUnlockToast removed — was causing React error #310 infinite re-render loop */}
+      <FeatureUnlockToast
+        availableTabsKey={tabIdsKey}
+        availableTabs={allTabs.map(t => t.id)}
+        onNavigateToTab={(t) => setTab(t as GameTab)}
+      />
       <ProUpgradeBanner completedResearch={state.completedResearch.length} />
 
       {/* Prestige Modal */}

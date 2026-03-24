@@ -32,8 +32,59 @@ export default function ContractsPanel({ state, onAcceptContract }: ContractsPan
   // Milestones
   const claimedMilestones = state.claimedMilestones || {};
 
+  // Timed competitive events
+  const timedEvents = (state.activeTimedEvents || []).filter(e => !e.completed);
+  const completedTimedEvents = (state.activeTimedEvents || []).filter(e => e.completed);
+
   return (
     <div className="space-y-6">
+      {/* Timed Competitive Events */}
+      {(timedEvents.length > 0 || completedTimedEvents.length > 0) && (
+        <div>
+          <h3 className="text-white text-xs font-bold uppercase tracking-wider mb-3 flex items-center gap-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+            Timed Events ({timedEvents.length} active)
+          </h3>
+          <div className="grid gap-2">
+            {timedEvents.map(evt => {
+              const template = (require('@/lib/game/timed-events') as { EVENT_TEMPLATES: { id: string; getProgress: (s: GameState) => number }[] }).EVENT_TEMPLATES.find((t: { id: string }) => t.id === evt.templateId);
+              const progress = template ? template.getProgress(state) : 0;
+              const pct = Math.min(100, Math.round((progress / evt.target) * 100));
+              const remaining = Math.max(0, evt.expiresAtMs - Date.now());
+              const hoursLeft = Math.floor(remaining / 3600000);
+              const minsLeft = Math.floor((remaining % 3600000) / 60000);
+              return (
+                <div key={evt.templateId + evt.startedAtMs} className="bg-zinc-800/60 border border-zinc-700/50 rounded-lg p-3">
+                  <div className="flex items-center justify-between mb-1.5">
+                    <span className="text-sm font-medium text-white">{evt.icon} {evt.name}</span>
+                    <span className="text-xs text-amber-400 font-mono">{hoursLeft}h {minsLeft}m</span>
+                  </div>
+                  <p className="text-xs text-zinc-400 mb-2">{evt.description}</p>
+                  <div className="flex items-center gap-2 mb-1">
+                    <div className="flex-1 h-1.5 bg-zinc-700 rounded-full overflow-hidden">
+                      <div className="h-full bg-amber-500 rounded-full transition-all" style={{ width: `${pct}%` }} />
+                    </div>
+                    <span className="text-xs text-zinc-300 font-mono">{progress}/{evt.target}</span>
+                  </div>
+                  <div className="flex justify-between text-xs">
+                    <span className="text-zinc-500">{evt.targetLabel}</span>
+                    <span className="text-emerald-400">+{formatMoney(evt.rewardAmount)}</span>
+                  </div>
+                </div>
+              );
+            })}
+            {completedTimedEvents.map(evt => (
+              <div key={evt.templateId + evt.startedAtMs} className="bg-emerald-900/20 border border-emerald-700/30 rounded-lg p-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium text-emerald-300">{evt.icon} {evt.name} — Complete!</span>
+                  <span className="text-xs text-emerald-400">+{formatMoney(evt.rewardAmount)}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Active Contracts */}
       {active.length > 0 && (
         <div>

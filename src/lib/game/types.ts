@@ -323,8 +323,29 @@ export interface GameState {
 
   // Dynamic service pricing (from server — multiplier per service ID)
   servicePriceMultipliers?: Record<string, number>;
+
+  // Timed competitive events
+  activeTimedEvents?: {
+    templateId: string;
+    name: string;
+    icon: string;
+    category: string;
+    description: string;
+    targetLabel: string;
+    target: number;
+    startedAtMs: number;
+    expiresAtMs: number;
+    rewardAmount: number;
+    boostReward?: 'construction' | 'research' | null;
+    completed?: boolean;
+    completedAtMs?: number;
+  }[];
+  lastTimedEventSpawnMs?: number;
+
+  // Mini-activities cooldowns
+  miniActivityCooldowns?: Record<string, number>; // activityId → lastExecutedAtMs
 }
 
 // ─── UI Tabs ────────────────────────────────────────────────────────────────
 
-export type GameTab = 'dashboard' | 'build' | 'research' | 'map' | 'services' | 'fleet' | 'crafting' | 'workforce' | 'market' | 'contracts' | 'alliance' | 'bounties' | 'leaderboard';
+export type GameTab = 'dashboard' | 'build' | 'research' | 'map' | 'services' | 'fleet' | 'crafting' | 'workforce' | 'market' | 'contracts' | 'alliance' | 'bounties' | 'leaderboard' | 'rivals' | 'leagues' | 'bidding' | 'seasons' | 'territory' | 'speedruns' | 'espionage' | 'megaproject';

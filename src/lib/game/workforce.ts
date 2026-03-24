@@ -97,3 +97,61 @@ export function getHireCost(type: WorkerType): number {
   if (!def) return 0;
   return def.salary * 6; // 6 months salary as signing bonus
 }
+
+/**
+ * Calculate max crew capacity based on infrastructure.
+ * Each completed building supports a certain number of crew.
+ * Players can't spam workers beyond what their buildings can house.
+ */
+export function getCrewCapacity(completedBuildingCount: number, unlockedLocationCount: number, completedResearchCount: number): {
+  total: number;
+  perType: number;
+  breakdown: { source: string; amount: number }[];
+} {
+  const breakdown: { source: string; amount: number }[] = [];
+
+  // Base: 2 crew (enough for 1 of each starter type)
+  const base = 2;
+  breakdown.push({ source: 'Base capacity', amount: base });
+
+  // +1 per completed building (each building has workstations)
+  const buildingCap = completedBuildingCount;
+  if (buildingCap > 0) breakdown.push({ source: `${completedBuildingCount} buildings`, amount: buildingCap });
+
+  // +2 per unlocked location beyond Earth (colony housing)
+  const locationCap = Math.max(0, unlockedLocationCount - 1) * 2;
+  if (locationCap > 0) breakdown.push({ source: `${unlockedLocationCount - 1} off-world locations`, amount: locationCap });
+
+  // +1 per 3 completed research (advanced crew quarters tech)
+  const researchCap = Math.floor(completedResearchCount / 3);
+  if (researchCap > 0) breakdown.push({ source: `${completedResearchCount} research`, amount: researchCap });
+
+  const total = base + buildingCap + locationCap + researchCap;
+  // Per-type cap = total / 2 (can't put all eggs in one basket)
+  const perType = Math.max(1, Math.ceil(total / 2));
+
+  return { total, perType, breakdown };
+}
+
+/**
+ * Check if a player can hire more of a specific worker type.
+ */
+export function canHireWorker(
+  workforce: WorkforceState,
+  type: WorkerType,
+  completedBuildingCount: number,
+  unlockedLocationCount: number,
+  completedResearchCount: number,
+): { allowed: boolean; reason?: string; capacity: ReturnType<typeof getCrewCapacity> } {
+  const capacity = getCrewCapacity(completedBuildingCount, unlockedLocationCount, completedResearchCount);
+  const currentTotal = workforce.engineers + workforce.scientists + workforce.miners + workforce.operators;
+  const currentOfType = workforce[`${type}s` as keyof WorkforceState] || 0;
+
+  if (currentTotal >= capacity.total) {
+    return { allowed: false, reason: `Crew full (${currentTotal}/${capacity.total}). Build more to expand.`, capacity };
+  }
+  if (currentOfType >= capacity.perType) {
+    return { allowed: false, reason: `Max ${capacity.perType} ${type}s. Diversify your crew or build more.`, capacity };
+  }
+  return { allowed: true, capacity };
+}

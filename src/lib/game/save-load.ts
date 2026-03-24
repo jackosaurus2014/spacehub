@@ -69,6 +69,8 @@ export function getNewGameState(): GameState {
     availableBoosts: [],
     activeBoosts: [],
     servicePriceMultipliers: {},
+    // V5 fields — mini-activities
+    miniActivityCooldowns: {},
   };
 }
 
@@ -121,6 +123,11 @@ export function loadGame(): GameState | null {
     if (!state.availableBoosts) state.availableBoosts = [];
     if (!state.activeBoosts) state.activeBoosts = [];
     if (!state.servicePriceMultipliers) state.servicePriceMultipliers = {};
+    // V4 fields — timed competitive events
+    if (!state.activeTimedEvents) state.activeTimedEvents = [];
+    if (!state.lastTimedEventSpawnMs) state.lastTimedEventSpawnMs = 0;
+    // V5 fields — mini-activities
+    if (!state.miniActivityCooldowns) state.miniActivityCooldowns = {};
 
     state.tickSpeed = 1; // Always 1x for fairness
     return state;
