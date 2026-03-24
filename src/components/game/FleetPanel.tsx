@@ -2,13 +2,14 @@
 
 import { useState, useCallback } from 'react';
 import type { GameState } from '@/lib/game/types';
-import { SHIPS, SHIP_MAP, getTravelTime, generateShipName } from '@/lib/game/ships';
+import { SHIPS, SHIP_MAP, getTravelTime, generateShipName, SURVEY_DURATION } from '@/lib/game/ships';
 import type { ShipInstance } from '@/lib/game/ships';
 import { LOCATIONS, LOCATION_MAP } from '@/lib/game/solar-system';
 import { RESOURCE_MAP } from '@/lib/game/resources';
 import { formatMoney, formatCountdown, formatDuration } from '@/lib/game/formulas';
 import { playSound } from '@/lib/game/sound-engine';
 import { getShipAsset } from '@/lib/game/assets';
+import { getShipyardSlots, getActiveShipBuilds, canBuildShip, getShipyardBreakdown } from '@/lib/game/shipyard-slots';
 import Image from 'next/image';
 
 interface FleetPanelProps {
@@ -17,16 +18,21 @@ interface FleetPanelProps {
   onStartMining: (shipInstanceId: string, resourceId: string) => void;
   onStopMining: (shipInstanceId: string) => void;
   onStartTransport: (shipInstanceId: string, toLocation: string, cargo: Record<string, number>) => void;
+  onLaunchSurvey?: (shipInstanceId: string, targetLocation: string) => void;
   onScrapShip?: (shipInstanceId: string) => void;
 }
 
-export default function FleetPanel({ state, onBuildShip, onStartMining, onStopMining, onStartTransport, onScrapShip }: FleetPanelProps) {
+export default function FleetPanel({ state, onBuildShip, onStartMining, onStopMining, onStartTransport, onLaunchSurvey, onScrapShip }: FleetPanelProps) {
   const [selectedShipyard, setSelectedShipyard] = useState('earth_surface');
   const [selectedShip, setSelectedShip] = useState<string | null>(null);
 
   const ships = state.ships || [];
   const builtShips = ships.filter(s => s.isBuilt);
   const buildingShips = ships.filter(s => !s.isBuilt);
+  const shipyardSlots = getShipyardSlots(state);
+  const activeBuilds = getActiveShipBuilds(state);
+  const canBuild = canBuildShip(state);
+  const shipyardBreakdown = getShipyardBreakdown(state);
 
   // Available ships to build
   const availableShipDefs = SHIPS.filter(s =>
@@ -168,6 +174,29 @@ export default function FleetPanel({ state, onBuildShip, onStartMining, onStopMi
             </button>
           )}
 
+          {/* Survey action (for idle survey probes) */}
+          {selectedShipInstance.status === 'idle' && selectedShipDef.role === 'survey' && onLaunchSurvey && (
+            <div className="mb-3 p-3 rounded-lg bg-purple-500/10 border border-purple-500/20">
+              <p className="text-purple-300 text-xs font-semibold mb-1">Launch Survey Expedition</p>
+              <p className="text-purple-300/60 text-[10px] mb-2">Send this probe to any location to discover hidden resources, anomalies, and mining bonuses. The probe is consumed after the expedition.</p>
+              <div className="flex flex-wrap gap-1.5">
+                {state.unlockedLocations.map(locId => {
+                  const loc = LOCATION_MAP.get(locId);
+                  const duration = SURVEY_DURATION[locId] || 120;
+                  return (
+                    <button
+                      key={locId}
+                      onClick={() => { playSound('build_start'); onLaunchSurvey(selectedShipInstance.instanceId, locId); setSelectedShip(null); }}
+                      className="px-2.5 py-1 text-[10px] font-medium bg-purple-600/20 text-purple-400 border border-purple-600/30 rounded-lg hover:bg-purple-600/30 transition-colors"
+                    >
+                      📡 {loc?.name} ({formatDuration(duration)})
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
           {/* Transport action (for idle ships) */}
           {selectedShipInstance.status === 'idle' && <div>
             <p className="text-slate-400 text-xs mb-2">Send to location (capacity: {selectedShipDef.cargoCapacity} units):</p>
@@ -230,9 +259,32 @@ export default function FleetPanel({ state, onBuildShip, onStartMining, onStopMi
         </div>
       )}
 
+      {/* Shipyard Capacity */}
+      <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-3 mb-4">
+        <div className="flex items-center justify-between mb-2">
+          <span className="text-white text-xs font-bold uppercase tracking-wider">Shipyard</span>
+          <span className={`text-xs font-mono ${canBuild ? 'text-cyan-400' : 'text-amber-400'}`}>
+            {activeBuilds}/{shipyardSlots} slots
+          </span>
+        </div>
+        <div className="w-full h-2 bg-zinc-800 rounded-full overflow-hidden mb-2">
+          <div className={`h-full rounded-full transition-all ${canBuild ? 'bg-cyan-500' : 'bg-amber-500'}`} style={{ width: `${(activeBuilds / Math.max(1, shipyardSlots)) * 100}%` }} />
+        </div>
+        <div className="flex flex-wrap gap-x-3 gap-y-0.5">
+          {shipyardBreakdown.map(b => (
+            <span key={b.label} className={`text-[9px] ${b.active ? 'text-cyan-400/70' : 'text-zinc-600'}`}>{b.label}</span>
+          ))}
+        </div>
+      </div>
+
       {/* Build New Ships */}
       <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
         <h3 className="text-white text-xs font-bold uppercase tracking-wider mb-3">Build Ships</h3>
+        {!canBuild && (
+          <div className="mb-3 px-3 py-2 rounded-lg bg-amber-500/10 border border-amber-500/20">
+            <p className="text-amber-400 text-xs">Shipyard full — wait for a ship to finish before starting another.</p>
+          </div>
+        )}
         {availableShipDefs.length === 0 ? (
           <p className="text-slate-500 text-xs">Research new technologies to unlock ship construction.</p>
         ) : (
@@ -242,7 +294,7 @@ export default function FleetPanel({ state, onBuildShip, onStartMining, onStopMi
               const hasResources = Object.entries(ship.resourceCost).every(
                 ([resId, qty]) => (state.resources[resId] || 0) >= qty
               );
-              const canBuild = canAffordMoney && hasResources;
+              const canBuildThis = canAffordMoney && hasResources && canBuild;
 
               return (
                 <div key={ship.id} className="p-3 rounded-lg bg-white/[0.02] border border-white/[0.04]">
@@ -298,14 +350,15 @@ export default function FleetPanel({ state, onBuildShip, onStartMining, onStopMi
                     </span>
                     <button
                       onClick={() => { playSound('build_start'); onBuildShip(ship.id, selectedShipyard); }}
-                      disabled={!canBuild}
+                      disabled={!canBuildThis}
+                      title={!canBuild ? 'Shipyard full' : !canAffordMoney ? 'Insufficient funds' : !hasResources ? 'Missing resources' : undefined}
                       className={`px-2.5 py-1 rounded text-[10px] font-medium transition-colors ${
-                        canBuild
+                        canBuildThis
                           ? 'bg-cyan-600 text-white hover:bg-cyan-500'
                           : 'bg-white/[0.04] text-slate-600 cursor-not-allowed'
                       }`}
                     >
-                      Build
+                      {!canBuild ? 'Yard Full' : 'Build'}
                     </button>
                   </div>
                 </div>

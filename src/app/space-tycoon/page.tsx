@@ -1564,6 +1564,31 @@ export default function SpaceTycoonPage() {
               return { ...prev, ships };
             });
           }}
+          onLaunchSurvey={(shipInstanceId, targetLocation) => {
+            setState(prev => {
+              if (!prev) return prev;
+              const { SURVEY_DURATION: durations } = require('@/lib/game/ships');
+              const duration = durations[targetLocation] || 120;
+              const ships = (prev.ships || []).map(s => {
+                if (s.instanceId !== shipInstanceId) return s;
+                return {
+                  ...s,
+                  status: 'surveying' as const,
+                  surveyExpedition: {
+                    targetLocation,
+                    startedAtMs: Date.now(),
+                    durationSeconds: duration,
+                  },
+                };
+              });
+              const loc = LOCATION_MAP.get(targetLocation);
+              return {
+                ...prev,
+                ships,
+                eventLog: [{ id: generateId(), date: prev.gameDate, type: 'build_complete' as const, title: `Survey probe launched to ${loc?.name || targetLocation}`, description: `Expedition will complete in ${Math.round(duration / 60)} minutes.` }, ...prev.eventLog].slice(0, 50),
+              };
+            });
+          }}
           onScrapShip={handleScrapShip}
         />}
         {tab === 'crafting' && <CraftingPanel state={state} onStartCrafting={(recipeId) => {

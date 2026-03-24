@@ -268,28 +268,41 @@ export default function MarketPanel({ state, onSellResource, onBuyResource }: Ma
                       {change > 0 ? '▲+' : change < 0 ? '▼' : ''}{change}%
                     </span>
                   </div>
-                  {onBuyResource && (
-                    <div className="flex gap-1">
-                      <button
-                        onClick={() => handleBuy(r.id, 1)}
-                        disabled={state.money < current || trading}
-                        className={`px-2 py-0.5 text-[9px] font-medium rounded transition-colors ${
-                          state.money >= current && !trading
-                            ? 'bg-cyan-600/20 text-cyan-400 border border-cyan-600/30 hover:bg-cyan-600/30'
-                            : 'bg-white/[0.02] text-slate-600 border border-white/[0.04] cursor-not-allowed'
-                        }`}
-                      >Buy 1</button>
-                      <button
-                        onClick={() => handleBuy(r.id, 20)}
-                        disabled={state.money < current * 20 || trading}
-                        className={`px-2 py-0.5 text-[9px] font-medium rounded transition-colors ${
-                          state.money >= current * 20 && !trading
-                            ? 'bg-cyan-600/20 text-cyan-400 border border-cyan-600/30 hover:bg-cyan-600/30'
-                            : 'bg-white/[0.02] text-slate-600 border border-white/[0.04] cursor-not-allowed'
-                        }`}
-                      >Buy 20</button>
-                    </div>
-                  )}
+                  <div className="flex gap-1">
+                    {/* Sell buttons (if player has this resource) */}
+                    {(state.resources[r.id] || 0) > 0 && (
+                      <>
+                        <button
+                          onClick={() => { setSelectedResource(r.id); setSellQty(Math.min(1, state.resources[r.id] || 0)); }}
+                          disabled={trading}
+                          className="px-2 py-0.5 text-[9px] font-medium rounded transition-colors bg-amber-600/20 text-amber-400 border border-amber-600/30 hover:bg-amber-600/30"
+                        >Sell</button>
+                      </>
+                    )}
+                    {/* Buy buttons */}
+                    {onBuyResource && (
+                      <>
+                        <button
+                          onClick={() => handleBuy(r.id, 1)}
+                          disabled={state.money < current || trading}
+                          className={`px-2 py-0.5 text-[9px] font-medium rounded transition-colors ${
+                            state.money >= current && !trading
+                              ? 'bg-cyan-600/20 text-cyan-400 border border-cyan-600/30 hover:bg-cyan-600/30'
+                              : 'bg-white/[0.02] text-slate-600 border border-white/[0.04] cursor-not-allowed'
+                          }`}
+                        >Buy 1</button>
+                        <button
+                          onClick={() => handleBuy(r.id, 10)}
+                          disabled={state.money < current * 10 || trading}
+                          className={`px-2 py-0.5 text-[9px] font-medium rounded transition-colors ${
+                            state.money >= current * 10 && !trading
+                              ? 'bg-cyan-600/20 text-cyan-400 border border-cyan-600/30 hover:bg-cyan-600/30'
+                              : 'bg-white/[0.02] text-slate-600 border border-white/[0.04] cursor-not-allowed'
+                          }`}
+                        >Buy 10</button>
+                      </>
+                    )}
+                  </div>
                 </div>
               </div>
             );
