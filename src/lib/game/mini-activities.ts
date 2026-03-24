@@ -80,12 +80,12 @@ export const MINI_ACTIVITIES: MiniActivity[] = [
     name: 'Scan for Debris',
     icon: '📡',
     description: 'Sweep local orbit for trackable debris. Sell data to space agencies.',
-    cooldownSeconds: 30,
+    cooldownSeconds: 300,
     category: 'scanning',
-    minReward: '$50K',
-    maxReward: '$200K',
+    minReward: '$10K',
+    maxReward: '$50K',
     getReward: () => {
-      const money = randBetween(50_000, 200_000);
+      const money = randBetween(10_000, 50_000);
       const foundResource = Math.random() < 0.15;
       return {
         money,
@@ -101,13 +101,13 @@ export const MINI_ACTIVITIES: MiniActivity[] = [
     name: 'Monitor Satellite Health',
     icon: '🛰️',
     description: 'Run diagnostics on your satellite constellation. Billing clients for health reports.',
-    cooldownSeconds: 60,
+    cooldownSeconds: 600,
     category: 'scanning',
     requirements: { requiresSatellite: true },
-    minReward: '$100K',
-    maxReward: '$300K',
+    minReward: '$20K',
+    maxReward: '$75K',
     getReward: () => {
-      const money = randBetween(100_000, 300_000);
+      const money = randBetween(20_000, 75_000);
       return {
         money,
         message: `Satellite diagnostics sold to insurers for ${formatRewardMoney(money)}.`,
@@ -119,13 +119,13 @@ export const MINI_ACTIVITIES: MiniActivity[] = [
     name: 'Process Ground Station Data',
     icon: '📶',
     description: 'Crunch incoming telemetry from your ground stations for third-party clients.',
-    cooldownSeconds: 45,
+    cooldownSeconds: 450,
     category: 'scanning',
     requirements: { requiresGroundStation: true },
-    minReward: '$75K',
-    maxReward: '$250K',
+    minReward: '$15K',
+    maxReward: '$60K',
     getReward: () => {
-      const money = randBetween(75_000, 250_000);
+      const money = randBetween(15_000, 60_000);
       return {
         money,
         message: `Data processing fee collected: ${formatRewardMoney(money)}.`,
@@ -137,13 +137,13 @@ export const MINI_ACTIVITIES: MiniActivity[] = [
     name: 'Calibrate Sensors',
     icon: '🔧',
     description: 'Fine-tune sensor arrays for optimal imaging. Sell calibration data to researchers.',
-    cooldownSeconds: 120,
+    cooldownSeconds: 900,
     category: 'scanning',
     requirements: { requiresSensorSatellite: true },
-    minReward: '$150K',
-    maxReward: '$500K',
+    minReward: '$30K',
+    maxReward: '$100K',
     getReward: () => {
-      const money = randBetween(150_000, 500_000);
+      const money = randBetween(30_000, 100_000);
       return {
         money,
         message: `Calibration data licensed to research institutions: ${formatRewardMoney(money)}.`,
@@ -157,22 +157,22 @@ export const MINI_ACTIVITIES: MiniActivity[] = [
     name: 'Spot Trade Opportunity',
     icon: '💹',
     description: 'Identify a quick market arbitrage in the resource exchange.',
-    cooldownSeconds: 300,
+    cooldownSeconds: 900,
     category: 'trading',
     requirements: { minBuildings: 2 },
-    minReward: '1%',
-    maxReward: '3%',
+    minReward: '$25K',
+    maxReward: '$100K',
     getReward: (state) => {
       const resourceValues = Object.entries(state.resources || {})
         .filter(([, qty]) => qty > 0)
-        .map(([id, qty]) => ({ id, value: qty * randBetween(10_000, 50_000) }));
+        .map(([id, qty]) => ({ id, value: qty * randBetween(5_000, 20_000) }));
       if (resourceValues.length === 0) {
-        const money = randBetween(100_000, 500_000);
+        const money = randBetween(25_000, 100_000);
         return { money, message: `Quick trade netted ${formatRewardMoney(money)}.` };
       }
       const picked = resourceValues[Math.floor(Math.random() * resourceValues.length)];
-      const pct = (1 + Math.random() * 2) / 100;
-      const money = Math.max(100_000, Math.round(picked.value * pct));
+      const pct = (0.5 + Math.random()) / 100;
+      const money = Math.min(150_000, Math.max(25_000, Math.round(picked.value * pct)));
       return {
         money,
         message: `Spot trade on ${picked.id.replace(/_/g, ' ')} earned ${formatRewardMoney(money)}.`,
@@ -184,13 +184,13 @@ export const MINI_ACTIVITIES: MiniActivity[] = [
     name: 'Arbitrage Alert',
     icon: '📊',
     description: 'Act on a cross-exchange price discrepancy before it closes.',
-    cooldownSeconds: 600,
+    cooldownSeconds: 1800,
     category: 'trading',
     requirements: { minBuildings: 3 },
-    minReward: '$500K',
-    maxReward: '$2M',
+    minReward: '$50K',
+    maxReward: '$200K',
     getReward: () => {
-      const money = randBetween(500_000, 2_000_000);
+      const money = randBetween(50_000, 200_000);
       return {
         money,
         message: `Arbitrage executed — profit: ${formatRewardMoney(money)}.`,
@@ -204,19 +204,16 @@ export const MINI_ACTIVITIES: MiniActivity[] = [
     name: 'Optimize Operations',
     icon: '⚙️',
     description: 'Review and streamline your operational workflows for a one-time efficiency bonus.',
-    cooldownSeconds: 180,
+    cooldownSeconds: 1200,
     category: 'management',
     requirements: { minBuildings: 1 },
-    minReward: '5%',
-    maxReward: 'monthly rev',
+    minReward: '$10K',
+    maxReward: '$75K',
     getReward: (state) => {
-      // 5% of total monthly service revenue
-      let monthlyRev = 0;
-      for (const svc of state.activeServices) {
-        monthlyRev += 5_000_000; // Approximate avg revenue per service
-      }
-      const bonus = Math.max(50_000, Math.round(monthlyRev * 0.05));
-      const money = Math.min(bonus, 5_000_000); // Cap at $5M
+      // Small fraction of service revenue — pocket change, not a real income source
+      const serviceCount = state.activeServices.length;
+      const bonus = Math.max(10_000, Math.round(serviceCount * 15_000));
+      const money = Math.min(bonus, 150_000); // Hard cap at $150K
       return {
         money,
         message: `Operations optimised — efficiency bonus: ${formatRewardMoney(money)}.`,
@@ -228,13 +225,13 @@ export const MINI_ACTIVITIES: MiniActivity[] = [
     name: 'Run Diagnostics',
     icon: '🔍',
     description: 'Deep diagnostics on fleet hardware. May boost mining yield temporarily.',
-    cooldownSeconds: 120,
+    cooldownSeconds: 900,
     category: 'management',
     requirements: { requiresShip: true },
-    minReward: '$100K',
-    maxReward: '$500K',
+    minReward: '$20K',
+    maxReward: '$80K',
     getReward: () => {
-      const money = randBetween(100_000, 500_000);
+      const money = randBetween(20_000, 80_000);
       const boosted = Math.random() < 0.25;
       return {
         money,
@@ -254,15 +251,15 @@ export const MINI_ACTIVITIES: MiniActivity[] = [
     name: 'Review Research Papers',
     icon: '📄',
     description: 'Read recent publications for insights. May accelerate current research or earn a grant.',
-    cooldownSeconds: 300,
+    cooldownSeconds: 1200,
     category: 'research',
     requirements: { minResearch: 1 },
-    minReward: '$200K',
-    maxReward: '$800K',
+    minReward: '$25K',
+    maxReward: '$100K',
     getReward: (state) => {
       const hasActiveResearch = !!state.activeResearch;
       const giveSpeedBoost = hasActiveResearch && Math.random() < 0.35;
-      const money = randBetween(200_000, 800_000);
+      const money = randBetween(25_000, 100_000);
       return {
         money,
         message: giveSpeedBoost
@@ -279,15 +276,15 @@ export const MINI_ACTIVITIES: MiniActivity[] = [
     name: 'Patent Filing',
     icon: '📝',
     description: 'File patents from your completed research. More research = higher licensing fees.',
-    cooldownSeconds: 900,
+    cooldownSeconds: 3600,
     category: 'research',
     requirements: { minResearch: 3 },
-    minReward: '$1M',
-    maxReward: '$5M',
+    minReward: '$50K',
+    maxReward: '$250K',
     getReward: (state) => {
       const researchCount = state.completedResearch.length;
-      const base = 1_000_000;
-      const scale = Math.min(researchCount * 200_000, 4_000_000);
+      const base = 50_000;
+      const scale = Math.min(researchCount * 20_000, 200_000);
       const money = randBetween(base, base + scale);
       return {
         money,
@@ -302,7 +299,7 @@ export const MINI_ACTIVITIES: MiniActivity[] = [
     name: 'Inspect Rival',
     icon: '🕵️',
     description: 'Gather intelligence on a competing space company. Fun intel, no direct combat.',
-    cooldownSeconds: 600,
+    cooldownSeconds: 1800,
     category: 'social',
     minReward: '$0',
     maxReward: 'intel',
@@ -320,7 +317,7 @@ export const MINI_ACTIVITIES: MiniActivity[] = [
       ];
       const rival = rivals[Math.floor(Math.random() * rivals.length)];
       const fact = facts[Math.floor(Math.random() * facts.length)];
-      const money = randBetween(0, 50_000);
+      const money = randBetween(0, 10_000);
       return {
         money,
         message: `Intel: ${rival} ${fact}.${money > 0 ? ` Tip earned: ${formatRewardMoney(money)}.` : ''}`,
@@ -332,15 +329,15 @@ export const MINI_ACTIVITIES: MiniActivity[] = [
     name: 'PR Campaign',
     icon: '📢',
     description: 'Launch a targeted publicity campaign. Revenue scales with your service portfolio.',
-    cooldownSeconds: 1800,
+    cooldownSeconds: 3600,
     category: 'social',
     requirements: { minServices: 1 },
-    minReward: '$500K',
-    maxReward: '$3M',
+    minReward: '$30K',
+    maxReward: '$150K',
     getReward: (state) => {
       const serviceCount = state.activeServices.length;
-      const base = 500_000;
-      const scale = Math.min(serviceCount * 300_000, 2_500_000);
+      const base = 30_000;
+      const scale = Math.min(serviceCount * 15_000, 120_000);
       const money = randBetween(base, base + scale);
       return {
         money,
