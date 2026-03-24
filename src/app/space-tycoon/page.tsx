@@ -1328,11 +1328,12 @@ export default function SpaceTycoonPage() {
   const hasServices = state.activeServices.length > 0;
   const hasResearch = state.completedResearch.length > 0;
   const hasResources = Object.values(state.resources || {}).some(q => q > 0);
-  const hasFabrication = state.buildings.some(b => b.isComplete && (b.definitionId === 'fabrication_orbital' || b.definitionId === 'fabrication_lunar'));
+  const hasFabrication = state.buildings.some(b => b.isComplete && b.definitionId.startsWith('fabrication_'));
+  const hasEnoughForCrafting = hasFabrication || (hasResources && completedBuildings >= 5);
 
   if (hasServices) allTabs.push({ id: 'services', label: 'Services', icon: '💰' });
   if (hasResearch) allTabs.push({ id: 'fleet', label: 'Fleet', icon: '🚀' });
-  if (hasFabrication) allTabs.push({ id: 'crafting', label: 'Craft', icon: '🔨' });
+  if (hasEnoughForCrafting) allTabs.push({ id: 'crafting', label: 'Craft', icon: '🔨' });
   if (completedBuildings >= 3) allTabs.push({ id: 'workforce', label: 'Crew', icon: '👷' });
   if (hasResources || completedBuildings >= 2) allTabs.push({ id: 'market', label: 'Market', icon: '📈' });
   if (completedBuildings >= 2) allTabs.push({ id: 'contracts', label: 'Contracts', icon: '📋' });
