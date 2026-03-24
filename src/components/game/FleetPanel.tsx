@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from 'react';
 import type { GameState } from '@/lib/game/types';
-import { SHIPS, SHIP_MAP, getTravelTime, generateShipName, SURVEY_DURATION } from '@/lib/game/ships';
+import { SHIPS, SHIP_MAP, getTravelTime, generateShipName, SURVEY_DURATION, canMineAtLocation, MINING_LOCATIONS } from '@/lib/game/ships';
 import type { ShipInstance } from '@/lib/game/ships';
 import { LOCATIONS, LOCATION_MAP } from '@/lib/game/solar-system';
 import { RESOURCE_MAP } from '@/lib/game/resources';
@@ -146,23 +146,42 @@ export default function FleetPanel({ state, onBuildShip, onStartMining, onStopMi
             {selectedShipDef.icon} {selectedShipInstance.name} — Commands
           </h3>
 
-          {/* Mining action (for idle mining ships) */}
-          {selectedShipInstance.status === 'idle' && selectedShipDef.role === 'mining' && selectedShipDef.miningTargets && (
-            <div className="mb-3">
-              <p className="text-slate-400 text-xs mb-2">Start Mining ({selectedShipDef.miningRate} units/min):</p>
-              <div className="flex flex-wrap gap-1.5">
-                {selectedShipDef.miningTargets.map(resId => (
-                  <button
-                    key={resId}
-                    onClick={() => { playSound('build_start'); onStartMining(selectedShipInstance.instanceId, resId); setSelectedShip(null); }}
-                    className="px-2.5 py-1 text-[10px] font-medium bg-amber-600/20 text-amber-400 border border-amber-600/30 rounded-lg hover:bg-amber-600/30 transition-colors"
-                  >
-                    ⛏️ Mine {resId.replace(/_/g, ' ')}
-                  </button>
-                ))}
+          {/* Mining action (for idle mining ships at valid mining locations) */}
+          {selectedShipInstance.status === 'idle' && selectedShipDef.role === 'mining' && selectedShipDef.miningTargets && (() => {
+            const currentLoc = selectedShipInstance.currentLocation;
+            const canMineHere = canMineAtLocation(currentLoc);
+            const locInfo = MINING_LOCATIONS[currentLoc];
+            return (
+              <div className="mb-3">
+                {canMineHere ? (
+                  <>
+                    <p className="text-slate-400 text-xs mb-1">
+                      Start Mining at {LOCATION_MAP.get(currentLoc)?.name || currentLoc}
+                      {locInfo && <span className="text-amber-400 ml-1">({locInfo.multiplier}x output)</span>}
+                    </p>
+                    <p className="text-slate-500 text-[9px] mb-2">{locInfo?.description}</p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {selectedShipDef.miningTargets.map(resId => (
+                        <button
+                          key={resId}
+                          onClick={() => { playSound('build_start'); onStartMining(selectedShipInstance.instanceId, resId); setSelectedShip(null); }}
+                          className="px-2.5 py-1 text-[10px] font-medium bg-amber-600/20 text-amber-400 border border-amber-600/30 rounded-lg hover:bg-amber-600/30 transition-colors"
+                        >
+                          ⛏️ Mine {resId.replace(/_/g, ' ')}
+                        </button>
+                      ))}
+                    </div>
+                  </>
+                ) : (
+                  <div className="p-2.5 rounded-lg bg-red-500/10 border border-red-500/20">
+                    <p className="text-red-400 text-xs font-semibold mb-1">Cannot mine at {LOCATION_MAP.get(currentLoc)?.name || currentLoc}</p>
+                    <p className="text-red-300/60 text-[10px] mb-2">Mining ships must be at a celestial body (Moon, Mars, asteroids, etc.). Send this ship to a mining location first.</p>
+                    <p className="text-slate-500 text-[9px]">Valid locations: {Object.entries(MINING_LOCATIONS).map(([id, info]) => info.name).join(', ')}</p>
+                  </div>
+                )}
               </div>
-            </div>
-          )}
+            );
+          })()}
 
           {/* Stop mining (for mining ships) */}
           {selectedShipInstance.status === 'mining' && (

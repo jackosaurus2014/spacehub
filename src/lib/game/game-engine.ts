@@ -456,12 +456,15 @@ export function processFullTick(state: GameState): GameState {
           }
         }
 
-        // Mining production (with workforce and prestige bonuses, fractional per tick)
+        // Mining production (with workforce, prestige, and location bonuses, fractional per tick)
         if (ship.isBuilt && ship.status === 'mining' && ship.miningOperation) {
           const shipDef = SHIP_MAP.get(ship.definitionId);
           if (shipDef?.miningRate) {
             const resId = ship.miningOperation.resourceId;
-            const mined = Math.round(shipDef.miningRate * 0.5 * shipMiningMult * shipFraction);
+            // Location multiplier: further/riskier locations yield more
+            const { getMiningMultiplier: getLocMult } = require('./ships');
+            const locationMult = getLocMult(ship.miningOperation.locationId || ship.currentLocation) || 1;
+            const mined = Math.round(shipDef.miningRate * 0.5 * shipMiningMult * locationMult * shipFraction);
             if (mined >= 1) {
               resources[resId] = (resources[resId] || 0) + mined;
             }

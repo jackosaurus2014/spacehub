@@ -24,6 +24,30 @@ export interface ShipDefinition {
   maintenancePerMonth: number; // Monthly upkeep cost (prevents infinite fleet spam)
 }
 
+/**
+ * Locations where ship-based mining is allowed and their output multipliers.
+ * Earth surface and orbits are NOT mineable — ships must go to actual celestial bodies.
+ * Higher-risk/further locations give better output multipliers.
+ */
+export const MINING_LOCATIONS: Record<string, { name: string; multiplier: number; description: string }> = {
+  lunar_surface:  { name: 'Lunar Surface',   multiplier: 0.8,  description: 'Low risk, moderate yields. Water and helium-3.' },
+  mars_surface:   { name: 'Mars Surface',    multiplier: 1.0,  description: 'Standard yields. Water, iron, aluminum.' },
+  asteroid_belt:  { name: 'Asteroid Belt',   multiplier: 1.5,  description: 'Rich deposits. Precious metals and rare earth.' },
+  jupiter_system: { name: 'Jupiter System',  multiplier: 2.0,  description: 'Exotic materials from Europa. High value, high risk.' },
+  saturn_system:  { name: 'Saturn System',   multiplier: 2.0,  description: 'Titan hydrocarbons. Methane and ethane lakes.' },
+  outer_system:   { name: 'Outer System',    multiplier: 3.0,  description: 'Extreme frontier. Maximum yields for rare resources.' },
+};
+
+/** Check if a location allows ship-based mining */
+export function canMineAtLocation(locationId: string): boolean {
+  return locationId in MINING_LOCATIONS;
+}
+
+/** Get the mining output multiplier for a location */
+export function getMiningMultiplier(locationId: string): number {
+  return MINING_LOCATIONS[locationId]?.multiplier ?? 0;
+}
+
 export type ShipStatus = 'idle' | 'in_transit' | 'mining' | 'loading' | 'refining' | 'building' | 'surveying';
 
 export interface ShipInstance {

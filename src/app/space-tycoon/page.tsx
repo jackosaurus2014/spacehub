@@ -1523,6 +1523,14 @@ export default function SpaceTycoonPage() {
           onStartMining={(shipInstanceId, resourceId) => {
             setState(prev => {
               if (!prev) return prev;
+              const ship = (prev.ships || []).find(s => s.instanceId === shipInstanceId);
+              if (!ship) return prev;
+              // Validate mining location
+              const { canMineAtLocation: canMine } = require('@/lib/game/ships');
+              if (!canMine(ship.currentLocation)) {
+                playSound('error');
+                return prev;
+              }
               const ships = (prev.ships || []).map(s =>
                 s.instanceId === shipInstanceId
                   ? { ...s, status: 'mining' as const, miningOperation: { resourceId, startedAtMs: Date.now(), locationId: s.currentLocation } }
