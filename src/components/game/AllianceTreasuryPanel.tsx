@@ -8,44 +8,46 @@ import { playSound } from '@/lib/game/sound-engine';
 
 interface ActivePerk {
   id: string;
+  perkId: string;
   name: string;
-  icon: string;
-  bonusPct: number;
+  description: string;
   bonusType: string;
-  activatedBy: string;
-  activatedAt: string;
-  expiresAt: string;
-  timeRemainingMs: number;
+  bonusValue: number;
+  activatedAt: number;
+  expiresAt: number;
+  remainingMs: number;
 }
 
-interface PerkShopItem {
-  id: string;
+interface PerkCatalogItem {
+  perkId: string;
   name: string;
   icon: string;
   description: string;
-  bonusPct: number;
   bonusType: string;
-  cost: number;
+  bonusValue: number;
+  treasuryCost: number;
   durationHours: number;
-  requiredLevel: number;
+  minLevel: number;
+  canActivate: boolean;
+  isActive: boolean;
 }
 
-interface TransactionLog {
-  id: string;
-  type: 'deposit' | 'withdrawal' | 'perk_activation' | 'research_cost' | 'project_cost';
-  amount: number;
-  description: string;
-  playerName: string;
-  createdAt: string;
+interface LogEntry {
+  type: string;
+  actorName: string | null;
+  title: string;
+  metadata: Record<string, unknown> | null;
+  createdAt: number;
 }
 
 interface TreasuryData {
-  balance: number;
+  treasury: number;
   allianceLevel: number;
   activePerks: ActivePerk[];
-  perkShop: PerkShopItem[];
-  transactions: TransactionLog[];
-  myRole: string;
+  perkCatalog: PerkCatalogItem[];
+  recentLogs: LogEntry[];
+  canManage: boolean;
+  perkBonuses: Record<string, number>;
 }
 
 // ─── Component ───────────────────────────────────────────────────────────────
@@ -160,7 +162,7 @@ export default function AllianceTreasuryPanel() {
 
   if (!data) return null;
 
-  const { balance, allianceLevel, activePerks, perkShop, transactions } = data;
+  const { treasury, allianceLevel, activePerks, perkCatalog, recentLogs, canManage } = data;
   const levelGated = allianceLevel < 8;
 
   return (
@@ -170,7 +172,7 @@ export default function AllianceTreasuryPanel() {
         <div className="flex items-center justify-between">
           <div>
             <p className="text-amber-300/70 text-[10px] font-bold uppercase tracking-wider mb-1">Alliance Treasury</p>
-            <p className="text-amber-300 text-2xl font-bold font-mono">{formatMoney(balance)}</p>
+            <p className="text-amber-300 text-2xl font-bold font-mono">{formatMoney(treasury)}</p>
           </div>
           <span className="text-3xl">🏦</span>
         </div>
@@ -245,19 +247,18 @@ export default function AllianceTreasuryPanel() {
                 >
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2">
-                      <span className="text-lg">{perk.icon}</span>
                       <div>
                         <h4 className="text-white text-xs font-semibold">{perk.name}</h4>
-                        <span className="text-amber-300 text-[10px] font-mono font-bold">+{perk.bonusPct}% {perk.bonusType}</span>
+                        <span className="text-amber-300 text-[10px] font-mono font-bold">+{Math.round(perk.bonusValue * 100)}% {perk.bonusType}</span>
                       </div>
                     </div>
                   </div>
                   <div className="flex items-center justify-between text-[10px]">
                     <span className="text-slate-500">
-                      by {perk.activatedBy}
+                      {perk.description}
                     </span>
                     <span className="text-amber-300 font-mono">
-                      {formatTimeRemaining(perk.timeRemainingMs)}
+                      {formatTimeRemaining(perk.remainingMs)}
                     </span>
                   </div>
                   {/* Timer bar */}
@@ -265,7 +266,7 @@ export default function AllianceTreasuryPanel() {
                     <div
                       className="h-full bg-amber-500 rounded-full transition-all"
                       style={{
-                        width: `${Math.max(0, Math.min(100, (perk.timeRemainingMs / (24 * 60 * 60 * 1000)) * 100))}%`,
+                        width: `${Math.max(0, Math.min(100, (perk.remainingMs / (24 * 60 * 60 * 1000)) * 100))}%`,
                       }}
                     />
                   </div>
@@ -279,63 +280,56 @@ export default function AllianceTreasuryPanel() {
       {/* Perk Shop */}
       {activeTab === 'shop' && (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-          {perkShop.map(perk => {
-            const canAfford = balance >= perk.cost;
-            const meetsLevel = allianceLevel >= perk.requiredLevel;
-            const canActivate = canAfford && meetsLevel && !actionLoading;
-            const isActive = activePerks.some(ap => ap.id === perk.id);
-
-            return (
-              <div
-                key={perk.id}
-                className={`rounded-xl border p-3 transition-colors ${
-                  isActive
-                    ? 'border-green-500/20 bg-green-500/5'
-                    : canActivate
-                      ? 'border-amber-500/20 bg-amber-500/5 hover:border-amber-500/30'
-                      : 'border-white/[0.06] bg-white/[0.02] opacity-60'
-                }`}
-              >
-                <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center gap-2">
-                    <span className="text-lg">{perk.icon}</span>
-                    <h4 className="text-white text-xs font-semibold">{perk.name}</h4>
-                  </div>
-                  <span className="text-amber-300 text-[10px] font-mono font-bold">+{perk.bonusPct}%</span>
+          {perkCatalog.map(perk => (
+            <div
+              key={perk.perkId}
+              className={`rounded-xl border p-3 transition-colors ${
+                perk.isActive
+                  ? 'border-green-500/20 bg-green-500/5'
+                  : perk.canActivate && !actionLoading
+                    ? 'border-amber-500/20 bg-amber-500/5 hover:border-amber-500/30'
+                    : 'border-white/[0.06] bg-white/[0.02] opacity-60'
+              }`}
+            >
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2">
+                  <span className="text-lg">{perk.icon}</span>
+                  <h4 className="text-white text-xs font-semibold">{perk.name}</h4>
                 </div>
-
-                <p className="text-slate-400 text-[10px] mb-2">{perk.description}</p>
-
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2 text-[10px]">
-                    <span className={`font-mono ${canAfford ? 'text-amber-300' : 'text-red-400'}`}>
-                      {formatMoney(perk.cost)}
-                    </span>
-                    <span className="text-slate-600">|</span>
-                    <span className="text-slate-500">{perk.durationHours}h</span>
-                  </div>
-
-                  {isActive ? (
-                    <span className="text-[10px] px-2 py-1 rounded bg-green-500/20 text-green-300 border border-green-500/30 font-bold">
-                      ACTIVE
-                    </span>
-                  ) : !meetsLevel ? (
-                    <span className="text-[10px] text-slate-600">
-                      Lv.{perk.requiredLevel} required
-                    </span>
-                  ) : (
-                    <button
-                      onClick={() => handleActivatePerk(perk.id)}
-                      disabled={!canActivate}
-                      className="px-3 py-1 text-[10px] font-semibold text-white bg-amber-600 hover:bg-amber-500 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition-colors"
-                    >
-                      Activate
-                    </button>
-                  )}
-                </div>
+                <span className="text-amber-300 text-[10px] font-mono font-bold">+{Math.round(perk.bonusValue * 100)}%</span>
               </div>
-            );
-          })}
+
+              <p className="text-slate-400 text-[10px] mb-2">{perk.description}</p>
+
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 text-[10px]">
+                  <span className={`font-mono ${treasury >= perk.treasuryCost ? 'text-amber-300' : 'text-red-400'}`}>
+                    {formatMoney(perk.treasuryCost)}
+                  </span>
+                  <span className="text-slate-600">|</span>
+                  <span className="text-slate-500">{perk.durationHours}h</span>
+                </div>
+
+                {perk.isActive ? (
+                  <span className="text-[10px] px-2 py-1 rounded bg-green-500/20 text-green-300 border border-green-500/30 font-bold">
+                    ACTIVE
+                  </span>
+                ) : allianceLevel < perk.minLevel ? (
+                  <span className="text-[10px] text-slate-600">
+                    Lv.{perk.minLevel} required
+                  </span>
+                ) : (
+                  <button
+                    onClick={() => handleActivatePerk(perk.perkId)}
+                    disabled={!perk.canActivate || actionLoading}
+                    className="px-3 py-1 text-[10px] font-semibold text-white bg-amber-600 hover:bg-amber-500 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition-colors"
+                  >
+                    Activate
+                  </button>
+                )}
+              </div>
+            </div>
+          ))}
         </div>
       )}
 
@@ -345,30 +339,35 @@ export default function AllianceTreasuryPanel() {
           <h3 className="text-white text-xs font-bold uppercase tracking-wider mb-3 flex items-center gap-1.5">
             <span>📜</span> Transaction History
           </h3>
-          {transactions.length === 0 ? (
+          {recentLogs.length === 0 ? (
             <p className="text-slate-500 text-xs text-center py-4">No transactions yet.</p>
           ) : (
             <div className="space-y-1.5 max-h-80 overflow-y-auto game-scroll">
-              {transactions.map(tx => (
+              {recentLogs.map((log, idx) => (
                 <div
-                  key={tx.id}
+                  key={idx}
                   className="flex items-center justify-between py-2 px-3 rounded-lg hover:bg-white/[0.02] transition-colors"
                 >
                   <div className="flex items-center gap-2">
                     <span className="text-sm">
-                      {tx.type === 'deposit' ? '📥' : tx.type === 'perk_activation' ? '✨' : tx.type === 'research_cost' ? '🔬' : tx.type === 'project_cost' ? '🏗️' : '📤'}
+                      {log.type === 'treasury_deposit' ? '📥' : log.type === 'perk_activated' ? '✨' : '📤'}
                     </span>
                     <div>
-                      <p className="text-white text-xs">{tx.description}</p>
+                      <p className="text-white text-xs">{log.title}</p>
                       <p className="text-slate-600 text-[9px]">
-                        {tx.playerName} &middot; {new Date(tx.createdAt).toLocaleDateString()}
+                        {log.actorName ?? 'System'} &middot; {new Date(log.createdAt).toLocaleDateString()}
                       </p>
                     </div>
                   </div>
                   <span className={`text-xs font-mono font-bold ${
-                    tx.type === 'deposit' ? 'text-green-400' : 'text-red-400'
+                    log.type === 'treasury_deposit' ? 'text-green-400' : 'text-red-400'
                   }`}>
-                    {tx.type === 'deposit' ? '+' : '-'}{formatMoney(Math.abs(tx.amount))}
+                    {log.type === 'treasury_deposit' ? '+' : '-'}
+                    {log.metadata && typeof log.metadata === 'object' && 'amount' in log.metadata
+                      ? formatMoney(Number(log.metadata.amount))
+                      : log.metadata && typeof log.metadata === 'object' && 'cost' in log.metadata
+                        ? formatMoney(Number(log.metadata.cost))
+                        : ''}
                   </span>
                 </div>
               ))}

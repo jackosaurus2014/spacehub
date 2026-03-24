@@ -41,6 +41,7 @@ export async function POST(request: NextRequest) {
             buildingCount: true,
             researchCount: true,
             serviceCount: true,
+            locationsUnlocked: true,
           },
         },
         rival: {
@@ -51,6 +52,7 @@ export async function POST(request: NextRequest) {
             buildingCount: true,
             researchCount: true,
             serviceCount: true,
+            locationsUnlocked: true,
           },
         },
         snapshots: {
@@ -75,6 +77,7 @@ export async function POST(request: NextRequest) {
         buildings: player.buildingCount,
         research: player.researchCount,
         services: player.serviceCount,
+        locations: player.locationsUnlocked,
       };
 
       const rivalCurrent = {
@@ -82,6 +85,7 @@ export async function POST(request: NextRequest) {
         buildings: rival.buildingCount,
         research: rival.researchCount,
         services: rival.serviceCount,
+        locations: rival.locationsUnlocked,
       };
 
       // Previous state (from last snapshot, or same as current if first)

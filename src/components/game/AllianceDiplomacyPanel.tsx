@@ -5,84 +5,69 @@ import { playSound } from '@/lib/game/sound-engine';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
-type TreatyType = 'trade' | 'defense' | 'research' | 'non_aggression';
-type ProposalDirection = 'incoming' | 'outgoing';
-type WarObjective = 'territory' | 'resources' | 'supremacy';
+type DiplomacyType = 'trade_agreement' | 'non_aggression' | 'alliance_pact' | 'war';
+type WarObjective = 'zone_control' | 'economic_dominance' | 'event_supremacy';
 
-interface Treaty {
+interface DiplomacyRecord {
   id: string;
-  partnerName: string;
-  partnerTag: string;
-  type: TreatyType;
-  benefits: string;
-  createdAt: string;
-  expiresAt: string;
-  timeRemainingMs: number;
-}
-
-interface ActiveWar {
-  id: string;
-  opponentName: string;
-  opponentTag: string;
-  objective: WarObjective;
-  ourScore: number;
-  theirScore: number;
-  targetScore: number;
-  startsAt: string;
-  endsAt: string;
-  timeRemainingMs: number;
-}
-
-interface Proposal {
-  id: string;
-  direction: ProposalDirection;
-  allianceName: string;
-  allianceTag: string;
-  type: TreatyType;
-  message: string;
-  createdAt: string;
+  type: string;
+  status: string;
+  partnerAllianceId: string;
+  partnerAllianceName: string;
+  partnerAllianceTag: string;
+  tradeBonus: number | null;
+  warScore: { senderScore: number; receiverScore: number } | null;
+  warObjective: string | null;
+  startsAt: number | null;
+  endsAt: number | null;
+  remainingMs: number;
+  isSender: boolean;
 }
 
 interface AllianceListing {
   id: string;
   name: string;
   tag: string;
+  level: number;
+  memberCount: number;
 }
 
 interface DiplomacyData {
-  treaties: Treaty[];
-  activeWar: ActiveWar | null;
-  proposals: Proposal[];
   allianceLevel: number;
-  knownAlliances: AllianceListing[];
-  myRole: string;
+  warRecord: { wins: number; losses: number };
+  active: DiplomacyRecord[];
+  pending: DiplomacyRecord[];
+  diplomacyBonuses: { tradeBonus: number; zoneBonus: number; espionageProtection: boolean };
+  treatyDefinitions: Array<{ type: string; name: string; description: string; durationDays: number; maxActive: number; minLevel: number }>;
+  warDefinition: { durationDays: number; minLevel: number; objectives: string[] };
+  otherAlliances: AllianceListing[];
+  canManage: boolean;
 }
 
-const TREATY_COLORS: Record<TreatyType, { bg: string; border: string; text: string; badge: string }> = {
-  trade: { bg: 'bg-green-500/10', border: 'border-green-500/20', text: 'text-green-300', badge: 'bg-green-500/20 text-green-300 border-green-500/30' },
-  defense: { bg: 'bg-blue-500/10', border: 'border-blue-500/20', text: 'text-blue-300', badge: 'bg-blue-500/20 text-blue-300 border-blue-500/30' },
-  research: { bg: 'bg-purple-500/10', border: 'border-purple-500/20', text: 'text-purple-300', badge: 'bg-purple-500/20 text-purple-300 border-purple-500/30' },
+const TREATY_COLORS: Record<string, { bg: string; border: string; text: string; badge: string }> = {
+  trade_agreement: { bg: 'bg-green-500/10', border: 'border-green-500/20', text: 'text-green-300', badge: 'bg-green-500/20 text-green-300 border-green-500/30' },
+  alliance_pact: { bg: 'bg-blue-500/10', border: 'border-blue-500/20', text: 'text-blue-300', badge: 'bg-blue-500/20 text-blue-300 border-blue-500/30' },
   non_aggression: { bg: 'bg-cyan-500/10', border: 'border-cyan-500/20', text: 'text-cyan-300', badge: 'bg-cyan-500/20 text-cyan-300 border-cyan-500/30' },
 };
 
-const TREATY_LABELS: Record<TreatyType, string> = {
-  trade: 'Trade Pact',
-  defense: 'Defense Pact',
-  research: 'Research Accord',
+const TREATY_LABELS: Record<string, string> = {
+  trade_agreement: 'Trade Agreement',
+  alliance_pact: 'Alliance Pact',
   non_aggression: 'Non-Aggression',
 };
 
-const TREATY_ICONS: Record<TreatyType, string> = {
-  trade: '💹',
-  defense: '🛡️',
-  research: '🔬',
+const TREATY_ICONS: Record<string, string> = {
+  trade_agreement: '💹',
+  alliance_pact: '🛡️',
   non_aggression: '🕊️',
 };
 
-const WAR_OBJECTIVE_LABELS: Record<WarObjective, string> = {
-  territory: 'Territory Conquest',
-  resources: 'Resource Plunder',
-  supremacy: 'Total Supremacy',
+const TREATY_TYPES: DiplomacyType[] = ['trade_agreement', 'non_aggression', 'alliance_pact'];
+
+const WAR_OBJECTIVE_LABELS: Record<string, string> = {
+  zone_control: 'Zone Control',
+  economic_dominance: 'Economic Dominance',
+  event_supremacy: 'Event Supremacy',
 };
 
 // ─── Component ───────────────────────────────────────────────────────────────
@@ -96,13 +81,13 @@ export default function AllianceDiplomacyPanel() {
   // Propose treaty modal
   const [showProposeModal, setShowProposeModal] = useState(false);
   const [proposeTarget, setProposeTarget] = useState('');
-  const [proposeType, setProposeType] = useState<TreatyType>('trade');
+  const [proposeType, setProposeType] = useState<DiplomacyType>('trade_agreement');
   const [proposeMessage, setProposeMessage] = useState('');
 
   // Declare war modal
   const [showWarModal, setShowWarModal] = useState(false);
   const [warTarget, setWarTarget] = useState('');
-  const [warObjective, setWarObjective] = useState<WarObjective>('territory');
+  const [warObjective, setWarObjective] = useState<WarObjective>('zone_control');
 
   const fetchData = useCallback(async () => {
     try {
@@ -135,10 +120,8 @@ export default function AllianceDiplomacyPanel() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          action: 'propose_treaty',
           targetAllianceId: proposeTarget,
-          treatyType: proposeType,
-          message: proposeMessage,
+          type: proposeType,
         }),
       });
       const result = await res.json();
@@ -157,7 +140,7 @@ export default function AllianceDiplomacyPanel() {
       playSound('error');
     }
     setActionLoading(false);
-  }, [actionLoading, proposeTarget, proposeType, proposeMessage, fetchData]);
+  }, [actionLoading, proposeTarget, proposeType, fetchData]);
 
   const handleRespondProposal = useCallback(async (proposalId: string, accept: boolean) => {
     if (actionLoading) return;
@@ -167,8 +150,8 @@ export default function AllianceDiplomacyPanel() {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          action: accept ? 'accept_proposal' : 'reject_proposal',
-          proposalId,
+          diplomacyId: proposalId,
+          accept,
         }),
       });
       const result = await res.json();
@@ -195,9 +178,9 @@ export default function AllianceDiplomacyPanel() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          action: 'declare_war',
           targetAllianceId: warTarget,
-          objective: warObjective,
+          type: 'war' as DiplomacyType,
+          warObjective,
         }),
       });
       const result = await res.json();
@@ -242,11 +225,17 @@ export default function AllianceDiplomacyPanel() {
 
   if (!data) return null;
 
-  const { treaties, activeWar, proposals, allianceLevel, knownAlliances, myRole } = data;
-  const isLeaderOrOfficer = myRole === 'leader' || myRole === 'officer';
+  const { active, pending, allianceLevel, otherAlliances, canManage } = data;
+
+  // Separate active records into treaties and wars
+  const treaties = active.filter(d => d.type !== 'war');
+  const activeWar = active.find(d => d.type === 'war') ?? null;
+  const isLeaderOrOfficer = canManage;
   const canDeclareWar = allianceLevel >= 30;
-  const incomingProposals = proposals.filter(p => p.direction === 'incoming');
-  const outgoingProposals = proposals.filter(p => p.direction === 'outgoing');
+
+  // Pending proposals: incoming (we are receiver, i.e., not sender) vs outgoing (we are sender)
+  const incomingProposals = pending.filter(p => !p.isSender);
+  const outgoingProposals = pending.filter(p => p.isSender);
 
   return (
     <div className="space-y-4">
@@ -259,51 +248,58 @@ export default function AllianceDiplomacyPanel() {
               <div>
                 <h3 className="text-red-300 text-sm font-bold uppercase tracking-wider">War Active</h3>
                 <p className="text-slate-400 text-[10px]">
-                  vs [{activeWar.opponentTag}] {activeWar.opponentName}
+                  vs [{activeWar.partnerAllianceTag}] {activeWar.partnerAllianceName}
                 </p>
               </div>
             </div>
             <div className="text-right">
-              <p className="text-amber-300 text-xs font-mono font-bold">{formatTimeRemaining(activeWar.timeRemainingMs)}</p>
+              <p className="text-amber-300 text-xs font-mono font-bold">{formatTimeRemaining(activeWar.remainingMs)}</p>
               <p className="text-slate-500 text-[10px]">remaining</p>
             </div>
           </div>
 
           {/* Objective */}
-          <div className="text-center mb-3">
-            <span className="text-[9px] px-2 py-0.5 rounded bg-red-500/20 text-red-300 border border-red-500/30 font-bold uppercase">
-              {WAR_OBJECTIVE_LABELS[activeWar.objective]}
-            </span>
-          </div>
+          {activeWar.warObjective && (
+            <div className="text-center mb-3">
+              <span className="text-[9px] px-2 py-0.5 rounded bg-red-500/20 text-red-300 border border-red-500/30 font-bold uppercase">
+                {WAR_OBJECTIVE_LABELS[activeWar.warObjective] ?? activeWar.warObjective}
+              </span>
+            </div>
+          )}
 
           {/* Score Bars */}
-          <div className="space-y-2">
-            <div>
-              <div className="flex items-center justify-between mb-0.5">
-                <span className="text-green-300 text-[10px] font-semibold">Our Alliance</span>
-                <span className="text-green-300 text-xs font-mono font-bold">{activeWar.ourScore.toLocaleString()}</span>
+          {activeWar.warScore && (
+            <div className="space-y-2">
+              <div>
+                <div className="flex items-center justify-between mb-0.5">
+                  <span className="text-green-300 text-[10px] font-semibold">Our Alliance</span>
+                  <span className="text-green-300 text-xs font-mono font-bold">
+                    {(activeWar.isSender ? activeWar.warScore.senderScore : activeWar.warScore.receiverScore).toLocaleString()}
+                  </span>
+                </div>
+                <div className="w-full h-2 bg-white/[0.06] rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-green-500 rounded-full transition-all"
+                    style={{ width: `${Math.min(100, ((activeWar.isSender ? activeWar.warScore.senderScore : activeWar.warScore.receiverScore) / 1000) * 100)}%` }}
+                  />
+                </div>
               </div>
-              <div className="w-full h-2 bg-white/[0.06] rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-green-500 rounded-full transition-all"
-                  style={{ width: `${Math.min(100, (activeWar.ourScore / activeWar.targetScore) * 100)}%` }}
-                />
+              <div>
+                <div className="flex items-center justify-between mb-0.5">
+                  <span className="text-red-300 text-[10px] font-semibold">[{activeWar.partnerAllianceTag}]</span>
+                  <span className="text-red-300 text-xs font-mono font-bold">
+                    {(activeWar.isSender ? activeWar.warScore.receiverScore : activeWar.warScore.senderScore).toLocaleString()}
+                  </span>
+                </div>
+                <div className="w-full h-2 bg-white/[0.06] rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-red-500 rounded-full transition-all"
+                    style={{ width: `${Math.min(100, ((activeWar.isSender ? activeWar.warScore.receiverScore : activeWar.warScore.senderScore) / 1000) * 100)}%` }}
+                  />
+                </div>
               </div>
             </div>
-            <div>
-              <div className="flex items-center justify-between mb-0.5">
-                <span className="text-red-300 text-[10px] font-semibold">[{activeWar.opponentTag}]</span>
-                <span className="text-red-300 text-xs font-mono font-bold">{activeWar.theirScore.toLocaleString()}</span>
-              </div>
-              <div className="w-full h-2 bg-white/[0.06] rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-red-500 rounded-full transition-all"
-                  style={{ width: `${Math.min(100, (activeWar.theirScore / activeWar.targetScore) * 100)}%` }}
-                />
-              </div>
-            </div>
-            <p className="text-center text-slate-600 text-[9px]">Target: {activeWar.targetScore.toLocaleString()} pts</p>
-          </div>
+          )}
         </div>
       )}
 
@@ -330,7 +326,7 @@ export default function AllianceDiplomacyPanel() {
         ) : (
           <div className="space-y-2">
             {treaties.map(treaty => {
-              const tc = TREATY_COLORS[treaty.type];
+              const tc = TREATY_COLORS[treaty.type] ?? TREATY_COLORS.trade_agreement;
               return (
                 <div
                   key={treaty.id}
@@ -338,26 +334,25 @@ export default function AllianceDiplomacyPanel() {
                 >
                   <div className="flex items-center justify-between mb-1.5">
                     <div className="flex items-center gap-2">
-                      <span className="text-sm">{TREATY_ICONS[treaty.type]}</span>
+                      <span className="text-sm">{TREATY_ICONS[treaty.type] ?? '📜'}</span>
                       <div>
                         <div className="flex items-center gap-1.5">
-                          <span className="text-white text-xs font-semibold">{treaty.partnerName}</span>
+                          <span className="text-white text-xs font-semibold">{treaty.partnerAllianceName}</span>
                           <span className="text-[9px] px-1 py-0.5 rounded bg-white/[0.06] text-slate-400 font-mono">
-                            [{treaty.partnerTag}]
+                            [{treaty.partnerAllianceTag}]
                           </span>
                         </div>
                         <span className={`text-[9px] px-1.5 py-0.5 rounded border font-bold uppercase ${tc.badge}`}>
-                          {TREATY_LABELS[treaty.type]}
+                          {TREATY_LABELS[treaty.type] ?? treaty.type}
                         </span>
                       </div>
                     </div>
                     <div className="text-right">
                       <span className={`text-[10px] font-mono ${tc.text}`}>
-                        {formatTimeRemaining(treaty.timeRemainingMs)}
+                        {formatTimeRemaining(treaty.remainingMs)}
                       </span>
                     </div>
                   </div>
-                  <p className="text-slate-400 text-[10px]">{treaty.benefits}</p>
                 </div>
               );
             })}
@@ -369,7 +364,7 @@ export default function AllianceDiplomacyPanel() {
       {(incomingProposals.length > 0 || outgoingProposals.length > 0) && (
         <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
           <h3 className="text-white text-xs font-bold uppercase tracking-wider mb-3 flex items-center gap-1.5">
-            <span>📨</span> Pending Proposals ({proposals.length})
+            <span>📨</span> Pending Proposals ({pending.length})
           </h3>
 
           {/* Incoming */}
@@ -378,21 +373,20 @@ export default function AllianceDiplomacyPanel() {
               <p className="text-cyan-300 text-[10px] font-bold uppercase tracking-wider mb-2">Incoming</p>
               <div className="space-y-2">
                 {incomingProposals.map(p => {
-                  const tc = TREATY_COLORS[p.type];
+                  const tc = TREATY_COLORS[p.type] ?? TREATY_COLORS.trade_agreement;
                   return (
                     <div key={p.id} className={`rounded-lg ${tc.bg} border ${tc.border} p-3`}>
                       <div className="flex items-center justify-between mb-1.5">
                         <div className="flex items-center gap-2">
-                          <span className="text-sm">{TREATY_ICONS[p.type]}</span>
+                          <span className="text-sm">{TREATY_ICONS[p.type] ?? '📜'}</span>
                           <div>
-                            <span className="text-white text-xs font-semibold">[{p.allianceTag}] {p.allianceName}</span>
+                            <span className="text-white text-xs font-semibold">[{p.partnerAllianceTag}] {p.partnerAllianceName}</span>
                             <span className={`ml-2 text-[9px] px-1.5 py-0.5 rounded border font-bold uppercase ${tc.badge}`}>
-                              {TREATY_LABELS[p.type]}
+                              {TREATY_LABELS[p.type] ?? p.type}
                             </span>
                           </div>
                         </div>
                       </div>
-                      {p.message && <p className="text-slate-400 text-[10px] mb-2">&ldquo;{p.message}&rdquo;</p>}
                       {isLeaderOrOfficer && (
                         <div className="flex gap-2">
                           <button
@@ -424,15 +418,15 @@ export default function AllianceDiplomacyPanel() {
               <p className="text-amber-300 text-[10px] font-bold uppercase tracking-wider mb-2">Outgoing</p>
               <div className="space-y-2">
                 {outgoingProposals.map(p => {
-                  const tc = TREATY_COLORS[p.type];
+                  const tc = TREATY_COLORS[p.type] ?? TREATY_COLORS.trade_agreement;
                   return (
                     <div key={p.id} className={`rounded-lg bg-white/[0.03] border border-white/[0.06] p-3`}>
                       <div className="flex items-center gap-2">
-                        <span className="text-sm">{TREATY_ICONS[p.type]}</span>
+                        <span className="text-sm">{TREATY_ICONS[p.type] ?? '📜'}</span>
                         <div>
-                          <span className="text-white text-xs">[{p.allianceTag}] {p.allianceName}</span>
+                          <span className="text-white text-xs">[{p.partnerAllianceTag}] {p.partnerAllianceName}</span>
                           <span className={`ml-2 text-[9px] px-1.5 py-0.5 rounded border font-bold uppercase ${tc.badge}`}>
-                            {TREATY_LABELS[p.type]}
+                            {TREATY_LABELS[p.type] ?? p.type}
                           </span>
                         </div>
                       </div>
@@ -489,19 +483,19 @@ export default function AllianceDiplomacyPanel() {
                 className="w-full h-8 px-3 rounded-lg bg-white/[0.06] text-white text-xs border border-white/[0.06] focus:outline-none focus:border-green-500/30"
               >
                 <option value="">Select alliance...</option>
-                {knownAlliances.map(a => (
-                  <option key={a.id} value={a.id}>[{a.tag}] {a.name}</option>
+                {otherAlliances.map(a => (
+                  <option key={a.id} value={a.id}>[{a.tag}] {a.name} (Lv.{a.level})</option>
                 ))}
               </select>
             </div>
 
             {/* Treaty Type */}
-            <div className="mb-3">
+            <div className="mb-4">
               <label className="text-slate-400 text-[10px] uppercase tracking-wider font-medium block mb-1">
                 Treaty Type
               </label>
               <div className="grid grid-cols-2 gap-2">
-                {(Object.keys(TREATY_LABELS) as TreatyType[]).map(type => {
+                {TREATY_TYPES.map(type => {
                   const tc = TREATY_COLORS[type];
                   return (
                     <button
@@ -518,21 +512,6 @@ export default function AllianceDiplomacyPanel() {
                   );
                 })}
               </div>
-            </div>
-
-            {/* Message */}
-            <div className="mb-4">
-              <label className="text-slate-400 text-[10px] uppercase tracking-wider font-medium block mb-1">
-                Message (optional)
-              </label>
-              <input
-                type="text"
-                value={proposeMessage}
-                onChange={(e) => setProposeMessage(e.target.value)}
-                placeholder="e.g. Let's trade resources!"
-                maxLength={100}
-                className="w-full h-8 px-3 rounded-lg bg-white/[0.06] text-white text-xs border border-white/[0.06] focus:outline-none focus:border-green-500/30 placeholder-slate-600"
-              />
             </div>
 
             <div className="flex gap-2">
@@ -573,8 +552,8 @@ export default function AllianceDiplomacyPanel() {
                 className="w-full h-8 px-3 rounded-lg bg-white/[0.06] text-white text-xs border border-white/[0.06] focus:outline-none focus:border-red-500/30"
               >
                 <option value="">Select alliance...</option>
-                {knownAlliances.map(a => (
-                  <option key={a.id} value={a.id}>[{a.tag}] {a.name}</option>
+                {otherAlliances.map(a => (
+                  <option key={a.id} value={a.id}>[{a.tag}] {a.name} (Lv.{a.level})</option>
                 ))}
               </select>
             </div>

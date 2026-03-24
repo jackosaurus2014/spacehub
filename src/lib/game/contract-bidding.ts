@@ -229,7 +229,7 @@ const RESOURCES_BY_TIER: Record<number, string[]> = {
   1: ['iron', 'aluminum'],
   2: ['titanium', 'rare_earth'],
   3: ['helium3', 'platinum_group'],
-  4: ['exotic_materials', 'antimatter_precursors'],
+  4: ['exotic_materials', 'helium3'],
 };
 
 // Locations by tier

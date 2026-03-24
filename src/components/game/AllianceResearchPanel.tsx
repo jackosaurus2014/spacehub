@@ -8,7 +8,7 @@ import { playSound } from '@/lib/game/sound-engine';
 type ResearchCategory = 'logistics' | 'mining' | 'commerce' | 'military' | 'science' | 'infrastructure';
 
 interface ResearchItem {
-  id: string;
+  researchId: string;
   category: ResearchCategory;
   tier: number;
   name: string;
@@ -17,11 +17,12 @@ interface ResearchItem {
   bonusValue: number;
   xpCost: number;
   treasuryCost: number;
-  requiredLevel: number;
+  prerequisite: string | null;
   status: 'locked' | 'available' | 'researching' | 'completed';
   progressPct: number;
-  timeRemainingMs: number;
-  startedBy: string | null;
+  startedAt: number | null;
+  completedAt: number | null;
+  durationDays: number;
 }
 
 interface AggregateBonuses {
@@ -34,10 +35,12 @@ interface AggregateBonuses {
 }
 
 interface AllianceResearchData {
-  items: ResearchItem[];
-  aggregateBonuses: AggregateBonuses;
+  tree: ResearchItem[];
   allianceLevel: number;
-  treasuryBalance: number;
+  allianceXP: number;
+  treasury: number;
+  currentlyResearching: string | null;
+  researchProgress: number | null;
 }
 
 const CATEGORY_CONFIG: { id: ResearchCategory; label: string; icon: string; color: string }[] = [
@@ -97,7 +100,7 @@ export default function AllianceResearchPanel() {
       const res = await fetch('/api/space-tycoon/alliance-research', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'start', itemId }),
+        body: JSON.stringify({ researchId: itemId }),
       });
       const result = await res.json();
       if (result.success) {
@@ -139,7 +142,21 @@ export default function AllianceResearchPanel() {
 
   if (!data) return null;
 
-  const { items, aggregateBonuses, allianceLevel, treasuryBalance } = data;
+  const { tree: items, allianceLevel, treasury } = data;
+
+  // Compute aggregate bonuses from completed research
+  const aggregateBonuses: AggregateBonuses = {
+    logistics: 0, mining: 0, commerce: 0, military: 0, science: 0, infrastructure: 0,
+  };
+  for (const item of items) {
+    if (item.status === 'completed') {
+      const cat = item.category as keyof AggregateBonuses;
+      if (cat in aggregateBonuses) {
+        aggregateBonuses[cat] += item.bonusValue * 100;
+      }
+    }
+  }
+
   const categoryItems = items.filter(i => i.category === activeCategory);
   const tiers = [1, 2, 3, 4, 5];
   const activeCatConfig = CATEGORY_CONFIG.find(c => c.id === activeCategory)!;
@@ -201,7 +218,7 @@ export default function AllianceResearchPanel() {
           <div className="text-right text-[10px] text-slate-500">
             <span>Alliance Lv.{allianceLevel}</span>
             <span className="mx-1.5">|</span>
-            <span className="text-amber-300 font-mono">${treasuryBalance.toLocaleString()}</span>
+            <span className="text-amber-300 font-mono">${treasury.toLocaleString()}</span>
           </div>
         </div>
 
@@ -231,7 +248,7 @@ export default function AllianceResearchPanel() {
                 isLast={tierIdx === tiers.length - 1}
                 allianceLevel={allianceLevel}
                 actionLoading={actionLoading}
-                onStart={() => handleStartResearch(item.id)}
+                onStart={() => handleStartResearch(item.researchId)}
               />
             );
           })}
@@ -271,7 +288,8 @@ function TierSlot({
   const isResearching = item?.status === 'researching';
   const isCompleted = item?.status === 'completed';
   const isAvailable = item?.status === 'available';
-  const requiredLevel = item?.requiredLevel ?? tier * 5;
+  const TIER_REQUIRED_LEVELS: Record<number, number> = { 1: 5, 2: 10, 3: 15, 4: 25, 5: 25 };
+  const requiredLevel = TIER_REQUIRED_LEVELS[tier] ?? tier * 5;
   const meetsLevel = allianceLevel >= requiredLevel;
 
   return (
@@ -337,28 +355,30 @@ function TierSlot({
             {isCompleted && (
               <div className="flex items-center gap-1.5">
                 <span className="text-green-400 text-sm">✅</span>
-                <span className="text-green-300 text-[10px] font-mono font-bold">+{item.bonusValue}% {item.bonusType}</span>
+                <span className="text-green-300 text-[10px] font-mono font-bold">+{Math.round(item.bonusValue * 100)}% {item.bonusType}</span>
               </div>
             )}
 
             {/* Researching */}
-            {isResearching && (
-              <div>
-                <div className="flex items-center justify-between mb-1">
-                  <span className={`text-[10px] ${colors.text}`}>Researching...</span>
-                  <span className="text-slate-400 text-[10px] font-mono">{formatTimeRemaining(item.timeRemainingMs)}</span>
+            {isResearching && (() => {
+              const durationMs = item.durationDays * 24 * 60 * 60 * 1000;
+              const endsAt = item.startedAt ? item.startedAt + durationMs : 0;
+              const timeRemainingMs = Math.max(0, endsAt - Date.now());
+              return (
+                <div>
+                  <div className="flex items-center justify-between mb-1">
+                    <span className={`text-[10px] ${colors.text}`}>Researching...</span>
+                    <span className="text-slate-400 text-[10px] font-mono">{formatTimeRemaining(timeRemainingMs)}</span>
+                  </div>
+                  <div className="w-full h-1.5 bg-white/[0.06] rounded-full overflow-hidden">
+                    <div
+                      className={`h-full rounded-full transition-all duration-500 ${colors.accent}`}
+                      style={{ width: `${item.progressPct}%` }}
+                    />
+                  </div>
                 </div>
-                <div className="w-full h-1.5 bg-white/[0.06] rounded-full overflow-hidden">
-                  <div
-                    className={`h-full rounded-full transition-all duration-500 ${colors.accent}`}
-                    style={{ width: `${item.progressPct}%` }}
-                  />
-                </div>
-                {item.startedBy && (
-                  <p className="text-slate-600 text-[9px] mt-1">Started by {item.startedBy}</p>
-                )}
-              </div>
-            )}
+              );
+            })()}
 
             {/* Available */}
             {isAvailable && meetsLevel && (

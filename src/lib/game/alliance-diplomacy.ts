@@ -133,6 +133,16 @@ export async function proposeDiplomacy(
     const now = new Date();
     const endsAt = new Date(now.getTime() + WAR_DEFINITION.durationDays * 24 * 60 * 60 * 1000);
 
+    // Delete expired/rejected/broken war records that would violate the unique constraint
+    await prisma.allianceDiplomacy.deleteMany({
+      where: {
+        senderId,
+        receiverId,
+        type: 'war',
+        status: { in: ['expired', 'rejected', 'broken'] },
+      },
+    });
+
     const diplomacy = await prisma.allianceDiplomacy.create({
       data: {
         senderId,
@@ -212,6 +222,17 @@ export async function proposeDiplomacy(
   if (senderActiveCount >= treatyDef.maxActive) {
     return { success: false, error: `Maximum ${treatyDef.maxActive} active ${treatyDef.name}(s) allowed.` };
   }
+
+  // Delete expired/rejected/broken records that would violate the unique constraint
+  // @@unique([senderId, receiverId, type])
+  await prisma.allianceDiplomacy.deleteMany({
+    where: {
+      senderId,
+      receiverId,
+      type,
+      status: { in: ['expired', 'rejected', 'broken'] },
+    },
+  });
 
   const diplomacy = await prisma.allianceDiplomacy.create({
     data: {

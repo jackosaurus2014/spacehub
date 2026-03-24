@@ -59,6 +59,7 @@ interface SnapshotData {
   buildings: number;
   research: number;
   services: number;
+  locations?: number;
 }
 
 export interface RivalCandidate {
@@ -288,8 +289,8 @@ export function computeScoreMovement(
     },
     {
       weight: W.locations,
-      playerDelta: 0, // Locations are tracked in snapshots but not currently stored separately
-      rivalDelta: 0,  // So we use 0 for now — the other 4 metrics dominate
+      playerDelta: (playerCurrent.locations ?? 0) - (playerPrevious.locations ?? 0),
+      rivalDelta: (rivalCurrent.locations ?? 0) - (rivalPrevious.locations ?? 0),
     },
   ];
 

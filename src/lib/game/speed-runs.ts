@@ -550,6 +550,12 @@ export async function completeSpeedRun(
       }>;
       count: (args: { where: Record<string, unknown> }) => Promise<number>;
     };
+    speedRunChallenge: {
+      findUnique: (args: { where: Record<string, unknown> }) => Promise<{
+        id: string;
+        milestoneId: string;
+      } | null>;
+    };
   },
   attemptId: string,
 ): Promise<{
@@ -571,9 +577,14 @@ export async function completeSpeedRun(
   // Reject times under 1 second
   if (durationSeconds < 1) return null;
 
-  // Calculate suspicion score
+  // Look up the challenge record to get the actual milestone ID
+  const challenge = await prisma.speedRunChallenge.findUnique({
+    where: { id: attempt.challengeId },
+  });
+
+  // Calculate suspicion score using the milestone ID (not the challenge DB ID)
   const suspicionScore = calculateSuspicionScore(
-    attempt.challengeId,
+    challenge?.milestoneId ?? attempt.challengeId,
     elapsedMs,
   );
 
