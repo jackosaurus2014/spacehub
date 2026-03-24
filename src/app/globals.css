@@ -2096,7 +2096,7 @@ pre {
 }
 
 .animate-ticker {
-  animation: ticker-scroll 60s linear infinite;
+  animation: ticker-scroll 90s linear infinite;
 }
 
 .animate-ticker:hover {
