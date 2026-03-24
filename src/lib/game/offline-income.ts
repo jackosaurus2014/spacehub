@@ -10,10 +10,11 @@ import { getActiveMultipliers } from './random-events';
 import { getRevenueMultiplier as getUpgradeRevenueMultiplier, getMaintenanceMultiplier } from './upgrades';
 import { formatMoney } from './formulas';
 import { getMonthlyPayroll } from './workforce';
+import { TICKS_PER_GAME_MONTH } from './constants';
 
 const MAX_OFFLINE_HOURS = 8;
 const MAX_OFFLINE_MS = MAX_OFFLINE_HOURS * 60 * 60 * 1000;
-const TICK_INTERVAL_MS = 2000; // 1x speed = 2s per month
+const TICK_INTERVAL_MS = 2000; // 1x speed = 2s per tick
 
 export interface OfflineEarnings {
   timeAwayMs: number;
@@ -40,7 +41,11 @@ export function calculateOfflineIncome(state: GameState): OfflineEarnings | null
 
   const multipliers = getActiveMultipliers(state);
 
-  // Calculate revenue per tick
+  // IMPORTANT: Revenue/costs are MONTHLY values. Each tick = 1/TICKS_PER_GAME_MONTH of a month.
+  // This must match the game engine's fractional calculation exactly.
+  const fraction = 1 / TICKS_PER_GAME_MONTH;
+
+  // Calculate revenue per tick (fractional monthly amount, matching game-engine.ts)
   let revenuePerTick = 0;
   let costsPerTick = 0;
 
@@ -52,8 +57,8 @@ export function calculateOfflineIncome(state: GameState): OfflineEarnings | null
       BUILDING_MAP.get(b.definitionId)?.enabledServices.includes(svc.definitionId)
     );
     const upgradeBoost = getUpgradeRevenueMultiplier(linkedBld?.upgradeLevel || 0);
-    revenuePerTick += Math.round(def.revenuePerMonth * svc.revenueMultiplier * multipliers.revenueMultiplier * upgradeBoost);
-    costsPerTick += Math.round(def.operatingCostPerMonth * multipliers.costMultiplier);
+    revenuePerTick += Math.round(def.revenuePerMonth * fraction * svc.revenueMultiplier * multipliers.revenueMultiplier * upgradeBoost);
+    costsPerTick += Math.round(def.operatingCostPerMonth * fraction * multipliers.costMultiplier);
   }
 
   for (const bld of state.buildings) {
@@ -61,23 +66,26 @@ export function calculateOfflineIncome(state: GameState): OfflineEarnings | null
     const def = BUILDING_MAP.get(bld.definitionId);
     if (!def) continue;
     const maintMult = getMaintenanceMultiplier(bld.upgradeLevel || 0);
-    costsPerTick += Math.round(def.maintenanceCostPerMonth * multipliers.costMultiplier * maintMult);
+    costsPerTick += Math.round(def.maintenanceCostPerMonth * fraction * multipliers.costMultiplier * maintMult);
   }
 
-  // Include workforce payroll in costs
-  const payroll = getMonthlyPayroll(state.workforce || { engineers: 0, scientists: 0, miners: 0, operators: 0 });
+  // Include workforce payroll in costs (fractional per tick)
+  const payroll = Math.round(getMonthlyPayroll(state.workforce || { engineers: 0, scientists: 0, miners: 0, operators: 0 }) * fraction);
   costsPerTick += payroll;
 
   const netPerTick = revenuePerTick - costsPerTick;
   const moneyEarned = Math.max(0, netPerTick * ticksProcessed); // Don't lose money offline
 
-  // Calculate resources earned offline
+  // Calculate resources earned offline (also fractional per tick)
   const resourcesEarned: Record<string, number> = {};
   for (const svc of state.activeServices) {
     const production = MINING_PRODUCTION[svc.definitionId];
     if (!production) continue;
     for (const { resource, amountPerMonth } of production) {
-      resourcesEarned[resource] = (resourcesEarned[resource] || 0) + (amountPerMonth * ticksProcessed);
+      const totalMined = amountPerMonth * fraction * ticksProcessed;
+      if (totalMined >= 1) {
+        resourcesEarned[resource] = (resourcesEarned[resource] || 0) + Math.round(totalMined);
+      }
     }
   }
 
