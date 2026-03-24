@@ -126,8 +126,10 @@ export function loadGame(): GameState | null {
     // V4 fields — timed competitive events
     if (!state.activeTimedEvents) state.activeTimedEvents = [];
     if (!state.lastTimedEventSpawnMs) state.lastTimedEventSpawnMs = 0;
-    // V5 fields — mini-activities
+    // V5 fields — mini-activities (rotating slot system)
     if (!state.miniActivityCooldowns) state.miniActivityCooldowns = {};
+    if (!state.miniActivitySlots) state.miniActivitySlots = [];
+    if (!state.miniActivityLastSpawnMs) state.miniActivityLastSpawnMs = 0;
 
     state.tickSpeed = 1; // Always 1x for fairness
     return state;

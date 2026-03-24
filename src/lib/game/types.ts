@@ -342,8 +342,10 @@ export interface GameState {
   }[];
   lastTimedEventSpawnMs?: number;
 
-  // Mini-activities cooldowns
+  // Mini-activities — rotating slot system
   miniActivityCooldowns?: Record<string, number>; // activityId → lastExecutedAtMs
+  miniActivitySlots?: string[]; // Currently visible activity IDs (max 4)
+  miniActivityLastSpawnMs?: number; // When the last activity was added to slots
 }
 
 // ─── UI Tabs ────────────────────────────────────────────────────────────────

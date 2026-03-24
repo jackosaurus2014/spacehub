@@ -1159,6 +1159,19 @@ export default function SpaceTycoonPage() {
     return () => window.removeEventListener('mini-activity-execute', handler);
   }, []);
 
+  // Mini-activity slot rotation listener
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const { slots, lastSpawnMs } = (e as CustomEvent).detail;
+      setState(prev => {
+        if (!prev) return prev;
+        return { ...prev, miniActivitySlots: slots, miniActivityLastSpawnMs: lastSpawnMs };
+      });
+    };
+    window.addEventListener('mini-activity-slots-update', handler);
+    return () => window.removeEventListener('mini-activity-slots-update', handler);
+  }, []);
+
   // Resource sell handler (must be before early return)
   const handleSellResource = useCallback((resourceId: string, quantity: number, revenue: number) => {
     setState(prev => {

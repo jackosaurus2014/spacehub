@@ -10,20 +10,22 @@ import {
   getRemainingCooldown,
   executeActivity,
   activityRequirementsMet,
-  getMissingRequirements,
 } from '@/lib/game/mini-activities';
-import type { MiniActivity, MiniActivityCategory, MiniActivityReward } from '@/lib/game/mini-activities';
+import type { MiniActivityReward } from '@/lib/game/mini-activities';
 
-// ─── Types ─────────────────────────────────────────────────────────────────
+// ─── Constants ──────────────────────────────────────────────────────────────
+
+const MAX_VISIBLE_SLOTS = 4;
+const SPAWN_INTERVAL_MS = 5 * 60 * 1000; // 1 new activity every 5 minutes
+
+// ─── Types ──────────────────────────────────────────────────────────────────
 
 interface MiniActivitiesWidgetProps {
   state: GameState;
   onExecute: (activityId: string, reward: MiniActivityReward) => void;
 }
 
-type FilterCategory = 'all' | MiniActivityCategory;
-
-// ─── Reward popup ──────────────────────────────────────────────────────────
+// ─── Reward popup ───────────────────────────────────────────────────────────
 
 function RewardPopup({ reward, onDone }: { reward: MiniActivityReward; onDone: () => void }) {
   useEffect(() => {
@@ -51,145 +53,106 @@ function RewardPopup({ reward, onDone }: { reward: MiniActivityReward; onDone: (
   );
 }
 
-// ─── Cooldown timer ────────────────────────────────────────────────────────
+// ─── Slot management ────────────────────────────────────────────────────────
 
-function CooldownTimer({ activityId, cooldowns }: { activityId: string; cooldowns: Record<string, number> }) {
-  const [remaining, setRemaining] = useState(() => getRemainingCooldown(activityId, cooldowns));
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setRemaining(getRemainingCooldown(activityId, cooldowns));
-    }, 1000);
-    return () => clearInterval(timer);
-  }, [activityId, cooldowns]);
-
-  if (remaining <= 0) return null;
-  return (
-    <span className="text-[10px] font-mono tabular-nums" style={{ color: 'var(--text-muted, #6b7280)' }}>
-      {formatCountdown(remaining)}
-    </span>
-  );
+/**
+ * Pick a random activity that's not already in slots and meets requirements.
+ */
+function pickNewActivity(state: GameState, currentSlots: string[]): string | null {
+  const available = getAvailableActivities(state);
+  const candidates = available.filter(a => !currentSlots.includes(a.id));
+  if (candidates.length === 0) return null;
+  return candidates[Math.floor(Math.random() * candidates.length)].id;
 }
 
-// ─── Category filter tabs ──────────────────────────────────────────────────
+/**
+ * Update activity slots: spawn new ones if enough time has passed, max 4.
+ * Returns updated slots and lastSpawnMs.
+ */
+function updateSlots(
+  state: GameState,
+): { slots: string[]; lastSpawnMs: number; changed: boolean } {
+  const now = Date.now();
+  const currentSlots = [...(state.miniActivitySlots || [])];
+  const lastSpawn = state.miniActivityLastSpawnMs || 0;
+  let changed = false;
 
-const CATEGORY_TABS: { id: FilterCategory; label: string; icon: string }[] = [
-  { id: 'all', label: 'All', icon: '🎯' },
-  { id: 'scanning', label: 'Scan', icon: '📡' },
-  { id: 'trading', label: 'Trade', icon: '💹' },
-  { id: 'management', label: 'Manage', icon: '⚙️' },
-  { id: 'research', label: 'Research', icon: '📄' },
-  { id: 'social', label: 'Social', icon: '📢' },
-];
-
-// ─── Activity button ───────────────────────────────────────────────────────
-
-function ActivityButton({
-  activity,
-  state,
-  onExecute,
-}: {
-  activity: MiniActivity;
-  state: GameState;
-  onExecute: (activityId: string, reward: MiniActivityReward) => void;
-}) {
-  const [showReward, setShowReward] = useState<MiniActivityReward | null>(null);
+  // Remove completed activities (on cooldown = just completed)
   const cooldowns = state.miniActivityCooldowns || {};
-  const onCooldown = isOnCooldown(activity.id, cooldowns);
-  const reqsMet = activityRequirementsMet(state, activity.id);
-  const missingReqs = !reqsMet ? getMissingRequirements(state, activity.requirements) : [];
-  const disabled = onCooldown || !reqsMet;
+  const activeSlots = currentSlots.filter(id => {
+    const onCd = isOnCooldown(id, cooldowns);
+    // Keep it if not on cooldown (ready to do) or if cooldown just started (< 30s ago, show briefly)
+    if (onCd) {
+      const remaining = getRemainingCooldown(id, cooldowns);
+      const activity = MINI_ACTIVITIES.find(a => a.id === id);
+      const totalCd = activity ? activity.cooldownSeconds : 300;
+      // If more than 30s into cooldown, remove from slots
+      if (totalCd - remaining > 30) {
+        changed = true;
+        return false;
+      }
+    }
+    return true;
+  });
 
-  const handleClick = useCallback(() => {
-    if (disabled) return;
-    const reward = executeActivity(state, activity.id);
-    if (!reward) return;
-    setShowReward(reward);
-    onExecute(activity.id, reward);
-  }, [disabled, state, activity.id, onExecute]);
+  // Spawn new activity if: under max slots AND enough time since last spawn
+  let newLastSpawn = lastSpawn;
+  if (activeSlots.length < MAX_VISIBLE_SLOTS && (now - lastSpawn) >= SPAWN_INTERVAL_MS) {
+    const newId = pickNewActivity(state, activeSlots);
+    if (newId) {
+      activeSlots.push(newId);
+      newLastSpawn = now;
+      changed = true;
+    }
+  }
 
-  return (
-    <div className="relative">
-      {showReward && (
-        <RewardPopup reward={showReward} onDone={() => setShowReward(null)} />
-      )}
-      <button
-        onClick={handleClick}
-        disabled={disabled}
-        className={`w-full text-left p-2.5 rounded-lg border transition-all ${
-          disabled
-            ? 'border-white/[0.04] opacity-50 cursor-not-allowed'
-            : 'border-cyan-500/20 hover:border-cyan-500/40 hover:bg-cyan-500/5 active:scale-[0.98] cursor-pointer'
-        }`}
-        style={{ background: disabled ? 'rgba(255,255,255,0.01)' : 'rgba(34,211,238,0.03)' }}
-      >
-        <div className="flex items-start gap-2">
-          <span className="text-base shrink-0 mt-0.5">
-            {!reqsMet ? '🔒' : activity.icon}
-          </span>
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center justify-between gap-1">
-              <span className="text-xs font-semibold truncate" style={{ color: disabled ? 'var(--text-muted, #6b7280)' : 'var(--text-primary, #e5e7eb)' }}>
-                {activity.name}
-              </span>
-              {onCooldown ? (
-                <CooldownTimer activityId={activity.id} cooldowns={cooldowns} />
-              ) : !reqsMet ? (
-                <span className="text-[9px] px-1.5 py-0.5 rounded-full shrink-0" style={{ background: 'rgba(255,179,2,0.1)', color: '#FFB302' }}>
-                  LOCKED
-                </span>
-              ) : (
-                <span className="text-[9px] px-1.5 py-0.5 rounded-full shrink-0" style={{ background: 'rgba(34,211,238,0.1)', color: '#22d3ee' }}>
-                  READY
-                </span>
-              )}
-            </div>
-            <p className="text-[10px] leading-relaxed mt-0.5 truncate" style={{ color: 'var(--text-muted, #6b7280)' }}>
-              {!reqsMet
-                ? `Requires: ${missingReqs.join(', ')}`
-                : activity.description
-              }
-            </p>
-            <div className="flex items-center gap-2 mt-1">
-              <span className="text-[9px] font-mono" style={{ color: 'var(--text-tertiary, #9ca3af)' }}>
-                {activity.minReward}–{activity.maxReward}
-              </span>
-              <span className="text-[9px]" style={{ color: 'var(--text-muted, #6b7280)' }}>
-                {activity.cooldownSeconds < 60
-                  ? `${activity.cooldownSeconds}s cd`
-                  : activity.cooldownSeconds < 3600
-                    ? `${Math.round(activity.cooldownSeconds / 60)}m cd`
-                    : `${(activity.cooldownSeconds / 3600).toFixed(1)}h cd`
-                }
-              </span>
-            </div>
-          </div>
-        </div>
-      </button>
-    </div>
-  );
+  // First load: seed 1 activity immediately if empty
+  if (activeSlots.length === 0 && lastSpawn === 0) {
+    const newId = pickNewActivity(state, activeSlots);
+    if (newId) {
+      activeSlots.push(newId);
+      newLastSpawn = now;
+      changed = true;
+    }
+  }
+
+  return { slots: activeSlots, lastSpawnMs: newLastSpawn, changed };
 }
 
-// ─── Main Widget ───────────────────────────────────────────────────────────
+// ─── Main Widget ────────────────────────────────────────────────────────────
 
 export default function MiniActivitiesWidget({ state, onExecute }: MiniActivitiesWidgetProps) {
-  const [filter, setFilter] = useState<FilterCategory>('all');
   const [isCollapsed, setIsCollapsed] = useState(false);
 
-  const allActivities = MINI_ACTIVITIES;
+  // Manage slot rotation via dispatching state updates
+  useEffect(() => {
+    const check = () => {
+      const { slots, lastSpawnMs, changed } = updateSlots(state);
+      if (changed) {
+        // Dispatch a custom event to update game state
+        window.dispatchEvent(new CustomEvent('mini-activity-slots-update', {
+          detail: { slots, lastSpawnMs },
+        }));
+      }
+    };
+    check();
+    const interval = setInterval(check, 10_000); // Check every 10s
+    return () => clearInterval(interval);
+  }, [state.miniActivitySlots?.join(','), state.miniActivityCooldowns, state.miniActivityLastSpawnMs]);
 
-  const filteredActivities = useMemo(() => {
-    if (filter === 'all') return allActivities;
-    return allActivities.filter(a => a.category === filter);
-  }, [allActivities, filter]);
+  const visibleSlots = state.miniActivitySlots || [];
+  const visibleActivities = visibleSlots
+    .map(id => MINI_ACTIVITIES.find(a => a.id === id))
+    .filter(Boolean) as typeof MINI_ACTIVITIES;
 
-  // Count ready activities for the badge
   const cooldowns = state.miniActivityCooldowns || {};
-  const readyCount = useMemo(() => {
-    return allActivities.filter(a =>
-      activityRequirementsMet(state, a.id) && !isOnCooldown(a.id, cooldowns)
-    ).length;
-  }, [allActivities, state, cooldowns]);
+  const readyCount = visibleActivities.filter(a =>
+    activityRequirementsMet(state, a.id) && !isOnCooldown(a.id, cooldowns)
+  ).length;
+
+  // Next spawn countdown
+  const lastSpawn = state.miniActivityLastSpawnMs || 0;
+  const nextSpawnIn = Math.max(0, SPAWN_INTERVAL_MS - (Date.now() - lastSpawn));
 
   // Re-render cooldown timers every second
   const [, setTick] = useState(0);
@@ -235,48 +198,114 @@ export default function MiniActivitiesWidget({ state, onExecute }: MiniActivitie
       </button>
 
       {!isCollapsed && (
-        <div className="p-3 space-y-3">
-          {/* Category filter tabs */}
-          <div className="flex gap-1 overflow-x-auto pb-1 scrollbar-none">
-            {CATEGORY_TABS.map(cat => (
-              <button
-                key={cat.id}
-                onClick={() => setFilter(cat.id)}
-                className={`shrink-0 px-2 py-1 rounded-md text-[10px] font-medium transition-colors ${
-                  filter === cat.id
-                    ? 'text-white'
-                    : 'hover:bg-white/[0.04]'
-                }`}
-                style={{
-                  background: filter === cat.id ? 'rgba(34,211,238,0.15)' : 'transparent',
-                  color: filter === cat.id ? '#22d3ee' : 'var(--text-muted, #6b7280)',
-                  border: filter === cat.id ? '1px solid rgba(34,211,238,0.2)' : '1px solid transparent',
-                }}
-              >
-                <span className="mr-0.5">{cat.icon}</span> {cat.label}
-              </button>
-            ))}
+        <div className="p-3 space-y-2">
+          {/* Status line */}
+          <div className="flex items-center justify-between text-[9px] px-1">
+            <span style={{ color: 'var(--text-muted, #6b7280)' }}>
+              {visibleActivities.length}/{MAX_VISIBLE_SLOTS} slots
+            </span>
+            {visibleActivities.length < MAX_VISIBLE_SLOTS && (
+              <span style={{ color: 'var(--text-muted, #6b7280)' }}>
+                Next in {formatCountdown(Math.ceil(nextSpawnIn / 1000))}
+              </span>
+            )}
           </div>
 
-          {/* Activity grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-[400px] overflow-y-auto scrollbar-thin scrollbar-thumb-white/10 pr-0.5">
-            {filteredActivities.map(activity => (
-              <ActivityButton
-                key={activity.id}
-                activity={activity}
-                state={state}
-                onExecute={onExecute}
-              />
-            ))}
-          </div>
-
-          {filteredActivities.length === 0 && (
-            <p className="text-center text-[11px] py-4" style={{ color: 'var(--text-muted, #6b7280)' }}>
-              No activities in this category.
+          {/* Activity cards */}
+          {visibleActivities.length === 0 ? (
+            <p className="text-center text-[11px] py-6" style={{ color: 'var(--text-muted, #6b7280)' }}>
+              No activities available yet. First one arrives shortly...
             </p>
+          ) : (
+            <div className="space-y-2">
+              {visibleActivities.map(activity => {
+                const onCooldown = isOnCooldown(activity.id, cooldowns);
+                const remaining = getRemainingCooldown(activity.id, cooldowns);
+                return (
+                  <ActivityCard
+                    key={activity.id}
+                    activity={activity}
+                    state={state}
+                    onCooldown={onCooldown}
+                    cooldownRemaining={remaining}
+                    onExecute={onExecute}
+                  />
+                );
+              })}
+            </div>
           )}
         </div>
       )}
+    </div>
+  );
+}
+
+// ─── Activity Card ──────────────────────────────────────────────────────────
+
+function ActivityCard({
+  activity,
+  state,
+  onCooldown,
+  cooldownRemaining,
+  onExecute,
+}: {
+  activity: typeof MINI_ACTIVITIES[0];
+  state: GameState;
+  onCooldown: boolean;
+  cooldownRemaining: number;
+  onExecute: (activityId: string, reward: MiniActivityReward) => void;
+}) {
+  const [showReward, setShowReward] = useState<MiniActivityReward | null>(null);
+
+  const handleClick = useCallback(() => {
+    if (onCooldown) return;
+    const reward = executeActivity(state, activity.id);
+    if (!reward) return;
+    setShowReward(reward);
+    onExecute(activity.id, reward);
+  }, [onCooldown, state, activity.id, onExecute]);
+
+  return (
+    <div className="relative">
+      {showReward && (
+        <RewardPopup reward={showReward} onDone={() => setShowReward(null)} />
+      )}
+      <button
+        onClick={handleClick}
+        disabled={onCooldown}
+        className={`w-full text-left p-3 rounded-lg border transition-all ${
+          onCooldown
+            ? 'border-white/[0.04] opacity-40 cursor-not-allowed'
+            : 'border-cyan-500/20 hover:border-cyan-500/40 hover:bg-cyan-500/5 active:scale-[0.98] cursor-pointer'
+        }`}
+        style={{ background: onCooldown ? 'rgba(255,255,255,0.01)' : 'rgba(34,211,238,0.03)' }}
+      >
+        <div className="flex items-center gap-3">
+          <span className="text-lg shrink-0">{activity.icon}</span>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-xs font-semibold truncate" style={{ color: onCooldown ? 'var(--text-muted)' : 'var(--text-primary, #e5e7eb)' }}>
+                {activity.name}
+              </span>
+              {onCooldown ? (
+                <span className="text-[10px] font-mono tabular-nums shrink-0" style={{ color: 'var(--text-muted, #6b7280)' }}>
+                  {formatCountdown(cooldownRemaining)}
+                </span>
+              ) : (
+                <span className="text-[9px] px-1.5 py-0.5 rounded-full shrink-0" style={{ background: 'rgba(34,211,238,0.1)', color: '#22d3ee' }}>
+                  READY
+                </span>
+              )}
+            </div>
+            <p className="text-[10px] mt-0.5" style={{ color: 'var(--text-muted, #6b7280)' }}>
+              {activity.description}
+            </p>
+            <span className="text-[9px] font-mono mt-0.5 inline-block" style={{ color: 'var(--text-tertiary, #9ca3af)' }}>
+              {activity.minReward}–{activity.maxReward}
+            </span>
+          </div>
+        </div>
+      </button>
     </div>
   );
 }
