@@ -191,7 +191,7 @@ export const CONTRACT_POOL: ContractDefinition[] = [
       { type: 'locations_unlocked', target: 9, label: '9 locations unlocked (outer system)' },
       { type: 'mining_services_active', target: 3, label: '3 active mining services' },
     ],
-    reward: { money: 1_500_000_000, resources: { exotic_materials: 15, deuterium: 5 } }, durationMonths: 48,
+    reward: { money: 1_500_000_000, resources: { exotic_materials: 15, helium3: 5 } }, durationMonths: 48,
   },
   {
     id: 'c_satellite_empire', name: 'Global Satellite Empire', icon: '🛰️', client: 'World Telecommunications Union',

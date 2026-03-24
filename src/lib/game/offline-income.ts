@@ -9,7 +9,8 @@ import { MINING_PRODUCTION } from './resources';
 import { getActiveMultipliers } from './random-events';
 import { getRevenueMultiplier as getUpgradeRevenueMultiplier, getMaintenanceMultiplier } from './upgrades';
 import { formatMoney } from './formulas';
-import { getMonthlyPayroll } from './workforce';
+import { getMonthlyPayroll, getWorkforceBonuses } from './workforce';
+import { getResearchBonuses } from './research-tree';
 import { TICKS_PER_GAME_MONTH } from './constants';
 
 const MAX_OFFLINE_HOURS = 8;
@@ -40,6 +41,10 @@ export function calculateOfflineIncome(state: GameState): OfflineEarnings | null
   if (ticksProcessed <= 0) return null;
 
   const multipliers = getActiveMultipliers(state);
+  const workforce = state.workforce || { engineers: 0, scientists: 0, miners: 0, operators: 0 };
+  const wfBonuses = getWorkforceBonuses(workforce);
+  const resBonuses = getResearchBonuses(state.completedResearch);
+  const prestigeRevMult = state.prestige?.permanentBonuses?.revenueMultiplier || 1;
 
   // IMPORTANT: Revenue/costs are MONTHLY values. Each tick = 1/TICKS_PER_GAME_MONTH of a month.
   // This must match the game engine's fractional calculation exactly.
@@ -57,7 +62,17 @@ export function calculateOfflineIncome(state: GameState): OfflineEarnings | null
       BUILDING_MAP.get(b.definitionId)?.enabledServices.includes(svc.definitionId)
     );
     const upgradeBoost = getUpgradeRevenueMultiplier(linkedBld?.upgradeLevel || 0);
-    revenuePerTick += Math.round(def.revenuePerMonth * fraction * svc.revenueMultiplier * multipliers.revenueMultiplier * upgradeBoost);
+    const supplyMult = (state.servicePriceMultipliers || {})[svc.definitionId] ?? 1.0;
+    revenuePerTick += Math.round(
+      def.revenuePerMonth * fraction
+      * svc.revenueMultiplier
+      * multipliers.revenueMultiplier
+      * upgradeBoost
+      * (1 + wfBonuses.serviceRevenue)
+      * (1 + resBonuses.serviceRevenueBonus)
+      * prestigeRevMult
+      * supplyMult
+    );
     costsPerTick += Math.round(def.operatingCostPerMonth * fraction * multipliers.costMultiplier);
   }
 
@@ -66,23 +81,25 @@ export function calculateOfflineIncome(state: GameState): OfflineEarnings | null
     const def = BUILDING_MAP.get(bld.definitionId);
     if (!def) continue;
     const maintMult = getMaintenanceMultiplier(bld.upgradeLevel || 0);
-    costsPerTick += Math.round(def.maintenanceCostPerMonth * fraction * multipliers.costMultiplier * maintMult);
+    costsPerTick += Math.round(def.maintenanceCostPerMonth * fraction * multipliers.costMultiplier * maintMult * (1 - resBonuses.maintenanceReduction));
   }
 
   // Include workforce payroll in costs (fractional per tick)
-  const payroll = Math.round(getMonthlyPayroll(state.workforce || { engineers: 0, scientists: 0, miners: 0, operators: 0 }) * fraction);
+  const payroll = Math.round(getMonthlyPayroll(workforce) * fraction);
   costsPerTick += payroll;
 
   const netPerTick = revenuePerTick - costsPerTick;
   const moneyEarned = Math.max(0, netPerTick * ticksProcessed); // Don't lose money offline
 
-  // Calculate resources earned offline (also fractional per tick)
+  // Calculate resources earned offline (also fractional per tick, with bonuses matching game engine)
+  const prestigeMiningMult = state.prestige?.permanentBonuses?.miningMultiplier || 1;
+  const miningMult = (1 + wfBonuses.miningOutput) * (1 + resBonuses.miningOutputBonus) * prestigeMiningMult;
   const resourcesEarned: Record<string, number> = {};
   for (const svc of state.activeServices) {
     const production = MINING_PRODUCTION[svc.definitionId];
     if (!production) continue;
     for (const { resource, amountPerMonth } of production) {
-      const totalMined = amountPerMonth * fraction * ticksProcessed;
+      const totalMined = amountPerMonth * fraction * miningMult * ticksProcessed;
       if (totalMined >= 1) {
         resourcesEarned[resource] = (resourcesEarned[resource] || 0) + Math.round(totalMined);
       }

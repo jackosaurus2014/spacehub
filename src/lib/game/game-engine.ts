@@ -428,6 +428,7 @@ export function processFullTick(state: GameState): GameState {
   try {
     if (newState.ships && newState.ships.length > 0) {
       const now = Date.now();
+      const shipFraction = 1 / TICKS_PER_GAME_MONTH; // Same fractional rate as revenue
       const resources = { ...(newState.resources || {}) };
       let shipMoney = newState.money;
       let shipTotalSpent = newState.totalSpent;
@@ -445,21 +446,25 @@ export function processFullTick(state: GameState): GameState {
           }
         }
 
-        // Fleet maintenance (per built ship, per tick)
+        // Fleet maintenance (per built ship, fractional per tick)
         if (ship.isBuilt) {
           const shipDef = SHIP_MAP.get(ship.definitionId);
           if (shipDef && shipDef.maintenancePerMonth > 0) {
-            shipMoney -= shipDef.maintenancePerMonth;
-            shipTotalSpent += shipDef.maintenancePerMonth;
+            const maint = Math.round(shipDef.maintenancePerMonth * shipFraction);
+            shipMoney -= maint;
+            shipTotalSpent += maint;
           }
         }
 
-        // Mining production (with workforce and prestige bonuses)
+        // Mining production (with workforce and prestige bonuses, fractional per tick)
         if (ship.isBuilt && ship.status === 'mining' && ship.miningOperation) {
           const shipDef = SHIP_MAP.get(ship.definitionId);
           if (shipDef?.miningRate) {
             const resId = ship.miningOperation.resourceId;
-            resources[resId] = (resources[resId] || 0) + Math.round(shipDef.miningRate * 0.5 * shipMiningMult);
+            const mined = Math.round(shipDef.miningRate * 0.5 * shipMiningMult * shipFraction);
+            if (mined >= 1) {
+              resources[resId] = (resources[resId] || 0) + mined;
+            }
           }
         }
 

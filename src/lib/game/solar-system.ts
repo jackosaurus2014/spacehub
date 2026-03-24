@@ -26,7 +26,7 @@ export const LOCATIONS: SolarSystemLocation[] = [
     travelTimeMonths: 0,
     unlockCost: 0,
     requiredResearch: [],
-    availableBuildings: ['sat_telecom', 'sat_sensor', 'space_station_small', 'datacenter_orbital', 'solar_farm_orbital'],
+    availableBuildings: ['sat_telecom', 'sat_sensor', 'space_station_small', 'datacenter_orbital', 'solar_farm_orbital', 'fabrication_orbital'],
     tier: 1,
   },
   {
