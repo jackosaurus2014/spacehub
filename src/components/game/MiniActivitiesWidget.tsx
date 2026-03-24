@@ -95,9 +95,17 @@ function updateSlots(
     return true;
   });
 
-  // Spawn new activity if: under max slots AND enough time since last spawn
   let newLastSpawn = lastSpawn;
-  if (activeSlots.length < MAX_VISIBLE_SLOTS && (now - lastSpawn) >= SPAWN_INTERVAL_MS) {
+
+  // If returning from offline (gap > 2x spawn interval), reset the timer
+  // so we don't instantly fill all slots from accumulated offline time
+  if (lastSpawn > 0 && (now - lastSpawn) > SPAWN_INTERVAL_MS * 2) {
+    newLastSpawn = now;
+    changed = true;
+  }
+
+  // Spawn 1 new activity if: under max slots AND enough ACTIVE play time since last spawn
+  if (activeSlots.length < MAX_VISIBLE_SLOTS && (now - newLastSpawn) >= SPAWN_INTERVAL_MS) {
     const newId = pickNewActivity(state, activeSlots);
     if (newId) {
       activeSlots.push(newId);
@@ -107,7 +115,7 @@ function updateSlots(
   }
 
   // First load: seed 1 activity immediately if empty
-  if (activeSlots.length === 0 && lastSpawn === 0) {
+  if (activeSlots.length === 0) {
     const newId = pickNewActivity(state, activeSlots);
     if (newId) {
       activeSlots.push(newId);
