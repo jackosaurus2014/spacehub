@@ -7,6 +7,8 @@ import ScrollReveal from '@/components/ui/ScrollReveal';
 import { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import { toast } from '@/lib/toast';
 import { extractApiError } from '@/lib/errors';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 const showingCards = [
   {
@@ -406,6 +408,8 @@ export default function Satellite2026Page() {
             </Link>
           </div>
         </ScrollReveal>
+
+        <RelatedModules modules={PAGE_RELATIONS['satellite-2026']} />
       </div>
     </div>
   );

@@ -13,6 +13,8 @@ import EventSchema from '@/components/seo/EventSchema';
 import { getCompanyProfileUrl } from '@/lib/company-links';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import PullToRefresh from '@/components/ui/PullToRefresh';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 interface LaunchEvent {
   id: string;
@@ -331,6 +333,8 @@ export default function LaunchListPage() {
         )}
         </PullToRefresh>
         </ScrollReveal>
+
+        <RelatedModules modules={PAGE_RELATIONS['launch']} />
       </div>
     </div>
   );

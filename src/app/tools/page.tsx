@@ -3,6 +3,7 @@ import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
+import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
@@ -169,6 +170,7 @@ const TOOLS = [
 export default function ToolsHubPage() {
   return (
     <div className="min-h-screen bg-space-900">
+      <BreadcrumbSchema items={[{ name: 'Home', href: '/' }, { name: 'Engineering Tools' }]} />
       <div className="container mx-auto px-4 pb-16">
         <AnimatedPageHeader
           title="Space Engineering Tools"

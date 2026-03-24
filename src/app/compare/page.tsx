@@ -3,6 +3,8 @@
 import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 const COMPARISON_TOOLS = [
   {
@@ -296,6 +298,8 @@ export default function ComparisonHubPage() {
             </div>
           </ScrollReveal>
         </section>
+
+        <RelatedModules modules={PAGE_RELATIONS['compare']} />
       </div>
     </div>
   );

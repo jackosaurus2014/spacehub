@@ -1,6 +1,8 @@
 'use client';
 
 import Link from 'next/link';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 const PAIN_POINTS = [
   {
@@ -229,6 +231,9 @@ export default function SpaceProfessionalsPage() {
           <p className="mt-4 text-sm text-slate-500">No credit card required. Cancel anytime.</p>
         </div>
       </section>
-    </div>
+    
+
+        <RelatedModules modules={PAGE_RELATIONS['solutions/space-professionals']} />
+      </div>
   );
 }

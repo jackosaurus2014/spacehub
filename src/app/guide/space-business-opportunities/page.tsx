@@ -2,8 +2,11 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import FAQSchema from '@/components/seo/FAQSchema';
+import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import GuideNavigation from '@/components/guide/GuideNavigation';
 import ReadingTime from '@/components/ui/ReadingTime';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 export const revalidate = 3600;
 
@@ -140,6 +143,7 @@ const FAQ_ITEMS = [
 export default function SpaceBusinessOpportunitiesPage() {
   return (
     <div className="min-h-screen bg-black">
+      <BreadcrumbSchema items={[{ name: 'Home', href: '/' }, { name: 'Guides', href: '/guide/space-industry' }, { name: 'Space Business Opportunities' }]} />
       <div className="container mx-auto px-4 pb-16">
         {/* Breadcrumbs */}
         <nav className="flex items-center gap-2 text-sm text-slate-400 pt-6 mb-4 overflow-x-auto" aria-label="Breadcrumb">
@@ -544,6 +548,8 @@ export default function SpaceBusinessOpportunitiesPage() {
             }}
           />
         </div>
+
+        <RelatedModules modules={PAGE_RELATIONS['guide/space-business-opportunities']} />
       </div>
     </div>
   );

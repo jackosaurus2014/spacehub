@@ -2,6 +2,8 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 interface SatellitePass {
   name: string;
@@ -171,6 +173,8 @@ export default function WhatsOverheadPage() {
                           sat.brightness === 'Bright' ? 'text-amber-400' :
                           sat.brightness === 'Dim' ? 'text-slate-300' : 'text-slate-500'
                         }`}>{sat.brightness}</span>
+
+        <RelatedModules modules={PAGE_RELATIONS['whats-overhead']} />
                       </div>
                     </div>
                   ))}

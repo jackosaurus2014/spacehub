@@ -5,6 +5,7 @@ import { WORKER_TYPES, getMonthlyPayroll, getWorkforceBonuses, getHireCost, getC
 import type { WorkerType } from '@/lib/game/workforce';
 import { formatMoney } from '@/lib/game/formulas';
 import { playSound } from '@/lib/game/sound-engine';
+import { getLegacyBonuses, DEFAULT_LEGACY } from '@/lib/game/legacy-system';
 
 interface WorkforcePanelProps {
   state: GameState;
@@ -18,7 +19,8 @@ export default function WorkforcePanel({ state, onHire, onDismiss }: WorkforcePa
   const bonuses = getWorkforceBonuses(workforce);
   const totalWorkers = workforce.engineers + workforce.scientists + workforce.miners + workforce.operators;
   const completedBuildings = state.buildings.filter(b => b.isComplete).length;
-  const capacity = getCrewCapacity(completedBuildings, state.unlockedLocations.length, state.completedResearch.length);
+  const legacyBonusCrew = getLegacyBonuses(state.legacy || DEFAULT_LEGACY).bonusCrewCapacity;
+  const capacity = getCrewCapacity(completedBuildings, state.unlockedLocations.length, state.completedResearch.length, legacyBonusCrew);
 
   return (
     <div className="space-y-4">
@@ -95,7 +97,7 @@ export default function WorkforcePanel({ state, onHire, onDismiss }: WorkforcePa
             const count = workforce[`${worker.type}s` as keyof typeof workforce] || 0;
             const hireCost = getHireCost(worker.type);
             const canAfford = state.money >= hireCost;
-            const hireCheck = canHireWorker(workforce, worker.type as WorkerType, completedBuildings, state.unlockedLocations.length, state.completedResearch.length);
+            const hireCheck = canHireWorker(workforce, worker.type as WorkerType, completedBuildings, state.unlockedLocations.length, state.completedResearch.length, legacyBonusCrew);
             const canHire = canAfford && hireCheck.allowed;
 
             return (

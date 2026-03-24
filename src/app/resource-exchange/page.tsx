@@ -19,6 +19,8 @@ import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import ExportButton from '@/components/ui/ExportButton';
 import { sanitizeCommentary } from '@/lib/sanitize';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 const DEFAULT_LAUNCH_COST = 2720;
 
@@ -488,6 +490,8 @@ function ResourceExchangeContent() {
                   ))}
                 </tbody>
               </table>
+
+        <RelatedModules modules={PAGE_RELATIONS['resource-exchange']} />
             </div>
           </div>
         )}

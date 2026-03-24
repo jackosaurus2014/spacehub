@@ -2,6 +2,8 @@ import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import SocialShare from '@/components/ui/SocialShare';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 const COMPARISON_FEATURES = [
   {
@@ -525,6 +527,9 @@ export default function WhySpaceNexusPage() {
           }).replace(/</g, '\\u003c'),
         }}
       />
-    </div>
+    
+
+        <RelatedModules modules={PAGE_RELATIONS['why-spacenexus']} />
+      </div>
   );
 }

@@ -1,6 +1,8 @@
 'use client';
 
 import Link from 'next/link';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 // ────────────────────────────────────────────────────────────────
 // Types
@@ -220,6 +222,8 @@ export default function YearInReviewPage() {
                   <p className="text-slate-400 text-sm leading-relaxed">
                     {m.description}
                   </p>
+
+        <RelatedModules modules={PAGE_RELATIONS['year-in-review']} />
                 </div>
               </div>
             );

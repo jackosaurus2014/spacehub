@@ -767,6 +767,47 @@ function DataPrivacySection() {
   const [deleteConfirmation, setDeleteConfirmation] = useState('');
   const [deletePassword, setDeletePassword] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
+  const [cacheStats, setCacheStats] = useState<{ articles: number; events: number; watchlist: number; syncQueue: number } | null>(null);
+  const [isLoadingCache, setIsLoadingCache] = useState(false);
+  const [isClearingCache, setIsClearingCache] = useState(false);
+
+  useEffect(() => {
+    loadCacheStats();
+  }, []);
+
+  const loadCacheStats = async () => {
+    setIsLoadingCache(true);
+    try {
+      const { getCacheStats } = await import('@/lib/offline/cache-manager');
+      const stats = await getCacheStats();
+      setCacheStats(stats);
+    } catch {
+      // IndexedDB not available or cache-manager error
+    } finally {
+      setIsLoadingCache(false);
+    }
+  };
+
+  const handleClearCache = async () => {
+    setIsClearingCache(true);
+    try {
+      // Clear service worker caches
+      if ('caches' in window) {
+        const keys = await caches.keys();
+        await Promise.all(keys.map(k => caches.delete(k)));
+      }
+      // Clear IndexedDB offline data
+      const { evictStaleData } = await import('@/lib/offline/cache-manager');
+      await evictStaleData();
+      // Reload cache stats
+      await loadCacheStats();
+      toast.success('Cache cleared successfully');
+    } catch {
+      toast.error('Failed to clear cache');
+    } finally {
+      setIsClearingCache(false);
+    }
+  };
 
   const handleExportData = async () => {
     setIsExporting(true);
@@ -838,6 +879,67 @@ function DataPrivacySection() {
   return (
     <>
       <div className="space-y-6">
+        {/* Cache Management */}
+        <section className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-6">
+          <h2 className="text-lg font-semibold mb-2">Cache &amp; Offline Storage</h2>
+          <p className="text-sm text-slate-400 mb-4">
+            SpaceNexus caches data locally for faster loading and offline access.
+            Clear your cache if you experience stale data or want to free up storage.
+          </p>
+
+          {isLoadingCache ? (
+            <div className="animate-pulse space-y-2">
+              <div className="h-4 bg-white/[0.06] rounded w-1/2" />
+              <div className="h-4 bg-white/[0.06] rounded w-1/3" />
+            </div>
+          ) : cacheStats ? (
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
+              {[
+                { label: 'Articles', value: cacheStats.articles },
+                { label: 'Events', value: cacheStats.events },
+                { label: 'Watchlist', value: cacheStats.watchlist },
+                { label: 'Sync Queue', value: cacheStats.syncQueue },
+              ].map(({ label, value }) => (
+                <div key={label} className="bg-white/[0.04] rounded-lg p-3 text-center">
+                  <div className="text-lg font-bold text-white">{value}</div>
+                  <div className="text-xs text-slate-400">{label}</div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-sm text-slate-500 mb-4">Cache stats unavailable</p>
+          )}
+
+          <div className="flex gap-3">
+            <button
+              onClick={handleClearCache}
+              disabled={isClearingCache}
+              className="flex items-center gap-2 px-4 py-2 bg-white/[0.08] hover:bg-white/[0.12] disabled:bg-white/[0.06] disabled:text-slate-500 text-white rounded-lg text-sm font-medium transition-colors"
+            >
+              {isClearingCache ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-white" />
+                  Clearing...
+                </>
+              ) : (
+                <>
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                  Clear All Caches
+                </>
+              )}
+            </button>
+            <button
+              onClick={loadCacheStats}
+              disabled={isLoadingCache}
+              className="px-4 py-2 bg-white/[0.06] hover:bg-white/[0.08] text-slate-300 rounded-lg text-sm transition-colors"
+            >
+              Refresh Stats
+            </button>
+          </div>
+        </section>
+
         {/* Export Data */}
         <section className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-6">
           <h2 className="text-lg font-semibold mb-2">Export Your Data</h2>

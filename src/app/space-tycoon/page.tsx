@@ -62,6 +62,7 @@ import GameTutorial from '@/components/game/GameTutorial';
 import FeatureUnlockToast from '@/components/game/FeatureUnlockToast';
 import ProUpgradeBanner from '@/components/game/ProUpgradeBanner';
 import { getConstructionSlots, getActiveConstructions, canStartConstruction, getSlotBreakdown } from '@/lib/game/construction-slots';
+import { getTierUnlockedTabs, getTierDef, getNextTierProgress } from '@/lib/game/corporation-tiers';
 
 // ─── Build Panel ────────────────────────────────────────────────────────────
 
@@ -1329,40 +1330,35 @@ export default function SpaceTycoonPage() {
     );
   }
 
-  const allTabs: { id: GameTab; label: string; icon: string }[] = [
+  // Tab definitions — full catalog of all possible tabs
+  const TAB_CATALOG: { id: GameTab; label: string; icon: string }[] = [
     { id: 'dashboard', label: 'Dashboard', icon: '📊' },
     { id: 'build', label: 'Build', icon: '🏗️' },
     { id: 'research', label: 'Research', icon: '🔬' },
     { id: 'map', label: 'Map', icon: '🗺️' },
+    { id: 'services', label: 'Services', icon: '💰' },
+    { id: 'fleet', label: 'Fleet', icon: '🚀' },
+    { id: 'contracts', label: 'Contracts', icon: '📋' },
+    { id: 'crafting', label: 'Craft', icon: '🔨' },
+    { id: 'market', label: 'Market', icon: '📈' },
+    { id: 'workforce', label: 'Crew', icon: '👷' },
+    { id: 'alliance', label: 'Alliance', icon: '🤝' },
+    { id: 'bounties', label: 'Bounties', icon: '📦' },
+    { id: 'rivals', label: 'Rivals', icon: '⚔️' },
+    { id: 'leagues', label: 'Leagues', icon: '🏅' },
+    { id: 'bidding', label: 'Bidding', icon: '🎯' },
+    { id: 'megaproject', label: 'Mega-Project', icon: '🌍' },
+    { id: 'espionage', label: 'Intel', icon: '🕵️' },
+    { id: 'territory', label: 'Territory', icon: '🗺️' },
+    { id: 'speedruns', label: 'Speed Run', icon: '⏱️' },
+    { id: 'seasons', label: 'Seasons', icon: '🌟' },
+    { id: 'leaderboard', label: 'Ranks', icon: '🏆' },
   ];
 
-  // Progressive disclosure: unlock tabs as player progresses
-  const completedBuildings = state.buildings.filter(b => b.isComplete).length;
-  const hasServices = state.activeServices.length > 0;
-  const hasResearch = state.completedResearch.length > 0;
-  const hasResources = Object.values(state.resources || {}).some(q => q > 0);
-  const hasFabrication = state.buildings.some(b => b.isComplete && b.definitionId.startsWith('fabrication_'));
-  const hasEnoughForCrafting = hasFabrication || (hasResources && completedBuildings >= 5);
-
-  if (hasServices) allTabs.push({ id: 'services', label: 'Services', icon: '💰' });
-  if (hasResearch) allTabs.push({ id: 'fleet', label: 'Fleet', icon: '🚀' });
-  if (hasEnoughForCrafting) allTabs.push({ id: 'crafting', label: 'Craft', icon: '🔨' });
-  if (completedBuildings >= 3) allTabs.push({ id: 'workforce', label: 'Crew', icon: '👷' });
-  if (hasResources || completedBuildings >= 2) allTabs.push({ id: 'market', label: 'Market', icon: '📈' });
-  if (completedBuildings >= 2) allTabs.push({ id: 'contracts', label: 'Contracts', icon: '📋' });
-  if (completedBuildings >= 5) allTabs.push({ id: 'alliance', label: 'Alliance', icon: '🤝' });
-  if (hasResources) allTabs.push({ id: 'bounties', label: 'Bounties', icon: '📦' });
-  allTabs.push({ id: 'leaderboard', label: 'Ranks', icon: '🏆' });
-
-  // Competitive multiplayer tabs (progressive unlock)
-  allTabs.push({ id: 'leagues', label: 'Leagues', icon: '🏅' });
-  allTabs.push({ id: 'rivals', label: 'Rivals', icon: '⚔️' });
-  if (completedBuildings >= 2) allTabs.push({ id: 'bidding', label: 'Bidding', icon: '🎯' });
-  allTabs.push({ id: 'seasons', label: 'Seasons', icon: '🌟' });
-  allTabs.push({ id: 'megaproject', label: 'Mega-Project', icon: '🌍' });
-  if (completedBuildings >= 3) allTabs.push({ id: 'territory', label: 'Territory', icon: '🗺️' });
-  if (state.prestige && state.prestige.level >= 1) allTabs.push({ id: 'speedruns', label: 'Speed Run', icon: '⏱️' });
-  if (completedBuildings >= 5) allTabs.push({ id: 'espionage', label: 'Intel', icon: '🕵️' });
+  // Corporation tier-based tab unlocking
+  const corpTier = state.corporationTier || 1;
+  const unlockedTabIds = new Set(getTierUnlockedTabs(corpTier));
+  const allTabs = TAB_CATALOG.filter(t => unlockedTabIds.has(t.id));
 
   // Stable key for FeatureUnlockToast (avoids infinite re-render from array reference)
   const tabIdsKey = allTabs.map(t => t.id).join(',');

@@ -2,8 +2,12 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import FAQSchema from '@/components/seo/FAQSchema';
+import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import GuideNavigation from '@/components/guide/GuideNavigation';
 import ReadingTime from '@/components/ui/ReadingTime';
+import RelatedModules from '@/components/ui/RelatedModules';
+import HowToSchema from '@/components/seo/HowToSchema';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 export const revalidate = 3600;
 
@@ -153,6 +157,19 @@ const FAQ_ITEMS = [
 export default function SatelliteTrackingGuidePage() {
   return (
     <div className="min-h-screen bg-black">
+      <BreadcrumbSchema items={[{ name: 'Home', href: '/' }, { name: 'Guides', href: '/guide/space-industry' }, { name: 'Satellite Tracking Guide' }]} />
+      <HowToSchema
+        name="Satellite Tracking Guide"
+        description="Step-by-step guide to tracking satellites using free online tools and apps"
+        steps={[
+          { name: 'Understand what satellite tracking is and why it matters', text: 'Learn why satellite tracking is critical for collision avoidance, national security, atmospheric research, and the growing commercial space economy, with over 48,000 tracked objects in orbit.' },
+          { name: 'Learn how tracking works: observation, TLEs, and SGP4', text: 'Understand the three key components of satellite tracking: observation using radar and optical sensors, cataloging orbital data in Two-Line Element sets, and predicting positions using the SGP4 propagation model.' },
+          { name: 'Identify orbit types and their tracking characteristics', text: 'Study the five main orbital regimes (LEO, MEO, GEO, HEO, SSO) to understand where satellites operate, how fast they move, and what tracking methods work best for each.' },
+          { name: 'Access tracking data sources', text: 'Register for Space-Track.org for TLE data from the US Space Force, use CelesTrak for curated datasets, and explore commercial providers like LeoLabs for near-real-time radar tracking.' },
+          { name: 'Track the ISS and other notable satellites', text: 'Search for the ISS (NORAD ID 25544), enter your location for pass predictions, and look for passes reaching 40+ degrees elevation during twilight for the best naked-eye viewing experience.' },
+          { name: 'Monitor conjunction events and debris', text: 'Understand conjunction assessments and Conjunction Data Messages (CDMs), learn collision probability thresholds, and track debris clouds from breakup events using space environment dashboards.' },
+        ]}
+      />
       <div className="container mx-auto px-4 pb-16">
         {/* Breadcrumbs */}
         <nav className="pt-6 mb-4" aria-label="Breadcrumb">
@@ -601,6 +618,8 @@ export default function SatelliteTrackingGuidePage() {
             }}
           />
         </div>
+
+        <RelatedModules modules={PAGE_RELATIONS['guide/satellite-tracking-guide']} />
       </div>
     </div>
   );

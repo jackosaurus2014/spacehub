@@ -300,8 +300,25 @@ export interface GameState {
     };
   }[];
 
-  // Prestige
+  // Prestige (deprecated — kept for migration; see legacy-system.ts)
   prestige?: { level: number; legacyPoints: number; permanentBonuses: { revenueMultiplier: number; buildSpeedMultiplier: number; researchSpeedMultiplier: number; miningMultiplier: number; startingMoney: number } };
+
+  // Legacy system (replaces prestige — permanent bonuses without resets)
+  legacy?: {
+    completedMilestones: string[];
+    stretchLevels: Record<string, number>;
+    trackers: {
+      totalResourcesMined: number;
+      totalContractsCompleted: number;
+      totalShipsBuilt: number;
+      totalBuildingsCompleted: number;
+    };
+    legacyPower: number;
+    displayTier: 'Pioneer' | 'Colonist' | 'Admiral' | 'Architect' | 'Legend';
+  };
+
+  // Corporation tier (1-6, company evolution)
+  corporationTier?: number;
 
   // Weekly events
   currentWeekId?: number;
@@ -346,8 +363,44 @@ export interface GameState {
   miniActivityCooldowns?: Record<string, number>; // activityId → lastExecutedAtMs
   miniActivitySlots?: string[]; // Currently visible activity IDs (max 4)
   miniActivityLastSpawnMs?: number; // When the last activity was added to slots
+
+  // Personal Megastructures
+  megastructures?: {
+    definitionId: string;
+    currentPhase: number;
+    completedPhases: number;
+    totalPhases: number;
+    status: 'building' | 'paused' | 'complete';
+    phaseStartedAtMs?: number;
+    phaseDurationSeconds?: number;
+    startedAtMs: number;
+    completedAtMs?: number;
+  }[];
+
+  // Reputation
+  reputation?: number;
+
+  // Victory conditions
+  earnedVictories?: string[];
+
+  // Specialization
+  specialization?: {
+    primary: { path: 'launch_magnate' | 'mining_baron' | 'data_overlord' | 'tourism_mogul' | 'fleet_commander' | 'fabrication_savant'; tier: number } | null;
+    secondary: { path: 'launch_magnate' | 'mining_baron' | 'data_overlord' | 'tourism_mogul' | 'fleet_commander' | 'fabrication_savant'; tier: number } | null;
+    respecCount: number;
+  };
+
+  // Subsidiaries
+  subsidiaries?: {
+    id: string;
+    type: 'sub_launch' | 'sub_mining' | 'sub_telecom' | 'sub_tourism' | 'sub_fabrication' | 'sub_research';
+    createdAtMs: number;
+    operations: number;
+    synergy: number;
+    efficiency: number;
+  }[];
 }
 
 // ─── UI Tabs ────────────────────────────────────────────────────────────────
 
-export type GameTab = 'dashboard' | 'build' | 'research' | 'map' | 'services' | 'fleet' | 'crafting' | 'workforce' | 'market' | 'contracts' | 'alliance' | 'bounties' | 'leaderboard' | 'rivals' | 'leagues' | 'bidding' | 'seasons' | 'territory' | 'speedruns' | 'espionage' | 'megaproject';
+export type GameTab = 'dashboard' | 'build' | 'research' | 'map' | 'services' | 'fleet' | 'crafting' | 'workforce' | 'market' | 'contracts' | 'alliance' | 'bounties' | 'leaderboard' | 'rivals' | 'leagues' | 'bidding' | 'seasons' | 'territory' | 'speedruns' | 'espionage' | 'megaproject' | 'megastructures';

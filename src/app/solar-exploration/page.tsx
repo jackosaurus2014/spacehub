@@ -16,6 +16,8 @@ import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import { clientLogger } from '@/lib/client-logger';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import ExportButton from '@/components/ui/ExportButton';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 // Dynamic import for 3D scene (client-side only)
 const PlanetaryScene = dynamic(
@@ -30,6 +32,8 @@ const PlanetaryScene = dynamic(
             style={{ borderWidth: '3px' }}
           />
           <p className="text-slate-400 text-sm">Loading 3D visualization...</p>
+
+        <RelatedModules modules={PAGE_RELATIONS['solar-exploration']} />
         </div>
       </div>
     ),

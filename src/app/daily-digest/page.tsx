@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 /* ------------------------------------------------------------------ */
 /*  Types                                                              */
@@ -205,6 +207,8 @@ export default function DailyDigestPage() {
                 <div className="space-y-2">
                   <div className="h-3 w-full bg-white/[0.05] rounded" />
                   <div className="h-3 w-5/6 bg-white/[0.05] rounded" />
+
+        <RelatedModules modules={PAGE_RELATIONS['daily-digest']} />
                 </div>
               </div>
             ))}

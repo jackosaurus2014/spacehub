@@ -1497,8 +1497,10 @@ function SpaceTalentHubContent() {
       )}
 
       {/* ──────────────── TOP-LEVEL TAB NAVIGATION ──────────────── */}
-      <div className="flex border-b border-white/[0.06] mb-8 overflow-x-auto scrollbar-hide">
+      <div role="tablist" className="flex border-b border-white/[0.06] mb-8 overflow-x-auto scrollbar-hide">
         <button
+          role="tab"
+          aria-selected={topTab === 'talent'}
           onClick={() => handleTopTabChange('talent')}
           className={`py-3 px-6 min-h-[44px] font-medium text-sm transition-colors border-b-2 -mb-px whitespace-nowrap ${
             topTab === 'talent'
@@ -1511,6 +1513,8 @@ function SpaceTalentHubContent() {
           </span>
         </button>
         <button
+          role="tab"
+          aria-selected={topTab === 'workforce'}
           onClick={() => handleTopTabChange('workforce')}
           className={`py-3 px-6 min-h-[44px] font-medium text-sm transition-colors border-b-2 -mb-px whitespace-nowrap ${
             topTab === 'workforce'
@@ -1530,8 +1534,10 @@ function SpaceTalentHubContent() {
       {topTab === 'talent' && (
         <div>
           {/* Sub-tab navigation (Experts / Webinars) */}
-          <div className="flex border-b border-white/[0.06] mb-6 overflow-x-auto scrollbar-hide">
+          <div role="tablist" className="flex border-b border-white/[0.06] mb-6 overflow-x-auto scrollbar-hide">
             <button
+              role="tab"
+              aria-selected={talentSubTab === 'experts'}
               onClick={() => setTalentSubTab('experts')}
               className={`py-3 px-6 min-h-[44px] font-medium text-sm transition-colors border-b-2 -mb-px whitespace-nowrap ${
                 talentSubTab === 'experts'
@@ -1544,6 +1550,8 @@ function SpaceTalentHubContent() {
               </span>
             </button>
             <button
+              role="tab"
+              aria-selected={talentSubTab === 'webinars'}
               onClick={() => setTalentSubTab('webinars')}
               className={`py-3 px-6 min-h-[44px] font-medium text-sm transition-colors border-b-2 -mb-px whitespace-nowrap ${
                 talentSubTab === 'webinars'
@@ -2214,7 +2222,7 @@ function SpaceTalentHubContent() {
 
           {/* Workforce Sub-Tab Navigation */}
           <div className="relative">
-            <div className="flex gap-2 mb-6 overflow-x-auto pb-1 scrollbar-hide">
+            <div role="tablist" className="flex gap-2 mb-6 overflow-x-auto pb-1 scrollbar-hide">
               {[
                 { id: 'jobs' as const, label: 'Job Postings', count: totalJobs },
                 { id: 'trends' as const, label: 'Workforce Trends', count: trends.length },
@@ -2223,6 +2231,8 @@ function SpaceTalentHubContent() {
               ].map((tab) => (
                 <button
                   key={tab.id}
+                  role="tab"
+                  aria-selected={wfSubTab === tab.id}
                   onClick={() => handleWfSubTabChange(tab.id)}
                   className={`flex items-center gap-2 px-5 py-2.5 min-h-[44px] rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
                     wfSubTab === tab.id

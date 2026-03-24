@@ -103,7 +103,12 @@ export function getHireCost(type: WorkerType): number {
  * Each completed building supports a certain number of crew.
  * Players can't spam workers beyond what their buildings can house.
  */
-export function getCrewCapacity(completedBuildingCount: number, unlockedLocationCount: number, completedResearchCount: number): {
+export function getCrewCapacity(
+  completedBuildingCount: number,
+  unlockedLocationCount: number,
+  completedResearchCount: number,
+  legacyBonusCrew: number = 0,
+): {
   total: number;
   perType: number;
   breakdown: { source: string; amount: number }[];
@@ -126,7 +131,12 @@ export function getCrewCapacity(completedBuildingCount: number, unlockedLocation
   const researchCap = Math.floor(completedResearchCount / 3);
   if (researchCap > 0) breakdown.push({ source: `${completedResearchCount} research`, amount: researchCap });
 
-  const total = base + buildingCap + locationCap + researchCap;
+  // Legacy milestone bonus crew slots
+  if (legacyBonusCrew > 0) {
+    breakdown.push({ source: 'Legacy milestones', amount: legacyBonusCrew });
+  }
+
+  const total = base + buildingCap + locationCap + researchCap + legacyBonusCrew;
   // Per-type cap = total / 2 (can't put all eggs in one basket)
   const perType = Math.max(1, Math.ceil(total / 2));
 
@@ -142,8 +152,9 @@ export function canHireWorker(
   completedBuildingCount: number,
   unlockedLocationCount: number,
   completedResearchCount: number,
+  legacyBonusCrew: number = 0,
 ): { allowed: boolean; reason?: string; capacity: ReturnType<typeof getCrewCapacity> } {
-  const capacity = getCrewCapacity(completedBuildingCount, unlockedLocationCount, completedResearchCount);
+  const capacity = getCrewCapacity(completedBuildingCount, unlockedLocationCount, completedResearchCount, legacyBonusCrew);
   const currentTotal = workforce.engineers + workforce.scientists + workforce.miners + workforce.operators;
   const currentOfType = workforce[`${type}s` as keyof WorkforceState] || 0;
 

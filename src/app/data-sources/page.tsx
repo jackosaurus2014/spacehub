@@ -4,6 +4,8 @@ import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 interface DataSource {
   name: string;
@@ -361,6 +363,8 @@ export default function DataSourcesPage() {
                         <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full border ${tierStyles[source.tier]}`}>
                           {source.tier}
                         </span>
+
+        <RelatedModules modules={PAGE_RELATIONS['data-sources']} />
                       </div>
                     </div>
                   ))}

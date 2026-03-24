@@ -1,5 +1,6 @@
 'use client';
 
+import { memo } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 
@@ -23,7 +24,7 @@ const cardVariants = {
   }),
 };
 
-export default function RelatedModules({ modules, title = 'Related Intelligence' }: { modules: RelatedModule[]; title?: string }) {
+const RelatedModules = memo(function RelatedModules({ modules, title = 'Related Intelligence' }: { modules: RelatedModule[]; title?: string }) {
   return (
     <div className="mt-12 pt-8 border-t border-white/[0.06]">
       <h3 className="text-lg font-semibold text-white mb-4">{title}</h3>
@@ -56,4 +57,6 @@ export default function RelatedModules({ modules, title = 'Related Intelligence'
       </div>
     </div>
   );
-}
+});
+
+export default RelatedModules;

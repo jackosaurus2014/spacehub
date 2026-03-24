@@ -3,6 +3,8 @@ import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import FAQSchema from '@/components/seo/FAQSchema';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 export const metadata: Metadata = {
   title: 'Satellite Companies 2026: Earth Observation, Communications & Manufacturing',
@@ -97,6 +99,8 @@ export default function SatelliteCompaniesPage() {
             </div>
           </ScrollReveal>
         </div>
+
+        <RelatedModules modules={PAGE_RELATIONS['guide/satellite-companies']} />
       </div>
     </div>
   );

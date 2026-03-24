@@ -1,4 +1,6 @@
 import Link from 'next/link';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 const newsletters = [
   {
@@ -275,6 +277,8 @@ export default function NewsletterComparisonPage() {
                       </li>
                     ))}
                   </ul>
+
+        <RelatedModules modules={PAGE_RELATIONS['compare/newsletters']} />
                 </div>
               </div>
             ))}

@@ -4,7 +4,9 @@ import { useRef, useState, useEffect, type ReactNode } from 'react';
 
 interface LazySectionProps {
   children: ReactNode;
+  /** @deprecated Use fallback instead */
   placeholder?: ReactNode;
+  fallback?: ReactNode;
   rootMargin?: string;
   className?: string;
 }
@@ -12,6 +14,7 @@ interface LazySectionProps {
 export default function LazySection({
   children,
   placeholder,
+  fallback,
   rootMargin = '200px 0px',
   className = '',
 }: LazySectionProps) {
@@ -34,12 +37,16 @@ export default function LazySection({
     return () => observer.disconnect();
   }, [rootMargin]);
 
+  const fallbackContent = fallback ?? placeholder ?? (
+    <div className="h-48 animate-pulse bg-white/5 rounded-lg" />
+  );
+
   return (
     <div ref={ref} className={className}>
       {visible ? (
         <div className="skeleton-reveal">{children}</div>
       ) : (
-        placeholder ?? <div className="min-h-[200px]" />
+        fallbackContent
       )}
     </div>
   );

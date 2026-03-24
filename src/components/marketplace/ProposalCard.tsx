@@ -1,5 +1,6 @@
 'use client';
 
+import { memo } from 'react';
 import Image from 'next/image';
 import { PROPOSAL_STATUSES } from '@/lib/marketplace-types';
 import MatchScore from './MatchScore';
@@ -38,7 +39,7 @@ interface ProposalCardProps {
   onAction?: (proposalId: string, action: string) => void;
 }
 
-export default function ProposalCard({ proposal, isBuyer, onAction }: ProposalCardProps) {
+const ProposalCard = memo(function ProposalCard({ proposal, isBuyer, onAction }: ProposalCardProps) {
   const statusInfo = PROPOSAL_STATUSES[proposal.status as keyof typeof PROPOSAL_STATUSES] || PROPOSAL_STATUSES.submitted;
 
   return (
@@ -145,4 +146,6 @@ export default function ProposalCard({ proposal, isBuyer, onAction }: ProposalCa
       )}
     </div>
   );
-}
+});
+
+export default ProposalCard;

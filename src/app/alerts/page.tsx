@@ -689,7 +689,7 @@ function AlertsPageInner() {
 
   if (sessionStatus === 'loading' || loading) {
     return (
-      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
+      <div className="min-h-screen bg-slate-950 flex items-center justify-center" aria-live="polite" aria-busy="true">
         <div className="text-center">
           <LoadingSpinner size="lg" />
           <p className="text-slate-400">Loading alerts...</p>
@@ -1667,8 +1667,10 @@ function AlertsPageInner() {
 
         {/* Tab Navigation */}
         <ScrollReveal delay={0.2}>
-        <div className="flex gap-1 mb-6 bg-black/60 rounded-lg p-1 w-fit border border-white/[0.06]">
+        <div role="tablist" className="flex gap-1 mb-6 bg-black/60 rounded-lg p-1 w-fit border border-white/[0.06]">
           <button
+            role="tab"
+            aria-selected={currentTab === 'alerts'}
             onClick={() => setTab('alerts')}
             className={`flex items-center gap-1.5 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
               currentTab === 'alerts'
@@ -1682,6 +1684,8 @@ function AlertsPageInner() {
             My Alerts
           </button>
           <button
+            role="tab"
+            aria-selected={currentTab === 'notifications'}
             onClick={() => setTab('notifications')}
             className={`flex items-center gap-1.5 px-4 py-2 rounded-md text-sm font-medium transition-colors relative ${
               currentTab === 'notifications'
@@ -1700,6 +1704,8 @@ function AlertsPageInner() {
             )}
           </button>
           <button
+            role="tab"
+            aria-selected={currentTab === 'saved-searches'}
             onClick={() => setTab('saved-searches')}
             className={`flex items-center gap-1.5 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
               currentTab === 'saved-searches'
@@ -1718,6 +1724,8 @@ function AlertsPageInner() {
             )}
           </button>
           <button
+            role="tab"
+            aria-selected={currentTab === 'webhooks'}
             onClick={() => setTab('webhooks')}
             className={`flex items-center gap-1.5 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
               currentTab === 'webhooks'
@@ -1736,6 +1744,8 @@ function AlertsPageInner() {
             )}
           </button>
           <button
+            role="tab"
+            aria-selected={currentTab === 'preferences'}
             onClick={() => setTab('preferences')}
             className={`flex items-center gap-1.5 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
               currentTab === 'preferences'
@@ -1785,7 +1795,7 @@ export default function AlertsPage() {
     <PremiumGate requiredTier="pro" context="alerts" showPreview={true}>
       <Suspense
         fallback={
-          <div className="min-h-screen bg-slate-950 flex items-center justify-center">
+          <div className="min-h-screen bg-slate-950 flex items-center justify-center" aria-live="polite" aria-busy="true">
             <div className="text-center">
               <LoadingSpinner size="lg" />
               <p className="text-slate-400">Loading alerts...</p>

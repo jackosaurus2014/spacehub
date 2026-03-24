@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import FAQSchema from '@/components/seo/FAQSchema';
+import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
+import HowToSchema from '@/components/seo/HowToSchema';
 
 export const revalidate = 86400;
 
@@ -237,8 +239,20 @@ export default function HowToTrackSatellitesPage() {
 
   return (
     <div className="min-h-screen pb-12">
+      <BreadcrumbSchema items={[{ name: 'Home', href: '/' }, { name: 'Learn', href: '/learn' }, { name: 'How to Track Satellites' }]} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema).replace(/</g, '\\u003c') }} />
       <FAQSchema items={faqItems} />
+      <HowToSchema
+        name="How to Track Satellites"
+        description="Learn how to find and track satellites visible to the naked eye"
+        steps={[
+          { name: 'Learn what satellite tracking is', text: 'Understand how satellite tracking works using ground-based radar, optical telescopes, and laser ranging stations that detect and measure positions of 30,000+ objects, with orbit data published as Two-Line Element sets (TLEs).' },
+          { name: 'Understand the different orbit types', text: 'Study the five main orbits: LEO (160-2,000 km, where ISS and Starlink operate), MEO (GPS and navigation constellations), GEO (stationary weather and broadcast satellites), HEO (high-latitude coverage), and SSO (Earth observation imaging).' },
+          { name: 'Know which satellites are visible to the naked eye', text: 'Identify the best targets for visual observation: the ISS (magnitude -6, very bright), Starlink trains after deployment, Hubble Space Telescope, and Tiangong Space Station. LEO satellites are visible during twilight hours as steady, non-blinking moving lights.' },
+          { name: 'Learn TLE data and orbital propagation basics', text: 'Understand Two-Line Element sets that encode six orbital parameters, NORAD catalog numbers for unique identification, and the SGP4 algorithm that predicts satellite positions with accuracy to about 1 km over a few days.' },
+          { name: 'Use a satellite tracking tool to find pass times', text: 'Open a satellite tracker like SpaceNexus, search for a satellite by name or NORAD ID, enter your location, and check upcoming visible passes with azimuth, elevation, and timing data for optimal viewing.' },
+        ]}
+      />
 
       <div className="container mx-auto px-4 max-w-4xl">
         {/* Breadcrumb */}

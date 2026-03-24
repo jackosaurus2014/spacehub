@@ -6,6 +6,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from '@/lib/toast';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 interface RelatedCompany {
   name: string;
@@ -75,7 +77,10 @@ function formatAnswer(text: string): React.ReactNode[] {
         <div key={i} className="flex items-start gap-2 ml-2">
           <span className="text-slate-300 mt-1 flex-shrink-0">&#8226;</span>
           <span>{formattedParts.slice(0).map((p, idx) => <span key={idx}>{typeof p === 'string' ? p.replace(/^[-*]\s/, '') : p}</span>)}</span>
-        </div>
+        
+
+        <RelatedModules modules={PAGE_RELATIONS['company-research']} />
+      </div>
       );
     } else if (line.trim() === '') {
       elements.push(<div key={i} className="h-2" />);

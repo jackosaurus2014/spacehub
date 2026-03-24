@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 export const metadata: Metadata = {
   title: 'Iridium vs Globalstar: Complete Comparison 2026',
@@ -122,6 +124,9 @@ export default function Page() {
         datePublished: '2026-03-22', dateModified: '2026-03-22',
         url: 'https://spacenexus.us/compare/iridium-vs-globalstar',
       }).replace(/</g, '\\u003c') }} />
-    </div>
+    
+
+        <RelatedModules modules={PAGE_RELATIONS['compare/iridium-vs-globalstar']} />
+      </div>
   );
 }

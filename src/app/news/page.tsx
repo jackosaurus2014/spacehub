@@ -154,7 +154,7 @@ function NewsContent() {
 
       {/* Error Banner */}
       {error && !loading && (
-        <div className="card p-5 border border-red-500/20 bg-red-500/5 text-center mb-6">
+        <div role="alert" aria-live="polite" className="card p-5 border border-red-500/20 bg-red-500/5 text-center mb-6">
           <div className="text-red-400 text-sm font-medium">{error}</div>
           <button
             onClick={() => fetchNews(0)}
@@ -167,7 +167,7 @@ function NewsContent() {
 
       {/* News Grid */}
       {loading && articles.length === 0 ? (
-        <div>
+        <div aria-live="polite" aria-busy="true">
           <div className="flex items-center gap-2 mb-4">
             <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />

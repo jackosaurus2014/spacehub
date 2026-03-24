@@ -17,6 +17,8 @@ import { clientLogger } from '@/lib/client-logger';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import ExportButton from '@/components/ui/ExportButton';
 import { sanitizeCommentary } from '@/lib/sanitize';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 // ────────────────────────────────────────
 // Types
@@ -520,6 +522,8 @@ function MarketYearCard({
             Largest Claim: <span className="text-red-400 font-medium">{formatCurrency(year.largestClaim)}</span>
           </span>
         )}
+
+        <RelatedModules modules={PAGE_RELATIONS['space-insurance']} />
       </div>
     </div>
   );

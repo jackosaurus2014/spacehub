@@ -181,7 +181,7 @@ function LoginContent() {
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {error && (
-          <div id="login-error" role="alert" className="bg-red-500/10 border border-red-500/50 text-red-400 px-4 py-3 rounded-lg text-sm">
+          <div id="login-error" role="alert" aria-live="polite" className="bg-red-500/10 border border-red-500/50 text-red-400 px-4 py-3 rounded-lg text-sm">
             {error}
           </div>
         )}
@@ -206,7 +206,7 @@ function LoginContent() {
             aria-describedby={emailError ? 'email-error' : error ? 'login-error' : undefined}
           />
           {emailError && (
-            <p id="email-error" className="text-red-400 text-sm mt-1">{emailError}</p>
+            <p id="email-error" aria-live="polite" className="text-red-400 text-sm mt-1">{emailError}</p>
           )}
         </div>
 
@@ -237,7 +237,7 @@ function LoginContent() {
             aria-describedby={passwordError ? 'password-error' : error ? 'login-error' : undefined}
           />
           {passwordError && (
-            <p id="password-error" className="text-red-400 text-sm mt-1">{passwordError}</p>
+            <p id="password-error" aria-live="polite" className="text-red-400 text-sm mt-1">{passwordError}</p>
           )}
         </div>
 

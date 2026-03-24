@@ -22,6 +22,11 @@ import { rollMarketEvent } from './market-events';
 import type { ActiveMarketEvent } from './market-events';
 import { checkAchievements } from './achievements';
 import { rollTimedEvent, calculateEventReward, EVENT_TEMPLATES } from './timed-events';
+import { DEFAULT_LEGACY, getLegacyBonuses, checkLegacyMilestones, checkStretchProgress, getLegacyPower, getLegacyDisplayTier, LEGACY_MILESTONE_MAP } from './legacy-system';
+import { checkCorporationTier, getTierBonuses } from './corporation-tiers';
+import { getMegastructureBonuses, checkMegastructureCompletion } from './personal-megastructures';
+import { getReputationBonuses, addReputation } from './reputation';
+import type { ResourceId } from './resources';
 
 /**
  * Process a single game tick (1 in-game month).
@@ -54,10 +59,23 @@ export function processTick(state: GameState): GameState {
   // Get research bonuses (category-specific bonuses from completed research)
   const resBonuses = getResearchBonuses(state.completedResearch);
 
-  // Get prestige bonuses
-  const prestige = state.prestige || { level: 0, legacyPoints: 0, permanentBonuses: { revenueMultiplier: 1, buildSpeedMultiplier: 1, researchSpeedMultiplier: 1, miningMultiplier: 1, startingMoney: 200_000_000 } };
-  const prestigeRevMult = prestige.permanentBonuses?.revenueMultiplier || 1;
-  const prestigeMiningMult = prestige.permanentBonuses?.miningMultiplier || 1;
+  // Get legacy bonuses (replaces prestige)
+  const legacy = state.legacy || DEFAULT_LEGACY;
+  const legacyBonuses = getLegacyBonuses(legacy);
+  const legacyRevMult = legacyBonuses.revenueMultiplier;
+  const legacyMiningMult = legacyBonuses.miningMultiplier;
+  const legacyBuildSpeedMult = legacyBonuses.buildSpeedMultiplier;
+  const legacyCostMult = legacyBonuses.costMultiplier;
+
+  // Get corporation tier bonuses
+  const corpTier = state.corporationTier || 1;
+  const tierBonuses = getTierBonuses(corpTier);
+
+  // Get megastructure bonuses
+  const megaBonuses = getMegastructureBonuses(state.megastructures || []);
+
+  // Get reputation bonuses
+  const repBonuses = getReputationBonuses(state.reputation || 0);
 
   // ─── 0. Workforce payroll (fractional per tick) ──────────────────
   const payroll = Math.round(getMonthlyPayroll(workforce) * fraction);
@@ -84,10 +102,13 @@ export function processTick(state: GameState): GameState {
       * upgradeBoost
       * (1 + wfBonuses.serviceRevenue)
       * (1 + resBonuses.serviceRevenueBonus)
-      * prestigeRevMult
+      * legacyRevMult
+      * (1 + tierBonuses.revenueBonus)
       * supplyMult
+      * (megaBonuses.revenueMultiplier || 1)
+      * repBonuses.revenueMultiplier
     );
-    const cost = Math.round(def.operatingCostPerMonth * fraction * multipliers.costMultiplier);
+    const cost = Math.round(def.operatingCostPerMonth * fraction * multipliers.costMultiplier * legacyCostMult * (1 - tierBonuses.maintenanceReduction) * (megaBonuses.maintenanceMultiplier || 1) * repBonuses.maintenanceMultiplier);
     money += revenue - cost;
     totalEarned += revenue;
     totalSpent += cost;
@@ -101,7 +122,7 @@ export function processTick(state: GameState): GameState {
     const def = BUILDING_MAP.get(bld.definitionId);
     if (!def) continue;
     const maintMult = getMaintenanceMultiplier(bld.upgradeLevel || 0);
-    const maint = Math.round(def.maintenanceCostPerMonth * fraction * multipliers.costMultiplier * maintMult * (1 - resBonuses.maintenanceReduction));
+    const maint = Math.round(def.maintenanceCostPerMonth * fraction * multipliers.costMultiplier * maintMult * (1 - resBonuses.maintenanceReduction) * legacyCostMult * (1 - tierBonuses.maintenanceReduction) * (megaBonuses.maintenanceMultiplier || 1) * repBonuses.maintenanceMultiplier);
     money -= maint;
     totalSpent += maint;
     monthlyCosts += maint;
@@ -115,7 +136,7 @@ export function processTick(state: GameState): GameState {
     if (bld.isComplete) return bld;
     const elapsed = (now - (bld.startedAtMs || 0)) / 1000;
     // Speed boosts reduce effective duration
-    const effectiveDuration = (bld.realDurationSeconds || 0) / buildBoostMult;
+    const effectiveDuration = (bld.realDurationSeconds || 0) / (buildBoostMult * legacyBuildSpeedMult * (megaBonuses.buildSpeedMultiplier || 1) * repBonuses.buildSpeedMultiplier);
     if (elapsed >= effectiveDuration) {
       const def = BUILDING_MAP.get(bld.definitionId);
       events.push({
@@ -137,7 +158,7 @@ export function processTick(state: GameState): GameState {
   if (activeResearch) {
     const researchElapsed = (now - (activeResearch.startedAtMs || 0)) / 1000;
     const researchBoostMult = getActiveBoostMultiplier(activeBoosts, 'research');
-    const researchSpeedMult = (1 + wfBonuses.researchSpeed) * (1 + resBonuses.researchSpeedBonus) * (prestige.permanentBonuses?.researchSpeedMultiplier || 1) * researchBoostMult;
+    const researchSpeedMult = (1 + wfBonuses.researchSpeed) * (1 + resBonuses.researchSpeedBonus) * legacyBonuses.researchSpeedMultiplier * researchBoostMult * (megaBonuses.researchSpeedMultiplier || 1) * repBonuses.researchSpeedMultiplier;
     const effectiveDuration = (activeResearch.realDurationSeconds || 0) / researchSpeedMult;
     if (researchElapsed >= effectiveDuration) {
       completedResearch.push(activeResearch.definitionId);
@@ -194,7 +215,7 @@ export function processTick(state: GameState): GameState {
 
   // ─── 6. Resource production (fractional per tick, with bonuses) ───
   const resources = { ...(state.resources || {}) };
-  const miningMult = (1 + wfBonuses.miningOutput) * (1 + resBonuses.miningOutputBonus) * prestigeMiningMult;
+  const miningMult = (1 + wfBonuses.miningOutput) * (1 + resBonuses.miningOutputBonus) * legacyMiningMult * (1 + tierBonuses.miningBonus) * (megaBonuses.miningMultiplier || 1) * repBonuses.miningMultiplier;
   for (const svc of activeServices) {
     const production = MINING_PRODUCTION[svc.definitionId];
     if (!production) continue;
@@ -206,6 +227,25 @@ export function processTick(state: GameState): GameState {
       } else if (isMonthEnd) {
         // On month boundary, add at least the monthly total
         resources[resource] = (resources[resource] || 0) + Math.round(amountPerMonth * miningMult);
+      }
+    }
+  }
+
+  // ─── 6b. Megastructure passive income & resource production ─────────
+  if (megaBonuses.passiveIncome && megaBonuses.passiveIncome > 0) {
+    const passiveInc = Math.round(megaBonuses.passiveIncome * fraction);
+    money += passiveInc;
+    totalEarned += passiveInc;
+    monthlyRevenue += passiveInc;
+  }
+  if (megaBonuses.passiveResources) {
+    for (const [resId, amt] of Object.entries(megaBonuses.passiveResources)) {
+      if (!amt || amt <= 0) continue;
+      const fractionalAmt = amt * fraction;
+      if (fractionalAmt >= 1) {
+        resources[resId] = (resources[resId] || 0) + Math.round(fractionalAmt);
+      } else if (isMonthEnd) {
+        resources[resId] = (resources[resId] || 0) + Math.round(amt);
       }
     }
   }
@@ -433,7 +473,9 @@ export function processFullTick(state: GameState): GameState {
       let shipMoney = newState.money;
       let shipTotalSpent = newState.totalSpent;
       const wfBonuses = getWorkforceBonuses(newState.workforce || { engineers: 0, scientists: 0, miners: 0, operators: 0 });
-      const shipMiningMult = (1 + wfBonuses.miningOutput) * ((newState.prestige?.permanentBonuses?.miningMultiplier) || 1);
+      const shipLegacyBonuses = getLegacyBonuses(newState.legacy || DEFAULT_LEGACY);
+      const shipTierBonuses = getTierBonuses(newState.corporationTier || 1);
+      const shipMiningMult = (1 + wfBonuses.miningOutput) * shipLegacyBonuses.miningMultiplier * (1 + shipTierBonuses.miningBonus);
       const shipEvents: typeof newState.eventLog = [];
       const shipsToRemove: string[] = []; // For consumed survey probes
 
@@ -562,6 +604,147 @@ export function processFullTick(state: GameState): GameState {
     }
   } catch (err) {
     console.error('Achievement check error (non-fatal):', err);
+  }
+
+  // 7b. Check legacy milestones & corporation tier (same cadence as achievements)
+  try {
+    const legacyTickCount = Math.floor((newState.gameDate.year * 12 + newState.gameDate.month) % 5);
+    if (legacyTickCount === 0) {
+      const currentLegacy = { ...(newState.legacy || DEFAULT_LEGACY) };
+      currentLegacy.completedMilestones = [...currentLegacy.completedMilestones];
+      currentLegacy.stretchLevels = { ...currentLegacy.stretchLevels };
+      currentLegacy.trackers = { ...currentLegacy.trackers };
+
+      const newMilestones = checkLegacyMilestones(newState);
+      const newStretchLevels = checkStretchProgress(newState);
+
+      if (newMilestones.length > 0 || Object.keys(newStretchLevels).length > 0) {
+        const legacyEvents: typeof newState.eventLog = [];
+
+        for (const milestoneId of newMilestones) {
+          const def = LEGACY_MILESTONE_MAP.get(milestoneId);
+          if (def) {
+            currentLegacy.completedMilestones.push(milestoneId);
+            const bonusLabel = def.bonusCategory === 'crewCapacity'
+              ? `+${def.bonusValue} crew slots`
+              : `+${def.bonusValue}% ${def.bonusCategory}`;
+            legacyEvents.push({
+              id: generateId(),
+              date: newState.gameDate,
+              type: 'milestone',
+              title: `Legacy Milestone: ${def.name}`,
+              description: `${def.description} (${bonusLabel})`,
+            });
+          }
+        }
+
+        for (const [stretchId, newLevel] of Object.entries(newStretchLevels)) {
+          currentLegacy.stretchLevels[stretchId] = newLevel;
+          if (newLevel % 5 === 0 || newLevel <= 3) {
+            legacyEvents.push({
+              id: generateId(),
+              date: newState.gameDate,
+              type: 'milestone',
+              title: `Stretch Legacy Level ${newLevel}!`,
+              description: 'Your dynasty grows stronger.',
+            });
+          }
+        }
+
+        currentLegacy.legacyPower = getLegacyPower(currentLegacy);
+        currentLegacy.displayTier = getLegacyDisplayTier(currentLegacy);
+
+        newState = {
+          ...newState,
+          legacy: currentLegacy,
+          eventLog: [...legacyEvents, ...newState.eventLog].slice(0, MAX_EVENT_LOG),
+        };
+      }
+
+      // Check corporation tier advancement
+      const newCorpTier = checkCorporationTier(newState);
+      if (newCorpTier !== (newState.corporationTier || 1)) {
+        const { getTierDef } = require('./corporation-tiers');
+        const tierDef = getTierDef(newCorpTier);
+        newState = {
+          ...newState,
+          corporationTier: newCorpTier,
+          eventLog: [{
+            id: generateId(),
+            date: newState.gameDate,
+            type: 'milestone' as const,
+            title: `${tierDef.icon} Corporation Tier: ${tierDef.name}`,
+            description: `Your company has evolved to ${tierDef.name} tier! New capabilities unlocked.`,
+          }, ...newState.eventLog].slice(0, MAX_EVENT_LOG),
+        };
+      }
+    }
+  } catch (err) {
+    console.error('Legacy/tier check error (non-fatal):', err);
+  }
+
+  // 7c. Check megastructure phase completion
+  try {
+    newState = checkMegastructureCompletion(newState);
+  } catch (err) {
+    console.error('Megastructure check error (non-fatal):', err);
+  }
+
+  // 7d. Award reputation for completed events
+  try {
+    // Check for newly completed buildings
+    const prevBuildings = state.buildings;
+    for (const bld of newState.buildings) {
+      if (bld.isComplete) {
+        const wasPrevComplete = prevBuildings.find(b => b.instanceId === bld.instanceId)?.isComplete;
+        if (!wasPrevComplete) {
+          const def = BUILDING_MAP.get(bld.definitionId);
+          const tier = def?.tier || 1;
+          const source = `building_tier_${tier}` as 'building_tier_1' | 'building_tier_2' | 'building_tier_3' | 'building_tier_4' | 'building_tier_5';
+          newState = addReputation(newState, source);
+        }
+      }
+    }
+
+    // Check for newly completed research
+    if (newState.completedResearch.length > state.completedResearch.length) {
+      for (const resId of newState.completedResearch) {
+        if (!state.completedResearch.includes(resId)) {
+          const def = RESEARCH_MAP.get(resId);
+          const tier = def?.tier || 1;
+          const source = `research_tier_${tier}` as 'research_tier_1' | 'research_tier_2' | 'research_tier_3' | 'research_tier_4' | 'research_tier_5';
+          newState = addReputation(newState, source);
+        }
+      }
+    }
+
+    // Check for newly completed contracts
+    const prevContracts = state.completedContracts || [];
+    const newContracts = newState.completedContracts || [];
+    if (newContracts.length > prevContracts.length) {
+      const diff = newContracts.length - prevContracts.length;
+      for (let i = 0; i < diff; i++) {
+        newState = addReputation(newState, 'contract_complete');
+      }
+    }
+
+    // Check for megastructure phase/completion reputation
+    const prevMegas = state.megastructures || [];
+    const newMegas = newState.megastructures || [];
+    for (const newMega of newMegas) {
+      const prevMega = prevMegas.find(m => m.definitionId === newMega.definitionId);
+      if (prevMega) {
+        if (newMega.completedPhases > prevMega.completedPhases) {
+          if (newMega.status === 'complete' && prevMega.status !== 'complete') {
+            newState = addReputation(newState, 'megastructure_complete');
+          } else {
+            newState = addReputation(newState, 'megastructure_phase');
+          }
+        }
+      }
+    }
+  } catch (err) {
+    console.error('Reputation award error (non-fatal):', err);
   }
 
   // 8. Timed competitive events — spawn, check completion, expire

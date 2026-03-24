@@ -3,6 +3,8 @@ import Link from 'next/link';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import GuideNavigation from '@/components/guide/GuideNavigation';
 import ReadingTime from '@/components/ui/ReadingTime';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 export const revalidate = 3600;
 
@@ -414,6 +416,8 @@ export default function SpaceLaunchSchedule2026Page() {
             }}
           />
         </div>
+
+        <RelatedModules modules={PAGE_RELATIONS['guide/space-launch-schedule-2026']} />
       </div>
     </div>
   );

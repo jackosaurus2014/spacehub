@@ -11,6 +11,8 @@ import { toast } from '@/lib/toast';
 import { clientLogger } from '@/lib/client-logger';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import EmptyState from '@/components/ui/EmptyState';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 interface WatchlistItem {
   id: string;
@@ -234,6 +236,8 @@ function WatchlistsContent() {
           <Link href="/login" className="text-white/70 hover:text-white text-sm font-medium">
             Sign In →
           </Link>
+
+        <RelatedModules modules={PAGE_RELATIONS['my-watchlists']} />
         </div>
       </div>
     );

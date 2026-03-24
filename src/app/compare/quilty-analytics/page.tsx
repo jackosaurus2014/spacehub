@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 export const metadata: Metadata = {
   title: 'SpaceNexus vs Quilty Space Analytics — Space Industry Platform Comparison | SpaceNexus',
@@ -369,6 +371,9 @@ export default function QuiltyComparisonPage() {
           }).replace(/</g, '\\u003c'),
         }}
       />
-    </div>
+    
+
+        <RelatedModules modules={PAGE_RELATIONS['compare/quilty-analytics']} />
+      </div>
   );
 }

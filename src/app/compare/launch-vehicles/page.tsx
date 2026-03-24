@@ -4,6 +4,9 @@ import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
+import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 // ────────────────────────────────────────
 // Types
@@ -767,6 +770,8 @@ function VehicleSelector({
             </button>
           ))}
         </div>
+
+        <RelatedModules modules={PAGE_RELATIONS['compare/launch-vehicles']} />
       </div>
     </div>
   );
@@ -1060,6 +1065,7 @@ export default function LaunchVehicleComparePage() {
 
   return (
     <div className="min-h-screen p-4 lg:p-8 max-w-[1600px] mx-auto">
+      <BreadcrumbSchema items={[{ name: 'Home', href: '/' }, { name: 'Compare', href: '/compare' }, { name: 'Launch Vehicles Comparison' }]} />
 
       <AnimatedPageHeader
         title="Launch Vehicle Comparison"

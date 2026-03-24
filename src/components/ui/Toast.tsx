@@ -204,12 +204,8 @@ export default function ToastContainer() {
     };
   }, [removeToast, haptics]);
 
-  if (toasts.length === 0) {
-    return null;
-  }
-
   return (
-    <div className="fixed bottom-20 lg:bottom-4 right-4 z-[120] flex flex-col-reverse gap-2 items-end max-sm:right-1/2 max-sm:translate-x-1/2 max-sm:items-center">
+    <div aria-live="polite" aria-relevant="additions" className={`fixed bottom-20 lg:bottom-4 right-4 z-[120] flex flex-col-reverse gap-2 items-end max-sm:right-1/2 max-sm:translate-x-1/2 max-sm:items-center ${toasts.length === 0 ? 'pointer-events-none' : ''}`}>
       {toasts.map((t) => (
         <ToastItem key={t.id} toast={t} onRemove={removeToast} />
       ))}

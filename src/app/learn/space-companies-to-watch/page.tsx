@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import FAQSchema from '@/components/seo/FAQSchema';
+import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 
 export const revalidate = 86400;
 
@@ -515,6 +516,7 @@ export default function SpaceCompaniesPage() {
 
   return (
     <div className="min-h-screen pb-12">
+      <BreadcrumbSchema items={[{ name: 'Home', href: '/' }, { name: 'Learn', href: '/learn' }, { name: 'Space Companies to Watch' }]} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema).replace(/</g, '\\u003c') }} />
       <FAQSchema items={faqItems} />
 

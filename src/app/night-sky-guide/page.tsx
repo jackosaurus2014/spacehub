@@ -2,6 +2,8 @@ import { Metadata } from 'next';
 import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 export const metadata: Metadata = {
   title: 'Night Sky Guide',
@@ -102,6 +104,8 @@ export default function NightSkyGuidePage() {
                     >
                       {item.tool}
                     </Link>
+
+        <RelatedModules modules={PAGE_RELATIONS['night-sky-guide']} />
                   </div>
                 </div>
               ))}

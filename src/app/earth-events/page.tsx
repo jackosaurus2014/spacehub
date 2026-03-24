@@ -1,4 +1,6 @@
 import { fetchEONETEvents, EONETEvent } from '@/lib/eonet-fetcher';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -246,6 +248,8 @@ export default async function EarthEventsPage() {
             . Updated every 30 minutes.
           </p>
         </div>
+
+        <RelatedModules modules={PAGE_RELATIONS['earth-events']} />
       </div>
     </div>
   );

@@ -1,5 +1,7 @@
 import { fetchPodcasts, PODCAST_FEEDS, PodcastEpisode } from '@/lib/podcast-fetcher';
 import AdSlot from '@/components/ads/AdSlot';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 export const dynamic = 'force-dynamic';
 
@@ -118,6 +120,8 @@ function PodcastEpisodeCard({ episode }: { episode: PodcastEpisode }) {
             )}
           </div>
         </div>
+
+        <RelatedModules modules={PAGE_RELATIONS['podcasts']} />
       </div>
     </div>
   );

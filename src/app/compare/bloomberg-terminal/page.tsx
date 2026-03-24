@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import ScrollReveal from '@/components/ui/ScrollReveal';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 export const metadata: Metadata = {
   title: 'SpaceNexus vs Bloomberg Terminal for Space Industry | SpaceNexus',
@@ -362,6 +364,9 @@ export default function BloombergComparisonPage() {
           }).replace(/</g, '\\u003c'),
         }}
       />
-    </div>
+    
+
+        <RelatedModules modules={PAGE_RELATIONS['compare/bloomberg-terminal']} />
+      </div>
   );
 }

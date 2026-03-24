@@ -4,6 +4,8 @@ import { useState, useMemo } from 'react';
 import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 // ────────────────────────────────────────
 // Types
@@ -555,6 +557,8 @@ function ComparisonPanel({
           <span className="w-3 h-3 rounded bg-green-400/10 border border-green-400/30" />
           Best value in category
         </span>
+
+        <RelatedModules modules={PAGE_RELATIONS['compare/satellite-buses']} />
       </div>
     </div>
   );

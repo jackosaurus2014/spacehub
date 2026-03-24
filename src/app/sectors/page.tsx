@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { SECTORS } from '@/lib/sector-data';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 export const metadata: Metadata = {
   title: 'Space Industry Sectors — Complete Market Directory',
@@ -105,6 +107,8 @@ function SectorTier({ label, sublabel, sectors }: { label: string; sublabel: str
             </div>
           </Link>
         ))}
+
+        <RelatedModules modules={PAGE_RELATIONS['sectors']} />
       </div>
     </div>
   );

@@ -5,6 +5,8 @@ import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { toast } from '@/lib/toast';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 // ============================================================
 // Types
@@ -214,6 +216,8 @@ function ApiKeyCard({
               {apiKey.key}
             </code>
             <CopyButton text={apiKey.key} />
+
+        <RelatedModules modules={PAGE_RELATIONS['developer']} />
           </div>
         </div>
       )}

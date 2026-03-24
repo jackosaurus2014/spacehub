@@ -2,8 +2,12 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import FAQSchema from '@/components/seo/FAQSchema';
+import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import GuideNavigation from '@/components/guide/GuideNavigation';
 import ReadingTime from '@/components/ui/ReadingTime';
+import RelatedModules from '@/components/ui/RelatedModules';
+import HowToSchema from '@/components/seo/HowToSchema';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 export const revalidate = 3600;
 
@@ -123,6 +127,19 @@ const FAQ_ITEMS = [
 export default function SpaceRegulatoryCompliancePage() {
   return (
     <div className="min-h-screen bg-black">
+      <BreadcrumbSchema items={[{ name: 'Home', href: '/' }, { name: 'Guides', href: '/guide/space-industry' }, { name: 'Space Regulatory Compliance' }]} />
+      <HowToSchema
+        name="Space Regulatory Compliance Guide"
+        description="How to achieve regulatory compliance for commercial space operations"
+        steps={[
+          { name: 'Understand why regulatory compliance matters', text: 'Recognize that space companies must simultaneously comply with export controls, communications regulations, launch safety requirements, environmental reviews, and international treaty obligations, with severe penalties for non-compliance.' },
+          { name: 'Identify the regulatory agencies that apply to your operations', text: 'Determine which agencies govern your activities: FAA/AST for launch licensing, FCC for satellite communications, NOAA for remote sensing, State Dept/DDTC for ITAR exports, Commerce/BIS for dual-use items, and ITU for global spectrum coordination.' },
+          { name: 'Navigate ITAR and export controls', text: 'Register with the DDTC if your company handles USML-listed items, understand the distinction between ITAR and EAR jurisdiction, implement technology control plans, and manage deemed export obligations for non-US persons.' },
+          { name: 'Obtain FCC and FAA licenses', text: 'File FCC satellite authorization applications with technical parameters and debris mitigation plans, and apply for FAA launch/reentry licenses under the performance-based Part 450 framework with flight safety analyses and insurance documentation.' },
+          { name: 'Manage spectrum and international obligations', text: 'Coordinate spectrum rights through the ITU process via national administrations, comply with deployment milestone requirements for NGSO constellations, and align operations with Outer Space Treaty, Artemis Accords, and UN COPUOS guidelines.' },
+          { name: 'Implement cybersecurity and ongoing compliance', text: 'Achieve CMMC certification (Level 1-3) if pursuing defense contracts, implement NIST SP 800-171 controls for CUI, and use compliance tracking tools to monitor license expirations, filing deadlines, and regulatory changes.' },
+        ]}
+      />
       <div className="container mx-auto px-4 pb-16">
         {/* Breadcrumbs */}
         <nav className="pt-6 mb-4" aria-label="Breadcrumb">
@@ -582,6 +599,8 @@ export default function SpaceRegulatoryCompliancePage() {
             }}
           />
         </div>
+
+        <RelatedModules modules={PAGE_RELATIONS['guide/space-regulatory-compliance']} />
       </div>
     </div>
   );

@@ -11,6 +11,7 @@ const APP_DIR = path.join(__dirname, '..', 'src', 'app');
 
 // All page routes that should have RelatedModules (from PAGE_RELATIONS keys)
 const PAGE_ROUTES = [
+  // ── Existing routes (Wave 68) ──
   'news', 'blogs', 'news-digest', 'intelligence-brief', 'news-aggregator',
   'podcasts', 'resources', 'newsletters-directory', 'investment-tracker',
   'investment-thesis', 'deal-flow', 'ma-tracker', 'startup-tracker',
@@ -37,6 +38,55 @@ const PAGE_ROUTES = [
   'dashboard', 'procurement', 'patents', 'space-mining',
   'space-manufacturing', 'supply-chain-risk', 'supply-chain-map',
   'legal-resources',
+
+  // ── Wave 69: Pages that already have PAGE_RELATIONS but no component ──
+  'advertise', 'api-access', 'blueprints', 'company-research', 'daily-digest',
+  'data-sources', 'earth-events', 'ground-station-directory', 'help', 'investors',
+  'my-watchlists', 'pricing', 'regulatory-agencies', 'resource-exchange',
+  'satellite-2026', 'solar-exploration', 'space-insurance', 'space-stats',
+  'spaceports', 'spectrum', 'why-spacenexus', 'satellite-tracker',
+  'compliance', 'space-environment', 'market-intel', 'company-profiles',
+  'supply-chain', 'launch-vehicles', 'space-defense', 'ai-insights',
+  'constellations', 'ground-stations', 'satellites', 'debris-remediation',
+  'space-comms', 'licensing-checker', 'export-classifications',
+  'compliance-checklist', 'regulatory-risk', 'regulatory-calendar',
+  'regulatory-tracker', 'isru', 'mars-planner', 'cislunar', 'asteroid-watch',
+  'business-opportunities', 'patent-landscape', 'space-capital',
+  'funding-tracker', 'space-economy',
+
+  // ── Wave 69: New PAGE_RELATIONS entries + new pages ──
+  'blog', 'compare', 'compare/astra-vs-virgin-orbit', 'compare/bloomberg-terminal',
+  'compare/boeing-vs-lockheed-space', 'compare/companies',
+  'compare/iridium-vs-globalstar', 'compare/launch-vehicles',
+  'compare/maxar-vs-airbus-defence-space', 'compare/newsletters',
+  'compare/northrop-grumman-vs-l3harris-space', 'compare/payload-space',
+  'compare/planet-labs-vs-maxar', 'compare/quilty-analytics',
+  'compare/relativity-space-vs-firefly', 'compare/rocket-lab-vs-relativity-space',
+  'compare/satellite-buses', 'compare/satellites',
+  'compare/spacenexus-vs-bryce-tech', 'compare/spacex-vs-blue-origin',
+  'compare/spacex-vs-rocket-lab', 'compare/spacex-vs-ula',
+  'compare/starlink-vs-kuiper', 'compare/starlink-vs-oneweb',
+  'compare/virgin-galactic-vs-blue-origin',
+  'developer', 'developer/docs', 'developer/explorer',
+  'discover', 'faq',
+  'guide/how-satellite-tracking-works', 'guide/satellite-companies',
+  'guide/satellite-tracking-guide', 'guide/space-business-opportunities',
+  'guide/space-companies-directory', 'guide/space-economy-investment',
+  'guide/space-industry', 'guide/space-industry-market-size',
+  'guide/space-launch-cost-comparison', 'guide/space-launch-schedule-2026',
+  'guide/space-mining-guide', 'guide/space-regulatory-compliance',
+  'guide/itar-compliance-guide',
+  'launches', 'launch', 'live', 'market-segments',
+  'night-sky', 'night-sky-guide', 'press',
+  'regulation-explainers', 'reports', 'sectors',
+  'this-day-in-space', 'videos', 'whats-overhead', 'year-in-review',
+  'features', 'getting-started', 'case-studies', 'book-demo',
+  'enterprise', 'solutions', 'solutions/investors', 'solutions/analysts',
+  'solutions/engineers', 'solutions/executives', 'solutions/space-professionals',
+  'use-cases', 'careers', 'industry-scorecard', 'space-calendar',
+  'space-map', 'startup-directory', 'media-kit', 'newsletter',
+  'satellite-spotting', 'aurora-forecast', 'alternatives',
+  'learn/space-industry',
 ];
 
 let updated = 0;

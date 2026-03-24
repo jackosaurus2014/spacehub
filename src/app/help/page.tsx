@@ -2,6 +2,9 @@
 
 import { useState, useMemo } from 'react';
 import Link from 'next/link';
+import EmptyState from '@/components/ui/EmptyState';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 /* ------------------------------------------------------------------ */
 /*  FAQ data by category                                               */
@@ -344,33 +347,19 @@ export default function HelpCenterPage() {
 
         {/* ---- Category Cards ---- */}
         {filteredCategories.length === 0 ? (
-          <div className="text-center py-16">
-            <div className="w-16 h-16 bg-white/[0.06] rounded-full flex items-center justify-center mx-auto mb-4">
-              <svg
-                className="w-8 h-8 text-slate-400"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
+          <EmptyState
+            icon={<span className="text-4xl">🔍</span>}
+            title="No results found"
+            description="Try a different search term or browse all categories."
+            action={
+              <button
+                onClick={() => setSearchQuery('')}
+                className="text-blue-400 hover:text-blue-300 text-sm font-medium transition-colors"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-            </div>
-            <h3 className="text-lg font-semibold text-slate-100 mb-2">No results found</h3>
-            <p className="text-slate-400 mb-6">
-              Try a different search term or browse all categories.
-            </p>
-            <button
-              onClick={() => setSearchQuery('')}
-              className="text-blue-400 hover:text-blue-300 text-sm font-medium transition-colors"
-            >
-              Clear search
-            </button>
-          </div>
+                Clear search
+              </button>
+            }
+          />
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
             {filteredCategories.map((category) => {
@@ -471,6 +460,8 @@ export default function HelpCenterPage() {
                               <p className="text-sm text-slate-400 leading-relaxed pb-3 pl-1">
                                 {faq.answer}
                               </p>
+
+        <RelatedModules modules={PAGE_RELATIONS['help']} />
                             </div>
                           </div>
                         );

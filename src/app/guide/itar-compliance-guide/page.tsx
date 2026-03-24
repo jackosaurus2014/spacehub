@@ -3,6 +3,9 @@ import Link from 'next/link';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import GuideNavigation from '@/components/guide/GuideNavigation';
 import ReadingTime from '@/components/ui/ReadingTime';
+import RelatedModules from '@/components/ui/RelatedModules';
+import HowToSchema from '@/components/seo/HowToSchema';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 export const revalidate = 3600; // ISR: revalidate every hour
 
@@ -126,6 +129,19 @@ export default function ItarComplianceGuidePage() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema).replace(/</g, '\\u003c') }}
+      />
+
+      <HowToSchema
+        name="ITAR Compliance Guide"
+        description="How to navigate ITAR export control regulations for space industry companies"
+        steps={[
+          { name: 'Determine if ITAR applies to your company', text: 'Assess whether your products, services, or technical data fall under USML Category XV (Spacecraft and Related Articles) or have been moved to the Commerce Control List under EAR through the 2014 export control reform.' },
+          { name: 'Register with the DDTC', text: 'Complete mandatory registration with the State Department Directorate of Defense Trade Controls if your company manufactures, exports, or brokers defense articles or services listed on the USML (annual fee: $2,250 minimum).' },
+          { name: 'Obtain required export licenses and agreements', text: 'Apply for the appropriate authorization: permanent export licenses (DSP-5), temporary export licenses (DSP-73), Technical Assistance Agreements (TAAs) for defense services, or Manufacturing License Agreements (MLAs) for foreign production.' },
+          { name: 'Implement technical data controls', text: 'Establish a Technology Control Plan with physical and cybersecurity controls to prevent unauthorized access to ITAR-controlled data, including deemed export controls for non-US persons within the United States.' },
+          { name: 'Build an internal compliance program', text: 'Develop a comprehensive ITAR compliance program including an empowered compliance officer, written procedures, employee training, access controls, self-assessment audits, and voluntary disclosure protocols for violations.' },
+          { name: 'Stay current with regulatory developments', text: 'Monitor ongoing changes to ITAR and EAR regulations, CMMC cybersecurity requirements for defense contracts, and evolving enforcement actions to keep your compliance program up to date.' },
+        ]}
       />
 
       <div className="min-h-screen">
@@ -1008,6 +1024,8 @@ export default function ItarComplianceGuidePage() {
                   </Link>
                 </div>
               </section>
+
+              <RelatedModules modules={PAGE_RELATIONS['guide/itar-compliance-guide']} />
 
               {/* Guide Navigation */}
               <GuideNavigation currentSlug="itar-compliance-guide" />

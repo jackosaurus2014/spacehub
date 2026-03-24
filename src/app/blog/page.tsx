@@ -9,6 +9,8 @@ import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/Scr
 import ContentEngagementBadge from '@/components/ui/ContentEngagementBadge';
 import LaunchCountdownWidget from '@/components/LaunchCountdownWidget';
 import SpaceHistoryToday from '@/components/SpaceHistoryToday';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 function BlogItemListSchema() {
   const jsonLd = {
@@ -442,6 +444,8 @@ function BlogListingContent() {
                       </div>
                     </Link>
                   ))}
+
+        <RelatedModules modules={PAGE_RELATIONS['blog']} />
                 </div>
               </div>
             )}

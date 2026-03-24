@@ -7,6 +7,8 @@ import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import DataFreshness from '@/components/ui/DataFreshness';
 import { clientLogger } from '@/lib/client-logger';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 // Lazy-load the Communications tab (~730 lines, only visible when tab selected)
 const SpaceportsCommunicationsTab = dynamic(() => import('./SpaceportsCommunicationsTab'), {
@@ -1388,6 +1390,8 @@ function HeroStats({ activeSpaceports, emergingSpaceports, trafficData }: {
           </div>
           <div className="text-star-300 text-xs uppercase tracking-widest font-medium mt-1">
             {stat.label}
+
+        <RelatedModules modules={PAGE_RELATIONS['spaceports']} />
           </div>
         </div>
       ))}
@@ -2410,10 +2414,12 @@ function SpaceportDirectoryPage() {
         </ScrollReveal>
 
         {/* Tab Navigation */}
-        <div className="flex gap-2 mb-6 overflow-x-auto pb-1">
+        <div role="tablist" className="flex gap-2 mb-6 overflow-x-auto pb-1">
           {tabs.map((tab) => (
             <button
               key={tab.id}
+              role="tab"
+              aria-selected={activeTab === tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
                 activeTab === tab.id

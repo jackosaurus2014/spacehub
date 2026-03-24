@@ -7,6 +7,8 @@ import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import CompanySelector from '@/components/compare/CompanySelector';
 import CompanyComparisonTable from '@/components/compare/CompanyComparisonTable';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -245,6 +247,8 @@ function CompareCompaniesContent() {
                     {slugs.map((_, k) => (
                       <div key={k} className="h-4 flex-1 bg-white/[0.06] rounded animate-pulse" />
                     ))}
+
+        <RelatedModules modules={PAGE_RELATIONS['compare/companies']} />
                   </div>
                 </div>
               ))}

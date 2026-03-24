@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 export const metadata: Metadata = {
   title: 'Rocket Lab vs Relativity Space: Complete Comparison 2026',
@@ -141,6 +143,9 @@ export default function RocketLabVsRelativitySpace() {
           }).replace(/</g, '\\u003c'),
         }}
       />
-    </div>
+    
+
+        <RelatedModules modules={PAGE_RELATIONS['compare/rocket-lab-vs-relativity-space']} />
+      </div>
   );
 }

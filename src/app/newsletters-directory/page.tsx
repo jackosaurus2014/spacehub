@@ -3,6 +3,7 @@
 import React, { useState, useMemo } from 'react';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
+import EmptyState from '@/components/ui/EmptyState';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
@@ -751,15 +752,19 @@ export default function NewslettersDirectoryPage() {
           </div>
 
           {filteredNewsletters.length === 0 ? (
-            <div className="card p-12 text-center">
-              <p className="text-slate-400 mb-2">No newsletters match your search criteria.</p>
-              <button
-                onClick={() => { setSearchQuery(''); setActiveCategory('All'); }}
-                className="text-sm text-white/70 hover:text-white transition-colors"
-              >
-                Clear filters
-              </button>
-            </div>
+            <EmptyState
+              icon={<span className="text-4xl">📬</span>}
+              title="No newsletters found"
+              description="No newsletters match your search criteria."
+              action={
+                <button
+                  onClick={() => { setSearchQuery(''); setActiveCategory('All'); }}
+                  className="text-sm text-white/70 hover:text-white transition-colors"
+                >
+                  Clear filters
+                </button>
+              }
+            />
           ) : (
             <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredNewsletters.map((nl) => (

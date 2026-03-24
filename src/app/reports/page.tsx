@@ -9,6 +9,8 @@ import PremiumGate from '@/components/PremiumGate';
 import ExportPDFButton from '@/components/ui/ExportPDFButton';
 import { toast } from '@/lib/toast';
 import { sanitizeRenderedMarkdown } from '@/lib/sanitize';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 // ---------------------------------------------------------------------------
 // Types (mirroring report-templates.ts for the client)
@@ -774,6 +776,8 @@ function ReportsPageInner() {
             </div>
           </motion.div>
         </ScrollReveal>
+
+        <RelatedModules modules={PAGE_RELATIONS['reports']} />
         </div>
       </div>
     );

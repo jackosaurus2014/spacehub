@@ -78,7 +78,7 @@ function StoryForm() {
 
   if (storyStatus === 'success') {
     return (
-      <div className="text-center py-4">
+      <div className="text-center py-4" aria-live="polite">
         <p className="text-emerald-400 font-medium mb-2">Thank you for sharing your story!</p>
         <button
           onClick={() => setStoryStatus('idle')}
@@ -148,7 +148,7 @@ function StoryForm() {
         {storyStatus === 'submitting' ? 'Submitting...' : 'Share Your Story'}
       </button>
       {storyStatus === 'error' && (
-        <p role="alert" className="text-red-400 text-xs text-center">Something went wrong. Please try again.</p>
+        <p role="alert" aria-live="polite" className="text-red-400 text-xs text-center">Something went wrong. Please try again.</p>
       )}
     </form>
   );
@@ -282,7 +282,7 @@ export default function ContactPage() {
 
         <ScrollReveal><div className="max-w-2xl mx-auto">
           {status === 'success' ? (
-            <div className="card p-8 text-center">
+            <div className="card p-8 text-center" aria-live="polite">
               <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
                 <svg
                   className="w-8 h-8 text-green-400"
@@ -313,7 +313,7 @@ export default function ContactPage() {
             <div className="card p-8">
               <form onSubmit={handleSubmit} className="space-y-6">
                 {status === 'error' && (
-                  <div role="alert" className="bg-red-500/10 border border-red-500/50 text-red-400 px-4 py-3 rounded-lg text-sm">
+                  <div role="alert" aria-live="polite" className="bg-red-500/10 border border-red-500/50 text-red-400 px-4 py-3 rounded-lg text-sm">
                     {errorMessage}
                   </div>
                 )}
@@ -338,7 +338,7 @@ export default function ContactPage() {
                     aria-describedby={errors.name ? 'name-error' : undefined}
                   />
                   {errors.name && (
-                    <p id="name-error" className="text-red-400 text-sm mt-1">{errors.name}</p>
+                    <p id="name-error" aria-live="polite" className="text-red-400 text-sm mt-1">{errors.name}</p>
                   )}
                 </div>
 
@@ -363,7 +363,7 @@ export default function ContactPage() {
                     aria-describedby={errors.email ? 'email-error' : undefined}
                   />
                   {errors.email && (
-                    <p id="email-error" className="text-red-400 text-sm mt-1">{errors.email}</p>
+                    <p id="email-error" aria-live="polite" className="text-red-400 text-sm mt-1">{errors.email}</p>
                   )}
                 </div>
 
@@ -389,7 +389,7 @@ export default function ContactPage() {
                     ))}
                   </select>
                   {errors.subject && (
-                    <p id="subject-error" className="text-red-400 text-sm mt-1">{errors.subject}</p>
+                    <p id="subject-error" aria-live="polite" className="text-red-400 text-sm mt-1">{errors.subject}</p>
                   )}
                 </div>
 
@@ -413,7 +413,7 @@ export default function ContactPage() {
                     aria-describedby={errors.message ? 'message-error' : undefined}
                   />
                   {errors.message && (
-                    <p id="message-error" className="text-red-400 text-sm mt-1">{errors.message}</p>
+                    <p id="message-error" aria-live="polite" className="text-red-400 text-sm mt-1">{errors.message}</p>
                   )}
                 </div>
 

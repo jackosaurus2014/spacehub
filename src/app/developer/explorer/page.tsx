@@ -11,6 +11,8 @@ import {
   type OpenAPIEndpoint,
   type EndpointParameter,
 } from '@/lib/openapi-spec';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 // ============================================================
 // Constants
@@ -459,6 +461,8 @@ function ApiExplorerPageInner() {
                         )}
                       </div>
                     ))}
+
+        <RelatedModules modules={PAGE_RELATIONS['developer/explorer']} />
                   </div>
                 </div>
               )}

@@ -1,59 +1,54 @@
 // ─── Space Tycoon: Shipyard Construction Slots ──────────────────────────────
-// Players start with 1 active ship construction slot.
-// Additional slots unlocked via research and buildings.
+// Base shipyard slots come from corporation tier.
+// Additional slots unlocked via research.
 
 import type { GameState } from './types';
+import { getTierShipyardSlots, getTierDef } from './corporation-tiers';
 
-/** Base number of ships that can be under construction simultaneously */
-export const BASE_SHIPYARD_SLOTS = 1;
-/** Maximum possible shipyard slots */
-export const MAX_SHIPYARD_SLOTS = 4;
+/** Maximum possible shipyard slots (tier base + research bonuses) */
+export const MAX_SHIPYARD_SLOTS = 8;
 
 interface ShipyardSlotBonus {
   source: string;      // Research ID or building ID that grants this
-  type: 'research' | 'building' | 'prestige';
+  type: 'research' | 'building';
   label: string;
   slots: number;
 }
 
-/** All possible shipyard slot bonuses */
+/** All possible shipyard slot bonuses (on top of tier base) */
 const SHIPYARD_SLOT_BONUSES: ShipyardSlotBonus[] = [
   {
     source: 'modular_spacecraft',
     type: 'research',
     label: 'Modular Spacecraft research',
-    slots: 1,  // 1 → 2 slots
+    slots: 1,
   },
   {
     source: 'space_dock',
     type: 'research',
     label: 'Space Dock research',
-    slots: 1,  // 2 → 3 slots
+    slots: 1,
   },
   {
     source: 'automated_mining_fleet',
     type: 'research',
     label: 'Automated Mining Fleet research',
-    slots: 1,  // 3 → 4 slots
+    slots: 1,
   },
 ];
 
 /**
  * Calculate total shipyard slots available to the player.
- * Base: 1 slot. Max: 4 slots.
+ * Base comes from corporation tier. Research adds on top.
  */
 export function getShipyardSlots(state: GameState): number {
-  let slots = BASE_SHIPYARD_SLOTS;
+  const corpTier = state.corporationTier || 1;
+  let slots = getTierShipyardSlots(corpTier);
 
   for (const bonus of SHIPYARD_SLOT_BONUSES) {
     if (bonus.type === 'research' && state.completedResearch.includes(bonus.source)) {
       slots += bonus.slots;
     }
-  }
-
-  // Prestige bonus: +1 slot at prestige level 3+
-  if (state.prestige && state.prestige.level >= 3) {
-    slots += 1;
   }
 
   return Math.min(slots, MAX_SHIPYARD_SLOTS);
@@ -77,8 +72,10 @@ export function canBuildShip(state: GameState): boolean {
  * Get a breakdown of shipyard slot bonuses for display.
  */
 export function getShipyardBreakdown(state: GameState): { label: string; active: boolean }[] {
+  const corpTier = state.corporationTier || 1;
+  const tierDef = getTierDef(corpTier);
   const breakdown: { label: string; active: boolean }[] = [
-    { label: `Base shipyard: ${BASE_SHIPYARD_SLOTS} slot`, active: true },
+    { label: `${tierDef.name} tier base: ${tierDef.shipyardSlots} slot${tierDef.shipyardSlots > 1 ? 's' : ''}`, active: true },
   ];
 
   for (const bonus of SHIPYARD_SLOT_BONUSES) {
@@ -87,12 +84,6 @@ export function getShipyardBreakdown(state: GameState): { label: string; active:
       label: `+${bonus.slots} from ${bonus.label}`,
       active,
     });
-  }
-
-  if (state.prestige && state.prestige.level >= 3) {
-    breakdown.push({ label: '+1 from Prestige Level 3', active: true });
-  } else {
-    breakdown.push({ label: '+1 from Prestige Level 3', active: false });
   }
 
   return breakdown;

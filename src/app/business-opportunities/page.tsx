@@ -21,6 +21,7 @@ import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import RelatedModules from '@/components/ui/RelatedModules';
+import EmptyState from '@/components/ui/EmptyState';
 import ExportButton from '@/components/ui/ExportButton';
 import { ContractTicker, ContractsList } from '@/components/contracts';
 import { toast } from '@/lib/toast';
@@ -597,37 +598,33 @@ function BusinessOpportunitiesContent() {
             <LoadingSpinner size="lg" />
           </div>
         ) : opportunities.length === 0 && !stats?.total ? (
-          <div className="card p-12 text-center">
-            <span className="text-6xl block mb-4">💼</span>
-            <h2 className="text-2xl font-semibold text-white mb-2">
-              No Opportunities Yet
-            </h2>
-            <p className="text-slate-400 mb-6">
-              Initialize the database with curated space industry opportunities.
-            </p>
-            <button
-              onClick={handleInitialize}
-              disabled={initializing}
-              className="btn-primary"
-            >
-              {initializing ? (
-                <span className="flex items-center gap-2">
-                  <LoadingSpinner size="sm" />
-                  Initializing...
-                </span>
-              ) : (
-                'Load Opportunities'
-              )}
-            </button>
-          </div>
+          <EmptyState
+            icon={<span className="text-4xl">💼</span>}
+            title="No Opportunities Yet"
+            description="Initialize the database with curated space industry opportunities."
+            action={
+              <button
+                onClick={handleInitialize}
+                disabled={initializing}
+                className="btn-primary"
+              >
+                {initializing ? (
+                  <span className="flex items-center gap-2">
+                    <LoadingSpinner size="sm" />
+                    Initializing...
+                  </span>
+                ) : (
+                  'Load Opportunities'
+                )}
+              </button>
+            }
+          />
         ) : opportunities.length === 0 ? (
-          <div className="card p-12 text-center">
-            <span className="text-6xl block mb-4">🔍</span>
-            <h2 className="text-2xl font-semibold text-white mb-2">No Results</h2>
-            <p className="text-slate-400">
-              No opportunities match your filters. Try adjusting your criteria.
-            </p>
-          </div>
+          <EmptyState
+            icon={<span className="text-4xl">🔍</span>}
+            title="No Results"
+            description="No opportunities match your filters. Try adjusting your criteria."
+          />
         ) : (
           <StaggerContainer className="space-y-0">
             {opportunities.map((opp) => (

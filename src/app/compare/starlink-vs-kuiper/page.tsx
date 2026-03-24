@@ -1,5 +1,8 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 export const metadata: Metadata = {
   title: 'Starlink vs Project Kuiper: Complete Comparison 2026',
@@ -34,6 +37,7 @@ const COMPARISON_DATA = [
 export default function Page() {
   return (
     <div className="container mx-auto px-4 py-12 max-w-5xl">
+      <BreadcrumbSchema items={[{ name: 'Home', href: '/' }, { name: 'Compare', href: '/compare' }, { name: 'Starlink vs Kuiper' }]} />
       <nav className="text-xs text-zinc-500 mb-4">
         <Link href="/" className="hover:text-white">Home</Link>
         <span className="mx-2">/</span>
@@ -122,6 +126,9 @@ export default function Page() {
         datePublished: '2026-03-22', dateModified: '2026-03-22',
         url: 'https://spacenexus.us/compare/starlink-vs-kuiper',
       }).replace(/</g, '\\u003c') }} />
-    </div>
+    
+
+        <RelatedModules modules={PAGE_RELATIONS['compare/starlink-vs-kuiper']} />
+      </div>
   );
 }

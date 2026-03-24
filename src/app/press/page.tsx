@@ -3,6 +3,8 @@
 import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 /* metadata is in layout.tsx */
 
@@ -558,6 +560,8 @@ export default function PressPage() {
             </Link>
           </section>
         </div>
+
+        <RelatedModules modules={PAGE_RELATIONS['press']} />
       </div>
     </div>
   );

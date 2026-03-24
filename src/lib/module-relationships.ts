@@ -143,6 +143,12 @@ const MODULES: Record<string, RelatedModuleConfig> = {
   spaceMap: { name: 'Space Industry Map', description: 'Industry sector map', href: '/space-map', icon: '🗺️' },
   startupDirectory: { name: 'Startup Directory', description: 'Space startups', href: '/startup-directory', icon: '🚀' },
 
+  // ── Imagery ──
+  imagery: { name: 'Imagery Marketplace', description: 'Satellite imagery', href: '/imagery-providers', icon: '📷' },
+
+  // ── Help & Support ──
+  help: { name: 'Help Center', description: 'Guides & support', href: '/help', icon: '❓' },
+
   // ── Transparency ──
   dataSources: { name: 'Data Sources', description: 'Data transparency', href: '/data-sources', icon: '🔍' },
 
@@ -395,6 +401,103 @@ export const PAGE_RELATIONS: Record<string, RelatedModuleConfig[]> = {
 
   // ── Alternatives & Competitors ──
   'alternatives': [MODULES.marketIntel, MODULES.companyProfiles, MODULES.tools, MODULES.satellites, MODULES.pricing],
+
+  // ── Blog pages ──
+  'blog': [MODULES.news, MODULES.aiInsights, MODULES.blogs, MODULES.resources, MODULES.podcasts],
+  'blog/[slug]': [MODULES.news, MODULES.blogs, MODULES.aiInsights, MODULES.companyProfiles, MODULES.marketIntel],
+
+  // ── Compare hub & comparison pages ──
+  'compare': [MODULES.marketIntel, MODULES.companyProfiles, MODULES.launchVehicles, MODULES.satellites, MODULES.tools],
+  'compare/astra-vs-virgin-orbit': [MODULES.launchVehicles, MODULES.launchEconomics, MODULES.companyProfiles, MODULES.startupTracker],
+  'compare/bloomberg-terminal': [MODULES.marketIntel, MODULES.companyProfiles, MODULES.spaceEconomy, MODULES.industryTrends],
+  'compare/boeing-vs-lockheed-space': [MODULES.companyProfiles, MODULES.spaceDefense, MODULES.procurement, MODULES.contractAwards],
+  'compare/companies': [MODULES.companyProfiles, MODULES.companyResearch, MODULES.marketIntel, MODULES.reportCards],
+  'compare/iridium-vs-globalstar': [MODULES.constellations, MODULES.satellites, MODULES.spaceComms, MODULES.companyProfiles],
+  'compare/launch-vehicles': [MODULES.launchVehicles, MODULES.launchEconomics, MODULES.launchCostCalc, MODULES.launchSites],
+  'compare/maxar-vs-airbus-defence-space': [MODULES.satellites, MODULES.companyProfiles, MODULES.manufacturing, MODULES.imagery],
+  'compare/newsletters': [MODULES.newsletters, MODULES.blogs, MODULES.podcasts, MODULES.resources],
+  'compare/northrop-grumman-vs-l3harris-space': [MODULES.companyProfiles, MODULES.spaceDefense, MODULES.procurement, MODULES.satellites],
+  'compare/payload-space': [MODULES.marketIntel, MODULES.companyProfiles, MODULES.news, MODULES.aiInsights],
+  'compare/planet-labs-vs-maxar': [MODULES.satellites, MODULES.companyProfiles, MODULES.imagery, MODULES.constellations],
+  'compare/quilty-analytics': [MODULES.marketIntel, MODULES.companyProfiles, MODULES.industryTrends, MODULES.spaceEconomy],
+  'compare/relativity-space-vs-firefly': [MODULES.launchVehicles, MODULES.startupTracker, MODULES.companyProfiles, MODULES.launchEconomics],
+  'compare/rocket-lab-vs-relativity-space': [MODULES.launchVehicles, MODULES.startupTracker, MODULES.companyProfiles, MODULES.launchEconomics],
+  'compare/satellite-buses': [MODULES.satellites, MODULES.constellationDesigner, MODULES.powerBudget, MODULES.blueprints],
+  'compare/satellites': [MODULES.satellites, MODULES.constellations, MODULES.orbitalSlots, MODULES.spaceComms],
+  'compare/spacenexus-vs-bryce-tech': [MODULES.marketIntel, MODULES.companyProfiles, MODULES.spaceEconomy, MODULES.tools],
+  'compare/spacex-vs-blue-origin': [MODULES.launchVehicles, MODULES.companyProfiles, MODULES.launchEconomics, MODULES.spaceCapital],
+  'compare/spacex-vs-rocket-lab': [MODULES.launchVehicles, MODULES.companyProfiles, MODULES.launchEconomics, MODULES.startupTracker],
+  'compare/spacex-vs-ula': [MODULES.launchVehicles, MODULES.companyProfiles, MODULES.launchEconomics, MODULES.spaceDefense],
+  'compare/starlink-vs-kuiper': [MODULES.constellations, MODULES.satellites, MODULES.spaceComms, MODULES.companyProfiles],
+  'compare/starlink-vs-oneweb': [MODULES.constellations, MODULES.satellites, MODULES.spaceComms, MODULES.companyProfiles],
+  'compare/virgin-galactic-vs-blue-origin': [MODULES.spaceTourism, MODULES.companyProfiles, MODULES.launchVehicles, MODULES.spaceCapital],
+
+  // ── Developer portal ──
+  'developer': [MODULES.tools, MODULES.satellites, MODULES.marketIntel, MODULES.companyProfiles, MODULES.pricing],
+  'developer/docs': [MODULES.tools, MODULES.satellites, MODULES.marketIntel, MODULES.companyProfiles],
+  'developer/explorer': [MODULES.tools, MODULES.satellites, MODULES.marketIntel, MODULES.companyProfiles],
+
+  // ── Discover ──
+  'discover': [MODULES.news, MODULES.satellites, MODULES.marketIntel, MODULES.companyProfiles, MODULES.spaceEvents],
+
+  // ── FAQ ──
+  'faq': [MODULES.help, MODULES.glossary, MODULES.learn, MODULES.pricing],
+
+  // ── Guides ──
+  'guide/how-satellite-tracking-works': [MODULES.satellites, MODULES.orbitGuide, MODULES.satelliteSpotting, MODULES.constellations, MODULES.learn],
+  'guide/satellite-companies': [MODULES.companyProfiles, MODULES.satellites, MODULES.constellations, MODULES.startupTracker, MODULES.marketIntel],
+  'guide/satellite-tracking-guide': [MODULES.satellites, MODULES.satelliteSpotting, MODULES.orbitGuide, MODULES.constellations, MODULES.learn],
+  'guide/space-business-opportunities': [MODULES.businessOps, MODULES.marketplace, MODULES.procurement, MODULES.supplyChain, MODULES.fundingOpportunities],
+  'guide/space-companies-directory': [MODULES.companyProfiles, MODULES.startupDirectory, MODULES.companyResearch, MODULES.marketIntel, MODULES.reportCards],
+  'guide/space-economy-investment': [MODULES.spaceCapital, MODULES.fundingTracker, MODULES.investors, MODULES.spaceEconomy, MODULES.investmentThesis],
+  'guide/space-industry': [MODULES.marketIntel, MODULES.spaceEconomy, MODULES.industryTrends, MODULES.companyProfiles, MODULES.learn],
+  'guide/space-industry-market-size': [MODULES.marketSizing, MODULES.spaceEconomy, MODULES.industryTrends, MODULES.marketIntel, MODULES.govBudgets],
+  'guide/space-launch-cost-comparison': [MODULES.launchCostCalc, MODULES.launchVehicles, MODULES.launchEconomics, MODULES.orbitalCosts, MODULES.missionCost],
+  'guide/space-launch-schedule-2026': [MODULES.launchManifest, MODULES.launchWindows, MODULES.launchVehicles, MODULES.spaceCalendar, MODULES.launchSites],
+  'guide/space-mining-guide': [MODULES.spaceMining, MODULES.isru, MODULES.asteroidWatch, MODULES.materialsDB, MODULES.solarExploration],
+  'guide/space-regulatory-compliance': [MODULES.compliance, MODULES.regulatoryTracker, MODULES.spaceLaw, MODULES.licensingChecker, MODULES.exportClassifications],
+  'guide/itar-compliance-guide': [MODULES.exportClassifications, MODULES.compliance, MODULES.regulatoryRisk, MODULES.spaceLaw, MODULES.licensingChecker],
+
+  // ── Launch pages ──
+  'launches': [MODULES.launchManifest, MODULES.launchVehicles, MODULES.launchWindows, MODULES.launchSites, MODULES.missionPipeline],
+  'launch': [MODULES.launchManifest, MODULES.launchVehicles, MODULES.launchWindows, MODULES.launchSites],
+  'launch/[eventId]': [MODULES.launchManifest, MODULES.launchVehicles, MODULES.launchWindows, MODULES.launchSites],
+
+  // ── Live tracking ──
+  'live': [MODULES.satellites, MODULES.launchManifest, MODULES.spaceWeather, MODULES.news, MODULES.spaceEvents],
+
+  // ── Market segments ──
+  'market-segments': [MODULES.marketIntel, MODULES.marketSizing, MODULES.industryTrends, MODULES.spaceEconomy, MODULES.marketMap],
+
+  // ── Night sky ──
+  'night-sky': [MODULES.satelliteSpotting, MODULES.auroraForecast, MODULES.spaceWeather, MODULES.satellites, MODULES.learn],
+  'night-sky-guide': [MODULES.satelliteSpotting, MODULES.auroraForecast, MODULES.spaceWeather, MODULES.satellites, MODULES.orbitGuide],
+
+  // ── Press ──
+  'press': [MODULES.news, MODULES.blogs, MODULES.companyProfiles, MODULES.marketIntel],
+
+  // ── Regulation explainers ──
+  'regulation-explainers': [MODULES.compliance, MODULES.spaceLaw, MODULES.regulations, MODULES.regulatoryTracker, MODULES.regulatoryAgencies],
+  'regulation-explainers/[slug]': [MODULES.compliance, MODULES.spaceLaw, MODULES.regulations, MODULES.regulatoryTracker, MODULES.regulatoryAgencies],
+
+  // ── Reports ──
+  'reports': [MODULES.marketIntel, MODULES.industryTrends, MODULES.spaceEconomy, MODULES.companyProfiles, MODULES.news],
+
+  // ── Sectors ──
+  'sectors': [MODULES.marketIntel, MODULES.companyProfiles, MODULES.industryTrends, MODULES.marketMap, MODULES.ecosystemMap],
+  'sectors/[slug]': [MODULES.marketIntel, MODULES.companyProfiles, MODULES.industryTrends, MODULES.marketMap],
+
+  // ── This Day in Space ──
+  'this-day-in-space': [MODULES.timeline, MODULES.missionHeritage, MODULES.news, MODULES.learn, MODULES.spaceAgencies],
+
+  // ── Videos ──
+  'videos': [MODULES.news, MODULES.podcasts, MODULES.blogs, MODULES.resources, MODULES.learn],
+
+  // ── What's Overhead ──
+  'whats-overhead': [MODULES.satellites, MODULES.satelliteSpotting, MODULES.spaceWeather, MODULES.orbitGuide, MODULES.constellations],
+
+  // ── Year in Review ──
+  'year-in-review': [MODULES.spaceEconomy, MODULES.industryTrends, MODULES.missionStats, MODULES.fundingTracker, MODULES.govBudgets],
 };
 
 // Helper to get related modules for a page

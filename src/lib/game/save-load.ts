@@ -5,6 +5,9 @@
 import type { GameState } from './types';
 import { SAVE_KEY, SAVE_VERSION, STARTING_MONEY, STARTING_YEAR, STARTING_MONEY_PRO, STARTING_MONEY_ENTERPRISE } from './constants';
 import { createAllNPCs } from './npc-companies';
+import { DEFAULT_LEGACY, LEGACY_MILESTONES, STRETCH_LEGACIES, getLegacyPower, getLegacyDisplayTier } from './legacy-system';
+import type { LegacyState } from './legacy-system';
+import { checkCorporationTier } from './corporation-tiers';
 
 /** Create a fresh new game state */
 export function getNewGameState(): GameState {
@@ -71,6 +74,12 @@ export function getNewGameState(): GameState {
     servicePriceMultipliers: {},
     // V5 fields — mini-activities
     miniActivityCooldowns: {},
+    // V6 fields — legacy system & corporation tiers
+    legacy: { ...DEFAULT_LEGACY },
+    corporationTier: 1,
+    // V7 fields — megastructures & reputation
+    megastructures: [],
+    reputation: 0,
   };
 }
 
@@ -130,6 +139,64 @@ export function loadGame(): GameState | null {
     if (!state.miniActivityCooldowns) state.miniActivityCooldowns = {};
     if (!state.miniActivitySlots) state.miniActivitySlots = [];
     if (!state.miniActivityLastSpawnMs) state.miniActivityLastSpawnMs = 0;
+
+    // V6 fields — Legacy system & Corporation tiers
+    if (!state.legacy) {
+      // Migrate prestige -> legacy if player had prestige
+      if (state.prestige && state.prestige.level > 0) {
+        const prestigeLevel = state.prestige.level || 0;
+        const milestonesPerPrestige = 4;
+        const totalToGrant = Math.min(prestigeLevel * milestonesPerPrestige, 40);
+        const milestonesToGrant: string[] = [];
+        for (let i = 0; i < totalToGrant && i < LEGACY_MILESTONES.length; i++) {
+          milestonesToGrant.push(LEGACY_MILESTONES[i].id);
+        }
+
+        // Convert legacy points into stretch legacy levels
+        const legacyPoints = state.prestige.legacyPoints || 0;
+        const totalStretchLevels = Math.floor(legacyPoints / 15);
+        const stretchLevels: Record<string, number> = {};
+        const stretchIds = STRETCH_LEGACIES.map(s => s.id);
+        for (let i = 0; i < totalStretchLevels; i++) {
+          const id = stretchIds[i % stretchIds.length];
+          stretchLevels[id] = (stretchLevels[id] || 0) + 1;
+        }
+
+        const newLegacy: LegacyState = {
+          completedMilestones: milestonesToGrant,
+          stretchLevels,
+          trackers: {
+            totalResourcesMined: Object.values(state.resources || {}).reduce((a, b) => a + b, 0),
+            totalContractsCompleted: (state.completedContracts || []).length,
+            totalShipsBuilt: (state.ships || []).filter(s => s.isBuilt).length,
+            totalBuildingsCompleted: state.buildings.filter(b => b.isComplete).length,
+          },
+          legacyPower: 0,
+          displayTier: 'Pioneer',
+        };
+        newLegacy.legacyPower = getLegacyPower(newLegacy);
+        newLegacy.displayTier = getLegacyDisplayTier(newLegacy);
+        state.legacy = newLegacy;
+      } else {
+        // Fresh legacy state, initialize trackers from current game state
+        state.legacy = {
+          ...DEFAULT_LEGACY,
+          trackers: {
+            totalResourcesMined: Object.values(state.resources || {}).reduce((a, b) => a + b, 0),
+            totalContractsCompleted: (state.completedContracts || []).length,
+            totalShipsBuilt: (state.ships || []).filter(s => s.isBuilt).length,
+            totalBuildingsCompleted: state.buildings.filter(b => b.isComplete).length,
+          },
+        };
+      }
+    }
+    if (!state.corporationTier) {
+      state.corporationTier = checkCorporationTier(state);
+    }
+
+    // V7 fields — megastructures & reputation
+    if (!state.megastructures) state.megastructures = [];
+    if (state.reputation === undefined || state.reputation === null) state.reputation = 0;
 
     state.tickSpeed = 1; // Always 1x for fairness
     return state;

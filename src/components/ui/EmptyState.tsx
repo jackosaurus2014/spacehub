@@ -18,7 +18,7 @@ interface EmptyStateProps {
 
 export default function EmptyState({ icon, title, description, action, suggestions }: EmptyStateProps) {
   return (
-    <div className="relative overflow-hidden rounded-xl card">
+    <div className="relative overflow-hidden rounded-xl card" aria-live="polite">
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-white/5 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '3s' }} />
         <div className="absolute bottom-1/4 right-1/4 w-48 h-48 bg-purple-500/5 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '4s', animationDelay: '1s' }} />

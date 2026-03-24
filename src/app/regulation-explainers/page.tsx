@@ -8,6 +8,8 @@ import ScrollReveal from '@/components/ui/ScrollReveal';
 import { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import Link from 'next/link';
 import { clientLogger } from '@/lib/client-logger';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 const AGENCIES = ['FCC', 'FAA', 'DOD', 'NOAA', 'FTC', 'NASA', 'DOC', 'State'];
 const CATEGORIES = [
@@ -206,6 +208,8 @@ function ExplainersContent() {
             </button>
           </div>
         )}
+
+        <RelatedModules modules={PAGE_RELATIONS['regulation-explainers']} />
       </div>
     </div>
   );

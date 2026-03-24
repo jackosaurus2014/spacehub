@@ -11,6 +11,8 @@ import { clientLogger } from '@/lib/client-logger';
 import InvestorActivityBadge from '@/components/investors/InvestorActivityBadge';
 import EmptyState from '@/components/ui/EmptyState';
 import type { InvestorActivityResult } from '@/lib/investor-sentiment';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 // ────────────────────────────────────────
 // Types
@@ -189,6 +191,8 @@ function InvestorsPageInner() {
       <div className="min-h-screen bg-[#0B0F1A] text-white p-6">
         <div className="max-w-7xl mx-auto">
           <LoadingSpinner />
+
+        <RelatedModules modules={PAGE_RELATIONS['investors']} />
         </div>
       </div>
     );

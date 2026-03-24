@@ -1,5 +1,6 @@
 'use client';
 
+import { memo } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { getCategoryIcon, getCategoryLabel, formatPrice, RFQ_STATUSES } from '@/lib/marketplace-types';
@@ -24,7 +25,7 @@ interface RFQCardProps {
   index?: number;
 }
 
-export default function RFQCard({ rfq, index = 0 }: RFQCardProps) {
+const RFQCard = memo(function RFQCard({ rfq, index = 0 }: RFQCardProps) {
   const statusInfo = RFQ_STATUSES[rfq.status as keyof typeof RFQ_STATUSES] || RFQ_STATUSES.open;
   const daysLeft = rfq.deadline
     ? Math.max(0, Math.ceil((new Date(rfq.deadline).getTime() - Date.now()) / (1000 * 60 * 60 * 24)))
@@ -88,4 +89,6 @@ export default function RFQCard({ rfq, index = 0 }: RFQCardProps) {
       </Link>
     </motion.div>
   );
-}
+});
+
+export default RFQCard;

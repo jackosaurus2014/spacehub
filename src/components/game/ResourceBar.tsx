@@ -11,6 +11,9 @@ import { getRevenueMultiplier as getUpgradeRevenueMultiplier, getMaintenanceMult
 import { getActiveMultipliers } from '@/lib/game/random-events';
 import { SHIP_MAP } from '@/lib/game/ships';
 import { toggleMute, isMuted, initAudio, toggleAmbient, isAmbientPlaying } from '@/lib/game/sound-engine';
+import { getTierDef } from '@/lib/game/corporation-tiers';
+import { getLegacyBonuses, DEFAULT_LEGACY } from '@/lib/game/legacy-system';
+import { getTierBonuses } from '@/lib/game/corporation-tiers';
 
 interface ResourceBarProps {
   state: GameState;
@@ -65,8 +68,13 @@ export default function ResourceBar({ state }: ResourceBarProps) {
   const workforce = state.workforce || { engineers: 0, scientists: 0, miners: 0, operators: 0 };
   const wfBonuses = getWorkforceBonuses(workforce);
   const resBonuses = getResearchBonuses(state.completedResearch);
-  const prestigeRevMult = state.prestige?.permanentBonuses?.revenueMultiplier || 1;
+  const legacyBonuses = getLegacyBonuses(state.legacy || DEFAULT_LEGACY);
+  const tierBonuses = getTierBonuses(state.corporationTier || 1);
   const multipliers = getActiveMultipliers(state);
+
+  // Corporation tier info for badge
+  const corpTier = state.corporationTier || 1;
+  const tierDef = getTierDef(corpTier);
 
   let revenue = 0, costs = 0;
   for (const svc of state.activeServices) {
@@ -76,15 +84,15 @@ export default function ResourceBar({ state }: ResourceBarProps) {
     const upgradeBoost = getUpgradeRevenueMultiplier(linkedBld?.upgradeLevel || 0);
     const supplyMult = (state.servicePriceMultipliers || {})[svc.definitionId] ?? 1.0;
     revenue += def.revenuePerMonth * svc.revenueMultiplier * multipliers.revenueMultiplier * upgradeBoost
-      * (1 + wfBonuses.serviceRevenue) * (1 + resBonuses.serviceRevenueBonus) * prestigeRevMult * supplyMult;
-    costs += def.operatingCostPerMonth * multipliers.costMultiplier;
+      * (1 + wfBonuses.serviceRevenue) * (1 + resBonuses.serviceRevenueBonus) * legacyBonuses.revenueMultiplier * (1 + tierBonuses.revenueBonus) * supplyMult;
+    costs += def.operatingCostPerMonth * multipliers.costMultiplier * legacyBonuses.costMultiplier * (1 - tierBonuses.maintenanceReduction);
   }
   for (const bld of state.buildings) {
     if (!bld.isComplete) continue;
     const def = BUILDING_MAP.get(bld.definitionId);
     if (!def) continue;
     const maintMult = getMaintenanceMultiplier(bld.upgradeLevel || 0);
-    costs += def.maintenanceCostPerMonth * multipliers.costMultiplier * maintMult * (1 - resBonuses.maintenanceReduction);
+    costs += def.maintenanceCostPerMonth * multipliers.costMultiplier * maintMult * (1 - resBonuses.maintenanceReduction) * legacyBonuses.costMultiplier * (1 - tierBonuses.maintenanceReduction);
   }
   // Workforce payroll
   costs += getMonthlyPayroll(workforce);
@@ -123,6 +131,15 @@ export default function ResourceBar({ state }: ResourceBarProps) {
               : 'bg-red-500/10 text-red-400 border border-red-500/20'
           }`}>
             {net >= 0 ? '▲' : '▼'} {formatMoney(Math.abs(net))}/mo
+          </div>
+          {/* Corporation Tier Badge */}
+          <div
+            className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-semibold border"
+            style={{ borderColor: `${tierDef.color}40`, background: `${tierDef.color}15`, color: tierDef.color }}
+            title={`Corporation Tier ${corpTier}: ${tierDef.name}`}
+          >
+            <span>{tierDef.icon}</span>
+            <span className="hidden sm:inline">{tierDef.name}</span>
           </div>
         </div>
 

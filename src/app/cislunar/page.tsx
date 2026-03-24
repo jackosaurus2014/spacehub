@@ -1190,10 +1190,12 @@ function GatewayTab() {
 
       {/* Sub-tab Navigation */}
       <div className="border-b border-white/[0.06] relative">
-        <div className="flex gap-1 overflow-x-auto scrollbar-hide">
+        <div role="tablist" className="flex gap-1 overflow-x-auto scrollbar-hide">
           {subTabs.map((tab) => (
             <button
               key={tab.id}
+              role="tab"
+              aria-selected={gatewaySubTab === tab.id}
               onClick={() => setGatewaySubTab(tab.id)}
               className={`px-4 py-2.5 min-h-[44px] text-xs font-medium whitespace-nowrap border-b-2 transition-colors ${
                 gatewaySubTab === tab.id
@@ -1616,10 +1618,12 @@ function CislunarEcosystemContent() {
 
         {/* Tab Navigation */}
         <ScrollReveal delay={0.1}><div className="border-b border-white/[0.06] mb-8">
-          <div className="flex gap-1 overflow-x-auto">
+          <div role="tablist" className="flex gap-1 overflow-x-auto">
             {TABS.map((tab) => (
               <button
                 key={tab.id}
+                role="tab"
+                aria-selected={activeTab === tab.id}
                 onClick={() => setActiveTab(tab.id)}
                 className={`px-4 py-2.5 text-sm font-medium whitespace-nowrap border-b-2 transition-colors ${
                   activeTab === tab.id

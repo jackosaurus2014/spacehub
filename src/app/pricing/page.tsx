@@ -14,8 +14,11 @@ import AnimatedCounter from '@/components/ui/AnimatedCounter';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import FAQSchema from '@/components/seo/FAQSchema';
+import ProductSchema from '@/components/seo/ProductSchema';
 import StickyMobileCTA from '@/components/mobile/StickyMobileCTA';
 import { trackGA4Event } from '@/lib/analytics';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 const PRICING_FAQ = [
   { question: 'What is SpaceNexus?', answer: 'SpaceNexus is a comprehensive space industry intelligence platform that provides real-time data on satellite tracking, launch schedules, space stocks, regulatory compliance, and 200+ company profiles across 30+ modules.' },
@@ -77,6 +80,8 @@ function TrialPreview() {
         <p className="text-[10px] text-slate-500 text-center mt-1 pb-1">
           No credit card required &middot; Cancel anytime
         </p>
+
+        <RelatedModules modules={PAGE_RELATIONS['pricing']} />
       </div>
     </div>
   );
@@ -593,68 +598,35 @@ function PricingPageContent() {
       <FAQSchema items={PRICING_FAQ} />
 
       {/* Product structured data for each pricing tier */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify([
-            {
-              '@context': 'https://schema.org',
-              '@type': 'Product',
-              name: 'SpaceNexus Explorer',
-              description: 'Free tier of SpaceNexus space industry intelligence platform. Includes news feeds, satellite tracking, mission countdowns, and public data.',
-              brand: { '@type': 'Brand', name: 'SpaceNexus' },
-              offers: {
-                '@type': 'Offer',
-                price: '0',
-                priceCurrency: 'USD',
-                availability: 'https://schema.org/InStock',
-                url: 'https://spacenexus.us/pricing',
-              },
-            },
-            {
-              '@context': 'https://schema.org',
-              '@type': 'Product',
-              name: 'SpaceNexus Professional',
-              description: 'Professional tier with unlimited articles, deal flow database, executive move tracker, supply chain intelligence, full company profiles, and ad-free experience.',
-              brand: { '@type': 'Brand', name: 'SpaceNexus' },
-              offers: {
-                '@type': 'Offer',
-                price: '19.99',
-                priceCurrency: 'USD',
-                availability: 'https://schema.org/InStock',
-                url: 'https://spacenexus.us/pricing',
-                priceSpecification: {
-                  '@type': 'UnitPriceSpecification',
-                  price: '19.99',
-                  priceCurrency: 'USD',
-                  unitCode: 'MON',
-                  billingDuration: { '@type': 'QuantitativeValue', value: 1, unitCode: 'MON' },
-                },
-              },
-            },
-            {
-              '@context': 'https://schema.org',
-              '@type': 'Product',
-              name: 'SpaceNexus Enterprise',
-              description: 'Enterprise tier with AI-powered intelligence reports, API access, custom dashboards, webhook integrations, patent intelligence, procurement intelligence, and dedicated account manager.',
-              brand: { '@type': 'Brand', name: 'SpaceNexus' },
-              offers: {
-                '@type': 'Offer',
-                price: '49.99',
-                priceCurrency: 'USD',
-                availability: 'https://schema.org/InStock',
-                url: 'https://spacenexus.us/pricing',
-                priceSpecification: {
-                  '@type': 'UnitPriceSpecification',
-                  price: '49.99',
-                  priceCurrency: 'USD',
-                  unitCode: 'MON',
-                  billingDuration: { '@type': 'QuantitativeValue', value: 1, unitCode: 'MON' },
-                },
-              },
-            },
-          ]).replace(/</g, '\\u003c'),
-        }}
+      <ProductSchema
+        name="SpaceNexus Free"
+        description="Free space industry intelligence with basic features"
+        url="/pricing"
+        brand="SpaceNexus"
+        category="Software"
+        price="0"
+        priceCurrency="USD"
+        availability="InStock"
+      />
+      <ProductSchema
+        name="SpaceNexus Pro"
+        description="Professional space industry intelligence with advanced analytics and API access"
+        url="/pricing"
+        brand="SpaceNexus"
+        category="Software"
+        price="29"
+        priceCurrency="USD"
+        availability="InStock"
+      />
+      <ProductSchema
+        name="SpaceNexus Enterprise"
+        description="Enterprise space industry platform with unlimited access, priority support, and custom integrations"
+        url="/pricing"
+        brand="SpaceNexus"
+        category="Software"
+        price="99"
+        priceCurrency="USD"
+        availability="InStock"
       />
 
       <div className="container mx-auto px-4">

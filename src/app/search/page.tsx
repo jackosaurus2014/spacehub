@@ -643,6 +643,7 @@ function SearchContent() {
         {!loading && query && (
           <button
             onClick={() => setQuery('')}
+            aria-label="Clear search"
             className="absolute inset-y-0 right-0 flex items-center pr-5 text-star-300 hover:text-white/90 transition-colors"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -745,7 +746,7 @@ function SearchContent() {
           </button>
 
           {hasSearched && !loading && (
-            <span className="text-sm text-star-300">
+            <span className="text-sm text-star-300" aria-live="polite">
               {totalResults} {totalResults === 1 ? 'result' : 'results'} found
               {searchMethod === 'fts' && (
                 <span className="ml-2 text-xs px-1.5 py-0.5 rounded bg-white/5 text-slate-300 border border-white/10">
@@ -873,7 +874,9 @@ function SearchContent() {
         <main className="flex-1 min-w-0">
           {/* Loading State */}
           {loading && (
-            <SearchResultSkeleton />
+            <div aria-live="polite" aria-busy="true">
+              <SearchResultSkeleton />
+            </div>
           )}
 
           {/* Empty query state */}

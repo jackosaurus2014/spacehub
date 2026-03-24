@@ -7,6 +7,8 @@ import ScrollReveal from '@/components/ui/ScrollReveal';
 import { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import { toast } from '@/lib/toast';
 import { extractApiError } from '@/lib/errors';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 const sponsorshipTiers = [
   {
@@ -436,6 +438,8 @@ export default function AdvertisePage() {
             )}
           </div>
         </ScrollReveal>
+
+        <RelatedModules modules={PAGE_RELATIONS['advertise']} />
       </div>
     </div>
   );

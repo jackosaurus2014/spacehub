@@ -12,6 +12,8 @@ import { clientLogger } from '@/lib/client-logger';
 import EmptyState from '@/components/ui/EmptyState';
 import ReferenceDesigns from '@/components/blueprints/ReferenceDesigns';
 import MissionPlanner from '@/components/blueprints/MissionPlanner';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 // ────────────────────────────────────────
 // Types
@@ -654,6 +656,8 @@ function BlueprintDetailModal({
                       {new URL(url).hostname}
                     </a>
                   ))}
+
+        <RelatedModules modules={PAGE_RELATIONS['blueprints']} />
                 </div>
               </div>
             )}
@@ -802,10 +806,12 @@ function BlueprintsContent() {
 
       {/* Tabs */}
       <div className="border-b border-slate-500/30 mb-6 overflow-x-auto">
-        <nav className="flex gap-4 lg:gap-8 min-w-max">
+        <nav role="tablist" className="flex gap-4 lg:gap-8 min-w-max">
           {TABS.map(tab => (
             <button
               key={tab.id}
+              role="tab"
+              aria-selected={activeTab === tab.id}
               onClick={() => updateParams({ tab: tab.id === 'all' ? null : tab.id })}
               className={`flex items-center gap-2 py-4 border-b-2 text-sm font-medium transition-colors ${
                 activeTab === tab.id

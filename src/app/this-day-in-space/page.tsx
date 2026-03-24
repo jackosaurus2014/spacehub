@@ -2,6 +2,8 @@ import { Metadata } from 'next';
 import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 export const metadata: Metadata = {
   title: 'This Day in Space History',
@@ -104,6 +106,8 @@ export default function ThisDayInSpacePage() {
                           {evt.category}
                         </span>
                         <p className="text-slate-300 text-sm mt-1">{evt.event}</p>
+
+        <RelatedModules modules={PAGE_RELATIONS['this-day-in-space']} />
                       </div>
                     </div>
                   ))}

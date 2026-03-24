@@ -2,6 +2,8 @@
 
 import Link from 'next/link';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 const API_FEATURES = [
   {
@@ -337,6 +339,8 @@ export default function ApiAccessPage() {
             </div>
           </div>
         </ScrollReveal>
+
+        <RelatedModules modules={PAGE_RELATIONS['api-access']} />
       </div>
     </div>
   );

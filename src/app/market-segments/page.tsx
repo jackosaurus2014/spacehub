@@ -5,6 +5,8 @@ import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import ShareButton from '@/components/ui/ShareButton';
 import { motion } from 'framer-motion';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 // ── Market Segment Data ──────────────────────────────────────────────
 
@@ -393,6 +395,8 @@ function SegmentCard({ segment }: { segment: MarketSegment }) {
         >
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
         </svg>
+
+        <RelatedModules modules={PAGE_RELATIONS['market-segments']} />
       </div>
     </div>
   );

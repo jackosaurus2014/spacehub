@@ -718,10 +718,12 @@ function ProcurementContent() {
 
         {/* Tabs */}
         <ScrollReveal delay={0.1}>
-        <div className="flex flex-wrap gap-1 mb-6 bg-black p-1 rounded-lg">
+        <div role="tablist" className="flex flex-wrap gap-1 mb-6 bg-black p-1 rounded-lg">
           {tabs.map(tab => (
             <button
               key={tab.id}
+              role="tab"
+              aria-selected={currentTab === tab.id}
               onClick={() => setTab(tab.id)}
               className={`flex items-center gap-1.5 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                 currentTab === tab.id

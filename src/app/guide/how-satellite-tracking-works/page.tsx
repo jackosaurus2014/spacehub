@@ -3,6 +3,9 @@ import Link from 'next/link';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import GuideNavigation from '@/components/guide/GuideNavigation';
 import ReadingTime from '@/components/ui/ReadingTime';
+import RelatedModules from '@/components/ui/RelatedModules';
+import HowToSchema from '@/components/seo/HowToSchema';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 export const revalidate = 3600; // ISR: revalidate every hour
 
@@ -127,6 +130,19 @@ export default function HowSatelliteTrackingWorksPage() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema).replace(/</g, '\\u003c') }}
+      />
+
+      <HowToSchema
+        name="How Satellite Tracking Works"
+        description="Learn how satellite tracking technology works, from ground-based radar to optical telescopes and the TLE data format"
+        steps={[
+          { name: 'Understand orbital mechanics fundamentals', text: 'Learn the six Keplerian orbital elements (semi-major axis, eccentricity, inclination, RAAN, argument of perigee, and mean anomaly) that fully describe any satellite orbit and form the basis of all tracking calculations.' },
+          { name: 'Learn the tracking methods', text: 'Understand how ground-based radar (phased-array systems like the Space Fence), optical telescopes, and laser ranging stations detect and measure satellite positions at different orbital altitudes.' },
+          { name: 'Explore the Space Surveillance Network', text: 'Discover how the US Space Surveillance Network and commercial providers like LeoLabs and ExoAnalytic Solutions operate global sensor networks to maintain catalogs of 48,000+ tracked objects.' },
+          { name: 'Decode TLE data and SGP4 propagation', text: 'Learn to read Two-Line Element sets that encode orbital parameters in two 69-character lines, and understand how the SGP4 algorithm predicts satellite positions from TLE data.' },
+          { name: 'Understand conjunction assessment', text: 'Learn how the 18th Space Defense Squadron screens trackable objects for close approaches and issues Conjunction Data Messages (CDMs) with collision probability estimates to satellite operators.' },
+          { name: 'Use tracking tools and platforms', text: 'Apply your knowledge using satellite tracking platforms like SpaceNexus to visualize orbits in real time, monitor constellations, and receive conjunction alerts for objects of interest.' },
+        ]}
       />
 
       <div className="min-h-screen">
@@ -983,6 +999,8 @@ export default function HowSatelliteTrackingWorksPage() {
                   </Link>
                 </div>
               </section>
+
+              <RelatedModules modules={PAGE_RELATIONS['guide/how-satellite-tracking-works']} />
 
               {/* Guide Navigation */}
               <GuideNavigation currentSlug="how-satellite-tracking-works" />

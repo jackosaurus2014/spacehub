@@ -4,6 +4,9 @@ import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
+import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 // ────────────────────────────────────────
 // Types
@@ -466,6 +469,8 @@ function ComparisonChart({ selected }: { selected: SatelliteConstellation[] }) {
                     </div>
                   );
                 })}
+
+        <RelatedModules modules={PAGE_RELATIONS['compare/satellites']} />
               </div>
             </div>
           );
@@ -831,6 +836,7 @@ export default function SatelliteConstellationComparePage() {
 
   return (
     <div className="min-h-screen p-4 lg:p-8 max-w-[1600px] mx-auto">
+      <BreadcrumbSchema items={[{ name: 'Home', href: '/' }, { name: 'Compare', href: '/compare' }, { name: 'Satellites Comparison' }]} />
       {/* Breadcrumb */}
       <nav className="flex items-center gap-2 text-sm text-slate-500 mb-6">
         <Link href="/" className="hover:text-white/70 transition-colors">Home</Link>

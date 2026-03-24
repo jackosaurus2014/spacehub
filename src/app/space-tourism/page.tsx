@@ -889,10 +889,12 @@ function SpaceTourismContent() {
                 className="backdrop-blur-xl rounded-xl border border-white/[0.06] p-2 mb-8"
                 style={glassCard}
               >
-                <div className="flex flex-wrap gap-1">
+                <div role="tablist" className="flex flex-wrap gap-1">
                   {TAB_SECTIONS.map((tab) => (
                     <button
                       key={tab.id}
+                      role="tab"
+                      aria-selected={activeTab === tab.id}
                       onClick={() => handleTabChange(tab.id)}
                       className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all ${
                         activeTab === tab.id

@@ -1,5 +1,8 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 export const metadata: Metadata = {
   title: 'SpaceX vs Blue Origin: Complete Comparison 2026',
@@ -35,6 +38,7 @@ const COMPARISON_DATA = [
 export default function SpaceXVsBlueOrigin() {
   return (
     <div className="container mx-auto px-4 py-12 max-w-5xl">
+      <BreadcrumbSchema items={[{ name: 'Home', href: '/' }, { name: 'Compare', href: '/compare' }, { name: 'SpaceX vs Blue Origin' }]} />
       <div className="mb-8">
         <nav className="text-xs text-zinc-500 mb-4">
           <Link href="/" className="hover:text-white">Home</Link>
@@ -142,6 +146,9 @@ export default function SpaceXVsBlueOrigin() {
           }).replace(/</g, '\\u003c'),
         }}
       />
-    </div>
+    
+
+        <RelatedModules modules={PAGE_RELATIONS['compare/spacex-vs-blue-origin']} />
+      </div>
   );
 }

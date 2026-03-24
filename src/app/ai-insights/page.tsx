@@ -8,6 +8,7 @@ import ConfidenceBadge from '@/components/ui/ConfidenceBadge';
 import SourceCitation from '@/components/ui/SourceCitation';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import RelatedModules from '@/components/ui/RelatedModules';
+import EmptyState from '@/components/ui/EmptyState';
 import { clientLogger } from '@/lib/client-logger';
 
 interface Insight {
@@ -209,17 +210,15 @@ export default function AIInsightsPage() {
           </div>
         ) : insights.length === 0 ? (
           /* Empty State */
-          <div className="text-center py-20">
-            <span className="text-6xl block mb-4">&#x1F52D;</span>
-            <h2 className="text-2xl font-semibold text-slate-100 mb-2">
-              No insights generated yet
-            </h2>
-            <p className="text-slate-400">
-              {selectedCategory !== 'all'
+          <EmptyState
+            icon={<span className="text-4xl">&#x1F52D;</span>}
+            title="No insights generated yet"
+            description={
+              selectedCategory !== 'all'
                 ? `No ${selectedCategory} insights available. Try selecting a different category.`
-                : 'Check back soon for AI-powered space industry analysis.'}
-            </p>
-          </div>
+                : 'Check back soon for AI-powered space industry analysis.'
+            }
+          />
         ) : (
           /* Insight Cards Grid */
           <>

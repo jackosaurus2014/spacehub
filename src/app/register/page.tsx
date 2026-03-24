@@ -235,7 +235,7 @@ function RegisterPageContent() {
 
           <form onSubmit={handleSubmit} className="space-y-5">
             {error && (
-              <div id="register-error" className="bg-red-500/10 border border-red-500/50 text-red-400 px-4 py-3 rounded-lg text-sm">
+              <div id="register-error" role="alert" aria-live="polite" className="bg-red-500/10 border border-red-500/50 text-red-400 px-4 py-3 rounded-lg text-sm">
                 {error}
               </div>
             )}
@@ -257,7 +257,7 @@ function RegisterPageContent() {
                 aria-describedby={nameError ? 'name-error' : error ? 'register-error' : undefined}
               />
               {nameError && (
-                <p id="name-error" className="text-red-400 text-sm mt-1">{nameError}</p>
+                <p id="name-error" aria-live="polite" className="text-red-400 text-sm mt-1">{nameError}</p>
               )}
             </div>
 
@@ -280,7 +280,7 @@ function RegisterPageContent() {
                 aria-describedby={emailError ? 'email-error' : error ? 'register-error' : undefined}
               />
               {emailError && (
-                <p id="email-error" className="text-red-400 text-sm mt-1">{emailError}</p>
+                <p id="email-error" aria-live="polite" className="text-red-400 text-sm mt-1">{emailError}</p>
               )}
             </div>
 
@@ -306,7 +306,7 @@ function RegisterPageContent() {
                 aria-describedby={passwordError ? 'password-error' : error ? 'register-error password-strength' : undefined}
               />
               {passwordError && (
-                <p id="password-error" className="text-red-400 text-sm mt-1">{passwordError}</p>
+                <p id="password-error" aria-live="polite" className="text-red-400 text-sm mt-1">{passwordError}</p>
               )}
               {password && (
                 <div className="mt-2" id="password-strength">
@@ -346,7 +346,7 @@ function RegisterPageContent() {
                 aria-describedby={confirmPasswordError ? 'confirmPassword-error' : error ? 'register-error' : undefined}
               />
               {confirmPasswordError && (
-                <p id="confirmPassword-error" className="text-red-400 text-sm mt-1">{confirmPasswordError}</p>
+                <p id="confirmPassword-error" aria-live="polite" className="text-red-400 text-sm mt-1">{confirmPasswordError}</p>
               )}
             </div>
 

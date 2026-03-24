@@ -2,6 +2,8 @@ import { Metadata } from 'next';
 import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 export const metadata: Metadata = {
   title: 'Discover SpaceNexus',
@@ -180,6 +182,8 @@ export default function DiscoverPage() {
                         {link.label}
                       </Link>
                     ))}
+
+        <RelatedModules modules={PAGE_RELATIONS['discover']} />
                   </div>
                 </div>
               ))}

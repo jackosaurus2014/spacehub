@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import { toast } from '@/lib/toast';
 import ScrollReveal from '@/components/ui/ScrollReveal';
+import EmptyState from '@/components/ui/EmptyState';
 import PremiumGate from '@/components/PremiumGate';
 import {
   API_CATEGORIES,
@@ -13,6 +14,8 @@ import {
   type OpenAPIEndpoint,
   type EndpointParameter,
 } from '@/lib/openapi-spec';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 // ============================================================
 // Constants
@@ -171,6 +174,8 @@ function CodeExamples({ endpoint }: { endpoint: OpenAPIEndpoint }) {
         <div className="absolute top-2 right-2">
           <CopyButton text={endpoint.codeExamples[activeLang]} />
         </div>
+
+        <RelatedModules modules={PAGE_RELATIONS['developer/docs']} />
       </div>
     </div>
   );
@@ -731,15 +736,19 @@ function ApiDocsPageInner() {
 
           {/* No results */}
           {filteredCategories.length === 0 && searchQuery && (
-            <div className="text-center py-12">
-              <p className="text-slate-400 text-lg">No endpoints match &quot;{searchQuery}&quot;</p>
-              <button
-                onClick={() => setSearchQuery('')}
-                className="mt-3 text-white/70 hover:text-white text-sm"
-              >
-                Clear search
-              </button>
-            </div>
+            <EmptyState
+              icon={<span className="text-4xl">🔌</span>}
+              title="No endpoints found"
+              description={`No endpoints match "${searchQuery}".`}
+              action={
+                <button
+                  onClick={() => setSearchQuery('')}
+                  className="text-white/70 hover:text-white text-sm"
+                >
+                  Clear search
+                </button>
+              }
+            />
           )}
 
           {/* Footer */}

@@ -3,6 +3,10 @@ import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import FAQSchema from '@/components/seo/FAQSchema';
+import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
+import RelatedModules from '@/components/ui/RelatedModules';
+import HowToSchema from '@/components/seo/HowToSchema';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 export const metadata: Metadata = {
   title: 'Space Mining Guide 2026: Asteroid Mining, Lunar Resources & In-Situ Utilization',
@@ -30,6 +34,18 @@ const faqs = [
 export default function SpaceMiningGuidePage() {
   return (
     <div className="min-h-screen bg-space-900">
+      <BreadcrumbSchema items={[{ name: 'Home', href: '/' }, { name: 'Guides', href: '/guide/space-industry' }, { name: 'Space Mining Guide' }]} />
+      <HowToSchema
+        name="Space Mining Guide"
+        description="How to understand and evaluate space mining opportunities, from asteroid selection to resource extraction"
+        steps={[
+          { name: 'Understand what space mining is', text: 'Learn the fundamentals of extracting resources from celestial bodies including asteroids, the Moon, and Mars, and why lunar water ice is expected to be the first commercially viable space mining target.' },
+          { name: 'Identify the types of space resources', text: 'Study the six key resource categories: water ice for propellant, platinum group metals from asteroids, structural metals like iron and titanium, Helium-3 for fusion fuel, hydrocarbons from Titan, and rare earth elements.' },
+          { name: 'Evaluate the legal framework', text: 'Understand the 2015 US Commercial Space Launch Competitiveness Act and Artemis Accords that grant companies the right to own and sell extracted space resources, providing the legal foundation for commercial mining.' },
+          { name: 'Research active mining companies', text: 'Assess key players like AstroForge (asteroid mining), TransAstra (optical mining), ispace (lunar resources), and Intuitive Machines (lunar landers), along with NASA VIPER rover mapping lunar ice deposits.' },
+          { name: 'Understand ISRU technology and economics', text: 'Learn how In-Situ Resource Utilization works to convert local materials into usable products like rocket propellant, and evaluate the economic viability timeline from lunar ice mining (2030-2035) to asteroid belt operations (2040s+).' },
+        ]}
+      />
       <FAQSchema items={faqs} />
       <div className="container mx-auto px-4 pb-16">
         <AnimatedPageHeader
@@ -113,6 +129,8 @@ export default function SpaceMiningGuidePage() {
             </div>
           </ScrollReveal>
         </div>
+
+        <RelatedModules modules={PAGE_RELATIONS['guide/space-mining-guide']} />
       </div>
     </div>
   );

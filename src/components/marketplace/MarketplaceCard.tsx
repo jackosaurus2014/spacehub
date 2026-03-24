@@ -1,5 +1,6 @@
 'use client';
 
+import { memo } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
@@ -37,7 +38,7 @@ interface MarketplaceCardProps {
   index?: number;
 }
 
-export default function MarketplaceCard({ listing, index = 0 }: MarketplaceCardProps) {
+const MarketplaceCard = memo(function MarketplaceCard({ listing, index = 0 }: MarketplaceCardProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -125,4 +126,6 @@ export default function MarketplaceCard({ listing, index = 0 }: MarketplaceCardP
       </Link>
     </motion.div>
   );
-}
+});
+
+export default MarketplaceCard;

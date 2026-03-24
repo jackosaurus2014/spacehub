@@ -10,6 +10,7 @@ import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/Scr
 import ExportButton from '@/components/ui/ExportButton';
 import { clientLogger } from '@/lib/client-logger';
 import AdSlot from '@/components/ads/AdSlot';
+import EmptyState from '@/components/ui/EmptyState';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
@@ -338,22 +339,24 @@ function BlogsContent() {
           <LoadingSpinner size="lg" />
         </div>
       ) : posts.length === 0 ? (
-        <div className="text-center py-20">
-          <span className="text-6xl block mb-4">📚</span>
-          <h2 className="text-2xl font-semibold text-white mb-2">No Articles Found</h2>
-          <p className="text-slate-400 mb-6">
-            {selectedTopic || selectedAuthorType
+        <EmptyState
+          icon={<span className="text-4xl">📚</span>}
+          title="No Articles Found"
+          description={
+            selectedTopic || selectedAuthorType
               ? 'Try adjusting your filters or fetch new articles.'
-              : 'Click "Fetch New Articles" to load content from space industry blogs.'}
-          </p>
-          <button
-            onClick={handleFetchNewPosts}
-            disabled={fetching}
-            className="btn-primary"
-          >
-            {fetching ? 'Fetching...' : 'Fetch Articles'}
-          </button>
-        </div>
+              : 'Click "Fetch New Articles" to load content from space industry blogs.'
+          }
+          action={
+            <button
+              onClick={handleFetchNewPosts}
+              disabled={fetching}
+              className="btn-primary"
+            >
+              {fetching ? 'Fetching...' : 'Fetch Articles'}
+            </button>
+          }
+        />
       ) : (
         <>
           <StaggerContainer className="grid grid-cols-1 lg:grid-cols-2 gap-6">

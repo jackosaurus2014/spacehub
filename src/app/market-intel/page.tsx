@@ -848,7 +848,7 @@ function MarketIntelContent() {
 
         {/* Error Banner */}
         {error && !loading && (
-          <div className="card p-5 border border-red-500/20 bg-red-500/5 text-center mb-6">
+          <div role="alert" aria-live="polite" className="card p-5 border border-red-500/20 bg-red-500/5 text-center mb-6">
             <div className="text-red-400 text-sm font-medium">{error}</div>
             <button
               onClick={() => fetchData()}
@@ -861,7 +861,7 @@ function MarketIntelContent() {
 
         {/* Companies Table */}
         {loading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+          <div aria-live="polite" aria-busy="true" className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
             {Array.from({ length: 9 }).map((_, i) => (
               <div key={i} className="card p-5 animate-pulse">
                 <div className="flex items-center gap-3 mb-3">

@@ -6,6 +6,7 @@ import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import EmptyState from '@/components/ui/EmptyState';
 import InlineDisclaimer from '@/components/InlineDisclaimer';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
@@ -821,17 +822,19 @@ function TabContent({ entries, tabId }: { entries: SpaceLawEntry[]; tabId: TabId
           ))}
         </StaggerContainer>
       ) : (
-        <div className="text-center py-20">
-          <div className="text-4xl mb-4">{'\uD83D\uDD0D'}</div>
-          <h3 className="text-xl font-semibold text-white mb-2">No entries match your search</h3>
-          <p className="text-slate-400 text-sm mb-4">Try adjusting your filters or search terms</p>
-          <button
-            onClick={handleClearFilters}
-            className="text-white/90 hover:text-white text-sm transition-colors"
-          >
-            Clear All Filters
-          </button>
-        </div>
+        <EmptyState
+          icon={<span className="text-4xl">{'\uD83D\uDD0D'}</span>}
+          title="No entries match your search"
+          description="Try adjusting your filters or search terms."
+          action={
+            <button
+              onClick={handleClearFilters}
+              className="text-white/90 hover:text-white text-sm transition-colors"
+            >
+              Clear All Filters
+            </button>
+          }
+        />
       )}
     </div>
   );

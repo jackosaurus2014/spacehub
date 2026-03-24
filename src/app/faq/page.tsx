@@ -6,6 +6,8 @@ import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import FAQAccordion, { FAQItem } from '@/components/support/FAQAccordion';
 import FAQSchema from '@/components/seo/FAQSchema';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 const FAQ_CATEGORIES = [
   { id: 'getting-started', label: 'Getting Started', icon: '🚀' },
@@ -237,6 +239,8 @@ export default function FAQPage() {
             </div>
           </div>
         </ScrollReveal>
+
+        <RelatedModules modules={PAGE_RELATIONS['faq']} />
       </div>
     </div>
   );

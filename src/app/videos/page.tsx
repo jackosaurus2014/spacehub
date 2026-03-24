@@ -3,6 +3,8 @@ import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import prisma from '@/lib/db';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 export const metadata: Metadata = {
   title: 'Space Videos & Tutorials',
@@ -128,6 +130,8 @@ export default async function VideosPage() {
             </ScrollReveal>
           )}
         </div>
+
+        <RelatedModules modules={PAGE_RELATIONS['videos']} />
       </div>
     </div>
   );
