@@ -155,11 +155,11 @@ export const CONTRACT_POOL: ContractDefinition[] = [
   // ═══════════════════════════════════════════════════════════════════════════
   {
     id: 'c_mars_colony', name: 'Mars Colonization Initiative', icon: '🔴', client: 'United Nations Space Command',
-    description: 'Unlock Mars and establish at least 1 colony with research and mining operations.',
+    description: 'Establish a presence on Mars with buildings, research, and mining operations.',
     tier: 3,
     requirements: [
-      { type: 'locations_unlocked', target: 7, label: '7 locations unlocked' },
-      { type: 'colonies_established', target: 1, label: '1 colony established' },
+      { type: 'locations_unlocked', target: 6, label: '6 locations unlocked (including Mars)' },
+      { type: 'buildings_completed', target: 15, label: '15 buildings completed' },
       { type: 'research_completed', target: 15, label: '15 research completed' },
     ],
     reward: { money: 1_000_000_000, resources: { exotic_materials: 5, helium3: 3 } }, durationMonths: 48,

@@ -139,7 +139,7 @@ export const BUILDINGS: BuildingDefinition[] = [
     tooltip: 'EXOTIC MATERIALS SOURCE. Activates Europa Subsurface Resources at $120M/mo vs $45M cost = $75M/mo net — one of the highest-profit services in the game. Produces 5 exotic materials ($2M each) + 200 lunar water per month. Exotic materials are needed for Tier 5 research and endgame construction. Requires "Deep Drilling" research + Jupiter unlock ($100B). The $75M/mo net profit makes this worth the massive investment.',
     baseCost: 30_000_000_000, buildTimeMonths: 48, maintenanceCostPerMonth: 20_000_000,
     requiredResearch: ['deep_drilling'], requiredLocation: 'jupiter_system', enabledServices: ['svc_mining_europa'],
-    realBuildSeconds: 7200, resourceCost: { titanium: 200, rare_earth: 80, platinum_group: 20, exotic_materials: 5 } },
+    realBuildSeconds: 7200, resourceCost: { titanium: 200, rare_earth: 80, platinum_group: 20 } },
   { id: 'mining_titan', name: 'Titan Hydrocarbon Harvester', category: 'mining_enterprise', tier: 4,
     description: 'Harvest methane and ethane from Titan\'s lakes.',
     tooltip: 'HIGHEST REVENUE SERVICE IN THE GAME. Activates Titan Hydrocarbon Exports at $160M/mo vs $55M cost = $105M/mo net. Produces 300 methane + 150 ethane per month. The $105M/mo net is the single best revenue source available. Requires "Deep Drilling" research + Saturn unlock ($200B). Late-game mega-investment that funds everything else. Build as soon as you can afford the Saturn system.',
