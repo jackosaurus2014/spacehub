@@ -184,7 +184,7 @@ export default function TerritoryPanel({ state }: TerritoryPanelProps) {
                 </span>
               </>
             ) : (
-              'Build infrastructure to earn zone influence'
+              'Build facilities at different locations to earn influence'
             )}
             {contestedZones.length > 0 && (
               <span className="ml-2 text-red-400">
@@ -202,6 +202,22 @@ export default function TerritoryPanel({ state }: TerritoryPanelProps) {
           </button>
         )}
       </div>
+
+      {/* How Territory Works — info box */}
+      {!selectedZone && governedZones.length === 0 && (
+        <div className="rounded-lg border border-indigo-500/20 bg-indigo-500/5 p-3">
+          <p className="text-indigo-300 text-xs font-semibold mb-1">How Zone Influence Works</p>
+          <ul className="text-indigo-200/70 text-[10px] space-y-0.5 list-disc pl-4">
+            <li><strong>Build</strong> facilities at locations to earn influence in that zone (30% of total)</li>
+            <li><strong>Run services</strong> at a location for ongoing influence (30%)</li>
+            <li><strong>Mine resources</strong> to contribute to zone influence (20%)</li>
+            <li><strong>Complete research</strong> related to a zone for influence (10%)</li>
+            <li><strong>Complete contracts</strong> for additional zone influence (10%)</li>
+            <li>The player with the <strong>highest influence share</strong> becomes <strong>Governor</strong> and earns bonuses</li>
+            <li>Influence is recalculated periodically — keep building to maintain your position!</li>
+          </ul>
+        </div>
+      )}
 
       {/* Zone Grid or Detail View */}
       {!selectedZone ? (
