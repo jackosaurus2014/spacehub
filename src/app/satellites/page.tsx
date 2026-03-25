@@ -2,6 +2,7 @@
 
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
+import Image from 'next/image';
 import Link from 'next/link';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
@@ -210,20 +211,35 @@ function SatelliteTrackerContent() {
   return (
     <PullToRefresh onRefresh={async () => { await fetchData(); }}>
     <div className="min-h-screen">
-      <div className="container mx-auto px-4">
-        <AnimatedPageHeader
-          title="Satellite Tracker & Visualization"
-          subtitle="Track active satellites across all orbital regimes - from ISS to GPS to Starlink"
-          icon="🛰️"
-          accentColor="cyan"
-        >
-          <DataFreshnessBadge
-            lastUpdated={lastFetchedAt}
-            source="CelesTrak"
-            refreshInterval="every 6 hours"
-            onRefresh={() => { setLoading(true); fetchData(); }}
+      <div className="relative overflow-hidden">
+        <div className="absolute inset-0 -z-10">
+          <Image
+            src="/art/hero-space-operations.png"
+            alt=""
+            fill
+            className="object-cover opacity-20"
+            priority
           />
-        </AnimatedPageHeader>
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#09090b]/80 to-[#09090b]" />
+        </div>
+        <div className="container mx-auto px-4 pt-6">
+          <AnimatedPageHeader
+            title="Satellite Tracker & Visualization"
+            subtitle="Track active satellites across all orbital regimes - from ISS to GPS to Starlink"
+            icon="🛰️"
+            accentColor="cyan"
+          >
+            <DataFreshnessBadge
+              lastUpdated={lastFetchedAt}
+              source="CelesTrak"
+              refreshInterval="every 6 hours"
+              onRefresh={() => { setLoading(true); fetchData(); }}
+            />
+          </AnimatedPageHeader>
+        </div>
+      </div>
+
+      <div className="container mx-auto px-4">
 
         {error && !loading && (
           <div className="card p-5 border border-red-500/20 bg-red-500/5 text-center mb-6">

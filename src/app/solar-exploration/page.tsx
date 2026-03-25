@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, Suspense } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
+import Image from 'next/image';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import {
@@ -345,8 +346,23 @@ function SolarExplorationContent() {
 
   return (
     <div className="min-h-screen">
+      <div className="relative overflow-hidden">
+        <div className="absolute inset-0 -z-10">
+          <Image
+            src="/art/hero-solar-expansion.png"
+            alt=""
+            fill
+            className="object-cover opacity-20"
+            priority
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#09090b]/80 to-[#09090b]" />
+        </div>
+        <div className="container mx-auto px-4 pt-6">
+          <AnimatedPageHeader title="Solar System Exploration" subtitle="Interactive 3D visualization of planetary bodies with rover and lander locations" icon="🌌" accentColor="purple" />
+        </div>
+      </div>
+
       <div className="container mx-auto px-4">
-        <AnimatedPageHeader title="Solar System Exploration" subtitle="Interactive 3D visualization of planetary bodies with rover and lander locations" icon="🌌" accentColor="purple" />
 
         {error && !loading && (
           <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-4 text-center mb-6">

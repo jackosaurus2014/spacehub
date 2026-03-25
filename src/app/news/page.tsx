@@ -19,6 +19,7 @@ import StickyMobileCTA from '@/components/mobile/StickyMobileCTA';
 import ContentEngagementBadge from '@/components/ui/ContentEngagementBadge';
 import EmptyState from '@/components/ui/EmptyState';
 import { clientLogger } from '@/lib/client-logger';
+import Image from 'next/image';
 import Link from 'next/link';
 import { BLOG_POSTS } from '@/lib/blog-content';
 import ItemListSchema from '@/components/seo/ItemListSchema';
@@ -258,8 +259,23 @@ export default function NewsPage() {
           { name: 'Space Business', url: '/news?category=business', description: 'Space industry business and financial news' },
         ]}
       />
+      <div className="relative overflow-hidden">
+        <div className="absolute inset-0 -z-10">
+          <Image
+            src="/art/hero-news-media.png"
+            alt=""
+            fill
+            className="object-cover opacity-20"
+            priority
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#09090b]/80 to-[#09090b]" />
+        </div>
+        <div className="container mx-auto px-4 pt-6">
+          <AnimatedPageHeader title="Space News" subtitle="Stay up to date with the latest from the space industry" icon="📰" accentColor="cyan" breadcrumb="Dashboard → News & Media" />
+        </div>
+      </div>
+
       <div className="container mx-auto px-4">
-        <AnimatedPageHeader title="Space News" subtitle="Stay up to date with the latest from the space industry" icon="📰" accentColor="cyan" breadcrumb="Dashboard → News & Media" />
 
         <AlertNudge moduleName="Space News" alertType="news" ctaHref="/alerts" className="mb-4" />
 

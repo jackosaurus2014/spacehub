@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, Suspense } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
+import Image from 'next/image';
 import Link from 'next/link';
 import { clientLogger } from '@/lib/client-logger';
 import {
@@ -389,13 +390,28 @@ function BusinessOpportunitiesContent() {
 
   return (
     <div className="min-h-screen">
+      <div className="relative overflow-hidden">
+        <div className="absolute inset-0 -z-10">
+          <Image
+            src="/art/hero-business-ops.png"
+            alt=""
+            fill
+            className="object-cover opacity-20"
+            priority
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#09090b]/80 to-[#09090b]" />
+        </div>
+        <div className="container mx-auto px-4 pt-6">
+          <AnimatedPageHeader
+            title="Business Opportunities"
+            subtitle="AI-powered discovery of space industry opportunities for entrepreneurs, investors, and students"
+            icon="💼"
+            accentColor="amber"
+          />
+        </div>
+      </div>
+
       <div className="container mx-auto px-4">
-        <AnimatedPageHeader
-          title="Business Opportunities"
-          subtitle="AI-powered discovery of space industry opportunities for entrepreneurs, investors, and students"
-          icon="💼"
-          accentColor="amber"
-        />
 
         {/* Government Contracts Ticker */}
         <div className="mb-8">

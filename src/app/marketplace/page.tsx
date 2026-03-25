@@ -8,6 +8,7 @@ import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import CategoryGrid from '@/components/marketplace/CategoryGrid';
 import MarketplaceCard from '@/components/marketplace/MarketplaceCard';
 import RFQCard from '@/components/marketplace/RFQCard';
+import Image from 'next/image';
 import { clientLogger } from '@/lib/client-logger';
 import ComingSoonBadge from '@/components/marketplace/ComingSoonBadge';
 import { toast } from '@/lib/toast';
@@ -117,7 +118,17 @@ export default function MarketplacePage() {
         )}
 
         {/* Hero */}
-        <div className="text-center space-y-4">
+        <div className="relative overflow-hidden text-center space-y-4">
+          <div className="absolute inset-0 -z-10">
+            <Image
+              src="/art/hero-marketplace.png"
+              alt=""
+              fill
+              className="object-cover opacity-15"
+              priority
+            />
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#09090b]/70 to-[#09090b]" />
+          </div>
           <AnimatedPageHeader
             title="Space Industry Marketplace"
             subtitle="Connect with verified providers, submit RFQs, and procure space services"

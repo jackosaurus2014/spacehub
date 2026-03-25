@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { useEffect, useState } from 'react';
 
 /* Staggered entrance */
@@ -84,6 +85,18 @@ export default function LandingHero({ featuredArticle, trendingNews }: LandingHe
 
   return (
     <section className="relative min-h-[80vh] md:min-h-[88vh] flex items-center overflow-hidden">
+      {/* Hero background illustration */}
+      <div className="absolute inset-0 -z-10">
+        <Image
+          src="/art/hero-landing.png"
+          alt=""
+          fill
+          className="object-cover opacity-15"
+          priority
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#09090b]/70 to-[#09090b]" />
+      </div>
+
       {/* Single accent glow — one intentional light source at 8% opacity */}
       <div
         className="absolute pointer-events-none z-0"

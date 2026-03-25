@@ -3,6 +3,7 @@
 import { useState, useCallback, Suspense } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import dynamic from 'next/dynamic';
+import Image from 'next/image';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import PullToRefresh from '@/components/ui/PullToRefresh';
 import { useSwipeTabs } from '@/hooks/useSwipeTabs';
@@ -86,13 +87,28 @@ function SpaceEnvironmentContent() {
   return (
     <PullToRefresh onRefresh={async () => { setRefreshKey((k) => k + 1); }}>
     <div className="min-h-screen">
+      <div className="relative overflow-hidden">
+        <div className="absolute inset-0 -z-10">
+          <Image
+            src="/art/hero-space-environment.png"
+            alt=""
+            fill
+            className="object-cover opacity-20"
+            priority
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#09090b]/80 to-[#09090b]" />
+        </div>
+        <div className="container mx-auto px-4 pt-6">
+          <AnimatedPageHeader
+            title="Space Environment Monitor"
+            subtitle="Unified dashboard for space weather, orbital debris tracking, and operational awareness"
+            icon="☀️"
+            accentColor="red"
+          />
+        </div>
+      </div>
+
       <div className="container mx-auto px-4">
-        <AnimatedPageHeader
-          title="Space Environment Monitor"
-          subtitle="Unified dashboard for space weather, orbital debris tracking, and operational awareness"
-          icon="☀️"
-          accentColor="red"
-        />
 
         {/* Main Tab Navigation */}
         <div role="tablist" className="flex gap-1 mb-8 p-1 bg-white/[0.04] rounded-xl w-full sm:w-fit overflow-x-auto scrollbar-thin">

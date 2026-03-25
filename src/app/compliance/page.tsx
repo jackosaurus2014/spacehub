@@ -5,6 +5,7 @@ import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import PullToRefresh from '@/components/ui/PullToRefresh';
 import { useSwipeTabs } from '@/hooks/useSwipeTabs';
+import Image from 'next/image';
 import Link from 'next/link';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
@@ -528,18 +529,32 @@ export default function RegulatoryHubPage() {
       { question: 'Which regulatory bodies oversee commercial space activities?', answer: 'Key bodies include: FCC (spectrum and satellite licensing), FAA/AST (launch and reentry licensing), ITU (international frequency coordination), NOAA (remote sensing licenses), BIS (export controls under EAR), DDTC (export controls under ITAR), and COPUOS (international space governance at the UN level).' },
     ]} />
     <div className="min-h-screen">
-      <div className="container mx-auto px-4">
-        <AnimatedPageHeader
-          title="Regulatory Hub"
-          subtitle="Comprehensive regulatory tracking, compliance guidance, space law, bid protests, case law, filings, and expert analysis for the space industry"
-          icon="⚖️"
-          accentColor="amber"
-        >
-          <Link href="/" className="btn-secondary text-sm py-2 px-4">
-            &larr; Back to Dashboard
-          </Link>
-        </AnimatedPageHeader>
+      <div className="relative overflow-hidden">
+        <div className="absolute inset-0 -z-10">
+          <Image
+            src="/art/hero-regulatory.png"
+            alt=""
+            fill
+            className="object-cover opacity-20"
+            priority
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#09090b]/80 to-[#09090b]" />
+        </div>
+        <div className="container mx-auto px-4 pt-6">
+          <AnimatedPageHeader
+            title="Regulatory Hub"
+            subtitle="Comprehensive regulatory tracking, compliance guidance, space law, bid protests, case law, filings, and expert analysis for the space industry"
+            icon="⚖️"
+            accentColor="amber"
+          >
+            <Link href="/" className="btn-secondary text-sm py-2 px-4">
+              &larr; Back to Dashboard
+            </Link>
+          </AnimatedPageHeader>
+        </div>
+      </div>
 
+      <div className="container mx-auto px-4">
         <PremiumGate requiredTier="pro">
           <Suspense
             fallback={

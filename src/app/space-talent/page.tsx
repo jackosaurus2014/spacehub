@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useCallback, Suspense } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
+import Image from 'next/image';
 import Link from 'next/link';
 import {
   SpaceTalent,
@@ -2663,14 +2664,28 @@ export default function SpaceTalentHubPage() {
           { name: 'Industry Insights', url: '/space-talent?tab=workforce&wfTab=insights', description: 'Space workforce sector employment, skills demand, and education pipeline analytics' },
         ]}
       />
-      <div className="container mx-auto px-4">
-        <AnimatedPageHeader
-          title="Space Talent Hub"
-          subtitle="Expert consultants, webinars, job listings, salary benchmarks, and workforce analytics"
-          icon="👨‍🚀"
-          accentColor="emerald"
-        />
+      <div className="relative overflow-hidden">
+        <div className="absolute inset-0 -z-10">
+          <Image
+            src="/art/hero-talent-hub.png"
+            alt=""
+            fill
+            className="object-cover opacity-20"
+            priority
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#09090b]/80 to-[#09090b]" />
+        </div>
+        <div className="container mx-auto px-4 pt-6">
+          <AnimatedPageHeader
+            title="Space Talent Hub"
+            subtitle="Expert consultants, webinars, job listings, salary benchmarks, and workforce analytics"
+            icon="👨‍🚀"
+            accentColor="emerald"
+          />
+        </div>
+      </div>
 
+      <div className="container mx-auto px-4">
         <Suspense
           fallback={
             <div className="flex justify-center py-20">

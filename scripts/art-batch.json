@@ -1,0 +1,62 @@
+[
+  {
+    "prompt": "A futuristic command center with holographic displays showing Earth orbit data, satellite positions on curved screens, dramatic lighting with blue and indigo glows, wide cinematic shot, sci-fi interior",
+    "output": "public/art/hero-mission-control.png"
+  },
+  {
+    "prompt": "A financial trading terminal floating in space showing holographic stock charts, market data streams, and economic graphs, indigo and cyan neon accents, dark void background with distant stars",
+    "output": "public/art/hero-market-intel.png"
+  },
+  {
+    "prompt": "Multiple news screens and data feeds floating in zero gravity showing space headlines, a satellite dish receiving signals, Earth in background, blue and purple holographic displays",
+    "output": "public/art/hero-news-media.png"
+  },
+  {
+    "prompt": "A rocket launch pad at night with a sleek modern rocket ready for launch, launch tower with service arms, dramatic spotlights, indigo sky with stars, steam/vapor at base",
+    "output": "public/art/hero-mission-planning.png"
+  },
+  {
+    "prompt": "A network of satellites orbiting Earth forming a constellation pattern, orbital paths visible as glowing cyan lines, Earth's curvature below with city lights, deep space background",
+    "output": "public/art/hero-space-operations.png"
+  },
+  {
+    "prompt": "A holographic briefcase opening to reveal floating contract documents, handshake silhouettes, supply chain network diagrams, business opportunity icons, dark background with indigo accents",
+    "output": "public/art/hero-business-ops.png"
+  },
+  {
+    "prompt": "Diverse group of astronauts and engineers in a modern training facility, holographic career path visualization, educational displays, professional development theme, blue-indigo lighting",
+    "output": "public/art/hero-talent-hub.png"
+  },
+  {
+    "prompt": "A legal scales of justice floating in space with holographic regulatory documents, compliance checklists, treaty scrolls orbiting around it, indigo and gold accents on dark background",
+    "output": "public/art/hero-regulatory.png"
+  },
+  {
+    "prompt": "Mars surface with a futuristic habitat dome, cislunar gateway station visible in sky, asteroid mining operation in distance, multiple celestial bodies, epic sci-fi landscape, warm orange and cool blue contrast",
+    "output": "public/art/hero-solar-expansion.png"
+  },
+  {
+    "prompt": "Earth from orbit showing solar wind particle streams, aurora bands, orbital debris field visualization, space weather monitoring sensors, dramatic blue-green atmospheric glow",
+    "output": "public/art/hero-space-environment.png"
+  },
+  {
+    "prompt": "An elegant floating astronaut in a peaceful pose surrounded by small glowing particles, minimalist style, conveying 'nothing here yet' or empty state, soft indigo lighting on dark background",
+    "output": "public/art/empty-state-astronaut.png"
+  },
+  {
+    "prompt": "A minimalist satellite dish pointing at empty sky with no signal, a few stars scattered, conveying 'no results found', clean composition, dark background with subtle indigo gradient",
+    "output": "public/art/empty-state-no-results.png"
+  },
+  {
+    "prompt": "A small rocket on a launch pad with a 'ready to launch' feel, starter/beginner energy, welcoming and inviting, clean minimalist style, dark background with warm indigo glow",
+    "output": "public/art/empty-state-getting-started.png"
+  },
+  {
+    "prompt": "A SpaceNexus branded hero banner: sleek dark space scene with a futuristic orbital station, Earth below, constellation of satellites, shooting star, cinematic widescreen composition, premium feel",
+    "output": "public/art/hero-landing.png"
+  },
+  {
+    "prompt": "A futuristic online marketplace in space, holographic product cards and service listings floating around a central hub station, buyer and seller icons connected by glowing lines, dark theme with purple and cyan",
+    "output": "public/art/hero-marketplace.png"
+  }
+]

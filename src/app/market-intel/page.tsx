@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, Suspense } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
+import Image from 'next/image';
 import Link from 'next/link';
 import { SpaceCompany, FOCUS_AREAS, COUNTRY_INFO, CompanyCountry, CompanyFocusArea } from '@/types';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
@@ -429,8 +430,23 @@ function MarketIntelContent() {
   return (
     <PullToRefresh onRefresh={async () => { await fetchData(); }}>
     <div className="min-h-screen">
+      <div className="relative overflow-hidden">
+        <div className="absolute inset-0 -z-10">
+          <Image
+            src="/art/hero-market-intel.png"
+            alt=""
+            fill
+            className="object-cover opacity-20"
+            priority
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#09090b]/80 to-[#09090b]" />
+        </div>
+        <div className="container mx-auto px-4 pt-6">
+          <AnimatedPageHeader title="Market Intel" subtitle="Track space industry companies, stock performance, and funding rounds" icon="📊" accentColor="emerald" breadcrumb="Dashboard → Market Intel" />
+        </div>
+      </div>
+
       <div className="container mx-auto px-4">
-        <AnimatedPageHeader title="Market Intel" subtitle="Track space industry companies, stock performance, and funding rounds" icon="📊" accentColor="emerald" breadcrumb="Dashboard → Market Intel" />
 
         {/* ═══════ SpaceX IPO Market Alert ═══════ */}
         <Link href="/blog/spacex-ipo-what-it-means-for-space-investors" className="block mb-6 group">
