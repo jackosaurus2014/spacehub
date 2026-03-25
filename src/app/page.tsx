@@ -1,5 +1,6 @@
 import { Suspense } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import nextDynamic from 'next/dynamic';
 import { ModuleContainer } from '@/components/modules';
 import { getDefaultModulePreferences } from '@/lib/module-preferences';
@@ -226,6 +227,55 @@ export default async function HomePage() {
 
       {/* Space Industry KPIs — Animated Counter Strip */}
       <KPIStrip />
+
+      {/* Featured Articles — NASA Moon Base (temporary, remove after 2026-04-01) */}
+      <section className="relative z-10 py-8">
+        <div className="container mx-auto px-4 max-w-5xl">
+          <div className="mb-5">
+            <div className="flex items-center gap-2">
+              <span className="inline-block w-1 h-6 rounded-full bg-gradient-to-b from-indigo-400 to-cyan-400" />
+              <h2 className="text-lg font-bold text-white">Featured Analysis</h2>
+              <span className="text-[10px] px-2 py-0.5 rounded-full bg-red-500/20 text-red-400 border border-red-500/30 font-bold uppercase tracking-wider">New</span>
+            </div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Link
+              href="/blog/nasa-20-billion-moon-base-everything-you-need-to-know"
+              className="group rounded-xl border border-white/[0.08] bg-white/[0.03] hover:bg-white/[0.06] hover:border-indigo-500/20 transition-all duration-300 overflow-hidden"
+            >
+              <div className="relative h-40 overflow-hidden">
+                <Image src="/art/hero-mission-planning.png" alt="" fill className="object-cover opacity-40 group-hover:opacity-50 group-hover:scale-105 transition-all duration-500" />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#09090b] via-[#09090b]/60 to-transparent" />
+                <div className="absolute bottom-3 left-4 right-4">
+                  <span className="text-[9px] px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 font-bold uppercase tracking-wider">Analysis</span>
+                </div>
+              </div>
+              <div className="p-4">
+                <h3 className="text-white text-sm font-bold mb-1.5 group-hover:text-indigo-300 transition-colors line-clamp-2">NASA&apos;s $20 Billion Moon Base: Everything You Need to Know About Project Ignition</h3>
+                <p className="text-slate-400 text-xs line-clamp-2 mb-2">NASA just announced its most ambitious lunar initiative since Apollo. The &quot;Ignition&quot; plan commits $20 billion over seven years to build a permanent base at the Moon&apos;s south pole.</p>
+                <span className="text-[10px] text-slate-500">14 min read</span>
+              </div>
+            </Link>
+            <Link
+              href="/blog/nasa-moon-base-commercial-space-implications"
+              className="group rounded-xl border border-white/[0.08] bg-white/[0.03] hover:bg-white/[0.06] hover:border-cyan-500/20 transition-all duration-300 overflow-hidden"
+            >
+              <div className="relative h-40 overflow-hidden">
+                <Image src="/art/hero-space-operations.png" alt="" fill className="object-cover opacity-40 group-hover:opacity-50 group-hover:scale-105 transition-all duration-500" />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#09090b] via-[#09090b]/60 to-transparent" />
+                <div className="absolute bottom-3 left-4 right-4">
+                  <span className="text-[9px] px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 font-bold uppercase tracking-wider">Market</span>
+                </div>
+              </div>
+              <div className="p-4">
+                <h3 className="text-white text-sm font-bold mb-1.5 group-hover:text-cyan-300 transition-colors line-clamp-2">NASA&apos;s Moon Base Changes Everything for Commercial Space Companies</h3>
+                <p className="text-slate-400 text-xs line-clamp-2 mb-2">The $20 billion Ignition initiative isn&apos;t just a NASA program &mdash; it&apos;s the biggest commercial space catalyst since the Commercial Crew Program.</p>
+                <span className="text-[10px] text-slate-500">7 min read</span>
+              </div>
+            </Link>
+          </div>
+        </div>
+      </section>
 
       {/* Platform Feature Showcase — Bento Grid */}
       <BentoFeatures />
