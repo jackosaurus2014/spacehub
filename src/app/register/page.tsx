@@ -121,6 +121,13 @@ function RegisterPageContent() {
         return;
       }
 
+      trackGA4Event('signup_success', {
+        role: role || 'not_selected',
+        plan: planParam || 'free',
+        founding: isFounding,
+        trial: isTrial,
+      });
+
       // Store selected role for future personalization
       if (role) {
         try { localStorage.setItem('spacenexus-user-role', role); } catch { /* ignore */ }

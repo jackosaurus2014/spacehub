@@ -467,6 +467,16 @@ function PricingPageContent() {
   const [isOpeningPortal, setIsOpeningPortal] = useState(false);
   const [hasPaymentMethod, setHasPaymentMethod] = useState(false);
 
+  // Track pricing page view for conversion funnel
+  useEffect(() => {
+    trackGA4Event('pricing_page_view', {
+      is_logged_in: !!session?.user,
+      current_tier: tier,
+      source: searchParams.get('utm_source') || searchParams.get('ref') || 'direct',
+    });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   // Show success/cancel messages based on URL params
   useEffect(() => {
     if (searchParams.get('success') === 'true') {
@@ -516,6 +526,7 @@ function PricingPageContent() {
       }
 
       toast.success(`Your 14-day ${planTier === 'pro' ? 'Professional' : 'Enterprise'} trial has started!`);
+      trackGA4Event('trial_started', { plan: planTier, location: 'pricing_page' });
       refreshSubscription();
     } catch {
       toast.error('Something went wrong. Please try again.');

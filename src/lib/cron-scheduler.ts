@@ -84,6 +84,13 @@ const CRON_JOBS: CronJobDef[] = [
   // Win-back emails for inactive users (daily at 10am UTC)
   { schedule: '0 10 * * *',   path: '/api/winback',                              label: 'winback-emails',             maxStaleMinutes: 1560 },
 
+  // Welcome drip sequence — daily at 10:30am UTC (sends next email to users within 14-day window)
+  { schedule: '30 10 * * *',  path: '/api/drip/process',                         label: 'welcome-drip-sequence',      maxStaleMinutes: 1560 },
+  // Nurture email sequence — daily at 11am UTC (7-step sequence for free-tier users)
+  { schedule: '0 11 * * *',   path: '/api/nurture/process',                      label: 'nurture-email-sequence',     maxStaleMinutes: 1560 },
+  // Forum digest — weekly on Sundays at 9am UTC
+  { schedule: '0 9 * * 0',    path: '/api/newsletter/forum-digest',              label: 'forum-digest-email',         maxStaleMinutes: 11520 },
+
   // ─── New Real-Time Data Feed Integrations ────────────────────────────
   { schedule: '0 */6 * * *',  path: '/api/refresh?type=conjunction-alerts',       label: 'conjunction-alerts',          maxStaleMinutes: 480 },
   { schedule: '0 14 * * *',   path: '/api/refresh?type=executive-moves',          label: 'executive-moves-refresh',     maxStaleMinutes: 1560 },

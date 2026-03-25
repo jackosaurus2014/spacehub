@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { toast } from '@/lib/toast';
+import { trackGA4Event } from '@/lib/analytics';
 
 const isValidEmail = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
@@ -121,6 +122,7 @@ function LoginContent() {
     e.preventDefault();
     setError('');
     setLoading(true);
+    trackGA4Event('login_attempt', { method: 'credentials' });
 
     try {
       const result = await signIn('credentials', {
@@ -132,7 +134,10 @@ function LoginContent() {
       if (result?.error) {
         setError(result.error);
         toast.error('Invalid email or password');
+        trackGA4Event('login_failure', { method: 'credentials' });
       } else {
+        trackGA4Event('login_success', { method: 'credentials' });
+
         // Detect first login and redirect new users to onboarding
         let isFirstLogin = false;
         try {
