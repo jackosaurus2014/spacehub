@@ -3,6 +3,8 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import prisma from '@/lib/db';
 import LaunchDayDashboard from '@/components/launch/LaunchDayDashboard';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 interface LaunchPageProps {
   params: { eventId: string };
@@ -78,6 +80,9 @@ export default async function LaunchPage({ params }: LaunchPageProps) {
         </nav>
       </div>
       <LaunchDayDashboard event={serializedEvent} />
+      <div className="max-w-[1400px] mx-auto px-4 pb-8">
+        <RelatedModules modules={PAGE_RELATIONS['launch/[eventId]']} />
+      </div>
     </>
   );
 }

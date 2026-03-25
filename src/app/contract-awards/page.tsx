@@ -665,7 +665,7 @@ export default function ContractAwardsPage() {
                   category: a.category,
                   description: a.description,
                 }))}
-                filename="contract-awards"
+                filename="spacenexus-contract-awards"
                 columns={[
                   { key: 'title', label: 'Title' },
                   { key: 'agency', label: 'Agency' },

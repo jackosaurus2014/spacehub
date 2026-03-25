@@ -21,6 +21,8 @@ import ExportPDFButton from '@/components/ui/ExportPDFButton';
 import { SpaceNexusScoreInline } from '@/components/company/SpaceNexusScore';
 import { calculateSpaceNexusScore, getScoreColor as snxScoreColor, getScoreGrade } from '@/lib/spacenexus-score';
 import { getEntityLinks } from '@/lib/entity-linker';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -1844,6 +1846,10 @@ export default function CompanyProfileDetailPage() {
       <ScrollReveal delay={0.2} className="mt-6">
         <SimilarCompanies companySlug={company.slug} companyName={company.name} />
       </ScrollReveal>
+
+      <div className="mt-8">
+        <RelatedModules modules={PAGE_RELATIONS['company-profiles']} />
+      </div>
     </div>
   );
 }

@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import Link from 'next/link';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { useSubscription } from '@/components/SubscriptionProvider';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 
@@ -142,7 +143,7 @@ export default function PatentTrackerPage() {
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('All Categories');
   const [statusFilter, setStatusFilter] = useState<'all' | 'granted' | 'pending' | 'published'>('all');
-  const [sortBy, setSortBy] = useState<'date' | 'citations'>('date');
+  const [sortBy, setSortBy] = useState<'date' | 'citations' | 'assignee' | 'category'>('date');
 
   const filtered = useMemo(() => {
     let result = PATENTS;
@@ -162,11 +163,25 @@ export default function PatentTrackerPage() {
     }
     if (sortBy === 'citations') {
       result = [...result].sort((a, b) => b.citations - a.citations);
+    } else if (sortBy === 'assignee') {
+      result = [...result].sort((a, b) => a.assignee.localeCompare(b.assignee));
+    } else if (sortBy === 'category') {
+      result = [...result].sort((a, b) => a.category.localeCompare(b.category));
     } else {
       result = [...result].sort((a, b) => b.filingDate.localeCompare(a.filingDate));
     }
     return result;
   }, [search, category, statusFilter, sortBy]);
+
+  const chartData = useMemo(() => {
+    const counts: Record<string, number> = {};
+    PATENTS.forEach(p => {
+      counts[p.category] = (counts[p.category] || 0) + 1;
+    });
+    return Object.entries(counts)
+      .map(([name, count]) => ({ name, count }))
+      .sort((a, b) => b.count - a.count);
+  }, []);
 
   const statusColors = {
     granted: { bg: 'rgba(86, 240, 0, 0.1)', text: '#56F000', border: 'rgba(86, 240, 0, 0.2)' },
@@ -210,29 +225,52 @@ export default function PatentTrackerPage() {
         </div>
       </ScrollReveal>
 
+      {/* Patent Distribution Chart */}
+      <ScrollReveal>
+        <div className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-6 mb-8">
+          <h2 className="text-sm font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>Patent Distribution by Category</h2>
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart data={chartData} margin={{ top: 5, right: 20, bottom: 60, left: 0 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
+              <XAxis
+                dataKey="name"
+                tick={{ fill: '#94a3b8', fontSize: 12 }}
+                angle={-35}
+                textAnchor="end"
+                interval={0}
+              />
+              <YAxis tick={{ fill: '#94a3b8', fontSize: 12 }} allowDecimals={false} />
+              <Tooltip
+                contentStyle={{ backgroundColor: '#1e293b', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: '#e2e8f0' }}
+                labelStyle={{ color: '#e2e8f0', fontWeight: 600 }}
+                itemStyle={{ color: '#818cf8' }}
+              />
+              <Bar dataKey="count" fill="#818cf8" radius={[4, 4, 0, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      </ScrollReveal>
+
       {/* Filters */}
-      <div className="flex flex-wrap gap-3 mb-6">
+      <div className="flex flex-wrap gap-3 mb-3">
         <input
           type="text"
           value={search}
           onChange={e => setSearch(e.target.value)}
           placeholder="Search patents, companies, inventors..."
-          className="flex-1 min-w-[200px] px-3 py-2 rounded text-sm"
-          style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)', color: 'var(--text-primary)' }}
+          className="flex-1 min-w-[200px] bg-white/[0.06] border border-white/[0.06] rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
         />
         <select
           value={category}
           onChange={e => setCategory(e.target.value)}
-          className="px-3 py-2 rounded text-sm"
-          style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)', color: 'var(--text-primary)' }}
+          className="bg-white/[0.06] border border-white/[0.06] rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
         >
           {PATENT_CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
         </select>
         <select
           value={statusFilter}
           onChange={e => setStatusFilter(e.target.value as typeof statusFilter)}
-          className="px-3 py-2 rounded text-sm"
-          style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)', color: 'var(--text-primary)' }}
+          className="bg-white/[0.06] border border-white/[0.06] rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
         >
           <option value="all">All Status</option>
           <option value="granted">Granted</option>
@@ -242,12 +280,16 @@ export default function PatentTrackerPage() {
         <select
           value={sortBy}
           onChange={e => setSortBy(e.target.value as typeof sortBy)}
-          className="px-3 py-2 rounded text-sm"
-          style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)', color: 'var(--text-primary)' }}
+          className="bg-white/[0.06] border border-white/[0.06] rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
         >
-          <option value="date">Newest First</option>
-          <option value="citations">Most Cited</option>
+          <option value="date">Sort by Date (Newest)</option>
+          <option value="citations">Sort by Citations (Most)</option>
+          <option value="assignee">Sort by Assignee (A-Z)</option>
+          <option value="category">Sort by Category (A-Z)</option>
         </select>
+      </div>
+      <div className="text-xs mb-6" style={{ color: 'var(--text-muted)' }}>
+        Showing {filtered.length} of {PATENTS.length} patents
       </div>
 
       {/* Patent List */}

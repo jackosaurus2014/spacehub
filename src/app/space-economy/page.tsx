@@ -6,6 +6,8 @@ import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/Scr
 import RelatedModules from '@/components/ui/RelatedModules';
 import MobileValueProp from '@/components/marketing/MobileValueProp';
 import QuickFacts from '@/components/ui/QuickFacts';
+import ExportButton from '@/components/ui/ExportButton';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 
 const SPACE_ECONOMY_FACTS = [
   { value: '$626B', label: 'Global Space Economy (2025)' },
@@ -146,7 +148,7 @@ export default function SpaceEconomyPage() {
         <QuickFacts facts={SPACE_ECONOMY_FACTS} title="Space Economy at a Glance" />
 
         {/* ── Search / Filter ────────────────────────────── */}
-        <div className="mb-8">
+        <div className="mb-8 flex flex-wrap items-center gap-3">
           <input
             type="search"
             placeholder="Filter segments, countries..."
@@ -154,6 +156,51 @@ export default function SpaceEconomyPage() {
             onChange={e => setSearch(e.target.value)}
             className="w-full max-w-md bg-white/[0.04] border border-white/[0.06] rounded-lg px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-white/15"
           />
+          <ExportButton
+            data={[
+              ...filteredSegments.map(s => ({
+                type: 'Market Segment',
+                name: s.name,
+                sizeB: s.size,
+                growthPct: s.growth,
+                detail: s.detail,
+              })),
+              ...filteredNations.map(n => ({
+                type: 'Nation Budget',
+                name: n.country,
+                sizeB: n.budget,
+                growthPct: null,
+                detail: 'est' in n ? 'Estimated' : 'Official',
+              })),
+            ] as Record<string, unknown>[]}
+            filename="spacenexus-space-economy"
+            columns={[
+              { key: 'type', label: 'Type' },
+              { key: 'name', label: 'Name' },
+              { key: 'sizeB', label: 'Size ($B)' },
+              { key: 'growthPct', label: 'Growth (%)' },
+              { key: 'detail', label: 'Details' },
+            ]}
+            label="Export Data"
+          />
+        </div>
+
+        {/* ── Market Segments Chart ─────────────────────── */}
+        <div className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-6 mb-8">
+          <h3 className="text-lg font-semibold text-white mb-4">Market Segments by Revenue ($B)</h3>
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart layout="vertical" data={MARKET_SEGMENTS} margin={{ top: 5, right: 30, left: 100, bottom: 5 }}>
+              <XAxis type="number" tick={{ fill: '#94a3b8', fontSize: 12 }} tickFormatter={(v) => `$${v}B`} />
+              <YAxis type="category" dataKey="name" tick={{ fill: '#94a3b8', fontSize: 12 }} width={95} />
+              <Tooltip
+                contentStyle={{ backgroundColor: '#1e293b', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8 }}
+                labelStyle={{ color: '#e2e8f0' }}
+                itemStyle={{ color: '#818cf8' }}
+                formatter={(value: number | string | undefined) => [`$${value ?? 0}B`, 'Revenue']}
+              />
+              <Bar dataKey="size" fill="#818cf8" radius={[0, 4, 4, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
         </div>
 
         {/* ── Global Overview Stats ──────────────────────── */}

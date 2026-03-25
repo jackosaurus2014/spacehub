@@ -316,8 +316,8 @@ export function ExpertCommentaryTab() {
         <p className="text-sm text-slate-400">Curated collection of authoritative sources for space law, policy analysis, and industry commentary. Follow these sources for the latest expert insights on regulatory developments.</p>
       </div>
       <div className="flex flex-wrap gap-2 mb-6">
-        <button onClick={() => setTypeFilter('')} className={`px-3 py-1.5 rounded-lg text-sm transition-all ${!typeFilter ? 'bg-black text-white' : 'bg-white/[0.04] text-slate-300 hover:bg-white/[0.08]'}`}>All Sources</button>
-        {Object.entries(typeLabels).map(([type, info]) => (<button key={type} onClick={() => setTypeFilter(type)} className={`px-3 py-1.5 rounded-lg text-sm transition-all flex items-center gap-1 ${typeFilter === type ? 'bg-black text-white' : 'bg-white/[0.04] text-slate-300 hover:bg-white/[0.08]'}`}><span>{info.icon}</span>{info.label}</button>))}
+        <button onClick={() => setTypeFilter('')} className={`px-3 py-1.5 min-h-[44px] rounded-lg text-sm transition-all ${!typeFilter ? 'bg-black text-white' : 'bg-white/[0.04] text-slate-300 hover:bg-white/[0.08]'}`}>All Sources</button>
+        {Object.entries(typeLabels).map(([type, info]) => (<button key={type} onClick={() => setTypeFilter(type)} className={`px-3 py-1.5 min-h-[44px] rounded-lg text-sm transition-all flex items-center gap-1 ${typeFilter === type ? 'bg-black text-white' : 'bg-white/[0.04] text-slate-300 hover:bg-white/[0.08]'}`}><span>{info.icon}</span>{info.label}</button>))}
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
         {filteredSources.map((source) => { const typeInfo = typeLabels[source.type]; return (

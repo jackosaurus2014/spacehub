@@ -3,6 +3,8 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getCity, SPACE_CITIES } from '@/lib/city-data';
 import FAQSchema from '@/components/seo/FAQSchema';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 export const revalidate = 86400;
 
@@ -266,6 +268,13 @@ export default function CityPage({ params }: Props) {
             Get Started Free
           </Link>
         </div>
+
+        <RelatedModules modules={[
+          { name: 'Market Intelligence', description: 'Industry analysis & trends', href: '/market-intel', icon: '📊' },
+          { name: 'Company Profiles', description: 'Space industry directory', href: '/company-profiles', icon: '🏢' },
+          { name: 'Space Industry Map', description: 'Industry sector map', href: '/space-map', icon: '🗺️' },
+          { name: 'Industry Trends', description: 'Trend analysis', href: '/industry-trends', icon: '📈' },
+        ]} />
 
         {/* Other Cities */}
         <section className="border-t border-white/[0.06] pt-8">

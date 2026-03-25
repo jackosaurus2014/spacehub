@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { SECTORS, SECTOR_MAP, getRelatedSectors } from '@/lib/sector-data';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -184,6 +186,8 @@ export default async function SectorPage({ params }: Props) {
           <Link href="/sectors" className="btn-secondary text-sm">All Sectors</Link>
         </div>
       </div>
+
+      <RelatedModules modules={PAGE_RELATIONS['sectors/[slug]']} />
 
       {/* JSON-LD */}
       <script

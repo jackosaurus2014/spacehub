@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
+import VirtualList from '@/components/ui/VirtualList';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import RelatedModules from '@/components/ui/RelatedModules';
@@ -534,7 +535,7 @@ export default function CompanyProfilesPage() {
               />
               <ExportButton
                 data={companies}
-                filename="spacenexus-company-profiles"
+                filename="spacenexus-companies"
                 columns={COMPANY_EXPORT_COLUMNS}
                 label="Export Companies"
               />
@@ -640,19 +641,16 @@ export default function CompanyProfilesPage() {
             </div>
             <div className="w-4" />
           </div>
-          <AnimatePresence mode="popLayout">
-            {companies.map((company, i) => (
-              <motion.div
-                key={company.id}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: i * 0.02 }}
-              >
+          <VirtualList
+            items={companies}
+            itemHeight={72}
+            overscan={5}
+            maxHeight={700}
+            className="rounded-xl"
+            renderItem={(company, i) => (
+              <div className="pb-2">
                 <Link href={`/company-profiles/${company.slug}`}>
-                  <motion.div
-                    whileHover={{ x: 4 }}
-                    className="card p-4 flex items-center gap-4 group cursor-pointer"
-                  >
+                  <div className="card p-4 flex items-center gap-4 group cursor-pointer hover:bg-white/[0.03] transition-colors">
                     <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-white/[0.08] to-white/[0.06] flex items-center justify-center text-lg flex-shrink-0 border border-white/[0.1]">
                       {company.logoUrl ? (
                         <Image src={company.logoUrl} alt={`${company.name} logo`} width={28} height={28} sizes="28px" className="w-7 h-7 rounded object-contain" unoptimized />
@@ -698,11 +696,11 @@ export default function CompanyProfilesPage() {
                     <svg className="w-4 h-4 text-slate-600 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                     </svg>
-                  </motion.div>
+                  </div>
                 </Link>
-              </motion.div>
-            ))}
-          </AnimatePresence>
+              </div>
+            )}
+          />
         </div>
       )}
 

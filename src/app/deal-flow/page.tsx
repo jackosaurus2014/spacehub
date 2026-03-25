@@ -2,6 +2,7 @@
 
 import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import EmptyState from '@/components/ui/EmptyState';
@@ -597,6 +598,17 @@ export default function DealFlowPage() {
     };
   }, [filteredDeals]);
 
+  // ── Chart Data ─────────────────────────────────────────────────
+  const dealTypeChartData = useMemo(() => {
+    const counts: Record<string, number> = {};
+    DEALS.forEach(d => {
+      counts[d.type] = (counts[d.type] || 0) + 1;
+    });
+    return Object.entries(counts)
+      .map(([name, count]) => ({ name, count }))
+      .sort((a, b) => b.count - a.count);
+  }, []);
+
   // ── Render ───────────────────────────────────────────────────────
 
   return (
@@ -635,6 +647,29 @@ export default function DealFlowPage() {
                 {formatCurrency(stats.largest)}
               </p>
             </div>
+          </div>
+        </ScrollReveal>
+
+        {/* ── Deal Type Chart ───────────────────────────────────── */}
+        <ScrollReveal delay={0.05}>
+          <div className="mt-8 bg-white/[0.04] border border-white/[0.06] rounded-lg p-6 mb-8">
+            <h2 className="text-lg font-semibold text-white mb-4">Deals by Type</h2>
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={dealTypeChartData} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
+                <XAxis
+                  dataKey="name"
+                  tick={{ fill: '#94a3b8', fontSize: 12 }}
+                />
+                <YAxis tick={{ fill: '#94a3b8', fontSize: 12 }} allowDecimals={false} />
+                <Tooltip
+                  contentStyle={{ backgroundColor: '#1e293b', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: '#e2e8f0' }}
+                  labelStyle={{ color: '#e2e8f0', fontWeight: 600 }}
+                  itemStyle={{ color: '#818cf8' }}
+                />
+                <Bar dataKey="count" fill="#818cf8" radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
           </div>
         </ScrollReveal>
 

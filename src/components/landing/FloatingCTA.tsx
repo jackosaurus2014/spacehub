@@ -70,7 +70,7 @@ export default function FloatingCTA() {
             <div className="flex items-center gap-3">
               <Link
                 href="/register?utm_source=website&utm_medium=floating_cta&utm_campaign=homepage"
-                className="inline-flex items-center gap-1.5 bg-white text-slate-900 font-medium text-xs sm:text-sm py-2 px-5 rounded-lg transition-all duration-200 ease-smooth hover:bg-slate-100 active:scale-[0.98] whitespace-nowrap"
+                className="inline-flex items-center gap-1.5 bg-white text-slate-900 font-medium text-xs sm:text-sm py-2 px-5 min-h-[44px] rounded-lg transition-all duration-200 ease-smooth hover:bg-slate-100 active:scale-[0.98] whitespace-nowrap"
               >
                 Start free
                 <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -80,7 +80,7 @@ export default function FloatingCTA() {
 
               <button
                 onClick={handleDismiss}
-                className="p-1.5 rounded-md text-slate-500 hover:text-white hover:bg-white/[0.06] transition-colors duration-150"
+                className="p-1.5 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-md text-slate-500 hover:text-white hover:bg-white/[0.06] transition-colors duration-150"
                 aria-label="Dismiss banner"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

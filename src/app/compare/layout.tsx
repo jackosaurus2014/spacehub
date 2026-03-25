@@ -28,12 +28,21 @@ export const metadata: Metadata = {
     type: 'website',
     url: 'https://spacenexus.us/compare',
     siteName: 'SpaceNexus',
+    images: [
+      {
+        url: '/api/og?title=Compare+Space+Companies+%26+Technologies&subtitle=Side-by-side+comparisons+of+launch+vehicles%2C+satellites%2C+and+companies&type=compare',
+        width: 1200,
+        height: 630,
+        alt: 'Compare Space Companies & Technologies',
+      },
+    ],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Compare Space Industry Players | SpaceNexus',
     description:
       'Side-by-side comparisons of launch vehicles, satellite constellations, companies, and platforms across the space industry.',
+    images: ['/api/og?title=Compare+Space+Companies+%26+Technologies&subtitle=Side-by-side+comparisons+of+launch+vehicles%2C+satellites%2C+and+companies&type=compare'],
   },
   alternates: {
     canonical: 'https://spacenexus.us/compare',

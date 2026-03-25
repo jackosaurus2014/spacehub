@@ -5,6 +5,7 @@ import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 
 /* ------------------------------------------------------------------ */
 /*  Data                                                               */
@@ -459,6 +460,24 @@ export default function MissionStatsPage() {
             <KpiCard label="Busiest Launch Site" value={yearData.busiestSite} sub={`${selectedYear}`} accent="amber" />
           </div>
         </ScrollReveal>
+
+        {/* ---------- Launches per year recharts ---------- */}
+        <div className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-6 mb-8">
+          <h3 className="text-lg font-semibold text-white mb-4">Total Orbital Launches per Year</h3>
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart data={YEAR_LAUNCH_TOTALS} margin={{ top: 5, right: 20, left: 10, bottom: 5 }}>
+              <XAxis dataKey="year" tick={{ fill: '#94a3b8', fontSize: 12 }} />
+              <YAxis tick={{ fill: '#94a3b8', fontSize: 12 }} />
+              <Tooltip
+                contentStyle={{ backgroundColor: '#1e293b', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8 }}
+                labelStyle={{ color: '#e2e8f0' }}
+                itemStyle={{ color: '#818cf8' }}
+                formatter={(value: number | string | undefined) => [value ?? 0, 'Launches']}
+              />
+              <Bar dataKey="launches" fill="#818cf8" radius={[4, 4, 0, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
 
         {/* ---------- Launches by year bar chart ---------- */}
         <ScrollReveal delay={0.05}>

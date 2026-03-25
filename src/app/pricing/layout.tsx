@@ -22,10 +22,10 @@ export const metadata: Metadata = {
     url: 'https://spacenexus.us/pricing',
     images: [
       {
-        url: '/og-image.png',
+        url: '/api/og?title=SpaceNexus+Pricing+Plans&subtitle=Choose+your+plan+for+unlimited+space+industry+intelligence&type=pricing',
         width: 1200,
         height: 630,
-        alt: 'SpaceNexus Pricing - Subscription Plans',
+        alt: 'SpaceNexus Pricing Plans',
       },
     ],
   },
@@ -35,7 +35,7 @@ export const metadata: Metadata = {
     creator: '@spacenexus',
     title: 'Pricing | SpaceNexus',
     description: 'Choose your subscription plan for unlimited space industry intelligence.',
-    images: ['/og-image.png'],
+    images: ['/api/og?title=SpaceNexus+Pricing+Plans&subtitle=Choose+your+plan+for+unlimited+space+industry+intelligence&type=pricing'],
   },
   alternates: {
     canonical: 'https://spacenexus.us/pricing',

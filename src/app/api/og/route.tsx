@@ -3,10 +3,23 @@ import { NextRequest } from 'next/server';
 
 export const runtime = 'edge';
 
+const TYPE_COLORS: Record<string, { bg: string; border: string; text: string }> = {
+  guide: { bg: 'rgba(99, 102, 241, 0.2)', border: 'rgba(99, 102, 241, 0.4)', text: '#a5b4fc' },
+  compare: { bg: 'rgba(6, 182, 212, 0.2)', border: 'rgba(6, 182, 212, 0.4)', text: '#67e8f9' },
+  learn: { bg: 'rgba(34, 197, 94, 0.2)', border: 'rgba(34, 197, 94, 0.4)', text: '#86efac' },
+  tools: { bg: 'rgba(249, 115, 22, 0.2)', border: 'rgba(249, 115, 22, 0.4)', text: '#fdba74' },
+  pricing: { bg: 'rgba(139, 92, 246, 0.2)', border: 'rgba(139, 92, 246, 0.4)', text: '#c4b5fd' },
+  marketplace: { bg: 'rgba(236, 72, 153, 0.2)', border: 'rgba(236, 72, 153, 0.4)', text: '#f9a8d4' },
+  data: { bg: 'rgba(14, 165, 233, 0.2)', border: 'rgba(14, 165, 233, 0.4)', text: '#7dd3fc' },
+};
+
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const title = searchParams.get('title') || 'Space Industry Intelligence';
   const subtitle = searchParams.get('subtitle') || 'Real-time data, market analytics, and business tools for the space economy';
+  const type = searchParams.get('type') || '';
+
+  const typeStyle = TYPE_COLORS[type] || null;
 
   return new ImageResponse(
     (
@@ -18,7 +31,7 @@ export async function GET(request: NextRequest) {
           flexDirection: 'column',
           justifyContent: 'space-between',
           padding: '60px',
-          background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 40%, #0f172a 70%, #1a1033 100%)',
+          background: 'linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #0f172a 100%)',
           fontFamily: 'sans-serif',
           position: 'relative',
           overflow: 'hidden',
@@ -38,6 +51,10 @@ export async function GET(request: NextRequest) {
           { top: 550, left: 550, size: 1.5, opacity: 0.4 },
           { top: 60, left: 1100, size: 2, opacity: 0.6 },
           { top: 480, left: 100, size: 1.5, opacity: 0.5 },
+          { top: 250, left: 750, size: 1, opacity: 0.3 },
+          { top: 380, left: 500, size: 2, opacity: 0.5 },
+          { top: 160, left: 350, size: 1.5, opacity: 0.6 },
+          { top: 450, left: 950, size: 2, opacity: 0.4 },
         ].map((star, i) => (
           <div
             key={i}
@@ -77,7 +94,7 @@ export async function GET(request: NextRequest) {
           }}
         />
 
-        {/* Top: Branding */}
+        {/* Top: Branding + type badge */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
             <div
@@ -100,23 +117,42 @@ export async function GET(request: NextRequest) {
               SpaceNexus
             </span>
           </div>
-          <div
-            style={{
-              background: 'rgba(6, 182, 212, 0.15)',
-              border: '1px solid rgba(6, 182, 212, 0.3)',
-              borderRadius: '20px',
-              padding: '6px 18px',
-              color: '#67e8f9',
-              fontSize: '14px',
-              fontWeight: 600,
-              letterSpacing: '1px',
-            }}
-          >
-            spacenexus.us
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            {typeStyle && (
+              <div
+                style={{
+                  background: typeStyle.bg,
+                  border: `1px solid ${typeStyle.border}`,
+                  borderRadius: '20px',
+                  padding: '6px 18px',
+                  color: typeStyle.text,
+                  fontSize: '14px',
+                  fontWeight: 600,
+                  letterSpacing: '0.5px',
+                  textTransform: 'uppercase',
+                }}
+              >
+                {type}
+              </div>
+            )}
+            <div
+              style={{
+                background: 'rgba(6, 182, 212, 0.15)',
+                border: '1px solid rgba(6, 182, 212, 0.3)',
+                borderRadius: '20px',
+                padding: '6px 18px',
+                color: '#67e8f9',
+                fontSize: '14px',
+                fontWeight: 600,
+                letterSpacing: '1px',
+              }}
+            >
+              spacenexus.us
+            </div>
           </div>
         </div>
 
-        {/* Center: Title */}
+        {/* Center: Title + Subtitle */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <div
             style={{

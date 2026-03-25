@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
@@ -796,6 +796,8 @@ function FrequencyBandCard({ band }: { band: FrequencyBand }) {
 export default function GroundStationsPage() {
   const [activeTab, setActiveTab] = useState<TabId>('networks');
   const [modelFilter, setModelFilter] = useState<string>('');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [sortBy, setSortBy] = useState<'name' | 'stations'>('name');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [refreshedAt, setRefreshedAt] = useState<string | null>(null);
@@ -861,9 +863,38 @@ export default function GroundStationsPage() {
     );
   }
 
-  const filteredNetworks = modelFilter
-    ? GROUND_STATION_NETWORKS.filter((n) => n.model === modelFilter)
-    : GROUND_STATION_NETWORKS;
+  const filteredNetworks = useMemo(() => {
+    let result = GROUND_STATION_NETWORKS;
+
+    // Text search
+    if (searchQuery) {
+      const q = searchQuery.toLowerCase();
+      result = result.filter((n) =>
+        n.name.toLowerCase().includes(q) ||
+        n.description.toLowerCase().includes(q) ||
+        n.coverage.toLowerCase().includes(q) ||
+        n.targetCustomers.toLowerCase().includes(q) ||
+        n.bands.some((b) => b.toLowerCase().includes(q))
+      );
+    }
+
+    // Model filter
+    if (modelFilter) {
+      result = result.filter((n) => n.model === modelFilter);
+    }
+
+    // Sort
+    result = [...result].sort((a, b) => {
+      if (sortBy === 'stations') {
+        const aNum = parseInt(a.stations.replace(/\D/g, '')) || 0;
+        const bNum = parseInt(b.stations.replace(/\D/g, '')) || 0;
+        return bNum - aNum;
+      }
+      return a.name.localeCompare(b.name);
+    });
+
+    return result;
+  }, [GROUND_STATION_NETWORKS, searchQuery, modelFilter, sortBy]);
 
   const tabs: { id: TabId; label: string; icon: string }[] = [
     { id: 'networks', label: 'Station Networks', icon: String.fromCodePoint(0x1F4E1) },
@@ -952,8 +983,26 @@ export default function GroundStationsPage() {
           {/* Networks Tab */}
           {activeTab === 'networks' && (
             <div>
-              {/* Filter */}
-              <div className="flex flex-wrap items-center gap-3 mb-6">
+              {/* Search, Sort & Filters */}
+              <div className="flex flex-wrap items-center gap-3 mb-4">
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search networks, bands, coverage..."
+                  className="flex-1 min-w-[200px] bg-white/[0.06] border border-white/[0.06] rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                />
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value as 'name' | 'stations')}
+                  className="bg-white/[0.06] border border-white/[0.06] rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                >
+                  <option value="name">Sort by Name</option>
+                  <option value="stations">Sort by Stations (most first)</option>
+                </select>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-3 mb-4">
                 <span className="text-slate-400 text-sm">Filter by model:</span>
                 {['', 'Owned', 'GaaS', 'Cloud-integrated', 'Aggregator', 'Government'].map((model) => (
                   <button
@@ -968,6 +1017,10 @@ export default function GroundStationsPage() {
                     {model || 'All'}
                   </button>
                 ))}
+              </div>
+
+              <div className="text-xs text-slate-400 mb-6">
+                Showing {filteredNetworks.length} of {GROUND_STATION_NETWORKS.length} networks
               </div>
 
               {/* Network Cards Grid */}

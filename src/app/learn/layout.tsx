@@ -23,12 +23,21 @@ export const metadata: Metadata = {
     type: 'website',
     url: 'https://spacenexus.us/learn',
     siteName: 'SpaceNexus',
+    images: [
+      {
+        url: '/api/og?title=Space+Industry+Learning+Hub&subtitle=Comprehensive+guides%2C+data%2C+and+analysis+on+the+space+industry&type=learn',
+        width: 1200,
+        height: 630,
+        alt: 'Space Industry Learning Hub',
+      },
+    ],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Space Industry Learning Center | SpaceNexus',
     description:
       'Comprehensive guides, data, and analysis on the space industry.',
+    images: ['/api/og?title=Space+Industry+Learning+Hub&subtitle=Comprehensive+guides%2C+data%2C+and+analysis+on+the+space+industry&type=learn'],
   },
   alternates: {
     canonical: 'https://spacenexus.us/learn',

@@ -11,6 +11,8 @@ import InlineNewsletterSignup from '@/components/blog/InlineNewsletterSignup';
 import BlogTableOfContents from '@/components/blog/BlogTableOfContents';
 import ReadingProgressBar from '@/components/blog/ReadingProgressBar';
 import AdSlot from '@/components/ads/AdSlot';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 const SAFE_HTML_CONFIG: sanitizeHtml.IOptions = {
   allowedTags: ['b', 'i', 'em', 'strong', 'a', 'p', 'br', 'ul', 'ol', 'li', 'h2', 'h3', 'h4', 'blockquote', 'code', 'pre', 'img', 'span', 'div', 'table', 'thead', 'tbody', 'tr', 'th', 'td'],
@@ -625,6 +627,8 @@ export default async function BlogPostPage({ params }: Props) {
             &larr; Back to all posts
           </Link>
         </div>
+
+        <RelatedModules modules={PAGE_RELATIONS['blog/[slug]']} />
       </article>
     </div>
   );

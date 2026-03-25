@@ -52,7 +52,7 @@ export default function WhatsNewBanner() {
         </div>
         <button
           onClick={handleDismiss}
-          className="shrink-0 p-1 rounded-md text-slate-400 hover:text-white hover:bg-white/10 transition-colors"
+          className="shrink-0 p-1 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-md text-slate-400 hover:text-white hover:bg-white/10 transition-colors"
           aria-label="Dismiss banner"
         >
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>

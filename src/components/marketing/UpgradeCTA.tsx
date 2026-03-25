@@ -139,7 +139,7 @@ function FloatingCTA({ feature }: { feature?: string }) {
         {/* Dismiss button */}
         <button
           onClick={handleDismiss}
-          className="absolute top-2 right-2 p-1 rounded-lg text-slate-500 hover:text-white/70 hover:bg-white/[0.06] transition-colors"
+          className="absolute top-2 right-2 p-1 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg text-slate-500 hover:text-white/70 hover:bg-white/[0.06] transition-colors"
           aria-label="Dismiss upgrade notification"
         >
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>

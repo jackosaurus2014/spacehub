@@ -701,13 +701,13 @@ export default function DebrisTrackingTab() {
           <div className="card p-4 mb-6">
             <div className="flex flex-wrap items-center gap-2">
               <span className="text-slate-400 text-sm mr-2">Filter by type:</span>
-              <button onClick={() => setObjectTypeFilter('')} className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${objectTypeFilter === '' ? 'bg-white/[0.06] text-white border border-white/[0.06]' : 'bg-transparent text-slate-400 border border-white/[0.06] hover:border-white/30'}`}>
+              <button onClick={() => setObjectTypeFilter('')} className={`px-3 py-1.5 min-h-[44px] rounded-lg text-sm font-medium transition-all ${objectTypeFilter === '' ? 'bg-white/[0.06] text-white border border-white/[0.06]' : 'bg-transparent text-slate-400 border border-white/[0.06] hover:border-white/30'}`}>
                 All ({notableDebris.length})
               </button>
               {DEBRIS_OBJECT_TYPES.map((type) => {
                 const count = notableDebris.filter((o) => o.objectType === type.value).length;
                 return (
-                  <button key={type.value} onClick={() => setObjectTypeFilter(type.value)} className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all flex items-center gap-1 ${objectTypeFilter === type.value ? 'bg-white/[0.06] text-white border border-white/[0.06]' : 'bg-transparent text-slate-400 border border-white/[0.06] hover:border-white/30'}`}>
+                  <button key={type.value} onClick={() => setObjectTypeFilter(type.value)} className={`px-3 py-1.5 min-h-[44px] rounded-lg text-sm font-medium transition-all flex items-center gap-1 ${objectTypeFilter === type.value ? 'bg-white/[0.06] text-white border border-white/[0.06]' : 'bg-transparent text-slate-400 border border-white/[0.06] hover:border-white/30'}`}>
                     <span>{type.icon}</span>
                     {type.label} ({count})
                   </button>

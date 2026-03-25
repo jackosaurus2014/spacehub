@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
 import SocialShare from '@/components/ui/SocialShare';
+import ExportButton from '@/components/ui/ExportButton';
 
 /* ─── Animated Counter Hook ─────────────────────────────────────────────── */
 function useAnimatedCounter(target: number, duration = 1800, prefix = '', suffix = '') {
@@ -157,6 +158,51 @@ function SectionHeader({ icon, title, id }: { icon: string; title: string; id: s
 }
 
 /* ─── Page ──────────────────────────────────────────────────────────────── */
+const SPACE_STATS_EXPORT_DATA = [
+  { stat: '$626B', category: 'Market Size', label: 'Global Space Economy (2025)', source: 'Space Foundation', year: '2025' },
+  { stat: '$1T+', category: 'Market Size', label: 'Projected Market Size by 2034', source: 'Morgan Stanley / BofA', year: '2034 projection' },
+  { stat: '$1.8T', category: 'Market Size', label: 'Projected Market Size by 2035', source: 'Space Foundation', year: '2035 projection' },
+  { stat: '9%', category: 'Market Size', label: 'Annual Growth Rate (CAGR)', source: 'Euroconsult', year: '2020-2025' },
+  { stat: '78%', category: 'Market Size', label: 'Commercial Share of Space Economy', source: 'Space Foundation', year: '2025' },
+  { stat: '$14B', category: 'Market Size', label: 'Launch Services Market', source: 'Bryce Tech', year: '2025' },
+  { stat: '320+', category: 'Launch Statistics', label: 'Orbital Launches (2025)', source: 'Space Launch Report', year: '2025' },
+  { stat: '96%', category: 'Launch Statistics', label: 'Overall Launch Success Rate', source: 'FAA / AST', year: '2025' },
+  { stat: '165+', category: 'Launch Statistics', label: 'SpaceX Falcon 9 Launches', source: 'SpaceX', year: '2025' },
+  { stat: '60%+', category: 'Launch Statistics', label: 'SpaceX Global Launch Share', source: 'Bryce Tech', year: '2024' },
+  { stat: '$2,720/kg', category: 'Launch Statistics', label: 'Average LEO Launch Cost (Falcon 9)', source: 'SpaceX / Industry Est.', year: '2025' },
+  { stat: '15+', category: 'Launch Statistics', label: 'Active Launch Providers', source: 'Bryce Tech', year: '2024' },
+  { stat: '10,000+', category: 'Satellites', label: 'Active Satellites in Orbit', source: 'UCS Satellite Database', year: '2025' },
+  { stat: '6,000+', category: 'Satellites', label: 'Starlink Satellites (Active)', source: 'SpaceX', year: '2025' },
+  { stat: '2,800+', category: 'Satellites', label: 'Satellites Launched Per Year', source: 'Bryce Tech', year: '2024' },
+  { stat: '58%', category: 'Satellites', label: 'LEO Constellation Share', source: 'SIA', year: '2025' },
+  { stat: '$40B', category: 'Satellites', label: 'Satellite Broadband Revenue (2030 Est.)', source: 'Euroconsult', year: '2030 projection' },
+  { stat: '3,236', category: 'Satellites', label: 'Amazon Kuiper Planned Satellites', source: 'Amazon / FCC Filing', year: '2025' },
+  { stat: '$95B+', category: 'Government Spending', label: 'Global Government Space Spending', source: 'Euroconsult', year: '2024' },
+  { stat: '$25.4B', category: 'Government Spending', label: 'NASA Annual Budget', source: 'NASA', year: 'FY2025' },
+  { stat: '$29.4B', category: 'Government Spending', label: 'US Space Force & NRO Budget', source: 'DoD / ODNI', year: 'FY2025' },
+  { stat: '70+', category: 'Government Spending', label: 'National Space Agencies', source: 'OECD Space Forum', year: '2024' },
+  { stat: '$12B+', category: 'Government Spending', label: 'ESA Budget (2025)', source: 'ESA', year: '2025' },
+  { stat: '$15B+', category: 'Government Spending', label: 'China Space Budget (Est.)', source: 'Euroconsult Est.', year: '2024' },
+  { stat: '360,000+', category: 'Workforce', label: 'US Space Workforce', source: 'Space Foundation', year: '2024' },
+  { stat: '5%', category: 'Workforce', label: 'Annual Workforce Growth', source: 'BLS / Space Foundation', year: '2023-2024' },
+  { stat: '$115K', category: 'Workforce', label: 'Median Salary (US Space Industry)', source: 'Glassdoor / SpaceNexus Data', year: '2025' },
+  { stat: '1M+', category: 'Workforce', label: 'Global Space Workforce', source: 'OECD', year: '2024' },
+  { stat: '42%', category: 'Workforce', label: 'STEM Degree Holders', source: 'AIAA Survey', year: '2024' },
+  { stat: '24%', category: 'Workforce', label: 'Women in Space Workforce', source: 'Space Foundation', year: '2024' },
+  { stat: '$10B+', category: 'Investment', label: 'Annual VC Investment', source: 'Space Capital', year: '2024' },
+  { stat: '500+', category: 'Investment', label: 'Active Space Startups', source: 'Bryce Tech / Space Capital', year: '2025' },
+  { stat: '$10B+', category: 'Investment', label: 'SpaceX Valuation Funding', source: 'Bloomberg / CNBC', year: '2025' },
+  { stat: '15+', category: 'Investment', label: 'Space SPACs (Completed)', source: 'CNBC', year: '2020-2022' },
+  { stat: '$2.4B', category: 'Investment', label: 'Sierra Space + Vast Raises (2025)', source: 'TechCrunch / SpaceNews', year: '2025' },
+  { stat: '35%', category: 'Investment', label: 'Launch Sector Investment Share', source: 'Space Capital', year: '2024' },
+  { stat: '$130B', category: 'Revenue Breakdown', label: 'Satellite Services Revenue', source: 'SIA', year: '2024' },
+  { stat: '$140B', category: 'Revenue Breakdown', label: 'Ground Equipment Revenue', source: 'SIA', year: '2024' },
+  { stat: '$20B', category: 'Revenue Breakdown', label: 'Satellite Manufacturing Revenue', source: 'SIA', year: '2024' },
+  { stat: '$7B', category: 'Revenue Breakdown', label: 'Earth Observation Market', source: 'Euroconsult', year: '2024' },
+  { stat: '$300B+', category: 'Revenue Breakdown', label: 'GNSS Downstream Applications', source: 'European GNSS Agency', year: '2024' },
+  { stat: '$2.6B', category: 'Revenue Breakdown', label: 'Space Tourism Revenue (Est. 2030)', source: 'UBS', year: '2030 projection' },
+];
+
 export default function SpaceStatsPage() {
   const relatedModules = PAGE_RELATIONS['space-stats'] || [];
 
@@ -200,6 +246,20 @@ export default function SpaceStatsPage() {
               url="https://spacenexus.us/space-stats"
               description="The definitive collection of space industry data: $626B market, 230+ launches, 10,000+ satellites, and more."
             />
+            <div className="mt-4 flex justify-center">
+              <ExportButton
+                data={SPACE_STATS_EXPORT_DATA as Record<string, unknown>[]}
+                filename="spacenexus-space-stats"
+                columns={[
+                  { key: 'stat', label: 'Statistic' },
+                  { key: 'category', label: 'Category' },
+                  { key: 'label', label: 'Description' },
+                  { key: 'source', label: 'Source' },
+                  { key: 'year', label: 'Year' },
+                ]}
+                label="Export Stats"
+              />
+            </div>
           </div>
 
           {/* Hero Stats - Animated Counters */}

@@ -6,6 +6,8 @@ import { motion } from 'framer-motion';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import Link from 'next/link';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 const IMPACT_COLORS: Record<string, string> = {
   critical: 'bg-red-500/20 text-red-400 border-red-500/30',
@@ -182,6 +184,10 @@ export default function RegulationExplainerDetailPage() {
             </div>
           )}
         </motion.div>
+
+        <div className="mt-8">
+          <RelatedModules modules={PAGE_RELATIONS['regulation-explainers/[slug]']} />
+        </div>
       </div>
     </div>
   );

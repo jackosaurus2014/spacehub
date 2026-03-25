@@ -8,6 +8,7 @@ import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import RelatedModules from '@/components/ui/RelatedModules';
 import DataFreshness from '@/components/ui/DataFreshness';
+import ExportButton from '@/components/ui/ExportButton';
 import { clientLogger } from '@/lib/client-logger';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 
@@ -1107,22 +1108,54 @@ function AsteroidWatchContent() {
         </div>
 
         {/* Tab Navigation */}
-        <div role="tablist" className="flex gap-2 mb-6 overflow-x-auto pb-1">
-          {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              role="tab"
-              aria-selected={activeTab === tab.id}
-              onClick={() => handleTabChange(tab.id)}
-              className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
-                activeTab === tab.id
-                  ? 'bg-white text-slate-900'
-                  : 'bg-white/[0.04] text-slate-400 hover:bg-white/[0.08]'
-              }`}
-            >
-              {tab.label}
-            </button>
-          ))}
+        <div className="flex flex-wrap items-center gap-3 mb-6">
+          <div role="tablist" className="flex gap-2 overflow-x-auto pb-1 flex-1">
+            {tabs.map((tab) => (
+              <button
+                key={tab.id}
+                role="tab"
+                aria-selected={activeTab === tab.id}
+                onClick={() => handleTabChange(tab.id)}
+                className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
+                  activeTab === tab.id
+                    ? 'bg-white text-slate-900'
+                    : 'bg-white/[0.04] text-slate-400 hover:bg-white/[0.08]'
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+          <ExportButton
+            data={CLOSE_APPROACHES.map(a => ({
+              name: a.name,
+              date: a.date,
+              distanceLD: a.distanceLD,
+              distanceAU: a.distanceAU,
+              diameterMinM: a.diameterMin,
+              diameterMaxM: a.diameterMax,
+              velocityKmS: a.velocity,
+              torinoScale: a.torino,
+              palermoScale: a.palermo,
+              isPHA: a.isPHA ? 'Yes' : 'No',
+              orbitClass: a.orbitClass,
+            })) as Record<string, unknown>[]}
+            filename="spacenexus-asteroids"
+            columns={[
+              { key: 'name', label: 'Name' },
+              { key: 'date', label: 'Close Approach Date' },
+              { key: 'distanceLD', label: 'Distance (LD)' },
+              { key: 'distanceAU', label: 'Distance (AU)' },
+              { key: 'diameterMinM', label: 'Diameter Min (m)' },
+              { key: 'diameterMaxM', label: 'Diameter Max (m)' },
+              { key: 'velocityKmS', label: 'Velocity (km/s)' },
+              { key: 'torinoScale', label: 'Torino Scale' },
+              { key: 'palermoScale', label: 'Palermo Scale' },
+              { key: 'isPHA', label: 'PHA' },
+              { key: 'orbitClass', label: 'Orbit Class' },
+            ]}
+            label="Export NEOs"
+          />
         </div>
 
         {/* ──────────────── CLOSE APPROACHES TAB ──────────────── */}

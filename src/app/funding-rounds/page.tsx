@@ -1,11 +1,13 @@
 'use client';
 
 import React, { useState, useMemo, useCallback } from 'react';
+import VirtualList from '@/components/ui/VirtualList';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
 import DataFreshnessBadge from '@/components/ui/DataFreshnessBadge';
+import ExportButton from '@/components/ui/ExportButton';
 
 // ────────────────────────────────────────
 // Types
@@ -720,99 +722,126 @@ export default function FundingRoundsPage() {
                     Clear all filters
                   </button>
                 )}
+                <div className="ml-auto">
+                  <ExportButton
+                    data={filteredRounds.map(r => ({
+                      company: r.company,
+                      roundType: r.roundType,
+                      amount_millions: r.amount,
+                      date: r.date,
+                      leadInvestor: r.leadInvestor,
+                      otherInvestors: (r.otherInvestors || []).join('; '),
+                      valuation_billions: r.valuation ?? '',
+                      sector: r.sector,
+                      notes: r.notes ?? '',
+                    }))}
+                    filename="spacenexus-funding-rounds"
+                    columns={[
+                      { key: 'company', label: 'Company' },
+                      { key: 'roundType', label: 'Round Type' },
+                      { key: 'amount_millions', label: 'Amount ($M)' },
+                      { key: 'date', label: 'Date' },
+                      { key: 'leadInvestor', label: 'Lead Investor' },
+                      { key: 'otherInvestors', label: 'Other Investors' },
+                      { key: 'valuation_billions', label: 'Valuation ($B)' },
+                      { key: 'sector', label: 'Sector' },
+                      { key: 'notes', label: 'Notes' },
+                    ]}
+                    label="Export Rounds"
+                  />
+                </div>
               </div>
             </div>
 
-            {/* Results Table */}
-            <div className="card overflow-hidden mb-8">
+            {/* Results Table — Desktop (md+) */}
+            <div className="card overflow-hidden mb-8 hidden md:block">
+              {/* Sticky table header */}
               <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="border-b border-white/[0.06]">
-                      <th
-                        className="text-left px-4 py-3 text-xs uppercase tracking-wider text-slate-400 cursor-pointer hover:text-white transition-colors"
-                        onClick={() => handleSort('company')}
-                      >
-                        Company <SortIcon field="company" />
-                      </th>
-                      <th className="text-left px-4 py-3 text-xs uppercase tracking-wider text-slate-400">
-                        Round
-                      </th>
-                      <th
-                        className="text-right px-4 py-3 text-xs uppercase tracking-wider text-slate-400 cursor-pointer hover:text-white transition-colors"
-                        onClick={() => handleSort('amount')}
-                      >
-                        Amount <SortIcon field="amount" />
-                      </th>
-                      <th
-                        className="text-left px-4 py-3 text-xs uppercase tracking-wider text-slate-400 cursor-pointer hover:text-white transition-colors hidden md:table-cell"
-                        onClick={() => handleSort('date')}
-                      >
-                        Date <SortIcon field="date" />
-                      </th>
-                      <th className="text-left px-4 py-3 text-xs uppercase tracking-wider text-slate-400 hidden lg:table-cell">
-                        Lead Investor
-                      </th>
-                      <th
-                        className="text-right px-4 py-3 text-xs uppercase tracking-wider text-slate-400 cursor-pointer hover:text-white transition-colors hidden lg:table-cell"
-                        onClick={() => handleSort('valuation')}
-                      >
-                        Valuation <SortIcon field="valuation" />
-                      </th>
-                      <th className="text-left px-4 py-3 text-xs uppercase tracking-wider text-slate-400 hidden xl:table-cell">
-                        Sector
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filteredRounds.map((round) => (
-                      <tr
-                        key={round.id}
-                        className="border-b border-white/[0.04] hover:bg-white/[0.03] transition-colors"
-                      >
-                        <td className="px-4 py-3">
-                          <div className="font-medium text-white/90">{round.company}</div>
-                          {round.notes && (
-                            <div className="text-xs text-slate-500 mt-0.5 max-w-[200px] truncate">{round.notes}</div>
-                          )}
-                          {/* Mobile-only extras */}
-                          <div className="md:hidden text-xs text-slate-500 mt-0.5">{formatDate(round.date)}</div>
-                        </td>
-                        <td className="px-4 py-3">
-                          <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${getRoundColor(round.roundType)}`}>
-                            {round.roundType}
-                          </span>
-                        </td>
-                        <td className="px-4 py-3 text-right font-mono text-white/90 font-medium">
-                          {formatAmount(round.amount)}
-                        </td>
-                        <td className="px-4 py-3 text-slate-400 hidden md:table-cell">
-                          {formatDate(round.date)}
-                        </td>
-                        <td className="px-4 py-3 text-white/70 hidden lg:table-cell">
-                          {round.leadInvestor}
-                        </td>
-                        <td className="px-4 py-3 text-right hidden lg:table-cell">
-                          <span className={round.valuation ? 'text-white/90 font-mono' : 'text-slate-600 italic'}>
-                            {formatValuation(round.valuation)}
-                          </span>
-                        </td>
-                        <td className="px-4 py-3 hidden xl:table-cell">
-                          <span className={`inline-block px-2 py-0.5 rounded text-xs font-medium ${getSectorColor(round.sector)}`}>
-                            {round.sector}
-                          </span>
-                        </td>
-                      </tr>
-                    ))}
-                    {filteredRounds.length === 0 && (
-                      <tr>
-                        <td colSpan={7} className="px-4 py-12 text-center text-slate-500">
-                          No funding rounds match your filters. Try adjusting your search criteria.
-                        </td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
+                <div className="min-w-[640px]">
+                  <div className="flex items-center border-b border-white/[0.06] text-sm">
+                    <div
+                      className="flex-[2] text-left px-4 py-3 text-xs uppercase tracking-wider text-slate-400 cursor-pointer hover:text-white transition-colors"
+                      onClick={() => handleSort('company')}
+                    >
+                      Company <SortIcon field="company" />
+                    </div>
+                    <div className="flex-1 text-left px-4 py-3 text-xs uppercase tracking-wider text-slate-400">
+                      Round
+                    </div>
+                    <div
+                      className="flex-1 text-right px-4 py-3 text-xs uppercase tracking-wider text-slate-400 cursor-pointer hover:text-white transition-colors"
+                      onClick={() => handleSort('amount')}
+                    >
+                      Amount <SortIcon field="amount" />
+                    </div>
+                    <div
+                      className="flex-1 text-left px-4 py-3 text-xs uppercase tracking-wider text-slate-400 cursor-pointer hover:text-white transition-colors"
+                      onClick={() => handleSort('date')}
+                    >
+                      Date <SortIcon field="date" />
+                    </div>
+                    <div className="flex-[1.5] text-left px-4 py-3 text-xs uppercase tracking-wider text-slate-400 hidden lg:block">
+                      Lead Investor
+                    </div>
+                    <div
+                      className="flex-1 text-right px-4 py-3 text-xs uppercase tracking-wider text-slate-400 cursor-pointer hover:text-white transition-colors hidden lg:block"
+                      onClick={() => handleSort('valuation')}
+                    >
+                      Valuation <SortIcon field="valuation" />
+                    </div>
+                    <div className="flex-1 text-left px-4 py-3 text-xs uppercase tracking-wider text-slate-400 hidden xl:block">
+                      Sector
+                    </div>
+                  </div>
+
+                  {/* Virtualized rows */}
+                  {filteredRounds.length === 0 ? (
+                    <div className="px-4 py-12 text-center text-slate-500">
+                      No funding rounds match your filters. Try adjusting your search criteria.
+                    </div>
+                  ) : (
+                    <VirtualList
+                      items={filteredRounds}
+                      itemHeight={56}
+                      overscan={5}
+                      maxHeight={600}
+                      renderItem={(round) => (
+                        <div className="flex items-center border-b border-white/[0.04] hover:bg-white/[0.03] transition-colors text-sm h-full">
+                          <div className="flex-[2] px-4 py-3">
+                            <div className="font-medium text-white/90">{round.company}</div>
+                            {round.notes && (
+                              <div className="text-xs text-slate-500 mt-0.5 max-w-[200px] truncate">{round.notes}</div>
+                            )}
+                          </div>
+                          <div className="flex-1 px-4 py-3">
+                            <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${getRoundColor(round.roundType)}`}>
+                              {round.roundType}
+                            </span>
+                          </div>
+                          <div className="flex-1 px-4 py-3 text-right font-mono text-white/90 font-medium">
+                            {formatAmount(round.amount)}
+                          </div>
+                          <div className="flex-1 px-4 py-3 text-slate-400">
+                            {formatDate(round.date)}
+                          </div>
+                          <div className="flex-[1.5] px-4 py-3 text-white/70 hidden lg:block">
+                            {round.leadInvestor}
+                          </div>
+                          <div className="flex-1 px-4 py-3 text-right hidden lg:block">
+                            <span className={round.valuation ? 'text-white/90 font-mono' : 'text-slate-600 italic'}>
+                              {formatValuation(round.valuation)}
+                            </span>
+                          </div>
+                          <div className="flex-1 px-4 py-3 hidden xl:block">
+                            <span className={`inline-block px-2 py-0.5 rounded text-xs font-medium ${getSectorColor(round.sector)}`}>
+                              {round.sector}
+                            </span>
+                          </div>
+                        </div>
+                      )}
+                    />
+                  )}
+                </div>
               </div>
 
               {/* Table footer */}
@@ -822,6 +851,74 @@ export default function FundingRoundsPage() {
                     Total: {formatAmount(filteredRounds.reduce((sum, r) => sum + r.amount, 0))} across {filteredRounds.length} rounds
                   </span>
                   <span>Data covers 2024 - 2026</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Results Cards — Mobile (<md) */}
+            <div className="md:hidden space-y-3 mb-8">
+              {filteredRounds.length === 0 ? (
+                <div className="card p-8 text-center text-slate-500">
+                  No funding rounds match your filters. Try adjusting your search criteria.
+                </div>
+              ) : (
+                filteredRounds.map((round) => (
+                  <div
+                    key={round.id}
+                    className="rounded-lg border border-white/[0.06] bg-white/[0.03] p-4"
+                  >
+                    {/* Card header */}
+                    <div className="mb-3 pb-2 border-b border-white/[0.06]">
+                      <div className="flex items-start justify-between gap-2">
+                        <div>
+                          <div className="text-sm font-semibold text-white">{round.company}</div>
+                          {round.notes && (
+                            <div className="text-xs text-slate-500 mt-0.5">{round.notes}</div>
+                          )}
+                        </div>
+                        <span className={`shrink-0 inline-block px-2 py-0.5 rounded-full text-xs font-medium ${getRoundColor(round.roundType)}`}>
+                          {round.roundType}
+                        </span>
+                      </div>
+                    </div>
+                    {/* Card body — label:value pairs */}
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between gap-4">
+                        <span className="text-xs uppercase tracking-wider text-slate-500">Amount</span>
+                        <span className="text-sm font-mono text-white/90 font-medium">{formatAmount(round.amount)}</span>
+                      </div>
+                      <div className="flex items-center justify-between gap-4">
+                        <span className="text-xs uppercase tracking-wider text-slate-500">Date</span>
+                        <span className="text-sm text-slate-400">{formatDate(round.date)}</span>
+                      </div>
+                      <div className="flex items-center justify-between gap-4">
+                        <span className="text-xs uppercase tracking-wider text-slate-500">Lead Investor</span>
+                        <span className="text-sm text-white/70 text-right">{round.leadInvestor}</span>
+                      </div>
+                      <div className="flex items-center justify-between gap-4">
+                        <span className="text-xs uppercase tracking-wider text-slate-500">Valuation</span>
+                        <span className={`text-sm ${round.valuation ? 'text-white/90 font-mono' : 'text-slate-600 italic'}`}>
+                          {formatValuation(round.valuation)}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between gap-4">
+                        <span className="text-xs uppercase tracking-wider text-slate-500">Sector</span>
+                        <span className={`inline-block px-2 py-0.5 rounded text-xs font-medium ${getSectorColor(round.sector)}`}>
+                          {round.sector}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              )}
+
+              {/* Mobile footer */}
+              <div className="card px-4 py-3">
+                <div className="flex items-center justify-between text-xs text-slate-500">
+                  <span>
+                    Total: {formatAmount(filteredRounds.reduce((sum, r) => sum + r.amount, 0))} across {filteredRounds.length} rounds
+                  </span>
+                  <span>2024 - 2026</span>
                 </div>
               </div>
             </div>

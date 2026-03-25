@@ -6,6 +6,7 @@ import ScrollReveal from '@/components/ui/ScrollReveal';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
 import AdSlot from '@/components/ads/AdSlot';
+import ExportButton from '@/components/ui/ExportButton';
 
 // =============================================================================
 // TYPES
@@ -1036,10 +1037,38 @@ export default function LaunchManifestPage() {
 
         </ScrollReveal>
 
-        {/* Results count */}
-        <p className="text-xs text-slate-500 mb-4">
-          Showing {filteredLaunches.length} of {LAUNCHES.length} launches
-        </p>
+        {/* Results count + Export */}
+        <div className="flex items-center justify-between mb-4">
+          <p className="text-xs text-slate-500">
+            Showing {filteredLaunches.length} of {LAUNCHES.length} launches
+          </p>
+          <ExportButton
+            data={filteredLaunches.map(l => ({
+              date: l.date,
+              time_utc: l.time,
+              vehicle: l.vehicle,
+              payload: l.payload,
+              customer: l.customer,
+              site: l.site,
+              orbit: l.orbit,
+              status: l.status,
+              description: l.description,
+            }))}
+            filename="spacenexus-launches"
+            columns={[
+              { key: 'date', label: 'Date' },
+              { key: 'time_utc', label: 'Time (UTC)' },
+              { key: 'vehicle', label: 'Vehicle' },
+              { key: 'payload', label: 'Payload' },
+              { key: 'customer', label: 'Customer' },
+              { key: 'site', label: 'Launch Site' },
+              { key: 'orbit', label: 'Orbit' },
+              { key: 'status', label: 'Status' },
+              { key: 'description', label: 'Description' },
+            ]}
+            label="Export Launches"
+          />
+        </div>
 
         {/* Calendar or List */}
         {viewMode === 'calendar' ? (

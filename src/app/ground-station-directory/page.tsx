@@ -5,6 +5,7 @@ import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
+import MobileTableView, { Column } from '@/components/ui/MobileTableView';
 
 // ────────────────────────────────────────
 // Types
@@ -606,7 +607,7 @@ export default function GroundStationDirectoryPage() {
                 placeholder="Search providers, bands, regions..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 bg-white/[0.04] border border-white/[0.06] rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-white/15 focus:ring-1 focus:ring-white/30 transition-colors"
+                className="w-full pl-10 pr-4 py-2.5 bg-white/[0.06] border border-white/[0.06] rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors"
               />
             </div>
 
@@ -632,7 +633,7 @@ export default function GroundStationDirectoryPage() {
             <select
               value={selectedRegion}
               onChange={(e) => setSelectedRegion(e.target.value)}
-              className="px-3 py-2.5 bg-white/[0.04] border border-white/[0.06] rounded-lg text-sm text-white focus:outline-none focus:border-white/15 transition-colors"
+              className="px-3 py-2.5 bg-white/[0.06] border border-white/[0.06] rounded-lg text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors"
             >
               <option value="">All Regions</option>
               {ALL_REGIONS.map((region) => (
@@ -644,7 +645,7 @@ export default function GroundStationDirectoryPage() {
             <select
               value={selectedPricing}
               onChange={(e) => setSelectedPricing(e.target.value)}
-              className="px-3 py-2.5 bg-white/[0.04] border border-white/[0.06] rounded-lg text-sm text-white focus:outline-none focus:border-white/15 transition-colors"
+              className="px-3 py-2.5 bg-white/[0.06] border border-white/[0.06] rounded-lg text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors"
             >
               <option value="">All Pricing</option>
               {PRICING_MODELS.map((model) => (
@@ -653,19 +654,19 @@ export default function GroundStationDirectoryPage() {
             </select>
           </div>
 
-          {hasActiveFilters && (
-            <div className="flex items-center gap-2 mt-3 pt-3 border-t border-white/[0.06]">
-              <span className="text-xs text-slate-400">
-                {regionFilteredProviders.length} of {PROVIDERS.length} providers
-              </span>
+          <div className="flex items-center gap-2 mt-3 pt-3 border-t border-white/[0.06]">
+            <span className="text-xs text-slate-400">
+              Showing {regionFilteredProviders.length} of {PROVIDERS.length} providers
+            </span>
+            {hasActiveFilters && (
               <button
                 onClick={clearFilters}
                 className="text-xs text-white/70 hover:text-white transition-colors ml-auto"
               >
                 Clear all filters
               </button>
-            </div>
-          )}
+            )}
+          </div>
         </div>
 
         </ScrollReveal>
@@ -722,69 +723,55 @@ export default function GroundStationDirectoryPage() {
           <section>
             <h2 className="text-xl font-bold text-white mb-4">Station Comparison Table</h2>
             <div className="card overflow-hidden">
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="bg-white/[0.05] border-b border-white/[0.06]">
-                      {([
-                        { field: 'name' as SortField, label: 'Provider' },
-                        { field: 'locations' as SortField, label: '# Stations' },
-                        { field: 'bands' as SortField, label: 'Bands Supported' },
-                        { field: 'pricingModel' as SortField, label: 'Pricing Model' },
-                        { field: 'minContactTime' as SortField, label: 'Min Contact' },
-                        { field: 'coverageFocus' as SortField, label: 'Coverage Focus' },
-                        { field: 'apiAccess' as SortField, label: 'API Access' },
-                      ]).map((col) => (
-                        <th
-                          key={col.field}
-                          onClick={() => handleSort(col.field)}
-                          className="px-4 py-3 text-left text-xs font-semibold text-white/70 uppercase tracking-wider cursor-pointer hover:text-white transition-colors select-none whitespace-nowrap"
-                        >
-                          {col.label}
-                          <SortIcon active={sortField === col.field} direction={sortDirection} />
-                        </th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-white/[0.04]">
-                    {sortedProviders.map((p) => (
-                      <tr key={p.id} className="hover:bg-white/[0.03] transition-colors">
-                        <td className="px-4 py-3">
-                          <div className="flex items-center gap-2">
-                            <span className="text-lg">{p.icon}</span>
-                            <span className="font-medium text-white">{p.name}</span>
-                          </div>
-                        </td>
-                        <td className="px-4 py-3 text-white/70 whitespace-nowrap">{p.locations}</td>
-                        <td className="px-4 py-3">
-                          <div className="flex flex-wrap gap-1">
-                            {p.bands.map((b) => (
-                              <BandBadge key={b} band={b} />
-                            ))}
-                          </div>
-                        </td>
-                        <td className="px-4 py-3 text-white/70 whitespace-nowrap">{p.pricingModel}</td>
-                        <td className="px-4 py-3 text-white/70 whitespace-nowrap">{p.minContactTime}</td>
-                        <td className="px-4 py-3 text-slate-400 max-w-[200px] truncate">{p.coverageFocus}</td>
-                        <td className="px-4 py-3">
-                          {p.apiAccess ? (
-                            <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-emerald-900/30 text-emerald-400 border border-emerald-500/30">
-                              Yes
-                            </span>
-                          ) : (
-                            <span className="text-slate-500">No</span>
-                          )}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-              {sortedProviders.length === 0 && (
-                <div className="p-8 text-center text-slate-400">
-                  No providers match your current filters.
-                </div>
-              )}
+              <MobileTableView<ProviderCard>
+                data={sortedProviders}
+                keyField="id"
+                columns={[
+                  {
+                    key: 'name',
+                    label: 'Provider',
+                    primary: true,
+                    render: (_v, row) => (
+                      <div className="flex items-center gap-2">
+                        <span className="text-lg">{row.icon}</span>
+                        <span className="font-medium text-white">{row.name}</span>
+                      </div>
+                    ),
+                  },
+                  { key: 'locations', label: '# Stations' },
+                  {
+                    key: 'bands',
+                    label: 'Bands Supported',
+                    render: (_v, row) => (
+                      <div className="flex flex-wrap gap-1">
+                        {row.bands.map((b) => (
+                          <BandBadge key={b} band={b} />
+                        ))}
+                      </div>
+                    ),
+                  },
+                  { key: 'pricingModel', label: 'Pricing Model' },
+                  { key: 'minContactTime', label: 'Min Contact' },
+                  { key: 'coverageFocus', label: 'Coverage Focus' },
+                  {
+                    key: 'apiAccess',
+                    label: 'API Access',
+                    render: (v) =>
+                      v ? (
+                        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-emerald-900/30 text-emerald-400 border border-emerald-500/30">
+                          Yes
+                        </span>
+                      ) : (
+                        <span className="text-slate-500">No</span>
+                      ),
+                  },
+                ] as Column<ProviderCard>[]}
+                onHeaderClick={(key) => handleSort(key as SortField)}
+                renderSortIcon={(key) => (
+                  <SortIcon active={sortField === key} direction={sortDirection} />
+                )}
+                emptyMessage="No providers match your current filters."
+              />
             </div>
           </section>
         )}
