@@ -641,42 +641,55 @@ export default function DashboardPanel({ state, onUpdateCompanyName }: { state: 
       {/* Active Services */}
       <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
         <h3 className="text-white text-xs font-bold uppercase tracking-wider mb-3">
-          Active Services ({state.activeServices.length})
+          Active Services ({new Set(state.activeServices.map(s => s.definitionId)).size} types, {state.activeServices.length} total)
         </h3>
         {state.activeServices.length === 0 ? (
           <p className="text-slate-500 text-xs">Build infrastructure to enable revenue-generating services.</p>
         ) : (
           <div className="space-y-1.5">
-            {state.activeServices.map((svc, i) => {
-              const def = SERVICE_MAP.get(svc.definitionId);
-              if (!def) return null;
-              const linkedBld = state.buildings.find(b => b.isComplete && b.locationId === svc.locationId && BUILDING_MAP.get(b.definitionId)?.enabledServices?.includes(svc.definitionId));
-              const upgradeBoost = getUpgradeRevenueMultiplier(linkedBld?.upgradeLevel || 0);
-              const supplyMult = (state.servicePriceMultipliers || {})[svc.definitionId] ?? 1.0;
-              const locPower = powerData[svc.locationId];
-              const powerRatio = locPower ? locPower.ratio : 1;
-              const rev = Math.round(
-                def.revenuePerMonth * svc.revenueMultiplier * upgradeBoost
-                * (1 + financials.wfBonuses.serviceRevenue)
-                * (1 + financials.resBonuses.serviceRevenueBonus)
-                * supplyMult
-                * powerRatio
-              );
-              const isPowerReduced = powerRatio < 1;
-              return (
-                <div key={i} className="flex items-center justify-between text-xs py-1 px-2 rounded-lg hover:bg-white/[0.02] transition-colors">
+            {(() => {
+              // Group services by definitionId (consolidate same type into one line)
+              const groups = new Map<string, { def: ReturnType<typeof SERVICE_MAP.get>; count: number; totalRev: number; isPowerReduced: boolean; minPowerRatio: number }>();
+              for (const svc of state.activeServices) {
+                const def = SERVICE_MAP.get(svc.definitionId);
+                if (!def) continue;
+                const linkedBld = state.buildings.find(b => b.isComplete && b.locationId === svc.locationId && BUILDING_MAP.get(b.definitionId)?.enabledServices?.includes(svc.definitionId));
+                const upgradeBoost = getUpgradeRevenueMultiplier(linkedBld?.upgradeLevel || 0);
+                const supplyMult = (state.servicePriceMultipliers || {})[svc.definitionId] ?? 1.0;
+                const locPower = powerData[svc.locationId];
+                const powerRatio = locPower ? locPower.ratio : 1;
+                const rev = Math.round(
+                  def.revenuePerMonth * svc.revenueMultiplier * upgradeBoost
+                  * (1 + financials.wfBonuses.serviceRevenue)
+                  * (1 + financials.resBonuses.serviceRevenueBonus)
+                  * supplyMult
+                  * powerRatio
+                );
+                const existing = groups.get(svc.definitionId);
+                if (existing) {
+                  existing.count++;
+                  existing.totalRev += rev;
+                  if (powerRatio < existing.minPowerRatio) existing.minPowerRatio = powerRatio;
+                  if (powerRatio < 1) existing.isPowerReduced = true;
+                } else {
+                  groups.set(svc.definitionId, { def, count: 1, totalRev: rev, isPowerReduced: powerRatio < 1, minPowerRatio: powerRatio });
+                }
+              }
+              return Array.from(groups.entries()).map(([id, g]) => (
+                <div key={id} className="flex items-center justify-between text-xs py-1 px-2 rounded-lg hover:bg-white/[0.02] transition-colors">
                   <span className="text-slate-300">
-                    {def.name}
-                    {isPowerReduced && (
-                      <span className="text-red-400/70 ml-1 text-[9px]" title={`Power deficit at this location reduces revenue to ${Math.round(powerRatio * 100)}%`}>
-                        {'\u26A1'}{Math.round(powerRatio * 100)}%
+                    {g.def!.name}
+                    {g.count > 1 && <span className="text-cyan-400 ml-1 text-[9px] font-mono">x{g.count}</span>}
+                    {g.isPowerReduced && (
+                      <span className="text-red-400/70 ml-1 text-[9px]" title={`Power deficit reduces revenue`}>
+                        {'\u26A1'}{Math.round(g.minPowerRatio * 100)}%
                       </span>
                     )}
                   </span>
-                  <span className={`font-mono ${isPowerReduced ? 'text-amber-400' : 'text-green-400'}`}>+{formatMoney(rev)}</span>
+                  <span className={`font-mono ${g.isPowerReduced ? 'text-amber-400' : 'text-green-400'}`}>+{formatMoney(g.totalRev)}</span>
                 </div>
-              );
-            })}
+              ));
+            })()}
           </div>
         )}
       </div>
