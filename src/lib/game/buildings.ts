@@ -189,7 +189,7 @@ export const BUILDINGS: BuildingDefinition[] = [
     tooltip: 'TWO SERVICES IN ONE. Activates both Debris Removal ($12M/mo, $5M cost = $7M net) AND Space Insurance ($8M/mo, $1.8M cost = $6.2M net). Combined: $13.2M/mo net from a single $200M building. Best ROI of any satellite. Requires "Reusable Boosters" research + Lunar Orbit unlock ($1B). Build this as soon as you unlock Lunar Orbit — two revenue streams from one building.',
     baseCost: 200_000_000, buildTimeMonths: 6, maintenanceCostPerMonth: 800_000,
     requiredResearch: ['reusable_boosters'], requiredLocation: 'lunar_orbit', enabledServices: ['svc_debris_removal', 'svc_space_insurance'],
-    realBuildSeconds: 420, resourceCost: { aluminum: 15, rare_earth: 5 } }, // 7 min
+    realBuildSeconds: 420, resourceCost: { aluminum: 15, rare_earth: 5 }, powerRequired: 3 }, // 7 min
   { id: 'sat_mars_relay', name: 'Mars Relay Satellite', category: 'satellite', tier: 3,
     description: 'Deep-space communications relay for Mars operations.',
     tooltip: 'MARS COMMS + PROPELLANT BROKERAGE. Activates Propellant Brokerage at $40M/mo vs $15M cost = $25M/mo net. One of the highest-profit services available at Mars. Essential for supporting your Mars fleet and trading operations. Requires "Super Heavy Lift" + "Ion Drives" research + Mars Orbit unlock ($10B). Build alongside your Mars orbital station.',
@@ -210,6 +210,50 @@ export const BUILDINGS: BuildingDefinition[] = [
     baseCost: 2_000_000_000, buildTimeMonths: 14, maintenanceCostPerMonth: 2_000_000,
     requiredResearch: ['triple_junction', 'resource_prospecting'], requiredLocation: 'mars_surface', enabledServices: [],
     realBuildSeconds: 1200, resourceCost: { aluminum: 60, iron: 80, rare_earth: 15 }, powerGenerated: 25 }, // 20 min
+
+  // ─── NUCLEAR POWER & ADVANCED ENERGY ──────────────────────────────
+  { id: 'nuclear_reactor_leo', name: 'Orbital Nuclear Reactor', category: 'solar_farm', tier: 2,
+    description: 'Compact fission reactor providing reliable continuous power in LEO. Not dependent on solar exposure.',
+    tooltip: 'RELIABLE LEO POWER. Unlike solar farms, nuclear reactors provide constant power regardless of orbital position. At 30 MW output, this single reactor covers the power needs of a data center (10 MW), fabrication lab (8 MW), and station (5 MW) combined. Requires "Surface Fission Reactor" research. More expensive than solar ($500M vs $100M) but higher output and no solar dependency. Essential for heavy LEO infrastructure.',
+    baseCost: 500_000_000, buildTimeMonths: 6, maintenanceCostPerMonth: 2_000_000,
+    requiredResearch: ['fission_surface_power'], requiredLocation: 'leo', enabledServices: [],
+    realBuildSeconds: 1200, resourceCost: { titanium: 30, rare_earth: 15 }, powerGenerated: 30 }, // 20 min
+  { id: 'solar_array_lunar_orbit', name: 'Lunar Orbital Solar Array', category: 'solar_farm', tier: 2,
+    description: 'Large solar array in lunar orbit providing power to orbital facilities.',
+    tooltip: 'LUNAR ORBIT POWER. Provides 25 MW to power your Lunar Gateway (8 MW) and relay satellites (3 MW each). Without this, your Lunar Gateway operates at reduced efficiency and loses revenue. Requires "Perovskite-Si Tandem" research. Build this immediately when you unlock Lunar Orbit to avoid power penalties on your Gateway station.',
+    baseCost: 400_000_000, buildTimeMonths: 5, maintenanceCostPerMonth: 1_500_000,
+    requiredResearch: ['perovskite_tandem'], requiredLocation: 'lunar_orbit', enabledServices: [],
+    realBuildSeconds: 900, resourceCost: { aluminum: 20, rare_earth: 10 }, powerGenerated: 25 }, // 15 min
+  { id: 'nuclear_reactor_mars_orbit', name: 'Mars Orbital Reactor', category: 'solar_farm', tier: 3,
+    description: 'Nuclear fission reactor powering Mars orbital infrastructure. Essential for data relay and station operations.',
+    tooltip: 'MARS ORBIT POWER. Provides 35 MW to power your Mars Orbital Station (10 MW), Mars Data Relay (20 MW), and other orbital facilities. Solar is weaker at Mars distance, making nuclear the better option. Requires "Surface Fission Reactor" research. Build before or alongside your Mars station to avoid crippling power penalties.',
+    baseCost: 1_200_000_000, buildTimeMonths: 8, maintenanceCostPerMonth: 4_000_000,
+    requiredResearch: ['fission_surface_power'], requiredLocation: 'mars_orbit', enabledServices: [],
+    realBuildSeconds: 1800, resourceCost: { titanium: 50, rare_earth: 25, platinum_group: 5 }, powerGenerated: 35 }, // 30 min
+  { id: 'nuclear_reactor_mars_surface', name: 'Mars Surface Reactor', category: 'solar_farm', tier: 3,
+    description: 'Kilopower-class fission reactor for Mars surface operations. Provides reliable power during dust storms when solar is unavailable.',
+    tooltip: 'MARS SURFACE POWERHOUSE. Generates 40 MW — enough to supplement your Mars Solar Farm (25 MW) and cover all surface operations: mining (15 MW), fabrication (15 MW), habitat (12 MW) = 42 MW total need. During dust storms, solar output drops but nuclear keeps running. Build alongside your Mars Solar Farm for full power coverage. Requires "Surface Fission Reactor" research.',
+    baseCost: 1_500_000_000, buildTimeMonths: 10, maintenanceCostPerMonth: 5_000_000,
+    requiredResearch: ['fission_surface_power'], requiredLocation: 'mars_surface', enabledServices: [],
+    realBuildSeconds: 2400, resourceCost: { titanium: 60, rare_earth: 30, platinum_group: 8 }, powerGenerated: 40 }, // 40 min
+  { id: 'nuclear_reactor_asteroid', name: 'Asteroid Belt Reactor', category: 'solar_farm', tier: 3,
+    description: 'Self-contained nuclear reactor powering mining and refining operations in the asteroid belt, where solar power is insufficient.',
+    tooltip: 'BELT POWER — NO SOLAR ALTERNATIVE. The asteroid belt is too far from the Sun for effective solar power. This is the ONLY way to power your Asteroid Mining Rig (12 MW), Asteroid Refinery (10 MW), and Ceres Station (8 MW). At 35 MW, one reactor covers a mining rig + refinery. Build two for full belt coverage. Requires "Surface Fission Reactor" + "Spacecraft Nuclear Reactors" research.',
+    baseCost: 1_800_000_000, buildTimeMonths: 10, maintenanceCostPerMonth: 5_000_000,
+    requiredResearch: ['fission_surface_power', 'nuclear_power_spacecraft'], requiredLocation: 'asteroid_belt', enabledServices: [],
+    realBuildSeconds: 2400, resourceCost: { titanium: 70, rare_earth: 30, platinum_group: 10 }, powerGenerated: 35 }, // 40 min
+  { id: 'nuclear_reactor_jupiter', name: 'Jovian Nuclear Plant', category: 'solar_farm', tier: 4,
+    description: 'High-output nuclear reactor for Jupiter system operations. Solar power is impractical at this distance from the Sun.',
+    tooltip: 'JUPITER POWER — ESSENTIAL. At Jupiter distance, solar panels produce only 4% of their Earth output. Nuclear is mandatory. Your Jovian Station generates 15 MW but needs 10 MW + 15 MW for the data center. Europa Ice Drill needs 15 MW. This 40 MW reactor fills the gap. The station\'s built-in reactor (net +5 MW) is not enough alone. Requires "Surface Fission Reactor" + "Spacecraft Nuclear Reactors" research.',
+    baseCost: 3_000_000_000, buildTimeMonths: 12, maintenanceCostPerMonth: 8_000_000,
+    requiredResearch: ['fission_surface_power', 'nuclear_power_spacecraft'], requiredLocation: 'jupiter_system', enabledServices: [],
+    realBuildSeconds: 3600, resourceCost: { titanium: 100, rare_earth: 50, platinum_group: 15, exotic_materials: 3 }, powerGenerated: 40 }, // 60 min
+  { id: 'nuclear_reactor_saturn', name: 'Saturnian Nuclear Plant', category: 'solar_farm', tier: 4,
+    description: 'Advanced nuclear reactor for Saturn system operations. Powers Titan mining and chemical processing.',
+    tooltip: 'SATURN POWER — ESSENTIAL. Saturn receives only 1% of Earth\'s solar energy. Nuclear is the only option. Your Kronos Station generates 20 MW (net +8 MW) but Titan Hydrocarbon Harvester (15 MW) + Titan Chemical Plant (12 MW) need far more. This 40 MW reactor ensures full operations. The $105M/mo from Titan mining makes this investment trivial. Requires "Surface Fission Reactor" + "Spacecraft Nuclear Reactors" research.',
+    baseCost: 3_500_000_000, buildTimeMonths: 12, maintenanceCostPerMonth: 9_000_000,
+    requiredResearch: ['fission_surface_power', 'nuclear_power_spacecraft'], requiredLocation: 'saturn_system', enabledServices: [],
+    realBuildSeconds: 3600, resourceCost: { titanium: 120, rare_earth: 60, platinum_group: 20, exotic_materials: 5 }, powerGenerated: 40 }, // 60 min
 
   // ─── ASTEROID BELT INFRASTRUCTURE ───────────────────────────────────
   { id: 'fabrication_asteroid', name: 'Asteroid Refinery', category: 'fabrication_facility', tier: 3,

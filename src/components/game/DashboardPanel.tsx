@@ -203,12 +203,14 @@ function EmpireOverview({ state, onUpdateCompanyName }: { state: GameState; onUp
         const power = getPowerByLocation(state.buildings);
         const entries = Object.entries(power).filter(([loc]) => state.unlockedLocations.includes(loc));
         if (entries.length === 0) return null;
+        const hasDeficit = entries.some(([, data]) => data.ratio < 1);
         return (
           <div className="px-4 py-2" style={{ borderTop: '1px solid var(--border-subtle)' }}>
             <div className="flex items-center gap-1 mb-1.5">
               <span className="text-[9px] font-bold uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>Power Grid</span>
+              {hasDeficit && <span className="text-[8px] text-red-400 font-semibold ml-1">DEFICIT</span>}
             </div>
-            <div className="flex flex-wrap gap-x-3 gap-y-1">
+            <div className="space-y-1">
               {entries.map(([loc, data]) => {
                 const color = data.ratio >= 1
                   ? 'text-green-400'
@@ -220,22 +222,48 @@ function EmpireOverview({ state, onUpdateCompanyName }: { state: GameState; onUp
                   : data.ratio >= 0.6
                     ? 'bg-amber-500/10'
                     : 'bg-red-500/10';
+                const barColor = data.ratio >= 1
+                  ? 'bg-green-400'
+                  : data.ratio >= 0.6
+                    ? 'bg-amber-400'
+                    : 'bg-red-400';
                 const locName = loc.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
-                const shortName = locName.replace('Surface', '').replace('System', '').replace('Orbit', 'Orb.').trim();
+                const shortName = locName.replace('Surface', 'Sfc').replace('System', 'Sys').replace('Orbit', 'Orb').trim();
+                const revenuePenalty = data.ratio < 1 ? Math.round((1 - data.ratio) * 100) : 0;
                 return (
                   <div
                     key={loc}
-                    className={`flex items-center gap-1 px-1.5 py-0.5 rounded ${bgColor}`}
+                    className={`px-2 py-1 rounded ${bgColor}`}
                     title={`${locName}: ${data.generated} MW generated / ${data.required} MW required (${Math.round(data.ratio * 100)}% efficiency)`}
                   >
-                    <span className={`text-[10px] font-mono ${color}`}>
-                      {'\u26A1'} {data.generated}/{data.required} MW
-                    </span>
-                    <span className="text-[8px]" style={{ color: 'var(--text-muted)' }}>{shortName}</span>
+                    <div className="flex items-center justify-between mb-0.5">
+                      <span className="text-[9px] font-medium" style={{ color: 'var(--text-secondary)' }}>{shortName}</span>
+                      <div className="flex items-center gap-1.5">
+                        <span className={`text-[10px] font-mono ${color}`}>
+                          {'\u26A1'} {data.generated}/{data.required} MW
+                        </span>
+                        {revenuePenalty > 0 && (
+                          <span className="text-[9px] font-mono text-red-400 bg-red-500/20 px-1 rounded">
+                            -{revenuePenalty}% rev
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    <div className="h-1 bg-white/[0.06] rounded-full overflow-hidden">
+                      <div
+                        className={`h-full ${barColor} rounded-full transition-all`}
+                        style={{ width: `${Math.min(100, data.ratio * 100)}%` }}
+                      />
+                    </div>
                   </div>
                 );
               })}
             </div>
+            {hasDeficit && (
+              <p className="text-[9px] mt-1.5 leading-tight" style={{ color: 'var(--text-muted)' }}>
+                Underpowered facilities operate at reduced efficiency. Revenue is proportionally reduced. Build solar farms or nuclear reactors to restore full output.
+              </p>
+            )}
           </div>
         );
       })()}
@@ -412,7 +440,7 @@ export default function DashboardPanel({ state, onUpdateCompanyName }: { state: 
             {financials.hasPowerDeficit && (
               <div className="flex justify-between">
                 <span className="text-red-400/80">{'\u26A1'} Power deficit penalty</span>
-                <span className="text-red-400 font-mono text-[10px]">Build solar farms!</span>
+                <span className="text-red-400 font-mono text-[10px]">Build solar/nuclear!</span>
               </div>
             )}
             <div className="border-t border-white/[0.04] my-1" />
