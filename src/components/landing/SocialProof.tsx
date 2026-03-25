@@ -194,33 +194,6 @@ export default function SocialProof() {
           </div>
         </motion.div>
 
-        {/* Live Usage Counter */}
-        <motion.div
-          className="relative overflow-hidden card-glass p-8 mb-8"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.4 }}
-          transition={{ duration: 0.5 }}
-        >
-          <p className="text-center text-lg font-bold text-white mb-6 relative z-10">
-            The space intelligence platform
-          </p>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-center relative z-10">
-            {[
-              { stat: '200+', label: 'Companies Tracked' },
-              { stat: '50+', label: 'Data Sources' },
-              { stat: '30+', label: 'Intelligence Modules' },
-            ].map((item) => (
-              <div key={item.label} className="group/usage">
-                <p className="text-2xl md:text-3xl font-bold text-white group-hover/usage:text-white/70 transition-colors duration-200">
-                  {item.stat}
-                </p>
-                <p className="text-sm text-slate-400 mt-1 font-medium">{item.label}</p>
-              </div>
-            ))}
-          </div>
-        </motion.div>
-
         {/* Stats Bar */}
         <motion.div
           ref={statsRef}
