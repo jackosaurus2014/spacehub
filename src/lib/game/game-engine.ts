@@ -2,12 +2,13 @@
 // 200-cycle polish pass: integrates workforce, prestige, market events,
 // achievements, ship cargo, bankruptcy protection, and revenue caps.
 
-import type { GameState, GameEvent } from './types';
-import { BUILDING_MAP } from './buildings';
+import type { GameState, GameEvent, GameReport } from './types';
+import { BUILDING_MAP, getPowerByLocation, getCraftingSpeedMultiplier } from './buildings';
 import { SERVICE_MAP } from './services';
 import { RESEARCH_MAP, getResearchBonuses } from './research-tree';
-import { MINING_PRODUCTION } from './resources';
+import { MINING_PRODUCTION, RESOURCE_MAP } from './resources';
 import { advanceDate, generateId, revenueMultiplier } from './formulas';
+import { LOCATION_MAP } from './solar-system';
 import { MAX_EVENT_LOG, TICKS_PER_GAME_MONTH } from './constants';
 import { getGlobalGameDate } from './server-time';
 import { processNPCTick, applyNPCMarketActions } from './npc-engine';
@@ -97,8 +98,12 @@ export function processTick(state: GameState): GameState {
     totalSpent += payroll;
   }
 
+  // ─── 0b. Power balance per location ─────────────────────────────
+  // Buildings at space locations need power. Underpowered locations reduce revenue.
+  const powerByLocation = getPowerByLocation(state.buildings);
+
   // ─── 1. Revenue collection from active services ───────────────────
-  // Applies: event multipliers, upgrade boost, workforce bonus, prestige bonus
+  // Applies: event multipliers, upgrade boost, workforce bonus, prestige bonus, power ratio
   let monthlyRevenue = 0;
   let monthlyCosts = 0;
   for (const svc of state.activeServices) {
@@ -108,6 +113,9 @@ export function processTick(state: GameState): GameState {
     const upgradeBoost = getUpgradeRevenueMultiplier(linkedBld?.upgradeLevel || 0);
     // Dynamic service pricing: server-reported multiplier based on global supply
     const supplyMult = (state.servicePriceMultipliers || {})[svc.definitionId] ?? 1.0;
+    // Power factor: underpowered locations reduce revenue proportionally
+    const locPower = powerByLocation[svc.locationId];
+    const powerRatio = locPower ? locPower.ratio : 1; // Earth/unlisted = full power
     const revenue = Math.round(
       def.revenuePerMonth * fraction
       * svc.revenueMultiplier
@@ -120,6 +128,7 @@ export function processTick(state: GameState): GameState {
       * supplyMult
       * (megaBonuses.revenueMultiplier || 1)
       * repBonuses.revenueMultiplier
+      * powerRatio
     );
     const cost = Math.round(def.operatingCostPerMonth * fraction * multipliers.costMultiplier * legacyCostMult * (1 - tierBonuses.maintenanceReduction) * (megaBonuses.maintenanceMultiplier || 1) * repBonuses.maintenanceMultiplier);
     money += revenue - cost;
@@ -187,6 +196,30 @@ export function processTick(state: GameState): GameState {
       const totalMonths = activeResearch.totalMonths || 1;
       const pctDone = researchElapsed / effectiveDuration;
       activeResearch = { ...activeResearch, progressMonths: Math.round(pctDone * totalMonths) };
+    }
+  }
+
+  // ─── 4b. Second research queue (unlocked via 'parallel_research') ──
+  let activeResearch2 = state.activeResearch2 || null;
+  if (activeResearch2 && completedResearch.includes('parallel_research')) {
+    const r2Elapsed = (now - (activeResearch2.startedAtMs || 0)) / 1000;
+    const researchBoostMult2 = getActiveBoostMultiplier(activeBoosts, 'research');
+    const researchSpeedMult2 = (1 + wfBonuses.researchSpeed) * (1 + resBonuses.researchSpeedBonus) * legacyBonuses.researchSpeedMultiplier * researchBoostMult2 * (megaBonuses.researchSpeedMultiplier || 1) * repBonuses.researchSpeedMultiplier;
+    const effectiveDuration2 = (activeResearch2.realDurationSeconds || 0) / researchSpeedMult2;
+    if (r2Elapsed >= effectiveDuration2) {
+      completedResearch.push(activeResearch2.definitionId);
+      stats.researchCompleted++;
+      const def2 = RESEARCH_MAP.get(activeResearch2.definitionId);
+      events.push({
+        id: generateId(), date: newDate, type: 'research_complete',
+        title: `Research Complete (Q2): ${def2?.name || 'Unknown'}`,
+        description: def2?.effect || 'New capabilities unlocked.',
+      });
+      activeResearch2 = null;
+    } else {
+      const totalMonths2 = activeResearch2.totalMonths || 1;
+      const pctDone2 = r2Elapsed / effectiveDuration2;
+      activeResearch2 = { ...activeResearch2, progressMonths: Math.round(pctDone2 * totalMonths2) };
     }
   }
 
@@ -385,6 +418,7 @@ export function processTick(state: GameState): GameState {
     buildings,
     completedResearch,
     activeResearch,
+    activeResearch2,
     activeServices,
     resources,
     activeEffects,
@@ -403,6 +437,47 @@ function formatRevenue(amount: number): string {
   if (amount >= 1_000_000) return `$${(amount / 1_000_000).toFixed(0)}M`;
   if (amount >= 1_000) return `$${(amount / 1_000).toFixed(0)}K`;
   return `$${amount}`;
+}
+
+/** Generate a detailed probe report for a survey discovery */
+function generateProbeReport(
+  ship: NonNullable<GameState['ships']>[number],
+  discovery: { type: string; title: string; description: string; rewards: { money?: number; resources?: Record<string, number>; miningBonus?: { locationId: string; resourceId: string; bonusPct: number; durationMonths: number } } },
+  locationId: string,
+): string {
+  const locName = LOCATION_MAP.get(locationId)?.name || locationId;
+  let body = `Survey probe "${ship.name}" completed exploration of ${locName}.\n\n`;
+  body += `== Discovery: ${discovery.title} ==\n${discovery.description}\n`;
+
+  if (discovery.rewards.money) {
+    const millions = discovery.rewards.money / 1_000_000;
+    body += `\nCredits recovered: $${millions >= 1000 ? (millions / 1000).toFixed(1) + 'B' : millions.toFixed(0) + 'M'}`;
+  }
+
+  if (discovery.rewards.resources) {
+    body += '\n\nResources found:';
+    for (const [resId, qty] of Object.entries(discovery.rewards.resources)) {
+      const resName = RESOURCE_MAP.get(resId as ResourceId)?.name || resId;
+      body += `\n  - ${qty} ${resName}`;
+    }
+  }
+
+  if (discovery.rewards.miningBonus) {
+    const mb = discovery.rewards.miningBonus;
+    const bonusLocName = LOCATION_MAP.get(mb.locationId)?.name || mb.locationId;
+    const bonusResName = RESOURCE_MAP.get(mb.resourceId as ResourceId)?.name || mb.resourceId;
+    body += `\n\n** Mining Bonus Activated **\n+${mb.bonusPct}% ${bonusResName} production at ${bonusLocName} for ${mb.durationMonths} months.`;
+    body += `\n\nRecommendation: Build additional mining operations at ${bonusLocName} to capitalize on this bonus.`;
+  }
+
+  if (!discovery.rewards.miningBonus && discovery.rewards.resources) {
+    const firstRes = Object.keys(discovery.rewards.resources)[0];
+    const resName = RESOURCE_MAP.get(firstRes as ResourceId)?.name || firstRes;
+    body += `\n\nRecommendation: Consider selling ${resName} on the Market or using it for Crafting.`;
+  }
+
+  body += '\n\nSend more probes to discover additional resources and anomalies.';
+  return body;
 }
 
 /**
@@ -473,10 +548,13 @@ export function processFullTick(state: GameState): GameState {
   }
 
   // 4. Check refining completion and deliver outputs
+  // Fabrication buildings give a crafting speed bonus (each extra fab = +15% speed)
   try {
     if (newState.activeRefining) {
+      const craftingSpeedMult = getCraftingSpeedMultiplier(newState.buildings);
       const elapsed = (Date.now() - (newState.activeRefining.startedAtMs || 0)) / 1000;
-      if (elapsed >= (newState.activeRefining.durationSeconds || 0)) {
+      const effectiveDuration = (newState.activeRefining.durationSeconds || 0) / craftingSpeedMult;
+      if (elapsed >= effectiveDuration) {
         // Look up recipe to find outputs
         const { CHAIN_MAP } = require('./production-chains');
         const recipe = CHAIN_MAP.get(newState.activeRefining.recipeId);
@@ -526,6 +604,7 @@ export function processFullTick(state: GameState): GameState {
       const shipTierBonuses = getTierBonuses(newState.corporationTier || 1);
       const shipMiningMult = (1 + wfBonuses.miningOutput) * shipLegacyBonuses.miningMultiplier * (1 + shipTierBonuses.miningBonus);
       const shipEvents: typeof newState.eventLog = [];
+      const shipReports: GameReport[] = [];
       const shipsToRemove: string[] = []; // For consumed survey probes
 
       const updatedShips = newState.ships.map(ship => {
@@ -597,6 +676,17 @@ export function processFullTick(state: GameState): GameState {
                 title: `📡 Survey Discovery: ${discovery.title}`,
                 description: discovery.description,
               });
+              // Generate detailed probe report
+              shipReports.push({
+                id: generateId(),
+                type: 'probe_discovery',
+                title: `Probe Report: ${discovery.title}`,
+                body: generateProbeReport(ship, discovery, ship.surveyExpedition!.targetLocation),
+                createdAt: Date.now(),
+                read: false,
+                locationId: ship.surveyExpedition!.targetLocation,
+                rewards: discovery.rewards,
+              });
               // TODO: Apply miningBonus to location (store in game state for duration)
             }
             // Probe is consumed after expedition
@@ -622,6 +712,9 @@ export function processFullTick(state: GameState): GameState {
         eventLog: shipEvents.length > 0
           ? [...shipEvents, ...newState.eventLog].slice(0, MAX_EVENT_LOG)
           : newState.eventLog,
+        reports: shipReports.length > 0
+          ? [...(newState.reports || []), ...shipReports].slice(-50)
+          : (newState.reports || []),
       };
     }
   } catch (err) {

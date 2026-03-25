@@ -51,6 +51,7 @@ import TerritoryPanel from '@/components/game/TerritoryPanel';
 import SpeedRunPanel from '@/components/game/SpeedRunPanel';
 import EspionagePanel from '@/components/game/EspionagePanel';
 import MegaProjectPanel from '@/components/game/MegaProjectPanel';
+import ReportsPanel from '@/components/game/ReportsPanel';
 import PrestigeModal from '@/components/game/PrestigeModal';
 import WeeklyChallengeWidget from '@/components/game/WeeklyChallengeWidget';
 import { SHIP_MAP, getTravelTime, generateShipName } from '@/lib/game/ships';
@@ -319,11 +320,13 @@ function BuildPanel({ state, onBuild, onSellBuilding }: { state: GameState; onBu
 function getSuggestedResearch(state: GameState): typeof RESEARCH[number][] {
   const completed = new Set(state.completedResearch);
   const activeId = state.activeResearch?.definitionId;
+  const activeId2 = state.activeResearch2?.definitionId;
 
   // All researches the player could potentially start (prereqs met, not completed, not active)
   const available = RESEARCH.filter(r =>
     !completed.has(r.id) &&
     r.id !== activeId &&
+    r.id !== activeId2 &&
     r.prerequisites.every(p => completed.has(p))
   );
 
@@ -389,15 +392,18 @@ function ResearchPanel({ state, onStartResearch }: { state: GameState; onStartRe
 
   // Get 3 suggested researches
   const suggestions = useMemo(() => getSuggestedResearch(state), [
-    state.completedResearch.length, state.money, state.activeResearch?.definitionId,
+    state.completedResearch.length, state.money, state.activeResearch?.definitionId, state.activeResearch2?.definitionId,
     // eslint-disable-next-line react-hooks/exhaustive-deps
     JSON.stringify(state.resources),
   ]);
 
+  const hasQueue2 = state.completedResearch.includes('parallel_research');
+  const anyQueueFree = !state.activeResearch || (hasQueue2 && !state.activeResearch2);
+
   return (
     <div className="space-y-4">
       {/* Suggested Research — top 3 picks for progression */}
-      {!state.activeResearch && suggestions.length > 0 && (
+      {anyQueueFree && suggestions.length > 0 && (
         <div className="rounded-xl border border-indigo-500/20 bg-indigo-500/5 p-4">
           <div className="flex items-center gap-2 mb-3">
             <span className="text-sm">💡</span>
@@ -410,7 +416,7 @@ function ResearchPanel({ state, onStartResearch }: { state: GameState; onStartRe
               const hasRes = !r.resourceCost || Object.entries(r.resourceCost).every(
                 ([resId, qty]) => (state.resources[resId] || 0) >= qty
               );
-              const canStart = canAffordMoney && hasRes && !state.activeResearch;
+              const canStart = canAffordMoney && hasRes && anyQueueFree;
               const unlocksText = r.unlocks && r.unlocks.length > 0
                 ? r.unlocks.map(u => BUILDING_MAP.get(u)?.name || u.replace(/_/g, ' ')).join(', ')
                 : null;
@@ -456,7 +462,7 @@ function ResearchPanel({ state, onStartResearch }: { state: GameState; onStartRe
         </div>
       )}
 
-      {/* Active Research Banner */}
+      {/* Active Research Banners */}
       {state.activeResearch && (() => {
         const def = RESEARCH_MAP.get(state.activeResearch.definitionId);
         if (!def) return null;
@@ -469,6 +475,7 @@ function ResearchPanel({ state, onStartResearch }: { state: GameState; onStartRe
                 <span className="text-lg animate-pulse">🔬</span>
                 <div>
                   <span className="text-white text-sm font-semibold">{def.name}</span>
+                  {hasQueue2 && <span className="text-slate-500 text-[9px] ml-1.5">Q1</span>}
                   <span className="text-purple-400 text-xs ml-2">{pct}%</span>
                 </div>
               </div>
@@ -478,6 +485,32 @@ function ResearchPanel({ state, onStartResearch }: { state: GameState; onStartRe
               <div className="h-full bg-gradient-to-r from-purple-500 to-cyan-500 rounded-full transition-all duration-1000 game-progress-shimmer" style={{ width: `${pct}%` }} />
             </div>
             <p className="text-slate-500 text-[10px] mt-1.5">{def.effect}</p>
+          </div>
+        );
+      })()}
+      {/* Second Research Queue Banner */}
+      {hasQueue2 && state.activeResearch2 && (() => {
+        const def2 = RESEARCH_MAP.get(state.activeResearch2.definitionId);
+        if (!def2) return null;
+        const elapsed2 = (Date.now() - (state.activeResearch2.startedAtMs || 0)) / 1000;
+        const pct2 = Math.min(100, Math.round((elapsed2 / (state.activeResearch2.realDurationSeconds || 1)) * 100));
+        return (
+          <div className="rounded-xl border border-cyan-500/30 bg-gradient-to-r from-cyan-500/10 to-purple-500/5 p-4">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2">
+                <span className="text-lg animate-pulse">🔬</span>
+                <div>
+                  <span className="text-white text-sm font-semibold">{def2.name}</span>
+                  <span className="text-slate-500 text-[9px] ml-1.5">Q2</span>
+                  <span className="text-cyan-400 text-xs ml-2">{pct2}%</span>
+                </div>
+              </div>
+              <span className="text-slate-400 text-xs">{formatCountdown(Math.max(0, (state.activeResearch2.realDurationSeconds || 0) - elapsed2))}</span>
+            </div>
+            <div className="h-2 bg-white/[0.06] rounded-full overflow-hidden">
+              <div className="h-full bg-gradient-to-r from-cyan-500 to-purple-500 rounded-full transition-all duration-1000 game-progress-shimmer" style={{ width: `${pct2}%` }} />
+            </div>
+            <p className="text-slate-500 text-[10px] mt-1.5">{def2.effect}</p>
           </div>
         );
       })()}
@@ -570,13 +603,13 @@ function ResearchPanel({ state, onStartResearch }: { state: GameState; onStartRe
               <div className="p-2 grid md:grid-cols-2 gap-2">
                 {items.map(r => {
                   const completed = state.completedResearch.includes(r.id);
-                  const active = state.activeResearch?.definitionId === r.id;
+                  const active = state.activeResearch?.definitionId === r.id || state.activeResearch2?.definitionId === r.id;
                   const prereqsMet = r.prerequisites.every(p => state.completedResearch.includes(p));
                   const hasResCost = !r.resourceCost || Object.entries(r.resourceCost).every(
                     ([resId, qty]) => (state.resources[resId] || 0) >= qty
                   );
                   const canAffordMoney = state.money >= r.baseCostMoney;
-                  const canStart = !completed && !active && !state.activeResearch && prereqsMet && canAffordMoney && hasResCost;
+                  const canStart = !completed && !active && anyQueueFree && prereqsMet && canAffordMoney && hasResCost;
                   const locked = !prereqsMet && !completed;
                   // Unlocked (prereqs met) but missing money or resources
                   const unlockedCantAfford = !completed && !active && prereqsMet && (!canAffordMoney || !hasResCost);
@@ -610,7 +643,7 @@ function ResearchPanel({ state, onStartResearch }: { state: GameState; onStartRe
                           }`}>{r.name}</span>
                         </div>
                         <div className="flex items-center gap-1">
-                          {canStart && !state.activeResearch && (
+                          {canStart && anyQueueFree && (
                             <span className="text-[8px] px-1.5 py-0.5 rounded-full bg-purple-500/20 text-purple-300 font-semibold">READY</span>
                           )}
                           {unlockedCantAfford && (
@@ -949,7 +982,7 @@ export default function SpaceTycoonPage() {
   const handleStartResearch = useCallback((researchId: string) => {
     playSound('research_start');
     setState(prev => {
-      if (!prev || prev.activeResearch) return prev;
+      if (!prev) return prev;
       const def = RESEARCH_MAP.get(researchId);
       if (!def || prev.money < def.baseCostMoney) { playSound('error'); return prev; }
 
@@ -960,6 +993,13 @@ export default function SpaceTycoonPage() {
         }
       }
 
+      // Determine which queue to use
+      const hasQueue2 = prev.completedResearch.includes('parallel_research');
+      const queue1Free = !prev.activeResearch;
+      const queue2Free = hasQueue2 && !prev.activeResearch2;
+
+      if (!queue1Free && !queue2Free) { playSound('error'); return prev; }
+
       // Deduct resources
       const newResources = { ...prev.resources };
       if (def.resourceCost) {
@@ -969,24 +1009,28 @@ export default function SpaceTycoonPage() {
       }
 
       const realDuration = def.realResearchSeconds;
+      const researchEntry = {
+        definitionId: researchId,
+        startDate: prev.gameDate,
+        progressMonths: 0,
+        totalMonths: scaledResearchTime(def.baseTimeMonths, def.tier),
+        startedAtMs: Date.now(),
+        realDurationSeconds: realDuration,
+      };
+
+      const queueLabel = queue1Free ? '' : ' (Q2)';
       return {
         ...prev,
         money: prev.money - def.baseCostMoney,
         totalSpent: prev.totalSpent + def.baseCostMoney,
         resources: newResources,
-        activeResearch: {
-          definitionId: researchId,
-          startDate: prev.gameDate,
-          progressMonths: 0,
-          totalMonths: scaledResearchTime(def.baseTimeMonths, def.tier),
-          startedAtMs: Date.now(),
-          realDurationSeconds: realDuration,
-        },
+        activeResearch: queue1Free ? researchEntry : prev.activeResearch,
+        activeResearch2: queue1Free ? prev.activeResearch2 : researchEntry,
         eventLog: [{
           id: generateId(),
           date: prev.gameDate,
           type: 'research_complete' as const,
-          title: `Research Started: ${def.name}`,
+          title: `Research Started${queueLabel}: ${def.name}`,
           description: `Ready in ${formatDuration(realDuration)}. Cost: ${formatMoney(def.baseCostMoney)}.`,
         }, ...prev.eventLog].slice(0, 50),
       };
@@ -1339,6 +1383,7 @@ export default function SpaceTycoonPage() {
     { id: 'map', label: 'Map', icon: '🗺️' },
     { id: 'services', label: 'Services', icon: '💰' },
     { id: 'fleet', label: 'Fleet', icon: '🚀' },
+    { id: 'reports', label: 'Reports', icon: '📬' },
     { id: 'contracts', label: 'Contracts', icon: '📋' },
     { id: 'crafting', label: 'Craft', icon: '🔨' },
     { id: 'market', label: 'Market', icon: '📈' },
@@ -1363,6 +1408,9 @@ export default function SpaceTycoonPage() {
 
   // Stable key for FeatureUnlockToast (avoids infinite re-render from array reference)
   const tabIdsKey = allTabs.map(t => t.id).join(',');
+
+  // Unread reports count for badge display
+  const unreadReports = (state.reports || []).filter(r => !r.read).length;
 
   // V3: Split tabs into primary (always visible) and secondary (overflow dropdown)
   const PRIMARY_TAB_IDS: GameTab[] = ['dashboard', 'build', 'research', 'map'];
@@ -1418,7 +1466,12 @@ export default function SpaceTycoonPage() {
               {activeInSecondary ? (
                 <><span className="mr-0.5 sm:mr-1">{activeInSecondary.icon}</span><span className="hidden sm:inline">{activeInSecondary.label}</span></>
               ) : (
-                <><span className="mr-0.5">•••</span><span className="hidden sm:inline">More</span></>
+                <>
+                  <span className="mr-0.5">•••</span><span className="hidden sm:inline">More</span>
+                  {unreadReports > 0 && (
+                    <span className="ml-1 w-2 h-2 rounded-full bg-cyan-400 inline-block" style={{ boxShadow: '0 0 6px #22d3ee' }} />
+                  )}
+                </>
               )}
               <svg className={`inline-block w-3 h-3 ml-1 transition-transform ${showMoreTabs ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
@@ -1436,6 +1489,11 @@ export default function SpaceTycoonPage() {
                   >
                     <span>{t.icon}</span>
                     <span>{t.label}</span>
+                    {t.id === 'reports' && unreadReports > 0 && (
+                      <span className="ml-auto px-1.5 py-0.5 rounded-full text-[9px] font-bold bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">
+                        {unreadReports}
+                      </span>
+                    )}
                   </button>
                 ))}
               </div>
@@ -1679,6 +1737,27 @@ export default function SpaceTycoonPage() {
         {tab === 'speedruns' && <SpeedRunPanel state={state} />}
         {tab === 'espionage' && <EspionagePanel state={state} />}
         {tab === 'megaproject' && <MegaProjectPanel state={state} />}
+        {tab === 'reports' && (
+          <ReportsPanel
+            state={state}
+            onMarkRead={(reportId) => {
+              setState(prev => {
+                if (!prev) return prev;
+                const reports = (prev.reports || []).map(r =>
+                  r.id === reportId ? { ...r, read: true } : r
+                );
+                return { ...prev, reports };
+              });
+            }}
+            onMarkAllRead={() => {
+              setState(prev => {
+                if (!prev) return prev;
+                const reports = (prev.reports || []).map(r => ({ ...r, read: true }));
+                return { ...prev, reports };
+              });
+            }}
+          />
+        )}
       </div>
 
       {/* Daily Login Bonus */}

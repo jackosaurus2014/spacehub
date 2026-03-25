@@ -23,6 +23,7 @@ export function getNewGameState(): GameState {
     buildings: [],
     completedResearch: [],
     activeResearch: null,
+    activeResearch2: null,
     activeServices: [],
     unlockedLocations: ['earth_surface', 'leo'],
     resources: {},
@@ -54,6 +55,7 @@ export function getNewGameState(): GameState {
     earnedAchievements: [],
     playerTitle: null,
     ships: [],
+    reports: [],
     workforce: { engineers: 0, scientists: 0, miners: 0, operators: 0 },
     prestige: {
       level: 0,
@@ -119,6 +121,7 @@ export function loadGame(): GameState | null {
     if (!state.earnedAchievements) state.earnedAchievements = [];
     if (!state.playerTitle) state.playerTitle = null;
     if (!state.ships) state.ships = [];
+    if (!state.reports) state.reports = [];
     if (!state.workforce) state.workforce = { engineers: 0, scientists: 0, miners: 0, operators: 0 };
     if (!state.prestige) {
       state.prestige = {
@@ -197,6 +200,8 @@ export function loadGame(): GameState | null {
     // V7 fields — megastructures & reputation
     if (!state.megastructures) state.megastructures = [];
     if (state.reputation === undefined || state.reputation === null) state.reputation = 0;
+    // V8 fields — second research queue
+    if (state.activeResearch2 === undefined) state.activeResearch2 = null;
 
     state.tickSpeed = 1; // Always 1x for fairness
     return state;

@@ -3,7 +3,7 @@
 import { useMemo, useState, useEffect } from 'react';
 import type { GameState } from '@/lib/game/types';
 import { formatMoney, formatGameDate, formatCountdown } from '@/lib/game/formulas';
-import { BUILDING_MAP } from '@/lib/game/buildings';
+import { BUILDING_MAP, getPowerByLocation } from '@/lib/game/buildings';
 import { SERVICE_MAP } from '@/lib/game/services';
 import { RESEARCH, getResearchBonuses } from '@/lib/game/research-tree';
 import { LOCATION_MAP } from '@/lib/game/solar-system';
@@ -197,6 +197,48 @@ function EmpireOverview({ state, onUpdateCompanyName }: { state: GameState; onUp
           <span className="text-[7px]" style={{ color: 'var(--text-muted)' }}>Outer System</span>
         </div>
       </div>
+
+      {/* Power status per location */}
+      {(() => {
+        const power = getPowerByLocation(state.buildings);
+        const entries = Object.entries(power).filter(([loc]) => state.unlockedLocations.includes(loc));
+        if (entries.length === 0) return null;
+        return (
+          <div className="px-4 py-2" style={{ borderTop: '1px solid var(--border-subtle)' }}>
+            <div className="flex items-center gap-1 mb-1.5">
+              <span className="text-[9px] font-bold uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>Power Grid</span>
+            </div>
+            <div className="flex flex-wrap gap-x-3 gap-y-1">
+              {entries.map(([loc, data]) => {
+                const color = data.ratio >= 1
+                  ? 'text-green-400'
+                  : data.ratio >= 0.6
+                    ? 'text-amber-400'
+                    : 'text-red-400';
+                const bgColor = data.ratio >= 1
+                  ? 'bg-green-500/10'
+                  : data.ratio >= 0.6
+                    ? 'bg-amber-500/10'
+                    : 'bg-red-500/10';
+                const locName = loc.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+                const shortName = locName.replace('Surface', '').replace('System', '').replace('Orbit', 'Orb.').trim();
+                return (
+                  <div
+                    key={loc}
+                    className={`flex items-center gap-1 px-1.5 py-0.5 rounded ${bgColor}`}
+                    title={`${locName}: ${data.generated} MW generated / ${data.required} MW required (${Math.round(data.ratio * 100)}% efficiency)`}
+                  >
+                    <span className={`text-[10px] font-mono ${color}`}>
+                      {'\u26A1'} {data.generated}/{data.required} MW
+                    </span>
+                    <span className="text-[8px]" style={{ color: 'var(--text-muted)' }}>{shortName}</span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        );
+      })()}
     </div>
   );
 }
@@ -204,6 +246,9 @@ function EmpireOverview({ state, onUpdateCompanyName }: { state: GameState; onUp
 export default function DashboardPanel({ state, onUpdateCompanyName }: { state: GameState; onUpdateCompanyName?: (name: string) => void }) {
   const completedBuildings = state.buildings.filter(b => b.isComplete);
   const inProgress = state.buildings.filter(b => !b.isComplete);
+
+  // Power balance per location (for revenue penalty display)
+  const powerData = useMemo(() => getPowerByLocation(state.buildings), [state.buildings]);
 
   // Calculate financials — matches game engine logic exactly
   const financials = useMemo(() => {
@@ -214,12 +259,17 @@ export default function DashboardPanel({ state, onUpdateCompanyName }: { state: 
 
     const priceMults = state.servicePriceMultipliers || {};
     let revenue = 0, opCosts = 0, maintenance = 0;
+    let hasPowerDeficit = false;
     for (const svc of state.activeServices) {
       const def = SERVICE_MAP.get(svc.definitionId);
       if (!def) continue;
       const linkedBld = state.buildings.find(b => b.isComplete && b.locationId === svc.locationId && BUILDING_MAP.get(b.definitionId)?.enabledServices?.includes(svc.definitionId));
       const upgradeBoost = getUpgradeRevenueMultiplier(linkedBld?.upgradeLevel || 0);
       const supplyMult = priceMults[svc.definitionId] ?? 1.0;
+      // Power factor: underpowered locations reduce revenue
+      const locPower = powerData[svc.locationId];
+      const powerRatio = locPower ? locPower.ratio : 1;
+      if (powerRatio < 1) hasPowerDeficit = true;
       revenue += Math.round(
         def.revenuePerMonth
         * svc.revenueMultiplier
@@ -227,6 +277,7 @@ export default function DashboardPanel({ state, onUpdateCompanyName }: { state: 
         * (1 + wfBonuses.serviceRevenue)
         * (1 + resBonuses.serviceRevenueBonus)
         * supplyMult
+        * powerRatio
       );
       opCosts += def.operatingCostPerMonth;
     }
@@ -244,8 +295,8 @@ export default function DashboardPanel({ state, onUpdateCompanyName }: { state: 
       : 1.0;
 
     const costs = opCosts + maintenance + payroll;
-    return { revenue, costs, opCosts, maintenance, payroll, net: revenue - costs, wfBonuses, resBonuses, hasSupplyPenalty, avgSupplyMult };
-  }, [state.activeServices, state.buildings, state.workforce, state.completedResearch, state.servicePriceMultipliers]);
+    return { revenue, costs, opCosts, maintenance, payroll, net: revenue - costs, wfBonuses, resBonuses, hasSupplyPenalty, avgSupplyMult, hasPowerDeficit };
+  }, [state.activeServices, state.buildings, state.workforce, state.completedResearch, state.servicePriceMultipliers, powerData]);
 
   return (
     <div className="space-y-4">
@@ -358,6 +409,12 @@ export default function DashboardPanel({ state, onUpdateCompanyName }: { state: 
                 <span className="text-amber-400 font-mono">{Math.round((financials.avgSupplyMult - 1) * 100)}%</span>
               </div>
             )}
+            {financials.hasPowerDeficit && (
+              <div className="flex justify-between">
+                <span className="text-red-400/80">{'\u26A1'} Power deficit penalty</span>
+                <span className="text-red-400 font-mono text-[10px]">Build solar farms!</span>
+              </div>
+            )}
             <div className="border-t border-white/[0.04] my-1" />
             <div className="flex justify-between">
               <span className="text-slate-400">Operating costs</span>
@@ -467,6 +524,7 @@ export default function DashboardPanel({ state, onUpdateCompanyName }: { state: 
       {state.activeResearch && (() => {
         const def = RESEARCH.find(r => r.id === state.activeResearch!.definitionId);
         const hasRealTime = state.activeResearch!.startedAtMs && state.activeResearch!.realDurationSeconds;
+        const hasQ2 = state.completedResearch.includes('parallel_research');
         return (
           <div className="rounded-xl border border-purple-500/20 bg-purple-500/5 p-4">
             <div className="flex items-center justify-between mb-2">
@@ -474,7 +532,7 @@ export default function DashboardPanel({ state, onUpdateCompanyName }: { state: 
                 <div className="w-6 h-6 rounded-full border border-purple-500/30 flex items-center justify-center">
                   <div className="w-2 h-2 rounded-full bg-purple-400 animate-pulse" />
                 </div>
-                <span className="text-white text-sm font-medium">Researching: {def?.name}</span>
+                <span className="text-white text-sm font-medium">Researching{hasQ2 ? ' (Q1)' : ''}: {def?.name}</span>
               </div>
             </div>
             {hasRealTime ? (
@@ -488,6 +546,34 @@ export default function DashboardPanel({ state, onUpdateCompanyName }: { state: 
               </div>
             )}
             <p className="text-slate-500 text-[10px] mt-1">{def?.effect}</p>
+          </div>
+        );
+      })()}
+      {/* Second Research Queue on Dashboard */}
+      {state.activeResearch2 && state.completedResearch.includes('parallel_research') && (() => {
+        const def2 = RESEARCH.find(r => r.id === state.activeResearch2!.definitionId);
+        const hasRealTime2 = state.activeResearch2!.startedAtMs && state.activeResearch2!.realDurationSeconds;
+        return (
+          <div className="rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-4">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2">
+                <div className="w-6 h-6 rounded-full border border-cyan-500/30 flex items-center justify-center">
+                  <div className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
+                </div>
+                <span className="text-white text-sm font-medium">Researching (Q2): {def2?.name}</span>
+              </div>
+            </div>
+            {hasRealTime2 ? (
+              <ResearchCountdown
+                startedAtMs={state.activeResearch2!.startedAtMs!}
+                durationSeconds={state.activeResearch2!.realDurationSeconds!}
+              />
+            ) : (
+              <div className="h-2 bg-cyan-500/10 rounded-full overflow-hidden">
+                <div className="h-full bg-gradient-to-r from-cyan-600 to-cyan-400 rounded-full" style={{ width: '50%' }} />
+              </div>
+            )}
+            <p className="text-slate-500 text-[10px] mt-1">{def2?.effect}</p>
           </div>
         );
       })()}
@@ -539,16 +625,27 @@ export default function DashboardPanel({ state, onUpdateCompanyName }: { state: 
               const linkedBld = state.buildings.find(b => b.isComplete && b.locationId === svc.locationId && BUILDING_MAP.get(b.definitionId)?.enabledServices?.includes(svc.definitionId));
               const upgradeBoost = getUpgradeRevenueMultiplier(linkedBld?.upgradeLevel || 0);
               const supplyMult = (state.servicePriceMultipliers || {})[svc.definitionId] ?? 1.0;
+              const locPower = powerData[svc.locationId];
+              const powerRatio = locPower ? locPower.ratio : 1;
               const rev = Math.round(
                 def.revenuePerMonth * svc.revenueMultiplier * upgradeBoost
                 * (1 + financials.wfBonuses.serviceRevenue)
                 * (1 + financials.resBonuses.serviceRevenueBonus)
                 * supplyMult
+                * powerRatio
               );
+              const isPowerReduced = powerRatio < 1;
               return (
                 <div key={i} className="flex items-center justify-between text-xs py-1 px-2 rounded-lg hover:bg-white/[0.02] transition-colors">
-                  <span className="text-slate-300">{def.name}</span>
-                  <span className="text-green-400 font-mono">+{formatMoney(rev)}</span>
+                  <span className="text-slate-300">
+                    {def.name}
+                    {isPowerReduced && (
+                      <span className="text-red-400/70 ml-1 text-[9px]" title={`Power deficit at this location reduces revenue to ${Math.round(powerRatio * 100)}%`}>
+                        {'\u26A1'}{Math.round(powerRatio * 100)}%
+                      </span>
+                    )}
+                  </span>
+                  <span className={`font-mono ${isPowerReduced ? 'text-amber-400' : 'text-green-400'}`}>+{formatMoney(rev)}</span>
                 </div>
               );
             })}

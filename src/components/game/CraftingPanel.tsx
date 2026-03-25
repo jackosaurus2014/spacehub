@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import type { GameState } from '@/lib/game/types';
 import { PRODUCTION_CHAINS } from '@/lib/game/production-chains';
-import { BUILDING_MAP } from '@/lib/game/buildings';
+import { BUILDING_MAP, getCraftingSpeedMultiplier } from '@/lib/game/buildings';
 import { formatMoney, formatDuration, formatCountdown } from '@/lib/game/formulas';
 import { playSound } from '@/lib/game/sound-engine';
 
@@ -23,6 +23,12 @@ export default function CraftingPanel({ state, onStartCrafting }: CraftingPanelP
   const allResources = { ...(state.resources || {}), ...(state.craftedProducts || {}) };
   const completedBuildingIds = state.buildings.filter(b => b.isComplete).map(b => b.definitionId);
 
+  // Crafting speed bonus from fabrication buildings
+  const craftingSpeedMult = getCraftingSpeedMultiplier(state.buildings);
+  const fabCount = state.buildings.filter(b =>
+    b.isComplete && BUILDING_MAP.get(b.definitionId)?.category === 'fabrication_facility'
+  ).length;
+
   const tiers = [
     { tier: 1, label: 'Raw Processing', icon: '🔩', color: 'slate' },
     { tier: 2, label: 'Components', icon: '⚙️', color: 'cyan' },
@@ -30,14 +36,31 @@ export default function CraftingPanel({ state, onStartCrafting }: CraftingPanelP
     { tier: 4, label: 'Advanced', icon: '✨', color: 'amber' },
   ];
 
-  // Active crafting
+  // Active crafting — apply fabrication speed multiplier to duration
   const activeCraft = state.activeRefining;
   const activeRecipe = activeCraft ? PRODUCTION_CHAINS.find(c => c.id === activeCraft.recipeId) : null;
-  const craftRemaining = activeCraft ? Math.max(0, activeCraft.durationSeconds - (Date.now() - activeCraft.startedAtMs) / 1000) : 0;
-  const craftPct = activeCraft ? Math.min(100, ((Date.now() - activeCraft.startedAtMs) / 1000 / activeCraft.durationSeconds) * 100) : 0;
+  const effectiveDuration = activeCraft ? activeCraft.durationSeconds / craftingSpeedMult : 0;
+  const craftRemaining = activeCraft ? Math.max(0, effectiveDuration - (Date.now() - activeCraft.startedAtMs) / 1000) : 0;
+  const craftPct = activeCraft ? Math.min(100, ((Date.now() - activeCraft.startedAtMs) / 1000 / effectiveDuration) * 100) : 0;
 
   return (
     <div className="space-y-4">
+      {/* Fabrication Speed Bonus */}
+      {fabCount >= 1 && (
+        <div className="flex items-center justify-between rounded-lg border border-cyan-500/15 bg-cyan-500/5 px-3 py-2">
+          <div className="flex items-center gap-2">
+            <span className="text-cyan-400 text-xs font-medium">Fabrication Speed: {craftingSpeedMult.toFixed(2)}x</span>
+            <span className="text-slate-500 text-[10px]">({fabCount} fab{fabCount !== 1 ? 's' : ''})</span>
+          </div>
+          {fabCount === 1 && (
+            <span className="text-slate-600 text-[10px]">Build more fabrication facilities to craft faster</span>
+          )}
+          {fabCount > 1 && (
+            <span className="text-cyan-500/60 text-[10px]">+{Math.round((craftingSpeedMult - 1) * 100)}% faster crafting</span>
+          )}
+        </div>
+      )}
+
       {/* Active Crafting */}
       {activeCraft && activeRecipe && (
         <div className="rounded-xl border border-purple-500/20 bg-purple-500/5 p-4">
@@ -107,7 +130,9 @@ export default function CraftingPanel({ state, onStartCrafting }: CraftingPanelP
 
                       <div className="flex items-center justify-between">
                         <div className="text-[10px] text-slate-500">
-                          {formatDuration(recipe.timeSeconds)} · Sells for {formatMoney(recipe.marketValue)}/u
+                          {craftingSpeedMult > 1 ? (
+                            <><span className="line-through opacity-50">{formatDuration(recipe.timeSeconds)}</span>{' '}<span className="text-cyan-400">{formatDuration(Math.round(recipe.timeSeconds / craftingSpeedMult))}</span></>
+                          ) : formatDuration(recipe.timeSeconds)} · Sells for {formatMoney(recipe.marketValue)}/u
                         </div>
                         <button
                           onClick={() => { if (canCraft) { playSound('build_start'); onStartCrafting(recipe.id); } }}

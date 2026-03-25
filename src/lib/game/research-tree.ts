@@ -86,7 +86,7 @@ const RAW_RESEARCH: RawResearch[] = [
   { id: 'adaptive_optics', name: 'Adaptive Optics', category: 'sensors', tier: 2, description: 'Real-time atmospheric correction.', effect: '+60% ground resolution from orbit', baseCostMoney: 280_000_000, baseTimeMonths: 10, prerequisites: ['high_res_optical'], unlocks: [] },
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // COMPUTING & AI (14 researches)
+  // COMPUTING & AI (15 researches)
   // ═══════════════════════════════════════════════════════════════════════════
   { id: 'rad_hard_processors', name: 'Rad-Hardened Processors', category: 'ai_chips', tier: 1, description: 'Processors that survive space radiation.', effect: 'Enables orbital data centers', baseCostMoney: 200_000_000, baseTimeMonths: 10, prerequisites: [], unlocks: ['datacenter_orbital'] },
   { id: 'edge_ai', name: 'Edge AI Accelerators', category: 'ai_chips', tier: 2, description: 'On-board AI inference.', effect: '+40% datacenter revenue', baseCostMoney: 500_000_000, baseTimeMonths: 14, prerequisites: ['rad_hard_processors'], unlocks: [] },
@@ -102,6 +102,7 @@ const RAW_RESEARCH: RawResearch[] = [
   { id: 'cybersecurity_adv', name: 'Advanced Space Cybersecurity', category: 'ai_chips', tier: 2, description: 'Quantum-safe encryption for space systems.', effect: '+20% defense rating', baseCostMoney: 300_000_000, baseTimeMonths: 12, prerequisites: ['fpga_reconfigurable'], unlocks: [] },
   { id: 'data_compression', name: 'Neural Data Compression', category: 'ai_chips', tier: 1, description: 'AI-powered data compression for downlinks.', effect: '+100% data throughput', baseCostMoney: 80_000_000, baseTimeMonths: 6, prerequisites: [], unlocks: [] },
   { id: 'mission_planning_ai', name: 'AI Mission Planning', category: 'ai_chips', tier: 3, description: 'Optimal trajectory and resource planning.', effect: '-15% travel time, -10% fuel cost', baseCostMoney: 1_500_000_000, baseTimeMonths: 18, prerequisites: ['swarm_ai'], unlocks: [] },
+  { id: 'parallel_research', name: 'Parallel Research Labs', category: 'ai_chips', tier: 3, description: 'Dedicated secondary research facility with independent teams.', effect: 'Unlocks a second simultaneous research queue', baseCostMoney: 500_000_000, baseTimeMonths: 4, prerequisites: ['neuromorphic_chips'], unlocks: ['research_queue_2'] },
 
   // ═══════════════════════════════════════════════════════════════════════════
   // SATELLITE SYSTEMS (15 researches)

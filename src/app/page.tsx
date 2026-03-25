@@ -208,7 +208,6 @@ export default async function HomePage() {
     analysis: 'bg-blue-500/20 text-blue-400 border-blue-500/30',
     guide: 'bg-teal-500/20 text-teal-400 border-teal-500/30',
     policy: 'bg-rose-500/20 text-rose-400 border-rose-500/30',
-    'building-in-public': 'bg-indigo-500/20 text-indigo-400 border-indigo-500/30',
   };
 
   return (
