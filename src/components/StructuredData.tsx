@@ -91,7 +91,7 @@ export default function StructuredData() {
     '@context': 'https://schema.org',
     '@type': 'SoftwareApplication',
     name: 'SpaceNexus',
-    description: 'The most comprehensive space industry intelligence platform. Track 19,000+ satellites, monitor launches, analyze market data, and access 200+ company profiles.',
+    description: 'A comprehensive space industry intelligence platform. Track 19,000+ satellites, monitor launches, analyze market data, and access 200+ company profiles.',
     applicationCategory: 'BusinessApplication',
     applicationSubCategory: 'Space Industry Intelligence',
     operatingSystem: 'Web, Android, iOS',

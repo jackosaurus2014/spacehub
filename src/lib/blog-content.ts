@@ -113,12 +113,12 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 <p>The Ignition initiative creates opportunities across the commercial space ecosystem:</p>
 
 <ul>
-<li><strong>SpaceX</strong> — Starship is central to the plan as both a crew and cargo lander. The company\'s role expanded further when NASA recently reduced Boeing\'s role in Artemis in favor of SpaceX. With a potential IPO in 2026 seeking a $1.5 trillion valuation, lunar contracts bolster investor confidence.</li>
+<li><strong>SpaceX</strong> — Starship is central to the plan as both a crew and cargo lander. The company\'s role expanded further when NASA recently reduced Boeing\'s role in Artemis in favor of SpaceX. With a potential IPO in 2026 seeking a $1.5-1.75 trillion valuation, lunar contracts bolster investor confidence.</li>
 <li><strong>Blue Origin</strong> — Contracted to deliver a lunar surface habitat by FY2033 via Blue Moon. The company is redirecting personnel from suborbital tourism to accelerate lunar development.</li>
 <li><strong>Northrop Grumman</strong> — Built the HALO habitation module for Gateway, now likely repurposed for surface deployment.</li>
 <li><strong>Intuitive Machines, Astrobotic, Firefly</strong> — CLPS commercial lander providers will see massively expanded demand with the near-monthly delivery cadence.</li>
 <li><strong>Lockheed Martin</strong> — Builds the Orion spacecraft and has proposed lunar habitat concepts.</li>
-<li><strong>Lunar Outpost</strong> — CEO reported 20 investor inquiries in a single week after the announcement, indicating massive interest in lunar infrastructure companies.</li>
+<li><strong>Lunar Outpost</strong> — CEO reported surging investor interest after the announcement, indicating massive interest in lunar infrastructure companies.</li>
 </ul>
 
 <h2 id="what-happens-next">What Happens Next</h2>
@@ -127,7 +127,8 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 
 <ul>
 <li><strong>April 1, 2026</strong> — Artemis II crewed lunar flyby</li>
-<li><strong>Early 2028</strong> — Artemis IV: first crewed lunar landing (moved from Artemis III)</li>
+<li><strong>Mid-2027</strong> — Artemis III: Earth-orbit rendezvous and docking test</li>
+<li><strong>Early 2028</strong> — Artemis IV: first crewed lunar landing</li>
 <li><strong>Late 2028</strong> — Space Reactor 1 Freedom launches to Mars</li>
 <li><strong>FY2032</strong> — JAXA pressurized rover delivered via SpaceX Starship</li>
 <li><strong>FY2033</strong> — Blue Origin delivers lunar surface habitat</li>
@@ -165,7 +166,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 
 <h2 id="spacex-blue-origin-elevated">SpaceX and Blue Origin: Elevated Roles, Higher Stakes</h2>
 
-<p><strong>SpaceX\'s</strong> position is stronger than ever. Starship is now the workhorse of the entire Ignition architecture — designated for both crew and heavy cargo delivery, including JAXA\'s pressurized rover for Artemis VII (FY2032). NASA recently expanded SpaceX\'s role while reducing Boeing\'s, signaling deep confidence in Starship\'s capabilities. With SpaceX reportedly planning an IPO seeking a $1.5 trillion valuation, successful lunar missions provide exactly the revenue visibility Wall Street demands.</p>
+<p><strong>SpaceX\'s</strong> position is stronger than ever. Starship is now the workhorse of the entire Ignition architecture — designated for both crew and heavy cargo delivery, including JAXA\'s pressurized rover for Artemis VII (FY2032). NASA recently expanded SpaceX\'s role while reducing Boeing\'s, signaling deep confidence in Starship\'s capabilities. With SpaceX reportedly planning an IPO seeking a $1.5-1.75 trillion valuation, successful lunar missions provide exactly the revenue visibility Wall Street demands.</p>
 
 <p><strong>Blue Origin</strong> has made a strategic bet by redirecting personnel from its suborbital tourism program to accelerate the Blue Moon lander. The company is contracted to deliver a lunar surface habitat by FY2033 — a mission-critical piece of the permanent base. CEO Jeff Bezos has long articulated a vision of millions of people living and working in space; the Ignition initiative provides the first concrete anchor customer for that vision.</p>
 
@@ -189,7 +190,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 
 <p>Global private investment in space technology surged <strong>48% in 2025 to $12.4 billion</strong>, with Q4 funding alone reaching $3.8 billion. The Ignition announcement will accelerate this trend dramatically.</p>
 
-<p>The CEO of Lunar Outpost reported receiving <strong>20 investor inquiries in a single week</strong> after the announcement. That\'s the kind of demand signal that moves entire sectors.</p>
+<p>The CEO of Lunar Outpost reported receiving <strong>surging investor interest</strong> after the announcement. That\'s the kind of demand signal that moves entire sectors.</p>
 
 <p>For investors, the calculus has changed. Lunar infrastructure is no longer a speculative bet on distant futures — it\'s a $20 billion government-backed program with a seven-year execution timeline and named commercial partners. The risk profile of lunar startups just improved significantly.</p>
 
@@ -504,7 +505,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 
 <h3>Explosive Market Growth</h3>
 
-<p>The space economy has grown from roughly $350 billion in 2020 to over $630 billion in 2026 — an average growth rate of approximately 9% per year. Industry forecasts from Morgan Stanley, Goldman Sachs, and the Space Foundation project the market will reach <strong>$1.8 trillion by 2035</strong>. That growth rate outpaces most traditional sectors and offers a long runway for compounding returns.</p>
+<p>The space economy has grown from roughly $350 billion in 2020 to over $630 billion in 2026 — an average growth rate of approximately 9% per year. Industry forecasts from McKinsey, the World Economic Forum, and other analysts project the market will reach <strong>$1.8 trillion by 2035</strong>, while Morgan Stanley projects over $1 trillion by 2040. That growth rate outpaces most traditional sectors and offers a long runway for compounding returns.</p>
 
 <h3>Declining Launch Costs</h3>
 
@@ -519,7 +520,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 <p>Space is no longer just about launches and satellites. Emerging revenue streams include:</p>
 
 <ul>
-<li><strong>Satellite broadband</strong> — Starlink alone generates an estimated $6.6 billion in annual revenue with 4+ million subscribers globally</li>
+<li><strong>Satellite broadband</strong> — Starlink alone generates an estimated $10+ billion in annual revenue with 10+ million subscribers globally</li>
 <li><strong>Earth observation and analytics</strong> — Satellite imagery data is used across agriculture, insurance, finance, and defense</li>
 <li><strong>Space tourism</strong> — Suborbital and orbital experiences for private customers</li>
 <li><strong>In-space services</strong> — Satellite servicing, debris removal, and on-orbit assembly</li>
@@ -536,7 +537,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 
 <p><strong>Why investors watch it:</strong> Rocket Lab has executed consistently, with a strong launch cadence and expanding satellite manufacturing business (Photon platform). The upcoming medium-lift Neutron rocket positions them to compete for larger payloads and constellation deployment contracts. Revenue has been growing at 40%+ year-over-year.</p>
 
-<p><strong>Key metrics:</strong> Market cap ~$12B, growing launch cadence, expanding backlog, vertically integrated from engines to spacecraft.</p>
+<p><strong>Key metrics:</strong> Market cap ~$38B, growing launch cadence, expanding backlog, vertically integrated from engines to spacecraft.</p>
 
 <h3>Intuitive Machines (LUNR)</h3>
 
@@ -649,14 +650,14 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 
 <h2 id="the-spacex-question">The SpaceX IPO Question</h2>
 
-<p>No discussion of space investing is complete without addressing SpaceX — by far the most valuable and influential space company, currently private and reportedly seeking a valuation of <strong>$1.5 trillion</strong> in a potential IPO.</p>
+<p>No discussion of space investing is complete without addressing SpaceX — by far the most valuable and influential space company, currently private and reportedly seeking a valuation of <strong>$1.5-1.75 trillion</strong> in a potential IPO.</p>
 
-<p>SpaceX dominates multiple markets: commercial launch (70%+ of global orbital launches), satellite broadband (Starlink, the world\'s largest satellite constellation), and government services (NASA crew transport, national security launches). Its Starship vehicle is the most ambitious launch system ever built.</p>
+<p>SpaceX dominates multiple markets: commercial launch (over 50% of global orbital launches), satellite broadband (Starlink, the world\'s largest satellite constellation), and government services (NASA crew transport, national security launches). Its Starship vehicle is the most ambitious launch system ever built.</p>
 
 <p>A SpaceX IPO would be a watershed moment for space investing. However, several considerations apply:</p>
 
 <ul>
-<li><strong>Valuation</strong> — At $1.5 trillion, SpaceX would be priced for perfection. Much of the growth story may already be priced in.</li>
+<li><strong>Valuation</strong> — At $1.5-1.75 trillion, SpaceX would be priced for perfection. Much of the growth story may already be priced in.</li>
 <li><strong>IPO timing</strong> — Elon Musk has discussed an IPO for Starlink (the satellite broadband subsidiary) rather than SpaceX as a whole. The structure and timing remain uncertain.</li>
 <li><strong>Indirect exposure</strong> — You can gain indirect SpaceX exposure through companies in its supply chain or through funds that hold pre-IPO SpaceX shares (some mutual funds have positions in SpaceX via secondary market purchases).</li>
 </ul>
@@ -826,7 +827,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 
 <p><strong>Headquarters:</strong> Ecublens, Switzerland (ESA spin-off)</p>
 
-<p>ClearSpace won the European Space Agency\'s first debris removal contract. Their ClearSpace-1 mission, scheduled for 2026, will capture and deorbit a Vega rocket payload adapter — a roughly 100 kg piece of debris left in orbit since 2013. The mission uses a "space claw" — four robotic arms that wrap around the target object.</p>
+<p>ClearSpace won the European Space Agency\'s first debris removal contract. Their ClearSpace-1 mission, scheduled for 2028-2029, will capture and deorbit the PROBA-1 satellite. The mission uses a "space claw" — four robotic arms that wrap around the target object.</p>
 
 <p>ClearSpace-1 is significant because it\'s the first government-funded mission to remove a specific piece of debris that wasn\'t designed for capture. This is much harder than capturing a cooperative target — the debris is tumbling, has no handles or docking ports, and its exact condition after years in space is unknown.</p>
 
@@ -1065,7 +1066,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 <p>Government space spending exceeds <strong>$110 billion</strong> globally, with the United States accounting for roughly half through NASA ($25.4B), Space Force ($30B+), and NRO/classified programs.</p>
 
 <ul>
-<li><strong>Artemis program</strong> is driving lunar economy investment with the Gateway station, Human Landing System (SpaceX, Blue Origin), and commercial lunar payload services</li>
+<li><strong>Artemis program</strong> is driving lunar economy investment with the Gateway station (since paused in favor of the Ignition surface base initiative), Human Landing System (SpaceX, Blue Origin), and commercial lunar payload services</li>
 <li><strong>Space Force</strong> is rapidly increasing spending on resilient architectures, proliferated LEO constellations, and commercial space integration</li>
 <li><strong>Commercial procurement</strong> is growing as agencies shift from cost-plus contracts to firm-fixed-price and commercial services</li>
 </ul>
@@ -1348,7 +1349,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
     readingTime: 9,
     keywords: ['space weather monitoring', 'solar flare impact', 'geomagnetic storm business', 'satellite operations weather', 'space weather forecast'],
     content: `
-<p>In February 2022, a geomagnetic storm caused SpaceX to lose <strong>40 Starlink satellites</strong> worth an estimated $50 million. The satellites encountered unexpectedly high atmospheric drag during deployment and couldn\'t recover. It was a dramatic reminder that space weather isn\'t just a scientific curiosity — it\'s a business risk.</p>
+<p>In February 2022, a geomagnetic storm caused SpaceX to lose <strong>40 Starlink satellites</strong> worth millions of dollars in satellite hardware. The satellites encountered unexpectedly high atmospheric drag during deployment and couldn\'t recover. It was a dramatic reminder that space weather isn\'t just a scientific curiosity — it\'s a business risk.</p>
 
 <h2 id="what-is-space-weather">What Is Space Weather?</h2>
 
@@ -1430,7 +1431,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 <p>The era of mega-constellations has arrived, and it\'s transforming every aspect of the space value chain — from manufacturing and launch services to spectrum management and orbital safety.</p>
 
 <ul>
-<li><strong>SpaceX Starlink</strong> has surpassed 7,000 operational satellites, delivering broadband to over 4 million subscribers across 75+ countries</li>
+<li><strong>SpaceX Starlink</strong> has surpassed 7,000 operational satellites, delivering broadband to over 10+ million subscribers across 75+ countries</li>
 <li><strong>Amazon Kuiper</strong> began deployment in 2026, aiming for 3,236 satellites with a $10 billion committed investment</li>
 <li><strong>OneWeb (Eutelsat)</strong> completed its 648-satellite constellation and is now focusing on Gen 2 expansion</li>
 <li><strong>Telesat Lightspeed</strong> is targeting enterprise and government customers with a 298-satellite LEO constellation</li>
@@ -1458,7 +1459,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 <li><strong>Northrop Grumman\'s MEV-2</strong> has been servicing an Intelsat satellite since 2021, extending its operational life by years</li>
 <li><strong>Orbit Fab</strong> is deploying fuel depots in orbit, creating the infrastructure for satellite refueling</li>
 <li><strong>Astroscale\'s ADRAS-J</strong> successfully demonstrated rendezvous and proximity operations with a piece of debris in 2024</li>
-<li><strong>NASA\'s OSAM-2</strong> (formerly Archinaut) is testing in-space robotic assembly capabilities</li>
+<li><strong>NASA\'s OSAM-2</strong> (formerly Archinaut) demonstrated in-space robotic assembly concepts before its conclusion in 2023</li>
 </ul>
 
 <p>The U.S. Space Force has identified ISAM as a critical capability, and the commercial market for life extension alone could exceed <strong>$4 billion annually</strong> by 2030. Operators with $200-500 million GEO satellites would rather pay $20 million for refueling than $300 million for a replacement.</p>
@@ -1532,7 +1533,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 
 <p>Four mega-constellation programs are driving the majority of global launch demand and spacecraft manufacturing volume:</p>
 
-<p><strong>SpaceX Starlink</strong> is the undisputed leader. With over 7,000 satellites in orbit delivering broadband to 4+ million subscribers, Starlink has proven the commercial viability of LEO broadband. The constellation generates an estimated <strong>$6-8 billion in annual revenue</strong> and has become SpaceX\'s primary revenue driver, surpassing launch services. Starlink\'s V2 Mini satellites (launched on Falcon 9) and the upcoming V3 satellites (designed for Starship) offer increasing capacity per spacecraft.</p>
+<p><strong>SpaceX Starlink</strong> is the undisputed leader. With over 7,000 satellites in orbit delivering broadband to 10+ million subscribers, Starlink has proven the commercial viability of LEO broadband. The constellation generates an estimated <strong>$10+ billion in annual revenue</strong> and has become SpaceX\'s primary revenue driver, surpassing launch services. Starlink\'s V2 Mini satellites (launched on Falcon 9) and the upcoming V3 satellites (designed for Starship) offer increasing capacity per spacecraft.</p>
 
 <p><strong>Amazon Kuiper</strong> represents the most significant new entrant. Amazon committed <strong>$10 billion</strong> to deploy 3,236 satellites, with an FCC deadline requiring half the constellation operational by mid-2026. Amazon\'s competitive advantages include integration with AWS cloud infrastructure, bundling with Amazon Prime services, and enterprise relationships. Kuiper is contracting launches from ULA (Atlas V, Vulcan), Arianespace (Ariane 6), and Blue Origin (New Glenn).</p>
 
@@ -3450,7 +3451,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 <p>Satellite communications is the largest revenue segment in the space economy, and it's being transformed by LEO broadband constellations:</p>
 
 <ul>
-<li><strong>Starlink</strong> (SpaceX) is generating an estimated $6-8 billion in annual revenue with 4+ million subscribers. It's proven the market exists.</li>
+<li><strong>Starlink</strong> (SpaceX) is generating an estimated $10+ billion in annual revenue with 10+ million subscribers. It's proven the market exists.</li>
 <li><strong>AST SpaceMobile (ASTS)</strong> is building a direct-to-device constellation that connects unmodified smartphones to satellites. High risk, enormous TAM — if it works, the addressable market is every unconnected phone on Earth</li>
 <li><strong>Globalstar (GSAT)</strong> is Apple's satellite partner, providing emergency SOS services on iPhones. Apple's majority investment provides financial stability and a path to broader D2D services</li>
 <li><strong>Iridium (IRDM)</strong> is the boring, profitable incumbent — steady cash flows from IoT, maritime, and aviation connectivity with low churn</li>
@@ -5134,7 +5135,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 <p>Several signals suggest a SpaceX IPO could materialize in 2026:</p>
 
 <ul>
-<li>Elon Musk has publicly stated that Starlink would IPO once cash flow becomes "reasonably predictable" \u2014 and Starlink reached <strong>profitability in 2024</strong> with over 4 million subscribers and $6.6 billion in projected 2025 revenue</li>
+<li>Elon Musk has publicly stated that Starlink would IPO once cash flow becomes "reasonably predictable" \u2014 and Starlink reached <strong>profitability in 2024</strong> with over 10+ million subscribers and $10+ billion in projected annual revenue</li>
 <li>SpaceX has been restructuring its corporate organization in ways consistent with IPO preparation, including separating Starlink\'s financials from the launch business</li>
 <li>Secondary market activity has intensified, with late-stage crossover funds acquiring SpaceX shares at accelerating valuations \u2014 a pattern that typically precedes IPO filing by 12-18 months</li>
 </ul>
@@ -5551,7 +5552,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 
 <p>SpaceX quietly crossed a remarkable threshold this week: <strong>10,000 active Starlink satellites</strong> in orbit. The milestone was reached following a Falcon 9 launch from Vandenberg Space Force Base on March 12 that deployed another batch of 23 V2 Mini satellites.</p>
 
-<p>To put that number in perspective, when SpaceX launched its first Starlink batch in May 2019, there were approximately 2,000 active satellites total across all operators worldwide. SpaceX now operates <strong>five times that number</strong> by itself. The constellation serves over 4 million subscribers in more than 75 countries, generating an estimated $6.6 billion in annual revenue.</p>
+<p>To put that number in perspective, when SpaceX launched its first Starlink batch in May 2019, there were approximately 2,000 active satellites total across all operators worldwide. SpaceX now operates <strong>five times that number</strong> by itself. The constellation serves over 10+ million subscribers in more than 75 countries, generating an estimated $10+ billion in annual revenue.</p>
 
 <p>The next chapter is Starlink V3 satellites, which are significantly larger and more capable, designed to launch aboard Starship. These next-generation satellites will deliver direct-to-cell connectivity and dramatically higher per-satellite bandwidth. SpaceX has FCC authorization for up to 12,000 satellites in its first-generation constellation and has applied for approval of an additional 30,000.</p>
 
@@ -5643,7 +5644,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 <li><strong>10,000+</strong> active satellites in LEO (approximately 550 km altitude)</li>
 <li><strong>4+ million</strong> subscribers across residential, business, maritime, and aviation segments</li>
 <li><strong>75+ countries</strong> with active Starlink service</li>
-<li><strong>$6.6 billion</strong> estimated annual revenue (2025), making Starlink one of the largest satellite operators by revenue in history</li>
+<li><strong>$10+ billion</strong> estimated annual revenue, making Starlink one of the largest satellite operators by revenue in history</li>
 <li><strong>~90 Falcon 9 launches</strong> dedicated to Starlink in the past 12 months alone</li>
 <li><strong>100-200 Mbps</strong> typical download speeds for residential users, with latency under 30 ms in most coverage areas</li>
 </ul>
@@ -6972,7 +6973,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 
 <p>The three constellations target different markets with different economics.</p>
 
-<p><strong>Starlink</strong> operates across consumer, business, maritime, aviation, and government tiers. Consumer service starts at <strong>$120/month</strong> with a $499 terminal. Starlink Business offers higher throughput at $250/month. Starlink Maritime and Aviation products serve the mobility market at premium price points ($5,000\u2013$25,000/month for maritime). The consumer business provides volume, while enterprise and mobility segments drive margin. Starlink generated an estimated <strong>$6.6 billion in revenue in 2025</strong>, making it the primary revenue driver for SpaceX.</p>
+<p><strong>Starlink</strong> operates across consumer, business, maritime, aviation, and government tiers. Consumer service starts at <strong>$120/month</strong> with a $499 terminal. Starlink Business offers higher throughput at $250/month. Starlink Maritime and Aviation products serve the mobility market at premium price points ($5,000\u2013$25,000/month for maritime). The consumer business provides volume, while enterprise and mobility segments drive margin. Starlink generated an estimated <strong>$10+ billion in annual revenue</strong>, making it the primary revenue driver for SpaceX.</p>
 
 <p><strong>OneWeb/Eutelsat</strong> operates exclusively in the <strong>B2B and government</strong> segment. It does not sell directly to consumers. Revenue comes through distribution agreements with telecom operators, managed service contracts with enterprise customers, and government/defense contracts. The merged Eutelsat Group reported approximately <strong>\u20AC1.2 billion</strong> in annual revenue, though only a portion comes from OneWeb\'s LEO services. The B2B model avoids the capital-intensive consumer terminal subsidy problem but limits total addressable market.</p>
 
@@ -7000,7 +7001,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 
 <h2 id="who-is-winning">Who Is Winning \u2014 and Why</h2>
 
-<p>As of March 2026, <strong>Starlink is winning decisively</strong> on every operational metric: satellite count, coverage, subscribers, revenue, and demonstrated military capability. SpaceX\'s vertical integration \u2014 designing, manufacturing, and launching its own satellites \u2014 creates a structural cost advantage that neither OneWeb nor Kuiper can replicate. Starlink has over <strong>4 million subscribers</strong> globally, generates billions in recurring revenue, and has proven its technology in the most demanding real-world conditions imaginable.</p>
+<p>As of March 2026, <strong>Starlink is winning decisively</strong> on every operational metric: satellite count, coverage, subscribers, revenue, and demonstrated military capability. SpaceX\'s vertical integration \u2014 designing, manufacturing, and launching its own satellites \u2014 creates a structural cost advantage that neither OneWeb nor Kuiper can replicate. Starlink has over <strong>10+ million subscribers</strong> globally, generates billions in recurring revenue, and has proven its technology in the most demanding real-world conditions imaginable.</p>
 
 <p>But this is not a winner-take-all market. Several factors prevent Starlink from capturing the entire market:</p>
 
@@ -7617,7 +7618,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 <p>Satellite ownership is increasingly concentrated in a handful of mega-constellation operators, though hundreds of organizations still operate individual spacecraft:</p>
 
 <h3>SpaceX Starlink: The Dominant Player</h3>
-<p>SpaceX\'s <strong>Starlink constellation accounts for over 6,000 active satellites</strong> — roughly 57% of all operational satellites in orbit. Starlink provides broadband internet service to 4+ million subscribers across 70+ countries. SpaceX launches batches of 20-23 Starlink V2 Mini satellites approximately every 4-5 days on Falcon 9, adding roughly 1,500 new satellites per year.</p>
+<p>SpaceX\'s <strong>Starlink constellation accounts for over 6,000 active satellites</strong> — roughly 57% of all operational satellites in orbit. Starlink provides broadband internet service to 10+ million subscribers across 70+ countries. SpaceX launches batches of 20-23 Starlink V2 Mini satellites approximately every 4-5 days on Falcon 9, adding roughly 1,500 new satellites per year.</p>
 
 <h3>OneWeb</h3>
 <p>Eutelsat OneWeb operates <strong>634 satellites</strong> in a 1,200 km orbit, providing broadband services focused on enterprise, aviation, maritime, and government markets.</p>
@@ -7686,7 +7687,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
   {
     slug: 'spacex-starlink-everything-you-need-to-know-2026',
     title: 'SpaceX Starlink: Everything You Need to Know in 2026',
-    excerpt: 'The complete guide to SpaceX Starlink in 2026: 6,000+ satellites, 4M+ subscribers, global coverage, pricing, technology, and what\'s next for the world\'s largest satellite constellation.',
+    excerpt: 'The complete guide to SpaceX Starlink in 2026: 6,000+ satellites, 10M+ subscribers, global coverage, pricing, technology, and what\'s next for the world\'s largest satellite constellation.',
     category: 'technology',
     author: 'SpaceNexus Team',
     authorRole: 'Editorial',
@@ -7694,7 +7695,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
     readingTime: 9,
     keywords: ['Starlink', 'SpaceX Starlink', 'Starlink satellites', 'Starlink internet', 'satellite internet', 'Starlink coverage 2026', 'Starlink price'],
     content: `
-<p><strong>SpaceX Starlink</strong> is the largest satellite constellation in history and the most ambitious commercial space project ever undertaken. With over <strong>6,000 active satellites</strong> and <strong>4 million+ subscribers</strong> across 70+ countries, Starlink has fundamentally changed the satellite internet industry. Here is everything you need to know about Starlink in 2026.</p>
+<p><strong>SpaceX Starlink</strong> is the largest satellite constellation in history and the most ambitious commercial space project ever undertaken. With over <strong>6,000 active satellites</strong> and <strong>10+ million subscribers</strong> across 70+ countries, Starlink has fundamentally changed the satellite internet industry. Here is everything you need to know about Starlink in 2026.</p>
 
 <h2 id="what-is-starlink">What Is Starlink?</h2>
 
@@ -7785,11 +7786,11 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 
 <h2 id="revenue-and-business">Revenue and Business Impact</h2>
 
-<p>Starlink is estimated to generate <strong>$6-8 billion in annual revenue</strong> in 2026, making it one of SpaceX\'s primary revenue streams alongside Falcon 9 launch services and government contracts. Key business metrics:</p>
+<p>Starlink is estimated to generate <strong>$10+ billion in annual revenue</strong> in 2026, making it one of SpaceX\'s primary revenue streams alongside Falcon 9 launch services and government contracts. Key business metrics:</p>
 
 <ul>
-<li><strong>4M+ subscribers worldwide</strong></li>
-<li><strong>$6-8B estimated annual revenue</strong></li>
+<li><strong>10M+ subscribers worldwide</strong></li>
+<li><strong>$10B+ estimated annual revenue</strong></li>
 <li><strong>Approaching EBITDA profitability</strong> (per SpaceX investor presentations)</li>
 <li><strong>Hardware cost reduction:</strong> User terminal cost has been reduced from ~$3,000 manufacturing cost in 2020 to under $600 in 2026</li>
 </ul>
@@ -10222,7 +10223,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 <h3>Rocket Lab: The Small Launch Champion</h3>
 <p>Peter Beck\'s Rocket Lab carved out a unique position with the <strong>Electron</strong> — the most frequently launched small-lift rocket in the Western world. But Rocket Lab\'s ambitions are much larger. The <strong>Neutron</strong> medium-lift rocket, targeting a 2026 maiden flight, will compete directly with Falcon 9 for constellation deployment and medium-payload missions. Rocket Lab is also a major spacecraft components supplier.</p>
 
-<p><strong>Key stats:</strong> ~2,000 employees | Market cap ~$12B (RKLB) | 50+ Electron launches | Headquarters: Long Beach, CA</p>
+<p><strong>Key stats:</strong> ~2,000 employees | Market cap ~$38B (RKLB) | 50+ Electron launches | Headquarters: Long Beach, CA</p>
 
 <h2 id="vehicle-comparison">Vehicle Comparison: The Rockets</h2>
 
@@ -10308,7 +10309,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 <h2 id="business-models">Business Model Comparison</h2>
 
 <h3>SpaceX: Vertically Integrated Launch + Services</h3>
-<p>SpaceX is not just a launch company — Starlink is now its largest revenue driver, generating an estimated $6-8 billion annually. The company uses its own rockets to deploy its own satellites, creating an internal demand flywheel that justifies high launch cadence, which in turn reduces per-launch costs. SpaceX also provides crew transportation to the ISS and has won major government contracts (HLS, NSSL).</p>
+<p>SpaceX is not just a launch company — Starlink is now its largest revenue driver, generating an estimated $10+ billion annually. The company uses its own rockets to deploy its own satellites, creating an internal demand flywheel that justifies high launch cadence, which in turn reduces per-launch costs. SpaceX also provides crew transportation to the ISS and has won major government contracts (HLS, NSSL).</p>
 
 <h3>Blue Origin: Infrastructure Provider</h3>
 <p>Blue Origin\'s business model extends beyond launch. The company supplies BE-4 engines to ULA\'s Vulcan Centaur, is developing the Orbital Reef commercial space station (with Sierra Space), and has won the NASA Artemis HLS Option B contract. Bezos\'s vision is building "roads to space" — infrastructure that enables an entire ecosystem.</p>
@@ -11525,7 +11526,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 <h2 id="major-constellations">The Major Satellite Internet Constellations</h2>
 
 <h3>SpaceX Starlink</h3>
-<p>Starlink is the dominant player with over <strong>6,000 satellites</strong> in orbit as of early 2026, serving more than 4 million subscribers across 75+ countries. Key specifications include:</p>
+<p>Starlink is the dominant player with over <strong>6,000 satellites</strong> in orbit as of early 2026, serving more than 10+ million subscribers across 75+ countries. Key specifications include:</p>
 
 <ul>
 <li><strong>Orbit:</strong> 540-570 km altitude, 53-97 degree inclinations</li>
@@ -11598,7 +11599,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 <li><strong>Launch cost:</strong> SpaceX\'s vertical integration means it launches its own satellites at marginal cost. Competitors must pay market rates ($5,000-$10,000 per kg to LEO)</li>
 <li><strong>User terminal subsidy:</strong> Most operators sell terminals below cost initially, recouping through monthly subscriptions</li>
 <li><strong>Satellite lifespan:</strong> LEO satellites last 5-7 years due to atmospheric drag, requiring continuous replenishment launches</li>
-<li><strong>ARPU (Average Revenue Per User):</strong> At ~$120/month with 4+ million subscribers, Starlink is generating $5-6 billion in annual revenue, approaching profitability</li>
+<li><strong>ARPU (Average Revenue Per User):</strong> At ~$120/month with 10+ million subscribers, Starlink is generating $10+ billion in annual revenue and has reached profitability</li>
 </ul>
 
 <h2 id="future">The Future of Satellite Internet</h2>
@@ -11668,7 +11669,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 <p>Building rockets is a smaller but strategically critical segment, worth roughly <strong>$5-8 billion annually</strong>. The market is dominated by SpaceX (Falcon 9, Falcon Heavy, Starship), with Rocket Lab, ULA, Arianespace, and newcomers like Relativity Space and Firefly competing for market share. Reusability has fundamentally changed the economics — a reusable Falcon 9 first stage can fly 20+ times, spreading manufacturing costs across many missions.</p>
 
 <h3>Ground Equipment</h3>
-<p>Ground segment manufacturing — including user terminals, ground stations, antennas, and network infrastructure — generates approximately <strong>$10-15 billion annually</strong>. This segment has grown dramatically with the deployment of LEO constellations that require millions of user terminals. Starlink alone has shipped over 4 million terminals, making ground equipment manufacturing a high-volume business.</p>
+<p>Ground segment manufacturing — including user terminals, ground stations, antennas, and network infrastructure — generates approximately <strong>$10-15 billion annually</strong>. This segment has grown dramatically with the deployment of LEO constellations that require millions of user terminals. Starlink alone has shipped over 10 million terminals, making ground equipment manufacturing a high-volume business.</p>
 
 <h3>Components and Subsystems</h3>
 <p>Beneath the prime contractors is a deep supply chain of component manufacturers providing solar arrays, reaction wheels, star trackers, processors, radiation-hardened electronics, propulsion systems, and more. Companies like <strong>HEICO, Mercury Systems, Teledyne Technologies,</strong> and <strong>L3Harris</strong> supply critical subsystems across the industry.</p>
@@ -13584,7 +13585,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 <h2 id="growth-drivers">The Five Growth Drivers to $1 Trillion</h2>
 
 <h3>1. Satellite Broadband: The Biggest Driver</h3>
-<p>Satellite internet is the single largest growth driver in the space economy. <strong>Starlink</strong> alone is projected to generate $15-20 billion in annual revenue by 2030, up from approximately $6.6 billion in 2025. Add <strong>Amazon\'s Project Kuiper</strong> (targeting 2026-2027 service launch with $10+ billion invested), <strong>OneWeb/Eutelsat</strong>, <strong>Telesat Lightspeed</strong>, and regional LEO constellations, and satellite broadband could be a <strong>$40-60 billion annual market</strong> by 2030.</p>
+<p>Satellite internet is the single largest growth driver in the space economy. <strong>Starlink</strong> alone is projected to generate $15-20 billion in annual revenue by 2030, up from approximately $10+ billion currently. Add <strong>Amazon\'s Project Kuiper</strong> (targeting 2026-2027 service launch with $10+ billion invested), <strong>OneWeb/Eutelsat</strong>, <strong>Telesat Lightspeed</strong>, and regional LEO constellations, and satellite broadband could be a <strong>$40-60 billion annual market</strong> by 2030.</p>
 
 <p>The addressable market is enormous: approximately 3 billion people globally lack reliable internet access. Satellite broadband serves not just rural homes but maritime vessels, airlines, enterprises, government agencies, and connected vehicles. Each new use case expands the total addressable market.</p>
 
@@ -14145,7 +14146,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 <h2 id="mid-cap-space-stocks">Mid-Cap Space Stocks (Market Cap $1B-$10B)</h2>
 
 <ul>
-<li><strong>Rocket Lab USA (RKLB)</strong> — Market cap ~$12B. The second most prolific orbital launch provider after SpaceX. Electron rocket for small satellites, Neutron medium-lift vehicle in development. Space Systems division builds satellite buses, reaction wheels, solar panels, and separation systems. The most investable pure-play space stock.</li>
+<li><strong>Rocket Lab USA (RKLB)</strong> — Market cap ~$38B. The second most prolific orbital launch provider after SpaceX. Electron rocket for small satellites, Neutron medium-lift vehicle in development. Space Systems division builds satellite buses, reaction wheels, solar panels, and separation systems. The most investable pure-play space stock.</li>
 <li><strong>Iridium Communications (IRDM)</strong> — Market cap ~$7B. Operates a 66-satellite LEO constellation providing global voice and data communications. Stable, cash-generative business with government and maritime customers. Recently debt-free after completing Iridium NEXT constellation deployment.</li>
 <li><strong>Viasat (VSAT)</strong> — Market cap ~$3B. Satellite broadband provider competing with Starlink, primarily in aviation and maritime markets. Completed acquisition of Inmarsat, creating the largest GEO broadband fleet. High debt load from ViaSat-3 constellation deployment.</li>
 <li><strong>Planet Labs (PL)</strong> — Market cap ~$2B. Operates the largest constellation of Earth observation satellites (200+ Dove and SuperDove satellites). Revenue growing steadily from government and commercial imagery customers. Not yet profitable but approaching breakeven.</li>
@@ -14347,7 +14348,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 <h2 id="broadband-constellations">Broadband Internet Constellations</h2>
 
 <h3>Starlink (SpaceX)</h3>
-<p>The constellation that launched the mega-constellation era. As of early 2026, SpaceX has deployed over <strong>6,500 Starlink satellites</strong> in LEO at 540-570 km altitude, with plans to eventually operate up to 42,000. Starlink provides broadband internet at speeds of 50-250 Mbps with latency of 20-40ms — comparable to cable internet and dramatically better than legacy GEO satellite internet. The constellation uses V2 Mini satellites (each about 800 kg) with inter-satellite laser links that allow data to route through space without touching the ground. Starlink serves over 4 million subscribers across 70+ countries.</p>
+<p>The constellation that launched the mega-constellation era. As of early 2026, SpaceX has deployed over <strong>6,500 Starlink satellites</strong> in LEO at 540-570 km altitude, with plans to eventually operate up to 42,000. Starlink provides broadband internet at speeds of 50-250 Mbps with latency of 20-40ms — comparable to cable internet and dramatically better than legacy GEO satellite internet. The constellation uses V2 Mini satellites (each about 800 kg) with inter-satellite laser links that allow data to route through space without touching the ground. Starlink serves over 10+ million subscribers across 70+ countries.</p>
 
 <h3>OneWeb (Eutelsat OneWeb)</h3>
 <p>Following a bankruptcy and rescue by the UK government and Bharti Global in 2020, OneWeb completed its first-generation constellation of <strong>648 satellites</strong> at 1,200 km altitude. OneWeb targets enterprise and government customers rather than consumers, with a focus on backhaul connectivity, maritime, aviation, and bridging the digital divide in underserved regions. The merger with Eutelsat created a combined GEO/LEO operator with a comprehensive product portfolio.</p>
@@ -14382,7 +14383,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 <li><strong>Upfront capital:</strong> Building and launching a constellation requires billions before generating revenue. Starlink cost SpaceX an estimated $10B+ before reaching profitability. OneWeb spent $3.4B before its bankruptcy.</li>
 <li><strong>Replacement cycle:</strong> LEO satellites have 5-7 year lifespans due to atmospheric drag. Constellation operators must continuously launch replacement satellites, creating ongoing capital expenditure. Starlink launches roughly 20-40 satellites per week to maintain and grow its fleet.</li>
 <li><strong>Economies of scale:</strong> The per-satellite cost drops dramatically with volume production. SpaceX's V2 Mini satellites are estimated to cost under $500K each — orders of magnitude cheaper than traditional GEO satellites. This is only possible at thousands-unit production volumes.</li>
-<li><strong>Revenue per satellite:</strong> A constellation's financial viability depends on generating enough revenue per satellite to cover manufacturing, launch, operations, and replacement costs. Starlink's 4 million subscribers across 6,500 satellites translates to roughly 600 subscribers per satellite.</li>
+<li><strong>Revenue per satellite:</strong> A constellation's financial viability depends on generating enough revenue per satellite to cover manufacturing, launch, operations, and replacement costs. Starlink's 10+ million subscribers across 6,500+ satellites translates to roughly 1,500 subscribers per satellite.</li>
 </ul>
 
 <h2 id="future-constellations">The Future of Constellations</h2>

@@ -190,7 +190,7 @@ export default function LandingHero({ featuredArticle, trendingNews }: LandingHe
                     </div>
                     <span className="text-[9px] font-mono text-[var(--text-muted)] tracking-wider uppercase">spacenexus:~/dashboard</span>
                   </div>
-                  <span className="live-badge text-[7px]">LIVE</span>
+                  <span className="live-badge text-[7px]">SPACE DATA</span>
                 </div>
 
                 {/* Data cards grid */}

@@ -52,10 +52,10 @@ const sponsorshipTiers = [
 ];
 
 const audienceStats = [
-  { value: '10K+', label: 'Monthly Active Users' },
-  { value: '85%', label: 'Space Industry Professionals' },
-  { value: '45%', label: 'Decision Makers (Director+)' },
-  { value: '8 min', label: 'Average Session Duration' },
+  { value: 'Growing', label: 'Active User Base' },
+  { value: 'Space', label: 'Industry Focused' },
+  { value: 'Global', label: 'Professional Audience' },
+  { value: 'Premium', label: 'Content Environment' },
 ];
 
 const audienceDemographics = [
@@ -190,7 +190,7 @@ export default function AdvertisePage() {
         {/* Hero */}
         <AnimatedPageHeader
           title="Advertise on SpaceNexus"
-          subtitle="Reach thousands of space industry decision-makers"
+          subtitle="Reach space industry professionals"
           accentColor="emerald"
         />
 

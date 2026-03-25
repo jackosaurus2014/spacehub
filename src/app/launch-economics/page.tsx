@@ -21,7 +21,7 @@ interface LaunchVehicleEcon {
   country: string;
   status: 'active' | 'historical' | 'development';
   costPerKgLeo: number;
-  costPerKgLeoHigh?: number; // for ranges like Starship $10-50
+  costPerKgLeoHigh?: number; // for ranges like Starship $67-100
   totalLaunchCost: number; // millions USD
   payloadLeoKg: number;
   reusable: boolean;
@@ -113,9 +113,9 @@ const VEHICLES: LaunchVehicleEcon[] = [
     name: 'Atlas V',
     provider: 'ULA (Lockheed heritage)',
     country: 'United States',
-    status: 'active',
+    status: 'historical',
     costPerKgLeo: 13200,
-    totalLaunchCost: 250,
+    totalLaunchCost: 110,
     payloadLeoKg: 18850,
     reusable: false,
     firstFlight: '2002',
@@ -125,8 +125,8 @@ const VEHICLES: LaunchVehicleEcon[] = [
     revenuePerLaunchM: 250,
     marginEstimate: '12-18%',
     fleetSize: 0,
-    backlog: 17,
-    notes: 'Uses RD-180 Russian engine (stockpiled). Being phased out in favor of Vulcan Centaur. 100% mission success rate.',
+    backlog: 0,
+    notes: 'Retired April 2024. Base launch price ~$110M; government-integrated mission costs reached ~$250M. Uses RD-180 Russian engine. 100% mission success rate. Replaced by Vulcan Centaur.',
   },
   {
     id: 'ariane-5',
@@ -278,8 +278,8 @@ const VEHICLES: LaunchVehicleEcon[] = [
     provider: 'SpaceX',
     country: 'United States',
     status: 'development',
-    costPerKgLeo: 10,
-    costPerKgLeoHigh: 50,
+    costPerKgLeo: 67,
+    costPerKgLeoHigh: 100,
     totalLaunchCost: 10,
     payloadLeoKg: 150000,
     reusable: true,
@@ -292,7 +292,7 @@ const VEHICLES: LaunchVehicleEcon[] = [
     marginEstimate: 'TBD (target >50%)',
     fleetSize: 0,
     backlog: 0,
-    notes: 'Fully reusable super heavy-lift. Chopstick catch system for booster. Target: airline-like operations. HLS variant for NASA Artemis. Massive Starlink V2 deployer.',
+    notes: 'Fully reusable super heavy-lift. Chopstick catch system for booster. Target: airline-like operations. HLS variant for NASA Artemis. Massive Starlink V2 deployer. Cost/kg figures are aspirational targets based on projected $10M launch cost, not current pricing.',
   },
 ];
 
@@ -377,8 +377,8 @@ const COST_ERAS: CostEra[] = [
   {
     era: 'Starship Era',
     years: '2025+',
-    costPerKg: '$10 - $50/kg (target)',
-    description: 'Fully reusable super heavy-lift. If targets met, launch cost drops 100x from today. Enables space industrialization, Mars colonization.',
+    costPerKg: '$67 - $100/kg (aspirational)',
+    description: 'Fully reusable super heavy-lift based on projected $10M launch cost. These are aspirational targets, not current pricing. If achieved, enables space industrialization and Mars colonization.',
     color: 'border-emerald-500 bg-emerald-500/10',
     widthPct: 0.1,
   },
@@ -654,8 +654,8 @@ export default function LaunchEconomicsPage() {
           </div>
 
           <div className="mt-4 p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-xl text-sm text-emerald-300">
-            <strong>Key insight:</strong> If Starship achieves its $10-50/kg target, the cost reduction from Shuttle
-            to Starship represents a <strong>1,000-5,000x decrease</strong> -- comparable to the drop in computing
+            <strong>Key insight:</strong> At Starship&apos;s projected ~$67-100/kg (based on aspirational $10M launch cost), the cost reduction from Shuttle
+            to Starship would represent a <strong>500-800x decrease</strong> -- comparable to the drop in computing
             costs over the same period.
           </div>
         </section>

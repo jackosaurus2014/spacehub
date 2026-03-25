@@ -40,8 +40,9 @@ const NATION_BUDGETS = [
 ];
 
 const PROJECTIONS = [
-  { year: 2024, size: 546, source: 'Space Foundation (actual)' },
-  { year: 2027, size: 640, source: 'Space Foundation (est.)' },
+  { year: 2023, size: 546, source: 'Space Foundation (actual)' },
+  { year: 2025, size: 626, source: 'Space Foundation (actual)' },
+  { year: 2027, size: 700, source: 'Space Foundation (est.)' },
   { year: 2030, size: 737, source: 'Space Foundation' },
   { year: 2035, size: 900, source: 'Consensus estimate' },
   { year: 2040, size: 1100, source: 'Morgan Stanley / Goldman Sachs' },

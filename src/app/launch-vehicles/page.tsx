@@ -83,9 +83,9 @@ const VEHICLES: LaunchVehicle[] = [
     engines: '9x Merlin 1D + 1x Merlin Vacuum',
     propellant: 'RP-1 / LOX',
     fairingDiameterM: 5.2,
-    firstFlight: '2010-06-04',
+    firstFlight: '2018-05-11',
     lastFlight: null,
-    description: 'The workhorse of the global launch industry. First orbital-class rocket to achieve propulsive landing and routine reuse of the first stage. Dominates the global commercial launch market with 134 flights in 2024 and 165 in 2025. Boosters have been certified for up to 40 flights each.',
+    description: 'The workhorse of the global launch industry. First orbital-class rocket to achieve propulsive landing and routine reuse of the first stage. Dominates the global commercial launch market with 134 flights in 2024 and 165 in 2025. Boosters have been certified for up to 40 flights each. Block 5 variant first flew May 2018 (original Falcon 9 v1.0 debuted June 2010).',
   },
   {
     id: 'falcon-heavy',

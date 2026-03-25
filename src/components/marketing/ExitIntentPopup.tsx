@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useSession } from 'next-auth/react';
 
 const TRIAL_BENEFITS = [
-  '30-day Pro trial (normally 14 days)',
+  '14-day free Pro trial',
   'Full access to 200+ intelligence modules',
   'Daily curated space industry alerts',
 ];
@@ -27,8 +27,6 @@ export default function ExitIntentPopup() {
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
-  const [countdown, setCountdown] = useState({ hours: 23, minutes: 59, seconds: 59 });
-
   const triggeredRef = useRef(false);
   const pageLoadTimeRef = useRef(Date.now());
   const maxScrollRef = useRef(0);
@@ -127,23 +125,6 @@ export default function ExitIntentPopup() {
       window.removeEventListener('scroll', handleScroll);
     };
   }, [shouldSuppress, showPopup]);
-
-  // Countdown timer for urgency (trial tab only)
-  useEffect(() => {
-    if (!visible) return;
-    const interval = setInterval(() => {
-      setCountdown((prev) => {
-        const totalSeconds = prev.hours * 3600 + prev.minutes * 60 + prev.seconds - 1;
-        if (totalSeconds <= 0) return { hours: 0, minutes: 0, seconds: 0 };
-        return {
-          hours: Math.floor(totalSeconds / 3600),
-          minutes: Math.floor((totalSeconds % 3600) / 60),
-          seconds: totalSeconds % 60,
-        };
-      });
-    }, 1000);
-    return () => clearInterval(interval);
-  }, [visible]);
 
   const handleDismiss = () => {
     setVisible(false);
@@ -274,7 +255,7 @@ export default function ExitIntentPopup() {
                     : 'text-slate-400 hover:text-slate-300'
                 }`}
               >
-                Free 30-Day Trial
+                Free 14-Day Trial
               </button>
               <button
                 onClick={() => setActiveTab('newsletter')}
@@ -290,7 +271,7 @@ export default function ExitIntentPopup() {
 
             {activeTab === 'trial' ? (
               <p className="text-sm text-slate-400 text-center mb-3">
-                Subscribe now and get a <span className="text-white/70 font-semibold">free extended 30-day trial</span> of SpaceNexus Pro
+                Subscribe now and get a <span className="text-white/70 font-semibold">free 14-day trial</span> of SpaceNexus Pro
               </p>
             ) : (
               <p className="text-sm text-slate-400 text-center mb-3">
@@ -298,24 +279,9 @@ export default function ExitIntentPopup() {
               </p>
             )}
 
-            {/* Countdown timer (trial tab only) */}
+            {/* Limited time offer (trial tab only) */}
             {activeTab === 'trial' && (
-              <div className="flex justify-center gap-2 mb-5">
-                {[
-                  { value: countdown.hours, label: 'HRS' },
-                  { value: countdown.minutes, label: 'MIN' },
-                  { value: countdown.seconds, label: 'SEC' },
-                ].map((unit) => (
-                  <div key={unit.label} className="text-center">
-                    <div className="w-12 h-12 rounded-lg bg-white/[0.06] border border-white/[0.1] flex items-center justify-center">
-                      <span className="text-lg font-bold text-white/70 tabular-nums">
-                        {String(unit.value).padStart(2, '0')}
-                      </span>
-                    </div>
-                    <span className="text-[10px] text-slate-500 mt-1 block">{unit.label}</span>
-                  </div>
-                ))}
-              </div>
+              <p className="text-xs text-center text-white/50 mb-5">Limited time offer</p>
             )}
 
             {/* Benefits */}

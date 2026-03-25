@@ -156,7 +156,7 @@ const TIER_1: CompanyData[] = [
       { date: '2015-12-22', type: 'milestone', title: 'First orbital-class rocket landing (Falcon 9 B1019)', importance: 10 },
       { date: '2020-05-30', type: 'milestone', title: 'Crew Dragon Demo-2: First commercial crew mission to ISS', importance: 10 },
       { date: '2024-10-13', type: 'milestone', title: 'Starship IFT-5: First successful Super Heavy booster catch by Mechazilla', importance: 9 },
-      { date: '2025-01-16', type: 'milestone', title: 'Starship IFT-7: Full mission profile success', importance: 9 },
+      { date: '2025-01-16', type: 'milestone', title: 'Starship IFT-6: Reached orbit, Ship-6 lost during reentry', importance: 9 },
     ],
     facilities: [
       { name: 'SpaceX Headquarters & Factory', type: 'headquarters', city: 'Hawthorne', state: 'CA', country: 'US' },
@@ -318,7 +318,7 @@ const TIER_1: CompanyData[] = [
     ],
     events: [
       { date: '2000-09-08', type: 'founding', title: 'Blue Origin founded by Jeff Bezos', importance: 9 },
-      { date: '2024-10-13', type: 'milestone', title: 'New Glenn first launch attempt', importance: 8 },
+      { date: '2025-01-16', type: 'milestone', title: 'New Glenn first launch attempt', importance: 8 },
     ],
     facilities: [
       { name: 'Blue Origin HQ & Factory', type: 'headquarters', city: 'Kent', state: 'WA', country: 'US' },
@@ -344,10 +344,10 @@ const TIER_1: CompanyData[] = [
     exchange: 'NYSE',
     ticker: 'NOC',
     ownershipType: 'public',
-    revenueEstimate: 36000000000,
+    revenueEstimate: 41000000000,
     products: [
       { name: 'Cygnus', category: 'spacecraft', description: 'Cargo resupply spacecraft for the ISS.', status: 'active' },
-      { name: 'OmegA/Pegasus', category: 'launch_vehicle', description: 'Launch vehicle family including Pegasus air-launch and legacy Antares.', status: 'active' },
+      { name: 'Pegasus/Antares', category: 'launch_vehicle', description: 'Launch vehicle family including Pegasus air-launch and legacy Antares. OmegA program was cancelled in 2020.', status: 'active' },
       { name: 'MEV (Mission Extension Vehicle)', category: 'spacecraft', description: 'Satellite life-extension spacecraft that docks with aging GEO satellites.', status: 'active' },
     ],
     keyPersonnel: [
@@ -361,7 +361,7 @@ const TIER_1: CompanyData[] = [
       { name: 'Chandler Satellite Facility', type: 'manufacturing', city: 'Chandler', state: 'AZ', country: 'US' },
     ],
     revenueEstimates: [
-      { year: 2024, revenue: 36600000000, source: 'SEC Filing' },
+      { year: 2024, revenue: 41000000000, source: 'SEC Filing' },
     ],
     scores: [{ scoreType: 'overall', score: 90 }, { scoreType: 'market_position', score: 95 }],
   },
@@ -498,7 +498,7 @@ const TIER_1: CompanyData[] = [
       { name: 'Adel Al-Saleh', title: 'CEO', role: 'executive', previousCompanies: ['T-Systems', 'Northgate Information Solutions'] },
     ],
     events: [
-      { date: '2024-01-01', type: 'acquisition', title: 'Completed acquisition of Intelsat', importance: 9 },
+      { date: '2025-01-02', type: 'acquisition', title: 'Completed acquisition of Intelsat', importance: 9 },
     ],
     facilities: [
       { name: 'SES HQ', type: 'headquarters', city: 'Betzdorf', country: 'LU' },
@@ -1003,7 +1003,7 @@ const TIER_1: CompanyData[] = [
       { name: 'Chris Kemp', title: 'Co-Founder, Chairman & CEO', role: 'founder', previousCompanies: ['NASA'] },
     ],
     events: [
-      { date: '2022-02-10', type: 'milestone', title: 'Astra reaches orbit successfully on LV0007', importance: 7 },
+      { date: '2021-11-20', type: 'milestone', title: 'Astra reaches orbit successfully on LV0007', importance: 7 },
     ],
     facilities: [
       { name: 'Astra HQ', type: 'headquarters', city: 'Alameda', state: 'CA', country: 'US' },
@@ -1056,7 +1056,7 @@ const TIER_1: CompanyData[] = [
     exchange: 'NYSE',
     ticker: 'RTX',
     ownershipType: 'public',
-    revenueEstimate: 69000000000,
+    revenueEstimate: 81000000000,
     products: [
       { name: 'OPIR Systems', category: 'sensor', description: 'Overhead Persistent Infrared missile warning satellites.', status: 'active' },
       { name: 'SM-3 Interceptor', category: 'missile', description: 'Anti-ballistic missile interceptor with exoatmospheric capability.', status: 'active' },
@@ -1071,135 +1071,9 @@ const TIER_1: CompanyData[] = [
       { name: 'RTX HQ', type: 'headquarters', city: 'Arlington', state: 'VA', country: 'US' },
     ],
     revenueEstimates: [
-      { year: 2024, revenue: 69000000000, source: 'SEC Filing' },
+      { year: 2024, revenue: 81000000000, source: 'SEC Filing' },
     ],
     scores: [{ scoreType: 'overall', score: 90 }],
-  },
-  {
-    name: 'Intuitive Machines',
-    headquarters: 'Houston, Texas',
-    country: 'US',
-    foundedYear: 2013,
-    employeeRange: '501-1000',
-    website: 'https://www.intuitivemachines.com',
-    description: 'Lunar access services company that achieved the first commercial Moon landing with IM-1 Odysseus in February 2024 under NASA\'s CLPS program.',
-    ceo: 'Steve Altemus',
-    sector: 'lunar',
-    tags: ['lunar-lander', 'nasa-clps', 'moon', 'lunar-services'],
-    tier: 1,
-    marketCap: 4000000000,
-    exchange: 'Nasdaq',
-    ticker: 'LUNR',
-    ownershipType: 'public',
-    revenueEstimate: 80000000,
-    products: [
-      { name: 'Nova-C Lander', category: 'lunar_lander', description: 'Lunar lander — IM-1 achieved first US commercial Moon landing in Feb 2024.', status: 'active' },
-      { name: 'PRIME-1 Drill', category: 'instrument', description: 'Polar Resources Ice Mining Experiment for lunar ice prospecting.', status: 'development' },
-    ],
-    keyPersonnel: [
-      { name: 'Steve Altemus', title: 'Co-Founder, President & CEO', role: 'founder', previousCompanies: ['NASA JSC'] },
-    ],
-    events: [
-      { date: '2024-02-22', type: 'milestone', title: 'IM-1 Odysseus: First commercial Moon landing', importance: 10 },
-    ],
-    facilities: [
-      { name: 'Intuitive Machines HQ', type: 'headquarters', city: 'Houston', state: 'TX', country: 'US' },
-    ],
-    scores: [{ scoreType: 'overall', score: 82 }],
-  },
-  {
-    name: 'Astrobotic',
-    headquarters: 'Pittsburgh, Pennsylvania',
-    country: 'US',
-    foundedYear: 2007,
-    employeeRange: '201-500',
-    website: 'https://www.astrobotic.com',
-    description: 'Lunar logistics company developing landers and rovers for NASA CLPS missions. Building Peregrine and Griffin landers for Moon delivery services.',
-    ceo: 'John Thornton',
-    sector: 'lunar',
-    tags: ['lunar-lander', 'nasa-clps', 'moon', 'robotics'],
-    tier: 1,
-    totalFunding: 400000000,
-    ownershipType: 'private',
-    products: [
-      { name: 'Peregrine Lander', category: 'lunar_lander', description: 'Small lunar lander for NASA CLPS deliveries.', status: 'active' },
-      { name: 'Griffin Lander', category: 'lunar_lander', description: 'Large lunar lander capable of delivering NASA VIPER rover.', status: 'development' },
-      { name: 'CubeRover', category: 'rover', description: 'Small, affordable lunar rover for exploration missions.', status: 'development' },
-    ],
-    keyPersonnel: [
-      { name: 'John Thornton', title: 'CEO', role: 'executive' },
-    ],
-    events: [
-      { date: '2024-01-08', type: 'milestone', title: 'Peregrine Mission One launch (anomaly after separation)', importance: 7 },
-    ],
-    facilities: [
-      { name: 'Astrobotic HQ', type: 'headquarters', city: 'Pittsburgh', state: 'PA', country: 'US' },
-    ],
-    scores: [{ scoreType: 'overall', score: 72 }],
-  },
-  {
-    name: 'ICEYE',
-    headquarters: 'Espoo, Finland',
-    country: 'FI',
-    foundedYear: 2014,
-    employeeRange: '501-1000',
-    website: 'https://www.iceye.com',
-    description: 'Finnish SAR microsatellite constellation operator providing all-weather, 24/7 radar imaging. Expanded into flood and natural catastrophe monitoring services.',
-    ceo: 'Rafal Modrzewski',
-    sector: 'earth-observation',
-    tags: ['earth-observation', 'sar', 'radar', 'insurance', 'flood-monitoring'],
-    tier: 1,
-    totalFunding: 300000000,
-    ownershipType: 'private',
-    products: [
-      { name: 'ICEYE SAR Constellation', category: 'satellite_constellation', description: 'World\'s largest SAR microsatellite constellation.', status: 'active', specs: { satellites: 30 } },
-      { name: 'ICEYE Flood Monitoring', category: 'data_service', description: 'Near real-time flood extent mapping for insurance and government.', status: 'active' },
-    ],
-    keyPersonnel: [
-      { name: 'Rafal Modrzewski', title: 'Co-Founder & CEO', role: 'founder' },
-    ],
-    events: [
-      { date: '2018-01-12', type: 'milestone', title: 'Launched world\'s first SAR microsatellite', importance: 8 },
-    ],
-    facilities: [
-      { name: 'ICEYE HQ', type: 'headquarters', city: 'Espoo', country: 'FI' },
-    ],
-    scores: [{ scoreType: 'overall', score: 80 }],
-  },
-  {
-    name: 'Redwire',
-    headquarters: 'Jacksonville, Florida',
-    country: 'US',
-    foundedYear: 2020,
-    employeeRange: '501-1000',
-    website: 'https://www.redwirespace.com',
-    description: 'Space infrastructure company formed through acquisitions, providing roll-out solar arrays, 3D bioprinting, regolith processing, and digital engineering for space.',
-    ceo: 'Peter Cannito',
-    sector: 'manufacturing',
-    tags: ['in-space-manufacturing', 'solar-arrays', 'infrastructure', '3d-printing'],
-    tier: 1,
-    marketCap: 1500000000,
-    exchange: 'NYSE',
-    ticker: 'RDW',
-    ownershipType: 'public',
-    revenueEstimate: 275000000,
-    products: [
-      { name: 'Roll-Out Solar Arrays (ROSA)', category: 'hardware', description: 'Flexible roll-out solar arrays used on ISS and Gateway.', status: 'active' },
-      { name: '3D BioFabrication Facility', category: 'manufacturing', description: 'In-space 3D bioprinting for tissue engineering in microgravity.', status: 'active' },
-    ],
-    keyPersonnel: [
-      { name: 'Peter Cannito', title: 'Chairman & CEO', role: 'executive' },
-    ],
-    events: [
-      { date: '2023-06-01', type: 'contract', title: 'Selected for NASA lunar construction technology development', importance: 7 },
-    ],
-    facilities: [
-      { name: 'Redwire HQ', type: 'headquarters', city: 'Jacksonville', state: 'FL', country: 'US' },
-    ],
-    revenueEstimates: [
-      { year: 2024, revenue: 275000000, source: 'SEC Filing' },
-    ],
-    scores: [{ scoreType: 'overall', score: 72 }],
   },
 ];
 

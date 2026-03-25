@@ -190,7 +190,7 @@ export default function AboutPage() {
               Ready to explore the space economy?
             </h2>
             <p className="text-lg text-slate-300 mb-8 max-w-2xl mx-auto">
-              Join thousands of space industry professionals using SpaceNexus for real-time intelligence,
+              Join space industry professionals using SpaceNexus for real-time intelligence,
               market data, and collaboration tools.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
