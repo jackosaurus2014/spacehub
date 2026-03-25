@@ -20,7 +20,7 @@ const COMPARISON_DATA = [
   { metric: 'Parent Company', a: 'The Boeing Company (BA)', b: 'Lockheed Martin Corporation (LMT)' },
   { metric: 'Space Division', a: 'Boeing Defense, Space & Security (BDS)', b: 'Lockheed Martin Space' },
   { metric: 'Space Revenue (approx.)', a: '~$6–7B/yr (BDS segment incl. defense)', b: '~$11–12B/yr (Space segment)' },
-  { metric: 'Launch Joint Venture', a: 'ULA (50% stake, with Lockheed)', b: 'ULA (50% stake, with Boeing)' },
+  { metric: 'Launch Joint Venture (Former)', a: 'ULA (sold 2024 — acquired by Cerberus Capital / Blue Origin interests)', b: 'ULA (sold 2024 — acquired by Cerberus Capital / Blue Origin interests)' },
   { metric: 'Human Spaceflight', a: 'CST-100 Starliner (commercial crew)', b: 'Orion Multi-Purpose Crew Vehicle (Artemis)' },
   { metric: 'Key Satellite Programs', a: 'GPS III, X-37B (OTV), WGS', b: 'GPS III (prime), SBIRS, Next Gen OPIR' },
   { metric: 'Missile Defense', a: 'Ground-Based Midcourse Defense (GMD)', b: 'THAAD, Aegis (in part)' },
@@ -84,7 +84,7 @@ export default function Page() {
       {/* Analysis */}
       <h2 className="text-display text-xl mb-3">Key Differences</h2>
       <p style={{ color: 'var(--text-secondary)' }} className="text-sm leading-relaxed mb-4">
-        Both Boeing and Lockheed Martin are legacy defense primes with deep roots in government space programs, and both share a 50/50 ownership of United Launch Alliance (ULA). Lockheed Martin Space tends to generate higher space-specific revenue thanks to the Orion spacecraft, GPS III constellation, and missile warning satellite programs (SBIRS, Next Gen OPIR). Its Space segment is also more clearly delineated as a standalone business unit, while Boeing&apos;s space work is embedded within the broader Defense, Space &amp; Security segment.
+        Both Boeing and Lockheed Martin are legacy defense primes with deep roots in government space programs. They formerly shared 50/50 ownership of United Launch Alliance (ULA), which was acquired by Cerberus Capital Management and Blue Origin interests in 2024. Lockheed Martin Space tends to generate higher space-specific revenue thanks to the Orion spacecraft, GPS III constellation, and missile warning satellite programs (SBIRS, Next Gen OPIR). Its Space segment is also more clearly delineated as a standalone business unit, while Boeing&apos;s space work is embedded within the broader Defense, Space &amp; Security segment.
       </p>
       <p style={{ color: 'var(--text-secondary)' }} className="text-sm leading-relaxed mb-8">
         Boeing&apos;s CST-100 Starliner program has faced persistent delays and technical challenges, including a 2024 crewed test flight where helium leaks and thruster anomalies led NASA to return the crew on SpaceX Crew Dragon instead. Lockheed&apos;s Orion capsule flew successfully on Artemis I (uncrewed, 2022) and Artemis II (crewed, 2025) but encountered a heat shield ablation issue on Artemis I that required investigation. Both primes face increasing pressure from new entrants like SpaceX in areas where traditional cost-plus contracting models are being challenged.

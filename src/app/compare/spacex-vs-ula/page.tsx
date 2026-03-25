@@ -17,7 +17,7 @@ export const metadata: Metadata = {
 };
 
 const COMPARISON_DATA = [
-  { metric: 'Type', a: 'Private company (SpaceX)', b: 'Joint venture (Boeing 50% + Lockheed Martin 50%)' },
+  { metric: 'Type', a: 'Private company (SpaceX)', b: 'Acquired by Cerberus Capital and Blue Origin interests (2024); formerly Boeing 50% + Lockheed Martin 50% JV' },
   { metric: 'Founded', a: '2002', b: '2006' },
   { metric: 'Headquarters', a: 'Hawthorne, CA', b: 'Centennial, CO' },
   { metric: 'Primary Launch Vehicles', a: 'Falcon 9, Falcon Heavy, Starship', b: 'Vulcan Centaur, Atlas V (phasing out), Delta IV Heavy (retired)' },
@@ -27,7 +27,7 @@ const COMPARISON_DATA = [
   { metric: 'Reusability', a: 'Yes — Falcon 9 first stage (200+ booster landings)', b: 'No — Vulcan Centaur is expendable; BE-4 engine partial recovery planned' },
   { metric: 'LEO Payload Capacity', a: '22,800 kg (F9); 63,800 kg (FH)', b: '27,200 kg (Vulcan Centaur VC6); ~8,900 kg (Atlas V 401)' },
   { metric: 'GTO Payload Capacity', a: '8,300 kg (F9); 26,700 kg (FH expendable)', b: '7,000–8,900 kg (Vulcan; varies by config)' },
-  { metric: 'NSSL Phase 2 Launch Lanes', a: 'Yes (Lane 1 — majority share)', b: 'Yes (Lane 2 — alongside SpaceX)' },
+  { metric: 'NSSL Phase 2 Launch Lanes', a: 'Yes (Lane 1)', b: 'Yes (Lane 2 — initially held ~60% NSSL share pre-SpaceX certification)' },
   { metric: 'National Security Launch Record', a: 'GPS, NRO, USSF missions (since 2015)', b: 'Primary NSSL provider pre-2015; shared since' },
   { metric: 'Mission Success Rate', a: '~99%+ (Falcon 9)', b: '~100% (Atlas V, 100 consecutive successes)' },
   { metric: 'Engine Supplier', a: 'SpaceX Merlin / Raptor (in-house)', b: 'BE-4 (Blue Origin) for Vulcan; RD-180 (Russia) for Atlas V (legacy)' },
@@ -88,7 +88,7 @@ export default function Page() {
         SpaceX transformed the U.S. launch market by driving down prices through reusability and vertical integration. Falcon 9&apos;s first stage routinely lands and relaunches within weeks, enabling a launch cadence that no other Western provider approaches — over 130 missions in 2024 alone. When SpaceX gained FAA certification for national security launches in 2015, it began winning NSSL (formerly EELV) contracts that had previously been ULA&apos;s exclusive domain. SpaceX now holds the majority share (Lane 1) of NSSL Phase 2 contracts through the early 2030s.
       </p>
       <p style={{ color: 'var(--text-secondary)' }} className="text-sm leading-relaxed mb-8">
-        ULA&apos;s Atlas V achieved 100 consecutive successes before retirement — an unmatched record in U.S. commercial launch history. Its Vulcan Centaur vehicle, which completed its first successful launch in January 2024 (Peregrine lunar lander mission), is designed to replace both Atlas V and Delta IV Heavy. However, Vulcan is expendable and will struggle to match SpaceX on price without reusability. ULA was acquired by Amazon-backed investors in 2024, which may change its strategic direction given Amazon&apos;s Project Kuiper launch needs. The NSSL Phase 3 competition (starting mid-2020s) will determine the next era of U.S. government launch.
+        ULA&apos;s Atlas V achieved 100 consecutive successes before retirement — an unmatched record in U.S. commercial launch history. Its Vulcan Centaur vehicle, which completed its first successful launch in January 2024 (Peregrine lunar lander mission), is designed to replace both Atlas V and Delta IV Heavy. However, Vulcan is expendable and will struggle to match SpaceX on price without reusability. ULA was acquired by Cerberus Capital Management and Blue Origin interests in 2024, ending the Boeing/Lockheed Martin joint venture. This may change its strategic direction given Blue Origin&apos;s relationship and Amazon&apos;s Project Kuiper launch needs. The NSSL Phase 3 competition (starting mid-2020s) will determine the next era of U.S. government launch.
       </p>
 
       {/* CTA */}

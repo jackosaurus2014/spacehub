@@ -258,7 +258,7 @@ function HeroStats() {
     { label: 'Artemis Missions', value: '6+', icon: '🚀', sub: 'Planned through 2030s' },
     { label: 'CLPS Deliveries', value: `${CLPS_MISSIONS.length}`, icon: '🌙', sub: 'Missions awarded' },
     { label: 'Cislunar Investment', value: '$93B+', icon: '💰', sub: 'NASA Artemis total' },
-    { label: 'Accords Signatories', value: '61', icon: '🌐', sub: 'Nations as of 2026' },
+    { label: 'Accords Signatories', value: '~47', icon: '🌐', sub: 'Nations as of early 2026' },
   ];
 
   return (

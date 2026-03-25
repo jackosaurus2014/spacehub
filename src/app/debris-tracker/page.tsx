@@ -103,9 +103,9 @@ const KEY_STATISTICS: DebrisStat[] = [
   },
   {
     label: 'Avoidance Maneuvers (ISS)',
-    value: '32/yr avg',
-    detail: 'ISS collision avoidance maneuvers in recent years',
-    trend: 'up',
+    value: '3-4/yr avg',
+    detail: 'ISS collision avoidance maneuvers per year (warnings number in the thousands)',
+    trend: 'stable',
     color: 'text-white/70',
   },
   {
@@ -189,12 +189,12 @@ const MAJOR_EVENTS: DebrisEvent[] = [
   },
   {
     year: 2023,
-    name: 'Starlink Conjunction Cluster',
+    name: 'Mega-Constellation Conjunction Concerns',
     fragments: 'N/A',
-    orbit: 'LEO (550 km)',
+    orbit: 'LEO (500-600 km)',
     description:
-      'Multiple close approaches between Starlink constellation satellites and tracked debris objects. Highlighted the growing challenge of managing mega-constellation collision avoidance at scale.',
-    severity: 'high',
+      'Growing number of close approaches involving mega-constellation satellites and tracked debris objects. Highlighted the increasing challenge of collision avoidance at scale as LEO becomes more congested.',
+    severity: 'medium',
     stillTracked: 'Ongoing monitoring',
   },
   {

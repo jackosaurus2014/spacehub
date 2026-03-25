@@ -143,7 +143,7 @@ export const KNOWN_SATELLITE_OPERATORS = [
 export const AUCTIONS: Auction[] = [
   {
     id: 'fcc-110',
-    name: 'FCC Auction 110 (3.45-3.55 GHz CBRS)',
+    name: 'FCC Auction 110 (3.45-3.55 GHz DoD Transition)',
     band: '3.45-3.55 GHz',
     status: 'completed',
     country: 'US',
@@ -151,7 +151,7 @@ export const AUCTIONS: Auction[] = [
     raised: '$22.5B',
     winnerHighlight: 'T-Mobile',
     relevance: 'Adjacent to satellite C-band',
-    details: 'The CBRS mid-band auction cleared spectrum previously used by federal government and satellite operators. T-Mobile secured the largest share of licenses, strengthening its 5G mid-band holdings. The proximity to satellite C-band downlinks raises interference concerns for adjacent-band satellite operations.',
+    details: 'The 3.45 GHz mid-band auction cleared spectrum previously used by the Department of Defense and transitioned it to commercial 5G use. T-Mobile secured the largest share of licenses, strengthening its 5G mid-band holdings. The proximity to satellite C-band downlinks raises interference concerns for adjacent-band satellite operations.',
   },
   {
     id: 'fcc-107',

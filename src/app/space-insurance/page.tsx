@@ -131,17 +131,17 @@ const ORBIT_RISK_FACTORS: Record<string, { label: string; launchRate: number; in
 
 const LAUNCH_VEHICLES: { name: string; reliability: number; riskMultiplier: number; flights: number }[] = [
   { name: 'Falcon 9 (SpaceX)', reliability: 99.3, riskMultiplier: 0.85, flights: 350 },
-  { name: 'Falcon Heavy (SpaceX)', reliability: 100, riskMultiplier: 0.90, flights: 12 },
-  { name: 'Ariane 6 (Arianespace)', reliability: 95.0, riskMultiplier: 1.10, flights: 8 },
+  { name: 'Falcon Heavy (SpaceX)', reliability: 100, riskMultiplier: 0.90, flights: 10 },
+  { name: 'Ariane 6 (Arianespace)', reliability: 95.0, riskMultiplier: 1.10, flights: 3 },
   { name: 'Atlas V (ULA)', reliability: 100, riskMultiplier: 0.80, flights: 101 },
-  { name: 'Vulcan Centaur (ULA)', reliability: 100, riskMultiplier: 1.05, flights: 4 },
+  { name: 'Vulcan Centaur (ULA)', reliability: 100, riskMultiplier: 1.05, flights: 3 },
   { name: 'Electron (Rocket Lab)', reliability: 96.0, riskMultiplier: 0.95, flights: 55 },
-  { name: 'Neutron (Rocket Lab)', reliability: 95.0, riskMultiplier: 1.15, flights: 2 },
-  { name: 'H3 (JAXA/MHI)', reliability: 90.0, riskMultiplier: 1.10, flights: 5 },
+  { name: 'Neutron (Rocket Lab)', reliability: 0, riskMultiplier: 1.50, flights: 0 },
+  { name: 'H3 (JAXA/MHI)', reliability: 90.0, riskMultiplier: 1.10, flights: 3 },
   { name: 'Long March 5 (CASC)', reliability: 92.0, riskMultiplier: 1.05, flights: 15 },
   { name: 'PSLV (ISRO)', reliability: 96.2, riskMultiplier: 0.95, flights: 62 },
   { name: 'New Glenn (Blue Origin)', reliability: 90.0, riskMultiplier: 1.20, flights: 1 },
-  { name: 'Starship (SpaceX)', reliability: 85.0, riskMultiplier: 1.35, flights: 7 },
+  { name: 'Starship (SpaceX)', reliability: 0, riskMultiplier: 1.50, flights: 7 },
   { name: 'Other / Unspecified', reliability: 90.0, riskMultiplier: 1.25, flights: 0 },
 ];
 
@@ -167,9 +167,9 @@ const TOP_INSURERS: { name: string; marketShare: number; specialty: string; hq: 
 const NOTABLE_CLAIMS: { year: number; mission: string; operator: string; insuredValue: number; claimAmount: number; cause: string; outcome: string }[] = [
   { year: 2016, mission: 'Amos-6', operator: 'Spacecom', insuredValue: 285, claimAmount: 285, cause: 'Pre-launch explosion on pad during fueling (Falcon 9 COPV failure)', outcome: 'Total loss. Largest space insurance claim at the time. Led to rate hardening.' },
   { year: 2019, mission: 'Arabsat-6A (Falcon Heavy)', operator: 'Arabsat', insuredValue: 350, claimAmount: 0, cause: 'Core booster lost during landing (no payload damage)', outcome: 'No claim filed -- satellite deployed successfully. Highlighted booster vs payload risk.' },
-  { year: 2018, mission: 'Intelsat 29e', operator: 'Intelsat', insuredValue: 408, claimAmount: 390, cause: 'Propellant leak led to loss of attitude control after 3 years in orbit', outcome: 'Partial claim settled. In-orbit anomaly triggered extended coverage review.' },
+  { year: 2019, mission: 'Intelsat 29e', operator: 'Intelsat', insuredValue: 408, claimAmount: 390, cause: 'Propellant leak led to loss of attitude control after 3 years in orbit', outcome: 'Partial claim settled. In-orbit anomaly triggered extended coverage review.' },
   { year: 2019, mission: 'Beresheet', operator: 'SpaceIL', insuredValue: 100, claimAmount: 95, cause: 'IMU failure during lunar landing attempt', outcome: 'Total loss. First privately funded lunar mission. Unique deep-space risk profile.' },
-  { year: 2020, mission: 'Vega VV16', operator: 'Arianespace', insuredValue: 175, claimAmount: 175, cause: 'Upper stage failure 8 minutes after launch (cable integration error)', outcome: 'Total loss of 2 payloads. Arianespace paused Vega launches for investigation.' },
+  { year: 2020, mission: 'Vega VV17', operator: 'Arianespace', insuredValue: 175, claimAmount: 175, cause: 'Upper stage failure 8 minutes after launch (cable integration error)', outcome: 'Total loss of 2 payloads. Arianespace paused Vega launches for investigation.' },
   { year: 2022, mission: 'Intelsat 33e', operator: 'Intelsat', insuredValue: 425, claimAmount: 400, cause: 'Progressive power subsystem degradation', outcome: 'Constructive total loss declared. Largest single satellite claim in recent years.' },
   { year: 2023, mission: 'ViaSat-3 Americas', operator: 'Viasat', insuredValue: 740, claimAmount: 420, cause: 'Antenna reflector deployment anomaly -- partial capacity loss', outcome: 'Partial loss claim. Satellite operational at reduced capacity (~70%).' },
   { year: 2017, mission: 'Telkom-3S', operator: 'Telkom Indonesia', insuredValue: 220, claimAmount: 0, cause: 'Solar array deployment delay resolved in orbit', outcome: 'No claim filed. Arrays deployed after troubleshooting. Underwriters relieved.' },
@@ -1249,7 +1249,7 @@ function InsuranceContent() {
                           >
                             {LAUNCH_VEHICLES.map((v) => (
                               <option key={v.name} value={v.name}>
-                                {v.name} ({v.reliability}% reliability, {v.flights} flights)
+                                {v.name} ({v.reliability > 0 ? `${v.reliability}% reliability, ` : ''}{v.flights > 0 ? `${v.flights} ${v.reliability === 0 ? 'test ' : ''}flights` : 'In development'})
                               </option>
                             ))}
                           </select>

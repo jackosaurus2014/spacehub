@@ -25,7 +25,7 @@ const COMPARISON_DATA = [
   { metric: 'Constellation Size', planet: '200+ active satellites (PlanetScope, SkySat)', maxar: '~10 high-resolution satellites (WorldView, GeoEye, Legion)' },
   { metric: 'Best Resolution', planet: '~50 cm (SkySat)', maxar: '~30 cm (WorldView-3, Legion)' },
   { metric: 'Revisit Rate', planet: 'Daily global (PlanetScope)', maxar: 'Less frequent per target (~1–4 days typical)' },
-  { metric: 'Satellite Type', planet: 'CubeSat / small sats (mass-produced)', maxar: 'Large GEO & LEO (custom, high-value)' },
+  { metric: 'Satellite Type', planet: 'CubeSat / small sats (mass-produced)', maxar: 'Large LEO satellites (custom, high-value)' },
   { metric: 'Acquisition History', planet: 'Acquired Terra Bella (from Google) 2017; BlackBridge 2015', maxar: 'Formed from DigitalGlobe + SSL + MDA + Radiant Solutions merger' },
   { metric: 'Data Products', planet: 'PlanetScope, SkySat, Planet Basemaps, Planetary Variables', maxar: 'WorldView imagery, Maxar ARD, SecureWatch, 3D surface data' },
   { metric: 'AI / Analytics Platform', planet: 'Planet Platform (APIs + analytics)', maxar: 'Maxar Intelligence (SecureWatch, GBDX successor)' },

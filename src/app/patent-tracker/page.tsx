@@ -56,7 +56,7 @@ const PATENTS: Patent[] = [
     filingDate: '2023-06-22', grantDate: '2025-04-10', status: 'granted',
     category: 'Launch Vehicles', patentNumber: 'US12,089,301',
     abstract: 'Deployable landing leg mechanism with honeycomb crush core energy absorption for vertical rocket landing on unprepared surfaces.',
-    inventors: ['Gary Lai', 'Mark Bezos'], citations: 18,
+    inventors: ['Gary Lai', 'Rob Meyerson'], citations: 18,
   },
   {
     id: 'p4', title: 'Optical Inter-Satellite Link Terminal', assignee: 'SpaceX',
@@ -126,8 +126,8 @@ const PATENTS: Patent[] = [
 // ─── Stats ───────────────────────────────────────────────────────────────────
 
 const STATS = {
-  totalPatents: 2847,
-  grantedThisYear: 312,
+  totalPatents: '~2,800 (est.)',
+  grantedThisYear: '~300 (est.)',
   topAssignee: 'SpaceX',
   topCategory: 'Propulsion Systems',
   avgCitations: 24,
@@ -209,8 +209,8 @@ export default function PatentTrackerPage() {
       <ScrollReveal>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
           {[
-            { label: 'Total Patents Tracked', value: STATS.totalPatents.toLocaleString(), icon: '📋' },
-            { label: 'Granted This Year', value: STATS.grantedThisYear.toString(), icon: '✅' },
+            { label: 'Total Patents Tracked', value: STATS.totalPatents, icon: '📋' },
+            { label: 'Granted This Year', value: STATS.grantedThisYear, icon: '✅' },
             { label: 'Top Assignee', value: STATS.topAssignee, icon: '🏆' },
             { label: 'Avg Citations', value: STATS.avgCitations.toString(), icon: '📊' },
           ].map(s => (
@@ -356,13 +356,18 @@ export default function PatentTrackerPage() {
           </p>
           <h3 className="text-lg font-bold mb-2 text-display">Unlock Full Patent Intelligence</h3>
           <p className="text-sm mb-4 max-w-md mx-auto" style={{ color: 'var(--text-secondary)' }}>
-            Track {STATS.totalPatents.toLocaleString()}+ space patents across {STATS.companiesTracked}+ companies with advanced search, citation analysis, and IP trend reports.
+            Track {STATS.totalPatents} space patents across {STATS.companiesTracked}+ companies with advanced search, citation analysis, and IP trend reports.
           </p>
           <Link href="/pricing?utm_source=patent_tracker&utm_medium=paywall" className="btn-primary">
             Upgrade to Enterprise — $49.99/mo
           </Link>
         </div>
       )}
+
+      {/* Disclaimer */}
+      <div className="mt-6 p-4 rounded-lg text-xs leading-relaxed" style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)', color: 'var(--text-muted)' }}>
+        Patent numbers and citation counts shown on this page are illustrative examples. Verify against USPTO/EPO for official records.
+      </div>
 
       {/* Category Breakdown */}
       <div className="mt-8">
