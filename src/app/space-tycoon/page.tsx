@@ -64,6 +64,7 @@ import FeatureUnlockToast from '@/components/game/FeatureUnlockToast';
 import ProUpgradeBanner from '@/components/game/ProUpgradeBanner';
 import { getConstructionSlots, getActiveConstructions, canStartConstruction, getSlotBreakdown } from '@/lib/game/construction-slots';
 import { getTierUnlockedTabs, getTierDef, getNextTierProgress } from '@/lib/game/corporation-tiers';
+import GameChat from '@/components/game/GameChat';
 
 // ─── Build Panel ────────────────────────────────────────────────────────────
 
@@ -1849,6 +1850,9 @@ export default function SpaceTycoonPage() {
           }}
         />
       )}
+
+      {/* Global Chat */}
+      <GameChat companyName={state.companyName || 'Anonymous'} />
     </div>
   );
 }
