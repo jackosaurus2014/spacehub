@@ -197,7 +197,7 @@ export default function NotFound() {
 
           {/* Astronaut image */}
           <div style={{ animation: 'float 6s ease-in-out infinite' }} className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-            <Image src="/art/404-lost-astronaut.png" alt="Lost astronaut floating in space" width={256} height={256} className="drop-shadow-[0_0_24px_rgba(148,163,184,0.3)]" priority />
+            <Image src="/art/404-lost-astronaut.png" alt="Lost astronaut floating in space" width={256} height={256} sizes="256px" className="drop-shadow-[0_0_24px_rgba(148,163,184,0.3)]" priority />
           </div>
 
           {/* Orbiting debris */}

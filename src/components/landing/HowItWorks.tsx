@@ -84,6 +84,7 @@ export default function HowItWorks() {
                 alt=""
                 width={80}
                 height={80}
+                sizes="80px"
                 className="opacity-60 rounded-lg mb-3"
               />
               <h3 className="text-lg font-semibold text-white mb-2 group-hover:text-white transition-colors duration-200">{s.title}</h3>

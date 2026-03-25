@@ -204,6 +204,7 @@ export default function BentoFeatures() {
                     src={item.heroImage}
                     alt=""
                     fill
+                    sizes="(max-width: 768px) 100vw, 66vw"
                     className="object-cover opacity-[0.08] group-hover:opacity-[0.14] transition-opacity duration-300"
                   />
                 )}

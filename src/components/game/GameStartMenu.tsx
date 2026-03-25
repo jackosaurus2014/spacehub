@@ -28,6 +28,7 @@ export default function GameStartMenu({ onNewGame, onContinue }: GameStartMenuPr
         src={BG_ASSETS.loadingScreen}
         alt=""
         fill
+        sizes="100vw"
         className="absolute inset-0 object-cover opacity-30 pointer-events-none"
         priority
       />

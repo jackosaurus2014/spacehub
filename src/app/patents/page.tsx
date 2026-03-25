@@ -1733,6 +1733,7 @@ export default function PatentTrackerPage() {
             src="/art/hero-patents.png"
             alt=""
             fill
+            sizes="100vw"
             className="object-cover opacity-20"
             priority
           />

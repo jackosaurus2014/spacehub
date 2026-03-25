@@ -352,6 +352,7 @@ function SolarExplorationContent() {
             src="/art/hero-solar-expansion.png"
             alt=""
             fill
+            sizes="100vw"
             className="object-cover opacity-20"
             priority
           />

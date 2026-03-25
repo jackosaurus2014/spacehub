@@ -98,7 +98,7 @@ export default function PricingCardV3({
       <div className="p-6">
         {/* Tier illustration */}
         {TIER_ILLUSTRATIONS[planId] && (
-          <Image src={TIER_ILLUSTRATIONS[planId]} alt="" width={120} height={120} className="opacity-60 mx-auto mb-4" />
+          <Image src={TIER_ILLUSTRATIONS[planId]} alt="" width={120} height={120} sizes="120px" className="opacity-60 mx-auto mb-4" />
         )}
 
         {/* Tier header */}

@@ -264,7 +264,7 @@ export default function GettingStartedPage() {
                       </div>
                       {STEP_ILLUSTRATIONS[step.step] && (
                         <div className="shrink-0">
-                          <Image src={STEP_ILLUSTRATIONS[step.step]} alt="" width={200} height={150} className="opacity-80 rounded-lg" />
+                          <Image src={STEP_ILLUSTRATIONS[step.step]} alt="" width={200} height={150} sizes="200px" className="opacity-80 rounded-lg" />
                         </div>
                       )}
                     </div>

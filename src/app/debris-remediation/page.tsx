@@ -1581,6 +1581,7 @@ function DebrisRemediationContent() {
               src="/art/hero-debris.png"
               alt=""
               fill
+              sizes="100vw"
               className="object-cover opacity-20"
               priority
             />

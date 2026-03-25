@@ -157,6 +157,7 @@ export default function ExplorePlatform() {
                   src={dest.heroImage}
                   alt=""
                   fill
+                  sizes="(max-width: 768px) 50vw, 25vw"
                   className="object-cover opacity-[0.08] group-hover:opacity-15 transition-opacity duration-300"
                 />
 

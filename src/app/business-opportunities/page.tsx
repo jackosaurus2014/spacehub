@@ -396,6 +396,7 @@ function BusinessOpportunitiesContent() {
             src="/art/hero-business-ops.png"
             alt=""
             fill
+            sizes="100vw"
             className="object-cover opacity-20"
             priority
           />

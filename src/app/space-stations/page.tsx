@@ -1592,6 +1592,7 @@ export default function SpaceStationTrackerPage() {
             src="/art/hero-space-stations.png"
             alt=""
             fill
+            sizes="100vw"
             className="object-cover opacity-20"
             priority
           />

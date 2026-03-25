@@ -2670,6 +2670,7 @@ export default function SpaceTalentHubPage() {
             src="/art/hero-talent-hub.png"
             alt=""
             fill
+            sizes="100vw"
             className="object-cover opacity-20"
             priority
           />

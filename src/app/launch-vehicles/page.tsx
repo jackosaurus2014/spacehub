@@ -1136,6 +1136,7 @@ export default function LaunchVehiclesPage() {
             src="/art/hero-launch-vehicles.png"
             alt=""
             fill
+            sizes="100vw"
             className="object-cover opacity-20"
             priority
           />

@@ -265,6 +265,7 @@ export default function NewsPage() {
             src="/art/hero-news-media.png"
             alt=""
             fill
+            sizes="100vw"
             className="object-cover opacity-20"
             priority
           />

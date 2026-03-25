@@ -91,8 +91,10 @@ export default function LandingHero({ featuredArticle, trendingNews }: LandingHe
           src="/art/hero-landing.png"
           alt=""
           fill
+          sizes="100vw"
           className="object-cover opacity-15"
           priority
+          fetchPriority="high"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#09090b]/70 to-[#09090b]" />
       </div>

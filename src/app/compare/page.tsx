@@ -165,6 +165,7 @@ export default function ComparisonHubPage() {
                     src={tool.heroImage}
                     alt=""
                     fill
+                    sizes="(max-width: 768px) 100vw, 50vw"
                     className="object-cover opacity-[0.06] group-hover:opacity-[0.12] transition-opacity duration-300"
                   />
 
@@ -174,6 +175,7 @@ export default function ComparisonHubPage() {
                       alt=""
                       width={48}
                       height={48}
+                      sizes="48px"
                       className="rounded-lg opacity-70 flex-shrink-0 mt-1"
                     />
                     <div className="flex-1 min-w-0">

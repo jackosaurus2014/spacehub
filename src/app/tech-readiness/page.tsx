@@ -979,6 +979,7 @@ export default function TechReadinessPage() {
             src="/art/hero-tech-readiness.png"
             alt=""
             fill
+            sizes="100vw"
             className="object-cover opacity-20"
             priority
           />

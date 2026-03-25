@@ -1736,6 +1736,7 @@ function SpaceCommsContent() {
             src="/art/hero-space-comms.png"
             alt=""
             fill
+            sizes="100vw"
             className="object-cover opacity-20"
             priority
           />

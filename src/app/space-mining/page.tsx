@@ -2054,6 +2054,7 @@ export default function SpaceMiningPage() {
             src="/art/hero-space-mining.png"
             alt=""
             fill
+            sizes="100vw"
             className="object-cover opacity-20"
             priority
           />

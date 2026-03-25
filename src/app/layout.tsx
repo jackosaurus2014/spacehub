@@ -215,6 +215,12 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="https://api.spacexdata.com" />
         <link rel="preconnect" href="https://eonet.gsfc.nasa.gov" />
         <link rel="dns-prefetch" href="https://eonet.gsfc.nasa.gov" />
+        <link rel="preconnect" href="https://www.googletagmanager.com" />
+        <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
+        <link rel="preconnect" href="https://api.nasa.gov" />
+        <link rel="dns-prefetch" href="https://api.nasa.gov" />
+        <link rel="preconnect" href="https://services.swpc.noaa.gov" />
+        <link rel="dns-prefetch" href="https://services.swpc.noaa.gov" />
         <link rel="alternate" hrefLang="en" href="https://spacenexus.us" />
         <link rel="alternate" hrefLang="x-default" href="https://spacenexus.us" />
         <StructuredData />
@@ -245,6 +251,7 @@ export default function RootLayout({
           enabled={true}
         />
         {/* Preload critical fonts for LCP */}
+        <link rel="preload" href="/fonts/Satoshi-Regular.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
         <link rel="preload" href="/fonts/Satoshi-Bold.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
         <link rel="preload" href="/fonts/Satoshi-Black.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
       </head>

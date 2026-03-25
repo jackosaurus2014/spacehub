@@ -113,6 +113,7 @@ export default function SpacePhotoOfDay() {
               src={data.url}
               alt={data.title}
               fill
+              sizes="(max-width: 768px) 100vw, 768px"
               className={`object-cover transition-opacity duration-500 ${imgLoaded ? 'opacity-100' : 'opacity-0'}`}
               onLoad={() => setImgLoaded(true)}
               loading="lazy"

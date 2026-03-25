@@ -35,6 +35,7 @@ export default function EmptyState({ icon, illustration, title, description, act
               alt=""
               width={128}
               height={128}
+              sizes="128px"
               className="w-full h-full object-contain"
             />
           </div>

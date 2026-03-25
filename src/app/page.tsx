@@ -243,7 +243,7 @@ export default async function HomePage() {
               className="group rounded-xl border border-white/[0.08] bg-white/[0.03] hover:bg-white/[0.06] hover:border-indigo-500/20 transition-all duration-300 overflow-hidden"
             >
               <div className="relative h-40 overflow-hidden">
-                <Image src="/art/hero-mission-planning.png" alt="" fill className="object-cover opacity-40 group-hover:opacity-50 group-hover:scale-105 transition-all duration-500" />
+                <Image src="/art/hero-mission-planning.png" alt="" fill sizes="(max-width: 768px) 100vw, 50vw" loading="lazy" className="object-cover opacity-40 group-hover:opacity-50 group-hover:scale-105 transition-all duration-500" />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#09090b] via-[#09090b]/60 to-transparent" />
                 <div className="absolute bottom-3 left-4 right-4">
                   <span className="text-[9px] px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 font-bold uppercase tracking-wider">Analysis</span>
@@ -252,7 +252,7 @@ export default async function HomePage() {
               <div className="p-4">
                 <h3 className="text-white text-sm font-bold mb-1.5 group-hover:text-indigo-300 transition-colors line-clamp-2">NASA&apos;s $20 Billion Moon Base: Everything You Need to Know About Project Ignition</h3>
                 <p className="text-slate-400 text-xs line-clamp-2 mb-2">NASA just announced its most ambitious lunar initiative since Apollo. The &quot;Ignition&quot; plan commits $20 billion over seven years to build a permanent base at the Moon&apos;s south pole.</p>
-                <span className="text-[10px] text-slate-500">14 min read</span>
+                <span className="text-[10px] text-slate-400">14 min read</span>
               </div>
             </Link>
             <Link
@@ -260,7 +260,7 @@ export default async function HomePage() {
               className="group rounded-xl border border-white/[0.08] bg-white/[0.03] hover:bg-white/[0.06] hover:border-cyan-500/20 transition-all duration-300 overflow-hidden"
             >
               <div className="relative h-40 overflow-hidden">
-                <Image src="/art/hero-space-operations.png" alt="" fill className="object-cover opacity-40 group-hover:opacity-50 group-hover:scale-105 transition-all duration-500" />
+                <Image src="/art/hero-space-operations.png" alt="" fill sizes="(max-width: 768px) 100vw, 50vw" loading="lazy" className="object-cover opacity-40 group-hover:opacity-50 group-hover:scale-105 transition-all duration-500" />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#09090b] via-[#09090b]/60 to-transparent" />
                 <div className="absolute bottom-3 left-4 right-4">
                   <span className="text-[9px] px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 font-bold uppercase tracking-wider">Market</span>
@@ -269,7 +269,7 @@ export default async function HomePage() {
               <div className="p-4">
                 <h3 className="text-white text-sm font-bold mb-1.5 group-hover:text-cyan-300 transition-colors line-clamp-2">NASA&apos;s Moon Base Changes Everything for Commercial Space Companies</h3>
                 <p className="text-slate-400 text-xs line-clamp-2 mb-2">The $20 billion Ignition initiative isn&apos;t just a NASA program &mdash; it&apos;s the biggest commercial space catalyst since the Commercial Crew Program.</p>
-                <span className="text-[10px] text-slate-500">7 min read</span>
+                <span className="text-[10px] text-slate-400">7 min read</span>
               </div>
             </Link>
           </div>
@@ -391,7 +391,7 @@ export default async function HomePage() {
                         AI Analysis
                       </span>
                     ) : card.readingTime ? (
-                      <span className="text-xs text-slate-500">{card.readingTime} min read</span>
+                      <span className="text-xs text-slate-400">{card.readingTime} min read</span>
                     ) : null}
                   </div>
                   <h3 className="text-lg font-semibold text-white group-hover:text-white transition-colors line-clamp-2 mb-2">
@@ -401,8 +401,8 @@ export default async function HomePage() {
                     {card.summary}
                   </p>
                   <div className="flex items-center justify-between">
-                    {card.author && <span className="text-xs text-slate-500">{card.author}</span>}
-                    <time className="text-xs text-slate-500 ml-auto">
+                    {card.author && <span className="text-xs text-slate-400">{card.author}</span>}
+                    <time className="text-xs text-slate-400 ml-auto">
                       {card.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' })}
                     </time>
                   </div>
@@ -513,7 +513,7 @@ export default async function HomePage() {
       {/* Mobile App CTA — visible on smaller screens */}
       <section className="section-spacer md:hidden">
         <div className="container mx-auto px-4 text-center">
-          <p className="text-slate-400 text-sm mb-3">Take SpaceNexus on the go</p>
+          <p className="text-slate-300 text-sm mb-3">Take SpaceNexus on the go</p>
           <a
             href="https://play.google.com/store/apps/details?id=com.spacenexus.app&referrer=utm_source%3Dwebsite%26utm_medium%3Dhomepage"
             target="_blank"
