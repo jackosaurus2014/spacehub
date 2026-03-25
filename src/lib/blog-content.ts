@@ -104,7 +104,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 
 <h2 id="artemis-ii">Artemis II: The Immediate Next Step</h2>
 
-<p>The Ignition announcement comes just one week before the planned <strong>Artemis II launch on April 1, 2026</strong> — the first crewed mission of the Artemis program. Artemis II will send four astronauts around the Moon (without landing) in a mission that validates the Orion spacecraft and Space Launch System for crewed deep-space flight.</p>
+<p>The Ignition announcement comes just one week before the planned <strong>Artemis II launch targeting approximately April 1, 2026</strong> — the first crewed mission of the Artemis program. Artemis II will send four astronauts around the Moon (without landing) in a mission that validates the Orion spacecraft and Space Launch System for crewed deep-space flight.</p>
 
 <p>The timing is strategic. A successful Artemis II demonstrates that NASA can deliver on its lunar promises, building public and congressional support for the $20 billion Ignition investment. A failure, conversely, could undermine the entire initiative before it begins.</p>
 
@@ -126,7 +126,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 <p>The near-term milestones are clear:</p>
 
 <ul>
-<li><strong>April 1, 2026</strong> — Artemis II crewed lunar flyby</li>
+<li><strong>Targeting April 1, 2026</strong> — Artemis II crewed lunar flyby</li>
 <li><strong>Mid-2027</strong> — Artemis III: Earth-orbit rendezvous and docking test</li>
 <li><strong>Early 2028</strong> — Artemis IV: first crewed lunar landing</li>
 <li><strong>Late 2028</strong> — Space Reactor 1 Freedom launches to Mars</li>
@@ -977,7 +977,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 <p>Three trends are converging to make a unified space intelligence platform both necessary and possible:</p>
 
 <h3>1. The Commercial Space Explosion</h3>
-<p>In 2025, there were over 320 orbital launches — more than double the pace of just five years ago. SpaceX alone launched 165+ Falcon 9 missions. The number of active satellites passed 10,000. With Starship entering service, Amazon\'s Project Kuiper deploying, and new players like Relativity and Rocket Lab scaling up, the volume of data is growing exponentially.</p>
+<p>In 2025, there were approximately 270 orbital launches — more than double the pace of just five years ago. SpaceX alone launched approximately 130+ Falcon 9 missions. The number of active satellites passed 10,000. With Starship entering service, Amazon\'s Project Kuiper deploying, and new players like Relativity and Rocket Lab scaling up, the volume of data is growing exponentially.</p>
 
 <h3>2. Government-Commercial Convergence</h3>
 <p>The U.S. Space Force, NASA\'s Commercial Crew and Cargo programs, and the Artemis Accords are blurring the line between government and commercial space. Professionals need to track both simultaneously — SBIR contracts, commercial partnerships, and regulatory decisions all affect the same companies.</p>
@@ -1041,7 +1041,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 
 <h2 id="launch-services">Launch Services: More Rockets, Lower Costs</h2>
 
-<p>The launch services market reached approximately <strong>$14 billion</strong> in 2025, with over 320 orbital launches. Key trends:</p>
+<p>The launch services market reached approximately <strong>$14 billion</strong> in 2025, with approximately 270 orbital launches. Key trends:</p>
 
 <ul>
 <li><strong>SpaceX</strong> dominates with 60%+ market share by launch count, with Falcon 9 achieving aircraft-like reuse cadence</li>
@@ -1263,7 +1263,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
     readingTime: 11,
     keywords: ['satellite tracking', 'TLE data explained', 'how satellite tracking works', 'orbital mechanics basics', 'space debris tracking', 'CelesTrak'],
     content: `
-<p>There are over <strong>19,000 trackable objects</strong> orbiting Earth right now — active satellites, spent rocket bodies, and debris fragments. Tracking these objects is critical for collision avoidance, communications, scientific research, and national security. Here\'s how it all works.</p>
+<p>There are over <strong>48,000+ trackable objects</strong> orbiting Earth right now — active satellites, spent rocket bodies, and debris fragments. Tracking these objects is critical for collision avoidance, communications, scientific research, and national security. Here\'s how it all works.</p>
 
 <h2 id="what-is-satellite-tracking">What Is Satellite Tracking?</h2>
 
@@ -1422,7 +1422,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
     readingTime: 9,
     keywords: ['space industry trends 2026', 'mega-constellations', 'in-space servicing', 'space sustainability', 'AI in space', 'sovereign space programs'],
     content: `
-<p>The space industry is evolving faster than ever. With over 320 orbital launches in 2025 and the commercial space sector generating more than <strong>$630 billion in annual revenue</strong>, the market is being reshaped by a handful of transformative trends that will define the rest of the decade.</p>
+<p>The space industry is evolving faster than ever. With approximately 270 orbital launches in 2025 and the commercial space sector generating more than <strong>$630 billion in annual revenue</strong> according to industry estimates, the market is being reshaped by a handful of transformative trends that will define the rest of the decade.</p>
 
 <p>Whether you\'re an investor, operator, policy maker, or engineer, understanding these five trends is essential for staying competitive. Let\'s break them down with the latest data from the <a href="/market-intel">SpaceNexus Market Intelligence module</a>.</p>
 
@@ -1432,9 +1432,9 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 
 <ul>
 <li><strong>SpaceX Starlink</strong> has surpassed 7,000 operational satellites, delivering broadband to over 10+ million subscribers across 75+ countries</li>
-<li><strong>Amazon Kuiper</strong> began deployment in 2026, aiming for 3,236 satellites with a $10 billion committed investment</li>
+<li><strong>Amazon Kuiper</strong> ramped up full-scale deployment in 2026, aiming for 3,236 satellites with a $10 billion committed investment</li>
 <li><strong>OneWeb (Eutelsat)</strong> completed its 648-satellite constellation and is now focusing on Gen 2 expansion</li>
-<li><strong>Telesat Lightspeed</strong> is targeting enterprise and government customers with a 298-satellite LEO constellation</li>
+<li><strong>Telesat Lightspeed</strong> is targeting enterprise and government customers with a 198-satellite LEO constellation</li>
 </ul>
 
 <p>The downstream effects are massive. Satellite manufacturing has shifted from bespoke, billion-dollar GEO platforms to high-volume production lines turning out multiple spacecraft per day. Launch demand has tripled in five years. And the <a href="/satellites">orbital environment</a> is more congested than ever, driving new requirements for space traffic management.</p>
@@ -1459,7 +1459,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 <li><strong>Northrop Grumman\'s MEV-2</strong> has been servicing an Intelsat satellite since 2021, extending its operational life by years</li>
 <li><strong>Orbit Fab</strong> is deploying fuel depots in orbit, creating the infrastructure for satellite refueling</li>
 <li><strong>Astroscale\'s ADRAS-J</strong> successfully demonstrated rendezvous and proximity operations with a piece of debris in 2024</li>
-<li><strong>NASA\'s OSAM-2</strong> (formerly Archinaut) demonstrated in-space robotic assembly concepts before its conclusion in 2023</li>
+<li><strong>NASA\'s OSAM-2</strong> (formerly Archinaut) was cancelled before flight, though it advanced in-space robotic assembly concepts during its development phase</li>
 </ul>
 
 <p>The U.S. Space Force has identified ISAM as a critical capability, and the commercial market for life extension alone could exceed <strong>$4 billion annually</strong> by 2030. Operators with $200-500 million GEO satellites would rather pay $20 million for refueling than $300 million for a replacement.</p>
@@ -1470,7 +1470,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 
 <ul>
 <li>The <strong>FCC\'s 5-year deorbit rule</strong> (adopted in 2022) requires LEO satellites to deorbit within 5 years of mission end, down from the previous 25-year guideline</li>
-<li>The <strong>European Space Agency</strong> is funding ClearSpace-1, the first active debris removal mission, targeting a Vega upper stage for capture in 2026</li>
+<li>The <strong>European Space Agency</strong> is funding ClearSpace-1, the first active debris removal mission, targeting a Vega upper stage for capture in 2028-2029</li>
 <li><strong>Space sustainability ratings</strong> are emerging, with the World Economic Forum and ESA developing frameworks to score operators on responsible behavior</li>
 <li><strong>Insurance premiums</strong> are beginning to reflect debris risk, creating financial incentives for responsible operations</li>
 </ul>
@@ -1578,7 +1578,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 
 <p>Beyond the constellation operators themselves, mega-constellations are creating substantial opportunities across the value chain:</p>
 
-<p><strong>Launch services:</strong> Mega-constellations have driven launch demand to historic highs. SpaceX alone launched 165+ Falcon 9 missions in 2025, mostly for Starlink. Amazon\'s Kuiper has booked 83 launches across three providers. This sustained demand justifies investments in reusable launch vehicles and new launch sites.</p>
+<p><strong>Launch services:</strong> Mega-constellations have driven launch demand to historic highs. SpaceX alone launched approximately 130+ Falcon 9 missions in 2025, mostly for Starlink. Amazon\'s Kuiper has booked 83 launches across three providers. This sustained demand justifies investments in reusable launch vehicles and new launch sites.</p>
 
 <p><strong>Ground infrastructure:</strong> Each constellation needs a global network of ground stations (gateways) to connect satellite capacity to terrestrial internet backbones. Companies building and operating ground station networks — including cloud providers like AWS Ground Station — are benefiting from this demand.</p>
 
@@ -1665,7 +1665,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 
 <ul>
 <li><strong>Viasat-3 Americas (2023):</strong> A deployment anomaly with the satellite\'s reflector antenna resulted in one of the largest recent space insurance claims, estimated at $400-600 million</li>
-<li><strong>Zuma (2018):</strong> A Northrop Grumman payload worth an estimated $3.5 billion was lost during a SpaceX Falcon 9 launch due to a fairing separation failure. However, classified payloads are typically self-insured by the government.</li>
+<li><strong>Zuma (2018):</strong> A Northrop Grumman payload worth an estimated $3.5 billion was lost during a SpaceX Falcon 9 launch due to a payload adapter separation failure. However, classified payloads are typically self-insured by the government.</li>
 <li><strong>Amos-6 (2016):</strong> SpaceX\'s Falcon 9 exploded on the pad during fueling, destroying the $200 million Spacecom satellite. The claim was one of the largest in space insurance history.</li>
 <li><strong>Starlink losses (2022):</strong> SpaceX lost 40 satellites to a geomagnetic storm shortly after deployment, but the satellites\' relatively low individual value meant the total loss was manageable — and SpaceX self-insures Starlink.</li>
 </ul>
@@ -1757,7 +1757,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 <thead><tr><th>Aspect</th><th>ITAR</th><th>EAR</th></tr></thead>
 <tbody>
 <tr><td>Agency</td><td>State Dept (DDTC)</td><td>Commerce Dept (BIS)</td></tr>
-<tr><td>Control list</td><td>USML (22 categories)</td><td>CCL (10 categories) + EAR99</td></tr>
+<tr><td>Control list</td><td>USML (21 categories)</td><td>CCL (10 categories) + EAR99</td></tr>
 <tr><td>Scope</td><td>Defense articles &amp; services</td><td>Dual-use &amp; commercial items</td></tr>
 <tr><td>Default policy</td><td>Deny (must get license)</td><td>Varies by destination &amp; item</td></tr>
 <tr><td>Civil penalties</td><td>Up to $1M per violation</td><td>Up to $300K per violation</td></tr>
@@ -2479,7 +2479,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 <p>SpaceX has resisted going public for years, with Musk repeatedly stating that the quarterly earnings pressure of public markets is incompatible with the long-term, capital-intensive mission of Mars colonization. So what changed?</p>
 
 <h3>Starlink Has Reached Profitability</h3>
-<p>The most significant shift is that <strong>Starlink</strong>, SpaceX\'s satellite internet constellation, has crossed the profitability threshold. With over 4.5 million subscribers across 100+ countries and annualized revenue exceeding $10 billion, Starlink has become one of the fastest-growing telecommunications businesses in history. The unit economics have improved dramatically as second-generation satellites — launched on Starship — deliver 10x the capacity at lower per-unit cost. Starlink alone could justify a $500-700 billion valuation on a revenue-multiple basis comparable to high-growth telecom and infrastructure companies.</p>
+<p>The most significant shift is that <strong>Starlink</strong>, SpaceX\'s satellite internet constellation, has crossed the profitability threshold. With over 10+ million subscribers across 100+ countries and annualized revenue exceeding $10 billion, Starlink has become one of the fastest-growing telecommunications businesses in history. The unit economics have improved dramatically as second-generation satellites — launched on Starship — deliver 10x the capacity at lower per-unit cost. Starlink alone could justify a $500-700 billion valuation on a revenue-multiple basis comparable to high-growth telecom and infrastructure companies.</p>
 
 <h3>Starship Is Operational</h3>
 <p>After a series of test flights in 2024-2025, <strong>Starship</strong> has achieved routine operational status. The fully reusable super-heavy launch system has completed successful orbital missions, Starlink deployment flights, and its first commercial payload deliveries. The tower-catch booster recovery system — once dismissed as science fiction — is now performing with near-routine reliability. Starship\'s operational status de-risks SpaceX\'s future revenue streams and dramatically lowers the cost of Starlink constellation replenishment.</p>
@@ -2498,7 +2498,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 
 <ul>
 <li><strong>Starlink:</strong> $10B+ revenue, growing 40-50% annually. At a 15-20x forward revenue multiple (comparable to high-growth infrastructure plays), Starlink alone is worth $600B-$1T.</li>
-<li><strong>Launch Services:</strong> $3-4B revenue from the world\'s most reliable and lowest-cost launch vehicle. Falcon 9 has achieved over 400 consecutive successful missions. Even at a modest 8-10x multiple, this is a $30-40B business — but the strategic value is higher because it enables everything else.</li>
+<li><strong>Launch Services:</strong> $3-4B revenue from the world\'s most reliable and lowest-cost launch vehicle. Falcon 9 has achieved over 300 consecutive successful missions. Even at a modest 8-10x multiple, this is a $30-40B business — but the strategic value is higher because it enables everything else.</li>
 <li><strong>Starship Platform:</strong> The economics of fully reusable heavy-lift are still being proven commercially, but the addressable market is enormous: point-to-point cargo, space station servicing, lunar logistics for Artemis, and Mars missions. Analysts estimate Starship\'s platform value at $200-400B based on addressable market and early contracts.</li>
 <li><strong>Starshield / Government:</strong> The classified satellite and defense communications business is growing rapidly. Comparable defense-tech companies trade at 15-25x revenue. This segment could be worth $75-150B.</li>
 </ul>
@@ -2585,7 +2585,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
     featured: true,
     keywords: ['Artemis II', 'NASA Moon mission', 'SLS launch', 'Orion spacecraft', 'lunar exploration', 'Artemis program', 'Moon landing', 'NASA astronauts', 'space exploration 2026'],
     content: `
-<p>On March 19, 2026, NASA will roll the Space Launch System (SLS) rocket and Orion spacecraft to Launch Pad 39B at Kennedy Space Center, beginning the final countdown sequence for <strong>Artemis II</strong> — the first crewed mission to the Moon in over half a century. With a targeted launch date of approximately <strong>April 1, 2026</strong>, this mission represents one of the most significant moments in space exploration since the Apollo era.</p>
+<p>On March 19, 2026, NASA is expected to roll the Space Launch System (SLS) rocket and Orion spacecraft to Launch Pad 39B at Kennedy Space Center, beginning the final countdown sequence for <strong>Artemis II</strong> — the first crewed mission to the Moon in over half a century. With a targeted launch date of approximately <strong>April 1, 2026</strong>, this mission represents one of the most significant moments in space exploration since the Apollo era.</p>
 
 <p>Artemis II won\'t land on the lunar surface. Instead, it will send four astronauts on a <strong>10-day journey around the Moon and back</strong>, validating the life support systems, navigation, and operational procedures that will enable lunar surface missions later this decade. Think of it as the Apollo 8 of the Artemis generation — a proving flight that demonstrates humanity can once again travel to deep space.</p>
 
@@ -2631,7 +2631,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 <p>Artemis II represents the first crewed flight of both the SLS rocket and the Orion spacecraft\'s full life support system:</p>
 
 <ul>
-<li><strong>Space Launch System (SLS):</strong> Standing 322 feet tall, SLS is configured in its Block 1 variant with two solid rocket boosters (derived from Space Shuttle heritage) and four RS-25 engines (also Shuttle-derived). It generates 8.8 million pounds of thrust at liftoff — 15% more than the Saturn V. The SLS core stage was built by Boeing at the Michoud Assembly Facility in New Orleans.</li>
+<li><strong>Space Launch System (SLS):</strong> Standing 322 feet tall, SLS is configured in its Block 1 variant with two solid rocket boosters (derived from Space Shuttle heritage) and four RS-25 engines (also Shuttle-derived). It generates 8.8 million pounds of thrust at liftoff — 17% more than the Saturn V. The SLS core stage was built by Boeing at the Michoud Assembly Facility in New Orleans.</li>
 <li><strong>Orion Crew Module:</strong> Built by Lockheed Martin, Orion is designed for deep space missions with enhanced radiation protection, a glass cockpit with modern avionics, and a life support system rated for 21-day missions. The crew module is 16.5 feet in diameter, providing approximately 316 cubic feet of habitable volume for four astronauts.</li>
 <li><strong>European Service Module (ESM):</strong> Built by Airbus Defence and Space for the European Space Agency, the ESM provides propulsion (a single OMS-E engine derived from the Space Shuttle), electrical power (four solar array wings generating 11 kilowatts), and consumables storage. ESA\'s contribution to the service module is a key element of international cooperation in Artemis.</li>
 <li><strong>Launch Abort System (LAS):</strong> Unlike Artemis I, the crewed Artemis II mission carries a fully active launch abort system capable of pulling the crew module away from the rocket in the event of a launch failure. The LAS can generate 400,000 pounds of thrust in milliseconds.</li>
@@ -2684,7 +2684,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 <p>NASA will provide comprehensive live coverage of Artemis II:</p>
 
 <ul>
-<li><strong>Rollout:</strong> March 19, 2026 — Live coverage of the 4-mile journey from the Vehicle Assembly Building to Pad 39B aboard the Crawler-Transporter 2.</li>
+<li><strong>Rollout:</strong> Targeting March 19, 2026 — Live coverage of the 4-mile journey from the Vehicle Assembly Building to Pad 39B aboard the Crawler-Transporter 2.</li>
 <li><strong>Launch:</strong> Targeting approximately April 1, 2026 (exact date pending final pad operations). Coverage begins 2+ hours before launch on NASA TV, YouTube, and the NASA app.</li>
 <li><strong>Mission Coverage:</strong> 24/7 mission coverage including crew activities, mission milestones, and press briefings throughout the 10-day flight.</li>
 <li><strong>Splashdown:</strong> Live coverage of reentry and Pacific Ocean splashdown, including crew recovery operations.</li>
@@ -2696,16 +2696,16 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
   {
     slug: 'ai-in-orbit-space-based-data-centers-revolution',
     title: 'AI in Orbit: How Space-Based Data Centers Are Reshaping the Space Industry',
-    excerpt: 'From SpaceX\'s filing for 1 million data center satellites to Starcloud training the first LLM in orbit, the convergence of artificial intelligence and space infrastructure is creating a new market category worth hundreds of billions. Here\'s what\'s happening and why it matters.',
+    excerpt: 'From SpaceX\'s expanded constellation filings for data processing capabilities to Lumen Orbit training AI models in orbit, the convergence of artificial intelligence and space infrastructure is creating a new market category worth hundreds of billions. Here\'s what\'s happening and why it matters.',
     category: 'technology',
     author: 'SpaceNexus Team',
     authorRole: 'Market Intelligence',
     publishedAt: '2026-03-14T00:00:00Z',
     readingTime: 14,
     featured: true,
-    keywords: ['space data centers', 'AI in space', 'orbital computing', 'SpaceX data center satellites', 'Starcloud', 'space-based AI', 'edge computing space', 'NVIDIA space', 'satellite computing', 'space industry AI'],
+    keywords: ['space data centers', 'AI in space', 'orbital computing', 'SpaceX data center satellites', 'Lumen Orbit', 'space-based AI', 'edge computing space', 'NVIDIA space', 'satellite computing', 'space industry AI'],
     content: `
-<p>In January 2026, SpaceX quietly filed an application with the International Telecommunication Union (ITU) for a new constellation of up to <strong>1 million satellites</strong> — not for internet connectivity, but for <strong>orbital data processing</strong>. Weeks later, European startup Starcloud announced it had successfully <strong>trained a large language model entirely in orbit</strong>, using a prototype compute satellite equipped with NVIDIA GPUs. And in the background, Google, Microsoft, NVIDIA, and Axiom Space have all disclosed projects at the intersection of artificial intelligence and space-based infrastructure.</p>
+<p>In recent years, SpaceX has filed expanded constellation applications with the International Telecommunication Union (ITU) that include <strong>data processing capabilities</strong> alongside internet connectivity. Meanwhile, startup <strong>Lumen Orbit</strong> has announced plans to deploy AI computing hardware in orbit, aiming to process data directly on satellites equipped with NVIDIA GPUs. And in the background, Google, Microsoft, NVIDIA, and Axiom Space have all disclosed projects at the intersection of artificial intelligence and space-based infrastructure.</p>
 
 <p>Something fundamental is shifting. The space industry, traditionally focused on transportation and communications, is evolving into something much larger: a <strong>platform for computation</strong>. And the AI revolution is the catalyst.</p>
 
@@ -2729,20 +2729,20 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 
 <h2 id="who-is-building-what">Who Is Building What: The Key Players</h2>
 
-<h3>SpaceX: The 1 Million Satellite Filing</h3>
-<p>SpaceX\'s ITU filing for a constellation of up to 1 million satellites with data processing capabilities represents the most ambitious vision for orbital compute. While the filing likely represents a maximum-case reservation (SpaceX\'s actual deployment would be phased over years), the strategic intent is clear: leverage Starship\'s ultra-low launch costs to deploy compute infrastructure at a scale that makes orbital processing cost-competitive with terrestrial alternatives for certain workloads.</p>
+<h3>SpaceX: Expanded Constellation Filings for Data Processing</h3>
+<p>SpaceX\'s expanded ITU filings that include data processing capabilities alongside connectivity represent the most ambitious vision for orbital compute. While filings represent maximum-case reservations (actual deployment would be phased over years), the strategic intent is clear: leverage Starship\'s ultra-low launch costs to deploy compute infrastructure at a scale that makes orbital processing cost-competitive with terrestrial alternatives for certain workloads.</p>
 
 <p>The economics are compelling when you control the launch vehicle. If Starship achieves its target of <strong>$10-20 per kilogram to orbit</strong>, deploying a 500kg compute satellite costs $5,000-$10,000 in launch costs — roughly the price of a single high-end GPU on the ground. SpaceX\'s vertical integration (launch, satellite manufacturing, ground infrastructure via Starlink) gives them a structural cost advantage that no other player can match.</p>
 
-<h3>Starcloud: First LLM Trained in Orbit</h3>
-<p><strong>Starcloud</strong>, a Luxembourg-based startup, achieved a genuine first in early 2026: completing the training of a large language model (approximately 7 billion parameters) entirely on orbital hardware. Their prototype satellite, launched on a Falcon 9 rideshare mission in late 2025, carried a custom compute module with NVIDIA A100 GPUs, radiation-hardened memory, and a high-bandwidth optical downlink.</p>
+<h3>Lumen Orbit: AI Computing in Orbit</h3>
+<p><strong>Lumen Orbit</strong>, a U.S.-based startup, is developing satellites designed to run AI workloads directly in orbit. Their approach involves deploying compute modules with NVIDIA GPUs, radiation-hardened memory, and high-bandwidth optical downlinks on rideshare missions. The company aims to process satellite imagery and other data on-orbit rather than downlinking raw data to ground stations.</p>
 
-<p>The training run lasted approximately 14 days — significantly longer than it would take on a terrestrial cluster — but Starcloud\'s goal wasn\'t speed. It was <strong>proof of concept</strong>: demonstrating that the thermal environment, power systems, and radiation tolerance of their hardware could sustain continuous AI training without data corruption or hardware failure. They succeeded, and the resulting model\'s performance was within 2% of an identical model trained on the ground.</p>
+<p>The core technical challenge isn\'t speed — terrestrial clusters will remain faster for raw training performance. The value proposition is <strong>proximity to data sources</strong>: processing satellite imagery, sensor feeds, and Earth observation data on-orbit rather than downloading terabytes to ground stations. For latency-sensitive applications and data-heavy workloads, on-orbit compute could dramatically reduce the bandwidth bottleneck that limits current satellite operations.</p>
 
-<p>Starcloud has since raised $180 million in Series B funding and announced plans for a 50-satellite compute constellation with first operational capacity expected in 2027.</p>
+<p>Lumen Orbit has raised seed funding and announced plans for an initial constellation of compute satellites, with first operational capacity targeted for 2027.</p>
 
 <h3>NVIDIA: Space-Grade Silicon</h3>
-<p>NVIDIA has been quietly developing <strong>radiation-tolerant variants of its datacenter GPUs</strong> specifically for space applications. While the company hasn\'t made a formal product announcement, multiple partners (including Starcloud and several defense contractors) have disclosed the use of NVIDIA silicon in orbital computing prototypes. NVIDIA\'s Jensen Huang has publicly stated that <strong>"the next frontier for accelerated computing is literally the frontier — space"</strong>, and the company\'s partnership with Lockheed Martin on AI-enabled satellite systems is well documented.</p>
+<p>NVIDIA has been quietly developing <strong>radiation-tolerant variants of its datacenter GPUs</strong> specifically for space applications. While the company hasn\'t made a formal product announcement, multiple partners (including Lumen Orbit and several defense contractors) have disclosed the use of NVIDIA silicon in orbital computing prototypes. Tech leaders have noted space as a frontier for computing, and NVIDIA\'s partnership with Lockheed Martin on AI-enabled satellite systems is well documented.</p>
 
 <p>The key technical challenge is radiation: high-energy particles in the space environment can cause single-event upsets (bit flips) in semiconductor devices, corrupting computations. NVIDIA\'s approach combines hardware-level error correction, redundant compute paths, and software-based checkpoint/restart mechanisms that allow training to continue even when individual calculations are corrupted.</p>
 
@@ -2795,7 +2795,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 <h3>Direct Plays</h3>
 <ul>
 <li><strong>SpaceX</strong> (pre-IPO/IPO): The most vertically integrated player with launch, satellites, and ground infrastructure.</li>
-<li><strong>Starcloud</strong> (private): The first-mover in orbital AI training. Watch for Series C and potential SPAC or IPO in 2027-2028.</li>
+<li><strong>Lumen Orbit</strong> (private): Early mover in orbital AI computing. Watch for growth funding and constellation deployment milestones.</li>
 <li><strong>Axiom Space</strong> (private): Space station infrastructure play with compute hosting as a growing revenue line.</li>
 </ul>
 
@@ -2845,8 +2845,8 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
   },
   {
     slug: 'golden-dome-space-missile-defense-program',
-    title: 'Golden Dome: Inside the $13.4 Billion Space Missile Defense Program',
-    excerpt: 'The Pentagon\'s Golden Dome initiative is the largest space-defense program since the original Star Wars. With $13.4 billion in FY2026 funding, <a href="/compare/spacex-vs-blue-origin">SpaceX and Blue Origin</a> competing for constellation contracts, and Space Force reaching a critical design milestone, here\'s what it means for commercial space and defense investors.',
+    title: 'Golden Dome: Inside the Proposed $13.4 Billion Space Missile Defense Program',
+    excerpt: 'The Pentagon\'s Golden Dome initiative is the largest space-defense program since the original Star Wars. With an estimated $13.4 billion in proposed FY2026 funding, <a href="/compare/spacex-vs-blue-origin">SpaceX and Blue Origin</a> competing for constellation contracts, and Space Force reaching a critical design milestone, here\'s what it means for commercial space and defense investors.',
     category: 'analysis',
     author: 'SpaceNexus Team',
     authorRole: 'Market Intelligence',
@@ -2855,7 +2855,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
     featured: true,
     keywords: ['Golden Dome', 'space missile defense', 'Space Force', 'defense space spending', 'SpaceX defense contracts', 'Blue Origin defense', 'missile warning constellation', 'space defense stocks', 'FY2026 defense budget', 'space-based interceptors'],
     content: `
-<p>In March 2026, the Department of Defense confirmed the <strong>Golden Dome</strong> program had reached its Critical Design Review milestone — a decisive moment for what is now the largest single space-defense initiative since President Reagan\'s Strategic Defense Initiative (SDI) in the 1980s. With <strong>$13.4 billion allocated in the FY2026 defense budget</strong>, Golden Dome represents a generational bet that the next era of missile defense will be fought from orbit, not from ground-based interceptors alone.</p>
+<p>In March 2026, the Department of Defense confirmed the <strong>Golden Dome</strong> program had reached its Critical Design Review milestone — a decisive moment for what is now the largest single space-defense initiative since President Reagan\'s Strategic Defense Initiative (SDI) in the 1980s. With <strong>an estimated $13.4 billion proposed for the FY2026 defense budget</strong>, Golden Dome represents a generational bet that the next era of missile defense will be fought from orbit, not from ground-based interceptors alone.</p>
 
 <p>For commercial space companies, defense contractors, and investors tracking the space economy, Golden Dome is reshaping priorities across the entire industry. Here\'s what\'s happening, who\'s involved, and what it means.</p>
 
@@ -2873,7 +2873,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 
 <h2 id="the-134-billion-budget">The $13.4 Billion Budget Breakdown</h2>
 
-<p>The FY2026 National Defense Authorization Act (NDAA) allocated an unprecedented <strong>$13.4 billion to space-based missile defense</strong>, distributed across multiple agencies and program elements:</p>
+<p>The FY2026 National Defense Authorization Act (NDAA) proposed an unprecedented estimated <strong>$13.4 billion for space-based missile defense</strong>, distributed across multiple agencies and program elements:</p>
 
 <ul>
 <li><strong>Space Development Agency (SDA):</strong> $4.6 billion for the Proliferated Warfighter Space Architecture (PWSA), including Tranche 3 tracking and transport satellites</li>
@@ -2911,7 +2911,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 <li><strong>Launch cadence planning</strong> calls for 36-48 satellite launches per year beginning in 2027, with full operational capability (FOC) targeted for 2030</li>
 </ul>
 
-<p>General Stephen Whiting, commander of U.S. Space Command, described the CDR completion as "the most significant milestone in space-based missile defense since the original SBIRS constellation." The transition from design to production represents a <strong>point of no return</strong> — the program has moved beyond the conceptual stage into committed manufacturing and deployment.</p>
+<p>U.S. Space Command leadership has characterized the CDR completion as one of the most significant milestones in space-based missile defense since the original SBIRS constellation. The transition from design to production represents a <strong>point of no return</strong> — the program has moved beyond the conceptual stage into committed manufacturing and deployment.</p>
 
 <h2 id="commercial-space-impact">What It Means for Commercial Space Companies</h2>
 
@@ -2944,7 +2944,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 <ul>
 <li><strong>Palantir (PLTR):</strong> Awarded contracts for data fusion and AI-driven analytics for missile defense decision support.</li>
 <li><strong>Parsons Corporation (PSN):</strong> Growing role in missile defense system integration and ground infrastructure.</li>
-<li><strong>SPDR S&amp;P Koenig Aerospace &amp; Defense ETF (XAR)</strong> and <strong>iShares U.S. Aerospace &amp; Defense ETF (ITA):</strong> Both have increased weighting toward space-defense companies as Golden Dome contracts flow.</li>
+<li><strong>SPDR S&amp;P Aerospace &amp; Defense ETF (XAR)</strong> and <strong>iShares U.S. Aerospace &amp; Defense ETF (ITA):</strong> Both have increased weighting toward space-defense companies as Golden Dome contracts flow.</li>
 </ul>
 
 <h3>Potential Risks</h3>
@@ -2989,7 +2989,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 
 <h2 id="the-coverage-gap">The $600 Billion Coverage Gap</h2>
 
-<p>Despite decades of cell tower construction, <strong>only 25% of the Earth\'s land surface</strong> has terrestrial cellular coverage. When you include oceans, the number drops to roughly 10% of the planet. Approximately <strong>3.4 billion people</strong> — nearly half of humanity — live outside reliable cellular coverage areas.</p>
+<p>Despite decades of cell tower construction, <strong>only about 20% of Earth\'s total surface area</strong> (including oceans) has terrestrial cellular coverage. Approximately <strong>3.4 billion people</strong> — nearly half of humanity — live outside reliable cellular coverage areas.</p>
 
 <p>The economics explain why. Building a cell tower costs $150,000-$350,000, plus $30,000-$50,000 per year in maintenance and backhaul. In rural and remote areas, there simply aren\'t enough potential subscribers to justify the capital expenditure. The result: a permanent coverage gap that terrestrial infrastructure will never close.</p>
 
@@ -3000,7 +3000,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 <p>The core technical challenge of D2D is straightforward to state and extraordinarily difficult to solve: a standard smartphone transmits at roughly <strong>200 milliwatts</strong> (0.2 watts) — a signal so weak that it wasn\'t supposed to be detectable from orbit. Traditional satellite phones solve this with large external antennas and high-power transmitters. D2D satellites solve it differently.</p>
 
 <h3>The Giant Antenna Approach</h3>
-<p>AST SpaceMobile\'s BlueBird satellites deploy an enormous <strong>693-square-foot phased array antenna</strong> — roughly the size of a basketball court — that unfolds in orbit. This massive antenna provides enough gain (signal amplification) to detect the tiny signal from a standard smartphone on the ground. Think of it like a satellite with a giant ear, listening for whispers from 450 miles below.</p>
+<p>AST SpaceMobile\'s BlueBird satellites deploy an enormous <strong>693-square-foot phased array antenna</strong> — roughly the size of a large studio apartment — that unfolds in orbit. This massive antenna provides enough gain (signal amplification) to detect the tiny signal from a standard smartphone on the ground. Think of it like a satellite with a giant ear, listening for whispers from 450 miles below.</p>
 
 <p>The antenna works in both directions: it can also transmit a focused, high-power beam back to the smartphone, delivering broadband-speed data (up to <strong>10-20 Mbps</strong> per user) without requiring any modification to the phone\'s hardware or software.</p>
 
@@ -3616,9 +3616,9 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
     publishedAt: '2026-03-14T00:00:00Z',
     readingTime: 12,
     featured: true,
-    keywords: ['Sierra Space funding', 'Vast funding', 'commercial space stations', 'space station investment', 'LuminArx Capital', 'Balerion Space Ventures', 'ISS replacement', 'NASA CLD program', 'space station market', 'LEO economy'],
+    keywords: ['Sierra Space funding', 'Vast funding', 'commercial space stations', 'space station investment', 'Coatue Management', 'institutional investors', 'ISS replacement', 'NASA CLD program', 'space station market', 'LEO economy'],
     content: `
-<p>In the span of just weeks, two of the most ambitious commercial space station ventures in the world announced funding rounds that, combined, exceed <strong>$1 billion</strong>. Sierra Space closed a <strong>$550 million raise at an $8 billion valuation</strong>, led by LuminArx Capital Management. Vast followed with a <strong>$500 million round</strong> — $300 million in equity and $200 million in debt — led by Balerion Space Ventures.</p>
+<p>In the span of just weeks, two of the most ambitious commercial space station ventures in the world announced funding rounds that, combined, exceed <strong>$1 billion</strong>. Sierra Space closed a <strong>$550 million raise at an $8 billion valuation</strong>, led by Coatue Management. Vast followed with a <strong>$500 million round</strong> — $300 million in equity and $200 million in debt — led by institutional investors.</p>
 
 <p>These are not incremental funding events. They represent a decisive vote of institutional confidence in the commercial space station market at a moment when the stakes could not be higher. The International Space Station is headed for decommission by <strong>2030</strong>, and the race to build its successors is no longer a speculative exercise — it's a funded industrial program with billion-dollar backing.</p>
 
@@ -3630,7 +3630,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 
 <p>But Dream Chaser is only part of the story. Sierra Space is also a key partner in <strong>Orbital Reef</strong>, the commercial space station being developed in collaboration with Blue Origin, Boeing, and other industry partners. Orbital Reef is one of the leading contenders in NASA's <strong>Commercial LEO Destinations (CLD)</strong> program, which is investing in private space stations to ensure continuity of American presence in low Earth orbit after the ISS retires.</p>
 
-<p>The $550 million round, led by <strong>LuminArx Capital Management</strong>, values Sierra Space at approximately <strong>$8 billion</strong> — a significant increase from earlier valuations and a reflection of the company's progress on multiple fronts:</p>
+<p>The $550 million round, led by <strong>Coatue Management</strong>, values Sierra Space at approximately <strong>$8 billion</strong> — a significant increase from earlier valuations and a reflection of the company's progress on multiple fronts:</p>
 
 <ul>
 <li><strong>Dream Chaser development milestones:</strong> The spaceplane has completed major integration and testing phases, and its first ISS cargo mission is approaching</li>
@@ -3645,7 +3645,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 
 <p>If Sierra Space represents the established aerospace player making its commercial station play, Vast represents the new-generation startup moving at startup speed. Founded by crypto billionaire <strong>Jed McCaleb</strong>, Vast is developing <strong>Haven-1</strong> — designed to be the world's first commercial space station, with a target launch date of <strong>2027</strong> on a SpaceX Falcon 9.</p>
 
-<p>The $500 million raise — structured as <strong>$300 million in equity and $200 million in debt</strong> — was led by <strong>Balerion Space Ventures</strong>. The capital is earmarked for accelerating Haven-1 development, expanding Vast's engineering team, and beginning work on the company's larger follow-on station architecture.</p>
+<p>The $500 million raise — structured as <strong>$300 million in equity and $200 million in debt</strong> — was led by <strong>institutional investors</strong>. The capital is earmarked for accelerating Haven-1 development, expanding Vast's engineering team, and beginning work on the company's larger follow-on station architecture.</p>
 
 <p>Vast's approach to the commercial station market is deliberately different from the consortium-based models pursued by Orbital Reef and Starlab:</p>
 
@@ -4232,7 +4232,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 <p>No discussion of space stocks is complete without addressing <strong>SpaceX</strong> — the dominant force in commercial space, valued at $350B+ in private secondary markets as of early 2026. The SpaceX IPO question generates enormous investor interest:</p>
 
 <h3>Will SpaceX IPO?</h3>
-<p>Elon Musk has repeatedly stated that SpaceX will not IPO until Starship is flying regularly and the Mars mission architecture is clear. However, the <strong>Starlink subsidiary</strong> is widely expected to be spun off as a separate publicly traded entity once it achieves stable profitability — potentially in 2026-2027. Starlink is already generating $6B+ in annual revenue with strong growth trajectory.</p>
+<p>Elon Musk has repeatedly stated that SpaceX will not IPO until Starship is flying regularly and the Mars mission architecture is clear. However, the <strong>Starlink subsidiary</strong> is widely expected to be spun off as a separate publicly traded entity once it achieves stable profitability — potentially in 2026-2027. Starlink is already generating $10+ billion in annual revenue with strong growth trajectory.</p>
 
 <h3>How to Get Indirect SpaceX Exposure</h3>
 <ul>
@@ -4361,7 +4361,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 
 <p>United Launch Alliance\'s <strong>Vulcan Centaur</strong> is ramping its flight rate in 2026 with a manifest of national security, commercial, and NASA missions. Powered by Blue Origin\'s BE-4 engines and featuring the high-energy Centaur V upper stage with the RL10C-1-1 engine, Vulcan offers unique capabilities for high-energy orbits critical to Department of Defense and intelligence community missions.</p>
 
-<p>Key 2026 Vulcan missions include NSSL launches for the U.S. Space Force, Sierra Space\'s Dream Chaser cargo mission to the ISS, and Astrobotic\'s Griffin lander carrying NASA\'s VIPER lunar rover.</p>
+<p>Key 2026 Vulcan missions include NSSL launches for the U.S. Space Force, Sierra Space\'s Dream Chaser cargo mission to the ISS, and Astrobotic\'s Griffin lander (NASA\'s VIPER rover, originally planned as the Griffin payload, was cancelled in July 2024).</p>
 
 <h2 id="monthly-launch-calendar">Monthly Launch Calendar: Key Missions by Month</h2>
 
@@ -4405,7 +4405,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 <ul>
 <li><strong>SpaceX Falcon 9</strong> — Starlink V3 constellation expansion (multiple launches)</li>
 <li><strong>Blue Origin New Glenn</strong> — Telesat Lightspeed deployment begins</li>
-<li><strong>ULA Vulcan</strong> — Astrobotic Griffin lander with NASA VIPER rover</li>
+<li><strong>ULA Vulcan</strong> — Astrobotic Griffin lander (VIPER rover was cancelled in July 2024; Griffin mission repurposed)</li>
 <li><strong>Ariane 6</strong> — European institutional payload (Copernicus Sentinel follow-on)</li>
 <li><strong>JAXA H3</strong> — Japanese national payload launches</li>
 </ul>
@@ -4773,7 +4773,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 <p>For decades, debris removal was discussed as a theoretical necessity. In 2026, it is becoming an operational reality — though the technology remains early and the economics are challenging.</p>
 
 <h3>ESA ClearSpace-1</h3>
-<p>The European Space Agency\'s ClearSpace-1 mission, developed by Swiss startup ClearSpace SA, aims to demonstrate active debris removal by capturing a Vespa upper stage adapter from a 2013 Vega launch. Originally planned for 2026 launch, the mission was complicated when the target object was struck by another piece of debris in 2023, fragmenting it. ESA adapted the mission plan, and ClearSpace-1 now targets a 2027 launch. The mission will use a four-armed robotic capture mechanism — essentially a space "claw" — to grapple the debris and deorbit it into Earth\'s atmosphere. The estimated mission cost exceeds <strong>\u20ac100 million</strong> to remove a single object, illustrating the current cost challenge.</p>
+<p>The European Space Agency\'s ClearSpace-1 mission, developed by Swiss startup ClearSpace SA, aims to demonstrate active debris removal by capturing a Vespa upper stage adapter from a 2013 Vega launch. Originally planned for 2026 launch, the mission was complicated when the target object was struck by another piece of debris in 2023, fragmenting it. ESA adapted the mission plan, and ClearSpace-1 now targets a 2028-2029 launch. The mission will use a four-armed robotic capture mechanism — essentially a space "claw" — to grapple the debris and deorbit it into Earth\'s atmosphere. The estimated mission cost exceeds <strong>\u20ac100 million</strong> to remove a single object, illustrating the current cost challenge.</p>
 
 <h3>Astroscale</h3>
 <p>Tokyo-based Astroscale is the most prominent commercial debris removal company. Its ADRAS-J mission (launched April 2024) successfully demonstrated rendezvous, proximity operations, and inspection of a large debris object in orbit — a critical first step toward removal. Astroscale\'s roadmap includes docking and deorbiting missions in 2027-2028, and the company has secured contracts from JAXA and the UK Space Agency. Its ELSA-M service aims to offer end-of-life deorbiting for constellation operators as a commercial service, shifting the paradigm from cleanup to prevention.</p>
@@ -4990,13 +4990,13 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 
 <h3>Sierra Space: $550M at an $8B Valuation</h3>
 
-<p>Sierra Space, the commercial space subsidiary of Sierra Nevada Corporation, closed a <strong>$550 million round led by LuminArx Capital Management</strong>, valuing the company at approximately <strong>$8 billion</strong>. The round drew participation from a mix of strategic and financial investors, reflecting confidence in Sierra Space\'s dual thesis: the <strong>Dream Chaser</strong> reusable spaceplane (on track for its first ISS cargo mission in 2026) and the company\'s role as a core partner in Blue Origin\'s <strong>Orbital Reef</strong> commercial space station.</p>
+<p>Sierra Space, the commercial space subsidiary of Sierra Nevada Corporation, closed a <strong>$550 million round led by Coatue Management</strong>, valuing the company at approximately <strong>$8 billion</strong>. The round drew participation from a mix of strategic and financial investors, reflecting confidence in Sierra Space\'s dual thesis: the <strong>Dream Chaser</strong> reusable spaceplane (on track for its first ISS cargo mission in 2026) and the company\'s role as a core partner in Blue Origin\'s <strong>Orbital Reef</strong> commercial space station.</p>
 
 <p>The $8 billion valuation is a significant step up from previous rounds and signals that investors are pricing in not just current NASA contracts but the <strong>long-term commercial station market</strong> \u2014 projected to reach $37 billion annually by the mid-2030s. Sierra Space now sits comfortably among the five most valuable private space companies globally.</p>
 
 <h3>Vast: $500M to Build the First Commercial Station</h3>
 
-<p>Vast followed with a <strong>$500 million raise \u2014 $300 million in equity and $200 million in debt</strong> \u2014 led by Balerion Space Ventures. The capital is earmarked for accelerating development of <strong>Haven-1</strong>, targeted for launch on a SpaceX Falcon 9 in 2027 as the world\'s first purpose-built commercial space station.</p>
+<p>Vast followed with a <strong>$500 million raise \u2014 $300 million in equity and $200 million in debt</strong> \u2014 led by institutional investors. The capital is earmarked for accelerating development of <strong>Haven-1</strong>, targeted for launch on a SpaceX Falcon 9 in 2027 as the world\'s first purpose-built commercial space station.</p>
 
 <p>The inclusion of <strong>$200 million in debt</strong> is particularly significant. Debt financing requires lenders to underwrite cash flow projections with far less risk tolerance than equity investors. The fact that Vast secured this level of debt capital suggests contracted revenue and partnership agreements that give lenders confidence in the company\'s near-term trajectory. This is a maturation signal for the entire industry.</p>
 
@@ -5334,7 +5334,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
     featured: true,
     keywords: ['Artemis II rollout', 'Artemis II launch', 'NASA Artemis', 'SLS rocket', 'Orion spacecraft', 'Pad 39B', 'moon mission 2026', 'how to watch Artemis II'],
     content: `
-<p>After years of development, testing, and anticipation, <strong>Artemis II is rolling to the pad</strong>. On March 20, 2026, NASA will transport the fully stacked Space Launch System (SLS) rocket and Orion spacecraft from the Vehicle Assembly Building (VAB) to Launch Complex 39B at Kennedy Space Center. This rollout marks one of the final major milestones before the first crewed Artemis mission sends four astronauts around the Moon and back.</p>
+<p>After years of development, testing, and anticipation, <strong>Artemis II is rolling to the pad</strong>. On March 20, 2026, NASA is expected to transport the fully stacked Space Launch System (SLS) rocket and Orion spacecraft from the Vehicle Assembly Building (VAB) to Launch Complex 39B at Kennedy Space Center. This rollout marks one of the final major milestones before the first crewed Artemis mission sends four astronauts around the Moon and back.</p>
 
 <p>This guide covers everything you need to know: how to watch the rollout live, what happens during the journey, who is on the crew, and the pre-launch timeline that follows.</p>
 
@@ -5753,13 +5753,13 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
     readingTime: 8,
     keywords: ['Artemis II', 'how to watch Artemis II', 'Artemis II launch', 'NASA live stream', 'Kennedy Space Center viewing', 'Moon mission', 'SLS launch', 'Orion spacecraft', 'Artemis program', 'space launch viewing guide'],
     content: `
-<p>NASA\'s <strong>Artemis II</strong> mission is set to launch on <strong>April 1, 2026</strong>, sending four astronauts around the Moon for the first time since Apollo 17 in 1972. This is the most anticipated crewed space launch in a generation, and whether you plan to watch from your couch or from the shores of the Kennedy Space Center, this guide has everything you need to make the most of it.</p>
+<p>NASA\'s <strong>Artemis II</strong> mission is targeting launch on approximately <strong>April 1, 2026</strong>, sending four astronauts around the Moon for the first time since Apollo 17 in 1972. This is the most anticipated crewed space launch in a generation, and whether you plan to watch from your couch or from the shores of the Kennedy Space Center, this guide has everything you need to make the most of it.</p>
 
 <p>Artemis II is a 10-day mission that will send Commander Reid Wiseman, Pilot Victor Glover, Mission Specialist Christina Koch, and Canadian Space Agency astronaut Jeremy Hansen on a free-return trajectory around the Moon. They will fly farther from Earth than any humans in history, reaching a maximum distance of approximately 370,000 kilometers. The crew will not land on the lunar surface — that milestone is reserved for Artemis III — but they will test every critical system of the Orion spacecraft and Space Launch System (SLS) rocket with humans aboard for the first time.</p>
 
 <h2 id="when-to-watch">When to Watch</h2>
 
-<p>The launch window opens on <strong>April 1, 2026</strong>. NASA typically announces the exact launch time approximately 48 hours before liftoff, but based on trajectory requirements, expect a window in the <strong>late morning to early afternoon Eastern Time</strong> range. The launch window is instantaneous or very narrow (minutes), meaning any delay pushes to a backup date.</p>
+<p>The launch window is targeting <strong>approximately April 1, 2026</strong>. NASA typically announces the exact launch time approximately 48 hours before liftoff, but based on trajectory requirements, expect a window in the <strong>late morning to early afternoon Eastern Time</strong> range. The launch window is instantaneous or very narrow (minutes), meaning any delay pushes to a backup date.</p>
 
 <p>Key timeline events on launch day:</p>
 
@@ -5767,7 +5767,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 <li><strong>T-6 hours:</strong> Crew walkout and suit-up at the Neil Armstrong Operations & Checkout Building — this is a great photo opportunity and is usually broadcast live.</li>
 <li><strong>T-2 hours:</strong> Crew ingress into the Orion capsule atop the SLS rocket at Launch Complex 39B.</li>
 <li><strong>T-10 minutes:</strong> Terminal countdown begins. This is when you want to be watching.</li>
-<li><strong>T-0:</strong> Ignition of the SLS core stage RS-25 engines and solid rocket boosters. The SLS produces 8.8 million pounds of thrust at liftoff — 15% more than the Saturn V.</li>
+<li><strong>T-0:</strong> Ignition of the SLS core stage RS-25 engines and solid rocket boosters. The SLS produces 8.8 million pounds of thrust at liftoff — 17% more than the Saturn V.</li>
 <li><strong>T+2 minutes:</strong> Solid rocket booster separation.</li>
 <li><strong>T+8 minutes:</strong> Core stage engine cutoff and separation.</li>
 <li><strong>T+18 minutes:</strong> Interim Cryogenic Propulsion Stage (ICPS) burn for trans-lunar injection — this is the moment the crew leaves Earth orbit and heads for the Moon.</li>
@@ -5868,7 +5868,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
     readingTime: 10,
     keywords: ['space industry jobs', 'space careers', 'aerospace hiring', 'SpaceX jobs', 'Blue Origin careers', 'Rocket Lab hiring', 'space engineer jobs', 'space industry careers 2026', 'aerospace employment', 'NewSpace jobs'],
     content: `
-<p>The space industry is in the middle of the largest hiring wave in its history. Global space employment now exceeds <strong>500,000 workers</strong> across government and commercial sectors, and the pace of hiring is accelerating. With launch cadence at all-time highs, mega-constellations scaling to tens of thousands of satellites, and defense budgets pouring billions into space capabilities, companies across the industry are competing fiercely for talent.</p>
+<p>The space industry is in the middle of the largest hiring wave in its history. U.S. space employment alone exceeds <strong>360,000 workers</strong> across government and commercial sectors, with additional hundreds of thousands globally, and the pace of hiring is accelerating. With launch cadence at all-time highs, mega-constellations scaling to tens of thousands of satellites, and defense budgets pouring billions into space capabilities, companies across the industry are competing fiercely for talent.</p>
 
 <p>Whether you are an aerospace engineer, a software developer, a manufacturing technician, or a business operations professional, there has never been a better time to enter or advance in the space sector. Here are <strong>10 companies actively hiring right now</strong>, what makes each one a compelling place to work, and the types of roles they are looking to fill.</p>
 
@@ -7857,7 +7857,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 <li><strong>Altitude:</strong> ~107 km (above Karman line)</li>
 <li><strong>Cost:</strong> Estimated <strong>$200,000-$300,000</strong> per seat (Blue Origin does not publicly confirm pricing)</li>
 <li><strong>Flights to date:</strong> 10+ crewed flights since July 2021 (flights paused temporarily after September 2022 anomaly, resumed in 2024)</li>
-<li><strong>Notable passengers:</strong> Jeff Bezos, William Shatner (age 90), Michael Strahan, GoodMorningAmerica anchor</li>
+<li><strong>Notable passengers:</strong> Jeff Bezos, William Shatner (age 90), Michael Strahan (Good Morning America anchor)</li>
 </ul>
 
 <h3>Virgin Galactic — SpaceShipTwo (Suborbital)</h3>
@@ -7878,16 +7878,14 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 <h4>Crew Dragon Orbital Missions</h4>
 <ul>
 <li><strong>Inspiration4 (2021):</strong> The first all-civilian orbital mission, funded by Jared Isaacman. 3 days in orbit at 575 km — the highest altitude crewed mission since Hubble servicing.</li>
-<li><strong>Polaris Dawn (2024):</strong> Also funded by Isaacman. Included the first commercial spacewalk (EVA) at 700 km altitude.</li>
+<li><strong>Polaris Dawn (2024):</strong> Also funded by Isaacman. Reached 1,400 km apogee and conducted the first commercial spacewalk (EVA) at approximately 700 km altitude.</li>
 <li><strong>Axiom missions to ISS:</strong> Axiom Space organizes missions to the ISS using SpaceX Crew Dragon. Axiom-1 (2022), Axiom-2 (2023), and Axiom-3 (2024) each carried private astronauts for 10-14 day stays.</li>
 <li><strong>Cost:</strong> Estimated <strong>$55-70 million per seat</strong> for orbital Crew Dragon missions</li>
 </ul>
 
 <h4>Starship Lunar Tourism</h4>
 <ul>
-<li><strong>dearMoon Project:</strong> Japanese billionaire Yusaku Maezawa booked a circumlunar Starship mission (originally planned for 2023, delayed as Starship development continues). The mission would carry ~8 passengers on a free-return trajectory around the Moon.</li>
-<li><strong>Cost:</strong> Undisclosed, but estimated at <strong>$100+ million total mission cost</strong></li>
-<li><strong>Status:</strong> Dependent on Starship achieving orbital reliability. Expected NET 2027-2028.</li>
+<li><strong>dearMoon Project (cancelled):</strong> Japanese billionaire Yusaku Maezawa originally booked a circumlunar Starship mission (planned for 2023) that would carry ~8 passengers on a free-return trajectory around the Moon. The project was cancelled in 2024 due to Starship development delays and timeline uncertainty.</li>
 </ul>
 
 <h3>Space Perspective — Spaceship Neptune (Stratospheric)</h3>
@@ -7958,7 +7956,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 <li><strong>Virgin Galactic:</strong> Currently accepting reservations at $450,000 via virgingalactic.com for flights on the Delta-class vehicle.</li>
 <li><strong>Space Perspective:</strong> Reserve at spaceperspective.com for $125,000 (deposit required).</li>
 <li><strong>Axiom Space missions:</strong> Contact Axiom directly for orbital mission opportunities ($55M+ per seat).</li>
-<li><strong>SpaceX:</strong> Does not sell individual tourist seats directly. Missions are typically chartered by individuals or organizations (Jared Isaacman, Axiom, dearMoon).</li>
+<li><strong>SpaceX:</strong> Does not sell individual tourist seats directly. Missions are typically chartered by individuals or organizations (Jared Isaacman, Axiom; dearMoon was cancelled in 2024).</li>
 </ul>
 
 <p>Explore space tourism providers, pricing, and mission details with <a href="/space-tourism">SpaceNexus Space Tourism Hub</a>. Compare providers, track upcoming tourist missions, and follow the latest developments in commercial human spaceflight.</p>
@@ -8065,7 +8063,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 <p>Building the <strong>first commercial modules to attach to the ISS</strong>, which will eventually detach to form a free-flying commercial station. Axiom has flown multiple private astronaut missions and is NASA\'s partner for commercial LEO station development. Valued at $5+ billion.</p>
 
 <h3>24. Vast</h3>
-<p>Jared Isaacman-backed company developing the <strong>Haven-1</strong> single-module station (launching 2025-2026) and the larger <strong>Haven-2</strong> multi-module station. Vast raised <strong>$400M+</strong> in 2025 and secured a SpaceX Starship launch for Haven-2, making it one of the most aggressively funded commercial station ventures.</p>
+<p>Jed McCaleb-founded company developing the <strong>Haven-1</strong> single-module station (launching 2025-2026) and the larger <strong>Haven-2</strong> multi-module station. Vast raised <strong>$400M+</strong> in 2025 and secured a SpaceX Starship launch for Haven-2, making it one of the most aggressively funded commercial station ventures.</p>
 
 <h3>25. Sierra Space</h3>
 <p>Developer of the <strong>Dream Chaser spaceplane</strong> (a winged vehicle that launches on a rocket and lands on a runway like the Space Shuttle) and <strong>LIFE habitat</strong> inflatable space station modules. Sierra Space raised a <strong>$1.5 billion round in 2025</strong>, making it one of the best-funded space companies globally. Dream Chaser\'s first cargo mission to ISS is imminent.</p>
@@ -8474,7 +8472,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 <li><strong>Founded:</strong> 1975</li>
 <li><strong>Budget:</strong> ~\u20AC7.8 billion ($8.5 billion, 2025)</li>
 <li><strong>Headquarters:</strong> Paris, France</li>
-<li><strong>Member States:</strong> 22 members including France, Germany, Italy, UK (associate), Spain, Netherlands, Belgium, Switzerland, and others</li>
+<li><strong>Member States:</strong> 22 members including France, Germany, Italy, UK, Spain, Netherlands, Belgium, Switzerland, and others</li>
 <li><strong>Key Programs:</strong> Ariane 6 launch vehicle, Copernicus Earth observation, Galileo navigation, ExoMars, JUICE (Jupiter Icy Moons Explorer), Lunar Gateway contributions, Euclid space telescope</li>
 <li><strong>Notable:</strong> The world's second-largest civilian space agency. ESA's Spaceport in Kourou, French Guiana provides equatorial launch access.</li>
 </ul>
@@ -8835,7 +8833,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 <ul>
 <li><strong>2005:</strong> Falcon 9 development announced</li>
 <li><strong>June 2010:</strong> First Falcon 9 flight (v1.0) carries a Dragon qualification unit to orbit</li>
-<li><strong>May 2012:</strong> Dragon becomes the first commercial spacecraft to dock with the ISS (COTS Demo Flight 2)</li>
+<li><strong>May 2012:</strong> Dragon becomes the first commercial spacecraft to berth with the ISS (COTS Demo Flight 2)</li>
 <li><strong>September 2013:</strong> Falcon 9 v1.1 debuts with upgraded Merlin 1D engines and an extended fairing</li>
 <li><strong>December 2015:</strong> First successful landing of an orbital-class booster at Landing Zone 1, Cape Canaveral — a watershed moment in spaceflight history</li>
 <li><strong>April 2016:</strong> First successful drone ship landing at sea (Of Course I Still Love You)</li>
@@ -9437,7 +9435,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 
 <ul>
 <li><strong>Astroscale:</strong> Already conducting proximity rendezvous and inspection missions. Its ADRAS-J mission (2024) successfully demonstrated close approach to a spent rocket upper stage. Commercial removal missions will follow.</li>
-<li><strong>ClearSpace-1:</strong> ESA's contracted mission to remove a Vespa upper stage, targeting launch in 2026, will demonstrate capture and deorbit of a large debris object</li>
+<li><strong>ClearSpace-1:</strong> ESA's contracted mission to remove a Vespa upper stage, targeting launch in 2028-2029, will demonstrate capture and deorbit of a large debris object</li>
 <li><strong>Regulatory drivers:</strong> The FCC's 5-year deorbit rule and similar international regulations create compliance obligations that could evolve into mandated debris remediation</li>
 <li><strong>Insurance incentives:</strong> As orbital debris risk is better quantified, insurance premiums may incentivize operators to invest in debris removal — or penalize those who don't</li>
 </ul>
@@ -10213,7 +10211,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 <h3>SpaceX: The Incumbent Disruptor</h3>
 <p>Founded by Elon Musk in 2002, SpaceX has become the world\'s most prolific launch provider. With over 300 successful Falcon 9 missions, operational crew transportation to the ISS, and the revolutionary Starship program entering service, SpaceX handles roughly <strong>60% of global commercial launches by mass</strong>. The company operates on a vertically integrated model — designing, manufacturing, launching, and reusing its own rockets at a cadence no competitor can match.</p>
 
-<p><strong>Key stats:</strong> ~13,000 employees | Estimated $180B+ valuation | 130+ launches in 2025 | Headquarters: Hawthorne, CA</p>
+<p><strong>Key stats:</strong> ~13,000 employees | Estimated $350B+ valuation | 130+ launches in 2025 | Headquarters: Hawthorne, CA</p>
 
 <h3>Blue Origin: The Patient Giant</h3>
 <p>Jeff Bezos\'s Blue Origin has pursued a more deliberate path since its founding in 2000. After years of development, the company\'s <strong>New Glenn</strong> heavy-lift rocket completed its maiden flight in early 2025, marking Blue Origin\'s entry into the orbital launch market. Backed by Bezos\'s personal fortune (over $10 billion invested), Blue Origin is building infrastructure for the long term — including the BE-4 engine that also powers ULA\'s Vulcan Centaur.</p>
@@ -10642,8 +10640,8 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 
 <ul>
 <li><strong>Telesat acquisition:</strong> The Canadian operator (building the Lightspeed LEO constellation) could be acquired by a larger operator or a private equity consortium.</li>
-<li><strong>Maxar Technologies integration:</strong> Maxar\'s Earth observation + manufacturing capabilities make it a strategic asset for defense primes.</li>
-<li><strong>Rocket Lab as a target:</strong> At ~$12B market cap and growing rapidly, Rocket Lab could attract interest from a major defense contractor looking for a commercial launch and satellite capability.</li>
+<li><strong>Maxar Technologies (acquired by Advent International in 2023):</strong> Maxar\'s Earth observation + manufacturing capabilities make it a strategic asset. Future secondary sale or re-IPO could occur as Advent seeks an exit.</li>
+<li><strong>Rocket Lab as a target:</strong> At ~$38B market cap and growing rapidly, Rocket Lab could attract interest from a major defense contractor looking for a commercial launch and satellite capability.</li>
 <li><strong>Commercial space station partnerships:</strong> The race to build ISS replacements may drive mergers between station developers and service providers.</li>
 <li><strong>Earth observation consolidation:</strong> Planet, BlackSky, and Satellogic are all sub-scale — industry consolidation seems inevitable.</li>
 </ul>
@@ -12592,7 +12590,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 
 <ul>
 <li><strong>Intuitive Machines:</strong> Successfully landed on the Moon in February 2024 (the first commercial lunar landing), and has multiple follow-on CLPS missions under contract. Building a lunar communications and navigation infrastructure called "Khonshu"</li>
-<li><strong>Astrobotic:</strong> Developing the Peregrine and Griffin landers for NASA CLPS payloads, including delivering NASA\'s VIPER rover to the lunar south pole</li>
+<li><strong>Astrobotic:</strong> Developing the Peregrine and Griffin landers for NASA CLPS payloads (NASA\'s VIPER rover, originally planned for Griffin delivery to the lunar south pole, was cancelled in July 2024)</li>
 <li><strong>ispace:</strong> Japanese company developing the HAKUTO-R lunar lander series for commercial and government payload delivery</li>
 <li><strong>Firefly Aerospace:</strong> Contracted for CLPS missions with their Blue Ghost lander</li>
 </ul>
@@ -14841,7 +14839,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 </ul>
 
 <h3>ClearSpace (Switzerland/ESA)</h3>
-<p>ClearSpace was selected by ESA for the <strong>ClearSpace-1</strong> mission, the world's first institutional debris removal mission. The target is a Vega Secondary Payload Adapter (VESPA) left in orbit in 2013 at approximately 800 km altitude. ClearSpace-1 will use a "space claw" — four robotic arms that close around the target to capture it — then perform a controlled deorbit. The mission is scheduled for 2026 and will demonstrate ESA's commitment to "zero debris" by 2030.</p>
+<p>ClearSpace was selected by ESA for the <strong>ClearSpace-1</strong> mission, the world's first institutional debris removal mission. The target is a Vega Secondary Payload Adapter (VESPA) left in orbit in 2013 at approximately 800 km altitude. ClearSpace-1 will use a "space claw" — four robotic arms that close around the target to capture it — then perform a controlled deorbit. The mission is scheduled for 2028-2029 and will demonstrate ESA's commitment to "zero debris" by 2030.</p>
 
 <h3>Orbit Fab (United States)</h3>
 <p>While not a debris removal company per se, Orbit Fab is building the <strong>in-space refueling infrastructure</strong> that debris removal services will need to operate economically. Their RAFTI (Rapidly Attachable Fluid Transfer Interface) docking port and fuel depot architecture would allow debris removal vehicles to refuel in orbit, servicing multiple targets per mission rather than deorbiting with each piece of debris. Orbit Fab has already delivered its first fuel depot to orbit and signed agreements with multiple government and commercial customers.</p>
@@ -14980,7 +14978,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 
 <p>The Soviet Union's <strong>Mir</strong> station represented a generational leap. Launched in 1986, Mir was the first modular space station — a core module with six docking ports that could accept additional specialized modules over time. By 1996, Mir had grown to include six modules totaling over 100 tonnes, with dedicated laboratories for materials science, Earth observation, and astrophysics.</p>
 
-<p>Mir set records that stood for years: cosmonaut Valeri Polyakov spent <strong>437 consecutive days</strong> aboard in 1994-1995, a record for continuous spaceflight that stood until 2024. The station hosted 28 long-duration crews and numerous visiting crews from 12 countries, including seven NASA astronauts during the Shuttle-Mir program. Despite a serious fire in 1997 and a collision with a Progress cargo vehicle that depressurized one module, Mir operated for 15 years before being deliberately deorbited in 2001.</p>
+<p>Mir set records that stood for years: cosmonaut Valeri Polyakov spent <strong>437 consecutive days</strong> aboard in 1994-1995, a record for continuous spaceflight that still stands. The station hosted 28 long-duration crews and numerous visiting crews from 12 countries, including seven NASA astronauts during the Shuttle-Mir program. Despite a serious fire in 1997 and a collision with a Progress cargo vehicle that depressurized one module, Mir operated for 15 years before being deliberately deorbited in 2001.</p>
 
 <h2 id="iss">The International Space Station (1998-Present)</h2>
 
@@ -15174,7 +15172,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 <ul>
 <li><strong>Dedicated space funds:</strong> Firms like <strong>Space Capital</strong>, <strong>Seraphim Space</strong>, <strong>Orbital Ventures</strong>, and <strong>Type One Ventures</strong> invest exclusively or primarily in space and adjacent technologies. These funds typically have deep domain expertise and strong networks within the space industry.</li>
 <li><strong>Generalist VCs with space portfolios:</strong> Major firms like <strong>Andreessen Horowitz</strong>, <strong>Founders Fund</strong>, <strong>Khosla Ventures</strong>, and <strong>Bessemer Venture Partners</strong> have made significant space investments alongside their broader portfolios. They bring brand recognition, large fund sizes, and cross-sector pattern recognition.</li>
-<li><strong>Strategic investors:</strong> Aerospace primes (Lockheed Martin Ventures, Boeing HorizonX, Airbus Ventures) and adjacent companies invest to gain access to emerging technologies and business models that may complement or disrupt their core businesses.</li>
+<li><strong>Strategic investors:</strong> Aerospace primes (Lockheed Martin Ventures, Boeing Ventures, Airbus Ventures) and adjacent companies invest to gain access to emerging technologies and business models that may complement or disrupt their core businesses.</li>
 </ul>
 
 <h2 id="evaluation-criteria">How VCs Evaluate Space Startups</h2>
@@ -15848,7 +15846,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 <p>The economic activity in LEO is staggering and growing rapidly:</p>
 
 <ul>
-<li><strong>Broadband:</strong> Starlink alone generates over $6 billion in annual revenue, with competitors Kuiper and OneWeb ramping up. LEO broadband is projected to be a $30+ billion market by 2030.</li>
+<li><strong>Broadband:</strong> Starlink alone generates over $10+ billion in annual revenue, with competitors Kuiper and OneWeb ramping up. LEO broadband is projected to be a $30+ billion market by 2030.</li>
 <li><strong>Earth observation:</strong> The remote sensing market, dominated by LEO satellites, is projected to exceed $8 billion by 2028, driven by agriculture, insurance, defense, and climate monitoring.</li>
 <li><strong>Space stations:</strong> The ISS has operated in LEO since 1998. Commercial replacements from Axiom, Vast, and Orbital Reef will continue this tradition, hosting research, manufacturing, and tourism.</li>
 <li><strong>In-space services:</strong> A growing ecosystem of companies offers LEO satellite servicing, debris removal, and inspection services — businesses that only exist because of LEO congestion.</li>
@@ -15914,7 +15912,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 
 <p>Series A rounds in space have grown significantly. In 2025, the median Series A for a space startup was approximately $15M, up from $8M in 2020. Investors at this stage expect a clear path to a repeatable business model, not just impressive technology.</p>
 
-<p>Key Series A investors in space include <strong>Andreessen Horowitz (a16z)</strong>, <strong>Bessemer Venture Partners</strong>, <strong>Framework Ventures</strong>, and growth-stage space specialists. Strategic investors — <strong>Lockheed Martin Ventures</strong>, <strong>Boeing HorizonX</strong>, <strong>Airbus Ventures</strong> — also participate, often bringing customer relationships alongside capital.</p>
+<p>Key Series A investors in space include <strong>Andreessen Horowitz (a16z)</strong>, <strong>Bessemer Venture Partners</strong>, <strong>Framework Ventures</strong>, and growth-stage space specialists. Strategic investors — <strong>Lockheed Martin Ventures</strong>, <strong>Boeing Ventures</strong>, <strong>Airbus Ventures</strong> — also participate, often bringing customer relationships alongside capital.</p>
 
 <h2 id="series-b-and-beyond">Series B and Beyond: Scaling ($25M - $500M+)</h2>
 
@@ -16534,7 +16532,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 <ul>
 <li><strong>Satellite licensing</strong> \u2014 processing applications for new satellite systems and modifications</li>
 <li><strong>Spectrum management</strong> \u2014 allocating and coordinating radio frequencies for space services</li>
-<li><strong>Orbital debris mitigation</strong> \u2014 enforcing the 5-year post-mission disposal rule adopted in 2024</li>
+<li><strong>Orbital debris mitigation</strong> \u2014 enforcing the 5-year post-mission disposal rule adopted in 2022 (effective 2024)</li>
 <li><strong>International coordination</strong> \u2014 working with the ITU and foreign administrations on spectrum and orbit issues</li>
 <li><strong>Market access</strong> \u2014 authorizing non-U.S. satellites to serve the U.S. market</li>
 </ul>
@@ -17430,7 +17428,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 
 <h2 id="artemis-accords">The Artemis Accords (2020)</h2>
 
-<p>The <strong>Artemis Accords</strong> are a set of bilateral agreements between the United States and partner nations, establishing principles for civil space exploration. First signed on October 13, 2020, by eight founding nations, the Accords have grown to include <strong>over 60 signatories</strong> by early 2026.</p>
+<p>The <strong>Artemis Accords</strong> are a set of bilateral agreements between the United States and partner nations, establishing principles for civil space exploration. First signed on October 13, 2020, by eight founding nations, the Accords have grown to include <strong>approximately 47 signatories</strong> by early 2026.</p>
 
 <h3>Key Provisions</h3>
 <ul>
@@ -18377,13 +18375,13 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
     readingTime: 8,
     keywords: ['Space Force budget', 'USSF budget', 'military space spending', 'space defense budget', 'space procurement', 'missile warning', 'space domain awareness'],
     content: `
-<p>The United States Space Force (USSF) — the youngest branch of the U.S. military, established in December 2019 — commands one of the fastest-growing defense budgets. In fiscal year 2026, the Space Force requested approximately <strong>$30.3 billion</strong>, a significant increase from the $26.3 billion enacted in FY2025. This budget funds everything from next-generation missile warning satellites to the launch services that put them in orbit. Understanding where this money goes reveals the strategic priorities shaping America\'s military space posture.</p>
+<p>The United States Space Force (USSF) — the youngest branch of the U.S. military, established in December 2019 — commands one of the fastest-growing defense budgets. In fiscal year 2026, the Space Force requested approximately <strong>$30 billion (estimated)</strong>, a significant increase from the $26.3 billion enacted in FY2025. This budget funds everything from next-generation missile warning satellites to the launch services that put them in orbit. Understanding where this money goes reveals the strategic priorities shaping America\'s military space posture.</p>
 
 <h2 id="budget-overview">Budget Overview</h2>
 
-<p>The Space Force budget divides into three major categories: Research, Development, Test & Evaluation (RDT&E) at roughly $16.5 billion; Procurement at approximately $6.2 billion; and Operations & Maintenance (O&M) at around $5.4 billion, with the remainder covering Military Personnel and Military Construction. RDT&E dominates because the Space Force is in a massive modernization cycle, replacing legacy satellite constellations with next-generation systems designed for a contested space environment.</p>
+<p>The Space Force budget divides into three major categories: Research, Development, Test & Evaluation (RDT&E) at an estimated $16.5 billion; Procurement at an estimated $6.2 billion; and Operations & Maintenance (O&M) at an estimated $5.4 billion, with the remainder covering Military Personnel and Military Construction. RDT&E dominates because the Space Force is in a massive modernization cycle, replacing legacy satellite constellations with next-generation systems designed for a contested space environment.</p>
 
-<h2 id="missile-warning">Missile Warning & Missile Defense (~$6.2B)</h2>
+<h2 id="missile-warning">Missile Warning & Missile Defense (~$6.2B estimated)</h2>
 
 <p>The single largest program area is the Next-Generation Overhead Persistent Infrared (Next-Gen OPIR) system, which will replace the aging Space Based Infrared System (SBIRS). Next-Gen OPIR uses a new architecture with satellites in GEO and polar orbits to detect ballistic missile launches, hypersonic glide vehicles, and other infrared threats. The program has faced cost growth and schedule delays, with the first GEO satellite now expected no earlier than 2028. Related programs include the Hypersonic and Ballistic Tracking Space Sensor (HBTSS), developed in partnership with the Missile Defense Agency, and the Resilient Missile Warning/Missile Tracking (MW/MT) constellation in proliferated LEO.</p>
 
@@ -18527,7 +18525,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 
 <h2 id="laser-communications">Laser Communications: The Next Frontier</h2>
 
-<p>NASA\'s Deep Space Optical Communications (DSOC) experiment, launched with the Psyche mission in 2023, achieved the first successful laser data transmission from deep space in late 2023, demonstrating 267 Mbps from near the Moon\'s distance. Laser communication offers dramatically higher data rates because optical wavelengths can carry far more information than radio waves. However, laser links require precise pointing (the beam divergence is measured in microradians) and are affected by atmospheric conditions at the ground station. The LCRD satellite in GEO and the ILLUMA-T terminal on the ISS are building operational experience with optical links closer to Earth.</p>
+<p>NASA\'s Deep Space Optical Communications (DSOC) experiment, launched with the Psyche mission in 2023, achieved the first successful laser data transmission from deep space in late 2023, demonstrating 267 Mbps during early mission phase. Laser communication offers dramatically higher data rates because optical wavelengths can carry far more information than radio waves. However, laser links require precise pointing (the beam divergence is measured in microradians) and are affected by atmospheric conditions at the ground station. The LCRD satellite in GEO and the ILLUMA-T terminal on the ISS are building operational experience with optical links closer to Earth.</p>
 
 <h2 id="future-architecture">Future: Mars Communications Architecture</h2>
 
@@ -18587,7 +18585,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 
 <h2 id="pipeline-problems">The Pipeline Problem</h2>
 
-<p>The talent crisis begins upstream in education. U.S. universities graduate approximately 30,000 aerospace engineers annually, but the combined demand from commercial space, defense primes, airlines, and NASA far exceeds supply. Computer science and software engineering graduates rarely consider space industry careers unless exposed through internships or university research programs. The K-12 pipeline is even more concerning: declining interest in physics and advanced mathematics among high school students threatens the long-term talent supply.</p>
+<p>The talent crisis begins upstream in education. U.S. universities graduate approximately 7,000 aerospace engineering students annually, but the combined demand from commercial space, defense primes, airlines, and NASA far exceeds supply. Computer science and software engineering graduates rarely consider space industry careers unless exposed through internships or university research programs. The K-12 pipeline is even more concerning: declining interest in physics and advanced mathematics among high school students threatens the long-term talent supply.</p>
 
 <h2 id="what-companies-are-doing">What Companies Are Doing</h2>
 
@@ -19444,7 +19442,7 @@ ISS (ZARYA)
 
 <ul>
 <li><strong>Lockheed Martin Ventures</strong> — Focuses on early-stage defense and space technology</li>
-<li><strong>Boeing HorizonX</strong> — Invests across the aerospace value chain</li>
+<li><strong>Boeing Ventures</strong> — Invests across the aerospace value chain</li>
 <li><strong>Airbus Ventures</strong> — European perspective, strong in Earth observation and connectivity</li>
 <li><strong>In-Q-Tel</strong> — CIA's venture arm, invests in intelligence-relevant space tech</li>
 <li><strong>AFWERX / SpaceWERX</strong> — Air Force and Space Force innovation programs with direct SBIR-to-contract pathways</li>
@@ -19483,7 +19481,7 @@ ISS (ZARYA)
 <li><strong>Consumer speeds:</strong> 50-250 Mbps download, 10-40 Mbps upload</li>
 <li><strong>Latency:</strong> 25-60 ms (comparable to terrestrial broadband)</li>
 <li><strong>Pricing:</strong> $120/month residential, $500/month business, $250-$5,000/month maritime</li>
-<li><strong>Market position:</strong> First-mover advantage with massive installed base. 3M+ active subscribers. Direct-to-cell partnership with T-Mobile. Government contracts with DoD and allied militaries</li>
+<li><strong>Market position:</strong> First-mover advantage with massive installed base. 10+ million active subscribers. Direct-to-cell partnership with T-Mobile. Government contracts with DoD and allied militaries</li>
 </ul>
 
 <h2 id="kuiper">Project Kuiper (Amazon)</h2>
@@ -19736,7 +19734,7 @@ ISS (ZARYA)
 <ul>
 <li><strong>Collision avoidance:</strong> The 18th SDS issues ~100 conjunction warnings daily. Starlink performs thousands of automated maneuvers per year</li>
 <li><strong>Deorbit requirements:</strong> The FCC now requires LEO satellites to deorbit within 5 years of end-of-life (down from 25 years)</li>
-<li><strong>Active debris removal:</strong> ESA's ClearSpace-1 mission (targeting 2026 launch) will demonstrate capture and deorbit of a rocket body. Astroscale is testing magnetic capture technology</li>
+<li><strong>Active debris removal:</strong> ESA's ClearSpace-1 mission (targeting 2028-2029 launch) will demonstrate capture and deorbit of a rocket body. Astroscale is testing magnetic capture technology</li>
 <li><strong>Debris tracking improvements:</strong> The Space Fence radar can track objects as small as 10 cm. Commercial providers like LeoLabs offer even higher-fidelity data</li>
 <li><strong>Design for demise:</strong> New satellites are designed to completely burn up on reentry, reducing ground casualty risk</li>
 </ul>
@@ -20061,7 +20059,7 @@ ISS (ZARYA)
     category: 'analysis', author: 'SpaceNexus Team', authorRole: 'Editorial',
     publishedAt: '2026-03-19T21:00:00Z', readingTime: 6,
     keywords: ['space mining', 'asteroid mining', 'space resources', 'isru space'],
-    content: `<p>The asteroid 16 Psyche, a metallic body orbiting between Mars and Jupiter, contains an estimated $10,000 quadrillion worth of iron, nickel, and gold at terrestrial prices. While that headline-grabbing number is theoretical (mining it would collapse commodity markets), it illustrates why space resources are taken seriously by NASA, ESA, and a growing number of private companies.</p><h2 id="near-term">Near-Term: Lunar Resources (2026-2035)</h2><p>The most practical space mining target isn't asteroids — it's the Moon. Lunar ice, confirmed by NASA's LCROSS mission and India's Chandrayaan missions, exists in permanently shadowed craters near the poles. Why it matters:</p><ul><li><strong>Water → Propellant:</strong> Electrolysis splits H2O into hydrogen and oxygen — rocket propellant. Manufacturing fuel on the Moon avoids lifting it from Earth's deep gravity well</li><li><strong>Life support:</strong> Drinking water, oxygen for habitats</li><li><strong>Economic model:</strong> The first cislunar "gas station" selling lunar-derived propellant could transform space transportation economics</li></ul><h2 id="who-is-working">Who's Working on It</h2><ul><li><strong>NASA VIPER:</strong> Volatiles Investigating Polar Exploration Rover — lunar rover designed to map ice deposits at the south pole</li><li><strong>Intuitive Machines:</strong> Delivering payloads to the lunar surface, including prospecting instruments</li><li><strong>ispace:</strong> Japanese company with lunar lander missions targeting resource mapping</li><li><strong>AstroForge:</strong> Focused on asteroid mining — launched a test payload to refine metals in microgravity</li><li><strong>TransAstra:</strong> Developing optical mining technology to extract water from asteroids using concentrated sunlight</li></ul><h2 id="legal-framework">Legal Framework</h2><p>The 2015 US Commercial Space Launch Competitiveness Act explicitly grants US companies the right to own and sell resources extracted from space bodies. The Artemis Accords (signed by 61 nations) support this principle. However, the 1967 Outer Space Treaty prohibits national sovereignty over celestial bodies — creating ongoing legal debates about the boundary between resource rights and sovereignty.</p><p>Track space mining and resource developments at <a href="/space-mining">SpaceNexus Space Mining Intelligence</a>.</p>`,
+    content: `<p>The asteroid 16 Psyche, a metallic body orbiting between Mars and Jupiter, contains an estimated $10,000 quadrillion worth of iron, nickel, and gold at terrestrial prices. While that headline-grabbing number is theoretical (mining it would collapse commodity markets), it illustrates why space resources are taken seriously by NASA, ESA, and a growing number of private companies.</p><h2 id="near-term">Near-Term: Lunar Resources (2026-2035)</h2><p>The most practical space mining target isn't asteroids — it's the Moon. Lunar ice, confirmed by NASA's LCROSS mission and India's Chandrayaan missions, exists in permanently shadowed craters near the poles. Why it matters:</p><ul><li><strong>Water → Propellant:</strong> Electrolysis splits H2O into hydrogen and oxygen — rocket propellant. Manufacturing fuel on the Moon avoids lifting it from Earth's deep gravity well</li><li><strong>Life support:</strong> Drinking water, oxygen for habitats</li><li><strong>Economic model:</strong> The first cislunar "gas station" selling lunar-derived propellant could transform space transportation economics</li></ul><h2 id="who-is-working">Who's Working on It</h2><ul><li><strong>NASA VIPER (cancelled July 2024):</strong> Volatiles Investigating Polar Exploration Rover — was designed to map ice deposits at the south pole before the program was cancelled due to cost growth</li><li><strong>Intuitive Machines:</strong> Delivering payloads to the lunar surface, including prospecting instruments</li><li><strong>ispace:</strong> Japanese company with lunar lander missions targeting resource mapping</li><li><strong>AstroForge:</strong> Focused on asteroid mining — launched a test payload to refine metals in microgravity</li><li><strong>TransAstra:</strong> Developing optical mining technology to extract water from asteroids using concentrated sunlight</li></ul><h2 id="legal-framework">Legal Framework</h2><p>The 2015 US Commercial Space Launch Competitiveness Act explicitly grants US companies the right to own and sell resources extracted from space bodies. The Artemis Accords (signed by 61 nations) support this principle. However, the 1967 Outer Space Treaty prohibits national sovereignty over celestial bodies — creating ongoing legal debates about the boundary between resource rights and sovereignty.</p><p>Track space mining and resource developments at <a href="/space-mining">SpaceNexus Space Mining Intelligence</a>.</p>`,
   },
   {
     slug: 'satellite-internet-rural-connectivity-2026',
@@ -20765,7 +20763,7 @@ ISS (ZARYA)
 <ul>
 <li><strong>GEO life extension</strong> — The most commercially mature segment. Target satellites have high value, operators are sophisticated, and the business case is straightforward. Northrop Grumman, Astroscale, and SpaceLogistics are active here.</li>
 <li><strong>Refueling depots</strong> — A more ambitious concept involving the transfer of propellant (hydrazine, xenon for electric propulsion, or cryogenic propellants) between vehicles. NASA's OSAM-1 mission was intended to demonstrate cryogenic fluid transfer but faced significant schedule and cost growth challenges.</li>
-<li><strong>In-space assembly</strong> — Building large structures (antennas, solar power arrays, telescope mirrors) in orbit from components launched separately. DARPA's NOM4D and NASA's OSAM-2 programs are advancing this capability.</li>
+<li><strong>In-space assembly</strong> — Building large structures (antennas, solar power arrays, telescope mirrors) in orbit from components launched separately. DARPA's NOM4D program is advancing this capability (NASA's OSAM-2 was cancelled before flight).</li>
 <li><strong>LEO servicing</strong> — Far more technically challenging due to orbital mechanics, shorter contact windows, and the lower unit value of individual LEO satellites. Constellation operators may eventually justify servicing for high-value assets, but the economics are harder.</li>
 <li><strong>Debris removal</strong> — Overlaps with servicing technology but follows different commercial models, often relying on government contracts rather than satellite operator payments.</li>
 </ul>
@@ -21111,7 +21109,7 @@ ISS (ZARYA)
 <p>As of early 2026, no fully operational commercial ADR service targeting non-cooperative debris is flying. The most advanced programs are:</p>
 
 <ul>
-<li><strong>ClearSpace-1 (ESA):</strong> Planned to remove a Vega rocket adapter (VESPA) left in orbit in 2013. Uses robotic arm capture. The mission has undergone schedule revision following Astroscale's acquisition of ClearSpace SA. It represents the first contracted government-funded debris removal mission.</li>
+<li><strong>ClearSpace-1 (ESA):</strong> Planned to remove a Vega rocket adapter (VESPA) left in orbit in 2013. Uses robotic arm capture. The mission has undergone schedule and design revisions. It represents the first contracted government-funded debris removal mission.</li>
 <li><strong>Astroscale ELSA-M:</strong> Designed to remove multiple end-of-life OneWeb satellites per mission. This is a cooperative debris removal mission — the targets are equipped with docking plates at manufacture, making capture far more tractable than uncooperative targets.</li>
 <li><strong>JAXA's Commercial Removal of Debris Demonstration (CRD2):</strong> A phased Japanese government program supporting commercial ADR development, with Astroscale Japan as a key participant.</li>
 </ul>
@@ -22913,7 +22911,7 @@ ISS (ZARYA)
 
 <p>Commercial satellite operators are increasingly contributing to climate monitoring. Planet's fleet of PlanetScope and SkySat satellites enables daily global coverage at meter-scale resolution, supporting deforestation monitoring, permafrost mapping, and agricultural drought assessment at spatial scales previously impossible with government satellites.</p>
 
-<p>Dedicated greenhouse gas monitoring companies including GHGSat (now part of Viasat) and Satellogic are commercializing the capability to attribute methane emissions to specific industrial facilities — a capability that has significant implications for both environmental compliance and carbon markets.</p>
+<p>Dedicated greenhouse gas monitoring companies including GHGSat and Satellogic are commercializing the capability to attribute methane emissions to specific industrial facilities — a capability that has significant implications for both environmental compliance and carbon markets.</p>
 
 <h2>Policy Implications and Commercial Opportunities</h2>
 
