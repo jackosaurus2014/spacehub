@@ -233,6 +233,7 @@ function MessagesPageInner() {
                 <div className="flex-1 flex flex-col items-center justify-center px-4">
                   <EmptyState
                     icon={<span className="text-4xl">💬</span>}
+                    illustration="/art/empty-state-getting-started.png"
                     title={conversations.length === 0 ? 'No messages yet' : 'Select a Conversation'}
                     description={conversations.length === 0
                       ? 'Connect with other space professionals to start a conversation.'

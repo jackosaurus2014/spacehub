@@ -376,6 +376,7 @@ function WatchlistsContent() {
             ) : (
               <EmptyState
                 icon={<span className="text-4xl">👁️</span>}
+                illustration="/art/empty-state-getting-started.png"
                 title="No watchlists yet"
                 description="Create your first watchlist to track companies, launches, and topics that matter to you."
                 action={

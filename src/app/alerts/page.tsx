@@ -934,6 +934,7 @@ function AlertsPageInner() {
       {deliveries.length === 0 ? (
         <EmptyState
           icon={<span className="text-4xl">🔔</span>}
+          illustration="/art/empty-state-astronaut.png"
           title="No notifications yet"
           description="When your alert rules are triggered, notifications will appear here."
         />

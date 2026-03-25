@@ -11,6 +11,7 @@ import { clientLogger } from '@/lib/client-logger';
 import OrganizationProfileSchema from '@/components/seo/OrganizationProfileSchema';
 import { toast } from '@/lib/toast';
 import SponsorBadge from '@/components/company/SponsorBadge';
+import CompanyAvatar from '@/components/company/CompanyAvatar';
 import SponsorBanner from '@/components/company/SponsorBanner';
 import LeadCaptureForm from '@/components/company/LeadCaptureForm';
 import SimilarCompanies from '@/components/company/SimilarCompanies';
@@ -1199,9 +1200,13 @@ function RelationshipsTab({ company }: { company: CompanyDetail }) {
                   whileHover={{ scale: 1.02 }}
                   className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-3 flex items-center gap-3 cursor-pointer hover:border-white/10 transition-colors"
                 >
-                  <div className="w-8 h-8 rounded-lg bg-white/[0.08] flex items-center justify-center text-sm">
-                    {c.logoUrl ? <Image src={c.logoUrl} alt={`${c.name} logo`} width={20} height={20} sizes="20px" className="w-5 h-5 rounded" unoptimized /> : getSectorIcon(c.sector)}
-                  </div>
+                  {c.logoUrl ? (
+                    <div className="w-8 h-8 rounded-lg bg-white/[0.08] flex items-center justify-center text-sm">
+                      <Image src={c.logoUrl} alt={`${c.name} logo`} width={20} height={20} sizes="20px" className="w-5 h-5 rounded" unoptimized />
+                    </div>
+                  ) : (
+                    <CompanyAvatar name={c.name} size={32} />
+                  )}
                   <div>
                     <div className="text-sm font-medium text-white">{c.name}</div>
                     <div className="text-xs text-slate-500 capitalize">{c.sector}</div>
@@ -1586,12 +1591,13 @@ export default function CompanyProfileDetailPage() {
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 transition={{ type: 'spring', stiffness: 200, damping: 15 }}
-                className="w-16 h-16 rounded-2xl bg-gradient-to-br from-white/[0.08] to-white/[0.06] flex items-center justify-center text-3xl flex-shrink-0 border border-white/[0.1]"
               >
                 {company.logoUrl ? (
-                  <Image src={company.logoUrl} alt={`${company.name} logo`} width={48} height={48} sizes="48px" className="w-12 h-12 rounded-xl object-contain" unoptimized />
+                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-white/[0.08] to-white/[0.06] flex items-center justify-center text-3xl flex-shrink-0 border border-white/[0.1]">
+                    <Image src={company.logoUrl} alt={`${company.name} logo`} width={48} height={48} sizes="48px" className="w-12 h-12 rounded-xl object-contain" unoptimized />
+                  </div>
                 ) : (
-                  getSectorIcon(company.sector)
+                  <CompanyAvatar name={company.name} tier={company.tier} size={64} className="rounded-2xl" />
                 )}
               </motion.div>
               <div>

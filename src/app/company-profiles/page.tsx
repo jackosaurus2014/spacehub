@@ -20,6 +20,7 @@ import EmptyState from '@/components/ui/EmptyState';
 import PullToRefresh from '@/components/ui/PullToRefresh';
 import StickyMobileCTA from '@/components/mobile/StickyMobileCTA';
 import SponsorBadge from '@/components/company/SponsorBadge';
+import CompanyAvatar from '@/components/company/CompanyAvatar';
 import ItemListSchema from '@/components/seo/ItemListSchema';
 import FAQSchema from '@/components/seo/FAQSchema';
 
@@ -159,13 +160,13 @@ function CompanyCardComponent({ company, index }: { company: CompanyCard; index:
             {/* Header */}
             <div className="flex items-start justify-between mb-3">
               <div className="flex items-center gap-3 min-w-0">
-                <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-white/[0.08] to-white/[0.06] flex items-center justify-center text-lg flex-shrink-0 border border-white/[0.1]">
-                  {company.logoUrl ? (
+                {company.logoUrl ? (
+                  <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-white/[0.08] to-white/[0.06] flex items-center justify-center text-lg flex-shrink-0 border border-white/[0.1]">
                     <Image src={company.logoUrl} alt={`${company.name} logo`} width={28} height={28} sizes="28px" className="w-7 h-7 rounded object-contain" unoptimized />
-                  ) : (
-                    getSectorIcon(company.sector)
-                  )}
-                </div>
+                  </div>
+                ) : (
+                  <CompanyAvatar name={company.name} tier={company.tier} size={40} />
+                )}
                 <div className="min-w-0">
                   <h3 className="font-semibold text-white truncate group-hover:text-white transition-colors">
                     {company.name}
@@ -597,6 +598,7 @@ export default function CompanyProfilesPage() {
       ) : companies.length === 0 ? (
         <EmptyState
           icon={<span className="text-4xl">🔍</span>}
+          illustration="/art/empty-state-no-results.png"
           title="No companies found"
           description="Try adjusting your search or filters to find matching companies."
         />

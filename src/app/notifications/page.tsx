@@ -232,6 +232,7 @@ export default function NotificationsPage() {
         ) : filtered.length === 0 ? (
           <EmptyState
             icon={<span className="text-4xl">{filter === 'unread' ? '✅' : '🔔'}</span>}
+            illustration="/art/empty-state-astronaut.png"
             title={filter === 'unread' ? "You're all caught up!" : 'No new notifications'}
             description={filter === 'unread'
               ? 'No unread notifications. Nicely done!'

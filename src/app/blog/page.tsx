@@ -3,6 +3,7 @@
 import { useState, useMemo, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { BLOG_POSTS, BLOG_CATEGORIES, type BlogCategory } from '@/lib/blog-content';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
@@ -48,6 +49,14 @@ function isNewPost(publishedAt: string): boolean {
   const sevenDaysAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
   return published >= sevenDaysAgo;
 }
+
+const BLOG_CATEGORY_IMAGES: Record<string, string> = {
+  analysis: '/logos/logo-blog-business.png',
+  guide: '/logos/logo-blog-exploration.png',
+  market: '/logos/logo-blog-investment.png',
+  technology: '/logos/logo-blog-technology.png',
+  policy: '/logos/logo-blog-policy.png',
+};
 
 const categoryColors: Record<BlogCategory, string> = {
   analysis: 'bg-indigo-500/20 text-indigo-300 border-indigo-500/30',
@@ -367,6 +376,11 @@ function BlogListingContent() {
                     href={`/blog/${post.slug}`}
                     className="group block bg-white/[0.04] border border-white/[0.06] rounded-xl p-6 hover:border-white/15 transition-all duration-300 h-full"
                   >
+                    <div className="h-24 rounded-t-xl bg-gradient-to-br from-white/[0.04] to-white/[0.02] flex items-center justify-center mb-4 -mx-6 -mt-6 overflow-hidden relative">
+                      {BLOG_CATEGORY_IMAGES[post.category] && (
+                        <Image src={BLOG_CATEGORY_IMAGES[post.category]} alt="" width={64} height={64} className="opacity-40" />
+                      )}
+                    </div>
                     <div className="flex items-center gap-3 mb-3">
                       <span
                         className={`text-xs font-medium px-2.5 py-1 rounded-full border ${categoryColors[post.category]}`}

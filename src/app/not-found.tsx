@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect, FormEvent, useCallback } from 'react';
 import { motion } from 'framer-motion';
@@ -183,50 +184,20 @@ export default function NotFound() {
       ))}
 
       <div className="text-center max-w-2xl w-full relative z-10">
-        {/* Lost satellite illustration */}
+        {/* Lost astronaut illustration */}
         <motion.div
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.8, ease: 'easeOut' }}
-          className="relative w-52 h-52 mx-auto mb-4"
+          className="relative w-64 h-64 mx-auto mb-4"
         >
           {/* Orbit rings */}
           <div className="absolute inset-2 rounded-full border border-dashed border-white/15" style={{ animation: 'pulse-ring 4s ease-in-out infinite' }} />
           <div className="absolute inset-6 rounded-full border border-dashed border-purple-500/10" style={{ animation: 'pulse-ring 5s ease-in-out 1s infinite' }} />
-          <div className="absolute inset-10 rounded-full border border-dashed border-blue-500/8" style={{ animation: 'pulse-ring 6s ease-in-out 2s infinite' }} />
 
-          {/* Satellite body */}
+          {/* Astronaut image */}
           <div style={{ animation: 'float 6s ease-in-out infinite' }} className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-            <svg width="72" height="72" viewBox="0 0 64 64" fill="none" className="drop-shadow-[0_0_16px_rgba(148,163,184,0.4)]">
-              {/* Main body */}
-              <rect x="24" y="20" width="16" height="24" rx="2" fill="#111111" stroke="#94a3b8" strokeWidth="1.5" />
-              {/* Solar panels */}
-              <rect x="4" y="26" width="18" height="12" rx="1" fill="#0a0a0a" stroke="#94a3b8" strokeWidth="1" />
-              <rect x="42" y="26" width="18" height="12" rx="1" fill="#0a0a0a" stroke="#94a3b8" strokeWidth="1" />
-              {/* Panel lines */}
-              <line x1="10" y1="26" x2="10" y2="38" stroke="#94a3b8" strokeWidth="0.5" opacity="0.5" />
-              <line x1="16" y1="26" x2="16" y2="38" stroke="#94a3b8" strokeWidth="0.5" opacity="0.5" />
-              <line x1="48" y1="26" x2="48" y2="38" stroke="#94a3b8" strokeWidth="0.5" opacity="0.5" />
-              <line x1="54" y1="26" x2="54" y2="38" stroke="#94a3b8" strokeWidth="0.5" opacity="0.5" />
-              {/* Antenna */}
-              <line x1="32" y1="20" x2="32" y2="12" stroke="#94a3b8" strokeWidth="1.5" />
-              <circle cx="32" cy="10" r="2.5" fill="#0a0a0a" stroke="#94a3b8" strokeWidth="1" />
-              {/* Signal waves (disconnected look) */}
-              <path d="M26 8a8 8 0 0 1 12 0" stroke="#94a3b8" strokeWidth="0.8" fill="none" strokeDasharray="2 2">
-                <animate attributeName="opacity" values="0.15;0.5;0.15" dur="2.5s" repeatCount="indefinite" />
-              </path>
-              <path d="M23 5a12 12 0 0 1 18 0" stroke="#94a3b8" strokeWidth="0.6" fill="none" strokeDasharray="3 3">
-                <animate attributeName="opacity" values="0.1;0.35;0.1" dur="3s" repeatCount="indefinite" />
-              </path>
-              {/* Status light - warning orange blink */}
-              <circle cx="32" cy="30" r="2" fill="#f97316">
-                <animate attributeName="opacity" values="1;0.2;1" dur="1.5s" repeatCount="indefinite" />
-              </circle>
-              {/* Second status light */}
-              <circle cx="28" cy="34" r="1.2" fill="#ef4444">
-                <animate attributeName="opacity" values="0.3;1;0.3" dur="2s" repeatCount="indefinite" />
-              </circle>
-            </svg>
+            <Image src="/art/404-lost-astronaut.png" alt="Lost astronaut floating in space" width={256} height={256} className="drop-shadow-[0_0_24px_rgba(148,163,184,0.3)]" priority />
           </div>
 
           {/* Orbiting debris */}
@@ -235,9 +206,6 @@ export default function NotFound() {
           </div>
           <div className="absolute top-1/2 left-1/2" style={{ animation: 'orbit 12s linear infinite reverse' }}>
             <div className="w-1 h-1 bg-white/40 rounded-full" />
-          </div>
-          <div className="absolute top-1/2 left-1/2" style={{ animation: 'orbit 15s linear 2s infinite' }}>
-            <div className="w-0.5 h-0.5 bg-purple-400/30 rounded-full" />
           </div>
         </motion.div>
 
@@ -259,10 +227,10 @@ export default function NotFound() {
           transition={{ duration: 0.6, delay: 0.4 }}
         >
           <h1 className="text-2xl sm:text-3xl font-bold text-white mt-5 mb-2 font-display">
-            Lost in Space?
+            Page Not Found
           </h1>
           <p className="text-slate-400 mb-2 max-w-md mx-auto text-base">
-            The page you&apos;re looking for has drifted into deep space. It may have been moved, renamed, or lost beyond the event horizon.
+            This part of space hasn&apos;t been charted yet. The page may have been moved, renamed, or lost beyond the event horizon.
           </p>
           <p className="text-slate-500 text-sm mb-8 max-w-sm mx-auto">
             Try searching for what you need, or navigate to one of our popular destinations below.
@@ -322,7 +290,7 @@ export default function NotFound() {
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
               </svg>
-              Go Home
+              Return to Mission Control
             </span>
           </Link>
         </motion.div>

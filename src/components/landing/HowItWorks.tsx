@@ -1,6 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import Image from 'next/image';
 import Link from 'next/link';
 
 const STEPS = [
@@ -8,6 +9,7 @@ const STEPS = [
     step: 1,
     title: 'Create Your Free Account',
     description: 'Sign up in seconds. No credit card required. Instant access to 30+ space industry modules.',
+    art: '/art/onboarding-step1.png',
     icon: (
       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.8}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M15.59 14.37a6 6 0 01-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 006.16-12.12A14.98 14.98 0 009.63 8.41m5.96 5.96a14.93 14.93 0 01-5.96 2.58m0 0a14.9 14.9 0 01-8.63-2.58m8.63 2.58v4.8m-8.63-7.38a6 6 0 015.84-7.38" />
@@ -18,6 +20,7 @@ const STEPS = [
     step: 2,
     title: 'Customize Your Dashboard',
     description: 'Choose your role -- Investor, Entrepreneur, Mission Planner, or Executive -- and get a personalized workspace.',
+    art: '/art/onboarding-step2.png',
     icon: (
       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.8}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.573-1.066z" />
@@ -29,6 +32,7 @@ const STEPS = [
     step: 3,
     title: 'Get Real-Time Intelligence',
     description: 'Track satellites, monitor launches, analyze markets, and discover opportunities with live data from NASA, NOAA, and 40+ sources.',
+    art: '/art/onboarding-step3.png',
     icon: (
       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.8}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M9.348 14.651a3.75 3.75 0 010-5.303m5.304 0a3.75 3.75 0 010 5.303m-7.425 2.122a6.75 6.75 0 010-9.546m9.546 0a6.75 6.75 0 010 9.546M5.106 18.894c-3.808-3.808-3.808-9.98 0-13.789m13.788 0c3.808 3.808 3.808 9.981 0 13.79M12 12h.008v.007H12V12zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
@@ -75,6 +79,13 @@ export default function HowItWorks() {
                 </span>
                 <span className="text-white/70 group-hover:text-white transition-colors duration-200">{s.icon}</span>
               </div>
+              <Image
+                src={s.art}
+                alt=""
+                width={80}
+                height={80}
+                className="opacity-60 rounded-lg mb-3"
+              />
               <h3 className="text-lg font-semibold text-white mb-2 group-hover:text-white transition-colors duration-200">{s.title}</h3>
               <p className="text-sm text-slate-400 leading-relaxed max-w-xs">{s.description}</p>
             </motion.div>

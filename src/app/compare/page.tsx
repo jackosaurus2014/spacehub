@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import RelatedModules from '@/components/ui/RelatedModules';
@@ -13,6 +14,7 @@ const COMPARISON_TOOLS = [
     href: '/compare/launch-vehicles',
     icon: '🚀',
     stats: '15 vehicles',
+    heroImage: '/art/hero-launch-vehicles.png',
   },
   {
     title: 'Satellite Constellation Comparison',
@@ -20,6 +22,7 @@ const COMPARISON_TOOLS = [
     href: '/compare/satellites',
     icon: '🛰️',
     stats: '12+ constellations',
+    heroImage: '/art/hero-space-operations.png',
   },
   {
     title: 'Company Comparison',
@@ -27,6 +30,7 @@ const COMPARISON_TOOLS = [
     href: '/compare/companies',
     icon: '🏢',
     stats: '100+ companies',
+    heroImage: '/art/hero-market-intel.png',
   },
   {
     title: 'Satellite Bus Comparison',
@@ -34,6 +38,7 @@ const COMPARISON_TOOLS = [
     href: '/compare/satellite-buses',
     icon: '📡',
     stats: '22 buses',
+    heroImage: '/art/hero-space-comms.png',
   },
 ];
 
@@ -153,22 +158,41 @@ export default function ComparisonHubPage() {
               <ScrollReveal key={tool.href} delay={0.1 + index * 0.1}>
                 <Link
                   href={tool.href}
-                  className="group block card p-6 hover:border-white/10 hover:bg-white/[0.06] hover:shadow-lg hover:shadow-black/20 hover:-translate-y-1"
+                  className="group block card p-6 hover:border-white/10 hover:bg-white/[0.06] hover:shadow-lg hover:shadow-black/20 hover:-translate-y-1 relative overflow-hidden"
                 >
-                  <div className="text-4xl mb-4">{tool.icon}</div>
-                  <h3 className="text-lg font-bold text-white group-hover:text-white/90 transition-colors mb-2">
-                    {tool.title}
-                  </h3>
-                  <p className="text-sm text-slate-400 mb-4 line-clamp-3">
-                    {tool.description}
-                  </p>
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-medium text-white/70 bg-white/5 px-2.5 py-1 rounded-full">
-                      {tool.stats}
-                    </span>
-                    <span className="text-sm text-slate-400 group-hover:text-white transition-colors">
-                      Compare &rarr;
-                    </span>
+                  {/* Background accent image */}
+                  <Image
+                    src={tool.heroImage}
+                    alt=""
+                    fill
+                    className="object-cover opacity-[0.06] group-hover:opacity-[0.12] transition-opacity duration-300"
+                  />
+
+                  <div className="relative z-10 flex items-start gap-4">
+                    <Image
+                      src={tool.heroImage}
+                      alt=""
+                      width={48}
+                      height={48}
+                      className="rounded-lg opacity-70 flex-shrink-0 mt-1"
+                    />
+                    <div className="flex-1 min-w-0">
+                      <div className="text-2xl mb-2">{tool.icon}</div>
+                      <h3 className="text-lg font-bold text-white group-hover:text-white/90 transition-colors mb-2">
+                        {tool.title}
+                      </h3>
+                      <p className="text-sm text-slate-400 mb-4 line-clamp-3">
+                        {tool.description}
+                      </p>
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-medium text-white/70 bg-white/5 px-2.5 py-1 rounded-full">
+                          {tool.stats}
+                        </span>
+                        <span className="text-sm text-slate-400 group-hover:text-white transition-colors">
+                          Compare &rarr;
+                        </span>
+                      </div>
+                    </div>
                   </div>
                 </Link>
               </ScrollReveal>

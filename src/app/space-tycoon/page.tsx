@@ -1431,6 +1431,13 @@ export default function SpaceTycoonPage() {
         priority={false}
       />
       <GameStyles />
+      {/* Hero art background */}
+      <div className="relative overflow-hidden">
+        <div className="absolute inset-0 -z-10">
+          <Image src="/art/hero-space-tycoon.png" alt="" fill className="object-cover opacity-20" priority />
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#09090b]/80 to-[#09090b]" />
+        </div>
+      </div>
       {/* Animated nebula background — subtle color drift behind game content */}
       <div className="game-nebula-bg" />
       {/* Resource Bar */}

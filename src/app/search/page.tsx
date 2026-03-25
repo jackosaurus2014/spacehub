@@ -913,6 +913,7 @@ function SearchContent() {
             <ScrollReveal>
             <EmptyState
               icon={<span className="text-4xl">🔍</span>}
+              illustration="/art/empty-state-no-results.png"
               title="No results found"
               description={`No matches found for "${debouncedQuery}"${hasActiveFilters ? ' with the current filters' : ''}.`}
               action={

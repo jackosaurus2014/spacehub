@@ -326,6 +326,7 @@ function SearchContent() {
               ) : (
                 <EmptyState
                   icon={<span className="text-4xl">📦</span>}
+                  illustration="/art/empty-state-no-results.png"
                   title="No listings found"
                   description="No listings match your current filters. Try adjusting your search criteria."
                 />
@@ -342,6 +343,7 @@ function SearchContent() {
             ) : (
               <EmptyState
                 icon={<span className="text-4xl">📋</span>}
+                illustration="/art/empty-state-no-results.png"
                 title="No open RFQs found"
                 description="There are no open requests for quotation matching your filters at this time."
               />

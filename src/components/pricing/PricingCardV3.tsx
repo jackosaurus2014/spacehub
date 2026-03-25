@@ -1,7 +1,14 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { SubscriptionTier } from '@/types';
+
+const TIER_ILLUSTRATIONS: Record<string, string> = {
+  free: '/art/pricing-free.png',
+  pro: '/art/pricing-pro.png',
+  enterprise: '/art/pricing-enterprise.png',
+};
 
 const TIER_CONFIG = {
   free: { label: 'Observer', clearance: 'CLEARANCE LEVEL 1', accent: 'zinc' },
@@ -89,6 +96,11 @@ export default function PricingCardV3({
       )}
 
       <div className="p-6">
+        {/* Tier illustration */}
+        {TIER_ILLUSTRATIONS[planId] && (
+          <Image src={TIER_ILLUSTRATIONS[planId]} alt="" width={120} height={120} className="opacity-60 mx-auto mb-4" />
+        )}
+
         {/* Tier header */}
         <div className="mb-5">
           <p className="text-[9px] font-semibold uppercase tracking-widest font-mono mb-1" style={{ color: 'var(--text-muted)' }}>

@@ -332,6 +332,7 @@ export default function ReadingListPage() {
         {items.length === 0 && (
           <EmptyState
             icon={<span className="text-4xl">🔖</span>}
+            illustration="/art/empty-state-getting-started.png"
             title="Your reading list is empty"
             description="Browse articles and click the bookmark icon to save them here. Build your personal library of space industry news and research."
             action={

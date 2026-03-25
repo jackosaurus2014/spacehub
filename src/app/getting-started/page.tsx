@@ -1,9 +1,16 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { getRelatedModules } from '@/lib/module-relationships';
 import PersonalizedWelcome from '@/components/onboarding/PersonalizedWelcome';
+
+const STEP_ILLUSTRATIONS: Record<number, string> = {
+  1: '/art/onboarding-step1.png',
+  2: '/art/onboarding-step2.png',
+  3: '/art/onboarding-step3.png',
+};
 
 const QUICK_START_STEPS = [
   {
@@ -240,18 +247,27 @@ export default function GettingStartedPage() {
                       <span className="text-slate-300">{step.icon}</span>
                       <h3 className="text-xl md:text-2xl font-bold text-white">{step.title}</h3>
                     </div>
-                    <p className="text-slate-300 text-sm md:text-base leading-relaxed mb-4">
-                      {step.description}
-                    </p>
-                    <Link
-                      href={step.href}
-                      className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-white hover:bg-slate-100 text-slate-900 text-sm font-semibold transition-colors"
-                    >
-                      {step.cta}
-                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                      </svg>
-                    </Link>
+                    <div className="flex flex-col md:flex-row gap-4 items-start">
+                      <div className="flex-1">
+                        <p className="text-slate-300 text-sm md:text-base leading-relaxed mb-4">
+                          {step.description}
+                        </p>
+                        <Link
+                          href={step.href}
+                          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-white hover:bg-slate-100 text-slate-900 text-sm font-semibold transition-colors"
+                        >
+                          {step.cta}
+                          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                          </svg>
+                        </Link>
+                      </div>
+                      {STEP_ILLUSTRATIONS[step.step] && (
+                        <div className="shrink-0">
+                          <Image src={STEP_ILLUSTRATIONS[step.step]} alt="" width={200} height={150} className="opacity-80 rounded-lg" />
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
               </ScrollReveal>

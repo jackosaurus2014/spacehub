@@ -1,0 +1,34 @@
+[
+  {
+    "prompt": "A space tycoon game concept art, futuristic corporate empire in space with orbital stations, mining operations, rocket fleets, and a glowing economy dashboard, dark background with gold and cyan accents, idle game aesthetic",
+    "output": "public/art/hero-space-tycoon.png"
+  },
+  {
+    "prompt": "A small single rocket on a simple launch pad, minimal design, represents a free starter plan, dark space background, clean and inviting, indigo subtle glow, beginner energy",
+    "output": "public/art/pricing-free.png"
+  },
+  {
+    "prompt": "A medium space station with solar panels and docked spacecraft, represents a professional plan, dark space background, indigo and cyan glow, moderate complexity, premium feel",
+    "output": "public/art/pricing-pro.png"
+  },
+  {
+    "prompt": "A massive orbital fleet with multiple space stations, mining operations, satellite constellations, and cargo ships, represents an enterprise plan, dark space background, gold and cyan glow, commanding presence",
+    "output": "public/art/pricing-enterprise.png"
+  },
+  {
+    "prompt": "A lost astronaut floating in dark empty space looking at a broken map hologram, conveying page not found / 404 error, minimal style, dark background with subtle indigo glow, slightly humorous",
+    "output": "public/art/404-lost-astronaut.png"
+  },
+  {
+    "prompt": "Step 1 onboarding: a person sitting at a futuristic terminal choosing their profile persona, holographic avatar options floating around them, dark background with welcoming indigo glow",
+    "output": "public/art/onboarding-step1.png"
+  },
+  {
+    "prompt": "Step 2 onboarding: a person configuring a customizable dashboard with floating module cards being arranged, drag and drop interface, dark background with cyan accents",
+    "output": "public/art/onboarding-step2.png"
+  },
+  {
+    "prompt": "Step 3 onboarding: a person receiving their first intelligence briefing notification on a futuristic device, data streams and alerts flowing in, dark background with green accents",
+    "output": "public/art/onboarding-step3.png"
+  }
+]
