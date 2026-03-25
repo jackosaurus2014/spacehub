@@ -6,7 +6,8 @@
 import * as fs from 'fs';
 import * as path from 'path';
 
-const API_KEY = 'AIzaSyDQM6KpuQO5CC7wvNcovtU_lHM9CT2vV-Y';
+const API_KEY = process.env.GEMINI_API_KEY || '';
+if (!API_KEY) { console.error('ERROR: Set GEMINI_API_KEY environment variable'); process.exit(1); }
 const MODEL = 'gemini-2.5-flash-image'; // Nano Banana - Gemini Flash with image generation
 const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent?key=${API_KEY}`;
 
