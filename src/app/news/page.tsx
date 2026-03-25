@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback, Suspense } from 'react';
+import React, { useState, useEffect, useCallback, useRef, Suspense } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import NewsCard from '@/components/NewsCard';
 import NewsFilter from '@/components/NewsFilter';
@@ -51,6 +51,8 @@ function NewsContent() {
   const [total, setTotal] = useState(0);
   const [offset, setOffset] = useState(0);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+  const [newArticlesCount, setNewArticlesCount] = useState(0);
+  const lastKnownTotal = useRef<number>(0);
   const limit = 12;
 
   // Calculate how many articles have been viewed today
@@ -87,6 +89,8 @@ function NewsContent() {
         setArticles((prev) => [...prev, ...(data.articles || [])]);
       }
       setTotal(data.total);
+      lastKnownTotal.current = data.total;
+      setNewArticlesCount(0);
       setLastUpdated(new Date());
     } catch (error) {
       clientLogger.error('Failed to fetch news', { error: error instanceof Error ? error.message : String(error) });
@@ -100,8 +104,29 @@ function NewsContent() {
     fetchNews();
   }, [fetchNews]);
 
+  // Poll for new articles every 2 minutes — lightweight check for total count only
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      try {
+        const params = new URLSearchParams();
+        if (selectedCategory) params.set('category', selectedCategory);
+        params.set('limit', '1');
+        params.set('offset', '0');
+        const res = await fetch(`/api/news?${params}`);
+        const data = await res.json();
+        if (data.total && lastKnownTotal.current > 0 && data.total > lastKnownTotal.current) {
+          setNewArticlesCount(data.total - lastKnownTotal.current);
+        }
+      } catch {
+        // Silently ignore poll errors
+      }
+    }, 120_000); // 2 minutes
+    return () => clearInterval(interval);
+  }, [selectedCategory]);
+
   const handleRefresh = useCallback(async () => {
     setOffset(0);
+    setNewArticlesCount(0);
     await fetchNews(0);
   }, [fetchNews]);
 
@@ -109,6 +134,7 @@ function NewsContent() {
     setSelectedCategory(category);
     setOffset(0);
     setArticles([]);
+    setNewArticlesCount(0);
   };
 
   const loadMore = () => {
@@ -137,6 +163,19 @@ function NewsContent() {
             ]}
           />
         </div>
+        {/* New articles indicator — shown when background poll detects newer content */}
+        {newArticlesCount > 0 && (
+          <button
+            onClick={handleRefresh}
+            className="w-full mb-3 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg border border-cyan-500/30 bg-cyan-500/10 text-cyan-300 text-sm font-medium hover:bg-cyan-500/20 transition-colors"
+          >
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75" />
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-400" />
+            </span>
+            {newArticlesCount} new article{newArticlesCount !== 1 ? 's' : ''} available — click to refresh
+          </button>
+        )}
         <div className="mb-4">
           <DataFreshnessBadge
             lastUpdated={lastUpdated}

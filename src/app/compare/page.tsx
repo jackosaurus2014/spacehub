@@ -100,6 +100,18 @@ const INDUSTRY_MATCHUPS = [
     href: '/compare/launch-vehicles',
     category: 'Heavy Lift',
   },
+  {
+    title: 'Rocket Lab vs Astra Space',
+    description: 'Small-launch divergence: Rocket Lab\'s growing space systems empire versus Astra\'s pivot from failed launches to spacecraft propulsion.',
+    href: '/compare/rocket-lab-vs-astra',
+    category: 'Launch Providers',
+  },
+  {
+    title: 'AST SpaceMobile vs Lynk Global',
+    description: 'Direct-to-device satellite showdown: massive phased-array satellites versus small-sat constellations to connect standard phones from space.',
+    href: '/compare/ast-spacemobile-vs-lynk',
+    category: 'Satellite Comms',
+  },
 ];
 
 const BLOG_COMPARISONS = [

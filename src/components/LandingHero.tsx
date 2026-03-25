@@ -59,17 +59,29 @@ function DataCard({ label, value, sub, live, delay }: { label: string; value: st
 }
 
 export default function LandingHero({ featuredArticle, trendingNews }: LandingHeroProps) {
-  // Fetch a live metric for the data preview
+  // Fetch live metrics for the data preview via the /api/pulse endpoint
   const [nextLaunch, setNextLaunch] = useState<string>('—');
   const [launchName, setLaunchName] = useState<string>('');
+  const [activeSats, setActiveSats] = useState<string>('10,200+');
+  const [satsSub, setSatsSub] = useState<string>('tracked in database');
+  const [weatherSummary, setWeatherSummary] = useState<string>('$546B');
+  const [weatherSub, setWeatherSub] = useState<string>('Space Economy');
+  const [fundingValue, setFundingValue] = useState<string>('—');
+  const [fundingSub, setFundingSub] = useState<string>('loading...');
+  const [pulseLive, setPulseLive] = useState(false);
 
   useEffect(() => {
-    fetch('/api/events?limit=1')
+    // Fetch pulse data for satellite count, weather, and next launch
+    fetch('/api/pulse')
       .then(r => r.json())
-      .then(data => {
-        if (data.events?.[0]) {
-          const evt = data.events[0];
-          const diff = new Date(evt.launchDate).getTime() - Date.now();
+      .then(res => {
+        if (!res.success || !res.data) return;
+        const data = res.data;
+        setPulseLive(true);
+
+        // Next launch
+        if (data.nextLaunch) {
+          const diff = new Date(data.nextLaunch.date).getTime() - Date.now();
           if (diff > 0) {
             const d = Math.floor(diff / 86400000);
             const h = Math.floor((diff % 86400000) / 3600000);
@@ -77,10 +89,77 @@ export default function LandingHero({ featuredArticle, trendingNews }: LandingHe
           } else {
             setNextLaunch('Launched');
           }
-          setLaunchName(evt.name?.slice(0, 30) || '');
+          setLaunchName(data.nextLaunch.name?.slice(0, 30) || '');
+        }
+
+        // Active satellites from DB
+        if (data.activeSatellites && data.activeSatellites > 0) {
+          setActiveSats(data.activeSatellites.toLocaleString());
+          setSatsSub('active in database');
+        }
+
+        // Space weather
+        if (data.spaceWeather) {
+          const sw = data.spaceWeather;
+          const severityMap: Record<string, string> = {
+            quiet: 'Quiet',
+            minor: 'Minor activity',
+            moderate: 'Moderate',
+            severe: 'Severe',
+          };
+          setWeatherSummary(severityMap[sw.severity] || 'Quiet');
+          setWeatherSub(sw.summary || 'Space weather nominal');
         }
       })
-      .catch(() => {});
+      .catch(() => {
+        // Fall back to events API for launch countdown
+        fetch('/api/events?limit=1')
+          .then(r => r.json())
+          .then(data => {
+            if (data.events?.[0]) {
+              const evt = data.events[0];
+              const diff = new Date(evt.launchDate).getTime() - Date.now();
+              if (diff > 0) {
+                const d = Math.floor(diff / 86400000);
+                const h = Math.floor((diff % 86400000) / 3600000);
+                setNextLaunch(d > 0 ? `T-${d}d ${h}h` : `T-${h}h`);
+              } else {
+                setNextLaunch('Launched');
+              }
+              setLaunchName(evt.name?.slice(0, 30) || '');
+            }
+          })
+          .catch(() => {});
+      });
+
+    // Fetch funding stats for the VC Funding card
+    fetch('/api/funding-tracker/stats')
+      .then(r => r.json())
+      .then(data => {
+        if (data.summary) {
+          const total = data.summary.last12MonthsTotal;
+          if (total > 0) {
+            // Format as $X.XB or $XXXM
+            if (total >= 1_000_000_000) {
+              setFundingValue(`$${(total / 1_000_000_000).toFixed(1)}B`);
+            } else if (total >= 1_000_000) {
+              setFundingValue(`$${Math.round(total / 1_000_000)}M`);
+            } else {
+              setFundingValue(`$${total.toLocaleString()}`);
+            }
+            setFundingSub(`${data.summary.last12MonthsDealCount} deals (12 mo)`);
+          } else {
+            // No funding data in DB yet — show static placeholder
+            setFundingValue('$2.1B');
+            setFundingSub('VC Funding (est.)');
+          }
+        }
+      })
+      .catch(() => {
+        // Static fallback
+        setFundingValue('$2.1B');
+        setFundingSub('VC Funding Q1 (est.)');
+      });
   }, []);
 
   return (
@@ -193,12 +272,12 @@ export default function LandingHero({ featuredArticle, trendingNews }: LandingHe
                   <span className="live-badge text-[7px]">SPACE DATA</span>
                 </div>
 
-                {/* Data cards grid */}
+                {/* Data cards grid — values fetched from /api/pulse and /api/funding-tracker/stats */}
                 <div className="p-3 grid grid-cols-2 gap-2.5">
                   <DataCard label="Next Launch" value={nextLaunch} sub={launchName} live delay={0.65} />
-                  <DataCard label="Active Sats" value="10,200+" sub="+180 this month" delay={0.7} />
-                  <DataCard label="Space Economy" value="$546B" sub="▲ 8.2% YoY" delay={0.75} />
-                  <DataCard label="VC Funding Q1" value="$2.1B" sub="▲ 12% QoQ" delay={0.8} />
+                  <DataCard label="Active Sats" value={activeSats} sub={satsSub} live={pulseLive} delay={0.7} />
+                  <DataCard label="Space Weather" value={weatherSummary} sub={weatherSub} live={pulseLive} delay={0.75} />
+                  <DataCard label="VC Funding" value={fundingValue} sub={fundingSub} live={fundingValue !== '—'} delay={0.8} />
                 </div>
 
                 {/* Bottom strip */}

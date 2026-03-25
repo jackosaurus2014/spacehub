@@ -408,6 +408,7 @@ export const PAGE_RELATIONS: Record<string, RelatedModuleConfig[]> = {
 
   // ── Compare hub & comparison pages ──
   'compare': [MODULES.marketIntel, MODULES.companyProfiles, MODULES.launchVehicles, MODULES.satellites, MODULES.tools],
+  'compare/ast-spacemobile-vs-lynk': [MODULES.constellations, MODULES.companyProfiles, MODULES.spaceComms, MODULES.spectrum],
   'compare/astra-vs-virgin-orbit': [MODULES.launchVehicles, MODULES.launchEconomics, MODULES.companyProfiles, MODULES.startupTracker],
   'compare/bloomberg-terminal': [MODULES.marketIntel, MODULES.companyProfiles, MODULES.spaceEconomy, MODULES.industryTrends],
   'compare/boeing-vs-lockheed-space': [MODULES.companyProfiles, MODULES.spaceDefense, MODULES.procurement, MODULES.contractAwards],
@@ -421,6 +422,7 @@ export const PAGE_RELATIONS: Record<string, RelatedModuleConfig[]> = {
   'compare/planet-labs-vs-maxar': [MODULES.satellites, MODULES.companyProfiles, MODULES.imagery, MODULES.constellations],
   'compare/quilty-analytics': [MODULES.marketIntel, MODULES.companyProfiles, MODULES.industryTrends, MODULES.spaceEconomy],
   'compare/relativity-space-vs-firefly': [MODULES.launchVehicles, MODULES.startupTracker, MODULES.companyProfiles, MODULES.launchEconomics],
+  'compare/rocket-lab-vs-astra': [MODULES.launchVehicles, MODULES.startupTracker, MODULES.companyProfiles, MODULES.launchEconomics],
   'compare/rocket-lab-vs-relativity-space': [MODULES.launchVehicles, MODULES.startupTracker, MODULES.companyProfiles, MODULES.launchEconomics],
   'compare/satellite-buses': [MODULES.satellites, MODULES.constellationDesigner, MODULES.powerBudget, MODULES.blueprints],
   'compare/satellites': [MODULES.satellites, MODULES.constellations, MODULES.orbitalSlots, MODULES.spaceComms],
