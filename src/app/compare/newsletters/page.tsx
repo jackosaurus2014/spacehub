@@ -333,7 +333,7 @@ export default function NewsletterComparisonPage() {
                 <div>
                   <h3 className="text-sm font-semibold text-white">Deep Content Library</h3>
                   <p className="text-xs text-slate-400 mt-0.5">
-                    With 133+ original long-form articles across 6 categories — technology, guides, analysis, market, policy, and building-in-public — SpaceNexus has the deepest free content library in space media.
+                    With 133+ original long-form articles across 5 categories — technology, guides, analysis, market, and policy — SpaceNexus has the deepest free content library in space media.
                   </p>
                 </div>
               </div>

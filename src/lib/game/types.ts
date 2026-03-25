@@ -390,6 +390,26 @@ export interface GameState {
     respecCount: number;
   };
 
+  // Daily task session metrics (reset daily, tracked client-side, synced to server)
+  dailyMetrics?: {
+    date: string; // YYYY-MM-DD
+    units_mined: number;
+    research_completed: number;
+    revenue_earned: number;
+    buildings_built: number;
+    contracts_completed: number;
+    research_started: number;
+    rockets_launched: number;
+    market_orders_filled: number;
+    trade_volume: number;
+    buildings_upgraded: number;
+    satellites_deployed: number;
+    cargo_delivered: number;
+    iron_mined: number;
+    titanium_mined: number;
+    platinum_group_mined: number;
+  };
+
   // Subsidiaries
   subsidiaries?: {
     id: string;

@@ -28,6 +28,19 @@ import { getMegastructureBonuses, checkMegastructureCompletion } from './persona
 import { getReputationBonuses, addReputation } from './reputation';
 import type { ResourceId } from './resources';
 
+/** Get or create today's daily metrics tracker */
+function getDailyMetrics(state: GameState): NonNullable<GameState['dailyMetrics']> {
+  const today = new Date().toISOString().slice(0, 10);
+  if (state.dailyMetrics?.date === today) return { ...state.dailyMetrics };
+  return {
+    date: today, units_mined: 0, research_completed: 0, revenue_earned: 0,
+    buildings_built: 0, contracts_completed: 0, research_started: 0,
+    rockets_launched: 0, market_orders_filled: 0, trade_volume: 0,
+    buildings_upgraded: 0, satellites_deployed: 0, cargo_delivered: 0,
+    iron_mined: 0, titanium_mined: 0, platinum_group_mined: 0,
+  };
+}
+
 /**
  * Process a single game tick (1 in-game month).
  * Pure function: takes state, returns new state. Never mutates input.
@@ -327,6 +340,41 @@ export function processTick(state: GameState): GameState {
   // ─── 12. Trim event log ──────────────────────────────────────────
   const eventLog = [...events, ...state.eventLog].slice(0, MAX_EVENT_LOG);
 
+  // ─── 13. Track daily metrics for corporation daily tasks ────────
+  const dm = getDailyMetrics(state);
+  // Count newly completed buildings this tick
+  const prevCompleteCount = state.buildings.filter(b => b.isComplete).length;
+  const newCompleteCount = buildings.filter(b => b.isComplete).length;
+  if (newCompleteCount > prevCompleteCount) {
+    dm.buildings_built += (newCompleteCount - prevCompleteCount);
+    // Track satellite deployments
+    for (const bld of buildings) {
+      if (bld.isComplete && !state.buildings.find(b => b.instanceId === bld.instanceId && b.isComplete)) {
+        const def = BUILDING_MAP.get(bld.definitionId);
+        if (def?.category === 'satellite') dm.satellites_deployed++;
+      }
+    }
+  }
+  // Track research completions
+  if (completedResearch.length > state.completedResearch.length) {
+    dm.research_completed += (completedResearch.length - state.completedResearch.length);
+  }
+  // Track revenue earned this tick
+  if (monthlyRevenue > 0) {
+    dm.revenue_earned += Math.round(monthlyRevenue * fraction);
+  }
+  // Track mining output
+  for (const [resId, qty] of Object.entries(resources)) {
+    const prevQty = state.resources?.[resId] || 0;
+    const mined = qty - prevQty;
+    if (mined > 0) {
+      dm.units_mined += mined;
+      if (resId === 'iron') dm.iron_mined += mined;
+      if (resId === 'titanium') dm.titanium_mined += mined;
+      if (resId === 'platinum_group') dm.platinum_group_mined += mined;
+    }
+  }
+
   return {
     ...state,
     gameDate: newDate,
@@ -346,6 +394,7 @@ export function processTick(state: GameState): GameState {
     incomeHistory,
     eventLog,
     stats,
+    dailyMetrics: dm,
     lastTickAt: Date.now(),
   };
 }

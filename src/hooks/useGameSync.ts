@@ -102,6 +102,15 @@ export function useGameSync(
             globalMilestones: data.globalMilestones || undefined,
           });
         }
+
+        // Report daily task metrics to corporation events (fire and forget)
+        if (state.dailyMetrics) {
+          fetch('/api/space-tycoon/alliance-events/daily-progress', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ metrics: state.dailyMetrics }),
+          }).catch(() => { /* non-critical */ });
+        }
       } else if (res.status === 401) {
         // Not logged in — silently skip, don't retry
         setStatus(prev => ({ ...prev, syncing: false, error: null }));

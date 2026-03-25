@@ -1,7 +1,7 @@
 // Original SpaceNexus blog content
 // Each post is authored by SpaceNexus and rendered on /blog/[slug]
 
-export type BlogCategory = 'analysis' | 'guide' | 'market' | 'technology' | 'policy' | 'building-in-public';
+export type BlogCategory = 'analysis' | 'guide' | 'market' | 'technology' | 'policy';
 
 export interface OriginalBlogPost {
   slug: string;
@@ -24,7 +24,6 @@ export const BLOG_CATEGORIES: { value: BlogCategory; label: string }[] = [
   { value: 'market', label: 'Market' },
   { value: 'technology', label: 'Technology' },
   { value: 'policy', label: 'Policy' },
-  { value: 'building-in-public', label: 'Building in Public' },
 ];
 
 export const BLOG_POSTS: OriginalBlogPost[] = [
@@ -1002,104 +1001,6 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 <p>SpaceNexus\'s <a href="/space-insurance">Space Insurance module</a> provides market data, premium benchmarks, and loss event tracking for the space insurance industry. Whether you\'re an operator seeking coverage or an underwriter evaluating risk, our platform aggregates the data you need to make informed decisions.</p>
 
 <p><a href="/register">Create your free account</a> and explore the space insurance market.</p>
-`,
-  },
-  {
-    slug: 'building-spacenexus-idea-to-launch-90-days',
-    title: 'Building SpaceNexus: From Idea to Launch in 90 Days',
-    excerpt: 'How we built a comprehensive space industry intelligence platform in three months. Our tech stack decisions, biggest challenges, lessons learned, and the metrics behind the journey.',
-    category: 'building-in-public',
-    author: 'SpaceNexus Team',
-    authorRole: 'Editorial',
-    publishedAt: '2026-02-17T00:00:00Z',
-    readingTime: 11,
-    keywords: ['building in public', 'space startup', 'Next.js app', 'SpaceNexus development', 'startup lessons', 'tech stack decisions'],
-    content: `
-<p>Ninety days. That\'s how long it took to go from "the space industry needs a Bloomberg Terminal" to a live platform with <strong>10 intelligence modules, 50+ data source integrations, 200+ company profiles, and a functioning marketplace</strong>. This is the story of how we built SpaceNexus — the decisions we made, the mistakes we avoided (and the ones we didn\'t), and what we learned along the way.</p>
-
-<p>We\'re sharing this in the spirit of building in public, because we believe transparency about the process helps the entire startup ecosystem. If you\'re building something ambitious, we hope our experience is useful.</p>
-
-<h2 id="tech-stack-decisions">Tech Stack Decisions: Why We Chose What We Chose</h2>
-
-<p>Every technical decision was made through the lens of one question: <strong>what lets a small team move the fastest without accumulating unmanageable technical debt?</strong></p>
-
-<p><strong>Next.js 14 (App Router)</strong> was our framework choice. The App Router\'s server components dramatically simplified our data fetching — most of our modules pull from external APIs, and being able to fetch and render on the server without complex state management libraries was a game-changer. Server Actions reduced the boilerplate for form submissions by 60-70% compared to traditional API routes.</p>
-
-<p><strong>Prisma ORM with PostgreSQL</strong> handles our data layer. Prisma\'s type safety caught dozens of bugs during development that would have been runtime errors with raw SQL. Our schema grew from 5 models to 30+ over the course of development, and Prisma\'s migration system handled that growth smoothly. PostgreSQL on Railway gave us a managed database with zero operational overhead.</p>
-
-<p><strong>Railway</strong> for deployment was a decision we\'re particularly happy with. Push to the dev branch and the app deploys automatically. No Dockerfiles to maintain, no CI/CD pipelines to debug, no infrastructure to manage. For a small team, this operational simplicity is worth its weight in gold. Our deployment takes about 3 minutes from push to live.</p>
-
-<p><strong>TypeScript everywhere.</strong> Not negotiable. In a codebase with 200+ API routes and dozens of data models, type safety isn\'t a luxury — it\'s a survival mechanism. TypeScript caught more bugs during development than our test suite did, and that\'s saying something since we have 80+ tests.</p>
-
-<p><strong>Tailwind CSS</strong> for styling. We evaluated component libraries (Shadcn, MUI, Chakra) and decided that Tailwind\'s utility-first approach gave us the most flexibility with the least overhead. Every component in SpaceNexus is custom-built to our design language.</p>
-
-<table>
-<thead><tr><th>Technology</th><th>Choice</th><th>Why</th></tr></thead>
-<tbody>
-<tr><td>Framework</td><td>Next.js 14 (App Router)</td><td>Server components, built-in routing, Vercel ecosystem</td></tr>
-<tr><td>Database</td><td>PostgreSQL + Prisma</td><td>Type safety, migrations, managed hosting</td></tr>
-<tr><td>Deployment</td><td>Railway</td><td>Auto-deploy, managed infra, zero DevOps overhead</td></tr>
-<tr><td>Language</td><td>TypeScript</td><td>Type safety across 200+ API routes</td></tr>
-<tr><td>Styling</td><td>Tailwind CSS</td><td>Utility-first, no component library lock-in</td></tr>
-<tr><td>Validation</td><td>Zod</td><td>Runtime type checking, schema-first API design</td></tr>
-<tr><td>Testing</td><td>Jest</td><td>Mature ecosystem, good Next.js integration</td></tr>
-</tbody>
-</table>
-
-<h2 id="data-integration-challenge">The Biggest Challenge: Data Integration at Scale</h2>
-
-<p>Building the UI was the easy part. The hard part — the part that consumed roughly <strong>60% of our development time</strong> — was integrating 50+ external data sources into a coherent platform.</p>
-
-<p>Here\'s what makes space industry data integration uniquely challenging:</p>
-
-<ul>
-<li><strong>No standards:</strong> NASA APIs return JSON. CelesTrak serves TLE text files. RSS feeds deliver XML. SAM.gov has a REST API with idiosyncratic pagination. Every data source has its own format, authentication method, rate limits, and reliability characteristics.</li>
-<li><strong>Stale data is dangerous:</strong> A satellite position that\'s 6 hours old is useless for collision avoidance. A launch window that\'s changed isn\'t just stale — it\'s wrong. We built a tiered caching system with different TTLs for different data types: 5 minutes for space weather, 1 hour for news, 24 hours for company profiles.</li>
-<li><strong>APIs go down:</strong> Over a 90-day development period, we experienced outages or degraded service from nearly every external API we integrate with. Our circuit breaker pattern (implemented in <code>src/lib/circuit-breaker.ts</code>) prevents cascading failures by falling back to cached data when an upstream service is unavailable.</li>
-<li><strong>Rate limits are real:</strong> NASA\'s DONKI API has generous limits, but SAM.gov throttles aggressively. We implemented per-source rate limiting and request queuing to stay within bounds during our 9 scheduled cron jobs.</li>
-</ul>
-
-<p>The lesson: <strong>data integration is the product.</strong> For a platform like SpaceNexus, the UI is table stakes. The value is in the data pipeline — fetching, normalizing, caching, and presenting data from dozens of sources as if it all came from one place.</p>
-
-<h2 id="by-the-numbers">By the Numbers: 90 Days of Building</h2>
-
-<ul>
-<li><strong>236 total routes</strong> (pages + API endpoints)</li>
-<li><strong>114 files</strong> created in the final major release alone</li>
-<li><strong>50+ external data sources</strong> integrated (NASA, NOAA, SAM.gov, CelesTrak, FCC, RSS feeds, and more)</li>
-<li><strong>200+ company profiles</strong> with financial data, satellite assets, and contract history</li>
-<li><strong>80+ automated tests</strong> covering validation, error handling, and business logic</li>
-<li><strong>30+ Prisma models</strong> in our database schema</li>
-<li><strong>9 cron jobs</strong> running on scheduled intervals for data freshness</li>
-<li><strong>10 major version releases</strong> (v0.1 through v1.0)</li>
-<li><strong>3-minute deployments</strong> via Railway auto-deploy</li>
-</ul>
-
-<h2 id="mistakes-and-lessons">Mistakes We Made (and What We Learned)</h2>
-
-<p><strong>Mistake #1: Starting with too many modules.</strong> Our initial plan had 44 separate modules. That was far too many — it fragmented the user experience and created maintenance overhead. In v0.7.0, we consolidated to 10 main modules with sub-modules and tab-based merges. The lesson: start with fewer, deeper modules and expand based on user demand.</p>
-
-<p><strong>Mistake #2: Underestimating Windows development quirks.</strong> Developing a Node.js application on Windows introduced unexpected challenges — file path separators, case sensitivity differences, and Prisma\'s query engine DLL locking during schema changes. We learned to always test in the deployment environment early.</p>
-
-<p><strong>Mistake #3: Not implementing structured logging from day one.</strong> We started with console.log statements and had to retrofit structured logging (via our custom logger in <code>src/lib/logger.ts</code>) later. Starting with structured logging would have saved debugging time during data integration.</p>
-
-<p><strong>Lesson learned: Security can\'t wait.</strong> We conducted a security audit at v0.9.0 that found critical, high, and medium-severity issues. Fixing them was far more expensive than building security in from the start. CSRF protection, rate limiting, input validation, and HTML sanitization should be in your first commit, not your last.</p>
-
-<h2 id="whats-next">What\'s Next for SpaceNexus</h2>
-
-<p>We\'re just getting started. Our roadmap includes:</p>
-
-<ul>
-<li><strong>AI-powered insights:</strong> Using Claude to analyze cross-module data patterns and generate actionable intelligence</li>
-<li><strong>Commercial API:</strong> Our v1 API product lets developers integrate SpaceNexus data into their own applications</li>
-<li><strong>Marketplace expansion:</strong> Growing our space industry marketplace with more verified providers and AI-assisted procurement matching</li>
-<li><strong>Mobile app:</strong> Native mobile experience with offline capabilities and widget support</li>
-<li><strong>Community features:</strong> Discussion forums, expert Q&A, and collaborative analysis tools</li>
-</ul>
-
-<p>We\'ll continue sharing our journey openly. Follow our <a href="/blog">blog</a> for regular updates on what we\'re building, why we\'re building it, and the data behind our decisions.</p>
-
-<p><a href="/register">Join SpaceNexus for free</a> and be part of the platform the space industry has been waiting for.</p>
 `,
   },
   {
@@ -18360,71 +18261,6 @@ ISS (ZARYA)
 `,
   },
   {
-    slug: 'spacenexus-now-on-google-play-android-app',
-    title: 'SpaceNexus Is Now on Google Play: Space Intelligence in Your Pocket',
-    excerpt: 'The SpaceNexus Android app brings the full power of our space industry intelligence platform to your phone. Track launches, monitor markets, and receive real-time alerts — all from Google Play.',
-    category: 'building-in-public',
-    author: 'SpaceNexus Team',
-    authorRole: 'Editorial',
-    publishedAt: '2026-03-18T18:00:00Z',
-    readingTime: 5,
-    featured: true,
-    keywords: ['spacenexus android app', 'google play space app', 'space industry mobile app', 'satellite tracking app', 'launch tracking android'],
-    content: `
-<p>Today we're excited to announce that <strong>SpaceNexus is now available on Google Play</strong>. After 76 waves of recursive development and 160+ articles published, we're bringing the full SpaceNexus experience to Android devices.</p>
-
-<h2 id="why-mobile-matters">Why Mobile Matters for Space Intelligence</h2>
-
-<p>Space doesn't operate on a 9-to-5 schedule. Launches happen at 3 AM. Solar flares can impact satellite operations without warning. Funding rounds close while you're away from your desk. Having space intelligence in your pocket means you never miss a critical moment.</p>
-
-<p>The SpaceNexus Android app isn't a stripped-down mobile version — it's the <strong>full platform</strong>, optimized for mobile with native features like push notifications, offline caching, and app shortcuts.</p>
-
-<h2 id="what-you-get">What You Get</h2>
-
-<ul>
-<li><strong>Live Launch Tracking:</strong> Real-time countdowns and mission status for every orbital launch worldwide. Get push notifications before liftoff</li>
-<li><strong>Satellite Tracker:</strong> Track 10,000+ satellites including Starlink, ISS, and classified payloads in real time</li>
-<li><strong>Market Intelligence:</strong> Space stocks, funding rounds, M&A deals, and sector trends at your fingertips</li>
-<li><strong>Space Weather Alerts:</strong> Solar flare notifications, geomagnetic storm tracking, and aurora forecasts</li>
-<li><strong>160+ Original Articles:</strong> The largest free space content library on the internet, from investment guides to engineering deep-dives</li>
-<li><strong>Offline Mode:</strong> Cached data lets you browse even without connectivity — essential for conference halls and remote locations</li>
-</ul>
-
-<h2 id="technical-approach">Our Technical Approach</h2>
-
-<p>Rather than building a separate native app that would lag behind our web platform, we chose a <strong>Trusted Web Activity (TWA)</strong> approach. This wraps our existing Progressive Web App (PWA) in a lightweight Android shell that:</p>
-
-<ul>
-<li>Launches instantly with no URL bar — it looks and feels like a native app</li>
-<li>Automatically stays in sync with every web deployment</li>
-<li>Supports push notifications via service workers</li>
-<li>Caches aggressively for offline use with TTL-aware caching strategies</li>
-<li>Weighs only ~3.4 MB to install</li>
-</ul>
-
-<p>This means that when we ship improvements to spacenexus.us, Android users get them immediately — no app store update required.</p>
-
-<h2 id="data-safety">Data Safety & Privacy</h2>
-
-<p>We've published a comprehensive <a href="/data-safety">Data Safety</a> page that details exactly what data we collect, how it's used, and your choices. Key commitments: we never sell your data, all transmissions are encrypted, and you can delete your account at any time.</p>
-
-<h2 id="whats-next">What's Next</h2>
-
-<p>The Android launch is just the beginning. We're working on:</p>
-
-<ul>
-<li><strong>Push notification channels:</strong> Subscribe to specific alert types (launches, funding rounds, space weather)</li>
-<li><strong>Home screen widgets:</strong> At-a-glance countdown timers and market snapshots</li>
-<li><strong>iOS App Store submission:</strong> Bringing SpaceNexus to iPhone and iPad</li>
-<li><strong>Wearable integration:</strong> Launch alerts on your smartwatch</li>
-</ul>
-
-<p>Download SpaceNexus from Google Play today and take space intelligence everywhere you go.</p>
-
-<p><a href="/app">Get SpaceNexus on Google Play</a></p>
-`,
-  },
-  {
     slug: 'play-store-launch-checklist-pwa-twa-android',
     title: 'Publishing a PWA on Google Play: The Complete TWA Checklist for 2026',
     excerpt: 'A step-by-step guide to publishing your Progressive Web App on Google Play using Trusted Web Activities. Covers signing keys, Digital Asset Links, Play Store requirements, and lessons learned from shipping SpaceNexus.',
@@ -18727,60 +18563,6 @@ ISS (ZARYA)
 `,
   },
   {
-    slug: 'spacenexus-product-roadmap-2026',
-    title: 'SpaceNexus Product Roadmap 2026: What We\'re Building Next',
-    excerpt: 'From iOS launch to WebSocket feeds to AI predictions — here\'s our public roadmap for the rest of 2026 and what it means for space professionals.',
-    category: 'building-in-public',
-    author: 'SpaceNexus Team',
-    authorRole: 'Product',
-    publishedAt: '2026-03-19T00:00:00Z',
-    readingTime: 4,
-    keywords: ['spacenexus roadmap', 'space platform features', 'space industry tools 2026', 'spacenexus updates'],
-    content: `
-<p>Transparency is a core value at SpaceNexus. We believe the space industry professionals who use our platform should know exactly what we're building and why. Here's our public roadmap for the rest of 2026.</p>
-
-<h2 id="shipped-q1">Already Shipped (Q1 2026)</h2>
-
-<p>In just the first quarter of 2026, we've deployed 84+ waves of recursive development including:</p>
-
-<ul>
-<li><strong>165+ original articles</strong> — the largest free space content library online</li>
-<li><strong>Android app on Google Play</strong> — full platform with push notifications and offline support</li>
-<li><strong>AI Insights pipeline</strong> — daily AI-generated analysis with fact-checking</li>
-<li><strong>Engineering tools suite</strong> — orbital, thermal, radiation, power, and link budget calculators</li>
-<li><strong>Community forums and marketplace</strong> — threaded discussions, procurement, and RFQ system</li>
-<li><strong>Developer API v1</strong> — 11 public endpoints with OpenAPI documentation</li>
-</ul>
-
-<h2 id="in-progress">In Progress (Q2 2026)</h2>
-
-<ul>
-<li><strong>Push notification channels:</strong> Subscribe to specific alert types instead of all-or-nothing. Choose launches, funding rounds, space weather, or regulatory updates</li>
-<li><strong>iOS App Store launch:</strong> SpaceNexus for iPhone and iPad with the same full-platform experience as Android</li>
-</ul>
-
-<h2 id="planned">Planned (Q2-Q3 2026)</h2>
-
-<ul>
-<li><strong>Home screen widgets:</strong> Glanceable countdown timers and market snapshots for Android</li>
-<li><strong>Real-time WebSocket feeds:</strong> Live streaming data for launch events and market changes</li>
-<li><strong>Team workspaces:</strong> Shared dashboards and collaborative watchlists for organizations</li>
-<li><strong>API v2 with GraphQL:</strong> Flexible queries for developers building on our data</li>
-</ul>
-
-<h2 id="exploring">Exploring (H2 2026)</h2>
-
-<ul>
-<li><strong>Multi-language support</strong> starting with Spanish, Mandarin, and French</li>
-<li><strong>Wearable integration</strong> for smartwatch alerts</li>
-<li><strong>AI-powered market predictions</strong> for funding and launch trends</li>
-<li><strong>Satellite imagery integration</strong> for in-platform analysis</li>
-</ul>
-
-<p>See the full interactive roadmap at <a href="/roadmap">spacenexus.us/roadmap</a>. Have a feature request? <a href="/contact">Let us know</a>.</p>
-`,
-  },
-  {
     slug: 'space-industry-conferences-guide-2026',
     title: 'Space Industry Conferences Worth Attending in 2026: The Complete Guide',
     excerpt: 'From SATELLITE to IAC to SmallSat — a curated guide to the most valuable space industry conferences, trade shows, and summits in 2026.',
@@ -19037,49 +18819,6 @@ ISS (ZARYA)
 </ul>
 
 <p>Track constellation deployments and satellite counts in real-time at <a href="/constellations">SpaceNexus Constellation Tracker</a>.</p>
-`,
-  },
-  {
-    slug: 'how-spacenexus-uses-ai-generate-insights',
-    title: 'How SpaceNexus Uses AI to Generate Daily Space Industry Insights',
-    excerpt: 'Behind the scenes of our AI insights pipeline: how we use Claude to analyze space industry trends, fact-check with a second AI pass, and deliver actionable intelligence daily.',
-    category: 'building-in-public',
-    author: 'SpaceNexus Team',
-    authorRole: 'Engineering',
-    publishedAt: '2026-03-19T05:00:00Z',
-    readingTime: 5,
-    keywords: ['ai space insights', 'claude ai analysis', 'automated intelligence', 'spacenexus ai pipeline'],
-    content: `
-<p>Every morning at 1:00 AM UTC, an automated pipeline scans the previous 36 hours of space industry news, cross-references it with recent blog posts and regulatory updates, and generates an original analysis piece. Here's how it works.</p>
-
-<h2 id="the-pipeline">The Pipeline</h2>
-
-<p>Our AI insights system runs as a scheduled cron job with these stages:</p>
-
-<ul>
-<li><strong>Data Collection:</strong> Fetch recent news (36 hours), blog posts (48 hours), and legal/regulatory updates (72 hours) from our database</li>
-<li><strong>Analysis Generation:</strong> Send the aggregated content to Claude with a prompt designed to identify trends, connections, and implications that humans might miss across disparate sources</li>
-<li><strong>Fact-Check Pass:</strong> A second AI call reviews the generated analysis for factual accuracy, flagging any claims that can't be supported by the source material</li>
-<li><strong>Editorial Queue:</strong> The analysis is saved as "pending review" and an email is sent to our editorial team for human approval before publishing</li>
-<li><strong>Retry Logic:</strong> If the 1 AM run fails, a retry fires at 7 AM UTC. The watchdog monitors both runs</li>
-</ul>
-
-<h2 id="why-ai-plus-human">Why AI + Human Review</h2>
-
-<p>We deliberately chose not to auto-publish AI content. Every insight requires manual admin approval because:</p>
-
-<ul>
-<li>AI can hallucinate facts about specific companies, funding amounts, or timelines</li>
-<li>The space industry has classified and export-controlled topics that require careful handling</li>
-<li>Tone and framing matter — analysis should be objective, not sensational</li>
-<li>Our readers trust SpaceNexus as an authoritative source; that trust requires human judgment</li>
-</ul>
-
-<h2 id="what-it-produces">What It Produces</h2>
-
-<p>The pipeline generates analysis covering: emerging trends across multiple news stories, connection patterns between funding events and policy changes, weekly intelligence briefs, and forward-looking implications for different industry segments.</p>
-
-<p>Browse our AI-generated insights at <a href="/ai-insights">spacenexus.us/ai-insights</a>.</p>
 `,
   },
   {
@@ -19649,15 +19388,6 @@ ISS (ZARYA)
     publishedAt: '2026-03-20T01:00:00Z', readingTime: 5,
     keywords: ['outer space treaty', 'space law', 'international space law', 'space treaty'],
     content: `<p>The Treaty on Principles Governing the Activities of States in the Exploration and Use of Outer Space — commonly called the Outer Space Treaty (OST) — was signed in 1967 at the height of the Cold War space race. Ratified by 114 nations including the US, Russia, and China, it remains the foundational document of international space law.</p><h2 id="key-principles">Key Principles</h2><ul><li><strong>Article I:</strong> Space exploration shall be carried out for the benefit of all countries. Space is free for exploration and use by all States</li><li><strong>Article II:</strong> Outer space is not subject to national appropriation by claim of sovereignty, use, occupation, or any other means. No country can "own" the Moon or Mars</li><li><strong>Article III:</strong> Space activities must be carried out in accordance with international law, including the UN Charter</li><li><strong>Article IV:</strong> No nuclear weapons or WMDs in orbit or on celestial bodies. Military bases and weapons testing on celestial bodies are prohibited</li><li><strong>Article VI:</strong> States bear international responsibility for national space activities, whether by government or private entities. Governments must authorize and supervise private space activities</li><li><strong>Article VII:</strong> Launching states are liable for damage caused by their space objects</li><li><strong>Article VIII:</strong> Objects launched into space remain under the jurisdiction of the launching state. No "space piracy" — you can't seize another nation's satellite</li></ul><h2 id="modern-challenges">Modern Challenges</h2><p>The OST was written for a world of two space powers launching government missions. Today's commercial space industry raises questions the treaty didn't anticipate:</p><ul><li><strong>Resource extraction:</strong> Article II bans sovereignty but the 2015 US Commercial Space Launch Competitiveness Act asserts the right to own resources extracted from space. Are these compatible?</li><li><strong>Mega-constellations:</strong> Are 10,000+ satellites from one company compatible with "free use" by all?</li><li><strong>Space debris:</strong> Article IX requires avoiding "harmful contamination" — does debris count?</li><li><strong>Space weapons:</strong> Article IV bans WMDs but not conventional weapons in orbit. Anti-satellite weapons (ASATs) are not explicitly banned</li></ul><p>Explore space law and regulatory resources at <a href="/compliance">SpaceNexus Compliance Hub</a>.</p>`,
-  },
-  {
-    slug: 'how-spacenexus-built-50-data-pipelines',
-    title: 'How SpaceNexus Built 50+ Automated Data Pipelines',
-    excerpt: 'Behind the scenes of SpaceNexus: how we aggregate data from NASA, NOAA, SpaceX, and dozens of other sources into a unified space intelligence platform.',
-    category: 'building-in-public', author: 'SpaceNexus Team', authorRole: 'Engineering',
-    publishedAt: '2026-03-20T02:00:00Z', readingTime: 5,
-    keywords: ['spacenexus architecture', 'data pipeline', 'space data aggregation', 'automated cron jobs'],
-    content: `<p>SpaceNexus aggregates data from over 50 sources, refreshed by 30+ automated cron jobs running on schedules ranging from every 2 minutes to weekly. Here's how the data pipeline works.</p><h2 id="architecture">Architecture</h2><p>Our data layer has three tiers:</p><ul><li><strong>High-frequency (2-15 min):</strong> News feeds, space weather, live events, realtime satellite data. These endpoints are latency-sensitive — a launch scrub at T-minus 10 minutes needs to appear in our feed within minutes</li><li><strong>Medium-frequency (30 min - 4 hr):</strong> SpaceX API data, EONET natural events, podcast feeds, blog sources, YouTube channels. These change regularly but aren't time-critical</li><li><strong>Daily/weekly:</strong> AI insights generation, SEC filings, patent monitoring, commodity prices, compliance data, newsletter digests. These are batch processes that run during off-peak hours</li></ul><h2 id="reliability">Reliability</h2><p>A staleness watchdog runs every 10 minutes, checking that each critical data source has been refreshed within its expected window. If a source goes stale:</p><ul><li>The watchdog logs an alert to the database</li><li>For critical sources (news, launches, space weather), it automatically triggers a retry</li><li>After 10 consecutive failures, auto-recovery stops and admin is notified via email</li><li>Grace periods prevent false positives during scheduler startup</li></ul><h2 id="data-sources">Key Data Sources</h2><ul><li><strong>Launch Library 2:</strong> Global launch schedule — the most comprehensive public API for mission data</li><li><strong>NOAA SWPC:</strong> Space weather — solar flare alerts, Kp index, CME tracking</li><li><strong>CelesTrak:</strong> TLE data for 10,000+ tracked objects</li><li><strong>SpaceX API:</strong> Open-source launch and vehicle data</li><li><strong>USAspending.gov:</strong> Federal space spending and contract awards</li><li><strong>12+ RSS feeds:</strong> NASA, ESA, CNN Space, Wired, and others</li><li><strong>Claude AI:</strong> Daily insight generation with two-pass fact-checking</li></ul><p>See our complete data source inventory at <a href="/data-sources">SpaceNexus Data Sources</a>.</p>`,
   },
   {
     slug: 'what-is-space-force-us-military-space',
@@ -20291,65 +20021,6 @@ ISS (ZARYA)
 </ul>
 
 <p>Follow the full launch manifest and real-time schedule updates in <a href="/launch-manifest">SpaceNexus Launch Tracker</a>. Our <a href="/launch-windows">Launch Windows module</a> provides orbital mechanics-based window analysis for any target orbit.</p>
-`,
-  },
-  {
-    slug: 'building-spacenexus-how-we-aggregate-space-industry-data-at-scale',
-    title: 'Building SpaceNexus: How We Aggregate Space Industry Data at Scale',
-    excerpt: 'SpaceNexus ingests data from 50+ sources — NASA APIs, NOAA feeds, SAM.gov, CelesTrak, and more — into a unified platform. Here is an honest look at the engineering, data quality, and product decisions behind the infrastructure.',
-    category: 'building-in-public',
-    author: 'SpaceNexus Team',
-    authorRole: 'Engineering',
-    publishedAt: '2026-03-22T11:00:00Z',
-    readingTime: 10,
-    keywords: ['SpaceNexus engineering', 'space data aggregation', 'building in public', 'space API', 'space industry data platform', 'next.js space platform'],
-    content: `
-<p>When we started building SpaceNexus, we made a decision that has shaped everything: we would integrate primary data sources directly rather than scraping content or relying on third-party data brokers. That meant building direct integrations with NASA APIs, NOAA's Space Weather Prediction Center, CelesTrak, SAM.gov, the FCC licensing database, and dozens more. Here is an honest account of what that looks like in practice.</p>
-
-<h2 id="the-data-source-landscape">The Data Source Landscape</h2>
-
-<p>The space industry's data infrastructure is a patchwork of public APIs, structured data feeds, semi-structured HTML, and completely unstructured documents. Our integrations fall into a few categories:</p>
-
-<ul>
-<li><strong>Well-maintained REST APIs:</strong> NASA has excellent public APIs (DONKI for space weather events, EPIC for Earth imagery, Exoplanet Archive, etc.) with consistent schemas and reasonable uptime. These are the easiest integrations to maintain</li>
-<li><strong>File-based feeds:</strong> CelesTrak distributes TLE (two-line element set) data as plain text files in a format unchanged since the 1980s. Authoritative, widely used, and reliably updated — but requiring custom parsing</li>
-<li><strong>Government procurement databases:</strong> SAM.gov offers a contract opportunities API and bulk data downloads. The data quality varies significantly by agency; some filings have excellent structured metadata, others are PDFs with minimal machine-readable content</li>
-<li><strong>RSS and structured news:</strong> The space industry has a rich journalism ecosystem — SpaceNews, NASASpaceFlight, SpaceFlightNow, Ars Technica, and dozens more. We aggregate via RSS where available, with content categorized using our own classification model</li>
-<li><strong>Financial data:</strong> Space-adjacent public companies trade on major exchanges; we integrate with market data providers for real-time and historical quotes, earnings data, and fundamentals</li>
-</ul>
-
-<h2 id="architecture-decisions">Architecture Decisions</h2>
-
-<p>SpaceNexus is built on Next.js 14 with the App Router, PostgreSQL via Prisma ORM, and deployed on Railway. A few architectural decisions are worth explaining:</p>
-
-<ul>
-<li><strong>Server-side rendering with aggressive caching:</strong> Space data has widely varying freshness requirements. TLE data is updated multiple times per day; launch schedules change on a timescale of hours to days; company profiles are relatively static. We use per-route caching headers and background revalidation to serve fresh data without hammering upstream APIs</li>
-<li><strong>Scheduled fetchers, not webhooks:</strong> Very few space data sources offer webhooks or push notifications. Nearly all our data ingestion is poll-based, with fetch intervals tuned to each source's update cadence and our freshness requirements</li>
-<li><strong>Graceful degradation:</strong> Upstream APIs go down. NOAA has occasional outages; SAM.gov bulk exports sometimes fail; third-party feeds go stale. We treat external data source failures as expected events, not exceptions. Every module has fallback behavior — either serving cached data or displaying a clearly labeled "data temporarily unavailable" state rather than breaking the page</li>
-<li><strong>AI-assisted categorization:</strong> With 50+ news sources generating hundreds of items per day, human curation is not scalable. We use language model classification to tag news items by topic (launch, policy, funding, technology, etc.), company mentions, and urgency. Categorization errors exist — we review flagged edge cases and iterate on the prompts</li>
-</ul>
-
-<h2 id="data-quality-challenges">Data Quality Challenges</h2>
-
-<p>Aggregating data at scale surfaces quality problems that aren't visible when manually browsing source sites:</p>
-
-<ul>
-<li><strong>Duplicate launches:</strong> A single upcoming launch may appear in SpaceX's manifest, NASA's launch schedule, the range's public calendar, and three different news articles — each with slightly different dates, payload names, or vehicle designations. Deduplication requires entity resolution across inconsistent naming conventions</li>
-<li><strong>Outdated records:</strong> Government databases sometimes retain stale entries. A company may be listed as active in one database after it has been acquired or dissolved. We run periodic freshness checks and flag records that haven't been updated beyond expected intervals</li>
-<li><strong>Unstructured regulatory filings:</strong> FCC satellite license applications are filed as a mix of structured database fields and uploaded PDF exhibits. Extracting technically meaningful information (orbital parameters, frequency coordination) from the documents requires parsing that is partly manual</li>
-</ul>
-
-<h2 id="what-we-have-learned">What We Have Learned</h2>
-
-<p>A few hard-won lessons from 18+ months of building:</p>
-
-<ul>
-<li><strong>Schema stability matters more than breadth:</strong> Early on, we tried to capture every available data field from every source. The result was a schema that changed constantly as source APIs evolved. We have since standardized on a narrower set of canonical fields per entity type, with raw source data preserved separately for future processing</li>
-<li><strong>Surface data provenance to users:</strong> Space professionals are appropriately skeptical of aggregated data. Showing the source, fetch timestamp, and raw data link for every data point builds trust and helps users catch errors we missed</li>
-<li><strong>Feedback loops are underrated:</strong> Some of our most valuable data corrections have come from users who noticed a discrepancy and reported it. We built a simple data feedback mechanism early, and it has paid dividends in data quality</li>
-</ul>
-
-<p>We publish periodic engineering updates in this building-in-public series. If you have questions about our data sources or methodology, reach out via the <a href="/community">community forum</a> or the feedback widget on any module page.</p>
 `,
   },
   {
