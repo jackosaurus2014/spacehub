@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useMemo, Suspense } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
+import Image from 'next/image';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import PullToRefresh from '@/components/ui/PullToRefresh';
@@ -1574,13 +1575,27 @@ function DebrisRemediationContent() {
   return (
     <PullToRefresh onRefresh={async () => { setRefreshKey((k) => k + 1); }}>
       <div className="min-h-screen">
+        <div className="relative overflow-hidden">
+          <div className="absolute inset-0 -z-10">
+            <Image
+              src="/art/hero-debris.png"
+              alt=""
+              fill
+              className="object-cover opacity-20"
+              priority
+            />
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#09090b]/80 to-[#09090b]" />
+          </div>
+          <div className="container mx-auto px-4 pt-6">
+            <AnimatedPageHeader
+              title="Space Debris Remediation"
+              subtitle="Active debris removal missions, remediation technologies, population statistics, and international regulatory frameworks for space sustainability"
+              icon="&#x1F6F0;&#xFE0F;"
+              accentColor="red"
+            />
+          </div>
+        </div>
         <div className="container mx-auto px-4">
-          <AnimatedPageHeader
-            title="Space Debris Remediation"
-            subtitle="Active debris removal missions, remediation technologies, population statistics, and international regulatory frameworks for space sustainability"
-            icon="&#x1F6F0;&#xFE0F;"
-            accentColor="red"
-          />
 
           {/* Main Tab Navigation */}
           <div className="flex gap-1 mb-8 p-1 bg-white/[0.04] rounded-xl w-full sm:w-fit overflow-x-auto scrollbar-thin">

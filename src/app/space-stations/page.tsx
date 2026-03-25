@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import DataFreshness from '@/components/ui/DataFreshness';
@@ -1585,13 +1586,27 @@ export default function SpaceStationTrackerPage() {
 
   return (
     <div className="min-h-screen">
+      <div className="relative overflow-hidden">
+        <div className="absolute inset-0 -z-10">
+          <Image
+            src="/art/hero-space-stations.png"
+            alt=""
+            fill
+            className="object-cover opacity-20"
+            priority
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#09090b]/80 to-[#09090b]" />
+        </div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
+          <AnimatedPageHeader
+            title="Space Station Tracker"
+            subtitle="Comprehensive tracking of active and planned space stations, crew rotations, and the transition to commercial LEO destinations"
+            icon="🏗️"
+            accentColor="cyan"
+          />
+        </div>
+      </div>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <AnimatedPageHeader
-          title="Space Station Tracker"
-          subtitle="Comprehensive tracking of active and planned space stations, crew rotations, and the transition to commercial LEO destinations"
-          icon="🏗️"
-          accentColor="cyan"
-        />
 
         <DataFreshness refreshedAt={refreshedAt} source="DynamicContent" />
 

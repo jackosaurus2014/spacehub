@@ -1,0 +1,50 @@
+[
+  {
+    "prompt": "A futuristic radio telescope array receiving signals from deep space, frequency spectrum visualization as colorful bands of light, dark space background with indigo and cyan accents, sci-fi aesthetic",
+    "output": "public/art/hero-spectrum.png"
+  },
+  {
+    "prompt": "An asteroid mining operation in deep space, robotic drill extracting glowing minerals from a rocky asteroid, mining laser beams, resource containers floating nearby, dark space with warm amber and cyan accents",
+    "output": "public/art/hero-space-mining.png"
+  },
+  {
+    "prompt": "A modular space station in orbit around Earth, multiple connected habitat modules with solar panels, a spacecraft docking, Earth visible below, cinematic lighting, dark space with blue and white accents",
+    "output": "public/art/hero-space-stations.png"
+  },
+  {
+    "prompt": "A cislunar transportation network showing Earth, Moon, and spacecraft traveling between them along curved trajectory paths, Lagrange points marked with glowing nodes, orbital mechanics visualization, dark space indigo theme",
+    "output": "public/art/hero-cislunar.png"
+  },
+  {
+    "prompt": "Multiple rocket silhouettes side by side in a comparison lineup, from small to massive, dramatic uplighting, launch pad at night, dark sky with stars, cyan and orange accent lighting",
+    "output": "public/art/hero-launch-vehicles.png"
+  },
+  {
+    "prompt": "A deep space communications relay satellite with large antenna dish transmitting data beams across space, constellation of smaller satellites in background, dark theme with cyan signal waves",
+    "output": "public/art/hero-space-comms.png"
+  },
+  {
+    "prompt": "A holographic patent document floating in space surrounded by technology blueprints, circuit diagrams, and innovation symbols, dark background with indigo and gold accents, intellectual property theme",
+    "output": "public/art/hero-patents.png"
+  },
+  {
+    "prompt": "Space debris field in low Earth orbit with a robotic cleanup spacecraft using a net to capture debris, Earth glow below, tracked objects highlighted with warning indicators, dark space with red and cyan accents",
+    "output": "public/art/hero-debris.png"
+  },
+  {
+    "prompt": "A futuristic space supply chain visualization showing cargo routes between Earth, orbital stations, and the Moon, shipping containers and transport vehicles, logistics network diagram, dark space with green and cyan accents",
+    "output": "public/art/hero-supply-chain.png"
+  },
+  {
+    "prompt": "A technology readiness level progression visualization, from concept to flight-proven hardware, ascending staircase of increasingly complex spacecraft components, dark background with purple and cyan gradient",
+    "output": "public/art/hero-tech-readiness.png"
+  },
+  {
+    "prompt": "A venture capital and investment visualization in space theme, stock charts and funding graphs floating holographically around a central space economy hub, money and rocket symbols, dark background with green and gold accents",
+    "output": "public/art/hero-space-capital.png"
+  },
+  {
+    "prompt": "An ISRU (in-situ resource utilization) facility on the lunar surface, extraction equipment processing lunar regolith into water and oxygen, solar panels and storage tanks, Moon landscape with Earth in sky, dark theme with warm lighting",
+    "output": "public/art/hero-isru.png"
+  }
+]

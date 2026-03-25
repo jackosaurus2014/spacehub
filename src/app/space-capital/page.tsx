@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useEffect, useCallback, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
+import Image from 'next/image';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import DataFreshness from '@/components/ui/DataFreshness';
@@ -1139,13 +1140,27 @@ function SpaceCapitalInner() {
 
   return (
     <div className="min-h-screen bg-black">
+      <div className="relative overflow-hidden">
+        <div className="absolute inset-0 -z-10">
+          <Image
+            src="/art/hero-space-capital.png"
+            alt=""
+            fill
+            className="object-cover opacity-20"
+            priority
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#09090b]/80 to-[#09090b]" />
+        </div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
+          <AnimatedPageHeader
+            title="Space Capital"
+            subtitle="Connect space startups with investors -- top VCs, funding trends, and matchmaking tools"
+            icon="💸"
+            accentColor="emerald"
+          />
+        </div>
+      </div>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <AnimatedPageHeader
-          title="Space Capital"
-          subtitle="Connect space startups with investors -- top VCs, funding trends, and matchmaking tools"
-          icon="💸"
-          accentColor="emerald"
-        />
         <DataFreshness refreshedAt={refreshedAt} source="DynamicContent" />
 
         {error && (

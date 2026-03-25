@@ -3,6 +3,7 @@
 import { useState, Suspense } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import FAQSchema from '@/components/seo/FAQSchema';
@@ -1727,17 +1728,29 @@ function SpaceCommsContent() {
   };
 
   return (
-    <main className="min-h-screen py-8 px-4 sm:px-6">
-      <div className="max-w-7xl mx-auto">
-        <FAQSchema items={FAQ_ITEMS} />
-
-        {/* Header */}
-        <AnimatedPageHeader
-          title="Space Communications"
-          subtitle="RF, optical/laser, quantum, and DTN technologies. 15+ SATCOM provider profiles. DSN architecture. Emerging trends in direct-to-device and deep space relay networks."
-          breadcrumb="Space Operations"
-          accentColor="cyan"
-        />
+    <main className="min-h-screen">
+      <FAQSchema items={FAQ_ITEMS} />
+      <div className="relative overflow-hidden">
+        <div className="absolute inset-0 -z-10">
+          <Image
+            src="/art/hero-space-comms.png"
+            alt=""
+            fill
+            className="object-cover opacity-20"
+            priority
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#09090b]/80 to-[#09090b]" />
+        </div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-6">
+          <AnimatedPageHeader
+            title="Space Communications"
+            subtitle="RF, optical/laser, quantum, and DTN technologies. 15+ SATCOM provider profiles. DSN architecture. Emerging trends in direct-to-device and deep space relay networks."
+            breadcrumb="Space Operations"
+            accentColor="cyan"
+          />
+        </div>
+      </div>
+      <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6">
 
         {/* Hero Stats Row */}
         <ScrollReveal>

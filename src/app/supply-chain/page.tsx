@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo, useCallback, Suspense } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import dynamic from 'next/dynamic';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
@@ -1582,17 +1583,31 @@ function MaterialCard({ material }: { material: CriticalMaterial }) {
 export default function SupplyChainPage() {
   return (
     <div className="min-h-screen bg-space-900">
+      <div className="relative overflow-hidden">
+        <div className="absolute inset-0 -z-10">
+          <Image
+            src="/art/hero-supply-chain.png"
+            alt=""
+            fill
+            className="object-cover opacity-20"
+            priority
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#09090b]/80 to-[#09090b]" />
+        </div>
+        <div className="container mx-auto px-4 pt-6">
+          <AnimatedPageHeader
+            title="Global Supply Chain"
+            subtitle="Aerospace supply chain tracking with geopolitical risk analysis"
+            icon="\uD83D\uDD17"
+            accentColor="cyan"
+          >
+            <Link href="/" className="btn-secondary text-sm py-2 px-4">
+              &larr; Back to Dashboard
+            </Link>
+          </AnimatedPageHeader>
+        </div>
+      </div>
       <div className="container mx-auto px-4">
-        <AnimatedPageHeader
-          title="Global Supply Chain"
-          subtitle="Aerospace supply chain tracking with geopolitical risk analysis"
-          icon="\uD83D\uDD17"
-          accentColor="cyan"
-        >
-          <Link href="/" className="btn-secondary text-sm py-2 px-4">
-            &larr; Back to Dashboard
-          </Link>
-        </AnimatedPageHeader>
 
         <PremiumGate requiredTier="pro">
           <Suspense

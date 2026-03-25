@@ -9,6 +9,7 @@ import SubscribeCTA from '@/components/marketing/SubscribeCTA';
 import DataFreshness from '@/components/ui/DataFreshness';
 import ExportButton from '@/components/ui/ExportButton';
 import Link from 'next/link';
+import Image from 'next/image';
 import { clientLogger } from '@/lib/client-logger';
 import MobileValueProp from '@/components/marketing/MobileValueProp';
 import { getCompanyProfileUrl } from '@/lib/company-links';
@@ -1129,13 +1130,27 @@ export default function LaunchVehiclesPage() {
 
   return (
     <div className="min-h-screen">
+      <div className="relative overflow-hidden">
+        <div className="absolute inset-0 -z-10">
+          <Image
+            src="/art/hero-launch-vehicles.png"
+            alt=""
+            fill
+            className="object-cover opacity-20"
+            priority
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#09090b]/80 to-[#09090b]" />
+        </div>
+        <div className="container mx-auto px-4 pt-6">
+          <AnimatedPageHeader
+            title="Launch Vehicle Comparison"
+            subtitle="Comprehensive database of active, in-development, and retired orbital launch vehicles worldwide with real specifications, reliability data, and cost analysis"
+            icon="🚀"
+            accentColor="red"
+          />
+        </div>
+      </div>
       <div className="container mx-auto px-4">
-        <AnimatedPageHeader
-          title="Launch Vehicle Comparison"
-          subtitle="Comprehensive database of active, in-development, and retired orbital launch vehicles worldwide with real specifications, reliability data, and cost analysis"
-          icon="🚀"
-          accentColor="red"
-        />
 
         <DataFreshness refreshedAt={refreshedAt} source="DynamicContent" className="mb-4" />
 

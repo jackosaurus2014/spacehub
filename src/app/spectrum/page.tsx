@@ -3,6 +3,7 @@
 import { useState, useEffect, Suspense, useCallback } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
@@ -593,17 +594,31 @@ function SpectrumContent() {
 
   return (
     <div className="min-h-screen">
+      <div className="relative overflow-hidden">
+        <div className="absolute inset-0 -z-10">
+          <Image
+            src="/art/hero-spectrum.png"
+            alt=""
+            fill
+            className="object-cover opacity-20"
+            priority
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#09090b]/80 to-[#09090b]" />
+        </div>
+        <div className="container mx-auto px-4 pt-6">
+          <AnimatedPageHeader
+            title="Spectrum Management"
+            subtitle="Satellite frequency allocations, filings, auctions, and spectrum coordination"
+            icon="📶"
+            accentColor="purple"
+          >
+            <Link href="/" className="btn-secondary text-sm py-2 px-4">
+              Back to Dashboard
+            </Link>
+          </AnimatedPageHeader>
+        </div>
+      </div>
       <div className="container mx-auto px-4">
-        <AnimatedPageHeader
-          title="Spectrum Management"
-          subtitle="Satellite frequency allocations, filings, auctions, and spectrum coordination"
-          icon="📶"
-          accentColor="purple"
-        >
-          <Link href="/" className="btn-secondary text-sm py-2 px-4">
-            Back to Dashboard
-          </Link>
-        </AnimatedPageHeader>
 
         {error && (
           <div className="card p-5 border border-red-500/20 bg-red-500/5 text-center mb-6">

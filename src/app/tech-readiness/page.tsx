@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useCallback } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import RelatedModules from '@/components/ui/RelatedModules';
@@ -972,15 +973,27 @@ export default function TechReadinessPage() {
 
   return (
     <div className="min-h-screen bg-black text-slate-100">
+      <div className="relative overflow-hidden">
+        <div className="absolute inset-0 -z-10">
+          <Image
+            src="/art/hero-tech-readiness.png"
+            alt=""
+            fill
+            className="object-cover opacity-20"
+            priority
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#09090b]/80 to-[#09090b]" />
+        </div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
+          <AnimatedPageHeader
+            title="Technology Readiness Assessment"
+            subtitle="Comprehensive TRL assessment, tracking, and reference tool for emerging space technologies"
+            icon={<span className="text-4xl">&#x1F52C;</span>}
+            accentColor="purple"
+          />
+        </div>
+      </div>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-
-        {/* Header */}
-        <AnimatedPageHeader
-          title="Technology Readiness Assessment"
-          subtitle="Comprehensive TRL assessment, tracking, and reference tool for emerging space technologies"
-          icon={<span className="text-4xl">&#x1F52C;</span>}
-          accentColor="purple"
-        />
 
         {/* Tab Navigation */}
         <ScrollReveal delay={0.05}>

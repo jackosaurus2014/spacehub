@@ -3,6 +3,7 @@
 import { useState, useCallback, Suspense } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import RelatedModules from '@/components/ui/RelatedModules';
@@ -1810,13 +1811,27 @@ function ISRUContent() {
 
   return (
     <div className="min-h-screen">
+      <div className="relative overflow-hidden">
+        <div className="absolute inset-0 -z-10">
+          <Image
+            src="/art/hero-isru.png"
+            alt=""
+            fill
+            className="object-cover opacity-20"
+            priority
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#09090b]/80 to-[#09090b]" />
+        </div>
+        <div className="container mx-auto px-4 pt-6">
+          <AnimatedPageHeader
+            title="In-Situ Resource Utilization (ISRU)"
+            subtitle="Living off the land in space -- technologies, locations, companies, and economics of harvesting resources beyond Earth"
+            icon={<span>&#9874;</span>}
+            accentColor="amber"
+          />
+        </div>
+      </div>
       <div className="container mx-auto px-4">
-        <AnimatedPageHeader
-          title="In-Situ Resource Utilization (ISRU)"
-          subtitle="Living off the land in space -- technologies, locations, companies, and economics of harvesting resources beyond Earth"
-          icon={<span>&#9874;</span>}
-          accentColor="amber"
-        />
 
         {/* Main Tab Navigation */}
         <div className="flex gap-1 mb-8 p-1 bg-white/[0.04] rounded-xl w-full sm:w-fit overflow-x-auto scrollbar-thin">

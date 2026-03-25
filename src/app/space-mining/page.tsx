@@ -3,6 +3,7 @@
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import {
   MiningBody,
   MiningResource,
@@ -2047,13 +2048,27 @@ function SpaceMiningContent() {
 export default function SpaceMiningPage() {
   return (
     <div className="min-h-screen bg-black">
+      <div className="relative overflow-hidden">
+        <div className="absolute inset-0 -z-10">
+          <Image
+            src="/art/hero-space-mining.png"
+            alt=""
+            fill
+            className="object-cover opacity-20"
+            priority
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#09090b]/80 to-[#09090b]" />
+        </div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
+          <AnimatedPageHeader
+            title="Space Mining Intelligence"
+            subtitle="Comprehensive database of asteroids, moons, and planetary bodies with resource valuations, accessibility metrics, and mining feasibility analysis"
+            icon="⛏️"
+            accentColor="amber"
+          />
+        </div>
+      </div>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <AnimatedPageHeader
-          title="Space Mining Intelligence"
-          subtitle="Comprehensive database of asteroids, moons, and planetary bodies with resource valuations, accessibility metrics, and mining feasibility analysis"
-          icon="⛏️"
-          accentColor="amber"
-        />
 
         <Suspense fallback={
           <div className="flex items-center justify-center py-12">
