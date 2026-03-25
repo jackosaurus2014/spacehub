@@ -95,7 +95,7 @@ export default function AllianceHubPanel({ state }: AllianceHubPanelProps) {
     return (
       <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-6 text-center">
         <div className="inline-block w-5 h-5 border-2 border-purple-400 border-t-transparent rounded-full animate-spin mb-2" />
-        <p className="text-slate-400 text-xs">Loading alliance...</p>
+        <p className="text-slate-400 text-xs">Loading corporation...</p>
       </div>
     );
   }
@@ -112,7 +112,7 @@ export default function AllianceHubPanel({ state }: AllianceHubPanelProps) {
 
   return (
     <div className="space-y-4">
-      {/* Alliance Header */}
+      {/* Corporation Header */}
       {allianceInfo && (
         <div className="rounded-xl border border-purple-500/20 bg-gradient-to-r from-purple-500/10 to-cyan-500/5 p-4">
           <div className="flex items-center justify-between mb-2">
@@ -148,7 +148,7 @@ export default function AllianceHubPanel({ state }: AllianceHubPanelProps) {
           {/* XP Progress Bar */}
           <div>
             <div className="flex items-center justify-between mb-0.5">
-              <span className="text-slate-500 text-[9px]">Alliance XP</span>
+              <span className="text-slate-500 text-[9px]">Corporation XP</span>
               <span className="text-purple-300 text-[9px] font-mono">
                 {allianceInfo.xp.toLocaleString()} / {allianceInfo.xpToNextLevel.toLocaleString()}
               </span>

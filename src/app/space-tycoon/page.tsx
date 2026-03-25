@@ -740,27 +740,28 @@ function SolarSystemMap({ state, onUnlock }: { state: GameState; onUnlock: (locI
 function ServicesPanel({ state }: { state: GameState }) {
   let totalRevenue = 0, totalCost = 0;
 
-  // Group services by definitionId + locationId for cleaner display
-  const serviceGroups = new Map<string, { def: typeof SERVICE_MAP extends Map<string, infer V> ? V : never; loc: string; count: number; totalRev: number; totalCostGroup: number }>();
+  // Group services by definitionId (consolidate same service type into one line)
+  const serviceGroups = new Map<string, { def: typeof SERVICE_MAP extends Map<string, infer V> ? V : never; locations: Set<string>; count: number; totalRev: number; totalCostGroup: number }>();
   for (const svc of state.activeServices) {
     const def = SERVICE_MAP.get(svc.definitionId);
     if (!def) continue;
     const rev = Math.round(def.revenuePerMonth * svc.revenueMultiplier);
     totalRevenue += rev;
     totalCost += def.operatingCostPerMonth;
-    const key = `${svc.definitionId}:${svc.locationId}`;
+    const key = svc.definitionId;
     const existing = serviceGroups.get(key);
     if (existing) {
       existing.count++;
       existing.totalRev += rev;
       existing.totalCostGroup += def.operatingCostPerMonth;
+      existing.locations.add(svc.locationId);
     } else {
-      serviceGroups.set(key, { def, loc: svc.locationId, count: 1, totalRev: rev, totalCostGroup: def.operatingCostPerMonth });
+      serviceGroups.set(key, { def, locations: new Set([svc.locationId]), count: 1, totalRev: rev, totalCostGroup: def.operatingCostPerMonth });
     }
   }
 
   const rows = Array.from(serviceGroups.entries()).map(([key, group]) => {
-    const loc = LOCATION_MAP.get(group.loc);
+    const locationNames = Array.from(group.locations).map(id => LOCATION_MAP.get(id)?.name || id);
     return (
       <div key={key} className="flex items-center justify-between py-2 border-b border-white/[0.04] last:border-0">
         <div>
@@ -768,7 +769,7 @@ function ServicesPanel({ state }: { state: GameState }) {
             {group.def.name}
             {group.count > 1 && <span className="text-cyan-400 ml-1.5 text-xs font-mono">x{group.count}</span>}
           </p>
-          <p className="text-slate-500 text-xs">{loc?.name || group.loc}</p>
+          <p className="text-slate-500 text-xs truncate max-w-[200px]">{locationNames.join(', ')}</p>
         </div>
         <div className="text-right">
           <p className="text-green-400 text-xs font-mono">+{formatMoney(group.totalRev)}/mo</p>
@@ -1342,7 +1343,7 @@ export default function SpaceTycoonPage() {
     { id: 'crafting', label: 'Craft', icon: '🔨' },
     { id: 'market', label: 'Market', icon: '📈' },
     { id: 'workforce', label: 'Crew', icon: '👷' },
-    { id: 'alliance', label: 'Alliance', icon: '🤝' },
+    { id: 'alliance', label: 'Corporation', icon: '🏢' },
     { id: 'bounties', label: 'Bounties', icon: '📦' },
     { id: 'rivals', label: 'Rivals', icon: '⚔️' },
     { id: 'leagues', label: 'Leagues', icon: '🏅' },
@@ -1489,7 +1490,7 @@ export default function SpaceTycoonPage() {
 
       {/* Panel Content — key={tab} triggers reveal animation on tab switch */}
       <div key={tab} className="flex-1 overflow-y-auto p-2 sm:p-4 max-w-5xl mx-auto w-full animate-reveal-up game-scroll">
-        {tab === 'dashboard' && <DashboardPanel state={state} />}
+        {tab === 'dashboard' && <DashboardPanel state={state} onUpdateCompanyName={(name) => setState(prev => prev ? { ...prev, companyName: name } : prev)} />}
         {tab === 'build' && <BuildPanel state={state} onBuild={handleBuild} onSellBuilding={handleSellBuilding} />}
         {tab === 'research' && <ResearchPanel state={state} onStartResearch={handleStartResearch} />}
         {tab === 'map' && <SolarSystemCanvas state={state} onUnlock={handleUnlockLocation} />}

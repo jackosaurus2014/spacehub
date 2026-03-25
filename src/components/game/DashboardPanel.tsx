@@ -98,7 +98,9 @@ function MiniSparkline({ positive }: { positive: boolean }) {
 }
 
 /** Empire Overview — visual summary of the player's space empire */
-function EmpireOverview({ state }: { state: GameState }) {
+function EmpireOverview({ state, onUpdateCompanyName }: { state: GameState; onUpdateCompanyName?: (name: string) => void }) {
+  const [editingName, setEditingName] = useState(false);
+  const [nameInput, setNameInput] = useState(state.companyName || '');
   const completedBuildings = state.buildings.filter(b => b.isComplete).length;
   const locations = state.unlockedLocations.length;
   const research = state.completedResearch.length;
@@ -136,9 +138,28 @@ function EmpireOverview({ state }: { state: GameState }) {
       <div className="flex items-center justify-between px-4 py-2.5" style={{ background: 'var(--bg-void)', borderBottom: '1px solid var(--border-subtle)' }}>
         <div className="flex items-center gap-2">
           <span className="text-sm font-bold" style={{ color: tierColors[tier] || '#71717a' }}>{tier}</span>
-          <span className="text-[9px] uppercase tracking-wider font-mono" style={{ color: 'var(--text-muted)' }}>
-            {state.companyName || 'Your Company'}
-          </span>
+          {editingName && onUpdateCompanyName ? (
+            <form className="flex items-center gap-1" onSubmit={(e) => { e.preventDefault(); const trimmed = nameInput.trim(); if (trimmed) { onUpdateCompanyName(trimmed); } setEditingName(false); }}>
+              <input
+                type="text"
+                value={nameInput}
+                onChange={(e) => setNameInput(e.target.value)}
+                maxLength={30}
+                autoFocus
+                onBlur={() => { const trimmed = nameInput.trim(); if (trimmed && onUpdateCompanyName) { onUpdateCompanyName(trimmed); } setEditingName(false); }}
+                className="h-5 px-1.5 text-[9px] uppercase tracking-wider font-mono bg-white/[0.08] border border-cyan-500/30 rounded text-white focus:outline-none focus:ring-1 focus:ring-cyan-500/30 w-32"
+              />
+            </form>
+          ) : (
+            <button
+              onClick={() => { if (onUpdateCompanyName) { setNameInput(state.companyName || ''); setEditingName(true); } }}
+              className="text-[9px] uppercase tracking-wider font-mono hover:text-cyan-400 transition-colors cursor-pointer"
+              style={{ color: 'var(--text-muted)' }}
+              title="Click to rename"
+            >
+              {state.companyName || 'Your Company'} ✎
+            </button>
+          )}
         </div>
         <span className="text-[9px] font-mono" style={{ color: 'var(--text-muted)' }}>
           {formatGameDate(state.gameDate)}
@@ -180,7 +201,7 @@ function EmpireOverview({ state }: { state: GameState }) {
   );
 }
 
-export default function DashboardPanel({ state }: { state: GameState }) {
+export default function DashboardPanel({ state, onUpdateCompanyName }: { state: GameState; onUpdateCompanyName?: (name: string) => void }) {
   const completedBuildings = state.buildings.filter(b => b.isComplete);
   const inProgress = state.buildings.filter(b => !b.isComplete);
 
@@ -229,7 +250,7 @@ export default function DashboardPanel({ state }: { state: GameState }) {
   return (
     <div className="space-y-4">
       {/* Empire Overview — visual summary at the top */}
-      <EmpireOverview state={state} />
+      <EmpireOverview state={state} onUpdateCompanyName={onUpdateCompanyName} />
 
       {/* Hero Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">

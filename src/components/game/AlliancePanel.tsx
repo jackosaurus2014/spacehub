@@ -104,7 +104,7 @@ export default function AlliancePanel({ state }: AlliancePanelProps) {
     const trimmedTag = createTag.trim().toUpperCase();
 
     if (!trimmedName || trimmedName.length < 3) {
-      setCreateError('Alliance name must be at least 3 characters');
+      setCreateError('Corporation name must be at least 3 characters');
       return;
     }
     if (trimmedTag.length < 3 || trimmedTag.length > 5) {
@@ -163,7 +163,7 @@ export default function AlliancePanel({ state }: AlliancePanelProps) {
 
   const handleLeave = useCallback(async () => {
     if (actionLoading) return;
-    if (!confirm('Are you sure you want to leave this alliance?')) return;
+    if (!confirm('Are you sure you want to leave this corporation?')) return;
     setActionLoading(true);
     try {
       const res = await fetch('/api/space-tycoon/alliances', {
@@ -193,7 +193,7 @@ export default function AlliancePanel({ state }: AlliancePanelProps) {
       <div className="space-y-4">
         <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-6 text-center">
           <div className="inline-block w-5 h-5 border-2 border-cyan-400 border-t-transparent rounded-full animate-spin mb-2" />
-          <p className="text-slate-400 text-xs">Loading alliances...</p>
+          <p className="text-slate-400 text-xs">Loading corporations...</p>
         </div>
       </div>
     );
@@ -220,7 +220,7 @@ export default function AlliancePanel({ state }: AlliancePanelProps) {
   if (myAlliance) {
     return (
       <div className="space-y-4">
-        {/* Alliance Header */}
+        {/* Corporation Header */}
         <div className="rounded-xl border border-purple-500/20 bg-purple-500/5 p-4">
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
@@ -247,7 +247,7 @@ export default function AlliancePanel({ state }: AlliancePanelProps) {
         {myAlliance.bonuses.length > 0 && (
           <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
             <h3 className="text-white text-xs font-bold uppercase tracking-wider mb-3 flex items-center gap-1.5">
-              <span>⚡</span> Alliance Bonuses
+              <span>⚡</span> Corporation Bonuses
             </h3>
             <div className="grid grid-cols-2 gap-2">
               {myAlliance.bonuses.map((bonus) => (
@@ -332,14 +332,14 @@ export default function AlliancePanel({ state }: AlliancePanelProps) {
           </div>
         )}
 
-        {/* Leave Alliance */}
+        {/* Leave Corporation */}
         <div className="flex justify-center">
           <button
             onClick={handleLeave}
             disabled={actionLoading}
             className="px-4 py-2 text-xs font-medium text-red-400 hover:text-red-300 bg-red-500/5 hover:bg-red-500/10 border border-red-500/20 hover:border-red-500/30 rounded-lg transition-colors disabled:opacity-50"
           >
-            {actionLoading ? 'Leaving...' : 'Leave Alliance'}
+            {actionLoading ? 'Leaving...' : 'Leave Corporation'}
           </button>
         </div>
 
@@ -357,18 +357,18 @@ export default function AlliancePanel({ state }: AlliancePanelProps) {
 
   return (
     <div className="space-y-4">
-      {/* Not in Alliance Banner */}
+      {/* Not in Corporation Banner */}
       <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 text-center">
         <span className="text-2xl block mb-2">🛡️</span>
-        <h3 className="text-white text-sm font-semibold mb-1">No Alliance</h3>
+        <h3 className="text-white text-sm font-semibold mb-1">No Corporation</h3>
         <p className="text-slate-400 text-xs mb-3">
-          Join or create an alliance to earn shared bonuses and access shared facilities.
+          Join or create a corporation to earn shared bonuses and access shared facilities.
         </p>
         <button
           onClick={() => setShowCreateForm(!showCreateForm)}
           className="px-4 py-2 text-xs font-semibold text-white bg-purple-600 hover:bg-purple-500 rounded-lg transition-colors"
         >
-          {showCreateForm ? 'Cancel' : 'Create Alliance'}
+          {showCreateForm ? 'Cancel' : 'Create Corporation'}
         </button>
       </div>
 
@@ -376,12 +376,12 @@ export default function AlliancePanel({ state }: AlliancePanelProps) {
       {showCreateForm && (
         <div className="rounded-xl border border-purple-500/20 bg-purple-500/5 p-4">
           <h3 className="text-white text-xs font-bold uppercase tracking-wider mb-3 flex items-center gap-1.5">
-            <span>✨</span> Create New Alliance
+            <span>✨</span> Create New Corporation
           </h3>
           <div className="space-y-3">
             <div>
               <label className="text-slate-400 text-[10px] uppercase tracking-wider font-medium block mb-1">
-                Alliance Name
+                Corporation Name
               </label>
               <input
                 type="text"
@@ -413,7 +413,7 @@ export default function AlliancePanel({ state }: AlliancePanelProps) {
               disabled={actionLoading || !createName.trim() || createTag.trim().length < 3}
               className="w-full py-2 text-xs font-semibold text-white bg-purple-600 hover:bg-purple-500 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition-colors"
             >
-              {actionLoading ? 'Creating...' : `Create [${createTag.toUpperCase() || '???'}] ${createName.trim() || 'Alliance'}`}
+              {actionLoading ? 'Creating...' : `Create [${createTag.toUpperCase() || '???'}] ${createName.trim() || 'Corporation'}`}
             </button>
           </div>
         </div>
@@ -422,11 +422,11 @@ export default function AlliancePanel({ state }: AlliancePanelProps) {
       {/* Available Alliances */}
       <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
         <h3 className="text-white text-xs font-bold uppercase tracking-wider mb-3 flex items-center gap-1.5">
-          <span>📋</span> Available Alliances
+          <span>📋</span> Available Corporations
         </h3>
         {listings.length === 0 ? (
           <p className="text-slate-500 text-xs text-center py-4">
-            No alliances available yet. Be the first to create one!
+            No corporations available yet. Be the first to create one!
           </p>
         ) : (
           <div className="space-y-2">
@@ -473,8 +473,8 @@ export default function AlliancePanel({ state }: AlliancePanelProps) {
 
       {/* Info footer */}
       <p className="text-slate-600 text-[10px] text-center">
-        Alliance members share bonuses to revenue, mining output, and research speed.
-        Facilities built by members benefit the entire alliance.
+        Corporation members share bonuses to revenue, mining output, and research speed.
+        Facilities built by members benefit the entire corporation.
       </p>
     </div>
   );
