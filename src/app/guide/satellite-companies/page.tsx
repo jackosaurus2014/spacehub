@@ -21,7 +21,7 @@ export const metadata: Metadata = {
 export const revalidate = 86400;
 
 const faqs = [
-  { question: 'How many satellites are in orbit?', answer: 'As of 2026, there are over 10,000 active satellites in orbit, with SpaceX\'s Starlink constellation accounting for more than 6,000. The total number of tracked objects (including debris) exceeds 36,000.' },
+  { question: 'How many satellites are in orbit?', answer: 'As of 2026, there are over 13,000 active satellites in orbit, with SpaceX\'s Starlink constellation accounting for more than 6,500. The total number of tracked objects (including debris) exceeds 48,000.' },
   { question: 'What companies make satellites?', answer: 'Major satellite manufacturers include Airbus Defence and Space, Lockheed Martin, Boeing, Maxar Technologies, Thales Alenia Space, Northrop Grumman, and Ball Aerospace. For small satellites, companies like York Space Systems, Rocket Lab (Photon), and Terran Orbital lead the market.' },
   { question: 'What is the satellite industry worth?', answer: 'The global satellite industry generates approximately $280 billion annually, including satellite services ($130B), ground equipment ($150B), satellite manufacturing ($15B), and launch services ($8B). The fastest-growing segment is LEO broadband (Starlink, Kuiper).' },
   { question: 'What do earth observation satellites do?', answer: 'Earth observation (EO) satellites capture images and data about Earth\'s surface, atmosphere, and oceans. Applications include agriculture (crop monitoring), insurance (damage assessment), defense (intelligence), climate monitoring, urban planning, and disaster response.' },

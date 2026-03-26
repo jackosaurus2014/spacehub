@@ -12,7 +12,7 @@ export const revalidate = 3600; // ISR: revalidate every hour
 export const metadata: Metadata = {
   title: 'How Satellite Tracking Works: Technology, Methods & Tools | SpaceNexus Guide',
   description:
-    'Learn how satellite tracking works: radar, optical, TLE data, orbital mechanics, and real-time tools used to monitor 10,000+ active satellites.',
+    'Learn how satellite tracking works: radar, optical, TLE data, orbital mechanics, and real-time tools used to monitor 13,000+ active satellites.',
   keywords: [
     'satellite tracking',
     'how satellite tracking works',
@@ -28,7 +28,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'How Satellite Tracking Works: Technology, Methods & Tools',
     description:
-      'Learn how satellite tracking works: radar, optical sensors, TLE data, and the tools used to monitor 10,000+ active satellites in orbit.',
+      'Learn how satellite tracking works: radar, optical sensors, TLE data, and the tools used to monitor 13,000+ active satellites in orbit.',
     type: 'article',
     publishedTime: '2026-02-08T00:00:00Z',
     authors: ['SpaceNexus'],
@@ -63,7 +63,7 @@ const TOC = [
 const FAQ_ITEMS = [
   {
     q: 'How many satellites are currently in orbit?',
-    a: 'As of early 2026, there are over 10,000 active satellites in Earth orbit, according to data from the Union of Concerned Scientists (UCS) satellite database and the U.S. Space Force 18th Space Defense Squadron catalog. The total number of tracked objects (including debris and inactive satellites) exceeds 48,000.',
+    a: 'As of early 2026, there are over 13,000 active satellites in Earth orbit, according to data from the Union of Concerned Scientists (UCS) satellite database and the U.S. Space Force 18th Space Defense Squadron catalog. The total number of tracked objects (including debris and inactive satellites) exceeds 48,000.',
   },
   {
     q: 'What is a TLE (Two-Line Element set)?',
@@ -223,7 +223,7 @@ export default function HowSatelliteTrackingWorksPage() {
                 </h2>
                 <div className="space-y-4 text-star-200 leading-relaxed text-lg">
                   <p>
-                    More than 10,000 active satellites currently orbit the Earth, and the number is
+                    More than 13,000 active satellites currently orbit the Earth, and the number is
                     growing rapidly. SpaceX alone has launched over 6,000 Starlink satellites, and
                     with Amazon&apos;s Project Kuiper, China&apos;s Guowang constellation, and dozens
                     of other operators deploying spacecraft, the total population of active satellites

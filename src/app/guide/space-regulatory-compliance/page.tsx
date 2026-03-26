@@ -308,7 +308,7 @@ export default function SpaceRegulatoryCompliancePage() {
               <h3 className="text-xl font-bold text-white mb-3 mt-6">Penalties for ITAR Violations</h3>
               <p className="text-slate-300 leading-relaxed">
                 ITAR violations carry severe penalties. Criminal violations can result in fines up to $1 million
-                and imprisonment up to 20 years per violation. Civil penalties can reach $500,000 per violation.
+                and imprisonment up to 20 years per violation. Civil penalties can exceed $1.2 million per violation (adjusted annually for inflation).
                 In recent years, several aerospace companies have paid multi-million-dollar settlements for ITAR
                 violations, including inadvertent disclosures of technical data. Beyond fines, violations can
                 result in debarment from government contracts, which can be an existential threat for defense-

@@ -22,13 +22,13 @@ const COMPARISON_DATA = [
   { metric: 'Founder(s)', a: 'Chris Kemp, Adam London', b: 'Richard Branson (Virgin Group spin-off)' },
   { metric: 'Launch Vehicle', a: 'Rocket 3 series (retired); Rocket 4 (development halted)', b: 'LauncherOne (air-launched from 747 "Cosmic Girl")' },
   { metric: 'Launch Method', a: 'Vertical ground launch', b: 'Air launch from modified Boeing 747' },
-  { metric: 'LEO Payload Capacity', a: 'Rocket 3.3: ~150 kg to SSO', b: 'LauncherOne: ~300 kg to LEO' },
-  { metric: 'Orbital Successes', a: '2 successful orbital missions (Rocket 3.3)', b: '4 successful orbital missions (LauncherOne)' },
-  { metric: 'Notable Failures', a: 'Multiple Rocket 3 failures; 2022 mission lost TROPICS sats (engine nozzle failure)', b: 'Jan 2023 mission failure (UK launch); filed for bankruptcy Apr 2023' },
-  { metric: 'Publicly Traded', a: 'Yes — ASTR (Nasdaq, via SPAC 2021); delisted 2023', b: 'No (private)' },
+  { metric: 'LEO Payload Capacity', a: 'Rocket 3.3: ~150 kg to SSO', b: 'LauncherOne: ~500 kg to LEO (~300 kg to SSO)' },
+  { metric: 'Orbital Successes', a: '1 successful orbital mission (LV0007, Nov 2021)', b: '4 successful orbital missions out of 6 total (LauncherOne)' },
+  { metric: 'Notable Failures', a: 'Multiple Rocket 3 failures; June 2022 mission lost NASA TROPICS sats (upper stage anomaly)', b: 'Jan 2023 mission failure (UK launch); filed for bankruptcy Apr 2023' },
+  { metric: 'Publicly Traded', a: 'Yes — ASTR (Nasdaq, via SPAC 2021); delisted 2023', b: 'Was public — VORB (Nasdaq, via SPAC Dec 2021); delisted after bankruptcy 2023' },
   { metric: 'Operational Status (2026)', a: 'Launch operations ceased; pivoted to spacecraft propulsion (Astra Spacecraft Engine)', b: 'Ceased operations Apr 2023 (bankrupt); assets sold' },
   { metric: 'Total Funding', a: '~$500M+', b: '~$1B+ (including Virgin Group support)' },
-  { metric: 'Key Customers', a: 'NASA (TROPICS), government smallsats', b: 'NASA (CAPSTONE, TROPICS backup), OneWeb, SatixFy' },
+  { metric: 'Key Customers', a: 'NASA (TROPICS), government smallsats', b: 'NASA (STP-27VPA), DoD, OneWeb, SatixFy' },
   { metric: 'Bankruptcy / Shutdown', a: 'No formal bankruptcy; operational pivot', b: 'Chapter 11 filed April 2023; assets auctioned' },
   { metric: 'Post-Shutdown Legacy', a: 'Spacecraft propulsion products still sold', b: 'LauncherOne technology / assets acquired by various parties' },
 ];
@@ -88,7 +88,7 @@ export default function Page() {
         Both Astra and Virgin Orbit demonstrated that reaching orbit is only the first milestone — building a reliable, repeatable, and commercially viable launch service is far harder. Astra pursued an aggressive &quot;fail fast&quot; iteration strategy, going public via SPAC in 2021 at a valuation of around $2.1 billion before operational failures and a high-profile mission loss (NASA&apos;s TROPICS constellation satellites in 2022) eroded investor confidence. Astra halted launch operations and pivoted to selling spacecraft propulsion components. Virgin Orbit filed for Chapter 11 bankruptcy in April 2023, just months after a failed launch attempt from Cornwall, UK — its 747 carrier aircraft and LauncherOne assets were subsequently auctioned.
       </p>
       <p style={{ color: 'var(--text-secondary)' }} className="text-sm leading-relaxed mb-8">
-        The two companies illustrate different failure modes. Astra&apos;s challenge was reliability — its Rocket 3 vehicles suffered repeated failures before achieving orbit, and its Rocket 4 development was abandoned before first flight. Virgin Orbit achieved a more consistent 4-for-5 orbital success rate but burned through capital without securing sufficient launch cadence to cover its fixed costs, including a dedicated 747 aircraft and large Long Beach facility. Both cases underscore the extreme difficulty of competing against incumbent rideshare options (Falcon 9 rideshare, PSLV) on price and reliability.
+        The two companies illustrate different failure modes. Astra&apos;s challenge was reliability — its Rocket 3 vehicles suffered repeated failures before achieving orbit, and its Rocket 4 development was abandoned before first flight. Virgin Orbit achieved a more consistent 4-for-6 orbital success rate but burned through capital without securing sufficient launch cadence to cover its fixed costs, including a dedicated 747 aircraft and large Long Beach facility. Both cases underscore the extreme difficulty of competing against incumbent rideshare options (Falcon 9 rideshare, PSLV) on price and reliability.
       </p>
 
       {/* CTA */}

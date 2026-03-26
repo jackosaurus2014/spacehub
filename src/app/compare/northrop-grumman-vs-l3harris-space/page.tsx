@@ -21,7 +21,7 @@ const COMPARISON_DATA = [
   { metric: 'Space / Relevant Division', a: 'Space Systems (within Northrop Grumman)', b: 'Space & Airborne Systems (SAS)' },
   { metric: 'Total Company Revenue (2024 est.)', a: '~$41B', b: '~$21B' },
   { metric: 'Space-Related Revenue (approx.)', a: '~$7–8B (Space Systems segment)', b: '~$5–6B (SAS segment)' },
-  { metric: 'Key Satellite Programs', a: 'James Webb Space Telescope (primary); NROL missions; AEHF', b: 'Space Fence radar; missile warning payloads; EO/IR sensors' },
+  { metric: 'Key Satellite Programs', a: 'James Webb Space Telescope (primary); NROL missions; SBIRS GEO payloads', b: 'Space Fence radar; missile warning payloads; EO/IR sensors' },
   { metric: 'Cislunar / Exploration', a: 'Gateway HALO module; Antares/Cygnus (ISS resupply)', b: 'Limited — focus on defense systems' },
   { metric: 'Launch Vehicle', a: 'OmegA (cancelled); supported Minotaur (NGIS heritage)', b: 'No proprietary launch vehicle' },
   { metric: 'ISS Cargo', a: 'Cygnus cargo spacecraft (CRS-2 contract)', b: 'N/A' },

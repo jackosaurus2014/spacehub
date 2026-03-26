@@ -4,7 +4,7 @@ import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 const COMPARISON_DATA = [
-  { metric: 'Founded', a: '2017', b: '2019' },
+  { metric: 'Founded', a: '2017', b: '2017 (as Ubiquitilink; renamed Lynk 2020)' },
   { metric: 'Founder / CEO', a: 'Abel Avellan', b: 'Charles Miller' },
   { metric: 'Headquarters', a: 'Midland, TX', b: 'Falls Church, VA' },
   { metric: 'Publicly Traded', a: 'Yes (ASTS, Nasdaq)', b: 'No (private)' },
@@ -20,7 +20,7 @@ const COMPARISON_DATA = [
   { metric: 'Other MNO Partners', a: 'Vodafone (global), Rakuten (Japan), Orange (France), Bell Canada, others — 50+ agreements', b: 'Aliv (Bahamas), Telecel Centrafrique, others — focus on developing markets' },
   { metric: 'Service Type', a: 'Voice + broadband data (5G speeds targeted)', b: 'Text messaging, basic data (2G/LTE equivalent)' },
   { metric: 'Data Throughput Target', a: 'Up to 10+ Mbps per user (broadband)', b: 'Text and low-bandwidth data' },
-  { metric: 'First D2D Connection', a: 'September 2023 (BlueWalker 3 test satellite)', b: 'February 2022 (first satellite-to-phone text)' },
+  { metric: 'First D2D Connection', a: 'April 2023 (BlueWalker 3 test satellite, launched Sep 2022)', b: '2020 (first satellite-to-phone text via Ubiquitilink/Lynk test satellite)' },
   { metric: 'FCC Approval', a: 'FCC license granted November 2024 for commercial service', b: 'FCC experimental licenses; full commercial approval pending' },
   { metric: 'Launch Provider', a: 'SpaceX (Falcon 9, Block 1 satellites)', b: 'Various (SpaceX rideshare, Rocket Lab, others)' },
   { metric: 'Key Technical Challenge', a: 'Manufacturing and deploying very large satellites with massive antenna arrays', b: 'Achieving sufficient link budget from small satellites to reach unmodified phones' },
@@ -81,10 +81,10 @@ export default function Page() {
       {/* Technology Deep Dive */}
       <h2 className="text-display text-xl mb-3">Technology Approach</h2>
       <p style={{ color: 'var(--text-secondary)' }} className="text-sm leading-relaxed mb-4">
-        AST SpaceMobile&apos;s approach centers on building some of the largest commercial satellites ever deployed. Each BlueBird satellite features a phased-array antenna spanning approximately 64 square meters — large enough to generate a strong enough signal to reach standard cellular phones on the ground without any hardware modifications. The BlueWalker 3 test satellite, launched in September 2022, successfully demonstrated voice calls, text messaging, and data connections to unmodified smartphones at 4G LTE speeds. AST&apos;s Block 1 BlueBird satellites began launching on SpaceX Falcon 9 in 2024, with five in orbit by early 2026.
+        AST SpaceMobile&apos;s approach centers on building some of the largest commercial satellites ever deployed. Each BlueBird satellite features a phased-array antenna spanning approximately 64 square meters — large enough to generate a strong enough signal to reach standard cellular phones on the ground without any hardware modifications. The BlueWalker 3 test satellite, launched in September 2022, successfully demonstrated voice calls (April 2023), text messaging, and data connections to unmodified smartphones at 4G LTE speeds. AST&apos;s Block 1 BlueBird satellites began launching on SpaceX Falcon 9 in 2024, with five in orbit by early 2026.
       </p>
       <p style={{ color: 'var(--text-secondary)' }} className="text-sm leading-relaxed mb-8">
-        Lynk Global takes the opposite approach: many small, inexpensive satellites rather than a few large ones. Lynk&apos;s satellites use software-defined radio to establish connections with standard phones, but the smaller antenna aperture limits throughput to text messaging and low-bandwidth data. Lynk claims to have been the first company to successfully send a text message from a satellite to a standard phone (February 2022), predating AST&apos;s BlueWalker 3 demonstration. Lynk&apos;s full vision requires thousands of small satellites for continuous global coverage, which demands significant capital investment.
+        Lynk Global takes the opposite approach: many small, inexpensive satellites rather than a few large ones. Lynk&apos;s satellites use software-defined radio to establish connections with standard phones, but the smaller antenna aperture limits throughput to text messaging and low-bandwidth data. Lynk claims to have been the first company to successfully send a text message from a satellite to a standard phone (2020, as Ubiquitilink), predating AST&apos;s BlueWalker 3 demonstration. Lynk&apos;s full vision requires thousands of small satellites for continuous global coverage, which demands significant capital investment.
       </p>
 
       {/* Partnerships */}

@@ -95,8 +95,8 @@ const SPACE_STOCKS = [
   },
   {
     company: 'Terran Orbital',
-    ticker: 'LLAP',
-    marketCap: '$0.8B',
+    ticker: 'Acquired (LMT)',
+    marketCap: 'Acquired by Lockheed Martin',
     focusArea: 'Small satellite manufacturing, defense',
   },
   {

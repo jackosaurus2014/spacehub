@@ -743,8 +743,8 @@ export default function SpaceLaunchCostComparisonPage() {
                     competition, potentially driving commercial prices down even before Starship
                     reaches maturity. The presence of multiple credible medium-to-heavy launch
                     providers gives customers negotiating leverage and reduces dependence on any
-                    single provider. For the small-launch market, Firefly Alpha, ABL Space Systems
-                    RS1, and other entrants could compress pricing below current Electron levels.
+                    single provider. For the small-launch market, Firefly Alpha and other emerging
+                    entrants could compress pricing below current Electron levels.
                   </p>
 
                   <h3 className="text-xl font-semibold text-white mt-8 mb-3">

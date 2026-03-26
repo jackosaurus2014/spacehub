@@ -21,11 +21,11 @@ const COMPARISON_DATA = [
   { metric: 'Headquarters', a: 'Long Beach, CA', b: 'Cedar Park, TX' },
   { metric: 'Primary Vehicle', a: 'Terran R (medium lift, in development)', b: 'Firefly Alpha (small lift, operational)' },
   { metric: 'Previous / Retired Vehicle', a: 'Terran 1 (retired after single flight, 2023)', b: 'N/A (Alpha is primary vehicle)' },
-  { metric: 'LEO Payload Capacity', a: 'Terran 1: 1,250 kg (retired); Terran R: ~20,000 kg target', b: 'Alpha: 1,030 kg' },
-  { metric: 'First Orbital Success', a: 'None (Terran 1 reached orbit but no payload — retired 2023)', b: 'Yes — Alpha Flight 2 (Oct 2022)' },
+  { metric: 'LEO Payload Capacity', a: 'Terran 1: 1,250 kg (retired); Terran R: ~20,000 kg target', b: 'Alpha: ~1,170 kg to LEO (~1,030 kg to SSO)' },
+  { metric: 'First Orbital Success', a: 'None (Terran 1 failed to reach orbit — upper stage anomaly; retired 2023)', b: 'Yes — Alpha Flight 2 (Oct 2022)' },
   { metric: 'Launch Cadence (2024–2025)', a: '0 (Terran 1 retired; Terran R in development)', b: '2–3 missions per year' },
   { metric: 'Manufacturing Innovation', a: '3D-printed rocket (Aeon engines, printed structure)', b: 'Conventional aluminum/carbon fiber; Reaver/Lightning engines' },
-  { metric: 'Reusability Plan', a: 'Terran R fully reusable (first stage)', b: 'No reusability on Alpha; Medium vehicle TBD' },
+  { metric: 'Reusability Plan', a: 'Terran R reusable first stage', b: 'No reusability on Alpha; Medium vehicle TBD' },
   { metric: 'Total Funding Raised', a: '~$1.3B', b: '~$300M+' },
   { metric: 'Key Investors / Backers', a: 'BOND, Tiger Global, Fidelity, K5 Global', b: 'AE Industrial Partners, NASA (VCLS)' },
   { metric: 'Launch Site', a: 'Cape Canaveral SLC-16', b: 'Vandenberg SLC-2W; Cape Canaveral LC-20' },
@@ -85,7 +85,7 @@ export default function Page() {
       {/* Analysis */}
       <h2 className="text-display text-xl mb-3">Key Differences</h2>
       <p style={{ color: 'var(--text-secondary)' }} className="text-sm leading-relaxed mb-4">
-        Relativity Space made headlines for building the world&apos;s first 3D-printed orbital rocket, Terran 1, which reached orbit on its single flight in March 2023 but carried no payload and was subsequently retired. The company pivoted its entire focus to Terran R — a fully reusable medium-lift rocket targeting the same market segment as Rocket Lab&apos;s Neutron and a future Falcon 9 replacement. This bold pivot required significant restructuring and eliminated Relativity&apos;s near-term revenue pathway from Terran 1 launches.
+        Relativity Space made headlines for building the world&apos;s first 3D-printed orbital rocket, Terran 1, which failed to reach orbit on its single flight in March 2023 due to an upper-stage ignition anomaly and was subsequently retired. The company pivoted its entire focus to Terran R — a medium-lift rocket with a reusable first stage, targeting the same market segment as Rocket Lab&apos;s Neutron. This bold pivot required significant restructuring and eliminated Relativity&apos;s near-term revenue pathway from Terran 1 launches.
       </p>
       <p style={{ color: 'var(--text-secondary)' }} className="text-sm leading-relaxed mb-8">
         Firefly Aerospace achieved orbital success on its second Alpha flight in October 2022, making it one of the few new-entrant launch companies to reach orbit. Alpha serves the 1,000 kg class small satellite market and has been building commercial and government launch cadence since. Firefly also won a NASA Commercial Lunar Payload Services (CLPS) task order for a lunar lander mission (Blue Ghost), expanding its business beyond just launch. Firefly&apos;s ownership structure has evolved — it was majority acquired by AE Industrial Partners after earlier Ukrainian investor ties were unwound.

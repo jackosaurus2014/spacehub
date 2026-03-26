@@ -19,17 +19,17 @@ export const metadata: Metadata = {
 const COMPARISON_DATA = [
   { metric: 'Headquarters', a: 'McLean, VA', b: 'Covington, LA' },
   { metric: 'Publicly Traded', a: 'Yes (IRDM, Nasdaq)', b: 'Yes (GSAT, Nasdaq)' },
-  { metric: 'Constellation Generation', a: 'Iridium NEXT (2nd gen, 2017–2019)', b: 'Second-generation (launched 2006–2019)' },
+  { metric: 'Constellation Generation', a: 'Iridium NEXT (2nd gen, 2017–2019)', b: 'Second-generation (launched 2010–2013)' },
   { metric: 'Satellites in Constellation', a: '66 operational + 9 spares (LEO)', b: '24 operational + spares (LEO)' },
   { metric: 'Orbital Altitude', a: '~780 km (LEO)', b: '~1,414 km (LEO)' },
   { metric: 'Coverage', a: 'True global (pole to pole)', b: 'Global except polar regions (~70° lat)' },
   { metric: 'Inter-Satellite Links', a: 'Yes — full ISL mesh network', b: 'No — ground station dependent' },
-  { metric: 'Voice / Data Service', a: 'Satellite phone, PTT, data (2.4–22 kbps basic; Iridium Certus up to 22 Mbps)', b: 'Satellite phone, simplex data, Duplex service (up to 256 kbps)' },
+  { metric: 'Voice / Data Service', a: 'Satellite phone, PTT, data (2.4 kbps SBD; Iridium Certus up to 704 kbps)', b: 'Satellite phone, simplex data, Duplex service (up to 256 kbps)' },
   { metric: 'Primary Consumer Device Partner', a: 'None (own hardware ecosystem)', b: 'Apple — iPhone Emergency SOS via Globalstar (since 2022)' },
   { metric: 'Apple Emergency SOS', a: 'No — Apple uses Globalstar', b: 'Yes — primary network for Apple Emergency SOS' },
   { metric: 'IoT / M2M Services', a: 'Iridium SBD, Certus IoT', b: 'SPOT, SmartOne, satellite IoT' },
   { metric: 'Revenue (approx. 2024)', a: '~$800M', b: '~$230M' },
-  { metric: 'Bankruptcy History', a: 'Filed 1999; emerged 2000; re-launched', b: 'Filed 2002; emerged 2004; re-launched' },
+  { metric: 'Bankruptcy History', a: 'Filed 1999; emerged 2001; re-launched', b: 'Filed 2011; emerged 2012; restructured' },
   { metric: 'Next-Gen Constellation Plans', a: 'No announced replacement (Iridium NEXT sufficient)', b: 'Exploring Gen 3 / capacity expansion' },
 ];
 
@@ -85,7 +85,7 @@ export default function Page() {
       {/* Analysis */}
       <h2 className="text-display text-xl mb-3">Key Differences</h2>
       <p style={{ color: 'var(--text-secondary)' }} className="text-sm leading-relaxed mb-4">
-        Iridium&apos;s defining technical advantage is its 66-satellite mesh network with full inter-satellite links, enabling true pole-to-pole global coverage without reliance on ground stations. A call routed over Iridium can traverse the entire globe via satellite links alone. This makes Iridium the preferred choice for polar operations, maritime, aviation, and military users who need reliable coverage anywhere on Earth. The Iridium NEXT constellation, completed in 2019, added the Certus broadband service offering data speeds up to 22 Mbps — a dramatic improvement over first-generation Iridium.
+        Iridium&apos;s defining technical advantage is its 66-satellite mesh network with full inter-satellite links, enabling true pole-to-pole global coverage without reliance on ground stations. A call routed over Iridium can traverse the entire globe via satellite links alone. This makes Iridium the preferred choice for polar operations, maritime, aviation, and military users who need reliable coverage anywhere on Earth. The Iridium NEXT constellation, completed in 2019, added the Certus service offering data speeds up to 704 kbps — a dramatic improvement over first-generation Iridium&apos;s 2.4 kbps.
       </p>
       <p style={{ color: 'var(--text-secondary)' }} className="text-sm leading-relaxed mb-8">
         Globalstar gained significant commercial visibility when Apple selected it as the network backbone for iPhone Emergency SOS via Satellite starting with iPhone 14 (2022). This partnership provided a major revenue boost and consumer awareness for a company that had historically served a more niche market. However, Globalstar&apos;s bent-pipe architecture (no ISLs) limits it to areas covered by ground stations, creating coverage gaps at high latitudes. Globalstar&apos;s SPOT satellite messenger products serve a large recreational and outdoor safety market, while IoT/M2M services represent a growing segment for both companies.

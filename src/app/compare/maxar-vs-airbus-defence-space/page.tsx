@@ -17,11 +17,11 @@ export const metadata: Metadata = {
 };
 
 const COMPARISON_DATA = [
-  { metric: 'Headquarters', a: 'Westminster, CO, USA', b: 'Leiden, Netherlands (Airbus DS HQ)' },
+  { metric: 'Headquarters', a: 'Westminster, CO, USA', b: 'Ottobrunn, Germany (Airbus DS HQ)' },
   { metric: 'Ownership', a: 'Private — acquired by Advent International 2023', b: 'Subsidiary of Airbus Group (listed)' },
   { metric: 'Primary Business Lines', a: 'Earth observation imagery, satellite manufacturing, geospatial services', b: 'Satellites, launchers support, defense electronics, space exploration' },
   { metric: 'Key EO Satellites', a: 'WorldView-1/2/3/4, WorldView Legion, GeoEye-1', b: 'Pléiades, Pléiades Neo, SPOT series' },
-  { metric: 'Best Optical Resolution', a: '~15 cm (WorldView-3, commercial)', b: '~30 cm (Pléiades Neo)' },
+  { metric: 'Best Optical Resolution', a: '~30 cm (WorldView-3 / WorldView Legion)', b: '~30 cm (Pléiades Neo)' },
   { metric: 'Imagery Archive', a: 'Largest commercial high-res archive (~100+ PB)', b: 'Extensive multispectral / optical archive' },
   { metric: 'Satellite Manufacturing', a: '1300-series GEO bus; WorldView spacecraft', b: 'Eurostar Neo GEO bus; Eurostar 3000' },
   { metric: 'GEO Communications Sats Built', a: '80+ (SSL heritage, rebranded Maxar)', b: '100+ (Eurostar family)' },
@@ -84,7 +84,7 @@ export default function Page() {
       {/* Analysis */}
       <h2 className="text-display text-xl mb-3">Key Differences</h2>
       <p style={{ color: 'var(--text-secondary)' }} className="text-sm leading-relaxed mb-4">
-        Maxar is the dominant commercial provider of sub-30 cm resolution satellite imagery to U.S. government intelligence agencies, primarily through its long-standing contracts with the National Reconnaissance Office. Its WorldView-3 satellite provides 31 cm panchromatic and 1.24 m multispectral resolution — among the highest commercially available. The company went private in 2023 after being acquired by Advent International, following financial difficulties partly driven by satellite losses and launch delays. Maxar&apos;s WorldView Legion constellation aims to dramatically increase revisit rates over key locations.
+        Maxar is the dominant commercial provider of high-resolution satellite imagery to U.S. government intelligence agencies, primarily through its long-standing contracts with the National Reconnaissance Office. Its WorldView-3 satellite provides 31 cm panchromatic and 1.24 m multispectral resolution — among the highest commercially available. The company went private in 2023 after being acquired by Advent International, following financial difficulties partly driven by satellite losses and launch delays. Maxar&apos;s WorldView Legion constellation aims to dramatically increase revisit rates over key locations.
       </p>
       <p style={{ color: 'var(--text-secondary)' }} className="text-sm leading-relaxed mb-8">
         Airbus Defence &amp; Space operates at much larger scale as a division of Airbus Group, combining Earth observation (Pléiades Neo at 30 cm), satellite manufacturing (Eurostar Neo GEO bus), defense electronics, and space exploration programs. Pléiades Neo offers daily revisit capability globally. Airbus DS is the primary satellite bus supplier to many European government and commercial operators. Unlike Maxar, Airbus DS has a diverse revenue base that is less dependent on any single imagery contract, including launch services support through Arianespace relationships.

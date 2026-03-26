@@ -9,7 +9,7 @@ export const revalidate = 86400;
 export const metadata: Metadata = {
   title: 'Space Industry Market Size: $1.8 Trillion by 2035 | SpaceNexus',
   description:
-    'The global space economy reached $546 billion in 2025 and is projected to exceed $1.8 trillion by 2035. Explore market segments, growth drivers, top companies by revenue, and investment trends.',
+    'The global space economy reached $630 billion in 2025 and is projected to exceed $1.8 trillion by 2035. Explore market segments, growth drivers, top companies by revenue, and investment trends.',
   keywords: [
     'space industry market size',
     'space economy size',
@@ -36,7 +36,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Space Industry Market Size: $1.8 Trillion and Growing',
     description:
-      'Global space economy at $546B in 2025, projected $1.8T by 2035. Market segments, growth drivers, and top companies.',
+      'Global space economy at $630B in 2025, projected $1.8T by 2035. Market segments, growth drivers, and top companies.',
   },
   alternates: {
     canonical: 'https://spacenexus.us/learn/space-industry-market-size',
@@ -186,8 +186,8 @@ const projections = [
   { year: '2020', size: '$371B', label: 'Pre-Starlink scaling' },
   { year: '2022', size: '$424B', label: 'Post-COVID recovery' },
   { year: '2024', size: '$508B', label: 'Constellation deployments accelerate' },
-  { year: '2025', size: '$546B', label: 'Current baseline' },
-  { year: '2026', size: '$600B (est.)', label: 'Starship operational flights begin' },
+  { year: '2025', size: '$630B', label: 'Current baseline' },
+  { year: '2026', size: '$670B (est.)', label: 'Starship operational flights begin' },
   { year: '2028', size: '$740B (proj.)', label: 'Kuiper constellation online' },
   { year: '2030', size: '$950B (proj.)', label: 'Commercial space stations operational' },
   { year: '2035', size: '$1.8T (proj.)', label: 'Lunar economy emerging' },
@@ -197,7 +197,7 @@ const faqItems = [
   {
     question: 'How big is the global space industry in 2026?',
     answer:
-      'The global space economy is estimated at approximately $600 billion in 2026, up from $546 billion in 2025. This includes satellite services ($193B), ground equipment ($152B), government space budgets ($95B defense + $48B civil), satellite manufacturing ($22B), launch services ($10B), and other segments. The industry is growing at approximately 7-9% CAGR, with launch services and satellite manufacturing growing the fastest at 15-18% annually.',
+      'The global space economy is estimated at approximately $670 billion in 2026, up from $630 billion in 2025. This includes satellite services ($193B), ground equipment ($152B), government space budgets ($95B defense + $48B civil), satellite manufacturing ($22B), launch services ($10B), and other segments. The industry is growing at approximately 7-9% CAGR, with launch services and satellite manufacturing growing the fastest at 15-18% annually.',
   },
   {
     question: 'What is the largest segment of the space economy?',
@@ -269,7 +269,7 @@ export default function SpaceIndustryMarketSizePage() {
             Space Industry Market Size: $1.8 Trillion and Growing
           </h1>
           <p className="text-lg text-slate-300 leading-relaxed">
-            The global space economy reached $546 billion in 2025 and is projected to exceed $1.8
+            The global space economy reached $630 billion in 2025 and is projected to exceed $1.8
             trillion by 2035. Driven by mega-constellations, reusable rockets, defense modernization,
             and emerging lunar infrastructure, the space sector is entering an era of unprecedented
             growth. Here is a data-driven look at where the industry stands and where it is heading.
@@ -280,7 +280,7 @@ export default function SpaceIndustryMarketSizePage() {
         <ScrollReveal>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
           <div className="bg-white/[0.06] border border-white/[0.06] rounded-xl p-4 text-center">
-            <div className="text-2xl font-bold text-slate-300 mb-1">$546B</div>
+            <div className="text-2xl font-bold text-slate-300 mb-1">$630B</div>
             <div className="text-xs text-slate-400">2025 Market Size</div>
           </div>
           <div className="bg-white/[0.06] border border-white/[0.06] rounded-xl p-4 text-center">

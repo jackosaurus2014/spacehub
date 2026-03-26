@@ -22,7 +22,7 @@ const LEARNING_STEPS: LearningStep[] = [
     id: 1,
     title: 'What is the Space Industry?',
     description:
-      'Start with the fundamentals. Understand how the $546B space economy is structured, who the major players are, and why the industry is growing faster than ever.',
+      'Start with the fundamentals. Understand how the $630B+ space economy is structured, who the major players are, and why the industry is growing faster than ever.',
     href: '/space-economy',
     cta: 'Start',
     gradient: 'from-blue-500 to-cyan-400',
@@ -49,7 +49,7 @@ const LEARNING_STEPS: LearningStep[] = [
     id: 4,
     title: 'How Many Satellites Are in Space?',
     description:
-      'Over 10,000 active satellites orbit Earth today. Learn about orbit types, mega-constellations, and how satellite numbers have tripled since 2019.',
+      'Over 13,000 active satellites orbit Earth today. Learn about orbit types, mega-constellations, and how satellite numbers have tripled since 2019.',
     href: '/blog/how-many-satellites-in-space-2026',
     cta: 'Start',
     gradient: 'from-teal-500 to-emerald-400',

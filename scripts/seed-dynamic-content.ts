@@ -882,14 +882,14 @@ async function main() {
       website: 'https://airbusventures.vc', hqLocation: 'San Francisco, CA', foundedYear: 2015,
     },
     {
-      id: 'boeing-horizonx', name: 'Boeing HorizonX', type: 'Corporate VC',
-      description: 'Boeing\'s venture investment arm identifying and investing in emerging aerospace technologies.',
+      id: 'boeing-ventures', name: 'Boeing Ventures', type: 'Corporate VC',
+      description: 'Boeing\'s venture investment arm (formerly HorizonX, rebranded 2022) investing in emerging aerospace technologies.',
       investmentThesis: 'Identifying technologies transforming aerospace and manufacturing to maintain Boeing\'s competitive edge.',
       aum: '$200M+', checkSizeRange: '$5M-$20M', stagePreference: ['Series A', 'Series B'],
       sectorFocus: ['Manufacturing', 'AI', 'Autonomy', 'Advanced Materials'],
       dealCount: 8, totalDeployed: '$80M+',
       notablePortfolio: ['SparkCognition', 'Matternet', 'Fortem Technologies'],
-      website: 'https://www.boeing.com/company/key-orgs/horizon-x', hqLocation: 'Chicago, IL', foundedYear: 2017,
+      website: 'https://www.boeing.com', hqLocation: 'Arlington, VA', foundedYear: 2017,
     },
     {
       id: 'y-combinator', name: 'Y Combinator', type: 'Accelerator',

@@ -652,7 +652,7 @@ export default function SpaceIndustryGuidePage() {
                       Space Sustainability &amp; Debris Removal
                     </h3>
                     <p>
-                      With over 10,000 active satellites in orbit and tens of thousands of tracked
+                      With over 13,000 active satellites in orbit and tens of thousands of tracked
                       debris objects, space sustainability has become a critical concern.
                       Astroscale (Japan) is a pioneer in active debris removal, having demonstrated
                       proximity operations and docking with defunct satellites. ClearSpace

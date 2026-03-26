@@ -23,9 +23,9 @@ export const metadata: Metadata = {
 export const revalidate = 86400;
 
 const faqs = [
-  { question: 'Is space mining legal?', answer: 'Yes. The 2015 US Commercial Space Launch Competitiveness Act grants US companies the right to own and sell resources extracted from asteroids and other celestial bodies. The Artemis Accords (signed by 61 nations) support this principle.' },
+  { question: 'Is space mining legal?', answer: 'Yes. The 2015 US Commercial Space Launch Competitiveness Act grants US companies the right to own and sell resources extracted from asteroids and other celestial bodies. The Artemis Accords (signed by 43 nations as of early 2026) support this principle.' },
   { question: 'What resources can be mined in space?', answer: 'Water ice (from the Moon and Mars), platinum group metals and gold (from asteroids), iron, nickel, and titanium (from asteroids and Mars), Helium-3 (from lunar regolith for fusion fuel), and methane/ethane (from Titan).' },
-  { question: 'Which companies are working on space mining?', answer: 'AstroForge (asteroid mining), TransAstra (optical mining), ispace (lunar resources), Intuitive Machines (lunar landers for resource prospecting), and Planetary Resources (acquired by ConsenSys). NASA\'s VIPER rover is mapping lunar ice deposits.' },
+  { question: 'Which companies are working on space mining?', answer: 'AstroForge (asteroid mining), TransAstra (optical mining), ispace (lunar resources), Intuitive Machines (lunar landers for resource prospecting), and Offworld (robotic mining). NASA\'s Lunar Trailblazer orbiter and commercial CLPS landers are surveying lunar ice deposits. The VIPER rover was canceled in 2024 due to cost overruns.' },
   { question: 'How much is an asteroid worth?', answer: 'A single metallic asteroid like 16 Psyche contains an estimated $10,000 quadrillion in metals at terrestrial prices. However, actually mining and returning these resources would collapse commodity markets, so real economic value depends on space-based demand.' },
   { question: 'When will asteroid mining become commercially viable?', answer: 'Lunar water mining is expected to be commercially viable by 2030-2035 as cislunar infrastructure develops. Near-Earth asteroid mining for platinum group metals could follow by 2035-2040. Large-scale asteroid belt mining is likely a 2040s+ endeavor.' },
   { question: 'What is ISRU?', answer: 'In-Situ Resource Utilization (ISRU) means using materials found at the destination rather than bringing everything from Earth. For example, extracting water from lunar ice and splitting it into hydrogen and oxygen for rocket fuel. ISRU is critical for affordable deep space exploration.' },
@@ -42,7 +42,7 @@ export default function SpaceMiningGuidePage() {
           { name: 'Understand what space mining is', text: 'Learn the fundamentals of extracting resources from celestial bodies including asteroids, the Moon, and Mars, and why lunar water ice is expected to be the first commercially viable space mining target.' },
           { name: 'Identify the types of space resources', text: 'Study the six key resource categories: water ice for propellant, platinum group metals from asteroids, structural metals like iron and titanium, Helium-3 for fusion fuel, hydrocarbons from Titan, and rare earth elements.' },
           { name: 'Evaluate the legal framework', text: 'Understand the 2015 US Commercial Space Launch Competitiveness Act and Artemis Accords that grant companies the right to own and sell extracted space resources, providing the legal foundation for commercial mining.' },
-          { name: 'Research active mining companies', text: 'Assess key players like AstroForge (asteroid mining), TransAstra (optical mining), ispace (lunar resources), and Intuitive Machines (lunar landers), along with NASA VIPER rover mapping lunar ice deposits.' },
+          { name: 'Research active mining companies', text: 'Assess key players like AstroForge (asteroid mining), TransAstra (optical mining), ispace (lunar resources), and Intuitive Machines (lunar landers), along with NASA Lunar Trailblazer and CLPS missions surveying lunar ice deposits.' },
           { name: 'Understand ISRU technology and economics', text: 'Learn how In-Situ Resource Utilization works to convert local materials into usable products like rocket propellant, and evaluate the economic viability timeline from lunar ice mining (2030-2035) to asteroid belt operations (2040s+).' },
         ]}
       />
@@ -77,7 +77,7 @@ export default function SpaceMiningGuidePage() {
               <h2 className="text-xl font-semibold bg-gradient-to-r from-slate-300 to-cyan-400 bg-clip-text text-transparent mb-4">Types of Space Resources</h2>
               <div className="grid md:grid-cols-2 gap-4">
                 {[
-                  { icon: '💧', title: 'Water Ice', where: 'Moon, Mars, asteroids', value: 'Rocket propellant, life support', status: 'NASA VIPER rover mapping ice deposits' },
+                  { icon: '💧', title: 'Water Ice', where: 'Moon, Mars, asteroids', value: 'Rocket propellant, life support', status: 'NASA CLPS landers surveying ice deposits' },
                   { icon: '💎', title: 'Platinum Group Metals', where: 'Metallic asteroids', value: '$500K+/kg — catalysts, electronics', status: 'AstroForge testing in-space refining' },
                   { icon: '🔩', title: 'Iron, Nickel, Titanium', where: 'Asteroids, Mars', value: 'In-space construction', status: 'Future — requires orbital manufacturing' },
                   { icon: '⚛️', title: 'Helium-3', where: 'Lunar regolith', value: 'Fusion fuel — $5M/kg theoretical', status: 'Requires fusion reactors (2040s+)' },

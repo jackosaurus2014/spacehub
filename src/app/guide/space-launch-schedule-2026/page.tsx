@@ -79,7 +79,7 @@ const FAQ_ITEMS = [
   },
   {
     question: 'What is the most anticipated launch of 2026?',
-    answer: 'Key milestones include SpaceX Starship crewed missions, the Blue Origin New Glenn orbital debut, Ariane 6 reaching operational cadence, and potential commercial space station module launches from Axiom Space.',
+    answer: 'Key milestones include SpaceX Starship crewed missions, Blue Origin New Glenn ramping to operational cadence after its 2025 maiden flight, Ariane 6 reaching full operational cadence, and potential commercial space station module launches from Axiom Space.',
   },
   {
     question: 'How do I get launch notifications?',
@@ -87,7 +87,7 @@ const FAQ_ITEMS = [
   },
   {
     question: 'What launch vehicles are new in 2026?',
-    answer: 'New vehicles expected to fly or reach milestones in 2026 include Blue Origin New Glenn, Relativity Space Terran R, ABL Space RS1 operational flights, and several small launch vehicles from Firefly, Virgin Orbit successor ventures, and international startups.',
+    answer: 'Vehicles expected to reach operational milestones in 2026 include Blue Origin New Glenn (ramping commercial flights after its 2025 debut), Relativity Space Terran R, and several small launch vehicles from Firefly and international startups. Rocket Lab Neutron is also targeting its first flight.',
   },
 ];
 
@@ -147,7 +147,7 @@ export default function SpaceLaunchSchedule2026Page() {
                 roughly 40% of global launches, while China maintains a robust 50+ launch campaign.
               </p>
               <p className="text-slate-400 leading-relaxed mb-4">
-                New entrants are reshaping the landscape: Blue Origin&apos;s New Glenn enters operational service,
+                New entrants are reshaping the landscape: Blue Origin&apos;s New Glenn ramps toward operational cadence after its 2025 debut,
                 Ariane 6 reaches full cadence in Europe, and multiple small launch vehicle providers compete
                 for dedicated rideshare missions. The mega-constellation buildout continues with Starlink,
                 OneWeb, and Amazon&apos;s Project Kuiper all requiring dozens of flights.

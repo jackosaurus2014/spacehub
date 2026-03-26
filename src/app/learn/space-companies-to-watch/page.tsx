@@ -76,9 +76,9 @@ const launchProviders = [
     founded: 2000,
     employees: '11,000+',
     valuation: 'Private (est. $30B+)',
-    whyWatch: 'New Glenn heavy-lift rocket targeting first flight. BE-4 engines power ULA Vulcan. Blue Moon lunar lander selected for NASA Artemis missions. Orbital Reef commercial space station partnership with Sierra Space.',
+    whyWatch: 'New Glenn heavy-lift rocket completed maiden flight in early 2025 and is ramping to operational cadence. BE-4 engines power ULA Vulcan. Blue Moon lunar lander selected for NASA Artemis missions. Orbital Reef commercial space station partnership with Sierra Space.',
     keyStats: ['New Glenn: 45,000 kg to LEO', 'BE-4 engines for ULA Vulcan', 'Blue Moon lunar lander', 'Orbital Reef space station'],
-    recentMilestones: 'New Glenn maiden flight preparation. Club for the Future STEM education reaching millions. New Shepard suborbital flights continuing.',
+    recentMilestones: 'New Glenn maiden flight completed in early 2025. Ramping toward commercial operations. Blue Moon lander development for Artemis. New Shepard suborbital flights continuing.',
   },
   {
     rank: 4,
@@ -426,7 +426,7 @@ const faqItems = [
   {
     question: 'Which space companies are publicly traded?',
     answer:
-      'Major publicly traded space companies include Rocket Lab (RKLB, $12B), Planet Labs (PL, $2.8B), Spire Global (SPIR, $800M), BlackSky (BKSY, $600M), Satellogic (SATL, $500M), Virgin Galactic (SPCE), and Mynaric (MYNA). The large defense primes with significant space divisions are also public: Lockheed Martin (LMT), Northrop Grumman (NOC), L3Harris (LHX), RTX (RTX), and Boeing (BA). Space ETFs like ARKX, UFO, and ROKT provide diversified exposure.',
+      'Major publicly traded space companies include Rocket Lab (RKLB, $12B), AST SpaceMobile (ASTS, $8.5B), Iridium (IRDM, $6.8B), Planet Labs (PL, $2.8B), Spire Global (SPIR, $800M), BlackSky (BKSY, $600M), and Satellogic (SATL, $500M). The large defense primes with significant space divisions are also public: Lockheed Martin (LMT), Northrop Grumman (NOC), L3Harris (LHX), RTX (RTX), and Boeing (BA). Space ETFs like ARKX, UFO, and ROKT provide diversified exposure.',
   },
   {
     question: 'What space startups are most promising?',

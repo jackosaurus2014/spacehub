@@ -23,7 +23,7 @@ const COMPARISON_DATA = [
   { metric: 'Satellites Deployed', starlink: '6,000+ (as of early 2026)', oneWeb: '648 (Gen 1 complete)' },
   { metric: 'Total Constellation Planned', starlink: '~42,000 (FCC authorized)', oneWeb: '648 Gen 1 + Gen 2 TBD' },
   { metric: 'Orbital Altitude', starlink: '~340–570 km (Shell 1–5)', oneWeb: '~1,200 km' },
-  { metric: 'Inter-Satellite Links (ISLs)', starlink: 'Yes (Gen 2 / V2 Mini+)', oneWeb: 'No (ground relay dependent)' },
+  { metric: 'Inter-Satellite Links (ISLs)', starlink: 'Yes (V1.5+ and all V2 Mini satellites)', oneWeb: 'No (ground relay dependent)' },
   { metric: 'Subscribers', starlink: '4M+ (as of 2025)', oneWeb: 'Not publicly disclosed (B2B focus)' },
   { metric: 'Latency', starlink: '20–60 ms (typical)', oneWeb: '30–70 ms (typical)' },
   { metric: 'Download Speed', starlink: '50–250 Mbps (consumer)', oneWeb: '50–200 Mbps (enterprise)' },

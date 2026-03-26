@@ -494,7 +494,7 @@ export default function CommercialSpaceEconomyPage() {
                       </div>
                       <div>
                         <span className="text-white font-medium">Small-Lift</span>
-                        <span className="text-star-300"> (Electron, Alpha, RS1) -- &lt;1,500 kg to LEO. For dedicated smallsat missions requiring precise orbit placement.</span>
+                        <span className="text-star-300"> (Electron, Alpha) -- &lt;1,500 kg to LEO. For dedicated smallsat missions requiring precise orbit placement.</span>
                       </div>
                     </div>
                   </div>
@@ -620,7 +620,7 @@ export default function CommercialSpaceEconomyPage() {
                     orbits, and eventually servicing cislunar infrastructure. D-Orbit&apos;s ION
                     Satellite Carrier provides orbital transfer services for smallsats. Impulse
                     Space is developing orbital transfer vehicles using high-performance propulsion.
-                    Momentus provides in-space transportation using water plasma propulsion.
+                    Exolaunch provides deployment and integration services for rideshare missions.
                   </p>
                 </div>
               </section>

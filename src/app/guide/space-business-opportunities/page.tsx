@@ -96,7 +96,7 @@ const MARKET_SEGMENTS = [
     segment: 'Space Logistics & Servicing',
     marketSize: '$3.1B',
     growthRate: '31%',
-    keyPlayers: 'Astroscale, Orbit Fab, Momentus',
+    keyPlayers: 'Astroscale, Orbit Fab, Impulse Space',
   },
   {
     segment: 'Ground Segment & Equipment',
@@ -360,7 +360,7 @@ export default function SpaceBusinessOpportunitiesPage() {
                 </li>
                 <li className="flex items-start gap-3">
                   <span className="text-slate-300 mt-1 flex-shrink-0">&#9656;</span>
-                  <span><strong className="text-white">Materials and manufacturing</strong> &mdash; Carbon fiber composites, specialty alloys, additive manufacturing, and thermal management materials are all growth areas. Relativity Space and Launcher have pioneered 3D-printed rocket components.</span>
+                  <span><strong className="text-white">Materials and manufacturing</strong> &mdash; Carbon fiber composites, specialty alloys, additive manufacturing, and thermal management materials are all growth areas. Relativity Space has pioneered 3D-printed rocket structures, while multiple companies are advancing additive manufacturing for space components.</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <span className="text-slate-300 mt-1 flex-shrink-0">&#9656;</span>
@@ -401,7 +401,7 @@ export default function SpaceBusinessOpportunitiesPage() {
               <p className="text-slate-300 leading-relaxed mb-4">
                 The emerging opportunity lies in space habitation. Axiom Space is building the first
                 commercial space station, with its initial module attached to the ISS before transitioning
-                to a free-flying station. Vast (formerly Orbital Assembly) is developing the Haven-1 station.
+                to a free-flying station. Vast is developing the Haven-1 station.
                 These platforms will need everything from life support systems to food services, entertainment,
                 and crew training programs — creating opportunities well beyond traditional aerospace.
               </p>

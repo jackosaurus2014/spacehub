@@ -91,7 +91,7 @@ const SPACE_FORCES = [
     budget: 'Classified (~$15B estimated space portion)',
     budgetYear: '2024',
     parentService: "People's Liberation Army",
-    commander: 'Lt. Gen. Jü Qiansheng (Information Support Force)',
+    commander: 'Classified (PLA does not publicly name ISF commander)',
     headquarters: 'Beijing, China',
     keyPrograms: [
       'Beidou-3 Navigation Constellation (BDS)',
@@ -120,7 +120,7 @@ const SPACE_FORCES = [
     budget: '~$3.5B estimated (from total defense ~$65B)',
     budgetYear: '2024',
     parentService: 'Russian Aerospace Forces (VKS)',
-    commander: 'Col. Gen. Viktor Afzalov (VKS Commander-in-Chief)',
+    commander: 'Gen. Viktor Afzalov (acting CinC) — command structure in flux due to wartime changes',
     headquarters: 'Moscow, Russia',
     keyPrograms: [
       'GLONASS navigation constellation',
@@ -148,7 +148,7 @@ const SPACE_FORCES = [
     budget: '€3.6B (2019-2025 Military Programming Law allocation)',
     budgetYear: '2024',
     parentService: 'French Air and Space Force',
-    commander: 'Général de brigade aérienne Philippe Adam',
+    commander: 'Général de brigade aérienne (updates may apply — CDE commander rotates)',
     headquarters: 'Toulouse, France',
     keyPrograms: [
       'CERES SIGINT constellation (3 satellites)',
@@ -176,7 +176,7 @@ const SPACE_FORCES = [
     budget: '£1.4B (2022-2032 UK Space Defence Strategy)',
     budgetYear: '2024',
     parentService: 'Joint command (RAF lead)',
-    commander: 'Air Vice-Marshal Paul Mayall',
+    commander: 'Air Vice-Marshal (rotational appointment)',
     headquarters: 'RAF High Wycombe, Buckinghamshire',
     keyPrograms: [
       'Skynet 6 military SATCOM',
@@ -220,7 +220,7 @@ const SPACE_FORCES = [
     budget: '~$2B (estimated, space-related defense)',
     budgetYear: '2024',
     parentService: 'Tri-service joint agency under CDS',
-    commander: 'Air Vice-Marshal SP Dharkar',
+    commander: 'Tri-service appointment (rotates between services)',
     headquarters: 'Bengaluru, India',
     keyPrograms: [
       'GSAT-7/7A military SATCOM',
@@ -243,7 +243,7 @@ const SPACE_FORCES = [
     budget: '~€500M (from Bundeswehr space activities)',
     budgetYear: '2024',
     parentService: 'Bundeswehr (German Armed Forces)',
-    commander: 'Brig. Gen. Michael Traut',
+    commander: 'Brig. Gen. (Bundeswehr appointment)',
     headquarters: 'Air Operations Centre, Uedem',
     keyPrograms: [
       'SARah radar reconnaissance constellation (3 satellites)',
@@ -265,7 +265,7 @@ const SPACE_FORCES = [
     budget: 'A$2.2B (2024-2034 Integrated Investment Program)',
     budgetYear: '2024',
     parentService: 'Australian Defence Force (RAAF lead)',
-    commander: 'Air Vice-Marshal Catherine Roberts',
+    commander: 'Air Vice-Marshal (appointment rotates)',
     headquarters: 'RAAF Base Edinburgh, South Australia',
     keyPrograms: [
       'JP 9102 Satellite Communications (MILSATCOM)',

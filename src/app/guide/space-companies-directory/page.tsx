@@ -21,10 +21,10 @@ export const metadata: Metadata = {
 export const revalidate = 86400;
 
 const faqs = [
-  { question: 'What are the biggest space companies in 2026?', answer: 'The largest space companies by valuation are SpaceX (~$200B+), Blue Origin, Northrop Grumman, Lockheed Martin, Boeing, Airbus Defence and Space, L3Harris Technologies, Raytheon (RTX), and Rocket Lab. Among startups, Sierra Space, Vast, and Relativity Space have raised the most capital.' },
+  { question: 'What are the biggest space companies in 2026?', answer: 'The largest space companies by valuation are SpaceX (~$350B+), Blue Origin, Northrop Grumman, Lockheed Martin, Boeing, Airbus Defence and Space, L3Harris Technologies, Raytheon (RTX), and Rocket Lab. Among startups, Sierra Space, Vast, and Relativity Space have raised the most capital.' },
   { question: 'How many space companies are there?', answer: 'There are over 10,000 companies worldwide working in the space industry, ranging from multi-billion-dollar primes to early-stage startups. The commercial space sector (NewSpace) includes approximately 2,000+ venture-backed companies.' },
   { question: 'What do space companies do?', answer: 'Space companies operate across the value chain: launch services (SpaceX, Rocket Lab, ULA), satellite manufacturing (Airbus, Maxar), Earth observation (Planet Labs, BlackSky), satellite communications (Starlink, OneWeb), space stations (Axiom, Vast), defense and national security, and more.' },
-  { question: 'How do I invest in space companies?', answer: 'Public space companies can be bought as stocks (RKLB, PL, BKSY, SPCE, MNTS, RDW). Space ETFs include ARKX, UFO, and ITA. Private companies like SpaceX require accredited investor access through secondary markets or space-focused VC funds like Space Capital or Seraphim.' },
+  { question: 'How do I invest in space companies?', answer: 'Public space companies can be bought as stocks (RKLB, PL, BKSY, ASTS, RDW, IRDM). Space ETFs include ARKX, UFO, and ITA. Private companies like SpaceX require accredited investor access through secondary markets or space-focused VC funds like Space Capital or Seraphim.' },
 ];
 
 const topCompanies = [
@@ -33,13 +33,13 @@ const topCompanies = [
   { name: 'Rocket Lab', sector: 'Small Launch, Spacecraft', founded: '2006', hq: 'Long Beach, CA' },
   { name: 'Planet Labs', sector: 'Earth Observation', founded: '2010', hq: 'San Francisco, CA' },
   { name: 'Relativity Space', sector: '3D-Printed Rockets', founded: '2015', hq: 'Long Beach, CA' },
-  { name: 'Sierra Space', sector: 'Dream Chaser, Stations', founded: '1963', hq: 'Broomfield, CO' },
+  { name: 'Sierra Space', sector: 'Dream Chaser, Stations', founded: '2021', hq: 'Louisville, CO' },
   { name: 'Vast', sector: 'Space Stations', founded: '2021', hq: 'Long Beach, CA' },
   { name: 'Axiom Space', sector: 'Space Stations', founded: '2016', hq: 'Houston, TX' },
   { name: 'L3Harris', sector: 'Defense, Satellites', founded: '2019', hq: 'Melbourne, FL' },
   { name: 'Maxar Technologies', sector: 'Imaging, Robotics', founded: '2017', hq: 'Westminster, CO' },
   { name: 'BlackSky', sector: 'Real-time EO', founded: '2014', hq: 'Herndon, VA' },
-  { name: 'Astra', sector: 'Small Launch', founded: '2016', hq: 'Alameda, CA' },
+  { name: 'Astra', sector: 'Spacecraft Propulsion', founded: '2016', hq: 'Alameda, CA' },
   { name: 'Capella Space', sector: 'SAR Imaging', founded: '2016', hq: 'San Francisco, CA' },
   { name: 'Astroscale', sector: 'Debris Removal', founded: '2013', hq: 'Tokyo, Japan' },
   { name: 'Firefly Aerospace', sector: 'Small/Medium Launch', founded: '2017', hq: 'Cedar Park, TX' },

@@ -186,7 +186,7 @@ const trackingConcepts = [
   {
     concept: 'Space Debris Tracking',
     description:
-      'In addition to active satellites, the US Space Force tracks over 30,000 pieces of debris larger than 10 cm. This includes spent rocket stages, defunct satellites, and collision fragments. Debris tracking is critical for conjunction analysis (collision avoidance). SpaceNexus visualizes debris density in the Space Environment module.',
+      'In addition to active satellites, the US Space Force tracks over 35,000 pieces of debris and defunct objects larger than 10 cm, for a total catalog exceeding 48,000 objects. This includes spent rocket stages, defunct satellites, and collision fragments. Debris tracking is critical for conjunction analysis (collision avoidance). SpaceNexus visualizes debris density in the Space Environment module.',
   },
 ];
 
@@ -199,7 +199,7 @@ const faqItems = [
   {
     question: 'How many satellites are currently in orbit?',
     answer:
-      'As of early 2026, there are approximately 10,000+ active satellites in orbit, with SpaceX Starlink alone accounting for over 6,000. The US Space Force tracks over 30,000 objects larger than 10 cm (including debris), and an estimated 100 million pieces of debris smaller than 1 cm are in orbit. The number of active satellites has more than tripled since 2020, driven primarily by mega-constellation deployments.',
+      'As of early 2026, there are approximately 13,000 active satellites in orbit, with SpaceX Starlink alone accounting for over 6,500. The US Space Force tracks over 48,000 objects larger than 10 cm (including debris), and an estimated 100 million pieces of debris smaller than 1 cm are in orbit. The number of active satellites has more than tripled since 2020, driven primarily by mega-constellation deployments.',
   },
   {
     question: 'What is the best satellite tracking app?',
@@ -277,7 +277,7 @@ export default function HowToTrackSatellitesPage() {
             How to Track Satellites in Real Time — Complete Guide
           </h1>
           <p className="text-lg text-slate-300 leading-relaxed">
-            Over 10,000 active satellites orbit Earth right now, from the International Space Station
+            Over 13,000 active satellites orbit Earth right now, from the International Space Station
             visible to the naked eye to tiny CubeSats transmitting scientific data. Whether you are a
             satellite operator managing a constellation, an amateur astronomer spotting the ISS, or an
             analyst tracking orbital debris, this guide explains how satellite tracking works and how to
@@ -298,7 +298,7 @@ export default function HowToTrackSatellitesPage() {
             </p>
             <p className="text-slate-300 leading-relaxed mb-4">
               The US Space Force&apos;s 18th Space Defense Squadron operates a global network of 30+ sensors
-              called the Space Surveillance Network (SSN). This network tracks over 30,000 objects
+              called the Space Surveillance Network (SSN). This network tracks over 48,000 objects
               larger than 10 cm, publishing orbital data as Two-Line Element Sets (TLEs) that anyone can
               use for tracking.
             </p>

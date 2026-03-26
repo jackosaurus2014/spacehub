@@ -23,12 +23,12 @@ const COMPARISON_DATA = [
   { metric: 'Vehicle', a: 'VSS Unity (SpaceShipTwo); Delta class (development)', b: 'New Shepard (NS) capsule + booster' },
   { metric: 'Vehicle Type', a: 'Air-launched glider / rocket plane', b: 'Vertical launch, ballistic capsule' },
   { metric: 'Apogee Altitude', a: '~89–90 km (Kármán line disputed)', b: '~107 km (above 100 km Kármán line)' },
-  { metric: 'Crewed Tourist Flights Completed', a: '6 commercial spaceflights (through Aug 2023)', b: '6 crewed flights (2021–2022 era)' },
+  { metric: 'Crewed Tourist Flights Completed', a: '6 commercial spaceflights (Galactic 01–06, June 2023 – Jan 2024)', b: '8 crewed flights (2021–2024, including post-return NS-25/NS-26)' },
   { metric: 'Passengers Per Flight', a: '6 (including 2 pilots)', b: '6 passengers (autonomous capsule)' },
   { metric: 'Ticket Price', a: '$450,000 per seat (2023 pricing)', b: 'Not publicly listed (auctioned / private)' },
-  { metric: 'Operational Status (2026)', a: 'Suspended — grounded after Aug 2023 final Unity flight, transitioning to Delta class', b: 'Resumed flights post-2022 anomaly; New Shepard operational' },
-  { metric: 'New Shepard Anomaly', a: 'N/A', b: 'Uncrewed booster failure Sep 2022; flights resumed May 2023' },
-  { metric: 'Publicly Traded', a: 'Yes (SPCE, NYSE) — acquired by Branson Aerospace 2024', b: 'No (private)' },
+  { metric: 'Operational Status (2026)', a: 'Suspended — grounded after Jan 2024 final Unity flight (Galactic 06), transitioning to Delta class', b: 'Resumed flights May 2024 post-anomaly; New Shepard operational' },
+  { metric: 'New Shepard Anomaly', a: 'N/A', b: 'Uncrewed booster failure Sep 2022; flights resumed May 2024' },
+  { metric: 'Publicly Traded', a: 'Yes (SPCE, NYSE)', b: 'No (private)' },
   { metric: 'Next Vehicle', a: 'Delta class spaceplane (in development)', b: 'New Glenn (orbital) — separate program' },
   { metric: 'FAA Launch License', a: 'Yes (commercial launch operator)', b: 'Yes (commercial launch operator)' },
 ];
@@ -88,7 +88,7 @@ export default function Page() {
         Virgin Galactic and Blue Origin represent fundamentally different engineering approaches to suborbital tourism. Virgin Galactic uses a carrier aircraft (WhiteKnightTwo) to air-launch SpaceShipTwo, which then ignites its hybrid rocket motor for a hypersonic climb. Blue Origin&apos;s New Shepard uses a conventional vertical rocket launch with a separating capsule that crosses 100 km before a parachute landing. New Shepard clearly exceeds the internationally recognized Kármán line at 100 km, while VSS Unity&apos;s ~89 km apogee meets the FAA/USAF definition of space (50 miles / 80 km) but falls short of the 100 km standard.
       </p>
       <p style={{ color: 'var(--text-secondary)' }} className="text-sm leading-relaxed mb-8">
-        Virgin Galactic completed its final VSS Unity commercial flight in August 2023, then retired the vehicle to focus on its next-generation Delta class spaceplane. Blue Origin&apos;s New Shepard program was grounded following an uncrewed booster failure in September 2022 and returned to flight in May 2023. Both programs have flown a similar number of crewed missions (roughly 6 each), and both face the fundamental challenge of scaling a high-cost, limited-seat experience into a sustainable business.
+        Virgin Galactic completed its final VSS Unity commercial flight in January 2024 (Galactic 06), then retired the vehicle to focus on its next-generation Delta class spaceplane. Blue Origin&apos;s New Shepard program was grounded following an uncrewed booster failure in September 2022 and returned to flight in May 2024. Both programs have flown a similar number of crewed missions (6 for VG, 8 for Blue Origin through 2024), and both face the fundamental challenge of scaling a high-cost, limited-seat experience into a sustainable business.
       </p>
 
       {/* CTA */}

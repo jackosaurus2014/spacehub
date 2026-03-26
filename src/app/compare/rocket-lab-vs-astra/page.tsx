@@ -13,14 +13,14 @@ const COMPARISON_DATA = [
   { metric: 'Revenue (TTM)', a: '~$436M (FY 2025)', b: 'Near zero — launch services discontinued' },
   { metric: 'Total Funding Raised', a: '~$800M+ (public + private)', b: '~$370M (including SPAC)' },
   { metric: 'Primary Launch Vehicle', a: 'Electron (operational)', b: 'Rocket 3 / LV0009 (retired)' },
-  { metric: 'Vehicle Payload (LEO)', a: '300 kg (Electron)', b: '~50 kg (LV0009 target — never reliably achieved)' },
+  { metric: 'Vehicle Payload (LEO)', a: '300 kg (Electron)', b: '~150 kg to SSO (Rocket 3.3 stated capacity)' },
   { metric: 'Total Orbital Launch Attempts', a: '55+ (Electron)', b: '7 (Rocket 3 series)' },
-  { metric: 'Successful Orbital Launches', a: '50+', b: '2 (reached orbit 2x out of 7 attempts)' },
-  { metric: 'Launch Success Rate', a: '~93%', b: '~29%' },
+  { metric: 'Successful Orbital Launches', a: '50+', b: '1 (LV0007 Nov 2021; only confirmed orbital success)' },
+  { metric: 'Launch Success Rate', a: '~93%', b: '~14% (1 success out of 7 attempts)' },
   { metric: 'Reusability', a: 'Electron booster recovery (helicopter catch program)', b: 'None — program ended' },
   { metric: 'Launch Sites', a: 'Mahia, NZ (LC-1); Wallops, VA (LC-2)', b: 'Kodiak, AK (Pacific Spaceport); Cape Canaveral' },
   { metric: 'Next-Gen Vehicle', a: 'Neutron (medium-lift, ~13,000 kg LEO, in development)', b: 'None — launch development halted' },
-  { metric: 'Space Systems Division', a: 'Photon satellite bus; Pioneer deep-space bus; SolAero solar cells; Sinclair reaction wheels; SailGP; satellite components', b: 'Pivoted to spacecraft electric propulsion systems' },
+  { metric: 'Space Systems Division', a: 'Photon satellite bus; Pioneer deep-space bus; SolAero solar cells; Sinclair reaction wheels; satellite components', b: 'Pivoted to spacecraft electric propulsion systems' },
   { metric: 'Key Customers', a: 'NASA, NRO, commercial smallsat operators, Synspective, Kineis', b: 'Formerly DARPA, DoD (pre-pivot)' },
   { metric: 'Business Model (2026)', a: 'Launch services + vertically integrated space systems', b: 'Spacecraft propulsion (electric propulsion modules)' },
   { metric: 'Stock Performance (2024–2025)', a: 'RKLB up ~700% in 2024; strong institutional interest', b: 'ASTR down ~95% from SPAC debut; reverse splits to maintain listing' },
@@ -82,7 +82,7 @@ export default function Page() {
         Rocket Lab&apos;s Electron has become the second-most-frequently-launched U.S. orbital rocket, with 55+ missions since its first orbital attempt in 2017. Its success rate of approximately 93% places it among the most reliable small launch vehicles ever built. Electron has launched payloads for NASA, the NRO, the U.S. Space Force, and dozens of commercial customers. The vehicle&apos;s Rutherford engines use an innovative electric turbopump design, and Rocket Lab has demonstrated first-stage recovery via mid-air helicopter catch.
       </p>
       <p style={{ color: 'var(--text-secondary)' }} className="text-sm leading-relaxed mb-8">
-        Astra&apos;s launch history was far shorter and more troubled. The company attempted seven orbital launches of its Rocket 3 / LV0009 vehicle between 2020 and 2023. Only two reached orbit — a 29% success rate. Notably, the August 2022 launch carrying NASA payloads failed shortly after liftoff. After a string of failures and growing cash burn, Astra halted launch vehicle development in 2023 and pivoted its business entirely toward spacecraft electric propulsion systems, leveraging technology from its acquired subsidiary Apollo Fusion.
+        Astra&apos;s launch history was far shorter and more troubled. The company attempted seven orbital launches of its Rocket 3 / LV0009 vehicle between 2020 and 2023. Only one mission (LV0007, November 2021) successfully reached orbit and deployed its payload. Notably, the June 2022 launch carrying NASA TROPICS payloads failed due to an upper-stage anomaly. After a string of failures and growing cash burn, Astra halted launch vehicle development in 2023 and pivoted its business entirely toward spacecraft electric propulsion systems, leveraging technology from its acquired subsidiary Apollo Fusion.
       </p>
 
       {/* Business Model Comparison */}
