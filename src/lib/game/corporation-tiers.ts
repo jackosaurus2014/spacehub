@@ -120,6 +120,23 @@ export const CORPORATION_TIERS: CorporationTierDef[] = [
     bonuses: { maintenanceReduction: 0.15, revenueBonus: 0.15, miningBonus: 0.20 },
     unlockedTabs: ['espionage', 'territory', 'speedruns', 'seasons'],
   },
+  {
+    tier: 7, name: 'Transcendent', icon: '💠', color: '#c084fc',
+    requirements: {
+      totalEarned: 50_000_000_000_000,
+      completedBuildings: 100,
+      completedResearch: 37,
+      unlockedLocations: 11,
+      builtShips: 20,
+      activeServices: 30,
+      completedContracts: 25,
+      prestigeLevel: 1,
+    },
+    constructionSlots: 14,
+    shipyardSlots: 7,
+    bonuses: { maintenanceReduction: 0.20, revenueBonus: 0.20, miningBonus: 0.25 },
+    unlockedTabs: ['megastructures'],
+  },
 ];
 
 export const TIER_MAP = new Map(CORPORATION_TIERS.map(t => [t.tier, t]));

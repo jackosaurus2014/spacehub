@@ -446,6 +446,224 @@ export const MEGASTRUCTURES: MegastructureDefinition[] = [
       passiveIncome: 750_000_000,
     },
   },
+
+  // 9. Dyson Swarm Segment — multi-phase orbital energy harvester (endgame tier)
+  {
+    id: 'dyson_swarm_segment',
+    name: 'Dyson Swarm Segment',
+    icon: '🌞',
+    description: 'A dedicated segment of self-replicating solar collectors that forms an independent power grid, generating enormous energy output for deep-space operations.',
+    phases: [
+      {
+        name: 'Fusion Bootstrap Reactor',
+        durationSeconds: 36000, // 10 hours
+        moneyCost: 150_000_000_000,
+        resourceCosts: { helium3: 20, titanium: 1500, rare_earth: 600 },
+        interimBonuses: { revenueMultiplier: 1.08, passiveIncome: 80_000_000 },
+      },
+      {
+        name: 'Self-Replicating Collector Foundry',
+        durationSeconds: 57600, // 16 hours
+        moneyCost: 300_000_000_000,
+        resourceCosts: { iron: 4000, aluminum: 3000, exotic_materials: 20, platinum_group: 200 },
+        interimBonuses: { revenueMultiplier: 1.15, maintenanceMultiplier: 0.90, passiveIncome: 200_000_000 },
+      },
+      {
+        name: 'Orbital Swarm Deployment',
+        durationSeconds: 86400, // 24 hours
+        moneyCost: 500_000_000_000,
+        resourceCosts: { titanium: 3000, exotic_materials: 40, helium3: 30, platinum_group: 300 },
+        interimBonuses: { revenueMultiplier: 1.25, maintenanceMultiplier: 0.82, buildSpeedMultiplier: 1.10, passiveIncome: 400_000_000 },
+      },
+      {
+        name: 'Beamed Power Relay Network',
+        durationSeconds: 115200, // 32 hours
+        moneyCost: 700_000_000_000,
+        resourceCosts: { exotic_materials: 80, helium3: 50, platinum_group: 400, rare_earth: 1500 },
+        interimBonuses: { revenueMultiplier: 1.40, maintenanceMultiplier: 0.72, buildSpeedMultiplier: 1.20, passiveIncome: 600_000_000 },
+      },
+      {
+        name: 'Full Segment Activation',
+        durationSeconds: 172800, // 48 hours
+        moneyCost: 1_000_000_000_000,
+        resourceCosts: { exotic_materials: 150, helium3: 80, platinum_group: 600 },
+        interimBonuses: { revenueMultiplier: 1.60, maintenanceMultiplier: 0.60, buildSpeedMultiplier: 1.30, researchSpeedMultiplier: 1.15, passiveIncome: 1_000_000_000 },
+      },
+    ],
+    prerequisites: {
+      research: ['fusion_drive', 'beamed_power'],
+      minMoney: 150_000_000_000,
+      minBuildings: 40,
+      minLocations: 10,
+    },
+    completionBonus: {
+      revenueMultiplier: 1.60,
+      maintenanceMultiplier: 0.55,
+      buildSpeedMultiplier: 1.35,
+      researchSpeedMultiplier: 1.25,
+      miningMultiplier: 1.25,
+      passiveIncome: 1_500_000_000,
+    },
+  },
+
+  // 10. Interstellar Probe — the first object sent beyond the solar system
+  {
+    id: 'interstellar_probe',
+    name: 'Interstellar Probe',
+    icon: '🛸',
+    description: 'An autonomous probe accelerated to 10% light speed via solar sail and laser array, destined for Alpha Centauri. Takes real-time months to arrive, but delivers unique discovery reports along the way.',
+    phases: [
+      {
+        name: 'Solar Sail Fabrication',
+        durationSeconds: 43200, // 12 hours
+        moneyCost: 120_000_000_000,
+        resourceCosts: { aluminum: 2000, titanium: 1200, rare_earth: 800, platinum_group: 100 },
+        interimBonuses: { researchSpeedMultiplier: 1.10 },
+      },
+      {
+        name: 'Laser Propulsion Array',
+        durationSeconds: 86400, // 24 hours
+        moneyCost: 250_000_000_000,
+        resourceCosts: { titanium: 2000, exotic_materials: 30, helium3: 20, rare_earth: 1000 },
+        interimBonuses: { researchSpeedMultiplier: 1.20, revenueMultiplier: 1.05 },
+      },
+      {
+        name: 'Probe AI Core & Instruments',
+        durationSeconds: 72000, // 20 hours
+        moneyCost: 180_000_000_000,
+        resourceCosts: { exotic_materials: 50, platinum_group: 200, rare_earth: 600 },
+        interimBonuses: { researchSpeedMultiplier: 1.30, revenueMultiplier: 1.08 },
+      },
+      {
+        name: 'Launch & Acceleration',
+        durationSeconds: 129600, // 36 hours
+        moneyCost: 400_000_000_000,
+        resourceCosts: { helium3: 40, exotic_materials: 60, platinum_group: 300 },
+        interimBonuses: { researchSpeedMultiplier: 1.40, revenueMultiplier: 1.12, passiveIncome: 100_000_000 },
+      },
+    ],
+    prerequisites: {
+      research: ['fusion_drive', 'deep_drilling'],
+      minMoney: 120_000_000_000,
+      minBuildings: 35,
+      minLocations: 9,
+    },
+    completionBonus: {
+      researchSpeedMultiplier: 1.50,
+      revenueMultiplier: 1.20,
+      passiveIncome: 500_000_000,
+    },
+  },
+
+  // 11. Space Elevator — Earth-to-LEO tether for dramatically cheaper access
+  {
+    id: 'space_elevator',
+    name: 'Space Elevator',
+    icon: '🗼',
+    description: 'A carbon nanotube tether from equatorial Earth to geostationary orbit, reducing launch costs by 90% and opening the floodgates to orbital commerce.',
+    phases: [
+      {
+        name: 'Nanotube Cable Production',
+        durationSeconds: 28800, // 8 hours
+        moneyCost: 80_000_000_000,
+        resourceCosts: { iron: 3000, aluminum: 2000, rare_earth: 500 },
+        interimBonuses: { buildSpeedMultiplier: 1.08, maintenanceMultiplier: 0.96 },
+      },
+      {
+        name: 'Anchor Station & Counterweight',
+        durationSeconds: 57600, // 16 hours
+        moneyCost: 160_000_000_000,
+        resourceCosts: { titanium: 2000, iron: 4000, platinum_group: 120 },
+        interimBonuses: { buildSpeedMultiplier: 1.15, maintenanceMultiplier: 0.90, revenueMultiplier: 1.05 },
+      },
+      {
+        name: 'Climber Deployment & Rail System',
+        durationSeconds: 72000, // 20 hours
+        moneyCost: 250_000_000_000,
+        resourceCosts: { titanium: 1500, exotic_materials: 15, rare_earth: 700, aluminum: 2500 },
+        interimBonuses: { buildSpeedMultiplier: 1.25, maintenanceMultiplier: 0.82, revenueMultiplier: 1.12, passiveIncome: 100_000_000 },
+      },
+      {
+        name: 'Orbital Port & Full Operation',
+        durationSeconds: 100800, // 28 hours
+        moneyCost: 350_000_000_000,
+        resourceCosts: { exotic_materials: 30, platinum_group: 200, helium3: 10, titanium: 2000 },
+        interimBonuses: { buildSpeedMultiplier: 1.35, maintenanceMultiplier: 0.75, revenueMultiplier: 1.20, passiveIncome: 250_000_000 },
+      },
+    ],
+    prerequisites: {
+      research: ['space_elevator_cable', 'orbital_assembly'],
+      minMoney: 80_000_000_000,
+      minBuildings: 25,
+      minLocations: 7,
+    },
+    completionBonus: {
+      buildSpeedMultiplier: 1.40,
+      maintenanceMultiplier: 0.65,
+      revenueMultiplier: 1.25,
+      passiveIncome: 400_000_000,
+    },
+  },
+
+  // 12. Terraforming Engine — the ultimate Mars megaproject
+  {
+    id: 'terraforming_engine',
+    name: 'Terraforming Engine',
+    icon: '🌎',
+    description: 'The definitive planetary engineering project: a continent-scale atmospheric processor, orbital mirror array, and magnetic shield that will make Mars breathable within decades. The longest and most prestigious construction in the game.',
+    phases: [
+      {
+        name: 'Polar Ice Cap Sublimation Array',
+        durationSeconds: 43200, // 12 hours
+        moneyCost: 200_000_000_000,
+        resourceCosts: { iron: 5000, aluminum: 3000, titanium: 1500, methane: 800 },
+        interimBonuses: { revenueMultiplier: 1.08, miningMultiplier: 1.10 },
+      },
+      {
+        name: 'Industrial Greenhouse Gas Emitters',
+        durationSeconds: 86400, // 24 hours
+        moneyCost: 400_000_000_000,
+        resourceCosts: { titanium: 2500, rare_earth: 1200, methane: 2000, exotic_materials: 20 },
+        interimBonuses: { revenueMultiplier: 1.15, miningMultiplier: 1.20, passiveIncome: 100_000_000 },
+      },
+      {
+        name: 'Orbital Mirror Constellation',
+        durationSeconds: 115200, // 32 hours
+        moneyCost: 600_000_000_000,
+        resourceCosts: { aluminum: 5000, platinum_group: 250, exotic_materials: 40, helium3: 20 },
+        interimBonuses: { revenueMultiplier: 1.25, miningMultiplier: 1.30, buildSpeedMultiplier: 1.10, passiveIncome: 250_000_000 },
+      },
+      {
+        name: 'Planetary Magnetic Shield',
+        durationSeconds: 172800, // 48 hours
+        moneyCost: 900_000_000_000,
+        resourceCosts: { exotic_materials: 80, helium3: 50, platinum_group: 400, rare_earth: 2000 },
+        interimBonuses: { revenueMultiplier: 1.35, miningMultiplier: 1.40, buildSpeedMultiplier: 1.15, researchSpeedMultiplier: 1.10, passiveIncome: 500_000_000 },
+      },
+      {
+        name: 'Biosphere Seeding & Activation',
+        durationSeconds: 259200, // 72 hours (3 real days — the ultimate commitment)
+        moneyCost: 1_500_000_000_000,
+        resourceCosts: { exotic_materials: 150, helium3: 100, platinum_group: 600, mars_water: 2000 },
+        interimBonuses: { revenueMultiplier: 1.50, miningMultiplier: 1.50, buildSpeedMultiplier: 1.25, researchSpeedMultiplier: 1.20, passiveIncome: 1_000_000_000 },
+      },
+    ],
+    prerequisites: {
+      research: ['mars_warming', 'greenhouse_engineering'],
+      minMoney: 200_000_000_000,
+      minBuildings: 50,
+      minLocations: 10,
+    },
+    completionBonus: {
+      revenueMultiplier: 1.60,
+      miningMultiplier: 1.50,
+      buildSpeedMultiplier: 1.30,
+      researchSpeedMultiplier: 1.25,
+      maintenanceMultiplier: 0.60,
+      passiveIncome: 2_000_000_000,
+      passiveResources: { mars_water: 1000, iron: 800, rare_earth: 200, methane: 500 },
+    },
+  },
 ];
 
 export const MEGASTRUCTURE_MAP = new Map(MEGASTRUCTURES.map(m => [m.id, m]));

@@ -438,6 +438,16 @@ export const PAGE_RELATIONS: Record<string, RelatedModuleConfig[]> = {
   'compare/starlink-vs-oneweb': [MODULES.constellations, MODULES.satellites, MODULES.spaceComms, MODULES.companyProfiles],
   'compare/viasat-vs-ses': [MODULES.spaceComms, MODULES.companyProfiles, MODULES.constellations, MODULES.spectrum],
   'compare/virgin-galactic-vs-blue-origin': [MODULES.spaceTourism, MODULES.companyProfiles, MODULES.launchVehicles, MODULES.spaceCapital],
+  'compare/spacex-vs-arianespace': [MODULES.launchVehicles, MODULES.companyProfiles, MODULES.launchEconomics, MODULES.spaceDefense],
+  'compare/firefly-vs-abl-space': [MODULES.launchVehicles, MODULES.startupTracker, MODULES.companyProfiles, MODULES.launchEconomics],
+  'compare/spire-vs-hawkeye-360': [MODULES.satellites, MODULES.companyProfiles, MODULES.spaceDefense, MODULES.constellations],
+  'compare/satellogic-vs-planet-labs': [MODULES.satellites, MODULES.companyProfiles, MODULES.imagery, MODULES.constellations],
+  'compare/ses-vs-intelsat': [MODULES.spaceComms, MODULES.companyProfiles, MODULES.constellations, MODULES.spectrum],
+  'compare/iridium-vs-starlink': [MODULES.constellations, MODULES.spaceComms, MODULES.companyProfiles, MODULES.satellites],
+  'compare/rocket-lab-vs-spacex': [MODULES.launchVehicles, MODULES.companyProfiles, MODULES.launchEconomics, MODULES.startupTracker],
+  'compare/northrop-grumman-vs-boeing-space': [MODULES.companyProfiles, MODULES.spaceDefense, MODULES.procurement, MODULES.contractAwards],
+  'compare/intuitive-machines-vs-astrobotic': [MODULES.cislunar, MODULES.companyProfiles, MODULES.startupTracker, MODULES.spaceCapital],
+  'compare/sierra-space-vs-axiom-space': [MODULES.spaceStations, MODULES.companyProfiles, MODULES.startupTracker, MODULES.spaceCapital],
 
   // ── Developer portal ──
   'developer': [MODULES.tools, MODULES.satellites, MODULES.marketIntel, MODULES.companyProfiles, MODULES.pricing],

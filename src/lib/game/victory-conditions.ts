@@ -115,6 +115,16 @@ function hasMarsBuilding(state: GameState, defId: string): boolean {
   return state.buildings.some(b => b.isComplete && b.definitionId === defId);
 }
 
+function isMegastructureComplete(state: GameState, megaId: string): boolean {
+  return (state.megastructures || []).some(m => m.definitionId === megaId && m.status === 'complete');
+}
+
+function getMegastructurePhaseProgress(state: GameState, megaId: string): { completed: number; total: number } {
+  const inst = (state.megastructures || []).find(m => m.definitionId === megaId);
+  if (!inst) return { completed: 0, total: 1 };
+  return { completed: inst.completedPhases, total: inst.totalPhases };
+}
+
 // ─── Victory Definitions ────────────────────────────────────────────────────
 
 export const VICTORY_CONDITIONS: VictoryDefinition[] = [
@@ -272,11 +282,87 @@ export const VICTORY_CONDITIONS: VictoryDefinition[] = [
     },
   },
 
-  // 7. Hegemon (meta-victory)
+  // 7. Dyson Lord — complete the Dyson Swarm Segment
+  {
+    id: 'dyson_lord',
+    name: 'Dyson Lord',
+    description: 'Complete the Dyson Swarm Segment megastructure, harnessing a star\'s energy to power your civilization.',
+    icon: '🌞',
+    title: 'Star Harnasser',
+    reward: { revenueMultiplier: 1.08, buildSpeedMultiplier: 1.05, researchSpeedMultiplier: 1.0, miningMultiplier: 1.0 },
+    check: (s) => isMegastructureComplete(s, 'dyson_swarm_segment'),
+    progress: (s) => {
+      const { completed, total } = getMegastructurePhaseProgress(s, 'dyson_swarm_segment');
+      const details = [
+        { label: 'Swarm Segment Phases', current: completed, target: total },
+      ];
+      const percent = details.reduce((sum, d) => sum + Math.min(1, d.current / d.target), 0) / details.length;
+      return { percent, details };
+    },
+  },
+
+  // 8. Interstellar Pioneer — build the Interstellar Probe
+  {
+    id: 'interstellar_pioneer',
+    name: 'Interstellar Pioneer',
+    description: 'Build and launch the Interstellar Probe, sending humanity\'s first emissary beyond the solar system.',
+    icon: '🛸',
+    title: 'Voyager',
+    reward: { revenueMultiplier: 1.0, buildSpeedMultiplier: 1.0, researchSpeedMultiplier: 1.10, miningMultiplier: 1.0 },
+    check: (s) => isMegastructureComplete(s, 'interstellar_probe'),
+    progress: (s) => {
+      const { completed, total } = getMegastructurePhaseProgress(s, 'interstellar_probe');
+      const details = [
+        { label: 'Probe Construction Phases', current: completed, target: total },
+      ];
+      const percent = details.reduce((sum, d) => sum + Math.min(1, d.current / d.target), 0) / details.length;
+      return { percent, details };
+    },
+  },
+
+  // 9. Space Elevator Tycoon — build the Space Elevator
+  {
+    id: 'space_elevator_tycoon',
+    name: 'Space Elevator Tycoon',
+    description: 'Build the Space Elevator, linking Earth\'s surface to orbit and revolutionizing access to space.',
+    icon: '🗼',
+    title: 'Elevator Baron',
+    reward: { revenueMultiplier: 1.05, buildSpeedMultiplier: 1.08, researchSpeedMultiplier: 1.0, miningMultiplier: 1.0 },
+    check: (s) => isMegastructureComplete(s, 'space_elevator'),
+    progress: (s) => {
+      const { completed, total } = getMegastructurePhaseProgress(s, 'space_elevator');
+      const details = [
+        { label: 'Elevator Construction Phases', current: completed, target: total },
+      ];
+      const percent = details.reduce((sum, d) => sum + Math.min(1, d.current / d.target), 0) / details.length;
+      return { percent, details };
+    },
+  },
+
+  // 10. Architect of Worlds — complete the Terraforming Engine
+  {
+    id: 'architect_of_worlds',
+    name: 'Architect of Worlds',
+    description: 'Complete the Terraforming Engine and begin the transformation of Mars into a habitable world. The ultimate expression of human ambition.',
+    icon: '🌎',
+    title: 'World Shaper',
+    reward: { revenueMultiplier: 1.10, buildSpeedMultiplier: 1.05, researchSpeedMultiplier: 1.05, miningMultiplier: 1.05 },
+    check: (s) => isMegastructureComplete(s, 'terraforming_engine'),
+    progress: (s) => {
+      const { completed, total } = getMegastructurePhaseProgress(s, 'terraforming_engine');
+      const details = [
+        { label: 'Terraforming Phases', current: completed, target: total },
+      ];
+      const percent = details.reduce((sum, d) => sum + Math.min(1, d.current / d.target), 0) / details.length;
+      return { percent, details };
+    },
+  },
+
+  // 11. Hegemon (meta-victory) — updated to require 6 of 10 other victories
   {
     id: 'hegemon',
     name: 'Hegemon',
-    description: 'Achieve 4 of the 6 other victories, prestige at least once, and earn 15+ achievements.',
+    description: 'Achieve 6 of the 10 other victories, prestige at least once, and earn 15+ achievements.',
     icon: '👑',
     title: 'Ascendant',
     reward: { revenueMultiplier: 1.10, buildSpeedMultiplier: 1.05, researchSpeedMultiplier: 1.05, miningMultiplier: 1.05 },
@@ -285,13 +371,13 @@ export const VICTORY_CONDITIONS: VictoryDefinition[] = [
       const otherVictories = earnedVictories.filter(v => v !== 'hegemon').length;
       const hasPrestige = (s.prestige?.level || 0) >= 1;
       const achievementCount = (s.earnedAchievements || []).length;
-      return otherVictories >= 4 && hasPrestige && achievementCount >= 15;
+      return otherVictories >= 6 && hasPrestige && achievementCount >= 15;
     },
     progress: (s) => {
       const earnedVictories = s.earnedVictories || [];
       const otherVictories = earnedVictories.filter(v => v !== 'hegemon').length;
       const details = [
-        { label: 'Other Victories', current: Math.min(otherVictories, 4), target: 4 },
+        { label: 'Other Victories', current: Math.min(otherVictories, 6), target: 6 },
         { label: 'Prestige Level', current: Math.min(s.prestige?.level || 0, 1), target: 1 },
         { label: 'Achievements', current: Math.min((s.earnedAchievements || []).length, 15), target: 15 },
       ];

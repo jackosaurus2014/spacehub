@@ -342,7 +342,7 @@ export interface GameState {
     displayTier: 'Pioneer' | 'Colonist' | 'Admiral' | 'Architect' | 'Legend';
   };
 
-  // Corporation tier (1-6, company evolution)
+  // Corporation tier (1-7, company evolution)
   corporationTier?: number;
 
   // Weekly events

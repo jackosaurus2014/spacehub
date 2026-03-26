@@ -142,6 +142,66 @@ const INDUSTRY_MATCHUPS = [
     href: '/compare/viasat-vs-ses',
     category: 'Satellite Comms',
   },
+  {
+    title: 'SpaceX vs Arianespace',
+    description: 'Falcon 9/Heavy vs Ariane 6: market share, pricing, government customers, and the transatlantic launch competition.',
+    href: '/compare/spacex-vs-arianespace',
+    category: 'Launch Providers',
+  },
+  {
+    title: 'Firefly Aerospace vs ABL Space',
+    description: 'Alpha vs RS1 in the small launch market: one reaching orbit, the other stalled after a single failed attempt.',
+    href: '/compare/firefly-vs-abl-space',
+    category: 'Launch Providers',
+  },
+  {
+    title: 'Spire Global vs HawkEye 360',
+    description: 'Multi-mission RF data platform versus dedicated RF geolocation and signal intelligence for defense and intelligence customers.',
+    href: '/compare/spire-vs-hawkeye-360',
+    category: 'Earth Observation',
+  },
+  {
+    title: 'Satellogic vs Planet Labs',
+    description: 'Hyperspectral imaging and video versus the world\'s largest multispectral constellation for daily global monitoring.',
+    href: '/compare/satellogic-vs-planet-labs',
+    category: 'Earth Observation',
+  },
+  {
+    title: 'SES vs Intelsat',
+    description: 'Pre-merger snapshot of two GEO satellite giants: 100+ combined satellites, C-band billions, and the deal reshaping satcom.',
+    href: '/compare/ses-vs-intelsat',
+    category: 'Satellite Comms',
+  },
+  {
+    title: 'Iridium vs Starlink',
+    description: 'L-band IoT/voice with 100% global coverage versus Ka/Ku broadband at massive scale — fundamentally different connectivity paradigms.',
+    href: '/compare/iridium-vs-starlink',
+    category: 'Satellite Comms',
+  },
+  {
+    title: 'Rocket Lab vs SpaceX',
+    description: 'Full vertical comparison: launch vehicles, spacecraft, solar panels, and components. Same end-to-end ambition at vastly different scale.',
+    href: '/compare/rocket-lab-vs-spacex',
+    category: 'Space Infrastructure',
+  },
+  {
+    title: 'Northrop Grumman vs Boeing Space',
+    description: 'Defense primes compared: JWST vs SLS, Cygnus vs Starliner, SDA contracts, and adapting to the new space era.',
+    href: '/compare/northrop-grumman-vs-boeing-space',
+    category: 'Defense Primes',
+  },
+  {
+    title: 'Intuitive Machines vs Astrobotic',
+    description: 'Commercial lunar lander companies: CLPS contracts, Nova-C vs Peregrine mission results, and the race to deliver payloads to the Moon.',
+    href: '/compare/intuitive-machines-vs-astrobotic',
+    category: 'Lunar',
+  },
+  {
+    title: 'Sierra Space vs Axiom Space',
+    description: 'Dream Chaser spaceplane and LIFE inflatable modules versus ISS-attached station with private astronaut mission heritage.',
+    href: '/compare/sierra-space-vs-axiom-space',
+    category: 'Space Stations',
+  },
 ];
 
 const BLOG_COMPARISONS = [
