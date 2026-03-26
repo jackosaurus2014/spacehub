@@ -63,20 +63,20 @@ export default function Page() {
           </div>
         </div>
         <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+          <table className="w-full text-xs sm:text-sm">
             <thead>
               <tr style={{ borderBottom: '1px solid var(--border-subtle)' }}>
-                <th className="py-3 px-4 text-left text-[10px] uppercase tracking-widest font-semibold" style={{ color: 'var(--text-tertiary)' }}>Metric</th>
-                <th className="py-3 px-4 text-center text-xs font-bold" style={{ color: 'var(--text-primary)' }}>Starlink</th>
-                <th className="py-3 px-4 text-center text-xs font-bold" style={{ color: 'var(--text-primary)' }}>Project Kuiper</th>
+                <th className="py-2 sm:py-3 px-2 sm:px-4 text-left text-[10px] uppercase tracking-widest font-semibold" style={{ color: 'var(--text-tertiary)' }}>Metric</th>
+                <th className="py-2 sm:py-3 px-2 sm:px-4 text-center text-[11px] sm:text-xs font-bold" style={{ color: 'var(--text-primary)' }}>Starlink</th>
+                <th className="py-2 sm:py-3 px-2 sm:px-4 text-center text-[11px] sm:text-xs font-bold" style={{ color: 'var(--text-primary)' }}>Project Kuiper</th>
               </tr>
             </thead>
             <tbody>
               {COMPARISON_DATA.map((row, i) => (
                 <tr key={row.metric} style={{ borderBottom: '1px solid var(--border-subtle)', background: i % 2 === 0 ? 'transparent' : 'var(--bg-elevated)' }}>
-                  <td className="py-2.5 px-4 text-xs font-medium" style={{ color: 'var(--text-secondary)' }}>{row.metric}</td>
-                  <td className="py-2.5 px-4 text-center text-xs" style={{ color: 'var(--text-primary)' }}>{row.a}</td>
-                  <td className="py-2.5 px-4 text-center text-xs" style={{ color: 'var(--text-primary)' }}>{row.b}</td>
+                  <td className="py-2 sm:py-2.5 px-2 sm:px-4 text-[11px] sm:text-xs font-medium" style={{ color: 'var(--text-secondary)' }}>{row.metric}</td>
+                  <td className="py-2 sm:py-2.5 px-2 sm:px-4 text-center text-[11px] sm:text-xs" style={{ color: 'var(--text-primary)' }}>{row.a}</td>
+                  <td className="py-2 sm:py-2.5 px-2 sm:px-4 text-center text-[11px] sm:text-xs" style={{ color: 'var(--text-primary)' }}>{row.b}</td>
                 </tr>
               ))}
             </tbody>
@@ -114,6 +114,16 @@ export default function Page() {
             <Link key={c.href} href={c.href} className="card-content text-center text-sm p-4">{c.title} →</Link>
           ))}
         </div>
+      </div>
+
+      {/* Related Reading */}
+      <div className="mt-8 p-4 rounded-lg bg-white/[0.03] border border-white/[0.06]">
+        <h3 className="text-sm font-bold text-white mb-3">Related Reading</h3>
+        <ul className="space-y-2">
+          <li><Link href="/blog/10000-starlink-satellites-mega-constellation-internet" className="text-sm text-indigo-400 hover:text-indigo-300">10,000 Starlink Satellites: Inside the Mega-Constellation</Link></li>
+          <li><Link href="/blog/how-to-track-satellites-complete-guide-2026" className="text-sm text-indigo-400 hover:text-indigo-300">How to Track Satellites in Real-Time: The Complete 2026 Guide</Link></li>
+          <li><Link href="/guide/satellite-tracking-guide" className="text-sm text-indigo-400 hover:text-indigo-300">The Complete Satellite Tracking Guide</Link></li>
+        </ul>
       </div>
 
       {/* JSON-LD */}

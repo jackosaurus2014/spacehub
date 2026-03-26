@@ -480,6 +480,10 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 
 <p>The sky has never been busier with human-made objects, and the tools for tracking them have never been more accessible. Whether you\'re stepping outside for the first time to catch the ISS or building automated tracking stations, the community of satellite watchers is growing — and every clear night offers something new to discover.</p>
 
+<h2 id="further-reading">Further Reading</h2>
+
+<p>Want to go deeper? Our <a href="/guide/satellite-tracking-guide">Complete Satellite Tracking Guide</a> covers TLE data, SGP4 propagation, and professional-grade tracking techniques. If you\'re interested in the mega-constellations that are transforming the night sky, read our <a href="/compare/starlink-vs-kuiper">Starlink vs Project Kuiper comparison</a> to understand how these networks differ. And for the environmental impact of all these satellites, see our analysis of <a href="/blog/space-debris-growing-threat-orbital-environment">the growing space debris threat</a>.</p>
+
 <p>Ready to start tracking? <a href="/satellites">Open the SpaceNexus Satellite Tracker</a> and find out what\'s passing over your location tonight.</p>
 `
   },
@@ -721,6 +725,10 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 
 <p>The space industry is entering a golden age of growth driven by declining costs, expanding applications, and massive government investment. For patient, informed investors, the opportunity is substantial — but so are the risks. Understand the companies, evaluate the technologies, size your positions appropriately, and stay engaged with an industry that\'s quite literally reaching for the stars.</p>
 
+<h2 id="further-reading">Further Reading</h2>
+
+<p>For a more advanced look at space investing strategies, see our <a href="/blog/space-industry-investment-guide-2026">2026 Investment Guide: Where Smart Money Is Going</a>. Interested in the biggest upcoming catalyst? Read <a href="/blog/spacex-ipo-what-it-means-for-space-investors">The SpaceX IPO: What a $1.75 Trillion Valuation Means</a>. And for an in-depth guide to the investment landscape, visit our <a href="/guide/space-economy-investment">Space Economy Investment Guide</a> and our <a href="/compare/spacex-vs-blue-origin">SpaceX vs Blue Origin comparison</a>.</p>
+
 <p><em>Disclaimer: This article is for educational and informational purposes only and does not constitute investment advice. Space investments carry significant risks including potential total loss of capital. Always conduct your own research and consult with a qualified financial advisor before making investment decisions.</em></p>
 `
   },
@@ -922,6 +930,10 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 </ul>
 
 <p>The next five years are critical. The decisions made today about mega-constellation deployment, debris removal investment, and regulatory frameworks will determine whether the orbital environment remains usable for future generations — or becomes a cautionary tale about the tragedy of the commons playing out at 28,000 kilometers per hour.</p>
+
+<h2 id="further-reading">Further Reading</h2>
+
+<p>To understand how Earth observation companies are monitoring orbital debris and environmental conditions from space, read our <a href="/compare/iceye-vs-capella-space">ICEYE vs Capella Space comparison</a>. For more on the tracking technology behind debris monitoring, see our <a href="/guide/satellite-tracking-guide">Complete Satellite Tracking Guide</a>. And for the latest on how regulators are responding, visit our <a href="/blog/space-debris-regulations-changes-2026">Space Debris Regulations in 2026</a> analysis.</p>
 
 <p>Stay informed about the debris environment and orbital safety developments through the <a href="/space-environment">SpaceNexus Space Environment module</a>. The data is updated in real time, and understanding the problem is the first step toward solving it.</p>
 `
@@ -2570,7 +2582,9 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 
 <p>For space industry professionals, the implications extend beyond investment returns. A publicly traded SpaceX with a $1.5T+ market cap will attract talent from Big Tech, drive supplier development, accelerate regulatory modernization, and create a gravitational pull that lifts the entire sector.</p>
 
-<p>Track space market movements, sector valuations, and IPO developments in real time with the <a href="/space-capital">Space Capital Tracker</a> and <a href="/market-intel">Market Intelligence</a> modules on SpaceNexus.</p>
+<p>For a broader look at how to position your portfolio around space, read our <a href="/blog/space-industry-investment-guide-2026">Space Industry Investment Guide</a> and our <a href="/guide/space-economy-investment">Space Economy Investment Guide</a>. To understand how SpaceX compares to its closest rival, see our <a href="/compare/spacex-vs-blue-origin">SpaceX vs Blue Origin comparison</a>. And for a deep dive into the space ETFs mentioned in this article, check out our <a href="/blog/complete-guide-space-etfs-arkx-ufo-ita-2026">Complete Guide to Space ETFs</a>.
+
+Track space market movements, sector valuations, and IPO developments in real time with the <a href="/space-capital">Space Capital Tracker</a> and <a href="/market-intel">Market Intelligence</a> modules on SpaceNexus.</p>
 `,
   },
   {
@@ -3105,7 +3119,9 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 
 <p>The cell tower won\'t disappear — it will remain essential for high-density urban areas where satellite capacity is insufficient. But for the <strong>75% of the Earth\'s surface</strong> currently without coverage, and for the billions of people who live there, the satellite is becoming the tower. That\'s not a vision for the distant future. It\'s happening now.</p>
 
-<p>Track D2D satellite deployments, constellation coverage maps, and related company metrics through the SpaceNexus <a href="/satellites">Satellite Tracker</a>. Monitor AST SpaceMobile, Globalstar, and carrier stocks in <a href="/market-intel">Market Intelligence</a>, and follow spectrum regulatory developments in <a href="/compliance">Compliance Hub</a>.</p>
+<p>For a head-to-head comparison of the two leading D2D approaches, read our <a href="/compare/starlink-vs-ast-spacemobile">Starlink vs AST SpaceMobile comparison</a>. To see how AST SpaceMobile stacks up against smaller D2D competitors, check our <a href="/compare/ast-spacemobile-vs-lynk">AST SpaceMobile vs Lynk Global analysis</a>. And for a broader look at the satellite broadband market, see our <a href="/blog/starlink-oneweb-kuiper-mega-constellation-comparison">Mega-Constellation Comparison</a>.
+
+Track D2D satellite deployments, constellation coverage maps, and related company metrics through the SpaceNexus <a href="/satellites">Satellite Tracker</a>. Monitor AST SpaceMobile, Globalstar, and carrier stocks in <a href="/market-intel">Market Intelligence</a>, and follow spectrum regulatory developments in <a href="/compliance">Compliance Hub</a>.</p>
 `,
   },
   {
@@ -3600,6 +3616,8 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 <p>The space economy in 2026 offers the most compelling investment opportunity since the early days of the internet — a massive, growing addressable market with improving unit economics, increasing government support, and technology maturation that is turning science fiction into revenue. But it requires discipline: not every space company will survive, valuations can detach from fundamentals, and the sector's inherent technical risk demands appropriate position sizing.</p>
 
 <p>The smart money isn't just investing in space — it's investing in the <strong>right parts</strong> of space, at the <strong>right valuations</strong>, with the <strong>right time horizons</strong>. Use this guide as a starting framework, but do your own due diligence, monitor the data continuously, and adjust as the market evolves.</p>
+
+<p>For the biggest upcoming catalyst in space investing, read our deep dive on <a href="/blog/spacex-ipo-what-it-means-for-space-investors">The SpaceX IPO and what it means for investors</a>. If you're new to space investing, start with our <a href="/blog/space-industry-investment-guide-beginners-2026">Beginner's Investment Guide</a>. And for a head-to-head look at the industry's two biggest players, see our <a href="/compare/spacex-vs-blue-origin">SpaceX vs Blue Origin comparison</a>.</p>
 
 <p>Track space stocks, funding rounds, and market trends in real time with SpaceNexus's <a href="/space-capital">Space Capital Tracker</a>. Monitor company fundamentals in <a href="/market-intel">Market Intelligence</a>, and follow launch catalysts on the <a href="/launch-manifest">Launch Manifest</a>.</p>
 

@@ -272,6 +272,15 @@ export default function GameStyles() {
         background: rgba(6, 182, 212, 0.3);
       }
 
+      /* Tab bar — horizontal scroll with hidden scrollbar */
+      .game-tab-bar {
+        scrollbar-width: none; /* Firefox */
+        -ms-overflow-style: none; /* IE/Edge */
+      }
+      .game-tab-bar::-webkit-scrollbar {
+        display: none; /* Chrome/Safari */
+      }
+
       /* ═══════════════════════════════════════════════════════════════════
          TYPOGRAPHY — game display text
          ═══════════════════════════════════════════════════════════════════ */

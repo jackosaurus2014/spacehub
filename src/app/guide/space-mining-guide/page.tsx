@@ -48,6 +48,17 @@ export default function SpaceMiningGuidePage() {
       />
       <FAQSchema items={faqs} />
       <div className="container mx-auto px-4 pb-16">
+        {/* Breadcrumbs */}
+        <nav className="pt-6 mb-4" aria-label="Breadcrumb">
+          <ol className="flex items-center gap-2 text-sm text-slate-400">
+            <li><Link href="/" className="hover:text-slate-300 transition-colors">Home</Link></li>
+            <li>/</li>
+            <li><Link href="/guide/space-industry" className="hover:text-slate-300 transition-colors">Guides</Link></li>
+            <li>/</li>
+            <li className="text-slate-300">Space Mining Guide</li>
+          </ol>
+        </nav>
+
         <AnimatedPageHeader
           title="Space Mining Guide"
           subtitle="Asteroid mining, lunar resources, and the economics of space"

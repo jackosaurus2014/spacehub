@@ -141,14 +141,13 @@ export default function GameChat({ companyName }: GameChatProps) {
   };
 
   return (
-    <div className="fixed bottom-4 right-4 z-50 flex flex-col items-end" style={{ pointerEvents: 'auto' }}>
+    <div className="fixed bottom-4 right-4 z-50 flex flex-col items-end max-w-[calc(100vw-2rem)]" style={{ pointerEvents: 'auto' }}>
       {/* Expanded Chat Panel */}
       {isOpen && (
         <div
-          className="mb-2 rounded-xl overflow-hidden shadow-2xl flex flex-col"
+          className="mb-2 rounded-xl overflow-hidden shadow-2xl flex flex-col w-[calc(100vw-2rem)] sm:w-[320px]"
           style={{
-            width: '320px',
-            height: '420px',
+            height: 'min(420px, calc(100vh - 6rem))',
             background: 'linear-gradient(180deg, #0d0d1a 0%, #0a0a0f 100%)',
             border: '1px solid rgba(99, 179, 237, 0.2)',
           }}

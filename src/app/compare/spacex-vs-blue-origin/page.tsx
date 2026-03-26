@@ -66,20 +66,20 @@ export default function SpaceXVsBlueOrigin() {
           </div>
         </div>
         <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+          <table className="w-full text-xs sm:text-sm">
             <thead>
               <tr style={{ borderBottom: '1px solid var(--border-subtle)' }}>
-                <th className="py-3 px-4 text-left text-[10px] uppercase tracking-widest font-semibold" style={{ color: 'var(--text-tertiary)' }}>Metric</th>
-                <th className="py-3 px-4 text-center text-xs font-bold" style={{ color: 'var(--text-primary)' }}>SpaceX</th>
-                <th className="py-3 px-4 text-center text-xs font-bold" style={{ color: 'var(--text-primary)' }}>Blue Origin</th>
+                <th className="py-2 sm:py-3 px-2 sm:px-4 text-left text-[10px] uppercase tracking-widest font-semibold" style={{ color: 'var(--text-tertiary)' }}>Metric</th>
+                <th className="py-2 sm:py-3 px-2 sm:px-4 text-center text-[11px] sm:text-xs font-bold" style={{ color: 'var(--text-primary)' }}>SpaceX</th>
+                <th className="py-2 sm:py-3 px-2 sm:px-4 text-center text-[11px] sm:text-xs font-bold" style={{ color: 'var(--text-primary)' }}>Blue Origin</th>
               </tr>
             </thead>
             <tbody>
               {COMPARISON_DATA.map((row, i) => (
                 <tr key={row.metric} style={{ borderBottom: '1px solid var(--border-subtle)', background: i % 2 === 0 ? 'transparent' : 'var(--bg-elevated)' }}>
-                  <td className="py-2.5 px-4 text-xs font-medium" style={{ color: 'var(--text-secondary)' }}>{row.metric}</td>
-                  <td className="py-2.5 px-4 text-center text-xs" style={{ color: 'var(--text-primary)' }}>{row.spacex}</td>
-                  <td className="py-2.5 px-4 text-center text-xs" style={{ color: 'var(--text-primary)' }}>{row.blueOrigin}</td>
+                  <td className="py-2 sm:py-2.5 px-2 sm:px-4 text-[11px] sm:text-xs font-medium" style={{ color: 'var(--text-secondary)' }}>{row.metric}</td>
+                  <td className="py-2 sm:py-2.5 px-2 sm:px-4 text-center text-[11px] sm:text-xs" style={{ color: 'var(--text-primary)' }}>{row.spacex}</td>
+                  <td className="py-2 sm:py-2.5 px-2 sm:px-4 text-center text-[11px] sm:text-xs" style={{ color: 'var(--text-primary)' }}>{row.blueOrigin}</td>
                 </tr>
               ))}
             </tbody>
@@ -127,6 +127,16 @@ export default function SpaceXVsBlueOrigin() {
             </Link>
           ))}
         </div>
+      </div>
+
+      {/* Related Reading */}
+      <div className="mt-8 p-4 rounded-lg bg-white/[0.03] border border-white/[0.06]">
+        <h3 className="text-sm font-bold text-white mb-3">Related Reading</h3>
+        <ul className="space-y-2">
+          <li><Link href="/blog/spacex-ipo-what-it-means-for-space-investors" className="text-sm text-indigo-400 hover:text-indigo-300">The SpaceX IPO: What a $1.75 Trillion Valuation Means for Space Investors</Link></li>
+          <li><Link href="/blog/space-industry-investment-guide-2026" className="text-sm text-indigo-400 hover:text-indigo-300">Space Industry Investment Guide: Where Smart Money Is Going in 2026</Link></li>
+          <li><Link href="/guide/space-launch-cost-comparison" className="text-sm text-indigo-400 hover:text-indigo-300">Space Launch Cost Comparison 2026: Prices by Vehicle &amp; Provider</Link></li>
+        </ul>
       </div>
 
       {/* Schema.org structured data */}

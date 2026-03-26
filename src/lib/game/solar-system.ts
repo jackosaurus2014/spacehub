@@ -26,7 +26,7 @@ export const LOCATIONS: SolarSystemLocation[] = [
     travelTimeMonths: 0,
     unlockCost: 0,
     requiredResearch: [],
-    availableBuildings: ['sat_telecom', 'sat_sensor', 'space_station_small', 'datacenter_orbital', 'solar_farm_orbital', 'fabrication_orbital'],
+    availableBuildings: ['sat_telecom', 'sat_sensor', 'space_station_small', 'datacenter_orbital', 'solar_farm_orbital', 'fabrication_orbital', 'nuclear_reactor_leo'],
     tier: 1,
   },
   {
@@ -52,7 +52,7 @@ export const LOCATIONS: SolarSystemLocation[] = [
     travelTimeMonths: 1,
     unlockCost: 1_000_000_000,
     requiredResearch: ['reusable_boosters'],
-    availableBuildings: ['space_station_lunar', 'sat_lunar_relay'],
+    availableBuildings: ['space_station_lunar', 'sat_lunar_relay', 'solar_array_lunar_orbit'],
     tier: 2,
   },
   {
@@ -65,7 +65,7 @@ export const LOCATIONS: SolarSystemLocation[] = [
     travelTimeMonths: 1,
     unlockCost: 2_000_000_000,
     requiredResearch: ['reusable_boosters', 'modular_spacecraft'],
-    availableBuildings: ['mining_lunar_ice', 'fabrication_lunar', 'solar_farm_lunar', 'habitat_lunar'],
+    availableBuildings: ['mining_lunar_ice', 'fabrication_lunar', 'solar_farm_lunar', 'habitat_lunar', 'nuclear_reactor_lunar'],
     tier: 2,
   },
   {
@@ -78,7 +78,7 @@ export const LOCATIONS: SolarSystemLocation[] = [
     travelTimeMonths: 8,
     unlockCost: 10_000_000_000,
     requiredResearch: ['super_heavy_lift', 'ion_drives'],
-    availableBuildings: ['space_station_mars', 'sat_mars_relay', 'datacenter_mars_orbit'],
+    availableBuildings: ['space_station_mars', 'sat_mars_relay', 'datacenter_mars_orbit', 'nuclear_reactor_mars_orbit'],
     tier: 3,
   },
   {
@@ -91,7 +91,7 @@ export const LOCATIONS: SolarSystemLocation[] = [
     travelTimeMonths: 8,
     unlockCost: 25_000_000_000,
     requiredResearch: ['super_heavy_lift', 'ion_drives', 'resource_prospecting'],
-    availableBuildings: ['mining_mars', 'fabrication_mars', 'habitat_mars', 'solar_farm_mars'],
+    availableBuildings: ['mining_mars', 'fabrication_mars', 'habitat_mars', 'solar_farm_mars', 'nuclear_reactor_mars_surface'],
     tier: 3,
   },
   {
@@ -104,7 +104,7 @@ export const LOCATIONS: SolarSystemLocation[] = [
     travelTimeMonths: 18,
     unlockCost: 15_000_000_000,
     requiredResearch: ['asteroid_capture', 'autonomous_docking'],
-    availableBuildings: ['mining_asteroid', 'fabrication_asteroid', 'space_station_belt'],
+    availableBuildings: ['mining_asteroid', 'fabrication_asteroid', 'space_station_belt', 'nuclear_reactor_asteroid'],
     tier: 3,
   },
   {
@@ -117,7 +117,7 @@ export const LOCATIONS: SolarSystemLocation[] = [
     travelTimeMonths: 30,
     unlockCost: 100_000_000_000,
     requiredResearch: ['nuclear_thermal', 'interplanetary_cruisers'],
-    availableBuildings: ['space_station_jupiter', 'mining_europa', 'datacenter_jupiter'],
+    availableBuildings: ['space_station_jupiter', 'mining_europa', 'datacenter_jupiter', 'nuclear_reactor_jupiter'],
     tier: 4,
   },
   {
@@ -130,7 +130,7 @@ export const LOCATIONS: SolarSystemLocation[] = [
     travelTimeMonths: 60,
     unlockCost: 200_000_000_000,
     requiredResearch: ['nuclear_thermal', 'interplanetary_cruisers', 'deep_drilling'],
-    availableBuildings: ['space_station_saturn', 'mining_titan', 'fabrication_titan'],
+    availableBuildings: ['space_station_saturn', 'mining_titan', 'fabrication_titan', 'nuclear_reactor_saturn'],
     tier: 4,
   },
   {

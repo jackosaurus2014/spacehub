@@ -1,5 +1,5 @@
 // ─── Space Tycoon: Building Definitions ─────────────────────────────────────
-// realBuildSeconds: Tier 1 ≈ 5 min (300s), Tier 2 ≈ 15 min, Tier 3 ≈ 45 min, Tier 4 ≈ 2 hr
+// realBuildSeconds: Tier 1 ≈ 3-5 min (180-300s), Tier 2 ≈ 10-20 min, Tier 3 ≈ 30-45 min, Tier 4 ≈ 45-60 min
 // Duplicate builds at same location scale by 1.3x time (in addition to cost scaling)
 
 import type { BuildingDefinition } from './types';
@@ -70,10 +70,10 @@ export const BUILDINGS: BuildingDefinition[] = [
   // ─── SPACE STATIONS ───────────────────────────────────────────────────
   { id: 'space_station_small', name: 'Orbital Outpost', category: 'space_station', tier: 1,
     description: 'Small modular space station in LEO. 4-person crew capacity.',
-    tooltip: 'YOUR FIRST SPACE STATION. Activates LEO Space Tourism at $12M/mo vs $4M cost = $8M/mo net. Also enables the Debris Removal service (with research). Requires "Modular Spacecraft" research and costs aluminum (50) + titanium (20). At $500M, payback is ~62 months, but it unlocks tourism — a key revenue category — and counts toward station contracts. Essential mid-game milestone.',
+    tooltip: 'YOUR FIRST SPACE STATION. Activates LEO Space Tourism at $12M/mo vs $4M cost = $8M/mo net. Requires "Modular Spacecraft" research and costs aluminum (50) + titanium (20). At $500M and 15 min build, payback is ~167 months, but it unlocks tourism — a key revenue category — and counts toward station contracts. Essential mid-game milestone.',
     baseCost: 500_000_000, buildTimeMonths: 18, maintenanceCostPerMonth: 5_000_000,
     requiredResearch: ['modular_spacecraft'], requiredLocation: 'leo', enabledServices: ['svc_tourism_leo'],
-    realBuildSeconds: 480, resourceCost: { aluminum: 50, titanium: 20 }, powerRequired: 5 },
+    realBuildSeconds: 900, resourceCost: { aluminum: 50, titanium: 20 }, powerRequired: 5 },
   { id: 'space_station_lunar', name: 'Lunar Gateway', category: 'space_station', tier: 2,
     description: 'Orbital station around the Moon. Staging point for surface operations.',
     tooltip: 'CISLUNAR HUB. Activates Lunar Gateway Tours at $25M/mo vs $10M cost = $15M/mo net. Positions you as a lunar operator and fulfills "station at location" competitive contracts. Requires Lunar Orbit unlock ($1B) plus research. The $15M/mo net profit justifies the $2B cost over time, and you need a presence here for late-game lunar dominance.',
@@ -82,13 +82,13 @@ export const BUILDINGS: BuildingDefinition[] = [
     realBuildSeconds: 1200, resourceCost: { aluminum: 100, titanium: 40, iron: 80 }, powerRequired: 8 },
   { id: 'space_station_mars', name: 'Mars Orbital Station', category: 'space_station', tier: 3,
     description: 'Permanent crewed station in Mars orbit.',
-    tooltip: 'MARS COMMAND CENTER. Activates Mars Station Operations at $45M/mo vs $15M cost = $30M/mo net. One of the highest-profit services in the game. Requires massive investment ($10B + resources) and "Interplanetary Cruisers" research. But $30M/mo net means payback in ~28 years of game time. Critical for Mars colonization contracts and late-game competitive milestones.',
-    baseCost: 10_000_000_000, buildTimeMonths: 36, maintenanceCostPerMonth: 15_000_000,
+    tooltip: 'MARS COMMAND CENTER. Activates Mars Station Operations at $45M/mo vs $15M cost = $30M/mo net. One of the highest-profit services in the game. Requires "Interplanetary Cruisers" research. Critical for Mars colonization contracts and late-game competitive milestones.',
+    baseCost: 8_000_000_000, buildTimeMonths: 36, maintenanceCostPerMonth: 10_000_000,
     requiredResearch: ['interplanetary_cruisers'], requiredLocation: 'mars_orbit', enabledServices: ['svc_mars_station_ops'],
     realBuildSeconds: 3600, resourceCost: { titanium: 100, aluminum: 200, rare_earth: 30, iron: 300 }, powerRequired: 10 },
 
   // ─── DATA CENTERS ─────────────────────────────────────────────────────
-  { id: 'datacenter_orbital', name: 'Orbital Data Center', category: 'datacenter', tier: 1,
+  { id: 'datacenter_orbital', name: 'Orbital Data Center', category: 'datacenter', tier: 2,
     description: 'AI compute facility in orbit. Free cooling, solar powered.',
     tooltip: 'HIGH-MARGIN TECH PLAY. Activates Orbital AI Compute at $12M/mo vs $4M cost = $8M/mo net. Excellent 67% profit margin. Requires "Rad-Hardened Processors" research. At $300M cost, payback is ~37 months. The AI datacenter revenue is one of the best returns per dollar invested. Build as soon as you complete the research.',
     baseCost: 300_000_000, buildTimeMonths: 12, maintenanceCostPerMonth: 2_000_000,
@@ -139,13 +139,13 @@ export const BUILDINGS: BuildingDefinition[] = [
     tooltip: 'EXOTIC MATERIALS SOURCE. Activates Europa Subsurface Resources at $120M/mo vs $45M cost = $75M/mo net — one of the highest-profit services in the game. Produces 5 exotic materials ($2M each) + 200 lunar water per month. Exotic materials are needed for Tier 5 research and endgame construction. Requires "Deep Drilling" research + Jupiter unlock ($100B). The $75M/mo net profit makes this worth the massive investment.',
     baseCost: 30_000_000_000, buildTimeMonths: 48, maintenanceCostPerMonth: 20_000_000,
     requiredResearch: ['deep_drilling'], requiredLocation: 'jupiter_system', enabledServices: ['svc_mining_europa'],
-    realBuildSeconds: 7200, resourceCost: { titanium: 200, rare_earth: 80, platinum_group: 20 }, powerRequired: 15 },
+    realBuildSeconds: 5400, resourceCost: { titanium: 200, rare_earth: 80, platinum_group: 20 }, powerRequired: 15 },
   { id: 'mining_titan', name: 'Titan Hydrocarbon Harvester', category: 'mining_enterprise', tier: 4,
     description: 'Harvest methane and ethane from Titan\'s lakes.',
     tooltip: 'HIGHEST REVENUE SERVICE IN THE GAME. Activates Titan Hydrocarbon Exports at $160M/mo vs $55M cost = $105M/mo net. Produces 300 methane + 150 ethane per month. The $105M/mo net is the single best revenue source available. Requires "Deep Drilling" research + Saturn unlock ($200B). Late-game mega-investment that funds everything else. Build as soon as you can afford the Saturn system.',
     baseCost: 40_000_000_000, buildTimeMonths: 48, maintenanceCostPerMonth: 25_000_000,
     requiredResearch: ['deep_drilling'], requiredLocation: 'saturn_system', enabledServices: ['svc_mining_titan'],
-    realBuildSeconds: 7200, resourceCost: { titanium: 250, rare_earth: 100, platinum_group: 30 }, powerRequired: 15 },
+    realBuildSeconds: 5400, resourceCost: { titanium: 250, rare_earth: 100, platinum_group: 30 }, powerRequired: 15 },
 
   // ─── FABRICATION ──────────────────────────────────────────────────────
   { id: 'fabrication_orbital', name: 'Orbital Fabrication Lab', category: 'fabrication_facility', tier: 2,
@@ -189,7 +189,7 @@ export const BUILDINGS: BuildingDefinition[] = [
     tooltip: 'TWO SERVICES IN ONE. Activates both Debris Removal ($12M/mo, $5M cost = $7M net) AND Space Insurance ($8M/mo, $1.8M cost = $6.2M net). Combined: $13.2M/mo net from a single $200M building. Best ROI of any satellite. Requires "Reusable Boosters" research + Lunar Orbit unlock ($1B). Build this as soon as you unlock Lunar Orbit — two revenue streams from one building.',
     baseCost: 200_000_000, buildTimeMonths: 6, maintenanceCostPerMonth: 800_000,
     requiredResearch: ['reusable_boosters'], requiredLocation: 'lunar_orbit', enabledServices: ['svc_debris_removal', 'svc_space_insurance'],
-    realBuildSeconds: 420, resourceCost: { aluminum: 15, rare_earth: 5 }, powerRequired: 3 }, // 7 min
+    realBuildSeconds: 720, resourceCost: { aluminum: 15, rare_earth: 5 }, powerRequired: 3 }, // 12 min
   { id: 'sat_mars_relay', name: 'Mars Relay Satellite', category: 'satellite', tier: 3,
     description: 'Deep-space communications relay for Mars operations.',
     tooltip: 'MARS COMMS + PROPELLANT BROKERAGE. Activates Propellant Brokerage at $40M/mo vs $15M cost = $25M/mo net. One of the highest-profit services available at Mars. Essential for supporting your Mars fleet and trading operations. Requires "Super Heavy Lift" + "Ion Drives" research + Mars Orbit unlock ($10B). Build alongside your Mars orbital station.',
@@ -224,6 +224,12 @@ export const BUILDINGS: BuildingDefinition[] = [
     baseCost: 400_000_000, buildTimeMonths: 5, maintenanceCostPerMonth: 1_500_000,
     requiredResearch: ['perovskite_tandem'], requiredLocation: 'lunar_orbit', enabledServices: [],
     realBuildSeconds: 900, resourceCost: { aluminum: 20, rare_earth: 10 }, powerGenerated: 25 }, // 15 min
+  { id: 'nuclear_reactor_lunar', name: 'Lunar Surface Reactor', category: 'solar_farm', tier: 2,
+    description: 'Compact fission reactor for lunar surface operations. Provides reliable power during the 14-day lunar night when solar is unavailable.',
+    tooltip: 'LUNAR NIGHT POWER. During the 14-day lunar night, solar farms produce zero power. This reactor ensures continuous operations for your mining, fabrication, and habitat. At 35 MW output, it covers the full 30 MW demand of all lunar surface buildings with headroom for expansion. Combined with the solar farm (30 MW), you get 65 MW total — plenty for duplicate buildings. Build alongside your Lunar Solar Farm for a robust power grid. Requires "Surface Fission Reactor" research.',
+    baseCost: 800_000_000, buildTimeMonths: 8, maintenanceCostPerMonth: 3_000_000,
+    requiredResearch: ['fission_surface_power'], requiredLocation: 'lunar_surface', enabledServices: [],
+    realBuildSeconds: 1200, resourceCost: { titanium: 40, rare_earth: 20 }, powerGenerated: 35 }, // 20 min
   { id: 'nuclear_reactor_mars_orbit', name: 'Mars Orbital Reactor', category: 'solar_farm', tier: 3,
     description: 'Nuclear fission reactor powering Mars orbital infrastructure. Essential for data relay and station operations.',
     tooltip: 'MARS ORBIT POWER. Provides 35 MW to power your Mars Orbital Station (10 MW), Mars Data Relay (20 MW), and other orbital facilities. Solar is weaker at Mars distance, making nuclear the better option. Requires "Surface Fission Reactor" research. Build before or alongside your Mars station to avoid crippling power penalties.',

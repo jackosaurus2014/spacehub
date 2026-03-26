@@ -113,7 +113,7 @@ export default function FeedbackWidget() {
 
   return (
     <div
-      className="fixed bottom-4 left-4 z-[9997] w-[280px] animate-in slide-in-from-bottom-4 duration-300"
+      className="fixed bottom-4 left-4 z-[9997] w-[calc(100vw-2rem)] sm:w-[280px] max-w-[280px] animate-in slide-in-from-bottom-4 duration-300"
       role="dialog"
       aria-label="Feedback"
     >

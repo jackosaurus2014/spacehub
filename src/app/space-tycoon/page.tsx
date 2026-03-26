@@ -1476,7 +1476,7 @@ export default function SpaceTycoonPage() {
       <ResourceBar state={state} />
 
       {/* Tab Navigation — V3: 4 primary tabs + overflow dropdown */}
-      <div className="bg-black/40 border-b border-white/[0.06] px-2 sm:px-4 py-1 flex items-center gap-0.5 sm:gap-1" style={{ WebkitOverflowScrolling: 'touch' }}>
+      <div className="bg-black/40 border-b border-white/[0.06] px-2 sm:px-4 py-1 flex items-center gap-0.5 sm:gap-1 overflow-x-auto game-tab-bar" style={{ WebkitOverflowScrolling: 'touch' }}>
         {/* Primary tabs — always visible */}
         {primaryTabs.map(t => {
           const isTutorialTarget = getTutorialTargetTab(state.tutorialStep) === t.id && tab !== t.id;
@@ -1484,7 +1484,7 @@ export default function SpaceTycoonPage() {
           <button
             key={t.id}
             onClick={() => { setTab(t.id); setShowMoreTabs(false); }}
-            className={`px-2 sm:px-3 py-2 rounded-lg text-[10px] sm:text-xs font-medium transition-colors whitespace-nowrap min-h-[36px] ${
+            className={`px-2 sm:px-3 py-2 rounded-lg text-[10px] sm:text-xs font-medium transition-colors whitespace-nowrap min-h-[36px] shrink-0 ${
               tab === t.id
                 ? 'bg-white/[0.08] text-white game-tab-active'
                 : 'text-slate-400 hover:text-white hover:bg-white/[0.04]'
@@ -1497,7 +1497,7 @@ export default function SpaceTycoonPage() {
 
         {/* More dropdown — contains secondary tabs */}
         {secondaryTabs.length > 0 && (
-          <div className="relative">
+          <div className="relative shrink-0">
             <button
               onClick={() => setShowMoreTabs(!showMoreTabs)}
               className={`px-2 sm:px-3 py-2 rounded-lg text-[10px] sm:text-xs font-medium transition-colors whitespace-nowrap min-h-[36px] ${
@@ -1521,7 +1521,7 @@ export default function SpaceTycoonPage() {
               </svg>
             </button>
             {showMoreTabs && (
-              <div className="absolute top-full left-0 mt-1 py-1 rounded-lg shadow-xl z-50 min-w-[180px]" style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border-default)' }}>
+              <div className="absolute top-full left-0 sm:left-0 right-auto mt-1 py-1 rounded-lg shadow-xl z-50 min-w-[180px] max-h-[60vh] overflow-y-auto" style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border-default)' }}>
                 {secondaryTabs.map(t => (
                   <button
                     key={t.id}
@@ -1547,49 +1547,49 @@ export default function SpaceTycoonPage() {
         <div className="flex-1" />
         <button
           onClick={handleRestartTutorial}
-          className="px-2 py-1 text-[10px] text-slate-500 hover:text-cyan-400 transition-colors"
+          className="px-1.5 sm:px-2 py-1 text-[10px] text-slate-500 hover:text-cyan-400 transition-colors whitespace-nowrap shrink-0"
           title="Replay Tutorial"
         >
-          ? Tutorial
+          ?<span className="hidden sm:inline"> Tutorial</span>
         </button>
         <Link
           href="/space-tycoon/faq"
-          className="px-2 py-1 text-[10px] text-slate-500 hover:text-cyan-400 transition-colors"
+          className="px-1.5 sm:px-2 py-1 text-[10px] text-slate-500 hover:text-cyan-400 transition-colors whitespace-nowrap shrink-0"
           title="How to Play"
         >
-          FAQ
+          <span className="sm:hidden">❓</span><span className="hidden sm:inline">FAQ</span>
         </Link>
         <button
           onClick={() => { playSound('click'); setShowAchievements(true); }}
-          className="px-2 py-1 text-[10px] text-slate-500 hover:text-amber-400 transition-colors"
+          className="px-1.5 sm:px-2 py-1 text-[10px] text-slate-500 hover:text-amber-400 transition-colors whitespace-nowrap shrink-0"
           title="Achievements"
         >
-          🏆 {unlockedAchievements.length}
+          🏆<span className="hidden sm:inline"> {unlockedAchievements.length}</span>
         </button>
         <button
           onClick={() => { playSound('click'); setShowPrestige(true); }}
-          className="px-2 py-1 text-[10px] text-slate-500 hover:text-purple-400 transition-colors"
+          className="px-1.5 sm:px-2 py-1 text-[10px] text-slate-500 hover:text-purple-400 transition-colors whitespace-nowrap shrink-0"
           title="Prestige"
         >
-          ⭐ Prestige
+          ⭐<span className="hidden sm:inline"> Prestige</span>
         </button>
         <button
           onClick={() => { saveGame(state); playSound('click'); }}
-          className="px-2 py-1 text-[10px] text-slate-500 hover:text-white transition-colors"
+          className="px-1.5 sm:px-2 py-1 text-[10px] text-slate-500 hover:text-white transition-colors whitespace-nowrap shrink-0"
           title="Save Game"
         >
-          💾 Save
+          💾<span className="hidden sm:inline"> Save</span>
         </button>
         <button
           onClick={handleRestartGame}
-          className="px-2 py-1 text-[10px] text-slate-500 hover:text-amber-400 transition-colors"
+          className="hidden sm:block px-2 py-1 text-[10px] text-slate-500 hover:text-amber-400 transition-colors whitespace-nowrap shrink-0"
           title="Restart Game"
         >
           🔄 Restart
         </button>
         <button
           onClick={handleDeleteSave}
-          className="px-2 py-1 text-[10px] text-slate-500 hover:text-red-400 transition-colors"
+          className="hidden sm:block px-2 py-1 text-[10px] text-slate-500 hover:text-red-400 transition-colors whitespace-nowrap shrink-0"
           title="Quit to Menu"
         >
           🚪 Quit

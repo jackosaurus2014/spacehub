@@ -4,6 +4,7 @@ import ScrollReveal from '@/components/ui/ScrollReveal';
 import GuideNavigation from '@/components/guide/GuideNavigation';
 import ReadingTime from '@/components/ui/ReadingTime';
 import RelatedModules from '@/components/ui/RelatedModules';
+import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 export const revalidate = 3600; // ISR: revalidate every hour
@@ -130,6 +131,7 @@ export default function SpaceIndustryMarketSizePage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema).replace(/</g, '\\u003c') }}
       />
 
+      <BreadcrumbSchema items={[{ name: 'Home', href: '/' }, { name: 'Guides', href: '/guide/space-industry' }, { name: 'Space Industry Market Size' }]} />
       <div className="min-h-screen">
         {/* ── Hero ── */}
         <header className="relative overflow-hidden py-20 md:py-28">
@@ -138,17 +140,17 @@ export default function SpaceIndustryMarketSizePage() {
             className="absolute inset-0 bg-gradient-to-b from-slate-200/30 via-space-900/80 to-transparent pointer-events-none"
           />
           <div className="relative container mx-auto px-4 text-center max-w-4xl">
-            <div className="flex items-center justify-center gap-2 text-star-300 text-sm mb-4">
+            <nav className="flex items-center justify-center gap-2 text-star-300 text-sm mb-4" aria-label="Breadcrumb">
               <Link href="/" className="hover:text-white transition-colors">
                 Home
               </Link>
               <span className="text-star-300/50">/</span>
               <Link href="/guide/space-industry" className="hover:text-white transition-colors">
-                Guide
+                Guides
               </Link>
               <span className="text-star-300/50">/</span>
               <span className="text-white">Market Size</span>
-            </div>
+            </nav>
             <h1 className="text-display-lg md:text-display-xl font-display font-bold text-white mb-6 leading-tight">
               Space Industry Market Size 2026
             </h1>
