@@ -5,10 +5,10 @@ import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 const COMPARISON_DATA = [
   { metric: 'Founded / Spun Out', a: '2021 (spun out of Sierra Nevada Corporation, est. 1963)', b: '2016' },
-  { metric: 'Founder / CEO', a: 'Tom Vice (CEO); Fatih & Eren Ozmen (SNC founders)', b: 'Michael Suffredini (CEO, former ISS program manager)' },
+  { metric: 'Founder / CEO', a: 'Tom Vice (CEO); Fatih & Eren Ozmen (SNC owners since 1994)', b: 'Michael Suffredini (CEO, former ISS program manager)' },
   { metric: 'Headquarters', a: 'Broomfield, CO', b: 'Houston, TX' },
   { metric: 'Public / Private', a: 'Private', b: 'Private' },
-  { metric: 'Valuation', a: '~$5.3B (2023 Series B)', b: 'Est. $3B+ (2023 Series C)' },
+  { metric: 'Valuation', a: '~$5.3B (2023 Series A)', b: 'Est. $2-2.5B (2023 Series C)' },
   { metric: 'Total Funding', a: '~$1.5B+ (raised through 2023)', b: '~$505M+' },
   { metric: 'Employees', a: '~1,800 (Sierra Space) + SNC shared resources', b: '~700+' },
   { metric: 'Crew / Cargo Vehicle', a: 'Dream Chaser (winged spaceplane, CRS-2 cargo to ISS)', b: 'Uses SpaceX Crew Dragon (no proprietary vehicle)' },
@@ -17,7 +17,7 @@ const COMPARISON_DATA = [
   { metric: 'Station Architecture', a: 'Independent freeflying station; LIFE inflatable module technology', b: 'ISS-attached first, then freeflying after ISS decommission' },
   { metric: 'LIFE Module', a: 'Large Integrated Flexible Environment — inflatable hab (300+ m3)', b: 'N/A (rigid modules, traditional construction)' },
   { metric: 'First Station Hardware', a: 'Orbital Reef targeted late 2020s', b: 'AxH1 module targeted for late 2026 (ISS attachment)' },
-  { metric: 'NASA CLD (Commercial LEO Destinations)', a: 'No (Orbital Reef was not selected for CLD; however, Blue Origin partner Orbital Reef has separate funding)', b: 'No CLD award (Axiom has a separate Space Act Agreement for ISS)' },
+  { metric: 'NASA CLD (Commercial LEO Destinations)', a: 'Yes — Orbital Reef selected for CLD Phase 1 ($130M award, Dec 2021, via Blue Origin partnership)', b: 'Not selected for CLD Phase 1 (has separate Space Act Agreement for ISS module attachment)' },
   { metric: 'NASA Contracts', a: 'CRS-2 (Dream Chaser cargo); SNC/Sierra legacy defense & space work', b: 'Ax-1/2/3/4 private astronaut missions; AxEMU spacesuit for Artemis III' },
   { metric: 'Private Astronaut Missions', a: 'None (no crewed vehicle yet)', b: 'Ax-1 (2022), Ax-2 (2023), Ax-3 (2024), Ax-4 (planned)' },
   { metric: 'EVA Spacesuit', a: 'No spacesuit program', b: 'AxEMU — next-gen EVA suit for Artemis III (NASA contract)' },
@@ -79,7 +79,7 @@ export default function Page() {
       {/* Analysis: Dream Chaser vs Private Astronaut Missions */}
       <h2 className="text-display text-xl mb-3">Dream Chaser vs Private Astronaut Missions</h2>
       <p style={{ color: 'var(--text-secondary)' }} className="text-sm leading-relaxed mb-4">
-        Sierra Space&apos;s Dream Chaser is the only winged orbital vehicle in development for ISS cargo delivery. Unlike capsule-based spacecraft (Dragon, Starliner, Cygnus), Dream Chaser lands on a conventional runway, potentially enabling faster payload retrieval and lower refurbishment costs. The vehicle has been in development in various forms since the 2000s (originally for NASA&apos;s Commercial Crew program, where it lost to SpaceX and Boeing), and is now contracted for at least 7 NASA CRS-2 cargo missions. First flight has been repeatedly delayed, now expected in 2025-2026.
+        Sierra Space&apos;s Dream Chaser is the only winged orbital vehicle in development for ISS cargo delivery. Unlike capsule-based spacecraft (Dragon, Starliner, Cygnus), Dream Chaser lands on a conventional runway, potentially enabling faster payload retrieval and lower refurbishment costs. The vehicle has been in development in various forms since the 2000s (originally for NASA&apos;s Commercial Crew program, where it lost to SpaceX and Boeing), and is now contracted for at least 6 NASA CRS-2 cargo missions. First flight has been repeatedly delayed, now expected in 2025-2026.
       </p>
       <p style={{ color: 'var(--text-secondary)' }} className="text-sm leading-relaxed mb-8">
         Axiom Space has something no other commercial station company possesses: actual flight experience. Through its Ax-1, Ax-2, and Ax-3 private astronaut missions to the ISS (using SpaceX&apos;s Crew Dragon and Falcon 9), Axiom has demonstrated the ability to train crews, manage mission operations, and generate revenue from human spaceflight. Each mission seat costs approximately $55 million. Axiom has also won the contract to develop NASA&apos;s next-generation EVA spacesuit (AxEMU) for the Artemis III mission, which represents both a significant revenue source and a vote of confidence from NASA in Axiom&apos;s technical capabilities.
@@ -97,7 +97,7 @@ export default function Page() {
       {/* Analysis: Funding and Sustainability */}
       <h2 className="text-display text-xl mb-3">Funding &amp; Path to Sustainability</h2>
       <p style={{ color: 'var(--text-secondary)' }} className="text-sm leading-relaxed mb-8">
-        Sierra Space raised over $1.5 billion at a $5.3 billion valuation in its 2023 Series B round, led by Coatue Management and Moore Strategic Ventures. The company benefits from shared resources with parent Sierra Nevada Corporation, a diversified defense and aerospace contractor. However, Sierra Space is pre-revenue from its own programs (Dream Chaser has not yet flown) and depends on the Orbital Reef partnership timeline, which is tied to Blue Origin&apos;s development cadence. Axiom Space has raised approximately $505 million through its Series C, at a lower valuation than Sierra Space, but is already generating revenue from private astronaut missions and the AxEMU spacesuit contract. Axiom&apos;s nearer-term hardware timeline (AxH1 targeted for 2026) and existing revenue streams give it a stronger argument for near-term sustainability, though both companies will need additional capital to complete their station programs.
+        Sierra Space raised over $1.4 billion at a $5.3 billion valuation in its 2023 Series A round, led by Coatue Management and Moore Strategic Ventures. The company benefits from shared resources with parent Sierra Nevada Corporation, a diversified defense and aerospace contractor. However, Sierra Space is pre-revenue from its own programs (Dream Chaser has not yet flown) and depends on the Orbital Reef partnership timeline, which is tied to Blue Origin&apos;s development cadence. Axiom Space has raised approximately $505 million through its Series C, at a lower valuation than Sierra Space, but is already generating revenue from private astronaut missions and the AxEMU spacesuit contract. Axiom&apos;s nearer-term hardware timeline (AxH1 targeted for 2026) and existing revenue streams give it a stronger argument for near-term sustainability, though both companies will need additional capital to complete their station programs.
       </p>
 
       {/* CTA */}

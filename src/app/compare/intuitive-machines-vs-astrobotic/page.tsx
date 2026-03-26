@@ -12,17 +12,17 @@ const COMPARISON_DATA = [
   { metric: 'Total Funding', a: '~$250M+ (SPAC + follow-on raises)', b: '~$380M+ (including government contracts and private investment)' },
   { metric: 'Employees', a: '~400+', b: '~350+' },
   { metric: 'Primary Lander', a: 'Nova-C (small lander, ~100 kg payload to surface)', b: 'Peregrine (small lander, ~90 kg payload to surface)' },
-  { metric: 'Large Lander', a: 'Nova-D (in development, larger payload capacity)', b: 'Griffin (larger lander; carries VIPER rover — ~430 kg payload)' },
+  { metric: 'Large Lander', a: 'Nova-D (in development, larger payload capacity)', b: 'Griffin (larger lander; ~500 kg payload capacity; VIPER rover cancelled July 2024)' },
   { metric: 'First Mission', a: 'IM-1 (Odysseus) — Feb 2024: reached lunar surface, tipped on side', b: 'Peregrine Mission One — Jan 2024: propulsion anomaly, never reached Moon' },
   { metric: 'First Mission Outcome', a: 'Partial success — landed but tipped over; operated ~7 days', b: 'Failure — propellant leak after separation; re-entered Earth atmosphere' },
-  { metric: 'Second Mission', a: 'IM-2 — launched early 2025 targeting lunar south pole', b: 'Griffin Mission One (VIPER rover) — timeline uncertain after Peregrine failure' },
+  { metric: 'Second Mission', a: 'IM-2 — launched early 2025 targeting lunar south pole', b: 'Griffin Mission One — NASA cancelled VIPER rover (July 2024); Griffin repurposed for other payloads' },
   { metric: 'CLPS Contract Value (cumulative)', a: '~$300M+ across IM-1, IM-2, IM-3 task orders', b: '~$320M+ across Peregrine and Griffin/VIPER task orders' },
-  { metric: 'NASA CLPS Role', a: 'Delivery of NASA payloads to lunar surface (instruments, tech demos)', b: 'Delivery of NASA payloads + VIPER rover to lunar south pole' },
+  { metric: 'NASA CLPS Role', a: 'Delivery of NASA payloads to lunar surface (instruments, tech demos)', b: 'Delivery of NASA payloads to lunar surface (VIPER cancelled; Griffin mission repurposed)' },
   { metric: 'Propulsion', a: 'LOX/methane (VR900 engine, developed in-house)', b: 'Bipropellant (hydrazine/MON-3 heritage-based systems)' },
   { metric: 'Lunar Terrain Vehicle', a: 'No (focused on landers)', b: 'MoonRanger micro-rover (Carnegie Mellon partnership)' },
   { metric: 'Communications Network', a: 'Developing lunar relay/comms capability', b: 'LunaNet relay services via Griffin missions' },
   { metric: 'Lunar Data Service', a: 'Lunar Data Network (comms + nav as a service)', b: 'Lunar delivery-as-a-service for commercial/government payloads' },
-  { metric: 'Key Differentiator', a: 'First U.S. company to soft-land on Moon (albeit imperfectly); public company', b: 'VIPER rover delivery contract; deep CMU robotics heritage' },
+  { metric: 'Key Differentiator', a: 'First U.S. company to soft-land on Moon (albeit imperfectly); public company', b: 'Griffin heavy lander capability; deep CMU robotics heritage' },
 ];
 
 export default function Page() {
@@ -90,7 +90,7 @@ export default function Page() {
         NASA&apos;s CLPS program is an experiment in commercial procurement: instead of building its own landers, NASA buys delivery services from commercial companies under fixed-price contracts. The philosophy intentionally accepts a higher risk of mission failure in exchange for lower costs and faster timelines compared to traditional NASA-built missions. Both Intuitive Machines and Astrobotic are among a dozen CLPS-selected vendors, but they have received the largest and most numerous task orders.
       </p>
       <p style={{ color: 'var(--text-secondary)' }} className="text-sm leading-relaxed mb-8">
-        The early CLPS results vindicated both the approach and the risk tolerance. Neither company&apos;s first mission was a complete success, but neither was a total loss either. Intuitive Machines demonstrated the fundamental capability to reach the lunar surface, and Astrobotic gained valuable data on its propulsion system failure. NASA has continued to award both companies additional CLPS task orders, signaling confidence that iterative improvement will eventually produce reliable commercial lunar delivery. Astrobotic&apos;s Griffin lander (designed to carry NASA&apos;s VIPER rover to the lunar south pole to prospect for water ice) is the highest-profile upcoming CLPS mission, though its timeline has been affected by the Peregrine experience.
+        The early CLPS results vindicated both the approach and the risk tolerance. Neither company&apos;s first mission was a complete success, but neither was a total loss either. Intuitive Machines demonstrated the fundamental capability to reach the lunar surface, and Astrobotic gained valuable data on its propulsion system failure. NASA has continued to award both companies additional CLPS task orders, signaling confidence that iterative improvement will eventually produce reliable commercial lunar delivery. Astrobotic&apos;s Griffin lander was originally designed to carry NASA&apos;s VIPER rover to the lunar south pole to prospect for water ice, but NASA cancelled VIPER in July 2024 citing cost overruns and schedule delays. Griffin is being repurposed for other payloads, and Astrobotic continues to develop the lander as its heavy-class delivery vehicle.
       </p>
 
       {/* Analysis: Beyond Delivery */}

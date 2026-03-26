@@ -5,23 +5,23 @@ import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 const COMPARISON_DATA = [
   { metric: 'Founded', a: '2017 (reincorporated after 2016 bankruptcy)', b: '2017' },
-  { metric: 'Founder / CEO', a: 'Tom Markusic (CEO until 2023); now led by Jason Kim', b: 'Harry O\'Brien & Dan Piemont' },
-  { metric: 'Headquarters', a: 'Cedar Park, TX', b: 'El Segundo, CA' },
+  { metric: 'Founder / CEO', a: 'Tom Markusic (founder); CEO: Jason Kim (since Oct 2024)', b: 'Harry O\'Hanley & Dan Piemont' },
+  { metric: 'Headquarters', a: 'Cedar Park, TX', b: 'Long Beach, CA (formerly El Segundo)' },
   { metric: 'Employees', a: '~900+', b: '~200 (est., significantly reduced)' },
-  { metric: 'Total Funding', a: '~$275M+ (including Northrop Grumman investment)', b: '~$200M+ (Lockheed Martin anchor contract)' },
-  { metric: 'Key Investor / Partner', a: 'Northrop Grumman (minority stake, ~15%)', b: 'Lockheed Martin (major customer, not equity investor)' },
+  { metric: 'Total Funding', a: '~$589M+ (including Northrop Grumman investment)', b: '~$420M+ (incl. Lockheed Martin Ventures investment)' },
+  { metric: 'Key Investor / Partner', a: 'Northrop Grumman (strategic investor)', b: 'Lockheed Martin (major customer + equity via LM Ventures)' },
   { metric: 'Primary Vehicle', a: 'Alpha (LEO small launcher)', b: 'RS1 (LEO small launcher)' },
   { metric: 'LEO Payload Capacity', a: '~1,170 kg to LEO (est. 200 km SSO)', b: '~1,350 kg to LEO (designed capacity)' },
   { metric: 'First Stage Engines', a: '4x Reaver (LOX/RP-1, tap-off)', b: '9x E2 (LOX/RP-1, gas generator)' },
-  { metric: 'Upper Stage Engine', a: '1x Lightning (LOX/RP-1, electric pump-fed)', b: '1x E2 (vacuum variant)' },
+  { metric: 'Upper Stage Engine', a: '1x Lightning (LOX/RP-1, tap-off cycle)', b: '1x E2 (vacuum variant)' },
   { metric: 'First Orbital Attempt', a: 'Sept 2021 (failed — terminated in flight)', b: 'Jan 2023 (failed — first stage shutdown after liftoff)' },
   { metric: 'First Successful Orbit', a: 'Oct 2022 (FLTA002 — "To The Black")', b: 'None as of early 2026' },
-  { metric: 'Total Orbital Launches', a: '5+ (through early 2026)', b: '1 (failed)' },
+  { metric: 'Total Orbital Launches', a: '7 (through early 2026)', b: '1 (failed)' },
   { metric: 'Launch Price (est.)', a: '~$15M per launch', b: '~$12M per launch (projected)' },
   { metric: 'Launch Site(s)', a: 'Vandenberg SFB (SLC-2W); developing Wallops Island', b: 'Pacific Spaceport Complex, Kodiak, AK (mobile launch)' },
-  { metric: 'Vehicle Status (2026)', a: 'Operational; ramping cadence', b: 'Stalled — no launches since 2023 failure; company future uncertain' },
-  { metric: 'Next Vehicle', a: 'MLV (Medium Launch Vehicle, ~10,000 kg to LEO, with Northrop Grumman)', b: 'No announced successor' },
-  { metric: 'Government Contracts', a: 'USSF OSP-4 task orders; NASA VADR; Northrop Grumman Antares replacement', b: 'Lockheed Martin contract for rideshare deployment (paused/uncertain)' },
+  { metric: 'Vehicle Status (2026)', a: 'Operational; ramping cadence', b: 'Ended — company rebranded to Long Wall, pivoted to missile defense' },
+  { metric: 'Next Vehicle', a: 'Eclipse (formerly MLV, ~16,000 kg to LEO, with Northrop Grumman)', b: 'No announced successor (pivoted to missile defense)' },
+  { metric: 'Government Contracts', a: 'USSF OSP-4 task orders; NASA VADR; Northrop Grumman Eclipse co-development', b: 'Lockheed Martin 58-launch contract (cancelled; company pivoted)' },
   { metric: 'Unique Approach', a: 'Also developing Elytra orbital transfer vehicle (OTV)', b: 'Containerized mobile launch system (GS0) for rapid deployment anywhere' },
 ];
 
@@ -38,7 +38,7 @@ export default function Page() {
       </nav>
       <h1 className="text-display text-3xl md:text-4xl mb-3">Firefly Aerospace vs ABL Space Systems</h1>
       <p style={{ color: 'var(--text-secondary)' }} className="text-base max-w-2xl mb-8">
-        Two small launch startups founded in 2017 with similar ambitions but sharply divergent outcomes. Firefly has reached orbit and is expanding into medium-lift with Northrop Grumman, while ABL Space has struggled to recover from its single failed launch attempt and faces an uncertain future.
+        Two small launch startups founded in 2017 with similar ambitions but sharply divergent outcomes. Firefly has reached orbit and is expanding into medium-lift with Northrop Grumman, while ABL Space (now rebranded as Long Wall) abandoned orbital launch entirely after two failed attempts and pivoted to missile defense.
       </p>
 
       {/* Terminal table */}
@@ -81,22 +81,22 @@ export default function Page() {
         Firefly Aerospace had its own near-death experience &mdash; the original company went bankrupt in 2016 before being reconstituted in 2017 under new ownership. After a failed first orbital attempt in September 2021 (the vehicle was terminated after a first-stage engine failed at liftoff), Firefly successfully reached orbit on its second attempt in October 2022. Since then, Alpha has continued flying, building a track record that has attracted U.S. Space Force task orders under the OSP-4 program and NASA VADR contracts. Firefly also developed the Elytra orbital transfer vehicle (OTV) to provide last-mile delivery for smallsats.
       </p>
       <p style={{ color: 'var(--text-secondary)' }} className="text-sm leading-relaxed mb-8">
-        ABL Space Systems attracted significant early attention with its innovative containerized launch system (GS0), which promised to deploy a complete launch pad from shipping containers at virtually any location. The company secured a major contract from Lockheed Martin to launch satellites on RS1. However, ABL&apos;s sole orbital attempt in January 2023 from Kodiak, Alaska ended in failure when the first stage shut down shortly after liftoff. As of early 2026, ABL has not attempted a second launch, and the company has reportedly downsized significantly. The Lockheed Martin contract status remains uncertain, and ABL&apos;s future as an operational launch provider is in serious doubt.
+        ABL Space Systems attracted significant early attention with its innovative containerized launch system (GS0), which promised to deploy a complete launch pad from shipping containers at virtually any location. The company secured a 58-launch contract from Lockheed Martin to deploy satellites on RS1. However, ABL&apos;s first orbital attempt in January 2023 from Kodiak, Alaska ended in failure when a fire damaged key harnessing, causing the engines to shut down 11 seconds after liftoff. A second RS1 rocket was destroyed during a static-fire test in July 2024. In February 2025, ABL rebranded as Long Wall and officially abandoned orbital launch, pivoting to missile defense applications.
       </p>
 
       {/* Analysis: Strategic Partnerships */}
       <h2 className="text-display text-xl mb-3">Strategic Partnerships &amp; Future Vehicles</h2>
       <p style={{ color: 'var(--text-secondary)' }} className="text-sm leading-relaxed mb-4">
-        Firefly&apos;s most significant strategic move has been its partnership with Northrop Grumman. In 2023, Northrop Grumman acquired a ~15% stake in Firefly and the two companies announced a joint development of the Medium Launch Vehicle (MLV), designed to replace the aging Antares rocket (whose RD-181 engines were Russian-supplied). MLV targets ~10,000 kg to LEO, putting it in the medium-lift class and giving Firefly a path well beyond small-launch economics. This partnership effectively ensures Firefly has a deep-pocketed industrial partner and a guaranteed customer for its next vehicle.
+        Firefly&apos;s most significant strategic move has been its partnership with Northrop Grumman. The two companies announced joint development of the Medium Launch Vehicle (MLV), now named Eclipse, designed to replace the aging Antares rocket (whose RD-181 engines were Russian-supplied). In May 2025, Northrop Grumman invested $50M in Firefly to advance Eclipse production. Eclipse targets ~16,000 kg to LEO, putting it in the medium-lift class and giving Firefly a path well beyond small-launch economics. This partnership effectively ensures Firefly has a deep-pocketed industrial partner and a guaranteed customer for its next vehicle.
       </p>
       <p style={{ color: 'var(--text-secondary)' }} className="text-sm leading-relaxed mb-8">
-        ABL&apos;s key partnership was with Lockheed Martin, which committed to using RS1 for deploying satellites under a contract reportedly worth up to $200M. However, after the failed launch and extended development delays, Lockheed Martin&apos;s commitment to the RS1 program appears to have cooled. Without a successful flight, additional investment, or a new anchor customer, ABL faces the challenge that has ended many small launch ventures: the gap between promising technology and a sustainable business is enormous.
+        ABL&apos;s key partnership was with Lockheed Martin, which committed to a 58-launch block buy of RS1 missions. However, after the failed first launch in January 2023 and the destruction of the second RS1 during preflight testing in July 2024, ABL&apos;s orbital ambitions ended. The company rebranded as Long Wall in February 2025 and pivoted to missile defense, abandoning the commercial launch market entirely. The Lockheed Martin launch contract was effectively cancelled, though Lockheed Martin Ventures had also made an equity investment in the company.
       </p>
 
       {/* Analysis: Small Launch Economics */}
       <h2 className="text-display text-xl mb-3">The Small Launch Market Reality</h2>
       <p style={{ color: 'var(--text-secondary)' }} className="text-sm leading-relaxed mb-8">
-        Both companies illustrate the brutal economics of the small launch market. SpaceX&apos;s Transporter rideshare missions offer smallsat launches at $5,000-$6,000 per kg, far below the $10,000-$15,000/kg typical of dedicated small launchers. Rocket Lab&apos;s Electron is the only small launcher to achieve consistent commercial cadence, with 50+ launches. Of the dozens of small launch startups that emerged in the 2015-2020 era, most have failed or pivoted (Astra, Virgin Orbit). Firefly&apos;s pivot toward medium-lift via the Northrop Grumman partnership acknowledges this reality. ABL&apos;s stall is, in part, a reflection of investors and customers losing patience with a market segment where margins are thin and SpaceX rideshares offer a cheaper alternative for many payloads.
+        Both companies illustrate the brutal economics of the small launch market. SpaceX&apos;s Transporter rideshare missions offer smallsat launches at $5,000-$6,000 per kg, far below the $10,000-$15,000/kg typical of dedicated small launchers. Rocket Lab&apos;s Electron is the only small launcher to achieve consistent commercial cadence, with 50+ launches. Of the dozens of small launch startups that emerged in the 2015-2020 era, most have failed or pivoted (Astra, Virgin Orbit, ABL/Long Wall). Firefly&apos;s pivot toward medium-lift via the Northrop Grumman Eclipse partnership acknowledges this reality. ABL&apos;s complete abandonment of orbital launch and rebrand as Long Wall for missile defense is, in part, a reflection of investors and customers losing patience with a market segment where margins are thin and SpaceX rideshares offer a cheaper alternative for many payloads.
       </p>
 
       {/* CTA */}

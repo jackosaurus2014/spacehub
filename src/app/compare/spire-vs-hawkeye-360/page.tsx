@@ -6,12 +6,12 @@ import { PAGE_RELATIONS } from '@/lib/module-relationships';
 const COMPARISON_DATA = [
   { metric: 'Founded', a: '2012', b: '2015' },
   { metric: 'Headquarters', a: 'Vienna, VA (moved from San Francisco)', b: 'Herndon, VA' },
-  { metric: 'CEO', a: 'Peter Platzer (co-founder)', b: 'John Serafini' },
+  { metric: 'CEO', a: 'Theresa Condor (since Jan 2025; founder Peter Platzer now Exec Chairman)', b: 'John Serafini' },
   { metric: 'Public / Private', a: 'Public (NYSE: SPIR, via SPAC 2021)', b: 'Private' },
   { metric: 'Employees', a: '~750', b: '~300 (est.)' },
-  { metric: 'Total Funding / Market Cap', a: '~$276M raised; market cap ~$200M (volatile)', b: '~$300M+ raised (Series D, 2023)' },
+  { metric: 'Total Funding / Market Cap', a: '~$276M raised; market cap ~$200M (volatile)', b: '~$585M raised (through Series E, 2026)' },
   { metric: 'Revenue (2024)', a: '~$100M (est.)', b: 'Not disclosed (est. $60-80M)' },
-  { metric: 'Constellation Size', a: '~100+ satellites (LEMUR, later gen)', b: '~70+ satellites (Clusters 1-8+)' },
+  { metric: 'Constellation Size', a: '~100+ satellites (LEMUR, later gen)', b: '~36 satellites (12 clusters of 3)' },
   { metric: 'Satellite Type', a: '3U/6U CubeSats with multi-payload capability', b: 'Custom 6U-class sats in 3-satellite clusters' },
   { metric: 'Primary RF Capability', a: 'AIS (vessel tracking), ADS-B (aircraft), GNSS-RO (weather)', b: 'RF geolocation & characterization (SIGINT-lite)' },
   { metric: 'Key Data Products', a: 'Maritime tracking, weather/climate data, aviation surveillance', b: 'RF survey, geolocation of emitters, spectrum monitoring' },
@@ -95,7 +95,7 @@ export default function Page() {
       {/* Analysis: Business Models */}
       <h2 className="text-display text-xl mb-3">Business Models &amp; Market Position</h2>
       <p style={{ color: 'var(--text-secondary)' }} className="text-sm leading-relaxed mb-8">
-        Spire went public via SPAC in 2021 and has faced the typical post-SPAC challenges: its stock has traded well below the initial valuation, and the company has been working toward profitability while growing revenue toward $100M annually. Spire&apos;s diversified data streams (weather, maritime, aviation) provide resilience but also complexity. HawkEye 360 has remained private, raising over $300M through its Series D in 2023. The company&apos;s focused mission (RF geolocation) and strong defense customer base give it a clearer path to premium pricing, though the total addressable market is smaller than Spire&apos;s broader data business. Both companies benefit from the growing trend of defense and intelligence agencies supplementing classified satellites with commercial data purchases.
+        Spire went public via SPAC in 2021 and has faced the typical post-SPAC challenges: its stock has traded well below the initial valuation, and the company has been working toward profitability while growing revenue toward $100M annually. Spire&apos;s diversified data streams (weather, maritime, aviation) provide resilience but also complexity. HawkEye 360 has remained private, raising over $585M through its Series E in 2026. The company&apos;s focused mission (RF geolocation) and strong defense customer base give it a clearer path to premium pricing, though the total addressable market is smaller than Spire&apos;s broader data business. Both companies benefit from the growing trend of defense and intelligence agencies supplementing classified satellites with commercial data purchases.
       </p>
 
       {/* CTA */}

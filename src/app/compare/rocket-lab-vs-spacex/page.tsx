@@ -16,7 +16,7 @@ const COMPARISON_DATA = [
   { metric: 'Heavy / Super Heavy', a: 'None planned', b: 'Falcon Heavy (63,800 kg LEO); Starship (150,000+ kg LEO)' },
   { metric: 'Electron Launches (career)', a: '55+ (through early 2026)', b: 'N/A' },
   { metric: 'Falcon 9 Launches (career)', a: 'N/A', b: '300+ (through early 2026)' },
-  { metric: 'Engine Technology', a: 'Rutherford (electric pump-fed, 3D-printed); Archimedes (Neutron, gas gen, LOX/CH4)', b: 'Merlin (gas gen, LOX/RP-1); Raptor (full-flow, LOX/CH4)' },
+  { metric: 'Engine Technology', a: 'Rutherford (electric pump-fed, 3D-printed); Archimedes (Neutron, ox-rich staged combustion, LOX/CH4)', b: 'Merlin (gas gen, LOX/RP-1); Raptor (full-flow staged combustion, LOX/CH4)' },
   { metric: 'Reusability (Current)', a: 'Electron — mid-air helicopter catch (demonstrated)', b: 'Falcon 9 — propulsive booster landing (routine, 200+ landings)' },
   { metric: 'Spacecraft Division', a: 'Photon spacecraft bus (8 missions+); Pioneer spacecraft platform', b: 'Crew Dragon, Cargo Dragon, Starship' },
   { metric: 'Solar / Power Systems', a: 'SolAero (acquired 2022) — leading space solar cell manufacturer', b: 'In-house solar panel production for Starlink' },

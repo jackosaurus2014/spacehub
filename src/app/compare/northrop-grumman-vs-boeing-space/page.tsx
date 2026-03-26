@@ -20,7 +20,7 @@ const COMPARISON_DATA = [
   { metric: 'James Webb Space Telescope', a: 'Prime contractor (built and delivered JWST)', b: 'Not a primary JWST contractor' },
   { metric: 'SDA / Space Development Agency', a: 'Major Tranche 1 & 2 transport layer contractor', b: 'SDA Tranche contracts (tracking and transport layers)' },
   { metric: 'In-Space Servicing', a: 'MEV-1, MEV-2 (Mission Extension Vehicles) — first commercial in-space servicing', b: 'No operational in-space servicing program' },
-  { metric: 'Propulsion', a: 'OmegA (cancelled); solid rocket motors (SRBs for SLS, Vulcan)', b: 'RS-68 (retired, Delta IV); SLS core propulsion integration' },
+  { metric: 'Propulsion', a: 'OmegA (cancelled); solid rocket motors (SRBs for SLS, Vulcan)', b: 'SLS core stage integration (RS-25 engines by Aerojet Rocketdyne); Delta IV retired' },
   { metric: 'Autonomous Systems', a: 'Limited in space (more in defense aircraft sector)', b: 'X-37B spaceplane (USSF, autonomous orbital missions)' },
   { metric: 'Key Challenges', a: 'Antares replacement timeline; competition from SpaceX in defense', b: 'Starliner program delays/cost overruns; SLS sustainability debate' },
 ];

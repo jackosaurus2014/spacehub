@@ -5,15 +5,15 @@ import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 const COMPARISON_DATA = [
   { metric: 'Founded', a: '2010', b: '2010' },
-  { metric: 'Headquarters', a: 'Buenos Aires, Argentina / Charlotte, NC (US HQ)', b: 'San Francisco, CA' },
+  { metric: 'Headquarters', a: 'Buenos Aires, Argentina / Davidson, NC (US HQ)', b: 'San Francisco, CA' },
   { metric: 'CEO', a: 'Emiliano Kargieman (co-founder)', b: 'Will Marshall (co-founder)' },
   { metric: 'Public / Private', a: 'Public (NASDAQ: SATL, via SPAC 2022)', b: 'Public (NYSE: PL, via SPAC 2021)' },
   { metric: 'Employees', a: '~300', b: '~900' },
-  { metric: 'Market Cap (early 2026)', a: '~$200M (volatile)', b: '~$1.5B' },
-  { metric: 'Revenue (FY2024)', a: '~$19M', b: '~$244M' },
+  { metric: 'Market Cap (early 2026)', a: '~$500M (volatile)', b: '~$10B+' },
+  { metric: 'Revenue (FY2024)', a: '~$12.9M', b: '~$244M' },
   { metric: 'Constellation Size', a: '~30+ satellites (NewSat Mark V)', b: '~200+ satellites (Dove, SuperDove, SkySat, Pelican)' },
   { metric: 'Primary Imaging Mode', a: 'Multispectral + Hyperspectral (29 bands)', b: 'Multispectral (8 bands, SuperDove)' },
-  { metric: 'Optical Resolution', a: '~70 cm (multispectral), ~1 m (hyperspectral)', b: '~3 m (SuperDove), ~50 cm (SkySat), ~30 cm (Pelican, planned)' },
+  { metric: 'Optical Resolution', a: '~70 cm (multispectral, super-res), ~25-30 m (hyperspectral)', b: '~3 m (SuperDove), ~50 cm (SkySat), ~30-50 cm (Pelican)' },
   { metric: 'Hyperspectral', a: 'Yes — 29 spectral bands, a key differentiator', b: 'No native hyperspectral (acquired Sinergise for analytics)' },
   { metric: 'Daily Coverage', a: 'Not daily global; targeted tasking model', b: 'Near-daily global coverage (Dove fleet)' },
   { metric: 'Satellite Manufacturing', a: 'In-house (Argentina); claimed $1M per satellite cost', b: 'In-house (San Francisco factory)' },
@@ -87,7 +87,7 @@ export default function Page() {
       {/* Analysis: Scale vs Specialization */}
       <h2 className="text-display text-xl mb-3">Scale vs Specialization</h2>
       <p style={{ color: 'var(--text-secondary)' }} className="text-sm leading-relaxed mb-4">
-        Planet Labs is the clear leader in constellation scale, with over 200 operational satellites generating the most comprehensive daily record of change on Earth&apos;s surface. This volume and consistency has made Planet the default provider for applications requiring frequent, global coverage &mdash; agriculture monitoring, deforestation tracking, disaster response, and climate science. Planet&apos;s revenue (~$244M in FY2024) reflects the breadth of its customer base across government and commercial sectors.
+        Planet Labs is the clear leader in constellation scale, with over 200 operational satellites generating the most comprehensive daily record of change on Earth&apos;s surface. This volume and consistency has made Planet the default provider for applications requiring frequent, global coverage &mdash; agriculture monitoring, deforestation tracking, disaster response, and climate science. Planet&apos;s revenue (~$244M in FY2025, ending Jan 2025) reflects the breadth of its customer base across government and commercial sectors.
       </p>
       <p style={{ color: 'var(--text-secondary)' }} className="text-sm leading-relaxed mb-8">
         Satellogic has taken a different path, positioning its constellation as a capacity product rather than a data subscription. Under its &ldquo;Constellation-as-a-Service&rdquo; model, customers (including national governments) can essentially lease dedicated satellite capacity for their region. Satellogic has claimed manufacturing costs as low as $1M per satellite, which &mdash; if sustainable at scale &mdash; would give it a significant cost advantage. However, Satellogic&apos;s revenue remains an order of magnitude smaller than Planet&apos;s, and the company faces the ongoing challenge of converting a technically differentiated product into a large, recurring revenue stream.

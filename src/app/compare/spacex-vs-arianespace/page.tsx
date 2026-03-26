@@ -5,7 +5,7 @@ import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 const COMPARISON_DATA = [
   { metric: 'Founded', a: '2002', b: '1980 (Arianespace SA)' },
-  { metric: 'Headquarters', a: 'Hawthorne, CA, USA', b: 'Courcouronnes, France' },
+  { metric: 'Headquarters', a: 'Hawthorne, CA, USA', b: 'Evry-Courcouronnes, France' },
   { metric: 'Ownership', a: 'Private (Elon Musk majority)', b: 'ArianeGroup (Airbus/Safran JV), CNES, European shareholders' },
   { metric: 'Employees', a: '~13,000', b: '~1,300 (Arianespace) / ~8,000+ (ArianeGroup)' },
   { metric: 'Primary Launch Vehicle', a: 'Falcon 9 Block 5', b: 'Ariane 6 (A62 & A64 variants)' },
@@ -16,13 +16,13 @@ const COMPARISON_DATA = [
   { metric: 'Launch Price (est.)', a: '~$67M (Falcon 9) / ~$97M (Falcon Heavy)', b: '~$77M (A62 est.) / ~$115M (A64 est.)' },
   { metric: 'Launch Site(s)', a: 'Cape Canaveral, Vandenberg, KSC LC-39A', b: 'Guiana Space Centre (Kourou), French Guiana' },
   { metric: 'Career Orbital Launches', a: '300+ (through early 2026)', b: '130+ (Ariane 5 era); Ariane 6 first flight July 2024' },
-  { metric: '2024 Launches', a: '~134', b: '~5 (Ariane 6 maiden + Vega-C; transition year)' },
+  { metric: '2024 Launches', a: '~134 (Falcon family)', b: '3 (Ariane 6 maiden + Vega + Vega-C; transition year)' },
   { metric: 'Government Customers', a: 'NASA, DoD, NRO, Space Force', b: 'ESA, EU Commission, French MoD, Galileo program' },
   { metric: 'Commercial Market Share (2024)', a: '~65% of global commercial launches', b: '~10% (rebuilding with Ariane 6 ramp-up)' },
   { metric: 'Constellation Role', a: 'Primary deployer for Starlink (6,000+ sats)', b: 'Selected for Amazon Kuiper; European institutional missions' },
   { metric: 'Upper Stage Restart', a: 'Merlin Vacuum (multiple restarts)', b: 'Vinci engine (A64, multiple restarts in-flight)' },
   { metric: 'Equatorial Advantage', a: 'No (mid-latitude sites)', b: 'Yes — Kourou at 5°N gives significant GTO performance boost' },
-  { metric: 'Revenue (2024 est.)', a: '~$9-10B (launch + Starlink)', b: '~$1.3B (Arianespace launch services est.)' },
+  { metric: 'Revenue (2024 est.)', a: '~$13B (launch + Starlink)', b: '~$1.3B (Arianespace launch services est.)' },
 ];
 
 export default function Page() {
