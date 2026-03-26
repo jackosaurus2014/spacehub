@@ -243,20 +243,20 @@ export default async function HomePage() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Link
-              href="/blog/nasa-20-billion-moon-base-everything-you-need-to-know"
-              className="group rounded-xl border border-white/[0.08] bg-white/[0.03] hover:bg-white/[0.06] hover:border-indigo-500/20 transition-all duration-300 overflow-hidden"
+              href="/blog/how-to-watch-artemis-ii-launch-complete-guide"
+              className="group rounded-xl border border-white/[0.08] bg-white/[0.03] hover:bg-white/[0.06] hover:border-teal-500/20 transition-all duration-300 overflow-hidden"
             >
               <div className="relative h-40 overflow-hidden">
                 <Image src="/art/hero-mission-planning.png" alt="" fill sizes="(max-width: 768px) 100vw, 50vw" loading="lazy" className="object-cover opacity-40 group-hover:opacity-50 group-hover:scale-105 transition-all duration-500" />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#09090b] via-[#09090b]/60 to-transparent" />
                 <div className="absolute bottom-3 left-4 right-4">
-                  <span className="text-[9px] px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 font-bold uppercase tracking-wider">Analysis</span>
+                  <span className="text-[9px] px-2 py-0.5 rounded-full bg-teal-500/20 text-teal-300 border border-teal-500/30 font-bold uppercase tracking-wider">Guide</span>
                 </div>
               </div>
               <div className="p-4">
-                <h3 className="text-white text-sm font-bold mb-1.5 group-hover:text-indigo-300 transition-colors line-clamp-2">NASA&apos;s $20 Billion Moon Base: Everything You Need to Know About Project Ignition</h3>
-                <p className="text-slate-400 text-xs line-clamp-2 mb-2">NASA just announced its most ambitious lunar initiative since Apollo. The &quot;Ignition&quot; plan commits $20 billion over seven years to build a permanent base at the Moon&apos;s south pole.</p>
-                <span className="text-[10px] text-slate-400">14 min read</span>
+                <h3 className="text-white text-sm font-bold mb-1.5 group-hover:text-teal-300 transition-colors line-clamp-2">How to Watch Artemis II: Your Complete Guide to NASA&apos;s Historic Moon Mission</h3>
+                <p className="text-slate-400 text-xs line-clamp-2 mb-2">April 1, 6:24 PM EDT. Four astronauts. The Moon. Here&apos;s exactly how to watch online, where to see it in person, and what happens during the 10-day mission.</p>
+                <span className="text-[10px] text-slate-400">10 min read</span>
               </div>
             </Link>
             <Link

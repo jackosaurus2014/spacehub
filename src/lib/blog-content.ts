@@ -28,6 +28,190 @@ export const BLOG_CATEGORIES: { value: BlogCategory; label: string }[] = [
 
 export const BLOG_POSTS: OriginalBlogPost[] = [
   {
+    slug: 'how-to-watch-artemis-ii-launch-complete-guide',
+    title: 'How to Watch Artemis II: Your Complete Guide to NASA\'s Historic Moon Mission',
+    excerpt: 'NASA\'s Artemis II launches April 1, 2026 at 6:24 PM EDT, sending four astronauts around the Moon for the first time since Apollo. Here\'s exactly how to watch online, where to see it in person, and a day-by-day mission timeline.',
+    category: 'guide',
+    author: 'SpaceNexus Team',
+    authorRole: 'Editorial',
+    publishedAt: '2026-03-26T00:00:00Z',
+    readingTime: 10,
+    featured: true,
+    keywords: ['how to watch artemis ii', 'artemis 2 launch', 'nasa moon mission', 'artemis ii live stream', 'watch artemis launch'],
+    content: `
+<p>In six days, four astronauts will climb aboard the most powerful rocket ever flown with humans and begin a journey no one has attempted in over fifty years. <strong>Artemis II</strong> is targeting launch on <strong>April 1, 2026, at 6:24 PM EDT</strong> from Kennedy Space Center&apos;s Launch Pad 39B, with a two-hour launch window. If weather or technical issues intervene, backup dates are set for <strong>April 7, 8, 10, and 11</strong>.</p>
+
+<p>This is the real deal. Not a test dummy in the capsule. Not an uncrewed loop around the Moon. Four human beings are going farther from Earth than anyone in history, and you can watch every second of it for free. Here is your complete guide.</p>
+
+<h2 id="when-and-where">When &amp; Where</h2>
+
+<p>The launch is scheduled for <strong>Tuesday, April 1, 2026, at 6:24 PM Eastern Daylight Time</strong> (22:24 UTC). The launch window extends for two hours, closing at 8:24 PM EDT. NASA will make a final go/no-go call approximately 10 minutes before liftoff during the terminal count.</p>
+
+<p>If the April 1 attempt is scrubbed, the backup dates are:</p>
+
+<ul>
+<li><strong>April 7</strong> (Monday)</li>
+<li><strong>April 8</strong> (Tuesday)</li>
+<li><strong>April 10</strong> (Thursday)</li>
+<li><strong>April 11</strong> (Friday)</li>
+</ul>
+
+<p>These backup windows account for the Moon&apos;s orbital position and the precise trajectory required for a free-return flyby. Missing all five dates would push the launch to the next lunar cycle.</p>
+
+<p>The launch site is <strong>Launch Complex 39B</strong> at NASA&apos;s Kennedy Space Center in Florida &mdash; the same pad complex that launched every Apollo lunar mission and the first Space Shuttle flight.</p>
+
+<h2 id="how-to-watch-online">How to Watch Online</h2>
+
+<p>NASA is making this mission as accessible as possible. You do not need a cable subscription or any paid service to watch.</p>
+
+<h3>NASA+ (Free Streaming)</h3>
+<p><strong>NASA+</strong> is NASA&apos;s free streaming service, available at <strong>plus.nasa.gov</strong> and through the NASA app on iOS, Android, Apple TV, Roku, and Fire TV. Coverage will begin at least <strong>two hours before launch</strong> with expert commentary, crew suit-up footage, and pad closeout camera views. NASA+ will carry continuous mission coverage through every major milestone: launch, trans-lunar injection, lunar flyby, and splashdown.</p>
+
+<h3>NASA TV &amp; YouTube</h3>
+<p><strong>NASA TV</strong> (nasa.gov/nasatv) will simulcast the same feed. NASA&apos;s official YouTube channel already has a <strong>24/7 live pad camera</strong> running, pointed at Pad 39B where the SLS rocket is being prepared. On launch day, the YouTube stream will switch to full mission commentary. No account or subscription required &mdash; just open the link and watch.</p>
+
+<h3>Social Media</h3>
+<p>NASA will also stream on <strong>X (Twitter)</strong>, <strong>Facebook Live</strong>, and the <strong>NASA app</strong>. Follow <strong>@NASA</strong> and <strong>@NASAArtemis</strong> for real-time updates. The agency typically posts crew communications, milestone confirmations, and photography throughout the mission.</p>
+
+<h3>SpaceNexus Tracking</h3>
+<p>Once Orion separates from the upper stage, you can <a href="/satellites">track the spacecraft in real-time on SpaceNexus</a> using our satellite tracker. We will be updating our tracking database with Orion&apos;s orbital elements as soon as they become available after launch.</p>
+
+<h2 id="how-to-watch-in-person">How to Watch In Person</h2>
+
+<p>If you&apos;re in Florida or willing to travel, watching an SLS launch in person is a once-in-a-generation experience. The sound alone &mdash; 8.8 million pounds of thrust shaking your chest &mdash; is something no screen can replicate.</p>
+
+<h3>Kennedy Space Center Visitor Complex</h3>
+<p>The <strong>KSC Visitor Complex</strong> offers ticketed launch viewing packages that typically sell out quickly. Check <strong>kennedyspacecenter.com</strong> for availability. Ticket packages usually include a viewing area approximately 6 miles from the pad, access to mission commentary, and commemorative items. If launch-day tickets are sold out, the Visitor Complex may still offer general admission with views from the main campus.</p>
+
+<h3>Apollo/Saturn V Center (Closest Public Viewing)</h3>
+<p>The <strong>Apollo/Saturn V Center</strong>, located within the KSC campus, provides some of the closest public viewing &mdash; approximately <strong>3.9 miles</strong> from Pad 39B. Access requires a KSC Visitor Complex ticket and bus transport. This is the premium viewing spot and historically the first to sell out.</p>
+
+<h3>Free Public Viewing Areas</h3>
+<p>If tickets are unavailable, the <strong>Titusville area</strong> along the Indian River offers excellent free viewing. Popular spots include:</p>
+
+<ul>
+<li><strong>Space View Park</strong> in Titusville &mdash; the most popular free viewing location, directly across the river from KSC</li>
+<li><strong>Max Brewer Memorial Causeway</strong> (SR 406) &mdash; the bridge offers elevated, unobstructed sightlines</li>
+<li><strong>Rotary Riverfront Park</strong> in Titusville &mdash; another riverside option with good views</li>
+<li><strong>Playalinda Beach</strong> (Canaveral National Seashore) &mdash; one of the closest public areas, but it typically closes before launch for safety</li>
+</ul>
+
+<p><strong>Pro tips:</strong> Arrive <strong>at least 4&ndash;6 hours early</strong> for free viewing spots. Traffic on US-1 and SR-405 becomes gridlocked on launch days. Bring sunscreen, water, folding chairs, and binoculars. The April 1 evening launch time means you may see the rocket silhouetted against a twilight sky &mdash; spectacular for photography.</p>
+
+<h2 id="meet-the-crew">Meet the Crew</h2>
+
+<p>The Artemis II crew represents a historic expansion of who gets to explore deep space. For the first time, the crew traveling beyond Earth orbit reflects the diversity of the nations sending them.</p>
+
+<h3>Reid Wiseman &mdash; Commander</h3>
+<p>A NASA astronaut and U.S. Navy test pilot, Wiseman previously flew to the International Space Station on Expedition 41 in 2014. He served as Chief of the Astronaut Office before being named Artemis II commander. Wiseman will be responsible for overall mission execution and will command the Orion spacecraft during critical maneuvers.</p>
+
+<h3>Victor Glover &mdash; Pilot</h3>
+<p>A U.S. Navy Captain and fighter pilot, Glover was the pilot of SpaceX Crew-1 in 2020, the first operational Commercial Crew mission. On Artemis II, he becomes the <strong>first person of color to fly beyond low Earth orbit</strong> &mdash; a milestone that corrects one of the Apollo program&apos;s most notable omissions. Glover will serve as pilot, responsible for spacecraft systems and trajectory monitoring.</p>
+
+<h3>Christina Koch &mdash; Mission Specialist 1</h3>
+<p>Koch holds the record for the longest single spaceflight by a woman (328 days on the ISS) and participated in the first all-female spacewalk in 2019. On Artemis II, she becomes the <strong>first woman to fly beyond low Earth orbit</strong>. Koch has a background in electrical engineering and physics and will manage Orion&apos;s life support and environmental systems during the mission.</p>
+
+<h3>Jeremy Hansen &mdash; Mission Specialist 2</h3>
+<p>A Canadian Space Agency astronaut and former CF-18 fighter pilot, Hansen becomes the <strong>first non-American to fly on a lunar mission</strong>. His selection reflects Canada&apos;s contribution to the Artemis program, including the Canadarm3 robotic system. Hansen will serve as mission specialist responsible for navigation and communications.</p>
+
+<h2 id="mission-timeline">Mission Timeline: Day by Day</h2>
+
+<p>Artemis II is approximately a <strong>10-day mission</strong>. Here is what happens and when.</p>
+
+<h3>Day 1: Launch &amp; Earth Orbit</h3>
+<p>After liftoff from Pad 39B, the SLS rocket&apos;s two solid rocket boosters burn for about two minutes before separating. The core stage&apos;s four RS-25 engines continue firing for approximately eight minutes total. The Interim Cryogenic Propulsion Stage (ICPS) then places Orion into an initial <strong>Earth parking orbit</strong> at roughly 1,800 km altitude. The crew will spend <strong>approximately one full orbit</strong> in this phase, checking spacecraft systems, verifying communications, and confirming that Orion is healthy before committing to the Moon.</p>
+
+<h3>Day 1 (continued): Trans-Lunar Injection</h3>
+<p>If all systems check out, the ICPS fires its single RL-10 engine for the <strong>trans-lunar injection (TLI) burn</strong>, accelerating Orion from orbital velocity to approximately <strong>24,500 mph</strong> &mdash; fast enough to escape Earth&apos;s gravitational pull and begin the coast to the Moon. After TLI, the ICPS separates and Orion is on its own. This is the point of commitment: the crew is going to the Moon.</p>
+
+<h3>Days 2&ndash;4: Outbound Coast</h3>
+<p>During the three-day coast to the Moon, the crew will test Orion&apos;s life support systems, navigation, and manual piloting capabilities. They will perform star tracker alignments, test the communication links at increasing distances from Earth, and photograph the receding Earth &mdash; views no human has seen since Apollo 17 in December 1972.</p>
+
+<h3>Day 5: Lunar Flyby</h3>
+<p>This is the mission&apos;s climactic moment. Orion will fly behind the Moon at an altitude of approximately <strong>6,400 miles</strong> (about 10,300 km) above the lunar far side. During this passage, the spacecraft will be <strong>briefly out of communication</strong> with Earth &mdash; a planned communications blackout as the Moon blocks all radio signals. There is also a possibility of a <strong>solar eclipse visible from the spacecraft</strong> during the flyby, as the Moon passes between Orion and the Sun.</p>
+
+<p>At its farthest point, Artemis II will surpass <strong>Apollo 13&apos;s record of 248,655 miles</strong> (400,171 km) from Earth, making these four astronauts the humans who have traveled farthest from home in all of history.</p>
+
+<p>The Moon&apos;s gravity bends Orion&apos;s trajectory into a <strong>free-return path</strong>, meaning no engine burn is required to come home &mdash; the spacecraft will naturally arc back toward Earth. This is a critical safety feature: even if the propulsion system fails entirely, the crew still comes home.</p>
+
+<h3>Days 6&ndash;9: Return Coast</h3>
+<p>The return journey takes approximately four days. The crew will continue systems testing, downlink data, and prepare the spacecraft for the most dangerous phase of the mission: reentry.</p>
+
+<h3>Day 10: Reentry &amp; Splashdown</h3>
+<p>Orion hits Earth&apos;s atmosphere at approximately <strong>25,000 mph</strong> (Mach 32) &mdash; the fastest any crewed spacecraft will have traveled in over fifty years. The heat shield, the largest ever built for a human spacecraft at 16.5 feet in diameter, will endure temperatures around <strong>5,000&deg;F</strong> (2,760&deg;C). Parachutes deploy to slow the capsule for a <strong>splashdown in the Pacific Ocean</strong>, where a U.S. Navy recovery team will be waiting.</p>
+
+<h2 id="by-the-numbers">By the Numbers</h2>
+
+<p>The hardware behind Artemis II is staggering in scale.</p>
+
+<h3>Space Launch System (SLS)</h3>
+<ul>
+<li><strong>Height:</strong> 322 feet (98 meters) &mdash; taller than the Statue of Liberty</li>
+<li><strong>Thrust at liftoff:</strong> 8.8 million pounds &mdash; 15% more than the Saturn V</li>
+<li><strong>Core stage engines:</strong> 4 Aerojet Rocketdyne RS-25 engines (heritage Space Shuttle main engines)</li>
+<li><strong>Solid rocket boosters:</strong> 2 five-segment boosters by Northrop Grumman, each producing 3.6 million lbs of thrust</li>
+<li><strong>Propellant:</strong> 733,000 gallons of liquid hydrogen and liquid oxygen in the core stage alone</li>
+</ul>
+
+<h3>Orion Spacecraft</h3>
+<ul>
+<li><strong>Crew module:</strong> Built by Lockheed Martin, approximately 10.7 feet in diameter</li>
+<li><strong>Service module:</strong> Built by the European Space Agency (ESA), provides propulsion, power, and life support</li>
+<li><strong>Heat shield:</strong> 16.5 feet wide, largest ever built for human spaceflight</li>
+<li><strong>Solar arrays:</strong> 4 wings spanning 62 feet, generating 11 kilowatts of power</li>
+</ul>
+
+<h3>Mission Stats</h3>
+<ul>
+<li><strong>Duration:</strong> ~10 days</li>
+<li><strong>Maximum distance from Earth:</strong> Will surpass 248,655 miles (Apollo 13 record)</li>
+<li><strong>Lunar flyby altitude:</strong> ~6,400 miles above far side</li>
+<li><strong>Reentry speed:</strong> ~25,000 mph (Mach 32)</li>
+<li><strong>Reentry temperature:</strong> ~5,000&deg;F</li>
+</ul>
+
+<h2 id="why-this-mission-matters">Why This Mission Matters</h2>
+
+<p>Artemis II is not a Moon landing. It is something arguably more important: the mission that <strong>proves humans can safely travel to the Moon and back</strong> using 21st-century hardware.</p>
+
+<p>Artemis I, which flew uncrewed in late 2022, demonstrated that the SLS rocket and Orion spacecraft work. But flying empty seats to the Moon and back is fundamentally different from keeping four humans alive and operational for 10 days in deep space. Artemis II validates:</p>
+
+<ul>
+<li><strong>Life support systems</strong> &mdash; Can Orion&apos;s environmental control keep the crew safe at lunar distances?</li>
+<li><strong>Navigation and guidance</strong> &mdash; Can the crew manually pilot the spacecraft if autonomous systems fail?</li>
+<li><strong>Communication at distance</strong> &mdash; Does the Deep Space Network maintain reliable contact at 250,000+ miles?</li>
+<li><strong>Crew health</strong> &mdash; How do astronauts perform physically and cognitively during a 10-day deep space mission?</li>
+<li><strong>Reentry at lunar return speed</strong> &mdash; The heat shield performed well on Artemis I, but some ablative material eroded differently than models predicted. Artemis II provides the human-rated validation.</li>
+</ul>
+
+<p>Every subsequent Artemis mission depends on Artemis II proving that the crew systems work. Without this flight, there are no Moon landings.</p>
+
+<h2 id="what-comes-next">What Comes Next</h2>
+
+<p>If Artemis II succeeds, it unlocks an ambitious sequence of missions:</p>
+
+<ul>
+<li><strong>Artemis III</strong> (targeting 2027) &mdash; An Earth-orbit test mission that validates the Starship Human Landing System in low Earth orbit before using it for a lunar landing.</li>
+<li><strong>Artemis IV</strong> (targeting 2028) &mdash; The <strong>first crewed lunar landing since Apollo 17</strong>, using SpaceX&apos;s Starship HLS to deliver astronauts to the Moon&apos;s south pole.</li>
+<li><strong>Project Ignition</strong> &mdash; NASA&apos;s recently announced <strong>$20 billion initiative</strong> to build a permanent base at the lunar south pole, repurposing Gateway components for surface habitation. <a href="/blog/nasa-20-billion-moon-base-everything-you-need-to-know">Read our complete Ignition breakdown here</a>.</li>
+</ul>
+
+<p>Artemis II is the keystone. It is the flight that transitions Artemis from a testing program into an operational deep-space transportation system. If the crew comes home safely, the path to a permanent human presence on the Moon is open.</p>
+
+<h2 id="how-to-follow-along">How to Follow Along on SpaceNexus</h2>
+
+<p>We will be covering Artemis II extensively:</p>
+
+<ul>
+<li><strong><a href="/blog/artemis-ii-moon-mission-everything-you-need-to-know">Artemis II: Everything You Need to Know</a></strong> &mdash; Deep dive on the mission, crew, and technology</li>
+<li><strong><a href="/satellites">Satellite Tracker</a></strong> &mdash; Track Orion&apos;s position in real time after launch</li>
+<li><strong><a href="/blog/nasa-20-billion-moon-base-everything-you-need-to-know">NASA&apos;s $20 Billion Moon Base</a></strong> &mdash; What Artemis is building toward</li>
+</ul>
+
+<p>Set your alarms for <strong>April 1, 6:24 PM EDT</strong>. Humanity is going back to the Moon.</p>
+`
+  },
+  {
     slug: 'nasa-20-billion-moon-base-everything-you-need-to-know',
     title: 'NASA\'s $20 Billion Moon Base: Everything You Need to Know About Project Ignition',
     excerpt: 'NASA just announced its most ambitious lunar initiative since Apollo. The "Ignition" plan commits $20 billion over seven years to build a permanent base at the Moon\'s south pole — and it changes everything for the space industry.',
