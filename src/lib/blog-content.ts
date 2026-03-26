@@ -73,8 +73,10 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 <h3>Social Media</h3>
 <p>NASA will also stream on <strong>X (Twitter)</strong>, <strong>Facebook Live</strong>, and the <strong>NASA app</strong>. Follow <strong>@NASA</strong> and <strong>@NASAArtemis</strong> for real-time updates. The agency typically posts crew communications, milestone confirmations, and photography throughout the mission.</p>
 
-<h3>SpaceNexus Tracking</h3>
-<p>Once Orion separates from the upper stage, you can <a href="/satellites">track the spacecraft in real-time on SpaceNexus</a> using our satellite tracker. We will be updating our tracking database with Orion&apos;s orbital elements as soon as they become available after launch.</p>
+<h3>Watch on SpaceNexus</h3>
+<p><strong><a href="/live">SpaceNexus Live</a></strong> is your all-in-one mission dashboard. We embed the official NASA livestream alongside real-time telemetry data, a live mission chat, and our satellite tracker &mdash; all on a single page. No switching between tabs. Head to <a href="/live">spacenexus.us/live</a> on launch day for the complete experience.</p>
+
+<p>Once Orion separates from the upper stage, you can also <a href="/satellites">track the spacecraft in real-time</a> using our satellite tracker. We will update our tracking database with Orion&apos;s orbital elements as soon as they become available after launch.</p>
 
 <h2 id="how-to-watch-in-person">How to Watch In Person</h2>
 
