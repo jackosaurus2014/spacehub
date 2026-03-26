@@ -85,13 +85,13 @@ const INDUSTRY_MATCHUPS = [
   {
     title: 'Axiom vs Vast vs Orbital Reef',
     description: 'Commercial space station contenders: timelines, architectures, business models, and crew capacity.',
-    href: '/blog/commercial-space-stations-race-to-replace-iss',
+    href: '/compare/axiom-vs-vast',
     category: 'Space Stations',
   },
   {
     title: 'Planet vs Maxar vs BlackSky',
     description: 'Earth observation providers: resolution, revisit rates, constellation sizes, and defense vs. commercial focus.',
-    href: '/compare/companies',
+    href: '/compare/blacksky-vs-planet-labs',
     category: 'Earth Observation',
   },
   {
@@ -110,6 +110,36 @@ const INDUSTRY_MATCHUPS = [
     title: 'AST SpaceMobile vs Lynk Global',
     description: 'Direct-to-device satellite showdown: massive phased-array satellites versus small-sat constellations to connect standard phones from space.',
     href: '/compare/ast-spacemobile-vs-lynk',
+    category: 'Satellite Comms',
+  },
+  {
+    title: 'Starlink vs AST SpaceMobile',
+    description: 'LEO broadband via dish terminals versus direct-to-phone satellite connectivity. Two fundamentally different approaches to closing the global connectivity gap.',
+    href: '/compare/starlink-vs-ast-spacemobile',
+    category: 'Satellite Comms',
+  },
+  {
+    title: 'BlackSky vs Planet Labs',
+    description: 'Earth observation head-to-head: on-demand tasking with AI analytics versus daily global monitoring from the largest commercial EO constellation.',
+    href: '/compare/blacksky-vs-planet-labs',
+    category: 'Earth Observation',
+  },
+  {
+    title: 'Axiom Space vs Vast',
+    description: 'Commercial space station race: ISS-attached modules with flight heritage versus an independent station built from scratch with artificial gravity ambitions.',
+    href: '/compare/axiom-vs-vast',
+    category: 'Space Stations',
+  },
+  {
+    title: 'ICEYE vs Capella Space',
+    description: 'SAR satellite leaders compared: the largest commercial radar constellation versus cutting-edge resolution from a U.S.-based challenger.',
+    href: '/compare/iceye-vs-capella-space',
+    category: 'Earth Observation',
+  },
+  {
+    title: 'Viasat vs SES',
+    description: 'Satellite communications titans post-merger: Viasat+Inmarsat versus SES+Intelsat across aviation, maritime, and government markets.',
+    href: '/compare/viasat-vs-ses',
     category: 'Satellite Comms',
   },
 ];

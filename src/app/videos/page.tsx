@@ -5,6 +5,7 @@ import ScrollReveal from '@/components/ui/ScrollReveal';
 import prisma from '@/lib/db';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
+import YouTubeEmbed from '@/components/ui/YouTubeEmbed';
 
 export const metadata: Metadata = {
   title: 'Space Videos & Tutorials',
@@ -67,11 +68,57 @@ export default async function VideosPage() {
             </div>
           </ScrollReveal>
 
+          {/* Curated Space Videos */}
+          <ScrollReveal>
+            <div className="mb-10">
+              <div className="flex items-center gap-2 mb-5">
+                <span className="inline-block w-1 h-6 rounded-full bg-gradient-to-b from-red-400 to-red-600" />
+                <h2 className="text-lg font-bold text-white">Curated Space Videos</h2>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <YouTubeEmbed videoId="5EPVMYXOB_g" title="SpaceX Starship Flight 6 - Full Launch to Catch" />
+                <YouTubeEmbed videoId="vl6jn-DdafM" title="NASA Artemis: We Are Going to the Moon" />
+                <YouTubeEmbed videoId="FHlHxnNjJGM" title="How Satellite Internet Works - Starlink Explained" />
+                <YouTubeEmbed videoId="CtQb2bRGIXQ" title="Space Tourism: The Future of Commercial Spaceflight" />
+              </div>
+            </div>
+          </ScrollReveal>
+
+          <ScrollReveal>
+            <div className="mb-10">
+              <div className="flex items-center gap-2 mb-5">
+                <span className="inline-block w-1 h-6 rounded-full bg-gradient-to-b from-purple-400 to-purple-600" />
+                <h2 className="text-lg font-bold text-white">Launch Replays</h2>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <YouTubeEmbed videoId="Ky5l9ZQsG9c" title="SpaceX Crew Dragon Launch - Crew-8 Mission" />
+                <YouTubeEmbed videoId="KDK5TF2BOhI" title="Ariane 6 Inaugural Flight - Full Replay" />
+                <YouTubeEmbed videoId="M2_NeBkKfFs" title="Blue Origin New Glenn - First Orbital Launch" />
+              </div>
+            </div>
+          </ScrollReveal>
+
+          <ScrollReveal>
+            <div className="mb-10">
+              <div className="flex items-center gap-2 mb-5">
+                <span className="inline-block w-1 h-6 rounded-full bg-gradient-to-b from-cyan-400 to-cyan-600" />
+                <h2 className="text-lg font-bold text-white">Explainers &amp; Deep Dives</h2>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <YouTubeEmbed videoId="RlXcjh1ouxQ" title="The Economics of the Space Industry" />
+                <YouTubeEmbed videoId="gGjMicoP_64" title="Orbital Mechanics Explained - How Satellites Stay in Orbit" />
+                <YouTubeEmbed videoId="ohrQCzUKfBQ" title="Space Debris: The Growing Threat in Low Earth Orbit" />
+                <YouTubeEmbed videoId="hiH2AF1AlCg" title="How Space-Based Solar Power Could Work" />
+                <YouTubeEmbed videoId="Iy2aGaSnURM" title="Mars Colonization - Challenges and Solutions" />
+              </div>
+            </div>
+          </ScrollReveal>
+
           {videos.length === 0 ? (
             <ScrollReveal>
-              <div className="text-center py-16">
+              <div className="text-center py-16 border-t border-white/[0.06]">
                 <span className="text-5xl block mb-4">🎬</span>
-                <h2 className="text-white text-xl font-semibold mb-2">Coming Soon</h2>
+                <h2 className="text-white text-xl font-semibold mb-2">More Videos Coming Soon</h2>
                 <p className="text-slate-400 text-sm max-w-md mx-auto mb-6">
                   We&apos;re building a library of space industry tutorials, launch replays, expert interviews, and explainer videos. Check back soon.
                 </p>

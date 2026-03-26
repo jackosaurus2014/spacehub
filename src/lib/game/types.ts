@@ -435,6 +435,10 @@ export interface GameState {
     platinum_group_mined: number;
   };
 
+  // Tutorial
+  tutorialStep?: number; // 0 = not started, 1-5 = in progress, 6 = completed
+  tutorialDismissed?: boolean;
+
   // Subsidiaries
   subsidiaries?: {
     id: string;

@@ -409,10 +409,13 @@ export const PAGE_RELATIONS: Record<string, RelatedModuleConfig[]> = {
   // ── Compare hub & comparison pages ──
   'compare': [MODULES.marketIntel, MODULES.companyProfiles, MODULES.launchVehicles, MODULES.satellites, MODULES.tools],
   'compare/ast-spacemobile-vs-lynk': [MODULES.constellations, MODULES.companyProfiles, MODULES.spaceComms, MODULES.spectrum],
+  'compare/axiom-vs-vast': [MODULES.spaceStations, MODULES.companyProfiles, MODULES.startupTracker, MODULES.spaceCapital],
   'compare/astra-vs-virgin-orbit': [MODULES.launchVehicles, MODULES.launchEconomics, MODULES.companyProfiles, MODULES.startupTracker],
   'compare/bloomberg-terminal': [MODULES.marketIntel, MODULES.companyProfiles, MODULES.spaceEconomy, MODULES.industryTrends],
+  'compare/blacksky-vs-planet-labs': [MODULES.satellites, MODULES.companyProfiles, MODULES.imagery, MODULES.spaceDefense],
   'compare/boeing-vs-lockheed-space': [MODULES.companyProfiles, MODULES.spaceDefense, MODULES.procurement, MODULES.contractAwards],
   'compare/companies': [MODULES.companyProfiles, MODULES.companyResearch, MODULES.marketIntel, MODULES.reportCards],
+  'compare/iceye-vs-capella-space': [MODULES.satellites, MODULES.companyProfiles, MODULES.imagery, MODULES.spaceDefense],
   'compare/iridium-vs-globalstar': [MODULES.constellations, MODULES.satellites, MODULES.spaceComms, MODULES.companyProfiles],
   'compare/launch-vehicles': [MODULES.launchVehicles, MODULES.launchEconomics, MODULES.launchCostCalc, MODULES.launchSites],
   'compare/maxar-vs-airbus-defence-space': [MODULES.satellites, MODULES.companyProfiles, MODULES.manufacturing, MODULES.imagery],
@@ -430,8 +433,10 @@ export const PAGE_RELATIONS: Record<string, RelatedModuleConfig[]> = {
   'compare/spacex-vs-blue-origin': [MODULES.launchVehicles, MODULES.companyProfiles, MODULES.launchEconomics, MODULES.spaceCapital],
   'compare/spacex-vs-rocket-lab': [MODULES.launchVehicles, MODULES.companyProfiles, MODULES.launchEconomics, MODULES.startupTracker],
   'compare/spacex-vs-ula': [MODULES.launchVehicles, MODULES.companyProfiles, MODULES.launchEconomics, MODULES.spaceDefense],
+  'compare/starlink-vs-ast-spacemobile': [MODULES.constellations, MODULES.companyProfiles, MODULES.spaceComms, MODULES.spectrum],
   'compare/starlink-vs-kuiper': [MODULES.constellations, MODULES.satellites, MODULES.spaceComms, MODULES.companyProfiles],
   'compare/starlink-vs-oneweb': [MODULES.constellations, MODULES.satellites, MODULES.spaceComms, MODULES.companyProfiles],
+  'compare/viasat-vs-ses': [MODULES.spaceComms, MODULES.companyProfiles, MODULES.constellations, MODULES.spectrum],
   'compare/virgin-galactic-vs-blue-origin': [MODULES.spaceTourism, MODULES.companyProfiles, MODULES.launchVehicles, MODULES.spaceCapital],
 
   // ── Developer portal ──

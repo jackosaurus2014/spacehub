@@ -355,6 +355,24 @@ export default function GameStyles() {
       }
 
       /* ═══════════════════════════════════════════════════════════════════
+         TUTORIAL — pulsing tab highlight for onboarding
+         ═══════════════════════════════════════════════════════════════════ */
+      @keyframes tutorial-pulse {
+        0%, 100% {
+          background-color: rgba(6, 182, 212, 0.06);
+          box-shadow: 0 0 0 0 rgba(6, 182, 212, 0);
+        }
+        50% {
+          background-color: rgba(6, 182, 212, 0.18);
+          box-shadow: 0 0 12px rgba(6, 182, 212, 0.25), inset 0 0 8px rgba(6, 182, 212, 0.08);
+        }
+      }
+      .game-tutorial-pulse {
+        animation: tutorial-pulse 1.8s ease-in-out infinite;
+        border-radius: 8px;
+      }
+
+      /* ═══════════════════════════════════════════════════════════════════
          MOBILE OPTIMIZATIONS
          ═══════════════════════════════════════════════════════════════════ */
       .scrollbar-hide::-webkit-scrollbar { display: none; }

@@ -5,6 +5,7 @@ import { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { getRelatedModules } from '@/lib/module-relationships';
 import PersonalizedWelcome from '@/components/onboarding/PersonalizedWelcome';
+import YouTubeEmbed from '@/components/ui/YouTubeEmbed';
 
 const STEP_ILLUSTRATIONS: Record<number, string> = {
   1: '/art/onboarding-step1.png',
@@ -212,6 +213,24 @@ export default function GettingStartedPage() {
               </h1>
               <p className="text-lg md:text-xl text-slate-300 max-w-2xl mx-auto">
                 From signup to insights in under 5 minutes. Your space industry intelligence platform is ready when you are.
+              </p>
+            </div>
+          </ScrollReveal>
+        </div>
+      </section>
+
+      {/* Watch: Platform Overview */}
+      <section className="py-8 md:py-12">
+        <div className="container mx-auto px-4">
+          <ScrollReveal>
+            <div className="max-w-3xl mx-auto">
+              <div className="flex items-center gap-2 mb-5">
+                <span className="inline-block w-1 h-6 rounded-full bg-gradient-to-b from-red-400 to-red-600" />
+                <h2 className="text-lg font-bold text-white">Watch: The Space Industry in 2 Minutes</h2>
+              </div>
+              <YouTubeEmbed videoId="vl6jn-DdafM" title="NASA Artemis: Exploring the Moon and Beyond" />
+              <p className="text-slate-400 text-xs mt-3 text-center">
+                See how SpaceNexus helps you navigate the space economy &mdash; from launch tracking to market intelligence.
               </p>
             </div>
           </ScrollReveal>

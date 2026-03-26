@@ -60,6 +60,7 @@ import { getHireCost } from '@/lib/game/workforce';
 import type { WorkforceState } from '@/lib/game/workforce';
 import { calculatePrestigeRewards, DEFAULT_PRESTIGE } from '@/lib/game/prestige';
 import GameTutorial from '@/components/game/GameTutorial';
+import TutorialOverlay, { getTutorialTargetTab } from '@/components/game/TutorialOverlay';
 import FeatureUnlockToast from '@/components/game/FeatureUnlockToast';
 import ProUpgradeBanner from '@/components/game/ProUpgradeBanner';
 import { getConstructionSlots, getActiveConstructions, canStartConstruction, getSlotBreakdown } from '@/lib/game/construction-slots';
@@ -1118,6 +1119,37 @@ export default function SpaceTycoonPage() {
     }
   }, []);
 
+  // Tutorial handlers
+  const handleTutorialNext = useCallback(() => {
+    setState(prev => {
+      if (!prev) return prev;
+      const nextStep = (prev.tutorialStep ?? 1) + 1;
+      return { ...prev, tutorialStep: nextStep };
+    });
+  }, []);
+
+  const handleTutorialSkip = useCallback(() => {
+    setState(prev => {
+      if (!prev) return prev;
+      return { ...prev, tutorialStep: 6, tutorialDismissed: true };
+    });
+  }, []);
+
+  const handleTutorialComplete = useCallback(() => {
+    setState(prev => {
+      if (!prev) return prev;
+      return { ...prev, tutorialStep: 6 };
+    });
+  }, []);
+
+  const handleRestartTutorial = useCallback(() => {
+    playSound('click');
+    setState(prev => {
+      if (!prev) return prev;
+      return { ...prev, tutorialStep: 1, tutorialDismissed: false };
+    });
+  }, []);
+
   // Check achievements periodically (must be before any early returns — React hooks rules)
   useEffect(() => {
     if (!state) return;
@@ -1446,7 +1478,9 @@ export default function SpaceTycoonPage() {
       {/* Tab Navigation — V3: 4 primary tabs + overflow dropdown */}
       <div className="bg-black/40 border-b border-white/[0.06] px-2 sm:px-4 py-1 flex items-center gap-0.5 sm:gap-1" style={{ WebkitOverflowScrolling: 'touch' }}>
         {/* Primary tabs — always visible */}
-        {primaryTabs.map(t => (
+        {primaryTabs.map(t => {
+          const isTutorialTarget = getTutorialTargetTab(state.tutorialStep) === t.id && tab !== t.id;
+          return (
           <button
             key={t.id}
             onClick={() => { setTab(t.id); setShowMoreTabs(false); }}
@@ -1454,11 +1488,12 @@ export default function SpaceTycoonPage() {
               tab === t.id
                 ? 'bg-white/[0.08] text-white game-tab-active'
                 : 'text-slate-400 hover:text-white hover:bg-white/[0.04]'
-            }`}
+            } ${isTutorialTarget ? 'game-tutorial-pulse' : ''}`}
           >
             <span className="mr-0.5 sm:mr-1">{t.icon}</span><span className="hidden sm:inline">{t.label}</span>
           </button>
-        ))}
+          );
+        })}
 
         {/* More dropdown — contains secondary tabs */}
         {secondaryTabs.length > 0 && (
@@ -1510,12 +1545,19 @@ export default function SpaceTycoonPage() {
         )}
 
         <div className="flex-1" />
+        <button
+          onClick={handleRestartTutorial}
+          className="px-2 py-1 text-[10px] text-slate-500 hover:text-cyan-400 transition-colors"
+          title="Replay Tutorial"
+        >
+          ? Tutorial
+        </button>
         <Link
           href="/space-tycoon/faq"
           className="px-2 py-1 text-[10px] text-slate-500 hover:text-cyan-400 transition-colors"
           title="How to Play"
         >
-          ❓ FAQ
+          FAQ
         </Link>
         <button
           onClick={() => { playSound('click'); setShowAchievements(true); }}
@@ -1795,7 +1837,18 @@ export default function SpaceTycoonPage() {
         />
       )}
 
-      {/* Tutorial + Feature Unlock Notifications */}
+      {/* Interactive Tutorial Overlay (5-step onboarding, persisted in GameState) */}
+      {(state.tutorialStep ?? 6) >= 1 && (state.tutorialStep ?? 6) <= 5 && (
+        <TutorialOverlay
+          state={state}
+          currentTab={tab}
+          onNext={handleTutorialNext}
+          onSkip={handleTutorialSkip}
+          onComplete={handleTutorialComplete}
+          onSetTab={(t) => setTab(t)}
+        />
+      )}
+      {/* Legacy detailed tutorial + Feature Unlock Notifications */}
       <GameTutorial key={state.createdAt} onSetTab={(t) => setTab(t as GameTab)} />
       <FeatureUnlockToast
         availableTabsKey={tabIdsKey}

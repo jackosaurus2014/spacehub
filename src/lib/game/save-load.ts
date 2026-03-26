@@ -82,6 +82,9 @@ export function getNewGameState(): GameState {
     // V7 fields — megastructures & reputation
     megastructures: [],
     reputation: 0,
+    // V9 fields — tutorial onboarding
+    tutorialStep: 1,
+    tutorialDismissed: false,
   };
 }
 
@@ -202,6 +205,9 @@ export function loadGame(): GameState | null {
     if (state.reputation === undefined || state.reputation === null) state.reputation = 0;
     // V8 fields — second research queue
     if (state.activeResearch2 === undefined) state.activeResearch2 = null;
+    // V9 fields — tutorial onboarding
+    if (state.tutorialStep === undefined) state.tutorialStep = 6; // Existing saves: skip tutorial (already playing)
+    if (state.tutorialDismissed === undefined) state.tutorialDismissed = false;
 
     state.tickSpeed = 1; // Always 1x for fairness
     return state;
