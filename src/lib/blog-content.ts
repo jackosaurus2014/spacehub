@@ -23203,6 +23203,64 @@ ISS (ZARYA)
 `,
 },
 
+  {
+    slug: 'state-of-space-march-2026-monthly-report',
+    title: 'State of Space: March 2026 Monthly Industry Report',
+    excerpt: 'Our March 2026 State of Space report covers launch activity, funding trends, market movers, regulatory developments, technology milestones, and the month ahead for the global space industry.',
+    category: 'market',
+    author: 'SpaceNexus Intelligence Team',
+    authorRole: 'Research',
+    publishedAt: '2026-03-25T12:00:00Z',
+    readingTime: 8,
+    featured: true,
+    keywords: ['state of space', 'march 2026', 'space industry report', 'monthly report', 'space economy', 'launch activity', 'space funding', 'space market'],
+    content: `
+<p>Welcome to the March 2026 edition of <strong>State of Space</strong>, SpaceNexus's monthly intelligence report on the global space industry. Each month we aggregate data from 50+ sources — NASA, NOAA, SEC filings, CelesTrak, SAM.gov, and our own proprietary tracking — to give you a clear, data-driven picture of what happened and what's coming next.</p>
+
+<p><a href="/report/monthly">View the full interactive report with live data.</a></p>
+
+<h2 id="launch-activity">Launch Activity</h2>
+
+<p>Global launch cadence continued its upward trajectory in March 2026. Both government and commercial providers maintained aggressive manifests, with SpaceX continuing to dominate volume while international players expanded their share. The overall success rate remained strong, reflecting the maturation of next-generation launch systems.</p>
+
+<p>Key developments include continued Starship operational flights, progress on ULA's Vulcan Centaur manifest, and the expanding cadence from Rocket Lab, Relativity Space, and Chinese commercial launch providers.</p>
+
+<h2 id="funding-investment">Funding & Investment</h2>
+
+<p>Venture capital continued flowing into the space sector at a healthy pace in March. Early-stage rounds dominated deal count, while several growth-stage companies closed significant rounds that signal market confidence in proven business models. The satellite communications and Earth observation sectors attracted the most capital, followed by launch services and in-space infrastructure.</p>
+
+<p>The data confirms a broader shift: investors are increasingly focused on companies with established revenue or clear paths to profitability, moving away from pure technology bets. Defense-adjacent space companies continue to benefit from rising government space budgets worldwide.</p>
+
+<h2 id="market-movers">Market Movers</h2>
+
+<p>Public space equities saw mixed performance in March. Companies with direct-to-device (D2D) satellite connectivity plays outperformed the sector, while traditional satellite operators faced margin pressure from mega-constellation competition. Defense primes with significant space portfolios continued their steady upward trend, supported by growing appropriations and contract wins.</p>
+
+<p>Track real-time stock movements and financial metrics for all publicly traded space companies in the <a href="/market-intel">SpaceNexus Market Intelligence</a> module.</p>
+
+<h2 id="regulatory-watch">Regulatory Watch</h2>
+
+<p>The regulatory landscape saw several notable developments this month. FCC spectrum proceedings continued to shape the competitive dynamics of mega-constellations, while international coordination on space traffic management gained momentum. Export control adjustments and updated licensing frameworks are creating both opportunities and compliance challenges for commercial operators.</p>
+
+<p>Stay current on all regulatory developments through the <a href="/compliance">Regulatory & Compliance</a> module.</p>
+
+<h2 id="technology-milestones">Technology Milestones</h2>
+
+<p>March brought several significant technology achievements across the industry. Advances in satellite manufacturing, propulsion systems, and on-orbit servicing demonstrated the accelerating pace of space technology innovation. Commercial space station development continued to advance, with both Axiom Space and Vast hitting key program milestones.</p>
+
+<h2 id="month-ahead">The Month Ahead</h2>
+
+<p>Looking ahead to April 2026, the launch manifest remains packed. Key items to watch include commercial crew rotations, constellation deployment missions, and several national security launches. On the business side, Q1 earnings season for public space companies begins in late April, which will provide important data points on sector financial health.</p>
+
+<p>Defense procurement timelines, international spectrum coordination meetings, and several key contract award deadlines round out the major themes for the coming month.</p>
+
+<h2 id="methodology">Methodology</h2>
+
+<p>The State of Space report is generated from real-time data aggregated by the SpaceNexus platform. Sources include NASA, NOAA, ESA, SEC EDGAR, FCC ULS, CelesTrak, SAM.gov, Space-Track.org, and 40+ industry news and analysis outlets. Data is refreshed hourly and analyzed using our proprietary classification and scoring algorithms.</p>
+
+<p><strong>Get this report delivered to your inbox every month:</strong> <a href="/report/monthly">Subscribe free at spacenexus.us/report/monthly</a></p>
+`,
+  },
+
 ];
 
 export function getBlogPost(slug: string): OriginalBlogPost | undefined {

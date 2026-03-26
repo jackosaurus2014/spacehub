@@ -210,6 +210,7 @@ const BLOG_CTA_MAP: Record<string, { tool: string; path: string }> = {
   'how-to-use-spacenexus-space-weather-dashboard': { tool: 'Space Weather', path: '/space-weather' },
   'space-debris-five-year-rule-what-operators-need-know': { tool: 'Compliance Hub', path: '/compliance' },
   'spacenexus-engineering-tools-complete-guide': { tool: 'Engineering Tools', path: '/tools' },
+  'state-of-space-march-2026-monthly-report': { tool: 'Monthly Report', path: '/report/monthly' },
 };
 
 type Props = {

@@ -34,6 +34,10 @@ interface PricingCardV3Props {
   onStartTrial: (tier: SubscriptionTier) => void;
   onSubscribe: (tier: SubscriptionTier, interval: 'month' | 'year') => void;
   isYearly: boolean;
+  /** Override the trial CTA label (used by A/B tests) */
+  trialCtaLabel?: string;
+  /** Callback when the trial CTA is clicked (used by A/B test conversion tracking) */
+  onTrialCtaClick?: () => void;
 }
 
 export default function PricingCardV3({
@@ -54,6 +58,8 @@ export default function PricingCardV3({
   onStartTrial,
   onSubscribe,
   isYearly,
+  trialCtaLabel,
+  onTrialCtaClick,
 }: PricingCardV3Props) {
   const tier = TIER_CONFIG[planId as keyof typeof TIER_CONFIG] || TIER_CONFIG.free;
   const isTrialingThis = isTrialing && isCurrentPlan;
@@ -168,13 +174,16 @@ export default function PricingCardV3({
         ) : isLoggedIn && trialDays && !isTrialing ? (
           <div className="space-y-2">
             <button
-              onClick={() => onStartTrial(planId as SubscriptionTier)}
+              onClick={() => {
+                onTrialCtaClick?.();
+                onStartTrial(planId as SubscriptionTier);
+              }}
               disabled={isStartingTrial}
               className={`w-full py-3 px-4 rounded text-sm font-semibold text-white transition-all disabled:opacity-50 ${
                 highlighted ? 'hover:shadow-lg hover:shadow-indigo-500/20' : ''
               }`}
               style={{ background: highlighted ? 'var(--accent-primary)' : 'var(--bg-hover)', color: highlighted ? '#fff' : 'var(--text-primary)', border: highlighted ? 'none' : '1px solid var(--border-default)' }}>
-              {isStartingTrial ? 'Starting Trial...' : `Start ${trialDays}-Day Free Trial`}
+              {isStartingTrial ? 'Starting Trial...' : (trialCtaLabel || `Start ${trialDays}-Day Free Trial`)}
             </button>
             <button
               onClick={() => onSubscribe(planId as SubscriptionTier, isYearly ? 'year' : 'month')}

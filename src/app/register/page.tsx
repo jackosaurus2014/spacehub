@@ -9,6 +9,8 @@ import { toast } from '@/lib/toast';
 import { extractApiError } from '@/lib/errors';
 import StickyMobileCTA from '@/components/mobile/StickyMobileCTA';
 import { trackGA4Event } from '@/lib/analytics';
+import { useABTest } from '@/hooks/useABTest';
+import { SIGNUP_SOCIAL_PROOF_TEST } from '@/lib/ab-testing';
 
 function getPasswordStrength(password: string): { score: number; label: string; color: string } {
   if (!password) return { score: 0, label: '', color: '' };
@@ -71,6 +73,9 @@ function RegisterPageContent() {
   const passwordStrength = useMemo(() => getPasswordStrength(password), [password]);
   const [touched, setTouched] = useState<Record<string, boolean>>({});
 
+  // A/B test: social proof near signup form
+  const { variant: socialProofVariant, trackConversion: trackSignupConversion } = useABTest(SIGNUP_SOCIAL_PROOF_TEST);
+
   const handleBlur = (field: string) => setTouched(prev => ({ ...prev, [field]: true }));
 
   const nameError = touched.name ? getRegisterFieldError('name', name) : null;
@@ -127,6 +132,7 @@ function RegisterPageContent() {
         founding: isFounding,
         trial: isTrial,
       });
+      trackSignupConversion();
 
       // Store selected role for future personalization
       if (role) {
@@ -239,6 +245,22 @@ function RegisterPageContent() {
                 : 'Create your account and explore the cosmos'}
             </p>
           </div>
+
+          {/* A/B test: social proof variant */}
+          {socialProofVariant === 'social_proof' && (
+            <div className="mb-4 flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
+              <div className="flex -space-x-1.5">
+                {['bg-indigo-500', 'bg-emerald-500', 'bg-amber-500', 'bg-rose-500'].map((bg, i) => (
+                  <div key={i} className={`w-5 h-5 rounded-full ${bg} border-2 border-slate-900 flex items-center justify-center`}>
+                    <span className="text-[8px] text-white font-bold">{String.fromCharCode(65 + i)}</span>
+                  </div>
+                ))}
+              </div>
+              <span className="text-sm text-emerald-300 font-medium">
+                Join 500+ space professionals already on SpaceNexus
+              </span>
+            </div>
+          )}
 
           <form onSubmit={handleSubmit} className="space-y-5">
             {error && (

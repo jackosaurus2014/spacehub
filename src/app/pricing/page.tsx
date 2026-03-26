@@ -19,6 +19,8 @@ import StickyMobileCTA from '@/components/mobile/StickyMobileCTA';
 import { trackGA4Event } from '@/lib/analytics';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
+import { useABTest } from '@/hooks/useABTest';
+import { PRICING_CTA_TEST } from '@/lib/ab-testing';
 
 const PRICING_FAQ = [
   { question: 'What is SpaceNexus?', answer: 'SpaceNexus is a comprehensive space industry intelligence platform that provides real-time data on satellite tracking, launch schedules, space stocks, regulatory compliance, and 200+ company profiles across 30+ modules.' },
@@ -467,6 +469,12 @@ function PricingPageContent() {
   const [isOpeningPortal, setIsOpeningPortal] = useState(false);
   const [hasPaymentMethod, setHasPaymentMethod] = useState(false);
 
+  // A/B test: pricing CTA wording
+  const { variant: ctaVariant, trackConversion: trackCtaConversion } = useABTest(PRICING_CTA_TEST);
+  const trialCtaLabel = ctaVariant === 'reassuring'
+    ? 'Start Your 14-Day Free Trial — No Credit Card'
+    : undefined; // undefined = use PricingCardV3 default
+
   // Track pricing page view for conversion funnel
   useEffect(() => {
     trackGA4Event('pricing_page_view', {
@@ -800,6 +808,8 @@ function PricingPageContent() {
                   onStartTrial={handleStartTrial}
                   onSubscribe={handleSubscribe}
                   isYearly={isYearly}
+                  trialCtaLabel={plan.trialDays ? trialCtaLabel : undefined}
+                  onTrialCtaClick={trackCtaConversion}
                 />
               </StaggerItem>
             );
@@ -922,7 +932,7 @@ function PricingPageContent() {
       </div>
 
       <StickyMobileCTA
-        label="Start Free Trial"
+        label={ctaVariant === 'reassuring' ? 'Start Free Trial — No Card Needed' : 'Start Free Trial'}
         href="/register?trial=true&plan=pro"
         variant="primary"
       />

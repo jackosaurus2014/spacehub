@@ -313,6 +313,20 @@ model NpsResponse {
   @@index([createdAt])
 }
 
+model UserFeedback {
+  id        String   @id @default(cuid())
+  userId    String?  // Optional — anonymous users can submit
+  score     Int      // NPS 0-10
+  comment   String?  // Free-text improvement suggestion
+  pageUrl   String?  // Page the widget was triggered on
+  userAgent String?  // Browser/device info
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([score])
+  @@index([createdAt])
+}
+
 model NewsArticle {
   id          String   @id @default(cuid())
   title       String
