@@ -16,6 +16,7 @@ export interface OriginalBlogPost {
   keywords: string[];
   featured?: boolean;
   content: string; // HTML content
+  faqItems?: { question: string; answer: string }[]; // FAQ items for rich snippets
 }
 
 export const BLOG_CATEGORIES: { value: BlogCategory; label: string }[] = [
@@ -37,7 +38,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
     publishedAt: '2026-03-26T00:00:00Z',
     readingTime: 10,
     featured: true,
-    keywords: ['how to watch artemis ii', 'artemis 2 launch', 'nasa moon mission', 'artemis ii live stream', 'watch artemis launch'],
+    keywords: ['how to watch artemis 2', 'artemis ii launch', 'artemis 2 launch date', 'artemis 2 live stream', 'nasa artemis ii', 'artemis 2 crew', 'watch artemis launch live', 'artemis 2 april 2026', 'nasa moon mission 2026', 'artemis ii how to watch', 'artemis 2 launch', 'nasa moon mission', 'artemis ii viewing guide', 'artemis 2 watch online', 'sls launch live'],
     content: `
 <p>In six days, four astronauts will climb aboard the most powerful rocket ever flown with humans and begin a journey no one has attempted in over fifty years. <strong>Artemis II</strong> is targeting launch on <strong>April 1, 2026, at 6:24 PM EDT</strong> from Kennedy Space Center&apos;s Launch Pad 39B, with a two-hour launch window. If weather or technical issues intervene, backup dates are set for <strong>April 7, 8, 10, and 11</strong>.</p>
 
@@ -210,8 +211,32 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 <li><strong><a href="/blog/nasa-20-billion-moon-base-everything-you-need-to-know">NASA&apos;s $20 Billion Moon Base</a></strong> &mdash; What Artemis is building toward</li>
 </ul>
 
+<h2 id="frequently-asked-questions">Frequently Asked Questions</h2>
+
+<h3>When does Artemis II launch?</h3>
+<p>Artemis II is targeting launch on <strong>April 1, 2026, at 6:24 PM EDT</strong> (22:24 UTC) from Kennedy Space Center's Launch Pad 39B. The launch window is two hours. If the April 1 attempt is scrubbed, backup dates are April 7, 8, 10, and 11, 2026.</p>
+
+<h3>How can I watch Artemis II live?</h3>
+<p>You can watch Artemis II for free on <strong>NASA+</strong> (plus.nasa.gov), <strong>NASA TV</strong> (nasa.gov/nasatv), NASA's official <strong>YouTube channel</strong>, and on <strong><a href="/live">SpaceNexus Live</a></strong> which combines the stream with real-time telemetry and live chat. Coverage begins at least two hours before launch.</p>
+
+<h3>Who is on the Artemis II crew?</h3>
+<p>The four-person crew is: <strong>Reid Wiseman</strong> (Commander, NASA), <strong>Victor Glover</strong> (Pilot, NASA &mdash; first person of color beyond low Earth orbit), <strong>Christina Koch</strong> (Mission Specialist 1, NASA &mdash; first woman beyond low Earth orbit), and <strong>Jeremy Hansen</strong> (Mission Specialist 2, CSA &mdash; first non-American on a lunar mission).</p>
+
+<h3>How long is the Artemis II mission?</h3>
+<p>Artemis II is approximately a <strong>10-day mission</strong>. The crew will spend about one day in Earth orbit, three days coasting to the Moon, perform a lunar flyby on day 5, coast back for four days, and splashdown in the Pacific Ocean on approximately day 10.</p>
+
+<h3>Will Artemis II land on the Moon?</h3>
+<p>No. Artemis II is a <strong>lunar flyby mission</strong>, not a landing mission. The spacecraft will fly approximately 6,400 miles above the Moon's far side on a free-return trajectory and then return to Earth. It is designed to prove that Orion's crew systems work safely at lunar distances before NASA attempts a crewed landing on Artemis IV.</p>
+
 <p>Set your alarms for <strong>April 1, 6:24 PM EDT</strong>. Humanity is going back to the Moon.</p>
-`
+`,
+    faqItems: [
+      { question: 'When does Artemis II launch?', answer: 'Artemis II is targeting launch on April 1, 2026, at 6:24 PM EDT (22:24 UTC) from Kennedy Space Center\'s Launch Pad 39B. The launch window is two hours. If the April 1 attempt is scrubbed, backup dates are April 7, 8, 10, and 11, 2026.' },
+      { question: 'How can I watch Artemis II live?', answer: 'You can watch Artemis II for free on NASA+ (plus.nasa.gov), NASA TV (nasa.gov/nasatv), NASA\'s official YouTube channel, and on SpaceNexus Live (spacenexus.us/live) which combines the stream with real-time telemetry and live chat. Coverage begins at least two hours before launch.' },
+      { question: 'Who is on the Artemis II crew?', answer: 'The four-person crew is: Reid Wiseman (Commander, NASA), Victor Glover (Pilot, NASA — first person of color beyond low Earth orbit), Christina Koch (Mission Specialist 1, NASA — first woman beyond low Earth orbit), and Jeremy Hansen (Mission Specialist 2, CSA — first non-American on a lunar mission).' },
+      { question: 'How long is the Artemis II mission?', answer: 'Artemis II is approximately a 10-day mission. The crew will spend about one day in Earth orbit, three days coasting to the Moon, perform a lunar flyby on day 5, coast back for four days, and splashdown in the Pacific Ocean on approximately day 10.' },
+      { question: 'Will Artemis II land on the Moon?', answer: 'No. Artemis II is a lunar flyby mission, not a landing mission. The spacecraft will fly approximately 6,400 miles above the Moon\'s far side on a free-return trajectory and then return to Earth. It is designed to prove that Orion\'s crew systems work safely at lunar distances before NASA attempts a crewed landing on Artemis IV.' },
+    ],
   },
   {
     slug: 'nasa-20-billion-moon-base-everything-you-need-to-know',

@@ -1446,7 +1446,7 @@ export default function SpaceTycoonPage() {
   const unreadReports = (state.reports || []).filter(r => !r.read).length;
 
   // V3: Split tabs into primary (always visible) and secondary (overflow dropdown)
-  const PRIMARY_TAB_IDS: GameTab[] = ['dashboard', 'build', 'research', 'map'];
+  const PRIMARY_TAB_IDS: GameTab[] = ['dashboard', 'build', 'research', 'map', 'services', 'fleet', 'contracts'];
   const primaryTabs = allTabs.filter(t => PRIMARY_TAB_IDS.includes(t.id));
   const secondaryTabs = allTabs.filter(t => !PRIMARY_TAB_IDS.includes(t.id));
   // Check if active tab is in secondary — if so, show its label in the More button
@@ -1475,27 +1475,29 @@ export default function SpaceTycoonPage() {
       {/* Resource Bar */}
       <ResourceBar state={state} />
 
-      {/* Tab Navigation — V3: 4 primary tabs + overflow dropdown */}
-      <div className="bg-black/40 border-b border-white/[0.06] px-2 sm:px-4 py-1 flex items-center gap-0.5 sm:gap-1 overflow-x-auto game-tab-bar" style={{ WebkitOverflowScrolling: 'touch' }}>
-        {/* Primary tabs — always visible */}
-        {primaryTabs.map(t => {
-          const isTutorialTarget = getTutorialTargetTab(state.tutorialStep) === t.id && tab !== t.id;
-          return (
-          <button
-            key={t.id}
-            onClick={() => { setTab(t.id); setShowMoreTabs(false); }}
-            className={`px-2 sm:px-3 py-2 rounded-lg text-[10px] sm:text-xs font-medium transition-colors whitespace-nowrap min-h-[36px] shrink-0 ${
-              tab === t.id
-                ? 'bg-white/[0.08] text-white game-tab-active'
-                : 'text-slate-400 hover:text-white hover:bg-white/[0.04]'
-            } ${isTutorialTarget ? 'game-tutorial-pulse' : ''}`}
-          >
-            <span className="mr-0.5 sm:mr-1">{t.icon}</span><span className="hidden sm:inline">{t.label}</span>
-          </button>
-          );
-        })}
+      {/* Tab Navigation — V3: primary tabs + overflow dropdown */}
+      <div className="bg-black/40 border-b border-white/[0.06] px-2 sm:px-4 py-1 flex items-center gap-0.5 sm:gap-1 game-tab-bar">
+        {/* Scrollable primary tabs region */}
+        <div className="flex items-center gap-0.5 sm:gap-1 overflow-x-auto" style={{ WebkitOverflowScrolling: 'touch' }}>
+          {primaryTabs.map(t => {
+            const isTutorialTarget = getTutorialTargetTab(state.tutorialStep) === t.id && tab !== t.id;
+            return (
+            <button
+              key={t.id}
+              onClick={() => { setTab(t.id); setShowMoreTabs(false); }}
+              className={`px-2 sm:px-3 py-2 rounded-lg text-[10px] sm:text-xs font-medium transition-colors whitespace-nowrap min-h-[36px] shrink-0 ${
+                tab === t.id
+                  ? 'bg-white/[0.08] text-white game-tab-active'
+                  : 'text-slate-400 hover:text-white hover:bg-white/[0.04]'
+              } ${isTutorialTarget ? 'game-tutorial-pulse' : ''}`}
+            >
+              <span className="mr-0.5 sm:mr-1">{t.icon}</span><span className="hidden sm:inline">{t.label}</span>
+            </button>
+            );
+          })}
+        </div>
 
-        {/* More dropdown — contains secondary tabs */}
+        {/* More dropdown — contains secondary tabs (outside overflow container so dropdown isn't clipped) */}
         {secondaryTabs.length > 0 && (
           <div className="relative shrink-0">
             <button

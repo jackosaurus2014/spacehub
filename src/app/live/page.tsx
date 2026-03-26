@@ -38,9 +38,9 @@ const UPCOMING_LAUNCHES = [
     id: 'artemis-ii',
     mission: 'Artemis II',
     provider: 'NASA / SLS',
-    date: '2026-04-25T00:00:00Z',
+    date: '2026-04-01T22:24:00Z',
     description: 'First crewed Artemis mission. Four astronauts will fly around the Moon and return to Earth in a 10-day mission aboard Orion.',
-    blogSlug: 'artemis-ii-moon-mission-everything-you-need-to-know',
+    blogSlug: 'how-to-watch-artemis-ii-launch-complete-guide',
   },
   {
     id: 'starship-flight-12',
@@ -309,10 +309,10 @@ function LiveHubContent() {
                       Set Up Alerts
                     </Link>
                     <Link
-                      href="/blog/artemis-ii-moon-mission-everything-you-need-to-know"
+                      href="/blog/how-to-watch-artemis-ii-launch-complete-guide"
                       className="px-4 py-2 text-sm font-medium bg-gradient-to-r from-cyan-500/20 to-purple-500/20 hover:from-cyan-500/30 hover:to-purple-500/30 text-white rounded-lg transition-colors border border-white/[0.08]"
                     >
-                      Read: Artemis II Guide
+                      How to Watch Artemis II
                     </Link>
                   </div>
                 </div>
@@ -469,35 +469,46 @@ function LiveHubContent() {
 
         {/* Artemis II Feature Banner */}
         <ScrollReveal delay={0.15}>
-        <Link
-          href="/blog/artemis-ii-moon-mission-everything-you-need-to-know"
-          className="block mb-8 card-elevated p-6 hover:border-white/15 transition-all group relative overflow-hidden"
-        >
-          <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/5 via-transparent to-purple-500/5 group-hover:from-cyan-500/10 group-hover:to-purple-500/10 transition-all" />
-          <div className="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div className="flex items-center gap-4">
+        <div className="mb-8 card-elevated p-6 relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/5 via-transparent to-purple-500/5" />
+          <div className="relative z-10">
+            <div className="flex items-center gap-4 mb-4">
               <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-500/20 to-purple-500/20 flex items-center justify-center flex-shrink-0 border border-white/[0.08]">
                 <svg className="w-6 h-6 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
                 </svg>
               </div>
               <div>
-                <h3 className="text-white font-semibold text-lg group-hover:text-cyan-50 transition-colors">
-                  Artemis II: Humanity Returns to the Moon
+                <h3 className="text-white font-semibold text-lg">
+                  Artemis II: April 1, 2026 at 6:24 PM EDT
                 </h3>
                 <p className="text-slate-400 text-sm mt-0.5">
-                  FRR complete. Rollout March 20. Read our comprehensive mission guide covering everything from crew profiles to mission trajectory.
+                  Four astronauts. Ten days. Farther from Earth than any human in history. Watch every second live.
                 </p>
               </div>
             </div>
-            <span className="text-sm font-medium text-cyan-400/70 group-hover:text-cyan-400 transition-colors whitespace-nowrap flex items-center gap-1">
-              Read Full Guide
-              <svg className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </span>
+            <div className="flex flex-wrap gap-3">
+              <Link
+                href="/blog/how-to-watch-artemis-ii-launch-complete-guide"
+                className="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium bg-gradient-to-r from-cyan-500/20 to-purple-500/20 hover:from-cyan-500/30 hover:to-purple-500/30 text-white rounded-lg transition-colors border border-white/[0.08]"
+              >
+                How to Watch Artemis II
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </Link>
+              <Link
+                href="/blog/artemis-ii-moon-mission-everything-you-need-to-know"
+                className="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-white/70 hover:text-white bg-white/[0.06] hover:bg-white/[0.1] rounded-lg transition-colors border border-white/[0.06]"
+              >
+                Full Mission Guide
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </Link>
+            </div>
           </div>
-        </Link>
+        </div>
         </ScrollReveal>
 
         {/* Related Links */}

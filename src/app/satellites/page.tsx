@@ -349,6 +349,36 @@ function SatelliteTrackerContent() {
                 {/* ISS Highlight */}
                 {iss && <ISSHighlight iss={iss} />}
 
+                {/* Artemis II Tracking Callout */}
+                <Link
+                  href="/blog/how-to-watch-artemis-ii-launch-complete-guide"
+                  className="block card p-5 border border-cyan-500/20 bg-gradient-to-r from-cyan-500/[0.04] to-purple-500/[0.04] hover:border-cyan-500/30 transition-all group"
+                >
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-cyan-500/10 flex items-center justify-center flex-shrink-0 border border-cyan-500/20">
+                        <svg className="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                        </svg>
+                      </div>
+                      <div>
+                        <h3 className="text-white font-semibold group-hover:text-cyan-50 transition-colors">
+                          Track Artemis II &mdash; Launches April 1
+                        </h3>
+                        <p className="text-slate-400 text-sm mt-0.5">
+                          Watch the Orion spacecraft live after launch. Read our complete viewing guide with stream links, crew info, and mission timeline.
+                        </p>
+                      </div>
+                    </div>
+                    <span className="text-sm font-medium text-cyan-400/70 group-hover:text-cyan-400 transition-colors whitespace-nowrap flex items-center gap-1">
+                      How to Watch
+                      <svg className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </span>
+                  </div>
+                </Link>
+
                 {/* Distribution Cards */}
                 <ScrollReveal>
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

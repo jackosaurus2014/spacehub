@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import sanitizeHtml from 'sanitize-html';
 import { getBlogPost, BLOG_POSTS, BLOG_CATEGORIES } from '@/lib/blog-content';
 import FAQSchema from '@/components/seo/FAQSchema';
+import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import SocialShare from '@/components/ui/SocialShare';
 import ShareButton from '@/components/ui/ShareButton';
 import BlogViewTracker from '@/components/blog/BlogViewTracker';
@@ -64,6 +65,7 @@ const BLOG_CTA_MAP: Record<string, { tool: string; path: string }> = {
   'artemis-ii-rollout-live-coverage-march-2026': { tool: 'Mission Control', path: '/mission-control' },
   'spacex-starship-v3-whats-new-most-powerful-rocket': { tool: 'Launch Vehicles', path: '/launch-vehicles' },
   'weekly-digest-march-10-17-2026': { tool: 'Space News', path: '/news' },
+  'how-to-watch-artemis-ii-launch-complete-guide': { tool: 'Live Coverage', path: '/live' },
   'how-to-watch-artemis-ii-complete-viewing-guide': { tool: 'Live Coverage', path: '/live' },
   'space-industry-jobs-companies-hiring-2026': { tool: 'Space Talent Hub', path: '/space-talent' },
   'state-of-space-economy-2026-overview': { tool: 'Space Economy', path: '/space-economy' },
@@ -352,6 +354,14 @@ export default async function BlogPostPage({ params }: Props) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema).replace(/</g, '\\u003c') }}
       />
+      <BreadcrumbSchema items={[
+        { name: 'Home', href: '/' },
+        { name: 'Blog', href: '/blog' },
+        { name: post.title },
+      ]} />
+      {post.faqItems && post.faqItems.length > 0 && (
+        <FAQSchema items={post.faqItems} />
+      )}
 
       <article className="container mx-auto px-4 max-w-3xl">
 
