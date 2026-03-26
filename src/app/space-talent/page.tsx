@@ -58,12 +58,13 @@ import {
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
 import { extractApiError } from '@/lib/errors';
+import GigBoard from '@/components/workforce/GigBoard';
 
 // ────────────────────────────────────────
 // Types
 // ────────────────────────────────────────
 
-type TopLevelTab = 'talent' | 'workforce';
+type TopLevelTab = 'talent' | 'workforce' | 'gigs';
 
 interface ServiceProviderFormData {
   businessName: string;
@@ -1152,7 +1153,7 @@ function SpaceTalentHubContent() {
 
   // Read top-level tab from URL (?tab=talent or ?tab=workforce)
   const initialTopTab = (searchParams.get('tab') as TopLevelTab) || 'talent';
-  const validTopTab: TopLevelTab = initialTopTab === 'workforce' ? 'workforce' : 'talent';
+  const validTopTab: TopLevelTab = initialTopTab === 'workforce' ? 'workforce' : initialTopTab === 'gigs' ? 'gigs' : 'talent';
   const [topTab, setTopTab] = useState<TopLevelTab>(validTopTab);
 
   // ── URL sync helper ──
@@ -1434,16 +1435,17 @@ function SpaceTalentHubContent() {
   };
 
   // Swipe between tabs
-  useSwipeTabs(['talent', 'workforce'], topTab, (tab) => handleTopTabChange(tab as TopLevelTab));
+  useSwipeTabs(['talent', 'workforce', 'gigs'], topTab, (tab) => handleTopTabChange(tab as TopLevelTab));
 
   // Combined refresh for pull-to-refresh
   const handleRefresh = async () => {
     if (topTab === 'talent') {
       if (talentSubTab === 'experts') await fetchTalent();
       else await fetchWebinars();
-    } else {
+    } else if (topTab === 'workforce') {
       await fetchJobs(0, false);
     }
+    // gigs tab handles its own data fetching internally
   };
 
   // ════════════════════════════════════════
@@ -1525,6 +1527,20 @@ function SpaceTalentHubContent() {
         >
           <span className="flex items-center gap-2">
             Workforce Analytics
+          </span>
+        </button>
+        <button
+          role="tab"
+          aria-selected={topTab === 'gigs'}
+          onClick={() => handleTopTabChange('gigs')}
+          className={`py-3 px-6 min-h-[44px] font-medium text-sm transition-colors border-b-2 -mb-px whitespace-nowrap ${
+            topTab === 'gigs'
+              ? 'border-white/15 text-white'
+              : 'border-transparent text-slate-400 hover:text-white'
+          }`}
+        >
+          <span className="flex items-center gap-2">
+            Gig Board
           </span>
         </button>
       </div>
@@ -2642,6 +2658,11 @@ function SpaceTalentHubContent() {
           )}
         </div>
       )}
+
+      {/* ══════════════════════════════════════════════════════════ */}
+      {/* GIG BOARD TAB                                             */}
+      {/* ══════════════════════════════════════════════════════════ */}
+      {topTab === 'gigs' && <GigBoard />}
     </PullToRefresh>
   );
 }
@@ -2662,6 +2683,7 @@ export default function SpaceTalentHubPage() {
           { name: 'Expert Consultants', url: '/space-talent?tab=talent', description: 'Connect with space industry consultants and advisors' },
           { name: 'Salary Benchmarks', url: '/space-talent?tab=workforce&wfTab=salaries', description: 'Space industry salary data by role and seniority' },
           { name: 'Industry Insights', url: '/space-talent?tab=workforce&wfTab=insights', description: 'Space workforce sector employment, skills demand, and education pipeline analytics' },
+          { name: 'Gig Board', url: '/space-talent?tab=gigs', description: 'Freelance and contract gig opportunities in the space industry' },
         ]}
       />
       <div className="relative overflow-hidden">

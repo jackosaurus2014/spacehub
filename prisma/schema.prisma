@@ -123,6 +123,10 @@ model User {
 
   // Community badges
   badges               UserBadge[]
+
+  // Gig/Freelance marketplace
+  workerProfile        WorkerProfile?
+  employerProfile      EmployerProfile?
 }
 
 // ─── Space Tycoon: Multiplayer Game Models ──────────────────────────────────
@@ -5258,4 +5262,76 @@ model AllianceLog {
 
   @@index([allianceId, createdAt])
   @@index([type])
+}
+
+// ─── Gig/Freelance Marketplace ────────────────────────────────────────────────
+
+model WorkerProfile {
+  id              String   @id @default(cuid())
+  userId          String   @unique
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  displayName     String
+  headline        String   // e.g., "Propulsion Engineer | 10yr SpaceX"
+  bio             String?  @db.Text
+  skills          String[] // e.g., ["propulsion", "avionics", "systems_engineering"]
+  experienceYears Int?
+  hourlyRate      Int?     // USD per hour, null = negotiable
+  availability    String   @default("available") // available, part_time, contract_only, unavailable
+  workType        String[] // ["freelance", "contract", "part_time", "consulting", "side_project"]
+  linkedInUrl     String?
+  portfolioUrl    String?
+  location        String?
+  remoteOk        Boolean  @default(true)
+  clearanceLevel  String?  // none, secret, top_secret
+  visible         Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([availability])
+  @@index([visible])
+}
+
+model GigOpportunity {
+  id              String   @id @default(cuid())
+  employerId      String
+  employer        EmployerProfile @relation(fields: [employerId], references: [id], onDelete: Cascade)
+  title           String
+  description     String   @db.Text
+  category        String   // engineering, operations, business, research, legal, manufacturing
+  skills          String[] // required skills
+  workType        String   // freelance, contract, part_time, consulting, side_project
+  duration        String?  // e.g., "3 months", "ongoing", "one-time"
+  hoursPerWeek    Int?     // estimated hours
+  budgetMin       Int?     // USD total or per hour
+  budgetMax       Int?
+  budgetType      String   @default("hourly") // hourly, fixed, monthly
+  location        String?
+  remoteOk        Boolean  @default(true)
+  clearanceRequired Boolean @default(false)
+  isActive        Boolean  @default(true)
+  applicantCount  Int      @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([isActive])
+  @@index([category])
+  @@index([workType])
+}
+
+model EmployerProfile {
+  id              String   @id @default(cuid())
+  userId          String   @unique
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  companyName     String
+  companySlug     String?  // links to CompanyProfile if exists
+  description     String?  @db.Text
+  website         String?
+  industry        String?  // e.g., "launch_services", "satellite_operations"
+  size            String?  // startup, small, medium, large, enterprise
+  location        String?
+  logoUrl         String?
+  verified        Boolean  @default(false)
+  gigs            GigOpportunity[]
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 }

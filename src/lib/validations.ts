@@ -1852,3 +1852,68 @@ export type DealRoomJoinData = z.infer<typeof dealRoomJoinSchema>;
 export type DealRoomUpdateData = z.infer<typeof dealRoomUpdateSchema>;
 export type DealRoomInviteData = z.infer<typeof dealRoomInviteSchema>;
 export type DealRoomDocumentData = z.infer<typeof dealRoomDocumentSchema>;
+
+// ─── Gig/Freelance Marketplace ────────────────────────────────────────────────
+
+const GIG_CATEGORIES = ['engineering', 'operations', 'business', 'research', 'legal', 'manufacturing'] as const;
+const WORK_TYPES = ['freelance', 'contract', 'part_time', 'consulting', 'side_project'] as const;
+const AVAILABILITY_TYPES = ['available', 'part_time', 'contract_only', 'unavailable'] as const;
+const BUDGET_TYPES = ['hourly', 'fixed', 'monthly'] as const;
+const CLEARANCE_LEVELS = ['none', 'secret', 'top_secret'] as const;
+const COMPANY_SIZES = ['startup', 'small', 'medium', 'large', 'enterprise'] as const;
+
+export const workerProfileSchema = z.object({
+  displayName: z.string().min(1, 'Display name is required').max(100).transform(v => v.trim()),
+  headline: z.string().min(1, 'Headline is required').max(200).transform(v => v.trim()),
+  bio: z.string().max(5000).optional().nullable(),
+  skills: z.array(z.string().min(1).max(50)).min(1, 'At least one skill is required').max(30),
+  experienceYears: z.number().int().min(0).max(60).optional().nullable(),
+  hourlyRate: z.number().int().min(1).max(10000).optional().nullable(),
+  availability: z.enum(AVAILABILITY_TYPES).default('available'),
+  workType: z.array(z.enum(WORK_TYPES)).min(1, 'At least one work type is required'),
+  linkedInUrl: z.string().url().max(500).optional().nullable(),
+  portfolioUrl: z.string().url().max(500).optional().nullable(),
+  location: z.string().max(200).optional().nullable(),
+  remoteOk: z.boolean().default(true),
+  clearanceLevel: z.enum(CLEARANCE_LEVELS).optional().nullable(),
+  visible: z.boolean().default(true),
+});
+
+export const gigOpportunitySchema = z.object({
+  title: z.string().min(1, 'Title is required').max(200).transform(v => v.trim()),
+  description: z.string().min(10, 'Description must be at least 10 characters').max(10000).transform(v => v.trim()),
+  category: z.enum(GIG_CATEGORIES),
+  skills: z.array(z.string().min(1).max(50)).min(1, 'At least one skill is required').max(30),
+  workType: z.enum(WORK_TYPES),
+  duration: z.string().max(100).optional().nullable(),
+  hoursPerWeek: z.number().int().min(1).max(168).optional().nullable(),
+  budgetMin: z.number().int().min(0).optional().nullable(),
+  budgetMax: z.number().int().min(0).optional().nullable(),
+  budgetType: z.enum(BUDGET_TYPES).default('hourly'),
+  location: z.string().max(200).optional().nullable(),
+  remoteOk: z.boolean().default(true),
+  clearanceRequired: z.boolean().default(false),
+}).refine(
+  (data) => {
+    if (data.budgetMin != null && data.budgetMax != null) {
+      return data.budgetMax >= data.budgetMin;
+    }
+    return true;
+  },
+  { message: 'budgetMax must be greater than or equal to budgetMin', path: ['budgetMax'] }
+);
+
+export const employerProfileSchema = z.object({
+  companyName: z.string().min(1, 'Company name is required').max(200).transform(v => v.trim()),
+  companySlug: z.string().max(200).optional().nullable(),
+  description: z.string().max(5000).optional().nullable(),
+  website: z.string().url().max(500).optional().nullable(),
+  industry: z.string().max(100).optional().nullable(),
+  size: z.enum(COMPANY_SIZES).optional().nullable(),
+  location: z.string().max(200).optional().nullable(),
+  logoUrl: z.string().url().max(500).optional().nullable(),
+});
+
+export type WorkerProfileData = z.infer<typeof workerProfileSchema>;
+export type GigOpportunityData = z.infer<typeof gigOpportunitySchema>;
+export type EmployerProfileData = z.infer<typeof employerProfileSchema>;
