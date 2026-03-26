@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/lib/auth';
 import { validateBody, telemetryEventSchema } from '@/lib/validations';
-import { validationError, internalError } from '@/lib/errors';
-import { logger } from '@/lib/logger';
+import { validationError, unauthorizedError, forbiddenError, internalError } from '@/lib/errors';
+import { logger, getRecentErrors, getErrorStats } from '@/lib/logger';
 
 export const dynamic = 'force-dynamic';
 
@@ -22,7 +24,9 @@ export async function POST(request: NextRequest) {
 
     const { level, message, context, url, userAgent, timestamp } = validation.data;
 
-    // Log via structured logger so it appears in Railway/server logs
+    // Log via structured logger so it appears in Railway/server logs.
+    // The 'client-telemetry' source tag causes the logger's ring buffer to
+    // categorize these as client-side errors rather than server-side.
     const logContext = {
       ...(context ?? {}),
       clientUrl: url,
@@ -45,5 +49,43 @@ export async function POST(request: NextRequest) {
     // If parsing fails (e.g., malformed JSON from beacon), just discard
     logger.warn('Telemetry endpoint received unparseable payload');
     return new NextResponse(null, { status: 204 });
+  }
+}
+
+/**
+ * GET /api/telemetry
+ * Returns recent errors and statistics for the admin error dashboard.
+ * Requires admin authentication.
+ */
+export async function GET(request: NextRequest) {
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.id) {
+      return unauthorizedError();
+    }
+    if (!session.user.isAdmin) {
+      return forbiddenError('Admin access required');
+    }
+
+    const url = new URL(request.url);
+    const limit = Math.min(200, Math.max(1, parseInt(url.searchParams.get('limit') || '100', 10)));
+    const levelFilter = (url.searchParams.get('level') || 'all') as 'error' | 'warn' | 'all';
+    const sourceFilter = (url.searchParams.get('source') || 'all') as 'server' | 'client' | 'all';
+
+    const errors = getRecentErrors(limit, levelFilter, sourceFilter);
+    const stats = getErrorStats();
+
+    return NextResponse.json({
+      success: true,
+      data: {
+        errors,
+        stats,
+      },
+    });
+  } catch (err) {
+    logger.error('Error in telemetry GET handler', {
+      error: err instanceof Error ? err.message : String(err),
+    });
+    return internalError('Failed to retrieve error data');
   }
 }

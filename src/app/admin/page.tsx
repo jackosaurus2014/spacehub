@@ -131,7 +131,26 @@ export default function AdminPage() {
   return (
     <div className="min-h-screen py-8">
       <div className="container mx-auto px-4">
-        <h1 className="text-3xl font-display font-bold text-white mb-8">Admin Dashboard</h1>
+        <h1 className="text-3xl font-display font-bold text-white mb-4">Admin Dashboard</h1>
+
+        {/* Admin sub-pages nav */}
+        <div className="flex flex-wrap gap-2 mb-6">
+          {[
+            { href: '/admin/analytics', label: 'Analytics' },
+            { href: '/admin/users', label: 'Users' },
+            { href: '/admin/moderation', label: 'Moderation' },
+            { href: '/admin/data-freshness', label: 'Data Freshness' },
+            { href: '/admin/errors', label: 'Error Monitor' },
+          ].map((link) => (
+            <a
+              key={link.href}
+              href={link.href}
+              className="text-xs px-3 py-1.5 rounded-lg border border-space-600/40 bg-space-700/30 text-star-300 hover:text-white hover:bg-space-600/40 transition-colors"
+            >
+              {link.label}
+            </a>
+          ))}
+        </div>
 
         {/* Tabs */}
         <div className="flex border-b border-space-600/50 mb-6">

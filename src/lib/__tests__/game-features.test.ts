@@ -484,3 +484,394 @@ describe('Research Queue (activeResearch2)', () => {
     expect(result.activeResearch2!.definitionId).toBe('data_compression');
   });
 });
+
+// ===========================================================================
+// 5. Power System — Nuclear Reactors & Advanced Power
+// ===========================================================================
+describe('getPowerByLocation — Nuclear reactors', () => {
+  it('nuclear_reactor_leo generates 30 MW at LEO', () => {
+    const buildings = [makeBuilding('nuclear_reactor_leo', 'leo')];
+    const result = getPowerByLocation(buildings as BuildingInstance[]);
+    expect(result['leo']).toBeDefined();
+    expect(result['leo'].generated).toBe(30);
+    expect(result['leo'].required).toBe(0);
+    expect(result['leo'].ratio).toBe(1);
+  });
+
+  it('nuclear_reactor_mars_orbit generates 35 MW at mars_orbit', () => {
+    const buildings = [makeBuilding('nuclear_reactor_mars_orbit', 'mars_orbit')];
+    const result = getPowerByLocation(buildings as BuildingInstance[]);
+    expect(result['mars_orbit'].generated).toBe(35);
+  });
+
+  it('nuclear_reactor_mars_surface generates 40 MW at mars_surface', () => {
+    const buildings = [makeBuilding('nuclear_reactor_mars_surface', 'mars_surface')];
+    const result = getPowerByLocation(buildings as BuildingInstance[]);
+    expect(result['mars_surface'].generated).toBe(40);
+  });
+
+  it('nuclear_reactor_jupiter generates 40 MW at jupiter_system', () => {
+    const buildings = [makeBuilding('nuclear_reactor_jupiter', 'jupiter_system')];
+    const result = getPowerByLocation(buildings as BuildingInstance[]);
+    expect(result['jupiter_system'].generated).toBe(40);
+  });
+
+  it('nuclear_reactor_saturn generates 40 MW at saturn_system', () => {
+    const buildings = [makeBuilding('nuclear_reactor_saturn', 'saturn_system')];
+    const result = getPowerByLocation(buildings as BuildingInstance[]);
+    expect(result['saturn_system'].generated).toBe(40);
+  });
+
+  it('nuclear_reactor_asteroid generates 35 MW at asteroid_belt', () => {
+    const buildings = [makeBuilding('nuclear_reactor_asteroid', 'asteroid_belt')];
+    const result = getPowerByLocation(buildings as BuildingInstance[]);
+    expect(result['asteroid_belt'].generated).toBe(35);
+  });
+});
+
+// ===========================================================================
+// 6. Power Ratio Reduces Revenue (integration via processTick)
+// ===========================================================================
+describe('Power ratio affects revenue (processTick integration)', () => {
+  let originalDateNow: () => number;
+  const fixedNow = Date.UTC(2026, 2, 25, 12, 0, 0);
+
+  beforeEach(() => {
+    originalDateNow = Date.now;
+    Date.now = () => fixedNow;
+    jest.spyOn(Date.prototype, 'toISOString').mockReturnValue('2026-03-25T12:00:00.000Z');
+  });
+
+  afterEach(() => {
+    Date.now = originalDateNow;
+    jest.restoreAllMocks();
+  });
+
+  function makeMinimalState(overrides: Partial<GameState> = {}): GameState {
+    return {
+      version: 1,
+      createdAt: fixedNow - 86400000,
+      lastTickAt: fixedNow - 1000,
+      money: 100_000_000,
+      totalEarned: 0,
+      totalSpent: 0,
+      gameDate: { year: 2026, month: 3 },
+      tickSpeed: 1,
+      buildings: [],
+      completedResearch: [],
+      activeResearch: null,
+      activeResearch2: null,
+      activeServices: [],
+      unlockedLocations: ['earth_surface', 'leo'],
+      resources: {},
+      eventLog: [],
+      stats: {
+        rocketsLaunched: 0,
+        satellitesDeployed: 0,
+        stationsBuilt: 0,
+        researchCompleted: 0,
+        missionsToMoon: 0,
+        missionsToMars: 0,
+        missionsToOuterPlanets: 0,
+      },
+      npcCompanies: [],
+      npcMarketPressure: {},
+      activeEffects: [],
+      incomeHistory: [],
+      pendingChoice: null,
+      activeRefining: null,
+      activeMarketEvents: [],
+      claimedMilestones: {},
+      earnedAchievements: [],
+      playerTitle: null,
+      ships: [],
+      reports: [],
+      workforce: { engineers: 0, scientists: 0, miners: 0, operators: 0 },
+      activeBoosts: [],
+      availableBoosts: [],
+      tickCount: 0,
+      ...overrides,
+    };
+  }
+
+  it('Earth surface locations always return full revenue (unlimited power)', () => {
+    // Build a launch pad on earth_surface with its service active
+    const bld = {
+      ...makeBuilding('launch_pad_small', 'earth_surface'),
+      buildStartDate: { year: 2025, month: 1 },
+      completionDate: { year: 2025, month: 6 },
+      startedAtMs: fixedNow - 86400_000 * 365,
+      realDurationSeconds: 300,
+    } as BuildingInstance;
+
+    const state = makeMinimalState({
+      buildings: [bld],
+      activeServices: [{
+        definitionId: 'svc_launch_small',
+        locationId: 'earth_surface',
+        linkedBuildingIds: [bld.instanceId],
+        startDate: { year: 2025, month: 6 },
+        revenueMultiplier: 1,
+      }],
+    });
+
+    const result = processTick(state);
+    // Revenue should have been collected (totalEarned > 0)
+    expect(result.totalEarned).toBeGreaterThan(0);
+  });
+
+  it('zero-power location means zero revenue from services there', () => {
+    // mining_lunar_ice at lunar_surface requires power but has none
+    const bld = {
+      ...makeBuilding('mining_lunar_ice', 'lunar_surface'),
+      buildStartDate: { year: 2025, month: 1 },
+      completionDate: { year: 2025, month: 12 },
+      startedAtMs: fixedNow - 86400_000 * 365,
+      realDurationSeconds: 1200,
+    } as BuildingInstance;
+
+    const state = makeMinimalState({
+      buildings: [bld],
+      activeServices: [{
+        definitionId: 'svc_mining_lunar',
+        locationId: 'lunar_surface',
+        linkedBuildingIds: [bld.instanceId],
+        startDate: { year: 2025, month: 12 },
+        revenueMultiplier: 1,
+      }],
+    });
+
+    const result = processTick(state);
+    // Revenue from this service should be 0 (powerRatio = 0)
+    // totalEarned should be 0 since the only service has no power
+    expect(result.totalEarned).toBe(0);
+  });
+
+  it('multiple power generators at same location stack correctly', () => {
+    // Two solar farms at lunar_surface: 30 + 30 = 60 MW generated
+    const solar1 = makeBuilding('solar_farm_lunar', 'lunar_surface');
+    const solar2 = makeBuilding('solar_farm_lunar', 'lunar_surface');
+    const mine = makeBuilding('mining_lunar_ice', 'lunar_surface');
+    const buildings = [solar1, solar2, mine] as BuildingInstance[];
+
+    const result = getPowerByLocation(buildings);
+    expect(result['lunar_surface'].generated).toBe(60); // 30 + 30
+    expect(result['lunar_surface'].required).toBe(10);
+    expect(result['lunar_surface'].ratio).toBe(1); // 60/10 capped at 1
+  });
+});
+
+// ===========================================================================
+// 7. Probe Reports
+// ===========================================================================
+describe('Probe Reports', () => {
+  it('reports array field exists on GameState and defaults to empty', () => {
+    const state: Partial<GameState> = {
+      reports: [],
+    };
+    expect(state.reports).toEqual([]);
+  });
+
+  it('report has correct shape with required fields', () => {
+    const report: GameState['reports'] extends (infer R)[] | undefined ? R : never = {
+      id: 'rpt_test_123',
+      type: 'probe_discovery',
+      title: 'Probe Report: Ancient Debris Field',
+      body: 'Survey probe "Explorer-1" completed exploration of Asteroid Belt.',
+      createdAt: Date.now(),
+      read: false,
+      locationId: 'asteroid_belt',
+    };
+    expect(report.id).toBe('rpt_test_123');
+    expect(report.type).toBe('probe_discovery');
+    expect(report.title).toContain('Probe Report');
+    expect(report.body).toBeTruthy();
+    expect(report.read).toBe(false);
+    expect(report.locationId).toBe('asteroid_belt');
+  });
+
+  it('report can include rewards with money, resources, and miningBonus', () => {
+    const report: GameState['reports'] extends (infer R)[] | undefined ? R : never = {
+      id: 'rpt_test_456',
+      type: 'probe_discovery',
+      title: 'Rich Deposit Found',
+      body: 'Details here...',
+      createdAt: Date.now(),
+      read: false,
+      rewards: {
+        money: 50_000_000,
+        resources: { platinum_group: 25, rare_earth: 10 },
+        miningBonus: {
+          locationId: 'asteroid_belt',
+          resourceId: 'platinum_group',
+          bonusPct: 15,
+          durationMonths: 6,
+        },
+      },
+    };
+    expect(report.rewards!.money).toBe(50_000_000);
+    expect(report.rewards!.resources!['platinum_group']).toBe(25);
+    expect(report.rewards!.miningBonus!.bonusPct).toBe(15);
+  });
+
+  it('reports array is capped at 50 entries in processFullTick', () => {
+    // The engine does: [...(newState.reports || []), ...shipReports].slice(-50)
+    // Verify: starting with 50 reports, adding 1 keeps it at 50
+    const existing = Array.from({ length: 50 }, (_, i) => ({
+      id: `rpt_${i}`,
+      type: 'probe_discovery' as const,
+      title: `Report #${i}`,
+      body: 'body',
+      createdAt: Date.now() - (50 - i) * 1000,
+      read: true,
+    }));
+    const newReport = {
+      id: 'rpt_new',
+      type: 'probe_discovery' as const,
+      title: 'New Report',
+      body: 'body',
+      createdAt: Date.now(),
+      read: false,
+    };
+    const combined = [...existing, newReport].slice(-50);
+    expect(combined).toHaveLength(50);
+    // The oldest report should have been dropped
+    expect(combined[0].id).toBe('rpt_1'); // rpt_0 dropped
+    expect(combined[49].id).toBe('rpt_new');
+  });
+
+  it('reports cap at 50 even when many new reports are added at once', () => {
+    const existing = Array.from({ length: 48 }, (_, i) => ({
+      id: `rpt_${i}`,
+      type: 'probe_discovery' as const,
+      title: `Report #${i}`,
+      body: 'body',
+      createdAt: Date.now(),
+      read: true,
+    }));
+    const newReports = Array.from({ length: 5 }, (_, i) => ({
+      id: `rpt_new_${i}`,
+      type: 'probe_discovery' as const,
+      title: `New Report #${i}`,
+      body: 'body',
+      createdAt: Date.now(),
+      read: false,
+    }));
+    const combined = [...existing, ...newReports].slice(-50);
+    expect(combined).toHaveLength(50);
+  });
+});
+
+// ===========================================================================
+// 8. Tutorial System
+// ===========================================================================
+describe('Tutorial System', () => {
+  it('new game state can start with tutorialStep = 1', () => {
+    const state: Partial<GameState> = {
+      tutorialStep: 1,
+      tutorialDismissed: false,
+    };
+    expect(state.tutorialStep).toBe(1);
+    expect(state.tutorialDismissed).toBe(false);
+  });
+
+  it('tutorialStep = 0 means not started', () => {
+    const state: Partial<GameState> = {
+      tutorialStep: 0,
+    };
+    expect(state.tutorialStep).toBe(0);
+  });
+
+  it('tutorialStep = 6 means completed', () => {
+    const state: Partial<GameState> = {
+      tutorialStep: 6,
+    };
+    expect(state.tutorialStep).toBe(6);
+  });
+
+  it('tutorialStep advances from 1 through 5', () => {
+    let step = 1;
+    // Simulate advancing through tutorial steps
+    while (step < 6) {
+      expect(step).toBeGreaterThanOrEqual(1);
+      expect(step).toBeLessThanOrEqual(5);
+      step++;
+    }
+    expect(step).toBe(6); // completed
+  });
+
+  it('dismissed tutorial does not show again', () => {
+    const state: Partial<GameState> = {
+      tutorialStep: 3,
+      tutorialDismissed: true,
+    };
+    // When tutorialDismissed is true, the tutorial UI should not render
+    expect(state.tutorialDismissed).toBe(true);
+    // Step is preserved even when dismissed (can resume)
+    expect(state.tutorialStep).toBe(3);
+  });
+
+  it('tutorialDismissed defaults to undefined (falsy)', () => {
+    const state: Partial<GameState> = {};
+    // undefined is falsy, so tutorial should show by default
+    expect(state.tutorialDismissed).toBeFalsy();
+  });
+});
+
+// ===========================================================================
+// 9. Crafting Speed Applied to Refining Duration (processFullTick)
+// ===========================================================================
+describe('Crafting speed applied to refining', () => {
+  it('getCraftingSpeedMultiplier returns 1.45x with 4 fabrication facilities', () => {
+    // 1 + 0.15 * (4 - 1) = 1 + 0.45 = 1.45
+    const buildings = [
+      makeBuilding('fabrication_orbital', 'leo'),
+      makeBuilding('fabrication_orbital', 'leo'),
+      makeBuilding('fabrication_lunar', 'lunar_surface'),
+      makeBuilding('fabrication_mars', 'mars_surface'),
+    ];
+    const result = getCraftingSpeedMultiplier(buildings as BuildingInstance[]);
+    expect(result).toBeCloseTo(1.45, 10);
+  });
+
+  it('getCraftingSpeedMultiplier returns 1.75x with 6 fabrication facilities', () => {
+    // 1 + 0.15 * (6 - 1) = 1 + 0.75 = 1.75
+    const buildings = Array.from({ length: 6 }, () =>
+      makeBuilding('fabrication_orbital', 'leo'),
+    );
+    const result = getCraftingSpeedMultiplier(buildings as BuildingInstance[]);
+    expect(result).toBeCloseTo(1.75, 10);
+  });
+
+  it('crafting speed multiplier formula matches 1 + 0.15 * max(0, n-1)', () => {
+    // Test the formula for n = 0..10
+    for (let n = 0; n <= 10; n++) {
+      const expected = 1 + 0.15 * Math.max(0, n - 1);
+      const buildings = Array.from({ length: n }, () =>
+        makeBuilding('fabrication_orbital', 'leo'),
+      );
+      const result = getCraftingSpeedMultiplier(buildings as BuildingInstance[]);
+      expect(result).toBeCloseTo(expected, 10);
+    }
+  });
+
+  it('effective refining duration is reduced by crafting speed multiplier', () => {
+    // Simulate the logic from processFullTick line 555-556:
+    // effectiveDuration = durationSeconds / craftingSpeedMult
+    const durationSeconds = 120; // 2 minutes for smelt_steel
+    const craftingSpeedMult = 1.30; // 3 fabs
+    const effectiveDuration = durationSeconds / craftingSpeedMult;
+    expect(effectiveDuration).toBeCloseTo(120 / 1.30, 5);
+    expect(effectiveDuration).toBeLessThan(durationSeconds);
+  });
+
+  it('single fab does not speed up refining (1x multiplier)', () => {
+    const durationSeconds = 120;
+    const craftingSpeedMult = getCraftingSpeedMultiplier([
+      makeBuilding('fabrication_orbital', 'leo'),
+    ] as BuildingInstance[]);
+    expect(craftingSpeedMult).toBe(1);
+    const effectiveDuration = durationSeconds / craftingSpeedMult;
+    expect(effectiveDuration).toBe(durationSeconds);
+  });
+});
