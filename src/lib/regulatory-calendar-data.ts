@@ -127,7 +127,7 @@ export const REGULATORY_DEADLINES: RegulatoryDeadline[] = [
   {
     id: 'fcc-004',
     title: 'FCC 5-Year Deorbit Rule — First Compliance Reports',
-    description: 'First annual compliance reports due under the FCC 5-year post-mission disposal rule (adopted Sept 2024). All operators with LEO constellations must demonstrate compliance plans.',
+    description: 'First annual compliance reports due under the FCC 5-year post-mission disposal rule (adopted Sept 2022). All operators with LEO constellations must demonstrate compliance plans.',
     date: '2026-06-30',
     agency: 'FCC',
     type: 'compliance',

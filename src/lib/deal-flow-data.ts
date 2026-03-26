@@ -50,11 +50,26 @@ const DEALS: Deal[] = [
 
   // SpaceX funding history
   {
+    id: 'deal-spacex-early-funding',
+    type: 'funding_round',
+    title: 'SpaceX Early Funding (Musk Personal Investment)',
+    amount: 100_000_000,
+    date: '2002-06-01',
+    parties: [
+      { company: 'SpaceX', companySlug: 'spacex', role: 'recipient' },
+      { company: 'Elon Musk', role: 'investor' },
+    ],
+    stage: 'Founder Investment',
+    source: 'Public Reporting',
+    verified: true,
+    description: 'Elon Musk invested approximately $100M of his own money to found SpaceX and fund initial development of the Falcon 1 rocket through its first several launches.',
+  },
+  {
     id: 'deal-spacex-series-a',
     type: 'funding_round',
-    title: 'SpaceX Series A',
-    amount: 100_000_000,
-    date: '2006-03-15',
+    title: 'SpaceX Series A (Founders Fund)',
+    amount: 20_000_000,
+    date: '2008-08-04',
     parties: [
       { company: 'SpaceX', companySlug: 'spacex', role: 'recipient' },
       { company: 'Founders Fund', role: 'investor' },
@@ -62,22 +77,7 @@ const DEALS: Deal[] = [
     stage: 'Series A',
     source: 'SEC Filing',
     verified: true,
-    description: 'SpaceX raised $100M in its Series A round, with significant personal investment from Elon Musk alongside Founders Fund. The round funded development of the Falcon 1 rocket.',
-  },
-  {
-    id: 'deal-spacex-series-b',
-    type: 'funding_round',
-    title: 'SpaceX Series B',
-    amount: 100_000_000,
-    date: '2008-08-04',
-    parties: [
-      { company: 'SpaceX', companySlug: 'spacex', role: 'recipient' },
-      { company: 'Founders Fund', role: 'investor' },
-    ],
-    stage: 'Series B',
-    source: 'SEC Filing',
-    verified: true,
-    description: 'Second major funding round for SpaceX following the third Falcon 1 failure. Elon Musk invested his last personal funds to keep the company alive.',
+    description: 'Founders Fund led SpaceX\'s first external institutional funding round of $20M. This came shortly before the fourth and finally successful Falcon 1 flight in September 2008.',
   },
   {
     id: 'deal-spacex-series-g',

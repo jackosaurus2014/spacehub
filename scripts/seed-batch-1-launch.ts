@@ -429,7 +429,7 @@ const COMPANIES: CompanyData[] = [
     employeeRange: '51-200',
     employeeCount: 120,
     website: 'https://www.skyrora.com',
-    description: 'Skyrora is a UK launch company developing the Skyrora XL orbital rocket for polar and sun-synchronous launches from Scotland. The company uses a unique hydrogen peroxide-based fuel and has successfully tested suborbital vehicles.',
+    description: 'Skyrora is a UK launch company developing the Skyrora XL orbital rocket for polar and sun-synchronous launches from Scotland. The company uses Ecosene, a kerosene derived from recycled plastic waste, and has successfully tested suborbital vehicles.',
     longDescription: 'Skyrora is building the Skyrora XL, a three-stage orbital launch vehicle designed to deliver payloads of up to 315 kg to low Earth orbit from launch sites in Scotland. The company has completed multiple suborbital test flights and extensive engine testing. Skyrora is notable for its use of Ecosene, a high-performance kerosene derived from recycled plastic waste, and its focus on sustainable launch operations.',
     ceo: 'Volodymyr Levykin',
     sector: 'launch',

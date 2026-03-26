@@ -467,7 +467,7 @@ export function generateNurtureWelcomeEmail(userName: string): NurtureEmailResul
     <tr><td style="padding:40px;">
       <h2 style="margin:0 0 16px;color:#f1f5f9;font-size:20px;">Welcome aboard, ${name}!</h2>
       <p style="margin:0 0 16px;color:#94a3b8;font-size:15px;line-height:1.6;">
-        You now have access to the most comprehensive space industry intelligence platform. Here are 3 things to try right now:
+        You now have access to a comprehensive space industry intelligence platform. Here are 3 things to try right now:
       </p>
       <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
         <tr><td style="padding:10px 0;">
@@ -493,7 +493,7 @@ export function generateNurtureWelcomeEmail(userName: string): NurtureEmailResul
 
   const text = `Welcome aboard, ${userName || 'Explorer'}!
 
-You now have access to the most comprehensive space industry intelligence platform. Here are 3 things to try right now:
+You now have access to a comprehensive space industry intelligence platform. Here are 3 things to try right now:
 
 1. Browse the live news feed with 50+ curated space industry sources
 2. Check Mission Control for upcoming launch countdowns
@@ -566,18 +566,18 @@ ${APP_URL}`;
 }
 
 // A/B subject lines:
-//   A: "Join 500+ space professionals using SpaceNexus"
+//   A: "Join space professionals using SpaceNexus"
 //   B: "How data-driven teams are winning in the space economy"
 export function generateNurtureSocialProofEmail(userName: string): NurtureEmailResult {
   const name = escapeHtml(userName || 'Explorer');
-  const previewText = '500+ space professionals rely on SpaceNexus for critical decision-making.';
+  const previewText = 'Space professionals rely on SpaceNexus for critical decision-making.';
 
   const html = wrapNurtureEmail(`
     ${getNurtureHeader()}
     <tr><td style="padding:40px;">
       <h2 style="margin:0 0 16px;color:#f1f5f9;font-size:20px;">You're in good company, ${name}</h2>
       <p style="margin:0 0 16px;color:#94a3b8;font-size:15px;line-height:1.6;">
-        Over <strong style="color:#06b6d4;">500 space professionals</strong> -- from satellite operators to launch service providers -- use SpaceNexus to make faster, data-driven decisions.
+        Space professionals -- from satellite operators to launch service providers -- use SpaceNexus to make faster, data-driven decisions.
       </p>
       <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:16px 0;">
         <tr>
@@ -590,7 +590,7 @@ export function generateNurtureSocialProofEmail(userName: string): NurtureEmailR
         </tr>
       </table>
       <p style="margin:16px 0 0;color:#94a3b8;font-size:14px;line-height:1.6;">
-        Teams using integrated space data platforms report <strong style="color:#06b6d4;">37% faster</strong> decision-making on critical operations.
+        Integrated space data platforms help teams make faster, more informed decisions on critical operations.
       </p>
       ${getNurtureCta('See What Others Are Tracking', `${APP_URL}/mission-control`)}
     </td></tr>
@@ -599,12 +599,12 @@ export function generateNurtureSocialProofEmail(userName: string): NurtureEmailR
 
   const text = `You're in good company, ${userName || 'Explorer'}
 
-Over 500 space professionals -- from satellite operators to launch service providers -- use SpaceNexus to make faster, data-driven decisions.
+Space professionals -- from satellite operators to launch service providers -- use SpaceNexus to make faster, data-driven decisions.
 
 "SpaceNexus replaced 4 separate tools for our launch ops team. The consolidated view saves us hours every week."
 -- Launch Operations Manager
 
-Teams using integrated space data platforms report 37% faster decision-making on critical operations.
+Integrated space data platforms help teams make faster, more informed decisions on critical operations.
 
 See What Others Are Tracking: ${APP_URL}/mission-control
 
@@ -613,7 +613,7 @@ SpaceNexus - Your gateway to the space industry
 ${APP_URL}`;
 
   return {
-    subject: 'Join 500+ space professionals using SpaceNexus',
+    subject: 'Join space professionals using SpaceNexus',
     subjectB: 'How data-driven teams are winning in the space economy',
     previewText,
     html,
@@ -644,7 +644,7 @@ export function generateNurtureAISpotlightEmail(userName: string): NurtureEmailR
         </td></tr>
       </table>
       <p style="margin:16px 0 0;color:#94a3b8;font-size:14px;line-height:1.6;">
-        Enterprise users save an average of <strong style="color:#06b6d4;">10+ hours per week</strong> on market research with AI Insights.
+        Enterprise users can significantly reduce time spent on market research with AI Insights.
       </p>
       ${getNurtureCta('Try AI Insights', `${APP_URL}/ai-insights`)}
     </td></tr>
@@ -658,7 +658,7 @@ ${userName || 'Explorer'}, our AI Insights engine analyzes thousands of data poi
 Example AI Analysis:
 "LEO launch costs dropped 12% this quarter, driven by SpaceX's increased cadence. Three new entrants are expected to reach orbit by Q3, which could push prices down another 8-15%."
 
-Enterprise users save an average of 10+ hours per week on market research with AI Insights.
+Enterprise users can significantly reduce time spent on market research with AI Insights.
 
 Try AI Insights: ${APP_URL}/ai-insights
 
@@ -676,8 +676,8 @@ ${APP_URL}`;
 }
 
 // A/B subject lines:
-//   A: "How one team saved 40+ hours/month with SpaceNexus"
-//   B: "$360/year vs $50K+ in value -- the SpaceNexus ROI"
+//   A: "How SpaceNexus can save your team hours every month"
+//   B: "$199/year for consolidated space intelligence -- the SpaceNexus advantage"
 export function generateNurtureCaseStudyEmail(userName: string): NurtureEmailResult {
   const name = escapeHtml(userName || 'Explorer');
   const previewText = 'A satellite operator cut 40+ hours of manual tracking per month with SpaceNexus Pro.';
@@ -700,7 +700,7 @@ export function generateNurtureCaseStudyEmail(userName: string): NurtureEmailRes
         </td></tr>
       </table>
       <p style="margin:16px 0 0;color:#94a3b8;font-size:14px;line-height:1.6;">
-        At <strong style="color:#06b6d4;">$19.99/month</strong> ($199/year), SpaceNexus Pro delivers over <strong style="color:#06b6d4;">$50,000</strong> in annual productivity value.
+        At <strong style="color:#06b6d4;">$19.99/month</strong> ($199/year), SpaceNexus Pro consolidates multiple data sources into one dashboard, saving significant time on daily operations.
       </p>
       ${getNurtureCta('Read Full Case Study', `${APP_URL}/pricing`)}
     </td></tr>
@@ -715,7 +715,7 @@ Before: Manually checking 6 different sources for orbital data, conjunction aler
 
 After: One unified SpaceNexus dashboard with real-time alerts. Under 5 hours/month to stay fully informed.
 
-At $19.99/month ($199/year), SpaceNexus Pro delivers over $50,000 in annual productivity value.
+At $19.99/month ($199/year), SpaceNexus Pro consolidates multiple data sources into one dashboard, saving significant time on daily operations.
 
 Read Full Case Study: ${APP_URL}/pricing
 
@@ -724,8 +724,8 @@ SpaceNexus - Your gateway to the space industry
 ${APP_URL}`;
 
   return {
-    subject: 'How one team saved 40+ hours/month with SpaceNexus',
-    subjectB: '$199/year vs $50K+ in value -- the SpaceNexus ROI',
+    subject: 'How SpaceNexus can save your team hours every month',
+    subjectB: '$199/year for consolidated space intelligence -- the SpaceNexus advantage',
     previewText,
     html,
     text,

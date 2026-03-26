@@ -127,7 +127,7 @@ export const SECTORS: SectorDefinition[] = [
     tier: 1,
     keywords: ['defense space companies', 'military satellite companies', 'space domain awareness', 'national security space', 'space defense market'],
     companies: [
-      { name: 'Northrop Grumman', description: 'Satellites, launch vehicles (OmegA), missile warning', tier: 'leader' },
+      { name: 'Northrop Grumman', description: 'Satellites, solid rocket motors, missile warning, Cygnus resupply', tier: 'leader' },
       { name: 'Lockheed Martin Space', description: 'GPS III, SBIRS, Orion spacecraft, military SATCOM', tier: 'leader' },
       { name: 'L3Harris Technologies', description: 'Missile warning sensors, ground systems, small sats', tier: 'leader' },
       { name: 'Boeing Space', description: 'WGS, SDA satellites, ISS, Starliner', tier: 'leader' },
@@ -213,7 +213,7 @@ export const SECTORS: SectorDefinition[] = [
     tier: 2,
     keywords: ['space tourism companies', 'commercial spaceflight', 'space travel companies', 'orbital tourism', 'commercial space stations'],
     companies: [
-      { name: 'SpaceX', slug: 'spacex', description: 'Crew Dragon orbital tourism, Polaris program, Dear Moon', tier: 'leader' },
+      { name: 'SpaceX', slug: 'spacex', description: 'Crew Dragon orbital tourism, Polaris program', tier: 'leader' },
       { name: 'Blue Origin', description: 'New Shepard suborbital tourism, Orbital Reef station', tier: 'leader' },
       { name: 'Axiom Space', description: 'ISS modules, private astronaut missions (Ax-1 through Ax-4)', tier: 'leader' },
       { name: 'Virgin Galactic', slug: 'virgin-galactic', description: 'SpaceShipTwo suborbital experience', tier: 'challenger' },
@@ -269,7 +269,7 @@ export const SECTORS: SectorDefinition[] = [
       { name: 'Northrop Grumman (SpaceLogistics)', description: 'MEV-1/2 life extension, Mission Robotic Vehicle', tier: 'leader' },
       { name: 'Astroscale', description: 'ELSA-d debris removal demo, ELSA-M commercial service', tier: 'leader' },
       { name: 'Orbit Fab', description: 'In-space fuel depots and refueling interfaces', tier: 'challenger' },
-      { name: 'ClearSpace (Astroscale)', description: 'ESA-contracted debris removal mission', tier: 'challenger' },
+      { name: 'ClearSpace', description: 'ESA-contracted debris removal mission (ClearSpace-1)', tier: 'challenger' },
       { name: 'Starfish Space', description: 'Otter satellite servicing vehicle', tier: 'emerging' },
     ],
     relatedSectors: ['space-debris-removal', 'space-situational-awareness', 'satellite-manufacturing'],

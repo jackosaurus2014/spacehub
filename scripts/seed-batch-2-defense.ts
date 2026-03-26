@@ -185,7 +185,7 @@ const COMPANIES: CompanyData[] = [
     slug: 'kratos-defense',
     ticker: 'KTOS',
     exchange: 'NASDAQ',
-    headquarters: 'Oklahoma City, Oklahoma',
+    headquarters: 'San Diego, California',
     country: 'United States',
     foundedYear: 1994,
     employeeRange: '1001-5000',

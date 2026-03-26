@@ -447,7 +447,7 @@ export const CONJUNCTION_EVENTS_SEED = [
 export const DEBRIS_OBJECTS_SEED = [
   // Payloads (inactive)
   {
-    noradId: '32382',
+    noradId: '27386',
     name: 'Envisat',
     objectType: 'payload',
     orbitType: 'LEO',
@@ -671,7 +671,7 @@ export const DEBRIS_OBJECTS_SEED = [
     deorbitDate: null,
   },
   {
-    noradId: '27386',
+    noradId: '29499',
     name: 'Metop-A (Decommissioned)',
     objectType: 'payload',
     orbitType: 'LEO',
@@ -723,8 +723,8 @@ export const DEBRIS_OBJECTS_SEED = [
   },
   // Additional rocket bodies
   {
-    noradId: '49044',
-    name: 'CZ-5B Rocket Body (2021)',
+    noradId: '53240',
+    name: 'CZ-5B Rocket Body (2022)',
     objectType: 'rocket_body',
     orbitType: 'LEO',
     altitude: 280,

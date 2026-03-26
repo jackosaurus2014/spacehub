@@ -127,7 +127,7 @@ export const ROCKET_ENGINES_SEED: BlueprintSeed[] = [
       mass: 1600,
       nozzleRatio: 40,
       restartCapability: true,
-      gimbalRange: 15,
+      gimbalRange: 8,
     },
     propellantType: 'CH4/LOX (Methalox)',
     firstFlight: new Date('2023-04-20'),
@@ -230,8 +230,8 @@ export const ROCKET_ENGINES_SEED: BlueprintSeed[] = [
     specifications: {
       thrust: 490,
       thrustVacuum: 530,
-      isp: 410,
-      ispVacuum: 450,
+      isp: 310,
+      ispVacuum: 440,
       cycleType: 'Tap-off',
       throttleRange: '20%-100%',
       chamberPressure: 70,
@@ -1028,7 +1028,7 @@ export const LUNAR_LANDERS_SEED: BlueprintSeed[] = [
       'https://www.astrobotic.com/lunar-delivery/peregrine/',
       'https://www.nasa.gov/commercial-lunar-payload-services',
     ],
-    status: 'operational',
+    status: 'retired',
   },
   {
     slug: 'griffin',

@@ -399,10 +399,11 @@ const COMPANIES: CompanyData[] = [
         previousCompanies: ['Safran Aircraft Engines', 'Snecma'],
       },
       {
-        name: 'Pascal Bantegnie',
-        title: 'Chief Technology Officer',
+        name: 'Stephane Cueille',
+        title: 'Chief Technology & Innovation Officer',
         role: 'technical',
-        bio: 'Leads Safran\'s R&D efforts across propulsion, materials, and avionics technologies.',
+        bio: 'Leads Safran\'s technology strategy and R&D efforts across propulsion, materials, and avionics.',
+        previousCompanies: ['Safran Aircraft Engines'],
       },
     ],
     events: [
