@@ -29,6 +29,7 @@ import RelatedModules from '@/components/ui/RelatedModules';
 import TrendingSidebar from '@/components/TrendingSidebar';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
 import { trackTimeOnPage } from '@/lib/analytics';
+import JsonLd from '@/components/seo/JsonLd';
 
 function NewsContent() {
   const searchParams = useSearchParams();
@@ -287,6 +288,32 @@ export default function NewsPage() {
         { name: 'Home', href: '/' },
         { name: 'Space News', href: '/news' },
       ]} />
+      <JsonLd data={{
+        '@context': 'https://schema.org',
+        '@type': 'CollectionPage',
+        name: 'Space Industry News',
+        description: 'Breaking space industry news covering launches, satellite deployments, space policy, and commercial spaceflight.',
+        url: 'https://spacenexus.us/news',
+        isPartOf: {
+          '@type': 'WebSite',
+          name: 'SpaceNexus',
+          url: 'https://spacenexus.us',
+        },
+        publisher: {
+          '@type': 'Organization',
+          name: 'SpaceNexus',
+          url: 'https://spacenexus.us',
+          logo: {
+            '@type': 'ImageObject',
+            url: 'https://spacenexus.us/icons/icon-512x512.png',
+          },
+        },
+        mainEntity: {
+          '@type': 'ItemList',
+          name: 'Space Industry News Articles',
+          description: 'Curated space industry news from 50+ sources',
+        },
+      }} />
       <ItemListSchema
         name="Space Industry News"
         description="Breaking space industry news covering launches, satellite deployments, space policy, and commercial spaceflight."

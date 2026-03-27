@@ -21,6 +21,9 @@ export const metadata: Metadata = {
     description: 'Venture capital trends, public space companies, and emerging investment opportunities in aerospace.',
     images: ['/api/og?title=Space+Economy+Investment+Guide&subtitle=Venture+capital+trends%2C+public+space+companies%2C+and+emerging+opportunities&type=guide'],
   },
+  alternates: {
+    canonical: 'https://spacenexus.us/guide/space-economy-investment',
+  },
 };
 
 export default function Layout({ children }: { children: React.ReactNode }) {

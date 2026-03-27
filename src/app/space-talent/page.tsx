@@ -58,6 +58,7 @@ import {
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
 import { extractApiError } from '@/lib/errors';
+import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 import GigBoard from '@/components/workforce/GigBoard';
 
 // ────────────────────────────────────────
@@ -2674,6 +2675,7 @@ function SpaceTalentHubContent() {
 export default function SpaceTalentHubPage() {
   return (
     <div className="min-h-screen bg-space-900 py-8">
+      <BreadcrumbSchema items={[{ name: 'Home', href: '/' }, { name: 'Space Talent Hub' }]} />
       <ItemListSchema
         name="Space Talent Hub"
         description="Space industry job listings, expert consultants, salary benchmarks, and workforce analytics"

@@ -26,6 +26,7 @@ import EmptyState from '@/components/ui/EmptyState';
 import ExportButton from '@/components/ui/ExportButton';
 import { ContractTicker, ContractsList } from '@/components/contracts';
 import { toast } from '@/lib/toast';
+import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 
 function ExpressInterestButton({ opportunityId }: { opportunityId: string }) {
   const [interested, setInterested] = useState(false);
@@ -390,6 +391,7 @@ function BusinessOpportunitiesContent() {
 
   return (
     <div className="min-h-screen">
+      <BreadcrumbSchema items={[{ name: 'Home', href: '/' }, { name: 'Business Opportunities' }]} />
       <div className="relative overflow-hidden">
         <div className="absolute inset-0 -z-10">
           <Image

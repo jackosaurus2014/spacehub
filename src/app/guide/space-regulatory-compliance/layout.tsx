@@ -21,6 +21,9 @@ export const metadata: Metadata = {
     description: 'FCC licensing, FAA launch permits, ITU spectrum coordination, and export controls.',
     images: ['/api/og?title=Space+Regulatory+Compliance+Guide&subtitle=FCC+licensing%2C+FAA+launch+permits%2C+ITU+spectrum+coordination%2C+and+export+controls&type=guide'],
   },
+  alternates: {
+    canonical: 'https://spacenexus.us/guide/space-regulatory-compliance',
+  },
 };
 
 export default function Layout({ children }: { children: React.ReactNode }) {

@@ -18,6 +18,7 @@ import ItemListSchema from '@/components/seo/ItemListSchema';
 import FAQSchema from '@/components/seo/FAQSchema';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import RelatedModules from '@/components/ui/RelatedModules';
+import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
 
 interface MarketplaceStats {
   totalListings: number;
@@ -86,6 +87,7 @@ export default function MarketplacePage() {
   return (
     <PullToRefresh onRefresh={async () => { await loadData(); }}>
     <div className="min-h-screen">
+      <BreadcrumbSchema items={[{ name: 'Home', href: '/' }, { name: 'Marketplace' }]} />
       <ItemListSchema
         name="Space Industry Marketplace"
         description="B2B marketplace for space industry products and services including launch slots, satellite components, ground stations, and engineering services."

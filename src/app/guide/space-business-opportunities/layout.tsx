@@ -21,6 +21,9 @@ export const metadata: Metadata = {
     description: 'Government contracts, commercial partnerships, and emerging markets in the space industry.',
     images: ['/api/og?title=Space+Business+Opportunities+Guide&subtitle=Government+contracts%2C+commercial+partnerships%2C+and+emerging+markets&type=guide'],
   },
+  alternates: {
+    canonical: 'https://spacenexus.us/guide/space-business-opportunities',
+  },
 };
 
 export default function Layout({ children }: { children: React.ReactNode }) {
