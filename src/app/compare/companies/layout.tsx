@@ -3,6 +3,9 @@ import { Metadata } from 'next';
 export const metadata: Metadata = {
   title: 'Compare Space Companies',
   description: 'Side-by-side comparison of space industry companies. Compare financials, government contracts, space assets, and capabilities.',
+  alternates: {
+    canonical: 'https://spacenexus.us/compare/companies',
+  },
   openGraph: {
     title: 'Compare Space Companies | SpaceNexus',
     description: 'Side-by-side comparison of space industry companies.',

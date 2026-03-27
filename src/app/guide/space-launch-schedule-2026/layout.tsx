@@ -3,6 +3,9 @@ import type { Metadata } from 'next';
 export const metadata: Metadata = {
   title: 'Space Launch Schedule 2026',
   description: 'Complete space launch schedule for 2026. Upcoming launches, mission details, launch vehicles, and payload information from SpaceX, ULA, Arianespace, and more.',
+  alternates: {
+    canonical: 'https://spacenexus.us/guide/space-launch-schedule-2026',
+  },
   openGraph: {
     title: 'Space Launch Schedule 2026 | SpaceNexus',
     description: 'Complete space launch schedule for 2026. Upcoming launches, mission details, launch vehicles, and payload information.',

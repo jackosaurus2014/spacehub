@@ -3,6 +3,9 @@ import type { Metadata } from 'next';
 export const metadata: Metadata = {
   title: 'Space Launch Cost Comparison Guide',
   description: 'Compare space launch costs across providers and vehicles. Cost per kilogram data for SpaceX, ULA, Arianespace, Rocket Lab, and more.',
+  alternates: {
+    canonical: 'https://spacenexus.us/guide/space-launch-cost-comparison',
+  },
   openGraph: {
     title: 'Space Launch Cost Comparison Guide | SpaceNexus',
     description: 'Compare space launch costs across providers and vehicles. Cost per kilogram data for SpaceX, ULA, Arianespace, Rocket Lab, and more.',
