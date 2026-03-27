@@ -102,18 +102,20 @@ const CRON_JOBS: CronJobDef[] = [
   { schedule: '0 17 1 * *',   path: '/api/refresh?type=sam-entities',             label: 'sam-entities-refresh',        maxStaleMinutes: 43200 },
 
   // ─── Space Tycoon: Competitive Multiplayer Cron Jobs ─────────────────
+  // Note: These are non-critical game jobs. Generous staleness thresholds to avoid alert spam.
+  // They may fail gracefully when no active players/data exist.
   // Rival snapshots — every 4 hours (captures stats, updates rivalry scores)
-  { schedule: '0 */4 * * *',  path: '/api/space-tycoon/rivals/snapshot',           label: 'tycoon-rival-snapshots',      maxStaleMinutes: 360 },
+  { schedule: '0 */4 * * *',  path: '/api/space-tycoon/rivals/snapshot',           label: 'tycoon-rival-snapshots',      maxStaleMinutes: 1440 },
   // Contract bidding resolution — every 6 hours (resolves expired bids, generates new contracts)
-  { schedule: '0 */6 * * *',  path: '/api/space-tycoon/bidding/resolve',           label: 'tycoon-bidding-resolve',      maxStaleMinutes: 480 },
+  { schedule: '0 */6 * * *',  path: '/api/space-tycoon/bidding/resolve',           label: 'tycoon-bidding-resolve',      maxStaleMinutes: 1440 },
   // Zone influence recalculation — daily at 1am UTC (decay, recalculate shares, resolve challenges)
-  { schedule: '0 1 * * *',    path: '/api/space-tycoon/zones/update',              label: 'tycoon-zone-influence',       maxStaleMinutes: 1560 },
+  { schedule: '0 1 * * *',    path: '/api/space-tycoon/zones/update',              label: 'tycoon-zone-influence',       maxStaleMinutes: 2880 },
   // League week processing — Monday at 00:05 UTC (finalize brackets, promote/demote, create new week)
   { schedule: '5 0 * * 1',    path: '/api/space-tycoon/leagues/process-week',      label: 'tycoon-league-processing',    maxStaleMinutes: 11520 },
   // Alliance deep system processing — every 2 hours (activity, streaks, power score, research/project completion, perk expiry)
-  { schedule: '0 */2 * * *',  path: '/api/space-tycoon/alliance-cron',             label: 'tycoon-alliance-processing',  maxStaleMinutes: 180 },
+  { schedule: '0 */2 * * *',  path: '/api/space-tycoon/alliance-cron',             label: 'tycoon-alliance-processing',  maxStaleMinutes: 1440 },
   // Market NPC restocking — every hour (gradually replenishes supply toward baseline)
-  { schedule: '0 * * * *',    path: '/api/space-tycoon/market/restock',             label: 'tycoon-market-restock',       maxStaleMinutes: 120 },
+  { schedule: '0 * * * *',    path: '/api/space-tycoon/market/restock',             label: 'tycoon-market-restock',       maxStaleMinutes: 1440 },
 ];
 
 // Critical jobs that get auto-recovered by the watchdog
@@ -215,6 +217,9 @@ async function triggerEndpoint(path: string, label: string, retries: number = 3)
 // Staleness watchdog — runs every 10 minutes
 // ---------------------------------------------------------------------------
 
+// Track which jobs have already been alerted as stale (prevent repeat alerts)
+const alertedStaleJobs = new Set<string>();
+
 function startWatchdog() {
   cron.schedule('*/10 * * * *', async () => {
     const now = Date.now();
@@ -228,21 +233,30 @@ function startWatchdog() {
       const isStale = (now - lastSuccess) > staleThresholdMs;
 
       // Grace period after startup — don't flag jobs as stale before they've
-      // had a chance to run naturally (wait at least maxStaleMinutes)
+      // had a chance to run naturally (wait at least 2x maxStaleMinutes for safety)
       const startTime = schedulerStartTime || now;
-      if ((now - startTime) < staleThresholdMs) continue;
+      if ((now - startTime) < staleThresholdMs * 2) continue;
 
-      if (!isStale) continue;
+      if (!isStale) {
+        // Job recovered — clear the alert dedup flag
+        alertedStaleJobs.delete(label);
+        continue;
+      }
 
       staleCount++;
-      logger.warn(`Cron watchdog: [${label}] is stale`, {
-        lastSuccessAt: status.lastSuccessAt ? new Date(status.lastSuccessAt).toISOString() : 'never',
-        maxStaleMinutes: status.maxStaleMinutes,
-        consecutiveFailures: status.consecutiveFailures,
-      });
 
-      // Fire a freshness alert (persists to DB, optionally emails admin)
-      await sendFreshnessAlert(label, status.lastSuccessAt, status.maxStaleMinutes);
+      // Only alert ONCE per stale episode (not every 10 minutes)
+      if (!alertedStaleJobs.has(label)) {
+        alertedStaleJobs.add(label);
+        logger.warn(`Cron watchdog: [${label}] is stale`, {
+          lastSuccessAt: status.lastSuccessAt ? new Date(status.lastSuccessAt).toISOString() : 'never',
+          maxStaleMinutes: status.maxStaleMinutes,
+          consecutiveFailures: status.consecutiveFailures,
+        });
+
+        // Fire a freshness alert (persists to DB, optionally emails admin)
+        await sendFreshnessAlert(label, status.lastSuccessAt, status.maxStaleMinutes);
+      }
 
       // Auto-recover critical jobs only (cap at 10 consecutive failures)
       if (CRITICAL_JOBS.has(label) && status.consecutiveFailures < 10) {
