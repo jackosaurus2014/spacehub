@@ -5,8 +5,8 @@ export const metadata: Metadata = {
   description: 'Stay up to date with the latest space industry news. Breaking stories on launches, discoveries, space agencies, commercial spaceflight, and astronomical events.',
   keywords: [
     'space news',
-    'NASA news',
-    'SpaceX news',
+    'spacex news',
+    'nasa news',
     'rocket launch news',
     'astronomy news',
     'space exploration news',
@@ -14,6 +14,11 @@ export const metadata: Metadata = {
     'space industry updates',
     'space technology news',
     'commercial spaceflight',
+    'artemis news',
+    'blue origin news',
+    'rocket lab news',
+    'starlink news',
+    'space news today',
   ],
   openGraph: {
     title: 'Space News | SpaceNexus',

@@ -36,9 +36,9 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
 
     // Main modules
     { url: `${BASE_URL}/mission-control`, changeFrequency: 'hourly' as const, priority: 0.9 },
-    { url: `${BASE_URL}/news`, changeFrequency: 'hourly' as const, priority: 0.9 },
+    { url: `${BASE_URL}/news`, changeFrequency: 'daily' as const, priority: 1.0 },
     { url: `${BASE_URL}/market-intel`, changeFrequency: 'hourly' as const, priority: 0.9 },
-    { url: `${BASE_URL}/satellites`, changeFrequency: 'hourly' as const, priority: 0.9 },
+    { url: `${BASE_URL}/satellites`, changeFrequency: 'daily' as const, priority: 1.0 },
     { url: `${BASE_URL}/business-opportunities`, changeFrequency: 'daily' as const, priority: 0.8 },
     { url: `${BASE_URL}/mission-cost`, changeFrequency: 'daily' as const, priority: 0.8 },
     { url: `${BASE_URL}/compliance`, changeFrequency: 'daily' as const, priority: 0.8 },
@@ -93,7 +93,7 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/company-profiles/sponsor`, changeFrequency: 'monthly' as const, priority: 0.5 },
 
     // Blog index
-    { url: `${BASE_URL}/blog`, changeFrequency: 'weekly' as const, priority: 0.7 },
+    { url: `${BASE_URL}/blog`, changeFrequency: 'daily' as const, priority: 0.9 },
     { url: `${BASE_URL}/blog/topics`, changeFrequency: 'weekly' as const, priority: 0.6 },
 
     // City-specific landing pages
@@ -113,7 +113,7 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
     // Content and tools
     { url: `${BASE_URL}/blogs`, changeFrequency: 'daily' as const, priority: 0.6 },
     { url: `${BASE_URL}/launch`, changeFrequency: 'daily' as const, priority: 0.6 },
-    { url: `${BASE_URL}/live`, changeFrequency: 'hourly' as const, priority: 0.6 },
+    { url: `${BASE_URL}/live`, changeFrequency: 'daily' as const, priority: 1.0 },
     { url: `${BASE_URL}/ai-insights`, changeFrequency: 'daily' as const, priority: 0.6 },
     { url: `${BASE_URL}/search`, changeFrequency: 'weekly' as const, priority: 0.5 },
     { url: `${BASE_URL}/alerts`, changeFrequency: 'daily' as const, priority: 0.5 },
@@ -147,25 +147,25 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/regulation-explainers`, changeFrequency: 'monthly' as const, priority: 0.7 },
 
     // Comparison pages
-    { url: `${BASE_URL}/compare`, changeFrequency: 'monthly' as const, priority: 0.6 },
-    { url: `${BASE_URL}/compare/bloomberg-terminal`, changeFrequency: 'monthly' as const, priority: 0.6 },
-    { url: `${BASE_URL}/compare/quilty-analytics`, changeFrequency: 'monthly' as const, priority: 0.6 },
-    { url: `${BASE_URL}/compare/payload-space`, changeFrequency: 'monthly' as const, priority: 0.6 },
+    { url: `${BASE_URL}/compare`, changeFrequency: 'monthly' as const, priority: 0.8 },
+    { url: `${BASE_URL}/compare/bloomberg-terminal`, changeFrequency: 'monthly' as const, priority: 0.8 },
+    { url: `${BASE_URL}/compare/quilty-analytics`, changeFrequency: 'monthly' as const, priority: 0.8 },
+    { url: `${BASE_URL}/compare/payload-space`, changeFrequency: 'monthly' as const, priority: 0.8 },
     { url: `${BASE_URL}/compare/spacex-vs-blue-origin`, changeFrequency: 'monthly' as const, priority: 0.8 },
-    { url: `${BASE_URL}/compare/rocket-lab-vs-relativity-space`, changeFrequency: 'monthly' as const, priority: 0.7 },
-    { url: `${BASE_URL}/compare/starlink-vs-oneweb`, changeFrequency: 'monthly' as const, priority: 0.7 },
-    { url: `${BASE_URL}/compare/planet-labs-vs-maxar`, changeFrequency: 'monthly' as const, priority: 0.7 },
-    { url: `${BASE_URL}/compare/spacenexus-vs-bryce-tech`, changeFrequency: 'monthly' as const, priority: 0.7 },
-    { url: `${BASE_URL}/compare/spacex-vs-rocket-lab`, changeFrequency: 'monthly' as const, priority: 0.7 },
-    { url: `${BASE_URL}/compare/starlink-vs-kuiper`, changeFrequency: 'monthly' as const, priority: 0.7 },
-    { url: `${BASE_URL}/compare/boeing-vs-lockheed-space`, changeFrequency: 'monthly' as const, priority: 0.7 },
-    { url: `${BASE_URL}/compare/virgin-galactic-vs-blue-origin`, changeFrequency: 'monthly' as const, priority: 0.7 },
-    { url: `${BASE_URL}/compare/relativity-space-vs-firefly`, changeFrequency: 'monthly' as const, priority: 0.6 },
-    { url: `${BASE_URL}/compare/maxar-vs-airbus-defence-space`, changeFrequency: 'monthly' as const, priority: 0.6 },
-    { url: `${BASE_URL}/compare/astra-vs-virgin-orbit`, changeFrequency: 'monthly' as const, priority: 0.6 },
-    { url: `${BASE_URL}/compare/northrop-grumman-vs-l3harris-space`, changeFrequency: 'monthly' as const, priority: 0.6 },
-    { url: `${BASE_URL}/compare/iridium-vs-globalstar`, changeFrequency: 'monthly' as const, priority: 0.6 },
-    { url: `${BASE_URL}/compare/spacex-vs-ula`, changeFrequency: 'monthly' as const, priority: 0.7 },
+    { url: `${BASE_URL}/compare/rocket-lab-vs-relativity-space`, changeFrequency: 'monthly' as const, priority: 0.8 },
+    { url: `${BASE_URL}/compare/starlink-vs-oneweb`, changeFrequency: 'monthly' as const, priority: 0.8 },
+    { url: `${BASE_URL}/compare/planet-labs-vs-maxar`, changeFrequency: 'monthly' as const, priority: 0.8 },
+    { url: `${BASE_URL}/compare/spacenexus-vs-bryce-tech`, changeFrequency: 'monthly' as const, priority: 0.8 },
+    { url: `${BASE_URL}/compare/spacex-vs-rocket-lab`, changeFrequency: 'monthly' as const, priority: 0.8 },
+    { url: `${BASE_URL}/compare/starlink-vs-kuiper`, changeFrequency: 'monthly' as const, priority: 0.8 },
+    { url: `${BASE_URL}/compare/boeing-vs-lockheed-space`, changeFrequency: 'monthly' as const, priority: 0.8 },
+    { url: `${BASE_URL}/compare/virgin-galactic-vs-blue-origin`, changeFrequency: 'monthly' as const, priority: 0.8 },
+    { url: `${BASE_URL}/compare/relativity-space-vs-firefly`, changeFrequency: 'monthly' as const, priority: 0.8 },
+    { url: `${BASE_URL}/compare/maxar-vs-airbus-defence-space`, changeFrequency: 'monthly' as const, priority: 0.8 },
+    { url: `${BASE_URL}/compare/astra-vs-virgin-orbit`, changeFrequency: 'monthly' as const, priority: 0.8 },
+    { url: `${BASE_URL}/compare/northrop-grumman-vs-l3harris-space`, changeFrequency: 'monthly' as const, priority: 0.8 },
+    { url: `${BASE_URL}/compare/iridium-vs-globalstar`, changeFrequency: 'monthly' as const, priority: 0.8 },
+    { url: `${BASE_URL}/compare/spacex-vs-ula`, changeFrequency: 'monthly' as const, priority: 0.8 },
 
     // Sector directory pages (programmatic SEO)
     { url: `${BASE_URL}/sectors`, changeFrequency: 'weekly' as const, priority: 0.8 },
@@ -309,7 +309,7 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/career-guide`, changeFrequency: 'monthly' as const, priority: 0.7 },
     { url: `${BASE_URL}/acronyms`, changeFrequency: 'monthly' as const, priority: 0.6 },
     { url: `${BASE_URL}/space-weather`, changeFrequency: 'daily' as const, priority: 0.7 },
-    { url: `${BASE_URL}/compare/satellite-buses`, changeFrequency: 'monthly' as const, priority: 0.6 },
+    { url: `${BASE_URL}/compare/satellite-buses`, changeFrequency: 'monthly' as const, priority: 0.8 },
     { url: `${BASE_URL}/propulsion-database`, changeFrequency: 'monthly' as const, priority: 0.6 },
     { url: `${BASE_URL}/space-agencies`, changeFrequency: 'monthly' as const, priority: 0.6 },
     { url: `${BASE_URL}/launch-sites`, changeFrequency: 'monthly' as const, priority: 0.6 },
@@ -400,6 +400,24 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/compare/satellites`, changeFrequency: 'monthly' as const, priority: 0.6 },
     { url: `${BASE_URL}/compare/companies`, changeFrequency: 'monthly' as const, priority: 0.6 },
     { url: `${BASE_URL}/compare/launch-vehicles`, changeFrequency: 'monthly' as const, priority: 0.6 },
+    { url: `${BASE_URL}/compare/newsletters`, changeFrequency: 'monthly' as const, priority: 0.6 },
+    { url: `${BASE_URL}/compare/ast-spacemobile-vs-lynk`, changeFrequency: 'monthly' as const, priority: 0.8 },
+    { url: `${BASE_URL}/compare/axiom-vs-vast`, changeFrequency: 'monthly' as const, priority: 0.8 },
+    { url: `${BASE_URL}/compare/blacksky-vs-planet-labs`, changeFrequency: 'monthly' as const, priority: 0.8 },
+    { url: `${BASE_URL}/compare/firefly-vs-abl-space`, changeFrequency: 'monthly' as const, priority: 0.8 },
+    { url: `${BASE_URL}/compare/iceye-vs-capella-space`, changeFrequency: 'monthly' as const, priority: 0.8 },
+    { url: `${BASE_URL}/compare/intuitive-machines-vs-astrobotic`, changeFrequency: 'monthly' as const, priority: 0.8 },
+    { url: `${BASE_URL}/compare/iridium-vs-starlink`, changeFrequency: 'monthly' as const, priority: 0.8 },
+    { url: `${BASE_URL}/compare/northrop-grumman-vs-boeing-space`, changeFrequency: 'monthly' as const, priority: 0.8 },
+    { url: `${BASE_URL}/compare/rocket-lab-vs-astra`, changeFrequency: 'monthly' as const, priority: 0.8 },
+    { url: `${BASE_URL}/compare/rocket-lab-vs-spacex`, changeFrequency: 'monthly' as const, priority: 0.8 },
+    { url: `${BASE_URL}/compare/satellogic-vs-planet-labs`, changeFrequency: 'monthly' as const, priority: 0.8 },
+    { url: `${BASE_URL}/compare/ses-vs-intelsat`, changeFrequency: 'monthly' as const, priority: 0.8 },
+    { url: `${BASE_URL}/compare/sierra-space-vs-axiom-space`, changeFrequency: 'monthly' as const, priority: 0.8 },
+    { url: `${BASE_URL}/compare/spacex-vs-arianespace`, changeFrequency: 'monthly' as const, priority: 0.8 },
+    { url: `${BASE_URL}/compare/spire-vs-hawkeye-360`, changeFrequency: 'monthly' as const, priority: 0.8 },
+    { url: `${BASE_URL}/compare/starlink-vs-ast-spacemobile`, changeFrequency: 'monthly' as const, priority: 0.8 },
+    { url: `${BASE_URL}/compare/viasat-vs-ses`, changeFrequency: 'monthly' as const, priority: 0.8 },
 
     // Wave 70 pages
     { url: `${BASE_URL}/satellite-tracker`, changeFrequency: 'daily' as const, priority: 0.8 },
@@ -527,12 +545,12 @@ async function getMarketplaceRoutes(): Promise<MetadataRoute.Sitemap> {
 
 // Segment 3: Blog posts + AI insights + regulation explainers
 async function getContentRoutes(): Promise<MetadataRoute.Sitemap> {
-  // Static blog posts
+  // Static blog posts — featured posts get higher priority
   const blogRoutes: MetadataRoute.Sitemap = BLOG_POSTS.map(post => ({
     url: `${BASE_URL}/blog/${post.slug}`,
     lastModified: post.updatedAt ? new Date(post.updatedAt) : new Date(post.publishedAt),
     changeFrequency: 'monthly' as const,
-    priority: 0.6,
+    priority: post.featured ? 0.8 : 0.6,
   }));
 
   // AI insights from database

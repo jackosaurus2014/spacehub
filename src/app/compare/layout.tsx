@@ -9,7 +9,9 @@ export const metadata: Metadata = {
     'Compare space industry players side-by-side: launch vehicles, satellite constellations, companies, and platforms. SpaceX vs Blue Origin, Starlink vs Kuiper, and more data-driven comparisons.',
   keywords: [
     'space industry comparison',
-    'SpaceX vs Blue Origin',
+    'spacex vs blue origin',
+    'rocket comparison',
+    'satellite comparison',
     'Starlink vs Kuiper',
     'launch vehicle comparison',
     'satellite constellation comparison',
@@ -20,6 +22,9 @@ export const metadata: Metadata = {
     'Quilty Analytics alternative',
     'space intelligence tools',
     'Rocket Lab vs SpaceX',
+    'spacex vs ula',
+    'starlink vs oneweb',
+    'boeing vs lockheed space',
   ],
   openGraph: {
     title: 'Compare Space Industry Players | SpaceNexus',

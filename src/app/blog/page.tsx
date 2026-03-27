@@ -334,6 +334,26 @@ function BlogListingContent() {
           </ScrollReveal>
         )}
 
+        {/* Trending Topics */}
+        <div className="flex flex-wrap gap-2 mb-6">
+          {[
+            { label: 'Artemis II Launch Guide', href: '/blog/how-to-watch-artemis-ii-launch-complete-guide' },
+            { label: 'SpaceX Starship Guide', href: '/blog/spacex-starship-complete-guide-2026' },
+            { label: 'Falcon 9 Deep Dive', href: '/blog/falcon-9-workhorse-rocket-changed-spaceflight' },
+            { label: 'Artemis Program Explained', href: '/blog/artemis-program-explained-return-to-moon' },
+            { label: 'Starlink: Everything to Know', href: '/blog/spacex-starlink-everything-you-need-to-know-2026' },
+            { label: 'Top 50 Space Companies', href: '/blog/top-50-space-companies-to-watch-2026' },
+          ].map(topic => (
+            <Link
+              key={topic.href}
+              href={topic.href}
+              className="px-3 py-1.5 rounded-full text-xs font-medium bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 hover:bg-indigo-500/20 transition-colors"
+            >
+              Trending: {topic.label}
+            </Link>
+          ))}
+        </div>
+
         {/* Category Filter */}
         <div className="flex flex-wrap gap-2 mb-8">
           <button

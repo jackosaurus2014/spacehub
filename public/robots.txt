@@ -1,5 +1,15 @@
 User-agent: *
 Allow: /
+Allow: /blog/
+Allow: /compare/
+Allow: /guide/
+Allow: /learn/
+Allow: /sectors/
+Allow: /company-profiles/
+Allow: /news
+Allow: /satellites
+Allow: /live
+Allow: /marketplace/
 Disallow: /api/
 Disallow: /admin/
 Disallow: /checkout/
