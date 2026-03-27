@@ -148,6 +148,24 @@ export const SERVICES: ServiceDefinition[] = [
     description: 'Buy cheap fuel at Moon, sell at premium to Mars/Jupiter-bound missions.',
     revenuePerMonth: 40_000_000, operatingCostPerMonth: 15_000_000,
     requiredBuildings: ['sat_mars_relay'], requiredResearch: ['interplanetary_cruisers'] },
+
+  // ─── OUTER SYSTEM SERVICES ─────────────────────────────────────────
+  { id: 'svc_mining_kuiper', name: 'Kuiper Belt Extraction', type: 'mining_output', tier: 5,
+    description: 'Extract exotic materials, helium-3, and platinum group metals from Kuiper Belt objects.',
+    revenuePerMonth: 80_000_000, operatingCostPerMonth: 25_000_000,
+    requiredBuildings: ['mining_kuiper'], requiredResearch: ['deep_drilling'] },
+  { id: 'svc_deep_space_comm', name: 'Deep Space Data Relay', type: 'telecom_service', tier: 5,
+    description: 'Long-range communication relay services for outer system operations and deep space probes.',
+    revenuePerMonth: 40_000_000, operatingCostPerMonth: 15_000_000,
+    requiredBuildings: ['deep_space_relay'], requiredResearch: ['fusion_drive'] },
+  { id: 'svc_jupiter_relay', name: 'Jupiter System Relay', type: 'telecom_service', tier: 4,
+    description: 'Data relay and edge computing services for Jupiter system operations.',
+    revenuePerMonth: 30_000_000, operatingCostPerMonth: 12_000_000,
+    requiredBuildings: ['datacenter_jupiter'], requiredResearch: ['nuclear_thermal', 'edge_ai'] },
+  { id: 'svc_titan_processing', name: 'Titan Chemical Processing', type: 'fabrication_output', tier: 4,
+    description: 'Process Titan hydrocarbons into refined chemicals and rocket fuel for export.',
+    revenuePerMonth: 35_000_000, operatingCostPerMonth: 12_000_000,
+    requiredBuildings: ['fabrication_titan'], requiredResearch: ['deep_drilling', 'orbital_assembly'] },
 ];
 
 export const SERVICE_MAP = new Map(SERVICES.map(s => [s.id, s]));

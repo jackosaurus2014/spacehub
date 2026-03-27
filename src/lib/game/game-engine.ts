@@ -274,6 +274,8 @@ export function processTick(state: GameState): GameState {
   // ─── 6. Resource production (fractional per tick, with bonuses) ───
   const resources = { ...(state.resources || {}) };
   const miningMult = (1 + wfBonuses.miningOutput) * (1 + resBonuses.miningOutputBonus) * legacyMiningMult * (1 + tierBonuses.miningBonus) * (megaBonuses.miningMultiplier || 1) * repBonuses.miningMultiplier;
+  const currentTotalMonths = newDate.year * 12 + newDate.month;
+  const miningBonuses = state.miningBonuses || [];
   for (const svc of activeServices) {
     const production = MINING_PRODUCTION[svc.definitionId];
     if (!production) continue;
@@ -289,13 +291,17 @@ export function processTick(state: GameState): GameState {
       return Math.min(count * 0.10, 0.50); // +10% per freighter/tanker, cap +50%
     })();
     for (const { resource, amountPerMonth } of production) {
+      // Survey probe mining bonus: location + resource specific, time-limited
+      const locationBonus = miningBonuses
+        .filter(b => b.locationId === svc.locationId && b.resourceId === resource && b.expiresAtMonth > currentTotalMonths)
+        .reduce((sum, b) => sum + b.bonusPct / 100, 0);
       // Accumulate fractional amounts — only add whole units
-      const fractionalAmount = amountPerMonth * fraction * miningMult * (1 + freighterBonus);
+      const fractionalAmount = amountPerMonth * fraction * miningMult * (1 + freighterBonus) * (1 + locationBonus);
       if (fractionalAmount >= 1) {
         resources[resource] = (resources[resource] || 0) + Math.round(fractionalAmount);
       } else if (isMonthEnd) {
         // On month boundary, add at least the monthly total
-        resources[resource] = (resources[resource] || 0) + Math.round(amountPerMonth * miningMult * (1 + freighterBonus));
+        resources[resource] = (resources[resource] || 0) + Math.round(amountPerMonth * miningMult * (1 + freighterBonus) * (1 + locationBonus));
       }
     }
   }
@@ -381,9 +387,10 @@ export function processTick(state: GameState): GameState {
     activeMarketEvents = activeMarketEvents.filter(e => Date.now() < e.expiresAtMs);
   } catch { /* market events non-critical */ }
 
-  // ─── 9. Clean up expired effects and boosts ─────────────────────
+  // ─── 9. Clean up expired effects, boosts, and mining bonuses ────
   const activeEffects = cleanupExpiredEffects({ ...state, gameDate: newDate });
   const cleanedBoosts = cleanupExpiredBoosts(activeBoosts);
+  const cleanedMiningBonuses = miningBonuses.filter(b => b.expiresAtMonth > currentTotalMonths);
 
   // ─── 10. Track income history (last 24 months) ────────────────────
   const netIncome = Math.round(monthlyRevenue - monthlyCosts - payroll);
@@ -447,6 +454,7 @@ export function processTick(state: GameState): GameState {
     activeEffects,
     activeMarketEvents,
     activeBoosts: cleanedBoosts,
+    miningBonuses: cleanedMiningBonuses,
     pendingChoice,
     incomeHistory,
     eventLog,
@@ -710,7 +718,19 @@ export function processFullTick(state: GameState): GameState {
                 locationId: ship.surveyExpedition!.targetLocation,
                 rewards: discovery.rewards,
               });
-              // TODO: Apply miningBonus to location (store in game state for duration)
+              // Apply miningBonus to location (store in game state for duration)
+              if (discovery.rewards.miningBonus) {
+                const mb = discovery.rewards.miningBonus;
+                const currentTotalMonths = newState.gameDate.year * 12 + newState.gameDate.month;
+                const miningBonuses = [...(newState.miningBonuses || [])];
+                miningBonuses.push({
+                  locationId: mb.locationId,
+                  resourceId: mb.resourceId,
+                  bonusPct: mb.bonusPct,
+                  expiresAtMonth: currentTotalMonths + mb.durationMonths,
+                });
+                newState = { ...newState, miningBonuses };
+              }
             }
             // Probe is consumed after expedition
             shipsToRemove.push(ship.instanceId);

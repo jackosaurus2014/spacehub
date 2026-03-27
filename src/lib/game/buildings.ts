@@ -286,7 +286,7 @@ export const BUILDINGS: BuildingDefinition[] = [
     description: 'Deep-space data relay and edge computing center for outer system.',
     tooltip: 'OUTER SYSTEM COMMS. Provides communication relay for Jupiter and Saturn operations. Without this, your outer system facilities operate in isolation. Edge computing processes scientific data locally instead of transmitting raw data back to Earth. Requires "Nuclear Thermal" + "Edge AI" research. Build to support your Jupiter and Saturn expansion.',
     baseCost: 20_000_000_000, buildTimeMonths: 36, maintenanceCostPerMonth: 15_000_000,
-    requiredResearch: ['nuclear_thermal', 'edge_ai'], requiredLocation: 'jupiter_system', enabledServices: [],
+    requiredResearch: ['nuclear_thermal', 'edge_ai'], requiredLocation: 'jupiter_system', enabledServices: ['svc_jupiter_relay'],
     realBuildSeconds: 5400, resourceCost: { titanium: 100, rare_earth: 50, platinum_group: 15 }, powerRequired: 15 }, // 90 min
 
   // ─── SATURN SYSTEM INFRASTRUCTURE ───────────────────────────────────
@@ -300,7 +300,7 @@ export const BUILDINGS: BuildingDefinition[] = [
     description: 'Process Titan hydrocarbons into rocket fuel and industrial chemicals.',
     tooltip: 'FUEL REFINERY. Processes Titan\'s methane and ethane into rocket fuel and industrial chemicals on-site. Reduces the cost of fueling deep-space missions from Saturn. Combined with Titan Hydrocarbon Harvester, creates a self-sustaining fuel production chain. At $25B it\'s expensive but essential for efficient outer system operations.',
     baseCost: 25_000_000_000, buildTimeMonths: 36, maintenanceCostPerMonth: 18_000_000,
-    requiredResearch: ['deep_drilling', 'orbital_assembly'], requiredLocation: 'saturn_system', enabledServices: [],
+    requiredResearch: ['deep_drilling', 'orbital_assembly'], requiredLocation: 'saturn_system', enabledServices: ['svc_titan_processing'],
     realBuildSeconds: 5400, resourceCost: { titanium: 150, rare_earth: 60, platinum_group: 20, methane: 100 }, powerRequired: 12 }, // 90 min
 
   // ─── OUTER SYSTEM INFRASTRUCTURE ────────────────────────────────────
@@ -314,13 +314,13 @@ export const BUILDINGS: BuildingDefinition[] = [
     description: 'Extract exotic materials and volatiles from Kuiper Belt objects.',
     tooltip: 'ULTIMATE MINING. Extracts the rarest materials in the solar system from Kuiper Belt objects. Exotic materials ($2M each) and other volatiles not available anywhere else in these quantities. Requires "Fusion Drive" + "Automated Mining Fleet" research. At $150B it\'s the most expensive mining operation, but the resource output is unmatched. Late endgame only.',
     baseCost: 150_000_000_000, buildTimeMonths: 72, maintenanceCostPerMonth: 50_000_000,
-    requiredResearch: ['fusion_drive', 'automated_mining_fleet'], requiredLocation: 'outer_system', enabledServices: [],
+    requiredResearch: ['fusion_drive', 'automated_mining_fleet'], requiredLocation: 'outer_system', enabledServices: ['svc_mining_kuiper'],
     realBuildSeconds: 10800, resourceCost: { titanium: 400, platinum_group: 80, exotic_materials: 15 }, powerRequired: 15 }, // 3 hr
   { id: 'deep_space_relay', name: 'Deep Space Communication Relay', category: 'satellite', tier: 5,
     description: 'Long-range communication relay for outer system operations.',
     tooltip: 'OUTER SYSTEM COMMS. Maintains communication with your Deep Space Outpost and Kuiper Belt Mining Platform. Without this relay, outer system operations lose coordination. The farthest communication infrastructure ever built. Requires "Fusion Drive" research. Build alongside your other outer system facilities.',
     baseCost: 50_000_000_000, buildTimeMonths: 48, maintenanceCostPerMonth: 20_000_000,
-    requiredResearch: ['fusion_drive'], requiredLocation: 'outer_system', enabledServices: [],
+    requiredResearch: ['fusion_drive'], requiredLocation: 'outer_system', enabledServices: ['svc_deep_space_comm'],
     realBuildSeconds: 7200, resourceCost: { titanium: 200, rare_earth: 80, exotic_materials: 10 } }, // 2 hr
 ];
 

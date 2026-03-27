@@ -85,6 +85,8 @@ export function getNewGameState(): GameState {
     // V9 fields — tutorial onboarding
     tutorialStep: 1,
     tutorialDismissed: false,
+    // V10 fields — mining bonuses from survey probes
+    miningBonuses: [],
   };
 }
 
@@ -208,6 +210,8 @@ export function loadGame(): GameState | null {
     // V9 fields — tutorial onboarding
     if (state.tutorialStep === undefined) state.tutorialStep = 6; // Existing saves: skip tutorial (already playing)
     if (state.tutorialDismissed === undefined) state.tutorialDismissed = false;
+    // V10 fields — mining bonuses from survey probes
+    if (!state.miningBonuses) state.miningBonuses = [];
 
     state.tickSpeed = 1; // Always 1x for fairness
     return state;

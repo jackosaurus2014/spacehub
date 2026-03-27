@@ -157,4 +157,13 @@ export const MINING_PRODUCTION: Record<string, { resource: ResourceId; amountPer
     { resource: 'aluminum', amountPerMonth: 30 },
     { resource: 'iron', amountPerMonth: 50 },
   ],
+  svc_mining_kuiper: [
+    { resource: 'exotic_materials', amountPerMonth: 3 },
+    { resource: 'helium3', amountPerMonth: 2 },
+    { resource: 'platinum_group', amountPerMonth: 8 },
+  ],
+  svc_titan_processing: [
+    { resource: 'methane', amountPerMonth: 15 },
+    { resource: 'ethane', amountPerMonth: 10 },
+  ],
 };

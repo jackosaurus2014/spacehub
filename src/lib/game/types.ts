@@ -244,6 +244,9 @@ export interface GameState {
   unlockedLocations: string[];
   resources: Record<string, number>; // ResourceId → quantity
 
+  /** Active mining bonuses from survey probe discoveries */
+  miningBonuses?: { locationId: string; resourceId: string; bonusPct: number; expiresAtMonth: number }[];
+
   eventLog: GameEvent[];
   reports?: GameReport[];
   stats: GameStats;
