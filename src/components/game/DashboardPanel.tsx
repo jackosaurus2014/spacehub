@@ -379,6 +379,83 @@ export default function DashboardPanel({ state, onUpdateCompanyName }: { state: 
         ))}
       </div>
 
+      {/* Active Research with real-time countdown — promoted to top for visibility */}
+      {state.activeResearch && (() => {
+        const def = RESEARCH.find(r => r.id === state.activeResearch!.definitionId);
+        const hasRealTime = state.activeResearch!.startedAtMs && state.activeResearch!.realDurationSeconds;
+        const hasQ2 = state.completedResearch.includes('parallel_research');
+        return (
+          <div className="rounded-xl border border-purple-500/20 bg-purple-500/5 p-3">
+            <div className="flex items-center justify-between mb-1.5">
+              <div className="flex items-center gap-1.5">
+                <span className="text-sm">🔬</span>
+                <span className="text-white text-xs font-semibold">{def?.name || 'Research'}</span>
+                {hasQ2 && <span className="text-[9px] text-purple-400 font-mono">Q1</span>}
+              </div>
+            </div>
+            {hasRealTime ? (
+              <ResearchCountdown startedAtMs={state.activeResearch!.startedAtMs!} durationSeconds={state.activeResearch!.realDurationSeconds!} />
+            ) : (
+              <div className="h-1.5 bg-purple-500/10 rounded-full overflow-hidden">
+                <div className="h-full bg-gradient-to-r from-purple-600 to-purple-400 rounded-full" style={{ width: '50%' }} />
+              </div>
+            )}
+          </div>
+        );
+      })()}
+      {state.activeResearch2 && state.completedResearch.includes('parallel_research') && (() => {
+        const def2 = RESEARCH.find(r => r.id === state.activeResearch2!.definitionId);
+        const hasRealTime2 = state.activeResearch2!.startedAtMs && state.activeResearch2!.realDurationSeconds;
+        return (
+          <div className="rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-3">
+            <div className="flex items-center justify-between mb-1.5">
+              <div className="flex items-center gap-1.5">
+                <span className="text-sm">🔬</span>
+                <span className="text-white text-xs font-semibold">{def2?.name || 'Research'}</span>
+                <span className="text-[9px] text-cyan-400 font-mono">Q2</span>
+              </div>
+            </div>
+            {hasRealTime2 ? (
+              <ResearchCountdown startedAtMs={state.activeResearch2!.startedAtMs!} durationSeconds={state.activeResearch2!.realDurationSeconds!} />
+            ) : (
+              <div className="h-1.5 bg-cyan-500/10 rounded-full overflow-hidden">
+                <div className="h-full bg-gradient-to-r from-cyan-600 to-cyan-400 rounded-full" style={{ width: '50%' }} />
+              </div>
+            )}
+          </div>
+        );
+      })()}
+
+      {/* Under Construction — promoted to top for visibility */}
+      {inProgress.length > 0 && (
+        <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 p-3">
+          <h3 className="text-amber-400 text-[10px] font-bold uppercase tracking-wider mb-2 flex items-center gap-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+            Building ({inProgress.length})
+          </h3>
+          <div className="space-y-2">
+            {inProgress.slice(0, 3).map(bld => {
+              const def = BUILDING_MAP.get(bld.definitionId);
+              const loc = LOCATION_MAP.get(bld.locationId);
+              return (
+                <div key={bld.instanceId} className="space-y-1">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="text-white">{def?.name}</span>
+                    <span className="text-slate-600 text-[10px]">{loc?.name}</span>
+                  </div>
+                  {bld.startedAtMs && bld.realDurationSeconds ? (
+                    <Countdown startedAtMs={bld.startedAtMs} durationSeconds={bld.realDurationSeconds} />
+                  ) : (
+                    <span className="text-amber-400/70 font-mono text-[10px]">{formatGameDate(bld.completionDate)}</span>
+                  )}
+                </div>
+              );
+            })}
+            {inProgress.length > 3 && <p className="text-slate-600 text-[10px]">+{inProgress.length - 3} more</p>}
+          </div>
+        </div>
+      )}
+
       {/* Net Income Banner */}
       <div className={`rounded-xl p-3 border flex items-center justify-between ${
         financials.net >= 0

@@ -62,7 +62,7 @@ const categoryColors: Record<BlogCategory, string> = {
   analysis: 'bg-indigo-500/20 text-indigo-300 border-indigo-500/30',
   guide: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30',
   market: 'bg-amber-500/20 text-amber-300 border-amber-500/30',
-  technology: 'bg-white/10 text-white/90 border-white/10',
+  technology: 'bg-sky-500/20 text-sky-300 border-sky-500/30',
   policy: 'bg-purple-500/20 text-purple-300 border-purple-500/30',
 };
 
@@ -369,9 +369,9 @@ function BlogListingContent() {
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Main Content */}
           <div className="flex-1 min-w-0">
-            <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {filteredPosts.map((post) => (
-                <StaggerItem key={post.slug}>
+                <div key={post.slug}>
                   <Link
                     href={`/blog/${post.slug}`}
                     className="group block bg-white/[0.04] border border-white/[0.06] rounded-xl p-6 hover:border-white/15 transition-all duration-300 h-full"
@@ -414,9 +414,9 @@ function BlogListingContent() {
                       <span className="text-slate-500 text-xs">{formatDate(post.publishedAt)}</span>
                     </div>
                   </Link>
-                </StaggerItem>
+                </div>
               ))}
-            </StaggerContainer>
+            </div>
 
             {filteredPosts.length === 0 && (
               <div className="text-center py-16">

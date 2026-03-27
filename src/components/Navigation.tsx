@@ -525,7 +525,7 @@ export default function Navigation() {
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden lg:flex items-center space-x-6">
+          <div className="hidden lg:flex items-center gap-4 ml-6">
             <DropdownMenu
               label="Explore"
               items={EXPLORE_ITEMS}
@@ -577,7 +577,7 @@ export default function Navigation() {
           </div>
 
           {/* Auth Buttons */}
-          <div className="hidden lg:flex items-center space-x-3">
+          <div className="hidden lg:flex items-center gap-4 ml-2">
             {!isPro && (
               <Link
                 href="/pricing"
