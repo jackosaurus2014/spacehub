@@ -5,6 +5,7 @@ import type { GameState } from '@/lib/game/types';
 import { formatMoney, formatGameDate, formatCountdown } from '@/lib/game/formulas';
 import { BUILDING_MAP, getPowerByLocation } from '@/lib/game/buildings';
 import { SERVICE_MAP } from '@/lib/game/services';
+import { SHIP_MAP } from '@/lib/game/ships';
 import { RESEARCH, getResearchBonuses } from '@/lib/game/research-tree';
 import { LOCATION_MAP } from '@/lib/game/solar-system';
 import { getWorkforceBonuses, getMonthlyPayroll } from '@/lib/game/workforce';
@@ -725,8 +726,31 @@ export default function DashboardPanel({ state, onUpdateCompanyName }: { state: 
         ) : (
           <div className="space-y-1.5">
             {(() => {
+              // Pre-compute station bonus per location (space_station buildings boost revenue)
+              const stationBonusByLoc: Record<string, number> = {};
+              for (const bld of state.buildings) {
+                if (!bld.isComplete) continue;
+                const bDef = BUILDING_MAP.get(bld.definitionId);
+                if (!bDef || bDef.category !== 'space_station') continue;
+                stationBonusByLoc[bld.locationId] = Math.min(
+                  (stationBonusByLoc[bld.locationId] || 0) + 0.15,
+                  0.50
+                );
+              }
+              // Pre-compute freighter/tanker logistics bonus per location
+              const freighterBonusByLoc: Record<string, number> = {};
+              for (const ship of (state.ships || [])) {
+                if (!ship.isBuilt || ship.status !== 'idle') continue;
+                const sDef = SHIP_MAP.get(ship.definitionId);
+                if (sDef?.role === 'transport' || sDef?.role === 'tanker') {
+                  freighterBonusByLoc[ship.currentLocation] = Math.min(
+                    (freighterBonusByLoc[ship.currentLocation] || 0) + 0.10,
+                    0.50
+                  );
+                }
+              }
               // Group services by definitionId (consolidate same type into one line)
-              const groups = new Map<string, { def: ReturnType<typeof SERVICE_MAP.get>; count: number; totalRev: number; isPowerReduced: boolean; minPowerRatio: number }>();
+              const groups = new Map<string, { def: ReturnType<typeof SERVICE_MAP.get>; count: number; totalRev: number; isPowerReduced: boolean; minPowerRatio: number; maxStationBonus: number; maxFreighterBonus: number }>();
               for (const svc of state.activeServices) {
                 const def = SERVICE_MAP.get(svc.definitionId);
                 if (!def) continue;
@@ -735,12 +759,15 @@ export default function DashboardPanel({ state, onUpdateCompanyName }: { state: 
                 const supplyMult = (state.servicePriceMultipliers || {})[svc.definitionId] ?? 1.0;
                 const locPower = powerData[svc.locationId];
                 const powerRatio = locPower ? locPower.ratio : 1;
+                const stnBonus = stationBonusByLoc[svc.locationId] || 0;
+                const frtBonus = freighterBonusByLoc[svc.locationId] || 0;
                 const rev = Math.round(
                   def.revenuePerMonth * svc.revenueMultiplier * upgradeBoost
                   * (1 + financials.wfBonuses.serviceRevenue)
                   * (1 + financials.resBonuses.serviceRevenueBonus)
                   * supplyMult
                   * powerRatio
+                  * (1 + stnBonus)
                 );
                 const existing = groups.get(svc.definitionId);
                 if (existing) {
@@ -748,8 +775,10 @@ export default function DashboardPanel({ state, onUpdateCompanyName }: { state: 
                   existing.totalRev += rev;
                   if (powerRatio < existing.minPowerRatio) existing.minPowerRatio = powerRatio;
                   if (powerRatio < 1) existing.isPowerReduced = true;
+                  if (stnBonus > existing.maxStationBonus) existing.maxStationBonus = stnBonus;
+                  if (frtBonus > existing.maxFreighterBonus) existing.maxFreighterBonus = frtBonus;
                 } else {
-                  groups.set(svc.definitionId, { def, count: 1, totalRev: rev, isPowerReduced: powerRatio < 1, minPowerRatio: powerRatio });
+                  groups.set(svc.definitionId, { def, count: 1, totalRev: rev, isPowerReduced: powerRatio < 1, minPowerRatio: powerRatio, maxStationBonus: stnBonus, maxFreighterBonus: frtBonus });
                 }
               }
               return Array.from(groups.entries()).map(([id, g]) => (
@@ -760,6 +789,16 @@ export default function DashboardPanel({ state, onUpdateCompanyName }: { state: 
                     {g.isPowerReduced && (
                       <span className="text-red-400/70 ml-1 text-[9px]" title={`Power deficit reduces revenue`}>
                         {'\u26A1'}{Math.round(g.minPowerRatio * 100)}%
+                      </span>
+                    )}
+                    {g.maxStationBonus > 0 && (
+                      <span className="text-green-400/70 ml-1 text-[9px]" title={`Station presence boosts revenue by +${Math.round(g.maxStationBonus * 100)}%`}>
+                        {'\uD83C\uDFE0'}+{Math.round(g.maxStationBonus * 100)}%
+                      </span>
+                    )}
+                    {g.maxFreighterBonus > 0 && (
+                      <span className="text-blue-400/70 ml-1 text-[9px]" title={`Freighter logistics bonus: +${Math.round(g.maxFreighterBonus * 100)}% mining output`}>
+                        {'\uD83D\uDE80'}+{Math.round(g.maxFreighterBonus * 100)}%
                       </span>
                     )}
                   </span>

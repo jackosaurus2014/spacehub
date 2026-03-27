@@ -103,7 +103,7 @@ export function processTick(state: GameState): GameState {
   const powerByLocation = getPowerByLocation(state.buildings);
 
   // ─── 1. Revenue collection from active services ───────────────────
-  // Applies: event multipliers, upgrade boost, workforce bonus, prestige bonus, power ratio
+  // Applies: event multipliers, upgrade boost, workforce bonus, prestige bonus, power ratio, station bonus
   let monthlyRevenue = 0;
   let monthlyCosts = 0;
   for (const svc of state.activeServices) {
@@ -116,6 +116,17 @@ export function processTick(state: GameState): GameState {
     // Power factor: underpowered locations reduce revenue proportionally
     const locPower = powerByLocation[svc.locationId];
     const powerRatio = locPower ? locPower.ratio : 1; // Earth/unlisted = full power
+    // Station presence bonus — stations/habitats at a location boost all service revenue there
+    const stationBonus = (() => {
+      let bonus = 0;
+      for (const bld of state.buildings) {
+        if (!bld.isComplete || bld.locationId !== svc.locationId) continue;
+        const bDef = BUILDING_MAP.get(bld.definitionId);
+        if (!bDef) continue;
+        if (bDef.category === 'space_station') bonus += 0.15; // +15% per station/habitat
+      }
+      return Math.min(bonus, 0.50); // Cap at +50%
+    })();
     const revenue = Math.round(
       def.revenuePerMonth * fraction
       * svc.revenueMultiplier
@@ -129,6 +140,7 @@ export function processTick(state: GameState): GameState {
       * (megaBonuses.revenueMultiplier || 1)
       * repBonuses.revenueMultiplier
       * powerRatio
+      * (1 + stationBonus)
     );
     const cost = Math.round(def.operatingCostPerMonth * fraction * multipliers.costMultiplier * legacyCostMult * (1 - tierBonuses.maintenanceReduction) * (megaBonuses.maintenanceMultiplier || 1) * repBonuses.maintenanceMultiplier);
     money += revenue - cost;
@@ -265,14 +277,25 @@ export function processTick(state: GameState): GameState {
   for (const svc of activeServices) {
     const production = MINING_PRODUCTION[svc.definitionId];
     if (!production) continue;
+    // Logistics bonus from freighters/transports at this mining location
+    const freighterBonus = (() => {
+      let count = 0;
+      for (const ship of (state.ships || [])) {
+        if (!ship.isBuilt || ship.status !== 'idle') continue;
+        if (ship.currentLocation !== svc.locationId) continue;
+        const sDef = SHIP_MAP.get(ship.definitionId);
+        if (sDef?.role === 'transport' || sDef?.role === 'tanker') count++;
+      }
+      return Math.min(count * 0.10, 0.50); // +10% per freighter/tanker, cap +50%
+    })();
     for (const { resource, amountPerMonth } of production) {
       // Accumulate fractional amounts — only add whole units
-      const fractionalAmount = amountPerMonth * fraction * miningMult;
+      const fractionalAmount = amountPerMonth * fraction * miningMult * (1 + freighterBonus);
       if (fractionalAmount >= 1) {
         resources[resource] = (resources[resource] || 0) + Math.round(fractionalAmount);
       } else if (isMonthEnd) {
         // On month boundary, add at least the monthly total
-        resources[resource] = (resources[resource] || 0) + Math.round(amountPerMonth * miningMult);
+        resources[resource] = (resources[resource] || 0) + Math.round(amountPerMonth * miningMult * (1 + freighterBonus));
       }
     }
   }

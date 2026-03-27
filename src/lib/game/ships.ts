@@ -180,7 +180,7 @@ export const SHIPS: ShipDefinition[] = [
   {
     id: 'cargo_shuttle', name: 'Cargo Shuttle', icon: '🚀', role: 'transport',
     description: 'Basic orbital transport. Moves resources between Earth surface, LEO, and GEO.',
-    tooltip: 'WHY BUILD: Move resources you mine at one location to where you need them. For example, mine iron on the Lunar Surface and shuttle it to LEO for building space stations. Also useful for fulfilling resource bounties that require delivery to specific locations. At 50 units capacity and $200K/mo maintenance, this is your affordable early workhorse. Build 2-3 once you start mining.',
+    tooltip: 'WHY BUILD: Move resources you mine at one location to where you need them. LOGISTICS BONUS: When idle at a location, provides +10% mining output bonus to all resource production there (stacks up to +50%). For example, mine iron on the Lunar Surface and shuttle it to LEO for building space stations. Also useful for fulfilling resource bounties that require delivery to specific locations. At 50 units capacity and $200K/mo maintenance, this is your affordable early workhorse. Build 2-3 once you start mining.',
     cargoCapacity: 50, baseCost: 20_000_000,
     resourceCost: { aluminum: 20, iron: 30 },
     requiredResearch: ['reusable_boosters'], buildTimeSeconds: 300, tier: 1,
@@ -189,7 +189,7 @@ export const SHIPS: ShipDefinition[] = [
   {
     id: 'freighter', name: 'Space Freighter', icon: '🚢', role: 'transport',
     description: 'Mid-range hauler. Can reach the Moon with 200 units of cargo.',
-    tooltip: 'WHY BUILD: Your first serious bulk hauler. With 200-unit capacity (4x a Cargo Shuttle), it makes lunar supply runs efficient. Move large quantities of lunar water, iron, and aluminum between your Moon mining operations and LEO/Earth facilities. Essential once you have multiple mining operations producing resources faster than shuttles can move them. The $800K/mo maintenance is easily justified by mid-game resource volumes.',
+    tooltip: 'WHY BUILD: Your first serious bulk hauler. LOGISTICS BONUS: When idle at a location, provides +10% mining output bonus to all resource production there (stacks up to +50%). With 200-unit capacity (4x a Cargo Shuttle), it makes lunar supply runs efficient. Move large quantities of lunar water, iron, and aluminum between your Moon mining operations and LEO/Earth facilities. Essential once you have multiple mining operations producing resources faster than shuttles can move them. The $800K/mo maintenance is easily justified by mid-game resource volumes.',
     cargoCapacity: 200, baseCost: 100_000_000,
     resourceCost: { titanium: 30, aluminum: 50, iron: 80 },
     requiredResearch: ['modular_spacecraft'], buildTimeSeconds: 600, tier: 2,
@@ -198,7 +198,7 @@ export const SHIPS: ShipDefinition[] = [
   {
     id: 'heavy_transport', name: 'Heavy Transport', icon: '🏗️', role: 'transport',
     description: 'Massive hauler for Mars and asteroid belt routes. 500 unit capacity.',
-    tooltip: 'WHY BUILD: The only ship with enough cargo capacity (500 units) to make Mars and asteroid belt supply runs worthwhile. Long travel times to these destinations mean you want to move as much as possible per trip. Critical for delivering titanium, rare earth, and platinum from the asteroid belt back to your inner system facilities. Also needed to supply Mars colonies with equipment. Build when you expand beyond the Moon.',
+    tooltip: 'WHY BUILD: The only ship with enough cargo capacity (500 units) to make Mars and asteroid belt supply runs worthwhile. LOGISTICS BONUS: When idle at a location, provides +10% mining output bonus to all resource production there (stacks up to +50%). Long travel times to these destinations mean you want to move as much as possible per trip. Critical for delivering titanium, rare earth, and platinum from the asteroid belt back to your inner system facilities. Also needed to supply Mars colonies with equipment. Build when you expand beyond the Moon.',
     cargoCapacity: 500, baseCost: 500_000_000,
     resourceCost: { titanium: 80, aluminum: 100, rare_earth: 20 },
     requiredResearch: ['interplanetary_cruisers'], buildTimeSeconds: 1200, tier: 3,
@@ -209,7 +209,7 @@ export const SHIPS: ShipDefinition[] = [
   {
     id: 'fuel_tanker', name: 'Fuel Tanker', icon: '⛽', role: 'tanker',
     description: 'Specialized for water and fuel transport. 2x capacity for liquids. Boosts propellant depot revenue by 15% when stationed.',
-    tooltip: 'WHY BUILD: Carries 300 units with 2x effective capacity for water and fuel (effectively 600 units of liquids). Park one at your lunar mining operation to shuttle water efficiently. When stationed at a location with a Propellant Depot, it boosts depot service revenue by 15%. Cheaper than a Freighter ($80M vs $100M) with better liquid capacity. Build once you have lunar water mining active.',
+    tooltip: 'WHY BUILD: Carries 300 units with 2x effective capacity for water and fuel (effectively 600 units of liquids). LOGISTICS BONUS: When idle at a location, provides +10% mining output bonus to all resource production there (stacks up to +50%). Park one at your lunar mining operation to shuttle water efficiently. When stationed at a location with a Propellant Depot, it boosts depot service revenue by 15%. Cheaper than a Freighter ($80M vs $100M) with better liquid capacity. Build once you have lunar water mining active.',
     cargoCapacity: 300, baseCost: 80_000_000,
     resourceCost: { iron: 60, aluminum: 40 },
     requiredResearch: ['resource_prospecting'], buildTimeSeconds: 480, tier: 2,

@@ -70,19 +70,19 @@ export const BUILDINGS: BuildingDefinition[] = [
   // ─── SPACE STATIONS ───────────────────────────────────────────────────
   { id: 'space_station_small', name: 'Orbital Outpost', category: 'space_station', tier: 1,
     description: 'Small modular space station in LEO. 4-person crew capacity.',
-    tooltip: 'YOUR FIRST SPACE STATION. Activates LEO Space Tourism at $12M/mo vs $4M cost = $8M/mo net. Requires "Modular Spacecraft" research and costs aluminum (50) + titanium (20). At $500M and 15 min build, payback is ~167 months, but it unlocks tourism — a key revenue category — and counts toward station contracts. Essential mid-game milestone.',
+    tooltip: 'YOUR FIRST SPACE STATION (+15% REVENUE BONUS). Activates LEO Space Tourism at $12M/mo vs $4M cost = $8M/mo net. Also boosts ALL service revenue in LEO by +15% (stacks with other stations). Requires "Modular Spacecraft" research and costs aluminum (50) + titanium (20). At $500M and 15 min build, payback is ~167 months, but it unlocks tourism — a key revenue category — and counts toward station contracts. Essential mid-game milestone.',
     baseCost: 500_000_000, buildTimeMonths: 18, maintenanceCostPerMonth: 5_000_000,
     requiredResearch: ['modular_spacecraft'], requiredLocation: 'leo', enabledServices: ['svc_tourism_leo'],
     realBuildSeconds: 900, resourceCost: { aluminum: 50, titanium: 20 }, powerRequired: 5 },
   { id: 'space_station_lunar', name: 'Lunar Gateway', category: 'space_station', tier: 2,
     description: 'Orbital station around the Moon. Staging point for surface operations.',
-    tooltip: 'CISLUNAR HUB. Activates Lunar Gateway Tours at $25M/mo vs $10M cost = $15M/mo net. Positions you as a lunar operator and fulfills "station at location" competitive contracts. Requires Lunar Orbit unlock ($1B) plus research. The $15M/mo net profit justifies the $2B cost over time, and you need a presence here for late-game lunar dominance.',
+    tooltip: 'CISLUNAR HUB (+15% REVENUE BONUS). Activates Lunar Gateway Tours at $25M/mo vs $10M cost = $15M/mo net. Also boosts ALL service revenue in Lunar Orbit by +15%. Positions you as a lunar operator and fulfills "station at location" competitive contracts. Requires Lunar Orbit unlock ($1B) plus research. The $15M/mo net profit justifies the $2B cost over time, and you need a presence here for late-game lunar dominance.',
     baseCost: 2_000_000_000, buildTimeMonths: 24, maintenanceCostPerMonth: 8_000_000,
     requiredResearch: ['modular_spacecraft', 'reusable_boosters'], requiredLocation: 'lunar_orbit', enabledServices: ['svc_tourism_lunar_gateway'],
     realBuildSeconds: 1200, resourceCost: { aluminum: 100, titanium: 40, iron: 80 }, powerRequired: 8 },
   { id: 'space_station_mars', name: 'Mars Orbital Station', category: 'space_station', tier: 3,
     description: 'Permanent crewed station in Mars orbit.',
-    tooltip: 'MARS COMMAND CENTER. Activates Mars Station Operations at $45M/mo vs $15M cost = $30M/mo net. One of the highest-profit services in the game. Requires "Interplanetary Cruisers" research. Critical for Mars colonization contracts and late-game competitive milestones.',
+    tooltip: 'MARS COMMAND CENTER (+15% REVENUE BONUS). Activates Mars Station Operations at $45M/mo vs $15M cost = $30M/mo net. Also boosts ALL service revenue in Mars Orbit by +15%. One of the highest-profit services in the game. Requires "Interplanetary Cruisers" research. Critical for Mars colonization contracts and late-game competitive milestones.',
     baseCost: 8_000_000_000, buildTimeMonths: 36, maintenanceCostPerMonth: 10_000_000,
     requiredResearch: ['interplanetary_cruisers'], requiredLocation: 'mars_orbit', enabledServices: ['svc_mars_station_ops'],
     realBuildSeconds: 3600, resourceCost: { titanium: 100, aluminum: 200, rare_earth: 30, iron: 300 }, powerRequired: 10 },
@@ -164,13 +164,13 @@ export const BUILDINGS: BuildingDefinition[] = [
   // ─── HABITATS ─────────────────────────────────────────────────────────
   { id: 'habitat_lunar', name: 'Lunar Habitat', category: 'space_station', tier: 2,
     description: 'Pressurized habitat on the lunar surface. 8-person capacity.',
-    tooltip: 'LUNAR TOURISM HUB. Activates Lunar Tourism at $30M/mo vs $12M cost = $18M/mo net. The highest-revenue lunar service. Lunar Tourism is a premium revenue stream that attracts wealthy tourists. Requires "Modular Spacecraft" + "Resource Prospecting" research plus lunar water (50) and metals to build. At $3B cost, payback is ~14 years, but the steady $18M/mo income is valuable for mid-game stability.',
+    tooltip: 'LUNAR TOURISM HUB (+15% REVENUE BONUS). Activates Lunar Tourism at $30M/mo vs $12M cost = $18M/mo net. Also boosts ALL service revenue on the Lunar Surface by +15% (stacks with other stations). The highest-revenue lunar service. Lunar Tourism is a premium revenue stream that attracts wealthy tourists. Requires "Modular Spacecraft" + "Resource Prospecting" research plus lunar water (50) and metals to build. At $3B cost, payback is ~14 years, but the steady $18M/mo income is valuable for mid-game stability.',
     baseCost: 3_000_000_000, buildTimeMonths: 24, maintenanceCostPerMonth: 5_000_000,
     requiredResearch: ['modular_spacecraft', 'resource_prospecting'], requiredLocation: 'lunar_surface', enabledServices: ['svc_tourism_moon'],
     realBuildSeconds: 1500, resourceCost: { aluminum: 80, titanium: 30, lunar_water: 50, iron: 60 }, powerRequired: 8 },
   { id: 'habitat_mars', name: 'Mars Habitat', category: 'space_station', tier: 3,
     description: 'First permanent human settlement on Mars.',
-    tooltip: 'MARS COLONIZATION. Activates Mars Tourism at $80M/mo vs $35M cost = $45M/mo net — one of the top 5 revenue sources in the game. Establishes humanity\'s first Mars settlement and counts toward the "Mars Colonization Initiative" contract ($1B reward). Requires "Interplanetary Cruisers" + "Regolith Processing" research. At $15B cost and heavy resource requirements, this is a late mid-game milestone that defines your Mars strategy.',
+    tooltip: 'MARS COLONIZATION (+15% REVENUE BONUS). Activates Mars Tourism at $80M/mo vs $35M cost = $45M/mo net — one of the top 5 revenue sources in the game. Also boosts ALL service revenue on Mars Surface by +15% (stacks with other stations). Establishes humanity\'s first Mars settlement and counts toward the "Mars Colonization Initiative" contract ($1B reward). Requires "Interplanetary Cruisers" + "Regolith Processing" research. At $15B cost and heavy resource requirements, this is a late mid-game milestone that defines your Mars strategy.',
     baseCost: 15_000_000_000, buildTimeMonths: 36, maintenanceCostPerMonth: 12_000_000,
     requiredResearch: ['interplanetary_cruisers', 'regolith_processing'], requiredLocation: 'mars_surface', enabledServices: ['svc_tourism_mars'],
     realBuildSeconds: 3600, resourceCost: { titanium: 120, aluminum: 150, iron: 200, mars_water: 50, rare_earth: 25 }, powerRequired: 12 },
@@ -270,7 +270,7 @@ export const BUILDINGS: BuildingDefinition[] = [
     realBuildSeconds: 2700, resourceCost: { titanium: 100, iron: 200, platinum_group: 10, rare_earth: 30 }, powerRequired: 10 }, // 45 min
   { id: 'space_station_belt', name: 'Ceres Station', category: 'space_station', tier: 3,
     description: 'Deep-space outpost at Ceres. Hub for asteroid belt operations.',
-    tooltip: 'DEEP-SPACE HUB. Establishes a permanent presence at Ceres — the largest object in the asteroid belt. Serves as a staging point for asteroid mining ships, reducing transit times. Adds to your station count for competitive contracts. At $15B it\'s a prestige investment that signals dominance of the Belt. Required for serious endgame asteroid belt operations.',
+    tooltip: 'DEEP-SPACE HUB (+15% REVENUE BONUS). Establishes a permanent presence at Ceres — the largest object in the asteroid belt. Boosts ALL service revenue at the Asteroid Belt by +15%. Serves as a staging point for asteroid mining ships, reducing transit times. Adds to your station count for competitive contracts. At $15B it\'s a prestige investment that signals dominance of the Belt. Required for serious endgame asteroid belt operations.',
     baseCost: 15_000_000_000, buildTimeMonths: 36, maintenanceCostPerMonth: 10_000_000,
     requiredResearch: ['asteroid_capture', 'modular_spacecraft'], requiredLocation: 'asteroid_belt', enabledServices: [],
     realBuildSeconds: 3600, resourceCost: { titanium: 150, aluminum: 200, iron: 300, rare_earth: 40 }, powerRequired: 8 }, // 1 hr
@@ -278,7 +278,7 @@ export const BUILDINGS: BuildingDefinition[] = [
   // ─── JUPITER SYSTEM INFRASTRUCTURE ──────────────────────────────────
   { id: 'space_station_jupiter', name: 'Jovian Station', category: 'space_station', tier: 4,
     description: 'Orbital research platform in Jupiter system. Supports Europa operations.',
-    tooltip: 'JUPITER COMMAND. Staging platform for Europa mining and Jovian moon exploration. Supports your Europa Ice Drill operations and fulfills "Jupiter Expedition" competitive contracts (up to $5B reward + "Jovian Pioneer" title). At $50B it\'s a major late-game investment, but Jupiter system access is required for exotic materials production. Build alongside Europa Ice Drill.',
+    tooltip: 'JUPITER COMMAND (+15% REVENUE BONUS). Staging platform for Europa mining and Jovian moon exploration. Boosts ALL service revenue in the Jupiter System by +15%. Supports your Europa Ice Drill operations and fulfills "Jupiter Expedition" competitive contracts (up to $5B reward + "Jovian Pioneer" title). At $50B it\'s a major late-game investment, but Jupiter system access is required for exotic materials production. Build alongside Europa Ice Drill.',
     baseCost: 50_000_000_000, buildTimeMonths: 48, maintenanceCostPerMonth: 30_000_000,
     requiredResearch: ['nuclear_thermal', 'interplanetary_cruisers'], requiredLocation: 'jupiter_system', enabledServices: [],
     realBuildSeconds: 7200, resourceCost: { titanium: 200, platinum_group: 25, rare_earth: 60, exotic_materials: 3 }, powerRequired: 10, powerGenerated: 15 }, // 2 hr — nuclear powered, net +5 MW
@@ -292,7 +292,7 @@ export const BUILDINGS: BuildingDefinition[] = [
   // ─── SATURN SYSTEM INFRASTRUCTURE ───────────────────────────────────
   { id: 'space_station_saturn', name: 'Kronos Station', category: 'space_station', tier: 4,
     description: 'Saturn orbital platform. Staging for Titan and Enceladus operations.',
-    tooltip: 'SATURN COMMAND. Staging platform for Titan Hydrocarbon Harvester — the highest-revenue building in the game ($105M/mo net). Without Kronos Station, Titan operations have no support infrastructure. Also fulfills deep-space station competitive contracts. At $80B it\'s the most expensive station, but Titan\'s $105M/mo revenue justifies the investment.',
+    tooltip: 'SATURN COMMAND (+15% REVENUE BONUS). Staging platform for Titan Hydrocarbon Harvester — the highest-revenue building in the game ($105M/mo net). Boosts ALL service revenue in the Saturn System by +15%. Without Kronos Station, Titan operations have no support infrastructure. Also fulfills deep-space station competitive contracts. At $80B it\'s the most expensive station, but Titan\'s $105M/mo revenue justifies the investment.',
     baseCost: 80_000_000_000, buildTimeMonths: 60, maintenanceCostPerMonth: 40_000_000,
     requiredResearch: ['nuclear_thermal', 'interplanetary_cruisers', 'deep_drilling'], requiredLocation: 'saturn_system', enabledServices: [],
     realBuildSeconds: 7200, resourceCost: { titanium: 300, platinum_group: 40, rare_earth: 80, exotic_materials: 5 }, powerRequired: 12, powerGenerated: 20 }, // 2 hr — nuclear powered, net +8 MW
@@ -306,7 +306,7 @@ export const BUILDINGS: BuildingDefinition[] = [
   // ─── OUTER SYSTEM INFRASTRUCTURE ────────────────────────────────────
   { id: 'outpost_outer', name: 'Deep Space Outpost', category: 'space_station', tier: 5,
     description: 'Humanity\'s farthest permanent settlement. Research and exploration hub.',
-    tooltip: 'ENDGAME PRESTIGE. Humanity\'s most distant permanent outpost — beyond Neptune. The ultimate achievement in the game. Requires "Fusion Drive" + "Generation Ships" research (Tier 5) and the Outer System unlock ($500B). At $200B with exotic materials (20) and helium-3 (10) required, this is the final building milestone. Fulfills the "Architect of the Final Frontier" competitive contract.',
+    tooltip: 'ENDGAME PRESTIGE (+15% REVENUE BONUS). Humanity\'s most distant permanent outpost — beyond Neptune. Boosts ALL service revenue in the Outer System by +15%. The ultimate achievement in the game. Requires "Fusion Drive" + "Generation Ships" research (Tier 5) and the Outer System unlock ($500B). At $200B with exotic materials (20) and helium-3 (10) required, this is the final building milestone. Fulfills the "Architect of the Final Frontier" competitive contract.',
     baseCost: 200_000_000_000, buildTimeMonths: 96, maintenanceCostPerMonth: 60_000_000,
     requiredResearch: ['fusion_drive', 'generation_ships'], requiredLocation: 'outer_system', enabledServices: [],
     realBuildSeconds: 14400, resourceCost: { titanium: 500, platinum_group: 100, exotic_materials: 20, helium3: 10 }, powerRequired: 10, powerGenerated: 50 }, // 4 hr — fusion powered, net +40 MW
