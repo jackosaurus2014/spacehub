@@ -218,13 +218,14 @@ const ARTEMIS_BADGE_STYLES: Record<string, { color: string; bg: string; border: 
 // Countdown Hook
 // ────────────────────────────────────────
 
-function useCountdown(targetDate: Date) {
+const ARTEMIS_II_TARGET = new Date('2026-04-01T22:24:00Z').getTime(); // April 1, 2026 6:24 PM EDT
+
+function useCountdown(targetMs: number) {
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
 
   useEffect(() => {
     function calc() {
-      const now = new Date().getTime();
-      const diff = targetDate.getTime() - now;
+      const diff = targetMs - Date.now();
       if (diff <= 0) return { days: 0, hours: 0, minutes: 0, seconds: 0 };
       return {
         days: Math.floor(diff / (1000 * 60 * 60 * 24)),
@@ -236,7 +237,7 @@ function useCountdown(targetDate: Date) {
     setTimeLeft(calc());
     const interval = setInterval(() => setTimeLeft(calc()), 1000);
     return () => clearInterval(interval);
-  }, [targetDate]);
+  }, [targetMs]);
 
   return timeLeft;
 }
@@ -246,8 +247,7 @@ function useCountdown(targetDate: Date) {
 // ────────────────────────────────────────
 
 function CountdownDisplay() {
-  // Artemis II target: April 1, 2026
-  const countdown = useCountdown(new Date('2026-04-01T00:00:00Z'));
+  const countdown = useCountdown(ARTEMIS_II_TARGET);
 
   return (
     <div className="flex items-center gap-3 flex-wrap">
@@ -569,7 +569,7 @@ export default function IgnitionTrackerPage() {
   const relatedModules = PAGE_RELATIONS['ignition'] || [];
 
   return (
-    <div className="min-h-screen relative z-0">
+    <div className="min-h-screen">
       {/* Hero Section */}
       <div className="relative overflow-hidden">
         <div className="absolute inset-0 -z-10 pointer-events-none">
