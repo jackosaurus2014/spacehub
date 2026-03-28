@@ -1057,6 +1057,8 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 
 <p>Follow Project Ignition developments on SpaceNexus: read our <a href="/blog/nasa-20-billion-moon-base-everything-you-need-to-know">news analysis of the announcement</a>, explore the <a href="/cislunar">cislunar ecosystem</a>, and track the companies involved on our <a href="/compare/spacex-vs-blue-origin">SpaceX vs. Blue Origin comparison</a>.</p>
 
+<p><strong>Track Project Ignition live:</strong> <a href="/ignition">Visit our Ignition Tracker</a> for real-time milestones, contract tracking, and company involvement.</p>
+
 <h2 id="frequently-asked-questions">Frequently Asked Questions</h2>
 
 <h3>Is NASA building a Moon base?</h3>
@@ -1193,6 +1195,8 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 <p>The $20 billion question is whether NASA can execute. The agency\'s track record on mega-projects is mixed — SLS was years late and billions over budget. But the Ignition initiative\'s emphasis on commercial partnerships and a phased approach may help. Rather than building everything in-house, NASA is leveraging the rapidly maturing commercial space sector to deliver on a timeline that would have been impossible a decade ago.</p>
 
 <p>One thing is certain: the space industry will never be the same. The era of occasional lunar visits is over. The era of lunar settlement has begun.</p>
+
+<p><strong>Track Project Ignition live:</strong> <a href="/ignition">Visit our Ignition Tracker</a> for real-time milestones, contract tracking, and company involvement.</p>
 `
   },
   {
@@ -1270,6 +1274,8 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 <p>The companies that will win are those that can deliver <strong>reliable hardware at scale on compressed timelines</strong>. The era of concept studies and PowerPoint missions is over. NASA is buying flight hardware, and it needs it fast.</p>
 
 <p>At SpaceNexus, we\'ll be tracking every contract, milestone, and company involved in Ignition as it unfolds. <a href="/market-intel">Follow the developments in our Market Intelligence module</a>, or set up <a href="/alerts">custom alerts</a> for the companies and topics that matter to you.</p>
+
+<p><strong>Track Project Ignition live:</strong> <a href="/ignition">Visit our Ignition Tracker</a> for real-time milestones, contract tracking, and company involvement.</p>
 `
   },
   {

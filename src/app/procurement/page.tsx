@@ -712,6 +712,25 @@ function ProcurementContent() {
           icon="📋"
         />
 
+        {/* Ignition Tracker Callout */}
+        <Link href="/ignition" className="group block mb-6 rounded-xl border border-orange-500/20 bg-gradient-to-r from-orange-500/[0.06] to-amber-500/[0.04] hover:from-orange-500/[0.10] hover:to-amber-500/[0.08] hover:border-orange-500/30 transition-all duration-300 p-4">
+          <div className="flex items-center gap-4">
+            <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-orange-500/15 flex items-center justify-center text-xl">
+              <span>&#x1F525;</span>
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 mb-0.5">
+                <h3 className="text-white font-semibold text-sm group-hover:text-orange-300 transition-colors">Project Ignition: $20B in NASA Lunar Contracts</h3>
+                <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-orange-500/20 text-orange-300 border border-orange-500/30 uppercase tracking-wider">New</span>
+              </div>
+              <p className="text-slate-400 text-xs">Track every Ignition contract, company, and milestone. The largest NASA procurement initiative since Artemis &mdash; $20 billion across 3 phases through 2033.</p>
+            </div>
+            <svg className="w-5 h-5 text-slate-500 group-hover:text-orange-400 group-hover:translate-x-0.5 transition-all flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+            </svg>
+          </div>
+        </Link>
+
         <ScrollReveal>
           <StatsOverview stats={stats} />
         </ScrollReveal>

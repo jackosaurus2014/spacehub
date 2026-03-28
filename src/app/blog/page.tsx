@@ -343,6 +343,7 @@ function BlogListingContent() {
             { label: 'Artemis Program Explained', href: '/blog/artemis-program-explained-return-to-moon' },
             { label: 'Starlink: Everything to Know', href: '/blog/spacex-starlink-everything-you-need-to-know-2026' },
             { label: 'Top 50 Space Companies', href: '/blog/top-50-space-companies-to-watch-2026' },
+            { label: 'Ignition Tracker', href: '/ignition' },
           ].map(topic => (
             <Link
               key={topic.href}

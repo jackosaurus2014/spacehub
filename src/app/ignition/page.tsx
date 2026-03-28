@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
+import FAQSchema from '@/components/seo/FAQSchema';
 
 // ────────────────────────────────────────
 // Types
@@ -632,6 +633,35 @@ export default function IgnitionTrackerPage() {
 
         {/* Newsletter CTA */}
         <NewsletterCTA />
+
+        {/* FAQ Section for Rich Snippets */}
+        <FAQSchema items={[
+          { question: 'What is NASA Project Ignition?', answer: 'Project Ignition is NASA\'s $20 billion initiative to build a permanent human base at the Moon\'s south pole. Announced in March 2026, it replaces the Lunar Gateway with a surface-first approach, using commercial partners like SpaceX, Blue Origin, and international agencies to establish permanent lunar habitation by 2033.' },
+          { question: 'How much does Project Ignition cost?', answer: 'Project Ignition has a total budget of $20 billion over seven fiscal years (FY2027-2033). Approximately $10 billion funds Phase 1 (robotic testing and technology validation), with the remainder funding habitat construction and permanent infrastructure. This is in addition to existing Artemis program costs.' },
+          { question: 'When will the Moon base be ready?', answer: 'NASA targets a permanent human presence on the Moon by 2033. Phase 1 (Build, Test, Learn) runs FY2027-2030 with robotic precursor missions. Phase 2 (Early Infrastructure) targets FY2030-2032 with semi-habitable areas and JAXA\'s pressurized rover. Phase 3 (Long-Term Presence) delivers Blue Origin\'s habitat by FY2033.' },
+          { question: 'Which companies are involved in Project Ignition?', answer: 'Key companies include SpaceX (Starship HLS crew and cargo lander, $2.9B+), Blue Origin (Blue Moon lander and surface habitat, $3.4B), Northrop Grumman (HALO module, $935M), and Lockheed Martin (Orion spacecraft, $9.3B cumulative). International partners include JAXA (pressurized rover), ESA (I-Hab module), ASI (Italy), and CSA (Canada).' },
+          { question: 'What happened to the Lunar Gateway?', answer: 'NASA paused the Lunar Gateway — a planned orbiting station around the Moon — to redirect resources to surface infrastructure under Project Ignition. Gateway\'s HALO and I-Hab modules will be repurposed for surface deployment rather than assembled in lunar orbit, simplifying the architecture and reducing per-mission costs.' },
+        ]} />
+        <div className="card p-6 mb-8">
+          <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
+            <span className="w-8 h-8 rounded-lg bg-cyan-500/10 flex items-center justify-center text-lg">&#x2753;</span>
+            Frequently Asked Questions
+          </h2>
+          <div className="space-y-5">
+            {[
+              { q: 'What is NASA Project Ignition?', a: 'Project Ignition is NASA\'s $20 billion initiative to build a permanent human base at the Moon\'s south pole. Announced in March 2026, it replaces the Lunar Gateway with a surface-first approach, using commercial partners and international agencies to establish permanent lunar habitation by 2033.' },
+              { q: 'How much does Project Ignition cost?', a: '$20 billion over seven fiscal years (FY2027-2033). Approximately $10 billion funds Phase 1 (robotic testing), with the remainder funding habitat construction and permanent infrastructure.' },
+              { q: 'When will the Moon base be ready?', a: 'NASA targets permanent human presence by 2033. Phase 1 runs FY2027-2030, Phase 2 targets FY2030-2032, and Phase 3 delivers the Blue Origin habitat by FY2033.' },
+              { q: 'Which companies are involved in Project Ignition?', a: 'SpaceX (Starship HLS), Blue Origin (Blue Moon lander + habitat), Northrop Grumman (HALO module), Lockheed Martin (Orion), plus international partners JAXA, ESA, ASI, and CSA.' },
+              { q: 'What happened to the Lunar Gateway?', a: 'NASA paused Gateway to redirect resources to surface infrastructure. Gateway\'s HALO and I-Hab modules will be repurposed for surface deployment rather than assembled in lunar orbit.' },
+            ].map((faq) => (
+              <div key={faq.q} className="rounded-lg border border-white/[0.06] bg-white/[0.04] p-4">
+                <h3 className="text-white font-semibold text-sm mb-2">{faq.q}</h3>
+                <p className="text-star-400 text-sm">{faq.a}</p>
+              </div>
+            ))}
+          </div>
+        </div>
 
         {/* Related Modules */}
         {relatedModules.length > 0 && (

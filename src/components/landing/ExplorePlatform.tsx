@@ -97,6 +97,19 @@ const DESTINATIONS = [
     ),
   },
   {
+    title: 'Ignition Tracker',
+    description: "Track NASA's $20B Moon base program live.",
+    href: '/ignition',
+    stat: 'NEW',
+    badge: null,
+    heroImage: '/art/hero-mission-planning.png',
+    icon: (
+      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M15.362 5.214A8.252 8.252 0 0112 21 8.25 8.25 0 016.038 7.048 6.75 6.75 0 009 18.75a6.75 6.75 0 006.362-13.536z" />
+      </svg>
+    ),
+  },
+  {
     title: 'Learning Path',
     description: 'Structured education from beginner to advanced.',
     href: '/learn/space-industry',
@@ -131,7 +144,7 @@ export default function ExplorePlatform() {
               </h2>
             </div>
             <span className="text-[9px] uppercase tracking-[0.15em] text-slate-600 font-medium">
-              8 destinations
+              9 destinations
             </span>
           </div>
           <p className="text-sm text-slate-500 ml-4">

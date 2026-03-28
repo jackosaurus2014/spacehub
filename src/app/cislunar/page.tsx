@@ -1623,6 +1623,25 @@ function CislunarEcosystemContent() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <DataFreshness refreshedAt={refreshedAt} source="DynamicContent" />
 
+        {/* Ignition Tracker Banner */}
+        <Link href="/ignition" className="group block mb-6 rounded-xl border border-orange-500/20 bg-gradient-to-r from-orange-500/[0.06] to-amber-500/[0.04] hover:from-orange-500/[0.10] hover:to-amber-500/[0.08] hover:border-orange-500/30 transition-all duration-300 p-4">
+          <div className="flex items-center gap-4">
+            <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-orange-500/15 flex items-center justify-center text-xl">
+              <span>&#x1F525;</span>
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 mb-0.5">
+                <h3 className="text-white font-semibold text-sm group-hover:text-orange-300 transition-colors">Ignition Tracker: NASA&apos;s $20B Moon Base Program</h3>
+                <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-orange-500/20 text-orange-300 border border-orange-500/30 uppercase tracking-wider">Live</span>
+              </div>
+              <p className="text-slate-400 text-xs">Track every milestone, contract, and company building the permanent lunar base. Real-time countdown, 3-phase timeline, and infrastructure tracker.</p>
+            </div>
+            <svg className="w-5 h-5 text-slate-500 group-hover:text-orange-400 group-hover:translate-x-0.5 transition-all flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+            </svg>
+          </div>
+        </Link>
+
         {error && (
           <div className="card p-5 border border-red-500/20 bg-red-500/5 text-center mb-6">
             <div className="text-red-400 text-sm font-medium">{error}</div>

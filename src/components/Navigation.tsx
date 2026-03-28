@@ -40,6 +40,7 @@ const ALL_CATEGORIES: { key: CategoryKey; label: string; items: DropdownItem[] }
 
 const EXPLORE_ITEMS: DropdownItem[] = [
   { label: "What's New", href: '/changelog', description: 'Latest platform updates and features' },
+  { label: '\uD83C\uDF19 Ignition Tracker', href: '/ignition', description: "Track NASA's $20B Moon base program" },
   { label: 'Mission Control', href: '/mission-control', description: 'Upcoming launches and events' },
   { label: 'Mission Pipeline', href: '/mission-pipeline', description: 'Upcoming missions 2025-2030' },
   { label: 'Mission Statistics', href: '/mission-stats', description: 'Launch provider leaderboards & stats' },
@@ -357,6 +358,11 @@ function DropdownMenu({
                   {item.href === '/compliance' && !isPro && (
                     <span className="text-xs font-semibold px-1.5 py-0.5 rounded bg-white/10 text-white/70 border border-white/10">
                       PRO
+                    </span>
+                  )}
+                  {item.href === '/ignition' && (
+                    <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-orange-500/15 text-orange-400 border border-orange-500/25 uppercase tracking-wider">
+                      NEW
                     </span>
                   )}
                 </div>
