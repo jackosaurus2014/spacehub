@@ -392,6 +392,9 @@ export const PAGE_RELATIONS: Record<string, RelatedModuleConfig[]> = {
   // ── Daily Digest ──
   'daily-digest': [MODULES.newsDigest, MODULES.intelligenceBrief, MODULES.news, MODULES.aiInsights, MODULES.blogs],
 
+  // ── Ignition Tracker ──
+  'ignition': [MODULES.cislunar, MODULES.marsPlanner, MODULES.launchVehicles, MODULES.procurement, MODULES.govBudgets],
+
   // ── Newsletter ──
   'newsletter': [MODULES.intelligenceBrief, MODULES.newsDigest, MODULES.news, MODULES.newsletters, MODULES.blogs],
 
