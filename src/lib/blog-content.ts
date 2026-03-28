@@ -1085,6 +1085,568 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
     ],
   },
   {
+    slug: 'nasa-ignition-contracts-every-company-involved',
+    title: 'Every Company With a NASA Ignition Contract: The Complete List',
+    excerpt: 'A comprehensive breakdown of every prime contractor, CLPS provider, international partner, and subsystem supplier involved in NASA\'s Project Ignition and the broader Artemis lunar architecture — plus how smaller companies can compete for future work.',
+    category: 'analysis' as BlogCategory,
+    author: 'SpaceNexus Team',
+    authorRole: 'Editorial',
+    publishedAt: '2026-03-28T00:00:00Z',
+    readingTime: 12,
+    featured: false,
+    keywords: ['NASA ignition contracts', 'ignition program companies', 'moon base contractors', 'CLPS contracts', 'artemis contractors', 'NASA lunar contracts'],
+    content: `
+<p>NASA&apos;s <strong>Project Ignition</strong> is not being built by one company. It is a web of prime contracts, subcontracts, international agreements, and competitive task orders spanning dozens of organizations across multiple countries. If you want to understand who is actually building the Moon base &mdash; and who stands to profit from it &mdash; you need to follow the contracts.</p>
+
+<p>This is the complete list of every major company and agency with a confirmed role in Project Ignition and the broader Artemis architecture that supports it. We update this article as new contracts are awarded. For live tracking, visit our <a href="/ignition">Ignition Tracker</a>.</p>
+
+<h2 id="prime-contractors">Prime Contractors</h2>
+
+<p>These are the companies holding the largest, most critical contracts in the Artemis/Ignition ecosystem. Each is responsible for a major hardware element without which the program cannot proceed.</p>
+
+<h3>SpaceX &mdash; Starship Human Landing System (~$4 billion)</h3>
+
+<p><strong>SpaceX</strong> holds the original <strong>Human Landing System (HLS)</strong> contract, awarded in April 2021 and valued at approximately $2.89 billion, later supplemented with additional funding bringing the total to roughly $4 billion. The Starship HLS variant will carry astronauts from lunar orbit to the surface and back. It is the linchpin of crewed landings starting with Artemis IV (targeting no earlier than 2028).</p>
+
+<p>Beyond HLS, Starship is expected to serve as the primary heavy-lift cargo vehicle for delivering large Ignition infrastructure elements &mdash; habitats, power systems, and rovers &mdash; to the lunar surface. No other vehicle currently in development can match its payload capacity to the Moon.</p>
+
+<h3>Blue Origin &mdash; Blue Moon Habitat and Sustaining Lander (~$3.4 billion)</h3>
+
+<p><strong>Blue Origin</strong> was awarded the <strong>Sustaining Lunar Development</strong> contract in May 2023, valued at $3.4 billion. Under this contract, Blue Origin is developing the <strong>Blue Moon</strong> lander, which will provide an alternative crew landing capability and deliver habitat modules to the lunar surface. Under Project Ignition, Blue Origin&apos;s habitat is targeted for delivery in the 2032&ndash;2033 timeframe as part of Phase 3.</p>
+
+<p>Blue Origin leads a national team that includes <strong>Lockheed Martin</strong>, <strong>Draper</strong>, <strong>Boeing</strong>, and <strong>Astrobotic</strong> as major subcontractors on the Sustaining Lander effort. See the <a href="/compare/spacex-vs-blue-origin">SpaceX vs. Blue Origin comparison</a> for a detailed breakdown of how the two lander architectures differ.</p>
+
+<h3>Lockheed Martin &mdash; Orion Spacecraft (Multi-billion)</h3>
+
+<p><strong>Lockheed Martin</strong> is the prime contractor for the <strong>Orion Multi-Purpose Crew Vehicle</strong>, the capsule that carries astronauts from Earth to lunar orbit and back. The Orion contract dates to 2006 and has grown to well over $20 billion in cumulative value across development, production, and sustainment. Each Orion capsule is designed to be partially reusable, with the crew module pressure vessel rated for multiple flights.</p>
+
+<p>Orion is the only crew-rated deep space vehicle currently in production anywhere in the world. It will fly on every crewed Artemis mission, including all missions that deliver crew to Project Ignition surface infrastructure.</p>
+
+<h3>Northrop Grumman &mdash; HALO Module</h3>
+
+<p><strong>Northrop Grumman</strong> was originally contracted to build the <strong>Habitation and Logistics Outpost (HALO)</strong> for the Lunar Gateway. Following the Ignition announcement, NASA indicated that HALO and other Gateway modules would be <strong>repurposed for surface applications</strong> rather than assembled in lunar orbit. Northrop Grumman remains the contractor for this hardware. The exact reconfiguration is still being defined, but the module&apos;s life support and habitation capabilities make it a strong candidate for early surface shelter.</p>
+
+<h3>Boeing &mdash; SLS Core Stage</h3>
+
+<p><strong>Boeing</strong> is the prime contractor for the <strong>Space Launch System (SLS) core stage</strong>, the massive liquid hydrogen/liquid oxygen booster that generates 8.8 million pounds of thrust at liftoff. Boeing builds the core stage at NASA&apos;s Michoud Assembly Facility in New Orleans. SLS is currently the only rocket capable of sending the Orion crew capsule to the Moon in a single launch. The SLS contract has been valued at over $10 billion cumulatively, and each core stage costs approximately $2.2 billion.</p>
+
+<h2 id="clps-providers">Commercial Lunar Payload Services (CLPS) Providers</h2>
+
+<p>The <strong>CLPS program</strong> is NASA&apos;s mechanism for buying rides to the lunar surface from commercial companies. Rather than building its own robotic landers, NASA contracts with private firms to deliver instruments and technology demonstrations. Under Ignition Phase 1, CLPS is being dramatically expanded to target a <strong>near-monthly delivery cadence</strong> to the south pole region.</p>
+
+<h3>Intuitive Machines (Nova-C)</h3>
+
+<p><strong>Intuitive Machines</strong> made history in February 2024 when its <strong>Nova-C</strong> lander (IM-1 &ldquo;Odysseus&rdquo;) became the first commercial spacecraft to soft-land on the Moon, despite tipping on its side at touchdown. The company holds multiple CLPS task orders worth hundreds of millions of dollars and is developing larger lander variants for heavier payloads. Intuitive Machines is publicly traded (NASDAQ: LUNR) and is one of the most active CLPS providers.</p>
+
+<h3>Astrobotic (Peregrine, Griffin)</h3>
+
+<p><strong>Astrobotic</strong> has two lander platforms: <strong>Peregrine</strong> (small payloads) and <strong>Griffin</strong> (medium-to-large payloads, including NASA&apos;s VIPER rover, which was canceled in 2024 due to cost overruns). Astrobotic&apos;s Peregrine Mission 1 in January 2024 experienced a propulsion failure and did not achieve lunar landing. The company holds CLPS contracts collectively worth over $300 million and is also a subcontractor on Blue Origin&apos;s Sustaining Lander team.</p>
+
+<h3>Firefly Aerospace (Blue Ghost)</h3>
+
+<p><strong>Firefly Aerospace</strong> developed the <strong>Blue Ghost</strong> lander for CLPS missions. Blue Ghost 1, carrying 10 NASA payloads, launched in January 2025 aboard a SpaceX Falcon 9 and successfully reached lunar orbit. Firefly holds CLPS task orders and is positioning Blue Ghost as a versatile delivery platform for Ignition Phase 1 surface payloads.</p>
+
+<h3>Draper</h3>
+
+<p><strong>Draper</strong> (formally the Charles Stark Draper Laboratory) is a CLPS provider selected for task orders delivering payloads to the lunar far side. Draper brings deep heritage in guidance, navigation, and control systems dating back to the Apollo program, when it developed the Apollo guidance computer.</p>
+
+<h3>Masten Space Systems (Defunct)</h3>
+
+<p><strong>Masten Space Systems</strong> was selected as a CLPS provider and awarded a $75.9 million task order for a south pole delivery mission. However, Masten filed for bankruptcy in 2022 and its assets were acquired by Astrobotic. The CLPS task order was canceled. This is a reminder that not every company in the lunar supply chain will survive to see hardware fly.</p>
+
+<h2 id="international-partners">International Partners</h2>
+
+<p>Project Ignition is an international effort, built on the framework of the <strong>Artemis Accords</strong> signed by over 40 nations as of 2026. Key international hardware contributions include:</p>
+
+<h3>JAXA (Japan) &mdash; Pressurized Rover</h3>
+
+<p>The <strong>Japan Aerospace Exploration Agency (JAXA)</strong>, in partnership with <strong>Toyota</strong>, is developing a <strong>pressurized lunar rover</strong> that will allow astronauts to drive across the lunar surface in a shirt-sleeve environment. The rover is targeting delivery via Starship around 2032. This is one of the most significant international contributions to Ignition and gives Japan a prominent role in surface operations.</p>
+
+<h3>ESA (European Space Agency) &mdash; I-Hab and Service Module</h3>
+
+<p>The <strong>European Space Agency</strong> is contributing the <strong>International Habitation module (I-Hab)</strong>, originally designed for Gateway, which is now being evaluated for surface repurposing under Ignition. ESA also builds the <strong>European Service Module (ESM)</strong> for Orion, which provides propulsion, power, and life support during the journey to and from the Moon. The ESM is manufactured by <strong>Airbus Defence and Space</strong> in Bremen, Germany.</p>
+
+<h3>ASI (Italian Space Agency) &mdash; Surface Elements</h3>
+
+<p>The <strong>Italian Space Agency (ASI)</strong> has agreements with NASA to contribute <strong>pressurized surface elements</strong> for lunar habitation. Italy has significant experience building pressurized modules for the International Space Station (several ISS modules were built by Thales Alenia Space in Turin).</p>
+
+<h3>CSA (Canadian Space Agency) &mdash; Canadarm3 and Surface Systems</h3>
+
+<p>The <strong>Canadian Space Agency</strong> is developing <strong>Canadarm3</strong>, an advanced robotic arm system originally designed for Gateway. Canada&apos;s robotics expertise (Canadarm, Canadarm2, Dextre) is expected to translate into surface robotics contributions for base assembly and maintenance. In exchange for these contributions, a Canadian astronaut will fly on Artemis missions.</p>
+
+<h2 id="subsystem-contractors">Subsystem and Support Contractors</h2>
+
+<h3>Aerojet Rocketdyne / L3Harris &mdash; RS-25 Engines</h3>
+
+<p><strong>Aerojet Rocketdyne</strong> (now part of <strong>L3Harris Technologies</strong> following a 2023 acquisition) manufactures the <strong>RS-25 engines</strong> that power the SLS core stage. These are modernized versions of the Space Shuttle Main Engines. NASA contracted for 24 new RS-25 engines to support Artemis missions through the 2030s, in a contract valued at approximately $1.8 billion.</p>
+
+<h3>Jacobs &mdash; Ground Systems</h3>
+
+<p><strong>Jacobs Engineering</strong> holds the <strong>Exploration Ground Systems</strong> contract at Kennedy Space Center, responsible for modifying and operating the launch infrastructure for SLS, including the mobile launcher, Vehicle Assembly Building operations, and pad systems at Launch Complex 39B.</p>
+
+<h3>Axiom Space &mdash; AxEMU Spacesuits</h3>
+
+<p><strong>Axiom Space</strong> was awarded the contract to develop the <strong>Axiom Extravehicular Mobility Unit (AxEMU)</strong>, the next-generation spacesuits that astronauts will wear for moonwalks during Artemis surface missions. The AxEMU contract, part of NASA&apos;s Exploration Extravehicular Activity Services (xEVAS) program, is valued at up to $3.5 billion over the life of the program. These suits replace the aging EMU suits used on the ISS and are designed for the harsh lunar south pole environment.</p>
+
+<h2 id="how-to-compete">How Smaller Companies Can Compete for Ignition Work</h2>
+
+<p>Project Ignition is not limited to billion-dollar prime contractors. The program is explicitly structured to create opportunities for small and mid-size businesses. Here is how to get in the door:</p>
+
+<h3>Register on SAM.gov</h3>
+
+<p>Every company seeking federal contracts must be registered in the <strong>System for Award Management (SAM.gov)</strong>. This is a prerequisite for bidding on any NASA contract, including CLPS task orders, SBIR grants, and subcontracting opportunities. Registration is free but takes several weeks to process. Visit our <a href="/procurement">procurement intelligence page</a> for current NASA and DoD solicitations.</p>
+
+<h3>SBIR and STTR Programs</h3>
+
+<p>NASA&apos;s <strong>Small Business Innovation Research (SBIR)</strong> and <strong>Small Business Technology Transfer (STTR)</strong> programs fund early-stage technology development relevant to Ignition. Phase I awards are typically $150,000 for 6 months; Phase II awards are up to $750,000 for 24 months. Many current CLPS providers started with SBIR funding.</p>
+
+<h3>CLPS Task Orders</h3>
+
+<p>Companies can apply to be added to the CLPS provider pool. NASA periodically re-opens the vendor selection process. Even companies not selected as prime CLPS providers can subcontract with existing providers to fly instruments or technology demonstrations on upcoming missions.</p>
+
+<h3>Subcontracting</h3>
+
+<p>Large prime contractors are required to meet small business subcontracting goals on major NASA contracts. SpaceX, Blue Origin, Lockheed Martin, Boeing, and Northrop Grumman all maintain supplier portals where smaller companies can register interest and capabilities.</p>
+
+<p>For a deeper look at navigating government space contracts, see our <a href="/blog/sam-gov-to-space-government-contracts-guide">guide to SAM.gov and government space contracts</a>.</p>
+
+<p>Track the companies and contracts in real time on our <a href="/company-profiles">company profiles directory</a>.</p>
+
+<p><strong>Track Project Ignition live:</strong> Visit our <a href="/ignition">Ignition Tracker</a> for real-time milestones, contract tracking, and company involvement.</p>
+`,
+    faqItems: [
+      { question: 'Who has Ignition contracts?', answer: 'The major Ignition and Artemis contract holders include SpaceX (Starship HLS, ~$4 billion), Blue Origin (Sustaining Lander and habitat, ~$3.4 billion), Lockheed Martin (Orion capsule), Northrop Grumman (HALO module), Boeing (SLS core stage), Axiom Space (AxEMU spacesuits), and CLPS providers including Intuitive Machines, Astrobotic, Firefly Aerospace, and Draper. International partners JAXA, ESA, ASI, and CSA contribute hardware including a pressurized rover, habitation modules, and robotic systems.' },
+      { question: 'How much are the Ignition contracts worth?', answer: 'The total value across all Ignition and Artemis contracts exceeds $50 billion. The largest individual contracts include SpaceX HLS (~$4 billion), Blue Origin Sustaining Lander (~$3.4 billion), Orion development (over $20 billion cumulative), SLS core stage (over $10 billion cumulative), AxEMU spacesuits (up to $3.5 billion), and RS-25 engines (~$1.8 billion). Project Ignition itself adds $20 billion in new funding over FY2027-2033.' },
+      { question: 'Can small companies get Ignition contracts?', answer: 'Yes. NASA has structured Project Ignition to include opportunities for small and mid-size businesses through several pathways: the SBIR/STTR program (Phase I awards of ~$150,000, Phase II up to $750,000), the CLPS provider pool (which NASA periodically reopens), subcontracting with prime contractors who must meet small business goals, and direct task orders. Registration on SAM.gov is required for all federal contracting.' },
+      { question: 'What is CLPS?', answer: 'Commercial Lunar Payload Services (CLPS) is NASA\'s program for purchasing commercial delivery services to the Moon. Instead of building its own robotic landers, NASA contracts with private companies like Intuitive Machines, Astrobotic, Firefly Aerospace, and Draper to deliver instruments and technology demonstrations to the lunar surface. Under Project Ignition, CLPS is being expanded to target near-monthly deliveries to the south pole.' },
+    ],
+  },
+  {
+    slug: 'nasa-ignition-vs-apollo-moon-program-comparison',
+    title: 'Ignition vs Apollo: How NASA\'s New Moon Program Compares to the Original',
+    excerpt: 'Apollo put boots on the Moon in eight years with Cold War urgency and unlimited political will. Ignition aims to build a permanent base in seven years with commercial partnerships and international allies. Here is how the two programs compare across budget, timeline, technology, and ambition.',
+    category: 'analysis' as BlogCategory,
+    author: 'SpaceNexus Team',
+    authorRole: 'Editorial',
+    publishedAt: '2026-03-28T00:00:00Z',
+    readingTime: 10,
+    featured: false,
+    keywords: ['ignition vs apollo', 'NASA moon program comparison', 'apollo vs artemis', 'new moon program', 'return to moon comparison'],
+    content: `
+<p>In May 1961, President Kennedy told Congress the United States would land a man on the Moon before the decade was out. Eight years and two months later, Neil Armstrong stepped off the ladder. In March 2026, NASA Administrator Jared Isaacman announced <strong>Project Ignition</strong>, a $20 billion plan to build a permanent base at the lunar south pole by approximately 2033. Seven years. Different era, different approach, different goal &mdash; but the ambition is unmistakably Apollonian.</p>
+
+<p>So how does the new program actually compare to the original? Let&apos;s break it down across every dimension that matters. For live progress tracking, see our <a href="/ignition">Ignition Tracker</a>.</p>
+
+<h2 id="budget">Budget: Apollo&apos;s Blank Check vs. Ignition&apos;s Targeted Investment</h2>
+
+<p>Apollo cost approximately <strong>$25.8 billion in 1960s dollars</strong>. Adjusted for inflation, that is roughly <strong>$280 billion in 2026 dollars</strong>. At its peak, NASA consumed over 4% of the entire federal budget. The agency employed 400,000 people across government and contractor workforces.</p>
+
+<p>Project Ignition is budgeted at <strong>$20 billion over seven years (FY2027&ndash;2033)</strong>. But this figure is somewhat misleading in isolation because Ignition builds on top of the existing Artemis infrastructure. SLS development cost over $23 billion. Orion cost over $20 billion. The HLS contracts add another $7+ billion. When you include all Artemis-era spending that Ignition depends on, the total investment approaches <strong>$90&ndash;100 billion</strong> &mdash; still less than half of Apollo in inflation-adjusted terms.</p>
+
+<p>The key difference is <strong>NASA&apos;s share of the federal budget</strong>. In the 1960s, NASA had over 4%. Today, NASA&apos;s budget is approximately $25 billion, less than 0.4% of federal spending. Ignition must accomplish more with proportionally far less.</p>
+
+<h2 id="timeline">Timeline: Cold War Sprint vs. Methodical Build</h2>
+
+<p>Apollo&apos;s timeline was driven by geopolitical urgency. The Space Race against the Soviet Union gave NASA a political mandate that transcended budget cycles and partisan politics. From Kennedy&apos;s speech in 1961 to Apollo 11 in July 1969: <strong>8 years, 2 months</strong>.</p>
+
+<p>Ignition&apos;s timeline targets approximately <strong>7 years from announcement to permanent habitation</strong> (2026&ndash;2033). But the comparison is imperfect. Ignition benefits from decades of accumulated technology and infrastructure that Apollo had to invent from scratch. SLS and Orion already exist. Starship is in active flight testing. CLPS landers have already reached the lunar surface. Ignition is starting at a higher baseline.</p>
+
+<p>The risk is political, not technical. Apollo maintained funding through three presidential administrations because the Cold War provided unshakeable motivation. Ignition must survive potential changes in administration, congressional priorities, and public attention. The 2033 target date will span at least two presidential terms.</p>
+
+<h2 id="goal">Goal: Flags and Footprints vs. Permanent Settlement</h2>
+
+<p>This is the most consequential difference between the two programs.</p>
+
+<p><strong>Apollo&apos;s goal was demonstration.</strong> Prove that Americans could reach the Moon, walk on it, and return safely. Plant a flag. Collect some rocks. Beat the Soviets. Once that goal was achieved with Apollo 11, political support eroded rapidly. Apollo 18, 19, and 20 were canceled. The last Apollo landing (Apollo 17) was in December 1972. Total time with humans on the Moon across all six landings: approximately <strong>12.5 days</strong>.</p>
+
+<p><strong>Ignition&apos;s goal is permanence.</strong> Build infrastructure that persists between missions. Establish habitats where crews rotate in and out. Develop resource extraction capabilities that reduce dependence on Earth resupply. The explicit objective is a <strong>continuously inhabited base</strong> &mdash; not visits, but residence.</p>
+
+<p>If Ignition succeeds, the Moon does not become another place we went and left. It becomes a place we live.</p>
+
+<h2 id="approach">Approach: Government-Built vs. Commercial Partnerships</h2>
+
+<p>Apollo was a government program in the fullest sense. NASA designed the vehicles, managed the contractors, and maintained tight control over every system. The contractors (North American Aviation, Grumman, Boeing, IBM, MIT) built to NASA specifications under cost-plus contracts that paid for whatever the work required.</p>
+
+<p>Ignition operates on a fundamentally different model. NASA buys <strong>services</strong>, not hardware:</p>
+
+<ul>
+<li><strong>SpaceX</strong> is developing Starship HLS under a firm-fixed-price contract &mdash; SpaceX bears cost overruns, not the taxpayer</li>
+<li><strong>CLPS</strong> providers own and operate their own landers; NASA is a customer buying delivery slots</li>
+<li><strong>Blue Origin</strong> leads a commercial team with its own investment in the Blue Moon lander</li>
+<li><strong>International partners</strong> fund their own hardware contributions (JAXA pays for the rover, ESA pays for modules)</li>
+</ul>
+
+<p>This approach spreads financial risk, creates competitive pressure, and generates commercial capabilities that exist independent of NASA. When Apollo ended, the Saturn V production line shut down and the tooling was destroyed. When Ignition completes Phase 1, Starship, Blue Moon, and CLPS landers will continue to exist as commercial products available to any customer.</p>
+
+<h2 id="technology">Technology: Saturn V Era vs. AI and Reusability</h2>
+
+<p>The technological gap between the two programs is staggering:</p>
+
+<table>
+<thead>
+<tr><th>Capability</th><th>Apollo</th><th>Ignition</th></tr>
+</thead>
+<tbody>
+<tr><td>Launch vehicle</td><td>Saturn V (expendable, 140 tons to LEO)</td><td>SLS (expendable, 130 tons) + Starship (reusable, 150+ tons)</td></tr>
+<tr><td>Crew vehicle</td><td>Apollo CM (3 crew, 11 m&sup3;)</td><td>Orion (4 crew, 19.6 m&sup3;)</td></tr>
+<tr><td>Lunar lander</td><td>Lunar Module (2 crew, 1&ndash;3 day surface stay)</td><td>Starship HLS (4+ crew, multi-week stays) + Blue Moon</td></tr>
+<tr><td>Surface transport</td><td>Lunar Roving Vehicle (unpressurized, ~35 km range)</td><td>JAXA pressurized rover (shirt-sleeve, multi-day range)</td></tr>
+<tr><td>Computers</td><td>Apollo Guidance Computer (74 KB memory)</td><td>Modern flight computers, AI-assisted autonomous operations</td></tr>
+<tr><td>Communications</td><td>S-band, intermittent contact</td><td>Lunar communication relays, proto-cellular network</td></tr>
+<tr><td>Surface power</td><td>Batteries and fuel cells (hours to days)</td><td>Nuclear fission reactors + advanced solar arrays (years)</td></tr>
+<tr><td>Spacesuits</td><td>A7L (limited mobility, no thermal management)</td><td>AxEMU (full mobility, thermal regulation, longer EVAs)</td></tr>
+</tbody>
+</table>
+
+<p>Perhaps the most important technological difference is <strong>reusability</strong>. Every Apollo mission threw away the entire stack: Saturn V, Command/Service Module (except the heat shield), Lunar Module. Ignition&apos;s architecture is built around reusable landers (Starship, Blue Moon), persistent surface infrastructure, and the goal of eventually using lunar resources to reduce Earth-supplied consumables.</p>
+
+<h2 id="international">International Dimension: Solo Mission vs. Global Coalition</h2>
+
+<p>Apollo was an American project. Period. International contributions were essentially zero. The Cold War framing demanded that the United States reach the Moon on its own terms, with its own hardware, funded by its own taxpayers.</p>
+
+<p>Ignition is international by design. The <strong>Artemis Accords</strong>, signed by over 40 nations as of 2026, establish the framework for cooperative lunar exploration. Hardware contributions from <strong>JAXA</strong> (Japan), <strong>ESA</strong> (Europe), <strong>ASI</strong> (Italy), and <strong>CSA</strong> (Canada) are integral to the architecture, not add-ons. International astronauts will live and work at the base.</p>
+
+<p>This is both a strength and a vulnerability. International partnerships distribute cost and build diplomatic support. But they also introduce coordination complexity, schedule dependencies, and the risk that any partner&apos;s domestic politics could delay their contribution.</p>
+
+<h2 id="sustainability">Sustainability: Three Years of Landings vs. Permanent Presence</h2>
+
+<p>Apollo&apos;s crewed lunar program lasted from July 1969 (Apollo 11) to December 1972 (Apollo 17): <strong>three years and five months</strong>. Six successful landings. Twelve people walked on the Moon. Then it ended, and nobody went back for over half a century.</p>
+
+<p>Ignition is explicitly designed to avoid this pattern. The three-phase structure &mdash; robotic precursors, then semi-habitable infrastructure, then permanent habitation &mdash; builds capabilities incrementally so that each phase creates infrastructure the next phase depends on. The surface hardware does not go away between missions. Each delivery adds to the base.</p>
+
+<p>The greatest risk to Ignition is not technical failure. It is the same thing that killed Apollo&apos;s follow-on programs: <strong>loss of political will</strong>. The commercial partnership model helps mitigate this by creating private-sector stakeholders with their own investment in the program&apos;s success, but it does not eliminate the risk entirely.</p>
+
+<h2 id="verdict">The Verdict</h2>
+
+<p>Apollo was a sprint. Ignition is a marathon. Apollo proved humans could reach the Moon. Ignition aims to prove humans can <strong>stay</strong>. Apollo spent vastly more money in less time. Ignition tries to build more durable infrastructure at a fraction of the cost by leveraging commercial capabilities that did not exist in the 1960s.</p>
+
+<p>Whether Ignition succeeds depends less on engineering &mdash; the technology is ready or nearly so &mdash; and more on whether the political and funding commitment survives long enough for the hardware to accumulate on the lunar surface. Apollo had the Cold War. Ignition has commercial space, international partners, and the hope that this time, the footprints lead to a front door.</p>
+
+<p>For a detailed look at every mission and milestone in the program, see our <a href="/blog/nasa-artemis-program-complete-guide-2026">complete Artemis program guide</a>.</p>
+
+<p><strong>Track Project Ignition live:</strong> Visit our <a href="/ignition">Ignition Tracker</a> for real-time milestones, contract tracking, and company involvement.</p>
+`,
+    faqItems: [
+      { question: 'How does Ignition compare to Apollo?', answer: 'Apollo was a government-only sprint driven by Cold War urgency that cost approximately $280 billion (2026 dollars) over 8 years and achieved 6 lunar landings totaling 12.5 days on the surface. Ignition is a $20 billion commercial-partnership program (building on ~$70 billion in existing Artemis infrastructure) targeting permanent habitation over 7 years with 5+ international partners contributing hardware.' },
+      { question: 'Is Ignition more expensive than Apollo?', answer: 'No. Apollo cost approximately $280 billion in inflation-adjusted 2026 dollars, consuming over 4% of the federal budget at peak. Even including all Artemis-era spending that Ignition builds upon ($90-100 billion total), the combined cost is roughly one-third of Apollo. Ignition itself is budgeted at $20 billion over FY2027-2033.' },
+      { question: 'How long did Apollo take?', answer: 'From President Kennedy\'s May 1961 speech committing to a Moon landing to the Apollo 11 landing in July 1969 was 8 years and 2 months. The entire crewed lunar landing program ran from Apollo 11 (July 1969) to Apollo 17 (December 1972) — 3 years and 5 months. Six missions landed successfully; twelve astronauts walked on the Moon.' },
+      { question: 'Will Ignition succeed?', answer: 'The technical fundamentals are strong — the core technologies (SLS, Orion, Starship, CLPS landers) already exist or are in advanced testing. The primary risks are political: sustaining funding across multiple presidential administrations and maintaining international partner commitments through 2033. The commercial partnership model helps mitigate this by creating private-sector stakeholders with independent investment in the program.' },
+    ],
+  },
+  {
+    slug: 'how-to-get-job-nasa-project-ignition-careers',
+    title: 'How to Get a Job on Project Ignition: Career Guide for NASA\'s Moon Base Program',
+    excerpt: 'NASA\'s $20 billion Project Ignition is creating thousands of jobs across the space industry. Here is who is hiring, what skills are in demand, what the positions pay, and exactly how to position yourself for a role on the program building humanity\'s first permanent Moon base.',
+    category: 'guide' as BlogCategory,
+    author: 'SpaceNexus Team',
+    authorRole: 'Editorial',
+    publishedAt: '2026-03-28T00:00:00Z',
+    readingTime: 10,
+    featured: false,
+    keywords: ['NASA ignition jobs', 'moon base careers', 'space industry jobs', 'NASA contractor jobs', 'artemis program careers', 'work on moon base'],
+    content: `
+<p>Project Ignition is a $20 billion program that will employ thousands of engineers, scientists, managers, and technicians across NASA, prime contractors, subcontractors, and international partners over the next seven years. If you want to work on the program that builds humanity&apos;s first permanent Moon base, the window is opening now. Here is your roadmap. For live contract and milestone tracking, visit our <a href="/ignition">Ignition Tracker</a>.</p>
+
+<h2 id="who-is-hiring">Who Is Hiring</h2>
+
+<h3>NASA Directly</h3>
+
+<p>NASA hires civil servants through <strong>USAJobs.gov</strong>, the federal government&apos;s job portal. Positions related to Ignition will be posted primarily under <strong>NASA Johnson Space Center</strong> (Houston, TX &mdash; crew systems, mission operations, astronaut training), <strong>NASA Kennedy Space Center</strong> (Florida &mdash; launch operations, ground systems), <strong>NASA Marshall Space Flight Center</strong> (Huntsville, AL &mdash; propulsion, SLS), and <strong>NASA Goddard Space Flight Center</strong> (Greenbelt, MD &mdash; science instruments, communications).</p>
+
+<p>NASA civil servant positions typically require <strong>US citizenship</strong>. The hiring process is notoriously slow &mdash; expect 3&ndash;6 months from application to offer. The advantage is job security, a federal pension, and the prestige of working directly for the agency.</p>
+
+<h3>Prime Contractors</h3>
+
+<p>The majority of hands-on Ignition work will be performed by contractor employees, not NASA civil servants. The prime contractors hiring the most Ignition-related talent include:</p>
+
+<ul>
+<li><strong>SpaceX</strong> (Hawthorne, CA; Boca Chica, TX; Cape Canaveral, FL) &mdash; Starship HLS development, manufacturing, launch operations</li>
+<li><strong>Blue Origin</strong> (Kent, WA; Huntsville, AL; Cape Canaveral, FL) &mdash; Blue Moon lander, habitat development</li>
+<li><strong>Lockheed Martin</strong> (Denver, CO; Houston, TX) &mdash; Orion production, mission operations</li>
+<li><strong>Northrop Grumman</strong> (Dulles, VA; Chandler, AZ) &mdash; HALO module, solid rocket boosters</li>
+<li><strong>Boeing</strong> (Huntsville, AL; New Orleans, LA) &mdash; SLS core stage production</li>
+</ul>
+
+<p>Contractor positions often move faster than government hiring and may offer higher base salaries, though without federal benefits like the pension and leave accrual.</p>
+
+<h3>CLPS and Mid-Tier Companies</h3>
+
+<p>The expansion of CLPS under Ignition Phase 1 means growing headcount at companies building lunar landers and surface systems:</p>
+
+<ul>
+<li><strong>Intuitive Machines</strong> (Houston, TX) &mdash; Nova-C lander operations, next-gen lander development</li>
+<li><strong>Astrobotic</strong> (Pittsburgh, PA) &mdash; Griffin lander, lunar delivery services</li>
+<li><strong>Firefly Aerospace</strong> (Cedar Park, TX) &mdash; Blue Ghost lander, Alpha launch vehicle</li>
+<li><strong>Axiom Space</strong> (Houston, TX) &mdash; AxEMU spacesuit development, commercial space station</li>
+<li><strong>Draper</strong> (Cambridge, MA) &mdash; Guidance and navigation systems, lunar lander development</li>
+</ul>
+
+<p>These companies are typically smaller, move faster, and offer the chance to wear multiple hats. They are often the best entry point for early-career engineers who want rapid responsibility.</p>
+
+<h2 id="in-demand-roles">In-Demand Roles and Skills</h2>
+
+<h3>Engineering Disciplines</h3>
+
+<p>The following engineering specialties are in highest demand across Ignition-related programs:</p>
+
+<ul>
+<li><strong>Systems engineering</strong> &mdash; The most universally needed discipline. Ignition involves integrating hardware from multiple contractors and international partners. Systems engineers who can manage interfaces, requirements, and trade studies are essential at every level.</li>
+<li><strong>Propulsion engineering</strong> &mdash; Rocket engines (RS-25, Raptor, BE-7), reaction control systems, and in-space propulsion for landers and transfer vehicles.</li>
+<li><strong>Avionics and GN&amp;C</strong> &mdash; Guidance, navigation, and control for precision lunar landing, autonomous surface operations, and vehicle-to-vehicle rendezvous.</li>
+<li><strong>Structural and thermal engineering</strong> &mdash; Designing hardware to survive launch loads, the vacuum of space, and the extreme thermal environment of the lunar surface (250&deg;F in sunlight, -280&deg;F in shadow).</li>
+<li><strong>Software engineering</strong> &mdash; Flight software, ground systems, mission planning tools, autonomous operations, and data infrastructure. Software is increasingly the differentiator in modern space systems.</li>
+<li><strong>ISRU (In-Situ Resource Utilization) specialists</strong> &mdash; A niche but growing field. Ignition Phase 1 includes water extraction and electrolysis experiments. Engineers with expertise in chemical processing, mining, or resource extraction adapted for the lunar environment are in rare and growing demand.</li>
+<li><strong>Nuclear power engineers</strong> &mdash; Ignition plans to deploy small nuclear fission reactors for surface power. Engineers with nuclear engineering backgrounds, particularly in small modular reactor design, have an unusual opportunity.</li>
+<li><strong>Life support and ECLSS</strong> &mdash; Environmental Control and Life Support Systems engineers design the air, water, and thermal management systems that keep humans alive in habitats. This is critical for Phase 2 and Phase 3.</li>
+</ul>
+
+<h3>Non-Engineering Roles</h3>
+
+<p>Not every Ignition job requires an engineering degree:</p>
+
+<ul>
+<li><strong>Project and program managers</strong> &mdash; Managing schedules, budgets, and contractor relationships across a multi-year, multi-billion-dollar program</li>
+<li><strong>Mission operations specialists</strong> &mdash; Flight controllers, planners, and analysts who manage missions in real time from mission control</li>
+<li><strong>Quality assurance and safety</strong> &mdash; Ensuring hardware meets specifications and human-rating requirements</li>
+<li><strong>Procurement and contracts</strong> &mdash; Managing the complex web of federal contracts, task orders, and international agreements</li>
+<li><strong>Communications and public affairs</strong> &mdash; NASA and its contractors need people who can explain this program to Congress, the media, and the public</li>
+<li><strong>Technicians and manufacturing</strong> &mdash; Building, integrating, and testing flight hardware requires skilled technicians, welders, machinists, and composite fabricators</li>
+</ul>
+
+<h2 id="clearance">Security Clearance Requirements</h2>
+
+<p>Most Ignition-related work is <strong>unclassified</strong>. NASA is a civilian agency, and the Artemis/Ignition program is an international partnership with allies, which limits classification. However:</p>
+
+<ul>
+<li><strong>US citizenship</strong> is required for most NASA civil servant positions and many contractor positions that involve access to export-controlled hardware (ITAR)</li>
+<li>Some positions at defense-adjacent contractors (Northrop Grumman, Lockheed Martin, L3Harris) may require a <strong>Secret</strong> or <strong>Top Secret</strong> clearance, particularly if the role spans both civil and defense space programs</li>
+<li>CLPS companies and commercial-focused roles at SpaceX and Blue Origin generally require US person status (citizen or permanent resident) due to ITAR, but not a formal security clearance</li>
+<li>International partner positions (ESA, JAXA, CSA) have their own citizenship and clearance requirements</li>
+</ul>
+
+<p>If you do not currently hold a clearance, do not let that stop you from applying. Many companies will sponsor clearance processing for the right candidate. The process takes 6&ndash;12 months for Secret and 12&ndash;18 months for Top Secret.</p>
+
+<h2 id="salary">Salary Ranges</h2>
+
+<p>Compensation varies significantly by employer, location, and experience level. The following ranges are based on publicly available data from job postings, Glassdoor, Levels.fyi, and industry surveys as of early 2026:</p>
+
+<table>
+<thead>
+<tr><th>Role</th><th>Entry Level (0&ndash;3 years)</th><th>Mid-Career (4&ndash;10 years)</th><th>Senior / Lead (10+ years)</th></tr>
+</thead>
+<tbody>
+<tr><td>Systems Engineer</td><td>$85,000&ndash;$110,000</td><td>$110,000&ndash;$155,000</td><td>$150,000&ndash;$200,000</td></tr>
+<tr><td>Propulsion Engineer</td><td>$90,000&ndash;$115,000</td><td>$115,000&ndash;$160,000</td><td>$155,000&ndash;$210,000</td></tr>
+<tr><td>Software Engineer</td><td>$95,000&ndash;$130,000</td><td>$130,000&ndash;$180,000</td><td>$170,000&ndash;$250,000+</td></tr>
+<tr><td>GN&amp;C Engineer</td><td>$90,000&ndash;$115,000</td><td>$115,000&ndash;$160,000</td><td>$155,000&ndash;$210,000</td></tr>
+<tr><td>Project Manager</td><td>$80,000&ndash;$105,000</td><td>$105,000&ndash;$150,000</td><td>$145,000&ndash;$220,000</td></tr>
+<tr><td>Program Manager</td><td>N/A</td><td>$120,000&ndash;$170,000</td><td>$170,000&ndash;$250,000+</td></tr>
+<tr><td>Technician</td><td>$50,000&ndash;$70,000</td><td>$70,000&ndash;$95,000</td><td>$90,000&ndash;$120,000</td></tr>
+</tbody>
+</table>
+
+<p>SpaceX and Blue Origin tend to pay somewhat below market base salary but compensate with equity that can be substantial if the companies appreciate in value. Lockheed Martin, Northrop Grumman, and Boeing pay closer to market with more traditional benefits packages. NASA civil servant pay follows the <strong>General Schedule (GS)</strong> scale, typically GS-9 to GS-15, with locality pay adjustments that vary significantly by region.</p>
+
+<h2 id="career-path">Career Path: How to Get There</h2>
+
+<h3>Students and Recent Graduates</h3>
+
+<p><strong>Internships</strong> are the single most effective way into the space industry. NASA&apos;s internship program (intern.nasa.gov) places thousands of students at NASA centers every year. Major contractors all run intern programs as well. An internship at any Artemis-related organization is a direct pipeline to full-time Ignition work.</p>
+
+<p>Target degrees include aerospace engineering, mechanical engineering, electrical engineering, computer science, physics, and systems engineering. But the industry also needs materials scientists, nuclear engineers, geologists (for ISRU), and even psychologists (for long-duration crew support).</p>
+
+<h3>Career Changers</h3>
+
+<p>The space industry is increasingly hiring from adjacent sectors. Defense, automotive, energy, mining, and software industries all produce skills directly applicable to Ignition. If you have experience with autonomous systems, nuclear power, chemical processing, composite manufacturing, or large-scale project management, you have transferable skills the space industry needs.</p>
+
+<h3>Building Your Network</h3>
+
+<p>Space industry hiring is heavily network-driven. Attend conferences (<strong>Space Symposium</strong>, <strong>SATELLITE</strong>, <strong>IAC</strong>, <strong>SmallSat</strong>), join professional organizations (<strong>AIAA</strong>, <strong>Space Foundation</strong>), and engage with the community. Many positions are filled through referrals before they are even posted publicly.</p>
+
+<p>For current space industry job openings and salary data, visit our <a href="/space-talent">Space Talent Hub</a>. For salary benchmarking across the industry, see our <a href="/salary-benchmarks">salary benchmarks tool</a>. For a broader look at space careers, read our <a href="/blog/space-industry-careers-guide-2026">space industry careers guide</a>.</p>
+
+<p><strong>Track Project Ignition live:</strong> Visit our <a href="/ignition">Ignition Tracker</a> for real-time milestones, contract tracking, and company involvement.</p>
+`,
+    faqItems: [
+      { question: 'How do I get a job on Project Ignition?', answer: 'The primary pathways are: (1) apply directly to NASA through USAJobs.gov for civil servant positions, (2) apply to prime contractors like SpaceX, Blue Origin, Lockheed Martin, Northrop Grumman, or Boeing who perform the majority of hands-on work, (3) join CLPS companies like Intuitive Machines, Astrobotic, or Firefly Aerospace for lunar lander work, or (4) start with an internship at NASA or a contractor for the most direct pipeline. Most positions are posted on company career pages.' },
+      { question: 'What skills are needed for Ignition jobs?', answer: 'The highest-demand disciplines are systems engineering, propulsion engineering, avionics/GN&C, software engineering, structural and thermal engineering, ISRU (in-situ resource utilization), nuclear power engineering, and life support (ECLSS). Non-engineering roles include project management, mission operations, quality assurance, procurement, and skilled manufacturing technicians. Degrees in aerospace, mechanical, electrical engineering, or computer science are most common entry points.' },
+      { question: 'Do I need a security clearance for Ignition work?', answer: 'Most Ignition work is unclassified since NASA is a civilian agency and the program involves international partners. However, US citizenship (or permanent residency) is required for most positions due to ITAR export control regulations. Some positions at defense-adjacent contractors like Northrop Grumman or Lockheed Martin may require a Secret or Top Secret clearance. Companies will typically sponsor clearance processing for qualified candidates.' },
+      { question: 'What do Ignition jobs pay?', answer: 'Compensation varies by employer and experience. Typical ranges: entry-level engineers $85,000-$130,000, mid-career engineers $110,000-$180,000, senior engineers and leads $150,000-$250,000+, program managers $120,000-$250,000+, technicians $50,000-$120,000. SpaceX and Blue Origin tend to pay below-market base salary but offer equity compensation. NASA civil servants follow the GS pay scale (GS-9 to GS-15) with locality adjustments.' },
+    ],
+  },
+  {
+    slug: 'nasa-ignition-timeline-every-milestone-2026-2033',
+    title: 'NASA Ignition Timeline: Every Milestone from 2026 to 2033',
+    excerpt: 'A detailed year-by-year breakdown of Project Ignition\'s planned milestones, from the Artemis II flyby in 2026 through permanent lunar habitation targeting 2033. Updated as NASA announces schedule changes.',
+    category: 'guide' as BlogCategory,
+    author: 'SpaceNexus Team',
+    authorRole: 'Editorial',
+    publishedAt: '2026-03-28T00:00:00Z',
+    readingTime: 8,
+    featured: false,
+    keywords: ['NASA ignition timeline', 'moon base timeline', 'artemis timeline 2026', 'lunar base milestones', 'when will moon base be built'],
+    content: `
+<p>Project Ignition is a seven-year program with an aggressive schedule of missions, hardware deliveries, and capability milestones. Some dates are firm, with hardware built and launch contracts signed. Others are aspirational targets that will shift as the program matures. We distinguish between the two throughout this timeline. For real-time tracking, visit our <a href="/ignition">Ignition Tracker</a>.</p>
+
+<p>This timeline covers the Ignition program within the broader Artemis context, because Ignition depends on Artemis missions to deliver crew and major hardware to the lunar surface.</p>
+
+<h2 id="2026">2026: The Foundation Year</h2>
+
+<h3>Artemis II Crewed Flyby (Targeting April 2026)</h3>
+
+<p><strong>Status: Hardware ready, launch date confirmed.</strong> Artemis II will send four astronauts &mdash; Reid Wiseman, Victor Glover, Christina Koch, and Jeremy Hansen &mdash; on a roughly 10-day flyby around the Moon aboard the Orion spacecraft, launched by SLS from Kennedy Space Center. This mission validates Orion&apos;s crew life support systems at lunar distance for the first time. The primary launch date is <strong>April 1, 2026</strong>, with backup windows on April 7, 8, 10, and 11. For viewing details, see our <a href="/blog/how-to-watch-artemis-ii-launch-complete-guide">complete Artemis II viewing guide</a>.</p>
+
+<h3>Project Ignition Announcement and Phase 1 Kickoff (March 2026)</h3>
+
+<p><strong>Status: Announced.</strong> NASA Administrator Jared Isaacman announced Project Ignition on March 24, 2026, committing $20 billion over seven fiscal years (FY2027&ndash;2033) to build a permanent lunar base at the south pole. Phase 1 begins immediately with expanded CLPS procurement and technology development contracts.</p>
+
+<h3>CLPS Expansion Begins (2026)</h3>
+
+<p><strong>Status: In progress.</strong> NASA is expected to issue new CLPS task orders at an accelerated pace under Ignition. Intuitive Machines, Astrobotic, Firefly Aerospace, and Draper are all eligible for new awards. Additional CLPS vendors may be selected as NASA scales the program toward the near-monthly delivery cadence targeted for Phase 1.</p>
+
+<h3>Key Risks for 2026</h3>
+<ul>
+<li>Artemis II launch delay due to weather or technical issues (backup dates available through April 11)</li>
+<li>Congressional appropriations for FY2027 must include Ignition funding &mdash; the program depends on this first budget cycle</li>
+<li>CLPS mission reliability remains uncertain after the mixed results of early missions (IM-1 tipped, Peregrine failed)</li>
+</ul>
+
+<h2 id="2027">2027: Proving the Architecture</h2>
+
+<h3>Artemis III Earth-Orbit Test (Targeting 2027)</h3>
+
+<p><strong>Status: Targeting, schedule dependent on Starship readiness.</strong> Artemis III is planned as an <strong>Earth-orbit demonstration</strong> of the Starship HLS rendezvous and crew transfer procedures. This mission will verify that astronauts can safely transfer between Orion and Starship in space &mdash; a critical prerequisite for crewed lunar landings. The exact date depends on Starship&apos;s flight test cadence and NASA certification milestones.</p>
+
+<h3>CLPS Monthly Cadence Begins (Targeting late 2027)</h3>
+
+<p><strong>Status: Aspirational target.</strong> NASA aims to reach a near-monthly pace of CLPS deliveries to the lunar south pole by late 2027 or early 2028. Each delivery will carry instruments, technology demonstrators, or infrastructure components for Phase 1. Achieving this cadence requires multiple CLPS providers maintaining operational landers simultaneously.</p>
+
+<h3>Technology Development Awards</h3>
+
+<p><strong>Status: Expected.</strong> NASA is expected to award contracts for nuclear surface power systems, ISRU pilot plants, autonomous construction equipment, and communication relay satellites. These awards will flow to both established contractors and small businesses through SBIR/STTR and directed task orders.</p>
+
+<h3>Key Risks for 2027</h3>
+<ul>
+<li>Starship HLS schedule is the biggest single dependency &mdash; delays cascade to Artemis III and IV</li>
+<li>Scaling CLPS to monthly cadence is unprecedented and may take longer than planned</li>
+<li>FY2028 appropriations must sustain Ignition funding through the second year</li>
+</ul>
+
+<h2 id="2028">2028: First Boots on the Ground</h2>
+
+<h3>Artemis IV First Crewed Lunar Landing (Targeting 2028)</h3>
+
+<p><strong>Status: Targeting, schedule not confirmed.</strong> Artemis IV is planned as the <strong>first crewed lunar landing since Apollo 17 in 1972</strong>. Astronauts would descend to the south pole surface aboard the Starship HLS, conduct surface EVAs in AxEMU spacesuits, and return to Orion in lunar orbit. This is the mission where boots touch regolith for the first time in over 55 years. The 2028 date is a target that depends on successful completion of Artemis III and Starship HLS certification.</p>
+
+<h3>Nuclear Surface Power Tests (Targeting 2028&ndash;2029)</h3>
+
+<p><strong>Status: Development underway.</strong> NASA&apos;s <strong>Fission Surface Power</strong> project, developed in partnership with the Department of Energy, aims to deploy a small nuclear reactor on the lunar surface capable of generating 40 kilowatts of continuous power &mdash; enough to support a small habitat and ISRU operations. A terrestrial prototype is under development. Lunar deployment is targeting the late 2020s, with 2028&ndash;2029 the earliest realistic window.</p>
+
+<h3>Key Risks for 2028</h3>
+<ul>
+<li>Any delay to Artemis III pushes Artemis IV and the entire crewed surface campaign</li>
+<li>Nuclear surface power is a first-of-its-kind system with no prior space deployment at this scale</li>
+<li>2028 is a presidential election year &mdash; political attention to space programs may be minimal</li>
+</ul>
+
+<h2 id="2029-2030">2029&ndash;2030: Building the Base (Phase 1 Completion)</h2>
+
+<h3>Regular Surface Missions</h3>
+
+<p><strong>Status: Planned.</strong> With Starship HLS and Blue Moon operational, NASA targets <strong>one to two crewed surface missions per year</strong> starting in 2029, with surface stays extending from days to weeks. Each mission adds to the infrastructure at the south pole site.</p>
+
+<h3>Rover Deployments</h3>
+
+<p><strong>Status: Development underway.</strong> Multiple rover systems are planned for delivery during this period: small autonomous rovers for site survey and resource mapping, medium rovers for construction support, and early mobility platforms. These arrive via CLPS landers and Starship cargo deliveries.</p>
+
+<h3>Site Preparation for Permanent Infrastructure</h3>
+
+<p><strong>Status: Planned.</strong> Autonomous or teleoperated equipment will begin <strong>preparing the base site</strong> &mdash; leveling terrain, creating berms for radiation shielding, testing regolith-based construction techniques, and establishing the physical footprint for Phase 2 habitats. This is when the base transitions from a collection of instruments to a construction site.</p>
+
+<h3>Phase 1 Completion (Targeting 2030)</h3>
+
+<p><strong>Status: Target.</strong> By the end of Phase 1, NASA expects to have validated the core technologies for permanent habitation: surface power (nuclear and solar), ISRU water extraction and electrolysis, autonomous surface operations, communication infrastructure, and regular crew access via Starship and Blue Moon.</p>
+
+<h3>Key Risks for 2029&ndash;2030</h3>
+<ul>
+<li>Cumulative schedule delays from earlier phases could compress Phase 1 completion</li>
+<li>ISRU technology may perform differently in the actual lunar environment than in laboratory tests</li>
+<li>A new presidential administration (inaugurated January 2029) could adjust Ignition priorities or funding</li>
+</ul>
+
+<h2 id="2031">2031: Semi-Habitable Infrastructure (Phase 2)</h2>
+
+<h3>Extended Surface Stays</h3>
+
+<p><strong>Status: Planned.</strong> Phase 2 begins the transition from short visits to <strong>multi-week or multi-month crew stays</strong> on the surface. This requires functional life support, reliable power, communication, and the ability to conduct meaningful scientific and operational work without constant resupply.</p>
+
+<h3>ISRU Operations at Scale</h3>
+
+<p><strong>Status: Target.</strong> If Phase 1 ISRU experiments succeed, Phase 2 targets <strong>operational water extraction and oxygen production</strong> at a scale useful for mission support &mdash; reducing the mass of consumables that must be launched from Earth.</p>
+
+<h3>Key Risks for 2031</h3>
+<ul>
+<li>Phase 2 depends entirely on Phase 1 delivering validated technologies on schedule</li>
+<li>Extended crew stays surface new challenges: medical events, equipment failures, psychological factors</li>
+</ul>
+
+<h2 id="2032">2032: Major Hardware Deliveries</h2>
+
+<h3>JAXA Pressurized Rover (Targeting 2032)</h3>
+
+<p><strong>Status: Development underway.</strong> JAXA and Toyota are developing a <strong>pressurized lunar rover</strong> that will allow astronauts to drive across the lunar surface in a shirt-sleeve environment for multi-day excursions. The rover is currently targeting delivery to the Moon via Starship around 2032. This is one of the most significant international contributions to Ignition and transforms surface mobility from suited walks to extended exploration campaigns.</p>
+
+<h3>Additional Habitat Elements</h3>
+
+<p><strong>Status: Planned.</strong> Phase 2 includes delivery of additional pressurized modules and surface infrastructure elements from NASA, international partners, and commercial providers. The exact manifest is still being defined as Ignition contracts are finalized.</p>
+
+<h3>Key Risks for 2032</h3>
+<ul>
+<li>JAXA rover development is on Japan&apos;s budget and schedule &mdash; delays in Tokyo affect plans in Houston</li>
+<li>Starship cargo capacity is essential for the rover delivery; any Starship issues affect the timeline</li>
+</ul>
+
+<h2 id="2033">2033: Permanent Human Presence (Phase 3 Target)</h2>
+
+<h3>Blue Origin Habitat Delivery (Targeting 2032&ndash;2033)</h3>
+
+<p><strong>Status: Development underway.</strong> Blue Origin&apos;s lunar habitat, part of the $3.4 billion Sustaining Lunar Development contract, is targeted for delivery during this period. This is intended to be one of the primary long-duration crew habitats at the south pole base, enabling <strong>continuous rotating crew presence</strong>.</p>
+
+<h3>Permanent Habitation Achieved (Targeting ~2033)</h3>
+
+<p><strong>Status: Aspirational target.</strong> The culmination of the Ignition program is a base at the lunar south pole that is <strong>continuously inhabited</strong> by rotating crews. &ldquo;Permanent&rdquo; does not mean the same people stay forever &mdash; it means the base is always staffed, with crews rotating on a schedule similar to the International Space Station model (typically 6-month rotations on ISS).</p>
+
+<p>Achieving this requires simultaneous success across multiple systems: reliable crew transportation (SLS/Orion + Starship or Blue Moon), functional habitats with life support, surface power, communication, ISRU, and a logistics pipeline that can sustain the base without interruption.</p>
+
+<h3>Beyond 2033</h3>
+
+<p>Ignition&apos;s budget authority runs through FY2033, but the base is designed to operate indefinitely. Potential expansions include:</p>
+
+<ul>
+<li><strong>Lunar science laboratories</strong> for long-duration experiments in geology, biology, and physics</li>
+<li><strong>Commercial activities</strong> including tourism, resource extraction, and manufacturing</li>
+<li><strong>Deep space staging</strong> &mdash; using the lunar base as a waypoint for Mars missions and beyond</li>
+<li><strong>Expanded international presence</strong> with additional partner habitats and facilities</li>
+</ul>
+
+<h2 id="schedule-realism">A Note on Schedule Realism</h2>
+
+<p>Large NASA programs almost always experience schedule delays. SLS was originally expected to fly in 2017; it flew in 2022. The James Webb Space Telescope was supposed to launch in 2007; it launched in 2021. This is not a criticism &mdash; it is a pattern that applies to essentially every first-of-its-kind space system.</p>
+
+<p>The Ignition timeline presented here reflects NASA&apos;s stated targets. Realistic expectations should add 1&ndash;3 years of buffer to the later milestones. A permanent human presence by 2035&ndash;2036, rather than 2033, would still be an extraordinary achievement &mdash; the first permanent off-world settlement in human history.</p>
+
+<p>We will update this timeline as NASA announces schedule changes, contract awards, and mission results. For the latest, visit our <a href="/ignition">Ignition Tracker</a>.</p>
+
+<p><strong>Track Project Ignition live:</strong> Visit our <a href="/ignition">Ignition Tracker</a> for real-time milestones, contract tracking, and company involvement.</p>
+`,
+    faqItems: [
+      { question: 'When does Project Ignition start?', answer: 'Project Ignition was announced on March 24, 2026, with Phase 1 beginning immediately through expanded CLPS procurement and technology development contracts. The $20 billion budget spans fiscal years 2027 through 2033. The first major Artemis mission supporting Ignition is the Artemis II crewed lunar flyby, targeting April 1, 2026.' },
+      { question: 'When will humans live on the Moon?', answer: 'NASA targets permanent human habitation at the lunar south pole base by approximately 2033 under Project Ignition Phase 3. However, large NASA programs typically experience 1-3 year delays, so a realistic estimate for continuous crew presence is 2033-2036. Extended crew stays of weeks to months are planned for Phase 2, targeting around 2031.' },
+      { question: 'What are the 3 phases of Project Ignition?', answer: 'Phase 1 (FY2027-2030, ~$10 billion): Robotic precursor missions via CLPS at near-monthly cadence, technology validation including nuclear power, ISRU experiments, and autonomous construction. Phase 2 (FY2030-2032): Semi-habitable infrastructure with extended crew stays, JAXA pressurized rover delivery, and operational ISRU. Phase 3 (FY2032-2033+): Blue Origin habitat delivery, permanent rotating crew presence, and full base operations.' },
+      { question: 'When is the first Ignition lunar landing?', answer: 'The first crewed lunar landing under the Artemis/Ignition architecture is Artemis IV, targeting no earlier than 2028. This mission would send astronauts to the lunar south pole aboard the SpaceX Starship HLS. The 2028 date depends on successful completion of Artemis III (an Earth-orbit Starship HLS demonstration targeting 2027) and NASA certification of the landing system.' },
+    ],
+  },
+  {
     slug: 'nasa-20-billion-moon-base-everything-you-need-to-know',
     title: 'NASA\'s $20 Billion Moon Base: Everything You Need to Know About Project Ignition',
     excerpt: 'NASA just announced its most ambitious lunar initiative since Apollo. The "Ignition" plan commits $20 billion over seven years to build a permanent base at the Moon\'s south pole — and it changes everything for the space industry.',
