@@ -49,6 +49,7 @@ interface DailyTask {
   index: number;
   id: string;
   description: string;
+  metric: string;
   target: number;
   xpReward: number;
   completed: boolean;
@@ -87,9 +88,13 @@ interface EventsPanelData {
   myRole: string;
 }
 
+interface AllianceEventsPanelProps {
+  dailyMetrics?: Record<string, number>;
+}
+
 // ─── Component ───────────────────────────────────────────────────────────────
 
-export default function AllianceEventsPanel() {
+export default function AllianceEventsPanel({ dailyMetrics }: AllianceEventsPanelProps) {
   const [data, setData] = useState<EventsPanelData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -208,7 +213,7 @@ export default function AllianceEventsPanel() {
 
       {/* ─── Daily Tasks Tab ────────────────────────────────────────── */}
       {activeTab === 'tasks' && (
-        <DailyTasksCard tasks={dailyTasks} allCompleted={allTasksCompleted} />
+        <DailyTasksCard tasks={dailyTasks} allCompleted={allTasksCompleted} dailyMetrics={dailyMetrics} />
       )}
 
       {/* ─── History Tab ────────────────────────────────────────────── */}
@@ -371,7 +376,7 @@ function BracketStandings({ event }: { event: AllianceEventData }) {
   );
 }
 
-function DailyTasksCard({ tasks, allCompleted }: { tasks: DailyTask[]; allCompleted: boolean }) {
+function DailyTasksCard({ tasks, allCompleted, dailyMetrics }: { tasks: DailyTask[]; allCompleted: boolean; dailyMetrics?: Record<string, number> }) {
   const completedCount = tasks.filter(t => t.completed).length;
   const totalXP = tasks.reduce((sum, t) => sum + t.xpReward, 0);
 
@@ -387,30 +392,53 @@ function DailyTasksCard({ tasks, allCompleted }: { tasks: DailyTask[]; allComple
       </div>
 
       <div className="space-y-2 mb-3">
-        {tasks.map(task => (
-          <div
-            key={task.index}
-            className={`flex items-center justify-between py-2 px-3 rounded-lg border ${
-              task.completed
-                ? 'bg-green-500/5 border-green-500/20'
-                : 'bg-white/[0.02] border-white/[0.04]'
-            }`}
-          >
-            <div className="flex items-center gap-2">
-              <span className="text-sm">
-                {task.completed ? '✅' : '⬜'}
-              </span>
-              <span className={`text-xs ${task.completed ? 'text-green-300 line-through' : 'text-white'}`}>
-                {task.description}
-              </span>
+        {tasks.map(task => {
+          const currentValue = dailyMetrics?.[task.metric] || 0;
+          const progressPct = task.completed ? 100 : Math.min(100, (currentValue / task.target) * 100);
+
+          return (
+            <div
+              key={task.index}
+              className={`py-2 px-3 rounded-lg border ${
+                task.completed
+                  ? 'bg-green-500/5 border-green-500/20'
+                  : 'bg-white/[0.02] border-white/[0.04]'
+              }`}
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="text-sm">
+                    {task.completed ? '✅' : '⬜'}
+                  </span>
+                  <span className={`text-xs ${task.completed ? 'text-green-300 line-through' : 'text-white'}`}>
+                    {task.description}
+                  </span>
+                </div>
+                <span className={`text-[10px] font-mono font-bold ${
+                  task.completed ? 'text-green-400' : 'text-amber-300'
+                }`}>
+                  +{task.xpReward} XP
+                </span>
+              </div>
+              {!task.completed && (
+                <div className="mt-1.5 ml-7">
+                  <div className="flex items-center justify-between text-[9px] text-slate-500 mb-0.5">
+                    <span>{formatMetricValue(currentValue)} / {formatMetricValue(task.target)}</span>
+                    <span>{Math.round(progressPct)}%</span>
+                  </div>
+                  <div className="h-1 bg-white/[0.06] rounded-full overflow-hidden">
+                    <div
+                      className={`h-full rounded-full transition-all duration-500 ${
+                        progressPct >= 100 ? 'bg-green-500' : progressPct >= 50 ? 'bg-cyan-500' : 'bg-cyan-500/60'
+                      }`}
+                      style={{ width: `${progressPct}%` }}
+                    />
+                  </div>
+                </div>
+              )}
             </div>
-            <span className={`text-[10px] font-mono font-bold ${
-              task.completed ? 'text-green-400' : 'text-amber-300'
-            }`}>
-              +{task.xpReward} XP
-            </span>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {/* Completion bonus */}
@@ -481,6 +509,13 @@ function EventHistory({ history }: { history: EventHistoryItem[] }) {
 }
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
+
+function formatMetricValue(value: number): string {
+  if (value >= 1_000_000_000) return `${(value / 1_000_000_000).toFixed(1)}B`;
+  if (value >= 1_000_000) return `${(value / 1_000_000).toFixed(1)}M`;
+  if (value >= 10_000) return `${(value / 1_000).toFixed(1)}K`;
+  return value.toLocaleString();
+}
 
 function formatTimeRemaining(ms: number): string {
   if (ms <= 0) return 'Ended';

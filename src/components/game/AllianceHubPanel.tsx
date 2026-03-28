@@ -183,7 +183,7 @@ export default function AllianceHubPanel({ state }: AllianceHubPanelProps) {
 
       {/* Tab Content */}
       {activeTab === 'overview' && <AlliancePanel state={state} />}
-      {activeTab === 'events' && <AllianceEventsPanel />}
+      {activeTab === 'events' && <AllianceEventsPanel dailyMetrics={state.dailyMetrics as Record<string, number> | undefined} />}
       {activeTab === 'projects' && <AllianceProjectsPanel state={state} />}
       {activeTab === 'research' && <AllianceResearchPanel />}
       {activeTab === 'treasury' && <AllianceTreasuryPanel />}

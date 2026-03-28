@@ -228,6 +228,7 @@ export async function GET() {
       index: idx,
       id: task.id,
       description: task.description,
+      metric: task.metric,
       target: task.target,
       xpReward: task.xpReward,
       completed: completedIndices.has(idx),
