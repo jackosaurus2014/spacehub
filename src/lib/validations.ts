@@ -1871,8 +1871,8 @@ export const workerProfileSchema = z.object({
   hourlyRate: z.number().int().min(0).max(10000).optional().nullable(), // 0 = negotiable
   availability: z.enum(AVAILABILITY_TYPES).default('available'),
   workType: z.array(z.enum(WORK_TYPES)).min(1, 'At least one work type is required'),
-  linkedInUrl: z.string().url().max(500).optional().nullable(),
-  portfolioUrl: z.string().url().max(500).optional().nullable(),
+  linkedInUrl: z.preprocess(v => (typeof v === 'string' && v.trim() === '') ? null : v, z.string().url().max(500).nullable().optional()),
+  portfolioUrl: z.preprocess(v => (typeof v === 'string' && v.trim() === '') ? null : v, z.string().url().max(500).nullable().optional()),
   location: z.string().max(200).optional().nullable(),
   remoteOk: z.boolean().default(true),
   clearanceLevel: z.enum(CLEARANCE_LEVELS).optional().nullable(),
