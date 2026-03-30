@@ -19,12 +19,24 @@ interface LiveStream {
   launchName: string;
   scheduledTime: string;
   youtubeVideoId: string | null;
+  watchUrl: string | null;
+  youtubeWatchUrl: string | null;
   isLive: boolean;
   description: string;
   rocket: string;
   mission: string;
   launchSite: string;
 }
+
+/** Extract YouTube video ID from various URL formats */
+function extractYouTubeId(url: string | null | undefined): string | null {
+  if (!url) return null;
+  const match = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/live\/)([a-zA-Z0-9_-]{11})/);
+  return match ? match[1] : null;
+}
+
+/** NASA's official YouTube channel ID for fallback live embed */
+const NASA_LIVE_CHANNEL_ID = 'UCLA_DiR1FfKNvjuUpBHmylQ';
 
 interface StreamsData {
   streams: LiveStream[];
@@ -275,8 +287,6 @@ function LiveHubContent() {
                   <div className="text-2xl sm:text-3xl font-display font-bold text-transparent bg-clip-text bg-gradient-to-r from-slate-300 via-purple-400 to-pink-400">
                     {countdown}
                   </div>
-
-        <RelatedModules modules={PAGE_RELATIONS['live']} />
                 </div>
               </div>
             )}
@@ -284,7 +294,7 @@ function LiveHubContent() {
             {/* Video Embed */}
             {selectedStream ? (
               <StreamEmbed
-                youtubeVideoId={selectedStream.youtubeVideoId}
+                youtubeVideoId={extractYouTubeId(selectedStream.watchUrl || selectedStream.youtubeWatchUrl || selectedStream.youtubeVideoId)}
                 isLive={selectedStream.isLive}
                 scheduledTime={selectedStream.scheduledTime}
                 title={selectedStream.title}

@@ -52,8 +52,16 @@ export default function StreamEmbed({
     return () => clearInterval(interval);
   }, [scheduledTime]);
 
+  // NASA live channel fallback — embed their live stream when no specific video ID
+  const NASA_LIVE_CHANNEL = 'UCLA_DiR1FfKNvjuUpBHmylQ';
+  const embedId = youtubeVideoId || (isLive ? null : null);
+
   // If live and has video ID, show the embed
-  if (isLive && youtubeVideoId) {
+  if (isLive && (youtubeVideoId || true)) {
+    // Use specific video ID if available, otherwise embed NASA TV live channel
+    const embedSrc = youtubeVideoId
+      ? `https://www.youtube.com/embed/${youtubeVideoId}?autoplay=1&rel=0`
+      : `https://www.youtube.com/embed/live_stream?channel=${NASA_LIVE_CHANNEL}&autoplay=1`;
     return (
       <div className="relative w-full aspect-video bg-space-900 rounded-xl overflow-hidden border border-white/10 shadow-lg shadow-black/5">
         <div className="absolute top-4 left-4 z-10 flex items-center gap-2">
@@ -66,7 +74,7 @@ export default function StreamEmbed({
           </span>
         </div>
         <iframe
-          src={`https://www.youtube.com/embed/${youtubeVideoId}?autoplay=1&rel=0`}
+          src={embedSrc}
           title={title}
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
           allowFullScreen
