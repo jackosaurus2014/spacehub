@@ -663,6 +663,7 @@ export default function GigBoard() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...workerForm,
+          workType: workerForm.workTypes, // Schema expects workType (array), form uses workTypes
           experienceYears: workerForm.experienceYears ? parseInt(workerForm.experienceYears, 10) : 0,
           hourlyRate: workerForm.hourlyRate ? parseFloat(workerForm.hourlyRate) : 0,
         }),
