@@ -7,9 +7,8 @@ interface TalentCardProps {
   compact?: boolean;
 }
 
-function formatRate(rate: number | null): string {
-  if (!rate) return 'Contact for rates';
-  return `~$${rate}/hr`;
+function formatRate(): string {
+  return 'Contact consultant';
 }
 
 export default function TalentCard({ talent, compact = false }: TalentCardProps) {
@@ -43,8 +42,8 @@ export default function TalentCard({ talent, compact = false }: TalentCardProps)
             <p className="text-slate-400 text-xs truncate">{talent.title}</p>
             <p className="text-slate-400 text-xs">{talent.organization}</p>
           </div>
-          <span className={`text-xs px-2 py-0.5 rounded ${availabilityInfo.bgColor}/20 ${availabilityInfo.color}`}>
-            {availabilityInfo.label}
+          <span className="text-xs px-2 py-0.5 rounded bg-white/[0.06] text-slate-400">
+            Contact consultant
           </span>
         </div>
         <div className="flex items-center justify-between mt-3">
@@ -58,7 +57,7 @@ export default function TalentCard({ talent, compact = false }: TalentCardProps)
               );
             })}
           </div>
-          <span className="text-white/70 font-medium text-sm">{formatRate(talent.consultingRate)}</span>
+          <span className="text-slate-400 text-xs">Contact for rates</span>
         </div>
       </div>
     );
@@ -81,10 +80,10 @@ export default function TalentCard({ talent, compact = false }: TalentCardProps)
           <p className="text-slate-400 text-sm">{talent.organization}</p>
         </div>
         <div className="text-right">
-          <span className={`inline-block text-xs px-2 py-1 rounded ${availabilityInfo.bgColor}/20 ${availabilityInfo.color} mb-1`}>
-            {availabilityInfo.label}
+          <span className="inline-block text-xs px-2 py-1 rounded bg-white/[0.06] text-slate-400 mb-1">
+            Contact consultant
           </span>
-          <div className="text-white/70 font-bold text-lg">{formatRate(talent.consultingRate)}</div>
+          <div className="text-slate-400 text-sm">for availability &amp; rates</div>
         </div>
       </div>
 
@@ -116,7 +115,7 @@ export default function TalentCard({ talent, compact = false }: TalentCardProps)
           className="flex-1 bg-white hover:bg-white/[0.08] text-slate-900 text-sm font-medium py-2 px-4 rounded-lg transition-colors"
           onClick={() => window.location.href = `mailto:${talent.contactEmail}?subject=Consultation Request`}
         >
-          Book Consultation
+          Contact Consultant
         </button>
         {talent.linkedIn && (
           <a
