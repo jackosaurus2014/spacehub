@@ -30,4 +30,7 @@ Disallow: /widgets/
 Disallow: /community/profile
 Crawl-delay: 1
 
-Sitemap: https://spacenexus.us/sitemap.xml
+Sitemap: https://spacenexus.us/sitemap/0.xml
+Sitemap: https://spacenexus.us/sitemap/1.xml
+Sitemap: https://spacenexus.us/sitemap/2.xml
+Sitemap: https://spacenexus.us/sitemap/3.xml
