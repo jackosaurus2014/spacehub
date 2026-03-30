@@ -117,10 +117,24 @@ const WORK_TYPE_BADGE_COLORS: Record<GigWorkType, string> = {
 };
 
 const COMMON_SKILLS = [
+  // Engineering & Technical
   'Python', 'MATLAB', 'C++', 'Rust', 'Systems Engineering', 'Orbital Mechanics',
   'GNC', 'RF Engineering', 'Data Analysis', 'Machine Learning', 'Project Management',
   'Propulsion', 'Thermal Analysis', 'Structures', 'Avionics', 'Mission Planning',
   'Satellite Operations', 'Ground Systems', 'Space Policy', 'Technical Writing',
+  'Software Engineering', 'Embedded Systems', 'FPGA', 'Signal Processing', 'Robotics',
+  'Additive Manufacturing', 'CAD/CAM', 'Test Engineering', 'Quality Assurance',
+  // Professional Services
+  'Space Law', 'ITAR/EAR Compliance', 'Export Controls', 'Regulatory Affairs',
+  'Patent Law', 'IP Strategy', 'Government Contracts', 'FAR/DFARS',
+  'Accounting', 'Financial Analysis', 'Tax', 'Audit', 'Bookkeeping',
+  'CFO Services', 'Financial Modeling', 'Venture Capital', 'M&A Advisory',
+  'Business Development', 'Marketing', 'Communications', 'Public Relations',
+  'Graphic Design', 'UX/UI Design', 'Web Development', 'Branding',
+  'HR', 'Recruiting', 'Talent Acquisition', 'Executive Search',
+  'Supply Chain Management', 'Logistics', 'Procurement',
+  'Cybersecurity', 'CMMC Compliance', 'IT Infrastructure',
+  'Insurance', 'Risk Assessment', 'Safety Engineering',
 ];
 
 // ────────────────────────────────────────
@@ -274,7 +288,11 @@ function WorkerProfileCard({ profile }: { profile: WorkerProfile }) {
       <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-slate-400 mb-3">
         {profile.location && <span>{profile.location}</span>}
         {profile.experienceYears > 0 && <span>{profile.experienceYears} yr{profile.experienceYears !== 1 ? 's' : ''} exp</span>}
-        {profile.hourlyRate > 0 && <span className="text-emerald-400 font-medium">${profile.hourlyRate}/hr</span>}
+        {profile.hourlyRate != null && profile.hourlyRate > 0 ? (
+          <span className="text-emerald-400 font-medium">${profile.hourlyRate}/hr</span>
+        ) : (
+          <span className="text-slate-400 text-xs">Rate: Negotiable</span>
+        )}
         {profile.remoteOk && <span className="text-teal-400">Remote OK</span>}
       </div>
 
@@ -651,7 +669,8 @@ export default function GigBoard() {
       });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
-        throw new Error(data.error ?? 'Failed to save profile');
+        const msg = typeof data.error === 'string' ? data.error : data.error?.message ?? 'Failed to save profile';
+        throw new Error(msg);
       }
       setHasWorkerProfile(true);
       setProfileMessage('Profile saved successfully!');
@@ -675,7 +694,8 @@ export default function GigBoard() {
       });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
-        throw new Error(data.error ?? 'Failed to save employer profile');
+        const emsg = typeof data.error === 'string' ? data.error : data.error?.message ?? 'Failed to save employer profile';
+        throw new Error(emsg);
       }
       setIsEmployer(true);
       setEmployerMessage('Employer profile saved successfully!');
@@ -704,7 +724,8 @@ export default function GigBoard() {
       });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
-        throw new Error(data.error ?? 'Failed to post gig');
+        const gmsg = typeof data.error === 'string' ? data.error : data.error?.message ?? 'Failed to post gig';
+        throw new Error(gmsg);
       }
       const newGig = await res.json();
       setMyGigs(prev => [newGig, ...prev]);
@@ -1104,12 +1125,25 @@ export default function GigBoard() {
                       onChange={e => setWorkerForm(prev => ({ ...prev, experienceYears: e.target.value }))}
                       placeholder="5"
                     />
-                    <FormInput
-                      label="Hourly Rate ($)" name="wp-rate" type="number"
-                      value={workerForm.hourlyRate}
-                      onChange={e => setWorkerForm(prev => ({ ...prev, hourlyRate: e.target.value }))}
-                      placeholder="150"
-                    />
+                    <div>
+                      {workerForm.hourlyRate !== '0' && (
+                        <FormInput
+                          label="Hourly Rate ($)" name="wp-rate" type="number"
+                          value={workerForm.hourlyRate}
+                          onChange={e => setWorkerForm(prev => ({ ...prev, hourlyRate: e.target.value }))}
+                          placeholder="150"
+                        />
+                      )}
+                      <label className="flex items-center gap-2 mt-1.5 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={workerForm.hourlyRate === '0'}
+                          onChange={e => setWorkerForm(prev => ({ ...prev, hourlyRate: e.target.checked ? '0' : '' }))}
+                          className="rounded border-white/20 bg-white/[0.06]"
+                        />
+                        <span className="text-xs text-slate-400">Negotiable</span>
+                      </label>
+                    </div>
                     <FormSelect
                       label="Availability" name="wp-availability"
                       value={workerForm.availability}

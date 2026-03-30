@@ -1868,7 +1868,7 @@ export const workerProfileSchema = z.object({
   bio: z.string().max(5000).optional().nullable(),
   skills: z.array(z.string().min(1).max(50)).min(1, 'At least one skill is required').max(30),
   experienceYears: z.number().int().min(0).max(60).optional().nullable(),
-  hourlyRate: z.number().int().min(1).max(10000).optional().nullable(),
+  hourlyRate: z.number().int().min(0).max(10000).optional().nullable(), // 0 = negotiable
   availability: z.enum(AVAILABILITY_TYPES).default('available'),
   workType: z.array(z.enum(WORK_TYPES)).min(1, 'At least one work type is required'),
   linkedInUrl: z.string().url().max(500).optional().nullable(),
