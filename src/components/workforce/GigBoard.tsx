@@ -549,8 +549,10 @@ export default function GigBoard() {
       if (talentSearch) params.set('search', talentSearch);
       const res = await fetch(`/api/workforce/worker-profiles?${params.toString()}`);
       if (!res.ok) throw new Error('Failed to fetch worker profiles');
-      const data = await res.json();
-      setWorkers(Array.isArray(data) ? data : data.profiles ?? []);
+      const json = await res.json();
+      // API returns { success, data: { profiles, total, hasMore } }
+      const profiles = json?.data?.profiles ?? json?.profiles ?? (Array.isArray(json) ? json : []);
+      setWorkers(profiles);
     } catch (err) {
       clientLogger.error('Error fetching workers', { error: err instanceof Error ? err.message : String(err) });
       setWorkers([]);
