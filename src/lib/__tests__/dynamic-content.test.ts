@@ -589,8 +589,8 @@ describe('pruneRefreshLogs', () => {
 
     const call = mockDeleteMany.mock.calls[0][0];
     const cutoff = call.where.createdAt.lt as Date;
-    // cutoff should be approximately 30 days ago (within 5 seconds tolerance)
+    // cutoff should be approximately 30 days ago (within 2 hours tolerance to account for DST)
     const expectedCutoff = now - 30 * 24 * 60 * 60 * 1000;
-    expect(Math.abs(cutoff.getTime() - expectedCutoff)).toBeLessThan(5000);
+    expect(Math.abs(cutoff.getTime() - expectedCutoff)).toBeLessThan(2 * 60 * 60 * 1000);
   });
 });

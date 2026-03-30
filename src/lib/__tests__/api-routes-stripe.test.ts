@@ -371,12 +371,19 @@ describe('POST /api/stripe/checkout', () => {
         mode: 'subscription',
         customer: 'cus_existing789',
         line_items: [{ price: 'price_pro_monthly_test', quantity: 1 }],
-        success_url: 'https://spacenexus.us/pricing?success=true',
+        success_url: 'https://spacenexus.us/checkout/success?session_id={CHECKOUT_SESSION_ID}',
         cancel_url: 'https://spacenexus.us/pricing?canceled=true',
         allow_promotion_codes: true,
         metadata: expect.objectContaining({
           userId: 'user-1',
           tier: 'pro',
+        }),
+        subscription_data: expect.objectContaining({
+          metadata: expect.objectContaining({
+            userId: 'user-1',
+            tier: 'pro',
+          }),
+          trial_period_days: 14,
         }),
       })
     );
