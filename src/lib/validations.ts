@@ -1907,11 +1907,11 @@ export const employerProfileSchema = z.object({
   companyName: z.string().min(1, 'Company name is required').max(200).transform(v => v.trim()),
   companySlug: z.string().max(200).optional().nullable(),
   description: z.string().max(5000).optional().nullable(),
-  website: z.string().url().max(500).optional().nullable(),
+  website: z.preprocess(v => (typeof v === 'string' && v.trim() === '') ? null : v, z.string().url().max(500).nullable().optional()),
   industry: z.string().max(100).optional().nullable(),
   size: z.enum(COMPANY_SIZES).optional().nullable(),
   location: z.string().max(200).optional().nullable(),
-  logoUrl: z.string().url().max(500).optional().nullable(),
+  logoUrl: z.preprocess(v => (typeof v === 'string' && v.trim() === '') ? null : v, z.string().url().max(500).nullable().optional()),
 });
 
 export type WorkerProfileData = z.infer<typeof workerProfileSchema>;
