@@ -4,6 +4,9 @@ import { z } from 'zod';
  * Common validation schemas for SpaceNexus API
  */
 
+/** Strip HTML tags from user input to prevent stored XSS */
+const stripHtml = (v: string) => v.replace(/<[^>]*>/g, '');
+
 // Email validation
 export const emailSchema = z
   .string()
@@ -1863,9 +1866,9 @@ const CLEARANCE_LEVELS = ['none', 'secret', 'top_secret'] as const;
 const COMPANY_SIZES = ['startup', 'small', 'medium', 'large', 'enterprise'] as const;
 
 export const workerProfileSchema = z.object({
-  displayName: z.string().min(1, 'Display name is required').max(100).transform(v => v.trim()),
-  headline: z.string().min(1, 'Headline is required').max(200).transform(v => v.trim()),
-  bio: z.string().max(5000).optional().nullable(),
+  displayName: z.string().min(1, 'Display name is required').max(100).transform(v => stripHtml(v.trim())),
+  headline: z.string().min(1, 'Headline is required').max(200).transform(v => stripHtml(v.trim())),
+  bio: z.string().max(5000).transform(v => stripHtml(v)).optional().nullable(),
   skills: z.array(z.string().min(1).max(50)).min(1, 'At least one skill is required').max(30),
   experienceYears: z.number().int().min(0).max(60).optional().nullable(),
   hourlyRate: z.number().int().min(0).max(10000).optional().nullable(), // 0 = negotiable
@@ -1880,8 +1883,8 @@ export const workerProfileSchema = z.object({
 });
 
 export const gigOpportunitySchema = z.object({
-  title: z.string().min(1, 'Title is required').max(200).transform(v => v.trim()),
-  description: z.string().min(10, 'Description must be at least 10 characters').max(10000).transform(v => v.trim()),
+  title: z.string().min(1, 'Title is required').max(200).transform(v => stripHtml(v.trim())),
+  description: z.string().min(10, 'Description must be at least 10 characters').max(10000).transform(v => stripHtml(v.trim())),
   category: z.enum(GIG_CATEGORIES),
   skills: z.array(z.string().min(1).max(50)).min(1, 'At least one skill is required').max(30),
   workType: z.enum(WORK_TYPES),
@@ -1904,9 +1907,9 @@ export const gigOpportunitySchema = z.object({
 );
 
 export const employerProfileSchema = z.object({
-  companyName: z.string().min(1, 'Company name is required').max(200).transform(v => v.trim()),
+  companyName: z.string().min(1, 'Company name is required').max(200).transform(v => stripHtml(v.trim())),
   companySlug: z.string().max(200).optional().nullable(),
-  description: z.string().max(5000).optional().nullable(),
+  description: z.string().max(5000).transform(v => stripHtml(v)).optional().nullable(),
   website: z.preprocess(v => (typeof v === 'string' && v.trim() === '') ? null : v, z.string().url().max(500).nullable().optional()),
   industry: z.string().max(100).optional().nullable(),
   size: z.enum(COMPANY_SIZES).optional().nullable(),

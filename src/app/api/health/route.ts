@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
 
 export const dynamic = 'force-dynamic';
@@ -31,9 +32,37 @@ export async function GET(request: Request) {
   // Ensure cron scheduler is running (fallback for Railway)
   await ensureCronStarted();
 
+  const checks: Record<string, { status: 'ok' | 'error'; latencyMs?: number; error?: string }> = {};
+
+  // 1. Database connection
+  const dbStart = Date.now();
+  try {
+    await prisma.$queryRaw`SELECT 1`;
+    checks.database = { status: 'ok', latencyMs: Date.now() - dbStart };
+  } catch (err) {
+    checks.database = { status: 'error', latencyMs: Date.now() - dbStart, error: err instanceof Error ? err.message : 'Unknown' };
+  }
+
+  // 2. Memory usage
+  const mem = process.memoryUsage();
+  const heapUsedMB = Math.round(mem.heapUsed / 1024 / 1024);
+  const heapTotalMB = Math.round(mem.heapTotal / 1024 / 1024);
+  checks.memory = {
+    status: heapUsedMB < heapTotalMB * 0.9 ? 'ok' : 'error',
+    latencyMs: heapUsedMB,
+  };
+
+  // 3. Uptime
+  checks.uptime = { status: 'ok', latencyMs: Math.round(process.uptime()) };
+
+  // Overall status
+  const allOk = Object.values(checks).every(c => c.status === 'ok');
+
   const response: Record<string, unknown> = {
-    status: 'ok',
+    status: allOk ? 'healthy' : 'degraded',
     timestamp: new Date().toISOString(),
+    version: process.env.npm_package_version || 'unknown',
+    checks,
   };
 
   if (detailed) {
@@ -61,5 +90,5 @@ export async function GET(request: Request) {
     }
   }
 
-  return NextResponse.json(response);
+  return NextResponse.json(response, { status: allOk ? 200 : 503 });
 }

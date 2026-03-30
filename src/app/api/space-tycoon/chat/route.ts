@@ -85,7 +85,7 @@ export async function POST(request: NextRequest) {
       id: crypto.randomUUID(),
       userId,
       companyName: typeof companyName === 'string' && companyName.trim()
-        ? companyName.trim().slice(0, 50)
+        ? companyName.trim().replace(/<[^>]*>/g, '').slice(0, 50)
         : 'Anonymous',
       message: clean,
       timestamp: Date.now(),

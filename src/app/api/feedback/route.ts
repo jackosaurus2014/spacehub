@@ -13,7 +13,7 @@ import {
 
 const feedbackSchema = z.object({
   score: z.number().int().min(0).max(10),
-  comment: z.string().max(2000).optional(),
+  comment: z.string().max(2000).transform(v => v.replace(/<[^>]*>/g, '')).optional(),
   pageUrl: z.string().max(500).optional(),
 });
 
