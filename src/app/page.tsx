@@ -253,20 +253,20 @@ export default async function HomePage() {
               </div>
             </Link>
             <Link
-              href="/blog/nasa-moon-base-commercial-space-implications"
-              className="group rounded-xl border border-white/[0.08] bg-white/[0.03] hover:bg-white/[0.06] hover:border-cyan-500/20 transition-all duration-300 overflow-hidden"
+              href="/blog/nasa-ignition-rfi-guide-how-space-companies-should-respond"
+              className="group rounded-xl border border-white/[0.08] bg-white/[0.03] hover:bg-white/[0.06] hover:border-amber-500/20 transition-all duration-300 overflow-hidden"
             >
               <div className="relative h-40 overflow-hidden">
-                <Image src="/art/hero-space-operations.png" alt="" fill sizes="(max-width: 768px) 100vw, 33vw" loading="lazy" className="object-cover opacity-40 group-hover:opacity-50 group-hover:scale-105 transition-all duration-500" />
+                <Image src="/art/hero-business-ops.png" alt="" fill sizes="(max-width: 768px) 100vw, 33vw" loading="lazy" className="object-cover opacity-40 group-hover:opacity-50 group-hover:scale-105 transition-all duration-500" />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#09090b] via-[#09090b]/60 to-transparent" />
                 <div className="absolute bottom-3 left-4 right-4">
-                  <span className="text-[9px] px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 font-bold uppercase tracking-wider">Market</span>
+                  <span className="text-[9px] px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 font-bold uppercase tracking-wider">RFI Guide</span>
                 </div>
               </div>
               <div className="p-4">
-                <h3 className="text-white text-sm font-bold mb-1.5 group-hover:text-cyan-300 transition-colors line-clamp-2">NASA&apos;s Moon Base Changes Everything for Commercial Space Companies</h3>
-                <p className="text-slate-400 text-xs line-clamp-2 mb-2">The $20 billion Ignition initiative isn&apos;t just a NASA program &mdash; it&apos;s the biggest commercial space catalyst since the Commercial Crew Program.</p>
-                <span className="text-[10px] text-slate-400">7 min read</span>
+                <h3 className="text-white text-sm font-bold mb-1.5 group-hover:text-amber-300 transition-colors line-clamp-2">NASA Just Dropped Multiple RFIs for the Moon Base. Here&apos;s What You Need to Know.</h3>
+                <p className="text-slate-400 text-xs line-clamp-2 mb-2">6 procurement opportunities from the Ignition event. CLPS 2.0, $6B transportation contracts, science payloads, and how to respond.</p>
+                <span className="text-[10px] text-slate-400">12 min read</span>
               </div>
             </Link>
             <Link

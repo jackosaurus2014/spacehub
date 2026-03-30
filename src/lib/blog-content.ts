@@ -239,6 +239,308 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
     ],
   },
   {
+    slug: 'nasa-ignition-rfi-guide-how-space-companies-should-respond',
+    title: 'NASA Just Dropped Multiple RFIs for the Moon Base. Here\'s What Space Companies Need to Know.',
+    excerpt: 'NASA announced at least five major RFIs and solicitations during the Ignition event — from a Moon Base Capabilities RFI to CLPS 2.0 to commercial human lunar transportation beyond Artemis 5. Here is every opportunity, what NASA is looking for, and how to respond.',
+    category: 'guide' as BlogCategory,
+    author: 'SpaceNexus Team',
+    authorRole: 'Editorial',
+    publishedAt: '2026-03-30T00:00:00Z',
+    readingTime: 12,
+    featured: true,
+    keywords: ['NASA RFI', 'NASA moon base RFI', 'NASA solicitation', 'CLPS 2.0', 'NASA procurement', 'NASA ignition RFI', 'moon base contracts', 'NASA lunar transportation RFI'],
+    content: `
+<p>When NASA Administrator Jared Isaacman unveiled Project Ignition on March 24, 2026, the headlines focused on the $20 billion price tag and the Gateway cancellation. What got less attention — but matters far more to the companies that will actually build this thing — is the <strong>wave of procurement actions</strong> NASA announced alongside the vision. Multiple Requests for Information (RFIs), new solicitations, and restructured procurements were either released during the event or announced as imminent.</p>
+
+<p>If you run a space company, manage a business development team at a defense prime, or lead a startup trying to break into lunar infrastructure, this is the article you need to read. Here is every procurement opportunity that came out of the Ignition event, what NASA is signaling it wants, and how to position your company to respond.</p>
+
+<h2 id="what-was-announced">What Was Announced: The Complete List</h2>
+
+<p>The Ignition event produced at least five distinct procurement actions, each targeting a different segment of the lunar architecture:</p>
+
+<ol>
+<li><strong>Moon Base Capabilities RFI</strong> — A broad request seeking industry input on supply chain readiness, manufacturing capacity, facilities access, and technology maturation for the lunar base program</li>
+<li><strong>Commercial Human Lunar Transportation RFI</strong> — Seeking proposals for crewed lunar landing services beyond Artemis 5, with a $6 billion cap over a 10-year ordering period and a requirement for at least two launch providers</li>
+<li><strong>CLPS 2.0 Solicitation</strong> — A restructured and expanded Commercial Lunar Payload Services program with new task orders, an expanded provider pool, and a phased approach</li>
+<li><strong>Lunar Terrain Vehicle (LTV) Procurement Restructuring</strong> — A shift from one large 10-year contract to incremental capability buys</li>
+<li><strong>Nuclear Heating/Power RFI</strong> — Incentivizing radioisotope heater unit (RHU) and radioisotope thermoelectric generator (RTG) technology on commercial landers</li>
+<li><strong>Lunar Science and Technology Payloads RFI</strong> — Released via <a href="https://nspires.nasaprs.com">NSPIRES</a>, this RFI seeks ready-to-fly and medium-term science instruments and technology demonstrations for the dramatically expanded 2027-2028 CLPS landing manifest. Open to industry, academia, non-profits, government labs, and international partners (excluding entities with bilateral ties to China). With up to 30 robotic landings starting in 2027, NASA needs payloads for rovers, hoppers, drones, and surface landers — creating opportunities for universities, startups, and established payload providers alike.</li>
+</ol>
+
+<p>Each of these represents a separate entry point into the Ignition program. Some are massive (the transportation RFI covers $6 billion in potential orders). Others are narrower but still represent significant new business for organizations of all sizes — the Science and Technology Payloads RFI specifically targets researchers and small companies that have instruments ready to fly. Let us break each one down.</p>
+
+<h2 id="moon-base-capabilities-rfi">1. The Moon Base Capabilities RFI</h2>
+
+<p>This is the broadest and potentially most consequential RFI from the Ignition event. NASA is asking industry a fundamental question: <strong>what do you need from us, and what can you deliver?</strong></p>
+
+<p>During the Ignition announcement, Administrator Isaacman framed it directly: <em>&quot;What can we do better? What&apos;s slowing you down? What are things that could turn your capability to enable us to turn science fiction into reality?&quot;</em></p>
+
+<p>That is not standard government procurement language. It is an open invitation to reshape how NASA works with industry on the Moon base program. The RFI covers four major categories:</p>
+
+<ul>
+<li><strong>Supply chain readiness:</strong> NASA wants to know where the bottlenecks are. Which critical components have single-source suppliers? Where are lead times too long? What materials or subsystems are at risk?</li>
+<li><strong>Manufacturing capacity:</strong> Can the existing industrial base produce lunar hardware at the cadence Ignition demands? NASA is planning near-monthly CLPS deliveries. That requires landers, instruments, rovers, and support hardware at a production rate the industry has never sustained.</li>
+<li><strong>Facilities access:</strong> Do companies have the testing, integration, and launch facilities they need? Are there bottlenecks at thermal vacuum chambers, vibration tables, or clean rooms? Does the industry need NASA to open its own facilities more broadly?</li>
+<li><strong>Technology maturation:</strong> Which technologies are close to flight-ready but need one more development cycle? Where could a targeted NASA investment unlock a capability that the private sector cannot fund alone?</li>
+</ul>
+
+<p>If you have opinions on any of these topics — and if you work in the space industry, you do — this is your chance to put them on the record. RFI responses do not commit you to anything, but they put you on NASA&apos;s radar and shape how the program is structured.</p>
+
+<h2 id="commercial-lunar-transportation-rfi">2. Commercial Human Lunar Transportation RFI</h2>
+
+<p>This is the big one for launch providers and human spaceflight companies. NASA announced a new competitive solicitation for <strong>crewed lunar landing services beyond Artemis 5</strong>.</p>
+
+<p>The key parameters:</p>
+
+<ul>
+<li><strong>$6 billion cap</strong> over a 10-year ordering period</li>
+<li><strong>At least two launch providers</strong> — NASA explicitly stated it intends to work with no fewer than two providers for redundancy and competition</li>
+<li><strong>Crewed landings every six months</strong> — This is the sustained demand signal. Not one mission every two years. A landing every six months for a decade.</li>
+<li><strong>New entrants welcome</strong> — NASA indicated it is open to companies beyond the current SpaceX and Blue Origin HLS contract holders</li>
+</ul>
+
+<p>The math here is extraordinary. A $6 billion cap over 10 years, with landings every six months, means roughly 20 crewed landings at approximately $300 million each. For any company that can deliver a reliable human-rated lunar lander, this is the most sustained demand signal in the history of commercial spaceflight.</p>
+
+<p>SpaceX and Blue Origin are the obvious incumbents, but NASA&apos;s emphasis on &quot;no fewer than two providers&quot; and openness to new entrants suggests the agency wants more competition. Companies developing heavy-lift vehicles or lunar lander architectures should pay close attention.</p>
+
+<h2 id="clps-2-expansion">3. CLPS 2.0: The Conveyor Belt to the Moon</h2>
+
+<p>NASA is restructuring and dramatically expanding the Commercial Lunar Payload Services program. The original CLPS was an innovative but modest program — a handful of commercial landers delivering NASA instruments. Under Ignition, CLPS becomes the logistics backbone of the entire base-building effort.</p>
+
+<p>The CLPS 2.0 structure has two phases of procurement:</p>
+
+<ul>
+<li><strong>Phase 1 task orders:</strong> Two new RFPs for task orders are being released to the existing CLPS provider pool (Intuitive Machines, Astrobotic, Firefly Aerospace, Draper, and others). These task orders cover the initial wave of robotic deliveries to the south pole.</li>
+<li><strong>Phase 2-3 follow-on solicitation:</strong> A separate solicitation will expand the CLPS provider pool, bringing in new companies that can meet the escalating delivery cadence. This is designed to ensure NASA has enough providers to sustain near-monthly landings.</li>
+</ul>
+
+<p>The Phase 1 budget alone is approximately <strong>$10 billion</strong> — half of the entire Ignition funding. That is an enormous amount of commercial delivery services. For current CLPS providers, this transforms the program from a series of one-off missions to a sustained revenue stream. For companies not yet in the CLPS pool, the Phase 2-3 solicitation is your entry point.</p>
+
+<p>The target is 25 launches and 21 landings by 2028. That is not experimental. That is operational logistics.</p>
+
+<h2 id="ltv-procurement-pivot">4. LTV Procurement Pivot</h2>
+
+<p>The Lunar Terrain Vehicle (LTV) procurement tells an important story about how NASA is thinking about Ignition acquisitions differently than previous programs.</p>
+
+<p>Originally, NASA planned to award <strong>one large 10-year contract</strong> for a lunar rover. Under Ignition, that approach has been scrapped in favor of <strong>incremental capability buys</strong>. Instead of committing to one vendor for a decade, NASA will issue smaller contracts for specific capabilities — mobility, life support integration, power systems, cargo hauling — and build up the rover capability over time.</p>
+
+<p>This is significant for two reasons. First, it lowers the barrier to entry. A small company with excellent electric motor technology does not need to build an entire rover to compete. Second, it lets NASA incorporate technology advances as they happen rather than locking in 2026 technology for a 2036 rover.</p>
+
+<p>Companies with relevant ground vehicle, robotics, autonomous navigation, or mobility technology should watch the LTV procurement closely. The restructuring opens doors that the previous monolithic contract would have kept shut.</p>
+
+<h2 id="nuclear-technology-opportunities">5. Nuclear Technology Opportunities</h2>
+
+<p>One of the most technically significant announcements from the Ignition event was NASA&apos;s decision to <strong>actively incentivize nuclear heating and power technology on commercial landers</strong>.</p>
+
+<p>The lunar south pole presents a severe thermal challenge. During the two-week lunar night, surface temperatures plunge below minus 280 degrees Fahrenheit. Electronic systems, batteries, and scientific instruments must be kept warm to survive. The conventional approach — electric heaters powered by batteries — is heavy and limits mission duration.</p>
+
+<p>NASA is now pushing for <strong>radioisotope heater units (RHUs)</strong> and potentially <strong>radioisotope thermoelectric generators (RTGs)</strong> on commercial landers. The agency indicated it is open to any heating or power survival technology that enables landers and surface assets to survive the lunar night.</p>
+
+<p>This is an RFI, not a contract, but the signal is clear: NASA will pay for nuclear technology on the Moon. Companies developing compact nuclear power systems, radioisotope heating, or alternative lunar night survival technologies have a new customer.</p>
+
+<p>Separately, NASA announced that <strong>Space Reactor 1 Freedom</strong> — a nuclear electric propulsion spacecraft — will launch to Mars by the end of 2028, further demonstrating the agency&apos;s commitment to nuclear technology in space. The nuclear supply chain needed for both SR-1 and lunar surface systems represents a significant market opportunity.</p>
+
+<h2 id="science-technology-payloads-rfi">6. Lunar Science and Technology Payloads RFI</h2>
+
+<p>This is the opportunity many smaller organizations and universities have been waiting for. Released via <a href="https://nspires.nasaprs.com">NSPIRES</a> on March 24, the <strong>Lunar Science and Technology Payloads for Expanded Lunar Landing Opportunities RFI</strong> specifically targets the dramatically expanded 2027-2028 CLPS landing manifest.</p>
+
+<p>With NASA planning up to <strong>30 robotic landings starting in 2027</strong>, there are far more payload slots available than current demand fills. NASA is actively seeking:</p>
+
+<ul>
+<li><strong>Ready-to-fly instruments</strong> that can be manifested on near-term CLPS missions</li>
+<li><strong>Medium-term payloads</strong> requiring 1-2 years of development for later missions</li>
+<li><strong>Technology demonstrations</strong> relevant to lunar surface operations, ISRU, power, communications, or mobility</li>
+<li><strong>Science instruments</strong> supporting geology, volatile prospecting, space weather monitoring, or astrophysics from the lunar surface</li>
+</ul>
+
+<p>Eligible respondents include <strong>industry, academia, non-profits, government laboratories, and international partners</strong> — with the exception of entities with bilateral ties to China. This broad eligibility means university research groups, small payload companies, and international collaborators all have a path in.</p>
+
+<p>The payloads will ride on various delivery platforms including standard CLPS landers, rovers, hoppers, and the new Moonfall drones. Mass and volume constraints vary by delivery vehicle, but the RFI is designed to capture the full range of possibilities before NASA issues specific task orders.</p>
+
+<p>For researchers and small companies, this may be the most accessible entry point into the Ignition program. You do not need to build a lander or win a prime contract — you need a payload that advances NASA&apos;s science or technology goals and can survive delivery to the lunar surface.</p>
+
+<h2 id="how-to-respond">How to Respond: A Step-by-Step Guide</h2>
+
+<p>If any of these opportunities are relevant to your company, here is how to act:</p>
+
+<h3>Step 1: Register on SAM.gov and NSPIRES</h3>
+<p>Every company seeking federal contracts must be registered in the <strong>System for Award Management (SAM.gov)</strong>. If you are not already registered, start now — the process takes several weeks. You cannot bid on any NASA solicitation without an active SAM registration. For the Science and Technology Payloads RFI specifically, you will also need a <strong>NSPIRES account</strong> at <a href="https://nspires.nasaprs.com">nspires.nasaprs.com</a>, which is NASA&apos;s system for research solicitations. For a detailed walkthrough of SAM.gov, see our <a href="/blog/sam-gov-to-space-government-contracts-guide">SAM.gov guide for space companies</a>.</p>
+
+<h3>Step 2: Check the Ignition Page</h3>
+<p>NASA has published a dedicated page at <strong>nasa.gov/ignition</strong> with links to all active RFIs, solicitation timelines, and program information. Bookmark it and check it regularly. RFI deadlines are typically 30-60 days from release.</p>
+
+<h3>Step 3: Attend Breakout Sessions</h3>
+<p>NASA announced breakout sessions and industry days associated with the Ignition RFIs. These sessions provide direct access to program managers and contracting officers. They are where you learn what NASA actually wants versus what the formal RFI language says. Attendance is typically free but requires registration.</p>
+
+<h3>Step 4: Submit Through the RFI Portal</h3>
+<p>RFI responses are submitted electronically through the NASA Solicitation and Proposal Integrated Review and Evaluation System (NSPIRES) or through SAM.gov, depending on the specific action. Read the submission instructions carefully — format and page limits vary.</p>
+
+<h3>Step 5: Build Relationships</h3>
+<p>Government procurement runs on relationships. Attend industry conferences, participate in NASA-sponsored events, and engage with contracting officers during open periods. The companies that win contracts are the ones NASA already knows and trusts. Use our <a href="/space-talent?tab=gigs">Space Talent Hub</a> to find professionals with NASA procurement experience.</p>
+
+<h2 id="what-nasa-wants">What NASA Is Really Looking For</h2>
+
+<p>Behind the formal procurement language, the Ignition event revealed specific themes about what NASA values in its commercial partners. Companies that align with these priorities will have a significant advantage:</p>
+
+<ul>
+<li><strong>Mission reliability above all else:</strong> NASA made clear that schedule and budget performance will be scrutinized closely. Administrator Isaacman used pointed language about accountability, stating that companies should expect uncomfortable consequences if schedules slip or budgets are exceeded. This is a departure from the more accommodating posture of recent years.</li>
+<li><strong>Supply chain readiness:</strong> NASA is worried about single points of failure in the industrial base. Companies that can demonstrate robust, redundant supply chains — multiple qualified sources for critical components, domestic manufacturing where possible — will score well.</li>
+<li><strong>NASA workforce embedding:</strong> One of the most notable statements was that NASA intends to embed subject matter experts at contractor facilities across the supply chain. Administrator Isaacman stated: <em>&quot;We will embed NASA subject matter experts across the supply chain attached to every vendor, subcontractor and every part on the critical path.&quot;</em> Companies should be prepared to host NASA engineers and accept direct oversight of their production processes.</li>
+<li><strong>Manufacturing scale:</strong> The near-monthly CLPS cadence and crewed-landing-every-six-months tempo require manufacturing throughput the industry has not yet demonstrated. Companies that can show they can scale production — not just build one flight unit — will stand out.</li>
+<li><strong>Willingness to accept NASA oversight:</strong> This is a cultural shift. The commercial space era was built on NASA stepping back and buying services. Ignition is NASA stepping forward again — buying services but with much tighter oversight. Companies that resist embedded NASA staff or transparent reporting will not thrive in this environment.</li>
+</ul>
+
+<h2 id="the-20b-signal">The $20 Billion Signal</h2>
+
+<p>Step back and look at the full picture. Phase 1 is approximately $10 billion. Phase 3 adds roughly $10 billion more. The commercial lunar transportation RFI adds another $6 billion cap. Combined with existing Artemis contracts (SpaceX HLS, Blue Origin Sustaining Lander, Orion, SLS), the total procurement flowing through the Ignition architecture approaches <strong>$50 billion or more</strong> over the next decade.</p>
+
+<p>This is not a study. This is not a concept. These are real procurements with real money and real deadlines. The RFIs released during the Ignition event are the first wave. More will follow as each phase matures.</p>
+
+<p>For companies positioned to respond, this is the largest sustained procurement opportunity in the history of the commercial space industry. For companies that wait, the provider pools and contract vehicles will be established without them.</p>
+
+<p>The window is open. The RFIs are live. Act accordingly.</p>
+
+<p>For current NASA and DoD solicitations, visit our <a href="/procurement">Procurement Intelligence page</a>. For job opportunities on Ignition-related programs, check our <a href="/space-talent?tab=gigs">Space Talent Hub</a>.</p>
+
+<p><strong>Track Project Ignition live:</strong> Visit our <a href="/ignition">Ignition Tracker</a> for real-time milestones, contract tracking, and company involvement.</p>
+`,
+    faqItems: [
+      { question: 'How do I respond to a NASA RFI?', answer: 'Register on SAM.gov (required for all federal contracting), check nasa.gov/ignition for active RFIs, and submit your response electronically through NSPIRES or SAM.gov depending on the specific solicitation. RFI responses typically have 30-60 day deadlines and specific format and page limit requirements. Attending NASA-hosted breakout sessions and industry days is also strongly recommended.' },
+      { question: 'What is NASA looking for in Ignition partners?', answer: 'NASA is prioritizing mission reliability, supply chain readiness (robust and redundant sourcing), manufacturing scale (ability to produce hardware at near-monthly cadence), willingness to accept embedded NASA oversight at contractor facilities, and demonstrated ability to hold schedule and budget. Companies should be prepared for direct NASA involvement across their supply chain.' },
+      { question: 'What are the CLPS 2.0 requirements?', answer: 'CLPS 2.0 has two procurement phases. Phase 1 issues new task orders to existing CLPS providers (Intuitive Machines, Astrobotic, Firefly Aerospace, Draper, and others) for robotic deliveries to the south pole. Phase 2-3 is a follow-on solicitation that expands the provider pool to bring in new companies. The target is 25 launches and 21 landings by 2028, with Phase 1 budget alone approximately $10 billion.' },
+      { question: 'How much is the NASA commercial lunar transportation contract worth?', answer: 'The Commercial Human Lunar Transportation RFI covers a $6 billion cap over a 10-year ordering period, targeting crewed lunar landings every six months beyond Artemis 5. NASA intends to work with no fewer than two launch providers and is open to new entrants beyond the current SpaceX and Blue Origin HLS contract holders.' },
+      { question: 'Can small companies compete for Ignition contracts?', answer: 'Yes. The LTV procurement restructuring specifically broke a single 10-year contract into incremental capability buys, lowering the barrier to entry for smaller firms. NASA\'s SBIR/STTR programs fund early-stage technology development. The CLPS 2.0 Phase 2-3 solicitation will expand the provider pool. Small companies can also subcontract with prime contractors, who must meet small business subcontracting goals on major NASA contracts.' },
+    ],
+  },
+  {
+    slug: 'top-5-things-space-ceos-need-to-know-nasa-ignition',
+    title: 'Top 5 Things Every Space CEO Needs to Know About NASA\'s Ignition Announcement',
+    excerpt: 'NASA\'s Ignition event was not just a vision statement — it was a procurement signal, a management philosophy, and a market reshaping event. Here are the five things every space industry executive needs to understand right now.',
+    category: 'analysis' as BlogCategory,
+    author: 'SpaceNexus Team',
+    authorRole: 'Editorial',
+    publishedAt: '2026-03-30T00:00:00Z',
+    readingTime: 10,
+    featured: true,
+    keywords: ['NASA ignition CEO', 'space industry impact', 'NASA commercial partnerships', 'space business strategy', 'NASA moon base business', 'CLPS commercial', 'NASA accountability'],
+    content: `
+<p>If you lead a space company — whether you are a prime contractor CEO, a startup founder, or a VP of business development at a mid-tier supplier — NASA&apos;s Ignition announcement on March 24, 2026 changed your strategic landscape. Not eventually. Immediately.</p>
+
+<p>Most of the coverage has focused on the $20 billion headline and the Gateway cancellation. That matters, but it misses what makes this announcement operationally different from every NASA initiative of the last two decades. Here are the five things that should be on every space CEO&apos;s whiteboard this week.</p>
+
+<h2 id="nasa-embedding-staff">1. NASA Is Embedding Staff at Your Facility</h2>
+
+<p>This is the single most important operational change in the Ignition announcement, and it has received almost no media attention.</p>
+
+<p>Administrator Isaacman stated it plainly: <em>&quot;We will embed NASA subject matter experts across the supply chain attached to every vendor, subcontractor and every part on the critical path.&quot;</em></p>
+
+<p>Read that again. Not &quot;at prime contractor facilities.&quot; At <strong>every vendor</strong> and <strong>every subcontractor</strong> on the critical path. If you make valves for propulsion systems, or avionics boards for landers, or thermal management components for habitats — and your part is on the critical path — expect a NASA engineer with a badge at your facility.</p>
+
+<p>Isaacman went further: <em>&quot;Expect uncomfortable action if schedules slip or budgets are exceeded.&quot;</em></p>
+
+<p>This is a fundamental departure from the commercial space model that has defined NASA&apos;s relationship with industry since the Commercial Crew Program began. The previous posture was: NASA buys a service, the company delivers it, NASA does not micromanage. Ignition is NASA buying a service <strong>and</strong> standing in the factory while it is built.</p>
+
+<p><strong>What this means for your company:</strong></p>
+
+<ul>
+<li>Your production floor, your quality systems, your schedule tracking, and your supply chain management will be visible to NASA in real time</li>
+<li>Schedule slips and cost overruns will have consequences — not just awkward program reviews, but potentially contract restructuring or recompetes</li>
+<li>Companies that have been running lean on documentation, quality assurance, or configuration management need to get their house in order before the embedded staff arrive</li>
+<li>The upside: companies that welcome this transparency and perform well will build trust that translates directly into contract extensions and new awards</li>
+</ul>
+
+<p>If your production processes cannot withstand a NASA engineer watching every step, fix that before you bid on Ignition work.</p>
+
+<h2 id="gateway-dead-surface-everything">2. Gateway Is Dead. Surface Is Everything.</h2>
+
+<p>NASA announced it will pause the Lunar Gateway — the planned orbiting station around the Moon — and redirect approximately $20 billion to the lunar surface. Every dollar and every kilogram previously allocated to an orbital facility is now going to the ground.</p>
+
+<p>This is not a budget reallocation. It is a <strong>strategic reorientation of the entire program</strong>. The Gateway modules already under construction — Northrop Grumman&apos;s HALO and ESA&apos;s I-Hab — will be repurposed for surface deployment rather than assembled in orbit.</p>
+
+<p><strong>What this means for your company:</strong></p>
+
+<ul>
+<li>If your business plan, your technology roadmap, or your contract pipeline depends on Gateway, you need a new plan. Gateway as originally conceived is not happening.</li>
+<li>If you build surface systems — habitats, power, mobility, construction, ISRU, life support — your addressable market just expanded dramatically</li>
+<li>Companies that were subcontractors on Gateway work should immediately explore how their hardware can be adapted for surface deployment. NASA is actively looking for this kind of thinking.</li>
+<li>The surface-first approach changes the engineering requirements. Lunar surface thermal management, dust mitigation, regolith interaction, and radiation shielding are now the critical design drivers — not orbital debris protection or microgravity operations.</li>
+</ul>
+
+<p>The entire industry&apos;s center of gravity just shifted from orbit to the surface. Reorient accordingly.</p>
+
+<h2 id="crewed-landings-demand-signal">3. Crewed Landings Every 6 Months, With 2+ Providers</h2>
+
+<p>Beyond Artemis 5, NASA announced a new competitive solicitation for commercial human lunar transportation with a <strong>$6 billion cap over a 10-year ordering period</strong>. The agency stated it intends to work with <strong>no fewer than two launch providers</strong> for crewed landings at a cadence of approximately every six months.</p>
+
+<p>Let those numbers sink in. Twenty crewed lunar landings over a decade. Two or more providers sharing the work. A $6 billion procurement vehicle. New entrants welcome.</p>
+
+<p>This is, by a wide margin, <strong>the biggest sustained demand signal in the history of commercial human spaceflight</strong>. The Commercial Crew Program — which transformed the industry — covered a handful of missions per year to low Earth orbit. This is crewed missions to the Moon, twice a year, for a decade.</p>
+
+<p><strong>What this means for your company:</strong></p>
+
+<ul>
+<li>If you are developing a heavy-lift launch vehicle or a human-rated lander architecture, this is your market. The solicitation is designed for more than two providers — NASA wants competition and redundancy.</li>
+<li>If you are a component or subsystem supplier to SpaceX or Blue Origin, your order book is about to grow. Two landings per year means sustained production, not one-off builds.</li>
+<li>If you are an investor, this changes the revenue model for every company in the crewed lunar landing supply chain from speculative to contractual.</li>
+<li>The &quot;new entrants welcome&quot; signal is deliberate. NASA does not want to be dependent on two providers. A credible third or fourth entrant would be strategically valuable to the agency.</li>
+</ul>
+
+<h2 id="clps-conveyor-belt">4. CLPS Is Becoming a Conveyor Belt</h2>
+
+<p>The Commercial Lunar Payload Services program is being transformed from a series of experimental missions into an <strong>operational logistics system</strong>. The numbers from the Ignition event tell the story: 25 launches, 21 landings, all by 2028. Phase 1 alone is backed by approximately $10 billion in funding.</p>
+
+<p>CLPS 2.0 introduces a restructured procurement with new task orders for existing providers and a follow-on solicitation that expands the provider pool. NASA is not adding a few more missions to the existing program. It is building a <strong>conveyor belt to the Moon</strong>.</p>
+
+<p><strong>What this means for your company:</strong></p>
+
+<ul>
+<li>For current CLPS providers (Intuitive Machines, Astrobotic, Firefly Aerospace, Draper), this transforms your business from project-based to program-based. You need manufacturing capacity for multiple landers per year, not one every 18 months.</li>
+<li>For companies not yet in the CLPS pool, the Phase 2-3 solicitation is your entry point. NASA is actively seeking to expand the provider base because the current pool cannot sustain near-monthly deliveries alone.</li>
+<li>For payload developers and instrument builders, the number of available ride slots to the Moon is about to increase by an order of magnitude. If you have been waiting for a slot, the queue is getting shorter.</li>
+<li>For investors, CLPS providers just became infrastructure companies with government-backed recurring revenue. Price accordingly.</li>
+</ul>
+
+<p>The program is no longer experimental. It is operational logistics at industrial scale.</p>
+
+<h2 id="nuclear-finally-happening">5. Nuclear Is Finally Happening</h2>
+
+<p>NASA made two nuclear-related announcements during the Ignition event that together represent a fundamental shift in how the agency approaches power and propulsion.</p>
+
+<p>First, <strong>Space Reactor 1 Freedom</strong> — a nuclear electric propulsion spacecraft — is targeting launch to Mars by the end of 2028. This is not a study or a concept. It is a spacecraft with a launch date, and it will demonstrate nuclear propulsion in deep space for the first time in decades.</p>
+
+<p>Second, NASA announced it is <strong>actively incentivizing nuclear heating and power technology on commercial landers</strong>. The agency released an RFI seeking radioisotope heater units (RHUs), radioisotope thermoelectric generators (RTGs), and any other technology that can help surface assets survive the two-week lunar night. NASA made clear it is open to any heating or power survival solution — the approach does not have to be nuclear, but the agency is clearly signaling that nuclear is preferred.</p>
+
+<p><strong>What this means for your company:</strong></p>
+
+<ul>
+<li>The nuclear technology supply chain — which has been dormant for commercial space applications — is reactivating. Companies that can produce plutonium-238, fabricate RHUs, or build compact fission reactors have a new and growing market.</li>
+<li>Every lander going to the lunar south pole needs to survive the night. If your company has thermal management technology that works without sunlight, NASA wants to hear from you.</li>
+<li>The SR-1 Freedom mission creates demand for nuclear-rated components, testing facilities, and integration services. This is a market that did not exist 12 months ago.</li>
+<li>The regulatory pathway for nuclear materials in space is complex but NASA is clearing the way. Companies that navigate this early will have a significant first-mover advantage.</li>
+</ul>
+
+<p>Nuclear technology in space has been discussed for decades and perpetually deferred. Ignition puts a date on it. SR-1 Freedom launches by end of 2028. Lunar surface nuclear power is a Phase 1 priority. The market is real.</p>
+
+<h2 id="bottom-line">The Bottom Line</h2>
+
+<p>The Ignition announcement is not just a vision for the Moon. It is a <strong>procurement event, a management philosophy, and a market signal</strong> all rolled into one.</p>
+
+<p>NASA is going to embed staff at your facility. The surface is the only game now. Crewed landings will happen every six months with multiple providers. CLPS is scaling to industrial logistics. Nuclear is finally real.</p>
+
+<p>The companies that will capture the most value from Ignition are those that understand what NASA actually said — not just the $20 billion headline, but the procurement mechanics, the accountability language, and the technology priorities underneath it. Read the RFIs. Attend the breakout sessions. Register on SAM.gov. And get your production floor ready for visitors.</p>
+
+<p>The window for positioning is measured in weeks, not months. RFI deadlines do not wait.</p>
+
+<p><strong>Track Project Ignition live:</strong> Visit our <a href="/ignition">Ignition Tracker</a> for real-time milestones, contract tracking, and company involvement.</p>
+`,
+    faqItems: [
+      { question: 'How does NASA Ignition affect space companies?', answer: 'Ignition redirects $20 billion to the lunar surface, creates demand for crewed landings every 6 months with at least two providers (via a $6 billion transportation solicitation), expands CLPS to near-monthly robotic deliveries backed by $10 billion in Phase 1 funding, and introduces embedded NASA oversight at contractor and subcontractor facilities on the critical path. Every space company in the lunar supply chain faces both increased opportunity and increased accountability.' },
+      { question: 'What happened to the Lunar Gateway under Ignition?', answer: 'NASA announced it will pause the Lunar Gateway in its current form and redirect those resources — approximately $20 billion — to the lunar surface. Gateway modules already under construction (Northrop Grumman\'s HALO and ESA\'s I-Hab) will be repurposed for surface deployment rather than assembled in lunar orbit. Companies with Gateway-dependent business plans need to pivot to surface applications.' },
+      { question: 'How many crewed lunar landings will Ignition support?', answer: 'Beyond Artemis 5, NASA\'s Commercial Human Lunar Transportation RFI targets crewed landings approximately every six months over a 10-year ordering period with a $6 billion cap. That translates to roughly 20 crewed landings over a decade, split among at least two launch providers. This is the largest sustained crewed spaceflight demand signal in commercial space history.' },
+      { question: 'Is NASA really embedding staff at contractor facilities?', answer: 'Yes. Administrator Isaacman stated directly that NASA will embed subject matter experts across the supply chain, attached to every vendor, subcontractor, and every part on the critical path. He also warned to expect uncomfortable action if schedules slip or budgets are exceeded. This represents a significant increase in NASA oversight compared to the hands-off approach of recent commercial space programs.' },
+    ],
+  },
+  {
     slug: 'spacex-falcon-heavy-complete-guide-2026',
     title: 'SpaceX Falcon Heavy: Complete Guide to the World\'s Most Powerful Operational Rocket',
     excerpt: 'Everything you need to know about Falcon Heavy — specs, launch history, cost, notable missions, and how it compares to SLS and Starship. Updated for 2026.',
