@@ -549,6 +549,52 @@ export default async function HomePage() {
         </div>
       </section>
 
+      {/* Explore All Sections — internal linking density for SEO */}
+      <section className="section-spacer-sm relative z-10">
+        <div className="container mx-auto px-4 max-w-5xl">
+          <div className="mb-6">
+            <div className="section-header">
+              <div className="flex items-center">
+                <div className="section-header__bar bg-gradient-to-b from-slate-400 to-slate-600" />
+                <h2 className="section-header__title text-lg">Explore All Sections</h2>
+              </div>
+            </div>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
+            {[
+              { label: 'Artemis II Live', href: '/live' },
+              { label: 'Ignition Tracker', href: '/ignition' },
+              { label: 'News & Media', href: '/news' },
+              { label: 'Satellite Tracker', href: '/satellites' },
+              { label: 'Market Intelligence', href: '/market-intel' },
+              { label: 'Compare Companies', href: '/compare' },
+              { label: 'Space Talent Hub', href: '/space-talent' },
+              { label: 'Blog & Articles', href: '/blog' },
+              { label: 'Pricing', href: '/pricing' },
+              { label: 'Company Profiles', href: '/company-profiles' },
+              { label: 'Mission Control', href: '/mission-control' },
+              { label: 'Space Environment', href: '/space-environment' },
+              { label: 'Compliance Hub', href: '/compliance' },
+              { label: 'Solar Exploration', href: '/solar-exploration' },
+              { label: 'Marketplace', href: '/marketplace' },
+              { label: 'Business Opportunities', href: '/business-opportunities' },
+              { label: 'Mission Planning', href: '/mission-cost' },
+              { label: 'Space Tycoon', href: '/space-tycoon' },
+              { label: 'AI Insights', href: '/ai-insights' },
+              { label: 'Space Calendar', href: '/space-calendar' },
+            ].map(item => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="px-3 py-2.5 rounded-lg border border-white/[0.06] bg-white/[0.02] hover:bg-white/[0.05] hover:border-white/[0.12] text-slate-400 hover:text-white text-xs font-medium transition-all duration-200 text-center"
+              >
+                {item.label}
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Ad — subscriber-gated via AdSlot */}
       <section className="py-6">
         <div className="container mx-auto px-4 max-w-5xl">

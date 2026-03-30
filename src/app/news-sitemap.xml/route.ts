@@ -9,7 +9,7 @@ export const revalidate = 3600; // 1 hour
 /**
  * Google News Sitemap — only includes SpaceNexus-authored content:
  *  - AI-generated insights (AIInsight model) from the last 48 hours
- *  - SpaceNexus blog posts (BLOG_POSTS) published within the last 30 days
+ *  - SpaceNexus blog posts (BLOG_POSTS) published within the last 48 hours
  *  - AI-generated regulation explainers from the last 48 hours
  *
  * Does NOT include external RSS feeds or aggregated news.
@@ -17,7 +17,6 @@ export const revalidate = 3600; // 1 hour
 export async function GET() {
   const now = new Date();
   const twoDaysAgo = new Date(now.getTime() - 48 * 60 * 60 * 1000);
-  const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
 
   interface NewsEntry {
     url: string;
@@ -72,10 +71,10 @@ export async function GET() {
     });
   }
 
-  // 3. SpaceNexus blog posts published within the last 30 days
+  // 3. SpaceNexus blog posts published within the last 48 hours (Google News requirement)
   for (const post of BLOG_POSTS) {
     const publishDate = new Date(post.publishedAt);
-    if (publishDate >= thirtyDaysAgo) {
+    if (publishDate >= twoDaysAgo) {
       entries.push({
         url: `https://spacenexus.us/blog/${post.slug}`,
         title: escapeXml(post.title),

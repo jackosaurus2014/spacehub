@@ -1,6 +1,7 @@
 import cron from 'node-cron';
 import { logger } from './logger';
 import { sendFreshnessAlert, resolveFreshnessAlert } from './freshness-alerts';
+import { pingSearchEnginesOnDeploy } from './deploy-ping';
 
 import { BASE_URL } from '@/lib/constants';
 
@@ -364,6 +365,11 @@ export function startCronJobs() {
 
   // Start the staleness watchdog
   startWatchdog();
+
+  // Ping search engines on deploy (runs once per startup)
+  pingSearchEnginesOnDeploy().catch(() => {
+    // Best-effort — don't block scheduler startup
+  });
 
   logger.info('Cron scheduler started', {
     jobCount: CRON_JOBS.length,
