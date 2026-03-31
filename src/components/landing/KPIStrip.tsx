@@ -14,7 +14,7 @@ interface KPIMetric {
 }
 
 const KPI_METRICS: KPIMetric[] = [
-  { label: 'Launches YTD', value: 42, suffix: '', prefix: '', change: '+18% YoY', changeUp: true, colorClass: 'text-white' },
+  { label: 'Launches YTD', value: 68, suffix: '', prefix: '', change: '+22% YoY', changeUp: true, colorClass: 'text-white' },
   { label: 'Active Satellites', value: 10200, suffix: '+', prefix: '', change: '+12%', changeUp: true, colorClass: 'text-emerald-400' },
   { label: 'Companies Tracked', value: 15000, suffix: '+', prefix: '', change: '+6%', changeUp: true, colorClass: 'text-white' },
   { label: 'Space Economy', value: 546, suffix: 'B', prefix: '$', change: '+8.2%', changeUp: true, colorClass: 'text-emerald-400' },

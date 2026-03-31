@@ -20,20 +20,28 @@ const MAX_ENTRIES = 200;
 // Seed entries for Artemis II
 entries.push(
   {
-    id: 'lb-seed-4',
-    timestamp: new Date('2026-03-31T12:00:00Z').toISOString(),
-    title: 'Artemis II Launch Day Tomorrow',
-    body: 'NASA is targeting 6:24 PM EDT on April 1, 2026 for the launch of Artemis II. Weather is 80% favorable. The crew \u2014 Wiseman, Glover, Koch, and Hansen \u2014 are in quarantine at Kennedy Space Center.',
+    id: 'lb-seed-5',
+    timestamp: new Date('2026-04-01T14:00:00Z').toISOString(),
+    title: 'Artemis II Launch Day Is Here',
+    body: 'Today is the day. NASA is targeting 6:24 PM EDT (22:24 UTC) for the launch of Artemis II from Pad 39B. Weather remains 80% favorable. The crew \u2014 Wiseman, Glover, Koch, and Hansen \u2014 are preparing for suit-up. Follow along on our live page for real-time updates.',
     type: 'milestone',
     source: 'admin',
     pinned: true,
   },
   {
-    id: 'lb-seed-3',
-    timestamp: new Date('2026-03-30T18:00:00Z').toISOString(),
-    title: 'Weather Update: 80% Favorable',
-    body: 'The U.S. Space Force 45th Weather Squadron forecasts 80% chance of favorable weather for tomorrow\'s launch. Primary concerns are cloud coverage and potential high winds at ground level.',
+    id: 'lb-seed-4',
+    timestamp: new Date('2026-04-01T12:00:00Z').toISOString(),
+    title: 'Final Weather Briefing: 80% Go',
+    body: 'The U.S. Space Force 45th Weather Squadron confirms an 80% chance of favorable weather for today\'s 6:24 PM EDT launch. Primary concerns are cumulus clouds and potential upper-level winds. Backup date is April 7 if today\'s attempt is scrubbed.',
     type: 'update',
+    source: 'nasa',
+  },
+  {
+    id: 'lb-seed-3',
+    timestamp: new Date('2026-03-31T18:00:00Z').toISOString(),
+    title: 'Launch Readiness Review Complete — Go for Launch',
+    body: 'NASA\'s Launch Readiness Review is complete. All teams have given a GO for the Artemis II launch on April 1. The SLS rocket and Orion spacecraft are in excellent condition on Pad 39B.',
+    type: 'milestone',
     source: 'nasa',
   },
   {

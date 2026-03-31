@@ -19,7 +19,7 @@ function Reveal({ children, delay, className = '' }: { children: React.ReactNode
 /** Platform stat constants — exported so pricing/register pages can reuse them */
 export const PLATFORM_STATS = [
   { value: '264+', label: 'Modules & Tools' },
-  { value: '250+', label: 'Original Articles' },
+  { value: '258+', label: 'Original Articles' },
   { value: '50+', label: 'Live Data Sources' },
   { value: '10K+', label: 'Tracked Objects' },
 ];
@@ -282,7 +282,7 @@ export default function LandingHero({ featuredArticle, trendingNews }: LandingHe
 
                 {/* Bottom strip */}
                 <div className="px-4 py-2 border-t border-[var(--border-subtle)] flex items-center justify-between">
-                  <span className="text-[9px] text-[var(--text-muted)] font-mono">264 modules · 50+ sources</span>
+                  <span className="text-[9px] text-[var(--text-muted)] font-mono">264 modules · 258 articles · 50+ sources</span>
                   <Link href="/mission-control" className="text-[10px] text-[var(--accent-primary)] hover:text-[var(--accent-primary-bright)] font-medium transition-colors">
                     Open Dashboard →
                   </Link>

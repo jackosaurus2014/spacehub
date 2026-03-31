@@ -12023,7 +12023,7 @@ Track D2D satellite deployments, constellation coverage maps, and related compan
 <li><strong>Satellite tracker</strong> — search and visualize orbital positions for 10,000+ active satellites using CelesTrak data</li>
 <li><strong>Space weather monitor</strong> — solar flare alerts, geomagnetic storm forecasts, and solar wind data from NOAA</li>
 <li><strong>Government contracts</strong> — searchable database of space-related procurements from SAM.gov and USAspending.gov</li>
-<li><strong>70 original articles</strong> — deep-dive analysis on everything from Artemis to asteroid mining, written for professionals</li>
+<li><strong>258+ original articles</strong> — deep-dive analysis on everything from Artemis to asteroid mining, written for professionals</li>
 <li><strong>Company profiles</strong> — 200+ <a href="/company-profiles">space company profiles</a> with financials, satellite assets, leadership, and news</li>
 </ul>
 

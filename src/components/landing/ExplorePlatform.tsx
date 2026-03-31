@@ -6,10 +6,10 @@ import { motion } from 'framer-motion';
 
 const DESTINATIONS = [
   {
-    title: '250+ Blog Articles',
+    title: '258+ Blog Articles',
     description: 'Original analysis on launches, markets, policy, and technology.',
     href: '/blog',
-    stat: '250+',
+    stat: '258+',
     badge: null,
     heroImage: '/art/hero-news-media.png',
     icon: (
