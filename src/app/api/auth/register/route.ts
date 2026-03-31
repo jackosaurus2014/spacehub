@@ -39,11 +39,11 @@ export async function POST(req: NextRequest) {
         email,
         password: hashedPassword,
         name: name || null,
+        emailVerified: true, // Auto-verify — don't block login on email delivery
       },
     });
 
-    // Store a verification token on the user record; the account remains
-    // unverified until the user clicks the emailed link, which clears this token
+    // Still send a welcome/verification email but it's not required to log in
     const verificationToken = randomUUID();
     await prisma.user.update({
       where: { id: user.id },

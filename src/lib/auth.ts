@@ -33,9 +33,8 @@ export const authOptions: NextAuthOptions = {
           throw new Error('Invalid credentials');
         }
 
-        if (!user.emailVerified) {
-          throw new Error('Please verify your email address before signing in');
-        }
+        // Email verification is encouraged but not required for login.
+        // Users who haven't verified will see a reminder banner instead of being blocked.
 
         return {
           id: user.id,
