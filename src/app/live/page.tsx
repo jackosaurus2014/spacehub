@@ -9,6 +9,7 @@ import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import { clientLogger } from '@/lib/client-logger';
+import LiveBlog from '@/components/live/LiveBlog';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
@@ -378,6 +379,13 @@ function LiveHubContent() {
           </div>
         </div>
 
+        </ScrollReveal>
+
+        {/* Artemis II Live Blog */}
+        <ScrollReveal delay={0.05}>
+        <div className="mb-8 max-w-4xl mx-auto">
+          <LiveBlog />
+        </div>
         </ScrollReveal>
 
         {/* Upcoming Launch Streams (from API) */}

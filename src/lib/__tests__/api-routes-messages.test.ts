@@ -66,6 +66,7 @@ import { getServerSession } from 'next-auth';
 import { checkUserBanStatus, isUserBlocked } from '@/lib/moderation';
 
 import { GET as messagesGET, POST as messagesPOST } from '@/app/api/messages/route';
+import { GET as unreadGET } from '@/app/api/messages/unread/route';
 import {
   GET as conversationGET,
   POST as conversationPOST,
@@ -914,5 +915,64 @@ describe('POST /api/messages/[conversationId]', () => {
 
     expect(res.status).toBe(500);
     expect(body.error.message).toBe('Failed to mark conversation as read');
+  });
+});
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// GET /api/messages/unread
+// ═══════════════════════════════════════════════════════════════════════════════
+
+describe('GET /api/messages/unread', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('returns 401 when not authenticated', async () => {
+    mockGetServerSession.mockResolvedValue(null);
+
+    const res = await unreadGET();
+    expect(res.status).toBe(401);
+  });
+
+  it('returns 0 when user has no conversations', async () => {
+    mockGetServerSession.mockResolvedValue(authedSession());
+    mockPrisma.conversationParticipant.findMany.mockResolvedValue([]);
+
+    const res = await unreadGET();
+    const body = await res.json();
+
+    expect(res.status).toBe(200);
+    expect(body.data.unreadCount).toBe(0);
+  });
+
+  it('returns correct unread count across conversations', async () => {
+    mockGetServerSession.mockResolvedValue(authedSession());
+    mockPrisma.conversationParticipant.findMany.mockResolvedValue([
+      { conversationId: 'conv-1', lastReadAt: new Date('2024-01-01') },
+      { conversationId: 'conv-2', lastReadAt: null },
+    ]);
+    // 3 unread in conv-1, 5 unread in conv-2
+    mockPrisma.directMessage.count
+      .mockResolvedValueOnce(3)
+      .mockResolvedValueOnce(5);
+
+    const res = await unreadGET();
+    const body = await res.json();
+
+    expect(res.status).toBe(200);
+    expect(body.data.unreadCount).toBe(8);
+  });
+
+  it('returns 500 when database throws', async () => {
+    mockGetServerSession.mockResolvedValue(authedSession());
+    mockPrisma.conversationParticipant.findMany.mockRejectedValue(
+      new Error('DB down')
+    );
+
+    const res = await unreadGET();
+    const body = await res.json();
+
+    expect(res.status).toBe(500);
+    expect(body.error.message).toBe('Failed to fetch unread count');
   });
 });

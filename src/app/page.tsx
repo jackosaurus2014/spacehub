@@ -99,6 +99,10 @@ const LiveStreamSection = nextDynamic(() => import('@/components/landing/LiveStr
   ssr: false,
   loading: () => null,
 });
+const LiveBlog = nextDynamic(() => import('@/components/live/LiveBlog'), {
+  ssr: false,
+  loading: () => null,
+});
 const SpacePhotoOfDay = nextDynamic(() => import('@/components/SpacePhotoOfDay'), {
   ssr: false,
   loading: () => <div className="py-12"><div className="container mx-auto px-4 max-w-3xl"><div className="animate-pulse"><div className="aspect-video bg-white/[0.06] rounded-xl mb-4"></div><div className="h-5 bg-white/[0.06] rounded w-2/3 mb-3"></div><div className="h-3 bg-white/[0.04] rounded w-full"></div></div></div></div>,
@@ -219,6 +223,16 @@ export default async function HomePage() {
       {/* Scroll manager: non-subscribers see top, subscribers see content */}
       <HomeScrollManager />
 
+      {/* Live Stream — top of page; shows countdown banner pre-launch, full embed when live */}
+      <LiveStreamSection />
+
+      {/* Artemis II Live Blog — show during launch event */}
+      <section className="relative z-10 pb-6">
+        <div className="container mx-auto px-4 max-w-4xl">
+          <LiveBlog />
+        </div>
+      </section>
+
       {/* Hero Section with featured content */}
       <LandingHero featuredArticle={featuredArticle} trendingNews={trendingNews} />
 
@@ -292,9 +306,6 @@ export default async function HomePage() {
 
       {/* V3 Persona Picker — first-visit only, customizes the experience */}
       <PersonaPicker />
-
-      {/* Live Stream — appears only when a stream is active */}
-      <LiveStreamSection />
 
       {/* Space Industry KPIs — Animated Counter Strip */}
       <KPIStrip />

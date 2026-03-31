@@ -73,6 +73,7 @@ export async function GET(req: NextRequest) {
         skip: offset,
         select: {
           id: true,
+          userId: true,
           displayName: true,
           headline: true,
           skills: true,
@@ -83,8 +84,9 @@ export async function GET(req: NextRequest) {
           location: true,
           remoteOk: true,
           clearanceLevel: true,
+          linkedInUrl: true,
+          portfolioUrl: true,
           createdAt: true,
-          // Omit bio, linkedInUrl, portfolioUrl for list view (privacy)
         },
       }),
       prisma.workerProfile.count({ where }),

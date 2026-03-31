@@ -13,11 +13,58 @@ import { extractApiError } from '@/lib/errors';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import EmptyState from '@/components/ui/EmptyState';
 
+/**
+ * Map the API conversation response to the shape ConversationList expects.
+ * API returns: { id, lastMessageAt, lastMessage: { content, sender, createdAt }, otherParticipants, unreadCount }
+ * ConversationList expects: { id, participants, lastMessage, unreadCount, updatedAt }
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function mapConversation(raw: any): Conversation {
+  return {
+    id: raw.id,
+    participants: (raw.otherParticipants || raw.participants || []).map(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (p: any) => ({
+        id: p.id,
+        name: p.name || null,
+        email: p.email || '',
+      })
+    ),
+    lastMessage: raw.lastMessage
+      ? {
+          content: raw.lastMessage.content,
+          senderId: raw.lastMessage.senderId || raw.lastMessage.sender?.id || '',
+          createdAt: raw.lastMessage.createdAt,
+        }
+      : null,
+    unreadCount: raw.unreadCount || 0,
+    updatedAt: raw.lastMessageAt || raw.updatedAt || raw.createdAt || '',
+  };
+}
+
+/**
+ * Map API message to the shape MessageThread expects.
+ * API returns: { id, content, senderId, createdAt, sender: { id, name } }
+ * MessageThread expects: { id, content, senderId, senderName, createdAt }
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function mapMessage(raw: any): Message {
+  return {
+    id: raw.id,
+    content: raw.content,
+    senderId: raw.senderId || raw.sender?.id || '',
+    senderName: raw.senderName || raw.sender?.name || null,
+    createdAt: raw.createdAt,
+  };
+}
+
 function MessagesPageInner() {
   const searchParams = useSearchParams();
   const toUserId = searchParams.get('to');
+  const composeName = searchParams.get('name');
+  const composeMode = searchParams.get('compose') === 'true';
   const { data: session } = useSession();
-  const currentUserId = (session?.user as any)?.id || '';
+  const currentUserId = (session?.user as Record<string, unknown>)?.id as string || '';
 
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [activeConversationId, setActiveConversationId] = useState<string | null>(null);
@@ -31,8 +78,11 @@ function MessagesPageInner() {
     try {
       const res = await fetch('/api/messages');
       if (res.ok) {
-        const data = await res.json();
-        setConversations(data.conversations || []);
+        const json = await res.json();
+        // API returns { success, data: { conversations } }
+        const rawConversations = json?.data?.conversations || json?.conversations || [];
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        setConversations(rawConversations.map((c: any) => mapConversation(c)));
       }
     } catch {
       // silently fail
@@ -47,8 +97,11 @@ function MessagesPageInner() {
     try {
       const res = await fetch(`/api/messages/${conversationId}`);
       if (res.ok) {
-        const data = await res.json();
-        setMessages(data.messages || []);
+        const json = await res.json();
+        // API returns { success, data: { messages, pagination } }
+        const rawMessages = json?.data?.messages || json?.messages || [];
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        setMessages(rawMessages.map((m: any) => mapMessage(m)));
       }
     } catch {
       // silently fail
@@ -73,10 +126,12 @@ function MessagesPageInner() {
         setActiveConversationId(existing.id);
         fetchMessages(existing.id);
         setShowList(false);
+      } else if (composeMode) {
+        // No existing conversation — show compose view (message thread with no messages)
+        setShowList(false);
       }
-      // If no existing, the first message sent will create the conversation
     }
-  }, [toUserId, loading, conversations, fetchMessages]);
+  }, [toUserId, loading, conversations, fetchMessages, composeMode]);
 
   // Poll for new messages every 10 seconds
   useEffect(() => {
@@ -99,11 +154,19 @@ function MessagesPageInner() {
     try {
       const body: Record<string, string> = { content };
 
-      if (activeConversationId) {
-        body.conversationId = activeConversationId;
-      } else if (toUserId) {
-        body.recipientId = toUserId;
-      } else {
+      // Determine recipientId: from URL param, or from the active conversation's other participant
+      let recipient = toUserId;
+      if (!recipient && activeConversationId) {
+        const conv = conversations.find((c) => c.id === activeConversationId);
+        const other = conv?.participants.find((p) => p.id !== currentUserId);
+        recipient = other?.id || null;
+      }
+
+      if (recipient) {
+        body.recipientId = recipient;
+      }
+
+      if (!body.recipientId) {
         toast.error('No conversation selected');
         return;
       }
@@ -115,14 +178,16 @@ function MessagesPageInner() {
       });
 
       if (res.ok) {
-        const data = await res.json();
+        const json = await res.json();
+        const newConversationId = json?.data?.conversationId || json?.conversationId;
         // If new conversation was created, update state
-        if (data.conversationId && !activeConversationId) {
-          setActiveConversationId(data.conversationId);
+        if (newConversationId && !activeConversationId) {
+          setActiveConversationId(newConversationId);
         }
         // Refresh messages and conversations
-        if (activeConversationId || data.conversationId) {
-          fetchMessages(activeConversationId || data.conversationId);
+        const convId = activeConversationId || newConversationId;
+        if (convId) {
+          fetchMessages(convId);
         }
         fetchConversations();
       } else {
@@ -161,16 +226,25 @@ function MessagesPageInner() {
     );
   }
 
+  // Determine the compose header name: from URL param or from matched conversation
+  const activeConversation = conversations.find((c) => c.id === activeConversationId);
+  const recipientName =
+    composeName ||
+    activeConversation?.participants.find((p) => p.id !== currentUserId)?.name ||
+    null;
+
+  const isComposeNew = composeMode && toUserId && !activeConversationId;
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header - only show on mobile when list is visible */}
+        {/* Header */}
         <ScrollReveal>
           <div className="sm:block">
             <AnimatedPageHeader
               title="Messages"
               subtitle="Direct conversations with space industry professionals."
-              icon={<span>{"✉️"}</span>}
+              icon={<span>{"\u2709\uFE0F"}</span>}
               breadcrumb="Community"
             />
           </div>
@@ -180,7 +254,7 @@ function MessagesPageInner() {
         <ScrollReveal delay={0.1}>
         <div className="card overflow-hidden" style={{ height: 'calc(100dvh - 260px)', minHeight: '500px' }}>
           <div className="flex h-full">
-            {/* Conversation list — left panel */}
+            {/* Conversation list -- left panel */}
             <div
               className={`w-full sm:w-80 sm:border-r border-white/[0.06] flex-shrink-0 overflow-y-auto ${
                 showList ? 'block' : 'hidden sm:block'
@@ -197,24 +271,37 @@ function MessagesPageInner() {
               />
             </div>
 
-            {/* Message thread — right panel */}
+            {/* Message thread -- right panel */}
             <div
               className={`flex-1 flex flex-col ${
                 !showList ? 'block' : 'hidden sm:flex'
               }`}
             >
-              {/* Mobile back button */}
-              <div className="sm:hidden px-4 py-2 border-b border-white/[0.06]">
-                <button
-                  onClick={handleBack}
-                  className="flex items-center gap-1 text-sm text-slate-400 hover:text-white transition-colors"
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                  </svg>
-                  Back
-                </button>
-              </div>
+              {/* Mobile back button + compose header */}
+              {(!showList || activeConversationId || isComposeNew) && (
+                <div className="px-4 py-2 border-b border-white/[0.06] flex items-center gap-3">
+                  <button
+                    onClick={handleBack}
+                    className="sm:hidden flex items-center gap-1 text-sm text-slate-400 hover:text-white transition-colors"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                    </svg>
+                    Back
+                  </button>
+                  {recipientName && (
+                    <div className="flex items-center gap-2 min-w-0">
+                      <div className="w-7 h-7 rounded-full bg-gradient-to-br from-white/[0.08] to-white/[0.12] flex items-center justify-center text-xs font-bold text-white/70 flex-shrink-0">
+                        {recipientName.split(' ').map(w => w.charAt(0)).slice(0, 2).join('').toUpperCase()}
+                      </div>
+                      <span className="text-sm font-medium text-white truncate">{recipientName}</span>
+                      {isComposeNew && (
+                        <span className="text-xs text-slate-500 flex-shrink-0">New conversation</span>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
 
               {activeConversationId || toUserId ? (
                 loadingMessages ? (
@@ -232,7 +319,7 @@ function MessagesPageInner() {
                 /* Empty state */
                 <div className="flex-1 flex flex-col items-center justify-center px-4">
                   <EmptyState
-                    icon={<span className="text-4xl">💬</span>}
+                    icon={<span className="text-4xl">{"\uD83D\uDCAC"}</span>}
                     illustration="/art/empty-state-getting-started.png"
                     title={conversations.length === 0 ? 'No messages yet' : 'Select a Conversation'}
                     description={conversations.length === 0

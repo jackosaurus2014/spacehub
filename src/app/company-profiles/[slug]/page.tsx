@@ -167,7 +167,7 @@ function getScoreBarColor(score: number): string {
 
 // ─── Marketplace Actions ─────────────────────────────────────────────────────
 
-function MarketplaceActions({ companySlug, companyId, companyName, verificationLevel, contactEmail: initialContactEmail }: { companySlug: string; companyId: string; companyName: string; verificationLevel?: string | null; contactEmail?: string | null }) {
+function MarketplaceActions({ companySlug, companyId, companyName, verificationLevel, contactEmail: initialContactEmail, claimedByUserId }: { companySlug: string; companyId: string; companyName: string; verificationLevel?: string | null; contactEmail?: string | null; claimedByUserId?: string | null }) {
   const [claiming, setClaiming] = useState(false);
   const [claimed, setClaimed] = useState(!!verificationLevel);
   const [claimEmail, setClaimEmail] = useState('');
@@ -220,6 +220,17 @@ function MarketplaceActions({ companySlug, companyId, companyName, verificationL
         >
           Contact Provider
         </a>
+      )}
+      {claimed && claimedByUserId && (
+        <Link
+          href={`/messages?compose=true&to=${claimedByUserId}&name=${encodeURIComponent(companyName)}`}
+          className="text-xs px-3 py-1.5 bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 border border-blue-500/30 rounded-lg font-medium transition-colors flex items-center gap-1.5"
+        >
+          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+          </svg>
+          Send Message
+        </Link>
       )}
       <Link href={`/marketplace/search?category=&companyId=${companyId}`} className="text-xs px-3 py-1.5 bg-white/[0.08] hover:bg-white/[0.12] text-white rounded-lg transition-colors">
         View Service Listings
@@ -1774,7 +1785,7 @@ export default function CompanyProfileDetailPage() {
           </div>
 
           {/* Marketplace Actions */}
-          <MarketplaceActions companySlug={params.slug as string} companyId={company.id} companyName={company.name} verificationLevel={(company as any).verificationLevel} contactEmail={(company as any).contactEmail} />
+          <MarketplaceActions companySlug={params.slug as string} companyId={company.id} companyName={company.name} verificationLevel={(company as any).verificationLevel} contactEmail={(company as any).contactEmail} claimedByUserId={(company as any).claimedByUserId} />
         </div>
       </motion.div>
 

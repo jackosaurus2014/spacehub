@@ -617,41 +617,146 @@ export default function LiveStreamSection() {
   // Still loading
   if (!loaded) return null;
 
-  // ---- No active streams: show countdown card ----
+  // ---- No active streams ----
   if (streams.length === 0) {
-    return (
-      <section className="relative z-10 py-6">
-        <div className="container mx-auto px-4">
-          <div className="relative overflow-hidden rounded-2xl border border-white/[0.08] bg-gradient-to-br from-slate-900/80 via-space-900/60 to-indigo-950/40 backdrop-blur-sm">
-            {/* Subtle background glow */}
-            <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/[0.05] rounded-full blur-3xl" />
-            <div className="absolute bottom-0 left-0 w-48 h-48 bg-cyan-500/[0.05] rounded-full blur-3xl" />
+    // Calculate how far away the next launch is
+    const hoursUntilLaunch = nextLaunch?.scheduledTime
+      ? (new Date(nextLaunch.scheduledTime).getTime() - Date.now()) / (1000 * 60 * 60)
+      : Infinity;
+    const isWithin48Hours = hoursUntilLaunch <= 48 && hoursUntilLaunch > 0;
+    const isWithin6Hours = hoursUntilLaunch <= 6 && hoursUntilLaunch > 0;
+    const isImminent = hoursUntilLaunch <= 0; // past scheduled time but no stream yet
 
-            <div className="relative p-6 md:p-8">
-              <div className="flex flex-col md:flex-row items-center gap-6">
-                {/* Left: Icon + Status */}
-                <div className="flex items-center gap-4 flex-shrink-0">
-                  <div className="relative">
-                    <div className="w-14 h-14 rounded-full bg-white/[0.05] border border-white/[0.08] flex items-center justify-center">
-                      <svg className="w-7 h-7 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                      </svg>
-                    </div>
-                    {/* Offline indicator */}
-                    <span className="absolute -top-0.5 -right-0.5 w-3.5 h-3.5 bg-slate-600 rounded-full border-2 border-slate-900" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-slate-300 uppercase tracking-wider">
-                      No Active Livestream
-                    </p>
-                    <p className="text-xs text-slate-500 mt-0.5">
-                      We monitor SpaceX, NASA, Blue Origin & more
-                    </p>
-                  </div>
+    // Determine human-friendly time label
+    const getTimeLabel = () => {
+      if (isImminent) return 'Starting Soon';
+      if (hoursUntilLaunch <= 1) return 'Launching in Under 1 Hour';
+      if (isWithin6Hours) return `Launching in ${Math.ceil(hoursUntilLaunch)} Hours`;
+      if (hoursUntilLaunch <= 24) return 'Launching Today';
+      if (hoursUntilLaunch <= 48) return 'Launching Tomorrow';
+      return '';
+    };
+
+    // If within 48 hours of a scheduled launch, show a prominent countdown banner
+    if (nextLaunch && countdown && (isWithin48Hours || isImminent)) {
+      return (
+        <section className="relative z-10">
+          <div className="relative overflow-hidden bg-gradient-to-r from-indigo-950 via-[#0c0a20] to-cyan-950 border-b border-white/[0.08]">
+            {/* Animated background glow effects */}
+            <div className="absolute top-0 left-1/4 w-96 h-96 bg-indigo-500/[0.08] rounded-full blur-[120px] animate-pulse" />
+            <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-cyan-500/[0.06] rounded-full blur-[120px]" />
+            {isWithin6Hours && (
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-red-500/[0.04] rounded-full blur-[150px] animate-pulse" />
+            )}
+
+            <div className="relative container mx-auto px-4 py-8 md:py-10">
+              <div className="flex flex-col items-center text-center gap-5">
+                {/* Status badge */}
+                <div className="flex items-center gap-2">
+                  <span className="relative flex h-2.5 w-2.5">
+                    <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${isWithin6Hours ? 'bg-red-500' : 'bg-amber-400'}`} />
+                    <span className={`relative inline-flex rounded-full h-2.5 w-2.5 ${isWithin6Hours ? 'bg-red-500' : 'bg-amber-400'}`} />
+                  </span>
+                  <span className={`text-xs font-bold uppercase tracking-widest ${isWithin6Hours ? 'text-red-400' : 'text-amber-400'}`}>
+                    {getTimeLabel()}
+                  </span>
                 </div>
 
-                {/* Center: Next launch info + countdown */}
-                {nextLaunch && countdown ? (
+                {/* Title */}
+                <div>
+                  <h2 className="text-2xl sm:text-3xl md:text-4xl font-display font-bold text-white leading-tight">
+                    Watch {nextLaunch.title} Live
+                  </h2>
+                  {nextLaunch.provider && (
+                    <p className="text-sm text-slate-400 mt-1.5">{nextLaunch.provider}</p>
+                  )}
+                </div>
+
+                {/* Countdown digits — large and prominent */}
+                <div className="flex items-center gap-3 sm:gap-4">
+                  {countdown.split(' ').map((part, i) => {
+                    const num = part.slice(0, -1);
+                    const unit = part.slice(-1);
+                    const unitLabel = { d: 'days', h: 'hrs', m: 'min', s: 'sec' }[unit] || unit;
+                    return (
+                      <div key={i} className="flex flex-col items-center">
+                        <span className={`text-4xl sm:text-5xl md:text-6xl font-mono font-bold tabular-nums ${isWithin6Hours ? 'text-red-400' : 'text-white'}`}>
+                          {num.padStart(2, '0')}
+                        </span>
+                        <span className="text-[10px] sm:text-xs text-slate-500 uppercase tracking-wider mt-1">
+                          {unitLabel}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* CTA buttons */}
+                <div className="flex flex-wrap items-center justify-center gap-3 mt-1">
+                  <a
+                    href="/live"
+                    className={`inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold text-white transition-all ${
+                      isWithin6Hours
+                        ? 'bg-red-600 hover:bg-red-500 shadow-lg shadow-red-500/20'
+                        : 'bg-indigo-600 hover:bg-indigo-500 shadow-lg shadow-indigo-500/20'
+                    }`}
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                    </svg>
+                    {isWithin6Hours ? 'Go to Live Page' : 'Set a Reminder'}
+                  </a>
+                  <a
+                    href="/blog/how-to-watch-artemis-ii-launch-complete-guide"
+                    className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-white/[0.06] border border-white/[0.08] text-sm font-medium text-white hover:bg-white/[0.1] hover:border-white/15 transition-all"
+                  >
+                    How to Watch Guide
+                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      );
+    }
+
+    // More than 48h away or no upcoming launch — show the subtle card
+    if (nextLaunch && countdown) {
+      return (
+        <section className="relative z-10 py-6">
+          <div className="container mx-auto px-4">
+            <div className="relative overflow-hidden rounded-2xl border border-white/[0.08] bg-gradient-to-br from-slate-900/80 via-space-900/60 to-indigo-950/40 backdrop-blur-sm">
+              {/* Subtle background glow */}
+              <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/[0.05] rounded-full blur-3xl" />
+              <div className="absolute bottom-0 left-0 w-48 h-48 bg-cyan-500/[0.05] rounded-full blur-3xl" />
+
+              <div className="relative p-6 md:p-8">
+                <div className="flex flex-col md:flex-row items-center gap-6">
+                  {/* Left: Icon + Status */}
+                  <div className="flex items-center gap-4 flex-shrink-0">
+                    <div className="relative">
+                      <div className="w-14 h-14 rounded-full bg-white/[0.05] border border-white/[0.08] flex items-center justify-center">
+                        <svg className="w-7 h-7 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                        </svg>
+                      </div>
+                      {/* Upcoming indicator */}
+                      <span className="absolute -top-0.5 -right-0.5 w-3.5 h-3.5 bg-amber-500 rounded-full border-2 border-slate-900" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold text-slate-300 uppercase tracking-wider">
+                        Upcoming Launch
+                      </p>
+                      <p className="text-xs text-slate-500 mt-0.5">
+                        Livestream coverage will begin automatically
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Center: Next launch info + countdown */}
                   <div className="flex-1 text-center md:text-left">
                     <p className="text-sm text-slate-400 mb-1">
                       Next livestream expected
@@ -682,38 +787,35 @@ export default function LiveStreamSection() {
                       })}
                     </div>
                   </div>
-                ) : (
-                  <div className="flex-1 text-center md:text-left">
-                    <p className="text-sm text-slate-400">
-                      No upcoming launches scheduled — check back soon
-                    </p>
-                  </div>
-                )}
 
-                {/* Right: CTA */}
-                <div className="flex-shrink-0 flex flex-col gap-2">
-                  <a
-                    href="/live"
-                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white/[0.06] border border-white/[0.08] text-sm font-medium text-white hover:bg-white/[0.1] hover:border-white/15 transition-all"
-                  >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                    </svg>
-                    View Launch Schedule
-                  </a>
-                  <a
-                    href="/mission-control"
-                    className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-xs font-medium text-slate-400 hover:text-white transition-colors"
-                  >
-                    Mission Control →
-                  </a>
+                  {/* Right: CTA */}
+                  <div className="flex-shrink-0 flex flex-col gap-2">
+                    <a
+                      href="/live"
+                      className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white/[0.06] border border-white/[0.08] text-sm font-medium text-white hover:bg-white/[0.1] hover:border-white/15 transition-all"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                      </svg>
+                      View Launch Schedule
+                    </a>
+                    <a
+                      href="/mission-control"
+                      className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-xs font-medium text-slate-400 hover:text-white transition-colors"
+                    >
+                      Mission Control →
+                    </a>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      </section>
-    );
+        </section>
+      );
+    }
+
+    // No upcoming launch at all — render nothing (hero shows first)
+    return null;
   }
 
   // ---- Active streams: show full live experience ----

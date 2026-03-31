@@ -46,6 +46,7 @@ const CORE_SCALAR_SELECT = {
   dataCompleteness: true,
   verificationLevel: true,
   contactEmail: true,
+  claimedByUserId: true,
 };
 
 // Newer fields added in later versions — may not exist if db push failed
