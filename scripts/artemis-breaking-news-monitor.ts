@@ -41,7 +41,7 @@ async function checkForBreakingNews(): Promise<void> {
       let m: RegExpExecArray | null;
       const re = /<p[^>]*>(.*?)<\/p>/gi;
       while ((m = re.exec(html)) !== null) {
-        const text = m[1].replace(/<[^>]*>/g, '').trim().toLowerCase();
+        const text = m[1].replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/&#8217;/g, "'").replace(/&#\d+;/g, '').replace(/\s+/g, ' ').trim().toLowerCase();
         if (text.length > 50 && text.length < 400) {
           for (const kw of BREAKING_KEYWORDS) {
             if (text.includes(kw.toLowerCase())) {

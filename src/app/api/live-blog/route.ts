@@ -104,8 +104,8 @@ export async function POST(req: NextRequest) {
   const entry: LiveBlogEntry = {
     id: `lb-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
     timestamp: new Date().toISOString(),
-    title: title.replace(/<[^>]*>/g, '').slice(0, 200),
-    body: entryBody.replace(/<[^>]*>/g, '').slice(0, 2000),
+    title: title.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/&#8217;/g, "'").replace(/&#\d+;/g, '').replace(/\s+/g, ' ').trim().slice(0, 200),
+    body: entryBody.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/&#8217;/g, "'").replace(/&#\d+;/g, '').replace(/\s+/g, ' ').trim().slice(0, 2000),
     type: type || 'update',
     source: isCron ? 'auto' : 'admin',
     pinned: pinned || false,

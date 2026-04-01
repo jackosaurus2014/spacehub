@@ -27,7 +27,7 @@ async function fetchNASALiveBlog(): Promise<string[]> {
       let m: RegExpExecArray | null;
       const re = /<p[^>]*>(.*?)<\/p>/gi;
       while ((m = re.exec(html)) !== null) {
-        const text = m[1].replace(/<[^>]*>/g, '').trim();
+        const text = m[1].replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&#8217;/g, "'").replace(/&#8216;/g, "'").replace(/&#8220;/g, '"').replace(/&#8221;/g, '"').replace(/&#8212;/g, ' — ').replace(/&#\d+;/g, '').replace(/\s+/g, ' ').trim();
         // Filter out boilerplate, headers, and non-substantive text
         const boilerplate = [
           'live updates for launch', 'will be published on this page',
@@ -78,7 +78,7 @@ async function fetchLiveScienceBlog(): Promise<string[]> {
       let m: RegExpExecArray | null;
       const re = /<p[^>]*>(.*?)<\/p>/gi;
       while ((m = re.exec(html)) !== null) {
-        const text = m[1].replace(/<[^>]*>/g, '').trim();
+        const text = m[1].replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&#8217;/g, "'").replace(/&#8216;/g, "'").replace(/&#8220;/g, '"').replace(/&#8221;/g, '"').replace(/&#8212;/g, ' — ').replace(/&#\d+;/g, '').replace(/\s+/g, ' ').trim();
         if (text.length > 50 && text.length < 400 &&
             (text.toLowerCase().includes('artemis') || text.toLowerCase().includes('sls') ||
              text.toLowerCase().includes('orion') || text.toLowerCase().includes('crew') ||
