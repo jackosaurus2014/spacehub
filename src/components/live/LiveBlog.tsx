@@ -200,7 +200,20 @@ export default function LiveBlog() {
     );
   }
 
-  if (entries.length === 0) return null;
+  if (entries.length === 0) {
+    return (
+      <div className="card p-6 text-center">
+        <div className="flex items-center justify-center gap-2 mb-2">
+          <span className="relative flex h-2.5 w-2.5">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" />
+            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500" />
+          </span>
+          <span className="text-sm font-bold text-white">LIVE BLOG</span>
+        </div>
+        <p className="text-slate-400 text-sm">Artemis II launch coverage — updates coming soon. Stay tuned.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="card overflow-hidden">
