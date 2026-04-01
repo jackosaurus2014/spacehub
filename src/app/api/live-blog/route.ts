@@ -17,50 +17,8 @@ interface LiveBlogEntry {
 const entries: LiveBlogEntry[] = [];
 const MAX_ENTRIES = 200;
 
-// Seed entries for Artemis II — only past events with accurate timestamps
-entries.push(
-  {
-    id: 'lb-seed-5',
-    timestamp: new Date().toISOString(),
-    title: 'Artemis II Launch Day Is Here',
-    body: 'NASA is targeting 6:24 PM EDT (22:24 UTC) for the launch of Artemis II from Pad 39B. Weather is 80% favorable. The crew — Wiseman, Glover, Koch, and Hansen — are preparing for suit-up. Follow along for real-time updates throughout the day.',
-    type: 'milestone',
-    source: 'admin',
-    pinned: true,
-  },
-  {
-    id: 'lb-seed-3',
-    timestamp: new Date('2026-03-31T18:00:00Z').toISOString(),
-    title: 'Launch Readiness Review Complete — Go for Launch',
-    body: 'NASA\'s Launch Readiness Review is complete. All teams have given a GO for the Artemis II launch on April 1. The SLS rocket and Orion spacecraft are in excellent condition on Pad 39B.',
-    type: 'milestone',
-    source: 'nasa',
-  },
-  {
-    id: 'lb-seed-4',
-    timestamp: new Date('2026-03-30T18:00:00Z').toISOString(),
-    title: 'Weather Forecast: 80% Favorable',
-    body: 'The U.S. Space Force 45th Weather Squadron forecasts an 80% chance of favorable weather for the April 1 launch. Primary concerns are cumulus clouds and potential upper-level winds. Backup date is April 7 if the attempt is scrubbed.',
-    type: 'update',
-    source: 'nasa',
-  },
-  {
-    id: 'lb-seed-2',
-    timestamp: new Date('2026-03-30T14:00:00Z').toISOString(),
-    title: 'SLS Rocket on the Pad at LC-39B',
-    body: 'The Space Launch System rocket completed its 10-hour rollout from the Vehicle Assembly Building to Launch Complex 39B. Ground teams are now connecting power and communications systems.',
-    type: 'milestone',
-    source: 'nasa',
-  },
-  {
-    id: 'lb-seed-1',
-    timestamp: new Date('2026-03-27T16:00:00Z').toISOString(),
-    title: 'Crew Arrives at Kennedy Space Center',
-    body: 'The four Artemis II astronauts arrived at Kennedy Space Center on Friday, March 27. They will spend the final days of quarantine reviewing mission procedures before suiting up on launch day.',
-    type: 'update',
-    source: 'nasa',
-  },
-);
+// No seed entries — all content is posted via admin or API
+// This prevents duplicate entries on server restart / Railway dyno recycle
 
 // GET — return all entries (newest first)
 export async function GET(req: NextRequest) {
