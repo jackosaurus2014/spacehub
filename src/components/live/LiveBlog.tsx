@@ -348,9 +348,11 @@ function LiveBlogEntryCard({ entry, isPinned = false }: { entry: LiveBlogEntry; 
                 NASA
               </span>
             )}
-            <span className="text-[10px] text-slate-500 ml-auto flex-shrink-0" title={formatTimestamp(entry.timestamp)}>
-              {relativeTime(entry.timestamp)}
-            </span>
+            {!entry.pinned && (
+              <span className="text-[10px] text-slate-500 ml-auto flex-shrink-0">
+                {formatTimestamp(entry.timestamp)}
+              </span>
+            )}
           </div>
 
           {/* Title */}
