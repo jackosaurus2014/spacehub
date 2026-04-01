@@ -547,7 +547,7 @@ export default function Navigation() {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-14">
           {/* Logo + Home */}
-          <Link href="/" className="flex items-center gap-2 opacity-90 hover:opacity-100 transition-opacity">
+          <Link href="/" className="flex items-center gap-2 opacity-90 hover:opacity-100 transition-opacity shrink-0 mr-8">
             <Image
               src="/spacenexus-logo.png"
               alt="SpaceNexus logo"
@@ -556,11 +556,11 @@ export default function Navigation() {
               className="h-5 w-auto"
               priority
             />
-            <span className="text-white/90 hover:text-white text-sm font-medium transition-colors">Home</span>
+            <span className="text-white/90 hover:text-white text-sm font-medium transition-colors whitespace-nowrap">Home</span>
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden lg:flex items-center gap-4 ml-6">
+          <div className="hidden lg:flex items-center gap-4">
             <DropdownMenu
               label="Explore"
               items={EXPLORE_ITEMS}
