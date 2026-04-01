@@ -38,7 +38,7 @@ export async function submitToIndexNow(paths: string[]): Promise<boolean> {
  */
 export async function submitAllToIndexNow(): Promise<boolean> {
   const criticalPaths = [
-    '/', '/ignition', '/live', '/satellites', '/news', '/market-intel',
+    '/', '/ignition', '/live', '/live/artemis-ii-blog', '/satellites', '/news', '/market-intel',
     '/compare', '/space-talent', '/blog', '/pricing', '/company-profiles',
     '/mission-control', '/space-environment', '/compliance', '/solar-exploration',
     '/business-opportunities', '/mission-cost', '/marketplace',

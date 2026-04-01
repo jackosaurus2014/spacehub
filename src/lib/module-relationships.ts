@@ -485,6 +485,7 @@ export const PAGE_RELATIONS: Record<string, RelatedModuleConfig[]> = {
 
   // ── Live tracking ──
   'live': [MODULES.satellites, MODULES.launchManifest, MODULES.spaceWeather, MODULES.news, MODULES.spaceEvents],
+  'live/artemis-ii-blog': [MODULES.launchManifest, MODULES.satellites, MODULES.spaceWeather, MODULES.news, MODULES.cislunar],
 
   // ── Market segments ──
   'market-segments': [MODULES.marketIntel, MODULES.marketSizing, MODULES.industryTrends, MODULES.spaceEconomy, MODULES.marketMap],

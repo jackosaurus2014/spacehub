@@ -385,6 +385,17 @@ function LiveHubContent() {
         <ScrollReveal delay={0.05}>
         <div className="mb-8 max-w-4xl mx-auto">
           <LiveBlog />
+          <div className="mt-3 text-center">
+            <Link
+              href="/live/artemis-ii-blog"
+              className="inline-flex items-center gap-1.5 text-sm text-cyan-400/70 hover:text-cyan-400 transition-colors font-medium"
+            >
+              Open dedicated Artemis II Live Blog page
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </Link>
+          </div>
         </div>
         </ScrollReveal>
 

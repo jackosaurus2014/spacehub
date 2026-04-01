@@ -173,6 +173,12 @@ const INFRASTRUCTURE: InfraItem[] = [
 
 const RELATED_ARTICLES: RelatedArticle[] = [
   {
+    href: '/live/artemis-ii-blog',
+    title: 'Artemis II Live Blog — Real-Time Launch Updates',
+    excerpt: 'Follow the Artemis II launch live with updates every 15 seconds. Crew status, mission milestones, and real-time commentary.',
+    readingTime: 'Live',
+  },
+  {
     href: '/blog/how-to-watch-artemis-ii-launch-complete-guide',
     title: 'How to Watch the Artemis II Launch: Complete Guide',
     excerpt: 'Everything you need to know about watching humanity\'s return to the Moon, including viewing locations, live streams, and key milestones.',

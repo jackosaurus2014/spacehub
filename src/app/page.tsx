@@ -230,6 +230,17 @@ export default async function HomePage() {
       <section className="relative z-10 pb-6">
         <div className="container mx-auto px-4 max-w-4xl">
           <LiveBlog />
+          <div className="mt-3 text-center">
+            <Link
+              href="/live/artemis-ii-blog"
+              className="inline-flex items-center gap-1.5 text-sm text-cyan-400/70 hover:text-cyan-400 transition-colors font-medium"
+            >
+              Open full Artemis II Live Blog
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </Link>
+          </div>
         </div>
       </section>
 
