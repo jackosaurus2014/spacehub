@@ -520,6 +520,7 @@ export default function LiveStreamSection() {
   const [nextLaunch, setNextLaunch] = useState<NextLaunch | null>(null);
   const [countdown, setCountdown] = useState('');
   const [loaded, setLoaded] = useState(false);
+  const [dismissed, setDismissed] = useState(false);
 
   // Fetch active livestreams on mount and poll every 60s
   useEffect(() => {
@@ -554,7 +555,15 @@ export default function LiveStreamSection() {
         }
 
         // Process next launch (for countdown when no active streams)
-        if (liveRes?.ok) {
+        // Override: Always show Artemis II launch until April 2 (don't show post-launch conference)
+        const artemisLaunchTime = new Date('2026-04-01T22:24:00Z');
+        if (Date.now() < artemisLaunchTime.getTime() + 4 * 60 * 60 * 1000) { // Until 4 hours after launch
+          setNextLaunch({
+            title: 'Artemis II — First Crewed Moon Mission Since 1972',
+            provider: 'NASA / SLS',
+            scheduledTime: artemisLaunchTime.toISOString(),
+          });
+        } else if (liveRes?.ok) {
           const liveData = await liveRes.json();
           if (liveData.nextStream) {
             setNextLaunch({
@@ -638,10 +647,21 @@ export default function LiveStreamSection() {
     };
 
     // If within 48 hours of a scheduled launch, show a prominent countdown banner
+    if (dismissed) return null;
     if (nextLaunch && countdown && (isWithin48Hours || isImminent)) {
       return (
         <section className="relative z-10">
           <div className="relative overflow-hidden bg-gradient-to-r from-indigo-950 via-[#0c0a20] to-cyan-950 border-b border-white/[0.08]">
+            {/* Dismiss button */}
+            <button
+              onClick={() => setDismissed(true)}
+              className="absolute top-3 right-3 z-20 w-8 h-8 flex items-center justify-center rounded-full bg-white/[0.06] hover:bg-white/[0.12] text-slate-400 hover:text-white transition-colors"
+              aria-label="Dismiss"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
             {/* Animated background glow effects */}
             <div className="absolute top-0 left-1/4 w-96 h-96 bg-indigo-500/[0.08] rounded-full blur-[120px] animate-pulse" />
             <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-cyan-500/[0.06] rounded-full blur-[120px]" />

@@ -52,16 +52,12 @@ export default function StreamEmbed({
     return () => clearInterval(interval);
   }, [scheduledTime]);
 
-  // NASA live channel fallback — embed their live stream when no specific video ID
-  const NASA_LIVE_CHANNEL = 'UCLA_DiR1FfKNvjuUpBHmylQ';
-  const embedId = youtubeVideoId || (isLive ? null : null);
-
-  // If live and has video ID, show the embed
-  if (isLive && (youtubeVideoId || true)) {
-    // Use specific video ID if available, otherwise embed NASA TV live channel
+  // If live, show the embed
+  if (isLive) {
+    // Use specific video ID if available, otherwise embed NASA's official Artemis II stream
     const embedSrc = youtubeVideoId
       ? `https://www.youtube.com/embed/${youtubeVideoId}?autoplay=1&rel=0`
-      : `https://www.youtube.com/embed/live_stream?channel=${NASA_LIVE_CHANNEL}&autoplay=1`;
+      : `https://www.youtube.com/embed/m3kR2KK8TEs?autoplay=1&rel=0`; // NASA Official Artemis II Mission Coverage
     return (
       <div className="relative w-full aspect-video bg-space-900 rounded-xl overflow-hidden border border-white/10 shadow-lg shadow-black/5">
         <div className="absolute top-4 left-4 z-10 flex items-center gap-2">
