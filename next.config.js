@@ -5,8 +5,10 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   compress: true,
+  staticPageGenerationTimeout: 300,
   experimental: {
     instrumentationHook: true,
+    workerThreads: false, // Reduce memory usage during static generation
   },
   transpilePackages: ['three', '@react-three/fiber', '@react-three/drei'],
   images: {

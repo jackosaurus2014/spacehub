@@ -239,6 +239,208 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
     ],
   },
   {
+    slug: 'spacex-ipo-filed-trillion-dollar-offering-what-investors-need-to-know',
+    title: 'BREAKING: SpaceX Files for IPO at $1.75 Trillion — The Largest Offering in History',
+    excerpt: 'SpaceX filed confidentially with the SEC on April 1, 2026, targeting a June Nasdaq listing at a $1.75 trillion valuation. The offering could raise $40-80 billion with 30% allocated to retail investors. Here is everything investors need to know about the largest IPO in history.',
+    category: 'market' as BlogCategory,
+    author: 'SpaceNexus Team',
+    authorRole: 'Market Intelligence',
+    publishedAt: '2026-04-01T00:00:00Z',
+    readingTime: 14,
+    featured: true,
+    keywords: ['spacex ipo', 'spacex stock', 'spacex ipo filing', 'spacex valuation', 'spacex public', 'invest in spacex', 'spacex nasdaq', 'starlink ipo', 'spacex ipo 2026'],
+    content: `
+<p>It finally happened. On <strong>April 1, 2026</strong>, SpaceX filed confidentially with the U.S. Securities and Exchange Commission for an initial public offering that would value the company at approximately <strong>$1.75 trillion</strong>. If completed as planned, this will be the largest IPO in the history of public markets &mdash; surpassing Saudi Aramco&apos;s 2019 offering by a wide margin and creating the first publicly traded trillion-dollar space company.</p>
+
+<p>The filing comes after years of speculation about when &mdash; or if &mdash; Elon Musk would take his rocket company public. The answer is now: SpaceX is targeting a <strong>June 2026 listing on the Nasdaq</strong>, with an S-1 prospectus expected to become public between April and May, and an analyst day scheduled for <strong>April 21</strong>. This article breaks down everything we know so far about the filing, the valuation, the risks, and what it means for the broader space industry.</p>
+
+<p><em>For our full company profile, see <a href="/company-profiles/spacex">SpaceX on SpaceNexus</a>.</em></p>
+
+<h2 id="breaking-spacex-files-confidentially">Breaking: SpaceX Files Confidentially with the SEC</h2>
+
+<p>SpaceX submitted its confidential IPO filing to the SEC today, April 1, 2026. The confidential filing process &mdash; formally known as a confidential submission of a draft registration statement &mdash; allows the company to work through SEC disclosures privately before conducting a public roadshow. This is a standard and increasingly common approach for high-profile offerings, allowing management and underwriters to resolve regulatory comments without the scrutiny of public markets watching every revision.</p>
+
+<p>Here is the timeline as we understand it:</p>
+
+<ul>
+<li><strong>April 1, 2026</strong> &mdash; Confidential filing submitted to the SEC</li>
+<li><strong>April&ndash;May 2026</strong> &mdash; S-1 prospectus expected to become publicly available after SEC review</li>
+<li><strong>April 21, 2026</strong> &mdash; Analyst day planned, where SpaceX management will present financials, business strategy, and growth projections to institutional investors and analysts</li>
+<li><strong>June 2026 (target)</strong> &mdash; Shares begin trading on the <strong>Nasdaq</strong></li>
+</ul>
+
+<p>The confidential process means we will not see the full S-1 with detailed financials until SpaceX and the SEC complete their review cycle. But based on the information that has emerged from the filing and its underwriters, we already know enough to analyze the offering in detail.</p>
+
+<h2 id="the-numbers-1-75-trillion-valuation">The Numbers: A $1.75 Trillion Valuation</h2>
+
+<p>SpaceX is targeting a valuation of approximately <strong>$1.75 trillion</strong>. To put that in perspective, this would make SpaceX roughly as valuable as Amazon was in early 2024 and more valuable than most countries&apos; GDP. It dwarfs every other space company combined &mdash; Rocket Lab (RKLB), Intuitive Machines (LUNR), Planet Labs (PL), and AST SpaceMobile (ASTS) together represent a tiny fraction of this figure.</p>
+
+<p>How did SpaceX arrive at $1.75 trillion? The valuation is driven by three pillars:</p>
+
+<h3>1. Starlink: The Revenue Engine</h3>
+<p>Starlink has grown from an ambitious satellite internet experiment into a <strong>$10 billion-plus revenue business</strong> with <strong>9.2 million subscribers</strong> as of the latest data. The service generated an estimated <strong>$8 billion-plus in profit in 2025</strong>, making it one of the most profitable technology businesses in the world on a per-subscriber basis. Analyst projections for 2026 revenue range from <strong>$15.9 billion to $24 billion</strong>, depending on subscriber growth assumptions and average revenue per user trends.</p>
+
+<h3>2. Launch Services: Dominant Market Share</h3>
+<p>SpaceX completed <strong>more than 130 Falcon 9 missions in 2025</strong>, maintaining its position as the world&apos;s most prolific launch provider by a wide margin. The Falcon 9 has become the de facto standard for commercial and government satellite deployment, and its reusability economics give SpaceX structural cost advantages that no competitor has yet matched.</p>
+
+<h3>3. Government Contracts: A $24.4 Billion Anchor</h3>
+<p>Since 2008, SpaceX has been awarded <strong>$24.4 billion in government contracts</strong> from NASA, the Department of Defense, the Space Force, and other federal agencies. These contracts span crew transportation to the International Space Station, national security launch services, and the Artemis Human Landing System (Starship). Government revenue provides a stable, high-margin floor under SpaceX&apos;s business.</p>
+
+<p>The $1.75 trillion target implies a valuation of roughly <strong>100 times or more 2025 revenue</strong> &mdash; an extraordinary multiple by any historical standard. Bulls argue this is justified by Starlink&apos;s growth trajectory and Starship&apos;s transformative potential. Skeptics point out that no company has ever sustained such a multiple post-IPO. We address the valuation risk in detail below.</p>
+
+<h2 id="the-xai-factor">The xAI Factor: Artificial Intelligence Meets Orbital Infrastructure</h2>
+
+<p>Any analysis of the SpaceX IPO must account for the <strong>all-stock merger with xAI</strong>, Elon Musk&apos;s artificial intelligence company, which closed in <strong>February 2026</strong>. The merger created a combined entity that integrates xAI&apos;s AI computing capabilities with SpaceX&apos;s orbital infrastructure &mdash; satellite constellation, launch vehicles, and ground stations.</p>
+
+<p>At the time of the merger, the combined entity was valued at approximately <strong>$1.25 trillion</strong>. The current $1.75 trillion IPO target represents a roughly 40% premium over the merger valuation, reflecting both continued Starlink subscriber growth and the market&apos;s willingness to assign significant value to the AI-space convergence thesis.</p>
+
+<p>The strategic logic of the merger centers on several propositions:</p>
+
+<ul>
+<li><strong>Edge AI computing</strong> &mdash; Using Starlink&apos;s satellite network to distribute AI inference workloads closer to end users worldwide</li>
+<li><strong>Autonomous operations</strong> &mdash; Applying AI to rocket landing, satellite constellation management, and mission planning</li>
+<li><strong>Data advantage</strong> &mdash; Starlink&apos;s global network generates enormous telemetry and usage data that can feed AI model training</li>
+<li><strong>Capital efficiency</strong> &mdash; Combining two capital-intensive businesses under one public entity simplifies fundraising and capital allocation</li>
+</ul>
+
+<p>Whether this convergence will produce the value that the valuation implies is one of the central questions investors will need to evaluate. The S-1 should provide the first detailed look at how SpaceX accounts for the xAI integration and what revenue and cost synergies management expects.</p>
+
+<h2 id="how-the-ipo-will-work">How the IPO Will Work: Underwriters, Retail Access, and Nasdaq Listing</h2>
+
+<p>The offering is being managed by a heavyweight syndicate of <strong>senior underwriters</strong>:</p>
+
+<ul>
+<li><strong>Bank of America</strong></li>
+<li><strong>Goldman Sachs</strong></li>
+<li><strong>JPMorgan Chase</strong></li>
+<li><strong>Morgan Stanley</strong></li>
+</ul>
+
+<p>This is the same caliber of banking consortium that handled the largest IPOs in history, including Saudi Aramco and Alibaba. The presence of all four major Wall Street banks as senior underwriters signals the scale and seriousness of the offering.</p>
+
+<h3>Size of the Offering</h3>
+<p>SpaceX plans to float <strong>less than 5% of total shares</strong>, which at a $1.75 trillion valuation translates to a potential raise of <strong>$40 billion to $80 billion</strong>. Even the lower end of that range would make this the largest IPO ever by a significant margin. Saudi Aramco&apos;s 2019 IPO raised $25.6 billion; SpaceX is targeting nearly double that at minimum.</p>
+
+<h3>30% Retail Allocation: Three Times the Standard</h3>
+<p>Perhaps the most remarkable structural feature of this IPO is the <strong>30% allocation to retail investors</strong>. The typical Wall Street IPO allocates roughly 10% of shares to retail, with the remaining 90% going to institutional investors, hedge funds, and sovereign wealth funds. SpaceX is tripling the retail allocation.</p>
+
+<p>This is a deliberate strategic choice. SpaceX has an enormous retail fan base &mdash; millions of Starlink customers, space enthusiasts, Tesla shareholders, and individual investors who have waited years for a chance to own SpaceX stock. By allocating 30% to retail, SpaceX is both rewarding that base and creating a large, loyal shareholder constituency that tends to hold shares longer than institutional flippers.</p>
+
+<p>For retail investors, the practical question is how to participate. When the S-1 becomes public, most major brokerages (Fidelity, Schwab, Interactive Brokers, Robinhood, etc.) will likely offer IPO access or at least the ability to buy shares on the first trading day. Given the massive demand expected, getting an IPO allocation at the offering price will be highly competitive.</p>
+
+<h3>Nasdaq Listing</h3>
+<p>SpaceX has chosen the <strong>Nasdaq</strong> for its listing, following the path of most major technology companies. The Nasdaq listing puts SpaceX alongside Apple, Microsoft, Amazon, Nvidia, Tesla, and Alphabet &mdash; company it would join in terms of market capitalization almost immediately.</p>
+
+<h2 id="revenue-deep-dive">Revenue Deep Dive: Where SpaceX Makes Its Money</h2>
+
+<p>While the full S-1 will provide audited financial statements, here is what we know about SpaceX&apos;s revenue streams based on available data:</p>
+
+<h3>Starlink: 9.2 Million Subscribers and Growing</h3>
+<p>Starlink is the core value driver. With <strong>9.2 million subscribers</strong> and <strong>$10 billion-plus in 2025 revenue</strong>, the service has achieved a scale that most analysts thought was years away. More importantly, Starlink generated an estimated <strong>$8 billion-plus in profit in 2025</strong>, translating to profit margins of roughly 80% &mdash; extraordinarily high for a business that requires launching and maintaining thousands of satellites.</p>
+
+<p>The 2026 outlook is even more aggressive. Analyst projections range from <strong>$15.9 billion to $24 billion in Starlink revenue</strong> for the current year. The wide range reflects uncertainty about how quickly SpaceX can continue adding subscribers, expand into enterprise and government markets, and increase average revenue per user through premium tiers and add-on services.</p>
+
+<p>Starlink&apos;s addressable market extends well beyond residential internet. Maritime, aviation, enterprise backhaul, government communications, and direct-to-device connectivity all represent large, underpenetrated opportunities. The recently launched Starlink direct-to-cell partnership with T-Mobile is particularly significant &mdash; if it scales, it could add hundreds of millions of potential users.</p>
+
+<h3>Launch Services: 130+ Missions and Counting</h3>
+<p>SpaceX&apos;s Falcon 9 completed <strong>more than 130 missions in 2025</strong>, a launch cadence that no other provider comes close to matching. Each launch generates revenue from commercial satellite customers, government payloads, and Starlink constellation replenishment.</p>
+
+<p>The launch business also serves as a strategic moat. Every Starlink satellite launched by Falcon 9 strengthens the constellation at SpaceX&apos;s own marginal cost rather than at a third-party launch price. This vertical integration is a structural advantage no competitor can replicate without both a reusable rocket and a mega-constellation.</p>
+
+<h3>Government Contracts: $24.4 Billion Since 2008</h3>
+<p>SpaceX&apos;s <strong>$24.4 billion in government contracts since 2008</strong> spans multiple agencies and programs. Key contract vehicles include NASA Commercial Crew (ISS transportation), National Security Space Launch (NSSL) for the Department of Defense and Space Force, and the Artemis Human Landing System (Starship) for lunar missions. Government revenue is highly predictable and provides a stable foundation under the more volatile commercial segments.</p>
+
+<p>For a deeper look at space industry government contracting, see our <a href="/blog/how-to-win-government-space-contracts">guide to winning government space contracts</a>.</p>
+
+<h3>Starship: The Optionality Play</h3>
+<p>Starship, SpaceX&apos;s next-generation fully reusable super heavy-lift vehicle, is still in testing. It has not yet generated meaningful revenue. But it represents arguably the largest source of long-term optionality in the valuation. If Starship achieves its cost and reusability targets, it could reduce launch costs by an order of magnitude, enable Starlink V2 (larger, more capable satellites), support NASA&apos;s Artemis lunar landing missions, and eventually open the door to Mars missions and space-based manufacturing.</p>
+
+<p>However, Starship is also one of the largest risk factors. We address this in the risk section below.</p>
+
+<h2 id="five-key-risks">Five Key Risks Every Investor Should Understand</h2>
+
+<p>The SpaceX IPO is one of the most compelling investment opportunities in a generation. It is also one of the riskiest at this valuation. Here are the five risks that every prospective investor needs to evaluate carefully.</p>
+
+<h3>1. Government Contract Dependency</h3>
+<p>SpaceX has received <strong>$24.4 billion in government contracts since 2008</strong> from NASA, the Department of Defense, and the Space Force. While this revenue is stable, it also creates concentration risk. Government budgets are subject to political cycles, and any shift in procurement strategy &mdash; whether due to competition policy, geopolitical changes, or budget sequestration &mdash; could materially impact SpaceX&apos;s revenue. Additionally, Elon Musk&apos;s high-profile political activities create potential conflicts of interest that could complicate the government contracting relationship.</p>
+
+<h3>2. Starship Development Risk</h3>
+<p>Starship is the key to SpaceX&apos;s long-term growth narrative, but it remains in the testing phase. The vehicle has not yet completed a fully successful orbital flight with recovery of both stages. Starship is also critical for SpaceX&apos;s NASA Artemis Human Landing System contract &mdash; significant delays could jeopardize that contract and the broader Artemis program timeline. Rocket development has historically been plagued by cost overruns and schedule slips, and Starship is the most ambitious launch vehicle ever attempted.</p>
+
+<h3>3. Key-Man Risk: Elon Musk</h3>
+<p>Elon Musk holds approximately <strong>42% voting control</strong> and roughly <strong>54% economic stake</strong> in SpaceX. He is simultaneously the CEO of Tesla, the leader of xAI (now merged with SpaceX), and has been involved in various government advisory roles. This creates legitimate key-man risk on multiple levels: distraction from SpaceX operations, reputational risk from political activities, and ESG concerns that may cause some institutional investors to avoid or underweight the stock. Musk is both SpaceX&apos;s greatest asset and its most significant single point of failure.</p>
+
+<h3>4. Valuation Risk: 100x+ Revenue Multiple</h3>
+<p>A $1.75 trillion valuation on $10 billion-plus in 2025 revenue implies a revenue multiple of <strong>100x or higher</strong>. This is historically unprecedented for a company of this scale. Even the most aggressively valued technology companies during their hyper-growth phases &mdash; Amazon, Tesla, Nvidia &mdash; rarely sustained multiples above 30-40x revenue for extended periods. For SpaceX to grow into its valuation, Starlink revenue needs to reach the higher end of projections, Starship needs to succeed, and the xAI integration needs to deliver real synergies. A miss on any of these fronts could result in significant multiple compression.</p>
+
+<h3>5. Dual-Class Voting Structure</h3>
+<p>Musk&apos;s <strong>42% voting control</strong> means that public shareholders will have limited influence over corporate governance, capital allocation, and strategic direction. This is not unusual for founder-led technology companies &mdash; Google, Meta, and Snap all have dual-class structures &mdash; but it is a factor that investors should consider, particularly given Musk&apos;s history of making bold, sometimes polarizing strategic decisions (the xAI merger being a recent example). Public shareholders are effectively betting on Musk&apos;s judgment without a meaningful ability to override it.</p>
+
+<h2 id="what-this-means-for-space-industry">What This Means for the Space Industry</h2>
+
+<p>The SpaceX IPO is not just a single-company event. It is a watershed moment for the entire space sector. Here is why.</p>
+
+<h3>The Benchmark Effect</h3>
+<p>For the first time, the space industry will have a trillion-dollar public company as a benchmark. Every space company valuation &mdash; public and private &mdash; will be measured relative to SpaceX. This could be positive (lifting all boats as institutional capital flows into the sector) or negative (making every other space company look small and speculative by comparison). Either way, the benchmark changes the conversation.</p>
+
+<h3>Sympathy Trades and Sector Rotation</h3>
+<p>Existing public space stocks &mdash; including <strong>Rocket Lab (RKLB)</strong>, <strong>Intuitive Machines (LUNR)</strong>, <strong>Planet Labs (PL)</strong>, and <strong>AST SpaceMobile (ASTS)</strong> &mdash; could see significant sympathy moves as the IPO approaches. Historically, mega-IPOs draw attention to the entire sector and create a &ldquo;rising tide&rdquo; effect as investors who cannot get IPO allocations look for proxies. Track these moves in real time on our <a href="/space-capital">Space Capital</a> and <a href="/funding-tracker">Funding Tracker</a> pages.</p>
+
+<h3>Validation of the Commercial Space Thesis</h3>
+<p>For years, space industry investors have argued that commercial space is a legitimate, investable sector &mdash; not a niche novelty. A $1.75 trillion SpaceX IPO validates that thesis in the most definitive way possible. It tells institutional allocators, pension funds, sovereign wealth funds, and retail investors alike that space is a real sector with real revenues and real scale. This validation could trigger a wave of follow-on space company IPOs over the next 12-24 months.</p>
+
+<p>For a broader look at the space investment landscape, see our <a href="/blog/space-industry-investment-guide-beginners-2026">Space Industry Investment Guide for 2026</a>.</p>
+
+<h3>A Rising Tide &mdash; or a Shadow?</h3>
+<p>There is a counterargument worth considering. SpaceX may be so dominant that its IPO actually makes it harder for smaller space companies to attract capital. Why invest in a sub-scale launch company when you can own SpaceX? Why bet on a speculative satellite venture when Starlink already has 9.2 million subscribers? The SpaceX IPO could create a barbell effect in space investing: enormous capital flows into SpaceX while smaller companies struggle for attention.</p>
+
+<h2 id="how-to-prepare">How to Prepare: What Retail Investors Should Do Now</h2>
+
+<p>If you are a retail investor interested in the SpaceX IPO, here is a practical action plan for the next two months.</p>
+
+<h3>Before the S-1 Becomes Public (Now through April/May)</h3>
+<ul>
+<li><strong>Open or fund a brokerage account</strong> that offers IPO access. Fidelity, Schwab, and Interactive Brokers have historically provided IPO participation to retail clients, though allocations are competitive.</li>
+<li><strong>Research the business thoroughly.</strong> Read our <a href="/company-profiles/spacex">SpaceX company profile</a> and <a href="/compare/spacex-vs-blue-origin">SpaceX vs. Blue Origin comparison</a>. Understand the revenue streams, the competitive landscape, and the risk factors before the hype cycle intensifies.</li>
+<li><strong>Set a price limit.</strong> Decide in advance how much you are willing to pay relative to revenue and projected growth. Do not let IPO-day emotion override your analysis.</li>
+<li><strong>Understand the lockup period.</strong> Most IPOs have a 90-180 day lockup during which insiders cannot sell. When that lockup expires, additional supply hitting the market often pushes the stock price down. Plan accordingly.</li>
+</ul>
+
+<h3>Consider Alternatives and Diversification</h3>
+<p>Not every investor will get a SpaceX IPO allocation, and not every investor should put all their space exposure into a single stock &mdash; especially one trading at 100x+ revenue. Consider building a diversified space portfolio:</p>
+
+<ul>
+<li><strong>Rocket Lab (RKLB)</strong> &mdash; The second-largest Western launch provider, with a growing space systems business</li>
+<li><strong>Intuitive Machines (LUNR)</strong> &mdash; Lunar lander company with NASA CLPS contracts</li>
+<li><strong>Planet Labs (PL)</strong> &mdash; Earth observation data, large satellite constellation</li>
+<li><strong>AST SpaceMobile (ASTS)</strong> &mdash; Direct-to-device satellite broadband</li>
+<li><strong>Space ETFs</strong> &mdash; Funds like ARKX, UFO, and ROKT provide diversified space sector exposure. Once SpaceX lists, it will likely be added to these ETFs quickly, giving you indirect exposure.</li>
+</ul>
+
+<p>For more on space investing strategy, see our <a href="/blog/space-industry-investment-guide-beginners-2026">beginner&apos;s guide to space industry investing</a>.</p>
+
+<h3>Watch the April 21 Analyst Day</h3>
+<p>The scheduled analyst day on <strong>April 21</strong> will be the most important pre-IPO event. This is when SpaceX management will present detailed financials, growth projections, and strategic vision to analysts and institutional investors. While these presentations are typically aimed at institutional audiences, key takeaways and financial details will become public quickly. SpaceNexus will provide full coverage and analysis. Follow our <a href="/news">news feed</a> for real-time updates.</p>
+
+<h2 id="bottom-line">The Bottom Line</h2>
+
+<p>The SpaceX IPO filing is the single most significant event in space industry financial history. A $1.75 trillion valuation, a potential $40-80 billion raise, and a 30% retail allocation make this unprecedented in both scale and accessibility. The business fundamentals are extraordinary &mdash; $10 billion-plus in Starlink revenue with $8 billion-plus in profit, 130-plus Falcon 9 missions, and a $24.4 billion government contract base &mdash; but the valuation is also extraordinary, implying a 100x+ revenue multiple that leaves little room for execution missteps.</p>
+
+<p>This is a company that has redefined what is possible in spaceflight. Whether that justifies a $1.75 trillion price tag is the question every investor will need to answer for themselves over the next two months.</p>
+
+<p>SpaceNexus will provide continuous coverage as the S-1 becomes public, the analyst day takes place, and the roadshow begins. Bookmark our <a href="/company-profiles/spacex">SpaceX company profile</a> and follow our <a href="/news">news feed</a> for every update.</p>
+
+<p><em>Disclaimer: This article is for informational purposes only and does not constitute investment advice. SpaceNexus does not recommend or endorse any specific investment. Always conduct your own research and consult a financial advisor before making investment decisions.</em></p>
+`,
+    faqItems: [
+      { question: 'When is the SpaceX IPO?', answer: 'SpaceX filed confidentially with the SEC on April 1, 2026, and is targeting a June 2026 listing on the Nasdaq. The S-1 prospectus is expected to become public between April and May 2026, with an analyst day planned for April 21, 2026.' },
+      { question: 'How much is SpaceX worth?', answer: 'SpaceX is targeting a valuation of approximately $1.75 trillion for its IPO. This would make it the most valuable company to ever go public and the first trillion-dollar space company on public markets. The valuation is driven by Starlink ($10B+ revenue, 9.2M subscribers), 130+ annual Falcon 9 launches, and $24.4B in government contracts since 2008.' },
+      { question: 'Can retail investors buy SpaceX IPO stock?', answer: 'Yes. SpaceX is allocating 30% of IPO shares to retail investors, which is approximately three times the typical Wall Street standard of around 10%. To participate, you will need a brokerage account that offers IPO access. Major brokerages like Fidelity, Schwab, and Interactive Brokers have historically offered IPO participation, though allocations are competitive for high-demand offerings like this one.' },
+      { question: 'What are the risks of investing in the SpaceX IPO?', answer: 'The five key risks are: (1) Government contract dependency — $24.4B from NASA, DoD, and Space Force creates concentration risk. (2) Starship development risk — still in testing and critical for long-term growth. (3) Key-man risk — Elon Musk holds ~42% voting control and runs multiple companies simultaneously. (4) Valuation risk — $1.75T implies a 100x+ revenue multiple, historically unprecedented. (5) Dual-class voting structure limits public shareholder influence over corporate decisions.' },
+      { question: 'How does the xAI merger affect the SpaceX IPO?', answer: 'SpaceX completed an all-stock merger with Elon Musk\'s AI company xAI in February 2026, creating a combined entity valued at $1.25 trillion at that time. The merger integrates xAI\'s artificial intelligence computing capabilities with SpaceX\'s orbital infrastructure (Starlink constellation, launch vehicles, ground stations). The current $1.75 trillion IPO target represents a roughly 40% premium over the merger valuation. The S-1 prospectus should provide the first detailed look at how SpaceX accounts for the xAI integration and expected synergies.' },
+    ],
+  },
+  {
     slug: 'nasa-ignition-rfi-guide-how-space-companies-should-respond',
     title: 'NASA Just Dropped Multiple RFIs for the Moon Base. Here\'s What Space Companies Need to Know.',
     excerpt: 'NASA announced at least five major RFIs and solicitations during the Ignition event — from a Moon Base Capabilities RFI to CLPS 2.0 to commercial human lunar transportation beyond Artemis 5. Here is every opportunity, what NASA is looking for, and how to respond.',
