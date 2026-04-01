@@ -541,6 +541,167 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
     ],
   },
   {
+    slug: 'commerce-department-space-certification-what-companies-need-to-know',
+    title: 'The Commerce Department Wants to Be Your One-Stop Shop for Space Licensing. Here\'s What That Means.',
+    excerpt: 'The Office of Space Commerce released an updated proposal for a new opt-in "Space Commerce Certification" — a streamlined one-stop licensing process for novel space activities. We break down what it covers, how it works, and what your company should do next.',
+    category: 'policy',
+    author: 'SpaceNexus Team',
+    authorRole: 'Editorial',
+    publishedAt: '2026-03-30T00:00:00Z',
+    readingTime: 10,
+    featured: false,
+    keywords: ['space commerce certification', 'OSC proposal', 'mission authorization', 'novel space activities', 'space licensing', 'space regulation', 'ISAM', 'debris removal', 'satellite servicing'],
+    content: `
+<p>If you operate in any corner of the commercial space industry that does not fit neatly into an existing regulatory box — satellite servicing, debris removal, in-space manufacturing, lunar operations — the Department of Commerce just put forward a proposal that could fundamentally change how you get permission to operate. The <strong>Office of Space Commerce (OSC)</strong> released an updated proposal in March 2026 for a new opt-in <strong>"Space Commerce Certification"</strong> — a streamlined, single-application licensing process designed to bring regulatory clarity to novel space activities that currently have no dedicated federal authority overseeing them.</p>
+
+<p>The proposal was mandated by <strong>Executive Order 14335</strong>, which directed the Department of Commerce to develop a process to authorize novel commercial space activities. This is not a minor bureaucratic reshuffling. It is a structural attempt to solve one of the most persistent problems in commercial space: the fact that entire categories of activity exist in regulatory gray zones where no agency clearly has jurisdiction.</p>
+
+<p>Here is what the proposal actually says, what it means for different types of space companies, and what you should do about it right now.</p>
+
+<h2 id="what-was-proposed">What Was Proposed</h2>
+
+<p>At its core, the Space Commerce Certification is a <strong>voluntary, opt-in process</strong> that allows companies to submit a single application to the Department of Commerce for authorization of novel space activities. Instead of navigating a fragmented landscape of agencies — each with its own application process, review timeline, and regulatory framework — a company would work through Commerce as a single point of contact.</p>
+
+<p>The OSC would receive the application, conduct an interagency review by coordinating with relevant agencies (FCC, FAA, the Commercial Remote Sensing Regulatory Affairs office, and others), and issue a certification decision within a <strong>120-day timeline</strong> with limited extensions. The proposal establishes a <strong>presumption of approval</strong>: applications are approved unless the OSC documents specific grounds for denial.</p>
+
+<p>The certification requirements are described as <strong>"light touch"</strong> — narrowly tailored to core national interests rather than imposing broad regulatory burdens. And because the process bypasses traditional notice-and-comment rulemaking, mission-specific requirements would be developed through implementation and emerging industry standards, enabling rapid procedural adjustments as the industry evolves.</p>
+
+<h2 id="why-this-matters">Why This Matters</h2>
+
+<p>To understand why this proposal is significant, you need to understand how broken the current system is for companies operating at the frontier of commercial space.</p>
+
+<p>The existing U.S. regulatory framework for space activities was designed decades ago around a few well-understood activities:</p>
+
+<ul>
+<li><strong>The FCC</strong> handles spectrum licensing and orbital slot coordination for communications satellites.</li>
+<li><strong>The FAA</strong> (through its Office of Commercial Space Transportation) licenses launches, reentries, and spaceport operations.</li>
+<li><strong>CRSRA</strong> (the Commercial Remote Sensing Regulatory Affairs office within NOAA) licenses commercial remote sensing satellites.</li>
+</ul>
+
+<p>This framework works reasonably well for the activities it was built to regulate. But the commercial space industry has expanded far beyond those categories. If your company wants to service a satellite in orbit, manufacture materials in microgravity, remove debris, build on the lunar surface, or operate a commercial space station — <strong>no single agency has clear regulatory authority over your core activity</strong>.</p>
+
+<p>Companies in these sectors have been operating in a regulatory gray zone, sometimes seeking informal guidance from multiple agencies, sometimes proceeding without clear authorization, and sometimes delaying operations while waiting for regulatory frameworks that never arrive. The uncertainty creates real costs: it complicates investor due diligence, makes insurance harder to obtain, and puts U.S. companies at a competitive disadvantage against international competitors operating under clearer national frameworks.</p>
+
+<p>The Space Commerce Certification proposal is a direct attempt to close that gap. For companies tracking <a href="/compliance">regulatory and compliance developments</a>, this is one of the most consequential policy proposals of 2026.</p>
+
+<h2 id="what-activities-it-covers">What Activities It Covers</h2>
+
+<p>The proposal identifies several categories of novel space activities that would be eligible for Space Commerce Certification. Each one currently exists in a regulatory gray zone:</p>
+
+<p><strong>Satellite Servicing</strong> — Rendezvous and proximity operations to inspect, repair, refuel, or relocate existing satellites. No agency currently has a dedicated licensing framework for these activities. The FAA licenses the launch, the FCC licenses the communications, but the actual servicing operations fall between the cracks.</p>
+
+<p><strong>In-Space Assembly and Manufacturing (ISAM)</strong> — Constructing structures or manufacturing materials in orbit or elsewhere in space. This includes everything from assembling large space structures that cannot be launched in one piece to manufacturing fiber optics, pharmaceuticals, or advanced materials in microgravity. There is no existing regulatory pathway specifically designed for manufacturing in space.</p>
+
+<p><strong>Debris Removal</strong> — Active removal of defunct satellites, spent rocket stages, and other orbital debris. While debris mitigation guidelines exist (the FCC adopted rules in 2022 requiring deorbit within five years of mission end), there is no licensing framework for companies that want to actively go capture and remove existing debris.</p>
+
+<p><strong>Space Situational Awareness (SSA)</strong> — Commercial tracking and monitoring of objects in space. While CRSRA covers remote sensing of Earth, tracking objects in orbit does not clearly fall under any existing license regime.</p>
+
+<p><strong>Lunar Manufacturing</strong> — Manufacturing or processing materials on the lunar surface, including in-situ resource utilization (ISRU). NASA\'s <a href="/ignition">Ignition program</a> is generating enormous demand for lunar surface capabilities, but the regulatory framework for commercial operations on the Moon remains undefined.</p>
+
+<p><strong>Nuclear-Space Operations</strong> — Use of nuclear power or propulsion systems in space, which involves coordination across multiple agencies (DOE, NRC, NASA) with no single streamlined process.</p>
+
+<p><strong>Commercial Space Stations</strong> — Operation of privately owned and operated habitable space structures. The FAA licenses launch and reentry, but the ongoing operation of a commercial station in orbit lacks a dedicated regulatory framework.</p>
+
+<p><strong>Orbital Computing</strong> — Deploying and operating computing infrastructure in orbit for data processing, cloud services, or other computational tasks. This is an emerging category that no existing framework was designed to address.</p>
+
+<p>The common thread: each of these activities has real commercial demand, active companies pursuing them, and no clear federal licensing pathway. Companies pursuing <a href="/procurement">government contracts in these areas</a> face the added challenge of demonstrating regulatory compliance to agencies that have not defined what compliance looks like.</p>
+
+<h2 id="how-the-certification-process-works">How the Certification Process Works</h2>
+
+<p>The proposed certification process is designed around four key principles: simplicity, speed, a presumption of approval, and interagency coordination.</p>
+
+<h3>Single Application</h3>
+<p>Companies submit one application to the Office of Space Commerce. This is the "one-stop shop" concept. Instead of filing separate applications with the FCC for spectrum, the FAA for launch, CRSRA for remote sensing, and then discovering that your core activity (say, debris removal) has no application to file at all — you file a single application with Commerce that covers the novel aspects of your mission.</p>
+
+<h3>Interagency Review</h3>
+<p>The OSC coordinates the review across relevant agencies. Other agencies have a <strong>30-day window</strong> to review the application and raise any objections or concerns. If an agency does not respond within that window, <strong>silence equals approval</strong> — the lack of objection is treated as concurrence. This prevents the process from stalling indefinitely while waiting for agency responses.</p>
+
+<h3>Presumption of Approval</h3>
+<p>This is perhaps the most significant element of the proposal. Applications carry a <strong>presumption of approval</strong>. The burden is on the OSC to document specific grounds for denial, not on the applicant to prove they should be approved. This inverts the dynamic that many space companies have experienced, where the absence of a clear regulatory pathway effectively functions as a denial.</p>
+
+<h3>120-Day Decision Timeline</h3>
+<p>The OSC must render a decision within <strong>120 days</strong>, with limited extensions available only under defined circumstances. For comparison, some existing agency review processes have no statutory timeline at all, and companies have reported waiting years for decisions in ambiguous regulatory situations.</p>
+
+<h3>Light-Touch Requirements</h3>
+<p>Certification requirements are narrowly tailored to core national interests — specifically national security, international obligations, and space operations safety. The proposal does not attempt to create comprehensive operational regulations for each type of novel activity. Instead, it establishes a framework that can develop mission-specific requirements through implementation and emerging industry standards over time.</p>
+
+<h2 id="the-4-grounds-for-denial">The 4 Grounds for Denial</h2>
+
+<p>The proposal specifies exactly four grounds on which a Space Commerce Certification application can be denied. Understanding each one matters because they define the boundaries of what the government considers legitimate reasons to prevent a commercial space activity.</p>
+
+<h3>1. Applicant Inability to Comply with Certification Commitments</h3>
+<p>This is the most straightforward ground. If the OSC determines that the applicant lacks the technical capability, financial resources, or organizational capacity to actually carry out the commitments made in the certification application, the application can be denied. In practical terms, this means your application needs to demonstrate that you can actually do what you say you are going to do. Companies with a track record of successful space operations will find this easier to satisfy than pre-revenue startups making their first filing.</p>
+
+<h3>2. National Security Harm That Cannot Be Mitigated</h3>
+<p>Note the qualifier: "that cannot be mitigated." The proposal does not say that any national security concern is grounds for denial. It says the harm must be one that <strong>cannot be mitigated</strong> through conditions on the certification, operational restrictions, or other measures. This is an important distinction. It means the OSC and interagency reviewers should first attempt to find mitigation measures that allow the activity to proceed. Denial on national security grounds should be a last resort when no mitigation is possible.</p>
+
+<h3>3. Violation of International Obligations or Foreign Relations Damage That Cannot Be Mitigated</h3>
+<p>The United States is party to several international space treaties, including the Outer Space Treaty of 1967, which makes the U.S. government responsible for the activities of its nationals in space. If a proposed activity would put the U.S. in violation of treaty obligations or cause serious damage to foreign relations — and that risk cannot be mitigated — it can be denied. Again, the "cannot be mitigated" language is key. The default posture is to find a way to make the activity work within international frameworks, not to deny applications at the first hint of diplomatic complexity.</p>
+
+<h3>4. Unacceptable Dangers to Space Operations Safety That Cannot Be Mitigated</h3>
+<p>This covers situations where the proposed activity would create unacceptable risks to other operators in space — collision risks, interference with existing operations, generation of debris, or other hazards. As with the other grounds, the danger must be one that cannot be mitigated through operational constraints, coordination protocols, or other measures. A debris removal mission, for example, would not be denied simply because proximity operations carry inherent risk. It would only be denied if the specific risk profile could not be brought to an acceptable level through any available mitigation.</p>
+
+<p>The consistent theme across all four grounds is the <strong>"cannot be mitigated" standard</strong>. This is deliberately high. The proposal is structured so that denial is the exception, not the default.</p>
+
+<h2 id="what-changes-for-fcc-faa-crsra">What Changes for FCC, FAA, and CRSRA</h2>
+
+<p>The Space Commerce Certification does not strip existing agencies of their legal authority. The FCC still regulates spectrum. The FAA still licenses launches. CRSRA still oversees remote sensing. What the proposal does is create a mechanism for these agencies to <strong>streamline their own processes</strong> for applicants who hold a Space Commerce Certification.</p>
+
+<p>Specifically, the FCC, FAA, and CRSRA would "incorporate reliance on the certification to waive aspects of their regulatory reviews" that are already addressed by the certification. If Commerce has already reviewed and approved the safety, national security, and international obligation aspects of your mission through the certification process, the other agencies would not need to duplicate that review in their own proceedings.</p>
+
+<p>During the interagency review, each relevant agency has a <strong>30-day window to raise objections</strong>. If they do not raise concerns within that window, their silence is treated as approval. Companies work through Commerce as the single point of contact throughout the process — they do not need to separately lobby or coordinate with each agency.</p>
+
+<p>This is a significant operational simplification. Today, a company conducting satellite servicing might need to interact with the FAA for launch, the FCC for communications, and then have no clear pathway for the servicing operations themselves. Under the proposed system, the certification from Commerce would cover the novel activity, and the FAA and FCC reviews would be streamlined to focus only on the aspects within their traditional jurisdiction that are not already addressed by the certification.</p>
+
+<p>For companies navigating the intersection of <a href="/compliance">regulatory compliance</a> and commercial space operations, this integration between agencies is the practical mechanism that makes the "one-stop shop" concept functional rather than aspirational.</p>
+
+<h2 id="what-this-means-for-your-company">What This Means for Your Company</h2>
+
+<p>The implications vary depending on your company\'s size, stage, and the specific activities you are pursuing.</p>
+
+<h3>For Early-Stage Startups</h3>
+<p>If you are pre-revenue and developing technology in one of the covered activity areas, this proposal is potentially transformative for your fundraising and business planning. Regulatory uncertainty is one of the top concerns investors raise when evaluating space companies in novel sectors. A clear, time-bound certification pathway with a presumption of approval gives you a concrete answer to the question "how will you get permission to operate?" Include the Space Commerce Certification pathway in your regulatory strategy section. It signals to investors that you understand the landscape and have a credible path to authorization.</p>
+
+<h3>For Growth-Stage Companies</h3>
+<p>If you are approaching operational readiness and need actual authorization, the 120-day timeline with a presumption of approval is the headline number. Compare that to the current reality of indefinite timelines and ambiguous authority. Begin preparing your application materials now, even though the final process is not yet formalized. The documentation you will need — mission plans, safety analyses, compliance assessments — takes months to prepare properly.</p>
+
+<h3>For Established Operators</h3>
+<p>If you already hold licenses from the FCC, FAA, or CRSRA, the question is whether the certification adds value by streamlining your interactions with those agencies. If you are expanding into novel activities beyond your current license scope, the certification provides a pathway that does not exist today. If your current operations are well-served by existing licenses, the opt-in nature means you can evaluate whether the certification offers practical benefits before committing.</p>
+
+<h3>For Government Contractors</h3>
+<p>If you are pursuing government contracts — particularly NASA contracts through programs like <a href="/ignition">Project Ignition</a> or responding to solicitations like those covered in our <a href="/blog/nasa-ignition-rfi-guide-how-space-companies-should-respond">Ignition RFI guide</a> — holding a Space Commerce Certification could become a differentiator. Government agencies may view the certification as evidence of regulatory compliance and operational readiness, giving certified companies an edge in competitive procurements.</p>
+
+<h2 id="what-to-do-now">What to Do Now</h2>
+
+<p>The OSC is currently seeking stakeholder feedback on the proposal. No specific deadline has been announced, but early engagement typically carries more weight in shaping final implementation. Here is what you should do:</p>
+
+<h3>1. Provide Feedback to the OSC</h3>
+<p>If you operate in any of the covered activity areas, submit formal comments. The implementation details — how "light touch" requirements are defined, what documentation is required, how the 30-day agency review window operates in practice — will be shaped by industry input. If you do not participate, those details will be shaped by others.</p>
+
+<h3>2. Monitor the Implementation</h3>
+<p>Because the proposal bypasses traditional notice-and-comment rulemaking, the process will be developed through implementation rather than formal regulation. This means changes can happen quickly, and the framework will evolve as early certifications are processed. Track developments through the OSC directly and through industry organizations.</p>
+
+<h3>3. Prepare Your Documentation</h3>
+<p>Regardless of where the final process lands, you will need detailed mission plans, safety assessments, spectrum coordination documentation, compliance analyses for international obligations, and organizational capability evidence. Start assembling these materials now. The companies that can file quickly once the process is formalized will have a significant first-mover advantage.</p>
+
+<h3>4. Review Your Existing Licenses</h3>
+<p>If you hold existing FCC, FAA, or CRSRA authorizations, evaluate how the certification would interact with your current license obligations. Understand which aspects of your existing reviews might be streamlined and which would remain unchanged. Use the <a href="/compliance">regulatory compliance tools on SpaceNexus</a> to track your obligations across agencies.</p>
+
+<h3>5. Brief Your Investors and Board</h3>
+<p>If regulatory uncertainty has been a risk factor in your investor communications, update your stakeholders on this development. The proposal represents a concrete step toward resolving one of the most frequently cited risks in novel space activity investments. Do not overstate it — the proposal is not final, and implementation details matter — but it is a material development worth communicating.</p>
+
+<p>The Space Commerce Certification proposal is not a done deal. Stakeholder feedback could reshape key elements, implementation could hit bureaucratic resistance, and a future administration could take a different approach. But the direction is clear: the U.S. government is moving toward a consolidated, streamlined authorization pathway for novel space activities, with a presumption of approval and a defined timeline. For companies that have been waiting for regulatory clarity, this is the most concrete proposal yet.</p>
+
+<p>Stay up to date on lunar programs driving demand for these novel activities with the <a href="/ignition">Ignition Tracker</a> on SpaceNexus.</p>
+`,
+    faqItems: [
+      { question: 'What is Space Commerce Certification?', answer: 'Space Commerce Certification is a proposed opt-in, streamlined licensing process from the Department of Commerce\'s Office of Space Commerce (OSC). Mandated by Executive Order 14335, it creates a single application pathway for novel commercial space activities — such as satellite servicing, debris removal, in-space manufacturing, and lunar operations — that currently lack a clear regulatory authority. Instead of filing with multiple agencies, companies would submit one application to Commerce, which coordinates interagency review and issues a decision within 120 days.' },
+      { question: 'Who needs Space Commerce Certification?', answer: 'The certification is voluntary (opt-in) and designed for companies pursuing novel space activities not clearly governed by existing regulations. This includes satellite servicing, in-space assembly and manufacturing (ISAM), debris removal, space situational awareness (SSA), lunar manufacturing, nuclear-space operations, commercial space stations, and orbital computing. Companies already well-served by existing FCC, FAA, or CRSRA licenses may not need it, but those expanding into novel activities or seeking streamlined multi-agency coordination would benefit.' },
+      { question: 'How long does approval take?', answer: 'The proposal establishes a 120-day decision timeline with limited extensions. Applications carry a presumption of approval — the OSC must document specific grounds for denial rather than requiring applicants to prove they should be approved. During the review, other agencies have a 30-day window to raise objections; if they do not respond, silence equals approval. This is a significant improvement over the current reality where some regulatory reviews have no statutory timeline.' },
+      { question: 'Can my application be denied?', answer: 'Yes, but only on four specific grounds: (1) applicant inability to comply with certification commitments, (2) national security harm that cannot be mitigated, (3) violation of international obligations or foreign relations damage that cannot be mitigated, or (4) unacceptable dangers to space operations safety that cannot be mitigated. The key phrase across three of the four grounds is "cannot be mitigated" — the OSC must first attempt to find conditions or restrictions that allow the activity to proceed before denying the application.' },
+    ],
+  },
+  {
     slug: 'spacex-falcon-heavy-complete-guide-2026',
     title: 'SpaceX Falcon Heavy: Complete Guide to the World\'s Most Powerful Operational Rocket',
     excerpt: 'Everything you need to know about Falcon Heavy — specs, launch history, cost, notable missions, and how it compares to SLS and Starship. Updated for 2026.',
