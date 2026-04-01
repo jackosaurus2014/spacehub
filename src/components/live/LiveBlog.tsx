@@ -164,6 +164,16 @@ export default function LiveBlog() {
     }
   };
 
+  // Delete handler (admin only)
+  const handleDelete = async (id: string) => {
+    try {
+      const res = await fetch(`/api/live-blog?id=${id}`, { method: 'DELETE' });
+      if (res.ok) {
+        setEntries(prev => prev.filter(e => e.id !== id));
+      }
+    } catch { /* silent */ }
+  };
+
   // Separate pinned and regular entries
   const pinnedEntries = entries.filter(e => e.pinned);
   const regularEntries = entries.filter(e => !e.pinned);
@@ -292,12 +302,12 @@ export default function LiveBlog() {
       >
         {/* Pinned entries */}
         {pinnedEntries.map(entry => (
-          <LiveBlogEntryCard key={entry.id} entry={entry} isPinned />
+          <LiveBlogEntryCard key={entry.id} entry={entry} isPinned isAdmin={isAdmin} onDelete={handleDelete} />
         ))}
 
         {/* Regular entries (newest first) */}
         {regularEntries.map(entry => (
-          <LiveBlogEntryCard key={entry.id} entry={entry} />
+          <LiveBlogEntryCard key={entry.id} entry={entry} isAdmin={isAdmin} onDelete={handleDelete} />
         ))}
       </div>
 
@@ -311,7 +321,7 @@ export default function LiveBlog() {
   );
 }
 
-function LiveBlogEntryCard({ entry, isPinned = false }: { entry: LiveBlogEntry; isPinned?: boolean }) {
+function LiveBlogEntryCard({ entry, isPinned = false, isAdmin = false, onDelete }: { entry: LiveBlogEntry; isPinned?: boolean; isAdmin?: boolean; onDelete?: (id: string) => void }) {
   const icon = TYPE_ICONS[entry.type] || TYPE_ICONS.update;
   const borderColor = TYPE_BORDER_COLORS[entry.type] || TYPE_BORDER_COLORS.update;
   const label = TYPE_LABELS[entry.type] || 'Update';
@@ -364,6 +374,16 @@ function LiveBlogEntryCard({ entry, isPinned = false }: { entry: LiveBlogEntry; 
           <p className="text-sm text-slate-400 leading-relaxed">
             {entry.body}
           </p>
+
+          {/* Admin delete */}
+          {isAdmin && onDelete && (
+            <button
+              onClick={() => { if (confirm('Delete this entry?')) onDelete(entry.id); }}
+              className="mt-2 text-[10px] text-red-400/60 hover:text-red-400 transition-colors"
+            >
+              Delete entry
+            </button>
+          )}
         </div>
       </div>
     </article>

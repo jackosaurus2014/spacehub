@@ -118,3 +118,30 @@ export async function POST(req: NextRequest) {
 
   return NextResponse.json({ success: true, entry }, { status: 201 });
 }
+
+/**
+ * DELETE /api/live-blog — Remove an entry by ID (admin only)
+ */
+export async function DELETE(req: NextRequest) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.isAdmin) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  const { searchParams } = new URL(req.url);
+  const id = searchParams.get('id');
+
+  if (!id) {
+    return NextResponse.json({ error: 'Entry ID required' }, { status: 400 });
+  }
+
+  const idx = entries.findIndex(e => e.id === id);
+  if (idx === -1) {
+    return NextResponse.json({ error: 'Entry not found' }, { status: 404 });
+  }
+
+  const removed = entries.splice(idx, 1)[0];
+  logger.info('Live blog entry deleted', { id: removed.id, title: removed.title });
+
+  return NextResponse.json({ success: true, deleted: removed.id });
+}
