@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
     if (existingUser) {
       // Return a generic success response that looks identical to a new registration
       return NextResponse.json({
-        message: 'Registration successful. Please check your email to verify your account.',
+        message: 'Registration successful. You can now sign in.',
       });
     }
 
@@ -50,7 +50,7 @@ export async function POST(req: NextRequest) {
       data: { verificationToken },
     });
 
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://spacenexus.us';
     const verifyUrl = `${appUrl}/verify-email?token=${verificationToken}`;
     const { html, text } = generateVerificationEmail(verifyUrl, name || undefined);
 
@@ -71,7 +71,7 @@ export async function POST(req: NextRequest) {
     }
 
     return NextResponse.json({
-      message: 'Registration successful. Please check your email to verify your account.',
+      message: 'Registration successful. You can now sign in.',
     });
   } catch (error) {
     logger.error('Registration error', { error: error instanceof Error ? error.message : String(error) });

@@ -5335,3 +5335,18 @@ model EmployerProfile {
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 }
+
+// ─── Live Blog ──────────────────────────────────────────────────────────────
+
+model LiveBlogEntry {
+  id        String   @id @default(uuid())
+  title     String
+  body      String
+  type      String   @default("update") // update, milestone, alert, media, countdown
+  source    String   @default("admin") // admin, auto, nasa
+  pinned    Boolean  @default(false)
+  eventTag  String?  // e.g. "artemis-ii" — allows filtering by event
+  createdAt DateTime @default(now())
+
+  @@index([eventTag, createdAt])
+}

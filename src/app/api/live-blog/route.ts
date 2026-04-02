@@ -1,47 +1,87 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
+import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
 
-interface LiveBlogEntry {
-  id: string;
-  timestamp: string;
-  title: string;
-  body: string;
-  type: 'update' | 'milestone' | 'alert' | 'media' | 'countdown';
-  source: 'admin' | 'auto' | 'nasa';
-  pinned?: boolean;
+export const dynamic = 'force-dynamic';
+
+/** Sanitize text: strip HTML tags, decode entities, normalize whitespace */
+function sanitize(text: string, maxLen: number): string {
+  return text
+    .replace(/<[^>]*>/g, '')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&amp;/g, '&')
+    .replace(/&#8217;/g, "'")
+    .replace(/&#8216;/g, "'")
+    .replace(/&#8220;/g, '"')
+    .replace(/&#8221;/g, '"')
+    .replace(/&#8212;/g, ' — ')
+    .replace(/&#\d+;/g, '')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, maxLen);
 }
 
-// In-memory store (resets on deploy — fine for live events)
-const entries: LiveBlogEntry[] = [];
-const MAX_ENTRIES = 200;
-
-// No seed entries — all content is posted via admin or API
-// This prevents duplicate entries on server restart / Railway dyno recycle
-
-// GET — return all entries (newest first)
+/**
+ * GET /api/live-blog — Return entries (newest first)
+ * Query params:
+ *   ?event=artemis-ii  — filter by event tag (default: all)
+ *   ?since=ISO_DATE    — only entries after this timestamp
+ *   ?limit=50          — max entries to return
+ */
 export async function GET(req: NextRequest) {
-  const { searchParams } = new URL(req.url);
-  const since = searchParams.get('since'); // ISO timestamp — only return entries after this
+  try {
+    const { searchParams } = new URL(req.url);
+    const event = searchParams.get('event');
+    const since = searchParams.get('since');
+    const limit = Math.min(parseInt(searchParams.get('limit') || '50'), 200);
 
-  let filtered = entries;
-  if (since) {
-    filtered = entries.filter(e => e.timestamp > since);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const where: Record<string, any> = {};
+    if (event) where.eventTag = event;
+    if (since) where.createdAt = { gt: new Date(since) };
+
+    const [entries, total] = await Promise.all([
+      prisma.liveBlogEntry.findMany({
+        where,
+        orderBy: { createdAt: 'desc' },
+        take: limit,
+      }),
+      prisma.liveBlogEntry.count({ where }),
+    ]);
+
+    // Map to the shape the frontend expects
+    const mapped = entries.map(e => ({
+      id: e.id,
+      timestamp: e.createdAt.toISOString(),
+      title: e.title,
+      body: e.body,
+      type: e.type,
+      source: e.source,
+      pinned: e.pinned,
+      eventTag: e.eventTag,
+    }));
+
+    return NextResponse.json({
+      entries: mapped,
+      total,
+      lastUpdated: mapped[0]?.timestamp || null,
+    }, {
+      headers: { 'Cache-Control': 'no-cache, no-store, must-revalidate' },
+    });
+  } catch (error) {
+    logger.error('Live blog GET error', { error: String(error) });
+    return NextResponse.json({ entries: [], total: 0, lastUpdated: null }, {
+      headers: { 'Cache-Control': 'no-cache, no-store, must-revalidate' },
+    });
   }
-
-  return NextResponse.json({
-    entries: filtered.sort((a, b) => b.timestamp.localeCompare(a.timestamp)),
-    total: entries.length,
-    lastUpdated: entries[0]?.timestamp || null,
-  }, {
-    headers: { 'Cache-Control': 'no-cache, no-store, must-revalidate' },
-  });
 }
 
-// POST — add a new entry (admin only, or cron for auto-updates)
+/**
+ * POST /api/live-blog — Add a new entry (admin or cron)
+ */
 export async function POST(req: NextRequest) {
-  // Check admin auth or cron secret
   const session = await getServerSession(authOptions);
   const authHeader = req.headers.get('authorization');
   const cronSecret = process.env.CRON_SECRET;
@@ -52,37 +92,51 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const body = await req.json();
-  const { title, body: entryBody, type, pinned } = body;
+  try {
+    const body = await req.json();
+    const { title, body: entryBody, type, pinned, eventTag } = body;
 
-  if (!title || !entryBody) {
-    return NextResponse.json({ error: 'Title and body required' }, { status: 400 });
+    if (!title || !entryBody) {
+      return NextResponse.json({ error: 'Title and body required' }, { status: 400 });
+    }
+
+    const entry = await prisma.liveBlogEntry.create({
+      data: {
+        title: sanitize(title, 200),
+        body: sanitize(entryBody, 2000),
+        type: type || 'update',
+        source: isCron ? 'auto' : 'admin',
+        pinned: pinned || false,
+        eventTag: eventTag || 'artemis-ii', // Default to current event
+      },
+    });
+
+    logger.info('Live blog entry added', { id: entry.id, title: entry.title, source: entry.source });
+
+    return NextResponse.json({
+      success: true,
+      entry: {
+        id: entry.id,
+        timestamp: entry.createdAt.toISOString(),
+        title: entry.title,
+        body: entry.body,
+        type: entry.type,
+        source: entry.source,
+        pinned: entry.pinned,
+      },
+    }, { status: 201 });
+  } catch (error) {
+    logger.error('Live blog POST error', { error: String(error) });
+    return NextResponse.json({ error: 'Failed to create entry' }, { status: 500 });
   }
-
-  const entry: LiveBlogEntry = {
-    id: `lb-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
-    timestamp: new Date().toISOString(),
-    title: title.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/&#8217;/g, "'").replace(/&#\d+;/g, '').replace(/\s+/g, ' ').trim().slice(0, 200),
-    body: entryBody.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/&#8217;/g, "'").replace(/&#\d+;/g, '').replace(/\s+/g, ' ').trim().slice(0, 2000),
-    type: type || 'update',
-    source: isCron ? 'auto' : 'admin',
-    pinned: pinned || false,
-  };
-
-  entries.unshift(entry);
-  if (entries.length > MAX_ENTRIES) entries.length = MAX_ENTRIES;
-
-  logger.info('Live blog entry added', { id: entry.id, title: entry.title, source: entry.source });
-
-  return NextResponse.json({ success: true, entry }, { status: 201 });
 }
 
 /**
- * DELETE /api/live-blog — Remove an entry by ID (admin only)
+ * DELETE /api/live-blog?id=ENTRY_ID — Remove an entry (admin only)
  */
 export async function DELETE(req: NextRequest) {
   const session = await getServerSession(authOptions);
-  if (!session?.user?.isAdmin) {
+  if (!(session?.user as any)?.isAdmin) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -93,13 +147,11 @@ export async function DELETE(req: NextRequest) {
     return NextResponse.json({ error: 'Entry ID required' }, { status: 400 });
   }
 
-  const idx = entries.findIndex(e => e.id === id);
-  if (idx === -1) {
+  try {
+    const entry = await prisma.liveBlogEntry.delete({ where: { id } });
+    logger.info('Live blog entry deleted', { id: entry.id, title: entry.title });
+    return NextResponse.json({ success: true, deleted: entry.id });
+  } catch {
     return NextResponse.json({ error: 'Entry not found' }, { status: 404 });
   }
-
-  const removed = entries.splice(idx, 1)[0];
-  logger.info('Live blog entry deleted', { id: removed.id, title: removed.title });
-
-  return NextResponse.json({ success: true, deleted: removed.id });
 }
