@@ -33,6 +33,31 @@ jest.mock('@/lib/db', () => ({
       findMany: jest.fn(),
       create: jest.fn(),
     },
+    companyEvent: {
+      findMany: jest.fn(),
+      create: jest.fn(),
+      count: jest.fn(),
+    },
+    spaceJobPosting: {
+      findMany: jest.fn(),
+      findFirst: jest.fn(),
+      create: jest.fn(),
+      update: jest.fn(),
+    },
+    gigOpportunity: {
+      findMany: jest.fn(),
+      create: jest.fn(),
+    },
+    employerProfile: {
+      findUnique: jest.fn(),
+      create: jest.fn(),
+    },
+    partnershipRequest: {
+      findMany: jest.fn(),
+      findFirst: jest.fn(),
+      create: jest.fn(),
+      update: jest.fn(),
+    },
     user: {
       findUnique: jest.fn(),
       update: jest.fn(),
@@ -58,9 +83,13 @@ import prisma from '@/lib/db';
 import { getServerSession } from 'next-auth';
 
 import { GET as listGET } from '@/app/api/company-profiles/route';
-import { GET as detailGET } from '@/app/api/company-profiles/[slug]/route';
+import { GET as detailGET, PATCH as profilePATCH } from '@/app/api/company-profiles/[slug]/route';
 import { POST as claimPOST } from '@/app/api/company-profiles/[slug]/claim/route';
 import { POST as requestPOST, GET as requestGET } from '@/app/api/companies/request/route';
+import { POST as eventPOST, GET as eventGET } from '@/app/api/company-profiles/[slug]/events/route';
+import { POST as jobPOST, GET as jobGET } from '@/app/api/company-profiles/[slug]/jobs/route';
+import { POST as gigPOST, GET as gigGET } from '@/app/api/company-profiles/[slug]/gigs/route';
+import { POST as partnerPOST, GET as partnerGET, PATCH as partnerPATCH } from '@/app/api/company-profiles/[slug]/partnerships/route';
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -866,5 +895,327 @@ describe('GET /api/companies/request', () => {
 
     expect(res.status).toBe(500);
     expect(body.error).toBe('Failed to fetch company requests');
+  });
+});
+
+// =============================================================================
+// PATCH /api/company-profiles/[slug] (Owner edits profile)
+// =============================================================================
+
+describe('PATCH /api/company-profiles/[slug]', () => {
+  function makePatchRequest(body: Record<string, unknown>) {
+    return new NextRequest('http://localhost/api/company-profiles/spacex', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+  }
+
+  it('returns 401 when not authenticated', async () => {
+    mockGetServerSession.mockResolvedValue(null);
+
+    const req = makePatchRequest({ description: 'Updated' });
+    const res = await profilePATCH(req, { params: Promise.resolve({ slug: 'spacex' }) });
+    const body = await res.json();
+
+    expect(res.status).toBe(401);
+    expect(body.error).toBe('Authentication required');
+  });
+
+  it('returns 403 when user does not own the profile', async () => {
+    mockGetServerSession.mockResolvedValue({ user: { id: 'user-2' } } as any);
+    (mockPrisma.companyProfile.findUnique as jest.Mock).mockResolvedValue({
+      id: 'company-1', claimedByUserId: 'user-1', name: 'SpaceX', slug: 'spacex',
+    });
+
+    const req = makePatchRequest({ description: 'Updated' });
+    const res = await profilePATCH(req, { params: Promise.resolve({ slug: 'spacex' }) });
+    const body = await res.json();
+
+    expect(res.status).toBe(403);
+    expect(body.error).toContain('Only the profile owner');
+  });
+
+  it('successfully updates profile fields for owner', async () => {
+    mockGetServerSession.mockResolvedValue({ user: { id: 'user-1' } } as any);
+    (mockPrisma.companyProfile.findUnique as jest.Mock).mockResolvedValue({
+      id: 'company-1', claimedByUserId: 'user-1', name: 'SpaceX', slug: 'spacex',
+    });
+    (mockPrisma.companyProfile.update as jest.Mock).mockResolvedValue({
+      id: 'company-1', slug: 'spacex', name: 'SpaceX', description: 'Updated desc',
+    });
+
+    const req = makePatchRequest({ description: 'Updated desc', headquarters: 'LA' });
+    const res = await profilePATCH(req, { params: Promise.resolve({ slug: 'spacex' }) });
+    const body = await res.json();
+
+    expect(res.status).toBe(200);
+    expect(body.success).toBe(true);
+    expect(body.company.description).toBe('Updated desc');
+  });
+
+  it('returns 400 for invalid fields', async () => {
+    mockGetServerSession.mockResolvedValue({ user: { id: 'user-1' } } as any);
+    (mockPrisma.companyProfile.findUnique as jest.Mock).mockResolvedValue({
+      id: 'company-1', claimedByUserId: 'user-1', name: 'SpaceX', slug: 'spacex',
+    });
+
+    const req = makePatchRequest({ website: 'not-a-url' });
+    const res = await profilePATCH(req, { params: Promise.resolve({ slug: 'spacex' }) });
+
+    expect(res.status).toBe(400);
+  });
+
+  it('returns 400 when no fields to update', async () => {
+    mockGetServerSession.mockResolvedValue({ user: { id: 'user-1' } } as any);
+    (mockPrisma.companyProfile.findUnique as jest.Mock).mockResolvedValue({
+      id: 'company-1', claimedByUserId: 'user-1', name: 'SpaceX', slug: 'spacex',
+    });
+
+    const req = makePatchRequest({});
+    const res = await profilePATCH(req, { params: Promise.resolve({ slug: 'spacex' }) });
+
+    expect(res.status).toBe(400);
+  });
+
+  it('returns 404 when company not found', async () => {
+    mockGetServerSession.mockResolvedValue({ user: { id: 'user-1' } } as any);
+    (mockPrisma.companyProfile.findUnique as jest.Mock).mockResolvedValue(null);
+
+    const req = makePatchRequest({ description: 'Test' });
+    const res = await profilePATCH(req, { params: Promise.resolve({ slug: 'nonexistent' }) });
+
+    expect(res.status).toBe(404);
+  });
+});
+
+// =============================================================================
+// POST /api/company-profiles/[slug]/events (Owner posts announcement)
+// =============================================================================
+
+describe('POST /api/company-profiles/[slug]/events', () => {
+  const validEvent = {
+    title: 'Won NASA contract',
+    description: 'Major milestone for the company',
+    type: 'contract_win',
+    date: '2026-04-10',
+    importance: 8,
+  };
+
+  function makeEventRequest(body: Record<string, unknown>) {
+    return new NextRequest('http://localhost/api/company-profiles/spacex/events', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+  }
+
+  it('returns 401 when not authenticated', async () => {
+    mockGetServerSession.mockResolvedValue(null);
+
+    const req = makeEventRequest(validEvent);
+    const res = await eventPOST(req, { params: Promise.resolve({ slug: 'spacex' }) });
+    const body = await res.json();
+
+    expect(res.status).toBe(401);
+    expect(body.error).toBe('Authentication required');
+  });
+
+  it('returns 403 when user does not own the profile', async () => {
+    mockGetServerSession.mockResolvedValue({ user: { id: 'user-2' } } as any);
+    (mockPrisma.companyProfile.findUnique as jest.Mock).mockResolvedValue({
+      id: 'company-1', claimedByUserId: 'user-1', name: 'SpaceX',
+    });
+
+    const req = makeEventRequest(validEvent);
+    const res = await eventPOST(req, { params: Promise.resolve({ slug: 'spacex' }) });
+    const body = await res.json();
+
+    expect(res.status).toBe(403);
+    expect(body.error).toContain('Only the profile owner');
+  });
+
+  it('creates event successfully for owner', async () => {
+    mockGetServerSession.mockResolvedValue({ user: { id: 'user-1' } } as any);
+    (mockPrisma.companyProfile.findUnique as jest.Mock).mockResolvedValue({
+      id: 'company-1', claimedByUserId: 'user-1', name: 'SpaceX',
+    });
+    (mockPrisma.companyEvent.create as jest.Mock).mockResolvedValue({
+      id: 'event-1', title: validEvent.title, type: validEvent.type,
+    });
+
+    const req = makeEventRequest(validEvent);
+    const res = await eventPOST(req, { params: Promise.resolve({ slug: 'spacex' }) });
+    const body = await res.json();
+
+    expect(res.status).toBe(201);
+    expect(body.success).toBe(true);
+    expect(body.event.title).toBe(validEvent.title);
+  });
+
+  it('returns 400 for invalid event data', async () => {
+    mockGetServerSession.mockResolvedValue({ user: { id: 'user-1' } } as any);
+    (mockPrisma.companyProfile.findUnique as jest.Mock).mockResolvedValue({
+      id: 'company-1', claimedByUserId: 'user-1', name: 'SpaceX',
+    });
+
+    const req = makeEventRequest({ title: 'AB', type: 'invalid_type', date: 'not-a-date' });
+    const res = await eventPOST(req, { params: Promise.resolve({ slug: 'spacex' }) });
+
+    expect(res.status).toBe(400);
+  });
+
+  it('returns 404 when company not found', async () => {
+    mockGetServerSession.mockResolvedValue({ user: { id: 'user-1' } } as any);
+    (mockPrisma.companyProfile.findUnique as jest.Mock).mockResolvedValue(null);
+
+    const req = makeEventRequest(validEvent);
+    const res = await eventPOST(req, { params: Promise.resolve({ slug: 'nonexistent' }) });
+
+    expect(res.status).toBe(404);
+  });
+});
+
+// =============================================================================
+// GET /api/company-profiles/[slug]/events (List company events)
+// =============================================================================
+
+describe('GET /api/company-profiles/[slug]/events', () => {
+  it('returns events for existing company', async () => {
+    (mockPrisma.companyProfile.findUnique as jest.Mock).mockResolvedValue({ id: 'company-1' });
+    (mockPrisma.companyEvent.findMany as jest.Mock).mockResolvedValue([
+      { id: 'e1', title: 'Event 1', type: 'milestone' },
+      { id: 'e2', title: 'Event 2', type: 'funding' },
+    ]);
+
+    const req = new NextRequest('http://localhost/api/company-profiles/spacex/events');
+    const res = await eventGET(req, { params: Promise.resolve({ slug: 'spacex' }) });
+    const body = await res.json();
+
+    expect(res.status).toBe(200);
+    expect(body.events).toHaveLength(2);
+  });
+
+  it('returns 404 for non-existent company', async () => {
+    (mockPrisma.companyProfile.findUnique as jest.Mock).mockResolvedValue(null);
+
+    const req = new NextRequest('http://localhost/api/company-profiles/nope/events');
+    const res = await eventGET(req, { params: Promise.resolve({ slug: 'nope' }) });
+
+    expect(res.status).toBe(404);
+  });
+});
+
+// =============================================================================
+// Company Jobs API Tests
+// =============================================================================
+
+describe('POST /api/company-profiles/[slug]/jobs', () => {
+  const validJob = { title: 'Senior Engineer', location: 'Houston, TX', category: 'engineering', seniorityLevel: 'senior', description: 'Build rocket engines and more' };
+
+  it('returns 401 when not authenticated', async () => {
+    mockGetServerSession.mockResolvedValue(null);
+    const req = new NextRequest('http://localhost/api/company-profiles/spacex/jobs', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(validJob) });
+    const res = await jobPOST(req, { params: Promise.resolve({ slug: 'spacex' }) });
+    expect(res.status).toBe(401);
+  });
+
+  it('returns 403 when user does not own the profile', async () => {
+    mockGetServerSession.mockResolvedValue({ user: { id: 'user-2' } } as any);
+    (mockPrisma.companyProfile.findUnique as jest.Mock).mockResolvedValue({ id: 'c1', claimedByUserId: 'user-1', name: 'SpaceX' });
+    const req = new NextRequest('http://localhost/api/company-profiles/spacex/jobs', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(validJob) });
+    const res = await jobPOST(req, { params: Promise.resolve({ slug: 'spacex' }) });
+    expect(res.status).toBe(403);
+  });
+
+  it('creates job successfully for owner', async () => {
+    mockGetServerSession.mockResolvedValue({ user: { id: 'user-1' } } as any);
+    (mockPrisma.companyProfile.findUnique as jest.Mock).mockResolvedValue({ id: 'c1', claimedByUserId: 'user-1', name: 'SpaceX' });
+    (mockPrisma.spaceJobPosting.create as jest.Mock).mockResolvedValue({ id: 'job-1', title: validJob.title });
+    const req = new NextRequest('http://localhost/api/company-profiles/spacex/jobs', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(validJob) });
+    const res = await jobPOST(req, { params: Promise.resolve({ slug: 'spacex' }) });
+    const body = await res.json();
+    expect(res.status).toBe(201);
+    expect(body.success).toBe(true);
+  });
+});
+
+// =============================================================================
+// Company Gigs API Tests
+// =============================================================================
+
+describe('POST /api/company-profiles/[slug]/gigs', () => {
+  const validGig = { title: 'RF Consultant', description: 'Design antenna for cubesat mission payload', category: 'engineering', skills: ['RF', 'HFSS'], workType: 'consulting' };
+
+  it('returns 401 when not authenticated', async () => {
+    mockGetServerSession.mockResolvedValue(null);
+    const req = new NextRequest('http://localhost/api/company-profiles/spacex/gigs', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(validGig) });
+    const res = await gigPOST(req, { params: Promise.resolve({ slug: 'spacex' }) });
+    expect(res.status).toBe(401);
+  });
+
+  it('creates gig successfully for owner', async () => {
+    mockGetServerSession.mockResolvedValue({ user: { id: 'user-1' } } as any);
+    (mockPrisma.companyProfile.findUnique as jest.Mock).mockResolvedValue({ id: 'c1', claimedByUserId: 'user-1', name: 'SpaceX' });
+    (mockPrisma.employerProfile.findUnique as jest.Mock).mockResolvedValue(null);
+    (mockPrisma.employerProfile.create as jest.Mock).mockResolvedValue({ id: 'ep-1' });
+    (mockPrisma.gigOpportunity.create as jest.Mock).mockResolvedValue({ id: 'gig-1', title: validGig.title });
+    const req = new NextRequest('http://localhost/api/company-profiles/spacex/gigs', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(validGig) });
+    const res = await gigPOST(req, { params: Promise.resolve({ slug: 'spacex' }) });
+    const body = await res.json();
+    expect(res.status).toBe(201);
+    expect(body.success).toBe(true);
+  });
+});
+
+// =============================================================================
+// Partnership Request API Tests
+// =============================================================================
+
+describe('Partnership requests', () => {
+  const validRequest = { receiverCompanySlug: 'blue-origin', type: 'strategic_alliance', message: 'Let us team up' };
+
+  it('POST returns 401 when not authenticated', async () => {
+    mockGetServerSession.mockResolvedValue(null);
+    const req = new NextRequest('http://localhost/api/company-profiles/spacex/partnerships', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(validRequest) });
+    const res = await partnerPOST(req, { params: Promise.resolve({ slug: 'spacex' }) });
+    expect(res.status).toBe(401);
+  });
+
+  it('POST creates partnership request successfully', async () => {
+    mockGetServerSession.mockResolvedValue({ user: { id: 'user-1' } } as any);
+    (mockPrisma.companyProfile.findUnique as jest.Mock)
+      .mockResolvedValueOnce({ id: 'c1', claimedByUserId: 'user-1', name: 'SpaceX' })
+      .mockResolvedValueOnce({ id: 'c2', name: 'Blue Origin' });
+    (mockPrisma.partnershipRequest.findFirst as jest.Mock).mockResolvedValue(null);
+    (mockPrisma.partnershipRequest.create as jest.Mock).mockResolvedValue({
+      id: 'pr-1', status: 'pending', receiverCompany: { id: 'c2', slug: 'blue-origin', name: 'Blue Origin' },
+    });
+    const req = new NextRequest('http://localhost/api/company-profiles/spacex/partnerships', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(validRequest) });
+    const res = await partnerPOST(req, { params: Promise.resolve({ slug: 'spacex' }) });
+    expect(res.status).toBe(201);
+  });
+
+  it('POST returns 409 when partnership already exists', async () => {
+    mockGetServerSession.mockResolvedValue({ user: { id: 'user-1' } } as any);
+    (mockPrisma.companyProfile.findUnique as jest.Mock)
+      .mockResolvedValueOnce({ id: 'c1', claimedByUserId: 'user-1', name: 'SpaceX' })
+      .mockResolvedValueOnce({ id: 'c2', name: 'Blue Origin' });
+    (mockPrisma.partnershipRequest.findFirst as jest.Mock).mockResolvedValue({ id: 'pr-existing', status: 'pending' });
+    const req = new NextRequest('http://localhost/api/company-profiles/spacex/partnerships', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(validRequest) });
+    const res = await partnerPOST(req, { params: Promise.resolve({ slug: 'spacex' }) });
+    expect(res.status).toBe(409);
+  });
+
+  it('PATCH accepts a pending request', async () => {
+    mockGetServerSession.mockResolvedValue({ user: { id: 'user-1' } } as any);
+    (mockPrisma.companyProfile.findUnique as jest.Mock).mockResolvedValue({ id: 'c2', claimedByUserId: 'user-1', name: 'Blue Origin' });
+    (mockPrisma.partnershipRequest.findFirst as jest.Mock).mockResolvedValue({ id: 'pr-1', receiverCompanyId: 'c2', status: 'pending', senderCompany: { name: 'SpaceX' } });
+    (mockPrisma.partnershipRequest.update as jest.Mock).mockResolvedValue({ id: 'pr-1', status: 'accepted' });
+    const req = new NextRequest('http://localhost/api/company-profiles/blue-origin/partnerships', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ requestId: 'pr-1', action: 'accept' }) });
+    const res = await partnerPATCH(req, { params: Promise.resolve({ slug: 'blue-origin' }) });
+    const body = await res.json();
+    expect(res.status).toBe(200);
+    expect(body.success).toBe(true);
   });
 });

@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, usePathname } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -168,6 +169,9 @@ function getScoreBarColor(score: number): string {
 // ─── Marketplace Actions ─────────────────────────────────────────────────────
 
 function MarketplaceActions({ companySlug, companyId, companyName, verificationLevel, contactEmail: initialContactEmail, claimedByUserId }: { companySlug: string; companyId: string; companyName: string; verificationLevel?: string | null; contactEmail?: string | null; claimedByUserId?: string | null }) {
+  const { data: session, status: sessionStatus } = useSession();
+  const router = useRouter();
+  const pathname = usePathname();
   const [claiming, setClaiming] = useState(false);
   const [claimed, setClaimed] = useState(!!verificationLevel);
   const [claimEmail, setClaimEmail] = useState('');
@@ -185,10 +189,15 @@ function MarketplaceActions({ companySlug, companyId, companyName, verificationL
         body: JSON.stringify({ contactEmail: claimEmail }),
       });
       if (res.ok) {
+        const result = await res.json();
         setClaimed(true);
-        setVerLevel('identity');
+        setVerLevel(result.company?.verificationLevel || 'pending');
+        setContactEmail(claimEmail);
         setShowClaimForm(false);
-        toast.success('Profile claimed successfully! Verification pending.');
+        toast.success(result.message || 'Profile claimed successfully!');
+      } else if (res.status === 401) {
+        toast.error('Please sign in to claim a company profile.');
+        router.push(`/login?returnTo=${encodeURIComponent(pathname)}`);
       } else {
         const err = await res.json();
         toast.error(err.error || 'Failed to claim profile');
@@ -232,6 +241,22 @@ function MarketplaceActions({ companySlug, companyId, companyName, verificationL
           Send Message
         </Link>
       )}
+      {claimed && session?.user?.id === claimedByUserId && (
+        <>
+          <Link
+            href="/provider-dashboard"
+            className="text-xs px-3 py-1.5 bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 border border-emerald-500/30 rounded-lg font-medium transition-colors"
+          >
+            Manage Dashboard
+          </Link>
+          <Link
+            href="/provider-dashboard/new-listing"
+            className="text-xs px-3 py-1.5 bg-white hover:bg-slate-100 text-slate-900 rounded-lg font-semibold transition-colors"
+          >
+            + Add Listing
+          </Link>
+        </>
+      )}
       <Link href={`/marketplace/search?category=&companyId=${companyId}`} className="text-xs px-3 py-1.5 bg-white/[0.08] hover:bg-white/[0.12] text-white rounded-lg transition-colors">
         View Service Listings
       </Link>
@@ -250,10 +275,17 @@ function MarketplaceActions({ companySlug, companyId, companyName, verificationL
       </Link>
       {!claimed && !showClaimForm && (
         <button
-          onClick={() => setShowClaimForm(true)}
+          onClick={() => {
+            if (sessionStatus !== 'authenticated') {
+              toast.error('Please sign in to claim a company profile.');
+              router.push(`/login?returnTo=${encodeURIComponent(pathname)}`);
+              return;
+            }
+            setShowClaimForm(true);
+          }}
           className="text-xs px-3 py-1.5 bg-gradient-to-r from-slate-200 to-blue-600 hover:from-white hover:to-blue-500 text-white rounded-lg font-medium transition-all"
         >
-          Claim This Profile
+          {sessionStatus === 'authenticated' ? 'Claim This Profile' : 'Sign In to Claim'}
         </button>
       )}
       {showClaimForm && !claimed && (

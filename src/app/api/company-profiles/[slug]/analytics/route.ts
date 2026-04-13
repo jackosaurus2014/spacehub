@@ -22,6 +22,7 @@ export async function GET(
     const company = await (prisma.companyProfile as any).findUnique({
       where: { slug },
       select: {
+        id: true,
         claimedByUserId: true,
         sponsorTier: true,
         sponsorSince: true,
@@ -34,22 +35,52 @@ export async function GET(
       return NextResponse.json({ error: 'Company not found' }, { status: 404 });
     }
 
-    if (company.claimedByUserId !== session.user.id && !session.user.isAdmin) {
+    if (company.claimedByUserId !== session.user.id && !(session.user as any).isAdmin) {
       return NextResponse.json({ error: 'Access denied' }, { status: 403 });
     }
 
-    const analytics = (company.sponsorAnalytics as any) || {
+    const sponsorAnalytics = (company.sponsorAnalytics as any) || {
       views: 0,
       clicks: 0,
       leads: 0,
       lastUpdated: null,
     };
 
+    // Aggregate listing-level metrics for all claimed owners
+    const [listingStats, reviewStats, proposalStats, eventCount] = await Promise.all([
+      prisma.serviceListing.aggregate({
+        where: { companyId: company.id, status: 'active' },
+        _sum: { viewCount: true, inquiryCount: true },
+        _count: true,
+      }),
+      prisma.providerReview.aggregate({
+        where: { companyId: company.id, status: 'published' },
+        _avg: { overallRating: true },
+        _count: true,
+      }),
+      prisma.proposal.count({
+        where: { companyId: company.id },
+      }),
+      prisma.companyEvent.count({
+        where: { companyId: company.id },
+      }),
+    ]);
+
     return NextResponse.json({
       companyName: company.name,
       sponsorTier: company.sponsorTier,
       sponsorSince: company.sponsorSince,
-      analytics,
+      sponsorAnalytics,
+      metrics: {
+        activeListings: listingStats._count,
+        totalListingViews: listingStats._sum.viewCount || 0,
+        totalInquiries: listingStats._sum.inquiryCount || 0,
+        totalReviews: reviewStats._count,
+        avgRating: reviewStats._avg.overallRating ? parseFloat(reviewStats._avg.overallRating.toFixed(1)) : null,
+        totalProposals: proposalStats,
+        totalEvents: eventCount,
+        profileViews: sponsorAnalytics.views || 0,
+      },
     });
   } catch (error) {
     logger.error('Sponsor analytics failed', {

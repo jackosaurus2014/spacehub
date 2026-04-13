@@ -28,11 +28,19 @@ export async function GET(request: NextRequest) {
       });
     }
 
+    // Fetch company name for UI display (e.g. "Post as [Company]" in forums)
+    const company = await prisma.companyProfile.findUnique({
+      where: { id: user.claimedCompanyId },
+      select: { name: true, logoUrl: true },
+    });
+
     const result = await evaluateVerificationLevel(user.claimedCompanyId);
 
     return NextResponse.json({
       hasCompany: true,
       companyId: user.claimedCompanyId,
+      companyName: company?.name || null,
+      companyLogoUrl: company?.logoUrl || null,
       currentLevel: result.currentLevel,
       qualifiedLevel: result.qualifiedLevel,
       canUpgrade: result.upgraded,

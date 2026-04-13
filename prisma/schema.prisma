@@ -1252,6 +1252,12 @@ model SpaceJobPosting {
   location String
   remoteOk Boolean @default(false)
 
+  // Link to company profile (optional — seed data won't have this)
+  companyProfileId String?
+  companyProfile   CompanyProfile? @relation(fields: [companyProfileId], references: [id], onDelete: SetNull)
+  description      String?         @db.Text
+  employmentType   String?         // full_time, part_time, contract, internship
+
   // Classification
   category       String // engineering, operations, business, research, legal, manufacturing
   specialization String? // propulsion, avionics, software, systems, thermal, structures, RF, etc.
@@ -2775,11 +2781,17 @@ model CompanyProfile {
   facilities       FacilityLocation[]
   scores           CompanyScore[]
   newsArticles     NewsArticle[]     @relation("NewsCompanyTags")
-  serviceListings  ServiceListing[]
-  reviews          ProviderReview[]
-  teamingOpps      TeamingOpportunity[]
-  watchedBy        CompanyWatchlistItem[]
-  digests          CompanyDigest[]
+  serviceListings       ServiceListing[]
+  reviews               ProviderReview[]
+  teamingOpps           TeamingOpportunity[]
+  watchedBy             CompanyWatchlistItem[]
+  digests               CompanyDigest[]
+  jobPostings           SpaceJobPosting[]
+  gigOpportunities      GigOpportunity[]
+  forumThreads          ForumThread[]       @relation("CompanyForumThreads")
+  forumPosts            ForumPost[]         @relation("CompanyForumPosts")
+  sentPartnerRequests   PartnershipRequest[] @relation("PartnerRequestSender")
+  receivedPartnerRequests PartnershipRequest[] @relation("PartnerRequestReceiver")
 
   @@index([slug])
   @@index([name])
@@ -2969,6 +2981,11 @@ model GovernmentContractAward {
   placeOfPerformance     String?
   samOpportunityId       String?
   source                 String?
+  // Competition intelligence fields (from SAM.gov Awards API)
+  numberOfOffers         Int?            // How many companies bid
+  extentCompeted         String?         // "Full and Open", "Not Competed", "Set-Aside", etc.
+  competitionType        String?         // "Full and Open Competition", "Not Available for Competition"
+  pscCode                String?         // Product/Service Code
   createdAt              DateTime        @default(now())
   updatedAt              DateTime        @updatedAt
 
@@ -2981,6 +2998,61 @@ model GovernmentContractAward {
 // ============================================================
 // Funding Opportunity Aggregator
 // ============================================================
+
+model SubawardRelationship {
+  id                  String          @id @default(cuid())
+  primeContractId     String?         // Link to GovernmentContractAward if matched
+  primeCompanyName    String
+  primeCompanyId      String?         // FK to CompanyProfile if matched
+  primeUei            String?
+  subCompanyName      String
+  subCompanyId        String?         // FK to CompanyProfile if matched
+  subUei              String?
+  subawardAmount      Float?
+  subawardDate        DateTime?
+  agency              String?
+  description         String?         @db.Text
+  piid                String?         // Prime contract number
+  naicsCode           String?
+  createdAt           DateTime        @default(now())
+
+  @@index([primeCompanyId])
+  @@index([subCompanyId])
+  @@index([primeCompanyName])
+  @@index([subCompanyName])
+  @@index([agency])
+}
+
+model SBIRAward {
+  id                  String          @id @default(cuid())
+  firm                String          // Company name
+  companyId           String?         // FK to CompanyProfile if matched
+  awardTitle          String
+  agency              String          // NASA, SpaceWERX, NOAA, etc.
+  phase               String          // Phase I, Phase II, Phase III
+  program             String          // SBIR or STTR
+  topicCode           String?         // Links competitors on same topic
+  awardAmount         Float?
+  awardYear           Int?
+  proposalAwardDate   DateTime?
+  contractEndDate     DateTime?
+  solicitationNumber  String?
+  abstract            String?         @db.Text
+  keywords            String[]
+  city                String?
+  state               String?
+  hubzoneOwned        Boolean         @default(false)
+  womenOwned          Boolean         @default(false)
+  numberOfEmployees   Int?
+  createdAt           DateTime        @default(now())
+
+  @@index([companyId])
+  @@index([agency])
+  @@index([topicCode])
+  @@index([phase])
+  @@index([awardYear])
+  @@unique([firm, topicCode, phase, awardYear])
+}
 
 model FundingOpportunity {
   id                 String   @id @default(cuid())
@@ -3687,6 +3759,26 @@ model TeamingOpportunity {
   @@index([seekingRole])
 }
 
+model PartnershipRequest {
+  id              String          @id @default(cuid())
+  senderCompanyId String
+  senderCompany   CompanyProfile  @relation("PartnerRequestSender", fields: [senderCompanyId], references: [id], onDelete: Cascade)
+  receiverCompanyId String
+  receiverCompany CompanyProfile  @relation("PartnerRequestReceiver", fields: [receiverCompanyId], references: [id], onDelete: Cascade)
+  type            String          // joint_venture, strategic_alliance, supply_agreement, licensing, research, teaming
+  message         String?         @db.Text
+  status          String          @default("pending") // pending, accepted, rejected, withdrawn
+  respondedAt     DateTime?
+  responseMessage String?         @db.Text
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  @@unique([senderCompanyId, receiverCompanyId])
+  @@index([senderCompanyId])
+  @@index([receiverCompanyId])
+  @@index([status])
+}
+
 model InterestExpression {
   id            String   @id @default(cuid())
   opportunityId String   // BusinessOpportunity ID
@@ -4005,6 +4097,8 @@ model ForumThread {
   category       ForumCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   authorId       String
   author         User          @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  companyId      String?
+  company        CompanyProfile? @relation("CompanyForumThreads", fields: [companyId], references: [id], onDelete: SetNull)
   title          String
   content        String        @db.Text
   posts          ForumPost[]
@@ -4031,6 +4125,8 @@ model ForumPost {
   thread        ForumThread @relation(fields: [threadId], references: [id], onDelete: Cascade)
   authorId      String
   author        User        @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  companyId     String?
+  company       CompanyProfile? @relation("CompanyForumPosts", fields: [companyId], references: [id], onDelete: SetNull)
   content       String      @db.Text
   upvoteCount   Int         @default(0)
   downvoteCount Int         @default(0)
@@ -5295,6 +5391,8 @@ model GigOpportunity {
   id              String   @id @default(cuid())
   employerId      String
   employer        EmployerProfile @relation(fields: [employerId], references: [id], onDelete: Cascade)
+  companyProfileId String?
+  companyProfile  CompanyProfile? @relation(fields: [companyProfileId], references: [id], onDelete: SetNull)
   title           String
   description     String   @db.Text
   category        String   // engineering, operations, business, research, legal, manufacturing

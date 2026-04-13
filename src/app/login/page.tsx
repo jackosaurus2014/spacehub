@@ -107,6 +107,8 @@ function ResendVerificationBanner() {
 
 function LoginContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const returnTo = searchParams.get('returnTo');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -150,6 +152,9 @@ function LoginContent() {
         if (isFirstLogin) {
           toast.success('Welcome to SpaceNexus! Let\u2019s get you started.');
           router.push('/getting-started');
+        } else if (returnTo && returnTo.startsWith('/')) {
+          toast.success('Welcome back!');
+          router.push(returnTo);
         } else {
           toast.success('Welcome back!');
           router.push('/dashboard');

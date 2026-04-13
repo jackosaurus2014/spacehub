@@ -22,15 +22,24 @@ export async function GET() {
     const now = new Date();
     const fourteenDaysFromNow = new Date(now.getTime() + 14 * 24 * 60 * 60 * 1000);
 
-    // Query upcoming launches within the next 14 days
+    // Query upcoming launches within the next 14 days, plus any in-progress missions regardless of date
     const events = await prisma.spaceEvent.findMany({
       where: {
-        launchDate: {
-          gte: new Date(now.getTime() - 90 * 60 * 1000), // Include events up to 90min in the past (may still be live)
-          lte: fourteenDaysFromNow,
-        },
+        OR: [
+          {
+            // Normal upcoming window: -90min to +14 days
+            launchDate: {
+              gte: new Date(now.getTime() - 90 * 60 * 1000),
+              lte: fourteenDaysFromNow,
+            },
+            status: { in: ['upcoming', 'go', 'tbc', 'tbd'] },
+          },
+          {
+            // In-progress missions always show (e.g. multi-day missions like Artemis II)
+            status: 'in_progress',
+          },
+        ],
         type: 'launch',
-        status: { in: ['upcoming', 'go', 'tbc', 'tbd', 'in_progress'] },
       },
       select: {
         id: true,

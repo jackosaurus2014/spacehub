@@ -17,7 +17,7 @@ const footerLinks = {
       { label: 'Company Profiles', href: '/company-profiles' },
       { label: 'Market Intelligence', href: '/market-intel' },
       { label: 'Space Environment', href: '/space-environment' },
-      { label: 'Artemis II Live', href: '/live' },
+      { label: 'Live Launches', href: '/live' },
       { label: 'Ignition Tracker', href: '/ignition' },
       { label: 'All Features', href: '/features' },
     ],

@@ -156,7 +156,7 @@ describe('POST /api/auth/register', () => {
 
     expect(res.status).toBe(200);
     expect(body.message).toContain('Registration successful');
-    expect(body.message).toContain('check your email');
+    expect(body.message).toContain('You can now sign in');
   });
 
   it('hashes the password with bcrypt(12)', async () => {

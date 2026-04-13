@@ -200,7 +200,7 @@ export async function POST(
     }
 
     const body = await req.json();
-    const { content } = body;
+    const { content, postAsCompany } = body;
 
     if (!content || typeof content !== 'string' || content.trim().length === 0) {
       return validationError('Reply content is required');
@@ -210,12 +210,25 @@ export async function POST(
       return validationError('Reply content must be 10000 characters or less');
     }
 
+    // Optional: post as company
+    let companyId: string | null = null;
+    if (postAsCompany) {
+      const user = await prisma.user.findUnique({
+        where: { id: session.user.id },
+        select: { claimedCompanyId: true },
+      });
+      if (user?.claimedCompanyId) {
+        companyId = user.claimedCompanyId;
+      }
+    }
+
     // Create the post, update thread's updatedAt, and auto-subscribe the replier
     const [post] = await prisma.$transaction([
       prisma.forumPost.create({
         data: {
           threadId,
           authorId: session.user.id,
+          ...(companyId ? { companyId } : {}),
           content: content.trim(),
         },
         include: {

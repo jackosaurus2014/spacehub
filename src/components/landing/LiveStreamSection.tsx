@@ -555,15 +555,7 @@ export default function LiveStreamSection() {
         }
 
         // Process next launch (for countdown when no active streams)
-        // Override: Always show Artemis II launch until April 2 (don't show post-launch conference)
-        const artemisLaunchTime = new Date('2026-04-01T22:24:00Z');
-        if (Date.now() < artemisLaunchTime.getTime() + 4 * 60 * 60 * 1000) { // Until 4 hours after launch
-          setNextLaunch({
-            title: 'Artemis II — First Crewed Moon Mission Since 1972',
-            provider: 'NASA / SLS',
-            scheduledTime: artemisLaunchTime.toISOString(),
-          });
-        } else if (liveRes?.ok) {
+        if (liveRes?.ok) {
           const liveData = await liveRes.json();
           if (liveData.nextStream) {
             setNextLaunch({
@@ -727,10 +719,10 @@ export default function LiveStreamSection() {
                     {isWithin6Hours ? 'Go to Live Page' : 'Set a Reminder'}
                   </a>
                   <a
-                    href="/blog/how-to-watch-artemis-ii-launch-complete-guide"
+                    href="/ignition"
                     className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-white/[0.06] border border-white/[0.08] text-sm font-medium text-white hover:bg-white/[0.1] hover:border-white/15 transition-all"
                   >
-                    How to Watch Guide
+                    Moon Base Tracker
                     <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                     </svg>

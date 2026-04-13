@@ -226,20 +226,100 @@ export default async function HomePage() {
       {/* Live Stream — top of page; shows countdown banner pre-launch, full embed when live */}
       <LiveStreamSection />
 
-      {/* Artemis II Live Blog — show during launch event */}
+      {/* NASA Moon Base Mini-Hub */}
       <section className="relative z-10 pb-6">
-        <div className="container mx-auto px-4 max-w-4xl">
-          <LiveBlog />
-          <div className="mt-3 text-center">
-            <Link
-              href="/live/artemis-ii-blog"
-              className="inline-flex items-center gap-1.5 text-sm text-cyan-400/70 hover:text-cyan-400 transition-colors font-medium"
-            >
-              Open full Artemis II Live Blog
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </Link>
+        <div className="container mx-auto px-4 max-w-5xl">
+          <div className="rounded-2xl border border-white/[0.08] bg-gradient-to-br from-slate-900/80 via-indigo-950/30 to-slate-900/80 overflow-hidden">
+            <div className="p-6 sm:p-8">
+              <div className="flex items-center gap-3 mb-4">
+                <span className="text-3xl">🌙</span>
+                <div>
+                  <h2 className="text-xl font-bold text-white">NASA Moon Base & Ignition</h2>
+                  <p className="text-xs text-slate-400 mt-0.5">Tracking the Artemis program, lunar surface infrastructure, and commercial Moon economy</p>
+                </div>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-5">
+                <Link href="/ignition" className="group flex items-start gap-3 p-3 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.06] hover:border-indigo-500/20 transition-all">
+                  <span className="text-lg mt-0.5">🚀</span>
+                  <div>
+                    <div className="text-sm font-semibold text-white group-hover:text-indigo-300 transition-colors">Ignition Tracker</div>
+                    <div className="text-xs text-slate-400 mt-0.5">Moon base procurement, timelines, and milestones</div>
+                  </div>
+                </Link>
+                <Link href="/compliance?tab=treaties" className="group flex items-start gap-3 p-3 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.06] hover:border-amber-500/20 transition-all">
+                  <span className="text-lg mt-0.5">⚖️</span>
+                  <div>
+                    <div className="text-sm font-semibold text-white group-hover:text-amber-300 transition-colors">Regulatory Updates</div>
+                    <div className="text-xs text-slate-400 mt-0.5">Lunar surface operations, Artemis Accords, FAA licensing</div>
+                  </div>
+                </Link>
+                <Link href="/cislunar" className="group flex items-start gap-3 p-3 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.06] hover:border-teal-500/20 transition-all">
+                  <span className="text-lg mt-0.5">🌍</span>
+                  <div>
+                    <div className="text-sm font-semibold text-white group-hover:text-teal-300 transition-colors">Cislunar Ecosystem</div>
+                    <div className="text-xs text-slate-400 mt-0.5">Gateway, Lunar landers, ISRU, and cislunar economy</div>
+                  </div>
+                </Link>
+              </div>
+              <div className="border-t border-white/[0.06] pt-4">
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="relative flex h-2 w-2"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75" /><span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-500" /></span>
+                  <span className="text-xs font-semibold text-slate-300 uppercase tracking-wider">Upcoming Moon Base Milestones</span>
+                </div>
+                <div className="space-y-2">
+                  {[
+                    { date: 'Q3 2026', title: 'Artemis III crew selection & mission design review', tag: 'NASA' },
+                    { date: 'Q4 2026', title: 'SpaceX Starship HLS uncrewed lunar landing demo', tag: 'SpaceX' },
+                    { date: '2027', title: 'Blue Origin Blue Moon lander cargo delivery to south pole', tag: 'Blue Origin' },
+                    { date: '2027', title: 'Lunar Gateway PPE + HALO module launch (Falcon Heavy)', tag: 'Maxar / Northrop' },
+                    { date: '2028', title: 'Artemis IV — First crewed Gateway docking + surface EVAs', tag: 'NASA' },
+                  ].map((item, i) => (
+                    <div key={i} className="flex items-center gap-3 text-xs py-1.5">
+                      <span className="text-slate-500 font-mono w-16 shrink-0">{item.date}</span>
+                      <span className="text-white/80 flex-1">{item.title}</span>
+                      <span className="text-[10px] px-2 py-0.5 bg-indigo-500/10 text-indigo-300 rounded-full border border-indigo-500/20 shrink-0">{item.tag}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              {/* Two rows: Enthusiast interests + Business interests */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-5 pt-4 border-t border-white/[0.06]">
+                {/* Space Enthusiast Items */}
+                <Link href="/blog/artemis-ii-mission-recap-humanitys-return-to-the-moon" className="group flex items-start gap-3 p-3 rounded-xl bg-white/[0.03] hover:bg-white/[0.06] border border-white/[0.04] hover:border-cyan-500/20 transition-all">
+                  <span className="text-lg mt-0.5">🧑‍🚀</span>
+                  <div>
+                    <div className="text-xs font-bold text-cyan-400 uppercase tracking-wider mb-0.5">For Enthusiasts</div>
+                    <div className="text-sm font-medium text-white group-hover:text-cyan-300 transition-colors">Artemis II Mission Recap</div>
+                    <div className="text-xs text-slate-400 mt-0.5">How 4 astronauts flew around the Moon and what it means for Artemis III</div>
+                  </div>
+                </Link>
+                <Link href="/solar-exploration" className="group flex items-start gap-3 p-3 rounded-xl bg-white/[0.03] hover:bg-white/[0.06] border border-white/[0.04] hover:border-cyan-500/20 transition-all">
+                  <span className="text-lg mt-0.5">🔭</span>
+                  <div>
+                    <div className="text-xs font-bold text-cyan-400 uppercase tracking-wider mb-0.5">For Enthusiasts</div>
+                    <div className="text-sm font-medium text-white group-hover:text-cyan-300 transition-colors">Lunar South Pole Exploration Map</div>
+                    <div className="text-xs text-slate-400 mt-0.5">Planned landing sites, ice deposits, and the science driving site selection</div>
+                  </div>
+                </Link>
+                {/* Space Business Items */}
+                <Link href="/marketplace/search?category=human" className="group flex items-start gap-3 p-3 rounded-xl bg-white/[0.03] hover:bg-white/[0.06] border border-white/[0.04] hover:border-amber-500/20 transition-all">
+                  <span className="text-lg mt-0.5">💼</span>
+                  <div>
+                    <div className="text-xs font-bold text-amber-400 uppercase tracking-wider mb-0.5">For Business</div>
+                    <div className="text-sm font-medium text-white group-hover:text-amber-300 transition-colors">Lunar Services Marketplace</div>
+                    <div className="text-xs text-slate-400 mt-0.5">Find and bid on Moon base contracts: habitats, ISRU, crew transport, life support</div>
+                  </div>
+                </Link>
+                <Link href="/business-opportunities" className="group flex items-start gap-3 p-3 rounded-xl bg-white/[0.03] hover:bg-white/[0.06] border border-white/[0.04] hover:border-amber-500/20 transition-all">
+                  <span className="text-lg mt-0.5">📋</span>
+                  <div>
+                    <div className="text-xs font-bold text-amber-400 uppercase tracking-wider mb-0.5">For Business</div>
+                    <div className="text-sm font-medium text-white group-hover:text-amber-300 transition-colors">NASA Lunar Procurement Opportunities</div>
+                    <div className="text-xs text-slate-400 mt-0.5">Active RFPs, CLPS task orders, Artemis supply chain contracts on SAM.gov</div>
+                  </div>
+                </Link>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -261,20 +341,20 @@ export default async function HomePage() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <Link
-              href="/blog/how-to-watch-artemis-ii-launch-complete-guide"
+              href="/blog/artemis-ii-mission-recap-humanitys-return-to-the-moon"
               className="group rounded-xl border border-white/[0.08] bg-white/[0.03] hover:bg-white/[0.06] hover:border-teal-500/20 transition-all duration-300 overflow-hidden"
             >
               <div className="relative h-40 overflow-hidden">
                 <Image src="/art/hero-mission-planning.png" alt="" fill sizes="(max-width: 768px) 100vw, 33vw" loading="lazy" className="object-cover opacity-40 group-hover:opacity-50 group-hover:scale-105 transition-all duration-500" />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#09090b] via-[#09090b]/60 to-transparent" />
                 <div className="absolute bottom-3 left-4 right-4">
-                  <span className="text-[9px] px-2 py-0.5 rounded-full bg-teal-500/20 text-teal-300 border border-teal-500/30 font-bold uppercase tracking-wider">Guide</span>
+                  <span className="text-[9px] px-2 py-0.5 rounded-full bg-teal-500/20 text-teal-300 border border-teal-500/30 font-bold uppercase tracking-wider">Recap</span>
                 </div>
               </div>
               <div className="p-4">
-                <h3 className="text-white text-sm font-bold mb-1.5 group-hover:text-teal-300 transition-colors line-clamp-2">How to Watch Artemis II: Your Complete Guide to NASA&apos;s Historic Moon Mission</h3>
-                <p className="text-slate-400 text-xs line-clamp-2 mb-2">April 1, 6:24 PM EDT. Four astronauts. The Moon. Here&apos;s exactly how to watch online, where to see it in person, and what happens during the 10-day mission.</p>
-                <span className="text-[10px] text-slate-400">10 min read</span>
+                <h3 className="text-white text-sm font-bold mb-1.5 group-hover:text-teal-300 transition-colors line-clamp-2">Artemis II Mission Recap: Humanity&apos;s Return to the Moon</h3>
+                <p className="text-slate-400 text-xs line-clamp-2 mb-2">The historic 10-day mission is complete. Four astronauts flew around the Moon and returned safely — here&apos;s what it means for Artemis III and the lunar economy.</p>
+                <span className="text-[10px] text-slate-400">8 min read</span>
               </div>
             </Link>
             <Link
@@ -584,7 +664,7 @@ export default async function HomePage() {
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
             {[
-              { label: 'Artemis II Live', href: '/live' },
+              { label: 'Live Launches', href: '/live' },
               { label: 'Ignition Tracker', href: '/ignition' },
               { label: 'News & Media', href: '/news' },
               { label: 'Satellite Tracker', href: '/satellites' },

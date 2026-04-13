@@ -1,16 +1,19 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Investment Tracker',
-  description: 'Track space industry investment trends, top deals, and leading investors.',
+  title: 'Funding & Investment Flow Tracker',
+  description:
+    'Track space industry investment flows -- funding rounds, M&A exits, top investors, and capital allocation by sector and stage.',
   openGraph: {
-    title: 'Investment Tracker | SpaceNexus',
-    description: 'Track space industry investment trends, top deals, and leading investors.',
+    title: 'Funding & Investment Flow Tracker | SpaceNexus',
+    description:
+      'Track space industry investment flows -- funding rounds, M&A exits, top investors, and capital allocation by sector and stage.',
   },
-    twitter: {
+  twitter: {
     card: 'summary_large_image',
-    title: 'Investment Tracker | SpaceNexus',
-    description: 'Track space industry investment trends, top deals, and leading investors.',
+    title: 'Funding & Investment Flow Tracker | SpaceNexus',
+    description:
+      'Track space industry investment flows -- funding rounds, M&A exits, top investors, and capital allocation by sector and stage.',
     images: ['/og-image.png'],
   },
   alternates: {

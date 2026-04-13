@@ -33,6 +33,8 @@ interface ForumPost {
   downvoteCount: number;
   isAccepted: boolean;
   userVote: number | null;
+  companyName?: string;
+  companyId?: string;
 }
 
 interface ThreadDetail {
@@ -55,6 +57,8 @@ interface ThreadDetail {
   downvoteCount: number;
   userVote: number | null;
   isSubscribed: boolean;
+  companyName?: string;
+  companyId?: string;
 }
 
 function getInitials(name: string): string {
@@ -101,6 +105,27 @@ export default function ThreadDetailPage() {
   const [replyContent, setReplyContent] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [acceptedPostId, setAcceptedPostId] = useState<string | null>(null);
+  const [postAsCompany, setPostAsCompany] = useState(false);
+  const [claimedCompany, setClaimedCompany] = useState<{ id: string; name: string } | null>(null);
+
+  // Fetch user's claimed company info
+  useEffect(() => {
+    if (!session?.user?.id) return;
+    const fetchCompany = async () => {
+      try {
+        const res = await fetch('/api/marketplace/verify');
+        if (res.ok) {
+          const data = await res.json();
+          if (data.hasCompany && data.companyId && data.companyName) {
+            setClaimedCompany({ id: data.companyId, name: data.companyName });
+          }
+        }
+      } catch {
+        // silently fail - company features are optional
+      }
+    };
+    fetchCompany();
+  }, [session?.user?.id]);
 
   useEffect(() => {
     const fetchThread = async () => {
@@ -131,6 +156,8 @@ export default function ThreadDetailPage() {
               downvoteCount: t.downvoteCount || 0,
               userVote: t.userVote ?? null,
               isSubscribed: t.isSubscribed || false,
+              companyName: t.companyName || t.company?.name || undefined,
+              companyId: t.companyId || undefined,
             });
             setAcceptedPostId(t.acceptedPostId || null);
           }
@@ -145,6 +172,8 @@ export default function ThreadDetailPage() {
             downvoteCount: p.downvoteCount || 0,
             isAccepted: p.isAccepted || false,
             userVote: p.userVote ?? null,
+            companyName: p.companyName || p.company?.name || undefined,
+            companyId: p.companyId || undefined,
           }));
           setReplies(posts);
         }
@@ -176,13 +205,15 @@ export default function ThreadDetailPage() {
       const res = await fetch(`/api/community/forums/${slug}/${threadId}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ content: replyContent.trim() }),
+        body: JSON.stringify({ content: replyContent.trim(), ...(postAsCompany && claimedCompany ? { postAsCompany: true } : {}) }),
       });
 
       if (res.ok) {
         const json = await res.json();
         toast.success('Reply posted');
+        const wasPostAsCompany = postAsCompany;
         setReplyContent('');
+        setPostAsCompany(false);
         // API returns { success, data: post } — map to our ForumPost shape
         const newPost = json.data || json.reply;
         if (newPost) {
@@ -197,6 +228,8 @@ export default function ThreadDetailPage() {
             downvoteCount: newPost.downvoteCount || 0,
             isAccepted: false,
             userVote: null,
+            companyName: newPost.companyName || (wasPostAsCompany && claimedCompany ? claimedCompany.name : undefined),
+            companyId: newPost.companyId || (wasPostAsCompany && claimedCompany ? claimedCompany.id : undefined),
           }]);
         }
       } else {
@@ -260,7 +293,7 @@ export default function ThreadDetailPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
-          className="card p-6 mb-6"
+          className={`card p-6 mb-6 ${thread.companyName ? 'border-l-2 border-l-blue-500/50' : ''}`}
         >
           <div className="flex gap-4">
             {/* Vote column */}
@@ -318,11 +351,29 @@ export default function ThreadDetailPage() {
               )}
 
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-9 h-9 rounded-full bg-gradient-to-br from-white/5 to-purple-500/20 border border-white/10 flex items-center justify-center text-xs font-bold text-white/90">
-                  {getInitials(thread.authorName)}
-                </div>
+                {thread.companyName ? (
+                  <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500/20 to-blue-600/30 border border-blue-500/20 flex items-center justify-center">
+                    <svg className="w-4.5 h-4.5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                    </svg>
+                  </div>
+                ) : (
+                  <div className="w-9 h-9 rounded-full bg-gradient-to-br from-white/5 to-purple-500/20 border border-white/10 flex items-center justify-center text-xs font-bold text-white/90">
+                    {getInitials(thread.authorName)}
+                  </div>
+                )}
                 <div>
-                  <p className="text-sm font-medium text-white/90">{thread.authorName}</p>
+                  {thread.companyName ? (
+                    <p className="text-sm font-medium text-blue-400 flex items-center gap-1.5">
+                      {thread.companyName}
+                      <svg className="w-3.5 h-3.5 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                      </svg>
+                      <span className="text-xs text-slate-500 font-normal">({thread.authorName})</span>
+                    </p>
+                  ) : (
+                    <p className="text-sm font-medium text-white/90">{thread.authorName}</p>
+                  )}
                   <p className="text-xs text-slate-500">{formatDate(thread.createdAt)}</p>
                 </div>
               </div>
@@ -371,7 +422,7 @@ export default function ThreadDetailPage() {
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: idx * 0.03, duration: 0.3 }}
-                className={`card p-5 ${reply.isAccepted ? 'border-l-2 border-l-green-500/60' : ''}`}
+                className={`card p-5 ${reply.isAccepted ? 'border-l-2 border-l-green-500/60' : reply.companyName ? 'border-l-2 border-l-blue-500/50' : ''}`}
               >
                 <div className="flex items-start gap-3">
                   {/* Vote column */}
@@ -387,12 +438,29 @@ export default function ThreadDetailPage() {
                       size="sm"
                     />
                   </div>
-                  <div className="w-8 h-8 rounded-full bg-white/[0.08] flex items-center justify-center text-xs font-bold text-slate-400 flex-shrink-0">
-                    {getInitials(reply.authorName)}
-                  </div>
+                  {reply.companyName ? (
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500/20 to-blue-600/30 border border-blue-500/20 flex items-center justify-center flex-shrink-0">
+                      <svg className="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                      </svg>
+                    </div>
+                  ) : (
+                    <div className="w-8 h-8 rounded-full bg-white/[0.08] flex items-center justify-center text-xs font-bold text-slate-400 flex-shrink-0">
+                      {getInitials(reply.authorName)}
+                    </div>
+                  )}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1 flex-wrap">
-                      <span className="text-sm font-medium text-white/90">{reply.authorName}</span>
+                      {reply.companyName ? (
+                        <span className="text-sm font-medium text-blue-400 flex items-center gap-1">
+                          {reply.companyName}
+                          <svg className="w-3.5 h-3.5 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                          </svg>
+                        </span>
+                      ) : (
+                        <span className="text-sm font-medium text-white/90">{reply.authorName}</span>
+                      )}
                       <span className="text-xs text-slate-500">{timeAgo(reply.createdAt)}</span>
                       {reply.isAccepted && (
                         <span className="text-xs px-1.5 py-0.5 bg-green-500/15 text-green-400 rounded font-medium flex items-center gap-0.5">
@@ -449,6 +517,24 @@ export default function ThreadDetailPage() {
                 required
               />
               <p className="text-xs text-slate-500 mb-3">Supports **bold**, *italic*, `code`, [links](url), @mentions, and more Markdown formatting</p>
+              {claimedCompany && (
+                <div className="flex items-center gap-2 mb-3">
+                  <label className="flex items-center gap-2 cursor-pointer select-none">
+                    <input
+                      type="checkbox"
+                      checked={postAsCompany}
+                      onChange={(e) => setPostAsCompany(e.target.checked)}
+                      className="w-4 h-4 rounded border-white/20 bg-white/[0.06] text-blue-500 focus:ring-blue-500/30 focus:ring-offset-0"
+                    />
+                    <span className="text-sm text-slate-300 flex items-center gap-1.5">
+                      Post as <span className="font-medium text-blue-400">{claimedCompany.name}</span>
+                      <svg className="w-3.5 h-3.5 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                      </svg>
+                    </span>
+                  </label>
+                </div>
+              )}
               <div className="flex justify-end">
                 <button
                   type="submit"

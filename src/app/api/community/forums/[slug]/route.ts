@@ -205,7 +205,7 @@ export async function POST(
     }
 
     const body = await req.json();
-    const { title, content, tags } = body;
+    const { title, content, tags, postAsCompany } = body;
 
     if (!title || typeof title !== 'string' || title.trim().length === 0) {
       return validationError('Thread title is required');
@@ -226,10 +226,23 @@ export async function POST(
     // Validate tags if provided (max 5, must be from allowed list)
     const validTags = Array.isArray(tags) ? tags.filter((t: string) => typeof t === 'string').slice(0, 5) : [];
 
+    // Optional: post as company (must own a claimed company)
+    let companyId: string | null = null;
+    if (postAsCompany) {
+      const user = await prisma.user.findUnique({
+        where: { id: session.user.id },
+        select: { claimedCompanyId: true },
+      });
+      if (user?.claimedCompanyId) {
+        companyId = user.claimedCompanyId;
+      }
+    }
+
     const thread = await prisma.forumThread.create({
       data: {
         categoryId: category.id,
         authorId: session.user.id,
+        ...(companyId ? { companyId } : {}),
         title: title.trim(),
         content: content.trim(),
         tags: validTags,

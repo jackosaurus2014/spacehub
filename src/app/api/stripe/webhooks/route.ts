@@ -7,6 +7,7 @@ import { generatePaymentFailedEmail, generateSubscriptionConfirmEmail } from '@/
 import { Resend } from 'resend';
 
 export const dynamic = 'force-dynamic';
+export const maxDuration = 60; // Allow up to 60s for webhook processing (DB + email)
 
 // Lazy Resend initialization (same pattern as email-service.ts)
 let resendClient: Resend | null = null;

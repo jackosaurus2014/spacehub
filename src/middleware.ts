@@ -82,6 +82,10 @@ function getRateLimitConfig(pathname: string): RateLimitConfig {
   if (pathname.startsWith('/api/blog/views')) {
     return { maxRequests: 60, windowMs: 60 * 1000 }; // 60 req/minute
   }
+  // Stripe webhooks — bypass rate limiting (verified via signature, not IP-based)
+  if (pathname.startsWith('/api/stripe/webhooks')) {
+    return { maxRequests: 10000, windowMs: 60 * 1000 };
+  }
   // All other /api/* routes
   return { maxRequests: 200, windowMs: 60 * 1000 }; // 200 req/minute
 }

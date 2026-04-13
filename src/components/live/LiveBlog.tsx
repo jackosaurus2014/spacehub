@@ -210,7 +210,7 @@ export default function LiveBlog() {
           </span>
           <span className="text-sm font-bold text-white">LIVE BLOG</span>
         </div>
-        <p className="text-slate-400 text-sm">Artemis II launch coverage — updates coming soon. Stay tuned.</p>
+        <p className="text-slate-400 text-sm">No live events at this time. Check back during the next mission.</p>
       </div>
     );
   }
@@ -226,7 +226,7 @@ export default function LiveBlog() {
             <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500" />
           </span>
           <h2 className="text-lg font-bold text-white tracking-tight">LIVE BLOG</h2>
-          <span className="text-xs text-slate-400 hidden sm:inline">Artemis II Launch Coverage</span>
+          <span className="text-xs text-slate-400 hidden sm:inline">Space Mission Updates</span>
         </div>
         <div className="flex items-center gap-3">
           {newCount > 0 && (

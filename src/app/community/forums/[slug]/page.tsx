@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import { useSession } from 'next-auth/react';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import ThreadCard, { ThreadData } from '@/components/community/ThreadCard';
 import ITARWarningBanner from '@/components/community/ITARWarningBanner';
@@ -21,6 +22,7 @@ interface CategoryInfo {
 export default function ForumCategoryPage() {
   const params = useParams();
   const slug = params.slug as string;
+  const { data: session } = useSession();
 
   const [category, setCategory] = useState<CategoryInfo | null>(null);
   const [threads, setThreads] = useState<ThreadData[]>([]);
@@ -32,6 +34,27 @@ export default function ForumCategoryPage() {
   const [newTags, setNewTags] = useState<string[]>([]);
   const [creating, setCreating] = useState(false);
   const [sortBy, setSortBy] = useState('newest');
+  const [postAsCompany, setPostAsCompany] = useState(false);
+  const [claimedCompany, setClaimedCompany] = useState<{ id: string; name: string } | null>(null);
+
+  // Fetch user's claimed company info
+  useEffect(() => {
+    if (!session?.user?.id) return;
+    const fetchCompany = async () => {
+      try {
+        const res = await fetch('/api/marketplace/verify');
+        if (res.ok) {
+          const data = await res.json();
+          if (data.hasCompany && data.companyId && data.companyName) {
+            setClaimedCompany({ id: data.companyId, name: data.companyName });
+          }
+        }
+      } catch {
+        // silently fail - company features are optional
+      }
+    };
+    fetchCompany();
+  }, [session?.user?.id]);
 
   useEffect(() => {
     const fetchThreads = async () => {
@@ -58,6 +81,8 @@ export default function ForumCategoryPage() {
             acceptedPostId: t.acceptedPostId || null,
             upvoteCount: t.upvoteCount || 0,
             downvoteCount: t.downvoteCount || 0,
+            companyName: t.companyName || t.company?.name || undefined,
+            companyId: t.companyId || undefined,
           }));
           setThreads(threadsList);
         } else if (res.status === 404) {
@@ -83,17 +108,19 @@ export default function ForumCategoryPage() {
       const res = await fetch(`/api/community/forums/${slug}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title: newTitle.trim(), content: newContent.trim(), tags: newTags }),
+        body: JSON.stringify({ title: newTitle.trim(), content: newContent.trim(), tags: newTags, ...(postAsCompany && claimedCompany ? { postAsCompany: true } : {}) }),
       });
 
       if (res.ok) {
         const json = await res.json();
         const thread = json.data || json.thread || json;
         toast.success('Thread created successfully');
+        const wasPostAsCompany = postAsCompany;
         setShowNewThread(false);
         setNewTitle('');
         setNewContent('');
         setNewTags([]);
+        setPostAsCompany(false);
         // Add new thread to the top of the list
         if (thread.id) {
           setThreads((prev) => [{
@@ -112,6 +139,8 @@ export default function ForumCategoryPage() {
             acceptedPostId: null,
             upvoteCount: 0,
             downvoteCount: 0,
+            companyName: thread.companyName || (wasPostAsCompany && claimedCompany ? claimedCompany.name : undefined),
+            companyId: thread.companyId || (wasPostAsCompany && claimedCompany ? claimedCompany.id : undefined),
           }, ...prev]);
         }
       } else {
@@ -225,6 +254,24 @@ export default function ForumCategoryPage() {
                 <label className="block text-sm font-medium text-slate-400 mb-1">Tags <span className="text-slate-500 font-normal">(optional, max 5)</span></label>
                 <ThreadTags tags={newTags} editable onChange={setNewTags} />
               </div>
+              {claimedCompany && (
+                <div className="flex items-center gap-2">
+                  <label className="flex items-center gap-2 cursor-pointer select-none">
+                    <input
+                      type="checkbox"
+                      checked={postAsCompany}
+                      onChange={(e) => setPostAsCompany(e.target.checked)}
+                      className="w-4 h-4 rounded border-white/20 bg-white/[0.06] text-blue-500 focus:ring-blue-500/30 focus:ring-offset-0"
+                    />
+                    <span className="text-sm text-slate-300 flex items-center gap-1.5">
+                      Post as <span className="font-medium text-blue-400">{claimedCompany.name}</span>
+                      <svg className="w-3.5 h-3.5 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                      </svg>
+                    </span>
+                  </label>
+                </div>
+              )}
               <div className="flex gap-3">
                 <button
                   type="submit"

@@ -48,7 +48,7 @@ function delay(ms: number): Promise<void> {
 // ---------------------------------------------------------------------------
 
 async function gatherWeeklyData(weekStart: Date, weekEnd: Date) {
-  const [articles, companyEvents] = await Promise.all([
+  const [articles, companyEvents, recentLaunches] = await Promise.all([
     prisma.newsArticle.findMany({
       where: {
         publishedAt: {
@@ -88,9 +88,32 @@ async function gatherWeeklyData(weekStart: Date, weekEnd: Date) {
         },
       },
     }),
+    // Fetch actual launches from SpaceEvent — only completed or upcoming launches,
+    // NOT in-progress missions (e.g. Artemis II multi-day mission)
+    prisma.spaceEvent.findMany({
+      where: {
+        type: 'launch',
+        status: { in: ['completed', 'upcoming', 'go', 'tbc', 'tbd'] },
+        launchDate: {
+          gte: weekStart,
+          lte: new Date(weekEnd.getTime() + 7 * 24 * 60 * 60 * 1000), // include upcoming week
+        },
+      },
+      orderBy: { launchDate: 'asc' },
+      take: 15,
+      select: {
+        name: true,
+        status: true,
+        agency: true,
+        rocket: true,
+        mission: true,
+        launchDate: true,
+        location: true,
+      },
+    }),
   ]);
 
-  return { articles, companyEvents };
+  return { articles, companyEvents, recentLaunches };
 }
 
 // ---------------------------------------------------------------------------
@@ -105,7 +128,7 @@ Sections:
 1. "executive-summary" (isPro: false) - 3-4 high-level bullet points summarizing the week's most significant developments
 2. "top-stories" (isPro: false) - 5 most important stories with titles and 1-2 sentence summaries
 3. "contract-awards" (isPro: true) - Notable government and commercial contract awards or partnerships
-4. "launch-activity" (isPro: false) - Completed and upcoming launches, mission milestones
+4. "launch-activity" (isPro: false) - Completed and upcoming rocket launches ONLY (not in-progress multi-day missions)
 5. "funding-ma" (isPro: true) - Investment rounds, acquisitions, IPO activity, SPAC news
 6. "regulatory-updates" (isPro: true) - Policy changes, FCC/FAA/ITU decisions, spectrum, licensing
 7. "market-movers" (isPro: true) - Notable company developments, earnings, strategy shifts, executive moves
@@ -115,7 +138,7 @@ Guidelines:
 - Be factual and cite specific data points where available
 - Each item needs a clear, specific title (not generic)
 - Summaries should be 1-3 sentences, concise but substantive
-- If the data doesn't contain information for a section, create plausible items based on the trends you can infer, but mark source as "SpaceNexus Analysis"
+- If the data doesn't contain information for a section, include fewer items or note that activity was limited — do NOT fabricate or invent items. Never guess vehicle names; if a vehicle is unknown, omit the launch entry entirely
 - Include source attribution where relevant
 - Be professional, not hype-driven
 - Focus on actionable intelligence
@@ -136,7 +159,8 @@ Return valid JSON in this exact format:
 
 async function generateBriefContent(
   articles: Array<{ title: string; summary: string | null; url: string; source: string; category: string }>,
-  companyEvents: Array<{ title: string; description: string | null; type: string; source: string | null; sourceUrl: string | null; importance: number; company: { name: string } }>
+  companyEvents: Array<{ title: string; description: string | null; type: string; source: string | null; sourceUrl: string | null; importance: number; company: { name: string } }>,
+  recentLaunches: Array<{ name: string; status: string; agency: string | null; rocket: string | null; mission: string | null; launchDate: Date | null; location: string | null }>
 ): Promise<BriefSection[]> {
   const anthropic = new Anthropic();
 
@@ -158,6 +182,16 @@ async function generateBriefContent(
           .join('\n\n')
       : 'No company events this week.';
 
+  const launchesContext =
+    recentLaunches.length > 0
+      ? recentLaunches
+          .map(
+            (l, i) =>
+              `${i + 1}. ${l.name} [${l.status}]\n   Vehicle: ${l.rocket || 'N/A'}\n   Agency: ${l.agency || 'N/A'}\n   Date: ${l.launchDate ? l.launchDate.toISOString().split('T')[0] : 'TBD'}\n   Location: ${l.location || 'N/A'}`
+          )
+          .join('\n\n')
+      : 'No launches this week.';
+
   const userPrompt = `Generate the weekly intelligence brief based on these data points:
 
 ## News Articles (past 7 days)
@@ -165,6 +199,11 @@ ${articlesContext || 'No news articles available for this period.'}
 
 ## Company Events (past 7 days)
 ${eventsContext}
+
+## Launch Activity (completed and upcoming launches ONLY — do NOT include in-progress multi-day missions)
+${launchesContext}
+
+IMPORTANT: For the "launch-activity" section, use ONLY the launches listed above. Do not add launches that are not in the data. Do not include entries with "unknown vehicle". If a launch has Vehicle: N/A, skip it.
 
 Return the JSON response now.`;
 
@@ -269,15 +308,16 @@ export async function generateWeeklyBrief(): Promise<{
   });
 
   // Gather data
-  const { articles, companyEvents } = await gatherWeeklyData(weekStart, weekEnd);
+  const { articles, companyEvents, recentLaunches } = await gatherWeeklyData(weekStart, weekEnd);
 
   logger.info('Weekly data gathered', {
     articleCount: articles.length,
     eventCount: companyEvents.length,
+    launchCount: recentLaunches.length,
   });
 
   // Generate brief content using AI
-  const sections = await generateBriefContent(articles, companyEvents);
+  const sections = await generateBriefContent(articles, companyEvents, recentLaunches);
 
   // Generate HTML for storage (Pro version with all sections visible)
   const weekLabel = getWeekLabel(weekStart, weekEnd);
