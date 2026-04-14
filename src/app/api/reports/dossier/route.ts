@@ -129,7 +129,7 @@ function buildCompanyContext(company: any, recentNews: any[], marketContext: any
     sections.push(`\n## Government Contracts (showing ${company.contracts.length})`);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     company.contracts.forEach((c: any) => {
-      sections.push(`- ${c.title || c.contractNumber || 'Unnamed'}: ${formatCurrency(c.awardAmount)} from ${c.agency || 'Unknown agency'} (${formatDate(c.awardDate)})${c.status ? ` — ${c.status}` : ''}`);
+      sections.push(`- ${c.title || c.contractNumber || 'Unnamed'}: ${formatCurrency(c.value)} from ${c.agency || 'Unknown agency'} (${formatDate(c.awardDate)})${c.status ? ` — ${c.status}` : ''}`);
     });
   }
 
@@ -299,7 +299,7 @@ export async function POST(request: NextRequest) {
     const [contractAgg, activeSatellites, totalFundingRounds] = await Promise.all([
       prisma.governmentContractAward.aggregate({
         where: { companyId: company.id },
-        _sum: { awardAmount: true },
+        _sum: { value: true },
       }),
       prisma.satelliteAsset.count({
         where: { companyId: company.id, status: 'active' },
@@ -310,7 +310,7 @@ export async function POST(request: NextRequest) {
     ]);
 
     const marketContext = {
-      totalContractValue: contractAgg._sum.awardAmount || 0,
+      totalContractValue: contractAgg._sum.value || 0,
       activeSatellites,
       totalFundingRounds,
     };
