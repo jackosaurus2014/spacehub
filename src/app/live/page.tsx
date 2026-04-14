@@ -137,9 +137,9 @@ function UpcomingLaunchCard({ launch }: { launch: typeof UPCOMING_LAUNCHES[numbe
           T-{countdown}
         </div>
       </div>
-      {launch.blogSlug && (
+      {(launch as any).blogSlug && (
         <Link
-          href={`/blog/${launch.blogSlug}`}
+          href={`/blog/${(launch as any).blogSlug}`}
           className="mt-3 inline-flex items-center gap-1 text-xs text-cyan-400/70 hover:text-cyan-400 transition-colors"
         >
           Read mission guide
