@@ -148,7 +148,7 @@ export async function getSBIRCompetitors(companyId: string) {
     select: { topicCode: true, phase: true, agency: true, awardTitle: true },
   });
 
-  const topicCodes = [...new Set(myAwards.map(a => a.topicCode).filter(Boolean))] as string[];
+  const topicCodes = Array.from(new Set(myAwards.map(a => a.topicCode).filter((t): t is string => !!t)));
 
   if (topicCodes.length === 0) return { myAwards: [], competitors: [], topicAnalysis: [] };
 
