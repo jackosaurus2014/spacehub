@@ -25584,7 +25584,7 @@ ISS (ZARYA)
       { question: 'How much would TraCSS fees cost?', answer: 'No official fee schedule has been published. One industry estimate suggests $1,000 per satellite per year would fund about 25% of TraCSS\'s $55 million annual budget. At that rate, a 100-satellite operator would pay $100,000/year.' },
       { question: 'What is SpaceX Stargaze?', answer: 'Stargaze is SpaceX\'s free space tracking service that uses star tracker cameras on ~9,600 Starlink satellites to detect orbiting objects. It collects nearly 30 million observations per day and offers screening results free to any operator that shares its own data. It only works in LEO.' },
     ],
-    content: \`
+    content: `
 <p>Right now, if your satellite is on a potential collision course with another object in orbit, the U.S. government will warn you — for free. That may be about to change.</p>
 
 <p>The <strong>Office of Space Commerce (OSC)</strong> is actively deliberating whether to introduce user fees for <strong>TraCSS</strong>, the Traffic Coordination System for Space — the government\'s next-generation collision avoidance service that currently screens over <strong>8,000 spacecraft</strong>, roughly 80% of all active objects in orbit. A December 2025 Executive Order removed the policy prohibition on charging fees. A draft fee schedule was expected in March 2026. And in January, SpaceX launched a free competitor called <strong>Stargaze</strong> that collects 30 million observations per day.</p>
@@ -25684,7 +25684,7 @@ ISS (ZARYA)
 <p>The TraCSS fee debate is not really about $1,000 per satellite. It is about whether the United States treats collision avoidance as critical public infrastructure or as a commercial service. With 12,000 active satellites in orbit, 130 million debris fragments larger than 1mm, and mega-constellations adding thousands more objects every year, the stakes of getting this wrong are measured in Kessler syndrome scenarios — cascading debris that renders entire orbital regimes unusable.</p>
 
 <p>Whatever the fee structure looks like, operators need to plan for a world where free, comprehensive government SSA data is no longer guaranteed. The companies that prepare now — by diversifying their data sources, building internal conjunction assessment capabilities, and engaging in the public comment process — will be best positioned regardless of the outcome.</p>
-\`,
+`,
   },
 
   {
@@ -25704,7 +25704,7 @@ ISS (ZARYA)
       { question: 'What spectrum solutions are proposed?', answer: 'Three main mechanisms: codifying "frequency piggybacking" between nearby spacecraft, creating a new secondary allocation at 2320-2345 MHz through a spectrum leasing model with SiriusXM, and enabling standalone TT&C access in existing Fixed Satellite Service bands.' },
       { question: 'When is the comment deadline?', answer: 'Comments are due 30 days after Federal Register publication, with reply comments due at 60 days. The NPRM was formally issued March 31, 2026. Filed in SB Docket No. 26-54.' },
     ],
-    content: \`
+    content: `
 <p>On March 26, 2026, the FCC unanimously adopted one of the most consequential space-related rulemakings in years — and gave it possibly the best name in regulatory history. The <strong>"Spectrum Abundance for Weird Space Stuff"</strong> Notice of Proposed Rulemaking (FCC 26-13) proposes creating spectrum access for an entire category of space operations that currently has <strong>zero non-Federal spectrum available</strong> in the United States.</p>
 
 <p>Chairman Brendan Carr framed it simply: <em>"America\'s space companies, even the weird ones, need plentiful access to spectrum."</em> Commissioner Anna Gomez pushed back on the framing, noting the item <em>"isn\'t weird, it\'s cool."</em> Both voted yes, along with Commissioner Olivia Trusty.</p>
@@ -25795,7 +25795,7 @@ ISS (ZARYA)
 <p>Companies operating in ISAM, debris removal, orbital manufacturing, or any non-traditional space activity should file comments. Even if you are not directly affected by the spectrum proposals today, the definitions established in this proceeding — what counts as an "emergent space operation," how piggybacking works, what TT&C includes — will shape the licensing framework for years.</p>
 
 <p>The FCC is asking the right questions. Whether the answers create a workable framework or a regulatory tangle will depend on industry engagement now, while the rules are still being written.</p>
-\`,
+`,
   },
 
   {
@@ -25815,7 +25815,7 @@ ISS (ZARYA)
       { question: 'What are the space components?', answer: 'Three major space elements: tracking sensors (400-1,000 satellite constellation), a Space Data Network for real-time data transport, and space-based interceptors for boost-phase and midcourse interception. These build on the SDA\'s existing Proliferated Warfighter Space Architecture.' },
       { question: 'Who are the main contractors?', answer: 'Key contractors include Lockheed Martin (C2 architecture, SBI prototypes), Anduril/Palantir (software, custody layer), SpaceX (custody layer satellites, launch), Northrop Grumman, RTX/Raytheon, L3Harris, BAE Systems, and True Anomaly. The SHIELD contract vehicle has 2,400+ approved vendors.' },
     ],
-    content: \`
+    content: `
 <p>In March 2026, Gen. Michael Guetlein confirmed that the Pentagon\'s Golden Dome missile defense program had grown to <strong>$185 billion</strong> — a $10 billion increase driven by additional space capabilities. His explanation was characteristically direct: <em>"We were asked to procure some additional space capabilities."</em></p>
 
 <p>Golden Dome is the most ambitious U.S. defense program since the Manhattan Project — Guetlein\'s own comparison — and space is at its core. The system envisions constellations of hundreds to thousands of satellites for tracking, discrimination, and kinetic interception, connected by a space data transport network and managed by AI-enabled command and control. For the commercial space industry, this represents both the largest potential customer and the most complex integration challenge in a generation.</p>
@@ -25917,7 +25917,7 @@ ISS (ZARYA)
 </ul>
 
 <p>The next major milestone is a full-scale SBI flight test in <strong>early 2027</strong>, followed by the Pentagon\'s first major integrated test (sensors plus weapons engaging multiple targets) before end of 2028. Whether those tests succeed will determine whether Golden Dome remains the largest space procurement program in history or becomes the most expensive feasibility study.</p>
-\`,
+`,
   },
 
   {
@@ -25937,7 +25937,7 @@ ISS (ZARYA)
       { question: 'How much funding do SBIR/STTR programs provide?', answer: 'Approximately $4-6 billion annually across all federal agencies. The DoD alone provides about $3 billion/year. NASA awards over 300 Phase I grants and 108 Phase II awards annually, with Phase III awards averaging $56 million in total annual outflow.' },
       { question: 'Which space companies have benefited from SBIR/STTR?', answer: 'Notable space companies with SBIR origins include Starfish Space ($37.5M STRATFI), Varda Space Industries ($60M STRATFI), True Anomaly ($30M emergent need award), Anduril, ICON ($57.2M NASA Phase III), Orbit Fab, and many others. Over half of NASA SBIR awards support the Moon to Mars initiative.' },
     ],
-    content: \`
+    content: `
 <p>After the longest funding freeze in the programs\' 43-year history, America\'s most important small business innovation engine is back online. The <strong>Small Business Innovation and Economic Security Act (S. 3971)</strong> reauthorizes SBIR and STTR through <strong>September 30, 2031</strong> — a five-year extension that ends the prior pattern of recurring three-year cycles that repeatedly created funding uncertainty.</p>
 
 <p>The Senate passed it unanimously on March 3, 2026. The House passed it <strong>345-41</strong> on March 17. It is currently awaiting presidential action and expected to become law by mid-April 2026. But for the five months between the September 30, 2025 expiration and the March passage, agencies could not issue new solicitations or fund new awards. Space startups that depended on SBIR revenue watched contracts sit on ice.</p>
@@ -26037,7 +26037,7 @@ ISS (ZARYA)
 </ol>
 
 <p>The SBIR/STTR programs have generated 70,000 patents, created 700 public companies, and catalyzed $41 billion in venture capital. For space startups, they remain one of the most effective tools for converting innovative technology into funded programs — and the 2026 reauthorization just made them more powerful.</p>
-\`,
+`,
   },
 
 ];
