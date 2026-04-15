@@ -179,6 +179,41 @@ function MarketplaceActions({ companySlug, companyId, companyName, verificationL
   const [verLevel, setVerLevel] = useState<string | null>(verificationLevel || null);
   const [contactEmail, setContactEmail] = useState<string | null>(initialContactEmail || null);
 
+  // Meeting request state
+  const [showMeetingForm, setShowMeetingForm] = useState(false);
+  const [meetingForm, setMeetingForm] = useState({ visitorName: '', visitorEmail: '', visitorCompany: '', message: '', preferredDate: '' });
+  const [meetingSubmitting, setMeetingSubmitting] = useState(false);
+
+  const handleMeetingSubmit = async () => {
+    if (!meetingForm.visitorName || !meetingForm.visitorEmail || meetingForm.message.length < 10) return;
+    setMeetingSubmitting(true);
+    try {
+      const res = await fetch(`/api/company-profiles/${companySlug}/meeting-requests`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          visitorName: meetingForm.visitorName,
+          visitorEmail: meetingForm.visitorEmail,
+          visitorCompany: meetingForm.visitorCompany || null,
+          message: meetingForm.message,
+          preferredDate: meetingForm.preferredDate || null,
+        }),
+      });
+      if (res.ok) {
+        toast.success('Meeting request sent! The company will review your request.');
+        setShowMeetingForm(false);
+        setMeetingForm({ visitorName: '', visitorEmail: '', visitorCompany: '', message: '', preferredDate: '' });
+      } else {
+        const err = await res.json();
+        toast.error(err.error?.message || err.error || 'Failed to send meeting request');
+      }
+    } catch {
+      toast.error('Failed to send meeting request. Please try again.');
+    } finally {
+      setMeetingSubmitting(false);
+    }
+  };
+
   const handleClaim = async () => {
     if (!claimEmail) return;
     setClaiming(true);
@@ -273,6 +308,86 @@ function MarketplaceActions({ companySlug, companyId, companyName, verificationL
         </svg>
         Compare
       </Link>
+      {claimed && claimedByUserId && session?.user?.id !== claimedByUserId && !showMeetingForm && (
+        <button
+          onClick={() => setShowMeetingForm(true)}
+          className="text-xs px-3 py-1.5 bg-purple-500/20 hover:bg-purple-500/30 text-purple-400 border border-purple-500/30 rounded-lg font-medium transition-colors flex items-center gap-1.5"
+        >
+          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+          </svg>
+          Request a Meeting
+        </button>
+      )}
+      {showMeetingForm && (
+        <div className="w-full mt-3 bg-white/[0.04] border border-white/[0.08] rounded-xl p-4 space-y-3">
+          <div className="flex items-center justify-between">
+            <h4 className="text-sm font-semibold text-white">Request a Meeting with {companyName}</h4>
+            <button onClick={() => setShowMeetingForm(false)} className="text-xs text-slate-400 hover:text-white">Cancel</button>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs font-medium text-slate-400 mb-1">Your Name *</label>
+              <input
+                required
+                value={meetingForm.visitorName}
+                onChange={e => setMeetingForm(p => ({ ...p, visitorName: e.target.value }))}
+                placeholder="Full name"
+                className="w-full bg-white/[0.06] border border-white/[0.1] rounded-lg px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-purple-500/50"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-slate-400 mb-1">Your Email *</label>
+              <input
+                required
+                type="email"
+                value={meetingForm.visitorEmail}
+                onChange={e => setMeetingForm(p => ({ ...p, visitorEmail: e.target.value }))}
+                placeholder="you@company.com"
+                className="w-full bg-white/[0.06] border border-white/[0.1] rounded-lg px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-purple-500/50"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-slate-400 mb-1">Your Company</label>
+              <input
+                value={meetingForm.visitorCompany}
+                onChange={e => setMeetingForm(p => ({ ...p, visitorCompany: e.target.value }))}
+                placeholder="Company name (optional)"
+                className="w-full bg-white/[0.06] border border-white/[0.1] rounded-lg px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-purple-500/50"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-slate-400 mb-1">Preferred Date</label>
+              <input
+                type="date"
+                value={meetingForm.preferredDate}
+                onChange={e => setMeetingForm(p => ({ ...p, preferredDate: e.target.value }))}
+                className="w-full bg-white/[0.06] border border-white/[0.1] rounded-lg px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-purple-500/50"
+              />
+            </div>
+            <div className="sm:col-span-2">
+              <label className="block text-xs font-medium text-slate-400 mb-1">Message * (min 10 chars)</label>
+              <textarea
+                required
+                minLength={10}
+                maxLength={2000}
+                rows={3}
+                value={meetingForm.message}
+                onChange={e => setMeetingForm(p => ({ ...p, message: e.target.value }))}
+                placeholder="What would you like to discuss? Share context about your needs..."
+                className="w-full bg-white/[0.06] border border-white/[0.1] rounded-lg px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-purple-500/50"
+              />
+            </div>
+          </div>
+          <button
+            onClick={handleMeetingSubmit}
+            disabled={meetingSubmitting || !meetingForm.visitorName || !meetingForm.visitorEmail || meetingForm.message.length < 10}
+            className="px-4 py-2 bg-purple-600 hover:bg-purple-500 disabled:bg-white/[0.08] disabled:text-slate-500 text-white rounded-lg text-xs font-semibold transition-colors"
+          >
+            {meetingSubmitting ? 'Sending...' : 'Send Meeting Request'}
+          </button>
+        </div>
+      )}
       {!claimed && !showClaimForm && (
         <button
           onClick={() => {

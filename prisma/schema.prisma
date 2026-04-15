@@ -30,7 +30,7 @@ model User {
   trialEndDate   DateTime?
 
   // Admin
-  isAdmin Boolean @default(false)
+  isAdmin   Boolean @default(false)
   adminRole String? // 'super_admin', 'moderator', 'data_analyst' — null means basic admin
 
   // Community reputation
@@ -68,145 +68,146 @@ model User {
   nurtureEmails            NurtureEmailLog[]
 
   // Marketplace
-  claimedCompanyId         String? // CompanyProfile ID they've claimed
-  rfqs                     RFQ[]
-  interestExpressions      InterestExpression[]
+  claimedCompanyId    String? // CompanyProfile ID they've claimed
+  rfqs                RFQ[]
+  interestExpressions InterestExpression[]
+  bdOpportunities     BDOpportunity[]      @relation("BDOpportunities")
 
   // Watchlists & Saved Searches
-  companyWatchlist          CompanyWatchlistItem[]
-  savedSearches            SavedSearch[]
+  companyWatchlist CompanyWatchlistItem[]
+  savedSearches    SavedSearch[]
 
   // Launch engagement
-  launchPollVotes          LaunchPollVote[]
-  launchReactions          LaunchReaction[]
+  launchPollVotes LaunchPollVote[]
+  launchReactions LaunchReaction[]
 
   // Native push tokens (iOS/Android)
-  pushTokens               PushToken[]
+  pushTokens PushToken[]
 
   // Community
-  professionalProfile      ProfessionalProfile?
-  following                UserFollow[]         @relation("following")
-  followers                UserFollow[]         @relation("followers")
-  companyFollows           CompanyFollow[]
-  conversations            ConversationParticipant[]
-  sentMessages             DirectMessage[]
-  forumThreads             ForumThread[]
-  forumPosts               ForumPost[]
+  professionalProfile ProfessionalProfile?
+  following           UserFollow[]              @relation("following")
+  followers           UserFollow[]              @relation("followers")
+  companyFollows      CompanyFollow[]
+  conversations       ConversationParticipant[]
+  sentMessages        DirectMessage[]
+  forumThreads        ForumThread[]
+  forumPosts          ForumPost[]
 
   // Moderation
-  reportsMade              ContentReport[] @relation("reportsMade")
-  blocksGiven              UserBlock[]     @relation("blocksGiven")
-  blocksReceived           UserBlock[]     @relation("blocksReceived")
+  reportsMade    ContentReport[] @relation("reportsMade")
+  blocksGiven    UserBlock[]     @relation("blocksGiven")
+  blocksReceived UserBlock[]     @relation("blocksReceived")
 
   // Voting & Notifications
-  postVotes                PostVote[]
-  threadVotes              ThreadVote[]
-  notifications            Notification[]
-  threadSubscriptions      ThreadSubscription[]
+  postVotes           PostVote[]
+  threadVotes         ThreadVote[]
+  notifications       Notification[]
+  threadSubscriptions ThreadSubscription[]
 
   // Audit logging
-  auditLogs                AuditLog[]
+  auditLogs AuditLog[]
 
   // Notification preferences
-  notificationPreferences  NotificationPreference?
+  notificationPreferences NotificationPreference?
 
   // Onboarding
-  persona              String?  // investor, entrepreneur, mission-planner, executive, supply-chain, legal
-  onboardingCompleted  Boolean  @default(false)
-  onboardingStep       Int      @default(0)
+  persona             String? // investor, entrepreneur, mission-planner, executive, supply-chain, legal
+  onboardingCompleted Boolean @default(false)
+  onboardingStep      Int     @default(0)
 
   // Login tracking (for winback emails)
-  lastLoginAt          DateTime?
+  lastLoginAt DateTime?
 
   // Space Tycoon game profile
-  gameProfile          GameProfile?
+  gameProfile GameProfile?
 
   // Community badges
-  badges               UserBadge[]
+  badges UserBadge[]
 
   // Gig/Freelance marketplace
-  workerProfile        WorkerProfile?
-  employerProfile      EmployerProfile?
+  workerProfile   WorkerProfile?
+  employerProfile EmployerProfile?
 }
 
 // ─── Space Tycoon: Multiplayer Game Models ──────────────────────────────────
 
 model GameProfile {
-  id                String   @id @default(cuid())
-  userId            String   @unique
-  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id     String @id @default(cuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  companyName       String   @default("Untitled Aerospace")
-  title             String?
+  companyName String  @default("Untitled Aerospace")
+  title       String?
 
-  money             Float    @default(0)
-  totalEarned       Float    @default(0)
-  totalSpent        Float    @default(0)
-  netWorth          Float    @default(0)
-  buildingCount     Int      @default(0)
-  researchCount     Int      @default(0)
-  serviceCount      Int      @default(0)
-  locationsUnlocked Int      @default(0)
-  gameYear          Int      @default(2025)
+  money             Float @default(0)
+  totalEarned       Float @default(0)
+  totalSpent        Float @default(0)
+  netWorth          Float @default(0)
+  buildingCount     Int   @default(0)
+  researchCount     Int   @default(0)
+  serviceCount      Int   @default(0)
+  locationsUnlocked Int   @default(0)
+  gameYear          Int   @default(2025)
 
-  resources         Json     @default("{}")
-  achievements      String[] @default([])
+  resources    Json     @default("{}")
+  achievements String[] @default([])
 
-  lastSyncAt        DateTime @default(now())
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  lastSyncAt DateTime @default(now())
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
-  marketOrders      MarketOrder[]
-  postedBounties    ResourceBounty[]   @relation("postedBounties")
-  filledBounties    ResourceBounty[]   @relation("filledBounties")
-  globalMilestones  GlobalMilestone[]
+  marketOrders       MarketOrder[]
+  postedBounties     ResourceBounty[]  @relation("postedBounties")
+  filledBounties     ResourceBounty[]  @relation("filledBounties")
+  globalMilestones   GlobalMilestone[]
   allianceMembership AllianceMember?
-  activityLogs      PlayerActivity[]
-  colonyClaims      ColonyClaim[]
+  activityLogs       PlayerActivity[]
+  colonyClaims       ColonyClaim[]
 
   // Full game state for multiplayer visibility
-  buildingsData          Json      @default("[]")
-  activeServicesData     Json      @default("[]")
-  unlockedLocationsList  String[]  @default([])
-  completedResearchList  String[]  @default([])
-  shipsData              Json      @default("[]")
-  workforceData          Json?
+  buildingsData         Json     @default("[]")
+  activeServicesData    Json     @default("[]")
+  unlockedLocationsList String[] @default([])
+  completedResearchList String[] @default([])
+  shipsData             Json     @default("[]")
+  workforceData         Json?
 
   // ── Mechanic 1: Tiered Leaderboards ──
-  leagueProfile          PlayerLeagueProfile?
-  bracketEntries         LeagueBracketEntry[]
+  leagueProfile  PlayerLeagueProfile?
+  bracketEntries LeagueBracketEntry[]
 
   // ── Mechanic 2: Ghost/Shadow Rivals ──
-  peakNetWorth           Float     @default(0)
-  rivalWins              Int       @default(0)
-  rivalLosses            Int       @default(0)
-  rivalDraws             Int       @default(0)
-  rivalsAsPlayer         RivalAssignment[] @relation("rivalPlayer")
-  rivalsAsRival          RivalAssignment[] @relation("rivalTarget")
+  peakNetWorth   Float             @default(0)
+  rivalWins      Int               @default(0)
+  rivalLosses    Int               @default(0)
+  rivalDraws     Int               @default(0)
+  rivalsAsPlayer RivalAssignment[] @relation("rivalPlayer")
+  rivalsAsRival  RivalAssignment[] @relation("rivalTarget")
 
   // ── Mechanic 3: Contract Bidding ──
-  bidReliability         Float     @default(1.0)   // 0.0-1.0 reliability score
-  totalBidsWon           Int       @default(0)
-  totalBidsFailed        Int       @default(0)
-  biddingCooldownUntil   DateTime?
-  contractBids           ContractBid[]
-  wonBiddingContracts    BiddingContract[] @relation("contractWinner")
+  bidReliability       Float             @default(1.0) // 0.0-1.0 reliability score
+  totalBidsWon         Int               @default(0)
+  totalBidsFailed      Int               @default(0)
+  biddingCooldownUntil DateTime?
+  contractBids         ContractBid[]
+  wonBiddingContracts  BiddingContract[] @relation("contractWinner")
 
   // ── Mechanic 4: Seasonal Events ──
-  eventTokens            Int       @default(0)     // Persistent meta-currency
-  seasonParticipations   SeasonParticipation[]
+  eventTokens          Int                   @default(0) // Persistent meta-currency
+  seasonParticipations SeasonParticipation[]
 
   // ── Mechanic 7: Territory/Zone Influence ──
-  zoneInfluences         ZoneInfluence[]
-  governanceChallenges   GovernanceChallenge[]
+  zoneInfluences       ZoneInfluence[]
+  governanceChallenges GovernanceChallenge[]
 
   // ── Mechanic 8: Prestige Speed Runs ──
-  speedRunAttempts       SpeedRunAttempt[]
+  speedRunAttempts SpeedRunAttempt[]
 
   // ── Mechanic 9: Economic Espionage ──
-  espionageProfile       EspionageProfile?
-  espionageMissions      EspionageMission[]   @relation("missionAttacker")
-  espionageDefenses      EspionageMission[]   @relation("missionTarget")
+  espionageProfile  EspionageProfile?
+  espionageMissions EspionageMission[] @relation("missionAttacker")
+  espionageDefenses EspionageMission[] @relation("missionTarget")
 
   // ── Mechanic 10: Cooperative Mega-Projects ──
   megaProjectContributions MegaProjectContribution[]
@@ -237,42 +238,42 @@ model ColonyClaim {
 }
 
 model MarketResource {
-  id              String   @id @default(cuid())
-  slug            String   @unique
-  name            String
-  description     String   @default("")
-  category        String
-  basePrice       Float
-  currentPrice    Float
-  priceHistory    Json     @default("[]")
-  totalSupply     Float    @default(0)
-  totalDemand     Float    @default(0)
-  volatility      Float    @default(0.05)
-  minPrice        Float
-  maxPrice        Float
-  updatedAt       DateTime @updatedAt
-  createdAt       DateTime @default(now())
+  id           String   @id @default(cuid())
+  slug         String   @unique
+  name         String
+  description  String   @default("")
+  category     String
+  basePrice    Float
+  currentPrice Float
+  priceHistory Json     @default("[]")
+  totalSupply  Float    @default(0)
+  totalDemand  Float    @default(0)
+  volatility   Float    @default(0.05)
+  minPrice     Float
+  maxPrice     Float
+  updatedAt    DateTime @updatedAt
+  createdAt    DateTime @default(now())
 
-  orders          MarketOrder[]
+  orders MarketOrder[]
 
   @@index([slug])
   @@index([category])
 }
 
 model MarketOrder {
-  id              String       @id @default(cuid())
-  profileId       String
-  profile         GameProfile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
-  resourceId      String
-  resource        MarketResource @relation(fields: [resourceId], references: [id])
+  id         String         @id @default(cuid())
+  profileId  String
+  profile    GameProfile    @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  resourceId String
+  resource   MarketResource @relation(fields: [resourceId], references: [id])
 
-  type            String       // "buy" | "sell"
-  quantity        Float
-  pricePerUnit    Float
-  totalCost       Float
-  status          String       @default("completed")
+  type         String // "buy" | "sell"
+  quantity     Float
+  pricePerUnit Float
+  totalCost    Float
+  status       String @default("completed")
 
-  createdAt       DateTime     @default(now())
+  createdAt DateTime @default(now())
 
   @@index([profileId])
   @@index([resourceId])
@@ -297,7 +298,7 @@ model NurtureEmailLog {
   id        String   @id @default(cuid())
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  emailType String   // "welcome", "did_you_know", "social_proof", "ai_spotlight", "case_study", "trial_offer", "final_nudge"
+  emailType String // "welcome", "did_you_know", "social_proof", "ai_spotlight", "case_study", "trial_offer", "final_nudge"
   sentAt    DateTime @default(now())
 
   @@unique([userId, emailType])
@@ -308,8 +309,8 @@ model NurtureEmailLog {
 model NpsResponse {
   id        String   @id @default(cuid())
   userId    String
-  score     Int      // 0-10
-  feedback  String?  // Optional free-text
+  score     Int // 0-10
+  feedback  String? // Optional free-text
   createdAt DateTime @default(now())
 
   @@index([userId])
@@ -319,11 +320,11 @@ model NpsResponse {
 
 model UserFeedback {
   id        String   @id @default(cuid())
-  userId    String?  // Optional — anonymous users can submit
-  score     Int      // NPS 0-10
-  comment   String?  // Free-text improvement suggestion
-  pageUrl   String?  // Page the widget was triggered on
-  userAgent String?  // Browser/device info
+  userId    String? // Optional — anonymous users can submit
+  score     Int // NPS 0-10
+  comment   String? // Free-text improvement suggestion
+  pageUrl   String? // Page the widget was triggered on
+  userAgent String? // Browser/device info
   createdAt DateTime @default(now())
 
   @@index([userId])
@@ -332,16 +333,16 @@ model UserFeedback {
 }
 
 model NewsArticle {
-  id          String   @id @default(cuid())
+  id          String           @id @default(cuid())
   title       String
   summary     String?
   content     String?
-  url         String   @unique
+  url         String           @unique
   source      String
   category    String
   imageUrl    String?
   publishedAt DateTime
-  fetchedAt   DateTime @default(now())
+  fetchedAt   DateTime         @default(now())
   companyTags CompanyProfile[] @relation("NewsCompanyTags")
 
   @@index([category])
@@ -744,9 +745,9 @@ model RegulationExplainer {
   title                  String
   summary                String   @db.Text
   content                String   @db.Text
-  whatItMeans             String?  @db.Text
+  whatItMeans            String?  @db.Text
   whoItAffects           String?  @db.Text
-  whatToDoNext            String?  @db.Text
+  whatToDoNext           String?  @db.Text
   affectedCompanyTypes   String? // JSON array of company types affected
   agency                 String
   category               String
@@ -780,10 +781,10 @@ model CompanyDigest {
   createdAt        DateTime        @default(now())
   updatedAt        DateTime        @updatedAt
 
+  @@unique([companyProfileId, periodStart, periodEnd])
   @@index([companyProfileId])
   @@index([sector])
   @@index([periodEnd])
-  @@unique([companyProfileId, periodStart, periodEnd])
 }
 
 model WatchlistAlertLog {
@@ -1256,7 +1257,7 @@ model SpaceJobPosting {
   companyProfileId String?
   companyProfile   CompanyProfile? @relation(fields: [companyProfileId], references: [id], onDelete: SetNull)
   description      String?         @db.Text
-  employmentType   String?         // full_time, part_time, contract, internship
+  employmentType   String? // full_time, part_time, contract, internship
 
   // Classification
   category       String // engineering, operations, business, research, legal, manufacturing
@@ -2742,56 +2743,59 @@ model CompanyProfile {
   dataCompleteness    Int       @default(0) // 0-100 score of profile completeness
 
   // Marketplace fields
-  claimedByUserId   String?
-  claimedAt         DateTime?
-  verificationLevel     String?   // "identity", "capability", "performance"
+  claimedByUserId       String?
+  claimedAt             DateTime?
+  verificationLevel     String? // "identity", "capability", "performance"
   verifiedAt            DateTime?
-  verificationDocuments Json?     // Array of { name, url, type, uploadedAt }
+  verificationDocuments Json? // Array of { name, url, type, uploadedAt }
   verificationNotes     String?   @db.Text
-  contactEmail          String?   // For marketplace inquiries
+  contactEmail          String? // For marketplace inquiries
   marketplaceActive     Boolean   @default(false)
 
   // Sponsorship
-  sponsorTier         String?     // 'verified' | 'premium' (null = basic/free)
-  sponsorSince        DateTime?
-  sponsorExpires      DateTime?
-  sponsorStatus       String?     @default("active") // active, expired, cancelled
-  sponsorStripeSubId  String?     // Stripe subscription ID
-  sponsorBanner       String?     // Banner image URL (premium only)
-  sponsorTagline      String?     @db.Text // Custom tagline (premium only)
-  sponsorAnalytics    Json?       // { views, clicks, leads, lastUpdated }
+  sponsorTier        String? // 'verified' | 'premium' (null = basic/free)
+  sponsorSince       DateTime?
+  sponsorExpires     DateTime?
+  sponsorStatus      String?   @default("active") // active, expired, cancelled
+  sponsorStripeSubId String? // Stripe subscription ID
+  sponsorBanner      String? // Banner image URL (premium only)
+  sponsorTagline     String?   @db.Text // Custom tagline (premium only)
+  sponsorAnalytics   Json? // { views, clicks, leads, lastUpdated }
 
-  createdAt           DateTime  @default(now())
-  updatedAt           DateTime  @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  fundingRounds    FundingRound[]
-  revenueEstimates RevenueEstimate[]
-  products         CompanyProduct[]
-  keyPersonnel     KeyPersonnel[]
-  acquisitions     MergerAcquisition[]       @relation("acquirer")
-  acquisitionsOf   MergerAcquisition[]       @relation("target")
-  partnerships     Partnership[]
-  partnerOf        Partnership[]             @relation("partner")
-  secFilings       SECFiling[]
-  competitorOf     CompetitiveMapping[]      @relation("company")
-  competitorTo     CompetitiveMapping[]      @relation("competitor")
-  contracts        GovernmentContractAward[]
-  events           CompanyEvent[]
-  satelliteAssets  SatelliteAsset[]
-  facilities       FacilityLocation[]
-  scores           CompanyScore[]
-  newsArticles     NewsArticle[]     @relation("NewsCompanyTags")
-  serviceListings       ServiceListing[]
-  reviews               ProviderReview[]
-  teamingOpps           TeamingOpportunity[]
-  watchedBy             CompanyWatchlistItem[]
-  digests               CompanyDigest[]
-  jobPostings           SpaceJobPosting[]
-  gigOpportunities      GigOpportunity[]
-  forumThreads          ForumThread[]       @relation("CompanyForumThreads")
-  forumPosts            ForumPost[]         @relation("CompanyForumPosts")
-  sentPartnerRequests   PartnershipRequest[] @relation("PartnerRequestSender")
-  receivedPartnerRequests PartnershipRequest[] @relation("PartnerRequestReceiver")
+  fundingRounds           FundingRound[]
+  revenueEstimates        RevenueEstimate[]
+  products                CompanyProduct[]
+  keyPersonnel            KeyPersonnel[]
+  acquisitions            MergerAcquisition[]       @relation("acquirer")
+  acquisitionsOf          MergerAcquisition[]       @relation("target")
+  partnerships            Partnership[]
+  partnerOf               Partnership[]             @relation("partner")
+  secFilings              SECFiling[]
+  competitorOf            CompetitiveMapping[]      @relation("company")
+  competitorTo            CompetitiveMapping[]      @relation("competitor")
+  contracts               GovernmentContractAward[]
+  events                  CompanyEvent[]
+  satelliteAssets         SatelliteAsset[]
+  facilities              FacilityLocation[]
+  scores                  CompanyScore[]
+  newsArticles            NewsArticle[]             @relation("NewsCompanyTags")
+  serviceListings         ServiceListing[]
+  reviews                 ProviderReview[]
+  teamingOpps             TeamingOpportunity[]
+  watchedBy               CompanyWatchlistItem[]
+  digests                 CompanyDigest[]
+  jobPostings             SpaceJobPosting[]
+  gigOpportunities        GigOpportunity[]
+  forumThreads            ForumThread[]             @relation("CompanyForumThreads")
+  forumPosts              ForumPost[]               @relation("CompanyForumPosts")
+  sentPartnerRequests     PartnershipRequest[]      @relation("PartnerRequestSender")
+  receivedPartnerRequests PartnershipRequest[]      @relation("PartnerRequestReceiver")
+  bdOpportunities         BDOpportunity[]           @relation("BDOpportunities")
+  caseStudies             CaseStudy[]
+  meetingRequests         MeetingRequest[]
 
   @@index([slug])
   @@index([name])
@@ -2982,10 +2986,10 @@ model GovernmentContractAward {
   samOpportunityId       String?
   source                 String?
   // Competition intelligence fields (from SAM.gov Awards API)
-  numberOfOffers         Int?            // How many companies bid
-  extentCompeted         String?         // "Full and Open", "Not Competed", "Set-Aside", etc.
-  competitionType        String?         // "Full and Open Competition", "Not Available for Competition"
-  pscCode                String?         // Product/Service Code
+  numberOfOffers         Int? // How many companies bid
+  extentCompeted         String? // "Full and Open", "Not Competed", "Set-Aside", etc.
+  competitionType        String? // "Full and Open Competition", "Not Available for Competition"
+  pscCode                String? // Product/Service Code
   createdAt              DateTime        @default(now())
   updatedAt              DateTime        @updatedAt
 
@@ -2999,22 +3003,135 @@ model GovernmentContractAward {
 // Funding Opportunity Aggregator
 // ============================================================
 
-model SubawardRelationship {
+model ComplianceProgress {
+  id             String   @id @default(cuid())
+  userId         String
+  companyId      String? // Optional — company-scoped progress
+  completedItems String[] // Array of checklist item IDs that are checked
+  customItems    Json? // User-added custom checklist items
+  lastUpdatedAt  DateTime @default(now())
+  createdAt      DateTime @default(now())
+
+  @@unique([userId, companyId])
+  @@index([userId])
+}
+
+model CaseStudy {
+  id          String         @id @default(cuid())
+  companyId   String
+  company     CompanyProfile @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  title       String
+  slug        String         @unique
+  summary     String         @db.Text
+  content     String         @db.Text
+  clientName  String?
+  sector      String?
+  metrics     Json? // { outcome, duration, budget, roi, etc. }
+  imageUrl    String?
+  isPublished Boolean        @default(false)
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  @@index([companyId])
+  @@index([isPublished])
+}
+
+model MeetingRequest {
+  id             String         @id @default(cuid())
+  companyId      String
+  company        CompanyProfile @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  visitorName    String
+  visitorEmail   String
+  visitorCompany String?
+  message        String         @db.Text
+  preferredDate  DateTime?
+  status         String         @default("pending") // pending, accepted, declined, completed
+  respondedAt    DateTime?
+  createdAt      DateTime       @default(now())
+
+  @@index([companyId])
+  @@index([status])
+}
+
+model BDOpportunity {
   id                  String          @id @default(cuid())
-  primeContractId     String?         // Link to GovernmentContractAward if matched
-  primeCompanyName    String
-  primeCompanyId      String?         // FK to CompanyProfile if matched
-  primeUei            String?
-  subCompanyName      String
-  subCompanyId        String?         // FK to CompanyProfile if matched
-  subUei              String?
-  subawardAmount      Float?
-  subawardDate        DateTime?
-  agency              String?
+  companyId           String
+  company             CompanyProfile  @relation("BDOpportunities", fields: [companyId], references: [id], onDelete: Cascade)
+  ownerUserId         String
+  owner               User            @relation("BDOpportunities", fields: [ownerUserId], references: [id], onDelete: Cascade)
+  // Opportunity metadata
+  title               String
   description         String?         @db.Text
-  piid                String?         // Prime contract number
+  opportunityType     String          @default("procurement") // procurement, partnership, funding, teaming, contract_renewal, sbir
+  externalId          String? // Link to SAM.gov noticeId, SBIR award, etc.
+  // Classification
+  agency              String? // NASA, Space Force, NRO, NOAA, etc.
   naicsCode           String?
+  category            String? // launch, satellite, ground, propulsion, etc.
+  valueEstimated      Float? // Estimated deal size
+  // Compliance
+  itarRequired        Boolean         @default(false)
+  clearanceRequired   String? // none, secret, top_secret, ts_sci
+  setAsideEligibility String[] // 8(a), HUBZone, WOSB, SDVOSB
+  solicitationNumber  String?
+  samUrl              String?
+  // Pipeline tracking
+  stage               String          @default("discovery") // discovery, pursuit, capture, proposal, submitted, evaluation, award, lost, on_hold
+  probability         Int? // 0-100 win probability
+  expectedCloseDate   DateTime?
+  proposalDeadline    DateTime?
+  // Outcome
+  wonAmount           Float?
+  lostReason          String?
+  // Timestamps
+  discoveredAt        DateTime        @default(now())
+  pursuitStartedAt    DateTime?
+  proposalSubmittedAt DateTime?
+  awardedAt           DateTime?
+  lostAt              DateTime?
   createdAt           DateTime        @default(now())
+  updatedAt           DateTime        @updatedAt
+  // Relations
+  interactions        BDInteraction[]
+
+  @@index([companyId])
+  @@index([ownerUserId])
+  @@index([stage])
+  @@index([agency])
+  @@index([expectedCloseDate])
+}
+
+model BDInteraction {
+  id            String        @id @default(cuid())
+  opportunityId String
+  opportunity   BDOpportunity @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
+  type          String // call, email, meeting, site_visit, proposal_draft, proposal_submit, negotiation, teaming, note
+  date          DateTime      @default(now())
+  title         String?
+  notes         String?       @db.Text
+  contactName   String?
+  contactOrg    String?
+  createdAt     DateTime      @default(now())
+
+  @@index([opportunityId, date])
+}
+
+model SubawardRelationship {
+  id               String    @id @default(cuid())
+  primeContractId  String? // Link to GovernmentContractAward if matched
+  primeCompanyName String
+  primeCompanyId   String? // FK to CompanyProfile if matched
+  primeUei         String?
+  subCompanyName   String
+  subCompanyId     String? // FK to CompanyProfile if matched
+  subUei           String?
+  subawardAmount   Float?
+  subawardDate     DateTime?
+  agency           String?
+  description      String?   @db.Text
+  piid             String? // Prime contract number
+  naicsCode        String?
+  createdAt        DateTime  @default(now())
 
   @@index([primeCompanyId])
   @@index([subCompanyId])
@@ -3024,66 +3141,66 @@ model SubawardRelationship {
 }
 
 model SBIRAward {
-  id                  String          @id @default(cuid())
-  firm                String          // Company name
-  companyId           String?         // FK to CompanyProfile if matched
-  awardTitle          String
-  agency              String          // NASA, SpaceWERX, NOAA, etc.
-  phase               String          // Phase I, Phase II, Phase III
-  program             String          // SBIR or STTR
-  topicCode           String?         // Links competitors on same topic
-  awardAmount         Float?
-  awardYear           Int?
-  proposalAwardDate   DateTime?
-  contractEndDate     DateTime?
-  solicitationNumber  String?
-  abstract            String?         @db.Text
-  keywords            String[]
-  city                String?
-  state               String?
-  hubzoneOwned        Boolean         @default(false)
-  womenOwned          Boolean         @default(false)
-  numberOfEmployees   Int?
-  createdAt           DateTime        @default(now())
+  id                 String    @id @default(cuid())
+  firm               String // Company name
+  companyId          String? // FK to CompanyProfile if matched
+  awardTitle         String
+  agency             String // NASA, SpaceWERX, NOAA, etc.
+  phase              String // Phase I, Phase II, Phase III
+  program            String // SBIR or STTR
+  topicCode          String? // Links competitors on same topic
+  awardAmount        Float?
+  awardYear          Int?
+  proposalAwardDate  DateTime?
+  contractEndDate    DateTime?
+  solicitationNumber String?
+  abstract           String?   @db.Text
+  keywords           String[]
+  city               String?
+  state              String?
+  hubzoneOwned       Boolean   @default(false)
+  womenOwned         Boolean   @default(false)
+  numberOfEmployees  Int?
+  createdAt          DateTime  @default(now())
 
+  @@unique([firm, topicCode, phase, awardYear])
   @@index([companyId])
   @@index([agency])
   @@index([topicCode])
   @@index([phase])
   @@index([awardYear])
-  @@unique([firm, topicCode, phase, awardYear])
 }
 
 model FundingOpportunity {
-  id                 String   @id @default(cuid())
-  externalId         String?  @unique // Dedup key: "sbir-12345", "sam-ABC", "grants-XYZ"
+  id                 String    @id @default(cuid())
+  externalId         String?   @unique // Dedup key: "sbir-12345", "sam-ABC", "grants-XYZ"
   title              String
-  description        String?  @db.Text
-  agency             String   // "NASA", "DARPA", "NSF", "Space Force", "ESA", "FAA"
-  program            String?  // "SBIR Phase I", "STTR Phase II", "ROSES", "BAA"
-  fundingType        String   // "grant", "contract", "cooperative_agreement", "sbir", "sttr", "prize"
-  amountMin          Float?   // Minimum award in USD
-  amountMax          Float?   // Maximum award in USD
-  totalBudget        Float?   // Total program budget
+  description        String?   @db.Text
+  agency             String // "NASA", "DARPA", "NSF", "Space Force", "ESA", "FAA"
+  program            String? // "SBIR Phase I", "STTR Phase II", "ROSES", "BAA"
+  fundingType        String // "grant", "contract", "cooperative_agreement", "sbir", "sttr", "prize"
+  amountMin          Float? // Minimum award in USD
+  amountMax          Float? // Maximum award in USD
+  totalBudget        Float? // Total program budget
   deadline           DateTime?
   openDate           DateTime?
-  status             String   @default("open") // "open", "closed", "upcoming", "rolling"
+  status             String    @default("open") // "open", "closed", "upcoming", "rolling"
   eligibility        String[] // ["small_business", "university", "nonprofit", "any"]
-  setAside           String?  // "8a", "hubzone", "wosb", "sdvosb", "none"
+  setAside           String? // "8a", "hubzone", "wosb", "sdvosb", "none"
   categories         String[] // ["propulsion", "earth_observation", "communications", "launch", "in_space", "defense", "lunar", "debris"]
   applicationUrl     String?
   sourceUrl          String?
-  source             String   // "sbir.gov", "sam.gov", "grants.gov", "nasa.gov", "manual"
+  source             String // "sbir.gov", "sam.gov", "grants.gov", "nasa.gov", "manual"
   contactName        String?
   contactEmail       String?
   naicsCode          String?
   solicitationNumber String?
-  stateIncentive     Boolean  @default(false) // Is this a state/regional incentive?
-  state              String?  // For state-level incentives
-  recurring          Boolean  @default(false) // Does this open periodically?
-  lastUpdated        DateTime @default(now())
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
+  stateIncentive     Boolean   @default(false) // Is this a state/regional incentive?
+  state              String? // For state-level incentives
+  recurring          Boolean   @default(false) // Does this open periodically?
+  lastUpdated        DateTime  @default(now())
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
 
   @@index([status])
   @@index([agency])
@@ -3547,7 +3664,7 @@ model LaunchPoll {
   eventId   String
   event     SpaceEvent @relation(fields: [eventId], references: [id], onDelete: Cascade)
   question  String
-  options   Json       // Array of option strings
+  options   Json // Array of option strings
   votes     Json       @default("{}") // { optionIndex: count }
   isActive  Boolean    @default(true)
   closedAt  DateTime?
@@ -3566,7 +3683,7 @@ model LaunchPollVote {
   poll      LaunchPoll @relation(fields: [pollId], references: [id], onDelete: Cascade)
   userId    String
   user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  option    Int        // Index of chosen option
+  option    Int // Index of chosen option
   createdAt DateTime   @default(now())
 
   @@unique([pollId, userId])
@@ -3579,8 +3696,8 @@ model LaunchReaction {
   event     SpaceEvent @relation(fields: [eventId], references: [id], onDelete: Cascade)
   userId    String?
   user      User?      @relation(fields: [userId], references: [id])
-  emoji     String     // "rocket", "fire", "star", "heart", "100"
-  phase     String?    // Mission phase when reaction was sent
+  emoji     String // "rocket", "fire", "star", "heart", "100"
+  phase     String? // Mission phase when reaction was sent
   createdAt DateTime   @default(now())
 
   @@index([eventId, createdAt])
@@ -3592,35 +3709,35 @@ model LaunchReaction {
 // ============================================================
 
 model ServiceListing {
-  id              String          @id @default(cuid())
+  id              String         @id @default(cuid())
   companyId       String
-  company         CompanyProfile  @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  slug            String          @unique
+  company         CompanyProfile @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  slug            String         @unique
   name            String
-  description     String          @db.Text
-  category        String          // launch, satellite, in_space, ground, manufacturing, engineering, environment, rnd, human, power
+  description     String         @db.Text
+  category        String // launch, satellite, in_space, ground, manufacturing, engineering, environment, rnd, human, power
   subcategory     String?
-  pricingType     String          // fixed, hourly, per_unit, subscription, rfq_only
+  pricingType     String // fixed, hourly, per_unit, subscription, rfq_only
   priceMin        Float?
   priceMax        Float?
-  priceUnit       String?         // km², hour, kg, month, unit
-  pricingNotes    String?         @db.Text
-  specifications  Json?           // Flexible specs per category
-  certifications  String[]        // ITAR, ISO 9001, AS9100, etc.
-  pastPerformance String?         @db.Text
-  leadTime        String?         // "2-4 weeks", "3 months", etc.
-  capacity        String?         // "10 launches/year", etc.
-  coverageArea    String?         // "Global", "LEO", "North America"
-  isEditorial     Boolean         @default(false) // Editorial listing (not created by provider)
-  sourceService   String?         // Source of editorial listing (e.g. 'orbital-services')
-  status          String          @default("active") // active, pending, paused, archived
-  featured        Boolean         @default(false)
-  viewCount       Int             @default(0)
-  inquiryCount    Int             @default(0)
-  createdAt       DateTime        @default(now())
-  updatedAt       DateTime        @updatedAt
+  priceUnit       String? // km², hour, kg, month, unit
+  pricingNotes    String?        @db.Text
+  specifications  Json? // Flexible specs per category
+  certifications  String[] // ITAR, ISO 9001, AS9100, etc.
+  pastPerformance String?        @db.Text
+  leadTime        String? // "2-4 weeks", "3 months", etc.
+  capacity        String? // "10 launches/year", etc.
+  coverageArea    String? // "Global", "LEO", "North America"
+  isEditorial     Boolean        @default(false) // Editorial listing (not created by provider)
+  sourceService   String? // Source of editorial listing (e.g. 'orbital-services')
+  status          String         @default("active") // active, pending, paused, archived
+  featured        Boolean        @default(false)
+  viewCount       Int            @default(0)
+  inquiryCount    Int            @default(0)
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
 
-  matches         RFQProviderMatch[]
+  matches RFQProviderMatch[]
 
   @@index([companyId])
   @@index([category])
@@ -3633,30 +3750,30 @@ model ServiceListing {
 }
 
 model RFQ {
-  id                  String    @id @default(cuid())
-  slug                String    @unique
-  buyerUserId         String
-  buyer               User      @relation(fields: [buyerUserId], references: [id], onDelete: Cascade)
-  title               String
-  description         String    @db.Text
-  category            String
-  subcategory         String?
-  requirements        Json?     // Structured requirements per category
-  budgetMin           Float?
-  budgetMax           Float?
-  budgetCurrency      String    @default("USD")
-  deadline            DateTime? // Response deadline
-  deliveryDate        DateTime? // When service is needed
-  complianceReqs      String[]  // ITAR, AS9100, etc.
-  isPublic            Boolean   @default(true)
-  status              String    @default("open") // open, evaluating, awarded, cancelled, closed
-  awardedToCompanyId  String?   // CompanyProfile ID of winner
-  createdAt           DateTime  @default(now())
-  updatedAt           DateTime  @updatedAt
+  id                 String    @id @default(cuid())
+  slug               String    @unique
+  buyerUserId        String
+  buyer              User      @relation(fields: [buyerUserId], references: [id], onDelete: Cascade)
+  title              String
+  description        String    @db.Text
+  category           String
+  subcategory        String?
+  requirements       Json? // Structured requirements per category
+  budgetMin          Float?
+  budgetMax          Float?
+  budgetCurrency     String    @default("USD")
+  deadline           DateTime? // Response deadline
+  deliveryDate       DateTime? // When service is needed
+  complianceReqs     String[] // ITAR, AS9100, etc.
+  isPublic           Boolean   @default(true)
+  status             String    @default("open") // open, evaluating, awarded, cancelled, closed
+  awardedToCompanyId String? // CompanyProfile ID of winner
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
 
-  proposals           Proposal[]
-  matches             RFQProviderMatch[]
-  clarifications      RFQClarification[]
+  proposals      Proposal[]
+  matches        RFQProviderMatch[]
+  clarifications RFQClarification[]
 
   @@index([buyerUserId])
   @@index([category])
@@ -3672,12 +3789,12 @@ model Proposal {
   id            String   @id @default(cuid())
   rfqId         String
   rfq           RFQ      @relation(fields: [rfqId], references: [id], onDelete: Cascade)
-  companyId     String   // CompanyProfile ID of proposer
+  companyId     String // CompanyProfile ID of proposer
   price         Float?
   pricingDetail String?  @db.Text
   timeline      String?
   approach      String?  @db.Text
-  attachments   Json?    // Array of { name, url, type }
+  attachments   Json? // Array of { name, url, type }
   status        String   @default("submitted") // submitted, shortlisted, awarded, rejected, withdrawn
   submittedAt   DateTime @default(now())
   updatedAt     DateTime @updatedAt
@@ -3696,9 +3813,9 @@ model RFQProviderMatch {
   rfq          RFQ             @relation(fields: [rfqId], references: [id], onDelete: Cascade)
   listingId    String?
   listing      ServiceListing? @relation(fields: [listingId], references: [id])
-  companyId    String          // CompanyProfile ID
-  matchScore   Float           // 0-100 weighted score
-  matchReasons Json?           // { category: 30, price: 20, certs: 20, ... }
+  companyId    String // CompanyProfile ID
+  matchScore   Float // 0-100 weighted score
+  matchReasons Json? // { category: 30, price: 20, certs: 20, ... }
   notified     Boolean         @default(false)
   respondedAt  DateTime?
   createdAt    DateTime        @default(now())
@@ -3710,18 +3827,18 @@ model RFQProviderMatch {
 }
 
 model ProviderReview {
-  id             String         @id @default(cuid())
-  companyId      String
-  company        CompanyProfile @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  reviewerUserId String
-  rfqId          String?        // Link to original RFQ if applicable
-  overallRating  Int            // 1-5 stars
-  qualityRating  Int?           // 1-5
-  timelineRating Int?           // 1-5
-  commRating     Int?           // 1-5 Communication
-  valueRating    Int?           // 1-5
-  title          String?
-  content        String?        @db.Text
+  id                  String         @id @default(cuid())
+  companyId           String
+  company             CompanyProfile @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  reviewerUserId      String
+  rfqId               String? // Link to original RFQ if applicable
+  overallRating       Int // 1-5 stars
+  qualityRating       Int? // 1-5
+  timelineRating      Int? // 1-5
+  commRating          Int? // 1-5 Communication
+  valueRating         Int? // 1-5
+  title               String?
+  content             String?        @db.Text
   isVerified          Boolean        @default(false) // Verified transaction
   status              String         @default("published") // published, hidden, flagged
   providerResponse    String?        @db.Text
@@ -3740,13 +3857,13 @@ model TeamingOpportunity {
   id                     String         @id @default(cuid())
   companyId              String
   company                CompanyProfile @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  contractReference      String?        // GovernmentContract or ProcurementOpportunity ID/title
+  contractReference      String? // GovernmentContract or ProcurementOpportunity ID/title
   contractTitle          String
-  contractAgency         String?        // NASA, Space Force, etc.
-  seekingRole            String         // prime, subcontractor, teammate
-  capabilitiesNeeded     String[]       // What they need from partners
-  capabilitiesOffered    String[]       // What they bring to the team
-  setAsideQualifications String[]       // 8(a), HUBZone, WOSB, SDVOSB, etc.
+  contractAgency         String? // NASA, Space Force, etc.
+  seekingRole            String // prime, subcontractor, teammate
+  capabilitiesNeeded     String[] // What they need from partners
+  capabilitiesOffered    String[] // What they bring to the team
+  setAsideQualifications String[] // 8(a), HUBZone, WOSB, SDVOSB, etc.
   description            String?        @db.Text
   contactEmail           String
   status                 String         @default("open") // open, closed, teamed
@@ -3760,18 +3877,18 @@ model TeamingOpportunity {
 }
 
 model PartnershipRequest {
-  id              String          @id @default(cuid())
-  senderCompanyId String
-  senderCompany   CompanyProfile  @relation("PartnerRequestSender", fields: [senderCompanyId], references: [id], onDelete: Cascade)
+  id                String         @id @default(cuid())
+  senderCompanyId   String
+  senderCompany     CompanyProfile @relation("PartnerRequestSender", fields: [senderCompanyId], references: [id], onDelete: Cascade)
   receiverCompanyId String
-  receiverCompany CompanyProfile  @relation("PartnerRequestReceiver", fields: [receiverCompanyId], references: [id], onDelete: Cascade)
-  type            String          // joint_venture, strategic_alliance, supply_agreement, licensing, research, teaming
-  message         String?         @db.Text
-  status          String          @default("pending") // pending, accepted, rejected, withdrawn
-  respondedAt     DateTime?
-  responseMessage String?         @db.Text
-  createdAt       DateTime        @default(now())
-  updatedAt       DateTime        @updatedAt
+  receiverCompany   CompanyProfile @relation("PartnerRequestReceiver", fields: [receiverCompanyId], references: [id], onDelete: Cascade)
+  type              String // joint_venture, strategic_alliance, supply_agreement, licensing, research, teaming
+  message           String?        @db.Text
+  status            String         @default("pending") // pending, accepted, rejected, withdrawn
+  respondedAt       DateTime?
+  responseMessage   String?        @db.Text
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
 
   @@unique([senderCompanyId, receiverCompanyId])
   @@index([senderCompanyId])
@@ -3781,10 +3898,10 @@ model PartnershipRequest {
 
 model InterestExpression {
   id            String   @id @default(cuid())
-  opportunityId String   // BusinessOpportunity ID
+  opportunityId String // BusinessOpportunity ID
   userId        String
   user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  companyId     String?  // CompanyProfile ID if they have one
+  companyId     String? // CompanyProfile ID if they have one
   contactEmail  String
   message       String?  @db.Text
   status        String   @default("expressed") // expressed, contacted, converted
@@ -3797,17 +3914,17 @@ model InterestExpression {
 }
 
 model RFQClarification {
-  id          String    @id @default(cuid())
-  rfqId       String
-  rfq         RFQ       @relation(fields: [rfqId], references: [id], onDelete: Cascade)
-  authorId    String
-  authorRole  String    // 'buyer' or 'provider'
-  companyId   String?   // Provider's company ID if provider
-  question    String    @db.Text
-  answer      String?   @db.Text
-  isPublic    Boolean   @default(true)
-  createdAt   DateTime  @default(now())
-  answeredAt  DateTime?
+  id         String    @id @default(cuid())
+  rfqId      String
+  rfq        RFQ       @relation(fields: [rfqId], references: [id], onDelete: Cascade)
+  authorId   String
+  authorRole String // 'buyer' or 'provider'
+  companyId  String? // Provider's company ID if provider
+  question   String    @db.Text
+  answer     String?   @db.Text
+  isPublic   Boolean   @default(true)
+  createdAt  DateTime  @default(now())
+  answeredAt DateTime?
 
   @@index([rfqId])
   @@index([authorId])
@@ -3835,16 +3952,16 @@ model CompanyWatchlistItem {
 }
 
 model SavedSearch {
-  id           String    @id @default(cuid())
+  id           String   @id @default(cuid())
   userId       String
-  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   name         String
-  searchType   String    // company_directory, marketplace_listings, marketplace_rfqs
-  filters      Json      // Type-specific filter object
-  query        String?   // Text search query
-  alertEnabled Boolean   @default(false)
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
+  searchType   String // company_directory, marketplace_listings, marketplace_rfqs
+  filters      Json // Type-specific filter object
+  query        String? // Text search query
+  alertEnabled Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
   @@index([userId])
   @@index([searchType])
@@ -3854,7 +3971,7 @@ model PushToken {
   id        String   @id @default(cuid())
   token     String   @unique
   userId    String
-  platform  String   // 'ios' or 'android'
+  platform  String // 'ios' or 'android'
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -3875,24 +3992,24 @@ model WebPushSubscription {
 }
 
 model Investor {
-  id               String   @id @default(cuid())
-  name             String   @unique
-  type             String   // "vc", "pe", "corporate", "angel", "government", "family_office", "accelerator"
-  description      String?  @db.Text
-  website          String?
-  logoUrl          String?
-  headquarters     String?
-  foundedYear      Int?
-  aum              Float?   // Assets under management in USD
-  fundSize         Float?   // Current fund size
-  investmentStage  String[] // ["pre_seed", "seed", "series_a", "series_b", "growth", "late_stage"]
-  sectorFocus      String[] // ["launch", "satellite", "earth_observation", "defense", "in_space", "ground_segment"]
-  portfolioCount   Int?     // Known space portfolio companies
-  notableDeals     String[] // Notable space investments as text descriptions
-  linkedinUrl      String?
-  status           String   @default("active") // "active", "inactive", "new_fund"
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  id              String   @id @default(cuid())
+  name            String   @unique
+  type            String // "vc", "pe", "corporate", "angel", "government", "family_office", "accelerator"
+  description     String?  @db.Text
+  website         String?
+  logoUrl         String?
+  headquarters    String?
+  foundedYear     Int?
+  aum             Float? // Assets under management in USD
+  fundSize        Float? // Current fund size
+  investmentStage String[] // ["pre_seed", "seed", "series_a", "series_b", "growth", "late_stage"]
+  sectorFocus     String[] // ["launch", "satellite", "earth_observation", "defense", "in_space", "ground_segment"]
+  portfolioCount  Int? // Known space portfolio companies
+  notableDeals    String[] // Notable space investments as text descriptions
+  linkedinUrl     String?
+  status          String   @default("active") // "active", "inactive", "new_fund"
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 
   @@index([type])
   @@index([name])
@@ -3902,22 +4019,22 @@ model Investor {
 // ── Deal Room (Space Industry Deal Room) ──
 
 model DealRoom {
-  id              String          @id @default(cuid())
+  id              String   @id @default(cuid())
   name            String
-  description     String?         @db.Text
-  companySlug     String?         // Link to CompanyProfile
-  status          String          @default("active") // "active", "archived", "closed"
-  createdBy       String          // User ID or email who created the room
-  createdByUserId String?         // User ID of creator (nullable for backward compat)
-  accessCode      String?         @unique // Optional invite code
-  ndaRequired     Boolean         @default(false)
-  ndaText         String?         @db.Text
-  createdAt       DateTime        @default(now())
-  updatedAt       DateTime        @updatedAt
+  description     String?  @db.Text
+  companySlug     String? // Link to CompanyProfile
+  status          String   @default("active") // "active", "archived", "closed"
+  createdBy       String // User ID or email who created the room
+  createdByUserId String? // User ID of creator (nullable for backward compat)
+  accessCode      String?  @unique // Optional invite code
+  ndaRequired     Boolean  @default(false)
+  ndaText         String?  @db.Text
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 
-  members       DealRoomMember[]
-  documents     DealRoomDocument[]
-  activities    DealRoomActivity[]
+  members    DealRoomMember[]
+  documents  DealRoomDocument[]
+  activities DealRoomActivity[]
 
   @@index([createdBy])
   @@index([createdByUserId])
@@ -3929,7 +4046,7 @@ model DealRoomMember {
   id            String    @id @default(cuid())
   dealRoomId    String
   dealRoom      DealRoom  @relation(fields: [dealRoomId], references: [id], onDelete: Cascade)
-  userId        String?   // Null for invited-but-not-joined
+  userId        String? // Null for invited-but-not-joined
   email         String
   role          String    @default("viewer") // "owner", "admin", "viewer"
   ndaAcceptedAt DateTime?
@@ -3944,32 +4061,32 @@ model DealRoomMember {
 }
 
 model DealRoomDocument {
-  id            String    @id @default(cuid())
-  dealRoomId    String
-  dealRoom      DealRoom  @relation(fields: [dealRoomId], references: [id], onDelete: Cascade)
-  name          String
-  category      String    @default("general") // "pitch_deck", "financials", "technical", "legal", "team", "general"
-  fileType      String    // "pdf", "pptx", "xlsx", "docx", "png", "jpg"
-  fileSize      Int       // Bytes
-  uploadedBy    String    // User ID or email
-  description   String?
-  version       Int       @default(1)
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  id          String   @id @default(cuid())
+  dealRoomId  String
+  dealRoom    DealRoom @relation(fields: [dealRoomId], references: [id], onDelete: Cascade)
+  name        String
+  category    String   @default("general") // "pitch_deck", "financials", "technical", "legal", "team", "general"
+  fileType    String // "pdf", "pptx", "xlsx", "docx", "png", "jpg"
+  fileSize    Int // Bytes
+  uploadedBy  String // User ID or email
+  description String?
+  version     Int      @default(1)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   @@index([dealRoomId])
   @@index([category])
 }
 
 model DealRoomActivity {
-  id            String    @id @default(cuid())
-  dealRoomId    String
-  dealRoom      DealRoom  @relation(fields: [dealRoomId], references: [id], onDelete: Cascade)
-  userId        String?
-  userEmail     String?
-  action        String    // "viewed_document", "uploaded_document", "joined_room", "accepted_nda", "invited_member", "downloaded_document", "created_room"
-  details       String?   // Document name, member email, etc.
-  createdAt     DateTime  @default(now())
+  id         String   @id @default(cuid())
+  dealRoomId String
+  dealRoom   DealRoom @relation(fields: [dealRoomId], references: [id], onDelete: Cascade)
+  userId     String?
+  userEmail  String?
+  action     String // "viewed_document", "uploaded_document", "joined_room", "accepted_nda", "invited_member", "downloaded_document", "created_room"
+  details    String? // Document name, member email, etc.
+  createdAt  DateTime @default(now())
 
   @@index([dealRoomId])
   @@index([createdAt])
@@ -3980,15 +4097,15 @@ model DealRoomActivity {
 // ============================================================
 
 model WeeklyIntelligenceBrief {
-  id             String   @id @default(cuid())
+  id             String    @id @default(cuid())
   weekStart      DateTime
   weekEnd        DateTime
   content        Json
-  htmlContent    String?  @db.Text
+  htmlContent    String?   @db.Text
   sentAt         DateTime?
-  recipientCount Int      @default(0)
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  recipientCount Int       @default(0)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
 }
 
 // ============================================================
@@ -3999,7 +4116,7 @@ model ProfessionalProfile {
   id          String   @id @default(cuid())
   userId      String   @unique
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  headline    String?  // "VP Engineering at SpaceX"
+  headline    String? // "VP Engineering at SpaceX"
   bio         String?  @db.Text
   expertise   String[] // ["propulsion", "launch-ops", "mission-planning"]
   location    String?
@@ -4092,27 +4209,27 @@ model ForumCategory {
 }
 
 model ForumThread {
-  id             String        @id @default(cuid())
+  id             String               @id @default(cuid())
   categoryId     String
-  category       ForumCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  category       ForumCategory        @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   authorId       String
-  author         User          @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  author         User                 @relation(fields: [authorId], references: [id], onDelete: Cascade)
   companyId      String?
-  company        CompanyProfile? @relation("CompanyForumThreads", fields: [companyId], references: [id], onDelete: SetNull)
+  company        CompanyProfile?      @relation("CompanyForumThreads", fields: [companyId], references: [id], onDelete: SetNull)
   title          String
-  content        String        @db.Text
+  content        String               @db.Text
   posts          ForumPost[]
-  isPinned       Boolean       @default(false)
-  isLocked       Boolean       @default(false)
-  viewCount      Int           @default(0)
+  isPinned       Boolean              @default(false)
+  isLocked       Boolean              @default(false)
+  viewCount      Int                  @default(0)
   tags           String[]
   acceptedPostId String?
-  upvoteCount    Int           @default(0)
-  downvoteCount  Int           @default(0)
+  upvoteCount    Int                  @default(0)
+  downvoteCount  Int                  @default(0)
   votes          ThreadVote[]
   subscriptions  ThreadSubscription[]
-  createdAt      DateTime      @default(now())
-  updatedAt      DateTime      @updatedAt
+  createdAt      DateTime             @default(now())
+  updatedAt      DateTime             @updatedAt
 
   @@index([categoryId, createdAt])
   @@index([authorId])
@@ -4120,20 +4237,20 @@ model ForumThread {
 }
 
 model ForumPost {
-  id            String      @id @default(cuid())
+  id            String          @id @default(cuid())
   threadId      String
-  thread        ForumThread @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  thread        ForumThread     @relation(fields: [threadId], references: [id], onDelete: Cascade)
   authorId      String
-  author        User        @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  author        User            @relation(fields: [authorId], references: [id], onDelete: Cascade)
   companyId     String?
   company       CompanyProfile? @relation("CompanyForumPosts", fields: [companyId], references: [id], onDelete: SetNull)
-  content       String      @db.Text
-  upvoteCount   Int         @default(0)
-  downvoteCount Int         @default(0)
-  isAccepted    Boolean     @default(false)
+  content       String          @db.Text
+  upvoteCount   Int             @default(0)
+  downvoteCount Int             @default(0)
+  isAccepted    Boolean         @default(false)
   votes         PostVote[]
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
 
   @@index([threadId, createdAt])
   @@index([authorId])
@@ -4147,9 +4264,9 @@ model ContentReport {
   id          String   @id @default(cuid())
   reporterId  String
   reporter    User     @relation("reportsMade", fields: [reporterId], references: [id], onDelete: Cascade)
-  contentType String   // 'thread', 'post', 'message', 'profile'
+  contentType String // 'thread', 'post', 'message', 'profile'
   contentId   String
-  reason      String   // 'spam', 'harassment', 'itar_violation', 'copyright', 'inappropriate', 'hate_speech', 'other'
+  reason      String // 'spam', 'harassment', 'itar_violation', 'copyright', 'inappropriate', 'hate_speech', 'other'
   description String?  @db.Text
   status      String   @default("pending") // 'pending', 'reviewed', 'actioned', 'dismissed'
   reviewedBy  String?
@@ -4180,7 +4297,7 @@ model ModerationAction {
   id           String   @id @default(cuid())
   moderatorId  String
   targetUserId String
-  action       String   // 'warn', 'mute', 'unmute', 'ban', 'unban', 'delete_content'
+  action       String // 'warn', 'mute', 'unmute', 'ban', 'unban', 'delete_content'
   reason       String?  @db.Text
   contentType  String?
   contentId    String?
@@ -4202,7 +4319,7 @@ model PostVote {
   post      ForumPost @relation(fields: [postId], references: [id], onDelete: Cascade)
   userId    String
   user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  value     Int       // 1 (upvote) or -1 (downvote)
+  value     Int // 1 (upvote) or -1 (downvote)
   createdAt DateTime  @default(now())
 
   @@unique([postId, userId])
@@ -4216,7 +4333,7 @@ model ThreadVote {
   thread    ForumThread @relation(fields: [threadId], references: [id], onDelete: Cascade)
   userId    String
   user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  value     Int         // 1 (upvote) or -1 (downvote)
+  value     Int // 1 (upvote) or -1 (downvote)
   createdAt DateTime    @default(now())
 
   @@unique([threadId, userId])
@@ -4232,7 +4349,7 @@ model Notification {
   id                 String   @id @default(cuid())
   userId             String
   user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  type               String   // 'reply', 'mention', 'follow', 'vote', 'accepted_answer', 'moderation'
+  type               String // 'reply', 'mention', 'follow', 'vote', 'accepted_answer', 'moderation'
   title              String
   message            String
   relatedUserId      String?
@@ -4270,8 +4387,8 @@ model AuditLog {
   id         String   @id @default(cuid())
   adminId    String
   admin      User     @relation(fields: [adminId], references: [id], onDelete: Cascade)
-  action     String   // 'grant_admin', 'revoke_admin', 'update_role', 'seed_data', 'refresh_data', 'ban_user', 'mute_user', etc.
-  resource   String   // 'user', 'content', 'data', 'system'
+  action     String // 'grant_admin', 'revoke_admin', 'update_role', 'seed_data', 'refresh_data', 'ban_user', 'mute_user', etc.
+  resource   String // 'user', 'content', 'data', 'system'
   resourceId String?
   details    Json?
   ipAddress  String?
@@ -4283,25 +4400,25 @@ model AuditLog {
 }
 
 model NotificationPreference {
-  id                  String  @id @default(cuid())
-  userId              String  @unique
-  user                User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  emailDigest         Boolean @default(true)
-  emailAlerts         Boolean @default(true)
-  pushEnabled         Boolean @default(true)
-  forumReplies        Boolean @default(true)
-  directMessages      Boolean @default(true)
-  marketplaceUpdates  Boolean @default(true)
-  watchlistAlerts     Boolean @default(true)
-  newsDigest          Boolean @default(true)
-  digestFrequency     String  @default("daily") // "daily", "weekly", "none"
+  id                 String   @id @default(cuid())
+  userId             String   @unique
+  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  emailDigest        Boolean  @default(true)
+  emailAlerts        Boolean  @default(true)
+  pushEnabled        Boolean  @default(true)
+  forumReplies       Boolean  @default(true)
+  directMessages     Boolean  @default(true)
+  marketplaceUpdates Boolean  @default(true)
+  watchlistAlerts    Boolean  @default(true)
+  newsDigest         Boolean  @default(true)
+  digestFrequency    String   @default("daily") // "daily", "weekly", "none"
   // Smart batching & quiet hours (v1.2.0)
-  alertDigestMode     String  @default("instant") // "instant", "hourly", "daily", "weekly"
-  quietHoursStart     Int?    // Hour 0-23, null = disabled
-  quietHoursEnd       Int?    // Hour 0-23, null = disabled
-  quietHoursTimezone  String  @default("UTC")
-  createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
+  alertDigestMode    String   @default("instant") // "instant", "hourly", "daily", "weekly"
+  quietHoursStart    Int? // Hour 0-23, null = disabled
+  quietHoursEnd      Int? // Hour 0-23, null = disabled
+  quietHoursTimezone String   @default("UTC")
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
 }
 
 // ---------------------------------------------------------------------------
@@ -4327,7 +4444,7 @@ model UserBadge {
   id        String   @id @default(cuid())
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  badgeType String   // first_post, helpful_10, expert, top_contributor, space_authority
+  badgeType String // first_post, helpful_10, expert, top_contributor, space_authority
   awardedAt DateTime @default(now())
 
   @@unique([userId, badgeType])
@@ -4345,8 +4462,8 @@ model VideoContent {
   description  String   @db.Text
   youtubeId    String?
   thumbnailUrl String?
-  duration     Int?     // seconds
-  category     String   // tutorial, launch-replay, interview, explainer
+  duration     Int? // seconds
+  category     String // tutorial, launch-replay, interview, explainer
   tags         String[]
   featured     Boolean  @default(false)
   publishedAt  DateTime @default(now())
@@ -4363,7 +4480,7 @@ model VideoContent {
 // Server-validated "first to" milestones — only one player can claim each
 model GlobalMilestone {
   id          String      @id @default(cuid())
-  milestoneId String      @unique  // matches milestones.ts ID (first_orbit, first_moon, etc.)
+  milestoneId String      @unique // matches milestones.ts ID (first_orbit, first_moon, etc.)
   claimedById String
   claimedBy   GameProfile @relation(fields: [claimedById], references: [id], onDelete: Cascade)
   companyName String
@@ -4375,20 +4492,20 @@ model GlobalMilestone {
 
 // Player-to-player resource bounties (contracts marketplace)
 model ResourceBounty {
-  id            String       @id @default(cuid())
-  posterId      String
-  poster        GameProfile  @relation("postedBounties", fields: [posterId], references: [id], onDelete: Cascade)
-  resourceSlug  String       // iron, titanium, etc.
-  quantity      Int
-  pricePerUnit  Float        // what poster will pay per unit
-  totalBudget   Float        // quantity * pricePerUnit (escrowed)
-  filledQty     Int          @default(0)
-  status        String       @default("open") // open, partial, filled, cancelled
-  fillerId      String?
-  filler        GameProfile? @relation("filledBounties", fields: [fillerId], references: [id])
-  filledAt      DateTime?
-  createdAt     DateTime     @default(now())
-  expiresAt     DateTime     // auto-expire after 24h
+  id           String       @id @default(cuid())
+  posterId     String
+  poster       GameProfile  @relation("postedBounties", fields: [posterId], references: [id], onDelete: Cascade)
+  resourceSlug String // iron, titanium, etc.
+  quantity     Int
+  pricePerUnit Float // what poster will pay per unit
+  totalBudget  Float // quantity * pricePerUnit (escrowed)
+  filledQty    Int          @default(0)
+  status       String       @default("open") // open, partial, filled, cancelled
+  fillerId     String?
+  filler       GameProfile? @relation("filledBounties", fields: [fillerId], references: [id])
+  filledAt     DateTime?
+  createdAt    DateTime     @default(now())
+  expiresAt    DateTime // auto-expire after 24h
 
   @@index([status])
   @@index([resourceSlug])
@@ -4397,49 +4514,49 @@ model ResourceBounty {
 
 // Player alliances for shared bonuses
 model Alliance {
-  id          String            @id @default(cuid())
-  name        String            @unique
-  tag         String            @unique // 3-5 char tag like [SOL], [MARS]
-  description String?
-  leaderId    String
-  memberCount Int               @default(1)
-  totalNetWorth Float           @default(0)
-  bonusRevenue Float            @default(0.05) // +5% revenue per alliance member (capped)
-  members     AllianceMember[]
-  createdAt   DateTime          @default(now())
+  id            String           @id @default(cuid())
+  name          String           @unique
+  tag           String           @unique // 3-5 char tag like [SOL], [MARS]
+  description   String?
+  leaderId      String
+  memberCount   Int              @default(1)
+  totalNetWorth Float            @default(0)
+  bonusRevenue  Float            @default(0.05) // +5% revenue per alliance member (capped)
+  members       AllianceMember[]
+  createdAt     DateTime         @default(now())
 
   // ── Mechanic 5: Alliance Cooperative Competition ──
-  level              Int       @default(1)
-  xp                 Int       @default(0)
-  tier               Int       @default(1)    // 1-5 (Frontier Startup → Galactic Dominion)
-  powerScore         Float     @default(0)    // Composite Alliance Power Score
-  totalEventsWon     Int       @default(0)
+  level                  Int   @default(1)
+  xp                     Int   @default(0)
+  tier                   Int   @default(1) // 1-5 (Frontier Startup → Galactic Dominion)
+  powerScore             Float @default(0) // Composite Alliance Power Score
+  totalEventsWon         Int   @default(0)
   totalProjectsCompleted Int   @default(0)
-  treasury           Float     @default(0)    // Shared money pool
-  announcements      Json      @default("[]") // Array of { text, authorId, createdAt }
-  settings           Json      @default("{}") // { minActivityDays, autoKickDays, maxOfficers }
+  treasury               Float @default(0) // Shared money pool
+  announcements          Json  @default("[]") // Array of { text, authorId, createdAt }
+  settings               Json  @default("{}") // { minActivityDays, autoKickDays, maxOfficers }
 
   // Relations for competitive mechanics
-  allianceEventScores     AllianceEventScore[]
-  allianceProjects        AllianceProject[]
-  allianceDailyTasks      AllianceDailyTask[]
+  allianceEventScores       AllianceEventScore[]
+  allianceProjects          AllianceProject[]
+  allianceDailyTasks        AllianceDailyTask[]
   megaProjectAllianceScores MegaProjectAllianceScore[]
-  zoneInfluences          ZoneInfluence[]
+  zoneInfluences            ZoneInfluence[]
 
   // ── Deep Alliance System ──
-  motd               String?   // Message of the day (leader sets)
-  bannerColor         String    @default("#6366f1") // Alliance banner/accent color
-  iconId              String    @default("rocket_1") // Alliance icon from preset list
-  isRecruiting        Boolean   @default(true)
-  requiredNetWorth    Float     @default(0)    // Min net worth to join
-  warWins             Int       @default(0)
-  warLosses           Int       @default(0)
+  motd             String? // Message of the day (leader sets)
+  bannerColor      String  @default("#6366f1") // Alliance banner/accent color
+  iconId           String  @default("rocket_1") // Alliance icon from preset list
+  isRecruiting     Boolean @default(true)
+  requiredNetWorth Float   @default(0) // Min net worth to join
+  warWins          Int     @default(0)
+  warLosses        Int     @default(0)
 
-  allianceResearch    AllianceResearch[]
-  allianceLogs        AllianceLog[]
-  alliancePerks       AlliancePerk[]
-  diplomacySent       AllianceDiplomacy[] @relation("diplomacySender")
-  diplomacyReceived   AllianceDiplomacy[] @relation("diplomacyReceiver")
+  allianceResearch  AllianceResearch[]
+  allianceLogs      AllianceLog[]
+  alliancePerks     AlliancePerk[]
+  diplomacySent     AllianceDiplomacy[] @relation("diplomacySender")
+  diplomacyReceived AllianceDiplomacy[] @relation("diplomacyReceiver")
 
   @@index([totalNetWorth])
   @@index([powerScore])
@@ -4448,21 +4565,21 @@ model Alliance {
 }
 
 model AllianceMember {
-  id          String      @id @default(cuid())
-  allianceId  String
-  alliance    Alliance    @relation(fields: [allianceId], references: [id], onDelete: Cascade)
-  profileId   String      @unique
-  profile     GameProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
-  role        String      @default("member") // leader, officer, veteran, member, recruit
-  joinedAt    DateTime    @default(now())
+  id         String      @id @default(cuid())
+  allianceId String
+  alliance   Alliance    @relation(fields: [allianceId], references: [id], onDelete: Cascade)
+  profileId  String      @unique
+  profile    GameProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  role       String      @default("member") // leader, officer, veteran, member, recruit
+  joinedAt   DateTime    @default(now())
 
   // ── Mechanic 5: Alliance Cooperative Competition ──
-  roleTag        String?   // "miner", "researcher", "builder", "trader" (advisory)
-  status         String    @default("active") // active, idle, inactive, dormant
-  lastActiveAt   DateTime  @default(now())
-  activityStreak Int       @default(0)
-  totalXPEarned  Int       @default(0)
-  statusMessage  String?   // 50-char status line
+  roleTag        String? // "miner", "researcher", "builder", "trader" (advisory)
+  status         String   @default("active") // active, idle, inactive, dormant
+  lastActiveAt   DateTime @default(now())
+  activityStreak Int      @default(0)
+  totalXPEarned  Int      @default(0)
+  statusMessage  String? // 50-char status line
 
   @@index([allianceId])
 }
@@ -4473,10 +4590,10 @@ model PlayerActivity {
   profileId   String
   profile     GameProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
   companyName String
-  type        String      // milestone_claimed, big_trade, alliance_created, bounty_posted, prestige
+  type        String // milestone_claimed, big_trade, alliance_created, bounty_posted, prestige
   title       String
   description String?
-  metadata    Json?       // extra data (resource, quantity, price, etc.)
+  metadata    Json? // extra data (resource, quantity, price, etc.)
   createdAt   DateTime    @default(now())
 
   @@index([type])
@@ -4488,21 +4605,21 @@ model PlayerActivity {
 // ---------------------------------------------------------------------------
 
 model ExecutiveMove {
-  id            String   @id @default(cuid())
-  personName    String
-  fromCompany   String?
-  fromTitle     String?
-  toCompany     String?
-  toTitle       String?
-  moveType      String   // hired, departed, promoted, appointed, board_joined
-  date          DateTime
-  source        String?
-  sourceUrl     String?
-  summary       String?  @db.Text
-  companySlug   String?
-  verified      Boolean  @default(false)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id          String   @id @default(cuid())
+  personName  String
+  fromCompany String?
+  fromTitle   String?
+  toCompany   String?
+  toTitle     String?
+  moveType    String // hired, departed, promoted, appointed, board_joined
+  date        DateTime
+  source      String?
+  sourceUrl   String?
+  summary     String?  @db.Text
+  companySlug String?
+  verified    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   @@index([personName])
   @@index([companySlug])
@@ -4519,28 +4636,28 @@ model ExecutiveMove {
 model LeagueSeason {
   id           String   @id @default(cuid())
   seasonNumber Int      @unique
-  weekNumber   Int                          // week within the season (1-12)
-  metricSlug   String                       // "net_worth_growth", "trade_volume", etc.
+  weekNumber   Int // week within the season (1-12)
+  metricSlug   String // "net_worth_growth", "trade_volume", etc.
   startsAt     DateTime
   endsAt       DateTime
   isActive     Boolean  @default(false)
   createdAt    DateTime @default(now())
 
-  brackets     LeagueBracket[]
+  brackets LeagueBracket[]
 
   @@index([isActive])
   @@index([startsAt])
 }
 
 model LeagueBracket {
-  id           String        @id @default(cuid())
+  id           String       @id @default(cuid())
   seasonId     String
-  season       LeagueSeason  @relation(fields: [seasonId], references: [id], onDelete: Cascade)
-  league       Int                          // 1-8 (Suborbital through Galactic)
-  bracketIndex Int                          // multiple brackets per league
-  createdAt    DateTime      @default(now())
+  season       LeagueSeason @relation(fields: [seasonId], references: [id], onDelete: Cascade)
+  league       Int // 1-8 (Suborbital through Galactic)
+  bracketIndex Int // multiple brackets per league
+  createdAt    DateTime     @default(now())
 
-  entries      LeagueBracketEntry[]
+  entries LeagueBracketEntry[]
 
   @@unique([seasonId, league, bracketIndex])
   @@index([seasonId])
@@ -4548,24 +4665,24 @@ model LeagueBracket {
 }
 
 model LeagueBracketEntry {
-  id              String        @id @default(cuid())
-  bracketId       String
-  bracket         LeagueBracket @relation(fields: [bracketId], references: [id], onDelete: Cascade)
-  profileId       String
-  profile         GameProfile   @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  id        String        @id @default(cuid())
+  bracketId String
+  bracket   LeagueBracket @relation(fields: [bracketId], references: [id], onDelete: Cascade)
+  profileId String
+  profile   GameProfile   @relation(fields: [profileId], references: [id], onDelete: Cascade)
 
-  startValue      Float         // metric value at week start (snapshot)
-  currentValue    Float         @default(0) // latest metric value
-  score           Float         @default(0) // computed: delta or % change
-  rank            Int           @default(0)
+  startValue   Float // metric value at week start (snapshot)
+  currentValue Float @default(0) // latest metric value
+  score        Float @default(0) // computed: delta or % change
+  rank         Int   @default(0)
 
-  promoted        Boolean       @default(false)
-  demoted         Boolean       @default(false)
-  shielded        Boolean       @default(false) // promotion shield active
+  promoted Boolean @default(false)
+  demoted  Boolean @default(false)
+  shielded Boolean @default(false) // promotion shield active
 
-  rewardClaimed   Boolean       @default(false)
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
+  rewardClaimed Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
   @@unique([bracketId, profileId])
   @@index([bracketId, score])
@@ -4573,19 +4690,19 @@ model LeagueBracketEntry {
 }
 
 model PlayerLeagueProfile {
-  id              String      @id @default(cuid())
-  profileId       String      @unique
-  profile         GameProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  id        String      @id @default(cuid())
+  profileId String      @unique
+  profile   GameProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
 
-  currentLeague   Int         @default(1)     // 1-8
-  peakLeague      Int         @default(1)
-  promotionShield Boolean     @default(false)
-  consecutiveLow  Int         @default(0)
-  seasonPoints    Int         @default(0)
-  totalWeeksPlayed Int        @default(0)
+  currentLeague    Int     @default(1) // 1-8
+  peakLeague       Int     @default(1)
+  promotionShield  Boolean @default(false)
+  consecutiveLow   Int     @default(0)
+  seasonPoints     Int     @default(0)
+  totalWeeksPlayed Int     @default(0)
 
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([currentLeague])
 }
@@ -4593,21 +4710,21 @@ model PlayerLeagueProfile {
 // ── Mechanic 2: Ghost/Shadow Rivals ────────────────────────────────────────
 
 model RivalAssignment {
-  id              String      @id @default(cuid())
-  playerId        String
-  player          GameProfile @relation("rivalPlayer", fields: [playerId], references: [id], onDelete: Cascade)
-  rivalId         String
-  rival           GameProfile @relation("rivalTarget", fields: [rivalId], references: [id], onDelete: Cascade)
+  id       String      @id @default(cuid())
+  playerId String
+  player   GameProfile @relation("rivalPlayer", fields: [playerId], references: [id], onDelete: Cascade)
+  rivalId  String
+  rival    GameProfile @relation("rivalTarget", fields: [rivalId], references: [id], onDelete: Cascade)
 
-  rivalryScore    Float       @default(50)    // 0-100 tug-of-war
-  weekId          Int                         // getCurrentWeekId() value
-  isActive        Boolean     @default(true)
+  rivalryScore Float   @default(50) // 0-100 tug-of-war
+  weekId       Int // getCurrentWeekId() value
+  isActive     Boolean @default(true)
 
-  snapshots       RivalSnapshot[]
-  events          RivalEvent[]
+  snapshots RivalSnapshot[]
+  events    RivalEvent[]
 
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@unique([playerId, rivalId, weekId])
   @@index([playerId, isActive])
@@ -4616,9 +4733,9 @@ model RivalAssignment {
 }
 
 model RivalSnapshot {
-  id              String           @id @default(cuid())
-  assignmentId    String
-  assignment      RivalAssignment  @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+  id           String          @id @default(cuid())
+  assignmentId String
+  assignment   RivalAssignment @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
 
   playerNetWorth  Float
   rivalNetWorth   Float
@@ -4628,26 +4745,26 @@ model RivalSnapshot {
   rivalResearch   Int
   playerServices  Int
   rivalServices   Int
-  scoreDelta      Float            @default(0)   // Change to rivalry score
+  scoreDelta      Float @default(0) // Change to rivalry score
 
-  snapshotAt      DateTime         @default(now())
+  snapshotAt DateTime @default(now())
 
   @@index([assignmentId])
   @@index([snapshotAt])
 }
 
 model RivalEvent {
-  id              String           @id @default(cuid())
-  assignmentId    String
-  assignment      RivalAssignment  @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+  id           String          @id @default(cuid())
+  assignmentId String
+  assignment   RivalAssignment @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
 
-  type            String           // "overtook", "was_overtaken", "new_rival", "rival_milestone", etc.
-  title           String
-  description     String?
-  metadata        Json?
-  notified        Boolean          @default(false)
+  type        String // "overtook", "was_overtaken", "new_rival", "rival_milestone", etc.
+  title       String
+  description String?
+  metadata    Json?
+  notified    Boolean @default(false)
 
-  createdAt       DateTime         @default(now())
+  createdAt DateTime @default(now())
 
   @@index([assignmentId])
   @@index([type])
@@ -4657,32 +4774,32 @@ model RivalEvent {
 // ── Mechanic 3: Contract Bidding System ────────────────────────────────────
 
 model BiddingContract {
-  id              String      @id @default(cuid())
-  contractType    String      // satellite_deployment, resource_delivery, station_construction, etc.
-  tier            Int         // 1-4
-  title           String
-  description     String
+  id           String @id @default(cuid())
+  contractType String // satellite_deployment, resource_delivery, station_construction, etc.
+  tier         Int // 1-4
+  title        String
+  description  String
 
-  requirements    Json        // { type-specific requirements }
-  baseReward      Float
-  minBid          Float
-  maxBid          Float
-  collateralPct   Float       @default(0.10)  // 5-15% by tier
+  requirements  Json // { type-specific requirements }
+  baseReward    Float
+  minBid        Float
+  maxBid        Float
+  collateralPct Float @default(0.10) // 5-15% by tier
 
-  bidCount        Int         @default(0)
-  winnerId        String?
-  winner          GameProfile? @relation("contractWinner", fields: [winnerId], references: [id])
-  winningBid      Float?
+  bidCount   Int          @default(0)
+  winnerId   String?
+  winner     GameProfile? @relation("contractWinner", fields: [winnerId], references: [id])
+  winningBid Float?
 
-  status          String      @default("open") // open, bidding_closed, awarded, in_progress, completed, failed
-  biddingEndsAt   DateTime
+  status           String    @default("open") // open, bidding_closed, awarded, in_progress, completed, failed
+  biddingEndsAt    DateTime
   deliveryDeadline DateTime?
-  completedAt     DateTime?
+  completedAt      DateTime?
 
-  bids            ContractBid[]
+  bids ContractBid[]
 
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([status])
   @@index([tier])
@@ -4691,20 +4808,20 @@ model BiddingContract {
 }
 
 model ContractBid {
-  id              String           @id @default(cuid())
-  contractId      String
-  contract        BiddingContract  @relation(fields: [contractId], references: [id], onDelete: Cascade)
-  profileId       String
-  profile         GameProfile      @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  id         String          @id @default(cuid())
+  contractId String
+  contract   BiddingContract @relation(fields: [contractId], references: [id], onDelete: Cascade)
+  profileId  String
+  profile    GameProfile     @relation(fields: [profileId], references: [id], onDelete: Cascade)
 
-  bidAmount       Float
-  deliveryPromise Int?             // Promised delivery in hours
-  collateralLocked Float           @default(0)
-  compositeScore  Float?           // Computed: 70% price + 15% reputation + 15% speed
+  bidAmount        Float
+  deliveryPromise  Int? // Promised delivery in hours
+  collateralLocked Float  @default(0)
+  compositeScore   Float? // Computed: 70% price + 15% reputation + 15% speed
 
-  status          String           @default("pending") // pending, won, lost, withdrawn
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
+  status    String   @default("pending") // pending, won, lost, withdrawn
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@unique([contractId, profileId])
   @@index([contractId])
@@ -4715,26 +4832,26 @@ model ContractBid {
 // ── Mechanic 4: Seasonal Event Competitions ────────────────────────────────
 
 model SeasonalEvent {
-  id              String      @id @default(cuid())
-  seasonType      String      // asteroid_rush, mars_colony_race, solar_storm_crisis, helium3_gold_rush, fleet_command
-  seasonNumber    Int
-  title           String
-  description     String
+  id           String @id @default(cuid())
+  seasonType   String // asteroid_rush, mars_colony_race, solar_storm_crisis, helium3_gold_rush, fleet_command
+  seasonNumber Int
+  title        String
+  description  String
 
-  startsAt        DateTime
-  endsAt          DateTime
-  status          String      @default("upcoming") // upcoming, active, completed
+  startsAt DateTime
+  endsAt   DateTime
+  status   String   @default("upcoming") // upcoming, active, completed
 
   // Season Pass config
-  passRewards     Json        @default("[]")   // Array of tier reward definitions
-  challengePool   Json        @default("[]")   // Pool of daily/weekly challenge definitions
+  passRewards   Json @default("[]") // Array of tier reward definitions
+  challengePool Json @default("[]") // Pool of daily/weekly challenge definitions
 
-  metadata        Json?       // Season-specific config
+  metadata Json? // Season-specific config
 
-  participations  SeasonParticipation[]
+  participations   SeasonParticipation[]
   seasonChallenges SeasonChallenge[]
 
-  createdAt       DateTime    @default(now())
+  createdAt DateTime @default(now())
 
   @@unique([seasonType, seasonNumber])
   @@index([status])
@@ -4742,24 +4859,24 @@ model SeasonalEvent {
 }
 
 model SeasonParticipation {
-  id              String         @id @default(cuid())
-  eventId         String
-  event           SeasonalEvent  @relation(fields: [eventId], references: [id], onDelete: Cascade)
-  profileId       String
-  profile         GameProfile    @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  id        String        @id @default(cuid())
+  eventId   String
+  event     SeasonalEvent @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  profileId String
+  profile   GameProfile   @relation(fields: [profileId], references: [id], onDelete: Cascade)
 
-  eventState      Json           @default("{}") // Separate EventGameState
-  seasonPoints    Int            @default(0)    // SP earned this season
-  currentTier     Int            @default(0)    // Season pass tier reached (0-50)
-  bracket         Int            @default(1)    // Player bracket (1-5 by net worth)
+  eventState   Json @default("{}") // Separate EventGameState
+  seasonPoints Int  @default(0) // SP earned this season
+  currentTier  Int  @default(0) // Season pass tier reached (0-50)
+  bracket      Int  @default(1) // Player bracket (1-5 by net worth)
 
-  totalScore      Float          @default(0)    // Final ranking score
-  rank            Int?
+  totalScore Float @default(0) // Final ranking score
+  rank       Int?
 
-  rewardsClaimed  Json           @default("[]") // Tiers already claimed
+  rewardsClaimed Json @default("[]") // Tiers already claimed
 
-  createdAt       DateTime       @default(now())
-  updatedAt       DateTime       @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@unique([eventId, profileId])
   @@index([eventId, totalScore])
@@ -4767,20 +4884,20 @@ model SeasonParticipation {
 }
 
 model SeasonChallenge {
-  id              String         @id @default(cuid())
-  eventId         String
-  event           SeasonalEvent  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  id      String        @id @default(cuid())
+  eventId String
+  event   SeasonalEvent @relation(fields: [eventId], references: [id], onDelete: Cascade)
 
-  challengeType   String         // "daily", "weekly", "season"
-  title           String
-  description     String
-  metric          String         // What to measure
-  target          Float          // Target value
-  spReward        Int            // Season Points awarded
-  activeDate      DateTime?      // For daily challenges
-  activeWeek      Int?           // For weekly challenges
+  challengeType String // "daily", "weekly", "season"
+  title         String
+  description   String
+  metric        String // What to measure
+  target        Float // Target value
+  spReward      Int // Season Points awarded
+  activeDate    DateTime? // For daily challenges
+  activeWeek    Int? // For weekly challenges
 
-  createdAt       DateTime       @default(now())
+  createdAt DateTime @default(now())
 
   @@index([eventId, challengeType])
   @@index([activeDate])
@@ -4789,19 +4906,19 @@ model SeasonChallenge {
 // ── Mechanic 5: Alliance Cooperative Competition ───────────────────────────
 
 model AllianceEvent {
-  id              String      @id @default(cuid())
-  eventType       String      // "asteroid_rush", "launch_blitz", "research_sprint", etc.
-  eventCategory   String      // "sprint", "challenge", "mega_event"
-  bracketId       String      // Groups alliances competing against each other
-  startsAt        DateTime
-  endsAt          DateTime
-  status          String      @default("upcoming") // upcoming, active, completed
-  metadata        Json?       // Event-specific config
+  id            String   @id @default(cuid())
+  eventType     String // "asteroid_rush", "launch_blitz", "research_sprint", etc.
+  eventCategory String // "sprint", "challenge", "mega_event"
+  bracketId     String // Groups alliances competing against each other
+  startsAt      DateTime
+  endsAt        DateTime
+  status        String   @default("upcoming") // upcoming, active, completed
+  metadata      Json? // Event-specific config
 
-  scores          AllianceEventScore[]
-  contributions   AllianceEventContribution[]
+  scores        AllianceEventScore[]
+  contributions AllianceEventContribution[]
 
-  createdAt       DateTime    @default(now())
+  createdAt DateTime @default(now())
 
   @@index([status])
   @@index([bracketId])
@@ -4828,15 +4945,15 @@ model AllianceEventScore {
 }
 
 model AllianceEventContribution {
-  id              String        @id @default(cuid())
-  eventId         String
-  event           AllianceEvent @relation(fields: [eventId], references: [id], onDelete: Cascade)
-  allianceId      String
-  profileId       String
-  profile         GameProfile   @relation(fields: [profileId], references: [id], onDelete: Cascade)
-  score           Float         @default(0)
-  details         Json?         // Breakdown: { "iron_mined": 500, "titanium_mined": 200 }
-  updatedAt       DateTime      @updatedAt
+  id         String        @id @default(cuid())
+  eventId    String
+  event      AllianceEvent @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  allianceId String
+  profileId  String
+  profile    GameProfile   @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  score      Float         @default(0)
+  details    Json? // Breakdown: { "iron_mined": 500, "titanium_mined": 200 }
+  updatedAt  DateTime      @updatedAt
 
   @@unique([eventId, profileId])
   @@index([eventId, allianceId])
@@ -4844,25 +4961,25 @@ model AllianceEventContribution {
 }
 
 model AllianceProject {
-  id              String      @id @default(cuid())
+  id              String    @id @default(cuid())
   allianceId      String
-  alliance        Alliance    @relation(fields: [allianceId], references: [id], onDelete: Cascade)
-  projectType     String      // "orbital_mega_station", "space_elevator", etc.
+  alliance        Alliance  @relation(fields: [allianceId], references: [id], onDelete: Cascade)
+  projectType     String // "orbital_mega_station", "space_elevator", etc.
   name            String
-  status          String      @default("funding") // funding, building, completed, decommissioned
+  status          String    @default("funding") // funding, building, completed, decommissioned
   moneyCost       Float
-  moneyFunded     Float       @default(0)
-  resourceCosts   Json        // { "titanium": 10000, "carbon_fiber": 20000 }
-  resourceFunded  Json        @default("{}")
+  moneyFunded     Float     @default(0)
+  resourceCosts   Json // { "titanium": 10000, "carbon_fiber": 20000 }
+  resourceFunded  Json      @default("{}")
   fundingDeadline DateTime?
   buildStartAt    DateTime?
   buildEndAt      DateTime?
   completedAt     DateTime?
-  bonuses         Json        // The bonuses this project grants when complete
+  bonuses         Json // The bonuses this project grants when complete
 
-  contributions   AllianceProjectContribution[]
+  contributions AllianceProjectContribution[]
 
-  createdAt       DateTime    @default(now())
+  createdAt DateTime @default(now())
 
   @@index([allianceId])
   @@index([status])
@@ -4884,25 +5001,25 @@ model AllianceProjectContribution {
 }
 
 model AllianceDailyTask {
-  id              String      @id @default(cuid())
-  allianceId      String
-  alliance        Alliance    @relation(fields: [allianceId], references: [id], onDelete: Cascade)
-  date            DateTime    // Date (UTC day)
-  tasks           Json        // Array of 3 task definitions
-  createdAt       DateTime    @default(now())
+  id         String   @id @default(cuid())
+  allianceId String
+  alliance   Alliance @relation(fields: [allianceId], references: [id], onDelete: Cascade)
+  date       DateTime // Date (UTC day)
+  tasks      Json // Array of 3 task definitions
+  createdAt  DateTime @default(now())
 
-  completions     AllianceDailyTaskCompletion[]
+  completions AllianceDailyTaskCompletion[]
 
   @@unique([allianceId, date])
 }
 
 model AllianceDailyTaskCompletion {
-  id              String            @id @default(cuid())
-  dailyTaskId     String
-  dailyTask       AllianceDailyTask @relation(fields: [dailyTaskId], references: [id], onDelete: Cascade)
-  profileId       String
-  taskIndex       Int               // 0, 1, or 2
-  completedAt     DateTime          @default(now())
+  id          String            @id @default(cuid())
+  dailyTaskId String
+  dailyTask   AllianceDailyTask @relation(fields: [dailyTaskId], references: [id], onDelete: Cascade)
+  profileId   String
+  taskIndex   Int // 0, 1, or 2
+  completedAt DateTime          @default(now())
 
   @@unique([dailyTaskId, profileId, taskIndex])
   @@index([profileId])
@@ -4911,22 +5028,22 @@ model AllianceDailyTaskCompletion {
 // ── Mechanic 6: Player-Driven Marketplace Enhancement ──────────────────────
 
 model MarketLimitOrder {
-  id              String         @id @default(cuid())
-  profileId       String
-  resourceSlug    String
-  side            String         // "buy" | "sell"
-  quantity        Int
-  filledQty       Int            @default(0)
-  pricePerUnit    Int            // Integer cents to avoid float issues
-  escrowAmount    Int            @default(0)   // Money or resources locked
-  status          String         @default("open") // open, partial, filled, cancelled, expired
-  expiresAt       DateTime?
+  id           String    @id @default(cuid())
+  profileId    String
+  resourceSlug String
+  side         String // "buy" | "sell"
+  quantity     Int
+  filledQty    Int       @default(0)
+  pricePerUnit Int // Integer cents to avoid float issues
+  escrowAmount Int       @default(0) // Money or resources locked
+  status       String    @default("open") // open, partial, filled, cancelled, expired
+  expiresAt    DateTime?
 
-  fills           MarketFill[]   @relation("orderFills")
-  counterFills    MarketFill[]   @relation("counterFills")
+  fills        MarketFill[] @relation("orderFills")
+  counterFills MarketFill[] @relation("counterFills")
 
-  createdAt       DateTime       @default(now())
-  updatedAt       DateTime       @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([resourceSlug, side, status])
   @@index([profileId])
@@ -4935,20 +5052,20 @@ model MarketLimitOrder {
 }
 
 model MarketFill {
-  id              String          @id @default(cuid())
-  orderId         String
-  order           MarketLimitOrder @relation("orderFills", fields: [orderId], references: [id], onDelete: Cascade)
-  counterOrderId  String
-  counterOrder    MarketLimitOrder @relation("counterFills", fields: [counterOrderId], references: [id], onDelete: Cascade)
+  id             String           @id @default(cuid())
+  orderId        String
+  order          MarketLimitOrder @relation("orderFills", fields: [orderId], references: [id], onDelete: Cascade)
+  counterOrderId String
+  counterOrder   MarketLimitOrder @relation("counterFills", fields: [counterOrderId], references: [id], onDelete: Cascade)
 
   quantity        Int
   pricePerUnit    Int
   totalValue      Int
-  fee             Int             @default(0)    // 2% transaction fee
+  fee             Int    @default(0) // 2% transaction fee
   buyerProfileId  String
   sellerProfileId String
 
-  createdAt       DateTime        @default(now())
+  createdAt DateTime @default(now())
 
   @@index([orderId])
   @@index([counterOrderId])
@@ -4956,16 +5073,16 @@ model MarketFill {
 }
 
 model MarketPriceCandle {
-  id              String      @id @default(cuid())
-  resourceSlug    String
-  timeframe       String      // "1h", "4h", "1d", "1w"
-  openTime        DateTime
-  open            Int
-  high            Int
-  low             Int
-  close           Int
-  volume          Int         @default(0)
-  tradeCount      Int         @default(0)
+  id           String   @id @default(cuid())
+  resourceSlug String
+  timeframe    String // "1h", "4h", "1d", "1w"
+  openTime     DateTime
+  open         Int
+  high         Int
+  low          Int
+  close        Int
+  volume       Int      @default(0)
+  tradeCount   Int      @default(0)
 
   @@unique([resourceSlug, timeframe, openTime])
   @@index([resourceSlug, timeframe])
@@ -4973,28 +5090,28 @@ model MarketPriceCandle {
 }
 
 model MarketAlert {
-  id              String      @id @default(cuid())
-  profileId       String
-  resourceSlug    String
-  direction       String      // "above" | "below"
-  targetPrice     Int
-  triggered       Boolean     @default(false)
-  triggeredAt     DateTime?
+  id           String    @id @default(cuid())
+  profileId    String
+  resourceSlug String
+  direction    String // "above" | "below"
+  targetPrice  Int
+  triggered    Boolean   @default(false)
+  triggeredAt  DateTime?
 
-  createdAt       DateTime    @default(now())
+  createdAt DateTime @default(now())
 
   @@index([profileId])
   @@index([resourceSlug, triggered])
 }
 
 model MarketAuditLog {
-  id              String      @id @default(cuid())
-  eventType       String      // "self_trade_blocked", "price_spike", "volume_anomaly", etc.
-  profileId       String?
-  resourceSlug    String?
-  details         Json
-  severity        String      @default("info") // info, warning, critical
-  createdAt       DateTime    @default(now())
+  id           String   @id @default(cuid())
+  eventType    String // "self_trade_blocked", "price_spike", "volume_anomaly", etc.
+  profileId    String?
+  resourceSlug String?
+  details      Json
+  severity     String   @default("info") // info, warning, critical
+  createdAt    DateTime @default(now())
 
   @@index([eventType])
   @@index([profileId])
@@ -5004,39 +5121,39 @@ model MarketAuditLog {
 // ── Mechanic 7: Territory/Zone Influence ───────────────────────────────────
 
 model Zone {
-  id              String      @id @default(cuid())
-  slug            String      @unique  // "leo", "geo", "lunar", "mars", etc.
-  name            String
-  parentZone      String?     // null for major zones, parent slug for sub-zones
-  tier            Int         @default(1)
-  governorId      String?     // Profile ID of current governor
-  governorName    String?
-  customName      String?     // Governor-assigned zone name
+  id           String  @id @default(cuid())
+  slug         String  @unique // "leo", "geo", "lunar", "mars", etc.
+  name         String
+  parentZone   String? // null for major zones, parent slug for sub-zones
+  tier         Int     @default(1)
+  governorId   String? // Profile ID of current governor
+  governorName String?
+  customName   String? // Governor-assigned zone name
 
-  influences      ZoneInfluence[]
-  challenges      GovernanceChallenge[]
+  influences ZoneInfluence[]
+  challenges GovernanceChallenge[]
 
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([parentZone])
   @@index([governorId])
 }
 
 model ZoneInfluence {
-  id              String      @id @default(cuid())
-  zoneId          String
-  zone            Zone        @relation(fields: [zoneId], references: [id], onDelete: Cascade)
-  profileId       String?
-  profile         GameProfile? @relation(fields: [profileId], references: [id], onDelete: Cascade)
-  allianceId      String?
-  alliance        Alliance?   @relation(fields: [allianceId], references: [id], onDelete: Cascade)
+  id         String       @id @default(cuid())
+  zoneId     String
+  zone       Zone         @relation(fields: [zoneId], references: [id], onDelete: Cascade)
+  profileId  String?
+  profile    GameProfile? @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  allianceId String?
+  alliance   Alliance?    @relation(fields: [allianceId], references: [id], onDelete: Cascade)
 
-  influencePoints Float       @default(0)
-  sharePercent    Float       @default(0)  // Cached % share of zone
-  lastDecayAt     DateTime    @default(now())
+  influencePoints Float    @default(0)
+  sharePercent    Float    @default(0) // Cached % share of zone
+  lastDecayAt     DateTime @default(now())
 
-  updatedAt       DateTime    @updatedAt
+  updatedAt DateTime @updatedAt
 
   @@unique([zoneId, profileId])
   @@index([zoneId])
@@ -5050,13 +5167,13 @@ model GovernanceChallenge {
   zone            Zone        @relation(fields: [zoneId], references: [id], onDelete: Cascade)
   challengerId    String
   challenger      GameProfile @relation(fields: [challengerId], references: [id], onDelete: Cascade)
-  currentGovernor String      // Profile ID
-  challengerIP    Float       // IP at challenge start
-  governorIP      Float       // IP at challenge start
+  currentGovernor String // Profile ID
+  challengerIP    Float // IP at challenge start
+  governorIP      Float // IP at challenge start
   status          String      @default("active") // active, challenger_won, governor_held, expired
-  endsAt          DateTime    // 72-hour window
+  endsAt          DateTime // 72-hour window
 
-  createdAt       DateTime    @default(now())
+  createdAt DateTime @default(now())
 
   @@index([zoneId, status])
   @@index([challengerId])
@@ -5066,43 +5183,43 @@ model GovernanceChallenge {
 // ── Mechanic 8: Prestige Speed Runs ───────────────────────────────────────
 
 model SpeedRunChallenge {
-  id              String      @id @default(cuid())
-  weekId          Int         @unique   // Deterministic week identifier
-  milestoneId     String      // Which milestone to race for
+  id              String   @id @default(cuid())
+  weekId          Int      @unique // Deterministic week identifier
+  milestoneId     String // Which milestone to race for
   milestoneName   String
-  milestoneTarget String      // Human-readable target
-  bracket         String?     // null = all brackets, or "rookie", "veteran", "elite", "grandmaster"
+  milestoneTarget String // Human-readable target
+  bracket         String? // null = all brackets, or "rookie", "veteran", "elite", "grandmaster"
   startsAt        DateTime
   endsAt          DateTime
-  status          String      @default("upcoming") // upcoming, active, completed
+  status          String   @default("upcoming") // upcoming, active, completed
 
-  attempts        SpeedRunAttempt[]
+  attempts SpeedRunAttempt[]
 
-  createdAt       DateTime    @default(now())
+  createdAt DateTime @default(now())
 
   @@index([status])
   @@index([weekId])
 }
 
 model SpeedRunAttempt {
-  id              String             @id @default(cuid())
-  challengeId     String
-  challenge       SpeedRunChallenge  @relation(fields: [challengeId], references: [id], onDelete: Cascade)
-  profileId       String
-  profile         GameProfile        @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  id          String            @id @default(cuid())
+  challengeId String
+  challenge   SpeedRunChallenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+  profileId   String
+  profile     GameProfile       @relation(fields: [profileId], references: [id], onDelete: Cascade)
 
-  prestigeLevel   Int                // Player's prestige level at attempt start
-  bracket         String             // rookie, veteran, elite, grandmaster
-  startedAtMs     Float              // Unix timestamp when prestige reset occurred
-  completedAtMs   Float?             // Unix timestamp when milestone was reached
-  durationSeconds Float?             // Computed time to completion
+  prestigeLevel   Int // Player's prestige level at attempt start
+  bracket         String // rookie, veteran, elite, grandmaster
+  startedAtMs     Float // Unix timestamp when prestige reset occurred
+  completedAtMs   Float? // Unix timestamp when milestone was reached
+  durationSeconds Float? // Computed time to completion
   rank            Int?
 
-  isVerified      Boolean            @default(false) // Server-validated
-  suspicionScore  Float              @default(0)     // Anti-cheat score
+  isVerified     Boolean @default(false) // Server-validated
+  suspicionScore Float   @default(0) // Anti-cheat score
 
-  createdAt       DateTime           @default(now())
-  updatedAt       DateTime           @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@unique([challengeId, profileId])
   @@index([challengeId, bracket])
@@ -5113,43 +5230,43 @@ model SpeedRunAttempt {
 // ── Mechanic 9: Economic Espionage ────────────────────────────────────────
 
 model EspionageProfile {
-  id              String      @id @default(cuid())
-  profileId       String      @unique
-  profile         GameProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  id        String      @id @default(cuid())
+  profileId String      @unique
+  profile   GameProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
 
-  securityLevel   Int         @default(1)     // 1-10
-  actionsToday    Int         @default(0)
-  lastActionReset DateTime    @default(now())
+  securityLevel   Int      @default(1) // 1-10
+  actionsToday    Int      @default(0)
+  lastActionReset DateTime @default(now())
 
   // Counter-espionage
-  blacklist       String[]    @default([])    // Profile IDs blocked from targeting
-  heightenedAlert Boolean     @default(false)
+  blacklist       String[]  @default([]) // Profile IDs blocked from targeting
+  heightenedAlert Boolean   @default(false)
   alertExpiresAt  DateTime?
 
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model EspionageMission {
-  id              String      @id @default(cuid())
-  attackerId      String
-  attacker        GameProfile @relation("missionAttacker", fields: [attackerId], references: [id], onDelete: Cascade)
-  targetId        String
-  target          GameProfile @relation("missionTarget", fields: [targetId], references: [id], onDelete: Cascade)
+  id         String      @id @default(cuid())
+  attackerId String
+  attacker   GameProfile @relation("missionAttacker", fields: [attackerId], references: [id], onDelete: Cascade)
+  targetId   String
+  target     GameProfile @relation("missionTarget", fields: [targetId], references: [id], onDelete: Cascade)
 
-  actionType      String      // "market_spy", "tech_probe", "workforce_intel", "contract_snipe", etc.
-  cost            Float       // Money spent on the operation
-  successRate     Float       // Probability at time of execution
-  succeeded       Boolean
-  detected        Boolean     @default(false)  // Was the target alerted?
-  tracedBack      Boolean     @default(false)  // Was attacker identified?
+  actionType  String // "market_spy", "tech_probe", "workforce_intel", "contract_snipe", etc.
+  cost        Float // Money spent on the operation
+  successRate Float // Probability at time of execution
+  succeeded   Boolean
+  detected    Boolean @default(false) // Was the target alerted?
+  tracedBack  Boolean @default(false) // Was attacker identified?
 
   // Results
-  intelGathered   Json?       // What info was obtained
-  intelExpiresAt  DateTime?   // Intel freshness window
-  reward          Json?       // What bonus was earned
+  intelGathered  Json? // What info was obtained
+  intelExpiresAt DateTime? // Intel freshness window
+  reward         Json? // What bonus was earned
 
-  createdAt       DateTime    @default(now())
+  createdAt DateTime @default(now())
 
   @@index([attackerId])
   @@index([targetId])
@@ -5160,52 +5277,52 @@ model EspionageMission {
 // ── Mechanic 10: Cooperative Mega-Projects ────────────────────────────────
 
 model MegaProject {
-  id              String      @id @default(cuid())
-  projectType     String      // "space_elevator", "generation_ship", "dyson_sphere", "interstellar_probe"
-  title           String
-  description     String
+  id          String @id @default(cuid())
+  projectType String // "space_elevator", "generation_ship", "dyson_sphere", "interstellar_probe"
+  title       String
+  description String
 
   // Requirements per current phase
-  currentPhase    Int         @default(1)
-  totalPhases     Int
-  phaseCosts      Json        // Array of { phase, moneyCost, resourceCosts }
+  currentPhase Int  @default(1)
+  totalPhases  Int
+  phaseCosts   Json // Array of { phase, moneyCost, resourceCosts }
 
   // Aggregate funding
-  totalMoneyFunded   Float    @default(0)
-  totalResourceFunded Json    @default("{}")
+  totalMoneyFunded    Float @default(0)
+  totalResourceFunded Json  @default("{}")
 
-  status          String      @default("announced") // announced, active, extended, completed, shelved
-  startsAt        DateTime
-  endsAt          DateTime
-  completedAt     DateTime?
-  extensionCount  Int         @default(0)
+  status         String    @default("announced") // announced, active, extended, completed, shelved
+  startsAt       DateTime
+  endsAt         DateTime
+  completedAt    DateTime?
+  extensionCount Int       @default(0)
 
   // Permanent bonus granted on completion
-  permanentBonus  Json        // { type: "launch_cost_reduction", value: 0.15 }
+  permanentBonus Json // { type: "launch_cost_reduction", value: 0.15 }
 
-  contributions   MegaProjectContribution[]
-  allianceScores  MegaProjectAllianceScore[]
-  playerProgress  MegaProjectPlayerProgress[]
+  contributions  MegaProjectContribution[]
+  allianceScores MegaProjectAllianceScore[]
+  playerProgress MegaProjectPlayerProgress[]
 
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([status])
   @@index([startsAt])
 }
 
 model MegaProjectContribution {
-  id              String      @id @default(cuid())
-  projectId       String
-  project         MegaProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  profileId       String
-  profile         GameProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  id        String      @id @default(cuid())
+  projectId String
+  project   MegaProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  profileId String
+  profile   GameProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
 
-  moneyContributed   Float    @default(0)
-  resourcesContributed Json   @default("{}")
-  totalMPP        Float       @default(0)  // Mega-Project Points
+  moneyContributed     Float @default(0)
+  resourcesContributed Json  @default("{}")
+  totalMPP             Float @default(0) // Mega-Project Points
 
-  updatedAt       DateTime    @updatedAt
+  updatedAt DateTime @updatedAt
 
   @@unique([projectId, profileId])
   @@index([projectId, totalMPP])
@@ -5213,18 +5330,18 @@ model MegaProjectContribution {
 }
 
 model MegaProjectAllianceScore {
-  id              String      @id @default(cuid())
-  projectId       String
-  project         MegaProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  allianceId      String
-  alliance        Alliance    @relation(fields: [allianceId], references: [id], onDelete: Cascade)
+  id         String      @id @default(cuid())
+  projectId  String
+  project    MegaProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  allianceId String
+  alliance   Alliance    @relation(fields: [allianceId], references: [id], onDelete: Cascade)
 
-  totalMPP        Float       @default(0)
-  perCapitaMPP    Float       @default(0)
-  rank            Int?
-  namingRights    Boolean     @default(false)
+  totalMPP     Float   @default(0)
+  perCapitaMPP Float   @default(0)
+  rank         Int?
+  namingRights Boolean @default(false)
 
-  updatedAt       DateTime    @updatedAt
+  updatedAt DateTime @updatedAt
 
   @@unique([projectId, allianceId])
   @@index([projectId, totalMPP])
@@ -5232,16 +5349,16 @@ model MegaProjectAllianceScore {
 }
 
 model MegaProjectPlayerProgress {
-  id              String      @id @default(cuid())
-  projectId       String
-  project         MegaProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  profileId       String      @unique
-  profile         GameProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  id        String      @id @default(cuid())
+  projectId String
+  project   MegaProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  profileId String      @unique
+  profile   GameProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
 
-  contributionTier Int        @default(0) // 0-7 tier based on total MPP
-  rewardsClaimed  Json        @default("[]")
+  contributionTier Int  @default(0) // 0-7 tier based on total MPP
+  rewardsClaimed   Json @default("[]")
 
-  updatedAt       DateTime    @updatedAt
+  updatedAt DateTime @updatedAt
 
   @@index([projectId])
   @@index([profileId])
@@ -5253,29 +5370,29 @@ model MegaProjectPlayerProgress {
 
 // Alliance shared research tree — unlockable bonuses that benefit all members
 model AllianceResearch {
-  id              String      @id @default(cuid())
-  allianceId      String
-  alliance        Alliance    @relation(fields: [allianceId], references: [id], onDelete: Cascade)
+  id         String   @id @default(cuid())
+  allianceId String
+  alliance   Alliance @relation(fields: [allianceId], references: [id], onDelete: Cascade)
 
-  researchId      String      // "alliance_logistics_1", "alliance_mining_2", etc.
-  name            String
-  tier            Int         // 1-5
-  category        String      // logistics, mining, commerce, military, science, infrastructure
+  researchId String // "alliance_logistics_1", "alliance_mining_2", etc.
+  name       String
+  tier       Int // 1-5
+  category   String // logistics, mining, commerce, military, science, infrastructure
 
-  status          String      @default("locked") // locked, researching, completed
-  xpCost          Int         // Alliance XP spent to unlock
-  treasuryCost    Float       @default(0) // Treasury money spent
-  progressPct     Float       @default(0) // 0-100 during researching
+  status       String @default("locked") // locked, researching, completed
+  xpCost       Int // Alliance XP spent to unlock
+  treasuryCost Float  @default(0) // Treasury money spent
+  progressPct  Float  @default(0) // 0-100 during researching
 
-  startedAt       DateTime?
-  completedAt     DateTime?
-  startedBy       String?     // Profile ID of who initiated
+  startedAt   DateTime?
+  completedAt DateTime?
+  startedBy   String? // Profile ID of who initiated
 
   // What bonus this research provides
-  bonusType       String      // revenue_bonus, mining_bonus, research_speed, build_speed, member_cap, project_speed, trade_bonus, xp_multiplier
-  bonusValue      Float       // e.g., 0.03 = +3%
+  bonusType  String // revenue_bonus, mining_bonus, research_speed, build_speed, member_cap, project_speed, trade_bonus, xp_multiplier
+  bonusValue Float // e.g., 0.03 = +3%
 
-  createdAt       DateTime    @default(now())
+  createdAt DateTime @default(now())
 
   @@unique([allianceId, researchId])
   @@index([allianceId, status])
@@ -5284,29 +5401,29 @@ model AllianceResearch {
 
 // Alliance diplomacy — relations between alliances
 model AllianceDiplomacy {
-  id              String      @id @default(cuid())
-  senderId        String
-  sender          Alliance    @relation("diplomacySender", fields: [senderId], references: [id], onDelete: Cascade)
-  receiverId      String
-  receiver        Alliance    @relation("diplomacyReceiver", fields: [receiverId], references: [id], onDelete: Cascade)
+  id         String   @id @default(cuid())
+  senderId   String
+  sender     Alliance @relation("diplomacySender", fields: [senderId], references: [id], onDelete: Cascade)
+  receiverId String
+  receiver   Alliance @relation("diplomacyReceiver", fields: [receiverId], references: [id], onDelete: Cascade)
 
-  type            String      // "war", "trade_agreement", "non_aggression", "alliance_pact"
-  status          String      @default("pending") // pending, active, rejected, expired, broken
-  proposedBy      String      // Profile ID
+  type       String // "war", "trade_agreement", "non_aggression", "alliance_pact"
+  status     String @default("pending") // pending, active, rejected, expired, broken
+  proposedBy String // Profile ID
 
   // War-specific
-  warScore        Json?       // { senderScore: 0, receiverScore: 0 }
-  warObjective    String?     // "zone_control", "economic_dominance", "event_supremacy"
+  warScore     Json? // { senderScore: 0, receiverScore: 0 }
+  warObjective String? // "zone_control", "economic_dominance", "event_supremacy"
 
   // Trade agreement specifics
-  tradeBonus      Float?      // Mutual trade fee discount
+  tradeBonus Float? // Mutual trade fee discount
 
-  startsAt        DateTime?
-  endsAt          DateTime?
-  resolvedAt      DateTime?
+  startsAt   DateTime?
+  endsAt     DateTime?
+  resolvedAt DateTime?
 
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@unique([senderId, receiverId, type])
   @@index([senderId, status])
@@ -5316,22 +5433,22 @@ model AllianceDiplomacy {
 
 // Alliance perks — temporary buffs purchased from treasury
 model AlliancePerk {
-  id              String      @id @default(cuid())
-  allianceId      String
-  alliance        Alliance    @relation(fields: [allianceId], references: [id], onDelete: Cascade)
+  id         String   @id @default(cuid())
+  allianceId String
+  alliance   Alliance @relation(fields: [allianceId], references: [id], onDelete: Cascade)
 
-  perkId          String      // "revenue_surge", "mining_frenzy", "research_rush", etc.
-  name            String
-  description     String
+  perkId      String // "revenue_surge", "mining_frenzy", "research_rush", etc.
+  name        String
+  description String
 
-  bonusType       String      // revenue_bonus, mining_bonus, research_speed, build_speed, xp_multiplier
-  bonusValue      Float       // e.g., 0.10 = +10%
-  treasuryCost    Float       // How much it cost from treasury
-  durationHours   Int         // How long it lasts
+  bonusType     String // revenue_bonus, mining_bonus, research_speed, build_speed, xp_multiplier
+  bonusValue    Float // e.g., 0.10 = +10%
+  treasuryCost  Float // How much it cost from treasury
+  durationHours Int // How long it lasts
 
-  activatedAt     DateTime    @default(now())
-  expiresAt       DateTime
-  activatedBy     String      // Profile ID
+  activatedAt DateTime @default(now())
+  expiresAt   DateTime
+  activatedBy String // Profile ID
 
   @@index([allianceId])
   @@index([expiresAt])
@@ -5339,22 +5456,22 @@ model AlliancePerk {
 
 // Alliance activity log — tracks all significant alliance actions
 model AllianceLog {
-  id              String      @id @default(cuid())
-  allianceId      String
-  alliance        Alliance    @relation(fields: [allianceId], references: [id], onDelete: Cascade)
+  id         String   @id @default(cuid())
+  allianceId String
+  alliance   Alliance @relation(fields: [allianceId], references: [id], onDelete: Cascade)
 
-  type            String      // member_joined, member_left, member_promoted, member_demoted,
-                              // project_proposed, project_funded, project_completed,
-                              // event_won, event_completed, research_started, research_completed,
-                              // perk_activated, war_declared, treaty_signed, treasury_deposit, xp_earned
-  actorId         String?     // Profile ID of who did it (null for system events)
-  actorName       String?     // Company name snapshot
-  title           String
-  description     String?
-  metadata        Json?       // Extra data
-  xpEarned        Int         @default(0) // XP earned from this action
+  type        String // member_joined, member_left, member_promoted, member_demoted,
+  // project_proposed, project_funded, project_completed,
+  // event_won, event_completed, research_started, research_completed,
+  // perk_activated, war_declared, treaty_signed, treasury_deposit, xp_earned
+  actorId     String? // Profile ID of who did it (null for system events)
+  actorName   String? // Company name snapshot
+  title       String
+  description String?
+  metadata    Json? // Extra data
+  xpEarned    Int     @default(0) // XP earned from this action
 
-  createdAt       DateTime    @default(now())
+  createdAt DateTime @default(now())
 
   @@index([allianceId, createdAt])
   @@index([type])
@@ -5367,18 +5484,18 @@ model WorkerProfile {
   userId          String   @unique
   user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   displayName     String
-  headline        String   // e.g., "Propulsion Engineer | 10yr SpaceX"
+  headline        String // e.g., "Propulsion Engineer | 10yr SpaceX"
   bio             String?  @db.Text
   skills          String[] // e.g., ["propulsion", "avionics", "systems_engineering"]
   experienceYears Int?
-  hourlyRate      Int?     // USD per hour, null = negotiable
+  hourlyRate      Int? // USD per hour, null = negotiable
   availability    String   @default("available") // available, part_time, contract_only, unavailable
   workType        String[] // ["freelance", "contract", "part_time", "consulting", "side_project"]
   linkedInUrl     String?
   portfolioUrl    String?
   location        String?
   remoteOk        Boolean  @default(true)
-  clearanceLevel  String?  // none, secret, top_secret
+  clearanceLevel  String? // none, secret, top_secret
   visible         Boolean  @default(true)
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
@@ -5388,28 +5505,28 @@ model WorkerProfile {
 }
 
 model GigOpportunity {
-  id              String   @id @default(cuid())
-  employerId      String
-  employer        EmployerProfile @relation(fields: [employerId], references: [id], onDelete: Cascade)
-  companyProfileId String?
-  companyProfile  CompanyProfile? @relation(fields: [companyProfileId], references: [id], onDelete: SetNull)
-  title           String
-  description     String   @db.Text
-  category        String   // engineering, operations, business, research, legal, manufacturing
-  skills          String[] // required skills
-  workType        String   // freelance, contract, part_time, consulting, side_project
-  duration        String?  // e.g., "3 months", "ongoing", "one-time"
-  hoursPerWeek    Int?     // estimated hours
-  budgetMin       Int?     // USD total or per hour
-  budgetMax       Int?
-  budgetType      String   @default("hourly") // hourly, fixed, monthly
-  location        String?
-  remoteOk        Boolean  @default(true)
-  clearanceRequired Boolean @default(false)
-  isActive        Boolean  @default(true)
-  applicantCount  Int      @default(0)
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  id                String          @id @default(cuid())
+  employerId        String
+  employer          EmployerProfile @relation(fields: [employerId], references: [id], onDelete: Cascade)
+  companyProfileId  String?
+  companyProfile    CompanyProfile? @relation(fields: [companyProfileId], references: [id], onDelete: SetNull)
+  title             String
+  description       String          @db.Text
+  category          String // engineering, operations, business, research, legal, manufacturing
+  skills            String[] // required skills
+  workType          String // freelance, contract, part_time, consulting, side_project
+  duration          String? // e.g., "3 months", "ongoing", "one-time"
+  hoursPerWeek      Int? // estimated hours
+  budgetMin         Int? // USD total or per hour
+  budgetMax         Int?
+  budgetType        String          @default("hourly") // hourly, fixed, monthly
+  location          String?
+  remoteOk          Boolean         @default(true)
+  clearanceRequired Boolean         @default(false)
+  isActive          Boolean         @default(true)
+  applicantCount    Int             @default(0)
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
 
   @@index([isActive])
   @@index([category])
@@ -5417,21 +5534,21 @@ model GigOpportunity {
 }
 
 model EmployerProfile {
-  id              String   @id @default(cuid())
-  userId          String   @unique
-  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  companyName     String
-  companySlug     String?  // links to CompanyProfile if exists
-  description     String?  @db.Text
-  website         String?
-  industry        String?  // e.g., "launch_services", "satellite_operations"
-  size            String?  // startup, small, medium, large, enterprise
-  location        String?
-  logoUrl         String?
-  verified        Boolean  @default(false)
-  gigs            GigOpportunity[]
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  id          String           @id @default(cuid())
+  userId      String           @unique
+  user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  companyName String
+  companySlug String? // links to CompanyProfile if exists
+  description String?          @db.Text
+  website     String?
+  industry    String? // e.g., "launch_services", "satellite_operations"
+  size        String? // startup, small, medium, large, enterprise
+  location    String?
+  logoUrl     String?
+  verified    Boolean          @default(false)
+  gigs        GigOpportunity[]
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
 }
 
 // ─── Live Blog ──────────────────────────────────────────────────────────────
@@ -5443,7 +5560,7 @@ model LiveBlogEntry {
   type      String   @default("update") // update, milestone, alert, media, countdown
   source    String   @default("admin") // admin, auto, nasa
   pinned    Boolean  @default(false)
-  eventTag  String?  // e.g. "artemis-ii" — allows filtering by event
+  eventTag  String? // e.g. "artemis-ii" — allows filtering by event
   createdAt DateTime @default(now())
 
   @@index([eventTag, createdAt])

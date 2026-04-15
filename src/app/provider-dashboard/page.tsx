@@ -74,6 +74,15 @@ function DashboardContent() {
   const [partnerForm, setPartnerForm] = useState({ receiverCompanySlug: '', type: 'strategic_alliance', message: '' });
   const [partnerSubmitting, setPartnerSubmitting] = useState(false);
 
+  // Case studies state
+  const [caseStudies, setCaseStudies] = useState<any[]>([]);
+  const [caseStudyForm, setCaseStudyForm] = useState({ title: '', summary: '', content: '', clientName: '', sector: '', metrics: '' });
+  const [caseStudySubmitting, setCaseStudySubmitting] = useState(false);
+
+  // Meeting requests state
+  const [meetingRequests, setMeetingRequests] = useState<any[]>([]);
+  const [meetingStatusFilter, setMeetingStatusFilter] = useState('all');
+
   useEffect(() => {
     async function loadDashboard() {
       try {
@@ -114,14 +123,16 @@ function DashboardContent() {
             if (reviewRes.ok) { const d = await reviewRes.json(); setReviews(d.reviews || []); }
             if (proposalRes.ok) { const d = await proposalRes.json(); setProposals(d.proposals || []); }
 
-            // Load analytics, events, verification, jobs, gigs, partnerships in parallel
-            const [verifyRes, analyticsRes, eventsRes, jobsRes, gigsRes, partnershipsRes] = await Promise.all([
+            // Load analytics, events, verification, jobs, gigs, partnerships, case studies, meeting requests in parallel
+            const [verifyRes, analyticsRes, eventsRes, jobsRes, gigsRes, partnershipsRes, caseStudiesRes, meetingRes] = await Promise.all([
               fetch('/api/marketplace/verify').catch(() => null),
               fetch(`/api/company-profiles/${myCompany.slug}/analytics`).catch(() => null),
               fetch(`/api/company-profiles/${myCompany.slug}/events`).catch(() => null),
               fetch(`/api/company-profiles/${myCompany.slug}/jobs`).catch(() => null),
               fetch(`/api/company-profiles/${myCompany.slug}/gigs`).catch(() => null),
               fetch(`/api/company-profiles/${myCompany.slug}/partnerships`).catch(() => null),
+              fetch(`/api/company-profiles/${myCompany.slug}/case-studies`).catch(() => null),
+              fetch(`/api/company-profiles/${myCompany.slug}/meeting-requests`).catch(() => null),
             ]);
 
             if (verifyRes?.ok) setVerification(await verifyRes.json());
@@ -130,6 +141,8 @@ function DashboardContent() {
             if (jobsRes?.ok) { const d = await jobsRes.json(); setJobs(d.jobs || []); }
             if (gigsRes?.ok) { const d = await gigsRes.json(); setGigs(d.gigs || []); }
             if (partnershipsRes?.ok) setPartnerships(await partnershipsRes.json());
+            if (caseStudiesRes?.ok) { const d = await caseStudiesRes.json(); setCaseStudies(d.caseStudies || []); }
+            if (meetingRes?.ok) { const d = await meetingRes.json(); setMeetingRequests(d.meetingRequests || []); }
           }
         }
       } catch (err) {
@@ -371,6 +384,8 @@ function DashboardContent() {
     { key: 'proposals', label: `Proposals (${proposals.length})` },
     { key: 'partnerships', label: `Partners (${partnerships.sent.length + partnerships.received.length})` },
     { key: 'reviews', label: `Reviews (${reviews.length})` },
+    { key: 'case-studies', label: `Case Studies (${caseStudies.length})` },
+    { key: 'meetings', label: `Meetings (${meetingRequests.length})` },
     { key: 'profile', label: 'Edit Profile' },
     { key: 'announcements', label: `News (${events.length})` },
     { key: 'analytics', label: 'Analytics' },
@@ -1018,6 +1033,240 @@ function DashboardContent() {
                 <div className="text-center py-12"><div className="text-4xl mb-3">🔧</div><p className="text-sm text-slate-400">No gig opportunities yet. Post your first contract or freelance opportunity above.</p></div>
               )}
             </div>
+          </div>
+        )}
+
+        {/* ── Case Studies Tab ── */}
+        {tab === 'case-studies' && (
+          <div className="space-y-6">
+            <div className="card p-6">
+              <h3 className="text-sm font-semibold text-white mb-4">Create a Case Study</h3>
+              <form onSubmit={async (e) => {
+                e.preventDefault();
+                if (!company) return;
+                setCaseStudySubmitting(true);
+                try {
+                  let parsedMetrics = undefined;
+                  if (caseStudyForm.metrics.trim()) {
+                    try { parsedMetrics = JSON.parse(caseStudyForm.metrics); } catch { toast.error('Metrics must be valid JSON (e.g., {"roi": "3x", "duration": "6 months"})'); setCaseStudySubmitting(false); return; }
+                  }
+                  const res = await fetch(`/api/company-profiles/${company.slug}/case-studies`, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                      title: caseStudyForm.title,
+                      summary: caseStudyForm.summary,
+                      content: caseStudyForm.content,
+                      clientName: caseStudyForm.clientName || null,
+                      sector: caseStudyForm.sector || null,
+                      metrics: parsedMetrics,
+                      isPublished: false,
+                    }),
+                  });
+                  if (res.ok) {
+                    const result = await res.json();
+                    setCaseStudies(prev => [result.caseStudy, ...prev]);
+                    setCaseStudyForm({ title: '', summary: '', content: '', clientName: '', sector: '', metrics: '' });
+                    toast.success('Case study created! Toggle publish when ready.');
+                  } else { const err = await res.json(); toast.error(err.error?.message || err.error || 'Failed to create case study'); }
+                } catch { toast.error('Failed to create case study.'); } finally { setCaseStudySubmitting(false); }
+              }} className="space-y-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="sm:col-span-2">
+                    <label className={labelClass}>Title *</label>
+                    <input required minLength={3} maxLength={300} value={caseStudyForm.title} onChange={e => setCaseStudyForm(p => ({ ...p, title: e.target.value }))} placeholder="e.g., Satellite Integration for Orbital Sciences" className={inputClass} />
+                  </div>
+                  <div className="sm:col-span-2">
+                    <label className={labelClass}>Summary * (min 20 chars)</label>
+                    <textarea required minLength={20} rows={2} maxLength={2000} value={caseStudyForm.summary} onChange={e => setCaseStudyForm(p => ({ ...p, summary: e.target.value }))} placeholder="Brief overview of the project and outcomes..." className={inputClass} />
+                  </div>
+                  <div className="sm:col-span-2">
+                    <label className={labelClass}>Content * (min 50 chars)</label>
+                    <textarea required minLength={50} rows={6} maxLength={50000} value={caseStudyForm.content} onChange={e => setCaseStudyForm(p => ({ ...p, content: e.target.value }))} placeholder="Full case study content: challenge, approach, results..." className={inputClass} />
+                  </div>
+                  <div>
+                    <label className={labelClass}>Client Name</label>
+                    <input maxLength={200} value={caseStudyForm.clientName} onChange={e => setCaseStudyForm(p => ({ ...p, clientName: e.target.value }))} placeholder="e.g., NASA, Intelsat" className={inputClass} />
+                  </div>
+                  <div>
+                    <label className={labelClass}>Sector</label>
+                    <select value={caseStudyForm.sector} onChange={e => setCaseStudyForm(p => ({ ...p, sector: e.target.value }))} className={inputClass}>
+                      <option value="">Select sector...</option>
+                      {SECTOR_OPTIONS.map(s => <option key={s} value={s}>{s.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}</option>)}
+                    </select>
+                  </div>
+                  <div className="sm:col-span-2">
+                    <label className={labelClass}>Metrics (JSON, optional)</label>
+                    <input value={caseStudyForm.metrics} onChange={e => setCaseStudyForm(p => ({ ...p, metrics: e.target.value }))} placeholder='{"roi": "3x", "duration": "6 months", "budget": "$2M"}' className={inputClass} />
+                    <p className="text-xs text-slate-500 mt-1">Key-value pairs as JSON for outcome metrics</p>
+                  </div>
+                </div>
+                <button type="submit" disabled={caseStudySubmitting || !caseStudyForm.title || !caseStudyForm.summary || !caseStudyForm.content} className="px-5 py-2 bg-white hover:bg-slate-100 disabled:bg-white/[0.08] disabled:text-slate-500 text-slate-900 rounded-lg text-sm font-semibold transition-colors">
+                  {caseStudySubmitting ? 'Creating...' : 'Create Case Study'}
+                </button>
+              </form>
+            </div>
+
+            <div>
+              <h3 className="text-sm font-semibold text-white mb-3">Your Case Studies ({caseStudies.length})</h3>
+              {caseStudies.length > 0 ? (
+                <div className="space-y-3">
+                  {caseStudies.map(cs => (
+                    <div key={cs.id} className="card p-4">
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <span className="text-sm font-medium text-white">{cs.title}</span>
+                            <span className={`text-xs font-bold px-2 py-0.5 rounded ${cs.isPublished ? 'bg-green-500/20 text-green-400' : 'bg-yellow-500/20 text-yellow-400'}`}>
+                              {cs.isPublished ? 'Published' : 'Draft'}
+                            </span>
+                            {cs.sector && <span className="text-xs px-2 py-0.5 bg-white/[0.08] rounded text-slate-300">{cs.sector}</span>}
+                          </div>
+                          <p className="text-xs text-slate-400 mt-1 line-clamp-2">{cs.summary}</p>
+                          {cs.clientName && <p className="text-xs text-slate-500 mt-1">Client: {cs.clientName}</p>}
+                          {cs.metrics && Object.keys(cs.metrics).length > 0 && (
+                            <div className="flex flex-wrap gap-2 mt-2">
+                              {Object.entries(cs.metrics).map(([k, v]) => (
+                                <span key={k} className="text-xs px-2 py-0.5 bg-blue-500/10 text-blue-400 rounded">{k}: {String(v)}</span>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                        <button
+                          onClick={async () => {
+                            try {
+                              const res = await fetch(`/api/company-profiles/${company.slug}/case-studies`, {
+                                method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ caseStudyId: cs.id, isPublished: !cs.isPublished }),
+                              });
+                              if (res.ok) {
+                                setCaseStudies(prev => prev.map(c => c.id === cs.id ? { ...c, isPublished: !c.isPublished } : c));
+                                toast.success(cs.isPublished ? 'Case study unpublished.' : 'Case study published!');
+                              } else toast.error('Failed to update.');
+                            } catch { toast.error('Failed to update.'); }
+                          }}
+                          className={`px-3 py-1.5 text-xs rounded-lg transition-colors shrink-0 ${cs.isPublished ? 'bg-yellow-500/10 hover:bg-yellow-500/20 text-yellow-400' : 'bg-green-500/10 hover:bg-green-500/20 text-green-400'}`}
+                        >
+                          {cs.isPublished ? 'Unpublish' : 'Publish'}
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-12"><div className="text-4xl mb-3">📄</div><p className="text-sm text-slate-400">No case studies yet. Showcase your work by creating one above.</p></div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* ── Meeting Requests Tab ── */}
+        {tab === 'meetings' && (
+          <div className="space-y-6">
+            <div className="flex items-center justify-between">
+              <h3 className="text-sm font-semibold text-white">Meeting Requests ({meetingRequests.length})</h3>
+              <select
+                value={meetingStatusFilter}
+                onChange={async (e) => {
+                  const newFilter = e.target.value;
+                  setMeetingStatusFilter(newFilter);
+                  try {
+                    const res = await fetch(`/api/company-profiles/${company.slug}/meeting-requests${newFilter !== 'all' ? `?status=${newFilter}` : ''}`);
+                    if (res.ok) { const d = await res.json(); setMeetingRequests(d.meetingRequests || []); }
+                  } catch { /* keep existing */ }
+                }}
+                className={inputClass + ' w-auto'}
+              >
+                <option value="all">All Statuses</option>
+                <option value="pending">Pending</option>
+                <option value="accepted">Accepted</option>
+                <option value="declined">Declined</option>
+                <option value="completed">Completed</option>
+              </select>
+            </div>
+
+            {meetingRequests.length > 0 ? (
+              <div className="space-y-3">
+                {meetingRequests.map(mr => (
+                  <div key={mr.id} className="card p-4">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="text-sm font-medium text-white">{mr.visitorName}</span>
+                          {mr.visitorCompany && <span className="text-xs text-slate-400">from {mr.visitorCompany}</span>}
+                          <span className={`text-xs font-bold px-2 py-0.5 rounded ${
+                            mr.status === 'accepted' ? 'bg-green-500/20 text-green-400' :
+                            mr.status === 'declined' ? 'bg-red-500/20 text-red-400' :
+                            mr.status === 'completed' ? 'bg-blue-500/20 text-blue-400' :
+                            'bg-yellow-500/20 text-yellow-400'
+                          }`}>
+                            {mr.status}
+                          </span>
+                        </div>
+                        <a href={`mailto:${mr.visitorEmail}`} className="text-xs text-blue-400 hover:underline mt-0.5 inline-block">{mr.visitorEmail}</a>
+                        <p className="text-xs text-slate-400 mt-1">{mr.message}</p>
+                        {mr.preferredDate && (
+                          <p className="text-xs text-slate-500 mt-1">Preferred date: {new Date(mr.preferredDate).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' })}</p>
+                        )}
+                        <p className="text-xs text-slate-600 mt-1">Received: {new Date(mr.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' })}</p>
+                      </div>
+                      {mr.status === 'pending' && (
+                        <div className="flex gap-2 shrink-0">
+                          <button
+                            onClick={async () => {
+                              try {
+                                const res = await fetch(`/api/company-profiles/${company.slug}/meeting-requests`, {
+                                  method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+                                  body: JSON.stringify({ requestId: mr.id, action: 'accepted' }),
+                                });
+                                if (res.ok) {
+                                  setMeetingRequests(prev => prev.map(r => r.id === mr.id ? { ...r, status: 'accepted', respondedAt: new Date().toISOString() } : r));
+                                  toast.success('Meeting request accepted!');
+                                } else toast.error('Failed to respond.');
+                              } catch { toast.error('Failed to respond.'); }
+                            }}
+                            className="px-3 py-1.5 text-xs bg-green-500/20 hover:bg-green-500/30 text-green-400 rounded-lg transition-colors"
+                          >Accept</button>
+                          <button
+                            onClick={async () => {
+                              try {
+                                const res = await fetch(`/api/company-profiles/${company.slug}/meeting-requests`, {
+                                  method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+                                  body: JSON.stringify({ requestId: mr.id, action: 'declined' }),
+                                });
+                                if (res.ok) {
+                                  setMeetingRequests(prev => prev.map(r => r.id === mr.id ? { ...r, status: 'declined', respondedAt: new Date().toISOString() } : r));
+                                  toast.success('Meeting request declined.');
+                                } else toast.error('Failed to respond.');
+                              } catch { toast.error('Failed to respond.'); }
+                            }}
+                            className="px-3 py-1.5 text-xs bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-lg transition-colors"
+                          >Decline</button>
+                        </div>
+                      )}
+                      {mr.status === 'accepted' && (
+                        <button
+                          onClick={async () => {
+                            try {
+                              const res = await fetch(`/api/company-profiles/${company.slug}/meeting-requests`, {
+                                method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ requestId: mr.id, action: 'completed' }),
+                              });
+                              if (res.ok) {
+                                setMeetingRequests(prev => prev.map(r => r.id === mr.id ? { ...r, status: 'completed', respondedAt: new Date().toISOString() } : r));
+                                toast.success('Meeting marked as completed.');
+                              } else toast.error('Failed to update.');
+                            } catch { toast.error('Failed to update.'); }
+                          }}
+                          className="px-3 py-1.5 text-xs bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 rounded-lg transition-colors shrink-0"
+                        >Mark Complete</button>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-12"><div className="text-4xl mb-3">📅</div><p className="text-sm text-slate-400">No meeting requests yet. When visitors request meetings from your company profile, they will appear here.</p></div>
+            )}
           </div>
         )}
 
