@@ -86,6 +86,14 @@ function getRateLimitConfig(pathname: string): RateLimitConfig {
   if (pathname.startsWith('/api/stripe/webhooks')) {
     return { maxRequests: 10000, windowMs: 60 * 1000 };
   }
+  // Public form submissions — strict rate limits to prevent spam
+  if (pathname.includes('/meeting-requests') || pathname.includes('/leads')) {
+    return { maxRequests: 5, windowMs: 60 * 60 * 1000 }; // 5 per hour
+  }
+  // AI-powered report generation — expensive, limit usage
+  if (pathname.startsWith('/api/reports/dossier') || pathname.startsWith('/api/reports/board-prep')) {
+    return { maxRequests: 3, windowMs: 60 * 60 * 1000 }; // 3 per hour
+  }
   // All other /api/* routes
   return { maxRequests: 200, windowMs: 60 * 1000 }; // 200 req/minute
 }

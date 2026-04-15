@@ -1,6 +1,8 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import ScrollReveal from '@/components/ui/ScrollReveal';
@@ -138,11 +140,23 @@ function moveTypeBadgeColor(type: string): string {
 /* -------------------------------------------------------------------------- */
 
 export default function WarRoomPage() {
+  const { status: sessionStatus } = useSession();
+  const router = useRouter();
   const [slugInput, setSlugInput] = useState('');
   const [period, setPeriod] = useState<Period>('3y');
   const [companies, setCompanies] = useState<WarRoomCompany[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (sessionStatus === 'unauthenticated') {
+      router.push('/login?returnTo=/intelligence/war-room');
+    }
+  }, [sessionStatus, router]);
+
+  if (sessionStatus === 'loading') {
+    return <div className="min-h-screen flex items-center justify-center"><LoadingSpinner /></div>;
+  }
 
   const fetchData = useCallback(async () => {
     const slugs = slugInput

@@ -26,7 +26,7 @@ const VALID_SET_ASIDES = ['8(a)', 'HUBZone', 'WOSB', 'SDVOSB'];
 const updateBDOpportunitySchema = z.object({
   title: z.string().min(1).max(300).transform((v) => v.trim()).optional(),
   description: z.string().max(10000).optional().nullable(),
-  opportunityType: z.string().optional(),
+  opportunityType: z.enum(['procurement', 'partnership', 'funding', 'teaming', 'contract_renewal', 'sbir']).optional(),
   externalId: z.string().max(255).optional().nullable(),
   agency: z.string().max(200).optional().nullable(),
   naicsCode: z.string().max(20).optional().nullable(),

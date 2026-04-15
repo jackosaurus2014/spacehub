@@ -152,7 +152,7 @@ function LoginContent() {
         if (isFirstLogin) {
           toast.success('Welcome to SpaceNexus! Let\u2019s get you started.');
           router.push('/getting-started');
-        } else if (returnTo && returnTo.startsWith('/')) {
+        } else if (returnTo && returnTo.startsWith('/') && !returnTo.startsWith('//') && !returnTo.includes('://')) {
           toast.success('Welcome back!');
           router.push(returnTo);
         } else {
