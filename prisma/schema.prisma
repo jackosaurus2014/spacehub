@@ -3003,6 +3003,25 @@ model GovernmentContractAward {
 // Funding Opportunity Aggregator
 // ============================================================
 
+model IntroductionRequest {
+  id              String   @id @default(cuid())
+  fromUserId      String
+  toUserId        String
+  aboutUserId     String
+  message         String   @db.Text
+  status          String   @default("pending") // pending, accepted, declined, completed
+  responseMessage String?  @db.Text
+  requestedAt     DateTime @default(now())
+  respondedAt     DateTime?
+  completedAt     DateTime?
+
+  @@unique([fromUserId, toUserId, aboutUserId])
+  @@index([fromUserId])
+  @@index([toUserId])
+  @@index([aboutUserId])
+  @@index([status])
+}
+
 model ComplianceProgress {
   id             String   @id @default(cuid())
   userId         String

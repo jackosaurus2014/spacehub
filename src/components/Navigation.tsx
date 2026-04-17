@@ -597,7 +597,7 @@ export default function Navigation() {
             </Link>
             <Link
               href="/pricing"
-              className="text-white/90 hover:text-white transition-colors text-sm font-medium"
+              className="text-white/50 hover:text-white transition-colors text-sm"
             >
               Pricing
             </Link>
@@ -612,11 +612,11 @@ export default function Navigation() {
           </div>
 
           {/* Auth Buttons */}
-          <div className="hidden lg:flex items-center gap-4 ml-2">
+          <div className="hidden lg:flex items-center gap-2 ml-4">
             {!isPro && (
               <Link
                 href="/pricing"
-                className="text-white/70 hover:text-white text-sm font-medium transition-colors"
+                className="text-xs font-medium px-3 py-1.5 rounded-lg border border-white/[0.15] text-white/70 hover:text-white hover:border-white/[0.3] transition-all"
               >
                 Upgrade
               </Link>
@@ -648,77 +648,8 @@ export default function Navigation() {
                 {shortcutKey}+K
               </kbd>
             </button>
-            {/* Keyboard Shortcuts */}
-            <button
-              onClick={() => {
-                const opener = (window as unknown as Record<string, unknown>).__openKeyboardShortcuts;
-                if (typeof opener === 'function') {
-                  (opener as () => void)();
-                }
-              }}
-              className="relative p-2 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg text-slate-400 hover:text-white hover:bg-white/[0.05] transition-colors"
-              aria-label="Keyboard shortcuts (?)"
-            >
-              <svg
-                className="w-4 h-4"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth={2}
-                viewBox="0 0 24 24"
-                aria-hidden="true"
-              >
-                <rect x="2" y="6" width="20" height="12" rx="2" />
-                <path strokeLinecap="round" strokeLinejoin="round" d="M6 10h0m4 0h0m4 0h0m4 0h0M8 14h8" />
-              </svg>
-            </button>
-            {/* High Contrast Toggle */}
-            <button
-              onClick={toggleHighContrast}
-              className={`relative p-2 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg transition-colors group ${
-                isHighContrast
-                  ? 'text-white/90 bg-white/[0.06]'
-                  : 'text-slate-400 hover:text-white/90 hover:bg-white/[0.05]'
-              }`}
-              aria-label="Toggle high contrast mode"
-              aria-pressed={isHighContrast}
-            >
-              {/* Eye / contrast icon */}
-              <svg
-                className="w-4 h-4"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth={2}
-                viewBox="0 0 24 24"
-                aria-hidden="true"
-              >
-                <circle cx="12" cy="12" r="10" />
-                <path d="M12 2a10 10 0 0 1 0 20z" fill="currentColor" />
-              </svg>
-            </button>
-            {/* Reading List */}
-            <Link
-              href="/reading-list"
-              className="relative p-2 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg text-slate-400 hover:text-white hover:bg-white/[0.05] transition-colors"
-              aria-label="Reading List"
-              title="Reading List"
-            >
-              <svg
-                className="w-4 h-4"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth={2}
-                viewBox="0 0 24 24"
-                aria-hidden="true"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"
-                />
-              </svg>
-            </Link>
-            {/* Recently Viewed */}
-            <RecentlyViewed />
+            {/* Keyboard Shortcuts — hidden for cleaner toolbar */}
+            {/* Utility buttons moved to profile/settings for cleaner toolbar */}
             {/* Notification Center */}
             <NotificationBell />
             <NotificationCenter />
@@ -742,34 +673,29 @@ export default function Navigation() {
             {status === 'loading' ? (
               <div className="w-8 h-8 border-2 border-slate-400 border-t-transparent rounded-full animate-spin" />
             ) : session ? (
-              <div className="flex items-center space-x-3">
-                <DensityToggle />
-                <div className="w-px h-4 bg-zinc-700" />
+              <div className="flex items-center gap-3">
                 {isPro && (
-                  <span className="text-xs font-semibold px-2 py-0.5 rounded bg-white/10 text-white/70 border border-white/10">
-                    PRO
+                  <span className="text-[10px] font-semibold px-2 py-0.5 rounded bg-white/10 text-white/60 border border-white/10 uppercase tracking-wider">
+                    Pro
                   </span>
                 )}
-                <span className="text-white/70 text-sm">
+                <span className="text-white/50 text-sm">
                   {session.user?.name || session.user?.email}
                 </span>
                 <button
                   onClick={() => signOut()}
-                  className="text-white/70 hover:text-white text-sm font-medium px-3 py-1.5 rounded-lg hover:bg-white/[0.05] transition-colors ease-smooth"
+                  className="text-white/50 hover:text-white text-xs px-3 py-1.5 rounded-lg hover:bg-white/[0.05] transition-colors"
                 >
                   Sign Out
                 </button>
               </div>
             ) : (
               <>
-                <Link href="/login" className="text-white/70 hover:text-white text-sm font-medium px-3 py-1.5 rounded-lg hover:bg-white/[0.05] transition-colors ease-smooth">
+                <Link href="/login" className="text-white/50 hover:text-white text-sm px-3 py-1.5 rounded-lg hover:bg-white/[0.05] transition-colors">
                   Sign In
                 </Link>
-                <Link href="/register" className="bg-white text-slate-900 font-medium text-xs py-2 px-5 rounded-lg hover:bg-slate-100 transition-all duration-200 ease-smooth">
+                <Link href="/register" className="bg-white text-black font-medium text-xs py-2 px-5 rounded-lg hover:bg-neutral-200 transition-all duration-200">
                   Get Started
-                </Link>
-                <Link href="/register?trial=true" className="bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 text-white font-medium text-xs py-2 px-5 rounded-lg transition-all duration-200 ease-smooth shadow-lg shadow-cyan-500/20">
-                  Start Free Trial
                 </Link>
               </>
             )}
