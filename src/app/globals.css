@@ -47,24 +47,24 @@ html {
      No pure black. No pure white. Warm off-blacks with no blue undertone.
      ═══════════════════════════════════════════════════════════════════ */
 
-  /* Background scale — Zinc-based warm off-blacks */
-  --bg-void:        #09090b;    /* Page background */
-  --bg-surface:     #131316;    /* Section backgrounds, containers */
-  --bg-elevated:    #1c1c21;    /* Cards, panels, popovers */
-  --bg-hover:       #252529;    /* Hover states on surfaces */
-  --bg-active:      #2e2e33;    /* Active/pressed states */
+  /* Background scale — Pure black foundation, clean contrast */
+  --bg-void:        #000000;    /* Page background — true black */
+  --bg-surface:     #0a0a0a;    /* Section backgrounds, containers */
+  --bg-elevated:    #111111;    /* Cards, panels, popovers */
+  --bg-hover:       #1a1a1a;    /* Hover states on surfaces */
+  --bg-active:      #222222;    /* Active/pressed states */
 
-  /* Text scale — off-white primary, zinc secondaries */
-  --text-primary:   #ededea;    /* Primary content (SpaceX off-white) */
-  --text-secondary: #a1a1aa;    /* Descriptions, secondary (Zinc 400) */
-  --text-tertiary:  #71717a;    /* Disabled, hints, timestamps (Zinc 500) */
-  --text-muted:     #52525b;    /* Barely-there labels (Zinc 600) */
+  /* Text scale — high contrast white primary */
+  --text-primary:   #ffffff;    /* Primary content — pure white */
+  --text-secondary: #a0a0a0;    /* Descriptions, secondary */
+  --text-tertiary:  #666666;    /* Disabled, hints, timestamps */
+  --text-muted:     #444444;    /* Barely-there labels */
 
-  /* Border scale — solid zinc values, not rgba */
-  --border-subtle:  #27272a;    /* Card edges, dividers (Zinc 800) */
-  --border-default: #3f3f46;    /* Visible borders (Zinc 700) */
-  --border-hover:   #52525b;    /* Hover emphasis (Zinc 600) */
-  --border-focus:   #6366f1;    /* Focus rings (Indigo) */
+  /* Border scale — clean white/gray edges */
+  --border-subtle:  #1a1a1a;    /* Card edges, dividers */
+  --border-default: #2a2a2a;    /* Visible borders */
+  --border-hover:   #404040;    /* Hover emphasis */
+  --border-focus:   #ffffff;    /* Focus rings — white */
 
   /* Accent colors */
   --accent-primary:        #6366f1;  /* Indigo 500 — brand, interactive */
@@ -206,14 +206,16 @@ html.high-contrast .border-white\/15 {
   border-color: rgba(255, 255, 255, 0.35) !important;
 }
 
-/* ——— High-contrast card backgrounds (slightly lighter) ——— */
+/* ——— High-contrast card backgrounds ——— */
 html.high-contrast .card,
 html.high-contrast .card-interactive {
-  background: rgba(20, 30, 52, 0.95) !important;
+  background: #111111 !important;
+  border-color: #333333 !important;
 }
 
 html.high-contrast .card-elevated {
-  background: rgba(20, 30, 52, 0.98) !important;
+  background: #161616 !important;
+  border-color: #333333 !important;
 }
 
 /* ——— High-contrast button improvements ——— */
@@ -277,8 +279,8 @@ html {
 }
 
 body {
-  color: var(--text-primary, #ededea);
-  background: var(--bg-void, #09090b);
+  color: var(--text-primary, #ffffff);
+  background: var(--bg-void, #000000);
   min-height: 100dvh;
   font-family: var(--font-body, 'DM Sans', 'Inter', sans-serif);
   letter-spacing: 0.015em;
@@ -391,13 +393,13 @@ body::after {
   50% { opacity: 1; }
 }
 
-/* Glow Effects — restrained */
+/* Border Effects — clean */
 .glow-border {
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.06);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08);
 }
 
 .glow-border:hover {
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.12);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.16);
 }
 
 /* .glow-text removed — unused */
@@ -459,10 +461,10 @@ body::after {
 
 /* Base card — data, metrics */
 .card {
-  @apply rounded-lg;
+  @apply rounded-xl;
   background: var(--bg-surface);
   border: 1px solid var(--border-subtle);
-  transition: border-color 0.15s var(--ease-smooth);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 .card:hover {
   border-color: var(--border-default);
@@ -470,22 +472,23 @@ body::after {
 
 /* Elevated card — panels, popovers */
 .card-elevated {
-  @apply rounded-lg;
+  @apply rounded-xl;
   background: var(--bg-elevated);
   border: 1px solid var(--border-default);
-  transition: border-color 0.15s var(--ease-smooth);
+  transition: border-color 0.2s ease;
 }
 
 /* Interactive card — clickable modules */
 .card-interactive {
-  @apply rounded-lg cursor-pointer;
+  @apply rounded-xl cursor-pointer;
   background: var(--bg-elevated);
   border: 1px solid var(--border-subtle);
-  transition: border-color 0.15s var(--ease-smooth), transform 0.15s var(--ease-smooth);
+  transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
 }
 .card-interactive:hover {
-  border-color: var(--accent-primary);
-  transform: translateY(-1px);
+  border-color: #ffffff30;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
 }
 
 /* Focus ring — indigo, all focusable elements */
@@ -723,37 +726,37 @@ body::after {
   animation: live-pulse 2s ease-in-out infinite;
 }
 
-/* Legacy colored card variants */
+/* Accent card variants — clean black base with subtle accent borders */
 .card-nebula {
-  @apply rounded-lg;
-  background: rgba(20, 16, 35, 0.7);
-  border: 1px solid rgba(139, 92, 246, 0.15);
-  transition: border-color 0.15s var(--ease-smooth);
+  @apply rounded-xl;
+  background: var(--bg-surface);
+  border: 1px solid rgba(139, 92, 246, 0.12);
+  transition: border-color 0.2s ease;
 }
-.card-nebula:hover { border-color: rgba(139, 92, 246, 0.25); }
+.card-nebula:hover { border-color: rgba(139, 92, 246, 0.3); }
 
 .card-cyan {
-  @apply rounded-lg;
-  background: var(--bg-elevated);
+  @apply rounded-xl;
+  background: var(--bg-surface);
   border: 1px solid var(--border-subtle);
-  transition: border-color 0.15s var(--ease-smooth);
+  transition: border-color 0.2s ease;
 }
 .card-cyan:hover { border-color: var(--border-default); }
 
 .card-amber {
-  @apply rounded-lg;
-  background: rgba(25, 20, 12, 0.7);
-  border: 1px solid rgba(245, 158, 11, 0.15);
-  transition: border-color 0.15s var(--ease-smooth);
+  @apply rounded-xl;
+  background: var(--bg-surface);
+  border: 1px solid rgba(245, 158, 11, 0.12);
+  transition: border-color 0.2s ease;
 }
-.card-amber:hover { border-color: rgba(245, 158, 11, 0.25); }
+.card-amber:hover { border-color: rgba(245, 158, 11, 0.3); }
 
 .card-emerald {
   @apply rounded-xl transition-all duration-200;
-  background: rgba(12, 24, 20, 0.7);
-  border: 1px solid rgba(16, 185, 129, 0.15);
+  background: var(--bg-surface);
+  border: 1px solid rgba(16, 185, 129, 0.12);
 }
-.card-emerald:hover { border-color: rgba(16, 185, 129, 0.25); }
+.card-emerald:hover { border-color: rgba(16, 185, 129, 0.3); }
 
 /* Dark Card Text Overrides - Force light text on dark cards */
 .card, .card-elevated, .card-interactive,

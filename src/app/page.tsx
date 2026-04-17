@@ -229,44 +229,46 @@ export default async function HomePage() {
       {/* NASA Moon Base Mini-Hub */}
       <section className="relative z-10 pb-6">
         <div className="container mx-auto px-4 max-w-5xl">
-          <div className="rounded-2xl border border-white/[0.08] bg-gradient-to-br from-slate-900/80 via-indigo-950/30 to-slate-900/80 overflow-hidden">
+          <div className="rounded-2xl border border-white/[0.1] bg-black overflow-hidden">
             <div className="p-6 sm:p-8">
-              <div className="flex items-center gap-3 mb-4">
-                <span className="text-3xl">🌙</span>
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-10 h-10 rounded-full border border-white/[0.15] flex items-center justify-center bg-white/[0.03]">
+                  <span className="text-xl">🌙</span>
+                </div>
                 <div>
-                  <h2 className="text-xl font-bold text-white">NASA Moon Base & Ignition</h2>
-                  <p className="text-xs text-slate-400 mt-0.5">Tracking the Artemis program, lunar surface infrastructure, and commercial Moon economy</p>
+                  <h2 className="text-xl font-bold text-white tracking-tight">NASA Moon Base & Ignition</h2>
+                  <p className="text-xs text-neutral-500 mt-0.5">Artemis program, lunar infrastructure, and the commercial Moon economy</p>
                 </div>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-5">
-                <Link href="/ignition" className="group flex items-start gap-3 p-3 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.06] hover:border-indigo-500/20 transition-all">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-6">
+                <Link href="/ignition" className="group flex items-start gap-3 p-4 rounded-xl bg-white/[0.02] hover:bg-white/[0.05] border border-white/[0.08] hover:border-white/[0.2] transition-all">
                   <span className="text-lg mt-0.5">🚀</span>
                   <div>
-                    <div className="text-sm font-semibold text-white group-hover:text-indigo-300 transition-colors">Ignition Tracker</div>
-                    <div className="text-xs text-slate-400 mt-0.5">Moon base procurement, timelines, and milestones</div>
+                    <div className="text-sm font-semibold text-white group-hover:text-white transition-colors">Ignition Tracker</div>
+                    <div className="text-xs text-neutral-500 mt-0.5">Moon base procurement, timelines, and milestones</div>
                   </div>
                 </Link>
-                <Link href="/compliance?tab=treaties" className="group flex items-start gap-3 p-3 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.06] hover:border-amber-500/20 transition-all">
+                <Link href="/compliance?tab=treaties" className="group flex items-start gap-3 p-4 rounded-xl bg-white/[0.02] hover:bg-white/[0.05] border border-white/[0.08] hover:border-white/[0.2] transition-all">
                   <span className="text-lg mt-0.5">⚖️</span>
                   <div>
-                    <div className="text-sm font-semibold text-white group-hover:text-amber-300 transition-colors">Regulatory Updates</div>
-                    <div className="text-xs text-slate-400 mt-0.5">Lunar surface operations, Artemis Accords, FAA licensing</div>
+                    <div className="text-sm font-semibold text-white group-hover:text-white transition-colors">Regulatory Updates</div>
+                    <div className="text-xs text-neutral-500 mt-0.5">Lunar surface operations, Artemis Accords, FAA licensing</div>
                   </div>
                 </Link>
-                <Link href="/cislunar" className="group flex items-start gap-3 p-3 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.06] hover:border-teal-500/20 transition-all">
+                <Link href="/cislunar" className="group flex items-start gap-3 p-4 rounded-xl bg-white/[0.02] hover:bg-white/[0.05] border border-white/[0.08] hover:border-white/[0.2] transition-all">
                   <span className="text-lg mt-0.5">🌍</span>
                   <div>
-                    <div className="text-sm font-semibold text-white group-hover:text-teal-300 transition-colors">Cislunar Ecosystem</div>
-                    <div className="text-xs text-slate-400 mt-0.5">Gateway, Lunar landers, ISRU, and cislunar economy</div>
+                    <div className="text-sm font-semibold text-white group-hover:text-white transition-colors">Cislunar Ecosystem</div>
+                    <div className="text-xs text-neutral-500 mt-0.5">Gateway, Lunar landers, ISRU, and cislunar economy</div>
                   </div>
                 </Link>
               </div>
-              <div className="border-t border-white/[0.06] pt-4">
-                <div className="flex items-center gap-2 mb-3">
-                  <span className="relative flex h-2 w-2"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75" /><span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-500" /></span>
-                  <span className="text-xs font-semibold text-slate-300 uppercase tracking-wider">Upcoming Moon Base Milestones</span>
+              <div className="border-t border-white/[0.08] pt-5">
+                <div className="flex items-center gap-2 mb-4">
+                  <span className="relative flex h-1.5 w-1.5"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-50" /><span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-white" /></span>
+                  <span className="text-[11px] font-semibold text-neutral-400 uppercase tracking-widest">Upcoming Milestones</span>
                 </div>
-                <div className="space-y-2">
+                <div className="space-y-2.5">
                   {[
                     { date: 'Q3 2026', title: 'Artemis III crew selection & mission design review', tag: 'NASA' },
                     { date: 'Q4 2026', title: 'SpaceX Starship HLS uncrewed lunar landing demo', tag: 'SpaceX' },
@@ -275,47 +277,47 @@ export default async function HomePage() {
                     { date: '2028', title: 'Artemis IV — First crewed Gateway docking + surface EVAs', tag: 'NASA' },
                   ].map((item, i) => (
                     <div key={i} className="flex items-center gap-3 text-xs py-1.5">
-                      <span className="text-slate-500 font-mono w-16 shrink-0">{item.date}</span>
-                      <span className="text-white/80 flex-1">{item.title}</span>
-                      <span className="text-[10px] px-2 py-0.5 bg-indigo-500/10 text-indigo-300 rounded-full border border-indigo-500/20 shrink-0">{item.tag}</span>
+                      <span className="text-neutral-600 font-mono w-16 shrink-0">{item.date}</span>
+                      <span className="text-white/90 flex-1">{item.title}</span>
+                      <span className="text-[10px] px-2 py-0.5 bg-white/[0.05] text-neutral-400 rounded-full border border-white/[0.1] shrink-0">{item.tag}</span>
                     </div>
                   ))}
                 </div>
               </div>
               {/* Two rows: Enthusiast interests + Business interests */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-5 pt-4 border-t border-white/[0.06]">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-6 pt-5 border-t border-white/[0.08]">
                 {/* Space Enthusiast Items */}
-                <Link href="/blog/artemis-ii-mission-recap-humanitys-return-to-the-moon" className="group flex items-start gap-3 p-3 rounded-xl bg-white/[0.03] hover:bg-white/[0.06] border border-white/[0.04] hover:border-cyan-500/20 transition-all">
+                <Link href="/blog/artemis-ii-mission-recap-humanitys-return-to-the-moon" className="group flex items-start gap-3 p-4 rounded-xl bg-white/[0.02] hover:bg-white/[0.05] border border-white/[0.08] hover:border-white/[0.2] transition-all">
                   <span className="text-lg mt-0.5">🧑‍🚀</span>
                   <div>
-                    <div className="text-xs font-bold text-cyan-400 uppercase tracking-wider mb-0.5">For Enthusiasts</div>
-                    <div className="text-sm font-medium text-white group-hover:text-cyan-300 transition-colors">Artemis II Mission Recap</div>
-                    <div className="text-xs text-slate-400 mt-0.5">How 4 astronauts flew around the Moon and what it means for Artemis III</div>
+                    <div className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-1">For Enthusiasts</div>
+                    <div className="text-sm font-medium text-white group-hover:text-white transition-colors">Artemis II Mission Recap</div>
+                    <div className="text-xs text-neutral-500 mt-0.5">How 4 astronauts flew around the Moon and what it means for Artemis III</div>
                   </div>
                 </Link>
-                <Link href="/solar-exploration" className="group flex items-start gap-3 p-3 rounded-xl bg-white/[0.03] hover:bg-white/[0.06] border border-white/[0.04] hover:border-cyan-500/20 transition-all">
+                <Link href="/solar-exploration" className="group flex items-start gap-3 p-4 rounded-xl bg-white/[0.02] hover:bg-white/[0.05] border border-white/[0.08] hover:border-white/[0.2] transition-all">
                   <span className="text-lg mt-0.5">🔭</span>
                   <div>
-                    <div className="text-xs font-bold text-cyan-400 uppercase tracking-wider mb-0.5">For Enthusiasts</div>
-                    <div className="text-sm font-medium text-white group-hover:text-cyan-300 transition-colors">Lunar South Pole Exploration Map</div>
-                    <div className="text-xs text-slate-400 mt-0.5">Planned landing sites, ice deposits, and the science driving site selection</div>
+                    <div className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-1">For Enthusiasts</div>
+                    <div className="text-sm font-medium text-white group-hover:text-white transition-colors">Lunar South Pole Exploration Map</div>
+                    <div className="text-xs text-neutral-500 mt-0.5">Planned landing sites, ice deposits, and the science driving site selection</div>
                   </div>
                 </Link>
                 {/* Space Business Items */}
-                <Link href="/marketplace/search?category=human" className="group flex items-start gap-3 p-3 rounded-xl bg-white/[0.03] hover:bg-white/[0.06] border border-white/[0.04] hover:border-amber-500/20 transition-all">
+                <Link href="/marketplace/search?category=human" className="group flex items-start gap-3 p-4 rounded-xl bg-white/[0.02] hover:bg-white/[0.05] border border-white/[0.08] hover:border-white/[0.2] transition-all">
                   <span className="text-lg mt-0.5">💼</span>
                   <div>
-                    <div className="text-xs font-bold text-amber-400 uppercase tracking-wider mb-0.5">For Business</div>
-                    <div className="text-sm font-medium text-white group-hover:text-amber-300 transition-colors">Lunar Services Marketplace</div>
-                    <div className="text-xs text-slate-400 mt-0.5">Find and bid on Moon base contracts: habitats, ISRU, crew transport, life support</div>
+                    <div className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-1">For Business</div>
+                    <div className="text-sm font-medium text-white group-hover:text-white transition-colors">Lunar Services Marketplace</div>
+                    <div className="text-xs text-neutral-500 mt-0.5">Find and bid on Moon base contracts: habitats, ISRU, crew transport, life support</div>
                   </div>
                 </Link>
-                <Link href="/business-opportunities" className="group flex items-start gap-3 p-3 rounded-xl bg-white/[0.03] hover:bg-white/[0.06] border border-white/[0.04] hover:border-amber-500/20 transition-all">
+                <Link href="/business-opportunities" className="group flex items-start gap-3 p-4 rounded-xl bg-white/[0.02] hover:bg-white/[0.05] border border-white/[0.08] hover:border-white/[0.2] transition-all">
                   <span className="text-lg mt-0.5">📋</span>
                   <div>
-                    <div className="text-xs font-bold text-amber-400 uppercase tracking-wider mb-0.5">For Business</div>
-                    <div className="text-sm font-medium text-white group-hover:text-amber-300 transition-colors">NASA Lunar Procurement Opportunities</div>
-                    <div className="text-xs text-slate-400 mt-0.5">Active RFPs, CLPS task orders, Artemis supply chain contracts on SAM.gov</div>
+                    <div className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-1">For Business</div>
+                    <div className="text-sm font-medium text-white group-hover:text-white transition-colors">NASA Lunar Procurement Opportunities</div>
+                    <div className="text-xs text-neutral-500 mt-0.5">Active RFPs, CLPS task orders, Artemis supply chain contracts on SAM.gov</div>
                   </div>
                 </Link>
               </div>
