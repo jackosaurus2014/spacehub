@@ -287,12 +287,12 @@ export default async function HomePage() {
               {/* Two rows: Enthusiast interests + Business interests */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-6 pt-5 border-t border-white/[0.08]">
                 {/* Space Enthusiast Items */}
-                <Link href="/blog/artemis-ii-mission-recap-humanitys-return-to-the-moon" className="group flex items-start gap-3 p-4 rounded-xl bg-white/[0.02] hover:bg-white/[0.05] border border-white/[0.08] hover:border-white/[0.2] transition-all">
+                <Link href="/blog/artemis-program-update-what-comes-after-artemis-ii" className="group flex items-start gap-3 p-4 rounded-xl bg-white/[0.02] hover:bg-white/[0.05] border border-white/[0.08] hover:border-white/[0.2] transition-all">
                   <span className="text-lg mt-0.5">🧑‍🚀</span>
                   <div>
                     <div className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-1">For Enthusiasts</div>
-                    <div className="text-sm font-medium text-white group-hover:text-white transition-colors">Artemis II Mission Recap</div>
-                    <div className="text-xs text-neutral-500 mt-0.5">How 4 astronauts flew around the Moon and what it means for Artemis III</div>
+                    <div className="text-sm font-medium text-white group-hover:text-white transition-colors">What Comes After Artemis II</div>
+                    <div className="text-xs text-neutral-500 mt-0.5">Artemis III lunar landing, Gateway, commercial landers, and the path to a Moon base</div>
                   </div>
                 </Link>
                 <Link href="/solar-exploration" className="group flex items-start gap-3 p-4 rounded-xl bg-white/[0.02] hover:bg-white/[0.05] border border-white/[0.08] hover:border-white/[0.2] transition-all">
@@ -343,7 +343,7 @@ export default async function HomePage() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <Link
-              href="/blog/artemis-ii-mission-recap-humanitys-return-to-the-moon"
+              href="/blog/artemis-program-update-what-comes-after-artemis-ii"
               className="group rounded-xl border border-white/[0.08] bg-white/[0.03] hover:bg-white/[0.06] hover:border-teal-500/20 transition-all duration-300 overflow-hidden"
             >
               <div className="relative h-40 overflow-hidden">
@@ -354,8 +354,8 @@ export default async function HomePage() {
                 </div>
               </div>
               <div className="p-4">
-                <h3 className="text-white text-sm font-bold mb-1.5 group-hover:text-teal-300 transition-colors line-clamp-2">Artemis II Mission Recap: Humanity&apos;s Return to the Moon</h3>
-                <p className="text-slate-400 text-xs line-clamp-2 mb-2">The historic 10-day mission is complete. Four astronauts flew around the Moon and returned safely — here&apos;s what it means for Artemis III and the lunar economy.</p>
+                <h3 className="text-white text-sm font-bold mb-1.5 group-hover:text-teal-300 transition-colors line-clamp-2">Artemis Program Update: What Comes After Artemis II</h3>
+                <p className="text-slate-400 text-xs line-clamp-2 mb-2">Artemis III lunar landing, Gateway assembly, commercial landers, and NASA&apos;s plan for sustained Moon base operations.</p>
                 <span className="text-[10px] text-slate-400">8 min read</span>
               </div>
             </Link>
