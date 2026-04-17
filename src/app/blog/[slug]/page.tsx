@@ -359,8 +359,8 @@ export default async function BlogPostPage({ params }: Props) {
         { name: 'Blog', href: '/blog' },
         { name: post.title },
       ]} />
-      {post.faqItems && post.faqItems.length > 0 && (
-        <FAQSchema items={post.faqItems} />
+      {(post as any).faq && (post as any).faq.length > 0 && (
+        <FAQSchema items={(post as any).faq} />
       )}
 
       <article className="container mx-auto px-4 max-w-3xl">
