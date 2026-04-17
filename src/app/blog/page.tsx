@@ -64,6 +64,7 @@ const categoryColors: Record<BlogCategory, string> = {
   market: 'bg-amber-500/20 text-amber-300 border-amber-500/30',
   technology: 'bg-sky-500/20 text-sky-300 border-sky-500/30',
   policy: 'bg-purple-500/20 text-purple-300 border-purple-500/30',
+  'building-in-public': 'bg-pink-500/20 text-pink-300 border-pink-500/30',
 };
 
 function BlogListingContent() {
