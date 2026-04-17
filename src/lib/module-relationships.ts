@@ -451,6 +451,16 @@ export const PAGE_RELATIONS: Record<string, RelatedModuleConfig[]> = {
   'compare/northrop-grumman-vs-boeing-space': [MODULES.companyProfiles, MODULES.spaceDefense, MODULES.procurement, MODULES.contractAwards],
   'compare/intuitive-machines-vs-astrobotic': [MODULES.cislunar, MODULES.companyProfiles, MODULES.startupTracker, MODULES.spaceCapital],
   'compare/sierra-space-vs-axiom-space': [MODULES.spaceStations, MODULES.companyProfiles, MODULES.startupTracker, MODULES.spaceCapital],
+  'compare/clearspace-vs-astroscale': [MODULES.debrisRemediation, MODULES.companyProfiles, MODULES.startupTracker, MODULES.sustainability],
+  'compare/leolabs-vs-slingshot': [MODULES.satellites, MODULES.companyProfiles, MODULES.spaceDefense, MODULES.debrisTracker],
+  'compare/starlab-vs-orbital-reef': [MODULES.spaceStations, MODULES.companyProfiles, MODULES.startupTracker, MODULES.spaceCapital],
+  'compare/skylo-vs-ast-spacemobile': [MODULES.constellations, MODULES.companyProfiles, MODULES.spaceComms, MODULES.spectrum],
+  'compare/anduril-vs-l3harris-space': [MODULES.spaceDefense, MODULES.companyProfiles, MODULES.procurement, MODULES.contractAwards],
+  'compare/pulsar-fusion-vs-ad-astra': [MODULES.propulsionDB, MODULES.companyProfiles, MODULES.startupTracker, MODULES.marsPlanner],
+  'compare/astrolab-vs-intuitive-machines': [MODULES.cislunar, MODULES.companyProfiles, MODULES.startupTracker, MODULES.spaceCapital],
+  'compare/loft-orbital-vs-york-space': [MODULES.satellites, MODULES.companyProfiles, MODULES.spaceDefense, MODULES.manufacturing],
+  'compare/spacex-starship-vs-new-glenn': [MODULES.launchVehicles, MODULES.companyProfiles, MODULES.launchEconomics, MODULES.spaceCapital],
+  'compare/space42-vs-planet-labs': [MODULES.satellites, MODULES.companyProfiles, MODULES.imagery, MODULES.constellations],
 
   // ── Developer portal ──
   'developer': [MODULES.tools, MODULES.satellites, MODULES.marketIntel, MODULES.companyProfiles, MODULES.pricing],
