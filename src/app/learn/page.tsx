@@ -1,243 +1,221 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import ScrollReveal from '@/components/ui/ScrollReveal';
-import { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
-import RelatedModules from '@/components/ui/RelatedModules';
-import { PAGE_RELATIONS } from '@/lib/module-relationships';
+import prisma from '@/lib/db';
+import { logger } from '@/lib/logger';
 
-export const revalidate = 86400;
+export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-  title: 'Space Industry Learning Center | SpaceNexus',
+  title: 'Learning Zone | SpaceNexus',
   description:
-    'In-depth guides on satellite launch costs, space industry market size, satellite tracking, and the top space companies to watch. Data-driven resources for space professionals.',
-  keywords: [
-    'space industry guide',
-    'satellite launch cost',
-    'space market size',
-    'satellite tracking',
-    'space companies',
-    'space industry education',
-    'aerospace guide',
-  ],
+    'Interactive courses and lessons on orbital mechanics, propulsion, space law, supply chain, communications, and more. Learn by doing with built-in calculators and quizzes.',
+  alternates: { canonical: 'https://spacenexus.us/learn' },
   openGraph: {
-    title: 'Space Industry Learning Center | SpaceNexus',
+    title: 'SpaceNexus Learning Zone',
     description:
-      'In-depth guides on satellite launch costs, space industry market size, satellite tracking, and the top space companies to watch.',
+      'Interactive courses on orbital mechanics, propulsion, space law, and more.',
     type: 'website',
     url: 'https://spacenexus.us/learn',
   },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'Space Industry Learning Center | SpaceNexus',
-    description:
-      'In-depth guides on satellite launch costs, space industry market size, satellite tracking, and the top space companies.',
-  },
-  alternates: {
-    canonical: 'https://spacenexus.us/learn',
-  },
 };
 
-const guides = [
+interface TrackMeta {
+  slug: string;
+  title: string;
+  description: string;
+  accent: string;
+}
+
+const TRACKS: TrackMeta[] = [
   {
-    slug: 'satellite-launch-cost',
-    title: 'How Much Does It Cost to Launch a Satellite?',
+    slug: 'orbital-mechanics',
+    title: 'Orbital Mechanics',
     description:
-      'Complete breakdown of satellite launch costs by provider, orbit type, and payload size. Compare rideshare vs. dedicated pricing from SpaceX, Rocket Lab, ULA, and more.',
-    category: 'Cost Analysis',
-    readTime: '12 min read',
-    cta: 'Explore launch costs',
-    icon: (
-      <svg className="w-8 h-8 text-white/70" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-      </svg>
-    ),
+      "Kepler's laws, orbital elements, delta-v budgets, Hohmann transfers, rendezvous — the math and intuition behind every mission.",
+    accent: 'from-sky-500/20 to-blue-600/10',
   },
   {
-    slug: 'space-industry-market-size',
-    title: 'Space Industry Market Size & Growth',
+    slug: 'propulsion',
+    title: 'Rocket Propulsion',
     description:
-      'The global space economy is projected to reach $1.8 trillion by 2035. Explore market segments, growth drivers, and investment trends shaping the industry.',
-    category: 'Market Intelligence',
-    readTime: '10 min read',
-    cta: 'See market data',
-    icon: (
-      <svg className="w-8 h-8 text-white/70" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
-      </svg>
-    ),
+      'Rocket equation, specific impulse, chemical vs electric, staging, and cycle selection explained from first principles.',
+    accent: 'from-orange-500/20 to-red-600/10',
   },
   {
-    slug: 'how-to-track-satellites',
-    title: 'How to Track Satellites in Real Time',
+    slug: 'space-law',
+    title: 'Space Law',
     description:
-      'Learn how satellite tracking works, the different orbit types, and how to use SpaceNexus to track the ISS, Starlink, GPS, and 30,000+ objects in real time.',
-    category: 'Technical Guide',
-    readTime: '11 min read',
-    cta: 'Start tracking satellites',
-    icon: (
-      <svg className="w-8 h-8 text-white/70" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M9.348 14.651a3.75 3.75 0 010-5.303m5.304 0a3.75 3.75 0 010 5.303m-7.425 2.122a6.75 6.75 0 010-9.546m9.546 0a6.75 6.75 0 010 9.546M5.106 18.894c-3.808-3.808-3.808-9.98 0-13.789m13.788 0c3.808 3.808 3.808 9.981 0 13.79M12 12h.008v.007H12V12zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
-      </svg>
-    ),
+      'Outer Space Treaty, ITU frequency coordination, FCC filings, export control (ITAR/EAR) for commercial operators.',
+    accent: 'from-purple-500/20 to-indigo-600/10',
   },
   {
-    slug: 'space-companies-to-watch',
-    title: 'Top 25 Space Companies to Watch in 2026',
+    slug: 'supply-chain',
+    title: 'Supply Chain',
     description:
-      'From SpaceX to emerging startups, discover the 25 most important companies driving the space economy across launch, satellites, defense, Earth observation, and space stations.',
-    category: 'Industry Analysis',
-    readTime: '14 min read',
-    cta: 'Explore companies',
-    icon: (
-      <svg className="w-8 h-8 text-white/70" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 3.75h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008z" />
-      </svg>
-    ),
+      'Space-qualified components, lead times, second sources, BOM risk, and sourcing strategies for flight hardware.',
+    accent: 'from-emerald-500/20 to-teal-600/10',
+  },
+  {
+    slug: 'communications',
+    title: 'Space Communications',
+    description:
+      'Link budgets, modulation, antenna gain, ground station selection, and latency for LEO, MEO, GEO systems.',
+    accent: 'from-cyan-500/20 to-sky-600/10',
+  },
+  {
+    slug: 'kids',
+    title: 'Space for Kids',
+    description:
+      'Friendly explainers for young learners. Rockets, planets, astronauts, and the magic of orbit.',
+    accent: 'from-pink-500/20 to-rose-600/10',
   },
 ];
 
-export default function LearnPage() {
-  const schema = {
-    '@context': 'https://schema.org',
-    '@type': 'CollectionPage',
-    name: 'Space Industry Learning Center',
-    description:
-      'Comprehensive guides on satellite launch costs, space market sizing, satellite tracking, and leading space companies.',
-    url: 'https://spacenexus.us/learn',
-    publisher: {
-      '@type': 'Organization',
-      name: 'SpaceNexus',
-      url: 'https://spacenexus.us',
-      logo: { '@type': 'ImageObject', url: 'https://spacenexus.us/spacenexus-logo.png' },
-    },
-    hasPart: guides.map((guide) => ({
-      '@type': 'Article',
-      name: guide.title,
-      url: `https://spacenexus.us/learn/${guide.slug}`,
-    })),
-  };
+async function getData() {
+  try {
+    const [modules, latestLessons] = await Promise.all([
+      prisma.courseModule.findMany({
+        where: { published: true },
+        orderBy: [{ track: 'asc' }, { orderIndex: 'asc' }],
+        select: {
+          id: true,
+          slug: true,
+          title: true,
+          track: true,
+          level: true,
+          estimatedMinutes: true,
+          _count: { select: { lessons: true } },
+        },
+      }),
+      prisma.lesson.findMany({
+        orderBy: { createdAt: 'desc' },
+        take: 8,
+        select: {
+          id: true,
+          slug: true,
+          title: true,
+          interactiveType: true,
+          module: { select: { slug: true, track: true, title: true, published: true } },
+        },
+      }),
+    ]);
+    return {
+      modules,
+      latestLessons: latestLessons.filter((l) => l.module.published),
+    };
+  } catch (error) {
+    logger.error('Failed to load learning zone data', {
+      error: error instanceof Error ? error.message : String(error),
+    });
+    return { modules: [], latestLessons: [] };
+  }
+}
+
+export default async function LearnPage() {
+  const { modules, latestLessons } = await getData();
+
+  const modulesByTrack = new Map<string, typeof modules>();
+  for (const mod of modules) {
+    if (!modulesByTrack.has(mod.track)) modulesByTrack.set(mod.track, []);
+    modulesByTrack.get(mod.track)!.push(mod);
+  }
 
   return (
-    <div className="min-h-screen pb-12">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema).replace(/</g, '\\u003c') }} />
-
-      <div className="container mx-auto px-4 max-w-5xl">
-        {/* Breadcrumb */}
+    <div className="min-h-screen pb-16">
+      <div className="container mx-auto px-4 max-w-6xl">
         <nav className="flex items-center gap-2 text-sm text-slate-500 pt-8 mb-8">
-          <Link href="/" className="hover:text-white/70 transition-colors">Home</Link>
+          <Link href="/" className="hover:text-white/80 transition-colors">
+            Home
+          </Link>
           <span>/</span>
-          <span className="text-slate-400">Learning Center</span>
+          <span className="text-slate-400">Learning Zone</span>
         </nav>
 
-        {/* Header */}
-        <ScrollReveal>
-        <header className="mb-12 text-center">
-          <h1 className="text-3xl md:text-5xl font-bold text-white leading-tight mb-4">
-            Space Industry Learning Center
+        <header className="mb-12 max-w-3xl">
+          <h1 className="text-4xl md:text-5xl font-bold text-white leading-tight mb-4">
+            Learning Zone
           </h1>
-          <p className="text-lg text-white/70 leading-relaxed max-w-3xl mx-auto">
-            Data-driven guides for space industry professionals. From satellite launch economics to
-            real-time tracking, explore the knowledge base that powers smarter decisions in the space
-            economy.
+          <p className="text-lg text-white/70 leading-relaxed">
+            Six tracks. Courses, lessons, built-in calculators and quizzes. Learn the math and
+            policy behind every mission — from Kepler to frequency coordination.
           </p>
         </header>
-        </ScrollReveal>
 
-        {/* Guide Cards */}
-        <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-16">
-          {guides.map((guide) => (
-            <StaggerItem key={guide.slug}>
-            <Link
-              href={`/learn/${guide.slug}`}
-              className="group bg-white/[0.04] border border-white/[0.06] rounded-xl p-6 hover:border-white/15 transition-all duration-300 hover:bg-white/[0.08]"
-            >
-              <div className="flex items-start gap-4 mb-4">
-                <div className="shrink-0 mt-1">{guide.icon}</div>
-                <div>
-                  <div className="flex items-center gap-3 mb-1">
-                    <span className="text-xs px-2 py-0.5 rounded-full bg-white/10 text-white/70 border border-white/15">
-                      {guide.category}
+        <section className="mb-14">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            {TRACKS.map((t) => {
+              const trackModules = modulesByTrack.get(t.slug) || [];
+              const lessonCount = trackModules.reduce(
+                (sum, m) => sum + m._count.lessons,
+                0,
+              );
+              return (
+                <Link
+                  key={t.slug}
+                  href={`/learn/${t.slug}`}
+                  className={`group relative overflow-hidden rounded-2xl border border-white/[0.08] bg-gradient-to-br ${t.accent} p-6 hover:border-white/20 transition-colors`}
+                >
+                  <h2 className="text-2xl font-bold text-white mb-2">{t.title}</h2>
+                  <p className="text-sm text-white/70 leading-relaxed mb-4">{t.description}</p>
+                  <div className="flex items-center gap-3 text-xs text-white/60">
+                    <span>
+                      {trackModules.length} module{trackModules.length === 1 ? '' : 's'}
                     </span>
-                    <span className="text-xs text-slate-500">{guide.readTime}</span>
+                    <span className="text-white/30">&bull;</span>
+                    <span>
+                      {lessonCount} lesson{lessonCount === 1 ? '' : 's'}
+                    </span>
                   </div>
-                  <h2 className="text-xl font-bold text-white group-hover:text-white/70 transition-colors">
-                    {guide.title}
-                  </h2>
-                </div>
-              </div>
-              <p className="text-slate-400 text-sm leading-relaxed mb-4">{guide.description}</p>
-              <span className="text-white/70 text-sm font-medium group-hover:underline">
-                {guide.cta} &rarr;
-              </span>
-            </Link>
-            </StaggerItem>
-          ))}
-        </StaggerContainer>
-
-        {/* CTA */}
-        <ScrollReveal>
-        <div className="bg-white/[0.06] border border-white/[0.06] rounded-xl p-8 text-center mb-12">
-          <h2 className="text-2xl font-bold text-white mb-3">Need live data, not just guides?</h2>
-          <p className="text-slate-400 mb-6 max-w-2xl mx-auto">
-            SpaceNexus gives you real-time satellite tracking, launch cost calculators, market
-            intelligence, and 200+ company profiles — all in one platform.
-          </p>
-          <div className="flex flex-wrap justify-center gap-4">
-            <Link
-              href="/register"
-              className="inline-block bg-white hover:bg-slate-100 text-slate-900 font-medium px-6 py-2.5 rounded-lg transition-colors"
-            >
-              Get Started Free
-            </Link>
-            <Link
-              href="/mission-control"
-              className="inline-block bg-white/[0.08] hover:bg-white/[0.08] text-white font-medium px-6 py-2.5 rounded-lg transition-colors border border-white/[0.1]"
-            >
-              Explore Mission Control
-            </Link>
-          </div>
-        </div>
-        </ScrollReveal>
-
-        {/* Related sections */}
-        <ScrollReveal>
-        <section className="border-t border-white/[0.06] pt-8">
-          <h3 className="text-lg font-bold text-white mb-4">Explore More SpaceNexus Resources</h3>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            <Link
-              href="/guide/space-industry"
-              className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-3 text-center hover:border-white/15 transition-colors"
-            >
-              <div className="text-white text-sm font-medium">Industry Overview</div>
-              <div className="text-slate-500 text-xs">Pillar guide</div>
-            </Link>
-            <Link
-              href="/space-industry/houston"
-              className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-3 text-center hover:border-white/15 transition-colors"
-            >
-              <div className="text-white text-sm font-medium">Space Hubs</div>
-              <div className="text-slate-500 text-xs">City guides</div>
-            </Link>
-            <Link
-              href="/compare"
-              className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-3 text-center hover:border-white/15 transition-colors"
-            >
-              <div className="text-white text-sm font-medium">Comparisons</div>
-              <div className="text-slate-500 text-xs">vs. competitors</div>
-            </Link>
-            <Link
-              href="/blog"
-              className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-3 text-center hover:border-white/15 transition-colors"
-            >
-              <div className="text-white text-sm font-medium">Blog</div>
-              <div className="text-slate-500 text-xs">News & analysis</div>
-            </Link>
+                  <div className="mt-4 text-sm font-medium text-white group-hover:underline">
+                    Explore {t.title} &rarr;
+                  </div>
+                </Link>
+              );
+            })}
           </div>
         </section>
-        </ScrollReveal>
 
-        <RelatedModules modules={PAGE_RELATIONS['learn']} />
+        {latestLessons.length > 0 && (
+          <section className="mb-14">
+            <h2 className="text-2xl font-bold text-white mb-4">Latest lessons</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {latestLessons.map((lesson) => (
+                <Link
+                  key={lesson.id}
+                  href={`/learn/${lesson.module.track}/${lesson.module.slug}/${lesson.slug}`}
+                  className="block rounded-xl border border-white/[0.08] bg-white/[0.03] p-5 hover:bg-white/[0.06] hover:border-white/[0.18] transition-colors"
+                >
+                  <div className="flex items-center gap-2 text-xs text-white/50 mb-2">
+                    <span className="uppercase tracking-wide">{lesson.module.track}</span>
+                    <span>&bull;</span>
+                    <span>{lesson.module.title}</span>
+                    {lesson.interactiveType && lesson.interactiveType !== 'none' && (
+                      <>
+                        <span>&bull;</span>
+                        <span className="text-emerald-300">{lesson.interactiveType}</span>
+                      </>
+                    )}
+                  </div>
+                  <div className="text-base font-semibold text-white">{lesson.title}</div>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
+
+        <section className="rounded-2xl border border-white/[0.08] bg-white/[0.03] p-8">
+          <h2 className="text-xl font-bold text-white mb-2">Ready to build?</h2>
+          <p className="text-white/70 mb-4 max-w-2xl">
+            Try one of our DIY Build Guides — CanSats, high-altitude balloons, ISS pass
+            receivers, weather stations and more.
+          </p>
+          <Link
+            href="/build-guides"
+            className="inline-block rounded-lg bg-white px-5 py-2.5 text-sm font-medium text-slate-900 hover:bg-slate-100 transition-colors"
+          >
+            Browse Build Guides &rarr;
+          </Link>
+        </section>
       </div>
     </div>
   );

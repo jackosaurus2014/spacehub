@@ -22,6 +22,7 @@ import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
 import EmptyState from '@/components/ui/EmptyState';
 import RSVPButton from '@/components/events/RSVPButton';
+import ListForResaleButton from '@/components/events/ListForResaleButton';
 
 // ── Helpers ──
 
@@ -283,6 +284,7 @@ function HighlightedEvents({ events, watchlist, onToggleWatch }: { events: Space
                   eventName={event.name}
                   eventDate={event.startDate}
                 />
+                <ListForResaleButton eventId={event.id} />
                 <WatchlistButton eventId={event.id} watchlist={watchlist} onToggle={onToggleWatch} />
                 <AddToCalendarDropdown event={event} />
                 {event.website && (
@@ -402,6 +404,7 @@ function EventListCard({ event, onSelect, watchlist, onToggleWatch }: { event: S
             eventName={event.name}
             eventDate={event.startDate}
           />
+          <ListForResaleButton eventId={event.id} />
           <WatchlistButton eventId={event.id} watchlist={watchlist} onToggle={onToggleWatch} />
           <AddToCalendarDropdown event={event} />
           {event.website && (
@@ -684,6 +687,7 @@ function EventDetailModal({
             eventDate={event.startDate}
             size="md"
           />
+          <ListForResaleButton eventId={event.id} />
           <WatchlistButton eventId={event.id} watchlist={watchlist} onToggle={onToggleWatch} size="md" />
           <button
             onClick={() => downloadICS(generateICS(event), `${event.id}.ics`)}

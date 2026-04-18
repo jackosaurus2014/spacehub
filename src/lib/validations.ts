@@ -199,6 +199,44 @@ export const respondIntroSchema = z.object({
     .optional(),
 });
 
+// Satellite pass alert schemas
+// ─────────────────────────────────────────────────────────────
+// Users subscribe a location + satellite (ISS or NORAD id) to get
+// notified when a visible pass occurs above a minimum elevation.
+export const createSatelliteAlertSchema = z.object({
+  satellite: z
+    .string()
+    .min(1, 'Satellite is required')
+    .max(64, 'Satellite identifier is too long')
+    .transform((val) => val.trim()),
+  latitude: z
+    .number()
+    .min(-90, 'Latitude must be between -90 and 90')
+    .max(90, 'Latitude must be between -90 and 90'),
+  longitude: z
+    .number()
+    .min(-180, 'Longitude must be between -180 and 180')
+    .max(180, 'Longitude must be between -180 and 180'),
+  locationLabel: z
+    .string()
+    .max(120, 'Location label is too long')
+    .transform((v) => v.trim())
+    .optional()
+    .or(z.literal('').transform(() => undefined)),
+  minElevation: z
+    .number()
+    .min(0, 'Minimum elevation must be between 0 and 90 degrees')
+    .max(90, 'Minimum elevation must be between 0 and 90 degrees')
+    .default(10),
+  enabled: z.boolean().default(true),
+});
+
+export const updateSatelliteAlertSchema = createSatelliteAlertSchema
+  .partial()
+  .extend({
+    enabled: z.boolean().optional(),
+  });
+
 /**
  * Validate request body and return parsed data or error response
  */
@@ -2709,6 +2747,56 @@ export const eventRsvpSchema = z.object({
 
 export type EventRsvpInput = z.infer<typeof eventRsvpSchema>;
 
+// Ticket Resale (Wave 3)
+export const createTicketListingSchema = z.object({
+  rsvpId: z
+    .string()
+    .min(1, 'rsvpId is required')
+    .max(200, 'rsvpId is too long'),
+  askingPrice: z
+    .number({ message: 'askingPrice must be a number' })
+    .positive('askingPrice must be greater than zero')
+    .max(1_000_000, 'askingPrice is unreasonably large'),
+  currency: z
+    .string()
+    .trim()
+    .length(3, 'currency must be a 3-letter ISO code')
+    .transform((v) => v.toUpperCase())
+    .optional(),
+  notes: z
+    .string()
+    .max(2000, 'notes must be 2000 characters or fewer')
+    .transform((v) => stripHtml(v.trim()))
+    .optional(),
+});
+
+export const updateTicketListingSchema = z.object({
+  askingPrice: z
+    .number({ message: 'askingPrice must be a number' })
+    .positive('askingPrice must be greater than zero')
+    .max(1_000_000, 'askingPrice is unreasonably large')
+    .optional(),
+  currency: z
+    .string()
+    .trim()
+    .length(3, 'currency must be a 3-letter ISO code')
+    .transform((v) => v.toUpperCase())
+    .optional(),
+  notes: z
+    .string()
+    .max(2000, 'notes must be 2000 characters or fewer')
+    .transform((v) => stripHtml(v.trim()))
+    .optional(),
+  status: z
+    .enum(['listed', 'cancelled'], {
+      message: 'status must be listed or cancelled',
+    })
+    .optional(),
+});
+
+export type CreateTicketListingInput = z.infer<typeof createTicketListingSchema>;
+export type UpdateTicketListingInput = z.infer<typeof updateTicketListingSchema>;
+
 // ============================================================
 // Professional Credential Verification (Wave 2)
 // ============================================================
@@ -3320,3 +3408,704 @@ export type CapTableEntryInput = z.infer<typeof capTableEntrySchema>;
 export type CapTableEntryUpdateInput = z.infer<typeof capTableEntryUpdateSchema>;
 export type CapTableShareInput = z.infer<typeof capTableShareSchema>;
 
+// ─── Countdown Widgets ───────────────────────────────────
+const COUNTDOWN_THEMES = ['dark', 'light', 'minimal', 'retro'] as const;
+
+export const createCountdownSchema = z.object({
+  missionName: z
+    .string()
+    .min(1, 'Mission name is required')
+    .max(120, 'Mission name is too long')
+    .transform((v) => stripHtml(v).trim()),
+  targetTime: z
+    .string()
+    .min(1, 'Target time is required')
+    .refine((v) => !Number.isNaN(new Date(v).getTime()), 'Target time must be a valid ISO date'),
+  eventId: z
+    .string()
+    .max(64, 'eventId is too long')
+    .optional()
+    .nullable(),
+  theme: z.enum(COUNTDOWN_THEMES).default('dark'),
+  slug: z
+    .string()
+    .min(3, 'Slug must be at least 3 characters')
+    .max(80, 'Slug is too long')
+    .regex(/^[a-z0-9-]+$/i, 'Slug may contain letters, numbers and hyphens only')
+    .optional(),
+});
+
+export const updateCountdownSchema = createCountdownSchema.partial();
+
+export type CreateCountdownInput = z.infer<typeof createCountdownSchema>;
+export type UpdateCountdownInput = z.infer<typeof updateCountdownSchema>;
+
+// ────────────────────────────────────────────────────────────────────────────
+// Universal Watchlists
+// ────────────────────────────────────────────────────────────────────────────
+
+export const WATCHLIST_ENTITY_TYPES = [
+  'company',
+  'person',
+  'mission',
+  'vehicle',
+  'technology',
+  'investor',
+  'podcast',
+  'conference',
+] as const;
+
+export const WATCHLIST_ALERT_LEVELS = ['all', 'major', 'none'] as const;
+
+export const createWatchlistItemSchema = z.object({
+  entityType: z.enum(WATCHLIST_ENTITY_TYPES),
+  entityId: z
+    .string()
+    .min(1, 'entityId is required')
+    .max(255, 'entityId is too long')
+    .transform((v) => v.trim()),
+  entityLabel: z
+    .string()
+    .max(255, 'entityLabel must be 255 characters or fewer')
+    .transform((v) => stripHtml(v.trim()))
+    .optional()
+    .nullable(),
+  alertLevel: z.enum(WATCHLIST_ALERT_LEVELS).optional().default('all'),
+  notes: z
+    .string()
+    .max(2000, 'notes must be 2000 characters or fewer')
+    .transform((v) => stripHtml(v.trim()))
+    .optional()
+    .nullable(),
+});
+
+export const updateWatchlistItemSchema = z
+  .object({
+    alertLevel: z.enum(WATCHLIST_ALERT_LEVELS).optional(),
+    notes: z
+      .string()
+      .max(2000, 'notes must be 2000 characters or fewer')
+      .transform((v) => stripHtml(v.trim()))
+      .optional()
+      .nullable(),
+  })
+  .refine((data) => data.alertLevel !== undefined || data.notes !== undefined, {
+    message: 'At least one of alertLevel or notes must be provided',
+  });
+
+export type CreateWatchlistItemInput = z.infer<typeof createWatchlistItemSchema>;
+export type UpdateWatchlistItemInput = z.infer<typeof updateWatchlistItemSchema>;
+export type WatchlistEntityType = (typeof WATCHLIST_ENTITY_TYPES)[number];
+export type WatchlistAlertLevel = (typeof WATCHLIST_ALERT_LEVELS)[number];
+
+// ────────────────────────────────────────────────────────────────────────────
+// Launch Cost Benchmarking + Supplier Reliability Scorecards (Wave 3)
+// ────────────────────────────────────────────────────────────────────────────
+
+export const LAUNCH_ORBIT_TYPES = ['leo', 'meo', 'geo', 'lunar', 'hyperbolic'] as const;
+export const LAUNCH_SOURCE_TYPES = ['article', 'filing', 'press_release'] as const;
+
+export const SUPPLIER_SCORE_CATEGORIES = [
+  'overall',
+  'propulsion',
+  'avionics',
+  'comms',
+  'structures',
+  'launch_services',
+] as const;
+
+const isoDateSchema = z
+  .string()
+  .min(1, 'Date is required')
+  .refine((v) => !Number.isNaN(new Date(v).getTime()), 'Must be a valid ISO date');
+
+const optionalUrlSchema = z
+  .union([
+    z.string().url('Must be a valid URL').max(2000),
+    z.literal('').transform(() => null),
+    z.null(),
+  ])
+  .optional()
+  .nullable();
+
+export const createLaunchCostSchema = z.object({
+  vehicle: z
+    .string()
+    .min(1, 'Vehicle is required')
+    .max(120, 'Vehicle name is too long')
+    .transform((v) => stripHtml(v).trim()),
+  provider: z
+    .string()
+    .min(1, 'Provider is required')
+    .max(120, 'Provider name is too long')
+    .transform((v) => stripHtml(v).trim()),
+  payloadKg: z.number().positive('Payload must be positive').max(1_000_000),
+  orbitType: z.enum(LAUNCH_ORBIT_TYPES),
+  launchDate: isoDateSchema,
+  costUSD: z.number().nonnegative('Cost must be non-negative').max(1e12),
+  costPerKg: z.number().nonnegative().max(1e9).optional().nullable(),
+  source: z.enum(LAUNCH_SOURCE_TYPES).optional().nullable(),
+  sourceUrl: optionalUrlSchema,
+  reliability: z.number().min(0).max(1).optional().nullable(),
+  notes: z
+    .string()
+    .max(2000, 'Notes must be 2000 characters or fewer')
+    .transform((v) => stripHtml(v.trim()))
+    .optional()
+    .nullable(),
+});
+
+export const createSupplierScoreSchema = z.object({
+  companyId: z.string().min(1, 'companyId is required').max(64),
+  scoredFor: z.enum(SUPPLIER_SCORE_CATEGORIES),
+  onTimePct: z.number().min(0).max(100).optional().nullable(),
+  qualityScore: z.number().min(0).max(100).optional().nullable(),
+  costPredictabilityScore: z.number().min(0).max(100).optional().nullable(),
+  overallScore: z.number().min(0).max(100).optional().nullable(),
+  sampleSize: z.number().int().min(0).max(100_000).default(0),
+  asOfDate: isoDateSchema,
+  methodology: z
+    .string()
+    .max(2000, 'Methodology must be 2000 characters or fewer')
+    .transform((v) => stripHtml(v.trim()))
+    .optional()
+    .nullable(),
+});
+
+export type CreateLaunchCostInput = z.infer<typeof createLaunchCostSchema>;
+export type CreateSupplierScoreInput = z.infer<typeof createSupplierScoreSchema>;
+export type LaunchOrbitType = (typeof LAUNCH_ORBIT_TYPES)[number];
+export type SupplierScoreCategory = (typeof SUPPLIER_SCORE_CATEGORIES)[number];
+
+// ─── Wave 3: Expert AMAs + Office Hours ───────────────────────────────────
+export const SESSION_TYPES = ['ama', 'office_hours', 'workshop', 'panel'] as const;
+export const SESSION_STATUSES = [
+  'scheduled',
+  'live',
+  'completed',
+  'cancelled',
+] as const;
+
+export const createSessionSchema = z.object({
+  sessionType: z.enum(SESSION_TYPES, { message: 'Invalid session type' }),
+  title: z
+    .string()
+    .min(4, 'Title must be at least 4 characters')
+    .max(160, 'Title is too long')
+    .transform((v) => stripHtml(v).trim()),
+  description: z
+    .string()
+    .min(20, 'Description must be at least 20 characters')
+    .max(5000, 'Description is too long')
+    .transform((v) => stripHtml(v).trim()),
+  scheduledAt: isoDateSchema,
+  durationMin: z.number().int().min(5).max(480).optional(),
+  maxAttendees: z.number().int().min(1).max(100_000).optional().nullable(),
+  streamUrl: z
+    .string()
+    .url('Stream URL must be a valid URL')
+    .max(500, 'Stream URL is too long')
+    .optional()
+    .nullable(),
+  tags: z.array(z.string().min(1).max(40)).max(10).optional(),
+});
+
+export const updateSessionSchema = z.object({
+  title: z
+    .string()
+    .min(4)
+    .max(160)
+    .transform((v) => stripHtml(v).trim())
+    .optional(),
+  description: z
+    .string()
+    .min(20)
+    .max(5000)
+    .transform((v) => stripHtml(v).trim())
+    .optional(),
+  scheduledAt: isoDateSchema.optional(),
+  durationMin: z.number().int().min(5).max(480).optional(),
+  maxAttendees: z.number().int().min(1).max(100_000).optional().nullable(),
+  streamUrl: z.string().url().max(500).optional().nullable(),
+  recordingUrl: z.string().url().max(500).optional().nullable(),
+  status: z.enum(SESSION_STATUSES).optional(),
+  tags: z.array(z.string().min(1).max(40)).max(10).optional(),
+});
+
+export const submitQuestionSchema = z.object({
+  body: z
+    .string()
+    .min(5, 'Question must be at least 5 characters')
+    .max(1000, 'Question is too long')
+    .transform((v) => stripHtml(v).trim()),
+});
+
+export const answerQuestionSchema = z.object({
+  answerText: z
+    .string()
+    .min(1, 'Answer text is required')
+    .max(5000, 'Answer is too long')
+    .transform((v) => stripHtml(v).trim())
+    .optional(),
+  answered: z.boolean().optional(),
+});
+
+const officeHourSlotInputSchema = z
+  .object({
+    startTime: isoDateSchema,
+    endTime: isoDateSchema,
+    notes: z
+      .string()
+      .max(500, 'Notes are too long')
+      .transform((v) => stripHtml(v).trim())
+      .optional()
+      .nullable(),
+  })
+  .refine(
+    (data) =>
+      new Date(data.endTime).getTime() > new Date(data.startTime).getTime(),
+    { message: 'endTime must be after startTime', path: ['endTime'] }
+  );
+
+export const createOfficeHourSlotSchema = z.object({
+  slots: z
+    .array(officeHourSlotInputSchema)
+    .min(1, 'At least one slot is required')
+    .max(50, 'Too many slots in one batch'),
+});
+
+export const bookOfficeHourSchema = z.object({
+  topic: z
+    .string()
+    .min(5, 'Topic must be at least 5 characters')
+    .max(200, 'Topic is too long')
+    .transform((v) => stripHtml(v).trim()),
+  notes: z
+    .string()
+    .max(1000, 'Notes are too long')
+    .transform((v) => stripHtml(v).trim())
+    .optional()
+    .nullable(),
+});
+
+export type CreateSessionInput = z.infer<typeof createSessionSchema>;
+export type UpdateSessionInput = z.infer<typeof updateSessionSchema>;
+export type SubmitQuestionInput = z.infer<typeof submitQuestionSchema>;
+export type AnswerQuestionInput = z.infer<typeof answerQuestionSchema>;
+export type CreateOfficeHourSlotInput = z.infer<typeof createOfficeHourSlotSchema>;
+export type BookOfficeHourInput = z.infer<typeof bookOfficeHourSchema>;
+
+// ---------- Learning Zone & Build Guides ----------
+
+export const LEARNING_TRACKS = [
+  'orbital-mechanics',
+  'propulsion',
+  'space-law',
+  'supply-chain',
+  'communications',
+  'kids',
+] as const;
+
+export const LEARNING_LEVELS = ['beginner', 'intermediate', 'advanced'] as const;
+
+export const INTERACTIVE_TYPES = ['calculator', 'simulator', 'quiz', 'none'] as const;
+
+export const BUILD_TRACKS = [
+  'diy-satellite',
+  'cansat',
+  'high-altitude-balloon',
+  'weather-station',
+  'amateur-radio',
+] as const;
+
+export const BUILD_DIFFICULTIES = ['beginner', 'intermediate', 'advanced'] as const;
+
+const learningSlugSchema = z
+  .string()
+  .min(2, 'Slug must be at least 2 characters')
+  .max(120, 'Slug is too long')
+  .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'Slug must be lowercase with hyphens only');
+
+export const createCourseModuleSchema = z.object({
+  slug: learningSlugSchema,
+  title: z.string().min(2, 'Title is required').max(200, 'Title is too long'),
+  description: z.string().min(10, 'Description is too short').max(5000, 'Description is too long'),
+  track: z.enum(LEARNING_TRACKS, { message: 'Invalid track' }),
+  level: z.enum(LEARNING_LEVELS).default('beginner'),
+  estimatedMinutes: z.number().int().min(1).max(10000).optional(),
+  heroImageUrl: z.string().url('Invalid URL').optional().or(z.literal('').transform(() => undefined)),
+  published: z.boolean().default(false),
+  orderIndex: z.number().int().min(0).default(0),
+});
+
+export const updateCourseModuleSchema = createCourseModuleSchema.partial();
+
+export const createLessonSchema = z.object({
+  slug: learningSlugSchema,
+  title: z.string().min(2, 'Title is required').max(200, 'Title is too long'),
+  bodyMd: z.string().min(1, 'Body is required').max(200000, 'Body is too long'),
+  videoUrl: z.string().url('Invalid URL').optional().or(z.literal('').transform(() => undefined)),
+  interactiveType: z.enum(INTERACTIVE_TYPES).optional(),
+  interactiveConfig: z.record(z.string(), z.unknown()).optional(),
+  orderIndex: z.number().int().min(0).default(0),
+});
+
+export const updateLessonSchema = createLessonSchema.partial();
+
+export const buildMaterialSchema = z.object({
+  name: z.string().min(1, 'Material name is required').max(200),
+  qty: z.union([z.string().max(50), z.number()]).optional(),
+  url: z.string().url('Invalid URL').optional().or(z.literal('').transform(() => undefined)),
+  notes: z.string().max(500).optional(),
+});
+
+export const buildStepSchema = z.object({
+  title: z.string().min(1, 'Step title is required').max(200),
+  body: z.string().min(1, 'Step body is required').max(20000),
+  imageUrl: z.string().url('Invalid URL').optional().or(z.literal('').transform(() => undefined)),
+});
+
+export const createBuildGuideSchema = z.object({
+  slug: learningSlugSchema,
+  title: z.string().min(2, 'Title is required').max(200, 'Title is too long'),
+  description: z.string().min(10, 'Description is too short').max(5000, 'Description is too long'),
+  track: z.enum(BUILD_TRACKS, { message: 'Invalid track' }),
+  difficulty: z.enum(BUILD_DIFFICULTIES).default('intermediate'),
+  estimatedHours: z.number().int().min(1).max(10000).optional(),
+  materialsList: z.array(buildMaterialSchema).max(200).default([]),
+  steps: z.array(buildStepSchema).min(1, 'At least one step is required').max(200),
+  published: z.boolean().default(false),
+});
+
+export const updateBuildGuideSchema = createBuildGuideSchema.partial();
+
+export type CreateCourseModuleInput = z.infer<typeof createCourseModuleSchema>;
+export type CreateLessonInput = z.infer<typeof createLessonSchema>;
+export type CreateBuildGuideInput = z.infer<typeof createBuildGuideSchema>;
+export type LearningTrack = (typeof LEARNING_TRACKS)[number];
+export type BuildTrack = (typeof BUILD_TRACKS)[number];
+
+// ============================================================
+// Study Groups + Reading Clubs
+// ============================================================
+
+export const STUDY_GROUP_TOPICS = [
+  'orbital-mechanics',
+  'space-law',
+  'propulsion',
+  'supply-chain',
+  'startup-finance',
+  'gnc',
+  'rocket-equation',
+  'space-policy',
+  'satellite-systems',
+  'space-medicine',
+  'mission-design',
+  'earth-observation',
+  'communications',
+  'cislunar',
+  'deep-space',
+  'general',
+] as const;
+
+export const MEETING_CADENCES = ['weekly', 'biweekly', 'monthly', 'adhoc'] as const;
+
+export const READING_ITEM_TYPES = [
+  'book',
+  'paper',
+  'article',
+  'video',
+  'course',
+  'podcast',
+  'other',
+] as const;
+
+export const readingListItemSchema = z.object({
+  title: z
+    .string()
+    .min(2, 'Title must be at least 2 characters')
+    .max(300, 'Title is too long')
+    .transform((v) => stripHtml(v).trim()),
+  url: z.preprocess(
+    (v) => (typeof v === 'string' && v.trim() === '' ? null : v),
+    z
+      .string()
+      .url('Must be a valid URL')
+      .max(1000, 'URL is too long')
+      .nullable()
+      .optional()
+  ),
+  type: z.enum(READING_ITEM_TYPES).optional(),
+  note: z
+    .string()
+    .max(500, 'Note is too long')
+    .transform((v) => stripHtml(v).trim())
+    .optional()
+    .nullable(),
+});
+
+export const createStudyGroupSchema = z.object({
+  name: z
+    .string()
+    .min(3, 'Name must be at least 3 characters')
+    .max(120, 'Name is too long')
+    .transform((v) => stripHtml(v).trim()),
+  description: z
+    .string()
+    .min(20, 'Description must be at least 20 characters')
+    .max(3000, 'Description is too long')
+    .transform((v) => v.trim()),
+  topic: z.enum(STUDY_GROUP_TOPICS),
+  meetingCadence: z.enum(MEETING_CADENCES).optional().nullable(),
+  memberLimit: z
+    .number()
+    .int('Member limit must be an integer')
+    .min(2, 'Member limit must be at least 2')
+    .max(500, 'Member limit cannot exceed 500')
+    .optional()
+    .nullable(),
+  isPrivate: z.boolean().optional(),
+  readingList: z
+    .array(readingListItemSchema)
+    .max(100, 'Too many reading list items')
+    .optional(),
+});
+
+export const updateStudyGroupSchema = createStudyGroupSchema.partial();
+
+export const createGroupMeetingSchema = z.object({
+  title: z
+    .string()
+    .min(3, 'Title must be at least 3 characters')
+    .max(200, 'Title is too long')
+    .transform((v) => stripHtml(v).trim()),
+  scheduledAt: z
+    .string()
+    .min(1, 'scheduledAt is required')
+    .refine((v) => !Number.isNaN(Date.parse(v)), 'scheduledAt must be a valid date'),
+  durationMin: z
+    .number()
+    .int('Duration must be an integer')
+    .min(10, 'Duration must be at least 10 minutes')
+    .max(480, 'Duration cannot exceed 8 hours')
+    .optional(),
+  streamUrl: z.preprocess(
+    (v) => (typeof v === 'string' && v.trim() === '' ? null : v),
+    z
+      .string()
+      .url('Must be a valid URL')
+      .max(500, 'URL is too long')
+      .nullable()
+      .optional()
+  ),
+  agendaMd: z
+    .string()
+    .max(10000, 'Agenda is too long')
+    .transform((v) => v.trim())
+    .optional()
+    .nullable(),
+});
+
+export const updateGroupMeetingSchema = createGroupMeetingSchema.partial();
+
+export type ReadingListItemInput = z.infer<typeof readingListItemSchema>;
+export type CreateStudyGroupInput = z.infer<typeof createStudyGroupSchema>;
+export type UpdateStudyGroupInput = z.infer<typeof updateStudyGroupSchema>;
+export type CreateGroupMeetingInput = z.infer<typeof createGroupMeetingSchema>;
+export type UpdateGroupMeetingInput = z.infer<typeof updateGroupMeetingSchema>;
+export type StudyGroupTopic = (typeof STUDY_GROUP_TOPICS)[number];
+export type MeetingCadence = (typeof MEETING_CADENCES)[number];
+export type ReadingItemType = (typeof READING_ITEM_TYPES)[number];
+
+// =======================================================================
+// Space History Event schema
+// =======================================================================
+
+export const HISTORY_CATEGORIES = [
+  'launch',
+  'landing',
+  'mission',
+  'discovery',
+  'policy',
+  'milestone',
+] as const;
+
+export type HistoryCategory = (typeof HISTORY_CATEGORIES)[number];
+
+export const createHistoryEventSchema = z.object({
+  slug: z
+    .string()
+    .min(1, 'Slug is required')
+    .max(200, 'Slug is too long')
+    .regex(/^[a-z0-9-]+$/, 'Slug must be lowercase alphanumeric with hyphens'),
+  title: z
+    .string()
+    .min(3, 'Title must be at least 3 characters')
+    .max(300, 'Title is too long')
+    .transform((v) => v.trim()),
+  description: z
+    .string()
+    .min(10, 'Description must be at least 10 characters')
+    .max(5000, 'Description is too long')
+    .transform((v) => v.trim()),
+  eventDate: z
+    .string()
+    .refine((v) => !Number.isNaN(Date.parse(v)), {
+      message: 'eventDate must be a valid ISO date',
+    }),
+  monthDay: z
+    .string()
+    .regex(/^(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/, 'monthDay must be formatted MM-DD'),
+  year: z
+    .number()
+    .int('Year must be an integer')
+    .min(1800, 'Year must be >= 1800')
+    .max(2100, 'Year must be <= 2100'),
+  category: z.enum(HISTORY_CATEGORIES, {
+    message: 'Category must be one of launch, landing, mission, discovery, policy, milestone',
+  }),
+  imageUrl: z
+    .string()
+    .url('imageUrl must be a valid URL')
+    .max(1000, 'imageUrl is too long')
+    .optional()
+    .nullable(),
+  sourceUrls: z
+    .array(z.string().url('sourceUrls must contain valid URLs').max(1000))
+    .max(20, 'Too many source URLs')
+    .optional()
+    .default([]),
+  relatedCompanyIds: z
+    .array(z.string().min(1).max(200))
+    .max(20, 'Too many related company IDs')
+    .optional()
+    .default([]),
+  featured: z.boolean().optional().default(false),
+});
+
+export type CreateHistoryEventInput = z.infer<typeof createHistoryEventSchema>;
+
+
+// ────────────────────────────────────────────────────────────────────────────
+// Investor Hub: Investor Thesis + Deal Memo Library
+// ────────────────────────────────────────────────────────────────────────────
+
+export const INVESTOR_HUB_STAGES = [
+  'pre_seed',
+  'seed',
+  'series_a',
+  'series_b',
+  'growth',
+  'late_stage',
+] as const;
+
+export const DEAL_MEMO_RECOMMENDATIONS = ['invest', 'pass', 'more_info'] as const;
+export const DEAL_MEMO_VISIBILITIES = ['public', 'logged_in', 'private'] as const;
+
+const thesisTitleSchema = z
+  .string()
+  .min(5, 'Title must be at least 5 characters')
+  .max(200, 'Title must be 200 characters or fewer')
+  .transform((v) => stripHtml(v).trim());
+
+const thesisSummarySchema = z
+  .string()
+  .min(20, 'Summary must be at least 20 characters')
+  .max(1000, 'Summary must be 1000 characters or fewer')
+  .transform((v) => stripHtml(v).trim());
+
+const thesisBodySchema = z
+  .string()
+  .min(50, 'Body must be at least 50 characters')
+  .max(50000, 'Body must be 50000 characters or fewer')
+  .transform((v) => v.trim());
+
+export const createThesisSchema = z.object({
+  title: thesisTitleSchema,
+  summary: thesisSummarySchema,
+  bodyMd: thesisBodySchema,
+  sectors: z
+    .array(z.string().min(1).max(60).transform((v) => stripHtml(v).trim()))
+    .min(1, 'At least one sector is required')
+    .max(10, 'Maximum of 10 sectors'),
+  stagePreference: z.enum(INVESTOR_HUB_STAGES).optional().nullable(),
+  geography: z
+    .string()
+    .max(100, 'Geography must be 100 characters or fewer')
+    .transform((v) => stripHtml(v).trim())
+    .optional()
+    .nullable(),
+  publish: z.boolean().optional().default(false),
+});
+
+export const updateThesisSchema = z.object({
+  title: thesisTitleSchema.optional(),
+  summary: thesisSummarySchema.optional(),
+  bodyMd: thesisBodySchema.optional(),
+  sectors: z
+    .array(z.string().min(1).max(60).transform((v) => stripHtml(v).trim()))
+    .min(1, 'At least one sector is required')
+    .max(10)
+    .optional(),
+  stagePreference: z.enum(INVESTOR_HUB_STAGES).optional().nullable(),
+  geography: z
+    .string()
+    .max(100)
+    .transform((v) => stripHtml(v).trim())
+    .optional()
+    .nullable(),
+  publish: z.boolean().optional(),
+});
+
+const dealMemoCompanyNameSchema = z
+  .string()
+  .min(1, 'Company name is required')
+  .max(160, 'Company name is too long')
+  .transform((v) => stripHtml(v).trim());
+
+const dealMemoThesisSchema = z
+  .string()
+  .min(20, 'Thesis must be at least 20 characters')
+  .max(20000, 'Thesis must be 20000 characters or fewer')
+  .transform((v) => v.trim());
+
+const dealMemoRisksSchema = z
+  .string()
+  .max(10000, 'Risks must be 10000 characters or fewer')
+  .transform((v) => v.trim())
+  .optional()
+  .nullable();
+
+export const createDealMemoSchema = z.object({
+  companyName: dealMemoCompanyNameSchema,
+  companyId: z.string().max(64).optional().nullable(),
+  dealStage: z.enum(INVESTOR_HUB_STAGES),
+  investmentAmount: z.number().nonnegative().max(1e12).optional().nullable(),
+  currency: z.string().min(3).max(6).optional().nullable(),
+  thesis: dealMemoThesisSchema,
+  risks: dealMemoRisksSchema,
+  recommendation: z.enum(DEAL_MEMO_RECOMMENDATIONS),
+  visibility: z.enum(DEAL_MEMO_VISIBILITIES).default('logged_in'),
+  publish: z.boolean().optional().default(false),
+});
+
+export const updateDealMemoSchema = z.object({
+  companyName: dealMemoCompanyNameSchema.optional(),
+  companyId: z.string().max(64).optional().nullable(),
+  dealStage: z.enum(INVESTOR_HUB_STAGES).optional(),
+  investmentAmount: z.number().nonnegative().max(1e12).optional().nullable(),
+  currency: z.string().min(3).max(6).optional().nullable(),
+  thesis: dealMemoThesisSchema.optional(),
+  risks: dealMemoRisksSchema,
+  recommendation: z.enum(DEAL_MEMO_RECOMMENDATIONS).optional(),
+  visibility: z.enum(DEAL_MEMO_VISIBILITIES).optional(),
+  publish: z.boolean().optional(),
+});
+
+export type CreateThesisInput = z.infer<typeof createThesisSchema>;
+export type UpdateThesisInput = z.infer<typeof updateThesisSchema>;
+export type CreateDealMemoInput = z.infer<typeof createDealMemoSchema>;
+export type UpdateDealMemoInput = z.infer<typeof updateDealMemoSchema>;
+export type InvestorHubStage = (typeof INVESTOR_HUB_STAGES)[number];
+export type DealMemoRecommendation = (typeof DEAL_MEMO_RECOMMENDATIONS)[number];
+export type DealMemoVisibility = (typeof DEAL_MEMO_VISIBILITIES)[number];

@@ -121,6 +121,12 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     return;
   }
 
+  // Resale ticket purchase flow — short-circuit before subscription / sponsor logic
+  if (session.metadata?.kind === 'ticket_resale') {
+    await handleResaleTicketCompleted(session);
+    return;
+  }
+
   // Check if this is a company sponsorship checkout (has companySlug instead of userId)
   const companySlug = session.metadata?.companySlug;
 
@@ -650,5 +656,178 @@ async function handleEventTicketCompleted(session: Stripe.Checkout.Session) {
         relatedContentId: eventId,
       });
     }
+  }
+}
+
+/**
+ * Handle checkout.session.completed for resale ticket purchases.
+ * Transfers RSVP ownership from seller to buyer, marks listing sold,
+ * and records a ResaleTransaction with a 10% platform fee.
+ */
+async function handleResaleTicketCompleted(session: Stripe.Checkout.Session) {
+  const meta = session.metadata || {};
+  const listingId = meta.listingId;
+  const buyerUserId = meta.buyerUserId;
+  const sellerUserId = meta.sellerUserId;
+  const rsvpId = meta.rsvpId || null;
+  const eventId = meta.eventId;
+  const sessionId = session.id;
+  const paymentIntentId =
+    typeof session.payment_intent === 'string'
+      ? session.payment_intent
+      : session.payment_intent?.id || null;
+
+  if (!listingId || !buyerUserId || !sellerUserId) {
+    logger.warn('ticket_resale checkout missing required metadata', {
+      sessionId,
+      listingId,
+      buyerUserId,
+      sellerUserId,
+    });
+    return;
+  }
+
+  const listing = await prisma.ticketListing.findUnique({
+    where: { id: listingId },
+  });
+  if (!listing) {
+    logger.warn('ticket_resale checkout completed but listing not found', {
+      sessionId,
+      listingId,
+    });
+    return;
+  }
+
+  if (listing.status === 'sold') {
+    logger.info('ticket_resale checkout re-run for already-sold listing', {
+      sessionId,
+      listingId,
+    });
+    return;
+  }
+
+  const amountTotalCents = session.amount_total ?? 0;
+  const amount = amountTotalCents / 100;
+  const currency = (session.currency || listing.currency || 'USD').toUpperCase();
+  const platformFee = Math.round(amount * 0.1 * 100) / 100; // 10%, round to cents
+
+  // Transfer RSVP ownership to buyer + mark listing sold + create transaction
+  try {
+    await prisma.$transaction(async (tx) => {
+      await tx.ticketListing.update({
+        where: { id: listingId },
+        data: {
+          status: 'sold',
+          buyerUserId,
+          soldAt: new Date(),
+        },
+      });
+
+      if (rsvpId) {
+        // Reassign the existing RSVP to the buyer. If the buyer already has an
+        // RSVP for this event, we can't just reassign (unique constraint), so
+        // we cancel theirs first and then transfer.
+        const existingBuyerRsvp = await tx.eventRSVP.findUnique({
+          where: { eventId_userId: { eventId, userId: buyerUserId } },
+        });
+        if (existingBuyerRsvp && existingBuyerRsvp.id !== rsvpId) {
+          await tx.eventRSVP.delete({ where: { id: existingBuyerRsvp.id } });
+        }
+        await tx.eventRSVP.update({
+          where: { id: rsvpId },
+          data: {
+            userId: buyerUserId,
+            paid: true,
+            status: 'going',
+            stripeSessionId: sessionId,
+            amount,
+            currency,
+          },
+        });
+      }
+
+      await tx.resaleTransaction.create({
+        data: {
+          ticketListingId: listingId,
+          buyerUserId,
+          sellerUserId,
+          amount,
+          currency,
+          platformFee,
+          stripePaymentIntentId: paymentIntentId,
+          status: 'completed',
+        },
+      });
+    });
+  } catch (err) {
+    logger.error('Failed to finalize resale ticket transaction', {
+      sessionId,
+      listingId,
+      error: err instanceof Error ? err.message : String(err),
+    });
+    throw err;
+  }
+
+  logger.info('Resale ticket purchase completed', {
+    sessionId,
+    listingId,
+    buyerUserId,
+    sellerUserId,
+    amount,
+    currency,
+    platformFee,
+  });
+
+  // Best-effort: in-app notifications to both parties
+  const [buyer, sellerEvent] = await Promise.all([
+    prisma.user
+      .findUnique({
+        where: { id: buyerUserId },
+        select: { id: true, email: true, name: true },
+      })
+      .catch(() => null),
+    eventId
+      ? prisma.spaceEvent
+          .findUnique({
+            where: { id: eventId },
+            select: { id: true, name: true },
+          })
+          .catch(() => null)
+      : Promise.resolve(null),
+  ]);
+  const eventName = sellerEvent?.name || 'a space event';
+  const formattedAmount = amount.toLocaleString('en-US', {
+    style: 'currency',
+    currency,
+  });
+
+  try {
+    await createNotification({
+      userId: buyerUserId,
+      type: 'system',
+      title: 'Resale Ticket Confirmed',
+      body: `Your resale ticket for ${eventName} is confirmed (${formattedAmount}).`,
+      link: `/ticket-resale/${listingId}`,
+      relatedContentType: 'ticket_resale',
+      relatedContentId: listingId,
+    });
+    const netFormatted = (amount - platformFee).toLocaleString('en-US', {
+      style: 'currency',
+      currency,
+    });
+    await createNotification({
+      userId: sellerUserId,
+      type: 'system',
+      title: 'Your ticket has been resold',
+      body: `${buyer?.name || 'A buyer'} purchased your ticket for ${eventName}. Payout: ${netFormatted} (10% fee applied).`,
+      link: `/ticket-resale/my-listings`,
+      relatedContentType: 'ticket_resale',
+      relatedContentId: listingId,
+    });
+  } catch (err) {
+    logger.warn('Failed to create resale notifications', {
+      listingId,
+      error: err instanceof Error ? err.message : String(err),
+    });
   }
 }

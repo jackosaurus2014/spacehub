@@ -96,6 +96,8 @@ const CRON_JOBS: CronJobDef[] = [
   { schedule: '30 9 * * *',   path: '/api/cron/mission-debriefs',                label: 'mission-debriefs-drafts',    maxStaleMinutes: 1560 },
   // Trial drip — daily at 10:45am UTC (mid-trial + final-day emails for users on a 3-day Pro trial)
   { schedule: '45 10 * * *',  path: '/api/cron/trials-expiring',                 label: 'trial-drip-emails',          maxStaleMinutes: 1560 },
+  // Satellite pass alerts — every 10 minutes (fires push when ISS/etc. is about to be visible)
+  { schedule: '*/10 * * * *', path: '/api/cron/satellite-pass-alerts',           label: 'satellite-pass-alerts',      maxStaleMinutes: 60 },
   // Nurture email sequence — daily at 11am UTC (7-step sequence for free-tier users)
   { schedule: '0 11 * * *',   path: '/api/nurture/process',                      label: 'nurture-email-sequence',     maxStaleMinutes: 1560 },
   // Forum digest — weekly on Sundays at 9am UTC

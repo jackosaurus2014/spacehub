@@ -414,7 +414,18 @@ export function middleware(req: NextRequest) {
   // Add security headers to all non-API responses
   const response = NextResponse.next();
   response.headers.set('X-Content-Type-Options', 'nosniff');
-  response.headers.set('X-Frame-Options', 'DENY');
+
+  // Embed routes must be iframe-embeddable on third-party sites.
+  // For /embed/* we allow any origin to frame the page and relax CSP
+  // accordingly. All other routes stay DENY to prevent clickjacking.
+  if (pathname.startsWith('/embed/')) {
+    response.headers.set('Content-Security-Policy', "frame-ancestors *");
+    // X-Frame-Options has no ALLOWALL value across browsers; omit it so
+    // the CSP frame-ancestors directive (which supersedes XFO) takes effect.
+  } else {
+    response.headers.set('X-Frame-Options', 'DENY');
+  }
+
   response.headers.set('X-DNS-Prefetch-Control', 'on');
   response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
   response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');

@@ -6069,3 +6069,394 @@ model MissionDebrief {
   @@index([missionDate])
   @@index([status])
 }
+
+// ─── Wave 3: Universal Watchlist ────────────────────────────────────────────
+
+model WatchlistItem {
+  id         String   @id @default(cuid())
+  userId     String
+  entityType String // company | person | mission | vehicle | technology | investor | podcast | conference
+  entityId   String
+  entityLabel String? // denormalized for easy display
+  alertLevel String   @default("all") // all | major | none
+  notes      String?
+  createdAt  DateTime @default(now())
+
+  @@unique([userId, entityType, entityId])
+  @@index([userId])
+  @@index([entityType])
+  @@index([entityId])
+}
+
+// ─── Wave 3: Expert AMAs + Office Hours ─────────────────────────────────────
+
+model ExpertSession {
+  id            String   @id @default(cuid())
+  hostUserId    String
+  sessionType   String // ama | office_hours | workshop | panel
+  title         String
+  description   String   @db.Text
+  scheduledAt   DateTime
+  durationMin   Int      @default(60)
+  maxAttendees  Int?
+  attendeeCount Int      @default(0)
+  streamUrl     String?
+  recordingUrl  String?
+  status        String   @default("scheduled") // scheduled | live | completed | cancelled
+  tags          String[]
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  questions SessionQuestion[]
+  rsvps     SessionRSVP[]
+
+  @@index([hostUserId])
+  @@index([scheduledAt])
+  @@index([sessionType])
+  @@index([status])
+}
+
+model SessionQuestion {
+  id         String   @id @default(cuid())
+  sessionId  String
+  session    ExpertSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  askerId    String
+  body       String   @db.Text
+  upvotes    Int      @default(0)
+  answered   Boolean  @default(false)
+  answerText String?  @db.Text
+  answeredAt DateTime?
+  createdAt  DateTime @default(now())
+
+  @@index([sessionId])
+  @@index([upvotes])
+}
+
+model SessionRSVP {
+  id        String   @id @default(cuid())
+  sessionId String
+  session   ExpertSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  userId    String
+  attended  Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@unique([sessionId, userId])
+  @@index([userId])
+}
+
+model OfficeHourSlot {
+  id           String   @id @default(cuid())
+  mentorUserId String
+  startTime    DateTime
+  endTime      DateTime
+  status       String   @default("open") // open | booked | cancelled
+  bookedByUserId String?
+  topic        String?
+  notes        String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([mentorUserId])
+  @@index([startTime])
+  @@index([status])
+}
+
+// ─── Wave 3: Satellite Pass Alerts ──────────────────────────────────────────
+
+model SatellitePassAlert {
+  id         String   @id @default(cuid())
+  userId     String
+  satellite  String // ISS | Starlink-XXXX | norad catalog ID
+  latitude   Float
+  longitude  Float
+  locationLabel String?
+  minElevation Float  @default(10) // degrees above horizon
+  enabled    Boolean  @default(true)
+  lastNotifiedAt DateTime?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([userId])
+  @@index([satellite])
+  @@index([enabled])
+}
+
+// ─── Wave 3: Countdown Widgets ──────────────────────────────────────────────
+
+model CountdownWidget {
+  id           String   @id @default(cuid())
+  slug         String   @unique
+  missionName  String
+  targetTime   DateTime
+  eventId      String? // optional SpaceEvent link
+  theme        String   @default("dark") // dark | light | minimal | retro
+  createdById  String?
+  views        Int      @default(0)
+  embedsCount  Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([slug])
+  @@index([targetTime])
+}
+
+// ─── Wave 3: Study Groups + Reading Clubs ───────────────────────────────────
+
+model StudyGroup {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  name        String
+  description String   @db.Text
+  topic       String // orbital-mechanics | space-law | supply-chain | propulsion | etc.
+  hostUserId  String
+  meetingCadence String? // weekly | biweekly | monthly
+  memberLimit Int?
+  isPrivate   Boolean  @default(false)
+  readingList Json? // array of { title, url, type }
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  memberships GroupMembership[]
+  meetings    GroupMeeting[]
+
+  @@index([topic])
+  @@index([hostUserId])
+}
+
+model GroupMembership {
+  id        String   @id @default(cuid())
+  groupId   String
+  group     StudyGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  userId    String
+  role      String   @default("member") // host | member
+  joinedAt  DateTime @default(now())
+
+  @@unique([groupId, userId])
+  @@index([userId])
+}
+
+model GroupMeeting {
+  id         String   @id @default(cuid())
+  groupId    String
+  group      StudyGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  title      String
+  scheduledAt DateTime
+  durationMin Int @default(60)
+  streamUrl  String?
+  agendaMd   String? @db.Text
+  createdAt  DateTime @default(now())
+
+  @@index([groupId])
+  @@index([scheduledAt])
+}
+
+// ─── Wave 3: Launch Cost Benchmarking + Supplier Reliability ────────────────
+
+model LaunchCostBenchmark {
+  id            String   @id @default(cuid())
+  vehicle       String
+  provider      String
+  payloadKg     Float
+  orbitType     String // leo | meo | geo | lunar | hyperbolic
+  launchDate    DateTime
+  costUSD       Float
+  costPerKg     Float?
+  source        String? // article | filing | press_release
+  sourceUrl     String?
+  reliability   Float? // success rate for this vehicle as of this date
+  notes         String?
+  createdAt     DateTime @default(now())
+
+  @@index([vehicle])
+  @@index([provider])
+  @@index([orbitType])
+  @@index([launchDate])
+}
+
+model SupplierReliabilityScore {
+  id            String   @id @default(cuid())
+  companyId     String
+  scoredFor     String // overall | propulsion | avionics | comms | structures | launch_services
+  onTimePct     Float? // 0-100
+  qualityScore  Float? // 0-100
+  costPredictabilityScore Float? // 0-100
+  overallScore  Float? // 0-100
+  sampleSize    Int    @default(0)
+  asOfDate      DateTime
+  methodology   String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@unique([companyId, scoredFor, asOfDate])
+  @@index([companyId])
+  @@index([scoredFor])
+}
+
+// ─── Wave 3: Investor Thesis + Deal Memos ───────────────────────────────────
+
+model InvestorThesis {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  authorUserId String
+  title       String
+  summary     String   @db.Text
+  bodyMd      String   @db.Text
+  sectors     String[] // ["launch", "in-space-manufacturing"]
+  stagePreference String? // pre-seed | seed | series_a | growth
+  geography   String?
+  publishedAt DateTime?
+  views       Int      @default(0)
+  upvotes     Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([authorUserId])
+  @@index([publishedAt])
+}
+
+model DealMemo {
+  id           String   @id @default(cuid())
+  slug         String   @unique
+  authorUserId String
+  companyName  String
+  companyId    String? // optional link to CompanyProfile
+  dealStage    String // seed | series_a | etc.
+  investmentAmount Float?
+  currency     String? @default("USD")
+  thesis       String   @db.Text
+  risks        String?  @db.Text
+  recommendation String // invest | pass | more_info
+  visibility   String   @default("logged_in") // public | logged_in | private
+  publishedAt  DateTime?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([authorUserId])
+  @@index([visibility])
+  @@index([publishedAt])
+}
+
+// ─── Wave 3: This Day in Space ──────────────────────────────────────────────
+
+model SpaceHistoryEvent {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  title       String
+  description String   @db.Text
+  eventDate   DateTime // full date for sorting
+  monthDay    String // "MM-DD" for "this day" lookups
+  year        Int
+  category    String // launch | landing | mission | discovery | policy | milestone
+  imageUrl    String?
+  sourceUrls  String[]
+  relatedCompanyIds String[]
+  featured    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([monthDay])
+  @@index([year])
+  @@index([category])
+  @@index([featured])
+}
+
+// ─── Wave 3: Ticket Resale ──────────────────────────────────────────────────
+
+model TicketListing {
+  id            String   @id @default(cuid())
+  rsvpId        String?  @unique // link to original RSVP being resold
+  eventId       String
+  sellerUserId  String
+  ticketTier    String?
+  askingPrice   Float
+  currency      String   @default("USD")
+  originalPrice Float?
+  status        String   @default("listed") // listed | sold | cancelled | expired
+  buyerUserId   String?
+  soldAt        DateTime?
+  sellerRating  Float?
+  notes         String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([eventId])
+  @@index([sellerUserId])
+  @@index([status])
+}
+
+model ResaleTransaction {
+  id            String   @id @default(cuid())
+  ticketListingId String
+  buyerUserId   String
+  sellerUserId  String
+  amount        Float
+  currency      String   @default("USD")
+  platformFee   Float    @default(0)
+  stripePaymentIntentId String?
+  status        String   @default("pending") // pending | completed | refunded
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([ticketListingId])
+  @@index([buyerUserId])
+  @@index([sellerUserId])
+}
+
+// ─── Wave 3: Learning Zone ──────────────────────────────────────────────────
+
+model CourseModule {
+  id           String   @id @default(cuid())
+  slug         String   @unique
+  title        String
+  description  String   @db.Text
+  track        String // orbital-mechanics | propulsion | space-law | supply-chain | communications | kids
+  level        String @default("beginner") // beginner | intermediate | advanced
+  estimatedMinutes Int?
+  heroImageUrl String?
+  published    Boolean  @default(false)
+  orderIndex   Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  lessons Lesson[]
+
+  @@index([track])
+  @@index([published])
+}
+
+model Lesson {
+  id          String   @id @default(cuid())
+  moduleId    String
+  module      CourseModule @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  slug        String
+  title       String
+  bodyMd      String   @db.Text
+  videoUrl    String?
+  interactiveType String? // calculator | simulator | quiz | none
+  interactiveConfig Json?
+  orderIndex  Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([moduleId, slug])
+  @@index([moduleId])
+}
+
+model BuildGuide {
+  id           String   @id @default(cuid())
+  slug         String   @unique
+  title        String
+  description  String   @db.Text
+  track        String // diy-satellite | cansat | high-altitude-balloon | weather-station | amateur-radio
+  difficulty   String   @default("intermediate")
+  estimatedHours Int?
+  materialsList Json? // array of { name, qty, url? }
+  steps        Json // array of { title, body, imageUrl? }
+  authorUserId String?
+  published    Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([track])
+  @@index([published])
+}
