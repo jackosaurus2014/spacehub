@@ -452,6 +452,7 @@ const TABS = [
   { id: 'relationships', label: 'Relationships', icon: '🔗' },
   { id: 'pitch-deck', label: 'Pitch Deck', icon: '📈' },
   { id: 'data-room', label: 'Data Room', icon: '🗂️' },
+  { id: 'mission-debriefs', label: 'Mission Debriefs', icon: '🚀' },
   { id: 'contact', label: 'Contact', icon: '✉️' },
 ] as const;
 
@@ -1562,6 +1563,113 @@ function DataRoomTab({ companyId, companyName }: { companyId: string; companyNam
   );
 }
 
+function MissionDebriefsTab({ companyId, companyName }: { companyId: string; companyName: string }) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [debriefs, setDebriefs] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    async function load() {
+      try {
+        setErrorMsg(null);
+        const res = await fetch(`/api/mission-debriefs?companyId=${encodeURIComponent(companyId)}&limit=20`);
+        if (!res.ok) {
+          if (!cancelled) {
+            setDebriefs([]);
+            setErrorMsg(`Failed to load (${res.status}).`);
+          }
+          return;
+        }
+        const data = await res.json();
+        if (!cancelled) setDebriefs(data.debriefs || []);
+      } catch (err) {
+        clientLogger.error('Mission debriefs tab load error', {
+          error: err instanceof Error ? err.message : String(err),
+        });
+        if (!cancelled) {
+          setDebriefs([]);
+          setErrorMsg('Failed to load mission debriefs.');
+        }
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+    load();
+    return () => {
+      cancelled = true;
+    };
+  }, [companyId]);
+
+  if (loading) return <div className="flex justify-center py-12"><LoadingSpinner size="lg" /></div>;
+
+  if (errorMsg) {
+    return (
+      <SectionCard title="Mission Debriefs">
+        <div className="text-sm text-red-300">{errorMsg}</div>
+      </SectionCard>
+    );
+  }
+
+  if (debriefs.length === 0) {
+    return (
+      <SectionCard title="Mission Debriefs">
+        <div className="text-center py-10">
+          <div className="text-3xl mb-2">🚀</div>
+          <p className="text-sm text-slate-400">
+            No mission debriefs reference {companyName} yet.
+          </p>
+          <Link
+            href="/mission-debriefs"
+            className="text-xs text-slate-300 hover:text-white mt-3 inline-block"
+          >
+            Browse all debriefs →
+          </Link>
+        </div>
+      </SectionCard>
+    );
+  }
+
+  return (
+    <SectionCard title="Mission Debriefs" count={debriefs.length}>
+      <div className="space-y-2">
+        {debriefs.map((d) => (
+          <Link
+            key={d.id}
+            href={`/mission-debriefs/${d.slug}`}
+            className="block p-3 rounded border border-white/10 hover:border-white/30 transition-colors"
+          >
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-2 mb-1">
+                  <span
+                    className={`text-[10px] uppercase tracking-wider px-2 py-0.5 rounded border ${
+                      d.status === 'success'
+                        ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30'
+                        : d.status === 'partial'
+                          ? 'bg-amber-500/15 text-amber-300 border-amber-500/30'
+                          : d.status === 'failure'
+                            ? 'bg-red-500/15 text-red-300 border-red-500/30'
+                            : 'bg-slate-500/15 text-slate-300 border-slate-500/30'
+                    }`}
+                  >
+                    {d.status}
+                  </span>
+                  <span className="text-xs text-slate-500">{fmtDate(d.missionDate)}</span>
+                </div>
+                <div className="text-sm text-white truncate">{d.missionName}</div>
+                <p className="text-xs text-slate-400 line-clamp-2 mt-1">{d.executiveSummary}</p>
+              </div>
+              <span className="text-xs text-slate-300 hover:text-white shrink-0">View →</span>
+            </div>
+          </Link>
+        ))}
+      </div>
+    </SectionCard>
+  );
+}
+
 function IntelligenceTab({ company }: { company: CompanyDetail }) {
   const entityLinks = getEntityLinks(company.slug);
   const links = [
@@ -2266,6 +2374,7 @@ export default function CompanyProfileDetailPage() {
           {activeTab === 'relationships' && <RelationshipsTab company={company} />}
           {activeTab === 'pitch-deck' && <PitchDeckTab companyId={company.id} companyName={company.name} />}
           {activeTab === 'data-room' && <DataRoomTab companyId={company.id} companyName={company.name} />}
+          {activeTab === 'mission-debriefs' && <MissionDebriefsTab companyId={company.id} companyName={company.name} />}
           {activeTab === 'contact' && company.sponsorTier && (
             <SectionCard title={`Contact ${company.name}`}>
               <LeadCaptureForm companySlug={company.slug} companyName={company.name} />

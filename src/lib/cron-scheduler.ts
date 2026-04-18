@@ -86,8 +86,14 @@ const CRON_JOBS: CronJobDef[] = [
   // Win-back emails for inactive users (daily at 10am UTC)
   { schedule: '0 10 * * *',   path: '/api/winback',                              label: 'winback-emails',             maxStaleMinutes: 1560 },
 
+  // Saved-search digest — daily at 11:15 UTC (re-runs every saved global
+  // search, fires in-app notifications + a per-user digest email)
+  { schedule: '15 11 * * *',  path: '/api/cron/saved-searches-digest',           label: 'saved-searches-digest',      maxStaleMinutes: 1560 },
+
   // Welcome drip sequence — daily at 10:30am UTC (sends next email to users within 14-day window)
   { schedule: '30 10 * * *',  path: '/api/drip/process',                         label: 'welcome-drip-sequence',      maxStaleMinutes: 1560 },
+  // Mission debrief drafts — daily at 9:30am UTC (creates placeholder drafts for completed launches)
+  { schedule: '30 9 * * *',   path: '/api/cron/mission-debriefs',                label: 'mission-debriefs-drafts',    maxStaleMinutes: 1560 },
   // Trial drip — daily at 10:45am UTC (mid-trial + final-day emails for users on a 3-day Pro trial)
   { schedule: '45 10 * * *',  path: '/api/cron/trials-expiring',                 label: 'trial-drip-emails',          maxStaleMinutes: 1560 },
   // Nurture email sequence — daily at 11am UTC (7-step sequence for free-tier users)

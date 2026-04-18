@@ -5,6 +5,7 @@ import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
 import { generatePaymentFailedEmail, generateSubscriptionConfirmEmail } from '@/lib/stripe-helpers';
 import { Resend } from 'resend';
+import { createNotification } from '@/lib/notifications/create';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60; // Allow up to 60s for webhook processing (DB + email)
@@ -113,6 +114,12 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
   const userId = session.metadata?.userId;
   const customerId = session.customer as string;
   const subscriptionId = session.subscription as string;
+
+  // Event ticket purchase flow — short-circuit before subscription / sponsor logic
+  if (session.metadata?.kind === 'event_ticket') {
+    await handleEventTicketCompleted(session);
+    return;
+  }
 
   // Check if this is a company sponsorship checkout (has companySlug instead of userId)
   const companySlug = session.metadata?.companySlug;
@@ -500,6 +507,147 @@ async function handlePaymentFailed(invoice: Stripe.Invoice) {
       logger.error('Failed to send payment failed email', {
         userId: user.id,
         error: err instanceof Error ? err.message : String(err),
+      });
+    }
+  }
+}
+
+/**
+ * Handle checkout.session.completed for event ticket purchases.
+ * Marks the EventRSVP as paid, fires a notification to the buyer, and
+ * (best-effort) notifies the event owner if one can be resolved.
+ */
+async function handleEventTicketCompleted(session: Stripe.Checkout.Session) {
+  const meta = session.metadata || {};
+  const eventId = meta.eventId;
+  const buyerUserId = meta.userId;
+  const ticketTier = meta.ticketTier || null;
+  const sessionId = session.id;
+
+  if (!eventId || !buyerUserId) {
+    logger.warn('event_ticket checkout missing eventId or userId', {
+      sessionId,
+      eventId,
+      buyerUserId,
+    });
+    return;
+  }
+
+  // Find the RSVP either by stripeSessionId (preferred) or by (eventId, userId)
+  let rsvp = await prisma.eventRSVP.findFirst({
+    where: { stripeSessionId: sessionId },
+  });
+  if (!rsvp) {
+    rsvp = await prisma.eventRSVP.findUnique({
+      where: { eventId_userId: { eventId, userId: buyerUserId } },
+    });
+  }
+
+  if (!rsvp) {
+    logger.warn('event_ticket checkout completed but no RSVP found', {
+      sessionId,
+      eventId,
+      buyerUserId,
+    });
+    return;
+  }
+
+  const amountTotalCents = session.amount_total ?? 0;
+  const currencyCode = (session.currency || rsvp.currency || 'USD').toUpperCase();
+
+  await prisma.eventRSVP.update({
+    where: { id: rsvp.id },
+    data: {
+      paid: true,
+      status: 'going',
+      stripeSessionId: sessionId,
+      amount: amountTotalCents / 100,
+      currency: currencyCode,
+      ...(ticketTier ? { ticketTier } : {}),
+    },
+  });
+
+  logger.info('Event ticket payment confirmed', {
+    rsvpId: rsvp.id,
+    eventId,
+    buyerUserId,
+    sessionId,
+    amount: amountTotalCents,
+    currency: currencyCode,
+  });
+
+  // Look up the buyer + event for notifications
+  const [buyer, event] = await Promise.all([
+    prisma.user.findUnique({
+      where: { id: buyerUserId },
+      select: { id: true, email: true, name: true },
+    }),
+    prisma.spaceEvent
+      .findUnique({
+        where: { id: eventId },
+        select: { id: true, name: true, agency: true, launchDate: true },
+      })
+      .catch(() => null),
+  ]);
+
+  const eventName = event?.name || 'your event';
+  const formattedAmount = (amountTotalCents / 100).toLocaleString('en-US', {
+    style: 'currency',
+    currency: currencyCode,
+  });
+
+  // Notify buyer (in-app)
+  await createNotification({
+    userId: buyerUserId,
+    type: 'system',
+    title: 'Ticket Confirmed',
+    body: `Your ${ticketTier || 'ticket'} for ${eventName} is paid (${formattedAmount}). See you there!`,
+    link: `/space-events`,
+    relatedContentType: 'event_ticket',
+    relatedContentId: eventId,
+  });
+
+  // Email buyer (best-effort)
+  if (buyer?.email) {
+    const resend = getResend();
+    if (resend) {
+      try {
+        await resend.emails.send({
+          from: FROM_EMAIL,
+          to: buyer.email,
+          subject: `Ticket confirmed: ${eventName}`,
+          text: `Hi ${buyer.name || 'there'},\n\nYour ticket purchase for ${eventName} is confirmed.\nAmount: ${formattedAmount}\nTier: ${ticketTier || 'standard'}\n\nWe'll send a reminder closer to the date.\n\n— SpaceNexus`,
+          html: `<p>Hi ${buyer.name || 'there'},</p><p>Your ticket purchase for <strong>${eventName}</strong> is confirmed.</p><ul><li>Amount: ${formattedAmount}</li><li>Tier: ${ticketTier || 'standard'}</li></ul><p>We'll send a reminder closer to the date.</p><p>— SpaceNexus</p>`,
+        });
+      } catch (err) {
+        logger.error('Failed to send ticket confirmation email', {
+          buyerUserId,
+          error: err instanceof Error ? err.message : String(err),
+        });
+      }
+    }
+  }
+
+  // Best-effort: notify the event owner if one can be resolved via CompanyProfile.claimedByUserId
+  if (event?.agency) {
+    const owner = await prisma.companyProfile
+      .findFirst({
+        where: {
+          claimedByUserId: { not: null },
+          OR: [{ name: event.agency }, { slug: event.agency }],
+        },
+        select: { claimedByUserId: true },
+      })
+      .catch(() => null);
+    if (owner?.claimedByUserId) {
+      await createNotification({
+        userId: owner.claimedByUserId,
+        type: 'system',
+        title: 'New ticket sale',
+        body: `${buyer?.name || 'A user'} purchased a ${ticketTier || 'ticket'} for ${eventName} (${formattedAmount}).`,
+        link: `/events/${eventId}/manage`,
+        relatedContentType: 'event_ticket',
+        relatedContentId: eventId,
       });
     }
   }

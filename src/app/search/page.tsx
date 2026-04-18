@@ -3,19 +3,23 @@
 import { useState, useEffect, useCallback, useRef, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import { Skeleton } from '@/components/ui/Skeleton';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import HighlightedText from '@/components/search/HighlightedText';
 import EmptyState from '@/components/ui/EmptyState';
+import Modal from '@/components/ui/Modal';
 import { clientLogger } from '@/lib/client-logger';
+import { toast } from '@/lib/toast';
+import { extractApiError } from '@/lib/errors';
 
 // ─────────────────────────────────────────────────────────────
 // Types
 // ─────────────────────────────────────────────────────────────
 
-type ResultType = 'news' | 'company' | 'job' | 'investor' | 'marketplace' | 'forum' | 'blog';
+type ResultType = 'news' | 'company' | 'job' | 'investor' | 'marketplace' | 'forum' | 'blog' | 'podcast';
 
 interface SearchResult {
   id: string;
@@ -39,6 +43,7 @@ interface ApiResponse {
     marketplace: SearchResult[];
     forum: SearchResult[];
     blog: SearchResult[];
+    podcast: SearchResult[];
   };
   totals: {
     news: number;
@@ -48,11 +53,12 @@ interface ApiResponse {
     marketplace: number;
     forum: number;
     blog: number;
+    podcast: number;
     all: number;
   };
 }
 
-type TabKey = 'all' | 'news' | 'companies' | 'jobs' | 'investors' | 'marketplace' | 'forum' | 'blog';
+type TabKey = 'all' | 'news' | 'companies' | 'jobs' | 'investors' | 'marketplace' | 'forum' | 'blog' | 'podcast';
 
 const TABS: { key: TabKey; label: string }[] = [
   { key: 'all', label: 'All' },
@@ -63,6 +69,7 @@ const TABS: { key: TabKey; label: string }[] = [
   { key: 'marketplace', label: 'Marketplace' },
   { key: 'forum', label: 'Community' },
   { key: 'blog', label: 'Blog' },
+  { key: 'podcast', label: 'Podcasts' },
 ];
 
 // ─────────────────────────────────────────────────────────────
@@ -100,6 +107,7 @@ function typeColor(type: ResultType): string {
     case 'marketplace': return 'text-cyan-400';
     case 'forum': return 'text-orange-400';
     case 'blog': return 'text-pink-400';
+    case 'podcast': return 'text-fuchsia-400';
     default: return 'text-star-300';
   }
 }
@@ -113,6 +121,7 @@ function typeLabel(type: ResultType): string {
     case 'marketplace': return 'Marketplace';
     case 'forum': return 'Community';
     case 'blog': return 'Blog';
+    case 'podcast': return 'Podcast';
     default: return type;
   }
 }
@@ -217,6 +226,11 @@ function MetaRow({ type, meta }: { type: ResultType; meta: Record<string, unknow
       if (typeof meta.sourceName === 'string') bits.push(meta.sourceName);
       if (typeof meta.authorName === 'string') bits.push(meta.authorName);
       break;
+    case 'podcast':
+      if (typeof meta.podcastName === 'string') bits.push(meta.podcastName);
+      if (typeof meta.episodeNumber === 'number') bits.push(`Ep ${meta.episodeNumber}`);
+      if (meta.hasTranscript) bits.push('Transcript');
+      break;
   }
 
   if (bits.length === 0) return null;
@@ -307,6 +321,7 @@ function SearchContent() {
   const router = useRouter();
   const pathname = usePathname();
   const inputRef = useRef<HTMLInputElement>(null);
+  const { status: sessionStatus } = useSession();
 
   const [query, setQuery] = useState(searchParams.get('q') || '');
   const [activeTab, setActiveTab] = useState<TabKey>(() => {
@@ -318,7 +333,64 @@ function SearchContent() {
   const [loading, setLoading] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
 
+  // Save-this-search modal state
+  const [saveOpen, setSaveOpen] = useState(false);
+  const [saveName, setSaveName] = useState('');
+  const [saveNotify, setSaveNotify] = useState<'email' | 'notification' | 'both'>('notification');
+  const [saving, setSaving] = useState(false);
+
   const debouncedQuery = useDebounce(query, 300);
+
+  const openSaveModal = useCallback(() => {
+    if (sessionStatus !== 'authenticated') {
+      const next = encodeURIComponent(`/search${pathname && searchParams ? '' : ''}?${searchParams.toString()}`);
+      router.push(`/login?next=${next}`);
+      return;
+    }
+    const trimmed = debouncedQuery.trim();
+    if (!trimmed) {
+      toast.error('Enter a search query first');
+      return;
+    }
+    setSaveName(`${trimmed.slice(0, 60)}${trimmed.length > 60 ? '…' : ''}`);
+    setSaveNotify('notification');
+    setSaveOpen(true);
+  }, [sessionStatus, debouncedQuery, router, pathname, searchParams]);
+
+  const onSaveSearch = useCallback(async () => {
+    const trimmed = debouncedQuery.trim();
+    if (!saveName.trim() || !trimmed) {
+      toast.error('Name and query are required');
+      return;
+    }
+    setSaving(true);
+    try {
+      const res = await fetch('/api/saved-searches', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: saveName.trim(),
+          query: trimmed,
+          type: activeTab,
+          notifyVia: saveNotify,
+        }),
+      });
+      const json = (await res.json()) as Record<string, unknown>;
+      if (!res.ok || !json.success) {
+        toast.error(extractApiError(json, 'Failed to save search'));
+        return;
+      }
+      toast.success('Search saved — you will be notified of new matches.');
+      setSaveOpen(false);
+    } catch (err) {
+      clientLogger.error('Failed to save search', {
+        error: err instanceof Error ? err.message : String(err),
+      });
+      toast.error('Failed to save search');
+    } finally {
+      setSaving(false);
+    }
+  }, [saveName, debouncedQuery, activeTab, saveNotify]);
 
   // Sync URL
   useEffect(() => {
@@ -437,10 +509,29 @@ function SearchContent() {
         })}
       </div>
 
-      {/* Result count */}
+      {/* Result count + save action */}
       {hasSearched && !loading && (
-        <div className="mb-4 text-sm text-star-300" aria-live="polite">
-          {overallTotal} {overallTotal === 1 ? 'result' : 'results'} found
+        <div className="mb-4 flex items-center justify-between gap-3">
+          <div className="text-sm text-star-300" aria-live="polite">
+            {overallTotal} {overallTotal === 1 ? 'result' : 'results'} found
+          </div>
+          <div className="flex items-center gap-2">
+            <Link
+              href="/saved-searches"
+              className="hidden sm:inline-flex items-center text-xs text-star-300 hover:text-white transition-colors"
+            >
+              My saved searches →
+            </Link>
+            <button
+              onClick={openSaveModal}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-lg bg-white/[0.06] text-star-200 border border-white/[0.06] hover:text-white hover:border-white/10 transition-all"
+            >
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+              </svg>
+              Save this search
+            </button>
+          </div>
         </div>
       )}
 
@@ -569,6 +660,14 @@ function SearchContent() {
               query={debouncedQuery}
               onTabChange={setActiveTab}
             />
+            <Section
+              title="Podcasts"
+              tabKey="podcast"
+              items={data.results.podcast}
+              total={data.totals.podcast}
+              query={debouncedQuery}
+              onTabChange={setActiveTab}
+            />
           </div>
         )}
 
@@ -581,6 +680,74 @@ function SearchContent() {
           </div>
         )}
       </main>
+
+      {/* Save-this-search modal */}
+      <Modal isOpen={saveOpen} onClose={() => setSaveOpen(false)} title="Save this search">
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm text-star-200 mb-1.5">Name</label>
+            <input
+              value={saveName}
+              onChange={(e) => setSaveName(e.target.value)}
+              maxLength={200}
+              placeholder="e.g. SpaceX news"
+              className="w-full px-3 py-2 text-sm bg-white/[0.06] border border-white/10 rounded-xl text-white placeholder-star-400 focus:outline-none focus:ring-2 focus:ring-white/20"
+            />
+          </div>
+          <div className="text-xs text-star-300/80 px-3 py-2 rounded-xl bg-white/[0.04] border border-white/[0.06]">
+            Query: <code className="text-cyan-300">{debouncedQuery.trim()}</code>
+            <span className="mx-2 text-star-300/40">·</span>
+            Category: <span className="text-star-200">{activeTab}</span>
+          </div>
+          <div>
+            <label className="block text-sm text-star-200 mb-1.5">Notify via</label>
+            <div className="space-y-1.5">
+              {([
+                { value: 'notification' as const, label: 'In-app only', description: 'Notification bell only' },
+                { value: 'email' as const, label: 'Email only', description: 'Daily digest email' },
+                { value: 'both' as const, label: 'In-app + email', description: 'Both channels' },
+              ]).map((o) => (
+                <label
+                  key={o.value}
+                  className={`flex items-center gap-3 px-3 py-2 rounded-xl border cursor-pointer transition-all ${
+                    saveNotify === o.value
+                      ? 'bg-white/10 border-white/15'
+                      : 'bg-white/[0.04] border-white/[0.06] hover:border-white/10'
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="saveNotify"
+                    value={o.value}
+                    checked={saveNotify === o.value}
+                    onChange={() => setSaveNotify(o.value)}
+                    className="accent-cyan-400"
+                  />
+                  <div>
+                    <div className="text-sm text-white">{o.label}</div>
+                    <div className="text-xs text-star-300/70">{o.description}</div>
+                  </div>
+                </label>
+              ))}
+            </div>
+          </div>
+          <div className="flex items-center justify-end gap-2 pt-2">
+            <button
+              onClick={() => setSaveOpen(false)}
+              className="px-3 py-2 text-sm rounded-xl bg-white/[0.04] text-star-200 border border-white/[0.06] hover:text-white hover:border-white/10 transition-all"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={onSaveSearch}
+              disabled={saving}
+              className="px-4 py-2 text-sm rounded-xl bg-white/10 text-white border border-white/10 hover:bg-white/[0.15] disabled:opacity-50 transition-all"
+            >
+              {saving ? 'Saving…' : 'Save search'}
+            </button>
+          </div>
+        </div>
+      </Modal>
     </>
   );
 }

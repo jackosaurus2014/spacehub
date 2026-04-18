@@ -21,6 +21,7 @@ import {
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
 import EmptyState from '@/components/ui/EmptyState';
+import RSVPButton from '@/components/events/RSVPButton';
 
 // ── Helpers ──
 
@@ -276,7 +277,12 @@ function HighlightedEvents({ events, watchlist, onToggleWatch }: { events: Space
                   </span>
                 )}
               </div>
-              <div className="flex items-center gap-2 mt-3">
+              <div className="flex items-center gap-2 mt-3 flex-wrap">
+                <RSVPButton
+                  eventId={event.id}
+                  eventName={event.name}
+                  eventDate={event.startDate}
+                />
                 <WatchlistButton eventId={event.id} watchlist={watchlist} onToggle={onToggleWatch} />
                 <AddToCalendarDropdown event={event} />
                 {event.website && (
@@ -391,6 +397,11 @@ function EventListCard({ event, onSelect, watchlist, onToggleWatch }: { event: S
 
         {/* Actions */}
         <div className="flex sm:flex-col items-center sm:items-end gap-2 flex-shrink-0" onClick={(e) => e.stopPropagation()}>
+          <RSVPButton
+            eventId={event.id}
+            eventName={event.name}
+            eventDate={event.startDate}
+          />
           <WatchlistButton eventId={event.id} watchlist={watchlist} onToggle={onToggleWatch} />
           <AddToCalendarDropdown event={event} />
           {event.website && (
@@ -667,6 +678,12 @@ function EventDetailModal({
         </div>
 
         <div className="flex items-center gap-3 pt-3 border-t border-white/[0.06] flex-wrap">
+          <RSVPButton
+            eventId={event.id}
+            eventName={event.name}
+            eventDate={event.startDate}
+            size="md"
+          />
           <WatchlistButton eventId={event.id} watchlist={watchlist} onToggle={onToggleWatch} size="md" />
           <button
             onClick={() => downloadICS(generateICS(event), `${event.id}.ics`)}

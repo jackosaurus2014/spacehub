@@ -7,6 +7,13 @@ import ProfileCard from '@/components/community/ProfileCard';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 
+interface VerifiedCredentialSummary {
+  id: string;
+  credentialType: string;
+  title: string;
+  issuingOrg: string;
+}
+
 interface ProfileData {
   id: string;
   userId: string;
@@ -21,6 +28,7 @@ interface ProfileData {
     email: string;
     verifiedBadge?: string | null;
   };
+  verifiedCredentials?: VerifiedCredentialSummary[];
 }
 
 const EXPERTISE_OPTIONS = [

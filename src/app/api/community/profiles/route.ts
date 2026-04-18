@@ -64,10 +64,39 @@ export async function GET(req: NextRequest) {
       prisma.professionalProfile.count({ where }),
     ]);
 
+    // Fetch only the verified credentials for the listed users so the
+    // directory can render badges. Self-reported / pending / rejected
+    // credentials are intentionally excluded from public output.
+    const userIds = profiles.map((p) => p.userId);
+    const verifiedCredentials = userIds.length
+      ? await prisma.userCredential.findMany({
+          where: { userId: { in: userIds }, status: 'verified' },
+          select: {
+            id: true,
+            userId: true,
+            credentialType: true,
+            title: true,
+            issuingOrg: true,
+          },
+          orderBy: { verifiedAt: 'desc' },
+        })
+      : [];
+    const credsByUser = new Map<string, typeof verifiedCredentials>();
+    for (const cred of verifiedCredentials) {
+      const list = credsByUser.get(cred.userId) ?? [];
+      list.push(cred);
+      credsByUser.set(cred.userId, list);
+    }
+
+    const profilesWithCredentials = profiles.map((p) => ({
+      ...p,
+      verifiedCredentials: credsByUser.get(p.userId) ?? [],
+    }));
+
     return NextResponse.json({
       success: true,
       data: {
-        profiles,
+        profiles: profilesWithCredentials,
         pagination: {
           page,
           limit,
@@ -75,6 +104,11 @@ export async function GET(req: NextRequest) {
           totalPages: Math.ceil(total / limit),
         },
       },
+      // Backwards-compatible flat field for older clients that read
+      // `data.profiles` and the directory page that reads `profiles` at the
+      // top level (it does not use `data` because the response was originally
+      // shaped as `{ profiles, pagination }`).
+      profiles: profilesWithCredentials,
     });
   } catch (error) {
     logger.error('Error fetching professional profiles', {

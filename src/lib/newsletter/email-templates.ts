@@ -1166,3 +1166,174 @@ Manage in admin: ${APP_URL}/admin`;
 
   return { html, text, subject };
 }
+
+// ============================================================================
+// Saved-Search Smart Alerts Digest
+// ============================================================================
+
+interface SavedSearchDigestUser {
+  name: string | null;
+  email: string;
+}
+
+interface SavedSearchDigestMatch {
+  id: string;
+  type: string;
+  title: string;
+  snippet: string;
+  url: string;
+}
+
+interface SavedSearchDigestSummary {
+  searchId: string;
+  searchName: string;
+  query: string;
+  type: string; // GlobalSearchType
+  newMatches: SavedSearchDigestMatch[];
+}
+
+/**
+ * Generate the daily saved-searches digest email. Batches every saved search
+ * with new matches into a single email per user. URLs that look relative are
+ * prefixed with APP_URL so they work in mail clients.
+ */
+export function generateSavedSearchesDigestEmail(
+  user: SavedSearchDigestUser,
+  matchesBySearch: SavedSearchDigestSummary[]
+): { html: string; text: string; subject: string } {
+  const userName = user.name || user.email.split('@')[0];
+  const totalNewMatches = matchesBySearch.reduce(
+    (sum, s) => sum + s.newMatches.length,
+    0
+  );
+  const searchCount = matchesBySearch.length;
+
+  const subject =
+    searchCount === 1
+      ? `${totalNewMatches} new ${totalNewMatches === 1 ? 'match' : 'matches'} for "${matchesBySearch[0].searchName}"`
+      : `${totalNewMatches} new ${totalNewMatches === 1 ? 'match' : 'matches'} across ${searchCount} saved searches`;
+
+  const absoluteUrl = (url: string): string => {
+    if (!url) return APP_URL;
+    if (/^https?:\/\//i.test(url)) return url;
+    return `${APP_URL}${url.startsWith('/') ? '' : '/'}${url}`;
+  };
+
+  const previewMax = 5;
+
+  let sectionsHtml = '';
+  let sectionsText = '';
+
+  matchesBySearch.forEach((summary) => {
+    const linkParams = new URLSearchParams();
+    linkParams.set('q', summary.query);
+    if (summary.type !== 'all') linkParams.set('type', summary.type);
+    const seeAllUrl = `${APP_URL}/search?${linkParams.toString()}`;
+
+    const preview = summary.newMatches.slice(0, previewMax);
+    const overflow = summary.newMatches.length - preview.length;
+
+    let matchesHtml = '';
+    preview.forEach((m) => {
+      const url = absoluteUrl(m.url);
+      // Strip <mark> tags from snippets for plain rendering
+      const plainSnippet = (m.snippet || '').replace(/<\/?mark>/gi, '');
+      matchesHtml += `
+        <tr><td style="padding:12px 0;border-bottom:1px solid #334155;">
+          <p style="margin:0 0 4px 0;color:#06b6d4;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;">
+            ${escapeHtml(m.type)}
+          </p>
+          <p style="margin:0 0 6px 0;color:#f1f5f9;font-size:15px;font-weight:600;line-height:1.35;">
+            <a href="${escapeHtml(url)}" style="color:#f1f5f9;text-decoration:none;">${escapeHtml(m.title)}</a>
+          </p>
+          ${plainSnippet ? `<p style="margin:0;color:#94a3b8;font-size:13px;line-height:1.55;">${escapeHtml(plainSnippet)}</p>` : ''}
+        </td></tr>`;
+    });
+
+    sectionsHtml += `
+      <tr><td style="padding:24px 40px 8px 40px;">
+        <h2 style="margin:0 0 4px 0;color:#f1f5f9;font-size:18px;font-weight:600;">
+          ${escapeHtml(summary.searchName)}
+        </h2>
+        <p style="margin:0 0 12px 0;color:#64748b;font-size:13px;">
+          <span style="color:#94a3b8;">${summary.newMatches.length} new ${summary.newMatches.length === 1 ? 'match' : 'matches'}</span>
+          &nbsp;&middot;&nbsp;
+          query: <code style="color:#06b6d4;">${escapeHtml(summary.query)}</code>
+          ${summary.type !== 'all' ? `&nbsp;&middot;&nbsp;type: ${escapeHtml(summary.type)}` : ''}
+        </p>
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+          ${matchesHtml}
+        </table>
+        ${overflow > 0 ? `<p style="margin:12px 0 0 0;color:#64748b;font-size:13px;">+ ${overflow} more</p>` : ''}
+        <p style="margin:16px 0 0 0;">
+          <a href="${escapeHtml(seeAllUrl)}" style="color:#06b6d4;font-size:13px;text-decoration:none;">View all results &rarr;</a>
+        </p>
+      </td></tr>`;
+
+    sectionsText += `\n=== ${summary.searchName} ===\n`;
+    sectionsText += `${summary.newMatches.length} new ${summary.newMatches.length === 1 ? 'match' : 'matches'} | query: ${summary.query}${summary.type !== 'all' ? ` | type: ${summary.type}` : ''}\n\n`;
+    preview.forEach((m, i) => {
+      const plainSnippet = (m.snippet || '').replace(/<\/?mark>/gi, '');
+      sectionsText += `${i + 1}. [${m.type}] ${m.title}\n`;
+      if (plainSnippet) sectionsText += `   ${plainSnippet}\n`;
+      sectionsText += `   ${absoluteUrl(m.url)}\n\n`;
+    });
+    if (overflow > 0) sectionsText += `   + ${overflow} more — view all: ${seeAllUrl}\n\n`;
+  });
+
+  const dashboardUrl = `${APP_URL}/saved-searches`;
+
+  const html = `<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
+<body style="margin:0;padding:0;background-color:#0f172a;font-family:Arial,Helvetica,sans-serif;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#0f172a;">
+    <tr><td align="center" style="padding:40px 20px;">
+      <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background-color:#1e293b;border-radius:12px;overflow:hidden;">
+        <tr><td style="padding:32px 40px;text-align:center;border-bottom:1px solid #334155;">
+          <h1 style="margin:0;color:#06b6d4;font-size:24px;">SpaceNexus</h1>
+          <p style="margin:8px 0 0 0;color:#94a3b8;font-size:13px;">Saved Search Digest</p>
+        </td></tr>
+
+        <tr><td style="padding:32px 40px 8px 40px;">
+          <h2 style="margin:0 0 8px 0;color:#f1f5f9;font-size:20px;">Hi ${escapeHtml(userName)},</h2>
+          <p style="margin:0;color:#94a3b8;font-size:15px;line-height:1.6;">
+            We found <strong style="color:#06b6d4;">${totalNewMatches}</strong> new
+            ${totalNewMatches === 1 ? 'result' : 'results'} across
+            <strong style="color:#06b6d4;">${searchCount}</strong> of your saved
+            ${searchCount === 1 ? 'search' : 'searches'}.
+          </p>
+        </td></tr>
+
+        ${sectionsHtml}
+
+        <tr><td style="padding:30px 40px;border-top:1px solid #334155;text-align:center;">
+          <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 auto 16px;">
+            <tr><td style="background-color:#06b6d4;border-radius:8px;padding:12px 28px;">
+              <a href="${escapeHtml(dashboardUrl)}" style="color:#0f172a;text-decoration:none;font-weight:bold;font-size:14px;">
+                Manage Saved Searches
+              </a>
+            </td></tr>
+          </table>
+          <p style="margin:0;color:#64748b;font-size:11px;">
+            <a href="${APP_URL}/account" style="color:#64748b;text-decoration:underline;">Notification preferences</a>
+            &nbsp;&middot;&nbsp;
+            <a href="${APP_URL}" style="color:#64748b;text-decoration:underline;">Visit SpaceNexus</a>
+          </p>
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`;
+
+  const text = `Hi ${userName},
+
+We found ${totalNewMatches} new ${totalNewMatches === 1 ? 'result' : 'results'} across ${searchCount} of your saved ${searchCount === 1 ? 'search' : 'searches'}.
+${sectionsText}
+---
+Manage saved searches: ${dashboardUrl}
+SpaceNexus — ${APP_URL}`;
+
+  return { html, text, subject };
+}

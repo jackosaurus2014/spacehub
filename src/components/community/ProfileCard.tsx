@@ -6,6 +6,14 @@ import { motion } from 'framer-motion';
 import ReportButton from './ReportButton';
 import BlockButton from './BlockButton';
 import VerifiedBadge from '@/components/VerifiedBadge';
+import CredentialBadge, { type CredentialType } from '@/components/CredentialBadge';
+
+interface VerifiedCredentialSummary {
+  id: string;
+  credentialType: string;
+  title: string;
+  issuingOrg: string;
+}
 
 interface ProfileData {
   id: string;
@@ -21,6 +29,7 @@ interface ProfileData {
     email: string;
     verifiedBadge?: string | null;
   };
+  verifiedCredentials?: VerifiedCredentialSummary[];
 }
 
 interface ProfileCardProps {
@@ -124,6 +133,26 @@ export default function ProfileCard({ profile, isFollowing = false, onFollowTogg
               {profile.expertise.length > 4 && (
                 <span className="text-xs px-1.5 py-0.5 bg-white/[0.05] text-slate-500 rounded">
                   +{profile.expertise.length - 4}
+                </span>
+              )}
+            </div>
+          )}
+
+          {/* Verified credentials (only verified ones are exposed by the API) */}
+          {profile.verifiedCredentials && profile.verifiedCredentials.length > 0 && (
+            <div className="flex flex-wrap gap-1 mb-3">
+              {profile.verifiedCredentials.slice(0, 3).map((cred) => (
+                <CredentialBadge
+                  key={cred.id}
+                  credentialType={cred.credentialType as CredentialType}
+                  issuingOrg={cred.issuingOrg}
+                  title={cred.title}
+                  size="sm"
+                />
+              ))}
+              {profile.verifiedCredentials.length > 3 && (
+                <span className="text-[10px] px-1.5 py-0.5 bg-white/[0.05] text-slate-500 rounded">
+                  +{profile.verifiedCredentials.length - 3}
                 </span>
               )}
             </div>

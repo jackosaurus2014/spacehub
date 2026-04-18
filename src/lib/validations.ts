@@ -398,6 +398,7 @@ export const GLOBAL_SEARCH_TYPES = [
   'marketplace',
   'forum',
   'blog',
+  'podcast',
 ] as const;
 export type GlobalSearchType = (typeof GLOBAL_SEARCH_TYPES)[number];
 
@@ -792,6 +793,27 @@ export const chatMessageSchema = z.object({
     .max(500, 'Message is too long')
     .transform((val) => val.trim()),
 });
+
+// Live mission chat — create message
+export const createChatMessageSchema = z.object({
+  eventId: z.string().min(1, 'eventId is required'),
+  message: z
+    .string()
+    .min(1, 'Message is required')
+    .max(500, 'Message must be 500 characters or fewer')
+    .transform((val) => val.trim().replace(/<[^>]*>/g, '')),
+  parentId: z.string().optional().nullable(),
+});
+
+// Live mission chat — message reaction
+export const CHAT_REACTION_EMOJIS = ['rocket', 'clap', 'tada', 'heart', 'fire', 'eyes'] as const;
+export const createReactionSchema = z.object({
+  messageId: z.string().min(1, 'messageId is required'),
+  emoji: z.enum(CHAT_REACTION_EMOJIS),
+});
+
+export type CreateChatMessageData = z.infer<typeof createChatMessageSchema>;
+export type CreateReactionData = z.infer<typeof createReactionSchema>;
 
 // Telemetry query schema
 export const telemetryQuerySchema = z.object({
@@ -1618,6 +1640,42 @@ export type CompanyWatchlistData = z.infer<typeof companyWatchlistSchema>;
 export type GeneralSavedSearchData = z.infer<typeof generalSavedSearchSchema>;
 
 // ============================================================
+// Saved Searches + Smart Alerts (global /search dashboard)
+// ============================================================
+
+// Notification channels for saved-search alerts
+export const SAVED_SEARCH_NOTIFY_CHANNELS = [
+  'email',
+  'notification',
+  'both',
+] as const;
+export type SavedSearchNotifyChannel = (typeof SAVED_SEARCH_NOTIFY_CHANNELS)[number];
+
+/**
+ * Schema used to create a saved search from the unified `/search` UI.
+ * The `type` value is a `GlobalSearchType` ('all' | 'news' | 'companies' | ...).
+ * Server-side this is mapped onto the `SavedSearch.searchType = 'global_search'`
+ * Prisma column, with `type` and `notifyVia` persisted in the `filters` JSON
+ * blob alongside `lastResultIds` / `lastRunAt` bookkeeping.
+ */
+export const createSavedSearchSchema = z.object({
+  name: z.string().min(1, 'Name is required').max(200).transform((val) => val.trim()),
+  query: z.string().min(1, 'Query is required').max(500).transform((val) => val.trim()),
+  type: z.enum(GLOBAL_SEARCH_TYPES).default('all'),
+  notifyVia: z.enum(SAVED_SEARCH_NOTIFY_CHANNELS).default('notification'),
+});
+export type CreateSavedSearchData = z.infer<typeof createSavedSearchSchema>;
+
+export const updateSavedSearchSchema = z.object({
+  name: z.string().min(1).max(200).transform((val) => val.trim()).optional(),
+  query: z.string().min(1).max(500).transform((val) => val.trim()).optional(),
+  type: z.enum(GLOBAL_SEARCH_TYPES).optional(),
+  notifyVia: z.enum(SAVED_SEARCH_NOTIFY_CHANNELS).optional(),
+  alertEnabled: z.boolean().optional(),
+});
+export type UpdateSavedSearchData = z.infer<typeof updateSavedSearchSchema>;
+
+// ============================================================
 // Investment Thesis
 // ============================================================
 
@@ -2397,6 +2455,120 @@ export type UpdatePitchDeckData = z.infer<typeof updatePitchDeckSchema>;
 export type CreateDataRoomDocData = z.infer<typeof createDataRoomDocSchema>;
 export type UpdateDataRoomDocData = z.infer<typeof updateDataRoomDocSchema>;
 
+// ============================================================
+// Mission Photo Gallery
+// ============================================================
+
+export const MISSION_PHOTO_CATEGORIES = [
+  'launch',
+  'on_orbit',
+  'landing',
+  'test',
+  'infrastructure',
+  'crew',
+] as const;
+
+export type MissionPhotoCategory = (typeof MISSION_PHOTO_CATEGORIES)[number];
+
+export const createMissionPhotoSchema = z.object({
+  missionName: z
+    .string()
+    .min(1, 'Mission name is required')
+    .max(200, 'Mission name is too long')
+    .transform((v) => stripHtml(v.trim())),
+  missionSlug: z
+    .string()
+    .max(200)
+    .regex(/^[a-z0-9-]*$/, 'Slug must be lowercase letters, numbers, and dashes only')
+    .optional()
+    .nullable(),
+  eventId: z.string().max(200).optional().nullable(),
+  companyId: z.string().max(200).optional().nullable(),
+  title: z
+    .string()
+    .min(1, 'Title is required')
+    .max(200, 'Title is too long')
+    .transform((v) => stripHtml(v.trim())),
+  description: z
+    .string()
+    .max(5000, 'Description is too long')
+    .transform((v) => stripHtml(v.trim()))
+    .optional()
+    .nullable(),
+  photoUrl: safeUrlSchema,
+  thumbnailUrl: safeUrlSchema.optional().nullable(),
+  credit: z
+    .string()
+    .max(300)
+    .transform((v) => stripHtml(v.trim()))
+    .optional()
+    .nullable(),
+  creditUrl: safeUrlSchema.optional().nullable(),
+  takenAt: z
+    .string()
+    .refine((v) => !v || !Number.isNaN(Date.parse(v)), { message: 'Invalid date' })
+    .optional()
+    .nullable(),
+  tags: z
+    .array(z.string().max(60).transform((v) => stripHtml(v.trim())))
+    .max(20, 'Too many tags')
+    .optional(),
+  category: z.enum(MISSION_PHOTO_CATEGORIES).optional().nullable(),
+});
+
+export const updateMissionPhotoSchema = z.object({
+  missionName: z
+    .string()
+    .min(1)
+    .max(200)
+    .transform((v) => stripHtml(v.trim()))
+    .optional(),
+  missionSlug: z
+    .string()
+    .max(200)
+    .regex(/^[a-z0-9-]*$/)
+    .optional()
+    .nullable(),
+  eventId: z.string().max(200).optional().nullable(),
+  companyId: z.string().max(200).optional().nullable(),
+  title: z
+    .string()
+    .min(1)
+    .max(200)
+    .transform((v) => stripHtml(v.trim()))
+    .optional(),
+  description: z
+    .string()
+    .max(5000)
+    .transform((v) => stripHtml(v.trim()))
+    .optional()
+    .nullable(),
+  photoUrl: safeUrlSchema.optional(),
+  thumbnailUrl: safeUrlSchema.optional().nullable(),
+  credit: z
+    .string()
+    .max(300)
+    .transform((v) => stripHtml(v.trim()))
+    .optional()
+    .nullable(),
+  creditUrl: safeUrlSchema.optional().nullable(),
+  takenAt: z
+    .string()
+    .refine((v) => !v || !Number.isNaN(Date.parse(v)), { message: 'Invalid date' })
+    .optional()
+    .nullable(),
+  tags: z
+    .array(z.string().max(60).transform((v) => stripHtml(v.trim())))
+    .max(20)
+    .optional(),
+  category: z.enum(MISSION_PHOTO_CATEGORIES).optional().nullable(),
+  featured: z.boolean().optional(),
+  approved: z.boolean().optional(),
+});
+
+export type CreateMissionPhotoInput = z.infer<typeof createMissionPhotoSchema>;
+export type UpdateMissionPhotoInput = z.infer<typeof updateMissionPhotoSchema>;
+
 // ─── Funding Round Announcements ──────────────────────────────────────────────
 
 export const FUNDING_ROUND_TYPES = [
@@ -2514,4 +2686,637 @@ export const updateCompanyAnnouncementSchema = z.object({
 
 export type CreateCompanyAnnouncementInput = z.infer<typeof createCompanyAnnouncementSchema>;
 export type UpdateCompanyAnnouncementInput = z.infer<typeof updateCompanyAnnouncementSchema>;
+
+// Event RSVP / Ticketing
+export const eventRsvpSchema = z.object({
+  eventId: z
+    .string()
+    .min(1, 'eventId is required')
+    .max(200, 'eventId is too long'),
+  status: z.enum(['going', 'maybe', 'not_going', 'waitlist'], {
+    message: 'status must be one of: going, maybe, not_going, waitlist',
+  }),
+  ticketTier: z
+    .string()
+    .max(50, 'ticketTier is too long')
+    .optional(),
+  notes: z
+    .string()
+    .max(2000, 'notes must be 2000 characters or fewer')
+    .transform((v) => stripHtml(v.trim()))
+    .optional(),
+});
+
+export type EventRsvpInput = z.infer<typeof eventRsvpSchema>;
+
+// ============================================================
+// Professional Credential Verification (Wave 2)
+// ============================================================
+
+/** Credential types users can self-attest or have verified. */
+export const CREDENTIAL_TYPES = [
+  'degree',
+  'certification',
+  'clearance',
+  'license',
+  'patent',
+] as const;
+export type CredentialType = (typeof CREDENTIAL_TYPES)[number];
+
+/** Optional http(s) URL — trims, returns undefined for empty strings, rejects non-http(s) schemes. */
+const optionalHttpUrl = z
+  .string()
+  .trim()
+  .max(500, 'URL is too long')
+  .optional()
+  .transform((v) => (v && v.length > 0 ? v : undefined))
+  .refine((v) => !v || /^https?:\/\/.+/i.test(v), {
+    message: 'Must be a valid http(s) URL',
+  });
+
+/** Optional ISO date string — accepts empty/null and parses to Date or undefined. */
+const optionalIsoDate = z
+  .string()
+  .trim()
+  .optional()
+  .nullable()
+  .transform((v) => (v && v.length > 0 ? v : undefined))
+  .refine((v) => !v || !Number.isNaN(Date.parse(v)), {
+    message: 'Must be a valid ISO date',
+  });
+
+export const createCredentialSchema = z.object({
+  credentialType: z.enum(CREDENTIAL_TYPES, {
+    message: 'credentialType must be one of: degree, certification, clearance, license, patent',
+  }),
+  title: z
+    .string()
+    .trim()
+    .min(2, 'Title must be at least 2 characters')
+    .max(200, 'Title must be 200 characters or fewer')
+    .transform((v) => stripHtml(v)),
+  issuingOrg: z
+    .string()
+    .trim()
+    .min(2, 'Issuing organization must be at least 2 characters')
+    .max(200, 'Issuing organization must be 200 characters or fewer')
+    .transform((v) => stripHtml(v)),
+  issuedAt: optionalIsoDate,
+  expiresAt: optionalIsoDate,
+  credentialId: z
+    .string()
+    .trim()
+    .max(200, 'Credential ID must be 200 characters or fewer')
+    .optional()
+    .transform((v) => (v && v.length > 0 ? stripHtml(v) : undefined)),
+  verificationUrl: optionalHttpUrl,
+  supportingDocUrl: optionalHttpUrl,
+});
+
+export type CreateCredentialInput = z.infer<typeof createCredentialSchema>;
+
+export const updateCredentialSchema = z.object({
+  credentialType: z.enum(CREDENTIAL_TYPES).optional(),
+  title: z
+    .string()
+    .trim()
+    .min(2, 'Title must be at least 2 characters')
+    .max(200, 'Title must be 200 characters or fewer')
+    .transform((v) => stripHtml(v))
+    .optional(),
+  issuingOrg: z
+    .string()
+    .trim()
+    .min(2, 'Issuing organization must be at least 2 characters')
+    .max(200, 'Issuing organization must be 200 characters or fewer')
+    .transform((v) => stripHtml(v))
+    .optional(),
+  issuedAt: optionalIsoDate,
+  expiresAt: optionalIsoDate,
+  credentialId: z
+    .string()
+    .trim()
+    .max(200, 'Credential ID must be 200 characters or fewer')
+    .optional()
+    .transform((v) => (v && v.length > 0 ? stripHtml(v) : undefined)),
+  verificationUrl: optionalHttpUrl,
+  supportingDocUrl: optionalHttpUrl,
+});
+
+export type UpdateCredentialInput = z.infer<typeof updateCredentialSchema>;
+
+export const credentialVerificationDecisionSchema = z.object({
+  decision: z.enum(['approve', 'reject'], {
+    message: 'decision must be either "approve" or "reject"',
+  }),
+  rejectionReason: z
+    .string()
+    .trim()
+    .max(500, 'Rejection reason must be 500 characters or fewer')
+    .optional()
+    .transform((v) => (v && v.length > 0 ? v : undefined)),
+});
+
+export type CredentialVerificationDecisionInput = z.infer<
+  typeof credentialVerificationDecisionSchema
+>;
+
+// ─────────────────────────────────────────────────────────────
+// Podcast directory (Wave 2)
+// ─────────────────────────────────────────────────────────────
+
+export const PODCAST_CATEGORIES = [
+  'industry',
+  'science',
+  'exploration',
+  'business',
+  'engineering',
+  'policy',
+  'education',
+  'interviews',
+  'news',
+  'general',
+] as const;
+export type PodcastCategory = (typeof PODCAST_CATEGORIES)[number];
+
+export const createPodcastSchema = z.object({
+  name: z
+    .string()
+    .trim()
+    .min(2, 'Name must be at least 2 characters')
+    .max(200, 'Name must be 200 characters or fewer')
+    .transform((v) => stripHtml(v)),
+  description: z
+    .string()
+    .trim()
+    .max(5000, 'Description must be 5000 characters or fewer')
+    .optional()
+    .transform((v) => (v && v.length > 0 ? stripHtml(v) : undefined)),
+  feedUrl: z
+    .string()
+    .trim()
+    .max(500, 'Feed URL must be 500 characters or fewer')
+    .optional()
+    .transform((v) => (v && v.length > 0 ? v : undefined))
+    .refine((v) => !v || /^https?:\/\/.+/i.test(v), {
+      message: 'Feed URL must be a valid http(s) URL',
+    }),
+  websiteUrl: optionalHttpUrl,
+  artworkUrl: optionalHttpUrl,
+  author: z
+    .string()
+    .trim()
+    .max(200, 'Author must be 200 characters or fewer')
+    .optional()
+    .transform((v) => (v && v.length > 0 ? stripHtml(v) : undefined)),
+  category: z
+    .enum(PODCAST_CATEGORIES)
+    .optional()
+    .transform((v) => v ?? 'general'),
+  language: z
+    .string()
+    .trim()
+    .max(10, 'Language must be 10 characters or fewer')
+    .optional()
+    .transform((v) => (v && v.length > 0 ? v.toLowerCase() : 'en')),
+});
+
+export type CreatePodcastInput = z.infer<typeof createPodcastSchema>;
+
+// ─── Wave 2: Corporate Messaging + Teams ──────────────────────────────────────
+
+export const CHANNEL_TYPES = ['announcement', 'discussion', 'project'] as const;
+export const CHANNEL_VISIBILITY = ['public', 'members', 'invite_only'] as const;
+
+export const createChannelSchema = z.object({
+  companyId: z.string().min(1, 'companyId is required'),
+  name: z
+    .string()
+    .min(2, 'Channel name must be at least 2 characters')
+    .max(80, 'Channel name must be 80 characters or fewer')
+    .transform((v) => stripHtml(v.trim())),
+  description: z
+    .string()
+    .max(500, 'Description must be 500 characters or fewer')
+    .optional()
+    .transform((v) => (v ? stripHtml(v.trim()) : undefined)),
+  channelType: z.enum(CHANNEL_TYPES).default('discussion'),
+  visibility: z.enum(CHANNEL_VISIBILITY).default('members'),
+});
+
+export const updateChannelSchema = z.object({
+  name: z
+    .string()
+    .min(2)
+    .max(80)
+    .transform((v) => stripHtml(v.trim()))
+    .optional(),
+  description: z
+    .string()
+    .max(500)
+    .optional()
+    .transform((v) => (v ? stripHtml(v.trim()) : undefined)),
+  channelType: z.enum(CHANNEL_TYPES).optional(),
+  visibility: z.enum(CHANNEL_VISIBILITY).optional(),
+});
+
+export const postMessageSchema = z.object({
+  body: z
+    .string()
+    .min(1, 'Message body cannot be empty')
+    .max(10000, 'Message body must be 10000 characters or fewer')
+    .transform((v) => v.trim()),
+  parentMessageId: z.string().optional().nullable(),
+});
+
+export const updateMessageSchema = z.object({
+  body: z
+    .string()
+    .min(1)
+    .max(10000)
+    .transform((v) => v.trim()),
+});
+
+export const PROJECT_STATUSES = ['active', 'paused', 'completed', 'archived'] as const;
+
+export const createProjectSchema = z.object({
+  companyId: z.string().min(1, 'companyId is required'),
+  name: z
+    .string()
+    .min(2, 'Project name must be at least 2 characters')
+    .max(120, 'Project name must be 120 characters or fewer')
+    .transform((v) => stripHtml(v.trim())),
+  description: z
+    .string()
+    .max(5000, 'Description must be 5000 characters or fewer')
+    .optional()
+    .transform((v) => (v ? stripHtml(v.trim()) : undefined)),
+  status: z.enum(PROJECT_STATUSES).default('active'),
+  dueDate: z
+    .string()
+    .refine((v) => !v || !Number.isNaN(Date.parse(v)), { message: 'Invalid date' })
+    .optional()
+    .nullable(),
+  memberUserIds: z.array(z.string()).max(100).optional().default([]),
+});
+
+export const updateProjectSchema = z.object({
+  name: z
+    .string()
+    .min(2)
+    .max(120)
+    .transform((v) => stripHtml(v.trim()))
+    .optional(),
+  description: z
+    .string()
+    .max(5000)
+    .optional()
+    .transform((v) => (v ? stripHtml(v.trim()) : undefined)),
+  status: z.enum(PROJECT_STATUSES).optional(),
+  dueDate: z
+    .string()
+    .refine((v) => !v || !Number.isNaN(Date.parse(v)), { message: 'Invalid date' })
+    .optional()
+    .nullable(),
+  memberUserIds: z.array(z.string()).max(100).optional(),
+});
+
+export type CreateChannelInput = z.infer<typeof createChannelSchema>;
+export type UpdateChannelInput = z.infer<typeof updateChannelSchema>;
+export type PostMessageInput = z.infer<typeof postMessageSchema>;
+export type UpdateMessageInput = z.infer<typeof updateMessageSchema>;
+export type CreateProjectInput = z.infer<typeof createProjectSchema>;
+export type UpdateProjectInput = z.infer<typeof updateProjectSchema>;
+
+// ────────────────────────────────────────────────────────────────────────────
+// Mentor Marketplace + Skill Endorsements (Wave 2)
+// ────────────────────────────────────────────────────────────────────────────
+
+const mentorExpertiseAreaSchema = z
+  .string()
+  .min(1, 'Expertise area cannot be empty')
+  .max(80, 'Expertise area is too long')
+  .transform((v) => stripHtml(v.trim()));
+
+const mentorPastCompanySchema = z
+  .string()
+  .min(1, 'Company name cannot be empty')
+  .max(120, 'Company name is too long')
+  .transform((v) => stripHtml(v.trim()));
+
+const mentorOptionalLinkedInUrl = z.preprocess(
+  (v) => (typeof v === 'string' && v.trim() === '' ? null : v),
+  z
+    .string()
+    .url('LinkedIn URL must be valid')
+    .max(500, 'LinkedIn URL is too long')
+    .refine(
+      (v) =>
+        v.startsWith('https://www.linkedin.com/') ||
+        v.startsWith('https://linkedin.com/'),
+      'Must be a LinkedIn URL'
+    )
+    .nullable()
+    .optional()
+);
+
+const mentorAvailabilityEnum = z.enum(['weekly', 'monthly', 'project']);
+
+export const createMentorProfileSchema = z.object({
+  headline: z
+    .string()
+    .min(5, 'Headline must be at least 5 characters')
+    .max(150, 'Headline must be 150 characters or fewer')
+    .transform((v) => stripHtml(v.trim())),
+  bio: z
+    .string()
+    .min(20, 'Bio must be at least 20 characters')
+    .max(2000, 'Bio must be 2000 characters or fewer')
+    .transform((v) => v.trim()),
+  expertiseAreas: z
+    .array(mentorExpertiseAreaSchema)
+    .min(1, 'Add at least one area of expertise')
+    .max(15, 'You can list up to 15 expertise areas'),
+  yearsExperience: z
+    .number()
+    .int('Years must be a whole number')
+    .min(0, 'Years cannot be negative')
+    .max(80, 'Years seems unrealistic')
+    .nullable()
+    .optional(),
+  hourlyRate: z
+    .number()
+    .min(0, 'Rate cannot be negative')
+    .max(10000, 'Rate seems unrealistic')
+    .nullable()
+    .optional(),
+  currency: z
+    .string()
+    .length(3, 'Use a 3-letter currency code')
+    .transform((v) => v.toUpperCase())
+    .optional(),
+  availability: mentorAvailabilityEnum.nullable().optional(),
+  remoteOnly: z.boolean().optional(),
+  acceptingMentees: z.boolean().optional(),
+  pastCompanies: z
+    .array(mentorPastCompanySchema)
+    .max(20, 'You can list up to 20 past companies')
+    .optional(),
+  linkedinUrl: mentorOptionalLinkedInUrl,
+});
+
+export const updateMentorProfileSchema = createMentorProfileSchema.partial();
+
+export const mentorRequestSchema = z.object({
+  message: z
+    .string()
+    .min(20, 'Please share at least 20 characters about what you need')
+    .max(2000, 'Message must be 2000 characters or fewer')
+    .transform((v) => v.trim()),
+});
+
+export const mentorMatchActionSchema = z.object({
+  action: z.enum(['accept', 'decline'], {
+    message: 'action must be "accept" or "decline"',
+  }),
+});
+
+export const endorsementSchema = z.object({
+  endorseeId: z
+    .string()
+    .min(1, 'endorseeId is required')
+    .max(60, 'endorseeId is invalid'),
+  skill: z
+    .string()
+    .min(2, 'Skill must be at least 2 characters')
+    .max(80, 'Skill must be 80 characters or fewer')
+    .transform((v) => stripHtml(v.trim())),
+  note: z
+    .string()
+    .max(500, 'Note must be 500 characters or fewer')
+    .transform((v) => stripHtml(v.trim()))
+    .optional(),
+});
+
+export type CreateMentorProfileInput = z.infer<typeof createMentorProfileSchema>;
+export type UpdateMentorProfileInput = z.infer<typeof updateMentorProfileSchema>;
+export type MentorRequestInput = z.infer<typeof mentorRequestSchema>;
+export type MentorMatchActionInput = z.infer<typeof mentorMatchActionSchema>;
+export type EndorsementInput = z.infer<typeof endorsementSchema>;
+
+// ============================================================
+// Mission Debriefs
+// ============================================================
+
+const debriefStatusEnum = z.enum(['success', 'partial', 'failure', 'scrubbed'], {
+  message: 'status must be one of: success, partial, failure, scrubbed',
+});
+
+const debriefTimelineItemSchema = z.object({
+  t: z.string().min(1, 'timestamp/label required').max(100),
+  label: z.string().min(1, 'event label required').max(200),
+  note: z.string().max(2000).optional(),
+});
+
+const debriefSourceSchema = z.object({
+  url: z.string().url('Source URL must be a valid URL').max(2000),
+  title: z.string().min(1).max(500),
+});
+
+export const createMissionDebriefSchema = z.object({
+  eventId: z.string().min(1, 'eventId is required').optional(),
+  slug: z
+    .string()
+    .min(2, 'slug must be at least 2 characters')
+    .max(200, 'slug is too long')
+    .regex(/^[a-z0-9-]+$/, 'slug may only contain lowercase letters, numbers, and hyphens')
+    .optional(),
+  missionName: z.string().min(2, 'missionName is required').max(300),
+  missionDate: z
+    .string()
+    .min(1, 'missionDate is required')
+    .refine((v) => !Number.isNaN(Date.parse(v)), 'missionDate must be a valid ISO date string'),
+  status: debriefStatusEnum,
+  executiveSummary: z
+    .string()
+    .min(20, 'executiveSummary must be at least 20 characters')
+    .max(20000, 'executiveSummary is too long'),
+  timeline: z.array(debriefTimelineItemSchema).max(200).optional().default([]),
+  costsEstimate: z.number().nonnegative().nullable().optional(),
+  currency: z.string().length(3).optional().default('USD'),
+  companyIds: z.array(z.string().min(1)).max(100).optional().default([]),
+  keyTakeaways: z
+    .array(z.string().min(1).max(2000))
+    .max(50)
+    .optional()
+    .default([]),
+  sources: z.array(debriefSourceSchema).max(100).optional().default([]),
+  fullAnalysis: z
+    .string()
+    .min(50, 'fullAnalysis must be at least 50 characters')
+    .max(100000, 'fullAnalysis is too long'),
+  generatedBy: z.enum(['claude', 'manual', 'mixed']).optional().default('manual'),
+  publishImmediately: z.boolean().optional().default(false),
+});
+
+export type CreateMissionDebriefInput = z.infer<typeof createMissionDebriefSchema>;
+
+export const updateMissionDebriefSchema = z.object({
+  missionName: z.string().min(2).max(300).optional(),
+  missionDate: z
+    .string()
+    .refine((v) => !Number.isNaN(Date.parse(v)), 'missionDate must be a valid ISO date string')
+    .optional(),
+  status: debriefStatusEnum.optional(),
+  executiveSummary: z.string().min(20).max(20000).optional(),
+  timeline: z.array(debriefTimelineItemSchema).max(200).optional(),
+  costsEstimate: z.number().nonnegative().nullable().optional(),
+  currency: z.string().length(3).optional(),
+  companyIds: z.array(z.string().min(1)).max(100).optional(),
+  keyTakeaways: z.array(z.string().min(1).max(2000)).max(50).optional(),
+  sources: z.array(debriefSourceSchema).max(100).optional(),
+  fullAnalysis: z.string().min(50).max(100000).optional(),
+  generatedBy: z.enum(['claude', 'manual', 'mixed']).optional(),
+  publishedAt: z
+    .string()
+    .nullable()
+    .optional()
+    .refine(
+      (v) => v === null || v === undefined || !Number.isNaN(Date.parse(v)),
+      'publishedAt must be a valid ISO date string or null'
+    ),
+});
+
+export type UpdateMissionDebriefInput = z.infer<typeof updateMissionDebriefSchema>;
+
+export const generateDebriefSchema = z.object({
+  eventId: z.string().min(1, 'eventId is required'),
+  additionalContext: z.string().max(10000).optional(),
+});
+
+export type GenerateDebriefInput = z.infer<typeof generateDebriefSchema>;
+
+// ─── Cap Table ─────────────────────────────────────────────────────────────────
+
+export const CAP_TABLE_VISIBILITY = ['public', 'logged_in', 'invite_only'] as const;
+export const CAP_TABLE_HOLDER_TYPES = ['founder', 'employee', 'investor', 'other'] as const;
+export const CAP_TABLE_SHARE_CLASSES = [
+  'common',
+  'preferred_a',
+  'preferred_b',
+  'preferred_c',
+  'convertible',
+  'safe',
+  'option_pool',
+  'other',
+] as const;
+
+/** Accepts an optional ISO date or YYYY-MM-DD style string. */
+const capTableDateSchema = z
+  .string()
+  .max(40)
+  .refine((v) => !v || !Number.isNaN(Date.parse(v)), { message: 'Invalid date' })
+  .optional()
+  .nullable();
+
+/**
+ * BigInt-friendly share count: accepts a number or numeric string and returns
+ * a numeric string (or null). Route handlers convert to BigInt before write.
+ */
+const capTableShareCountSchema = z
+  .union([z.number(), z.string()])
+  .transform((v, ctx) => {
+    if (v === '' || v === null || v === undefined) return null;
+    const s = String(v).trim();
+    if (!s) return null;
+    if (!/^\d+$/.test(s)) {
+      ctx.addIssue({ code: 'custom', message: 'Must be a non-negative integer' });
+      return z.NEVER;
+    }
+    return s;
+  })
+  .nullable()
+  .optional();
+
+const capTableDocumentUrlSchema = z
+  .union([
+    z
+      .string()
+      .url('Must be a valid URL')
+      .max(2000, 'URL is too long')
+      .refine(
+        (v) => {
+          try {
+            const u = new URL(v);
+            return u.protocol === 'http:' || u.protocol === 'https:';
+          } catch {
+            return false;
+          }
+        },
+        { message: 'URL must use http:// or https://' }
+      ),
+    z.literal('').transform(() => null),
+    z.null(),
+  ])
+  .optional()
+  .nullable();
+
+export const upsertCapTableSchema = z.object({
+  currentValuation: z.number().min(0).max(1e15).optional().nullable(),
+  currency: z
+    .string()
+    .length(3, 'currency must be a 3-letter ISO code')
+    .transform((v) => v.toUpperCase())
+    .optional()
+    .nullable(),
+  sharesAuthorized: capTableShareCountSchema,
+  sharesOutstanding: capTableShareCountSchema,
+  asOfDate: capTableDateSchema,
+  visibility: z.enum(CAP_TABLE_VISIBILITY).default('invite_only'),
+  documentUrl: capTableDocumentUrlSchema,
+  notes: z
+    .string()
+    .max(5000, 'notes must be 5000 characters or fewer')
+    .transform((v) => stripHtml(v.trim()))
+    .optional()
+    .nullable(),
+});
+
+export const capTableEntrySchema = z.object({
+  holderName: z
+    .string()
+    .min(1, 'holderName is required')
+    .max(200, 'holderName is too long')
+    .transform((v) => stripHtml(v.trim())),
+  holderType: z.enum(CAP_TABLE_HOLDER_TYPES),
+  shareClass: z.enum(CAP_TABLE_SHARE_CLASSES),
+  shareCount: capTableShareCountSchema,
+  percentage: z.number().min(0).max(100).optional().nullable(),
+  investmentAmount: z.number().min(0).max(1e15).optional().nullable(),
+  roundLabel: z
+    .string()
+    .max(100, 'roundLabel is too long')
+    .transform((v) => stripHtml(v.trim()))
+    .optional()
+    .nullable(),
+  acquiredAt: capTableDateSchema,
+  notes: z
+    .string()
+    .max(2000, 'notes must be 2000 characters or fewer')
+    .transform((v) => stripHtml(v.trim()))
+    .optional()
+    .nullable(),
+});
+
+export const capTableEntryUpdateSchema = capTableEntrySchema.partial();
+
+export const capTableShareSchema = z.object({
+  grantedToEmail: emailSchema,
+  expiresAt: capTableDateSchema,
+});
+
+export type UpsertCapTableInput = z.infer<typeof upsertCapTableSchema>;
+export type CapTableEntryInput = z.infer<typeof capTableEntrySchema>;
+export type CapTableEntryUpdateInput = z.infer<typeof capTableEntryUpdateSchema>;
+export type CapTableShareInput = z.infer<typeof capTableShareSchema>;
 

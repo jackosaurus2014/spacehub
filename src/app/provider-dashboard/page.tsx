@@ -123,6 +123,38 @@ function DashboardContent() {
   });
   const [dataRoomSubmitting, setDataRoomSubmitting] = useState(false);
 
+  // Cap Table state
+  const [capTable, setCapTable] = useState<any>(null);
+  const [capTableShares, setCapTableShares] = useState<any[]>([]);
+  const [capTableForm, setCapTableForm] = useState({
+    currentValuation: '',
+    currency: 'USD',
+    sharesAuthorized: '',
+    sharesOutstanding: '',
+    asOfDate: '',
+    visibility: 'invite_only',
+    documentUrl: '',
+    notes: '',
+  });
+  const [capTableSaving, setCapTableSaving] = useState(false);
+  const [capTableEntryForm, setCapTableEntryForm] = useState({
+    holderName: '',
+    holderType: 'investor',
+    shareClass: 'common',
+    shareCount: '',
+    percentage: '',
+    investmentAmount: '',
+    roundLabel: '',
+    acquiredAt: '',
+    notes: '',
+  });
+  const [capTableEntrySubmitting, setCapTableEntrySubmitting] = useState(false);
+  const [capTableShareForm, setCapTableShareForm] = useState({
+    grantedToEmail: '',
+    expiresAt: '',
+  });
+  const [capTableShareSubmitting, setCapTableShareSubmitting] = useState(false);
+
   useEffect(() => {
     async function loadDashboard() {
       try {
@@ -163,8 +195,8 @@ function DashboardContent() {
             if (reviewRes.ok) { const d = await reviewRes.json(); setReviews(d.reviews || []); }
             if (proposalRes.ok) { const d = await proposalRes.json(); setProposals(d.proposals || []); }
 
-            // Load analytics, events, verification, jobs, gigs, partnerships, case studies, meeting requests, funding, decks, data-room in parallel
-            const [verifyRes, analyticsRes, eventsRes, jobsRes, gigsRes, partnershipsRes, caseStudiesRes, meetingRes, fundingRes, pitchDecksRes, dataRoomRes] = await Promise.all([
+            // Load analytics, events, verification, jobs, gigs, partnerships, case studies, meeting requests, funding, decks, data-room, cap-table in parallel
+            const [verifyRes, analyticsRes, eventsRes, jobsRes, gigsRes, partnershipsRes, caseStudiesRes, meetingRes, fundingRes, pitchDecksRes, dataRoomRes, capTableRes, capTableSharesRes] = await Promise.all([
               fetch('/api/marketplace/verify').catch(() => null),
               fetch(`/api/company-profiles/${myCompany.slug}/analytics`).catch(() => null),
               fetch(`/api/company-profiles/${myCompany.slug}/events`).catch(() => null),
@@ -176,6 +208,8 @@ function DashboardContent() {
               fetch('/api/funding-rounds/announce').catch(() => null),
               fetch(`/api/pitch-decks?companyId=${myCompany.id}`).catch(() => null),
               fetch(`/api/data-room?companyId=${myCompany.id}`).catch(() => null),
+              fetch(`/api/cap-tables/${myCompany.id}`).catch(() => null),
+              fetch(`/api/cap-tables/${myCompany.id}/share`).catch(() => null),
             ]);
 
             if (verifyRes?.ok) setVerification(await verifyRes.json());
@@ -189,6 +223,23 @@ function DashboardContent() {
             if (fundingRes?.ok) { const d = await fundingRes.json(); setFundingAnnouncements(d.announcements || []); }
             if (pitchDecksRes?.ok) { const d = await pitchDecksRes.json(); setPitchDecks(d.pitchDecks || []); }
             if (dataRoomRes?.ok) { const d = await dataRoomRes.json(); setDataRoomDocs(d.documents || []); }
+            if (capTableRes?.ok) {
+              const d = await capTableRes.json();
+              if (d.capTable) {
+                setCapTable(d.capTable);
+                setCapTableForm({
+                  currentValuation: d.capTable.currentValuation != null ? String(d.capTable.currentValuation) : '',
+                  currency: d.capTable.currency || 'USD',
+                  sharesAuthorized: d.capTable.sharesAuthorized || '',
+                  sharesOutstanding: d.capTable.sharesOutstanding || '',
+                  asOfDate: d.capTable.asOfDate ? String(d.capTable.asOfDate).slice(0, 10) : '',
+                  visibility: d.capTable.visibility || 'invite_only',
+                  documentUrl: d.capTable.documentUrl || '',
+                  notes: d.capTable.notes || '',
+                });
+              }
+            }
+            if (capTableSharesRes?.ok) { const d = await capTableSharesRes.json(); setCapTableShares(d.shares || []); }
           }
         }
       } catch (err) {
@@ -620,6 +671,163 @@ function DashboardContent() {
     } catch { toast.error('Failed to update visibility.'); }
   };
 
+  // --- Cap Table Handlers ---
+  const handleCapTableSave = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!company) return;
+    setCapTableSaving(true);
+    try {
+      const payload: Record<string, unknown> = {
+        visibility: capTableForm.visibility,
+        currency: capTableForm.currency || 'USD',
+      };
+      if (capTableForm.currentValuation) {
+        const n = parseFloat(capTableForm.currentValuation);
+        if (!Number.isNaN(n)) payload.currentValuation = n;
+      }
+      if (capTableForm.sharesAuthorized) payload.sharesAuthorized = capTableForm.sharesAuthorized.trim();
+      if (capTableForm.sharesOutstanding) payload.sharesOutstanding = capTableForm.sharesOutstanding.trim();
+      if (capTableForm.asOfDate) payload.asOfDate = capTableForm.asOfDate;
+      if (capTableForm.documentUrl.trim()) payload.documentUrl = capTableForm.documentUrl.trim();
+      if (capTableForm.notes.trim()) payload.notes = capTableForm.notes.trim();
+
+      const res = await fetch(`/api/cap-tables/${company.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      if (res.ok) {
+        const result = await res.json();
+        setCapTable(result.capTable);
+        toast.success('Cap table saved.');
+      } else {
+        const err = await res.json().catch(() => ({}));
+        toast.error(err.error?.message || err.error || 'Failed to save cap table');
+      }
+    } catch (err) {
+      clientLogger.error('Cap table save error', { error: err instanceof Error ? err.message : String(err) });
+      toast.error('Failed to save cap table.');
+    } finally {
+      setCapTableSaving(false);
+    }
+  };
+
+  const handleCapTableEntrySubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!company) return;
+    if (!capTable) {
+      toast.error('Save the cap table first before adding entries.');
+      return;
+    }
+    setCapTableEntrySubmitting(true);
+    try {
+      const payload: Record<string, unknown> = {
+        holderName: capTableEntryForm.holderName.trim(),
+        holderType: capTableEntryForm.holderType,
+        shareClass: capTableEntryForm.shareClass,
+      };
+      if (capTableEntryForm.shareCount) payload.shareCount = capTableEntryForm.shareCount.trim();
+      if (capTableEntryForm.percentage) {
+        const n = parseFloat(capTableEntryForm.percentage);
+        if (!Number.isNaN(n)) payload.percentage = n;
+      }
+      if (capTableEntryForm.investmentAmount) {
+        const n = parseFloat(capTableEntryForm.investmentAmount);
+        if (!Number.isNaN(n)) payload.investmentAmount = n;
+      }
+      if (capTableEntryForm.roundLabel.trim()) payload.roundLabel = capTableEntryForm.roundLabel.trim();
+      if (capTableEntryForm.acquiredAt) payload.acquiredAt = capTableEntryForm.acquiredAt;
+      if (capTableEntryForm.notes.trim()) payload.notes = capTableEntryForm.notes.trim();
+
+      const res = await fetch(`/api/cap-tables/${company.id}/entries`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      if (res.ok) {
+        const result = await res.json();
+        setCapTable((prev: any) => prev ? { ...prev, entries: [...(prev.entries || []), result.entry] } : prev);
+        setCapTableEntryForm({
+          holderName: '', holderType: 'investor', shareClass: 'common',
+          shareCount: '', percentage: '', investmentAmount: '',
+          roundLabel: '', acquiredAt: '', notes: '',
+        });
+        toast.success('Entry added.');
+      } else {
+        const err = await res.json().catch(() => ({}));
+        toast.error(err.error?.message || err.error || 'Failed to add entry');
+      }
+    } catch (err) {
+      clientLogger.error('Cap table entry add error', { error: err instanceof Error ? err.message : String(err) });
+      toast.error('Failed to add entry.');
+    } finally {
+      setCapTableEntrySubmitting(false);
+    }
+  };
+
+  const handleCapTableEntryDelete = async (entryId: string) => {
+    if (!company) return;
+    try {
+      const res = await fetch(`/api/cap-tables/${company.id}/entries/${entryId}`, { method: 'DELETE' });
+      if (res.ok) {
+        setCapTable((prev: any) => prev ? { ...prev, entries: (prev.entries || []).filter((e: any) => e.id !== entryId) } : prev);
+        toast.success('Entry removed.');
+      } else toast.error('Failed to remove entry.');
+    } catch { toast.error('Failed to remove entry.'); }
+  };
+
+  const handleCapTableShareGrant = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!company) return;
+    if (!capTable) {
+      toast.error('Save the cap table first before granting access.');
+      return;
+    }
+    setCapTableShareSubmitting(true);
+    try {
+      const payload: Record<string, unknown> = {
+        grantedToEmail: capTableShareForm.grantedToEmail.trim(),
+      };
+      if (capTableShareForm.expiresAt) payload.expiresAt = capTableShareForm.expiresAt;
+
+      const res = await fetch(`/api/cap-tables/${company.id}/share`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      if (res.ok) {
+        const result = await res.json();
+        setCapTableShares(prev => {
+          const existing = prev.find(s => s.id === result.share.id);
+          return existing
+            ? prev.map(s => s.id === result.share.id ? result.share : s)
+            : [result.share, ...prev];
+        });
+        setCapTableShareForm({ grantedToEmail: '', expiresAt: '' });
+        toast.success('Access granted.');
+      } else {
+        const err = await res.json().catch(() => ({}));
+        toast.error(err.error?.message || err.error || 'Failed to grant access');
+      }
+    } catch (err) {
+      clientLogger.error('Cap table share grant error', { error: err instanceof Error ? err.message : String(err) });
+      toast.error('Failed to grant access.');
+    } finally {
+      setCapTableShareSubmitting(false);
+    }
+  };
+
+  const handleCapTableShareRevoke = async (shareId: string) => {
+    if (!company) return;
+    try {
+      const res = await fetch(`/api/cap-tables/${company.id}/share/${shareId}`, { method: 'DELETE' });
+      if (res.ok) {
+        setCapTableShares(prev => prev.filter(s => s.id !== shareId));
+        toast.success('Access revoked.');
+      } else toast.error('Failed to revoke access.');
+    } catch { toast.error('Failed to revoke access.'); }
+  };
+
   const tabs = [
     { key: 'overview', label: 'Overview' },
     { key: 'listings', label: `Listings (${listings.length})` },
@@ -635,6 +843,7 @@ function DashboardContent() {
     { key: 'funding', label: `Announce Round (${fundingAnnouncements.length})` },
     { key: 'pitch-deck', label: `Pitch Deck (${pitchDecks.length})` },
     { key: 'data-room', label: `Data Room (${dataRoomDocs.length})` },
+    { key: 'cap-table', label: `Cap Table${capTable ? ` (${(capTable.entries || []).length})` : ''}` },
     { key: 'analytics', label: 'Analytics' },
   ];
 
@@ -2160,6 +2369,371 @@ function DashboardContent() {
                 </div>
               )}
             </div>
+          </div>
+        )}
+
+        {/* ── Cap Table Tab ── */}
+        {tab === 'cap-table' && (
+          <div className="space-y-6">
+            {/* Cap table summary form */}
+            <div className="card p-5">
+              <div className="flex items-center justify-between flex-wrap gap-2 mb-4">
+                <h3 className="text-sm font-semibold text-white">Cap Table Summary</h3>
+                {capTable && (
+                  <Link
+                    href={`/cap-tables/${company.slug}`}
+                    target="_blank"
+                    className="text-xs text-slate-400 hover:text-white"
+                  >
+                    View public page →
+                  </Link>
+                )}
+              </div>
+              <form onSubmit={handleCapTableSave} className="space-y-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className={labelClass}>Current Valuation</label>
+                    <input
+                      type="number" min="0" step="any"
+                      value={capTableForm.currentValuation}
+                      onChange={e => setCapTableForm(p => ({ ...p, currentValuation: e.target.value }))}
+                      placeholder="e.g., 25000000"
+                      className={inputClass}
+                    />
+                  </div>
+                  <div>
+                    <label className={labelClass}>Currency</label>
+                    <input
+                      maxLength={3}
+                      value={capTableForm.currency}
+                      onChange={e => setCapTableForm(p => ({ ...p, currency: e.target.value.toUpperCase() }))}
+                      placeholder="USD"
+                      className={inputClass}
+                    />
+                  </div>
+                  <div>
+                    <label className={labelClass}>Shares Authorized</label>
+                    <input
+                      type="text" inputMode="numeric" pattern="\d*"
+                      value={capTableForm.sharesAuthorized}
+                      onChange={e => setCapTableForm(p => ({ ...p, sharesAuthorized: e.target.value.replace(/[^0-9]/g, '') }))}
+                      placeholder="e.g., 10000000"
+                      className={inputClass}
+                    />
+                  </div>
+                  <div>
+                    <label className={labelClass}>Shares Outstanding</label>
+                    <input
+                      type="text" inputMode="numeric" pattern="\d*"
+                      value={capTableForm.sharesOutstanding}
+                      onChange={e => setCapTableForm(p => ({ ...p, sharesOutstanding: e.target.value.replace(/[^0-9]/g, '') }))}
+                      placeholder="e.g., 8500000"
+                      className={inputClass}
+                    />
+                  </div>
+                  <div>
+                    <label className={labelClass}>As of Date</label>
+                    <input
+                      type="date"
+                      value={capTableForm.asOfDate}
+                      onChange={e => setCapTableForm(p => ({ ...p, asOfDate: e.target.value }))}
+                      className={inputClass}
+                    />
+                  </div>
+                  <div>
+                    <label className={labelClass}>Visibility</label>
+                    <select
+                      value={capTableForm.visibility}
+                      onChange={e => setCapTableForm(p => ({ ...p, visibility: e.target.value }))}
+                      className={inputClass}
+                    >
+                      <option value="public">Public — anyone</option>
+                      <option value="logged_in">Logged-in users only</option>
+                      <option value="invite_only">Invite only (granted investors)</option>
+                    </select>
+                  </div>
+                  <div className="sm:col-span-2">
+                    <label className={labelClass}>Carta / Source Document URL</label>
+                    <input
+                      type="url" maxLength={2000}
+                      value={capTableForm.documentUrl}
+                      onChange={e => setCapTableForm(p => ({ ...p, documentUrl: e.target.value }))}
+                      placeholder="https://app.carta.com/... (optional)"
+                      className={inputClass}
+                    />
+                    <p className="text-xs text-slate-500 mt-1">Paste a link to your Carta export or any source document.</p>
+                  </div>
+                  <div className="sm:col-span-2">
+                    <label className={labelClass}>Notes</label>
+                    <textarea
+                      rows={3} maxLength={5000}
+                      value={capTableForm.notes}
+                      onChange={e => setCapTableForm(p => ({ ...p, notes: e.target.value }))}
+                      placeholder="Optional context for viewers (assumptions, exclusions, etc.)"
+                      className={inputClass}
+                    />
+                  </div>
+                </div>
+                <button
+                  type="submit"
+                  disabled={capTableSaving}
+                  className="px-5 py-2 bg-white hover:bg-slate-100 disabled:bg-white/[0.08] disabled:text-slate-500 text-slate-900 rounded-lg text-sm font-semibold transition-colors"
+                >
+                  {capTableSaving ? 'Saving...' : capTable ? 'Update Cap Table' : 'Create Cap Table'}
+                </button>
+              </form>
+            </div>
+
+            {/* Add entry form */}
+            {capTable && (
+              <div className="card p-5">
+                <h3 className="text-sm font-semibold text-white mb-4">Add Entry</h3>
+                <form onSubmit={handleCapTableEntrySubmit} className="space-y-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className={labelClass}>Holder Name *</label>
+                      <input
+                        required maxLength={200}
+                        value={capTableEntryForm.holderName}
+                        onChange={e => setCapTableEntryForm(p => ({ ...p, holderName: e.target.value }))}
+                        placeholder="e.g., Jane Doe / Acme Ventures"
+                        className={inputClass}
+                      />
+                    </div>
+                    <div>
+                      <label className={labelClass}>Holder Type</label>
+                      <select
+                        value={capTableEntryForm.holderType}
+                        onChange={e => setCapTableEntryForm(p => ({ ...p, holderType: e.target.value }))}
+                        className={inputClass}
+                      >
+                        <option value="founder">Founder</option>
+                        <option value="employee">Employee</option>
+                        <option value="investor">Investor</option>
+                        <option value="other">Other</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className={labelClass}>Share Class</label>
+                      <select
+                        value={capTableEntryForm.shareClass}
+                        onChange={e => setCapTableEntryForm(p => ({ ...p, shareClass: e.target.value }))}
+                        className={inputClass}
+                      >
+                        <option value="common">Common</option>
+                        <option value="preferred_a">Preferred A</option>
+                        <option value="preferred_b">Preferred B</option>
+                        <option value="preferred_c">Preferred C</option>
+                        <option value="convertible">Convertible</option>
+                        <option value="safe">SAFE</option>
+                        <option value="option_pool">Option Pool</option>
+                        <option value="other">Other</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className={labelClass}>Round Label</label>
+                      <input
+                        maxLength={100}
+                        value={capTableEntryForm.roundLabel}
+                        onChange={e => setCapTableEntryForm(p => ({ ...p, roundLabel: e.target.value }))}
+                        placeholder="e.g., seed, series_a"
+                        className={inputClass}
+                      />
+                    </div>
+                    <div>
+                      <label className={labelClass}>Share Count</label>
+                      <input
+                        type="text" inputMode="numeric" pattern="\d*"
+                        value={capTableEntryForm.shareCount}
+                        onChange={e => setCapTableEntryForm(p => ({ ...p, shareCount: e.target.value.replace(/[^0-9]/g, '') }))}
+                        placeholder="e.g., 1000000"
+                        className={inputClass}
+                      />
+                      <p className="text-xs text-slate-500 mt-1">Percentage auto-calculates if shares outstanding is set.</p>
+                    </div>
+                    <div>
+                      <label className={labelClass}>Percentage (manual override)</label>
+                      <input
+                        type="number" min="0" max="100" step="0.0001"
+                        value={capTableEntryForm.percentage}
+                        onChange={e => setCapTableEntryForm(p => ({ ...p, percentage: e.target.value }))}
+                        placeholder="e.g., 12.5"
+                        className={inputClass}
+                      />
+                    </div>
+                    <div>
+                      <label className={labelClass}>Investment Amount</label>
+                      <input
+                        type="number" min="0" step="any"
+                        value={capTableEntryForm.investmentAmount}
+                        onChange={e => setCapTableEntryForm(p => ({ ...p, investmentAmount: e.target.value }))}
+                        placeholder="e.g., 500000"
+                        className={inputClass}
+                      />
+                    </div>
+                    <div>
+                      <label className={labelClass}>Acquired Date</label>
+                      <input
+                        type="date"
+                        value={capTableEntryForm.acquiredAt}
+                        onChange={e => setCapTableEntryForm(p => ({ ...p, acquiredAt: e.target.value }))}
+                        className={inputClass}
+                      />
+                    </div>
+                    <div className="sm:col-span-2">
+                      <label className={labelClass}>Notes</label>
+                      <input
+                        maxLength={2000}
+                        value={capTableEntryForm.notes}
+                        onChange={e => setCapTableEntryForm(p => ({ ...p, notes: e.target.value }))}
+                        placeholder="Optional notes about this entry"
+                        className={inputClass}
+                      />
+                    </div>
+                  </div>
+                  <button
+                    type="submit"
+                    disabled={capTableEntrySubmitting || !capTableEntryForm.holderName.trim()}
+                    className="px-5 py-2 bg-white hover:bg-slate-100 disabled:bg-white/[0.08] disabled:text-slate-500 text-slate-900 rounded-lg text-sm font-semibold transition-colors"
+                  >
+                    {capTableEntrySubmitting ? 'Adding...' : 'Add Entry'}
+                  </button>
+                </form>
+              </div>
+            )}
+
+            {/* Entries table */}
+            {capTable && (
+              <div className="card p-0 overflow-hidden">
+                <div className="px-5 py-3 border-b border-white/[0.08]">
+                  <h3 className="text-sm font-semibold text-white">
+                    Entries ({(capTable.entries || []).length})
+                  </h3>
+                </div>
+                {(capTable.entries || []).length === 0 ? (
+                  <div className="text-center py-12">
+                    <div className="text-4xl mb-3">📋</div>
+                    <p className="text-sm text-slate-400">No entries yet. Add founders, employees, and investors above.</p>
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead className="bg-white/[0.04] text-left text-xs text-slate-400 uppercase">
+                        <tr>
+                          <th className="px-4 py-3">Holder</th>
+                          <th className="px-4 py-3">Type</th>
+                          <th className="px-4 py-3">Class</th>
+                          <th className="px-4 py-3 text-right">Shares</th>
+                          <th className="px-4 py-3 text-right">%</th>
+                          <th className="px-4 py-3 text-right">$</th>
+                          <th className="px-4 py-3">Round</th>
+                          <th className="px-4 py-3"></th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-white/[0.06]">
+                        {(capTable.entries || []).map((e: any) => (
+                          <tr key={e.id} className="hover:bg-white/[0.03]">
+                            <td className="px-4 py-3 text-white">{e.holderName}</td>
+                            <td className="px-4 py-3 text-slate-300 capitalize">{e.holderType}</td>
+                            <td className="px-4 py-3 text-slate-300">{String(e.shareClass).replace(/_/g, ' ')}</td>
+                            <td className="px-4 py-3 text-right font-mono text-slate-300">
+                              {e.shareCount ? Number(e.shareCount).toLocaleString() : '—'}
+                            </td>
+                            <td className="px-4 py-3 text-right text-slate-300">
+                              {e.percentage != null ? `${Number(e.percentage).toFixed(2)}%` : '—'}
+                            </td>
+                            <td className="px-4 py-3 text-right text-slate-300">
+                              {e.investmentAmount != null
+                                ? `${capTable.currency || 'USD'} ${Number(e.investmentAmount).toLocaleString()}`
+                                : '—'}
+                            </td>
+                            <td className="px-4 py-3 text-slate-400">
+                              {e.roundLabel ? e.roundLabel.replace(/_/g, ' ') : '—'}
+                            </td>
+                            <td className="px-4 py-3 text-right">
+                              <button
+                                onClick={() => handleCapTableEntryDelete(e.id)}
+                                className="px-2 py-1 text-xs bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded transition-colors"
+                              >
+                                Delete
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Share access management */}
+            {capTable && (
+              <div className="card p-5">
+                <h3 className="text-sm font-semibold text-white mb-1">Investor Access</h3>
+                <p className="text-xs text-slate-500 mb-4">
+                  Grant specific SpaceNexus users read access when the cap table is set to invite-only.
+                </p>
+                <form onSubmit={handleCapTableShareGrant} className="flex items-end gap-2 flex-wrap mb-5">
+                  <div className="flex-1 min-w-[220px]">
+                    <label className={labelClass}>Investor email</label>
+                    <input
+                      type="email" required maxLength={255}
+                      value={capTableShareForm.grantedToEmail}
+                      onChange={e => setCapTableShareForm(p => ({ ...p, grantedToEmail: e.target.value }))}
+                      placeholder="investor@example.com"
+                      className={inputClass}
+                    />
+                  </div>
+                  <div className="w-44">
+                    <label className={labelClass}>Expires (optional)</label>
+                    <input
+                      type="date"
+                      value={capTableShareForm.expiresAt}
+                      onChange={e => setCapTableShareForm(p => ({ ...p, expiresAt: e.target.value }))}
+                      className={inputClass}
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    disabled={capTableShareSubmitting || !capTableShareForm.grantedToEmail}
+                    className="px-4 py-2 bg-white hover:bg-slate-100 disabled:bg-white/[0.08] disabled:text-slate-500 text-slate-900 rounded-lg text-sm font-semibold transition-colors"
+                  >
+                    {capTableShareSubmitting ? 'Granting...' : 'Grant Access'}
+                  </button>
+                </form>
+
+                {capTableShares.length > 0 ? (
+                  <div className="space-y-2">
+                    {capTableShares.map((s: any) => (
+                      <div
+                        key={s.id}
+                        className="flex items-center justify-between gap-3 p-3 bg-white/[0.04] rounded-lg"
+                      >
+                        <div className="min-w-0">
+                          <div className="text-sm text-white truncate">{s.grantedToEmail || s.grantedToUserId}</div>
+                          <div className="text-xs text-slate-500">
+                            {s.grantedToName ? `${s.grantedToName} · ` : ''}
+                            Granted {s.createdAt ? new Date(s.createdAt).toLocaleDateString() : ''}
+                            {s.expiresAt ? ` · Expires ${new Date(s.expiresAt).toLocaleDateString()}` : ''}
+                          </div>
+                        </div>
+                        <button
+                          onClick={() => handleCapTableShareRevoke(s.id)}
+                          className="px-3 py-1.5 text-xs bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-lg transition-colors shrink-0"
+                        >
+                          Revoke
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-xs text-slate-500 text-center py-4">
+                    No investors have been granted access yet.
+                  </p>
+                )}
+              </div>
+            )}
           </div>
         )}
       </div>

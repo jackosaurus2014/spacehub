@@ -8,17 +8,33 @@ import {
   validationError,
   createSuccessResponse,
 } from '@/lib/errors';
-import { validateBody, generalSavedSearchSchema } from '@/lib/validations';
+import {
+  validateBody,
+  generalSavedSearchSchema,
+  createSavedSearchSchema,
+  GLOBAL_SEARCH_TYPES,
+  SAVED_SEARCH_NOTIFY_CHANNELS,
+  type GlobalSearchType,
+  type SavedSearchNotifyChannel,
+} from '@/lib/validations';
 
 export const dynamic = 'force-dynamic';
 
+/**
+ * Tier limits for saved searches. Free tier is intentionally low (3) — Pro and
+ * Enterprise are unlimited. The legacy company-directory / marketplace saved
+ * searches share this same pool because they live in the same Prisma model.
+ */
 function getSavedSearchLimit(tier: string | null | undefined): number {
-  if (tier === 'enterprise') return Infinity;
-  if (tier === 'pro') return 20;
-  return 5; // free
+  if (tier === 'enterprise' || tier === 'pro') return Infinity;
+  return 3; // free
 }
 
-function getEffectiveTier(user: { subscriptionTier: string | null; trialTier: string | null; trialEndDate: Date | null }): string {
+function getEffectiveTier(user: {
+  subscriptionTier: string | null;
+  trialTier: string | null;
+  trialEndDate: Date | null;
+}): string {
   if (user.subscriptionTier === 'enterprise' || user.subscriptionTier === 'pro') {
     return user.subscriptionTier;
   }
@@ -26,6 +42,35 @@ function getEffectiveTier(user: { subscriptionTier: string | null; trialTier: st
     return user.trialTier;
   }
   return user.subscriptionTier || 'free';
+}
+
+/**
+ * Read the global-search-flavoured fields out of `SavedSearch.filters` (Json).
+ * The DB has no `notifyVia` / `lastRunAt` / `lastResultIds` columns, so we
+ * stash everything in the existing `filters` blob.
+ */
+function readSearchMeta(filters: unknown): {
+  type: GlobalSearchType;
+  notifyVia: SavedSearchNotifyChannel;
+  lastRunAt: string | null;
+  lastResultIds: string[];
+  lastResultCount: number;
+} {
+  const blob = (filters && typeof filters === 'object' ? (filters as Record<string, unknown>) : {});
+  const rawType = typeof blob.type === 'string' ? blob.type : 'all';
+  const type = (GLOBAL_SEARCH_TYPES as readonly string[]).includes(rawType)
+    ? (rawType as GlobalSearchType)
+    : 'all';
+  const rawNotify = typeof blob.notifyVia === 'string' ? blob.notifyVia : 'notification';
+  const notifyVia = (SAVED_SEARCH_NOTIFY_CHANNELS as readonly string[]).includes(rawNotify)
+    ? (rawNotify as SavedSearchNotifyChannel)
+    : 'notification';
+  const lastRunAt = typeof blob.lastRunAt === 'string' ? blob.lastRunAt : null;
+  const lastResultIds = Array.isArray(blob.lastResultIds)
+    ? blob.lastResultIds.filter((v): v is string => typeof v === 'string')
+    : [];
+  const lastResultCount = typeof blob.lastResultCount === 'number' ? blob.lastResultCount : 0;
+  return { type, notifyVia, lastRunAt, lastResultIds, lastResultCount };
 }
 
 export async function GET(request: Request) {
@@ -48,7 +93,9 @@ export async function GET(request: Request) {
       select: { subscriptionTier: true, trialTier: true, trialEndDate: true },
     });
 
-    const tier = getEffectiveTier(user || { subscriptionTier: null, trialTier: null, trialEndDate: null });
+    const tier = getEffectiveTier(
+      user || { subscriptionTier: null, trialTier: null, trialEndDate: null }
+    );
     const limit = getSavedSearchLimit(tier);
 
     const savedSearches = await prisma.savedSearch.findMany({
@@ -56,8 +103,27 @@ export async function GET(request: Request) {
       orderBy: { updatedAt: 'desc' },
     });
 
+    // Decorate each row with the meta we hide in `filters`
+    const decorated = savedSearches.map((s) => {
+      const meta = readSearchMeta(s.filters);
+      return {
+        id: s.id,
+        userId: s.userId,
+        name: s.name,
+        query: s.query,
+        searchType: s.searchType,
+        type: meta.type,
+        notifyVia: meta.notifyVia,
+        alertEnabled: s.alertEnabled,
+        lastRunAt: meta.lastRunAt,
+        lastResultCount: meta.lastResultCount,
+        createdAt: s.createdAt,
+        updatedAt: s.updatedAt,
+      };
+    });
+
     return createSuccessResponse({
-      savedSearches,
+      savedSearches: decorated,
       count: savedSearches.length,
       limit: limit === Infinity ? null : limit,
       tier,
@@ -82,21 +148,87 @@ export async function POST(request: Request) {
       select: { subscriptionTier: true, trialTier: true, trialEndDate: true },
     });
 
-    const tier = getEffectiveTier(user || { subscriptionTier: null, trialTier: null, trialEndDate: null });
+    const tier = getEffectiveTier(
+      user || { subscriptionTier: null, trialTier: null, trialEndDate: null }
+    );
     const limit = getSavedSearchLimit(tier);
 
-    // Check count limit
+    // Enforce shared per-user cap across all SavedSearch rows
     const currentCount = await prisma.savedSearch.count({
       where: { userId: session.user.id },
     });
 
     if (currentCount >= limit) {
       return validationError(
-        `You've reached the maximum of ${limit} saved searches for the ${tier} tier. Upgrade to save more.`
+        `You've reached the maximum of ${limit} saved searches on the ${tier} tier. Upgrade to Pro for unlimited saved searches.`
       );
     }
 
-    const body = await request.json();
+    const body = (await request.json()) as Record<string, unknown>;
+
+    // Two creation flavours coexist:
+    //  1. Global /search dashboard payload: { name, query, type, notifyVia }
+    //  2. Legacy module payload: { name, searchType, filters, query, alertEnabled }
+    const isGlobalPayload =
+      typeof body.type === 'string' && (typeof body.searchType !== 'string' || body.searchType === 'global_search');
+
+    if (isGlobalPayload) {
+      const validation = validateBody(createSavedSearchSchema, body);
+      if (!validation.success) {
+        return validationError('Invalid search data', validation.errors);
+      }
+
+      const { name, query, type, notifyVia } = validation.data;
+
+      const filters = {
+        type,
+        notifyVia,
+        lastRunAt: null,
+        lastResultIds: [] as string[],
+        lastResultCount: 0,
+      };
+
+      const savedSearch = await prisma.savedSearch.create({
+        data: {
+          userId: session.user.id,
+          name,
+          searchType: 'global_search',
+          query,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          filters: filters as any,
+          alertEnabled: notifyVia !== 'notification' ? true : true, // smart alerts always on for global searches
+        },
+      });
+
+      logger.info('Saved global search created', {
+        userId: session.user.id,
+        searchId: savedSearch.id,
+        type,
+        notifyVia,
+      });
+
+      return createSuccessResponse(
+        {
+          savedSearch: {
+            id: savedSearch.id,
+            userId: savedSearch.userId,
+            name: savedSearch.name,
+            query: savedSearch.query,
+            searchType: savedSearch.searchType,
+            type,
+            notifyVia,
+            alertEnabled: savedSearch.alertEnabled,
+            lastRunAt: null,
+            lastResultCount: 0,
+            createdAt: savedSearch.createdAt,
+            updatedAt: savedSearch.updatedAt,
+          },
+        },
+        201
+      );
+    }
+
+    // Legacy module payload
     const validation = validateBody(generalSavedSearchSchema, body);
     if (!validation.success) {
       return validationError('Invalid search data', validation.errors);
@@ -107,6 +239,7 @@ export async function POST(request: Request) {
         userId: session.user.id,
         name: validation.data.name,
         searchType: validation.data.searchType,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         filters: validation.data.filters as any,
         query: validation.data.query,
         alertEnabled: validation.data.alertEnabled,

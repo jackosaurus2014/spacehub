@@ -139,6 +139,7 @@ model User {
   verificationNote      String? // user-supplied justification for review
   speakingOpportunities SpeakingOpportunity[]  @relation("SubmittedSpeakingOps")
   companyAnnouncements  CompanyAnnouncement[]  @relation("AnnouncementAuthor")
+  eventRsvps            EventRSVP[]            @relation("UserEventRSVPs")
 }
 
 // ─── Space Tycoon: Multiplayer Game Models ──────────────────────────────────
@@ -5723,4 +5724,348 @@ model CompanyAnnouncement {
   @@index([companyId])
   @@index([createdAt])
   @@index([category])
+}
+
+// ─── Wave 2: Mission Photo Gallery ──────────────────────────────────────────
+
+model MissionPhoto {
+  id            String   @id @default(cuid())
+  missionName   String
+  missionSlug   String?
+  eventId       String? // optional link to SpaceEvent
+  companyId     String? // optional company association
+  title         String
+  description   String?  @db.Text
+  photoUrl      String
+  thumbnailUrl  String?
+  credit        String? // photographer / agency / source
+  creditUrl     String?
+  takenAt       DateTime?
+  tags          String[]
+  category      String? // launch | on_orbit | landing | test | infrastructure | crew
+  featured      Boolean  @default(false)
+  uploadedById  String?
+  approved      Boolean  @default(true) // admin moderation
+  views         Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([missionSlug])
+  @@index([eventId])
+  @@index([companyId])
+  @@index([featured])
+  @@index([category])
+  @@index([takenAt])
+}
+
+// ─── Wave 2: Event RSVP + Ticketing ─────────────────────────────────────────
+
+model EventRSVP {
+  id          String   @id @default(cuid())
+  eventId     String
+  userId      String
+  user        User     @relation("UserEventRSVPs", fields: [userId], references: [id], onDelete: Cascade)
+  status      String   @default("going") // going | maybe | not_going | waitlist
+  ticketTier  String? // free | paid | vip
+  stripeSessionId String?
+  paid        Boolean  @default(false)
+  amount      Float?
+  currency    String?  @default("USD")
+  notes       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([eventId, userId])
+  @@index([eventId])
+  @@index([userId])
+  @@index([status])
+}
+
+// ─── Wave 2: Mentor Marketplace ─────────────────────────────────────────────
+
+model MentorProfile {
+  id              String   @id @default(cuid())
+  userId          String   @unique
+  headline        String
+  bio             String   @db.Text
+  expertiseAreas  String[] // e.g. ["propulsion", "regulatory", "fundraising"]
+  yearsExperience Int?
+  hourlyRate      Float?
+  currency        String?  @default("USD")
+  availability    String? // weekly | monthly | project
+  remoteOnly      Boolean  @default(true)
+  acceptingMentees Boolean @default(true)
+  pastCompanies   String[]
+  linkedinUrl     String?
+  endorsementCount Int     @default(0)
+  rating          Float?
+  ratingCount     Int     @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  matches  MentorMatch[]
+
+  @@index([userId])
+  @@index([acceptingMentees])
+  @@index([hourlyRate])
+}
+
+model MentorMatch {
+  id           String        @id @default(cuid())
+  mentorId     String
+  mentor       MentorProfile @relation(fields: [mentorId], references: [id], onDelete: Cascade)
+  menteeUserId String
+  message      String        @db.Text
+  status       String        @default("pending") // pending | accepted | declined | completed
+  respondedAt  DateTime?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  @@index([mentorId])
+  @@index([menteeUserId])
+  @@index([status])
+}
+
+model SkillEndorsement {
+  id            String   @id @default(cuid())
+  endorserId    String // user doing the endorsing
+  endorseeId    String // user being endorsed
+  skill         String
+  note          String?
+  createdAt     DateTime @default(now())
+
+  @@unique([endorserId, endorseeId, skill])
+  @@index([endorseeId])
+  @@index([skill])
+}
+
+// ─── Wave 2: Credentials ────────────────────────────────────────────────────
+
+model UserCredential {
+  id               String   @id @default(cuid())
+  userId           String
+  credentialType   String // degree | certification | clearance | license | patent
+  title            String
+  issuingOrg       String
+  issuedAt         DateTime?
+  expiresAt        DateTime?
+  credentialId     String? // license number, diploma id, etc.
+  verificationUrl  String?
+  supportingDocUrl String? // attached evidence
+  status           String   @default("self_reported") // self_reported | pending | verified | rejected
+  verifiedAt       DateTime?
+  verifierId       String? // admin who verified
+  rejectionReason  String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([userId])
+  @@index([status])
+  @@index([credentialType])
+}
+
+// ─── Wave 2: Cap Table Transparency ─────────────────────────────────────────
+
+model CapTable {
+  id                 String   @id @default(cuid())
+  companyId          String   @unique
+  currentValuation   Float?
+  currency           String?  @default("USD")
+  sharesAuthorized   BigInt?
+  sharesOutstanding  BigInt?
+  asOfDate           DateTime?
+  visibility         String   @default("invite_only") // public | logged_in | invite_only
+  uploadedByUserId   String?
+  documentUrl        String? // optional supporting doc (e.g. Carta export)
+  notes              String?  @db.Text
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  entries CapTableEntry[]
+  shares  CapTableShare[]
+
+  @@index([visibility])
+}
+
+model CapTableEntry {
+  id           String   @id @default(cuid())
+  capTableId   String
+  capTable     CapTable @relation(fields: [capTableId], references: [id], onDelete: Cascade)
+  holderName   String
+  holderType   String // founder | employee | investor | other
+  shareClass   String // common | preferred_a | preferred_b | convertible | safe | option_pool
+  shareCount   BigInt?
+  percentage   Float?
+  investmentAmount Float?
+  roundLabel   String? // seed | series_a | etc.
+  acquiredAt   DateTime?
+  notes        String?
+  createdAt    DateTime @default(now())
+
+  @@index([capTableId])
+  @@index([holderType])
+  @@index([shareClass])
+}
+
+model CapTableShare {
+  id           String   @id @default(cuid())
+  capTableId   String
+  capTable     CapTable @relation(fields: [capTableId], references: [id], onDelete: Cascade)
+  grantedToUserId String // user who now has read access
+  grantedByUserId String
+  expiresAt    DateTime?
+  createdAt    DateTime @default(now())
+
+  @@unique([capTableId, grantedToUserId])
+  @@index([grantedToUserId])
+}
+
+// ─── Wave 2: Corporate Messaging + Teams ────────────────────────────────────
+
+model CorporateChannel {
+  id          String   @id @default(cuid())
+  companyId   String
+  name        String
+  description String?
+  channelType String   @default("announcement") // announcement | discussion | project
+  visibility  String   @default("members") // public | members | invite_only
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  memberships ChannelMembership[]
+  messages    ChannelMessage[]
+
+  @@index([companyId])
+  @@index([channelType])
+}
+
+model ChannelMembership {
+  id         String          @id @default(cuid())
+  channelId  String
+  channel    CorporateChannel @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  userId     String
+  role       String          @default("member") // owner | admin | member | readonly
+  joinedAt   DateTime        @default(now())
+  mutedUntil DateTime?
+
+  @@unique([channelId, userId])
+  @@index([userId])
+}
+
+model ChannelMessage {
+  id         String          @id @default(cuid())
+  channelId  String
+  channel    CorporateChannel @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  authorId   String
+  body       String          @db.Text
+  parentMessageId String? // threading
+  pinned     Boolean         @default(false)
+  editedAt   DateTime?
+  createdAt  DateTime        @default(now())
+
+  @@index([channelId])
+  @@index([authorId])
+  @@index([createdAt])
+}
+
+model TeamProject {
+  id          String   @id @default(cuid())
+  companyId   String
+  name        String
+  description String?  @db.Text
+  ownerId     String
+  status      String   @default("active") // active | paused | completed | archived
+  dueDate     DateTime?
+  memberUserIds String[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([companyId])
+  @@index([ownerId])
+  @@index([status])
+}
+
+// ─── Wave 2: Podcast Directory + Transcripts ────────────────────────────────
+
+model Podcast {
+  id           String   @id @default(cuid())
+  slug         String   @unique
+  name         String
+  description  String?  @db.Text
+  feedUrl      String?
+  websiteUrl   String?
+  artworkUrl   String?
+  author       String?
+  category     String?
+  language     String?  @default("en")
+  episodeCount Int      @default(0)
+  lastFetchedAt DateTime?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  episodes PodcastEpisode[]
+
+  @@index([slug])
+  @@index([category])
+}
+
+model PodcastEpisode {
+  id          String   @id @default(cuid())
+  podcastId   String
+  podcast     Podcast  @relation(fields: [podcastId], references: [id], onDelete: Cascade)
+  slug        String
+  title       String
+  description String?  @db.Text
+  audioUrl    String?
+  durationSec Int?
+  publishedAt DateTime?
+  episodeNumber Int?
+  seasonNumber Int?
+  transcript  PodcastTranscript?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([podcastId, slug])
+  @@index([podcastId])
+  @@index([publishedAt])
+}
+
+model PodcastTranscript {
+  id         String   @id @default(cuid())
+  episodeId  String   @unique
+  episode    PodcastEpisode @relation(fields: [episodeId], references: [id], onDelete: Cascade)
+  body       String   @db.Text
+  language   String   @default("en")
+  generatedBy String? // "whisper" | "manual" | "host"
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([episodeId])
+}
+
+// ─── Wave 2: Mission Debrief ────────────────────────────────────────────────
+
+model MissionDebrief {
+  id             String   @id @default(cuid())
+  slug           String   @unique
+  eventId        String? // link to SpaceEvent
+  missionName    String
+  missionDate    DateTime
+  status         String // success | partial | failure | scrubbed
+  executiveSummary String @db.Text
+  timeline       Json? // array of { t, label, note }
+  costsEstimate  Float?
+  currency       String?  @default("USD")
+  companyIds     String[] // involved companies (scalar array)
+  keyTakeaways   String[]
+  sources        Json? // array of { url, title }
+  fullAnalysis   String   @db.Text // AI-generated long-form
+  generatedBy    String?  @default("claude") // claude | manual | mixed
+  publishedAt    DateTime?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([slug])
+  @@index([missionDate])
+  @@index([status])
 }

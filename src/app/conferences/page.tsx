@@ -8,6 +8,7 @@ import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/Scr
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
 import EmptyState from '@/components/ui/EmptyState';
+import RSVPButton from '@/components/events/RSVPButton';
 
 // ────────────────────────────────────────
 // Types
@@ -1165,7 +1166,7 @@ function EventCard({ event }: { event: ConferenceEvent }) {
 
       {/* Topics */}
       <div className="mt-auto pt-3 border-t border-white/[0.04]">
-        <div className="flex flex-wrap gap-1.5">
+        <div className="flex flex-wrap gap-1.5 mb-3">
           {event.topics.slice(0, expanded ? event.topics.length : 3).map((topic) => (
             <span
               key={topic}
@@ -1180,6 +1181,11 @@ function EventCard({ event }: { event: ConferenceEvent }) {
             </span>
           )}
         </div>
+        <RSVPButton
+          eventId={event.id}
+          eventName={event.name}
+          eventDate={event.dates}
+        />
       </div>
     </div>
   );
@@ -1238,7 +1244,7 @@ function CalendarEventCard({ event }: { event: ConferenceEvent }) {
             </>
           )}
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             <div className="flex flex-wrap gap-1.5">
               {event.topics.slice(0, expanded ? event.topics.length : 3).map((topic) => (
                 <span
@@ -1249,6 +1255,11 @@ function CalendarEventCard({ event }: { event: ConferenceEvent }) {
                 </span>
               ))}
             </div>
+            <RSVPButton
+              eventId={event.id}
+              eventName={event.name}
+              eventDate={event.dates}
+            />
             <button
               onClick={() => setExpanded(!expanded)}
               className="ml-auto text-xs text-purple-400 hover:text-purple-300 flex-shrink-0 transition-colors"

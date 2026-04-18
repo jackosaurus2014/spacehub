@@ -8,7 +8,7 @@ import { logger } from '@/lib/logger';
  */
 export interface SearchResult {
   id: string;
-  type: 'news' | 'company' | 'job' | 'investor' | 'marketplace' | 'forum' | 'blog';
+  type: 'news' | 'company' | 'job' | 'investor' | 'marketplace' | 'forum' | 'blog' | 'podcast';
   title: string;
   snippet: string;
   url: string;
@@ -548,6 +548,75 @@ export async function searchForumThreads(query: string, limit = 10): Promise<Sea
     }));
   } catch (error) {
     logger.error('searchForumThreads failed', { error: error instanceof Error ? error.message : String(error) });
+    return [];
+  }
+}
+
+export async function searchPodcastEpisodes(query: string, limit = 10): Promise<SearchResult[]> {
+  const q = query.trim();
+  if (q.length < 2) return [];
+  const take = clampLimit(limit);
+
+  try {
+    // Fetch episodes whose title/description matches OR whose transcript body matches
+    const rows = await prisma.podcastEpisode.findMany({
+      where: {
+        OR: [
+          { title: ci(q) },
+          { description: ci(q) },
+          { transcript: { body: ci(q) } },
+        ],
+      },
+      select: {
+        id: true,
+        slug: true,
+        title: true,
+        description: true,
+        publishedAt: true,
+        durationSec: true,
+        episodeNumber: true,
+        seasonNumber: true,
+        podcast: { select: { slug: true, name: true, artworkUrl: true } },
+        transcript: { select: { body: true } },
+      },
+      orderBy: { publishedAt: 'desc' },
+      take,
+    });
+
+    return rows.map(r => {
+      // Prefer transcript snippet if it contains the term, else description
+      const lowered = q.toLowerCase();
+      let snippet = '';
+      const tBody = r.transcript?.body || '';
+      const tIdx = tBody.toLowerCase().indexOf(lowered);
+      if (tBody && tIdx >= 0) {
+        const start = Math.max(0, tIdx - 80);
+        const end = Math.min(tBody.length, tIdx + lowered.length + 140);
+        snippet = (start > 0 ? '…' : '') + tBody.slice(start, end) + (end < tBody.length ? '…' : '');
+      } else {
+        snippet = truncate(r.description);
+      }
+
+      return {
+        id: r.id,
+        type: 'podcast' as const,
+        title: r.title,
+        snippet,
+        url: `/podcasts/${r.podcast.slug}/${r.slug}`,
+        metadata: {
+          podcastName: r.podcast.name,
+          podcastSlug: r.podcast.slug,
+          artworkUrl: r.podcast.artworkUrl,
+          durationSec: r.durationSec,
+          episodeNumber: r.episodeNumber,
+          seasonNumber: r.seasonNumber,
+          hasTranscript: Boolean(r.transcript?.body),
+        },
+        createdAt: r.publishedAt ?? undefined,
+      };
+    });
+  } catch (error) {
+    logger.error('searchPodcastEpisodes failed', { error: error instanceof Error ? error.message : String(error) });
     return [];
   }
 }

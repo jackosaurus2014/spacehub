@@ -10,6 +10,7 @@ import {
   searchMarketplaceListings,
   searchForumThreads,
   searchBlogPosts,
+  searchPodcastEpisodes,
   SearchResult,
 } from '@/lib/full-text-search';
 import { GLOBAL_SEARCH_TYPES, GlobalSearchType } from '@/lib/validations';
@@ -27,6 +28,7 @@ type ResultsByType = {
   marketplace: SearchResult[];
   forum: SearchResult[];
   blog: SearchResult[];
+  podcast: SearchResult[];
 };
 
 type EntityKey = keyof ResultsByType;
@@ -39,6 +41,7 @@ const EMPTY_RESULTS: ResultsByType = {
   marketplace: [],
   forum: [],
   blog: [],
+  podcast: [],
 };
 
 function clampLimit(raw: string | null, fallback = 10): number {
@@ -105,7 +108,7 @@ export async function GET(req: NextRequest) {
       return [key, rows];
     };
 
-    const [news, companies, jobs, investors, marketplace, forum, blog] = await Promise.all([
+    const [news, companies, jobs, investors, marketplace, forum, blog, podcast] = await Promise.all([
       run('news', 'news', () => searchNewsArticles(rawQuery, perTypeLimit)),
       run('companies', 'companies', () => searchCompanies(rawQuery, perTypeLimit)),
       run('jobs', 'jobs', () => searchJobs(rawQuery, perTypeLimit)),
@@ -113,6 +116,7 @@ export async function GET(req: NextRequest) {
       run('marketplace', 'marketplace', () => searchMarketplaceListings(rawQuery, perTypeLimit)),
       run('forum', 'forum', () => searchForumThreads(rawQuery, perTypeLimit)),
       run('blog', 'blog', () => searchBlogPosts(rawQuery, perTypeLimit)),
+      run('podcast', 'podcast', () => searchPodcastEpisodes(rawQuery, perTypeLimit)),
     ]);
 
     const results: ResultsByType = {
@@ -124,6 +128,7 @@ export async function GET(req: NextRequest) {
       [marketplace[0]]: marketplace[1],
       [forum[0]]: forum[1],
       [blog[0]]: blog[1],
+      [podcast[0]]: podcast[1],
     };
 
     const totals = {
@@ -134,6 +139,7 @@ export async function GET(req: NextRequest) {
       marketplace: results.marketplace.length,
       forum: results.forum.length,
       blog: results.blog.length,
+      podcast: results.podcast.length,
       all:
         results.news.length +
         results.companies.length +
@@ -141,7 +147,8 @@ export async function GET(req: NextRequest) {
         results.investors.length +
         results.marketplace.length +
         results.forum.length +
-        results.blog.length,
+        results.blog.length +
+        results.podcast.length,
     };
 
     return buildETagResponse(req, {
