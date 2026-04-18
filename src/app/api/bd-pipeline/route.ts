@@ -67,6 +67,16 @@ const createBDOpportunitySchema = z.object({
   proposalDeadline: z.string().datetime().optional().nullable(),
 });
 
+function getEffectiveTier(user: { subscriptionTier: string | null; trialTier: string | null; trialEndDate: Date | null }): string {
+  if (user.subscriptionTier === 'enterprise' || user.subscriptionTier === 'pro') {
+    return user.subscriptionTier;
+  }
+  if (user.trialTier && user.trialEndDate && user.trialEndDate > new Date()) {
+    return user.trialTier;
+  }
+  return user.subscriptionTier || 'free';
+}
+
 export async function GET(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
@@ -85,7 +95,7 @@ export async function GET(req: NextRequest) {
 
     const user = await prisma.user.findUnique({
       where: { id: session.user.id },
-      select: { claimedCompanyId: true },
+      select: { claimedCompanyId: true, subscriptionTier: true, trialTier: true, trialEndDate: true },
     });
 
     if (user?.claimedCompanyId) {
@@ -106,12 +116,20 @@ export async function GET(req: NextRequest) {
       where.agency = agency;
     }
 
+    // Determine effective tier for free-tier limits
+    const tier = getEffectiveTier({
+      subscriptionTier: user?.subscriptionTier ?? null,
+      trialTier: user?.trialTier ?? null,
+      trialEndDate: user?.trialEndDate ?? null,
+    });
+    const isFree = tier === 'free';
+
     const [opportunities, total] = await Promise.all([
       prisma.bDOpportunity.findMany({
         where,
         orderBy: [{ stage: 'asc' }, { expectedCloseDate: 'asc' }, { createdAt: 'desc' }],
-        take: limit,
-        skip: offset,
+        take: isFree ? Math.min(limit, 3) : limit,
+        skip: isFree ? 0 : offset,
         include: {
           _count: { select: { interactions: true } },
           company: { select: { id: true, name: true, slug: true } },
@@ -144,11 +162,30 @@ export async function POST(req: NextRequest) {
     // User must have a claimed company
     const user = await prisma.user.findUnique({
       where: { id: session.user.id },
-      select: { claimedCompanyId: true },
+      select: { claimedCompanyId: true, subscriptionTier: true, trialTier: true, trialEndDate: true },
     });
 
     if (!user?.claimedCompanyId) {
       return forbiddenError('You must claim a company profile before creating BD opportunities');
+    }
+
+    // Free tier limit: max 3 pipeline opportunities
+    const tier = getEffectiveTier({
+      subscriptionTier: user.subscriptionTier ?? null,
+      trialTier: user.trialTier ?? null,
+      trialEndDate: user.trialEndDate ?? null,
+    });
+
+    if (tier === 'free') {
+      const existingCount = await prisma.bDOpportunity.count({
+        where: { companyId: user.claimedCompanyId },
+      });
+
+      if (existingCount >= 3) {
+        return forbiddenError(
+          'Free accounts are limited to 3 pipeline opportunities. Upgrade to Pro for unlimited pipeline tracking.'
+        );
+      }
     }
 
     const body = await req.json();

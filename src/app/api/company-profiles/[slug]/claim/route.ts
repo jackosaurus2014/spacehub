@@ -16,6 +16,20 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
     }
 
+    // Company claiming requires Pro or Enterprise subscription
+    const claimUser = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { subscriptionTier: true, trialTier: true, trialEndDate: true },
+    });
+    const isTrialing = claimUser?.trialTier && claimUser?.trialEndDate && new Date(claimUser.trialEndDate) > new Date();
+    const effectiveTier = isTrialing ? claimUser.trialTier : claimUser?.subscriptionTier;
+    if (!effectiveTier || effectiveTier === 'free') {
+      return NextResponse.json(
+        { error: 'Company claiming requires a Pro or Enterprise subscription. Upgrade your plan to claim and manage a company profile.' },
+        { status: 403 }
+      );
+    }
+
     const body = await request.json();
     const validation = validateBody(claimProfileSchema, body);
     if (!validation.success) {

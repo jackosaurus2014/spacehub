@@ -26,7 +26,7 @@ export const TIER_ACCESS: Record<SubscriptionTier, {
   hasSalaryData: boolean;
 }> = {
   free: {
-    maxDailyArticles: 25,
+    maxDailyArticles: 15,
     hasStockTracking: false,
     hasMarketIntel: true,
     hasResourceExchange: false,

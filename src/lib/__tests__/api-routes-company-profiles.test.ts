@@ -509,7 +509,10 @@ describe('POST /api/company-profiles/[slug]/claim', () => {
       website: 'https://www.spacex.com',
       tier: 1,
     });
-    (mockPrisma.user.findUnique as jest.Mock).mockResolvedValue({ claimedCompanyId: null });
+    // First call: subscription check, second call: claimedCompanyId check
+    (mockPrisma.user.findUnique as jest.Mock)
+      .mockResolvedValueOnce({ subscriptionTier: 'pro', trialTier: null, trialEndDate: null })
+      .mockResolvedValueOnce({ claimedCompanyId: null });
     (mockPrisma.$transaction as jest.Mock).mockResolvedValue([
       {
         id: 'company-1',
@@ -541,7 +544,9 @@ describe('POST /api/company-profiles/[slug]/claim', () => {
       website: 'https://smallspaco.com',
       tier: 3,
     });
-    (mockPrisma.user.findUnique as jest.Mock).mockResolvedValue({ claimedCompanyId: null });
+    (mockPrisma.user.findUnique as jest.Mock)
+      .mockResolvedValueOnce({ subscriptionTier: 'pro', trialTier: null, trialEndDate: null })
+      .mockResolvedValueOnce({ claimedCompanyId: null });
     (mockPrisma.$transaction as jest.Mock).mockResolvedValue([
       {
         id: 'company-2',
@@ -574,6 +579,7 @@ describe('POST /api/company-profiles/[slug]/claim', () => {
 
   it('rejects when profile already claimed by another user', async () => {
     mockGetServerSession.mockResolvedValue({ user: { id: 'user-2' } } as any);
+    (mockPrisma.user.findUnique as jest.Mock).mockResolvedValueOnce({ subscriptionTier: 'pro', trialTier: null, trialEndDate: null });
     (mockPrisma.companyProfile.findUnique as jest.Mock).mockResolvedValue({
       id: 'company-1',
       name: 'SpaceX',
@@ -593,6 +599,7 @@ describe('POST /api/company-profiles/[slug]/claim', () => {
 
   it('rejects when user already claimed the same profile', async () => {
     mockGetServerSession.mockResolvedValue({ user: { id: 'user-1' } } as any);
+    (mockPrisma.user.findUnique as jest.Mock).mockResolvedValueOnce({ subscriptionTier: 'pro', trialTier: null, trialEndDate: null });
     (mockPrisma.companyProfile.findUnique as jest.Mock).mockResolvedValue({
       id: 'company-1',
       name: 'SpaceX',
@@ -612,6 +619,9 @@ describe('POST /api/company-profiles/[slug]/claim', () => {
 
   it('rejects when user has already claimed a different company', async () => {
     mockGetServerSession.mockResolvedValue({ user: { id: 'user-1' } } as any);
+    (mockPrisma.user.findUnique as jest.Mock)
+      .mockResolvedValueOnce({ subscriptionTier: 'pro', trialTier: null, trialEndDate: null })
+      .mockResolvedValueOnce({ claimedCompanyId: 'company-1' });
     (mockPrisma.companyProfile.findUnique as jest.Mock).mockResolvedValue({
       id: 'company-2',
       name: 'Blue Origin',
@@ -620,7 +630,6 @@ describe('POST /api/company-profiles/[slug]/claim', () => {
       website: 'https://www.blueorigin.com',
       tier: 1,
     });
-    (mockPrisma.user.findUnique as jest.Mock).mockResolvedValue({ claimedCompanyId: 'company-1' });
 
     const req = makeClaimRequest({ contactEmail: 'user@blueorigin.com' });
     const res = await claimPOST(req, { params: Promise.resolve({ slug: 'blue-origin' }) });
@@ -632,6 +641,7 @@ describe('POST /api/company-profiles/[slug]/claim', () => {
 
   it('rejects if company not found with 404', async () => {
     mockGetServerSession.mockResolvedValue({ user: { id: 'user-1' } } as any);
+    (mockPrisma.user.findUnique as jest.Mock).mockResolvedValueOnce({ subscriptionTier: 'pro', trialTier: null, trialEndDate: null });
     (mockPrisma.companyProfile.findUnique as jest.Mock).mockResolvedValue(null);
 
     const req = makeClaimRequest({ contactEmail: 'user@example.com' });
@@ -644,6 +654,9 @@ describe('POST /api/company-profiles/[slug]/claim', () => {
 
   it('rejects tier 1 company claim when email domain does not match', async () => {
     mockGetServerSession.mockResolvedValue({ user: { id: 'user-1' } } as any);
+    (mockPrisma.user.findUnique as jest.Mock)
+      .mockResolvedValueOnce({ subscriptionTier: 'pro', trialTier: null, trialEndDate: null })
+      .mockResolvedValueOnce({ claimedCompanyId: null });
     (mockPrisma.companyProfile.findUnique as jest.Mock).mockResolvedValue({
       id: 'company-1',
       name: 'SpaceX',
@@ -665,6 +678,7 @@ describe('POST /api/company-profiles/[slug]/claim', () => {
 
   it('rejects invalid body (missing contactEmail)', async () => {
     mockGetServerSession.mockResolvedValue({ user: { id: 'user-1' } } as any);
+    (mockPrisma.user.findUnique as jest.Mock).mockResolvedValueOnce({ subscriptionTier: 'pro', trialTier: null, trialEndDate: null });
 
     const req = makeClaimRequest({});
     const res = await claimPOST(req, { params: Promise.resolve({ slug: 'spacex' }) });
@@ -676,6 +690,9 @@ describe('POST /api/company-profiles/[slug]/claim', () => {
 
   it('returns 500 when prisma transaction throws', async () => {
     mockGetServerSession.mockResolvedValue({ user: { id: 'user-1' } } as any);
+    (mockPrisma.user.findUnique as jest.Mock)
+      .mockResolvedValueOnce({ subscriptionTier: 'pro', trialTier: null, trialEndDate: null })
+      .mockResolvedValueOnce({ claimedCompanyId: null });
     (mockPrisma.companyProfile.findUnique as jest.Mock).mockResolvedValue({
       id: 'company-2',
       name: 'Small Co',
@@ -684,7 +701,6 @@ describe('POST /api/company-profiles/[slug]/claim', () => {
       website: 'https://smallco.com',
       tier: 3,
     });
-    (mockPrisma.user.findUnique as jest.Mock).mockResolvedValue({ claimedCompanyId: null });
     (mockPrisma.$transaction as jest.Mock).mockRejectedValue(new Error('Transaction failed'));
 
     const req = makeClaimRequest({ contactEmail: 'user@smallco.com' });

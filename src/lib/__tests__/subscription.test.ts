@@ -10,8 +10,8 @@ import {
 // TIER_ACCESS configuration
 // ---------------------------------------------------------------------------
 describe('TIER_ACCESS', () => {
-  it('free tier has 25 max daily articles', () => {
-    expect(TIER_ACCESS.free.maxDailyArticles).toBe(25);
+  it('free tier has 15 max daily articles', () => {
+    expect(TIER_ACCESS.free.maxDailyArticles).toBe(15);
   });
 
   it('pro tier has unlimited (-1) daily articles', () => {

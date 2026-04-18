@@ -34,12 +34,20 @@ export async function POST(req: NextRequest) {
 
     const hashedPassword = await bcrypt.hash(password, 12);
 
+    // Auto-start 3-day Pro trial for every new user — lets them experience
+    // the full platform immediately, driving conversions
+    const trialEnd = new Date();
+    trialEnd.setDate(trialEnd.getDate() + 3);
+
     const user = await prisma.user.create({
       data: {
         email,
         password: hashedPassword,
         name: name || null,
         emailVerified: true, // Auto-verify — don't block login on email delivery
+        trialTier: 'pro',
+        trialStartDate: new Date(),
+        trialEndDate: trialEnd,
       },
     });
 

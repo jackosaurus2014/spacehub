@@ -495,6 +495,43 @@ function DashboardContent() {
               </ScrollReveal>
             )}
 
+            <ScrollReveal delay={0.12}>
+              {(company as any)?.sponsorTier ? (
+                <div className="card p-5">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <span className="text-sm font-semibold text-white">Sponsor Status</span>
+                      <span className="text-xs px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-400 font-medium capitalize">{(company as any).sponsorTier}</span>
+                    </div>
+                    <Link href="/company-profiles/sponsor" className="text-xs px-3 py-1.5 bg-white/[0.08] hover:bg-white/[0.12] text-white rounded-lg transition-colors">
+                      Manage Subscription
+                    </Link>
+                  </div>
+                </div>
+              ) : (
+                <div className="relative overflow-hidden rounded-xl p-[1px] bg-gradient-to-r from-emerald-500/40 via-white/10 to-emerald-500/40">
+                  <div className="card rounded-xl p-5">
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+                      <div className="flex-1">
+                        <h3 className="text-sm font-semibold text-white mb-1">Boost Your Company&apos;s Visibility</h3>
+                        <p className="text-xs text-slate-400 leading-relaxed">
+                          Upgrade to Verified or Premium sponsor to unlock: custom banner, lead capture, priority placement, detailed viewer analytics
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-2 shrink-0">
+                        <Link href="/pricing" className="text-xs px-3 py-1.5 bg-white/[0.08] hover:bg-white/[0.12] text-white rounded-lg transition-colors">
+                          Learn More
+                        </Link>
+                        <Link href="/company-profiles/sponsor" className="text-xs px-3 py-1.5 bg-emerald-500 hover:bg-emerald-400 text-white font-medium rounded-lg transition-colors">
+                          Upgrade Now
+                        </Link>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </ScrollReveal>
+
             {listings.length > 0 && (
               <ScrollReveal delay={0.15}>
                 <div>
@@ -796,6 +833,39 @@ function DashboardContent() {
           <div className="space-y-6">
             {analytics?.metrics ? (
               <>
+                <div className="flex items-center justify-between">
+                  <h3 className="text-sm font-semibold text-white">Analytics Overview</h3>
+                  <button
+                    onClick={() => {
+                      if (!analytics?.metrics) return;
+                      const m = analytics.metrics;
+                      const rows = [
+                        ['Metric', 'Value'],
+                        ['Profile Views', m.profileViews],
+                        ['Listing Views', m.totalListingViews],
+                        ['Total Inquiries', m.totalInquiries],
+                        ['Active Listings', m.activeListings],
+                        ['Total Reviews', m.totalReviews],
+                        ['Avg Rating', m.avgRating ?? 'N/A'],
+                        ['Total Proposals', m.totalProposals],
+                        ['Company Events', m.totalEvents],
+                      ];
+                      const csv = rows.map(r => r.join(',')).join('\n');
+                      const blob = new Blob([csv], { type: 'text/csv' });
+                      const url = URL.createObjectURL(blob);
+                      const a = document.createElement('a');
+                      a.href = url;
+                      a.download = `spacenexus-analytics-${company?.slug || 'export'}.csv`;
+                      a.click();
+                      URL.revokeObjectURL(url);
+                      toast.success('Analytics exported!');
+                    }}
+                    className="text-xs px-3 py-1.5 bg-white/[0.08] hover:bg-white/[0.12] text-white rounded-lg transition-colors"
+                  >
+                    Export Analytics
+                  </button>
+                </div>
+
                 <StaggerContainer className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   {[
                     { label: 'Profile Views', value: analytics.metrics.profileViews, color: 'text-blue-400' },
