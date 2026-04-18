@@ -8,6 +8,8 @@ import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import { toast } from '@/lib/toast';
 import { clientLogger } from '@/lib/client-logger';
+import { trackGA4Event } from '@/lib/analytics';
+import { trackActivity } from '@/lib/track-activity';
 
 // ────────────────────────────────────────
 // Types
@@ -162,6 +164,10 @@ function BDPipelineContent() {
   const { data: session, status } = useSession();
   const router = useRouter();
 
+  useEffect(() => {
+    trackActivity('module_viewed', 'bd-pipeline');
+  }, []);
+
   // Data state
   const [opportunities, setOpportunities] = useState<BDOpportunity[]>([]);
   const [loading, setLoading] = useState(true);
@@ -292,6 +298,10 @@ function BDPipelineContent() {
         throw new Error(json.error?.message || 'Failed to create opportunity');
       }
 
+      const created = await res.json().catch(() => null);
+      trackGA4Event('bd_opportunity_created', {
+        stage: created?.data?.stage || 'discovery',
+      });
       toast.success('Opportunity created');
       setShowNewForm(false);
       setNewOpp({

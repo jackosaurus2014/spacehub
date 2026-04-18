@@ -1920,3 +1920,15 @@ export const employerProfileSchema = z.object({
 export type WorkerProfileData = z.infer<typeof workerProfileSchema>;
 export type GigOpportunityData = z.infer<typeof gigOpportunitySchema>;
 export type EmployerProfileData = z.infer<typeof employerProfileSchema>;
+
+// ============================================================
+// Activity Tracking (usage analytics)
+// ============================================================
+
+export const activityTrackSchema = z.object({
+  event: z.string().min(1, 'event is required').max(100),
+  module: z.string().max(100).optional().nullable(),
+  metadata: z.record(z.string(), z.unknown()).optional().nullable(),
+});
+
+export type ActivityTrackData = z.infer<typeof activityTrackSchema>;

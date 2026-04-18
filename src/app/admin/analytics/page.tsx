@@ -23,6 +23,18 @@ interface AnalyticsData {
     trialTier: string | null;
     trialActive: boolean;
   }>;
+  topModules?: Array<{ module: string; count: number }>;
+  funnel?: {
+    signUp: number;
+    trialStarted: number;
+    upgradeClicked: number;
+    paidConversions: number;
+  };
+  activeUsers?: {
+    dau: number;
+    wau: number;
+    mau: number;
+  };
 }
 
 const TIER_LABELS: Record<string, { label: string; color: string }> = {
@@ -219,6 +231,139 @@ export default function AdminAnalyticsPage() {
                 </StaggerContainer>
               </div>
             </ScrollReveal>
+
+            {/* Active Users */}
+            {data.activeUsers && (
+              <ScrollReveal delay={0.175}>
+                <div className="card border border-space-600/50 p-5">
+                  <h2 className="text-white font-semibold text-lg mb-4">Active Users</h2>
+                  <StaggerContainer className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <StaggerItem>
+                      <div className="rounded-lg border border-space-600/30 bg-space-700/20 p-4 text-center">
+                        <p className="text-star-400 text-sm font-medium">DAU</p>
+                        <p className="text-3xl font-bold text-emerald-400 mt-1">
+                          {data.activeUsers.dau.toLocaleString()}
+                        </p>
+                        <p className="text-star-500 text-xs mt-1">last 24 hours</p>
+                      </div>
+                    </StaggerItem>
+                    <StaggerItem>
+                      <div className="rounded-lg border border-space-600/30 bg-space-700/20 p-4 text-center">
+                        <p className="text-star-400 text-sm font-medium">WAU</p>
+                        <p className="text-3xl font-bold text-blue-400 mt-1">
+                          {data.activeUsers.wau.toLocaleString()}
+                        </p>
+                        <p className="text-star-500 text-xs mt-1">last 7 days</p>
+                      </div>
+                    </StaggerItem>
+                    <StaggerItem>
+                      <div className="rounded-lg border border-space-600/30 bg-space-700/20 p-4 text-center">
+                        <p className="text-star-400 text-sm font-medium">MAU</p>
+                        <p className="text-3xl font-bold text-purple-400 mt-1">
+                          {data.activeUsers.mau.toLocaleString()}
+                        </p>
+                        <p className="text-star-500 text-xs mt-1">last 30 days</p>
+                      </div>
+                    </StaggerItem>
+                  </StaggerContainer>
+                </div>
+              </ScrollReveal>
+            )}
+
+            {/* Top Modules */}
+            {data.topModules && data.topModules.length > 0 && (
+              <ScrollReveal delay={0.18}>
+                <div className="card border border-space-600/50 p-5">
+                  <h2 className="text-white font-semibold text-lg mb-1">Top Modules</h2>
+                  <p className="text-star-400 text-xs mb-4">
+                    module_viewed events in the last 7 days (top 10)
+                  </p>
+                  <div className="space-y-3">
+                    {(() => {
+                      const max = Math.max(...data.topModules!.map((m) => m.count), 1);
+                      return data.topModules!.map((row) => {
+                        const pct = Math.round((row.count / max) * 100);
+                        return (
+                          <div key={row.module} className="flex items-center gap-4">
+                            <span className="text-star-200 text-sm min-w-[160px] truncate">
+                              {row.module}
+                            </span>
+                            <div className="flex-1">
+                              <div className="h-3 w-full rounded-full bg-white/[0.06] overflow-hidden">
+                                <div
+                                  className="h-full rounded-full bg-gradient-to-r from-cyan-400/40 to-blue-500/60 transition-all duration-500"
+                                  style={{ width: `${Math.max(pct, 2)}%` }}
+                                />
+                              </div>
+                            </div>
+                            <span className="text-white font-semibold text-sm min-w-[60px] text-right">
+                              {row.count.toLocaleString()}
+                            </span>
+                          </div>
+                        );
+                      });
+                    })()}
+                  </div>
+                </div>
+              </ScrollReveal>
+            )}
+
+            {/* Conversion Funnel */}
+            {data.funnel && (
+              <ScrollReveal delay={0.185}>
+                <div className="card border border-space-600/50 p-5">
+                  <h2 className="text-white font-semibold text-lg mb-1">Conversion Funnel</h2>
+                  <p className="text-star-400 text-xs mb-4">last 30 days</p>
+                  <div className="space-y-2">
+                    {(() => {
+                      const steps: Array<{ label: string; value: number; color: string }> = [
+                        { label: 'Sign-ups', value: data.funnel!.signUp, color: 'text-slate-200' },
+                        { label: 'Trial started', value: data.funnel!.trialStarted, color: 'text-amber-300' },
+                        { label: 'Upgrade clicked', value: data.funnel!.upgradeClicked, color: 'text-blue-300' },
+                        { label: 'Paid conversions', value: data.funnel!.paidConversions, color: 'text-emerald-300' },
+                      ];
+                      const top = Math.max(steps[0].value, 1);
+                      return steps.map((step, idx) => {
+                        const pctOfTop = Math.round((step.value / top) * 100);
+                        const prev = idx === 0 ? null : steps[idx - 1].value;
+                        const stepConversion =
+                          prev !== null && prev > 0
+                            ? Math.round((step.value / prev) * 100)
+                            : null;
+                        return (
+                          <div
+                            key={step.label}
+                            className="rounded-lg border border-space-600/30 bg-space-700/20 px-4 py-3 flex items-center justify-between gap-4"
+                          >
+                            <div className="flex-1 min-w-0">
+                              <p className={`text-sm font-medium ${step.color}`}>{step.label}</p>
+                              <div className="h-2 mt-2 w-full rounded-full bg-white/[0.06] overflow-hidden">
+                                <div
+                                  className="h-full rounded-full bg-gradient-to-r from-white/20 to-white/40 transition-all duration-500"
+                                  style={{ width: `${Math.max(pctOfTop, 2)}%` }}
+                                />
+                              </div>
+                            </div>
+                            <div className="text-right min-w-[110px]">
+                              <p className="text-white font-semibold text-lg">
+                                {step.value.toLocaleString()}
+                              </p>
+                              <p className="text-star-500 text-xs">
+                                {idx === 0
+                                  ? 'top of funnel'
+                                  : stepConversion !== null
+                                    ? `${stepConversion}% of prev`
+                                    : '—'}
+                              </p>
+                            </div>
+                          </div>
+                        );
+                      });
+                    })()}
+                  </div>
+                </div>
+              </ScrollReveal>
+            )}
 
             {/* Recent Activity */}
             <ScrollReveal delay={0.19}>

@@ -132,6 +132,8 @@ function RegisterPageContent() {
         founding: isFounding,
         trial: isTrial,
       });
+      trackGA4Event('sign_up', { method: 'email' });
+      trackGA4Event('trial_started', { tier: 'pro', duration_days: 3 });
       trackSignupConversion();
 
       // Store selected role for future personalization

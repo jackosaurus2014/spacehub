@@ -7,6 +7,7 @@ import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import { toast } from '@/lib/toast';
+import { trackActivity } from '@/lib/track-activity';
 
 // ============================================================
 // Types
@@ -540,6 +541,10 @@ export default function ExecutiveCommandCenterPage() {
   const [briefing, setBriefing] = useState<BriefingData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    trackActivity('module_viewed', 'executive-center');
+  }, []);
 
   useEffect(() => {
     if (sessionStatus === 'loading') return;

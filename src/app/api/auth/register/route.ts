@@ -6,6 +6,7 @@ import { validationError, internalError } from '@/lib/errors';
 import { logger } from '@/lib/logger';
 import { serverRegisterSchema, validateBody } from '@/lib/validations';
 import { generateVerificationEmail } from '@/lib/newsletter/email-templates';
+import { TRIAL_DRIP_SEQUENCE } from '@/lib/newsletter/trial-drip-templates';
 
 export const dynamic = 'force-dynamic';
 
@@ -76,6 +77,32 @@ export async function POST(req: NextRequest) {
       // Email failure is non-fatal: the user can still request a new
       // verification email later, so we don't block registration
       logger.error('Failed to send verification email', { error: emailError instanceof Error ? emailError.message : String(emailError) });
+    }
+
+    // Fire trial drip #1 (welcome). Failure is non-fatal — the daily cron
+    // will still send the later emails even if this one misses.
+    try {
+      const welcome = TRIAL_DRIP_SEQUENCE.find((e) => e.templateId === 'trial-welcome');
+      if (welcome && process.env.RESEND_API_KEY) {
+        const { html, plain, subject } = welcome.generate({
+          userName: name || email.split('@')[0],
+        });
+        const { Resend } = await import('resend');
+        const resend = new Resend(process.env.RESEND_API_KEY);
+        await resend.emails.send({
+          from: process.env.NEWSLETTER_FROM_EMAIL || 'SpaceNexus <noreply@spacenexus.us>',
+          to: email,
+          subject,
+          html,
+          text: plain,
+        });
+        await prisma.user.update({
+          where: { id: user.id },
+          data: { trialEmailsSent: 1 },
+        });
+      }
+    } catch (dripError) {
+      logger.error('Failed to send trial welcome email', { userId: user.id, error: dripError instanceof Error ? dripError.message : String(dripError) });
     }
 
     return NextResponse.json({

@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { useSubscription } from './SubscriptionProvider';
 import { SubscriptionTier, SUBSCRIPTION_PLANS } from '@/types';
 import { getRequiredTierForModule } from '@/lib/subscription';
+import { trackGA4Event } from '@/lib/analytics';
 
 // Contextual upgrade messages with feature-specific value propositions
 export type UpgradeContext =
@@ -483,6 +484,7 @@ export default function PremiumGate({
             <div className="space-y-3">
               <Link
                 href="/pricing"
+                onClick={() => trackGA4Event('upgrade_clicked', { source: 'paywall' })}
                 className="block w-full py-3 px-6 rounded-xl bg-gradient-to-r from-white to-purple-500 text-white font-semibold hover:from-slate-300 hover:to-purple-400 transition-all duration-300 hover:shadow-lg hover:shadow-black/15"
               >
                 {plan?.trialDays
@@ -491,6 +493,7 @@ export default function PremiumGate({
               </Link>
               <Link
                 href="/pricing"
+                onClick={() => trackGA4Event('upgrade_clicked', { source: 'paywall_compare' })}
                 className="block text-slate-400 hover:text-white text-sm transition-colors"
               >
                 Compare all features &rarr;
@@ -567,6 +570,7 @@ export function UpgradePrompt({
   return (
     <Link
       href="/pricing"
+      onClick={() => trackGA4Event('upgrade_clicked', { source: 'inline_prompt', feature })}
       className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-white/90 text-sm hover:bg-slate-100/20 hover:border-white/15 transition-all duration-200"
     >
       <span>{contextMessage?.icon || '\u{1F512}'}</span>

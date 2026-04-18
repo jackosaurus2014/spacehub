@@ -25,6 +25,7 @@ import { calculateSpaceNexusScore, getScoreColor as snxScoreColor, getScoreGrade
 import { getEntityLinks } from '@/lib/entity-linker';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
+import { trackGA4Event } from '@/lib/analytics';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -233,6 +234,10 @@ function MarketplaceActions({ companySlug, companyId, companyName, verificationL
       } else if (res.status === 401) {
         toast.error('Please sign in to claim a company profile.');
         router.push(`/login?returnTo=${encodeURIComponent(pathname)}`);
+      } else if (res.status === 403) {
+        const err = await res.json().catch(() => ({ error: 'Upgrade required' }));
+        trackGA4Event('company_claim_blocked', { reason: 'free_tier' });
+        toast.error(err.error || 'Upgrade to Pro to claim this profile');
       } else {
         const err = await res.json();
         toast.error(err.error || 'Failed to claim profile');

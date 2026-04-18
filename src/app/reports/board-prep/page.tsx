@@ -7,6 +7,7 @@ import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import { toast } from '@/lib/toast';
 import { sanitizeRenderedMarkdown } from '@/lib/sanitize';
+import { trackGA4Event } from '@/lib/analytics';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -124,6 +125,7 @@ export default function BoardPrepReportPage() {
 
       const data = await res.json();
       setReport(data);
+      trackGA4Event('board_prep_generated', { company_slug: slug });
       toast.success('Board briefing generated successfully');
     } catch (error) {
       toast.error(error instanceof Error ? error.message : 'Failed to generate board briefing');

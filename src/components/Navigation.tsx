@@ -13,6 +13,7 @@ import DensityToggle from '@/components/ui/DensityToggle';
 import NotificationBell from '@/components/ui/NotificationBell';
 import RecentlyViewed from './ui/RecentlyViewed';
 import { usePlatformModifier } from '@/hooks/useKeyboardShortcut';
+import { trackGA4Event } from '@/lib/analytics';
 
 interface DropdownItem {
   label: string;
@@ -616,6 +617,7 @@ export default function Navigation() {
             {!isPro && (
               <Link
                 href="/pricing"
+                onClick={() => trackGA4Event('upgrade_clicked', { source: 'nav' })}
                 className="text-xs font-medium px-3 py-1.5 rounded-lg border border-white/[0.15] text-white/70 hover:text-white hover:border-white/[0.3] transition-all"
               >
                 Upgrade
@@ -1063,7 +1065,10 @@ export default function Navigation() {
                     <Link
                       href="/pricing"
                       className="block text-white/70 hover:text-white active:text-white font-medium text-center py-3 text-sm touch-target"
-                      onClick={() => setIsMenuOpen(false)}
+                      onClick={() => {
+                        trackGA4Event('upgrade_clicked', { source: 'nav_mobile' });
+                        setIsMenuOpen(false);
+                      }}
                     >
                       Upgrade to Pro
                     </Link>

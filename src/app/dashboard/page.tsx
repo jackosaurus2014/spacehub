@@ -70,7 +70,7 @@ import OnboardingChecklist from '@/components/OnboardingChecklist';
 import ReferralWidget from '@/components/ReferralWidget';
 import NewsTicker from '@/components/NewsTicker';
 import { useSubscription } from '@/components/SubscriptionProvider';
-import { trackTimeOnPage } from '@/lib/analytics';
+import { trackTimeOnPage, trackGA4Event } from '@/lib/analytics';
 
 /* ------------------------------------------------------------------ */
 /*  Quick Action items for the 6-button grid                          */
@@ -521,6 +521,7 @@ function TrialExpirationWarning() {
       <div className="flex items-center gap-2 shrink-0">
         <Link
           href="/pricing"
+          onClick={() => trackGA4Event('upgrade_clicked', { source: 'dashboard' })}
           className="inline-flex items-center gap-1.5 rounded-lg bg-amber-600 px-4 py-1.5 text-sm font-semibold text-white transition-colors hover:bg-amber-500"
         >
           Upgrade

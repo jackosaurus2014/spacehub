@@ -25,9 +25,10 @@ model User {
   stripeSubscriptionId  String?   @unique
 
   // Free trial
-  trialTier      String? // The tier being trialed: "pro" or "enterprise"
-  trialStartDate DateTime?
-  trialEndDate   DateTime?
+  trialTier        String? // The tier being trialed: "pro" or "enterprise"
+  trialStartDate   DateTime?
+  trialEndDate     DateTime?
+  trialEmailsSent  Int       @default(0) // 0=none, 1=welcome, 2=mid-trial, 3=final-day
 
   // Admin
   isAdmin   Boolean @default(false)
@@ -128,6 +129,9 @@ model User {
   // Gig/Freelance marketplace
   workerProfile   WorkerProfile?
   employerProfile EmployerProfile?
+
+  // Usage analytics
+  activityLogEvents ActivityLog[]
 }
 
 // ─── Space Tycoon: Multiplayer Game Models ──────────────────────────────────
@@ -5583,4 +5587,24 @@ model LiveBlogEntry {
   createdAt DateTime @default(now())
 
   @@index([eventTag, createdAt])
+}
+
+// ─── Usage Analytics ────────────────────────────────────────────────────────
+
+model ActivityLog {
+  id        String   @id @default(cuid())
+  userId    String?
+  sessionId String? // for anonymous tracking
+  event     String // e.g. "module_viewed", "feature_clicked", "upgrade_clicked"
+  module    String? // e.g. "bd-pipeline", "dossiers", "market-intel"
+  metadata  Json? // arbitrary extra context
+  userAgent String?
+  createdAt DateTime @default(now())
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([event])
+  @@index([module])
+  @@index([createdAt])
 }

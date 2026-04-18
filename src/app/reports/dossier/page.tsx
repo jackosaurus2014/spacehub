@@ -1,12 +1,14 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import { toast } from '@/lib/toast';
 import { sanitizeRenderedMarkdown } from '@/lib/sanitize';
+import { trackGA4Event } from '@/lib/analytics';
+import { trackActivity } from '@/lib/track-activity';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -77,6 +79,10 @@ export default function DossierReportPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
 
+  useEffect(() => {
+    trackActivity('module_viewed', 'dossiers');
+  }, []);
+
   const [companySlug, setCompanySlug] = useState('');
   const [loading, setLoading] = useState(false);
   const [dossier, setDossier] = useState<DossierResult | null>(null);
@@ -113,6 +119,7 @@ export default function DossierReportPage() {
       const data = await res.json();
       setDossier(data.dossier);
       setCompanyName(data.company?.name || slug);
+      trackGA4Event('dossier_generated', { company_slug: slug });
       toast.success('Dossier generated successfully');
     } catch (error) {
       toast.error(error instanceof Error ? error.message : 'Failed to generate dossier');

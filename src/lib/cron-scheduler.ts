@@ -88,6 +88,8 @@ const CRON_JOBS: CronJobDef[] = [
 
   // Welcome drip sequence — daily at 10:30am UTC (sends next email to users within 14-day window)
   { schedule: '30 10 * * *',  path: '/api/drip/process',                         label: 'welcome-drip-sequence',      maxStaleMinutes: 1560 },
+  // Trial drip — daily at 10:45am UTC (mid-trial + final-day emails for users on a 3-day Pro trial)
+  { schedule: '45 10 * * *',  path: '/api/cron/trials-expiring',                 label: 'trial-drip-emails',          maxStaleMinutes: 1560 },
   // Nurture email sequence — daily at 11am UTC (7-step sequence for free-tier users)
   { schedule: '0 11 * * *',   path: '/api/nurture/process',                      label: 'nurture-email-sequence',     maxStaleMinutes: 1560 },
   // Forum digest — weekly on Sundays at 9am UTC
