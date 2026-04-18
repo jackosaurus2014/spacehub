@@ -19,6 +19,7 @@ interface ProfileData {
     id: string;
     name: string | null;
     email: string;
+    verifiedBadge?: string | null;
   };
 }
 

@@ -7,6 +7,7 @@ import { logger } from '@/lib/logger';
 import { serverRegisterSchema, validateBody } from '@/lib/validations';
 import { generateVerificationEmail } from '@/lib/newsletter/email-templates';
 import { TRIAL_DRIP_SEQUENCE } from '@/lib/newsletter/trial-drip-templates';
+import { recomputeVerificationBadge } from '@/lib/verification/auto-badge';
 
 export const dynamic = 'force-dynamic';
 
@@ -103,6 +104,16 @@ export async function POST(req: NextRequest) {
       }
     } catch (dripError) {
       logger.error('Failed to send trial welcome email', { userId: user.id, error: dripError instanceof Error ? dripError.message : String(dripError) });
+    }
+
+    // Auto-recompute the verifiedBadge (email is auto-verified on registration).
+    try {
+      await recomputeVerificationBadge(user.id);
+    } catch (badgeErr) {
+      logger.error('recomputeVerificationBadge failed after registration', {
+        userId: user.id,
+        error: badgeErr instanceof Error ? badgeErr.message : String(badgeErr),
+      });
     }
 
     return NextResponse.json({

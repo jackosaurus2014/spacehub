@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
 import { TRIAL_DRIP_SEQUENCE } from '@/lib/newsletter/trial-drip-templates';
+import { createNotification } from '@/lib/notifications/create';
 
 export const dynamic = 'force-dynamic';
 

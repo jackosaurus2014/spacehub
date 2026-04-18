@@ -315,12 +315,30 @@ const RECENT_SEARCHES_KEY = 'spacenexus-recent-searches';
 const MAX_RECENT_SEARCHES = 5;
 
 // Server search result types
+/**
+ * Matches the normalized response shape of `/api/search`.
+ * Each array contains `SearchResult` objects with `title`, `snippet`, `url`, and `metadata`.
+ */
+interface NormalizedSearchResult {
+  id: string;
+  type: string;
+  title: string;
+  snippet: string;
+  url: string;
+  metadata?: Record<string, unknown>;
+  createdAt?: string;
+}
+
 interface ServerSearchResults {
-  news: Array<{ id: string; title: string; summary: string | null; url: string }>;
-  companies: Array<{ id: string; slug: string; name: string; description: string | null; headquarters: string | null; sector: string | null; ticker: string | null }>;
-  events: Array<{ id: string; name: string; description: string | null; type: string }>;
-  opportunities: Array<{ id: string; slug: string; title: string; description: string | null }>;
-  blogs: Array<{ id: string; title: string; excerpt: string | null; url: string }>;
+  results?: {
+    news?: NormalizedSearchResult[];
+    companies?: NormalizedSearchResult[];
+    jobs?: NormalizedSearchResult[];
+    investors?: NormalizedSearchResult[];
+    marketplace?: NormalizedSearchResult[];
+    forum?: NormalizedSearchResult[];
+    blog?: NormalizedSearchResult[];
+  };
 }
 
 function useDebounce<T>(value: T, delay: number): T {
@@ -375,18 +393,20 @@ export default function SearchCommandPalette() {
     let cancelled = false;
     setIsSearching(true);
 
-    fetch(`/api/search?q=${encodeURIComponent(trimmed)}&limit=5`)
+    fetch(`/api/search?q=${encodeURIComponent(trimmed)}&type=all&limit=5`)
       .then((res) => res.json())
       .then((data: ServerSearchResults) => {
         if (cancelled) return;
 
+        const stripMarks = (s: string) => (s || '').replace(/<\/?mark>/gi, '').slice(0, 80);
         const items: SearchItem[] = [];
+        const r = data.results || {};
 
-        data.news?.forEach((item) => {
+        r.news?.forEach((item) => {
           items.push({
             id: `news-${item.id}`,
             label: item.title,
-            description: item.summary?.slice(0, 80) || 'News article',
+            description: stripMarks(item.snippet) || 'News article',
             href: item.url,
             icon: <NewspaperIcon />,
             type: 'result',
@@ -394,52 +414,93 @@ export default function SearchCommandPalette() {
           });
         });
 
-        data.companies?.forEach((item) => {
+        r.companies?.forEach((item) => {
+          const meta = item.metadata || {};
           const desc = [
-            item.sector?.replace(/_/g, ' '),
-            item.headquarters,
-            item.ticker ? `(${item.ticker})` : null,
-          ].filter(Boolean).join(' · ') || item.description?.slice(0, 80) || 'Space company';
+            typeof meta.sector === 'string' ? meta.sector.replace(/_/g, ' ') : null,
+            typeof meta.headquarters === 'string' ? meta.headquarters : null,
+            meta.isPublic && typeof meta.ticker === 'string' ? `(${meta.ticker})` : null,
+          ].filter(Boolean).join(' · ') || stripMarks(item.snippet) || 'Space company';
           items.push({
             id: `company-${item.id}`,
-            label: item.name,
+            label: item.title,
             description: desc,
-            href: `/company-profiles/${item.slug}`,
+            href: item.url,
             icon: <ChartIcon />,
             type: 'result',
             category: 'Company Results',
           });
         });
 
-        data.events?.forEach((item) => {
+        r.jobs?.forEach((item) => {
+          const meta = item.metadata || {};
+          const desc = [
+            typeof meta.company === 'string' ? meta.company : null,
+            typeof meta.location === 'string' ? meta.location : null,
+            meta.remoteOk ? 'Remote OK' : null,
+          ].filter(Boolean).join(' · ') || stripMarks(item.snippet) || 'Job posting';
           items.push({
-            id: `event-${item.id}`,
-            label: item.name,
-            description: item.description?.slice(0, 80) || item.type,
-            href: '/mission-control',
-            icon: <RocketIcon />,
-            type: 'result',
-            category: 'Event Results',
-          });
-        });
-
-        data.opportunities?.forEach((item) => {
-          items.push({
-            id: `opportunity-${item.id}`,
+            id: `job-${item.id}`,
             label: item.title,
-            description: item.description?.slice(0, 80) || 'Business opportunity',
-            href: `/business-opportunities/${item.slug}`,
+            description: desc,
+            href: item.url,
             icon: <BriefcaseIcon />,
             type: 'result',
-            category: 'Opportunity Results',
+            category: 'Job Results',
           });
         });
 
-        data.blogs?.forEach((item) => {
+        r.investors?.forEach((item) => {
+          const meta = item.metadata || {};
+          const desc = [
+            typeof meta.investorType === 'string' ? String(meta.investorType).toUpperCase() : null,
+            typeof meta.headquarters === 'string' ? meta.headquarters : null,
+          ].filter(Boolean).join(' · ') || stripMarks(item.snippet) || 'Investor';
+          items.push({
+            id: `investor-${item.id}`,
+            label: item.title,
+            description: desc,
+            href: item.url,
+            icon: <ChartIcon />,
+            type: 'result',
+            category: 'Investor Results',
+          });
+        });
+
+        r.marketplace?.forEach((item) => {
+          const meta = item.metadata || {};
+          const desc = [
+            typeof meta.companyName === 'string' ? meta.companyName : null,
+            typeof meta.category === 'string' ? meta.category : null,
+          ].filter(Boolean).join(' · ') || stripMarks(item.snippet) || 'Marketplace listing';
+          items.push({
+            id: `marketplace-${item.id}`,
+            label: item.title,
+            description: desc,
+            href: item.url,
+            icon: <BriefcaseIcon />,
+            type: 'result',
+            category: 'Marketplace Results',
+          });
+        });
+
+        r.forum?.forEach((item) => {
+          items.push({
+            id: `forum-${item.id}`,
+            label: item.title,
+            description: stripMarks(item.snippet) || 'Community thread',
+            href: item.url,
+            icon: <DocumentTextIcon />,
+            type: 'result',
+            category: 'Community Results',
+          });
+        });
+
+        r.blog?.forEach((item) => {
           items.push({
             id: `blog-${item.id}`,
             label: item.title,
-            description: item.excerpt?.slice(0, 80) || 'Blog post',
+            description: stripMarks(item.snippet) || 'Blog post',
             href: item.url,
             icon: <DocumentTextIcon />,
             type: 'result',

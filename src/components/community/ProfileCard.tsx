@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import ReportButton from './ReportButton';
 import BlockButton from './BlockButton';
+import VerifiedBadge from '@/components/VerifiedBadge';
 
 interface ProfileData {
   id: string;
@@ -18,6 +19,7 @@ interface ProfileData {
     id: string;
     name: string | null;
     email: string;
+    verifiedBadge?: string | null;
   };
 }
 
@@ -89,8 +91,9 @@ export default function ProfileCard({ profile, isFollowing = false, onFollowTogg
               {getInitials(profile.user.name)}
             </div>
             <div className="min-w-0 flex-1">
-              <h3 className="font-semibold text-white group-hover:text-white transition-colors truncate">
-                {profile.user.name || 'Anonymous'}
+              <h3 className="font-semibold text-white group-hover:text-white transition-colors truncate flex items-center gap-1.5">
+                <span className="truncate">{profile.user.name || 'Anonymous'}</span>
+                <VerifiedBadge badge={profile.user.verifiedBadge} size="md" />
               </h3>
               {profile.headline && (
                 <p className="text-xs text-slate-400 line-clamp-1">{profile.headline}</p>

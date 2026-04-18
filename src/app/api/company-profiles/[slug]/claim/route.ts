@@ -5,6 +5,7 @@ import { validateBody, claimProfileSchema } from '@/lib/validations';
 import { validationError, internalError } from '@/lib/errors';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
+import { recomputeVerificationBadge } from '@/lib/verification/auto-badge';
 
 export const dynamic = 'force-dynamic';
 
@@ -116,6 +117,17 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       domainMatch,
       verificationLevel,
     });
+
+    // Auto-recompute the verifiedBadge — if the email domain matched, this
+    // will upgrade the user from 'email' to 'domain'. Never blocks the claim.
+    try {
+      await recomputeVerificationBadge(session.user.id);
+    } catch (badgeErr) {
+      logger.error('recomputeVerificationBadge failed after company claim', {
+        userId: session.user.id,
+        error: badgeErr instanceof Error ? badgeErr.message : String(badgeErr),
+      });
+    }
 
     const message = domainMatch
       ? `You have successfully claimed ${company.name}. Your verification level is set to "identity".`

@@ -55,3 +55,44 @@ export async function PATCH(
     return internalError();
   }
 }
+
+/**
+ * DELETE /api/notifications/[id]
+ * Dismiss a single notification. Owner-only.
+ */
+export async function DELETE(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.id) {
+      return unauthorizedError();
+    }
+
+    const { id } = await params;
+
+    const result = await prisma.notification.deleteMany({
+      where: {
+        id,
+        userId: session.user.id,
+      },
+    });
+
+    if (result.count === 0) {
+      return notFoundError('Notification');
+    }
+
+    logger.info('Notification dismissed', {
+      userId: session.user.id,
+      notificationId: id,
+    });
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    logger.error('Failed to dismiss notification', {
+      error: error instanceof Error ? error.message : 'Unknown error',
+    });
+    return internalError();
+  }
+}

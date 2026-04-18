@@ -132,6 +132,13 @@ model User {
 
   // Usage analytics
   activityLogEvents ActivityLog[]
+
+  // Wave 1: Verified badge + community adds
+  verifiedBadge         String?                @default("unverified") // unverified|email|domain|founder|investor|media|admin
+  verificationRequested Boolean                @default(false)
+  verificationNote      String? // user-supplied justification for review
+  speakingOpportunities SpeakingOpportunity[]  @relation("SubmittedSpeakingOps")
+  companyAnnouncements  CompanyAnnouncement[]  @relation("AnnouncementAuthor")
 }
 
 // ─── Space Tycoon: Multiplayer Game Models ──────────────────────────────────
@@ -2800,6 +2807,9 @@ model CompanyProfile {
   bdOpportunities         BDOpportunity[]           @relation("BDOpportunities")
   caseStudies             CaseStudy[]
   meetingRequests         MeetingRequest[]
+  pitchDecks              PitchDeck[]
+  dataRoomDocuments       DataRoomDocument[]
+  announcements           CompanyAnnouncement[]
 
   @@index([slug])
   @@index([name])
@@ -5607,4 +5617,110 @@ model ActivityLog {
   @@index([event])
   @@index([module])
   @@index([createdAt])
+}
+
+// ─── Wave 1: Speaking Opportunities ─────────────────────────────────────────
+
+model SpeakingOpportunity {
+  id             String   @id @default(cuid())
+  title          String
+  organization   String
+  conferenceName String?
+  topic          String
+  description    String   @db.Text
+  eventDate      DateTime
+  submissionDeadline DateTime?
+  location       String?
+  isRemote       Boolean  @default(false)
+  compensation   String? // "paid" | "travel" | "unpaid" | free text
+  audienceSize   Int?
+  cfpUrl         String? // Call-for-papers URL
+  contactEmail   String?
+  contactName    String?
+  submittedById  String?
+  submittedBy    User?    @relation("SubmittedSpeakingOps", fields: [submittedById], references: [id], onDelete: SetNull)
+  status         String   @default("pending") // pending | approved | rejected | expired
+  featured       Boolean  @default(false)
+  tags           String[] // e.g. ["policy", "GNC", "launch-ops"]
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([eventDate])
+  @@index([submissionDeadline])
+  @@index([status])
+  @@index([organization])
+}
+
+// ─── Wave 1: Pitch Decks & Data Room ────────────────────────────────────────
+
+model PitchDeck {
+  id             String        @id @default(cuid())
+  companyId      String
+  company        CompanyProfile @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  title          String
+  description    String?       @db.Text
+  fileUrl        String
+  fileSize       Int?
+  visibility     String        @default("logged_in") // public | logged_in | invite_only
+  roundType      String? // pre-seed | seed | series_a | series_b | growth
+  amountRaising  Float?
+  currency       String?       @default("USD")
+  uploadedByUserId String?
+  views          Int           @default(0)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  accessLogs     PitchDeckView[]
+
+  @@index([companyId])
+  @@index([visibility])
+}
+
+model PitchDeckView {
+  id         String    @id @default(cuid())
+  pitchDeckId String
+  pitchDeck  PitchDeck @relation(fields: [pitchDeckId], references: [id], onDelete: Cascade)
+  userId     String?
+  viewedAt   DateTime  @default(now())
+
+  @@index([pitchDeckId])
+  @@index([userId])
+}
+
+model DataRoomDocument {
+  id          String   @id @default(cuid())
+  companyId   String
+  company     CompanyProfile @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  title       String
+  description String?
+  fileUrl     String
+  fileSize    Int?
+  docType     String? // term_sheet | financials | cap_table | product_deck | market_research | other
+  visibility  String   @default("invite_only") // public | logged_in | invite_only
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([companyId])
+  @@index([docType])
+}
+
+// ─── Wave 1: Company Announcements ──────────────────────────────────────────
+
+model CompanyAnnouncement {
+  id          String         @id @default(cuid())
+  companyId   String
+  company     CompanyProfile @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  authorId    String? // the user who posted it (typically claimed owner)
+  author      User?          @relation("AnnouncementAuthor", fields: [authorId], references: [id], onDelete: SetNull)
+  title       String
+  body        String         @db.Text
+  linkUrl     String?
+  category    String?        @default("general") // general | product | hiring | funding | milestone
+  pinned      Boolean        @default(false)
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  @@index([companyId])
+  @@index([createdAt])
+  @@index([category])
 }

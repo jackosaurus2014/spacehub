@@ -83,6 +83,46 @@ function DashboardContent() {
   const [meetingRequests, setMeetingRequests] = useState<any[]>([]);
   const [meetingStatusFilter, setMeetingStatusFilter] = useState('all');
 
+  // Funding round announcements state
+  const [fundingAnnouncements, setFundingAnnouncements] = useState<any[]>([]);
+  const [fundingForm, setFundingForm] = useState({
+    roundType: 'seed',
+    amount: '',
+    currency: 'USD',
+    date: new Date().toISOString().split('T')[0],
+    leadInvestor: '',
+    otherInvestors: '',
+    valuation: '',
+    blurb: '',
+    pressReleaseUrl: '',
+    pitchDeckUrl: '',
+  });
+  const [fundingSubmitting, setFundingSubmitting] = useState(false);
+
+  // Pitch Deck state
+  const [pitchDecks, setPitchDecks] = useState<any[]>([]);
+  const [pitchDeckForm, setPitchDeckForm] = useState({
+    title: '',
+    description: '',
+    fileUrl: '',
+    visibility: 'logged_in',
+    roundType: '',
+    amountRaising: '',
+    currency: 'USD',
+  });
+  const [pitchDeckSubmitting, setPitchDeckSubmitting] = useState(false);
+
+  // Data Room state
+  const [dataRoomDocs, setDataRoomDocs] = useState<any[]>([]);
+  const [dataRoomForm, setDataRoomForm] = useState({
+    title: '',
+    description: '',
+    fileUrl: '',
+    docType: 'other',
+    visibility: 'invite_only',
+  });
+  const [dataRoomSubmitting, setDataRoomSubmitting] = useState(false);
+
   useEffect(() => {
     async function loadDashboard() {
       try {
@@ -123,8 +163,8 @@ function DashboardContent() {
             if (reviewRes.ok) { const d = await reviewRes.json(); setReviews(d.reviews || []); }
             if (proposalRes.ok) { const d = await proposalRes.json(); setProposals(d.proposals || []); }
 
-            // Load analytics, events, verification, jobs, gigs, partnerships, case studies, meeting requests in parallel
-            const [verifyRes, analyticsRes, eventsRes, jobsRes, gigsRes, partnershipsRes, caseStudiesRes, meetingRes] = await Promise.all([
+            // Load analytics, events, verification, jobs, gigs, partnerships, case studies, meeting requests, funding, decks, data-room in parallel
+            const [verifyRes, analyticsRes, eventsRes, jobsRes, gigsRes, partnershipsRes, caseStudiesRes, meetingRes, fundingRes, pitchDecksRes, dataRoomRes] = await Promise.all([
               fetch('/api/marketplace/verify').catch(() => null),
               fetch(`/api/company-profiles/${myCompany.slug}/analytics`).catch(() => null),
               fetch(`/api/company-profiles/${myCompany.slug}/events`).catch(() => null),
@@ -133,6 +173,9 @@ function DashboardContent() {
               fetch(`/api/company-profiles/${myCompany.slug}/partnerships`).catch(() => null),
               fetch(`/api/company-profiles/${myCompany.slug}/case-studies`).catch(() => null),
               fetch(`/api/company-profiles/${myCompany.slug}/meeting-requests`).catch(() => null),
+              fetch('/api/funding-rounds/announce').catch(() => null),
+              fetch(`/api/pitch-decks?companyId=${myCompany.id}`).catch(() => null),
+              fetch(`/api/data-room?companyId=${myCompany.id}`).catch(() => null),
             ]);
 
             if (verifyRes?.ok) setVerification(await verifyRes.json());
@@ -143,6 +186,9 @@ function DashboardContent() {
             if (partnershipsRes?.ok) setPartnerships(await partnershipsRes.json());
             if (caseStudiesRes?.ok) { const d = await caseStudiesRes.json(); setCaseStudies(d.caseStudies || []); }
             if (meetingRes?.ok) { const d = await meetingRes.json(); setMeetingRequests(d.meetingRequests || []); }
+            if (fundingRes?.ok) { const d = await fundingRes.json(); setFundingAnnouncements(d.announcements || []); }
+            if (pitchDecksRes?.ok) { const d = await pitchDecksRes.json(); setPitchDecks(d.pitchDecks || []); }
+            if (dataRoomRes?.ok) { const d = await dataRoomRes.json(); setDataRoomDocs(d.documents || []); }
           }
         }
       } catch (err) {
@@ -226,6 +272,77 @@ function DashboardContent() {
       toast.error('Failed to post announcement. Please try again.');
     } finally {
       setEventSubmitting(false);
+    }
+  };
+
+  const handleFundingSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!company) return;
+
+    const amountNum = parseFloat(fundingForm.amount);
+    if (!fundingForm.amount || isNaN(amountNum) || amountNum <= 0) {
+      toast.error('Amount must be greater than 0');
+      return;
+    }
+
+    setFundingSubmitting(true);
+    try {
+      const otherInvestors = fundingForm.otherInvestors
+        .split(',')
+        .map(s => s.trim())
+        .filter(Boolean);
+
+      const valuationNum = fundingForm.valuation ? parseFloat(fundingForm.valuation) : undefined;
+
+      const payload: Record<string, unknown> = {
+        roundType: fundingForm.roundType,
+        amount: amountNum,
+        currency: fundingForm.currency || 'USD',
+        date: fundingForm.date,
+        otherInvestors,
+      };
+      if (fundingForm.leadInvestor.trim()) payload.leadInvestor = fundingForm.leadInvestor.trim();
+      if (valuationNum && !isNaN(valuationNum)) payload.valuation = valuationNum;
+      if (fundingForm.blurb.trim()) payload.blurb = fundingForm.blurb.trim();
+      if (fundingForm.pressReleaseUrl.trim()) payload.pressReleaseUrl = fundingForm.pressReleaseUrl.trim();
+      if (fundingForm.pitchDeckUrl.trim()) payload.pitchDeckUrl = fundingForm.pitchDeckUrl.trim();
+
+      const res = await fetch('/api/funding-rounds/announce', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      if (res.ok) {
+        const result = await res.json();
+        if (result.fundingRound) {
+          setFundingAnnouncements(prev => [result.fundingRound, ...prev]);
+        }
+        if (result.companyEvent) {
+          setEvents(prev => [result.companyEvent, ...prev]);
+        }
+        setFundingForm({
+          roundType: 'seed',
+          amount: '',
+          currency: 'USD',
+          date: new Date().toISOString().split('T')[0],
+          leadInvestor: '',
+          otherInvestors: '',
+          valuation: '',
+          blurb: '',
+          pressReleaseUrl: '',
+          pitchDeckUrl: '',
+        });
+        toast.success('Funding round announced!');
+      } else {
+        const err = await res.json().catch(() => ({}));
+        toast.error(err.error?.message || err.error || 'Failed to announce funding round');
+      }
+    } catch (err) {
+      clientLogger.error('Funding announcement error', { error: err instanceof Error ? err.message : String(err) });
+      toast.error('Failed to announce funding round. Please try again.');
+    } finally {
+      setFundingSubmitting(false);
     }
   };
 
@@ -376,6 +493,133 @@ function DashboardContent() {
     } catch { toast.error('Failed to respond.'); }
   };
 
+  // --- Pitch Deck Handlers ---
+  const handlePitchDeckSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!company) return;
+    setPitchDeckSubmitting(true);
+    try {
+      const payload: Record<string, unknown> = {
+        companyId: company.id,
+        title: pitchDeckForm.title.trim(),
+        fileUrl: pitchDeckForm.fileUrl.trim(),
+        visibility: pitchDeckForm.visibility,
+        currency: pitchDeckForm.currency || 'USD',
+      };
+      if (pitchDeckForm.description.trim()) payload.description = pitchDeckForm.description.trim();
+      if (pitchDeckForm.roundType) payload.roundType = pitchDeckForm.roundType;
+      if (pitchDeckForm.amountRaising) {
+        const n = parseFloat(pitchDeckForm.amountRaising);
+        if (!Number.isNaN(n)) payload.amountRaising = n;
+      }
+
+      const res = await fetch('/api/pitch-decks', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      if (res.ok) {
+        const result = await res.json();
+        setPitchDecks(prev => [result.pitchDeck, ...prev]);
+        setPitchDeckForm({ title: '', description: '', fileUrl: '', visibility: 'logged_in', roundType: '', amountRaising: '', currency: 'USD' });
+        toast.success('Pitch deck uploaded!');
+      } else {
+        const err = await res.json().catch(() => ({}));
+        toast.error(err.error?.message || err.error || 'Failed to upload pitch deck');
+      }
+    } catch {
+      toast.error('Failed to upload pitch deck.');
+    } finally {
+      setPitchDeckSubmitting(false);
+    }
+  };
+
+  const handlePitchDeckDelete = async (id: string) => {
+    try {
+      const res = await fetch(`/api/pitch-decks/${id}`, { method: 'DELETE' });
+      if (res.ok) {
+        setPitchDecks(prev => prev.filter(d => d.id !== id));
+        toast.success('Pitch deck deleted.');
+      } else toast.error('Failed to delete pitch deck.');
+    } catch { toast.error('Failed to delete pitch deck.'); }
+  };
+
+  const handlePitchDeckVisibility = async (id: string, visibility: string) => {
+    try {
+      const res = await fetch(`/api/pitch-decks/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ visibility }),
+      });
+      if (res.ok) {
+        const result = await res.json();
+        setPitchDecks(prev => prev.map(d => d.id === id ? result.pitchDeck : d));
+        toast.success('Visibility updated.');
+      } else toast.error('Failed to update visibility.');
+    } catch { toast.error('Failed to update visibility.'); }
+  };
+
+  // --- Data Room Handlers ---
+  const handleDataRoomSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!company) return;
+    setDataRoomSubmitting(true);
+    try {
+      const payload: Record<string, unknown> = {
+        companyId: company.id,
+        title: dataRoomForm.title.trim(),
+        fileUrl: dataRoomForm.fileUrl.trim(),
+        visibility: dataRoomForm.visibility,
+        docType: dataRoomForm.docType || null,
+      };
+      if (dataRoomForm.description.trim()) payload.description = dataRoomForm.description.trim();
+
+      const res = await fetch('/api/data-room', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      if (res.ok) {
+        const result = await res.json();
+        setDataRoomDocs(prev => [result.document, ...prev]);
+        setDataRoomForm({ title: '', description: '', fileUrl: '', docType: 'other', visibility: 'invite_only' });
+        toast.success('Document uploaded!');
+      } else {
+        const err = await res.json().catch(() => ({}));
+        toast.error(err.error?.message || err.error || 'Failed to upload document');
+      }
+    } catch {
+      toast.error('Failed to upload document.');
+    } finally {
+      setDataRoomSubmitting(false);
+    }
+  };
+
+  const handleDataRoomDelete = async (id: string) => {
+    try {
+      const res = await fetch(`/api/data-room/${id}`, { method: 'DELETE' });
+      if (res.ok) {
+        setDataRoomDocs(prev => prev.filter(d => d.id !== id));
+        toast.success('Document deleted.');
+      } else toast.error('Failed to delete document.');
+    } catch { toast.error('Failed to delete document.'); }
+  };
+
+  const handleDataRoomVisibility = async (id: string, visibility: string) => {
+    try {
+      const res = await fetch(`/api/data-room/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ visibility }),
+      });
+      if (res.ok) {
+        const result = await res.json();
+        setDataRoomDocs(prev => prev.map(d => d.id === id ? result.document : d));
+        toast.success('Visibility updated.');
+      } else toast.error('Failed to update visibility.');
+    } catch { toast.error('Failed to update visibility.'); }
+  };
+
   const tabs = [
     { key: 'overview', label: 'Overview' },
     { key: 'listings', label: `Listings (${listings.length})` },
@@ -388,6 +632,9 @@ function DashboardContent() {
     { key: 'meetings', label: `Meetings (${meetingRequests.length})` },
     { key: 'profile', label: 'Edit Profile' },
     { key: 'announcements', label: `News (${events.length})` },
+    { key: 'funding', label: `Announce Round (${fundingAnnouncements.length})` },
+    { key: 'pitch-deck', label: `Pitch Deck (${pitchDecks.length})` },
+    { key: 'data-room', label: `Data Room (${dataRoomDocs.length})` },
     { key: 'analytics', label: 'Analytics' },
   ];
 
@@ -822,6 +1069,225 @@ function DashboardContent() {
                 <div className="text-center py-12">
                   <div className="text-4xl mb-3">📰</div>
                   <p className="text-sm text-slate-400">No events yet. Post your first announcement above.</p>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* ── Announce Funding Round Tab ── */}
+        {tab === 'funding' && (
+          <div className="space-y-6">
+            <div className="card p-6">
+              <h3 className="text-sm font-semibold text-white mb-1">Announce a Funding Round</h3>
+              <p className="text-xs text-slate-400 mb-4">
+                Submissions appear as &quot;self-reported&quot; on your public profile and the funding tracker.
+              </p>
+              <form onSubmit={handleFundingSubmit} className="space-y-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className={labelClass}>Round Type *</label>
+                    <select
+                      required
+                      value={fundingForm.roundType}
+                      onChange={e => setFundingForm(prev => ({ ...prev, roundType: e.target.value }))}
+                      className={inputClass}
+                    >
+                      <option value="pre_seed">Pre-Seed</option>
+                      <option value="seed">Seed</option>
+                      <option value="series_a">Series A</option>
+                      <option value="series_b">Series B</option>
+                      <option value="series_c">Series C</option>
+                      <option value="growth">Growth</option>
+                      <option value="bridge">Bridge</option>
+                      <option value="debt">Debt</option>
+                      <option value="other">Other</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className={labelClass}>Announcement Date *</label>
+                    <input
+                      type="date"
+                      required
+                      value={fundingForm.date}
+                      onChange={e => setFundingForm(prev => ({ ...prev, date: e.target.value }))}
+                      className={inputClass}
+                    />
+                  </div>
+                  <div>
+                    <label className={labelClass}>Amount Raised *</label>
+                    <input
+                      type="number"
+                      required
+                      min="0"
+                      step="any"
+                      value={fundingForm.amount}
+                      onChange={e => setFundingForm(prev => ({ ...prev, amount: e.target.value }))}
+                      placeholder="e.g., 5000000"
+                      className={inputClass}
+                    />
+                    <p className="text-[10px] text-slate-500 mt-1">Enter the full number, e.g. 5000000 for $5M.</p>
+                  </div>
+                  <div>
+                    <label className={labelClass}>Currency *</label>
+                    <input
+                      type="text"
+                      required
+                      maxLength={3}
+                      value={fundingForm.currency}
+                      onChange={e => setFundingForm(prev => ({ ...prev, currency: e.target.value.toUpperCase() }))}
+                      placeholder="USD"
+                      className={inputClass}
+                    />
+                  </div>
+                  <div>
+                    <label className={labelClass}>Lead Investor</label>
+                    <input
+                      type="text"
+                      maxLength={200}
+                      value={fundingForm.leadInvestor}
+                      onChange={e => setFundingForm(prev => ({ ...prev, leadInvestor: e.target.value }))}
+                      placeholder="e.g., Andreessen Horowitz"
+                      className={inputClass}
+                    />
+                  </div>
+                  <div>
+                    <label className={labelClass}>Valuation (optional)</label>
+                    <input
+                      type="number"
+                      min="0"
+                      step="any"
+                      value={fundingForm.valuation}
+                      onChange={e => setFundingForm(prev => ({ ...prev, valuation: e.target.value }))}
+                      placeholder="Post-money valuation"
+                      className={inputClass}
+                    />
+                  </div>
+                  <div className="sm:col-span-2">
+                    <label className={labelClass}>Other Investors (comma-separated)</label>
+                    <input
+                      type="text"
+                      value={fundingForm.otherInvestors}
+                      onChange={e => setFundingForm(prev => ({ ...prev, otherInvestors: e.target.value }))}
+                      placeholder="Sequoia, Founders Fund, ..."
+                      className={inputClass}
+                    />
+                  </div>
+                  <div className="sm:col-span-2">
+                    <label className={labelClass}>Pitch / Blurb ({fundingForm.blurb.length}/500)</label>
+                    <textarea
+                      rows={3}
+                      maxLength={500}
+                      value={fundingForm.blurb}
+                      onChange={e => setFundingForm(prev => ({ ...prev, blurb: e.target.value }))}
+                      placeholder="What will you do with this capital?"
+                      className={inputClass}
+                    />
+                  </div>
+                  <div>
+                    <label className={labelClass}>Press Release URL (optional)</label>
+                    <input
+                      type="url"
+                      value={fundingForm.pressReleaseUrl}
+                      onChange={e => setFundingForm(prev => ({ ...prev, pressReleaseUrl: e.target.value }))}
+                      placeholder="https://..."
+                      className={inputClass}
+                    />
+                  </div>
+                  <div>
+                    <label className={labelClass}>Pitch Deck Link (optional)</label>
+                    <input
+                      type="url"
+                      value={fundingForm.pitchDeckUrl}
+                      onChange={e => setFundingForm(prev => ({ ...prev, pitchDeckUrl: e.target.value }))}
+                      placeholder="https://..."
+                      className={inputClass}
+                    />
+                  </div>
+                </div>
+                <button
+                  type="submit"
+                  disabled={fundingSubmitting || !fundingForm.amount}
+                  className="px-5 py-2 bg-white hover:bg-slate-100 disabled:bg-white/[0.08] disabled:text-slate-500 text-slate-900 rounded-lg text-sm font-semibold transition-colors"
+                >
+                  {fundingSubmitting ? 'Announcing...' : 'Announce Round'}
+                </button>
+              </form>
+            </div>
+
+            <div>
+              <h3 className="text-sm font-semibold text-white mb-3">
+                Your Announcements ({fundingAnnouncements.length})
+              </h3>
+              {fundingAnnouncements.length > 0 ? (
+                <div className="space-y-3">
+                  {fundingAnnouncements.map((round: any) => {
+                    const fmt = (n: number | null | undefined) => {
+                      if (!n) return 'Undisclosed';
+                      if (n >= 1_000_000_000) return `$${(n / 1_000_000_000).toFixed(1)}B`;
+                      if (n >= 1_000_000) return `$${(n / 1_000_000).toFixed(1)}M`;
+                      if (n >= 1_000) return `$${(n / 1_000).toFixed(0)}K`;
+                      return `$${n.toFixed(0)}`;
+                    };
+                    return (
+                      <div key={round.id} className="card p-4">
+                        <div className="flex items-start justify-between gap-3 flex-wrap">
+                          <div className="min-w-0">
+                            <div className="flex items-center gap-2 mb-1 flex-wrap">
+                              <span className="text-xs font-bold px-2 py-0.5 bg-white/[0.08] rounded text-slate-300">
+                                {round.seriesLabel || round.roundType}
+                              </span>
+                              <span className="text-sm font-semibold text-emerald-400">
+                                {fmt(round.amount)}
+                              </span>
+                              {round.currency && round.currency !== 'USD' && (
+                                <span className="text-xs text-slate-400">{round.currency}</span>
+                              )}
+                              {round.source === 'self_reported' && (
+                                <span className="text-[10px] font-semibold px-2 py-0.5 rounded bg-blue-500/20 text-blue-400 border border-blue-500/30">
+                                  Self-reported
+                                </span>
+                              )}
+                            </div>
+                            {round.leadInvestor && (
+                              <div className="text-xs text-slate-300">
+                                Led by <span className="font-medium text-white">{round.leadInvestor}</span>
+                              </div>
+                            )}
+                            {round.investors && round.investors.length > 0 && (
+                              <div className="text-xs text-slate-500 mt-0.5">
+                                {round.investors.filter((i: string) => i !== round.leadInvestor).join(', ')}
+                              </div>
+                            )}
+                            {round.notes && <p className="text-xs text-slate-400 mt-1">{round.notes}</p>}
+                          </div>
+                          <div className="text-xs text-slate-500 whitespace-nowrap">
+                            {new Date(round.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                          </div>
+                        </div>
+                        {round.postValuation && (
+                          <div className="text-xs text-purple-400 mt-1">
+                            Valuation: {fmt(round.postValuation)}
+                          </div>
+                        )}
+                        {round.sourceUrl && (
+                          <a
+                            href={round.sourceUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-xs text-blue-400 hover:underline mt-2 inline-block"
+                          >
+                            Press release →
+                          </a>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="text-center py-12">
+                  <div className="text-4xl mb-3">💰</div>
+                  <p className="text-sm text-slate-400">No funding rounds announced yet. Share your latest round above.</p>
                 </div>
               )}
             </div>
@@ -1417,6 +1883,281 @@ function DashboardContent() {
                 </div>
               ) : (
                 <div className="text-center py-12"><div className="text-4xl mb-3">🤝</div><p className="text-sm text-slate-400">No partnership requests sent yet. Connect with other companies above.</p></div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* ── Pitch Deck Tab ── */}
+        {tab === 'pitch-deck' && (
+          <div className="space-y-6">
+            <div className="card p-5">
+              <h3 className="text-sm font-semibold text-white mb-4">Upload Pitch Deck</h3>
+              <form onSubmit={handlePitchDeckSubmit} className="space-y-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="sm:col-span-2">
+                    <label className={labelClass}>Title *</label>
+                    <input
+                      required maxLength={200}
+                      value={pitchDeckForm.title}
+                      onChange={e => setPitchDeckForm(p => ({ ...p, title: e.target.value }))}
+                      placeholder="e.g., Seed Round Pitch — Q2 2026"
+                      className={inputClass}
+                    />
+                  </div>
+                  <div className="sm:col-span-2">
+                    <label className={labelClass}>Description</label>
+                    <textarea
+                      rows={3} maxLength={5000}
+                      value={pitchDeckForm.description}
+                      onChange={e => setPitchDeckForm(p => ({ ...p, description: e.target.value }))}
+                      placeholder="Briefly describe this deck (teaser, one-liner, etc.)"
+                      className={inputClass}
+                    />
+                  </div>
+                  <div className="sm:col-span-2">
+                    <label className={labelClass}>Paste link to PDF (Google Drive, Dropbox, etc.) *</label>
+                    <input
+                      required type="url" maxLength={2000}
+                      value={pitchDeckForm.fileUrl}
+                      onChange={e => setPitchDeckForm(p => ({ ...p, fileUrl: e.target.value }))}
+                      placeholder="https://drive.google.com/file/d/..."
+                      className={inputClass}
+                    />
+                    <p className="text-xs text-slate-500 mt-1">Make sure the link is set to &ldquo;anyone with the link can view&rdquo;.</p>
+                  </div>
+                  <div>
+                    <label className={labelClass}>Visibility</label>
+                    <select
+                      value={pitchDeckForm.visibility}
+                      onChange={e => setPitchDeckForm(p => ({ ...p, visibility: e.target.value }))}
+                      className={inputClass}
+                    >
+                      <option value="public">Public — anyone</option>
+                      <option value="logged_in">Logged-in users only</option>
+                      <option value="invite_only">Invite only (owner/admin)</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className={labelClass}>Round Type</label>
+                    <select
+                      value={pitchDeckForm.roundType}
+                      onChange={e => setPitchDeckForm(p => ({ ...p, roundType: e.target.value }))}
+                      className={inputClass}
+                    >
+                      <option value="">—</option>
+                      <option value="pre_seed">Pre-seed</option>
+                      <option value="seed">Seed</option>
+                      <option value="series_a">Series A</option>
+                      <option value="series_b">Series B</option>
+                      <option value="series_c">Series C</option>
+                      <option value="growth">Growth</option>
+                      <option value="other">Other</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className={labelClass}>Amount Raising</label>
+                    <input
+                      type="number" min="0" step="1"
+                      value={pitchDeckForm.amountRaising}
+                      onChange={e => setPitchDeckForm(p => ({ ...p, amountRaising: e.target.value }))}
+                      placeholder="e.g., 2000000"
+                      className={inputClass}
+                    />
+                  </div>
+                  <div>
+                    <label className={labelClass}>Currency</label>
+                    <input
+                      maxLength={3}
+                      value={pitchDeckForm.currency}
+                      onChange={e => setPitchDeckForm(p => ({ ...p, currency: e.target.value.toUpperCase() }))}
+                      placeholder="USD"
+                      className={inputClass}
+                    />
+                  </div>
+                </div>
+                <button
+                  type="submit"
+                  disabled={pitchDeckSubmitting || !pitchDeckForm.title || !pitchDeckForm.fileUrl}
+                  className="px-5 py-2 bg-white hover:bg-slate-100 disabled:bg-white/[0.08] disabled:text-slate-500 text-slate-900 rounded-lg text-sm font-semibold transition-colors"
+                >
+                  {pitchDeckSubmitting ? 'Uploading...' : 'Upload Deck'}
+                </button>
+              </form>
+            </div>
+
+            <div>
+              <h3 className="text-sm font-semibold text-white mb-3">Your Pitch Decks ({pitchDecks.length})</h3>
+              {pitchDecks.length > 0 ? (
+                <div className="space-y-3">
+                  {pitchDecks.map(deck => (
+                    <div key={deck.id} className="card p-4">
+                      <div className="flex items-start justify-between gap-3 flex-wrap">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <a href={deck.fileUrl} target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-white hover:underline truncate">
+                              {deck.title}
+                            </a>
+                            {deck.roundType && (
+                              <span className="text-xs px-2 py-0.5 bg-white/[0.08] rounded text-slate-300">{deck.roundType.replace(/_/g, ' ')}</span>
+                            )}
+                            <span className="text-xs text-slate-500">{deck.views || 0} view{deck.views === 1 ? '' : 's'}</span>
+                          </div>
+                          {deck.description && <p className="text-xs text-slate-400 mt-1 line-clamp-2">{deck.description}</p>}
+                          {deck.amountRaising && (
+                            <p className="text-xs text-slate-500 mt-1">Raising: {deck.currency || 'USD'} {Number(deck.amountRaising).toLocaleString()}</p>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-2 shrink-0">
+                          <select
+                            value={deck.visibility}
+                            onChange={e => handlePitchDeckVisibility(deck.id, e.target.value)}
+                            className="text-xs bg-white/[0.06] border border-white/[0.1] rounded px-2 py-1 text-white"
+                          >
+                            <option value="public">Public</option>
+                            <option value="logged_in">Logged-in</option>
+                            <option value="invite_only">Invite only</option>
+                          </select>
+                          <button
+                            onClick={() => handlePitchDeckDelete(deck.id)}
+                            className="px-3 py-1.5 text-xs bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-lg transition-colors"
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-12">
+                  <div className="text-4xl mb-3">📊</div>
+                  <p className="text-sm text-slate-400">No pitch decks uploaded yet. Share your round with investors above.</p>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* ── Data Room Tab ── */}
+        {tab === 'data-room' && (
+          <div className="space-y-6">
+            <div className="card p-5">
+              <h3 className="text-sm font-semibold text-white mb-4">Upload Data Room Document</h3>
+              <form onSubmit={handleDataRoomSubmit} className="space-y-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="sm:col-span-2">
+                    <label className={labelClass}>Title *</label>
+                    <input
+                      required maxLength={200}
+                      value={dataRoomForm.title}
+                      onChange={e => setDataRoomForm(p => ({ ...p, title: e.target.value }))}
+                      placeholder="e.g., Cap Table Q2 2026"
+                      className={inputClass}
+                    />
+                  </div>
+                  <div className="sm:col-span-2">
+                    <label className={labelClass}>Description</label>
+                    <textarea
+                      rows={3} maxLength={5000}
+                      value={dataRoomForm.description}
+                      onChange={e => setDataRoomForm(p => ({ ...p, description: e.target.value }))}
+                      placeholder="Optional notes for reviewers"
+                      className={inputClass}
+                    />
+                  </div>
+                  <div className="sm:col-span-2">
+                    <label className={labelClass}>Paste link to PDF (Google Drive, Dropbox, etc.) *</label>
+                    <input
+                      required type="url" maxLength={2000}
+                      value={dataRoomForm.fileUrl}
+                      onChange={e => setDataRoomForm(p => ({ ...p, fileUrl: e.target.value }))}
+                      placeholder="https://drive.google.com/file/d/..."
+                      className={inputClass}
+                    />
+                  </div>
+                  <div>
+                    <label className={labelClass}>Document Type</label>
+                    <select
+                      value={dataRoomForm.docType}
+                      onChange={e => setDataRoomForm(p => ({ ...p, docType: e.target.value }))}
+                      className={inputClass}
+                    >
+                      <option value="term_sheet">Term Sheet</option>
+                      <option value="financials">Financials</option>
+                      <option value="cap_table">Cap Table</option>
+                      <option value="product_deck">Product Deck</option>
+                      <option value="market_research">Market Research</option>
+                      <option value="other">Other</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className={labelClass}>Visibility</label>
+                    <select
+                      value={dataRoomForm.visibility}
+                      onChange={e => setDataRoomForm(p => ({ ...p, visibility: e.target.value }))}
+                      className={inputClass}
+                    >
+                      <option value="public">Public — anyone</option>
+                      <option value="logged_in">Logged-in users only</option>
+                      <option value="invite_only">Invite only (owner/admin)</option>
+                    </select>
+                  </div>
+                </div>
+                <button
+                  type="submit"
+                  disabled={dataRoomSubmitting || !dataRoomForm.title || !dataRoomForm.fileUrl}
+                  className="px-5 py-2 bg-white hover:bg-slate-100 disabled:bg-white/[0.08] disabled:text-slate-500 text-slate-900 rounded-lg text-sm font-semibold transition-colors"
+                >
+                  {dataRoomSubmitting ? 'Uploading...' : 'Upload Document'}
+                </button>
+              </form>
+            </div>
+
+            <div>
+              <h3 className="text-sm font-semibold text-white mb-3">Your Documents ({dataRoomDocs.length})</h3>
+              {dataRoomDocs.length > 0 ? (
+                <div className="space-y-3">
+                  {dataRoomDocs.map(doc => (
+                    <div key={doc.id} className="card p-4">
+                      <div className="flex items-start justify-between gap-3 flex-wrap">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <a href={doc.fileUrl} target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-white hover:underline truncate">
+                              {doc.title}
+                            </a>
+                            {doc.docType && (
+                              <span className="text-xs px-2 py-0.5 bg-white/[0.08] rounded text-slate-300">{doc.docType.replace(/_/g, ' ')}</span>
+                            )}
+                          </div>
+                          {doc.description && <p className="text-xs text-slate-400 mt-1 line-clamp-2">{doc.description}</p>}
+                        </div>
+                        <div className="flex items-center gap-2 shrink-0">
+                          <select
+                            value={doc.visibility}
+                            onChange={e => handleDataRoomVisibility(doc.id, e.target.value)}
+                            className="text-xs bg-white/[0.06] border border-white/[0.1] rounded px-2 py-1 text-white"
+                          >
+                            <option value="public">Public</option>
+                            <option value="logged_in">Logged-in</option>
+                            <option value="invite_only">Invite only</option>
+                          </select>
+                          <button
+                            onClick={() => handleDataRoomDelete(doc.id)}
+                            className="px-3 py-1.5 text-xs bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-lg transition-colors"
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-12">
+                  <div className="text-4xl mb-3">🗂️</div>
+                  <p className="text-sm text-slate-400">No documents uploaded yet. Share financials, term sheets, and more above.</p>
+                </div>
               )}
             </div>
           </div>

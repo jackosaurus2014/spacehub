@@ -1,5 +1,7 @@
 'use client';
 
+import VerifiedBadge from '@/components/VerifiedBadge';
+
 interface Review {
   id: string;
   overallRating: number;
@@ -13,6 +15,8 @@ interface Review {
   providerResponse: string | null;
   providerRespondedAt: string | null;
   createdAt: string;
+  reviewerName?: string | null;
+  reviewerVerifiedBadge?: string | null;
 }
 
 interface ReviewCardProps {
@@ -38,11 +42,17 @@ export default function ReviewCard({ review }: ReviewCardProps) {
   return (
     <div className="card p-4 space-y-2">
       <div className="flex items-start justify-between">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <StarRating rating={review.overallRating} />
           {review.isVerified && (
             <span className="text-xs px-1.5 py-0.5 rounded bg-green-500/20 text-green-400 font-bold">
               Verified Purchase
+            </span>
+          )}
+          {review.reviewerName && (
+            <span className="text-xs text-slate-300 flex items-center gap-1">
+              {review.reviewerName}
+              <VerifiedBadge badge={review.reviewerVerifiedBadge} size="sm" />
             </span>
           )}
         </div>

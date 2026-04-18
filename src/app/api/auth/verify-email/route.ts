@@ -3,6 +3,7 @@ import prisma from '@/lib/db';
 import { validateBody, verifyEmailSchema } from '@/lib/validations';
 import { validationError, internalError } from '@/lib/errors';
 import { logger } from '@/lib/logger';
+import { recomputeVerificationBadge } from '@/lib/verification/auto-badge';
 
 export async function POST(req: NextRequest) {
   try {
@@ -36,6 +37,16 @@ export async function POST(req: NextRequest) {
         verificationToken: null,
       },
     });
+
+    // Auto-recompute the verifiedBadge (non-fatal if it fails).
+    try {
+      await recomputeVerificationBadge(user.id);
+    } catch (badgeErr) {
+      logger.error('recomputeVerificationBadge failed after email verify', {
+        userId: user.id,
+        error: badgeErr instanceof Error ? badgeErr.message : String(badgeErr),
+      });
+    }
 
     return NextResponse.json({
       success: true,

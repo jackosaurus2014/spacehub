@@ -414,6 +414,20 @@ function SecuritySection() {
         Update your password to keep your account secure
       </p>
 
+      {/* Verification */}
+      <div className="mb-6 pb-6 border-b border-white/[0.06]">
+        <h3 className="text-sm font-semibold text-white mb-1">Verified Badge</h3>
+        <p className="text-xs text-slate-400 mb-3">
+          Request a founder, investor, or media badge to appear next to your name across SpaceNexus.
+        </p>
+        <Link
+          href="/account/verification"
+          className="inline-block px-4 py-2 bg-white/[0.08] hover:bg-white/[0.12] text-white rounded-lg text-sm font-medium transition-colors"
+        >
+          Manage Verification
+        </Link>
+      </div>
+
       <form onSubmit={handleChangePassword} className="space-y-4 max-w-md">
         {/* Current Password */}
         <div>

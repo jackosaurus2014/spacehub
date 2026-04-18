@@ -161,6 +161,44 @@ export const dateRangeSchema = z.object({
   endDate: z.string().datetime().optional(),
 });
 
+// Introduction Request schemas
+export const INTRO_REQUEST_REASONS = [
+  'investment_opportunity',
+  'partnership',
+  'hiring',
+  'advice',
+  'other',
+] as const;
+
+export const createIntroRequestSchema = z
+  .object({
+    targetUserId: z.string().min(1).optional(),
+    targetCompanyId: z.string().min(1).optional(),
+    message: z
+      .string()
+      .transform((v) => stripHtml(v).trim())
+      .pipe(
+        z
+          .string()
+          .min(200, 'Message must be at least 200 characters')
+          .max(800, 'Message must be at most 800 characters')
+      ),
+    reason: z.enum(INTRO_REQUEST_REASONS).optional(),
+  })
+  .refine(
+    (data) => Boolean(data.targetUserId) !== Boolean(data.targetCompanyId),
+    { message: 'Provide exactly one of targetUserId or targetCompanyId' }
+  );
+
+export const respondIntroSchema = z.object({
+  action: z.enum(['accept', 'decline']),
+  responseMessage: z
+    .string()
+    .transform((v) => stripHtml(v).trim())
+    .pipe(z.string().max(1000, 'Response is too long'))
+    .optional(),
+});
+
 /**
  * Validate request body and return parsed data or error response
  */
@@ -337,8 +375,31 @@ export const webhookUnsubscribeSchema = z.object({
 });
 
 // Valid search modules
-export const SEARCH_MODULES = ['news', 'companies', 'events', 'opportunities', 'blogs'] as const;
+export const SEARCH_MODULES = [
+  'news',
+  'companies',
+  'events',
+  'opportunities',
+  'blogs',
+  'jobs',
+  'investors',
+  'marketplace',
+  'forum',
+] as const;
 export type SearchModule = (typeof SEARCH_MODULES)[number];
+
+// Global search entity types (a superset useful for the unified /search UI)
+export const GLOBAL_SEARCH_TYPES = [
+  'all',
+  'news',
+  'companies',
+  'jobs',
+  'investors',
+  'marketplace',
+  'forum',
+  'blog',
+] as const;
+export type GlobalSearchType = (typeof GLOBAL_SEARCH_TYPES)[number];
 
 // Sort options for search
 export const SEARCH_SORT_OPTIONS = ['relevance', 'date', 'title'] as const;
@@ -1726,6 +1787,49 @@ export type ChangePasswordData = z.infer<typeof changePasswordSchema>;
 export type UpdateProfileData = z.infer<typeof updateProfileSchema>;
 export type NotificationPreferencesData = z.infer<typeof notificationPreferencesSchema>;
 
+// ============================================================
+// Verified Badge Request Schema
+// ============================================================
+
+/** Manual-review badges users can request. email/domain/admin are auto-assigned. */
+export const REQUESTABLE_VERIFICATION_BADGES = ['founder', 'investor', 'media'] as const;
+export type RequestableVerificationBadge = (typeof REQUESTABLE_VERIFICATION_BADGES)[number];
+
+const optionalVerificationUrl = z
+  .string()
+  .trim()
+  .max(500, 'URL is too long')
+  .optional()
+  .transform((v) => (v && v.length > 0 ? v : undefined))
+  .refine(
+    (v) => !v || /^https?:\/\/.+/i.test(v),
+    { message: 'Must be a valid http(s) URL' }
+  );
+
+export const requestVerificationSchema = z.object({
+  badge: z.enum(REQUESTABLE_VERIFICATION_BADGES),
+  justification: z
+    .string()
+    .trim()
+    .min(50, 'Justification must be at least 50 characters')
+    .max(1000, 'Justification must be 1000 characters or less'),
+  website: optionalVerificationUrl,
+  linkedinUrl: optionalVerificationUrl,
+  supportingUrl: optionalVerificationUrl,
+});
+
+export type RequestVerificationData = z.infer<typeof requestVerificationSchema>;
+
+// Admin verification review decision
+export const reviewVerificationSchema = z.object({
+  userId: z.string().min(1, 'userId is required'),
+  decision: z.enum(['approve', 'deny']),
+  badge: z.enum(REQUESTABLE_VERIFICATION_BADGES).optional(),
+  reason: z.string().trim().max(500, 'Reason is too long').optional(),
+});
+
+export type ReviewVerificationData = z.infer<typeof reviewVerificationSchema>;
+
 // Sponsor checkout
 export const sponsorCheckoutSchema = z.object({
   companySlug: z.string().min(1),
@@ -1922,6 +2026,91 @@ export type GigOpportunityData = z.infer<typeof gigOpportunitySchema>;
 export type EmployerProfileData = z.infer<typeof employerProfileSchema>;
 
 // ============================================================
+// Gig Work Marketplace
+// ============================================================
+
+/**
+ * Schema for creating a new gig (POST /api/gig-work).
+ * Applies sensible defaults and allows an optional companyName so that a
+ * user without an EmployerProfile can post a gig (profile auto-created).
+ */
+export const createGigSchema = z.object({
+  title: z.string().min(1, 'Title is required').max(200).transform(v => stripHtml(v.trim())),
+  description: z.string().min(10, 'Description must be at least 10 characters').max(10000).transform(v => stripHtml(v.trim())),
+  category: z.enum(GIG_CATEGORIES),
+  skills: z.array(z.string().min(1).max(50)).min(1, 'At least one skill is required').max(30),
+  workType: z.enum(WORK_TYPES),
+  duration: z.string().max(100).optional().nullable(),
+  hoursPerWeek: z.number().int().min(1).max(168).optional().nullable(),
+  budgetMin: z.number().int().min(0).optional().nullable(),
+  budgetMax: z.number().int().min(0).optional().nullable(),
+  budgetType: z.enum(BUDGET_TYPES).default('hourly'),
+  location: z.string().max(200).optional().nullable(),
+  remoteOk: z.boolean().default(true),
+  clearanceRequired: z.boolean().default(false),
+  companyName: z.string().max(200).optional().nullable(),
+}).refine(
+  (data) => {
+    if (data.budgetMin != null && data.budgetMax != null) {
+      return data.budgetMax >= data.budgetMin;
+    }
+    return true;
+  },
+  { message: 'budgetMax must be greater than or equal to budgetMin', path: ['budgetMax'] }
+);
+
+/**
+ * Schema for updating a gig (PATCH /api/gig-work/[id]).
+ * All fields optional; refine enforces budget ordering when both provided.
+ */
+export const updateGigSchema = z.object({
+  title: z.string().min(1).max(200).transform(v => stripHtml(v.trim())).optional(),
+  description: z.string().min(10).max(10000).transform(v => stripHtml(v.trim())).optional(),
+  category: z.enum(GIG_CATEGORIES).optional(),
+  skills: z.array(z.string().min(1).max(50)).min(1).max(30).optional(),
+  workType: z.enum(WORK_TYPES).optional(),
+  duration: z.string().max(100).optional().nullable(),
+  hoursPerWeek: z.number().int().min(1).max(168).optional().nullable(),
+  budgetMin: z.number().int().min(0).optional().nullable(),
+  budgetMax: z.number().int().min(0).optional().nullable(),
+  budgetType: z.enum(BUDGET_TYPES).optional(),
+  location: z.string().max(200).optional().nullable(),
+  remoteOk: z.boolean().optional(),
+  clearanceRequired: z.boolean().optional(),
+  isActive: z.boolean().optional(),
+}).refine(
+  (data) => {
+    if (data.budgetMin != null && data.budgetMax != null) {
+      return data.budgetMax >= data.budgetMin;
+    }
+    return true;
+  },
+  { message: 'budgetMax must be greater than or equal to budgetMin', path: ['budgetMax'] }
+);
+
+/**
+ * Schema for applying to a gig (POST /api/gig-work/[id]/apply).
+ * Captures a short cover note and optional contact details.
+ */
+export const gigApplicationSchema = z.object({
+  coverNote: z.string().min(10, 'Cover note must be at least 10 characters').max(2000).transform(v => stripHtml(v.trim())),
+  proposedRate: z.number().int().min(0).max(100000).optional().nullable(),
+  availableFrom: z.string().max(100).optional().nullable(),
+  contactEmail: z.preprocess(
+    v => (typeof v === 'string' && v.trim() === '') ? null : v,
+    z.string().email().max(255).nullable().optional()
+  ),
+  portfolioUrl: z.preprocess(
+    v => (typeof v === 'string' && v.trim() === '') ? null : v,
+    z.string().url().max(500).nullable().optional()
+  ),
+});
+
+export type CreateGigData = z.infer<typeof createGigSchema>;
+export type UpdateGigData = z.infer<typeof updateGigSchema>;
+export type GigApplicationData = z.infer<typeof gigApplicationSchema>;
+
+// ============================================================
 // Activity Tracking (usage analytics)
 // ============================================================
 
@@ -1931,4 +2120,398 @@ export const activityTrackSchema = z.object({
   metadata: z.record(z.string(), z.unknown()).optional().nullable(),
 });
 
+// ============================================================
+// Speaking Opportunities (Wave 1)
+// ============================================================
+
+const SPEAKING_STATUSES = ['pending', 'approved', 'rejected', 'expired'] as const;
+
+/**
+ * Normalise a date-ish input (YYYY-MM-DD, ISO string, or Date) into a Date.
+ * Returns null when the input is empty or cannot be parsed.
+ */
+const dateInput = z.preprocess(
+  (v) => {
+    if (v === null || v === undefined) return null;
+    if (v instanceof Date) return v;
+    if (typeof v === 'string') {
+      const trimmed = v.trim();
+      if (!trimmed) return null;
+      const d = new Date(trimmed);
+      return isNaN(d.getTime()) ? v : d;
+    }
+    return v;
+  },
+  z.date({ message: 'Invalid date' }).nullable().optional()
+);
+
+const urlOrEmpty = z.preprocess(
+  (v) => (typeof v === 'string' && v.trim() === '' ? null : v),
+  z.string().url('Must be a valid URL').max(2048).nullable().optional()
+);
+
+const emailOrEmpty = z.preprocess(
+  (v) => (typeof v === 'string' && v.trim() === '' ? null : v),
+  z.string().email('Must be a valid email').max(255).nullable().optional()
+);
+
+const stringOrEmpty = (max: number) =>
+  z.preprocess(
+    (v) => (typeof v === 'string' && v.trim() === '' ? null : v),
+    z.string().max(max).nullable().optional()
+  );
+
+export const createSpeakingOpportunitySchema = z
+  .object({
+    title: z
+      .string()
+      .min(5, 'Title must be at least 5 characters')
+      .max(300, 'Title is too long')
+      .transform((v) => stripHtml(v).trim()),
+    organization: z
+      .string()
+      .min(2, 'Organization is required')
+      .max(200, 'Organization name is too long')
+      .transform((v) => stripHtml(v).trim()),
+    conferenceName: stringOrEmpty(200),
+    topic: z
+      .string()
+      .min(2, 'Topic is required')
+      .max(200, 'Topic is too long')
+      .transform((v) => stripHtml(v).trim()),
+    description: z
+      .string()
+      .min(20, 'Description must be at least 20 characters')
+      .max(10000, 'Description is too long')
+      .transform((v) => stripHtml(v).trim()),
+    eventDate: z.preprocess(
+      (v) => {
+        if (v instanceof Date) return v;
+        if (typeof v === 'string' && v.trim()) {
+          const d = new Date(v.trim());
+          return isNaN(d.getTime()) ? v : d;
+        }
+        return v;
+      },
+      z.date({ message: 'Event date is required' })
+    ),
+    submissionDeadline: dateInput,
+    location: stringOrEmpty(200),
+    isRemote: z.boolean().optional().default(false),
+    compensation: stringOrEmpty(200),
+    audienceSize: z
+      .preprocess(
+        (v) => {
+          if (v === null || v === undefined || v === '') return null;
+          if (typeof v === 'string') {
+            const n = parseInt(v, 10);
+            return isNaN(n) ? v : n;
+          }
+          return v;
+        },
+        z.number().int().min(0).max(1_000_000).nullable().optional()
+      ),
+    cfpUrl: urlOrEmpty,
+    contactEmail: emailOrEmpty,
+    contactName: stringOrEmpty(200),
+    tags: z
+      .array(z.string().min(1).max(60).transform((v) => stripHtml(v).trim().toLowerCase()))
+      .max(15, 'Too many tags')
+      .optional()
+      .default([]),
+  })
+  .superRefine((data, ctx) => {
+    // eventDate must be today or in the future
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    if (data.eventDate < today) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['eventDate'],
+        message: 'Event date must be today or in the future',
+      });
+    }
+    // submissionDeadline (if set) must be on or before eventDate
+    if (data.submissionDeadline && data.submissionDeadline > data.eventDate) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['submissionDeadline'],
+        message: 'Submission deadline must be on or before the event date',
+      });
+    }
+  });
+
+export const updateSpeakingOpportunitySchema = z
+  .object({
+    title: z
+      .string()
+      .min(5)
+      .max(300)
+      .transform((v) => stripHtml(v).trim())
+      .optional(),
+    organization: z
+      .string()
+      .min(2)
+      .max(200)
+      .transform((v) => stripHtml(v).trim())
+      .optional(),
+    conferenceName: stringOrEmpty(200),
+    topic: z
+      .string()
+      .min(2)
+      .max(200)
+      .transform((v) => stripHtml(v).trim())
+      .optional(),
+    description: z
+      .string()
+      .min(20)
+      .max(10000)
+      .transform((v) => stripHtml(v).trim())
+      .optional(),
+    eventDate: z
+      .preprocess(
+        (v) => {
+          if (v instanceof Date) return v;
+          if (typeof v === 'string' && v.trim()) {
+            const d = new Date(v.trim());
+            return isNaN(d.getTime()) ? v : d;
+          }
+          return v;
+        },
+        z.date()
+      )
+      .optional(),
+    submissionDeadline: dateInput,
+    location: stringOrEmpty(200),
+    isRemote: z.boolean().optional(),
+    compensation: stringOrEmpty(200),
+    audienceSize: z
+      .preprocess(
+        (v) => {
+          if (v === null || v === undefined || v === '') return null;
+          if (typeof v === 'string') {
+            const n = parseInt(v, 10);
+            return isNaN(n) ? v : n;
+          }
+          return v;
+        },
+        z.number().int().min(0).max(1_000_000).nullable().optional()
+      ),
+    cfpUrl: urlOrEmpty,
+    contactEmail: emailOrEmpty,
+    contactName: stringOrEmpty(200),
+    tags: z
+      .array(z.string().min(1).max(60).transform((v) => stripHtml(v).trim().toLowerCase()))
+      .max(15)
+      .optional(),
+    // Admin-only fields — enforced at route level
+    status: z.enum(SPEAKING_STATUSES).optional(),
+    featured: z.boolean().optional(),
+  })
+  .superRefine((data, ctx) => {
+    if (data.eventDate && data.submissionDeadline && data.submissionDeadline > data.eventDate) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['submissionDeadline'],
+        message: 'Submission deadline must be on or before the event date',
+      });
+    }
+  });
+
+export type CreateSpeakingOpportunityInput = z.infer<typeof createSpeakingOpportunitySchema>;
+export type UpdateSpeakingOpportunityInput = z.infer<typeof updateSpeakingOpportunitySchema>;
+export const SPEAKING_OPPORTUNITY_STATUSES = SPEAKING_STATUSES;
+
 export type ActivityTrackData = z.infer<typeof activityTrackSchema>;
+
+// ============================================================
+// Pitch Deck + Data Room
+// ============================================================
+
+/** Safe URL schema: http(s) only, rejects javascript: and data: URIs. */
+const safeUrlSchema = z
+  .string()
+  .url('Must be a valid URL')
+  .max(2000, 'URL is too long')
+  .refine(
+    (v) => {
+      try {
+        const u = new URL(v);
+        return u.protocol === 'http:' || u.protocol === 'https:';
+      } catch {
+        return false;
+      }
+    },
+    { message: 'URL must use http:// or https://' }
+  );
+
+export const PITCH_DECK_VISIBILITY = ['public', 'logged_in', 'invite_only'] as const;
+export const PITCH_DECK_ROUND_TYPES = ['pre_seed', 'seed', 'series_a', 'series_b', 'series_c', 'growth', 'other'] as const;
+export const DATA_ROOM_DOC_TYPES = ['term_sheet', 'financials', 'cap_table', 'product_deck', 'market_research', 'other'] as const;
+export const DATA_ROOM_VISIBILITY = ['public', 'logged_in', 'invite_only'] as const;
+
+export const createPitchDeckSchema = z.object({
+  companyId: z.string().min(1, 'companyId is required').max(200),
+  title: z.string().min(1, 'Title is required').max(200).transform(v => stripHtml(v.trim())),
+  description: z.string().max(5000).transform(v => stripHtml(v.trim())).optional().nullable(),
+  fileUrl: safeUrlSchema,
+  fileSize: z.number().int().min(0).max(500 * 1024 * 1024).optional().nullable(),
+  visibility: z.enum(PITCH_DECK_VISIBILITY).default('logged_in'),
+  roundType: z.enum(PITCH_DECK_ROUND_TYPES).optional().nullable(),
+  amountRaising: z.number().min(0).max(1e12).optional().nullable(),
+  currency: z.string().length(3).transform(v => v.toUpperCase()).optional().nullable(),
+});
+
+export const updatePitchDeckSchema = z.object({
+  title: z.string().min(1).max(200).transform(v => stripHtml(v.trim())).optional(),
+  description: z.string().max(5000).transform(v => stripHtml(v.trim())).optional().nullable(),
+  fileUrl: safeUrlSchema.optional(),
+  fileSize: z.number().int().min(0).max(500 * 1024 * 1024).optional().nullable(),
+  visibility: z.enum(PITCH_DECK_VISIBILITY).optional(),
+  roundType: z.enum(PITCH_DECK_ROUND_TYPES).optional().nullable(),
+  amountRaising: z.number().min(0).max(1e12).optional().nullable(),
+  currency: z.string().length(3).transform(v => v.toUpperCase()).optional().nullable(),
+});
+
+export const createDataRoomDocSchema = z.object({
+  companyId: z.string().min(1, 'companyId is required').max(200),
+  title: z.string().min(1, 'Title is required').max(200).transform(v => stripHtml(v.trim())),
+  description: z.string().max(5000).transform(v => stripHtml(v.trim())).optional().nullable(),
+  fileUrl: safeUrlSchema,
+  fileSize: z.number().int().min(0).max(500 * 1024 * 1024).optional().nullable(),
+  docType: z.enum(DATA_ROOM_DOC_TYPES).optional().nullable(),
+  visibility: z.enum(DATA_ROOM_VISIBILITY).default('invite_only'),
+});
+
+export const updateDataRoomDocSchema = z.object({
+  title: z.string().min(1).max(200).transform(v => stripHtml(v.trim())).optional(),
+  description: z.string().max(5000).transform(v => stripHtml(v.trim())).optional().nullable(),
+  fileUrl: safeUrlSchema.optional(),
+  fileSize: z.number().int().min(0).max(500 * 1024 * 1024).optional().nullable(),
+  docType: z.enum(DATA_ROOM_DOC_TYPES).optional().nullable(),
+  visibility: z.enum(DATA_ROOM_VISIBILITY).optional(),
+});
+
+export type CreatePitchDeckData = z.infer<typeof createPitchDeckSchema>;
+export type UpdatePitchDeckData = z.infer<typeof updatePitchDeckSchema>;
+export type CreateDataRoomDocData = z.infer<typeof createDataRoomDocSchema>;
+export type UpdateDataRoomDocData = z.infer<typeof updateDataRoomDocSchema>;
+
+// ─── Funding Round Announcements ──────────────────────────────────────────────
+
+export const FUNDING_ROUND_TYPES = [
+  'pre_seed',
+  'seed',
+  'series_a',
+  'series_b',
+  'series_c',
+  'growth',
+  'bridge',
+  'debt',
+  'other',
+] as const;
+
+/** Map internal round_type to a human-friendly Series label for UI/table display */
+export const FUNDING_ROUND_TYPE_LABELS: Record<(typeof FUNDING_ROUND_TYPES)[number], string> = {
+  pre_seed: 'Pre-Seed',
+  seed: 'Seed',
+  series_a: 'Series A',
+  series_b: 'Series B',
+  series_c: 'Series C',
+  growth: 'Growth',
+  bridge: 'Bridge',
+  debt: 'Debt',
+  other: 'Other',
+};
+
+export const announceFundingRoundSchema = z.object({
+  roundType: z.enum(FUNDING_ROUND_TYPES, { message: 'Please select a valid round type' }),
+  amount: z.number({ message: 'Amount is required' })
+    .positive('Amount must be greater than 0')
+    .max(1_000_000_000_000, 'Amount is unreasonably large'),
+  currency: z.string()
+    .min(3, 'Currency must be a 3-letter code')
+    .max(3, 'Currency must be a 3-letter code')
+    .transform(v => v.trim().toUpperCase())
+    .default('USD'),
+  date: z.string().refine(v => !isNaN(Date.parse(v)), 'Invalid date'),
+  leadInvestor: z.string()
+    .max(200, 'Lead investor name is too long')
+    .transform(v => stripHtml(v.trim()))
+    .optional()
+    .nullable(),
+  otherInvestors: z.array(z.string().min(1).max(200).transform(v => stripHtml(v.trim())))
+    .max(50, 'Too many investors listed')
+    .optional()
+    .default([]),
+  valuation: z.number()
+    .nonnegative('Valuation cannot be negative')
+    .max(10_000_000_000_000, 'Valuation is unreasonably large')
+    .optional()
+    .nullable(),
+  blurb: z.string()
+    .max(500, 'Blurb must be 500 characters or fewer')
+    .transform(v => stripHtml(v.trim()))
+    .optional()
+    .nullable(),
+  pressReleaseUrl: z.preprocess(
+    v => (typeof v === 'string' && v.trim() === '') ? null : v,
+    z.string().url('Press release URL must be a valid URL').max(1000).nullable().optional()
+  ),
+  pitchDeckUrl: z.preprocess(
+    v => (typeof v === 'string' && v.trim() === '') ? null : v,
+    z.string().url('Pitch deck URL must be a valid URL').max(1000).nullable().optional()
+  ),
+});
+
+export type AnnounceFundingRoundInput = z.infer<typeof announceFundingRoundSchema>;
+
+// ============================================================
+// Company Announcements (Follow + Fan-out system)
+// ============================================================
+
+const ANNOUNCEMENT_CATEGORIES = ['general', 'product', 'hiring', 'funding', 'milestone'] as const;
+
+export const createCompanyAnnouncementSchema = z.object({
+  title: z
+    .string()
+    .min(3, 'Title must be at least 3 characters')
+    .max(200, 'Title must be 200 characters or fewer')
+    .transform(v => stripHtml(v.trim())),
+  body: z
+    .string()
+    .min(5, 'Body must be at least 5 characters')
+    .max(2000, 'Body must be 2000 characters or fewer')
+    .transform(v => v.trim()),
+  linkUrl: z.preprocess(
+    v => (typeof v === 'string' && v.trim() === '') ? null : v,
+    z.string().url('Link URL must be a valid URL').max(1000).nullable().optional()
+  ),
+  category: z.enum(ANNOUNCEMENT_CATEGORIES).optional().default('general'),
+  pinned: z.boolean().optional().default(false),
+});
+
+export const updateCompanyAnnouncementSchema = z.object({
+  title: z
+    .string()
+    .min(3, 'Title must be at least 3 characters')
+    .max(200, 'Title must be 200 characters or fewer')
+    .transform(v => stripHtml(v.trim()))
+    .optional(),
+  body: z
+    .string()
+    .min(5, 'Body must be at least 5 characters')
+    .max(2000, 'Body must be 2000 characters or fewer')
+    .transform(v => v.trim())
+    .optional(),
+  linkUrl: z.preprocess(
+    v => (typeof v === 'string' && v.trim() === '') ? null : v,
+    z.string().url('Link URL must be a valid URL').max(1000).nullable().optional()
+  ),
+  category: z.enum(ANNOUNCEMENT_CATEGORIES).optional(),
+  pinned: z.boolean().optional(),
+});
+
+export type CreateCompanyAnnouncementInput = z.infer<typeof createCompanyAnnouncementSchema>;
+export type UpdateCompanyAnnouncementInput = z.infer<typeof updateCompanyAnnouncementSchema>;
+

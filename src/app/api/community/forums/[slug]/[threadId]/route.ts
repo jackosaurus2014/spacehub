@@ -47,12 +47,12 @@ export async function GET(
       where: { id: threadId },
       include: {
         author: {
-          select: { id: true, name: true, email: true },
+          select: { id: true, name: true, email: true, verifiedBadge: true },
         },
         posts: {
           include: {
             author: {
-              select: { id: true, name: true, email: true },
+              select: { id: true, name: true, email: true, verifiedBadge: true },
             },
           },
           orderBy: { createdAt: 'asc' },
@@ -233,7 +233,7 @@ export async function POST(
         },
         include: {
           author: {
-            select: { id: true, name: true, email: true },
+            select: { id: true, name: true, email: true, verifiedBadge: true },
           },
         },
       }),
@@ -402,7 +402,7 @@ export async function PATCH(
       data: updateData,
       include: {
         author: {
-          select: { id: true, name: true, email: true },
+          select: { id: true, name: true, email: true, verifiedBadge: true },
         },
         _count: {
           select: { posts: true },

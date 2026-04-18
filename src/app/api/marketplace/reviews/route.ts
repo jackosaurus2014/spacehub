@@ -19,7 +19,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'companyId is required' }, { status: 400 });
     }
 
-    const [reviews, total] = await Promise.all([
+    const [reviewsRaw, total] = await Promise.all([
       prisma.providerReview.findMany({
         where: { companyId, status: 'published' },
         orderBy: { createdAt: 'desc' },
@@ -45,6 +45,25 @@ export async function GET(request: NextRequest) {
       }),
       prisma.providerReview.count({ where: { companyId, status: 'published' } }),
     ]);
+
+    // Join reviewer user details (name + verifiedBadge) for rendering.
+    const reviewerIds = Array.from(new Set(reviewsRaw.map((r) => r.reviewerUserId)));
+    const reviewers = reviewerIds.length
+      ? await prisma.user.findMany({
+          where: { id: { in: reviewerIds } },
+          select: { id: true, name: true, verifiedBadge: true },
+        })
+      : [];
+    const reviewerMap = new Map(reviewers.map((u) => [u.id, u]));
+
+    const reviews = reviewsRaw.map((r) => {
+      const reviewer = reviewerMap.get(r.reviewerUserId);
+      return {
+        ...r,
+        reviewerName: reviewer?.name ?? null,
+        reviewerVerifiedBadge: reviewer?.verifiedBadge ?? null,
+      };
+    });
 
     // Calculate averages
     const avgRatings = reviews.length > 0 ? {

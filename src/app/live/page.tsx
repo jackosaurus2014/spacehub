@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
+import { useState, useEffect, Suspense, useMemo } from 'react';
 import Link from 'next/link';
 import StreamEmbed from '@/components/live/StreamEmbed';
 import TelemetryPanel from '@/components/live/TelemetryPanel';
@@ -9,9 +9,7 @@ import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import { clientLogger } from '@/lib/client-logger';
-import LiveBlog from '@/components/live/LiveBlog';
-import RelatedModules from '@/components/ui/RelatedModules';
-import { PAGE_RELATIONS } from '@/lib/module-relationships';
+import LiveStreamsHeroSection from '@/components/livestreams/LiveStreamsHeroSection';
 
 interface LiveStream {
   id: string;
@@ -152,12 +150,31 @@ function UpcomingLaunchCard({ launch }: { launch: typeof UPCOMING_LAUNCHES[numbe
   );
 }
 
+type StreamFilter = 'live' | 'today' | 'week' | 'recordings';
+
+function classifyStream(stream: LiveStream): Exclude<StreamFilter, 'recordings'> | null {
+  const now = Date.now();
+  const scheduledMs = new Date(stream.scheduledTime).getTime();
+  const diffMs = scheduledMs - now;
+
+  if (stream.isLive) return 'live';
+
+  // Past streams don't belong in upcoming filters
+  if (diffMs < -60 * 60 * 1000) return null;
+
+  const oneDay = 24 * 60 * 60 * 1000;
+  if (diffMs <= oneDay) return 'today';
+  if (diffMs <= 7 * oneDay) return 'week';
+  return null;
+}
+
 function LiveHubContent() {
   const [data, setData] = useState<StreamsData | null>(null);
   const [loading, setLoading] = useState(true);
   const [selectedStream, setSelectedStream] = useState<LiveStream | null>(null);
   const [countdown, setCountdown] = useState<string>('');
   const [error, setError] = useState<string | null>(null);
+  const [filter, setFilter] = useState<StreamFilter>('live');
 
   // Fetch streams data
   useEffect(() => {
@@ -222,6 +239,34 @@ function LiveHubContent() {
     return () => clearInterval(interval);
   }, [selectedStream]);
 
+  const streams = useMemo(() => data?.streams || [], [data?.streams]);
+  const upcomingStreams = useMemo(
+    () => streams.filter((s) => !s.isLive).slice(0, 5),
+    [streams],
+  );
+  const liveStreams = useMemo(() => streams.filter((s) => s.isLive), [streams]);
+  const todayStreams = useMemo(
+    () => streams.filter((s) => classifyStream(s) === 'today'),
+    [streams],
+  );
+  const weekStreams = useMemo(
+    () => streams.filter((s) => classifyStream(s) === 'week'),
+    [streams],
+  );
+
+  const filteredStreams = useMemo(() => {
+    switch (filter) {
+      case 'live':
+        return liveStreams;
+      case 'today':
+        return todayStreams;
+      case 'week':
+        return weekStreams;
+      case 'recordings':
+        return [];
+    }
+  }, [filter, liveStreams, todayStreams, weekStreams]);
+
   if (loading) {
     return (
       <div className="min-h-screen flex justify-center py-20">
@@ -229,9 +274,6 @@ function LiveHubContent() {
       </div>
     );
   }
-
-  const streams = data?.streams || [];
-  const upcomingStreams = streams.filter((s) => !s.isLive).slice(0, 5);
 
   return (
     <div className="min-h-screen">
@@ -242,6 +284,138 @@ function LiveHubContent() {
           icon="📡"
           accentColor="cyan"
         />
+
+        {/* Prominent hero: live + imminent missions */}
+        <div className="mb-8">
+          <LiveStreamsHeroSection />
+        </div>
+
+        {/* Filter tabs */}
+        <div className="mb-6 flex flex-wrap gap-2" role="tablist" aria-label="Filter livestreams">
+          {([
+            { id: 'live', label: 'Live now', count: liveStreams.length },
+            { id: 'today', label: 'Today', count: todayStreams.length },
+            { id: 'week', label: 'This week', count: weekStreams.length },
+            { id: 'recordings', label: 'Recordings', count: 0 },
+          ] as { id: StreamFilter; label: string; count: number }[]).map((tab) => {
+            const isActive = filter === tab.id;
+            return (
+              <button
+                key={tab.id}
+                role="tab"
+                type="button"
+                aria-selected={isActive}
+                onClick={() => setFilter(tab.id)}
+                className={`rounded-full border px-4 py-2 text-sm font-semibold transition ${
+                  isActive
+                    ? 'border-white bg-white text-black'
+                    : 'border-white/15 bg-white/[0.03] text-white/70 hover:border-white/30 hover:text-white'
+                }`}
+              >
+                <span className="inline-flex items-center gap-2">
+                  {tab.id === 'live' && (
+                    <span className="relative inline-flex h-2 w-2">
+                      <span
+                        className={`absolute inline-flex h-full w-full rounded-full ${
+                          tab.count > 0 ? 'animate-ping' : ''
+                        }`}
+                        style={{ backgroundColor: '#ff0033', opacity: tab.count > 0 ? 0.75 : 0.3 }}
+                      />
+                      <span
+                        className="relative inline-flex h-2 w-2 rounded-full"
+                        style={{ backgroundColor: '#ff0033' }}
+                      />
+                    </span>
+                  )}
+                  {tab.label}
+                  {tab.count > 0 && (
+                    <span
+                      className={`rounded-full px-1.5 py-0.5 text-[10px] font-bold ${
+                        isActive ? 'bg-black/10 text-black' : 'bg-white/10 text-white/80'
+                      }`}
+                    >
+                      {tab.count}
+                    </span>
+                  )}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Filtered stream grid */}
+        {filter !== 'recordings' && filteredStreams.length > 0 && (
+          <div className="mb-8 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {filteredStreams.map((stream) => (
+              <button
+                key={`filtered-${stream.id}`}
+                type="button"
+                onClick={() => setSelectedStream(stream)}
+                className={`card p-4 text-left transition hover:border-white/20 ${
+                  selectedStream?.id === stream.id ? 'border-white/30 bg-white/5' : ''
+                }`}
+              >
+                <div className="mb-3 flex items-start justify-between gap-2">
+                  <span className="rounded bg-white/[0.06] px-2 py-1 text-xs font-medium text-white/70">
+                    {stream.provider}
+                  </span>
+                  {stream.isLive && (
+                    <span
+                      className="inline-flex items-center gap-1 rounded-sm px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-widest text-white"
+                      style={{ backgroundColor: '#ff0033' }}
+                    >
+                      <span className="h-1.5 w-1.5 rounded-full bg-white" />
+                      Live
+                    </span>
+                  )}
+                </div>
+                <h3 className="mb-1 line-clamp-1 font-semibold text-white">
+                  {stream.launchName}
+                </h3>
+                <p className="mb-3 line-clamp-2 text-sm text-slate-400">
+                  {stream.description}
+                </p>
+                <div className="flex items-center gap-2 text-xs text-slate-400">
+                  <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  {new Date(stream.scheduledTime).toLocaleString('en-US', {
+                    month: 'short',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                  })}
+                </div>
+              </button>
+            ))}
+          </div>
+        )}
+
+        {filter === 'recordings' && (
+          <div className="mb-8 card p-8 text-center">
+            <p className="mb-2 text-lg font-semibold text-white">
+              Launch recordings coming soon
+            </p>
+            <p className="mx-auto max-w-md text-sm text-slate-400">
+              We&apos;re building an archive of past launch broadcasts with timestamped highlights. Check back soon.
+            </p>
+          </div>
+        )}
+
+        {filter !== 'recordings' && filteredStreams.length === 0 && (
+          <div className="mb-8 card p-8 text-center">
+            <p className="mb-2 text-lg font-semibold text-white">
+              {filter === 'live'
+                ? 'No streams are live right now'
+                : filter === 'today'
+                  ? 'No more launch streams scheduled today'
+                  : 'No launch streams scheduled this week'}
+            </p>
+            <p className="mx-auto max-w-md text-sm text-slate-400">
+              Switch tabs to see what&apos;s coming up, or subscribe to launch alerts below.
+            </p>
+          </div>
+        )}
 
         {error && (
           <div className="card p-5 border border-red-500/20 bg-red-500/5 text-center mb-6">

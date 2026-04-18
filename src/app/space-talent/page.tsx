@@ -2663,7 +2663,36 @@ function SpaceTalentHubContent() {
       {/* ══════════════════════════════════════════════════════════ */}
       {/* GIG BOARD TAB                                             */}
       {/* ══════════════════════════════════════════════════════════ */}
-      {topTab === 'gigs' && <GigBoard />}
+      {topTab === 'gigs' && (
+        <div className="space-y-6">
+          <div className="rounded-xl border border-white/20 bg-white/5 p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+              <h3 className="text-lg font-semibold text-white">
+                Dedicated gig marketplace
+              </h3>
+              <p className="text-sm text-slate-400 mt-1 max-w-2xl">
+                Browse freelance and contract gigs with richer filters, apply in one click, and post your
+                own gigs for free on the dedicated Gig Work board.
+              </p>
+            </div>
+            <div className="flex items-center gap-2">
+              <Link
+                href="/gig-work"
+                className="rounded-xl bg-white px-4 py-2 text-sm font-semibold text-black hover:bg-white/90 transition-colors"
+              >
+                Open Gig Work
+              </Link>
+              <Link
+                href="/gig-work/post"
+                className="rounded-xl border border-white/20 bg-white/5 px-4 py-2 text-sm font-medium text-white hover:bg-white/10 transition-colors"
+              >
+                Post a gig
+              </Link>
+            </div>
+          </div>
+          <GigBoard />
+        </div>
+      )}
     </PullToRefresh>
   );
 }

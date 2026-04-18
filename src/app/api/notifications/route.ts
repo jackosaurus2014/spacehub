@@ -13,8 +13,14 @@ export const dynamic = 'force-dynamic';
 
 /**
  * GET /api/notifications
- * List notifications for the current user
- * Query params: ?unread=true (optional), ?limit=20 (default 20, max 50)
+ *
+ * List notifications for the current user.
+ *
+ * Query params:
+ *  - ?unread=true  — only return unread notifications
+ *  - ?page=N       — 1-indexed page (default 1)
+ *  - ?pageSize=25  — page size (default 25, max 100)
+ *  - ?limit=N      — legacy alias for pageSize, kept for existing callers
  */
 export async function GET(req: NextRequest) {
   try {
@@ -25,10 +31,20 @@ export async function GET(req: NextRequest) {
 
     const { searchParams } = new URL(req.url);
     const unreadOnly = searchParams.get('unread') === 'true';
-    const limitParam = parseInt(searchParams.get('limit') || '20', 10);
-    const limit = Math.min(Math.max(1, isNaN(limitParam) ? 20 : limitParam), 50);
 
-    // Build where clause
+    const pageParam = parseInt(searchParams.get('page') || '1', 10);
+    const page = isNaN(pageParam) || pageParam < 1 ? 1 : pageParam;
+
+    const legacyLimit = searchParams.get('limit');
+    const pageSizeParam = parseInt(
+      searchParams.get('pageSize') || legacyLimit || '25',
+      10
+    );
+    const pageSize = Math.min(
+      Math.max(1, isNaN(pageSizeParam) ? 25 : pageSizeParam),
+      100
+    );
+
     const where: Record<string, unknown> = {
       userId: session.user.id,
     };
@@ -36,22 +52,27 @@ export async function GET(req: NextRequest) {
       where.read = false;
     }
 
-    // Fetch notifications and unread count in parallel
-    const [notifications, unreadCount] = await Promise.all([
+    const [notifications, total, unreadCount] = await Promise.all([
       prisma.notification.findMany({
         where,
         orderBy: { createdAt: 'desc' },
-        take: limit,
+        skip: (page - 1) * pageSize,
+        take: pageSize,
       }),
+      prisma.notification.count({ where }),
       prisma.notification.count({
-        where: {
-          userId: session.user.id,
-          read: false,
-        },
+        where: { userId: session.user.id, read: false },
       }),
     ]);
 
-    return NextResponse.json({ notifications, unreadCount });
+    return NextResponse.json({
+      notifications,
+      unreadCount,
+      total,
+      page,
+      pageSize,
+      hasMore: page * pageSize < total,
+    });
   } catch (error) {
     logger.error('Failed to fetch notifications', {
       error: error instanceof Error ? error.message : 'Unknown error',
@@ -62,7 +83,8 @@ export async function GET(req: NextRequest) {
 
 /**
  * PATCH /api/notifications
- * Mark multiple notifications as read
+ * Mark multiple notifications as read. Kept for backwards compatibility —
+ * prefer POST /api/notifications/mark-read.
  * Body: { ids: string[] }
  */
 export async function PATCH(req: NextRequest) {
@@ -75,7 +97,6 @@ export async function PATCH(req: NextRequest) {
     const body = await req.json();
     const { ids } = body;
 
-    // Validate ids is a non-empty array of strings
     if (!Array.isArray(ids) || ids.length === 0) {
       return validationError('ids must be a non-empty array of strings');
     }
@@ -84,18 +105,15 @@ export async function PATCH(req: NextRequest) {
       return validationError('Each id must be a non-empty string');
     }
 
-    // Update only notifications belonging to the current user
     const result = await prisma.notification.updateMany({
       where: {
         id: { in: ids },
         userId: session.user.id,
       },
-      data: {
-        read: true,
-      },
+      data: { read: true },
     });
 
-    logger.info('Notifications marked as read', {
+    logger.info('Notifications marked as read (PATCH)', {
       userId: session.user.id,
       updatedCount: result.count,
     });

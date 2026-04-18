@@ -450,6 +450,8 @@ const TABS = [
   { id: 'digest', label: 'Weekly Digest', icon: '📊' },
   { id: 'intelligence', label: 'Intelligence', icon: '🧠' },
   { id: 'relationships', label: 'Relationships', icon: '🔗' },
+  { id: 'pitch-deck', label: 'Pitch Deck', icon: '📈' },
+  { id: 'data-room', label: 'Data Room', icon: '🗂️' },
   { id: 'contact', label: 'Contact', icon: '✉️' },
 ] as const;
 
@@ -690,9 +692,20 @@ function FinancialsTab({ company }: { company: CompanyDetail }) {
                     >
                       <td className="py-2.5 text-slate-400">{fmtDate(r.date)}</td>
                       <td className="py-2.5">
-                        <span className="bg-white/5 text-slate-300 px-2 py-0.5 rounded text-xs">
-                          {r.seriesLabel || r.roundType || 'Unknown'}
-                        </span>
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          <span className="bg-white/5 text-slate-300 px-2 py-0.5 rounded text-xs">
+                            {r.seriesLabel || r.roundType || 'Unknown'}
+                          </span>
+                          {r.source === 'self_reported' ? (
+                            <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-400 border border-blue-500/30">
+                              Self-reported
+                            </span>
+                          ) : r.source ? (
+                            <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                              Verified
+                            </span>
+                          ) : null}
+                        </div>
                       </td>
                       <td className="py-2.5 text-right font-semibold text-emerald-400">{fmt(r.amount)}</td>
                       <td className="py-2.5 text-slate-300">{r.leadInvestor || '—'}</td>
@@ -1284,6 +1297,268 @@ function CompanyScoreSection({ company }: { company: CompanyDetail }) {
         </div>
       )}
     </div>
+  );
+}
+
+// ─── Pitch Deck / Data Room helpers ──────────────────────────────────────────
+
+function isPdfUrl(url: string): boolean {
+  if (!url) return false;
+  try {
+    const u = new URL(url);
+    const path = u.pathname.toLowerCase();
+    return path.endsWith('.pdf');
+  } catch {
+    return false;
+  }
+}
+
+function PitchDeckTab({ companyId, companyName }: { companyId: string; companyName: string }) {
+  const { status } = useSession();
+  const [decks, setDecks] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [openDeckId, setOpenDeckId] = useState<string | null>(null);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function load() {
+      try {
+        setErrorMsg(null);
+        const res = await fetch(`/api/pitch-decks?companyId=${encodeURIComponent(companyId)}`);
+        if (res.ok) {
+          const data = await res.json();
+          setDecks(data.pitchDecks || []);
+        } else {
+          setDecks([]);
+        }
+      } catch (err) {
+        clientLogger.error('Pitch deck load error', { error: err instanceof Error ? err.message : String(err) });
+        setDecks([]);
+        setErrorMsg('Failed to load pitch decks.');
+      } finally {
+        setLoading(false);
+      }
+    }
+    load();
+  }, [companyId]);
+
+  const handleOpen = async (deckId: string) => {
+    setOpenDeckId(deckId);
+    // Fire-and-forget view log
+    try {
+      await fetch(`/api/pitch-decks/${deckId}/view`, { method: 'POST' });
+    } catch (err) {
+      clientLogger.warn('Pitch deck view log failed', { error: err instanceof Error ? err.message : String(err) });
+    }
+  };
+
+  if (loading) return <div className="flex justify-center py-12"><LoadingSpinner size="lg" /></div>;
+
+  if (errorMsg) {
+    return (
+      <SectionCard title="Pitch Deck">
+        <p className="text-sm text-red-400 text-center py-6">{errorMsg}</p>
+      </SectionCard>
+    );
+  }
+
+  if (decks.length === 0) {
+    return (
+      <SectionCard title="Pitch Deck">
+        <div className="text-center py-10 space-y-2">
+          <div className="text-4xl">📈</div>
+          <p className="text-sm text-slate-400">No pitch decks have been shared for {companyName}.</p>
+          {status === 'unauthenticated' && (
+            <p className="text-xs text-slate-500">Some decks may require sign-in. <Link href="/login" className="text-white hover:underline">Sign in →</Link></p>
+          )}
+        </div>
+      </SectionCard>
+    );
+  }
+
+  return (
+    <SectionCard title={`Pitch Decks (${decks.length})`}>
+      <div className="space-y-4">
+        {decks.map(deck => {
+          const isOpen = openDeckId === deck.id;
+          const pdf = isPdfUrl(deck.fileUrl);
+          return (
+            <div key={deck.id} className="rounded-lg border border-white/[0.08] bg-white/[0.02] p-4">
+              <div className="flex items-start justify-between gap-3 flex-wrap">
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <h4 className="text-sm font-semibold text-white truncate">{deck.title}</h4>
+                    {deck.roundType && (
+                      <span className="text-xs px-2 py-0.5 bg-white/[0.08] rounded text-slate-300">{String(deck.roundType).replace(/_/g, ' ')}</span>
+                    )}
+                    <span className="text-xs px-2 py-0.5 bg-white/[0.05] rounded text-slate-400">{String(deck.visibility).replace(/_/g, ' ')}</span>
+                  </div>
+                  {deck.description && <p className="text-xs text-slate-400 mt-1">{deck.description}</p>}
+                  {deck.amountRaising && (
+                    <p className="text-xs text-slate-500 mt-1">Raising: {deck.currency || 'USD'} {Number(deck.amountRaising).toLocaleString()}</p>
+                  )}
+                </div>
+                <div className="flex items-center gap-2 shrink-0">
+                  <button
+                    onClick={() => handleOpen(deck.id)}
+                    className="px-3 py-1.5 text-xs bg-white hover:bg-slate-100 text-slate-900 rounded-lg font-medium transition-colors"
+                  >
+                    {isOpen ? 'Viewing' : 'View'}
+                  </button>
+                  <a
+                    href={deck.fileUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => {
+                      // Also count opening externally as a view
+                      fetch(`/api/pitch-decks/${deck.id}/view`, { method: 'POST' }).catch(() => {});
+                    }}
+                    className="px-3 py-1.5 text-xs bg-white/[0.08] hover:bg-white/[0.15] text-white rounded-lg transition-colors"
+                  >
+                    Open Link ↗
+                  </a>
+                </div>
+              </div>
+              {isOpen && pdf && (
+                <div className="mt-4 rounded overflow-hidden border border-white/[0.08] bg-black">
+                  <iframe
+                    src={deck.fileUrl}
+                    className="w-full h-[600px]"
+                    title={deck.title}
+                  />
+                </div>
+              )}
+              {isOpen && !pdf && (
+                <div className="mt-4 rounded border border-white/[0.08] bg-white/[0.02] p-4 text-xs text-slate-400">
+                  This link doesn&rsquo;t look like a PDF. Use the &ldquo;Open Link&rdquo; button to view it in a new tab.
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </SectionCard>
+  );
+}
+
+function DataRoomTab({ companyId, companyName }: { companyId: string; companyName: string }) {
+  const { status } = useSession();
+  const [docs, setDocs] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [openDocId, setOpenDocId] = useState<string | null>(null);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function load() {
+      try {
+        setErrorMsg(null);
+        const res = await fetch(`/api/data-room?companyId=${encodeURIComponent(companyId)}`);
+        if (res.ok) {
+          const data = await res.json();
+          setDocs(data.documents || []);
+        } else {
+          setDocs([]);
+        }
+      } catch (err) {
+        clientLogger.error('Data room load error', { error: err instanceof Error ? err.message : String(err) });
+        setDocs([]);
+        setErrorMsg('Failed to load data room documents.');
+      } finally {
+        setLoading(false);
+      }
+    }
+    load();
+  }, [companyId]);
+
+  const handleOpen = async (docId: string) => {
+    setOpenDocId(docId);
+    try {
+      await fetch(`/api/data-room/${docId}/view`, { method: 'POST' });
+    } catch (err) {
+      clientLogger.warn('Data room view log failed', { error: err instanceof Error ? err.message : String(err) });
+    }
+  };
+
+  if (loading) return <div className="flex justify-center py-12"><LoadingSpinner size="lg" /></div>;
+
+  if (errorMsg) {
+    return (
+      <SectionCard title="Data Room">
+        <p className="text-sm text-red-400 text-center py-6">{errorMsg}</p>
+      </SectionCard>
+    );
+  }
+
+  if (docs.length === 0) {
+    return (
+      <SectionCard title="Data Room">
+        <div className="text-center py-10 space-y-2">
+          <div className="text-4xl">🗂️</div>
+          <p className="text-sm text-slate-400">No data room documents available for {companyName}.</p>
+          {status === 'unauthenticated' && (
+            <p className="text-xs text-slate-500">Some documents may require sign-in. <Link href="/login" className="text-white hover:underline">Sign in →</Link></p>
+          )}
+        </div>
+      </SectionCard>
+    );
+  }
+
+  return (
+    <SectionCard title={`Data Room (${docs.length})`}>
+      <div className="space-y-4">
+        {docs.map(doc => {
+          const isOpen = openDocId === doc.id;
+          const pdf = isPdfUrl(doc.fileUrl);
+          return (
+            <div key={doc.id} className="rounded-lg border border-white/[0.08] bg-white/[0.02] p-4">
+              <div className="flex items-start justify-between gap-3 flex-wrap">
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <h4 className="text-sm font-semibold text-white truncate">{doc.title}</h4>
+                    {doc.docType && (
+                      <span className="text-xs px-2 py-0.5 bg-white/[0.08] rounded text-slate-300">{String(doc.docType).replace(/_/g, ' ')}</span>
+                    )}
+                    <span className="text-xs px-2 py-0.5 bg-white/[0.05] rounded text-slate-400">{String(doc.visibility).replace(/_/g, ' ')}</span>
+                  </div>
+                  {doc.description && <p className="text-xs text-slate-400 mt-1">{doc.description}</p>}
+                </div>
+                <div className="flex items-center gap-2 shrink-0">
+                  <button
+                    onClick={() => handleOpen(doc.id)}
+                    className="px-3 py-1.5 text-xs bg-white hover:bg-slate-100 text-slate-900 rounded-lg font-medium transition-colors"
+                  >
+                    {isOpen ? 'Viewing' : 'View'}
+                  </button>
+                  <a
+                    href={doc.fileUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => { fetch(`/api/data-room/${doc.id}/view`, { method: 'POST' }).catch(() => {}); }}
+                    className="px-3 py-1.5 text-xs bg-white/[0.08] hover:bg-white/[0.15] text-white rounded-lg transition-colors"
+                  >
+                    Open Link ↗
+                  </a>
+                </div>
+              </div>
+              {isOpen && pdf && (
+                <div className="mt-4 rounded overflow-hidden border border-white/[0.08] bg-black">
+                  <iframe
+                    src={doc.fileUrl}
+                    className="w-full h-[600px]"
+                    title={doc.title}
+                  />
+                </div>
+              )}
+              {isOpen && !pdf && (
+                <div className="mt-4 rounded border border-white/[0.08] bg-white/[0.02] p-4 text-xs text-slate-400">
+                  This link doesn&rsquo;t look like a PDF. Use the &ldquo;Open Link&rdquo; button to view it in a new tab.
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </SectionCard>
   );
 }
 
@@ -1989,6 +2264,8 @@ export default function CompanyProfileDetailPage() {
           {activeTab === 'digest' && <DigestTab companyId={company.id} companyName={company.name} />}
           {activeTab === 'intelligence' && <IntelligenceTab company={company} />}
           {activeTab === 'relationships' && <RelationshipsTab company={company} />}
+          {activeTab === 'pitch-deck' && <PitchDeckTab companyId={company.id} companyName={company.name} />}
+          {activeTab === 'data-room' && <DataRoomTab companyId={company.id} companyName={company.name} />}
           {activeTab === 'contact' && company.sponsorTier && (
             <SectionCard title={`Contact ${company.name}`}>
               <LeadCaptureForm companySlug={company.slug} companyName={company.name} />

@@ -1,115 +1,211 @@
 import { NextRequest, NextResponse } from 'next/server';
-import prisma from '@/lib/db';
-import { logger } from '@/lib/logger';
-import { internalError, validationError, unauthorizedError, forbiddenError, notFoundError } from '@/lib/errors';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
-import { z } from 'zod';
+import prisma from '@/lib/db';
+import { logger } from '@/lib/logger';
+import {
+  unauthorizedError,
+  forbiddenError,
+  validationError,
+  notFoundError,
+  internalError,
+} from '@/lib/errors';
+import { respondIntroSchema, validateBody } from '@/lib/validations';
 
 export const dynamic = 'force-dynamic';
 
-const respondSchema = z.object({
-  status: z.enum(['accepted', 'declined']),
-  responseMessage: z.string().max(2000).optional().transform((v) => v?.trim() || null),
-});
-
 /**
  * PATCH /api/introductions/[id]
- * Facilitator accepts or declines an introduction request.
- * Only the toUserId (facilitator) can respond.
+ * Respond to an introduction request. Body: { action: 'accept' | 'decline', responseMessage? }.
+ * Only the target (toUserId) can respond.
+ *
+ * On accept: creates a Conversation between requester + target, seeds it with the
+ * original request message and a system "Introduction accepted" message, and
+ * notifies the requester.
  */
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> | { id: string } }
 ) {
-  const session = await getServerSession(authOptions);
-  if (!session?.user?.id) {
-    return unauthorizedError('Authentication required');
-  }
-
   try {
-    const { id } = await params;
-
-    const body = await req.json();
-    const parsed = respondSchema.safeParse(body);
-
-    if (!parsed.success) {
-      const fieldErrors: Record<string, string> = {};
-      for (const issue of parsed.error.issues) {
-        const key = issue.path.join('.');
-        fieldErrors[key] = issue.message;
-      }
-      return validationError('Invalid response data', fieldErrors);
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.id) {
+      return unauthorizedError();
     }
 
-    const { status, responseMessage } = parsed.data;
+    const resolved = await Promise.resolve(params);
+    const { id } = resolved;
 
-    // Find the introduction request
-    const introduction = await prisma.introductionRequest.findUnique({
-      where: { id },
-    });
+    const body = await req.json().catch(() => ({}));
+    const validation = validateBody(respondIntroSchema, body);
+    if (!validation.success) {
+      const firstError = Object.values(validation.errors)[0]?.[0] || 'Validation failed';
+      return validationError(firstError, validation.errors);
+    }
 
-    if (!introduction) {
+    const { action, responseMessage } = validation.data;
+
+    const intro = await prisma.introductionRequest.findUnique({ where: { id } });
+    if (!intro) {
       return notFoundError('Introduction request');
     }
 
-    // Only the facilitator (toUserId) can respond
-    if (introduction.toUserId !== session.user.id) {
-      return forbiddenError('Only the facilitator can respond to this introduction request');
+    if (intro.toUserId !== session.user.id) {
+      return forbiddenError('Only the target can respond to this introduction request');
     }
 
-    // Cannot respond to already-responded requests
-    if (introduction.status !== 'pending') {
-      return validationError(`This introduction request has already been ${introduction.status}`);
+    if (intro.status !== 'pending') {
+      return validationError(
+        `This introduction request has already been ${intro.status}`
+      );
     }
 
-    // Update the introduction request
+    const newStatus = action === 'accept' ? 'accepted' : 'declined';
+    const now = new Date();
+
     const updated = await prisma.introductionRequest.update({
       where: { id },
       data: {
-        status,
-        responseMessage,
-        respondedAt: new Date(),
+        status: newStatus,
+        responseMessage: responseMessage || null,
+        respondedAt: now,
       },
     });
 
-    // If accepted, create notifications for both the requester and the target
-    if (status === 'accepted') {
-      await prisma.notification.createMany({
-        data: [
-          {
-            userId: introduction.fromUserId,
-            type: 'introduction',
-            title: 'Introduction Accepted',
-            message: `Your introduction request has been accepted by the facilitator.`,
-            relatedContentType: 'introduction',
-            relatedContentId: id,
-            linkUrl: '/account?tab=introductions',
+    if (action === 'accept') {
+      // Create a Conversation and seed with the original request + system message
+      try {
+        const conversation = await prisma.conversation.create({
+          data: {
+            lastMessageAt: now,
+            participants: {
+              create: [
+                { userId: intro.fromUserId },
+                { userId: intro.toUserId },
+              ],
+            },
           },
-          {
-            userId: introduction.aboutUserId,
-            type: 'introduction',
-            title: 'New Introduction',
-            message: `Someone would like to be introduced to you.`,
-            relatedContentType: 'introduction',
-            relatedContentId: id,
-            linkUrl: '/account?tab=introductions',
-          },
-        ],
-      });
+        });
 
-      logger.info('Introduction accepted, notifications sent', {
-        id,
-        fromUserId: introduction.fromUserId,
-        aboutUserId: introduction.aboutUserId,
-      });
+        await prisma.directMessage.createMany({
+          data: [
+            {
+              conversationId: conversation.id,
+              senderId: intro.fromUserId,
+              content: intro.message,
+            },
+            {
+              conversationId: conversation.id,
+              senderId: intro.toUserId,
+              content: responseMessage
+                ? `Introduction accepted. ${responseMessage}`
+                : 'Introduction accepted.',
+            },
+          ],
+        });
+
+        // Notify requester
+        await prisma.notification.create({
+          data: {
+            userId: intro.fromUserId,
+            type: 'introduction_accepted',
+            title: 'Introduction accepted',
+            message: 'Your introduction request was accepted. A conversation has been started.',
+            relatedUserId: intro.toUserId,
+            relatedContentType: 'introduction_request',
+            relatedContentId: intro.id,
+            linkUrl: `/messages?conversationId=${conversation.id}`,
+          },
+        });
+
+        logger.info('Introduction accepted and conversation seeded', {
+          id: intro.id,
+          conversationId: conversation.id,
+        });
+      } catch (acceptError) {
+        logger.error('Error seeding conversation after accepted intro', {
+          id: intro.id,
+          error: acceptError instanceof Error ? acceptError.message : String(acceptError),
+        });
+        // Non-fatal — the intro is marked accepted even if conversation seeding fails
+      }
     } else {
-      logger.info('Introduction declined', { id });
+      // Decline — notify requester
+      try {
+        await prisma.notification.create({
+          data: {
+            userId: intro.fromUserId,
+            type: 'introduction_declined',
+            title: 'Introduction declined',
+            message: 'Your introduction request was declined.',
+            relatedUserId: intro.toUserId,
+            relatedContentType: 'introduction_request',
+            relatedContentId: intro.id,
+            linkUrl: '/introductions?tab=sent',
+          },
+        });
+      } catch (notifyError) {
+        logger.warn('Failed to notify requester of declined intro', {
+          id: intro.id,
+          error: notifyError instanceof Error ? notifyError.message : String(notifyError),
+        });
+      }
+      logger.info('Introduction declined', { id: intro.id });
     }
 
-    return NextResponse.json({ success: true, data: updated });
+    return NextResponse.json({ success: true, data: { id: updated.id, status: updated.status } });
   } catch (error) {
-    logger.error('PATCH /api/introductions/[id] error', { error: error instanceof Error ? error.message : String(error) });
+    logger.error('Error responding to introduction request', {
+      error: error instanceof Error ? error.message : String(error),
+    });
     return internalError('Failed to update introduction request');
+  }
+}
+
+/**
+ * DELETE /api/introductions/[id]
+ * Cancel a pending introduction request. Only the requester can cancel.
+ */
+export async function DELETE(
+  _req: NextRequest,
+  { params }: { params: Promise<{ id: string }> | { id: string } }
+) {
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.id) {
+      return unauthorizedError();
+    }
+
+    const resolved = await Promise.resolve(params);
+    const { id } = resolved;
+
+    const intro = await prisma.introductionRequest.findUnique({ where: { id } });
+    if (!intro) {
+      return notFoundError('Introduction request');
+    }
+
+    if (intro.fromUserId !== session.user.id) {
+      return forbiddenError('Only the requester can cancel this introduction request');
+    }
+
+    if (intro.status !== 'pending') {
+      return validationError(
+        `This introduction request has already been ${intro.status} and cannot be cancelled`
+      );
+    }
+
+    await prisma.introductionRequest.delete({ where: { id } });
+
+    logger.info('Introduction request cancelled', {
+      id,
+      fromUserId: session.user.id,
+    });
+
+    return NextResponse.json({ success: true, data: { id } });
+  } catch (error) {
+    logger.error('Error cancelling introduction request', {
+      error: error instanceof Error ? error.message : String(error),
+    });
+    return internalError('Failed to cancel introduction request');
   }
 }

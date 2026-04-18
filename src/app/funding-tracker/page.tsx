@@ -24,6 +24,7 @@ interface FundingRound {
   leadInvestor: string | null;
   investors: string[];
   postValuation: number | null;
+  source: string | null;
   company: {
     id: string;
     name: string;
@@ -655,6 +656,15 @@ function FundingTrackerPageInner() {
                               {round.company.sector}
                             </span>
                           )}
+                          {round.source === 'self_reported' ? (
+                            <span className="text-[10px] font-semibold px-2 py-0.5 rounded bg-blue-500/20 text-blue-400 border border-blue-500/30" title="Reported by the company itself">
+                              Self-reported
+                            </span>
+                          ) : round.source ? (
+                            <span className="text-[10px] font-semibold px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20" title={`Source: ${round.source}`}>
+                              Verified
+                            </span>
+                          ) : null}
                         </div>
                         <div className="text-slate-500 text-xs mt-1">
                           {formatDate(round.date)}

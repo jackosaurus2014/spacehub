@@ -134,6 +134,10 @@ const INTELLIGENCE_ITEMS: DropdownItem[] = [
 ];
 
 const BUSINESS_ITEMS: DropdownItem[] = [
+  { label: '\uD83C\uDD95 Gig Work', href: '/gig-work', description: 'Freelance and contract opportunities' },
+  { label: '\uD83C\uDD95 Speaking Opportunities', href: '/speaking', description: 'CFPs and conference speaking slots' },
+  { label: '\uD83C\uDD95 Introductions', href: '/introductions', description: 'Request warm intros to founders, VCs, operators' },
+  { label: '\uD83C\uDD95 Inbox', href: '/inbox', description: 'Your notifications, messages, and activity' },
   { label: 'Business Opportunities', href: '/business-opportunities', description: 'AI-powered opportunity discovery' },
   { label: 'Deal Flow', href: '/deal-flow', description: 'Investment deals, M&A & partnerships' },
   { label: 'Contract Awards', href: '/contract-awards', description: 'Government & commercial contract tracker' },

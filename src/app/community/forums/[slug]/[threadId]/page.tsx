@@ -12,6 +12,7 @@ import VoteButton from '@/components/community/VoteButton';
 import AcceptedAnswerBadge from '@/components/community/AcceptedAnswerBadge';
 import SubscribeButton from '@/components/community/SubscribeButton';
 import ThreadTags from '@/components/community/ThreadTags';
+import VerifiedBadge from '@/components/VerifiedBadge';
 import { toast } from '@/lib/toast';
 import { extractApiError } from '@/lib/errors';
 import { useSession } from 'next-auth/react';
@@ -27,6 +28,7 @@ interface ForumPost {
   content: string;
   authorId: string;
   authorName: string;
+  authorVerifiedBadge?: string | null;
   createdAt: string;
   updatedAt: string;
   upvoteCount: number;
@@ -43,6 +45,7 @@ interface ThreadDetail {
   content: string;
   authorId: string;
   authorName: string;
+  authorVerifiedBadge?: string | null;
   category: string;
   categorySlug: string;
   categoryName: string;
@@ -142,6 +145,7 @@ export default function ThreadDetailPage() {
               content: t.content,
               authorId: t.author?.id || '',
               authorName: t.author?.name || 'Unknown',
+              authorVerifiedBadge: t.author?.verifiedBadge ?? null,
               category: data.category?.name || slug,
               categorySlug: data.category?.slug || slug,
               categoryName: data.category?.name || slug,
@@ -166,6 +170,7 @@ export default function ThreadDetailPage() {
             content: p.content,
             authorId: p.author?.id || p.authorId || '',
             authorName: p.author?.name || p.authorName || 'Unknown',
+            authorVerifiedBadge: p.author?.verifiedBadge ?? null,
             createdAt: p.createdAt,
             updatedAt: p.updatedAt,
             upvoteCount: p.upvoteCount || 0,
@@ -372,7 +377,10 @@ export default function ThreadDetailPage() {
                       <span className="text-xs text-slate-500 font-normal">({thread.authorName})</span>
                     </p>
                   ) : (
-                    <p className="text-sm font-medium text-white/90">{thread.authorName}</p>
+                    <p className="text-sm font-medium text-white/90 flex items-center gap-1.5">
+                      {thread.authorName}
+                      <VerifiedBadge badge={thread.authorVerifiedBadge} size="md" />
+                    </p>
                   )}
                   <p className="text-xs text-slate-500">{formatDate(thread.createdAt)}</p>
                 </div>
@@ -459,7 +467,10 @@ export default function ThreadDetailPage() {
                           </svg>
                         </span>
                       ) : (
-                        <span className="text-sm font-medium text-white/90">{reply.authorName}</span>
+                        <span className="text-sm font-medium text-white/90 flex items-center gap-1.5">
+                          {reply.authorName}
+                          <VerifiedBadge badge={reply.authorVerifiedBadge} size="sm" />
+                        </span>
                       )}
                       <span className="text-xs text-slate-500">{timeAgo(reply.createdAt)}</span>
                       {reply.isAccepted && (

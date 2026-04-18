@@ -4,6 +4,7 @@ import { authOptions } from '@/lib/auth';
 import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
 import { checkUserBanStatus, isUserBlocked } from '@/lib/moderation';
+import { createNotification } from '@/lib/notifications/create';
 import {
   unauthorizedError,
   validationError,
@@ -265,6 +266,22 @@ export async function POST(req: NextRequest) {
       conversationId,
       senderId: userId,
       recipientId,
+    });
+
+    // Notify recipient (fire and forget — respects NotificationPreference)
+    const senderName = session.user.name || 'Someone';
+    const preview = content.trim().slice(0, 120);
+    createNotification({
+      userId: recipientId,
+      type: 'direct_message',
+      title: `New message from ${senderName}`,
+      body: preview,
+      link: `/messages/${conversationId}`,
+      relatedUserId: userId,
+      relatedContentType: 'conversation',
+      relatedContentId: conversationId,
+    }).catch(() => {
+      // swallow — message already sent
     });
 
     return NextResponse.json(
