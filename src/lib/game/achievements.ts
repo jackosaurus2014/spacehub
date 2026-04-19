@@ -7,6 +7,8 @@ export interface Achievement {
   name: string;
   description: string;
   icon: string;
+  /** Badge art slug (file at /game/ach-badge-{badge}.webp). Falls back to emoji icon if omitted. */
+  badge?: string;
   category: 'wealth' | 'building' | 'research' | 'exploration' | 'market' | 'milestone';
   /** Title granted when unlocked (displayed on leaderboard) */
   title?: string;
@@ -16,115 +18,120 @@ export interface Achievement {
 
 export const ACHIEVEMENTS: Achievement[] = [
   // ─── WEALTH ───────────────────────────────────────────────────────────
-  { id: 'first_million', name: 'First Million', icon: '💵', category: 'wealth',
+  { id: 'first_million', name: 'First Million', icon: '💵', badge: 'credit-mogul', category: 'wealth',
     description: 'Earn $1M in total revenue.',
     check: (s) => s.totalEarned >= 1_000_000 },
-  { id: 'billionaire', name: 'Billionaire', icon: '💰', category: 'wealth',
+  { id: 'billionaire', name: 'Billionaire', icon: '💰', badge: 'tycoon', category: 'wealth',
     title: 'Billionaire',
     description: 'Accumulate $1B in cash.',
     check: (s) => s.money >= 1_000_000_000 },
-  { id: 'ten_billionaire', name: 'Ten Billionaire', icon: '🏦', category: 'wealth',
+  { id: 'ten_billionaire', name: 'Ten Billionaire', icon: '🏦', badge: 'industrialist', category: 'wealth',
     title: 'Tycoon',
     description: 'Accumulate $10B in cash.',
     check: (s) => s.money >= 10_000_000_000 },
-  { id: 'hundred_billionaire', name: 'Hundred Billionaire', icon: '👑', category: 'wealth',
+  { id: 'hundred_billionaire', name: 'Hundred Billionaire', icon: '👑', badge: 'benefactor', category: 'wealth',
     title: 'Space Mogul',
     description: 'Accumulate $100B in cash.',
     check: (s) => s.money >= 100_000_000_000 },
-  { id: 'trillionaire', name: 'Trillionaire', icon: '🌟', category: 'wealth',
+  { id: 'trillionaire', name: 'Trillionaire', icon: '🌟', badge: 'transcendent', category: 'wealth',
     title: 'Trillionaire',
     description: 'Accumulate $1T in cash.',
     check: (s) => s.money >= 1_000_000_000_000 },
 
   // ─── BUILDING ─────────────────────────────────────────────────────────
-  { id: 'first_building', name: 'Ground Breaking', icon: '🏗️', category: 'building',
+  { id: 'first_building', name: 'Ground Breaking', icon: '🏗️', badge: 'first-building', category: 'building',
     description: 'Complete your first building.',
     check: (s) => s.buildings.filter(b => b.isComplete).length >= 1 },
-  { id: 'ten_buildings', name: 'Developer', icon: '🏢', category: 'building',
+  { id: 'ten_buildings', name: 'Developer', icon: '🏢', badge: 'architect', category: 'building',
     title: 'Developer',
     description: 'Complete 10 buildings.',
     check: (s) => s.buildings.filter(b => b.isComplete).length >= 10 },
-  { id: 'twentyfive_buildings', name: 'Builder', icon: '🌆', category: 'building',
+  { id: 'twentyfive_buildings', name: 'Builder', icon: '🌆', badge: 'master-builder', category: 'building',
     title: 'Master Builder',
     description: 'Complete 25 buildings.',
     check: (s) => s.buildings.filter(b => b.isComplete).length >= 25 },
-  { id: 'fifty_buildings', name: 'Megacorp', icon: '🏙️', category: 'building',
+  { id: 'fifty_buildings', name: 'Megacorp', icon: '🏙️', badge: 'wonder-builder', category: 'building',
     title: 'Megacorp CEO',
     description: 'Complete 50 buildings.',
     check: (s) => s.buildings.filter(b => b.isComplete).length >= 50 },
 
   // ─── RESEARCH ─────────────────────────────────────────────────────────
-  { id: 'first_research', name: 'Eureka', icon: '💡', category: 'research',
+  { id: 'first_research', name: 'Eureka', icon: '💡', badge: 'eureka', category: 'research',
     description: 'Complete your first research.',
     check: (s) => s.completedResearch.length >= 1 },
-  { id: 'ten_research', name: 'Scientist', icon: '🔬', category: 'research',
+  { id: 'ten_research', name: 'Scientist', icon: '🔬', badge: 'scientist', category: 'research',
     title: 'Chief Scientist',
     description: 'Complete 10 research projects.',
     check: (s) => s.completedResearch.length >= 10 },
-  { id: 'twenty_research', name: 'Innovator', icon: '🧪', category: 'research',
+  { id: 'twenty_research', name: 'Innovator', icon: '🧪', badge: 'tech-visionary', category: 'research',
     title: 'Innovator',
     description: 'Complete 20 research projects.',
     check: (s) => s.completedResearch.length >= 20 },
-  { id: 'all_research', name: 'Tech Singularity', icon: '🌌', category: 'research',
+  { id: 'all_research', name: 'Tech Singularity', icon: '🌌', badge: 'knowledge', category: 'research',
     title: 'Transcendent',
     description: 'Complete all research in the game.',
     check: (s) => s.completedResearch.length >= 37 },
 
   // ─── EXPLORATION ──────────────────────────────────────────────────────
-  { id: 'unlock_geo', name: 'Geostationary', icon: '📡', category: 'exploration',
+  { id: 'unlock_geo', name: 'Geostationary', icon: '📡', badge: 'explorer', category: 'exploration',
     description: 'Unlock GEO orbit.',
     check: (s) => s.unlockedLocations.includes('geo') },
-  { id: 'unlock_moon', name: 'Lunar Pioneer', icon: '🌙', category: 'exploration',
+  { id: 'unlock_moon', name: 'Lunar Pioneer', icon: '🌙', badge: 'epic-explorer', category: 'exploration',
     title: 'Lunar Pioneer',
     description: 'Unlock the lunar surface.',
     check: (s) => s.unlockedLocations.includes('lunar_surface') },
-  { id: 'unlock_mars', name: 'Mars Colonist', icon: '🔴', category: 'exploration',
+  { id: 'unlock_mars', name: 'Mars Colonist', icon: '🔴', badge: 'star-mapper', category: 'exploration',
     title: 'Martian',
     description: 'Unlock Mars surface.',
     check: (s) => s.unlockedLocations.includes('mars_surface') },
-  { id: 'unlock_asteroids', name: 'Asteroid Miner', icon: '☄️', category: 'exploration',
+  { id: 'unlock_asteroids', name: 'Asteroid Miner', icon: '☄️', badge: 'precursor-finder', category: 'exploration',
     title: 'Asteroid Baron',
     description: 'Unlock the asteroid belt.',
     check: (s) => s.unlockedLocations.includes('asteroid_belt') },
-  { id: 'unlock_jupiter', name: 'Gas Giant Explorer', icon: '🪐', category: 'exploration',
+  { id: 'unlock_jupiter', name: 'Gas Giant Explorer', icon: '🪐', badge: 'galaxy-cartographer', category: 'exploration',
     title: 'Jovian Admiral',
     description: 'Unlock the Jupiter system.',
     check: (s) => s.unlockedLocations.includes('jupiter_system') },
-  { id: 'unlock_outer', name: 'Final Frontier', icon: '🌠', category: 'exploration',
+  { id: 'unlock_outer', name: 'Final Frontier', icon: '🌠', badge: 'prestige-explorer', category: 'exploration',
     title: 'Voyager',
     description: 'Unlock the outer system.',
     check: (s) => s.unlockedLocations.includes('outer_system') },
-  { id: 'all_locations', name: 'Solar System Complete', icon: '🗺️', category: 'exploration',
+  { id: 'all_locations', name: 'Solar System Complete', icon: '🗺️', badge: 'commander-ascendant', category: 'exploration',
     title: 'Solar Emperor',
     description: 'Unlock every location in the solar system.',
     check: (s) => s.unlockedLocations.length >= 11 },
 
   // ─── MARKET ───────────────────────────────────────────────────────────
-  { id: 'first_resource', name: 'Prospector', icon: '⛏️', category: 'market',
+  { id: 'first_resource', name: 'Prospector', icon: '⛏️', badge: 'fully-equipped', category: 'market',
     description: 'Mine your first resource.',
     check: (s) => Object.values(s.resources || {}).some(q => q > 0) },
-  { id: 'resource_hoarder', name: 'Hoarder', icon: '📦', category: 'market',
+  { id: 'resource_hoarder', name: 'Hoarder', icon: '📦', badge: 'dedicated', category: 'market',
     title: 'Hoarder',
     description: 'Accumulate 1,000+ units of any single resource.',
     check: (s) => Object.values(s.resources || {}).some(q => q >= 1000) },
-  { id: 'diverse_portfolio', name: 'Diversified', icon: '🎯', category: 'market',
+  { id: 'diverse_portfolio', name: 'Diversified', icon: '🎯', badge: 'trade-master', category: 'market',
     title: 'Diversified',
     description: 'Hold 5+ different resource types simultaneously.',
     check: (s) => Object.entries(s.resources || {}).filter(([, q]) => q > 0).length >= 5 },
 
   // ─── MILESTONES ───────────────────────────────────────────────────────
-  { id: 'break_even', name: 'Break Even', icon: '📊', category: 'milestone',
+  { id: 'break_even', name: 'Break Even', icon: '📊', badge: 'skill-master', category: 'milestone',
     description: 'Reach positive net monthly income.',
     check: (s) => s.activeServices.length > 0 && s.totalEarned > s.totalSpent },
-  { id: 'five_services', name: 'Service Provider', icon: '🔧', category: 'milestone',
+  { id: 'five_services', name: 'Service Provider', icon: '🔧', badge: 'versatile-tactician', category: 'milestone',
     title: 'Service Provider',
     description: 'Run 5 active services simultaneously.',
     check: (s) => s.activeServices.length >= 5 },
-  { id: 'ten_services', name: 'Conglomerate', icon: '🏛️', category: 'milestone',
+  { id: 'ten_services', name: 'Conglomerate', icon: '🏛️', badge: 'legendary-recruit', category: 'milestone',
     title: 'Conglomerate',
     description: 'Run 10 active services simultaneously.',
     check: (s) => s.activeServices.length >= 10 },
 ];
+
+/** Path to the badge art image for an achievement. Returns null if no badge art is mapped. */
+export function getAchievementBadgeUrl(achievement: Achievement): string | null {
+  return achievement.badge ? `/game/ach-badge-${achievement.badge}.webp` : null;
+}
 
 /** Check which achievements are newly unlocked */
 export function checkAchievements(state: GameState, alreadyUnlocked: string[]): Achievement[] {

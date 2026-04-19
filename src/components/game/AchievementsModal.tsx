@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import type { GameState } from '@/lib/game/types';
-import { ACHIEVEMENTS } from '@/lib/game/achievements';
+import { ACHIEVEMENTS, getAchievementBadgeUrl } from '@/lib/game/achievements';
 
 interface AchievementsModalProps {
   state: GameState;
@@ -75,6 +75,7 @@ export default function AchievementsModal({ state, unlockedIds, onClose }: Achie
         <div className="flex-1 overflow-y-auto p-4 space-y-2">
           {filtered.map(a => {
             const isUnlocked = unlockedIds.includes(a.id);
+            const badgeUrl = getAchievementBadgeUrl(a);
             return (
               <div
                 key={a.id}
@@ -84,10 +85,19 @@ export default function AchievementsModal({ state, unlockedIds, onClose }: Achie
                     : 'bg-white/[0.02] border border-white/[0.04] opacity-60'
                 }`}
               >
-                <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-lg shrink-0 ${
-                  isUnlocked ? 'bg-amber-500/10' : 'bg-white/[0.04] grayscale'
+                <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-lg shrink-0 overflow-hidden ${
+                  isUnlocked ? 'bg-amber-500/10' : 'bg-white/[0.04]'
                 }`}>
-                  {isUnlocked ? a.icon : '🔒'}
+                  {isUnlocked ? (
+                    badgeUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={badgeUrl} alt={a.name} className="w-full h-full object-contain" loading="lazy" />
+                    ) : (
+                      <span>{a.icon}</span>
+                    )
+                  ) : (
+                    <span className="grayscale opacity-70">🔒</span>
+                  )}
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">

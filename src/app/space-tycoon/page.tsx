@@ -174,7 +174,7 @@ function BuildPanel({ state, onBuild, onSellBuilding }: { state: GameState; onBu
                 {/* Building art — prominent, not hidden */}
                 <div className="relative h-20 sm:h-24 bg-gradient-to-br from-white/[0.03] to-transparent overflow-hidden">
                   <Image
-                    src={getBuildingAsset(bld.id, bld.category)}
+                    src={getBuildingAsset(bld.id, bld.category, bld.tier)}
                     alt={bld.name}
                     width={256}
                     height={96}
