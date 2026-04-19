@@ -68,6 +68,8 @@ import { getTierUnlockedTabs, getTierDef, getNextTierProgress } from '@/lib/game
 import GameChat from '@/components/game/GameChat';
 import CommanderPanel from '@/components/game/CommanderPanel';
 import { hireCommander, dismissCommander } from '@/lib/game/commanders';
+import FactionPanel from '@/components/game/FactionPanel';
+import { sendEnvoy } from '@/lib/game/factions';
 
 // ─── Build Panel ────────────────────────────────────────────────────────────
 
@@ -1435,6 +1437,7 @@ export default function SpaceTycoonPage() {
     { id: 'seasons', label: 'Seasons', icon: '🌟' },
     { id: 'leaderboard', label: 'Ranks', icon: '🏆' },
     { id: 'commanders', label: 'Commanders', icon: '🎖️' },
+    { id: 'factions', label: 'Factions', icon: '🛡️' },
   ];
 
   // Corporation tier-based tab unlocking
@@ -1802,6 +1805,15 @@ export default function SpaceTycoonPage() {
             onDismiss={(defId) => {
               playSound('click');
               setState(prev => prev ? dismissCommander(prev, defId) : prev);
+            }}
+          />
+        )}
+        {tab === 'factions' && (
+          <FactionPanel
+            state={state}
+            onSendEnvoy={(id) => {
+              playSound('click');
+              setState(prev => prev ? sendEnvoy(prev, id) : prev);
             }}
           />
         )}
