@@ -64,3 +64,6 @@ build.log
 # Screenshots (local reference only)
 public/Screenshot*.png
 public/screenshots/
+
+# Source PNGs for game art (converted to WebP into public/game/ via scripts/convert-game-assets.ts — keep originals out of git)
+/client/
