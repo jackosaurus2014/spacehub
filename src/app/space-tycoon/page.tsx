@@ -66,6 +66,8 @@ import ProUpgradeBanner from '@/components/game/ProUpgradeBanner';
 import { getConstructionSlots, getActiveConstructions, canStartConstruction, getSlotBreakdown } from '@/lib/game/construction-slots';
 import { getTierUnlockedTabs, getTierDef, getNextTierProgress } from '@/lib/game/corporation-tiers';
 import GameChat from '@/components/game/GameChat';
+import CommanderPanel from '@/components/game/CommanderPanel';
+import { hireCommander, dismissCommander } from '@/lib/game/commanders';
 
 // ─── Build Panel ────────────────────────────────────────────────────────────
 
@@ -1432,6 +1434,7 @@ export default function SpaceTycoonPage() {
     { id: 'speedruns', label: 'Speed Run', icon: '⏱️' },
     { id: 'seasons', label: 'Seasons', icon: '🌟' },
     { id: 'leaderboard', label: 'Ranks', icon: '🏆' },
+    { id: 'commanders', label: 'Commanders', icon: '🎖️' },
   ];
 
   // Corporation tier-based tab unlocking
@@ -1789,6 +1792,19 @@ export default function SpaceTycoonPage() {
         {tab === 'speedruns' && <SpeedRunPanel state={state} />}
         {tab === 'espionage' && <EspionagePanel state={state} />}
         {tab === 'megaproject' && <MegaProjectPanel state={state} />}
+        {tab === 'commanders' && (
+          <CommanderPanel
+            state={state}
+            onHire={(defId) => {
+              playSound('click');
+              setState(prev => prev ? hireCommander(prev, defId) : prev);
+            }}
+            onDismiss={(defId) => {
+              playSound('click');
+              setState(prev => prev ? dismissCommander(prev, defId) : prev);
+            }}
+          />
+        )}
         {tab === 'reports' && (
           <ReportsPanel
             state={state}

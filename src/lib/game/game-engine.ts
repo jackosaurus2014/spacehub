@@ -27,6 +27,7 @@ import { DEFAULT_LEGACY, getLegacyBonuses, checkLegacyMilestones, checkStretchPr
 import { checkCorporationTier, getTierBonuses } from './corporation-tiers';
 import { getMegastructureBonuses, checkMegastructureCompletion } from './personal-megastructures';
 import { getReputationBonuses, addReputation } from './reputation';
+import { computeCommanderBonuses } from './commanders';
 import type { ResourceId } from './resources';
 
 /** Get or create today's daily metrics tracker */
@@ -91,6 +92,9 @@ export function processTick(state: GameState): GameState {
   // Get reputation bonuses
   const repBonuses = getReputationBonuses(state.reputation || 0);
 
+  // Get commander bonuses (passive stacked bonuses from hired commanders)
+  const commanderBonuses = computeCommanderBonuses(state.hiredCommanders);
+
   // ─── 0. Workforce payroll (fractional per tick) ──────────────────
   const payroll = Math.round(getMonthlyPayroll(workforce) * fraction);
   if (payroll > 0) {
@@ -139,6 +143,7 @@ export function processTick(state: GameState): GameState {
       * supplyMult
       * (megaBonuses.revenueMultiplier || 1)
       * repBonuses.revenueMultiplier
+      * commanderBonuses.revenueMultiplier
       * powerRatio
       * (1 + stationBonus)
     );
@@ -170,7 +175,7 @@ export function processTick(state: GameState): GameState {
     if (bld.isComplete) return bld;
     const elapsed = (now - (bld.startedAtMs || 0)) / 1000;
     // Speed boosts reduce effective duration
-    const effectiveDuration = (bld.realDurationSeconds || 0) / (buildBoostMult * legacyBuildSpeedMult * (megaBonuses.buildSpeedMultiplier || 1) * repBonuses.buildSpeedMultiplier);
+    const effectiveDuration = (bld.realDurationSeconds || 0) / (buildBoostMult * legacyBuildSpeedMult * (megaBonuses.buildSpeedMultiplier || 1) * repBonuses.buildSpeedMultiplier * commanderBonuses.buildSpeedMultiplier);
     if (elapsed >= effectiveDuration) {
       const def = BUILDING_MAP.get(bld.definitionId);
       events.push({
@@ -192,7 +197,7 @@ export function processTick(state: GameState): GameState {
   if (activeResearch) {
     const researchElapsed = (now - (activeResearch.startedAtMs || 0)) / 1000;
     const researchBoostMult = getActiveBoostMultiplier(activeBoosts, 'research');
-    const researchSpeedMult = (1 + wfBonuses.researchSpeed) * (1 + resBonuses.researchSpeedBonus) * legacyBonuses.researchSpeedMultiplier * researchBoostMult * (megaBonuses.researchSpeedMultiplier || 1) * repBonuses.researchSpeedMultiplier;
+    const researchSpeedMult = (1 + wfBonuses.researchSpeed) * (1 + resBonuses.researchSpeedBonus) * legacyBonuses.researchSpeedMultiplier * researchBoostMult * (megaBonuses.researchSpeedMultiplier || 1) * repBonuses.researchSpeedMultiplier * commanderBonuses.researchSpeedMultiplier;
     const effectiveDuration = (activeResearch.realDurationSeconds || 0) / researchSpeedMult;
     if (researchElapsed >= effectiveDuration) {
       completedResearch.push(activeResearch.definitionId);
@@ -273,7 +278,7 @@ export function processTick(state: GameState): GameState {
 
   // ─── 6. Resource production (fractional per tick, with bonuses) ───
   const resources = { ...(state.resources || {}) };
-  const miningMult = (1 + wfBonuses.miningOutput) * (1 + resBonuses.miningOutputBonus) * legacyMiningMult * (1 + tierBonuses.miningBonus) * (megaBonuses.miningMultiplier || 1) * repBonuses.miningMultiplier;
+  const miningMult = (1 + wfBonuses.miningOutput) * (1 + resBonuses.miningOutputBonus) * legacyMiningMult * (1 + tierBonuses.miningBonus) * (megaBonuses.miningMultiplier || 1) * repBonuses.miningMultiplier * commanderBonuses.miningMultiplier;
   const currentTotalMonths = newDate.year * 12 + newDate.month;
   const miningBonuses = state.miningBonuses || [];
   for (const svc of activeServices) {

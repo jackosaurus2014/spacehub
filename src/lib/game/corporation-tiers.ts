@@ -72,7 +72,7 @@ export const CORPORATION_TIERS: CorporationTierDef[] = [
     constructionSlots: 4,
     shipyardSlots: 2,
     bonuses: { maintenanceReduction: 0.05, revenueBonus: 0.05, miningBonus: 0.05 },
-    unlockedTabs: ['crafting', 'market', 'workforce'],
+    unlockedTabs: ['crafting', 'market', 'workforce', 'commanders'],
   },
   {
     tier: 4, name: 'Corporation', icon: '🏛️', color: '#fbbf24',
