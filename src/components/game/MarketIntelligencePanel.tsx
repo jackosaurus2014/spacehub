@@ -9,6 +9,7 @@ import {
 import { RESOURCES, RESOURCE_MAP } from '@/lib/game/resources';
 import { RESOURCE_ASSETS } from '@/lib/game/assets';
 import { formatMoney } from '@/lib/game/formulas';
+import { useEscapeKey } from '@/hooks/useEscapeKey';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -289,13 +290,15 @@ function DeepDiveModal({
     };
   }, [chartData]);
 
+  useEscapeKey(onClose);
   if (!resource) return null;
+  const titleId = `market-deepdive-${resourceSlug}`;
 
   return (
-    <div className="fixed inset-0 z-[80] flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/80 backdrop-blur-md" onClick={onClose} />
+    <div className="fixed inset-0 z-[80] flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby={titleId}>
+      <div className="absolute inset-0 bg-black/80 backdrop-blur-md" onClick={onClose} aria-hidden="true" />
       <div className="relative w-full max-w-3xl max-h-[90vh] rounded-2xl overflow-hidden border border-cyan-500/30 flex flex-col" style={{ background: '#0a0a1a' }}>
-        <div className="h-1 bg-gradient-to-r from-cyan-500 via-purple-500 to-amber-500" />
+        <div className="h-1 bg-gradient-to-r from-cyan-500 via-purple-500 to-amber-500" aria-hidden="true" />
 
         {/* Header */}
         <div className="p-4 border-b border-white/[0.06]">
@@ -305,11 +308,17 @@ function DeepDiveModal({
                 <Image src={RESOURCE_ASSETS[resourceSlug] || RESOURCE_ASSETS.iron} alt="" fill className="object-cover" />
               </div>
               <div>
-                <h3 className="text-white text-lg font-bold">{resource.name}</h3>
+                <h3 id={titleId} className="text-white text-lg font-bold">{resource.name}</h3>
                 <p className="text-slate-500 text-xs">Commodity price intelligence</p>
               </div>
             </div>
-            <button onClick={onClose} className="w-8 h-8 rounded-full bg-black/40 text-white/70 hover:bg-black/60 hover:text-white flex items-center justify-center text-sm">✕</button>
+            <button
+              onClick={onClose}
+              aria-label={`Close ${resource.name} price chart`}
+              className="w-9 h-9 rounded-full bg-black/40 text-white/70 hover:bg-black/60 hover:text-white focus:outline-none focus:ring-2 focus:ring-cyan-400 flex items-center justify-center text-sm"
+            >
+              <span aria-hidden="true">✕</span>
+            </button>
           </div>
 
           {/* Current price strip */}
@@ -545,17 +554,19 @@ function CorporationsTab() {
 }
 
 function CorporationDetail({ corp, onClose }: { corp: CorporationRow; onClose: () => void }) {
+  useEscapeKey(onClose);
+  const titleId = `corp-detail-${corp.id}`;
   return (
-    <div className="fixed inset-0 z-[80] flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/80 backdrop-blur-md" onClick={onClose} />
+    <div className="fixed inset-0 z-[80] flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby={titleId}>
+      <div className="absolute inset-0 bg-black/80 backdrop-blur-md" onClick={onClose} aria-hidden="true" />
       <div className="relative w-full max-w-xl rounded-2xl overflow-hidden border border-cyan-500/30" style={{ background: '#0a0a1a' }}>
-        <div className="h-1 bg-gradient-to-r from-cyan-500 via-purple-500 to-amber-500" />
+        <div className="h-1 bg-gradient-to-r from-cyan-500 via-purple-500 to-amber-500" aria-hidden="true" />
 
         <div className="p-4">
           <div className="flex items-start justify-between gap-3 mb-4">
             <div>
               <div className="text-[10px] text-slate-500 uppercase tracking-wider">Rank #{corp.rank}</div>
-              <h3 className="text-white text-xl font-bold mt-0.5">{corp.companyName}</h3>
+              <h3 id={titleId} className="text-white text-xl font-bold mt-0.5">{corp.companyName}</h3>
               {corp.title && <p className="text-amber-300 text-sm italic">{corp.title}</p>}
               {corp.allianceName && (
                 <p className="text-purple-300 text-xs mt-1">
@@ -563,7 +574,13 @@ function CorporationDetail({ corp, onClose }: { corp: CorporationRow; onClose: (
                 </p>
               )}
             </div>
-            <button onClick={onClose} className="w-8 h-8 rounded-full bg-black/40 text-white/70 hover:bg-black/60 hover:text-white flex items-center justify-center text-sm shrink-0">✕</button>
+            <button
+              onClick={onClose}
+              aria-label={`Close ${corp.companyName} profile`}
+              className="w-9 h-9 rounded-full bg-black/40 text-white/70 hover:bg-black/60 hover:text-white focus:outline-none focus:ring-2 focus:ring-cyan-400 flex items-center justify-center text-sm shrink-0"
+            >
+              <span aria-hidden="true">✕</span>
+            </button>
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-4">

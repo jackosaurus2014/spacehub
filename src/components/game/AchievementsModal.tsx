@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import type { GameState } from '@/lib/game/types';
 import { ACHIEVEMENTS, getAchievementBadgeUrl } from '@/lib/game/achievements';
+import { useEscapeKey } from '@/hooks/useEscapeKey';
 
 interface AchievementsModalProps {
   state: GameState;
@@ -22,6 +23,7 @@ const CATEGORIES = [
 
 export default function AchievementsModal({ state, unlockedIds, onClose }: AchievementsModalProps) {
   const [filter, setFilter] = useState('all');
+  useEscapeKey(onClose);
 
   const filtered = filter === 'all'
     ? ACHIEVEMENTS
@@ -32,25 +34,39 @@ export default function AchievementsModal({ state, unlockedIds, onClose }: Achie
   const pct = Math.round((unlocked / total) * 100);
 
   return (
-    <div className="fixed inset-0 z-[70] flex items-center justify-center px-4">
-      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
+    <div className="fixed inset-0 z-[70] flex items-center justify-center px-4" role="dialog" aria-modal="true" aria-labelledby="achievements-title">
+      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} aria-hidden="true" />
 
       <div className="relative w-full max-w-lg max-h-[80vh] rounded-2xl overflow-hidden flex flex-col" style={{ background: '#0a0a1a' }}>
-        <div className="h-1 bg-gradient-to-r from-amber-500 via-cyan-500 to-purple-500" />
+        <div className="h-1 bg-gradient-to-r from-amber-500 via-cyan-500 to-purple-500" aria-hidden="true" />
 
         {/* Header */}
         <div className="p-4 border-b border-white/[0.06]">
           <div className="flex items-center justify-between mb-3">
-            <h3 className="text-white font-bold text-lg flex items-center gap-2">🏆 Achievements</h3>
-            <button onClick={onClose} className="text-slate-500 hover:text-white transition-colors text-sm">✕</button>
+            <h3 id="achievements-title" className="text-white font-bold text-lg flex items-center gap-2">🏆 Achievements</h3>
+            <button
+              onClick={onClose}
+              aria-label="Close achievements"
+              className="w-9 h-9 rounded-full text-slate-400 hover:text-white hover:bg-white/5 focus:outline-none focus:ring-2 focus:ring-cyan-400 transition-colors text-sm flex items-center justify-center"
+            >
+              <span aria-hidden="true">✕</span>
+            </button>
           </div>
 
           {/* Progress */}
           <div className="flex items-center gap-3 mb-3">
-            <div className="flex-1 h-2 bg-white/[0.06] rounded-full overflow-hidden">
-              <div className="h-full bg-gradient-to-r from-amber-500 to-cyan-500 rounded-full transition-all" style={{ width: `${pct}%` }} />
+            <div
+              className="flex-1 h-2 bg-white/[0.06] rounded-full overflow-hidden"
+              role="progressbar"
+              aria-label="Achievement completion"
+              aria-valuenow={unlocked}
+              aria-valuemin={0}
+              aria-valuemax={total}
+              aria-valuetext={`${unlocked} of ${total} achievements unlocked, ${pct} percent`}
+            >
+              <div className="h-full bg-gradient-to-r from-amber-500 to-cyan-500 rounded-full transition-all" style={{ width: `${pct}%` }} aria-hidden="true" />
             </div>
-            <span className="text-cyan-400 text-xs font-mono">{unlocked}/{total}</span>
+            <span className="text-cyan-400 text-xs font-mono" aria-hidden="true">{unlocked}/{total}</span>
           </div>
 
           {/* Category Filter */}

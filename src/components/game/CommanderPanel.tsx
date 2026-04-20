@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import Image from 'next/image';
+import { useEscapeKey } from '@/hooks/useEscapeKey';
 import type { GameState } from '@/lib/game/types';
 import {
   COMMANDER_MAP,
@@ -198,13 +199,14 @@ function CommanderCard({
       {/* Portrait */}
       <button
         type="button"
-        className="relative w-full aspect-square bg-gradient-to-b from-transparent to-black/60 overflow-hidden group"
+        aria-label={onOpenHero ? `View hero portrait for ${def.name}` : `${def.name} portrait`}
+        className="relative w-full aspect-square bg-gradient-to-b from-transparent to-black/60 overflow-hidden group focus:outline-none focus:ring-2 focus:ring-cyan-400"
         onClick={onOpenHero}
         disabled={!onOpenHero}
       >
         <Image
           src={getPortraitUrl(def)}
-          alt={def.name}
+          alt=""
           width={256}
           height={256}
           className="absolute inset-0 w-full h-full object-cover"
@@ -214,7 +216,7 @@ function CommanderCard({
           {RARITY_LABEL[def.rarity]}
         </span>
         {onOpenHero && (
-          <span className="absolute top-1.5 right-1.5 text-[9px] px-1.5 py-0.5 rounded-full text-amber-300 bg-amber-500/10 border border-amber-500/30 opacity-0 group-hover:opacity-100 transition-opacity">
+          <span className="absolute top-1.5 right-1.5 text-[9px] px-1.5 py-0.5 rounded-full text-amber-300 bg-amber-500/10 border border-amber-500/30 opacity-0 group-hover:opacity-100 transition-opacity" aria-hidden="true">
             View hero
           </span>
         )}
@@ -252,19 +254,27 @@ function CommanderCard({
 }
 
 function HeroModal({ def, onClose }: { def: CommanderDefinition; onClose: () => void }) {
+  useEscapeKey(onClose);
   const fullbody = getFullbodyUrl(def);
   if (!fullbody) return null;
   const accent = RARITY_ACCENT[def.rarity];
+  const titleId = `hero-title-${def.id}`;
   return (
-    <div className="fixed inset-0 z-[80] flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/80 backdrop-blur-md" onClick={onClose} />
+    <div className="fixed inset-0 z-[80] flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby={titleId}>
+      <div className="absolute inset-0 bg-black/80 backdrop-blur-md" onClick={onClose} aria-hidden="true" />
       <div className={`relative w-full max-w-md rounded-2xl overflow-hidden border-2 ${accent.border} shadow-2xl ${accent.glow}`} style={{ background: '#0a0a1a' }}>
         <div className="relative aspect-[3/4]">
-          <Image src={fullbody} alt={def.name} fill className="object-cover" />
-          <button onClick={onClose} className="absolute top-3 right-3 w-8 h-8 rounded-full bg-black/60 backdrop-blur-sm text-white hover:bg-black/80 transition-colors flex items-center justify-center text-sm">✕</button>
+          <Image src={fullbody} alt={`${def.name} hero portrait`} fill className="object-cover" />
+          <button
+            onClick={onClose}
+            aria-label="Close hero portrait"
+            className="absolute top-3 right-3 w-9 h-9 rounded-full bg-black/60 backdrop-blur-sm text-white hover:bg-black/80 focus:outline-none focus:ring-2 focus:ring-cyan-400 transition-colors flex items-center justify-center text-sm"
+          >
+            <span aria-hidden="true">✕</span>
+          </button>
           <div className="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black via-black/70 to-transparent">
             <div className={`text-[10px] font-bold uppercase tracking-wider ${accent.text}`}>{RARITY_LABEL[def.rarity]} · {CLASS_LABEL[def.class]}</div>
-            <h3 className="text-white text-2xl font-bold mt-1">{def.name}</h3>
+            <h3 id={titleId} className="text-white text-2xl font-bold mt-1">{def.name}</h3>
             <p className="text-slate-300 text-sm">{def.title}</p>
             <div className={`mt-2 text-sm font-mono ${accent.text}`}>{getClassBonusText(def.class, def.rarity)}</div>
           </div>

@@ -71,22 +71,34 @@ export default function FactionPanel({ state, onSendEnvoy }: Props) {
                 {/* Reputation bar */}
                 <div className="mb-3">
                   <div className="flex justify-between items-center text-[10px] mb-1">
-                    <span className="text-slate-500">Reputation</span>
-                    <span className={`font-mono font-bold ${rep >= 0 ? 'text-cyan-300' : 'text-red-300'}`}>{rep > 0 ? `+${rep}` : rep}</span>
+                    <span className="text-slate-500" id={`rep-label-${f.id}`}>Reputation</span>
+                    <span className={`font-mono font-bold ${rep >= 0 ? 'text-cyan-300' : 'text-red-300'}`} aria-live="polite">
+                      {rep > 0 ? `+${rep}` : rep} — {STANDING_LABEL[standing]}
+                    </span>
                   </div>
-                  <div className="relative h-2 bg-white/[0.06] rounded-full overflow-hidden">
+                  <div
+                    className="relative h-2 bg-white/[0.06] rounded-full overflow-hidden"
+                    role="progressbar"
+                    aria-labelledby={`rep-label-${f.id}`}
+                    aria-valuenow={rep}
+                    aria-valuemin={-100}
+                    aria-valuemax={100}
+                    aria-valuetext={`${rep > 0 ? '+' : ''}${rep}, ${STANDING_LABEL[standing]}`}
+                  >
                     {/* Center tick mark */}
-                    <div className="absolute top-0 bottom-0 left-1/2 w-px bg-white/20" />
+                    <div className="absolute top-0 bottom-0 left-1/2 w-px bg-white/20" aria-hidden="true" />
                     {/* Rep fill */}
                     {rep >= 0 ? (
                       <div
                         className="absolute top-0 bottom-0 left-1/2 bg-gradient-to-r from-cyan-500 to-emerald-400 rounded-r-full"
                         style={{ width: `${(rep / 100) * 50}%` }}
+                        aria-hidden="true"
                       />
                     ) : (
                       <div
                         className="absolute top-0 bottom-0 right-1/2 bg-gradient-to-l from-amber-500 to-red-500 rounded-l-full"
                         style={{ width: `${(Math.abs(rep) / 100) * 50}%` }}
+                        aria-hidden="true"
                       />
                     )}
                   </div>
