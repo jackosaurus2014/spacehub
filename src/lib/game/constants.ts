@@ -58,3 +58,10 @@ export const SAVE_KEY = 'spacetycoon_save';
  *  100x means a 5-minute build finishes in 3 seconds. */
 export const DEV_FAST_MULTIPLIER =
   process.env.NODE_ENV !== 'production' && process.env.NEXT_PUBLIC_DEV_FAST === 'true' ? 100 : 1;
+
+/** Dev-mode revenue multiplier — scales service revenue per tick. Costs are
+ *  unaffected so balance pressures (overhead, exec comp, saturation, broker
+ *  fees) remain proportionally meaningful — wealth just accumulates faster
+ *  for testing. Gated on NEXT_PUBLIC_DEV_FAST same as DEV_FAST_MULTIPLIER. */
+export const DEV_REVENUE_MULTIPLIER =
+  process.env.NODE_ENV !== 'production' && process.env.NEXT_PUBLIC_DEV_FAST === 'true' ? 10 : 1;

@@ -48,19 +48,21 @@ export const ARCHETYPES: ArchetypeDefinition[] = [
     tagline: 'Rockets before suborbital was cool.',
     flavor: 'Launch specialist',
     narrative:
-      'Your family has been putting mass into orbit for three generations. The first small launch pad is already operational, the logbook is thick with flown birds, and you know the telemetry cables by touch. The cash reserves are thin because the hardware exists, but the revenue clock is already ticking.',
+      'Your family has been putting mass into orbit for three generations. A small launch pad is already operational next to a ground tracking station — a complete launch-and-tracking operation from day one. Cash reserves are thin because the hardware exists, but two revenue streams are already running.',
     startingMoney: 75_000_000,
     startingResources: { iron: 30, aluminum: 20 },
     startingBuildings: [
       { definitionId: 'launch_pad_small', locationId: 'earth_surface' },
+      { definitionId: 'ground_station',   locationId: 'earth_surface' },
     ],
     startingServices: [
-      { definitionId: 'svc_launch_small', locationId: 'earth_surface', linkedBuildingIndex: 0 },
+      { definitionId: 'svc_launch_small',    locationId: 'earth_surface', linkedBuildingIndex: 0 },
+      { definitionId: 'svc_ground_tracking', locationId: 'earth_surface', linkedBuildingIndex: 1 },
     ],
     accent: { border: 'border-amber-500/40', bg: 'bg-amber-500/10', text: 'text-amber-300' },
     icon: '🚀',
     strategicHint:
-      'Revenue from day one. Build a second Launch Pad or Ground Station to clear the Launch Provider Certification contract ($60M) quickly, then race to Medium Launch research.',
+      'Two Earth-based revenue streams running on day one. Clear the Launch Provider Certification contract ($60M) immediately — you already qualify — then race toward Medium Launch research for a revenue multiplier.',
   },
   {
     id: 'meridian_signals',
@@ -92,8 +94,8 @@ export const ARCHETYPES: ArchetypeDefinition[] = [
     tagline: 'Where every mission calls home.',
     flavor: 'Ground operations specialist',
     narrative:
-      'You run the ground. Two tracking stations and a full Mission Control Center are staffed and generating revenue from everyone else\'s launches. Biggest war chest of the three archetypes — but your infrastructure is all Earth-bound until you build your first launch pad or buy into orbit.',
-    startingMoney: 100_000_000,
+      'You run the ground. Two tracking stations and a full Mission Control Center are staffed and generating revenue from everyone else\'s launches. Three revenue streams running — but cash reserves are lean, and your infrastructure is all Earth-bound until you build your first launch pad or buy into orbit.',
+    startingMoney: 75_000_000,
     startingResources: { iron: 40 },
     startingBuildings: [
       { definitionId: 'ground_station', locationId: 'earth_surface' },
