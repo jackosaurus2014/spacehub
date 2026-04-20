@@ -7,7 +7,7 @@ import { BUILDING_MAP, getPowerByLocation, getCraftingSpeedMultiplier } from './
 import { SERVICE_MAP } from './services';
 import { RESEARCH_MAP, getResearchBonuses } from './research-tree';
 import { MINING_PRODUCTION, RESOURCE_MAP } from './resources';
-import { advanceDate, generateId, revenueMultiplier } from './formulas';
+import { advanceDate, generateId, revenueMultiplier, serviceSaturationMultiplier } from './formulas';
 import { LOCATION_MAP } from './solar-system';
 import { MAX_EVENT_LOG, TICKS_PER_GAME_MONTH, DEV_FAST_MULTIPLIER } from './constants';
 import { getGlobalGameDate } from './server-time';
@@ -109,12 +109,23 @@ export function processTick(state: GameState): GameState {
   const powerByLocation = getPowerByLocation(state.buildings);
 
   // ─── 1. Revenue collection from active services ───────────────────
-  // Applies: event multipliers, upgrade boost, workforce bonus, prestige bonus, power ratio, station bonus
+  // Applies: event multipliers, upgrade boost, workforce bonus, prestige bonus,
+  //          power ratio, station bonus, market saturation (see Wave 1 balance).
   let monthlyRevenue = 0;
   let monthlyCosts = 0;
+
+  // Market saturation counters — one per (definitionId, locationId) bucket.
+  // Each iteration increments the bucket so the Nth duplicate earns less than
+  // the (N-1)th. See serviceSaturationMultiplier for the curve.
+  const saturationCounts = new Map<string, number>();
+
   for (const svc of state.activeServices) {
     const def = SERVICE_MAP.get(svc.definitionId);
     if (!def) continue;
+    const bucketKey = `${svc.definitionId}@${svc.locationId}`;
+    const saturationPosition = saturationCounts.get(bucketKey) || 0;
+    saturationCounts.set(bucketKey, saturationPosition + 1);
+    const saturationMult = serviceSaturationMultiplier(saturationPosition);
     const linkedBld = state.buildings.find(b => b.isComplete && b.locationId === svc.locationId && BUILDING_MAP.get(b.definitionId)?.enabledServices?.includes(svc.definitionId));
     const upgradeBoost = getUpgradeRevenueMultiplier(linkedBld?.upgradeLevel || 0);
     // Dynamic service pricing: server-reported multiplier based on global supply
@@ -148,6 +159,7 @@ export function processTick(state: GameState): GameState {
       * commanderBonuses.revenueMultiplier
       * powerRatio
       * (1 + stationBonus)
+      * saturationMult
     );
     const cost = Math.round(def.operatingCostPerMonth * fraction * multipliers.costMultiplier * legacyCostMult * (1 - tierBonuses.maintenanceReduction) * (megaBonuses.maintenanceMultiplier || 1) * repBonuses.maintenanceMultiplier);
     money += revenue - cost;

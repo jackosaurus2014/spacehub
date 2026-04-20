@@ -23,6 +23,28 @@ export function revenueMultiplier(relevantResearchCount: number): number {
   return Math.min(2.0, 1.0 + relevantResearchCount * RESEARCH_REVENUE_BONUS);
 }
 
+/**
+ * Market saturation multiplier for duplicate services at the same location.
+ * The Nth (0-indexed) instance of the same service at the same location earns
+ * proportionally less revenue than the first. Floor of ~35% ensures high-volume
+ * fleets still earn something — no fleet is infinitely profitable.
+ *
+ * Curve: 0.35 + 0.65 * 0.92^position
+ *   - 1st instance (pos=0): 100%
+ *   - 2nd (pos=1): 95%
+ *   - 5th (pos=4): 80%
+ *   - 10th (pos=9): 70%
+ *   - 20th (pos=19): 58%
+ *   - 50th (pos=49): 42%
+ *   - 100th (pos=99): 36%
+ *
+ * This closes the "spam 50 telecom sats for linear revenue" exploit while
+ * keeping the first few satellites of any type fully valuable.
+ */
+export function serviceSaturationMultiplier(positionInBucket: number): number {
+  return 0.35 + 0.65 * Math.pow(0.92, Math.max(0, positionInBucket));
+}
+
 /** Compare two game dates: returns negative if a < b, 0 if equal, positive if a > b */
 export function compareDates(a: GameDate, b: GameDate): number {
   if (a.year !== b.year) return a.year - b.year;
