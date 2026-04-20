@@ -246,6 +246,52 @@ describe('commanders — bonus computation', () => {
     const b = computeCommanderBonuses([{ definitionId: 'ghost', hiredAtMs: 0 }]);
     expect(b.revenueMultiplier).toBe(1);
   });
+
+  // ─── Wave 5 balance: diminishing-returns stacking in same class ──────
+  it('same-class commanders stack with diminishing returns', () => {
+    const sameClass = COMMANDER_DEFS.filter(c => c.class === 'commander');
+    // Pick 2 legendaries of 'commander' class
+    const legendaries = sameClass.filter(c => c.rarity === 'legendary').slice(0, 2);
+    expect(legendaries.length).toBeGreaterThanOrEqual(2);
+    const single = computeCommanderBonuses([{ definitionId: legendaries[0].id, hiredAtMs: 0 }]);
+    const pair = computeCommanderBonuses([
+      { definitionId: legendaries[0].id, hiredAtMs: 0 },
+      { definitionId: legendaries[1].id, hiredAtMs: 0 },
+    ]);
+    const singleBonus = single.revenueMultiplier - 1;
+    const pairBonus = pair.revenueMultiplier - 1;
+    // Pair should be more than a single bonus, but less than 2× single
+    expect(pairBonus).toBeGreaterThan(singleBonus);
+    expect(pairBonus).toBeLessThan(singleBonus * 2);
+    // Specifically the second should contribute 88% of the first
+    expect(pairBonus).toBeCloseTo(singleBonus * (1 + 0.88), 2);
+  });
+
+  it('highest-rarity commander in a class gets the full bonus', () => {
+    // If we hire a common + a legendary of the same class, the legendary
+    // should be at position 0 (full) and common at position 1 (diminished).
+    const commonCmdr = COMMANDER_DEFS.find(c => c.class === 'commander' && c.rarity === 'common')!;
+    const legendCmdr = COMMANDER_DEFS.find(c => c.class === 'commander' && c.rarity === 'legendary')!;
+    const b = computeCommanderBonuses([
+      { definitionId: commonCmdr.id, hiredAtMs: 0 },
+      { definitionId: legendCmdr.id, hiredAtMs: 0 },
+    ]);
+    // Legendary at full (0.20), common at 88% (0.02 × 0.88 = 0.0176)
+    const expectedBonus = 0.20 + 0.02 * 0.88;
+    expect(b.revenueMultiplier - 1).toBeCloseTo(expectedBonus, 3);
+  });
+
+  it('cross-class commanders stack independently (no diminishing returns)', () => {
+    const diplomat = COMMANDER_DEFS.find(c => c.class === 'diplomat' && c.rarity === 'rare')!;
+    const engineer = COMMANDER_DEFS.find(c => c.class === 'engineer' && c.rarity === 'uncommon')!;
+    const b = computeCommanderBonuses([
+      { definitionId: diplomat.id, hiredAtMs: 0 },
+      { definitionId: engineer.id, hiredAtMs: 0 },
+    ]);
+    // Each is position 0 in its own class — full bonus each
+    expect(b.revenueMultiplier).toBeCloseTo(1 + RARITY_MAGNITUDE.rare);
+    expect(b.buildSpeedMultiplier).toBeCloseTo(1 + RARITY_MAGNITUDE.uncommon);
+  });
 });
 
 describe('commanders — recruitment pool', () => {

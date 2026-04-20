@@ -73,6 +73,7 @@ Space Tycoon is intended to be a **highly complex economic PVE and PVP MMO space
 - [`docs/SESSION_DESIGN.md`](docs/SESSION_DESIGN.md) — map of existing features to their time-loop (tactical / daily / weekly / monthly / campaign). Consult before adding new features and make sure they land on a loop the game isn't already over-serving.
 - [`docs/NPC_BACKDROP.md`](docs/NPC_BACKDROP.md) — audit of the existing NPC economic backdrop, the design invariants it enforces, and next-step recommendations (faction alignment, dynamic population scaling, market share telemetry).
 - [`docs/SIMULATION_INTEGRITY_TOOLING.md`](docs/SIMULATION_INTEGRITY_TOOLING.md) — engineering specification for the admin tooling that fulfills POLICY.md's simulation-integrity commitments (exploit reports, balance reports, rollback toolkit, RMT detection, public post-mortems). Five phases, ~14-20 hours total.
+- [`docs/BALANCE.md`](docs/BALANCE.md) — economic balance decisions and money-sink design. Read before changing revenue/cost formulas, commander bonuses, or market pricing.
 
 ### Meaningful decisions
 Every player choice — what to build, where to expand, whom to hire, which resources to stockpile, which contracts to bid on — should have real economic trade-offs. Avoid dominant strategies, free wins, and cosmetic-only choices. If a decision doesn't change a player's economic situation, it shouldn't be in the game.

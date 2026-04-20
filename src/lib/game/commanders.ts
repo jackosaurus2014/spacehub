@@ -187,6 +187,25 @@ export function getHireCap(state: GameState): number {
   return 2 + (state.corporationTier || 1);
 }
 
+/**
+ * Per-class diminishing-returns multiplier on commander bonus stacking.
+ * Each additional commander in the same class contributes at 88% of the
+ * previous one. Prevents a 9-legendary all-commander roster from reaching
+ * +180% global revenue.
+ *
+ *  1st commander of class: 100%
+ *  2nd: 88%
+ *  3rd: 77%
+ *  5th: 60%
+ *  9th: 36%
+ *
+ * Rationale: one expert diplomat negotiates better than you; a second helps
+ * somewhat; a ninth is just overhead arguing amongst themselves.
+ */
+function stackingContribution(positionInClass: number): number {
+  return Math.pow(0.88, Math.max(0, positionInClass));
+}
+
 /** Compute combined bonuses from all hired commanders. Returns multipliers (1.0 = no bonus). */
 export function computeCommanderBonuses(hired: HiredCommander[] | undefined): CommanderBonuses {
   const result: CommanderBonuses = {
@@ -196,19 +215,38 @@ export function computeCommanderBonuses(hired: HiredCommander[] | undefined): Co
     miningMultiplier: 1.0,
     marketPriceMultiplier: 1.0,
   };
+
+  // Group by class and apply diminishing-returns stacking per class.
+  const byClass = new Map<CommanderClass, CommanderDefinition[]>();
   for (const h of hired || []) {
     const def = COMMANDER_MAP.get(h.definitionId);
     if (!def) continue;
-    const bonus = RARITY_MAGNITUDE[def.rarity];
-    switch (def.class) {
-      case 'diplomat':    result.revenueMultiplier += bonus; break;
-      case 'engineer':    result.buildSpeedMultiplier += bonus; break;
-      case 'scientist':   result.researchSpeedMultiplier += bonus; break;
-      case 'logistician': result.miningMultiplier += bonus; break;
-      case 'magnate':     result.revenueMultiplier += bonus; result.marketPriceMultiplier += bonus; break;
-      case 'commander':   result.revenueMultiplier += bonus; break;
-    }
+    byClass.set(def.class, [...(byClass.get(def.class) || []), def]);
   }
+
+  byClass.forEach((defs, cls) => {
+    // Sort by rarity descending — the most powerful commander of each class
+    // gets the full bonus, lesser commanders get progressively diminished
+    // contributions. Prevents rarity-inversion from wasting legendaries.
+    const rarityRank: Record<CommanderRarity, number> = {
+      legendary: 5, epic: 4, rare: 3, uncommon: 2, common: 1,
+    };
+    const sorted = [...defs].sort((a, b) => rarityRank[b.rarity] - rarityRank[a.rarity]);
+
+    for (let i = 0; i < sorted.length; i++) {
+      const def = sorted[i];
+      const bonus = RARITY_MAGNITUDE[def.rarity] * stackingContribution(i);
+      switch (cls) {
+        case 'diplomat':    result.revenueMultiplier += bonus; break;
+        case 'engineer':    result.buildSpeedMultiplier += bonus; break;
+        case 'scientist':   result.researchSpeedMultiplier += bonus; break;
+        case 'logistician': result.miningMultiplier += bonus; break;
+        case 'magnate':     result.revenueMultiplier += bonus; result.marketPriceMultiplier += bonus; break;
+        case 'commander':   result.revenueMultiplier += bonus; break;
+      }
+    }
+  });
+
   return result;
 }
 
