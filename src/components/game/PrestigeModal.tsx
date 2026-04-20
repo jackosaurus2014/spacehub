@@ -4,6 +4,7 @@ import { canPrestige, calculatePrestigeRewards, getPrestigeName } from '@/lib/ga
 import type { GameState } from '@/lib/game/types';
 import { formatMoney } from '@/lib/game/formulas';
 import { playSound } from '@/lib/game/sound-engine';
+import { useEscapeKey } from '@/hooks/useEscapeKey';
 
 interface PrestigeModalProps {
   state: GameState;
@@ -12,21 +13,22 @@ interface PrestigeModalProps {
 }
 
 export default function PrestigeModal({ state, onPrestige, onClose }: PrestigeModalProps) {
+  useEscapeKey(onClose);
   const currentLevel = state.prestige?.level || 0;
   const isEligible = canPrestige(state.unlockedLocations.length, state.completedResearch.length);
   const nextRewards = calculatePrestigeRewards(state.prestige || { level: 0, legacyPoints: 0, permanentBonuses: { revenueMultiplier: 1, buildSpeedMultiplier: 1, researchSpeedMultiplier: 1, miningMultiplier: 1, startingMoney: 500_000_000 } });
 
   return (
-    <div className="fixed inset-0 z-[70] flex items-center justify-center px-4">
-      <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={onClose} />
+    <div className="fixed inset-0 z-[70] flex items-center justify-center px-4" role="dialog" aria-modal="true" aria-labelledby="prestige-title">
+      <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={onClose} aria-hidden="true" />
 
       <div className="relative w-full max-w-md rounded-2xl overflow-hidden" style={{ background: 'linear-gradient(180deg, #1a0a30 0%, #0a0a1a 100%)' }}>
-        <div className="h-1 bg-gradient-to-r from-amber-500 via-purple-500 to-cyan-500" />
+        <div className="h-1 bg-gradient-to-r from-amber-500 via-purple-500 to-cyan-500" aria-hidden="true" />
 
         <div className="p-6">
           <div className="text-center mb-5">
-            <span className="text-5xl block mb-3">{currentLevel >= 3 ? '👑' : '⭐'}</span>
-            <h3 className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-amber-300 to-purple-300">
+            <span className="text-5xl block mb-3" aria-hidden="true">{currentLevel >= 3 ? '👑' : '⭐'}</span>
+            <h3 id="prestige-title" className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-amber-300 to-purple-300">
               Prestige {currentLevel > 0 ? `(Level ${currentLevel})` : ''}
             </h3>
             {currentLevel > 0 && (

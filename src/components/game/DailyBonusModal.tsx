@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { canClaimBonus, claimDailyBonus, getCurrentStreak, getBonusSchedule } from '@/lib/game/daily-bonus';
 import { formatMoney } from '@/lib/game/formulas';
 import { playSound } from '@/lib/game/sound-engine';
+import { useEscapeKey } from '@/hooks/useEscapeKey';
 
 interface DailyBonusModalProps {
   onClaim: (amount: number) => void;
@@ -51,14 +52,15 @@ export default function DailyBonusModal({ onClaim }: DailyBonusModalProps) {
     setVisible(false);
   };
 
+  useEscapeKey(handleDismiss, visible);
   if (!visible) return null;
 
   const currentDay = (streak % 7) + 1;
 
   return (
-    <div className="fixed inset-0 z-[70] flex items-center justify-center px-4">
+    <div className="fixed inset-0 z-[70] flex items-center justify-center px-4" role="dialog" aria-modal="true" aria-labelledby="daily-bonus-title">
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={handleDismiss} />
+      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={handleDismiss} aria-hidden="true" />
 
       {/* Modal */}
       <div className="relative w-full max-w-sm rounded-2xl overflow-hidden" style={{ background: 'linear-gradient(180deg, #0f0f2e 0%, #0a0a1a 100%)' }}>
@@ -71,7 +73,7 @@ export default function DailyBonusModal({ onClaim }: DailyBonusModalProps) {
               {/* Header */}
               <div className="text-center mb-5">
                 <span className="text-3xl block mb-2">🎁</span>
-                <h3 className="text-xl font-bold text-white">Daily Bonus</h3>
+                <h3 id="daily-bonus-title" className="text-xl font-bold text-white">Daily Bonus</h3>
                 <p className="text-slate-400 text-sm mt-1">
                   {streak > 0 ? `${streak}-day streak!` : 'Welcome back!'} Claim your reward.
                 </p>

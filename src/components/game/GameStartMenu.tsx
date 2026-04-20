@@ -128,7 +128,8 @@ export default function GameStartMenu({ onNewGame, onContinue }: GameStartMenuPr
         >
           <button
             onClick={onNewGame}
-            className="group relative w-full py-3.5 text-sm font-bold text-white rounded-xl overflow-hidden transition-all duration-300 hover:shadow-[0_0_30px_rgba(6,182,212,0.3)]"
+            aria-label="Start a new Space Tycoon game"
+            className="group relative w-full py-3.5 text-sm font-bold text-white rounded-xl overflow-hidden transition-all duration-300 hover:shadow-[0_0_30px_rgba(6,182,212,0.3)] focus:outline-none focus:ring-2 focus:ring-cyan-400"
           >
             <div className="absolute inset-0 bg-gradient-to-r from-cyan-600 to-purple-600 group-hover:from-cyan-500 group-hover:to-purple-500 transition-all" />
             <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.1),transparent_70%)]" />
@@ -143,7 +144,8 @@ export default function GameStartMenu({ onNewGame, onContinue }: GameStartMenuPr
           {hasSave && (
             <button
               onClick={onContinue}
-              className="w-full py-3 text-sm font-semibold text-white/90 border border-white/10 hover:border-cyan-500/30 hover:bg-white/[0.04] rounded-xl transition-all duration-200"
+              aria-label="Continue your existing saved Space Tycoon game"
+              className="w-full py-3 text-sm font-semibold text-white/90 border border-white/10 hover:border-cyan-500/30 hover:bg-white/[0.04] rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-cyan-400"
             >
               Continue Saved Game
             </button>

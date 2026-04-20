@@ -3,6 +3,7 @@
 import { formatMoney } from '@/lib/game/formulas';
 import type { OfflineEarnings } from '@/lib/game/offline-income';
 import { playSound } from '@/lib/game/sound-engine';
+import { useEscapeKey } from '@/hooks/useEscapeKey';
 
 interface WelcomeBackModalProps {
   earnings: OfflineEarnings;
@@ -10,6 +11,7 @@ interface WelcomeBackModalProps {
 }
 
 export default function WelcomeBackModal({ earnings, onCollect }: WelcomeBackModalProps) {
+  useEscapeKey(onCollect);
   const hours = Math.floor(earnings.timeAwayCapped / 3600000);
   const minutes = Math.floor((earnings.timeAwayCapped % 3600000) / 60000);
   const timeStr = hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`;
@@ -21,15 +23,15 @@ export default function WelcomeBackModal({ earnings, onCollect }: WelcomeBackMod
     .slice(0, 4);
 
   return (
-    <div className="fixed inset-0 z-[70] flex items-center justify-center px-4">
-      <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" />
+    <div className="fixed inset-0 z-[70] flex items-center justify-center px-4" role="dialog" aria-modal="true" aria-labelledby="welcome-back-title">
+      <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" aria-hidden="true" />
 
       <div className="relative w-full max-w-sm rounded-2xl overflow-hidden" style={{ background: 'linear-gradient(180deg, #0f1530 0%, #0a0a1a 100%)' }}>
-        <div className="h-1 bg-gradient-to-r from-green-500 via-cyan-500 to-green-500" />
+        <div className="h-1 bg-gradient-to-r from-green-500 via-cyan-500 to-green-500" aria-hidden="true" />
 
         <div className="p-6 text-center">
-          <span className="text-4xl block mb-3">🌙</span>
-          <h3 className="text-xl font-bold text-white mb-1">Welcome Back!</h3>
+          <span className="text-4xl block mb-3" aria-hidden="true">🌙</span>
+          <h3 id="welcome-back-title" className="text-xl font-bold text-white mb-1">Welcome Back!</h3>
           <p className="text-slate-400 text-sm mb-5">
             Your empire ran for <span className="text-white font-medium">{timeStr}</span> while you were away.
           </p>
