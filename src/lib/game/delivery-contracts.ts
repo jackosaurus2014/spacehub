@@ -118,7 +118,8 @@ const FACTION_FLAVOR: Record<FactionId, FactionFlavor> = {
   },
 };
 
-const POOL_TARGET_SIZE = 8;
+export const POOL_SIZE = 8;
+const POOL_TARGET_SIZE = POOL_SIZE;
 const POOL_REFRESH_MS = 4 * 60 * 60 * 1000; // 4 hours
 
 export function getDeliveryPool(state: GameState): DeliveryContract[] {

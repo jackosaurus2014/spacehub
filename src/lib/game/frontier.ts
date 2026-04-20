@@ -64,7 +64,10 @@ export function shouldAutoGraduate(state: GameState, now: number = Date.now()): 
   if (netWorth >= FRONTIER_HARD_CAP_NET_WORTH) return true;
   // If past the time window but still under the graduation net worth, grace a
   // little longer so brand-new players don't get tossed into the shark tank.
-  if (timer.remainingMs <= -7 * 24 * 60 * 60 * 1000) return true; // +7 day grace
+  // `remainingMs` is clamped at zero by getFrontierTimer — measure grace from
+  // the actual expiration timestamp instead.
+  const msPastExpiry = now - timer.expiredAtMs;
+  if (msPastExpiry >= 7 * 24 * 60 * 60 * 1000) return true; // +7 day grace
   return false;
 }
 
