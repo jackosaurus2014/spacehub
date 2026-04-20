@@ -2,10 +2,8 @@
 
 /** Starting cash — sim-validated at $100M for balanced early progression.
  *  Players can afford 2-3 tier 1 buildings, then must earn more.
- *  Pro subscribers get +35%, Enterprise gets +70%. */
+ *  All players start with the same amount regardless of subscription — see docs/POLICY.md. */
 export const STARTING_MONEY = 100_000_000;
-export const STARTING_MONEY_PRO = 135_000_000;
-export const STARTING_MONEY_ENTERPRISE = 170_000_000;
 
 /** Starting year — matches real-world present */
 export const STARTING_YEAR = 2026;
