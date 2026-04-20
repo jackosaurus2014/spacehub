@@ -76,6 +76,8 @@ import DiplomacyPanel from '@/components/game/DiplomacyPanel';
 import { acceptDelivery, deliverContract } from '@/lib/game/delivery-contracts';
 import FrontierBadge from '@/components/game/FrontierBadge';
 import { graduateFrontier } from '@/lib/game/frontier';
+import ArchetypePicker from '@/components/game/ArchetypePicker';
+import { applyArchetype, type StartingArchetype } from '@/lib/game/archetypes';
 
 // ─── Build Panel ────────────────────────────────────────────────────────────
 
@@ -1090,12 +1092,23 @@ export default function SpaceTycoonPage() {
     });
   }, []);
 
+  const [showArchetypePicker, setShowArchetypePicker] = useState(false);
+
   const handleNewGame = useCallback(() => {
     initAudio();
+    // Opens the archetype picker instead of immediately starting a vanilla
+    // game. The picker then calls handleArchetypeSelected to actually create
+    // the state.
+    setShowArchetypePicker(true);
+  }, []);
+
+  const handleArchetypeSelected = useCallback((archetypeId: StartingArchetype) => {
     playSound('milestone');
-    const newState = getNewGameState();
+    const base = getNewGameState();
+    const newState = applyArchetype(base, archetypeId);
     setState(newState);
     saveGame(newState);
+    setShowArchetypePicker(false);
     setShowMenu(false);
     // Reset tutorial so it shows for new games
     try {
@@ -1107,17 +1120,10 @@ export default function SpaceTycoonPage() {
 
   const handleRestartGame = useCallback(() => {
     if (confirm('Restart the game? Your current progress will be erased and a new game will begin.')) {
-      playSound('milestone');
       deleteSave();
-      const newState = getNewGameState();
-      setState(newState);
-      saveGame(newState);
-      // Reset tutorial so it shows again
-      try {
-        localStorage.removeItem('spacetycoon_tutorial_complete');
-        localStorage.removeItem('spacetycoon_tutorial_step');
-        localStorage.removeItem('spacetycoon_unlocked_features');
-      } catch {}
+      setState(null);
+      setShowMenu(true);
+      setShowArchetypePicker(true);
     }
   }, []);
 
@@ -1411,10 +1417,18 @@ export default function SpaceTycoonPage() {
   // ─── Start Menu (cinematic) ─────────────────────────────────────────
   if (showMenu || !state) {
     return (
-      <GameStartMenu
-        onNewGame={handleNewGame}
-        onContinue={() => { const saved = loadGame(); if (saved) { setState(saved); setShowMenu(false); } }}
-      />
+      <>
+        <GameStartMenu
+          onNewGame={handleNewGame}
+          onContinue={() => { const saved = loadGame(); if (saved) { setState(saved); setShowMenu(false); } }}
+        />
+        {showArchetypePicker && (
+          <ArchetypePicker
+            onSelect={handleArchetypeSelected}
+            onCancel={() => setShowArchetypePicker(false)}
+          />
+        )}
+      </>
     );
   }
 

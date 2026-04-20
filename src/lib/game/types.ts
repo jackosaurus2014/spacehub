@@ -469,6 +469,9 @@ export interface GameState {
   frontierStatus?: 'active' | 'graduated' | 'none';
   frontierEnteredAtMs?: number;
   frontierGraduatedAtMs?: number;
+
+  // Starting archetype — the path the player picked at game creation
+  startingArchetype?: 'cape_heritage' | 'meridian_signals' | 'tracking_consortium';
 }
 
 export interface DeliveryContractState {
