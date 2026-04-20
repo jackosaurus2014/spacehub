@@ -7,7 +7,7 @@ import { BUILDING_MAP, getPowerByLocation, getCraftingSpeedMultiplier } from './
 import { SERVICE_MAP } from './services';
 import { RESEARCH_MAP, getResearchBonuses } from './research-tree';
 import { MINING_PRODUCTION, RESOURCE_MAP } from './resources';
-import { advanceDate, generateId, revenueMultiplier, serviceSaturationMultiplier } from './formulas';
+import { advanceDate, generateId, revenueMultiplier, serviceSaturationMultiplier, corporateOverheadMonthly } from './formulas';
 import { LOCATION_MAP } from './solar-system';
 import { MAX_EVENT_LOG, TICKS_PER_GAME_MONTH, DEV_FAST_MULTIPLIER } from './constants';
 import { getGlobalGameDate } from './server-time';
@@ -167,6 +167,28 @@ export function processTick(state: GameState): GameState {
     totalSpent += cost;
     monthlyRevenue += revenue;
     monthlyCosts += cost;
+  }
+
+  // ─── 1b. Corporate overhead (Wave 2 balance: scaling tax on fleet size) ──
+  // Administrative, HR, compliance, and audit costs that grow superlinearly with
+  // building count. Money sink that keeps mega-empires from infinite scaling.
+  // Tier-scale maintenance reductions apply (larger corps get economies of scale).
+  {
+    const completedBuildings = state.buildings.filter(b => b.isComplete).length;
+    const monthlyOverhead = corporateOverheadMonthly(completedBuildings);
+    const overhead = Math.round(
+      monthlyOverhead * fraction
+      * multipliers.costMultiplier
+      * legacyCostMult
+      * (1 - tierBonuses.maintenanceReduction)
+      * (megaBonuses.maintenanceMultiplier || 1)
+      * repBonuses.maintenanceMultiplier
+    );
+    if (overhead > 0) {
+      money -= overhead;
+      totalSpent += overhead;
+      monthlyCosts += overhead;
+    }
   }
 
   // ─── 2. Maintenance costs for completed buildings ─────────────────

@@ -24,6 +24,28 @@ export function revenueMultiplier(relevantResearchCount: number): number {
 }
 
 /**
+ * Monthly corporate overhead — administrative / HR / compliance / audit costs
+ * that scale superlinearly with building count. Tiny for small operations,
+ * meaningful for megacorps. Money sink that prevents unchecked infrastructure
+ * accumulation.
+ *
+ * Formula: 100_000 × count^1.4
+ *   - 1 building: $100K (trivial)
+ *   - 5 buildings: ~$950K (notable)
+ *   - 10: ~$2.5M
+ *   - 25: ~$8.8M
+ *   - 50: ~$23M
+ *   - 100: ~$63M (roughly 10-15% of typical mid-game gross revenue)
+ *   - 200: ~$173M
+ *
+ * Corporation-tier maintenance reductions apply (economies of scale).
+ */
+export function corporateOverheadMonthly(buildingCount: number): number {
+  if (buildingCount <= 0) return 0;
+  return Math.round(100_000 * Math.pow(buildingCount, 1.4));
+}
+
+/**
  * Market saturation multiplier for duplicate services at the same location.
  * The Nth (0-indexed) instance of the same service at the same location earns
  * proportionally less revenue than the first. Floor of ~35% ensures high-volume
