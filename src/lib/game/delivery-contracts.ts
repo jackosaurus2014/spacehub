@@ -8,6 +8,7 @@
 import type { GameState, DeliveryContractState } from './types';
 import { FACTIONS, FACTION_MAP, getFactionRep, shiftReputation, type FactionId } from './factions';
 import { RESOURCES, RESOURCE_MAP, type ResourceId } from './resources';
+import { isInFrontier, FRONTIER_CONTRACT_PAYOUT_MULTIPLIER } from './frontier';
 
 /** Public type alias — the persisted DeliveryContractState is the contract. */
 export type DeliveryContract = DeliveryContractState;
@@ -278,20 +279,25 @@ export function deliverContract(state: GameState, contractId: string, now: numbe
   if (!canDeliver(state, contractId)) return state;
 
   // Deduct resources, pay money, record completion, shift reputation.
+  // Frontier-protected players earn the FRONTIER_CONTRACT_PAYOUT_MULTIPLIER bonus.
   const resources = { ...state.resources };
   resources[contract.resourceId] = (resources[contract.resourceId] || 0) - contract.quantity;
+
+  const frontierBonus = isInFrontier(state, now) ? FRONTIER_CONTRACT_PAYOUT_MULTIPLIER : 1;
+  const payment = Math.round(contract.paymentMoney * frontierBonus);
 
   const completed: DeliveryContract = {
     ...contract,
     status: 'completed',
     completedAtMs: now,
+    paymentMoney: payment,
   };
 
   let next: GameState = {
     ...state,
     resources,
-    money: state.money + contract.paymentMoney,
-    totalEarned: state.totalEarned + contract.paymentMoney,
+    money: state.money + payment,
+    totalEarned: state.totalEarned + payment,
     activeDeliveries: active.filter(c => c.id !== contractId),
     completedDeliveries: [completed, ...(state.completedDeliveries || [])].slice(0, 100),
   };

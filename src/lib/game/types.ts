@@ -464,6 +464,11 @@ export interface GameState {
   activeDeliveries?: DeliveryContractState[];
   completedDeliveries?: DeliveryContractState[];
   deliveryPoolRefreshedAtMs?: number;
+
+  // Protected Frontier — new-player onramp shield
+  frontierStatus?: 'active' | 'graduated' | 'none';
+  frontierEnteredAtMs?: number;
+  frontierGraduatedAtMs?: number;
 }
 
 export interface DeliveryContractState {

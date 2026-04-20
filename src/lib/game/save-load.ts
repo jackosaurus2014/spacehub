@@ -8,6 +8,7 @@ import { createAllNPCs } from './npc-companies';
 import { DEFAULT_LEGACY, LEGACY_MILESTONES, STRETCH_LEGACIES, getLegacyPower, getLegacyDisplayTier } from './legacy-system';
 import type { LegacyState } from './legacy-system';
 import { checkCorporationTier } from './corporation-tiers';
+import { initializeFrontier } from './frontier';
 
 /** Create a fresh new game state */
 export function getNewGameState(): GameState {
@@ -87,6 +88,8 @@ export function getNewGameState(): GameState {
     tutorialDismissed: false,
     // V10 fields — mining bonuses from survey probes
     miningBonuses: [],
+    // V11 — Protected Frontier (new-player onramp shield)
+    ...initializeFrontier(Date.now()),
   };
 }
 

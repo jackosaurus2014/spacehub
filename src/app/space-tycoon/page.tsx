@@ -74,6 +74,8 @@ import MarketIntelligencePanel from '@/components/game/MarketIntelligencePanel';
 import SpatialStrategyPanel from '@/components/game/SpatialStrategyPanel';
 import DiplomacyPanel from '@/components/game/DiplomacyPanel';
 import { acceptDelivery, deliverContract } from '@/lib/game/delivery-contracts';
+import FrontierBadge from '@/components/game/FrontierBadge';
+import { graduateFrontier } from '@/lib/game/frontier';
 
 // ─── Build Panel ────────────────────────────────────────────────────────────
 
@@ -1487,6 +1489,15 @@ export default function SpaceTycoonPage() {
       <div className="game-nebula-bg" />
       {/* Resource Bar */}
       <ResourceBar state={state} />
+
+      {/* Protected Frontier banner — renders only when active */}
+      <FrontierBadge
+        state={state}
+        onGraduate={() => {
+          playSound('milestone');
+          setState(prev => prev ? graduateFrontier(prev) : prev);
+        }}
+      />
 
       {/* Tab Navigation — V3: primary tabs + overflow dropdown */}
       <div className="bg-black/40 border-b border-white/[0.06] px-2 sm:px-4 py-1 flex items-center gap-0.5 sm:gap-1 game-tab-bar">

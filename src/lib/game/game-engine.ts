@@ -29,6 +29,7 @@ import { getMegastructureBonuses, checkMegastructureCompletion } from './persona
 import { getReputationBonuses, addReputation } from './reputation';
 import { computeCommanderBonuses } from './commanders';
 import { ensureFreshDeliveryPool, processContractDeadlines } from './delivery-contracts';
+import { shouldAutoGraduate, graduateFrontier } from './frontier';
 import type { ResourceId } from './resources';
 
 /** Get or create today's daily metrics tracker */
@@ -472,6 +473,18 @@ export function processTick(state: GameState): GameState {
   // Delivery contracts: refresh pool if due, then process overdue contracts.
   out = ensureFreshDeliveryPool(out);
   out = processContractDeadlines(out);
+
+  // Frontier: auto-graduate when time + net worth conditions are met.
+  if (out.frontierStatus === 'active' && shouldAutoGraduate(out)) {
+    out = graduateFrontier(out);
+    events.push({
+      id: generateId(),
+      date: newDate,
+      type: 'milestone',
+      title: 'Frontier Graduated',
+      description: 'Your Protected Frontier period has ended. The full competitive economy is now open to you — and you to it.',
+    });
+  }
 
   return out;
 }
