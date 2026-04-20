@@ -28,6 +28,7 @@ import { checkCorporationTier, getTierBonuses } from './corporation-tiers';
 import { getMegastructureBonuses, checkMegastructureCompletion } from './personal-megastructures';
 import { getReputationBonuses, addReputation } from './reputation';
 import { computeCommanderBonuses } from './commanders';
+import { ensureFreshDeliveryPool, processContractDeadlines } from './delivery-contracts';
 import type { ResourceId } from './resources';
 
 /** Get or create today's daily metrics tracker */
@@ -443,7 +444,7 @@ export function processTick(state: GameState): GameState {
     }
   }
 
-  return {
+  let out: GameState = {
     ...state,
     gameDate: newDate,
     tickCount: isMonthEnd ? 0 : tickCount,
@@ -467,6 +468,12 @@ export function processTick(state: GameState): GameState {
     dailyMetrics: dm,
     lastTickAt: Date.now(),
   };
+
+  // Delivery contracts: refresh pool if due, then process overdue contracts.
+  out = ensureFreshDeliveryPool(out);
+  out = processContractDeadlines(out);
+
+  return out;
 }
 
 function formatRevenue(amount: number): string {

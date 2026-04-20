@@ -1,0 +1,342 @@
+// ─── Space Tycoon: Delivery Contracts ───────────────────────────────────────
+// NPC-faction-issued binding contracts that require physical delivery of
+// resources by a deadline. Ties Factions ↔ Contracts ↔ Reputation together.
+//
+// v1 scope: NPC-issued only. P2P player contracts will extend this system
+// later — the UI and data shape are designed to support both from day one.
+
+import type { GameState, DeliveryContractState } from './types';
+import { FACTIONS, FACTION_MAP, getFactionRep, shiftReputation, type FactionId } from './factions';
+import { RESOURCES, RESOURCE_MAP, type ResourceId } from './resources';
+
+/** Public type alias — the persisted DeliveryContractState is the contract. */
+export type DeliveryContract = DeliveryContractState;
+export type DeliveryStatus = DeliveryContractState['status'];
+
+// ─── Template generation ──────────────────────────────────────────────────────
+// Each faction has a preferred resource category and offers contracts
+// consistent with its character. Mentioned in lore / flavor text.
+
+interface FactionFlavor {
+  preferredResources: ResourceId[];
+  avoidedResources: ResourceId[];
+  paymentMultiplier: number;   // faction's pay vs baseline
+  deadlineHoursRange: [number, number];
+  reputationOnComplete: number;
+  reputationOnDefault: number;
+  quantityMultiplier: number;  // faction's typical request size
+  titleTemplates: string[];
+}
+
+const FACTION_FLAVOR: Record<FactionId, FactionFlavor> = {
+  'the-dominion': {
+    preferredResources: ['iron', 'aluminum', 'titanium', 'rare_earth'],
+    avoidedResources: [],
+    paymentMultiplier: 1.0,
+    deadlineHoursRange: [12, 72],
+    reputationOnComplete: 6,
+    reputationOnDefault: -10,
+    quantityMultiplier: 1.2,
+    titleTemplates: [
+      'Strategic Reserve: {qty} {res}',
+      'Fleet Refit Contract: {qty} {res}',
+      'Infrastructure Appropriation: {qty} {res}',
+      'Official Procurement #{{n}}: {qty} {res}',
+    ],
+  },
+  'the-syndicate': {
+    preferredResources: ['platinum_group', 'gold', 'rare_earth', 'exotic_materials'],
+    avoidedResources: [],
+    paymentMultiplier: 1.3,   // pays more but can be a reputation trap
+    deadlineHoursRange: [6, 48],
+    reputationOnComplete: 8,
+    reputationOnDefault: -12,  // stiff default penalty
+    quantityMultiplier: 0.8,
+    titleTemplates: [
+      'Discreet Handover: {qty} {res}',
+      'Off-the-Books Shipment: {qty} {res}',
+      'Pallas-4 Priority: {qty} {res}',
+      'Gray-Market Exchange: {qty} {res}',
+    ],
+  },
+  'void-corsairs': {
+    preferredResources: ['methane', 'ethane', 'aluminum', 'iron'],
+    avoidedResources: ['rare_earth', 'platinum_group'],
+    paymentMultiplier: 0.9,   // pays less but low rep gate
+    deadlineHoursRange: [8, 36],
+    reputationOnComplete: 5,
+    reputationOnDefault: -4,
+    quantityMultiplier: 1.0,
+    titleTemplates: [
+      'Tribute Shipment: {qty} {res}',
+      'Clan Supplies: {qty} {res}',
+      'Convoy Fee: {qty} {res}',
+    ],
+  },
+  'hive-collective': {
+    preferredResources: ['exotic_materials', 'helium3', 'lunar_water', 'mars_water'],
+    avoidedResources: [],
+    paymentMultiplier: 1.5,   // best pay; rarest asks
+    deadlineHoursRange: [24, 120],
+    reputationOnComplete: 10,
+    reputationOnDefault: -6,
+    quantityMultiplier: 0.5,
+    titleTemplates: [
+      'Pattern Exchange: {qty} {res}',
+      'Collective Provisioning: {qty} {res}',
+      'Resonance Trade: {qty} {res}',
+    ],
+  },
+  'nebula-reavers': {
+    preferredResources: ['methane', 'helium3', 'ethane', 'exotic_materials'],
+    avoidedResources: ['iron', 'aluminum'],
+    paymentMultiplier: 1.1,
+    deadlineHoursRange: [18, 96],
+    reputationOnComplete: 7,
+    reputationOnDefault: -8,
+    quantityMultiplier: 0.9,
+    titleTemplates: [
+      'Drift Cache: {qty} {res}',
+      'Convocation Dispatch: {qty} {res}',
+      'Deep Run: {qty} {res}',
+    ],
+  },
+  'echo-remnants': {
+    preferredResources: ['exotic_materials', 'rare_earth', 'titanium', 'platinum_group'],
+    avoidedResources: [],
+    paymentMultiplier: 1.4,
+    deadlineHoursRange: [24, 168],  // scholarly patience
+    reputationOnComplete: 9,
+    reputationOnDefault: -6,
+    quantityMultiplier: 0.7,
+    titleTemplates: [
+      'Archive Acquisition: {qty} {res}',
+      'Preservation Order: {qty} {res}',
+      'Order Requisition: {qty} {res}',
+    ],
+  },
+};
+
+const POOL_TARGET_SIZE = 8;
+const POOL_REFRESH_MS = 4 * 60 * 60 * 1000; // 4 hours
+
+export function getDeliveryPool(state: GameState): DeliveryContract[] {
+  return state.availableDeliveries || [];
+}
+
+export function getActiveDeliveries(state: GameState): DeliveryContract[] {
+  return state.activeDeliveries || [];
+}
+
+export function getCompletedDeliveries(state: GameState): DeliveryContract[] {
+  return state.completedDeliveries || [];
+}
+
+/** Compute a deterministic hash for stable pool seeding. */
+function mulberry32(seed: number): () => number {
+  let s = seed;
+  return () => {
+    s |= 0; s = (s + 0x6D2B79F5) | 0;
+    let t = Math.imul(s ^ (s >>> 15), 1 | s);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+function randRange(rng: () => number, min: number, max: number): number {
+  return min + rng() * (max - min);
+}
+
+function pickWeighted<T>(rng: () => number, items: T[], weights: number[]): T {
+  const total = weights.reduce((a, b) => a + b, 0);
+  const target = rng() * total;
+  let cumulative = 0;
+  for (let i = 0; i < items.length; i++) {
+    cumulative += weights[i];
+    if (target <= cumulative) return items[i];
+  }
+  return items[items.length - 1];
+}
+
+/** Generate a single contract for the given faction. */
+export function generateContract(factionId: FactionId, rngSeed: number, now: number = Date.now()): DeliveryContract {
+  const rng = mulberry32(rngSeed);
+  const flavor = FACTION_FLAVOR[factionId];
+  const faction = FACTION_MAP.get(factionId)!;
+
+  // Pick a resource — weight preferred higher, avoid avoided.
+  const candidates = RESOURCES.filter(r => !flavor.avoidedResources.includes(r.id));
+  const weights = candidates.map(r => flavor.preferredResources.includes(r.id) ? 5 : 1);
+  const resource = pickWeighted(rng, candidates, weights);
+
+  // Quantity: scales to flavor multiplier. Base range 20-200.
+  const baseQty = Math.round(20 + rng() * 180);
+  const quantity = Math.max(5, Math.round(baseQty * flavor.quantityMultiplier));
+
+  // Payment: baseline market price × quantity × multiplier, with some noise.
+  const basePrice = resource.baseMarketPrice;
+  const payment = Math.round(basePrice * quantity * flavor.paymentMultiplier * (0.9 + rng() * 0.2));
+
+  // Deadline: from flavor range, measured in real-time hours.
+  const deadlineHours = randRange(rng, flavor.deadlineHoursRange[0], flavor.deadlineHoursRange[1]);
+  const deadlineAtMs = now + deadlineHours * 60 * 60 * 1000;
+
+  // Title from a template.
+  const template = flavor.titleTemplates[Math.floor(rng() * flavor.titleTemplates.length)];
+  const n = Math.floor(rng() * 9000) + 1000;
+  const title = template
+    .replace('{qty}', quantity.toLocaleString())
+    .replace('{res}', resource.name)
+    .replace('{{n}}', n.toString());
+
+  return {
+    id: `dlv-${factionId}-${rngSeed.toString(36)}-${Math.floor(rng() * 1e9).toString(36)}`,
+    issuerKind: 'faction',
+    issuerFactionId: factionId,
+    title,
+    resourceId: resource.id,
+    quantity,
+    paymentMoney: payment,
+    deadlineAtMs,
+    reputationOnComplete: flavor.reputationOnComplete,
+    reputationOnDefault: flavor.reputationOnDefault,
+    status: 'open',
+    offeredAtMs: now,
+  };
+}
+
+/** Ensure the contract pool is fresh. Refreshes on a bucketed schedule so all
+ *  clients converge without server persistence. */
+export function ensureFreshDeliveryPool(state: GameState, now: number = Date.now()): GameState {
+  const existing = state.availableDeliveries || [];
+  // Remove expired open contracts
+  const stillValid = existing.filter(c => c.status === 'open' && c.deadlineAtMs > now);
+
+  // Refresh every POOL_REFRESH_MS
+  const lastRefresh = state.deliveryPoolRefreshedAtMs || 0;
+  const shouldRefresh = now - lastRefresh >= POOL_REFRESH_MS || stillValid.length < POOL_TARGET_SIZE / 2;
+
+  if (!shouldRefresh) {
+    return { ...state, availableDeliveries: stillValid };
+  }
+
+  // Generate new contracts across factions, weighted by player standing.
+  // Allied factions offer more contracts; hostile factions offer fewer.
+  const factionWeights: Record<FactionId, number> = FACTIONS.reduce((acc, f) => {
+    const rep = getFactionRep(state, f.id);
+    // Standing modifier: 0 rep = 1.0, +100 = 1.5, -100 = 0.3
+    const mod = rep >= 0 ? 1 + (rep / 100) * 0.5 : Math.max(0.3, 1 + (rep / 100) * 0.7);
+    acc[f.id] = mod;
+    return acc;
+  }, {} as Record<FactionId, number>);
+
+  const bucket = Math.floor(now / POOL_REFRESH_MS);
+  const fresh: DeliveryContract[] = [];
+  for (let i = 0; i < POOL_TARGET_SIZE; i++) {
+    const fId = pickWeighted(mulberry32(bucket * 1000 + i), FACTIONS.map(f => f.id), FACTIONS.map(f => factionWeights[f.id]));
+    fresh.push(generateContract(fId, bucket * 1000 + i * 37, now));
+  }
+
+  return {
+    ...state,
+    availableDeliveries: fresh,
+    deliveryPoolRefreshedAtMs: now,
+  };
+}
+
+// ─── Actions ──────────────────────────────────────────────────────────────────
+
+export function acceptDelivery(state: GameState, contractId: string, now: number = Date.now()): GameState {
+  const pool = state.availableDeliveries || [];
+  const contract = pool.find(c => c.id === contractId);
+  if (!contract || contract.status !== 'open') return state;
+
+  const accepted: DeliveryContract = {
+    ...contract,
+    status: 'accepted',
+    acceptedAtMs: now,
+  };
+
+  return {
+    ...state,
+    availableDeliveries: pool.filter(c => c.id !== contractId),
+    activeDeliveries: [...(state.activeDeliveries || []), accepted],
+  };
+}
+
+export function canDeliver(state: GameState, contractId: string): boolean {
+  const contract = (state.activeDeliveries || []).find(c => c.id === contractId);
+  if (!contract || contract.status !== 'accepted') return false;
+  const have = state.resources[contract.resourceId] || 0;
+  return have >= contract.quantity;
+}
+
+export function deliverContract(state: GameState, contractId: string, now: number = Date.now()): GameState {
+  const active = state.activeDeliveries || [];
+  const contract = active.find(c => c.id === contractId);
+  if (!contract || contract.status !== 'accepted') return state;
+  if (!canDeliver(state, contractId)) return state;
+
+  // Deduct resources, pay money, record completion, shift reputation.
+  const resources = { ...state.resources };
+  resources[contract.resourceId] = (resources[contract.resourceId] || 0) - contract.quantity;
+
+  const completed: DeliveryContract = {
+    ...contract,
+    status: 'completed',
+    completedAtMs: now,
+  };
+
+  let next: GameState = {
+    ...state,
+    resources,
+    money: state.money + contract.paymentMoney,
+    totalEarned: state.totalEarned + contract.paymentMoney,
+    activeDeliveries: active.filter(c => c.id !== contractId),
+    completedDeliveries: [completed, ...(state.completedDeliveries || [])].slice(0, 100),
+  };
+
+  if (contract.issuerKind === 'faction' && contract.issuerFactionId) {
+    next = shiftReputation(next, contract.issuerFactionId as FactionId, contract.reputationOnComplete);
+  }
+
+  return next;
+}
+
+/** Automatically move any overdue accepted contracts to defaulted status and
+ *  apply reputation penalties. Called from the game tick. */
+export function processContractDeadlines(state: GameState, now: number = Date.now()): GameState {
+  const active = state.activeDeliveries || [];
+  const overdue = active.filter(c => c.deadlineAtMs <= now && c.status === 'accepted');
+  if (overdue.length === 0) return state;
+
+  let next: GameState = {
+    ...state,
+    activeDeliveries: active.filter(c => c.deadlineAtMs > now || c.status !== 'accepted'),
+    completedDeliveries: [
+      ...overdue.map(c => ({ ...c, status: 'defaulted' as const, defaultedAtMs: now })),
+      ...(state.completedDeliveries || []),
+    ].slice(0, 100),
+  };
+
+  for (const c of overdue) {
+    if (c.issuerKind === 'faction' && c.issuerFactionId) {
+      next = shiftReputation(next, c.issuerFactionId as FactionId, c.reputationOnDefault);
+    }
+  }
+
+  return next;
+}
+
+// ─── Display helpers ──────────────────────────────────────────────────────────
+
+export function formatDeadline(deadlineAtMs: number, now: number = Date.now()): string {
+  const delta = deadlineAtMs - now;
+  if (delta <= 0) return 'OVERDUE';
+  const mins = Math.floor(delta / 60000);
+  if (mins < 60) return `${mins}m`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return `${hrs}h ${mins % 60}m`;
+  const days = Math.floor(hrs / 24);
+  return `${days}d ${hrs % 24}h`;
+}

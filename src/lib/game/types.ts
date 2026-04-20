@@ -458,8 +458,33 @@ export interface GameState {
 
   // Faction standing (reputation -100 to +100 per faction)
   factionReputation?: Record<string, number>;
+
+  // Delivery contracts — NPC-issued binding resource-delivery agreements
+  availableDeliveries?: DeliveryContractState[];
+  activeDeliveries?: DeliveryContractState[];
+  completedDeliveries?: DeliveryContractState[];
+  deliveryPoolRefreshedAtMs?: number;
+}
+
+export interface DeliveryContractState {
+  id: string;
+  issuerKind: 'faction' | 'player';
+  issuerFactionId?: string;
+  issuerPlayerName?: string;
+  title: string;
+  resourceId: string;
+  quantity: number;
+  paymentMoney: number;
+  deadlineAtMs: number;
+  reputationOnComplete: number;
+  reputationOnDefault: number;
+  status: 'open' | 'accepted' | 'completed' | 'defaulted' | 'cancelled';
+  offeredAtMs: number;
+  acceptedAtMs?: number;
+  completedAtMs?: number;
+  defaultedAtMs?: number;
 }
 
 // ─── UI Tabs ────────────────────────────────────────────────────────────────
 
-export type GameTab = 'dashboard' | 'build' | 'research' | 'map' | 'services' | 'fleet' | 'crafting' | 'workforce' | 'market' | 'intelligence' | 'contracts' | 'alliance' | 'bounties' | 'leaderboard' | 'rivals' | 'leagues' | 'bidding' | 'seasons' | 'territory' | 'speedruns' | 'espionage' | 'megaproject' | 'megastructures' | 'reports' | 'commanders' | 'factions' | 'spatial';
+export type GameTab = 'dashboard' | 'build' | 'research' | 'map' | 'services' | 'fleet' | 'crafting' | 'workforce' | 'market' | 'intelligence' | 'contracts' | 'alliance' | 'bounties' | 'leaderboard' | 'rivals' | 'leagues' | 'bidding' | 'seasons' | 'territory' | 'speedruns' | 'espionage' | 'megaproject' | 'megastructures' | 'reports' | 'commanders' | 'factions' | 'spatial' | 'diplomacy';

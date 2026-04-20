@@ -72,6 +72,8 @@ import FactionPanel from '@/components/game/FactionPanel';
 import { sendEnvoy } from '@/lib/game/factions';
 import MarketIntelligencePanel from '@/components/game/MarketIntelligencePanel';
 import SpatialStrategyPanel from '@/components/game/SpatialStrategyPanel';
+import DiplomacyPanel from '@/components/game/DiplomacyPanel';
+import { acceptDelivery, deliverContract } from '@/lib/game/delivery-contracts';
 
 // ─── Build Panel ────────────────────────────────────────────────────────────
 
@@ -1442,6 +1444,7 @@ export default function SpaceTycoonPage() {
     { id: 'factions', label: 'Factions', icon: '🛡️' },
     { id: 'intelligence', label: 'Analytics', icon: '📈' },
     { id: 'spatial', label: 'Spatial', icon: '✦' },
+    { id: 'diplomacy', label: 'Diplomacy', icon: '⚐' },
   ];
 
   // Corporation tier-based tab unlocking
@@ -1823,6 +1826,19 @@ export default function SpaceTycoonPage() {
         )}
         {tab === 'intelligence' && <MarketIntelligencePanel />}
         {tab === 'spatial' && <SpatialStrategyPanel state={state} />}
+        {tab === 'diplomacy' && (
+          <DiplomacyPanel
+            state={state}
+            onAccept={(id) => {
+              playSound('click');
+              setState(prev => prev ? acceptDelivery(prev, id) : prev);
+            }}
+            onDeliver={(id) => {
+              playSound('milestone');
+              setState(prev => prev ? deliverContract(prev, id) : prev);
+            }}
+          />
+        )}
         {tab === 'reports' && (
           <ReportsPanel
             state={state}
