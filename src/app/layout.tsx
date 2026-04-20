@@ -234,9 +234,11 @@ export default function RootLayout({
         {/* Inline service worker registration for PWA crawlers (PWABuilder, Lighthouse) */}
         {/* The full SW lifecycle management is in ServiceWorkerRegistration component */}
         <script dangerouslySetInnerHTML={{ __html: `try{if(localStorage.getItem('spacenexus-oled')==='true')document.documentElement.classList.add('oled')}catch(e){}` }} />
-        <script dangerouslySetInnerHTML={{ __html: `
-          if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js',{scope:'/'})}
-        `}} />
+        {process.env.NODE_ENV === 'production' && (
+          <script dangerouslySetInnerHTML={{ __html: `
+            if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js',{scope:'/'})}
+          `}} />
+        )}
         {/* Smart App Banners — uncomment when native apps are published */}
         {/* PWA Meta Tags for iOS */}
         <meta name="apple-mobile-web-app-capable" content="yes" />

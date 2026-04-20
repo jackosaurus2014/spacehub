@@ -54,3 +54,9 @@ export const SAVE_VERSION = 1;
 
 /** localStorage key */
 export const SAVE_KEY = 'spacetycoon_save';
+
+/** Dev-mode speed multiplier — divides all construction and research durations by this factor.
+ *  Enabled by setting NEXT_PUBLIC_DEV_FAST=true in .env.local. Ignored in production builds.
+ *  100x means a 5-minute build finishes in 3 seconds. */
+export const DEV_FAST_MULTIPLIER =
+  process.env.NODE_ENV !== 'production' && process.env.NEXT_PUBLIC_DEV_FAST === 'true' ? 100 : 1;

@@ -51,6 +51,20 @@ export default function ServiceWorkerRegistration() {
       };
     }
 
+    // Skip SW registration in dev — Next.js HMR chunks have rotating hashes
+    // that the SW will 404 and cache, breaking the whole dev session. Also
+    // proactively unregister any previously-installed SW from a prior dev run.
+    if (isDev) {
+      navigator.serviceWorker.getRegistrations?.().then(regs => {
+        for (const r of regs) r.unregister().catch(() => {});
+      }).catch(() => {});
+      return () => {
+        clearInterval(lastOnlineInterval);
+        window.removeEventListener('online', handleOnline);
+        document.removeEventListener('visibilitychange', handleVisibility);
+      };
+    }
+
     // Register service worker
     const registerServiceWorker = async () => {
       try {

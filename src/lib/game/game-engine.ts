@@ -9,7 +9,7 @@ import { RESEARCH_MAP, getResearchBonuses } from './research-tree';
 import { MINING_PRODUCTION, RESOURCE_MAP } from './resources';
 import { advanceDate, generateId, revenueMultiplier } from './formulas';
 import { LOCATION_MAP } from './solar-system';
-import { MAX_EVENT_LOG, TICKS_PER_GAME_MONTH } from './constants';
+import { MAX_EVENT_LOG, TICKS_PER_GAME_MONTH, DEV_FAST_MULTIPLIER } from './constants';
 import { getGlobalGameDate } from './server-time';
 import { processNPCTick, applyNPCMarketActions } from './npc-engine';
 import { rollRandomEvent, applyEventEffect, getActiveMultipliers, cleanupExpiredEffects } from './random-events';
@@ -175,7 +175,7 @@ export function processTick(state: GameState): GameState {
     if (bld.isComplete) return bld;
     const elapsed = (now - (bld.startedAtMs || 0)) / 1000;
     // Speed boosts reduce effective duration
-    const effectiveDuration = (bld.realDurationSeconds || 0) / (buildBoostMult * legacyBuildSpeedMult * (megaBonuses.buildSpeedMultiplier || 1) * repBonuses.buildSpeedMultiplier * commanderBonuses.buildSpeedMultiplier);
+    const effectiveDuration = (bld.realDurationSeconds || 0) / (buildBoostMult * legacyBuildSpeedMult * (megaBonuses.buildSpeedMultiplier || 1) * repBonuses.buildSpeedMultiplier * commanderBonuses.buildSpeedMultiplier * DEV_FAST_MULTIPLIER);
     if (elapsed >= effectiveDuration) {
       const def = BUILDING_MAP.get(bld.definitionId);
       events.push({
@@ -197,7 +197,7 @@ export function processTick(state: GameState): GameState {
   if (activeResearch) {
     const researchElapsed = (now - (activeResearch.startedAtMs || 0)) / 1000;
     const researchBoostMult = getActiveBoostMultiplier(activeBoosts, 'research');
-    const researchSpeedMult = (1 + wfBonuses.researchSpeed) * (1 + resBonuses.researchSpeedBonus) * legacyBonuses.researchSpeedMultiplier * researchBoostMult * (megaBonuses.researchSpeedMultiplier || 1) * repBonuses.researchSpeedMultiplier * commanderBonuses.researchSpeedMultiplier;
+    const researchSpeedMult = (1 + wfBonuses.researchSpeed) * (1 + resBonuses.researchSpeedBonus) * legacyBonuses.researchSpeedMultiplier * researchBoostMult * (megaBonuses.researchSpeedMultiplier || 1) * repBonuses.researchSpeedMultiplier * commanderBonuses.researchSpeedMultiplier * DEV_FAST_MULTIPLIER;
     const effectiveDuration = (activeResearch.realDurationSeconds || 0) / researchSpeedMult;
     if (researchElapsed >= effectiveDuration) {
       completedResearch.push(activeResearch.definitionId);
@@ -221,7 +221,7 @@ export function processTick(state: GameState): GameState {
   if (activeResearch2 && completedResearch.includes('parallel_research')) {
     const r2Elapsed = (now - (activeResearch2.startedAtMs || 0)) / 1000;
     const researchBoostMult2 = getActiveBoostMultiplier(activeBoosts, 'research');
-    const researchSpeedMult2 = (1 + wfBonuses.researchSpeed) * (1 + resBonuses.researchSpeedBonus) * legacyBonuses.researchSpeedMultiplier * researchBoostMult2 * (megaBonuses.researchSpeedMultiplier || 1) * repBonuses.researchSpeedMultiplier;
+    const researchSpeedMult2 = (1 + wfBonuses.researchSpeed) * (1 + resBonuses.researchSpeedBonus) * legacyBonuses.researchSpeedMultiplier * researchBoostMult2 * (megaBonuses.researchSpeedMultiplier || 1) * repBonuses.researchSpeedMultiplier * commanderBonuses.researchSpeedMultiplier * DEV_FAST_MULTIPLIER;
     const effectiveDuration2 = (activeResearch2.realDurationSeconds || 0) / researchSpeedMult2;
     if (r2Elapsed >= effectiveDuration2) {
       completedResearch.push(activeResearch2.definitionId);
