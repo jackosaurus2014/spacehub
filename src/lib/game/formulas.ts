@@ -24,6 +24,27 @@ export function revenueMultiplier(relevantResearchCount: number): number {
 }
 
 /**
+ * Monthly executive compensation — CEO, CFO, board, legal retainers, consultants.
+ * Scales with net worth above a $100M exemption threshold. Prevents wealthy
+ * players from passively accumulating cash with no ongoing costs.
+ *
+ * Rate: 0.03% of (net worth - $100M), monthly. ~0.36% annual drag on wealth.
+ *
+ * Examples (above the $100M threshold):
+ *   - $1B net worth:   $270K/mo (trivial — early-mid game)
+ *   - $10B:            $2.97M/mo (notable)
+ *   - $100B:           $30M/mo (meaningful)
+ *   - $1T:             $300M/mo (substantial ongoing pressure)
+ *   - $10T:            $3B/mo (late-game)
+ *
+ * Corporation tier reductions apply — larger corps get efficient negotiation.
+ */
+export function executiveCompensationMonthly(netWorth: number): number {
+  const taxable = Math.max(0, netWorth - 100_000_000);
+  return Math.round(taxable * 0.0003);
+}
+
+/**
  * Monthly corporate overhead — administrative / HR / compliance / audit costs
  * that scale superlinearly with building count. Tiny for small operations,
  * meaningful for megacorps. Money sink that prevents unchecked infrastructure

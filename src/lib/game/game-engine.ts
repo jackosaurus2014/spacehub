@@ -7,7 +7,7 @@ import { BUILDING_MAP, getPowerByLocation, getCraftingSpeedMultiplier } from './
 import { SERVICE_MAP } from './services';
 import { RESEARCH_MAP, getResearchBonuses } from './research-tree';
 import { MINING_PRODUCTION, RESOURCE_MAP } from './resources';
-import { advanceDate, generateId, revenueMultiplier, serviceSaturationMultiplier, corporateOverheadMonthly } from './formulas';
+import { advanceDate, generateId, revenueMultiplier, serviceSaturationMultiplier, corporateOverheadMonthly, executiveCompensationMonthly } from './formulas';
 import { LOCATION_MAP } from './solar-system';
 import { MAX_EVENT_LOG, TICKS_PER_GAME_MONTH, DEV_FAST_MULTIPLIER } from './constants';
 import { getGlobalGameDate } from './server-time';
@@ -188,6 +188,26 @@ export function processTick(state: GameState): GameState {
       money -= overhead;
       totalSpent += overhead;
       monthlyCosts += overhead;
+    }
+  }
+
+  // ─── 1c. Executive compensation (Wave 3 balance: wealth-scaled tax) ──
+  // CEO, CFO, board, legal. Scales with net worth above a $100M threshold so
+  // early players aren't affected; wealthy corps pay continuously.
+  {
+    // Net worth here reads the *current* money; totalEarned / totalSpent came
+    // in with state, so this is an up-to-date running estimate.
+    const netWorth = money + totalEarned - totalSpent;
+    const monthlyExecComp = executiveCompensationMonthly(netWorth);
+    const execComp = Math.round(
+      monthlyExecComp * fraction
+      * multipliers.costMultiplier
+      * (1 - tierBonuses.maintenanceReduction)
+    );
+    if (execComp > 0) {
+      money -= execComp;
+      totalSpent += execComp;
+      monthlyCosts += execComp;
     }
   }
 
