@@ -78,6 +78,20 @@ export function calculateIdleDecay(
 export const MINIMUM_MARKET_SUPPLY = 100;
 
 /**
+ * Broker commission on sell-side trades (buy-side is unaffected — the premium
+ * is already baked into the supply multiplier).
+ *
+ * 3% sink per sale. Prevents frictionless mine → sell loops from being pure
+ * profit, creates a realistic commodities-market feel, and adds ongoing
+ * downward pressure to raw-resource revenue at scale.
+ *
+ * Magnate commanders reduce this fee via the marketPriceMultiplier bonus,
+ * applied client-side when the fee is surfaced for display. The server-side
+ * endpoint applies the base fee; per-player bonuses are computed from state.
+ */
+export const MARKET_BROKER_FEE_RATE = 0.03;
+
+/**
  * Calculate price multiplier based on current supply vs baseline.
  * Low supply → high multiplier (scarcity premium).
  * High supply → low multiplier (abundance discount).

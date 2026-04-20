@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
-import { calculatePriceAfterTrade, getSupplyPriceMultiplier, MINIMUM_MARKET_SUPPLY } from '@/lib/game/market-engine';
+import { calculatePriceAfterTrade, getSupplyPriceMultiplier, MINIMUM_MARKET_SUPPLY, MARKET_BROKER_FEE_RATE } from '@/lib/game/market-engine';
 import { RESOURCE_MAP } from '@/lib/game/resources';
 
 /**
@@ -47,7 +47,13 @@ export async function POST(request: NextRequest) {
     const supplyMult = getSupplyPriceMultiplier(resource.totalSupply, baselineSupply);
     const effectivePrice = Math.round(resource.currentPrice * supplyMult);
     const pricePerUnit = isBuy ? effectivePrice : resource.currentPrice;
-    const totalCost = Math.round(pricePerUnit * quantity);
+    const grossTotal = Math.round(pricePerUnit * quantity);
+
+    // Sell-side broker commission (Wave 4 balance: sink that prevents
+    // frictionless mine-and-sell loops). Buy-side is unaffected — scarcity
+    // premium is already baked into the supply multiplier.
+    const brokerFee = isBuy ? 0 : Math.round(grossTotal * MARKET_BROKER_FEE_RATE);
+    const totalCost = isBuy ? grossTotal : grossTotal - brokerFee;
 
     // For buys: check available supply (always at least MINIMUM_MARKET_SUPPLY)
     if (isBuy) {
@@ -134,6 +140,9 @@ export async function POST(request: NextRequest) {
         resource: resourceSlug,
         quantity,
         pricePerUnit,
+        grossTotal,
+        brokerFee,
+        brokerFeeRate: isBuy ? 0 : MARKET_BROKER_FEE_RATE,
         totalCost,
         newPrice: newEffectivePrice,
         supply: newSupply,
