@@ -70,6 +70,7 @@ import CommanderPanel from '@/components/game/CommanderPanel';
 import { hireCommander, dismissCommander } from '@/lib/game/commanders';
 import FactionPanel from '@/components/game/FactionPanel';
 import { sendEnvoy } from '@/lib/game/factions';
+import MarketIntelligencePanel from '@/components/game/MarketIntelligencePanel';
 
 // ─── Build Panel ────────────────────────────────────────────────────────────
 
@@ -1438,6 +1439,7 @@ export default function SpaceTycoonPage() {
     { id: 'leaderboard', label: 'Ranks', icon: '🏆' },
     { id: 'commanders', label: 'Commanders', icon: '🎖️' },
     { id: 'factions', label: 'Factions', icon: '🛡️' },
+    { id: 'intelligence', label: 'Analytics', icon: '📈' },
   ];
 
   // Corporation tier-based tab unlocking
@@ -1817,6 +1819,7 @@ export default function SpaceTycoonPage() {
             }}
           />
         )}
+        {tab === 'intelligence' && <MarketIntelligencePanel />}
         {tab === 'reports' && (
           <ReportsPanel
             state={state}
