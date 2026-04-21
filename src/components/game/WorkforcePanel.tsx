@@ -17,7 +17,13 @@ export default function WorkforcePanel({ state, onHire, onDismiss }: WorkforcePa
   const workforce = state.workforce || { engineers: 0, scientists: 0, miners: 0, operators: 0 };
   const payroll = getMonthlyPayroll(workforce);
   const bonuses = getWorkforceBonuses(workforce);
-  const totalWorkers = workforce.engineers + workforce.scientists + workforce.miners + workforce.operators;
+  const totalWorkers =
+    workforce.engineers + workforce.scientists + workforce.miners + workforce.operators
+    + (workforce.pilots || 0) + (workforce.negotiators || 0)
+    + (workforce.securitys || 0) + (workforce.medics || 0);
+  const morale = workforce.morale ?? 0.8;
+  const fatigue = workforce.fatigue ?? 0;
+  const training = workforce.trainingLevel ?? 0.5;
   const completedBuildings = state.buildings.filter(b => b.isComplete).length;
   const legacyBonusCrew = getLegacyBonuses(state.legacy || DEFAULT_LEGACY).bonusCrewCapacity;
   const capacity = getCrewCapacity(completedBuildings, state.unlockedLocations.length, state.completedResearch.length, legacyBonusCrew);
@@ -41,6 +47,41 @@ export default function WorkforcePanel({ state, onHire, onDismiss }: WorkforcePa
         <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 p-3 text-center">
           <p className="text-amber-400 text-lg font-bold">+{Math.round(bonuses.miningOutput * 100)}%</p>
           <p className="text-slate-500 text-xs">Mining Bonus</p>
+        </div>
+      </div>
+
+      {/* Crew health (Phase III) — morale, fatigue, training level */}
+      <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-3">
+        <p className="text-white text-xs font-bold mb-2 uppercase tracking-wider">Crew Health</p>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+          <CrewStatBar
+            label="Morale"
+            value={morale}
+            max={1.2}
+            good={morale >= 0.9}
+            help="Global output multiplier. >0.8 is a boost, <0.8 is a drag on all service revenue."
+            color="emerald"
+            display={`${(morale * 100).toFixed(0)}%`}
+          />
+          <CrewStatBar
+            label="Fatigue"
+            value={fatigue}
+            max={1}
+            good={fatigue < 0.3}
+            help="Accumulates during high-workload months. Halves per-worker bonuses when at max."
+            color="amber"
+            display={`${(fatigue * 100).toFixed(0)}%`}
+            invert
+          />
+          <CrewStatBar
+            label="Training"
+            value={training}
+            max={1}
+            good={training >= 0.7}
+            help="(0.5 + training) scales per-worker bonus magnitudes. Budget training to grow it."
+            color="sky"
+            display={`${(training * 100).toFixed(0)}%`}
+          />
         </div>
       </div>
 
@@ -143,6 +184,49 @@ export default function WorkforcePanel({ state, onHire, onDismiss }: WorkforcePa
             );
           })}
         </div>
+      </div>
+    </div>
+  );
+}
+
+function CrewStatBar({
+  label, value, max, good, help, color, display, invert = false,
+}: {
+  label: string;
+  value: number;
+  max: number;
+  good: boolean;
+  help: string;
+  color: 'emerald' | 'amber' | 'sky';
+  display: string;
+  invert?: boolean;
+}) {
+  const pct = Math.min(100, (value / max) * 100);
+  const fillColor = {
+    emerald: invert ? 'from-emerald-500 to-amber-500' : 'from-amber-500 via-emerald-500 to-cyan-500',
+    amber:   invert ? 'from-emerald-500 via-amber-500 to-red-500' : 'from-amber-500 to-red-500',
+    sky:     'from-slate-500 via-sky-500 to-indigo-400',
+  }[color];
+  const valueColor = good ? 'text-emerald-300' : (color === 'amber' ? 'text-amber-300' : 'text-slate-300');
+  return (
+    <div className="rounded-lg bg-white/[0.03] p-2" title={help}>
+      <div className="flex justify-between items-baseline mb-1">
+        <span className="text-[10px] uppercase tracking-wider text-slate-500 font-bold">{label}</span>
+        <span className={`text-xs font-mono font-bold ${valueColor}`}>{display}</span>
+      </div>
+      <div
+        className="h-1.5 bg-white/[0.06] rounded-full overflow-hidden"
+        role="progressbar"
+        aria-label={`${label}: ${display}`}
+        aria-valuenow={value}
+        aria-valuemin={0}
+        aria-valuemax={max}
+      >
+        <div
+          className={`h-full bg-gradient-to-r ${fillColor} rounded-full transition-all`}
+          style={{ width: `${pct}%` }}
+          aria-hidden="true"
+        />
       </div>
     </div>
   );
