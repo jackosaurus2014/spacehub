@@ -319,25 +319,28 @@ export default function SolarSystemCanvas({ state, onUnlock }: SolarSystemCanvas
             <div>
               <h3 className="text-white font-semibold text-sm">{selectedLocData.name}</h3>
               <p className="text-slate-400 text-xs mt-0.5">{selectedLocData.description}</p>
-              <div className="flex items-center gap-3 mt-2 text-xs">
-                {isUnlocked && (
-                  <>
-                    <span className="text-cyan-400">{buildingsAtSelected.filter(b => b.isComplete).length} buildings</span>
-                    {buildingsAtSelected.filter(b => !b.isComplete).length > 0 && (
-                      <span className="text-amber-400">{buildingsAtSelected.filter(b => !b.isComplete).length} building</span>
-                    )}
-                  </>
-                )}
-                {npcCountAtSelected > 0 && (
-                  <span className="text-red-400/70">🤖 {npcCountAtSelected} NPC{npcCountAtSelected > 1 ? 's' : ''}</span>
-                )}
-              </div>
-              {!isUnlocked && (
-                <div className="mt-2 text-xs text-slate-500">
-                  <span>Unlock cost: {formatMoney(selectedLocData.unlockCost)}</span>
-                  {selectedLocData.requiredResearch.length > 0 && (
-                    <span className="ml-2">Requires: {selectedLocData.requiredResearch.join(', ').replace(/_/g, ' ')}</span>
+              {isUnlocked && (
+                <div className="flex items-center gap-3 mt-2 text-xs">
+                  <span className="text-cyan-400">{buildingsAtSelected.filter(b => b.isComplete).length} buildings</span>
+                  {buildingsAtSelected.filter(b => !b.isComplete).length > 0 && (
+                    <span className="text-amber-400">{buildingsAtSelected.filter(b => !b.isComplete).length} building</span>
                   )}
+                </div>
+              )}
+              {!isUnlocked && (
+                <div className="mt-2 text-xs">
+                  <div className="text-[10px] uppercase tracking-wider text-slate-500 font-semibold mb-1">Requirements to unlock</div>
+                  <ul className="space-y-0.5 text-slate-400 pl-4" style={{ listStyle: 'disc' }}>
+                    <li>Pay <span className="text-white font-mono">{formatMoney(selectedLocData.unlockCost)}</span></li>
+                    {selectedLocData.requiredResearch.length > 0 && (
+                      <li>Research: {selectedLocData.requiredResearch.map(r => r.replace(/_/g, ' ')).join(', ')}</li>
+                    )}
+                  </ul>
+                </div>
+              )}
+              {npcCountAtSelected > 0 && (
+                <div className="mt-2 text-[10px] text-slate-500 italic">
+                  🤖 {npcCountAtSelected} NPC {npcCountAtSelected === 1 ? 'competitor already operates' : 'competitors already operate'} here — informational only, not a gate
                 </div>
               )}
             </div>
