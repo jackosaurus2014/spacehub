@@ -522,6 +522,15 @@ export interface GameState {
   // Starting archetype — the path the player picked at game creation
   startingArchetype?: 'cape_heritage' | 'meridian_signals' | 'tracking_consortium';
 
+  // Modules (Phase IV) — purchased modules + fitted modules per ship
+  moduleInventory?: {
+    instanceId: string;
+    definitionId: string;
+    acquiredAtMs: number;
+  }[];
+  /** Map of shipInstanceId → list of module instanceIds fitted to that ship. */
+  fittedModules?: Record<string, string[]>;
+
   // Hazards (Phase II) — recent hazard log
   recentHazards?: {
     id: string;
