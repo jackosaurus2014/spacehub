@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from 'react';
 import type { GameState } from '@/lib/game/types';
-import { SHIPS, SHIP_MAP, getTravelTime, generateShipName, SURVEY_DURATION, canMineAtLocation, MINING_LOCATIONS } from '@/lib/game/ships';
+import { SHIPS, SHIP_MAP, getTravelTime, generateShipName, SURVEY_DURATION, canMineAtLocation, MINING_LOCATIONS, getShipDerivedStats } from '@/lib/game/ships';
 import type { ShipInstance } from '@/lib/game/ships';
 import { LOCATIONS, LOCATION_MAP } from '@/lib/game/solar-system';
 import { RESOURCE_MAP } from '@/lib/game/resources';
@@ -342,12 +342,38 @@ export default function FleetPanel({ state, onBuildShip, onStartMining, onStopMi
                   </details>
 
                   {/* Stats */}
-                  <div className="flex gap-3 text-[9px] text-slate-400 mb-2">
+                  <div className="flex gap-3 text-[9px] text-slate-400 mb-2 flex-wrap">
                     <span>Cargo: {ship.cargoCapacity}</span>
                     {ship.miningRate && <span>Mining: {ship.miningRate}/min</span>}
                     <span>Build: {formatDuration(ship.buildTimeSeconds)}</span>
                     {ship.maintenancePerMonth > 0 && <span>Maint: {formatMoney(ship.maintenancePerMonth)}/mo</span>}
                   </div>
+
+                  {/* Deep stats — Phase I derived stats. Collapsed by default. */}
+                  {(() => {
+                    const s = getShipDerivedStats(ship);
+                    return (
+                      <details className="mb-2 group/deep">
+                        <summary className="text-[9px] text-slate-500 cursor-pointer hover:text-slate-300 transition-colors select-none">
+                          Detailed specs ▾
+                        </summary>
+                        <div className="mt-1 grid grid-cols-2 gap-x-3 gap-y-0.5 text-[9px] text-slate-400">
+                          <span>Sublight: {s.sublightSpeed.toLocaleString()} m/s</span>
+                          <span>Warp: {s.warpFactor.toFixed(1)}×</span>
+                          <span>Fuel: {s.fuelCapacity} ({s.fuelBurnRate}/hr)</span>
+                          <span>Δv: {s.deltaVBudget.toLocaleString()} m/s</span>
+                          <span>Crew req: {s.crewRequired} (cap {s.crewCapacity})</span>
+                          <span>Life sup: {s.lifeSupportDays}d</span>
+                          <span>Hull: {s.hullIntegrity}</span>
+                          <span>Shield: {Math.round(s.shieldingRating * 100)}%</span>
+                          {s.surveyRange > 0 && <span>Survey: {s.surveyRange.toFixed(1)} AU ({Math.round(s.surveyAccuracy * 100)}%)</span>}
+                          <span>Stealth sig: {s.stealthSignature.toFixed(2)}</span>
+                          <span>MTBF: {s.mtbfHours.toLocaleString()}h</span>
+                          <span>Modules: {s.moduleSlots} ({s.hardpointTypes.join('/')})</span>
+                        </div>
+                      </details>
+                    );
+                  })()}
 
                   {/* Resource costs */}
                   {Object.keys(ship.resourceCost).length > 0 && (

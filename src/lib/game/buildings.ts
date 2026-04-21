@@ -2,7 +2,7 @@
 // realBuildSeconds: Tier 1 ≈ 3-5 min (180-300s), Tier 2 ≈ 10-20 min, Tier 3 ≈ 30-45 min, Tier 4 ≈ 45-60 min
 // Duplicate builds at same location scale by 1.3x time (in addition to cost scaling)
 
-import type { BuildingDefinition } from './types';
+import type { BuildingDefinition, BuildingCategory, BuildingDerivedStats, BuildingSynergyRange } from './types';
 
 export const BUILDINGS: BuildingDefinition[] = [
   // ─── LAUNCH PADS ──────────────────────────────────────────────────────
@@ -331,6 +331,183 @@ export const BUILDINGS: BuildingDefinition[] = [
 ];
 
 export const BUILDING_MAP = new Map(BUILDINGS.map(b => [b.id, b]));
+
+// ─── Phase I: Building Derived Stats ────────────────────────────────────────
+// Category + tier defaults, with per-building overrides via def.stats.
+// Populated per STATS_DESIGN.md so later waves (hazards, modules, market
+// depth) can assume every building has every stat.
+
+const CATEGORY_PROFILE: Record<BuildingCategory, (tier: number) => BuildingDerivedStats> = {
+  launch_pad: (tier) => ({
+    dockingCapacity: 1 + tier,
+    storageCapacity: 200 + tier * 100,
+    manufacturingThroughput: tier * 2,
+    refiningThroughput: 0,
+    marketLiquidityContribution: 0,
+    serviceQualityMultiplier: 0.9 + tier * 0.1,
+    customerCapacity: 50 + tier * 100,
+    uplinkBandwidth: 0,
+    crewQuarters: 20 + tier * 15,
+    crewMoraleModifier: 0.4 + tier * 0.05,
+    structuralIntegrity: 600 + tier * 300,
+    shieldingRating: 0.1 + tier * 0.03,  // Earth atmospheric protection
+    stabilityRating: 0.9,
+    synergyTags: ['launch', 'ground'],
+    synergyRange: 'location' as BuildingSynergyRange,
+    maxUpgradeLevel: 3,
+  }),
+  rocket: (tier) => ({
+    dockingCapacity: 0,
+    storageCapacity: 100 + tier * 50,
+    manufacturingThroughput: tier,
+    refiningThroughput: 0,
+    marketLiquidityContribution: 0,
+    serviceQualityMultiplier: 0.9 + tier * 0.1,
+    customerCapacity: 0,
+    uplinkBandwidth: 0,
+    crewQuarters: 10,
+    crewMoraleModifier: 0.3,
+    structuralIntegrity: 300 + tier * 150,
+    shieldingRating: 0.1 + tier * 0.03,
+    stabilityRating: 0.85,
+    synergyTags: ['launch'],
+    synergyRange: 'location',
+    maxUpgradeLevel: 3,
+  }),
+  satellite: (tier) => ({
+    dockingCapacity: 0,
+    storageCapacity: 2 + tier,
+    manufacturingThroughput: 0,
+    refiningThroughput: 0,
+    marketLiquidityContribution: 0,
+    serviceQualityMultiplier: 0.9 + tier * 0.1,
+    customerCapacity: 1_000 + tier * 3_000,  // satellites serve many customers each
+    uplinkBandwidth: 50 + tier * 80,
+    crewQuarters: 0,
+    crewMoraleModifier: 0,
+    structuralIntegrity: 50 + tier * 30,  // fragile
+    shieldingRating: 0.05 + tier * 0.03,
+    stabilityRating: 0.8,
+    synergyTags: ['telecom', 'constellation'],
+    synergyRange: 'system',  // constellation benefits interplanetary
+    maxUpgradeLevel: 2,
+  }),
+  space_station: (tier) => ({
+    dockingCapacity: 3 + tier * 2,
+    storageCapacity: 800 + tier * 400,
+    manufacturingThroughput: 1 + tier,
+    refiningThroughput: tier * 5,
+    marketLiquidityContribution: 20 + tier * 40,
+    serviceQualityMultiplier: 1.0 + tier * 0.15,
+    customerCapacity: 200 + tier * 150,
+    uplinkBandwidth: 30 + tier * 50,
+    crewQuarters: 40 + tier * 30,
+    crewMoraleModifier: 0.7 + tier * 0.05,  // stations = comfortable life
+    structuralIntegrity: 1_200 + tier * 500,
+    shieldingRating: 0.25 + tier * 0.08,
+    stabilityRating: 0.7,
+    synergyTags: ['habitation', 'logistics', 'trade'],
+    synergyRange: 'location',
+    maxUpgradeLevel: 4,
+  }),
+  fabrication_facility: (tier) => ({
+    dockingCapacity: 1 + tier,
+    storageCapacity: 500 + tier * 250,
+    manufacturingThroughput: 10 + tier * 8,  // the factory role
+    refiningThroughput: 2 + tier * 3,
+    marketLiquidityContribution: 10 + tier * 15,
+    serviceQualityMultiplier: 0.9 + tier * 0.1,
+    customerCapacity: 100 + tier * 150,
+    uplinkBandwidth: 10 + tier * 10,
+    crewQuarters: 15 + tier * 10,
+    crewMoraleModifier: 0.4 + tier * 0.05,
+    structuralIntegrity: 700 + tier * 300,
+    shieldingRating: 0.15 + tier * 0.05,
+    stabilityRating: 0.85,
+    synergyTags: ['manufacturing', 'industry'],
+    synergyRange: 'location',
+    maxUpgradeLevel: 4,
+  }),
+  datacenter: (tier) => ({
+    dockingCapacity: 0,
+    storageCapacity: 20 + tier * 10,
+    manufacturingThroughput: 0,
+    refiningThroughput: 0,
+    marketLiquidityContribution: 0,
+    serviceQualityMultiplier: 1.0 + tier * 0.2,
+    customerCapacity: 2_000 + tier * 5_000,
+    uplinkBandwidth: 500 + tier * 1_500,  // data ops = big bandwidth
+    crewQuarters: 5 + tier * 5,
+    crewMoraleModifier: 0.5,
+    structuralIntegrity: 400 + tier * 200,
+    shieldingRating: 0.2 + tier * 0.05,   // radiation-hardened
+    stabilityRating: 0.9,
+    synergyTags: ['data', 'AI'],
+    synergyRange: 'location',
+    maxUpgradeLevel: 4,
+  }),
+  mining_enterprise: (tier) => ({
+    dockingCapacity: 1 + Math.floor(tier / 2),
+    storageCapacity: 1_000 + tier * 500,   // big ore bins
+    manufacturingThroughput: 0,
+    refiningThroughput: 15 + tier * 10,
+    marketLiquidityContribution: 5 + tier * 8,
+    serviceQualityMultiplier: 0.85 + tier * 0.1,
+    customerCapacity: 0,
+    uplinkBandwidth: 5 + tier * 5,
+    crewQuarters: 10 + tier * 8,
+    crewMoraleModifier: 0.35 + tier * 0.05,  // rough life
+    structuralIntegrity: 800 + tier * 350,
+    shieldingRating: 0.15 + tier * 0.05,
+    stabilityRating: 0.8,
+    synergyTags: ['mining', 'extraction'],
+    synergyRange: 'body',
+    maxUpgradeLevel: 4,
+  }),
+  ground_station: (tier) => ({
+    dockingCapacity: 0,
+    storageCapacity: 30 + tier * 20,
+    manufacturingThroughput: 0,
+    refiningThroughput: 0,
+    marketLiquidityContribution: 0,
+    serviceQualityMultiplier: 0.95 + tier * 0.1,
+    customerCapacity: 500 + tier * 1_500,
+    uplinkBandwidth: 200 + tier * 500,
+    crewQuarters: 8 + tier * 6,
+    crewMoraleModifier: 0.6,
+    structuralIntegrity: 500 + tier * 200,
+    shieldingRating: 0.2 + tier * 0.04,
+    stabilityRating: 0.95,  // ground is very stable
+    synergyTags: ['ground', 'communications', 'relay'],
+    synergyRange: 'system',
+    maxUpgradeLevel: 3,
+  }),
+  solar_farm: (tier) => ({
+    dockingCapacity: 0,
+    storageCapacity: 10,
+    manufacturingThroughput: 0,
+    refiningThroughput: 0,
+    marketLiquidityContribution: 0,
+    serviceQualityMultiplier: 1.0,
+    customerCapacity: 0,
+    uplinkBandwidth: 0,
+    crewQuarters: 2 + tier,
+    crewMoraleModifier: 0.3,
+    structuralIntegrity: 200 + tier * 100,
+    shieldingRating: 0.08 + tier * 0.03,
+    stabilityRating: 0.9,
+    synergyTags: ['power'],
+    synergyRange: 'location',
+    maxUpgradeLevel: 3,
+  }),
+};
+
+export function getBuildingDerivedStats(def: BuildingDefinition): BuildingDerivedStats {
+  const profile = CATEGORY_PROFILE[def.category];
+  const defaults = profile(def.tier);
+  if (!def.stats) return defaults;
+  return { ...defaults, ...def.stats };
+}
 
 /** Scale build time for duplicates: 1.3x per existing instance at same location */
 export function scaledBuildTime(baseSec: number, countAtLocation: number): number {

@@ -5,6 +5,43 @@
 
 export type ShipRole = 'transport' | 'mining' | 'survey' | 'tanker';
 
+export type ShipHardpointType = 'engine' | 'shield' | 'cargo' | 'sensor' | 'drone' | 'utility';
+
+/**
+ * Comprehensive ship stats per STATS_DESIGN.md Phase I. Derived from role+tier
+ * when not set explicitly. Populated with sensible defaults by
+ * getShipDerivedStats so game-engine changes in later phases can depend on
+ * every ship having every stat.
+ */
+export interface ShipDerivedStats {
+  // Movement & fuel
+  sublightSpeed: number;       // m/s — intra-location travel
+  warpFactor: number;          // unitless — interplanetary travel multiplier
+  fuelCapacity: number;        // units
+  fuelBurnRate: number;        // units per hour of travel
+  deltaVBudget: number;        // m/s — total delta-v per mission
+  // Crew & life support
+  crewRequired: number;
+  crewCapacity: number;
+  lifeSupportDays: number;
+  // Hazard resilience (per CLAUDE.md: no PvP combat — these defend against
+  // micrometeorites, solar storms, NPC pirates, and environmental hazards only)
+  hullIntegrity: number;
+  shieldingRating: number;     // 0-0.9 — fraction of hazard damage absorbed
+  pointDefenseRating: number;  // 0-1 — passive pirate-raid mitigation
+  // Sensors & survey
+  surveyRange: number;         // AU
+  surveyAccuracy: number;      // 0-1 — quality of prospecting data returned
+  stealthSignature: number;    // smaller = harder to detect; default 1.0 baseline
+  // Reliability
+  mtbfHours: number;           // mean time between failures
+  insurancePremium: number;    // $ per game-month if insured
+  insuredValue: number;        // $ payout on catastrophic loss
+  // Modularity
+  moduleSlots: number;
+  hardpointTypes: ShipHardpointType[];
+}
+
 export interface ShipDefinition {
   id: string;
   name: string;
@@ -22,6 +59,9 @@ export interface ShipDefinition {
   buildTimeSeconds: number;
   tier: number;
   maintenancePerMonth: number; // Monthly upkeep cost (prevents infinite fleet spam)
+  /** Phase I: optional per-ship overrides for any of the derived stats.
+   *  Values not specified here are filled in by role+tier defaults. */
+  stats?: Partial<ShipDerivedStats>;
 }
 
 /**
@@ -286,6 +326,113 @@ export const SHIPS: ShipDefinition[] = [
 ];
 
 export const SHIP_MAP = new Map(SHIPS.map(s => [s.id, s]));
+
+// ─── Phase I: Ship Derived Stats ────────────────────────────────────────────
+// Fills in every ShipDerivedStats field based on role + tier, then applies
+// any per-ship overrides from def.stats. Role profile is the load-bearing
+// behavior (cargo ships vs surveyors vs miners have very different stats).
+//
+// Defaults are intentionally conservative baselines for now — later waves
+// (hazard system, module system, market-depth work) will consume them.
+
+const ROLE_PROFILE: Record<ShipRole, (tier: number) => ShipDerivedStats> = {
+  transport: (tier) => ({
+    sublightSpeed: 2_000 + tier * 400,
+    warpFactor: 0.8 + tier * 0.2,
+    fuelCapacity: 400 + tier * 300,
+    fuelBurnRate: 4 + tier * 0.8,
+    deltaVBudget: 8_000 + tier * 2_000,
+    crewRequired: 2 + tier,
+    crewCapacity: 6 + tier * 2,
+    lifeSupportDays: 60 + tier * 30,
+    hullIntegrity: 400 + tier * 200,
+    shieldingRating: 0.15 + tier * 0.05,
+    pointDefenseRating: 0.10 + tier * 0.03,
+    surveyRange: 0,
+    surveyAccuracy: 0,
+    stealthSignature: 1.4 - tier * 0.05,  // big ships = loud
+    mtbfHours: 1_200 + tier * 600,
+    insurancePremium: 0,  // pay-as-you-go
+    insuredValue: 0,
+    moduleSlots: 2 + tier,
+    hardpointTypes: ['cargo', 'engine', 'utility'],
+  }),
+  tanker: (tier) => ({
+    sublightSpeed: 1_500 + tier * 300,
+    warpFactor: 0.6 + tier * 0.15,
+    fuelCapacity: 1_500 + tier * 800,  // tankers carry a lot of fuel
+    fuelBurnRate: 5 + tier,
+    deltaVBudget: 10_000 + tier * 2_500,
+    crewRequired: 3 + tier,
+    crewCapacity: 6 + tier * 2,
+    lifeSupportDays: 90 + tier * 30,
+    hullIntegrity: 500 + tier * 250,  // robust — carrying fuel
+    shieldingRating: 0.20 + tier * 0.05,
+    pointDefenseRating: 0.15 + tier * 0.04,
+    surveyRange: 0,
+    surveyAccuracy: 0,
+    stealthSignature: 1.5 - tier * 0.05,
+    mtbfHours: 1_500 + tier * 600,
+    insurancePremium: 0,
+    insuredValue: 0,
+    moduleSlots: 2 + tier,
+    hardpointTypes: ['cargo', 'shield', 'utility'],
+  }),
+  mining: (tier) => ({
+    sublightSpeed: 1_200 + tier * 300,
+    warpFactor: 0.5 + tier * 0.15,
+    fuelCapacity: 250 + tier * 200,
+    fuelBurnRate: 3 + tier * 0.6,
+    deltaVBudget: 6_000 + tier * 1_800,
+    crewRequired: 1 + Math.floor(tier / 2),
+    crewCapacity: 4 + tier,
+    lifeSupportDays: 45 + tier * 20,
+    hullIntegrity: 350 + tier * 180,
+    shieldingRating: 0.12 + tier * 0.04,
+    pointDefenseRating: 0.08 + tier * 0.03,
+    surveyRange: 0.2 + tier * 0.1,  // basic prospecting range
+    surveyAccuracy: 0.3 + tier * 0.08,
+    stealthSignature: 1.2 - tier * 0.04,
+    mtbfHours: 1_000 + tier * 500,  // mining wears ships down
+    insurancePremium: 0,
+    insuredValue: 0,
+    moduleSlots: 3 + tier,
+    hardpointTypes: ['drone', 'cargo', 'utility'],
+  }),
+  survey: (tier) => ({
+    sublightSpeed: 3_500 + tier * 500,
+    warpFactor: 1.2 + tier * 0.3,
+    fuelCapacity: 500 + tier * 250,
+    fuelBurnRate: 2 + tier * 0.4,  // efficient engines
+    deltaVBudget: 12_000 + tier * 3_000,
+    crewRequired: 1 + Math.floor(tier / 3),
+    crewCapacity: 3 + tier,
+    lifeSupportDays: 120 + tier * 40,
+    hullIntegrity: 200 + tier * 120,  // fragile; speed > armor
+    shieldingRating: 0.08 + tier * 0.03,
+    pointDefenseRating: 0.05 + tier * 0.02,
+    surveyRange: 2 + tier * 1.5,
+    surveyAccuracy: 0.55 + tier * 0.1,
+    stealthSignature: 0.6 - tier * 0.06,  // low signature by design
+    mtbfHours: 2_000 + tier * 800,
+    insurancePremium: 0,
+    insuredValue: 0,
+    moduleSlots: 3 + tier,
+    hardpointTypes: ['sensor', 'engine', 'utility'],
+  }),
+};
+
+const BASE_INSURANCE_RATE = 0.002;  // 0.2% of baseCost per game-month if insured
+
+export function getShipDerivedStats(def: ShipDefinition): ShipDerivedStats {
+  const profile = ROLE_PROFILE[def.role];
+  const defaults = profile(def.tier);
+  // Reasonable insured-value defaults — 80% of baseCost.
+  defaults.insurancePremium = Math.round(def.baseCost * BASE_INSURANCE_RATE);
+  defaults.insuredValue = Math.round(def.baseCost * 0.8);
+  if (!def.stats) return defaults;
+  return { ...defaults, ...def.stats };
+}
 
 // Travel times between locations (in real seconds)
 // Expanded to include all colony locations

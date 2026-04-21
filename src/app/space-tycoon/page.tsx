@@ -6,7 +6,7 @@ import { processFullTick } from '@/lib/game/game-engine';
 import { getNewGameState, saveGame, loadGame, deleteSave } from '@/lib/game/save-load';
 import { TICK_INTERVALS, AUTO_SAVE_INTERVAL_MS } from '@/lib/game/constants';
 import { formatMoney, formatGameDate, formatDuration, formatCountdown, advanceDate, generateId, scaledBuildingCost, scaledResearchTime } from '@/lib/game/formulas';
-import { BUILDINGS, BUILDING_MAP, scaledBuildTime } from '@/lib/game/buildings';
+import { BUILDINGS, BUILDING_MAP, scaledBuildTime, getBuildingDerivedStats } from '@/lib/game/buildings';
 import { RESEARCH, RESEARCH_MAP, RESEARCH_CATEGORIES, getResearchMechanicalEffect } from '@/lib/game/research-tree';
 import { SERVICE_MAP } from '@/lib/game/services';
 import { LOCATIONS, LOCATION_MAP } from '@/lib/game/solar-system';
@@ -213,6 +213,33 @@ function BuildPanel({ state, onBuild, onSellBuilding }: { state: GameState; onBu
                     </div>
                   </details>
                 )}
+
+                {/* Deep stats — Phase I derived stats */}
+                {(() => {
+                  const s = getBuildingDerivedStats(bld);
+                  const rows: Array<[string, string]> = [];
+                  if (s.customerCapacity > 0)          rows.push(['Customer cap', s.customerCapacity.toLocaleString()]);
+                  if (s.uplinkBandwidth > 0)           rows.push(['Uplink', `${s.uplinkBandwidth.toLocaleString()} Gbps`]);
+                  if (s.manufacturingThroughput > 0)   rows.push(['Mfg tput', `${s.manufacturingThroughput}/mo`]);
+                  if (s.refiningThroughput > 0)        rows.push(['Refining', `${s.refiningThroughput}/mo`]);
+                  if (s.storageCapacity > 0)           rows.push(['Storage', `${s.storageCapacity.toLocaleString()} m³`]);
+                  if (s.dockingCapacity > 0)           rows.push(['Docking', `${s.dockingCapacity} ships`]);
+                  if (s.crewQuarters > 0)              rows.push(['Crew qtrs', s.crewQuarters.toString()]);
+                  rows.push(['Structure', s.structuralIntegrity.toLocaleString()]);
+                  if (s.shieldingRating > 0)           rows.push(['Shield', `${Math.round(s.shieldingRating * 100)}%`]);
+                  rows.push(['Max upgrade', `L${s.maxUpgradeLevel}`]);
+                  if (s.synergyTags.length > 0)        rows.push(['Synergy', `${s.synergyTags.join(', ')} (${s.synergyRange})`]);
+                  return (
+                    <details className="mb-2 group/deep">
+                      <summary className="text-[9px] text-slate-500 cursor-pointer hover:text-slate-300 transition-colors select-none">
+                        Detailed specs ▾
+                      </summary>
+                      <div className="mt-1 grid grid-cols-2 gap-x-3 gap-y-0.5 text-[9px] text-slate-400">
+                        {rows.map(([k, v]) => <span key={k}>{k}: <span className="text-slate-300">{v}</span></span>)}
+                      </div>
+                    </details>
+                  );
+                })()}
                 {/* Revenue preview */}
                 {bld.enabledServices.length > 0 && (() => {
                   const svc = SERVICE_MAP.get(bld.enabledServices[0]);
