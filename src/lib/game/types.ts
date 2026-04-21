@@ -507,6 +507,21 @@ export interface GameState {
 
   // Starting archetype — the path the player picked at game creation
   startingArchetype?: 'cape_heritage' | 'meridian_signals' | 'tracking_consortium';
+
+  // Hazards (Phase II) — recent hazard log
+  recentHazards?: {
+    id: string;
+    type: 'solar_storm' | 'micrometeorite' | 'pirate_raid' | 'equipment_failure';
+    locationId: string;
+    occurredAtMs: number;
+    affectedShipInstanceId?: string;
+    affectedBuildingInstanceId?: string;
+    damagePct: number;
+    mitigatedPct: number;
+    destroyed: boolean;
+    insurancePayout: number;
+    summary: string;
+  }[];
 }
 
 export interface DeliveryContractState {

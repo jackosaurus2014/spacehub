@@ -29,7 +29,8 @@ import { getMegastructureBonuses, checkMegastructureCompletion } from './persona
 import { getReputationBonuses, addReputation } from './reputation';
 import { computeCommanderBonuses } from './commanders';
 import { ensureFreshDeliveryPool, processContractDeadlines } from './delivery-contracts';
-import { shouldAutoGraduate, graduateFrontier } from './frontier';
+import { shouldAutoGraduate, graduateFrontier, isInFrontier } from './frontier';
+import { rollMonthlyHazards, applyHazards } from './hazards';
 import type { ResourceId } from './resources';
 
 /** Get or create today's daily metrics tracker */
@@ -528,6 +529,19 @@ export function processTick(state: GameState): GameState {
   // Delivery contracts: refresh pool if due, then process overdue contracts.
   out = ensureFreshDeliveryPool(out);
   out = processContractDeadlines(out);
+
+  // Hazards (Phase II): roll once per game-month. Frontier players are
+  // shielded from all hostile hazards per the onramp policy.
+  if (isMonthEnd && !isInFrontier(out)) {
+    const hazards = rollMonthlyHazards(out, Date.now());
+    if (hazards.length > 0) {
+      const applied = applyHazards(out, hazards);
+      out = {
+        ...applied.state,
+        eventLog: [...applied.events, ...(applied.state.eventLog || [])].slice(0, MAX_EVENT_LOG),
+      };
+    }
+  }
 
   // Frontier: auto-graduate when time + net worth conditions are met.
   if (out.frontierStatus === 'active' && shouldAutoGraduate(out)) {
