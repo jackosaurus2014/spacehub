@@ -531,6 +531,22 @@ export interface GameState {
   /** Map of shipInstanceId → list of module instanceIds fitted to that ship. */
   fittedModules?: Record<string, string[]>;
 
+  // Market depth (Phase V) — open futures positions
+  futuresContracts?: {
+    id: string;
+    holderProfileId?: string;
+    resourceSlug: string;
+    quantity: number;
+    strikePrice: number;
+    direction: 'long' | 'short';
+    marginLocked: number;
+    openedAtMs: number;
+    expiresAtMs: number;
+    settledAtMs?: number;
+    settlementPnL?: number;
+    status: 'open' | 'settled' | 'liquidated';
+  }[];
+
   // Hazards (Phase II) — recent hazard log
   recentHazards?: {
     id: string;
