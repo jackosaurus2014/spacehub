@@ -464,6 +464,43 @@ export function getResearchBonuses(completedResearchIds: string[]): ResearchBonu
   };
 }
 
+/**
+ * Return a human-readable string describing the *actual mechanical* bonus a
+ * single research grants, derived from its category + tier. The `effect`
+ * field on each research definition is narrative flavor text; the real
+ * in-game effect comes from the category bucket the research sits in.
+ *
+ * Display this alongside the flavor text so players can see what the research
+ * actually does — answers the common "it says -15% launch cost but my costs
+ * didn't move" confusion.
+ */
+export function getResearchMechanicalEffect(def: ResearchDefinition): string {
+  const pct = (n: number) => `${(n * 100).toFixed(1)}%`;
+  const tierBonus = def.tier * 0.02;
+
+  const parts: string[] = [];
+  switch (def.category) {
+    case 'rocketry':             parts.push(`-${pct(tierBonus)} building cost`); break;
+    case 'propulsion':           parts.push(`-${pct(tierBonus * 0.5)} building cost`, `+${pct(tierBonus * 0.5)} build speed`); break;
+    case 'mining':               parts.push(`+${pct(tierBonus)} mining output`); break;
+    case 'materials':            parts.push(`+${pct(tierBonus * 0.5)} mining output`, `-${pct(tierBonus * 0.5)} maintenance cost`); break;
+    case 'spacecraft':           parts.push(`-${pct(tierBonus)} maintenance cost`); break;
+    case 'infrastructure':       parts.push(`-${pct(tierBonus * 0.5)} maintenance cost`, `+${pct(tierBonus * 0.5)} build speed`); break;
+    case 'solar_arrays':         parts.push(`+${pct(tierBonus)} service revenue`); break;
+    case 'services':             parts.push(`+${pct(tierBonus)} service revenue`); break;
+    case 'economy':              parts.push(`+${pct(tierBonus * 0.5)} service revenue`, `-${pct(tierBonus * 0.5)} maintenance cost`); break;
+    case 'sensors':              parts.push(`+${pct(tierBonus * 0.7)} service revenue`, `+${pct(tierBonus * 0.3)} research speed`); break;
+    case 'ai_chips':             parts.push(`+${pct(tierBonus * 0.7)} research speed`, `+${pct(tierBonus * 0.3)} service revenue`); break;
+    case 'satellite_components': parts.push(`+${pct(tierBonus)} service revenue`); break;
+    case 'crew':                 parts.push(`+${pct(tierBonus * 0.5)} build speed`, `-${pct(tierBonus * 0.5)} maintenance cost`); break;
+    case 'ships':                parts.push(`+${pct(tierBonus * 0.5)} build speed`, `+${pct(tierBonus * 0.5)} mining output`); break;
+    case 'defense':              parts.push(`-${pct(tierBonus)} maintenance cost`); break;
+    case 'exploration':          parts.push(`+${pct(tierBonus * 0.5)} mining output`, `+${pct(tierBonus * 0.5)} service revenue`); break;
+    case 'terraforming':         parts.push(`+${pct(tierBonus * 0.5)} service revenue`, `+${pct(tierBonus * 0.5)} mining output`); break;
+  }
+  return parts.length > 0 ? parts.join(' · ') : '—';
+}
+
 export const RESEARCH_CATEGORIES = [
   { id: 'rocketry', name: 'Rocketry', icon: '🚀' },
   { id: 'spacecraft', name: 'Spacecraft Design', icon: '🛸' },

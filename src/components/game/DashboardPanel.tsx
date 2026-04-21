@@ -6,7 +6,7 @@ import { formatMoney, formatGameDate, formatCountdown } from '@/lib/game/formula
 import { BUILDING_MAP, getPowerByLocation } from '@/lib/game/buildings';
 import { SERVICE_MAP } from '@/lib/game/services';
 import { SHIP_MAP } from '@/lib/game/ships';
-import { RESEARCH, getResearchBonuses } from '@/lib/game/research-tree';
+import { RESEARCH, getResearchBonuses, getResearchMechanicalEffect } from '@/lib/game/research-tree';
 import { LOCATION_MAP } from '@/lib/game/solar-system';
 import { getWorkforceBonuses, getMonthlyPayroll } from '@/lib/game/workforce';
 import { getRevenueMultiplier as getUpgradeRevenueMultiplier, getMaintenanceMultiplier } from '@/lib/game/upgrades';
@@ -652,6 +652,7 @@ export default function DashboardPanel({ state, onUpdateCompanyName }: { state: 
               </div>
             )}
             <p className="text-slate-500 text-[10px] mt-1">{def?.effect}</p>
+            {def && <p className="text-cyan-300/80 text-[10px] font-mono mt-0.5">→ {getResearchMechanicalEffect(def)}</p>}
           </div>
         );
       })()}
@@ -680,6 +681,7 @@ export default function DashboardPanel({ state, onUpdateCompanyName }: { state: 
               </div>
             )}
             <p className="text-slate-500 text-[10px] mt-1">{def2?.effect}</p>
+            {def2 && <p className="text-cyan-300/80 text-[10px] font-mono mt-0.5">→ {getResearchMechanicalEffect(def2)}</p>}
           </div>
         );
       })()}

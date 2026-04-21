@@ -58,7 +58,7 @@ export const CORPORATION_TIERS: CorporationTierDef[] = [
     constructionSlots: 3,
     shipyardSlots: 1,
     bonuses: { maintenanceReduction: 0.03, revenueBonus: 0.03, miningBonus: 0 },
-    unlockedTabs: ['fleet', 'reports', 'spatial', 'diplomacy'],
+    unlockedTabs: ['fleet', 'reports', 'spatial', 'diplomacy', 'market'],
   },
   {
     tier: 3, name: 'Enterprise', icon: '🏢', color: '#a78bfa',
@@ -72,7 +72,7 @@ export const CORPORATION_TIERS: CorporationTierDef[] = [
     constructionSlots: 4,
     shipyardSlots: 2,
     bonuses: { maintenanceReduction: 0.05, revenueBonus: 0.05, miningBonus: 0.05 },
-    unlockedTabs: ['crafting', 'market', 'workforce', 'commanders', 'intelligence'],
+    unlockedTabs: ['crafting', 'workforce', 'commanders', 'intelligence'],
   },
   {
     tier: 4, name: 'Corporation', icon: '🏛️', color: '#fbbf24',

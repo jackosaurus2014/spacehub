@@ -7,7 +7,7 @@ import { getNewGameState, saveGame, loadGame, deleteSave } from '@/lib/game/save
 import { TICK_INTERVALS, AUTO_SAVE_INTERVAL_MS } from '@/lib/game/constants';
 import { formatMoney, formatGameDate, formatDuration, formatCountdown, advanceDate, generateId, scaledBuildingCost, scaledResearchTime } from '@/lib/game/formulas';
 import { BUILDINGS, BUILDING_MAP, scaledBuildTime } from '@/lib/game/buildings';
-import { RESEARCH, RESEARCH_MAP, RESEARCH_CATEGORIES } from '@/lib/game/research-tree';
+import { RESEARCH, RESEARCH_MAP, RESEARCH_CATEGORIES, getResearchMechanicalEffect } from '@/lib/game/research-tree';
 import { SERVICE_MAP } from '@/lib/game/services';
 import { LOCATIONS, LOCATION_MAP } from '@/lib/game/solar-system';
 import { playSound, initAudio } from '@/lib/game/sound-engine';
@@ -455,7 +455,8 @@ function ResearchPanel({ state, onStartResearch }: { state: GameState; onStartRe
                       {canStart ? 'READY' : 'NEED $'}
                     </span>
                   </div>
-                  <p className="text-[10px] mb-1.5" style={{ color: 'var(--text-tertiary)' }}>{r.effect}</p>
+                  <p className="text-[10px] mb-0.5" style={{ color: 'var(--text-tertiary)' }}>{r.effect}</p>
+                  <p className="text-[10px] mb-1.5 text-cyan-300/80 font-mono">→ {getResearchMechanicalEffect(r)}</p>
                   {unlocksText && (
                     <p className="text-[9px] font-medium" style={{ color: '#56F000' }}>
                       Unlocks: {unlocksText}
@@ -499,6 +500,7 @@ function ResearchPanel({ state, onStartResearch }: { state: GameState; onStartRe
               <div className="h-full bg-gradient-to-r from-purple-500 to-cyan-500 rounded-full transition-all duration-1000 game-progress-shimmer" style={{ width: `${pct}%` }} />
             </div>
             <p className="text-slate-500 text-[10px] mt-1.5">{def.effect}</p>
+            <p className="text-cyan-300/80 text-[10px] font-mono mt-0.5">→ {getResearchMechanicalEffect(def)}</p>
           </div>
         );
       })()}
@@ -525,6 +527,7 @@ function ResearchPanel({ state, onStartResearch }: { state: GameState; onStartRe
               <div className="h-full bg-gradient-to-r from-cyan-500 to-purple-500 rounded-full transition-all duration-1000 game-progress-shimmer" style={{ width: `${pct2}%` }} />
             </div>
             <p className="text-slate-500 text-[10px] mt-1.5">{def2.effect}</p>
+            <p className="text-cyan-300/80 text-[10px] font-mono mt-0.5">→ {getResearchMechanicalEffect(def2)}</p>
           </div>
         );
       })()}
@@ -671,7 +674,8 @@ function ResearchPanel({ state, onStartResearch }: { state: GameState; onStartRe
                           }`}>T{r.tier}</span>
                         </div>
                       </div>
-                      <p className="text-slate-400 text-[10px] mb-1.5 leading-relaxed">{r.effect}</p>
+                      <p className="text-slate-400 text-[10px] mb-0.5 leading-relaxed">{r.effect}</p>
+                      <p className="text-cyan-300/80 text-[10px] font-mono mb-1.5">→ {getResearchMechanicalEffect(r)}</p>
                       {/* Prerequisites */}
                       {locked && r.prerequisites.length > 0 && (
                         <div className="flex flex-wrap gap-1 mb-1.5">
