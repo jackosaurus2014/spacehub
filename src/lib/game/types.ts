@@ -625,4 +625,4 @@ export interface DeliveryContractState {
 
 // ─── UI Tabs ────────────────────────────────────────────────────────────────
 
-export type GameTab = 'dashboard' | 'build' | 'research' | 'map' | 'services' | 'fleet' | 'crafting' | 'workforce' | 'market' | 'intelligence' | 'contracts' | 'alliance' | 'bounties' | 'leaderboard' | 'rivals' | 'leagues' | 'bidding' | 'seasons' | 'territory' | 'speedruns' | 'espionage' | 'megaproject' | 'megastructures' | 'reports' | 'commanders' | 'factions' | 'spatial' | 'diplomacy';
+export type GameTab = 'dashboard' | 'build' | 'research' | 'map' | 'services' | 'fleet' | 'crafting' | 'workforce' | 'market' | 'intelligence' | 'contracts' | 'alliance' | 'bounties' | 'leaderboard' | 'rivals' | 'leagues' | 'bidding' | 'seasons' | 'territory' | 'speedruns' | 'espionage' | 'megaproject' | 'megastructures' | 'reports' | 'commanders' | 'factions' | 'spatial' | 'diplomacy' | 'modules';
