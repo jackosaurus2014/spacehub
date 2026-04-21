@@ -135,7 +135,7 @@ export const CORPORATION_TIERS: CorporationTierDef[] = [
     constructionSlots: 14,
     shipyardSlots: 7,
     bonuses: { maintenanceReduction: 0.20, revenueBonus: 0.20, miningBonus: 0.25 },
-    unlockedTabs: ['megastructures'],
+    unlockedTabs: ['megastructures', 'interstellar'],
   },
 ];
 
