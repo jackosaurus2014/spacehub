@@ -531,6 +531,19 @@ export interface GameState {
   /** Map of shipInstanceId → list of module instanceIds fitted to that ship. */
   fittedModules?: Record<string, string[]>;
 
+  // Corporate governance (Phase VI) — shared treasury + dividend history
+  /** Corporate shared wallet. Separate from personal money once multiplayer
+   *  alliances exist; mirrors player money in single-player. */
+  corporateTreasury?: number;
+  dividendHistory?: {
+    id: string;
+    declaredAtMs: number;
+    perShareAmount: number;
+    totalPayout: number;
+    declaringUserId?: string;
+    treasuryBefore: number;
+  }[];
+
   // Market depth (Phase V) — open futures positions
   futuresContracts?: {
     id: string;
