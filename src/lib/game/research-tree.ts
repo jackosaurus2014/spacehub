@@ -360,9 +360,134 @@ export const RESEARCH: ResearchDefinition[] = RAW_RESEARCH.map(r => {
 
 export const RESEARCH_MAP = new Map(RESEARCH.map(r => [r.id, r]));
 
+// ─── Research Effects (per-research custom bonuses) ──────────────────────────
+// As of the "per-research custom effects" refactor, each research can declare
+// its own explicit effect magnitude. When a research doesn't declare effects
+// explicitly (which is every research today — none have been hand-annotated
+// yet), we infer effects from the flavor text so the game matches what the
+// flavor promises. Falls back to the legacy category-tier formula if parsing
+// can't identify a stat.
+
+export type ResearchEffectType =
+  | 'buildCost'      // reduces building construction cost
+  | 'buildSpeed'     // speeds up construction
+  | 'mining'         // increases mining yield
+  | 'revenue'        // increases service revenue
+  | 'research'       // increases research speed
+  | 'maintenance';   // reduces maintenance / operating cost
+
+export interface ResearchEffect {
+  type: ResearchEffectType;
+  /** Decimal fraction (0-1). 0.15 = 15%. Capped at 0.30 per effect to prevent
+   *  hyperbolic flavor text from producing broken bonuses. */
+  magnitude: number;
+}
+
+/** Max per-effect magnitude. Hyperbolic flavor like "+200%" is capped here. */
+const PER_EFFECT_CAP = 0.30;
+
+/**
+ * Parse flavor text into structured effects. Handles the common patterns:
+ *   "-15% per-launch cost"        → [{ buildCost, 0.15 }]
+ *   "+30% revenue from sensors"   → [{ revenue, 0.30 }]
+ *   "Double research speed"       → [{ research, 0.30 }] (capped)
+ *   "Enables Venus cloud colonies" (no numeric) → [] (gate-only, category fallback used)
+ */
+export function inferEffectsFromFlavor(effectText: string): ResearchEffect[] {
+  if (!effectText) return [];
+  const lower = effectText.toLowerCase();
+  const effects: ResearchEffect[] = [];
+
+  // Keyword → effect-type map. Order matters — specific before generic.
+  const keywordTypes: Array<[string[], ResearchEffectType]> = [
+    [['research speed', 'research rate', 'r&d speed', 'faster research', 'parallel'], 'research'],
+    [['mining yield', 'mining rate', 'mining output', 'extraction', 'yield', 'deposit'], 'mining'],
+    [['build speed', 'construction speed', 'faster build', 'build time', 'construction time'], 'buildSpeed'],
+    [['launch cost', 'building cost', 'construction cost', 'per-unit cost', 'manufacturing cost', 'ship cost', 'spacecraft cost', 'hardware cost'], 'buildCost'],
+    [['maintenance', 'upkeep', 'operating cost', 'crew comfort', 'crew survival', 'reliability', 'radiation damage', 'wear', 'durability', 'life support', 'insurance cost', 'shielding'], 'maintenance'],
+    [['revenue', 'income', 'profit', 'earnings', 'sales', 'customer', 'broadband', 'data rate', 'throughput', 'service quality'], 'revenue'],
+    // generic 'cost' falls to buildCost
+    [['cost'], 'buildCost'],
+    // generic 'speed' falls to buildSpeed
+    [['speed'], 'buildSpeed'],
+  ];
+
+  let type: ResearchEffectType | null = null;
+  for (const [keywords, t] of keywordTypes) {
+    if (keywords.some(k => lower.includes(k))) { type = t; break; }
+  }
+  if (type === null) return [];
+
+  // Number extraction.
+  //   "-15%" → 15
+  //   "+200%" → 200 (will be capped)
+  //   "double" → 100  "triple" → 200  "half" → 50
+  //   "2x" / "3x" → 100 / 200 (× multiplier minus 1 × 100)
+  let magnitudePct: number | null = null;
+  const pctMatch = effectText.match(/([+-]?\d+(?:\.\d+)?)%/);
+  if (pctMatch) {
+    magnitudePct = Math.abs(parseFloat(pctMatch[1]));
+  } else if (lower.includes('double')) {
+    magnitudePct = 100;
+  } else if (lower.includes('triple')) {
+    magnitudePct = 200;
+  } else if (lower.includes('half') || lower.includes('halved')) {
+    magnitudePct = 50;
+  } else {
+    const xMatch = effectText.match(/(\d+(?:\.\d+)?)[xX×]/);
+    if (xMatch) magnitudePct = (parseFloat(xMatch[1]) - 1) * 100;
+  }
+
+  if (magnitudePct === null || magnitudePct <= 0) return [];
+
+  const magnitude = Math.min(PER_EFFECT_CAP, magnitudePct / 100);
+  effects.push({ type, magnitude });
+  return effects;
+}
+
+/**
+ * Resolve the final effect list for a research. If `def.effects` is set
+ * explicitly, use it. Otherwise infer from flavor text. If the flavor yields
+ * nothing, fall back to the legacy category-tier formula so no research is
+ * ever completely silent.
+ */
+function resolveEffects(def: ResearchDefinition): ResearchEffect[] {
+  // Explicit effects field (future) — use as-is, clamp magnitudes.
+  const explicit = (def as ResearchDefinition & { effects?: ResearchEffect[] }).effects;
+  if (explicit && explicit.length > 0) {
+    return explicit.map(e => ({ type: e.type, magnitude: Math.min(PER_EFFECT_CAP, Math.max(0, e.magnitude)) }));
+  }
+
+  // Inferred from flavor text
+  const inferred = inferEffectsFromFlavor(def.effect);
+  if (inferred.length > 0) return inferred;
+
+  // Legacy category-tier fallback (same formula as before this refactor)
+  const tierBonus = def.tier * 0.02;
+  const push = (type: ResearchEffectType, magnitude: number): ResearchEffect => ({ type, magnitude });
+  switch (def.category) {
+    case 'rocketry':             return [push('buildCost', tierBonus)];
+    case 'propulsion':           return [push('buildCost', tierBonus * 0.5), push('buildSpeed', tierBonus * 0.5)];
+    case 'mining':               return [push('mining', tierBonus)];
+    case 'materials':            return [push('mining', tierBonus * 0.5), push('maintenance', tierBonus * 0.5)];
+    case 'spacecraft':           return [push('maintenance', tierBonus)];
+    case 'infrastructure':       return [push('maintenance', tierBonus * 0.5), push('buildSpeed', tierBonus * 0.5)];
+    case 'solar_arrays':         return [push('revenue', tierBonus)];
+    case 'services':             return [push('revenue', tierBonus)];
+    case 'economy':              return [push('revenue', tierBonus * 0.5), push('maintenance', tierBonus * 0.5)];
+    case 'sensors':              return [push('revenue', tierBonus * 0.7), push('research', tierBonus * 0.3)];
+    case 'ai_chips':             return [push('research', tierBonus * 0.7), push('revenue', tierBonus * 0.3)];
+    case 'satellite_components': return [push('revenue', tierBonus)];
+    case 'crew':                 return [push('buildSpeed', tierBonus * 0.5), push('maintenance', tierBonus * 0.5)];
+    case 'ships':                return [push('buildSpeed', tierBonus * 0.5), push('mining', tierBonus * 0.5)];
+    case 'defense':              return [push('maintenance', tierBonus)];
+    case 'exploration':          return [push('mining', tierBonus * 0.5), push('revenue', tierBonus * 0.5)];
+    case 'terraforming':         return [push('revenue', tierBonus * 0.5), push('mining', tierBonus * 0.5)];
+    default:                     return [];
+  }
+}
+
 // ─── Research Bonuses ────────────────────────────────────────────────────────
-// Each completed research provides category-specific gameplay bonuses.
-// Bonuses scale by tier: T1=2%, T2=4%, T3=6%, T4=8%, T5=10% per research.
 
 export interface ResearchBonuses {
   buildCostReduction: number;    // % less building cost
@@ -385,72 +510,15 @@ export function getResearchBonuses(completedResearchIds: string[]): ResearchBonu
   for (const resId of completedResearchIds) {
     const def = RESEARCH_MAP.get(resId);
     if (!def) continue;
-
-    // Each research gives a bonus based on its tier (T1=2%, T2=4%, T3=6%, T4=8%, T5=10%)
-    const tierBonus = def.tier * 0.02;
-
-    switch (def.category) {
-      case 'rocketry':
-        buildCostReduction += tierBonus;
-        break;
-      case 'propulsion':
-        buildCostReduction += tierBonus * 0.5;
-        buildSpeedBonus += tierBonus * 0.5;
-        break;
-      case 'mining':
-        miningOutputBonus += tierBonus;
-        break;
-      case 'materials':
-        miningOutputBonus += tierBonus * 0.5;
-        maintenanceReduction += tierBonus * 0.5;
-        break;
-      case 'spacecraft':
-        maintenanceReduction += tierBonus;
-        break;
-      case 'infrastructure':
-        maintenanceReduction += tierBonus * 0.5;
-        buildSpeedBonus += tierBonus * 0.5;
-        break;
-      case 'solar_arrays':
-        serviceRevenueBonus += tierBonus;
-        break;
-      case 'services':
-        serviceRevenueBonus += tierBonus;
-        break;
-      case 'economy':
-        serviceRevenueBonus += tierBonus * 0.5;
-        maintenanceReduction += tierBonus * 0.5;
-        break;
-      case 'sensors':
-        serviceRevenueBonus += tierBonus * 0.7;
-        researchSpeedBonus += tierBonus * 0.3;
-        break;
-      case 'ai_chips':
-        researchSpeedBonus += tierBonus * 0.7;
-        serviceRevenueBonus += tierBonus * 0.3;
-        break;
-      case 'satellite_components':
-        serviceRevenueBonus += tierBonus;
-        break;
-      case 'crew':
-        buildSpeedBonus += tierBonus * 0.5;
-        maintenanceReduction += tierBonus * 0.5;
-        break;
-      case 'ships':
-        buildSpeedBonus += tierBonus * 0.5;
-        miningOutputBonus += tierBonus * 0.5;
-        break;
-      case 'defense':
-        maintenanceReduction += tierBonus;
-        break;
-      case 'exploration':
-        miningOutputBonus += tierBonus * 0.5;
-        serviceRevenueBonus += tierBonus * 0.5;
-        break;
-      case 'terraforming':
-        serviceRevenueBonus += tierBonus * 0.5;
-        miningOutputBonus += tierBonus * 0.5;
-        break;
+    for (const eff of resolveEffects(def)) {
+      switch (eff.type) {
+        case 'buildCost':   buildCostReduction   += eff.magnitude; break;
+        case 'buildSpeed':  buildSpeedBonus      += eff.magnitude; break;
+        case 'mining':      miningOutputBonus    += eff.magnitude; break;
+        case 'revenue':     serviceRevenueBonus  += eff.magnitude; break;
+        case 'research':    researchSpeedBonus   += eff.magnitude; break;
+        case 'maintenance': maintenanceReduction += eff.magnitude; break;
+      }
     }
   }
 
@@ -476,29 +544,18 @@ export function getResearchBonuses(completedResearchIds: string[]): ResearchBonu
  */
 export function getResearchMechanicalEffect(def: ResearchDefinition): string {
   const pct = (n: number) => `${(n * 100).toFixed(1)}%`;
-  const tierBonus = def.tier * 0.02;
-
-  const parts: string[] = [];
-  switch (def.category) {
-    case 'rocketry':             parts.push(`-${pct(tierBonus)} building cost`); break;
-    case 'propulsion':           parts.push(`-${pct(tierBonus * 0.5)} building cost`, `+${pct(tierBonus * 0.5)} build speed`); break;
-    case 'mining':               parts.push(`+${pct(tierBonus)} mining output`); break;
-    case 'materials':            parts.push(`+${pct(tierBonus * 0.5)} mining output`, `-${pct(tierBonus * 0.5)} maintenance cost`); break;
-    case 'spacecraft':           parts.push(`-${pct(tierBonus)} maintenance cost`); break;
-    case 'infrastructure':       parts.push(`-${pct(tierBonus * 0.5)} maintenance cost`, `+${pct(tierBonus * 0.5)} build speed`); break;
-    case 'solar_arrays':         parts.push(`+${pct(tierBonus)} service revenue`); break;
-    case 'services':             parts.push(`+${pct(tierBonus)} service revenue`); break;
-    case 'economy':              parts.push(`+${pct(tierBonus * 0.5)} service revenue`, `-${pct(tierBonus * 0.5)} maintenance cost`); break;
-    case 'sensors':              parts.push(`+${pct(tierBonus * 0.7)} service revenue`, `+${pct(tierBonus * 0.3)} research speed`); break;
-    case 'ai_chips':             parts.push(`+${pct(tierBonus * 0.7)} research speed`, `+${pct(tierBonus * 0.3)} service revenue`); break;
-    case 'satellite_components': parts.push(`+${pct(tierBonus)} service revenue`); break;
-    case 'crew':                 parts.push(`+${pct(tierBonus * 0.5)} build speed`, `-${pct(tierBonus * 0.5)} maintenance cost`); break;
-    case 'ships':                parts.push(`+${pct(tierBonus * 0.5)} build speed`, `+${pct(tierBonus * 0.5)} mining output`); break;
-    case 'defense':              parts.push(`-${pct(tierBonus)} maintenance cost`); break;
-    case 'exploration':          parts.push(`+${pct(tierBonus * 0.5)} mining output`, `+${pct(tierBonus * 0.5)} service revenue`); break;
-    case 'terraforming':         parts.push(`+${pct(tierBonus * 0.5)} service revenue`, `+${pct(tierBonus * 0.5)} mining output`); break;
-  }
-  return parts.length > 0 ? parts.join(' · ') : '—';
+  const effects = resolveEffects(def);
+  if (effects.length === 0) return '—';
+  return effects.map(e => {
+    switch (e.type) {
+      case 'buildCost':   return `-${pct(e.magnitude)} building cost`;
+      case 'buildSpeed':  return `+${pct(e.magnitude)} build speed`;
+      case 'mining':      return `+${pct(e.magnitude)} mining output`;
+      case 'revenue':     return `+${pct(e.magnitude)} service revenue`;
+      case 'research':    return `+${pct(e.magnitude)} research speed`;
+      case 'maintenance': return `-${pct(e.magnitude)} maintenance cost`;
+    }
+  }).join(' · ');
 }
 
 export const RESEARCH_CATEGORIES = [
