@@ -124,6 +124,10 @@ export const RESOURCE_MAP = new Map(RESOURCES.map(r => [r.id, r]));
 
 /** What each mining service produces per game month */
 export const MINING_PRODUCTION: Record<string, { resource: ResourceId; amountPerMonth: number }[]> = {
+  svc_mining_lunar_basic: [
+    { resource: 'lunar_water', amountPerMonth: 20 },
+    { resource: 'helium3', amountPerMonth: 0.5 },
+  ],
   svc_mining_lunar: [
     { resource: 'lunar_water', amountPerMonth: 100 },
     { resource: 'helium3', amountPerMonth: 2 },

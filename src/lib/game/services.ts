@@ -60,6 +60,10 @@ export const SERVICES: ServiceDefinition[] = [
     requiredBuildings: ['datacenter_mars_orbit'], requiredResearch: ['edge_ai'] },
 
   // ─── MINING OUTPUT ────────────────────────────────────────────────────
+  { id: 'svc_mining_lunar_basic', name: 'Lunar Basic Water Sales', type: 'mining_output', tier: 1,
+    description: 'Sell modest batches of lunar water from surface-skimmer extraction.',
+    revenuePerMonth: 5_500_000, operatingCostPerMonth: 2_000_000,
+    requiredBuildings: ['mining_lunar_basic'], requiredResearch: [] },
   { id: 'svc_mining_lunar', name: 'Lunar Water Sales', type: 'mining_output', tier: 2,
     description: 'Sell water and propellant derived from lunar ice.',
     revenuePerMonth: 18_000_000, operatingCostPerMonth: 7_000_000,

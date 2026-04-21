@@ -218,6 +218,17 @@ export const SHIPS: ShipDefinition[] = [
 
   // MINING — rebalanced for better ROI
   {
+    id: 'prospector_drone', name: 'Prospector Drone', icon: '🛠️', role: 'mining',
+    description: 'Bare-bones starter mining drone. No exotic materials to build — just money and a shipyard.',
+    tooltip: 'STARTER MINER. Built from shelf parts with money alone — no iron, aluminum, or research gates. Mines a trickle of iron/aluminum anywhere ship-mining is allowed. Use it to bootstrap your first resource inventory before graduating to the Mining Drone or Ore Harvester. Low cargo (12 units), low mining rate (3/min), but always available.',
+    cargoCapacity: 12, miningRate: 3,
+    miningTargets: ['iron', 'aluminum'],
+    baseCost: 30_000_000,
+    resourceCost: {},
+    requiredResearch: [], buildTimeSeconds: 120, tier: 1,
+    maintenancePerMonth: 80_000,
+  },
+  {
     id: 'mining_drone', name: 'Mining Drone', icon: '⛏️', role: 'mining',
     description: 'Automated mining vessel. Extracts iron and aluminum. Cheap and reliable.',
     tooltip: 'WHY BUILD: Your cheapest way to produce iron and aluminum — the two resources you need for almost every building and ship. At 8 units/minute and only $150K/mo maintenance, the ROI is excellent. Send it to any location where you have mining operations and set it to mine. Iron sells for $5K/unit and aluminum for $8K/unit on the market. Each drone generates ~$40-64K/minute in resources. Build 2-3 early to stockpile building materials.',

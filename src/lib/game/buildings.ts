@@ -116,6 +116,12 @@ export const BUILDINGS: BuildingDefinition[] = [
     realBuildSeconds: 900, powerGenerated: 30 },
 
   // ─── MINING ───────────────────────────────────────────────────────────
+  { id: 'mining_lunar_basic', name: 'Basic Lunar Extractor', category: 'mining_enterprise', tier: 1,
+    description: 'Simple surface skimmer that scrapes loose regolith ice. Small output, but no advanced materials needed to build.',
+    tooltip: 'BOOTSTRAP MINING. Money-only build ($250M, no resource inputs) so you can start producing lunar water before having iron/aluminum. Output is 20 water + 0.5 helium-3 per game month — modest but enough to unlock follow-on construction and start earning Lunar Basic Water Sales revenue. Upgrade to the full Lunar Ice Mine when you have the metals to afford it.',
+    baseCost: 250_000_000, buildTimeMonths: 6, maintenanceCostPerMonth: 800_000,
+    requiredResearch: [], requiredLocation: 'lunar_surface', enabledServices: ['svc_mining_lunar_basic'],
+    realBuildSeconds: 420, powerRequired: 3 },
   { id: 'mining_lunar_ice', name: 'Lunar Ice Mine', category: 'mining_enterprise', tier: 2,
     description: 'Extract water ice from permanently shadowed craters.',
     tooltip: 'YOUR GATEWAY TO RESOURCES. Activates Lunar Water Sales at $18M/mo vs $7M cost = $11M/mo net. More importantly, it produces 100 lunar water + 2 helium-3 per game month — resources you NEED for advanced buildings and research. This is how you unlock the Market tab. Water sells for $50K/unit on the market. Once built, your resource economy begins. Requires "Resource Prospecting" research + Lunar Surface unlock ($2B).',
