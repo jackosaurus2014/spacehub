@@ -1,7 +1,8 @@
 // ─── Space Tycoon: Workforce Management ─────────────────────────────────────
 // Buildings need crew to operate efficiently. Workers cost salary but boost output.
 
-export type WorkerType = 'engineer' | 'scientist' | 'miner' | 'operator';
+export type WorkerType = 'engineer' | 'scientist' | 'miner' | 'operator'
+  | 'pilot' | 'negotiator' | 'security' | 'medic';
 
 export interface WorkerDefinition {
   type: WorkerType;
@@ -14,6 +15,10 @@ export interface WorkerDefinition {
     researchSpeed?: number; // +% research speed
     miningOutput?: number;  // +% resource production
     serviceRevenue?: number;// +% service revenue
+    contractPayBonus?: number; // +% contract payouts (negotiators)
+    hazardMitigation?: number; // +% hazard damage absorbed (security, medics)
+    crewSurvival?: number;     // reduces crew-loss on disasters (medics)
+    shipEfficiency?: number;   // improves ship ops (pilots)
   };
 }
 
@@ -38,6 +43,27 @@ export const WORKER_TYPES: WorkerDefinition[] = [
     description: 'Improves service revenue from satellites and stations.',
     bonus: { serviceRevenue: 0.1 },
   },
+  // ── Phase III additions ──────────────────────────────────────────
+  {
+    type: 'pilot', name: 'Pilot', icon: '🧑‍✈️', salary: 550_000,
+    description: 'Ship operations specialist. Improves travel speed and cargo throughput.',
+    bonus: { shipEfficiency: 0.08, serviceRevenue: 0.03 },
+  },
+  {
+    type: 'negotiator', name: 'Negotiator', icon: '🤝', salary: 600_000,
+    description: 'Secures better terms on contracts and faction dealings.',
+    bonus: { contractPayBonus: 0.10, serviceRevenue: 0.04 },
+  },
+  {
+    type: 'security', name: 'Security Officer', icon: '🛡️', salary: 450_000,
+    description: 'Reduces damage from pirate raids and internal incidents.',
+    bonus: { hazardMitigation: 0.08 },
+  },
+  {
+    type: 'medic', name: 'Medic', icon: '🩺', salary: 500_000,
+    description: 'Keeps crew healthy; reduces casualties in disasters.',
+    bonus: { crewSurvival: 0.12, hazardMitigation: 0.04 },
+  },
 ];
 
 export const WORKER_MAP = new Map(WORKER_TYPES.map(w => [w.type, w]));
@@ -47,6 +73,19 @@ export interface WorkforceState {
   scientists: number;
   miners: number;
   operators: number;
+  // Phase III additions (all optional — existing saves continue to work)
+  pilots?: number;
+  negotiators?: number;
+  securitys?: number;   // pluralized for consistency with helper function that builds key as `${type}s`
+  medics?: number;
+  /** Global crew morale 0-1. Default 0.8. Modifies all outputs. */
+  morale?: number;
+  /** Accumulated fatigue 0-1. Penalty when high. */
+  fatigue?: number;
+  /** Training level 0-1. Multiplies bonuses. Default 0.5 (meh). */
+  trainingLevel?: number;
+  /** Monthly training budget per crew member. More budget → faster training growth. */
+  trainingBudgetPerCrew?: number;
 }
 
 export const DEFAULT_WORKFORCE: WorkforceState = {
@@ -54,6 +93,14 @@ export const DEFAULT_WORKFORCE: WorkforceState = {
   scientists: 0,
   miners: 0,
   operators: 0,
+  pilots: 0,
+  negotiators: 0,
+  securitys: 0,
+  medics: 0,
+  morale: 0.8,
+  fatigue: 0,
+  trainingLevel: 0.5,
+  trainingBudgetPerCrew: 0,
 };
 
 /** Calculate total monthly salary for all workers */
@@ -65,29 +112,52 @@ export function getMonthlyPayroll(workforce: WorkforceState): number {
   return total;
 }
 
-/** Calculate aggregate bonuses from workforce */
+/** Calculate aggregate bonuses from workforce. Morale and trainingLevel
+ *  multiply per-worker bonuses (so a 0.5-training crew delivers half their
+ *  paper output, and low-morale crew drops further). */
 export function getWorkforceBonuses(workforce: WorkforceState): {
   buildSpeed: number;
   researchSpeed: number;
   miningOutput: number;
   serviceRevenue: number;
+  contractPayBonus: number;
+  hazardMitigation: number;
+  crewSurvival: number;
+  shipEfficiency: number;
+  moraleMultiplier: number;     // universal multiplier applied elsewhere
 } {
   let buildSpeed = 0, researchSpeed = 0, miningOutput = 0, serviceRevenue = 0;
+  let contractPayBonus = 0, hazardMitigation = 0, crewSurvival = 0, shipEfficiency = 0;
+
+  const morale = workforce.morale ?? 0.8;
+  const fatigue = workforce.fatigue ?? 0;
+  const training = workforce.trainingLevel ?? 0.5;
+  // Effective bonus scale: trained and morale-rich crew deliver more per head.
+  const bonusScale = (0.5 + training) * (1 - fatigue * 0.5);
 
   for (const wDef of WORKER_TYPES) {
-    const count = workforce[`${wDef.type}s` as keyof WorkforceState] || 0;
-    if (wDef.bonus.buildSpeed) buildSpeed += wDef.bonus.buildSpeed * count;
-    if (wDef.bonus.researchSpeed) researchSpeed += wDef.bonus.researchSpeed * count;
-    if (wDef.bonus.miningOutput) miningOutput += wDef.bonus.miningOutput * count;
-    if (wDef.bonus.serviceRevenue) serviceRevenue += wDef.bonus.serviceRevenue * count;
+    const count = workforce[`${wDef.type}s` as keyof WorkforceState] as number | undefined;
+    const n = typeof count === 'number' ? count : 0;
+    if (wDef.bonus.buildSpeed)       buildSpeed       += wDef.bonus.buildSpeed       * n * bonusScale;
+    if (wDef.bonus.researchSpeed)    researchSpeed    += wDef.bonus.researchSpeed    * n * bonusScale;
+    if (wDef.bonus.miningOutput)     miningOutput     += wDef.bonus.miningOutput     * n * bonusScale;
+    if (wDef.bonus.serviceRevenue)   serviceRevenue   += wDef.bonus.serviceRevenue   * n * bonusScale;
+    if (wDef.bonus.contractPayBonus) contractPayBonus += wDef.bonus.contractPayBonus * n * bonusScale;
+    if (wDef.bonus.hazardMitigation) hazardMitigation += wDef.bonus.hazardMitigation * n * bonusScale;
+    if (wDef.bonus.crewSurvival)     crewSurvival     += wDef.bonus.crewSurvival     * n * bonusScale;
+    if (wDef.bonus.shipEfficiency)   shipEfficiency   += wDef.bonus.shipEfficiency   * n * bonusScale;
   }
 
-  // Cap bonuses at reasonable maximums
   return {
-    buildSpeed: Math.min(buildSpeed, 0.5),      // Max +50%
-    researchSpeed: Math.min(researchSpeed, 0.5), // Max +50%
-    miningOutput: Math.min(miningOutput, 1.0),   // Max +100%
-    serviceRevenue: Math.min(serviceRevenue, 0.5), // Max +50%
+    buildSpeed: Math.min(buildSpeed, 0.5),
+    researchSpeed: Math.min(researchSpeed, 0.5),
+    miningOutput: Math.min(miningOutput, 1.0),
+    serviceRevenue: Math.min(serviceRevenue, 0.5),
+    contractPayBonus: Math.min(contractPayBonus, 0.5),
+    hazardMitigation: Math.min(hazardMitigation, 0.8),
+    crewSurvival: Math.min(crewSurvival, 0.9),
+    shipEfficiency: Math.min(shipEfficiency, 0.5),
+    moraleMultiplier: Math.max(0.5, Math.min(1.2, morale)),  // morale boost/penalty on outputs
   };
 }
 

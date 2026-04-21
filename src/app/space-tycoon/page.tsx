@@ -1374,7 +1374,7 @@ export default function SpaceTycoonPage() {
       const salaries: Record<string, number> = { engineer: 500000, scientist: 600000, miner: 400000, operator: 450000 };
       const severance = (salaries[workerType] || 500000) * 2;
 
-      workforce[key] = workforce[key] - 1;
+      workforce[key] = (workforce[key] || 0) - 1;
       return {
         ...prev,
         money: prev.money - severance,

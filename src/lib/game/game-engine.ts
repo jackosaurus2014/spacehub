@@ -161,6 +161,7 @@ export function processTick(state: GameState): GameState {
       * powerRatio
       * (1 + stationBonus)
       * saturationMult
+      * wfBonuses.moraleMultiplier
       * DEV_REVENUE_MULTIPLIER
     );
     const cost = Math.round(def.operatingCostPerMonth * fraction * multipliers.costMultiplier * legacyCostMult * (1 - tierBonuses.maintenanceReduction) * (megaBonuses.maintenanceMultiplier || 1) * repBonuses.maintenanceMultiplier);

@@ -332,7 +332,21 @@ export interface GameState {
   craftedProducts?: Record<string, number>; // Product inventory (steel_ingots, etc.)
 
   // Workforce
-  workforce?: { engineers: number; scientists: number; miners: number; operators: number };
+  workforce?: {
+    engineers: number;
+    scientists: number;
+    miners: number;
+    operators: number;
+    // Phase III additions (all optional; game-engine falls back to 0/defaults)
+    pilots?: number;
+    negotiators?: number;
+    securitys?: number;
+    medics?: number;
+    morale?: number;
+    fatigue?: number;
+    trainingLevel?: number;
+    trainingBudgetPerCrew?: number;
+  };
 
   // Ships
   ships?: {
