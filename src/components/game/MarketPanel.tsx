@@ -261,12 +261,22 @@ export default function MarketPanel({ state, onSellResource, onBuyResource }: Ma
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="text-right">
-                    <span className="text-white text-xs font-mono">{formatMoney(current)}</span>
-                    <span className={`text-[10px] font-mono ml-1.5 ${
-                      change > 0 ? 'text-green-400' : change < 0 ? 'text-red-400' : 'text-slate-500'
-                    }`}>
-                      {change > 0 ? '▲+' : change < 0 ? '▼' : ''}{change}%
-                    </span>
+                    <div className="flex items-baseline justify-end gap-2 text-[9px] font-mono">
+                      <span className="text-amber-300" title="Bid — what you receive when selling (includes 3% broker fee)">
+                        B: {formatMoney(Math.round(current * 0.97))}
+                      </span>
+                      <span className="text-cyan-300" title="Ask — what you pay when buying (includes scarcity premium)">
+                        A: {formatMoney(current)}
+                      </span>
+                    </div>
+                    <div className="text-white text-xs font-mono">
+                      {formatMoney(current)}
+                      <span className={`text-[10px] font-mono ml-1.5 ${
+                        change > 0 ? 'text-green-400' : change < 0 ? 'text-red-400' : 'text-slate-500'
+                      }`}>
+                        {change > 0 ? '▲+' : change < 0 ? '▼' : ''}{change}%
+                      </span>
+                    </div>
                   </div>
                   <div className="flex gap-1">
                     {/* Sell buttons (if player has this resource) */}

@@ -77,6 +77,7 @@ import { acceptDelivery, deliverContract } from '@/lib/game/delivery-contracts';
 import FrontierBadge from '@/components/game/FrontierBadge';
 import { graduateFrontier } from '@/lib/game/frontier';
 import ModulesPanel from '@/components/game/ModulesPanel';
+import AnomaliesPanel from '@/components/game/AnomaliesPanel';
 import ArchetypePicker from '@/components/game/ArchetypePicker';
 import { applyArchetype, type StartingArchetype } from '@/lib/game/archetypes';
 
@@ -1494,6 +1495,7 @@ export default function SpaceTycoonPage() {
     { id: 'spatial', label: 'Spatial', icon: '✦' },
     { id: 'diplomacy', label: 'Diplomacy', icon: '⚐' },
     { id: 'modules', label: 'Modules', icon: '⚙️' },
+    { id: 'discoveries', label: 'Discoveries', icon: '🔭' },
   ];
 
   // Corporation tier-based tab unlocking
@@ -1898,6 +1900,7 @@ export default function SpaceTycoonPage() {
           />
         )}
         {tab === 'modules' && <ModulesPanel state={state} setState={setState} />}
+        {tab === 'discoveries' && <AnomaliesPanel state={state} setState={setState} />}
         {tab === 'reports' && (
           <ReportsPanel
             state={state}
