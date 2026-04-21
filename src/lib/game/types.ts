@@ -544,6 +544,34 @@ export interface GameState {
     treasuryBefore: number;
   }[];
 
+  // Exploration (Phase VII) — per-corp discovery database + active claims
+  knownAnomalies?: {
+    id: string;
+    kind: 'rich_deposit' | 'ancient_artifact' | 'derelict_ship' | 'uncharted_asteroid' | 'hazard_zone' | 'alien_signal' | 'gravitational_lens';
+    locationId: string;
+    discoveredByShipId?: string;
+    discoveredAtMs: number;
+    fadesAtMs: number;
+    claimed: boolean;
+    claimedByCorp?: string;
+    claimedAtMs?: number;
+    title: string;
+    summary: string;
+    rewards: {
+      money?: number;
+      miningBonus?: { resourceId: string; bonusPct: number; durationMonths: number };
+      unlocksResearchId?: string;
+      moduleId?: string;
+    };
+  }[];
+  claimStakes?: {
+    id: string;
+    anomalyId: string;
+    stakedAtMs: number;
+    expiresAtMs: number;
+    holderProfileId?: string;
+  }[];
+
   // Market depth (Phase V) — open futures positions
   futuresContracts?: {
     id: string;
