@@ -11,6 +11,10 @@ import { playSound } from '@/lib/game/sound-engine';
 interface SolarSystemCanvasProps {
   state: GameState;
   onUnlock: (locId: string) => void;
+  /** Notify the parent shell when the user focuses a location, so the region
+   *  backdrop + any ambient ops can follow the player's attention. Passing
+   *  null means the user deselected (clicked empty space). */
+  onSelectLocation?: (locId: string | null) => void;
 }
 
 // Visual layout: positions, radius, color, emoji per location.
@@ -131,7 +135,7 @@ function useImageCache(urls: string[]): { cache: Map<string, HTMLImageElement>; 
   return { cache: cacheRef.current, loaded };
 }
 
-export default function SolarSystemCanvas({ state, onUnlock }: SolarSystemCanvasProps) {
+export default function SolarSystemCanvas({ state, onUnlock, onSelectLocation }: SolarSystemCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [selectedLoc, setSelectedLoc] = useState<string | null>(null);
@@ -579,12 +583,17 @@ export default function SolarSystemCanvas({ state, onUnlock }: SolarSystemCanvas
       const dist = Math.sqrt(Math.pow(mx - lx, 2) + Math.pow(my - ly, 2));
       if (dist < r) {
         playSound('click');
-        setSelectedLoc(prev => prev === loc.id ? null : loc.id);
+        setSelectedLoc(prev => {
+          const next = prev === loc.id ? null : loc.id;
+          onSelectLocation?.(next);
+          return next;
+        });
         return;
       }
     }
     setSelectedLoc(null);
-  }, [zoom, offset]);
+    onSelectLocation?.(null);
+  }, [zoom, offset, onSelectLocation]);
 
   const handleMouseDown = (e: React.MouseEvent) => {
     setDragging(true);

@@ -83,8 +83,16 @@ export default function FleetPanel({ state, onBuildShip, onStartMining, onStopMi
                   }`}
                 >
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <Image src={getShipAsset(def.id)} alt="" width={32} height={32} className="w-8 h-8 rounded object-cover flex-shrink-0" />
+                    <div className="flex items-center gap-3">
+                      <div className="sprite-frame w-14 h-14 flex-shrink-0 flex items-center justify-center">
+                        <Image
+                          src={getShipAsset(def.id)}
+                          alt=""
+                          width={56}
+                          height={56}
+                          className="w-12 h-12 object-contain drop-shadow-[0_0_6px_rgba(34,211,238,0.35)]"
+                        />
+                      </div>
                       <div>
                         <p className="text-white text-xs font-medium">{ship.name}</p>
                         <p className="text-slate-500 text-[10px]">{def.name} · {loc?.name || ship.currentLocation}</p>
@@ -316,9 +324,17 @@ export default function FleetPanel({ state, onBuildShip, onStartMining, onStopMi
               const canBuildThis = canAffordMoney && hasResources && canBuild;
 
               return (
-                <div key={ship.id} className="p-3 rounded-lg bg-white/[0.02] border border-white/[0.04]">
-                  <div className="flex items-center gap-2 mb-1">
-                    <Image src={getShipAsset(ship.id)} alt="" width={32} height={32} className="w-8 h-8 rounded object-cover flex-shrink-0" />
+                <div key={ship.id} className="p-3 rounded-lg bg-white/[0.02] border border-white/[0.04] game-card">
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className="sprite-frame w-16 h-16 flex-shrink-0 flex items-center justify-center holo-sprite">
+                      <Image
+                        src={getShipAsset(ship.id)}
+                        alt=""
+                        width={64}
+                        height={64}
+                        className="w-14 h-14 object-contain drop-shadow-[0_0_8px_rgba(34,211,238,0.4)]"
+                      />
+                    </div>
                     <div>
                       <h4 className="text-white text-xs font-semibold">{ship.name}</h4>
                       <span className={`text-[9px] px-1 py-0.5 rounded ${

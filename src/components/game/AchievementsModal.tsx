@@ -35,9 +35,9 @@ export default function AchievementsModal({ state, unlockedIds, onClose }: Achie
 
   return (
     <div className="fixed inset-0 z-[70] flex items-center justify-center px-4" role="dialog" aria-modal="true" aria-labelledby="achievements-title">
-      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} aria-hidden="true" />
+      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm game-modal-backdrop" onClick={onClose} aria-hidden="true" />
 
-      <div className="relative w-full max-w-lg max-h-[80vh] rounded-2xl overflow-hidden flex flex-col" style={{ background: '#0a0a1a' }}>
+      <div className="relative w-full max-w-lg max-h-[80vh] rounded-2xl overflow-hidden flex flex-col game-modal-card" style={{ background: '#0a0a1a' }}>
         <div className="h-1 bg-gradient-to-r from-amber-500 via-cyan-500 to-purple-500" aria-hidden="true" />
 
         {/* Header */}

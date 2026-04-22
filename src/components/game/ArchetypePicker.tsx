@@ -28,9 +28,9 @@ export default function ArchetypePicker({ onSelect, onCancel }: Props) {
       aria-modal="true"
       aria-labelledby="archetype-title"
     >
-      <div className="absolute inset-0 bg-black/90 backdrop-blur-md" onClick={onCancel} aria-hidden="true" />
+      <div className="absolute inset-0 bg-black/90 backdrop-blur-md game-modal-backdrop" onClick={onCancel} aria-hidden="true" />
 
-      <div className="relative w-full max-w-5xl max-h-[90vh] rounded-2xl overflow-hidden flex flex-col" style={{ background: '#0a0a1a' }}>
+      <div className="relative w-full max-w-5xl max-h-[90vh] rounded-2xl overflow-hidden flex flex-col game-modal-card" style={{ background: '#0a0a1a' }}>
         <div className="h-1 bg-gradient-to-r from-amber-500 via-cyan-500 to-emerald-500" aria-hidden="true" />
 
         {/* Header */}

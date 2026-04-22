@@ -20,9 +20,9 @@ export default function PrestigeModal({ state, onPrestige, onClose }: PrestigeMo
 
   return (
     <div className="fixed inset-0 z-[70] flex items-center justify-center px-4" role="dialog" aria-modal="true" aria-labelledby="prestige-title">
-      <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={onClose} aria-hidden="true" />
+      <div className="absolute inset-0 bg-black/80 backdrop-blur-sm game-modal-backdrop" onClick={onClose} aria-hidden="true" />
 
-      <div className="relative w-full max-w-md rounded-2xl overflow-hidden" style={{ background: 'linear-gradient(180deg, #1a0a30 0%, #0a0a1a 100%)' }}>
+      <div className="relative w-full max-w-md rounded-2xl overflow-hidden game-modal-card" style={{ background: 'linear-gradient(180deg, #1a0a30 0%, #0a0a1a 100%)' }}>
         <div className="h-1 bg-gradient-to-r from-amber-500 via-purple-500 to-cyan-500" aria-hidden="true" />
 
         <div className="p-6">

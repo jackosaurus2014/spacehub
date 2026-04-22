@@ -24,9 +24,9 @@ export default function WelcomeBackModal({ earnings, onCollect }: WelcomeBackMod
 
   return (
     <div className="fixed inset-0 z-[70] flex items-center justify-center px-4" role="dialog" aria-modal="true" aria-labelledby="welcome-back-title">
-      <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" aria-hidden="true" />
+      <div className="absolute inset-0 bg-black/80 backdrop-blur-sm game-modal-backdrop" aria-hidden="true" />
 
-      <div className="relative w-full max-w-sm rounded-2xl overflow-hidden" style={{ background: 'linear-gradient(180deg, #0f1530 0%, #0a0a1a 100%)' }}>
+      <div className="relative w-full max-w-sm rounded-2xl overflow-hidden game-modal-card" style={{ background: 'linear-gradient(180deg, #0f1530 0%, #0a0a1a 100%)' }}>
         <div className="h-1 bg-gradient-to-r from-green-500 via-cyan-500 to-green-500" aria-hidden="true" />
 
         <div className="p-6 text-center">

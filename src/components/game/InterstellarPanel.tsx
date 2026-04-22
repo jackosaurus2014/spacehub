@@ -187,9 +187,9 @@ function FirstContactModal({
       aria-modal="true"
       aria-labelledby="fc-title"
     >
-      <div className="absolute inset-0 bg-black/90 backdrop-blur-md" onClick={onClose} aria-hidden="true" />
+      <div className="absolute inset-0 bg-black/90 backdrop-blur-md game-modal-backdrop" onClick={onClose} aria-hidden="true" />
       <div
-        className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl overflow-hidden border border-indigo-500/40"
+        className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl overflow-hidden border border-indigo-500/40 game-modal-card"
         style={{ background: '#0a0a1a' }}
       >
         <div className="h-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-amber-500" aria-hidden="true" />

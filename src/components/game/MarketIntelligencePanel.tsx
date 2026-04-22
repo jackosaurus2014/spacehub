@@ -296,8 +296,8 @@ function DeepDiveModal({
 
   return (
     <div className="fixed inset-0 z-[80] flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby={titleId}>
-      <div className="absolute inset-0 bg-black/80 backdrop-blur-md" onClick={onClose} aria-hidden="true" />
-      <div className="relative w-full max-w-3xl max-h-[90vh] rounded-2xl overflow-hidden border border-cyan-500/30 flex flex-col" style={{ background: '#0a0a1a' }}>
+      <div className="absolute inset-0 bg-black/80 backdrop-blur-md game-modal-backdrop" onClick={onClose} aria-hidden="true" />
+      <div className="relative w-full max-w-3xl max-h-[90vh] rounded-2xl overflow-hidden border border-cyan-500/30 flex flex-col game-modal-card" style={{ background: '#0a0a1a' }}>
         <div className="h-1 bg-gradient-to-r from-cyan-500 via-purple-500 to-amber-500" aria-hidden="true" />
 
         {/* Header */}

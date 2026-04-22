@@ -36,6 +36,7 @@ import WelcomeBackModal from '@/components/game/WelcomeBackModal';
 import { calculateOfflineIncome, applyOfflineIncome } from '@/lib/game/offline-income';
 import type { OfflineEarnings } from '@/lib/game/offline-income';
 import GameStyles from '@/components/game/GameStyles';
+import RegionBackdrop from '@/components/game/RegionBackdrop';
 import FleetPanel from '@/components/game/FleetPanel';
 import CraftingPanel from '@/components/game/CraftingPanel';
 import WorkforcePanel from '@/components/game/WorkforcePanel';
@@ -186,20 +187,20 @@ function BuildPanel({ state, onBuild, onSellBuilding }: { state: GameState; onBu
               <div key={bld.id} className={`rounded-xl border overflow-hidden transition-all game-card ${
                 canAfford ? 'border-cyan-500/20 hover:border-cyan-500/40' : 'border-white/[0.06]'
               }`}>
-                {/* Building art — prominent, not hidden */}
-                <div className="relative h-20 sm:h-24 bg-gradient-to-br from-white/[0.03] to-transparent overflow-hidden">
+                {/* Building art — brighter, with hologram scanline for AAA feel */}
+                <div className="relative h-24 sm:h-28 bg-gradient-to-br from-white/[0.03] to-transparent overflow-hidden holo-sprite">
                   <Image
                     src={getBuildingAsset(bld.id, bld.category, bld.tier)}
                     alt={bld.name}
-                    width={256}
-                    height={96}
-                    className="absolute inset-0 w-full h-full object-cover opacity-40"
+                    width={320}
+                    height={112}
+                    className="absolute inset-0 w-full h-full object-cover opacity-70"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent" />
                   <div className="absolute bottom-2 left-3 right-3">
-                    <div className="flex justify-between items-end">
-                      <h4 className="text-white text-sm font-bold drop-shadow-lg">{bld.name}</h4>
-                      <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-white/10 text-slate-300 backdrop-blur-sm">T{bld.tier}</span>
+                    <div className="flex justify-between items-end gap-2">
+                      <h4 className="text-white text-sm font-bold drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">{bld.name}</h4>
+                      <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-semibold backdrop-blur-sm shrink-0 game-badge-t${Math.min(5, Math.max(1, bld.tier))}`}>T{bld.tier}</span>
                     </div>
                   </div>
                 </div>
@@ -894,6 +895,9 @@ function ServicesPanel({ state }: { state: GameState }) {
 export default function SpaceTycoonPage() {
   const [state, setState] = useState<GameState | null>(null);
   const [tab, setTab] = useState<GameTab>('dashboard');
+  // Region focus drives the shell's background tint + planet texture overlay.
+  // Set when the user clicks a location on the map, null = neutral palette.
+  const [selectedRegion, setSelectedRegion] = useState<string | null>(null);
   const [showMenu, setShowMenu] = useState(false);
   const [showAchievements, setShowAchievements] = useState(false);
   const [unlockedAchievements, setUnlockedAchievements] = useState<string[]>([]);
@@ -1528,7 +1532,7 @@ export default function SpaceTycoonPage() {
   const activeInSecondary = secondaryTabs.find(t => t.id === tab);
 
   return (
-    <div className="min-h-screen bg-space-900 flex flex-col relative">
+    <div className="min-h-screen bg-space-900 flex flex-col relative hud-scanlines">
       {/* Subtle starfield background */}
       <Image
         src="/game/bg-starfield.webp"
@@ -1538,6 +1542,8 @@ export default function SpaceTycoonPage() {
         priority={false}
       />
       <GameStyles />
+      {/* Region-themed backdrop — tint shifts based on selected map location */}
+      <RegionBackdrop region={selectedRegion} />
       {/* Hero art background */}
       <div className="relative overflow-hidden">
         <div className="absolute inset-0 -z-10">
@@ -1687,7 +1693,7 @@ export default function SpaceTycoonPage() {
         {tab === 'dashboard' && <DashboardPanel state={state} onUpdateCompanyName={(name) => setState(prev => prev ? { ...prev, companyName: name } : prev)} />}
         {tab === 'build' && <BuildPanel state={state} onBuild={handleBuild} onSellBuilding={handleSellBuilding} />}
         {tab === 'research' && <ResearchPanel state={state} onStartResearch={handleStartResearch} />}
-        {tab === 'map' && <SolarSystemCanvas state={state} onUnlock={handleUnlockLocation} />}
+        {tab === 'map' && <SolarSystemCanvas state={state} onUnlock={handleUnlockLocation} onSelectLocation={setSelectedRegion} />}
         {tab === 'services' && <ServicesPanel state={state} />}
         {tab === 'fleet' && <FleetPanel
           state={state}

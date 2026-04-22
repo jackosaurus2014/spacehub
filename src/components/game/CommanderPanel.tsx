@@ -261,8 +261,8 @@ function HeroModal({ def, onClose }: { def: CommanderDefinition; onClose: () => 
   const titleId = `hero-title-${def.id}`;
   return (
     <div className="fixed inset-0 z-[80] flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby={titleId}>
-      <div className="absolute inset-0 bg-black/80 backdrop-blur-md" onClick={onClose} aria-hidden="true" />
-      <div className={`relative w-full max-w-md rounded-2xl overflow-hidden border-2 ${accent.border} shadow-2xl ${accent.glow}`} style={{ background: '#0a0a1a' }}>
+      <div className="absolute inset-0 bg-black/80 backdrop-blur-md game-modal-backdrop" onClick={onClose} aria-hidden="true" />
+      <div className={`relative w-full max-w-md rounded-2xl overflow-hidden border-2 ${accent.border} shadow-2xl ${accent.glow} game-modal-card`} style={{ background: '#0a0a1a' }}>
         <div className="relative aspect-[3/4]">
           <Image src={fullbody} alt={`${def.name} hero portrait`} fill className="object-cover" />
           <button

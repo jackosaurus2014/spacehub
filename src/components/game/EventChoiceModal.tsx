@@ -16,9 +16,9 @@ interface EventChoiceModalProps {
 export default function EventChoiceModal({ eventName, eventIcon, eventDescription, choices, onChoose }: EventChoiceModalProps) {
   return (
     <div className="fixed inset-0 z-[70] flex items-center justify-center px-4" role="alertdialog" aria-modal="true" aria-labelledby="event-title" aria-describedby="event-desc">
-      <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" aria-hidden="true" />
+      <div className="absolute inset-0 bg-black/80 backdrop-blur-sm game-modal-backdrop" aria-hidden="true" />
 
-      <div className="relative w-full max-w-md rounded-2xl overflow-hidden" style={{ background: 'linear-gradient(180deg, #12122a 0%, #0a0a1a 100%)' }}>
+      <div className="relative w-full max-w-md rounded-2xl overflow-hidden game-modal-card" style={{ background: 'linear-gradient(180deg, #12122a 0%, #0a0a1a 100%)' }}>
         {/* Accent bar */}
         <div className="h-1 bg-gradient-to-r from-amber-500 via-cyan-500 to-amber-500" aria-hidden="true" />
 

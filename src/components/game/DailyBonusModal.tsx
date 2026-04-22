@@ -60,10 +60,10 @@ export default function DailyBonusModal({ onClaim }: DailyBonusModalProps) {
   return (
     <div className="fixed inset-0 z-[70] flex items-center justify-center px-4" role="dialog" aria-modal="true" aria-labelledby="daily-bonus-title">
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={handleDismiss} aria-hidden="true" />
+      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm game-modal-backdrop" onClick={handleDismiss} aria-hidden="true" />
 
       {/* Modal */}
-      <div className="relative w-full max-w-sm rounded-2xl overflow-hidden" style={{ background: 'linear-gradient(180deg, #0f0f2e 0%, #0a0a1a 100%)' }}>
+      <div className="relative w-full max-w-sm rounded-2xl overflow-hidden game-modal-card" style={{ background: 'linear-gradient(180deg, #0f0f2e 0%, #0a0a1a 100%)' }}>
         {/* Top accent */}
         <div className="h-1 bg-gradient-to-r from-cyan-500 via-purple-500 to-amber-500" />
 

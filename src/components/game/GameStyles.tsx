@@ -392,6 +392,196 @@ export default function GameStyles() {
           transform: none; /* Disable hover lift on touch devices */
         }
       }
+
+      /* ═══════════════════════════════════════════════════════════════════
+         HUD CHROME — corner brackets + scanlines for the command-center feel
+         ═══════════════════════════════════════════════════════════════════ */
+
+      /* Corner-bracket decoration. Wrap a container with .hud-frame and it gets
+         four small angle brackets at the corners. Color via --hud-color. */
+      .hud-frame {
+        --hud-color: rgba(34, 211, 238, 0.35);
+        position: relative;
+      }
+      .hud-frame::before,
+      .hud-frame::after,
+      .hud-frame > .hud-corner-bl,
+      .hud-frame > .hud-corner-br {
+        content: '';
+        position: absolute;
+        width: 12px;
+        height: 12px;
+        border-color: var(--hud-color);
+        border-style: solid;
+        pointer-events: none;
+        transition: border-color 0.4s ease;
+      }
+      .hud-frame::before { top: -1px; left: -1px; border-width: 1.5px 0 0 1.5px; }
+      .hud-frame::after  { top: -1px; right: -1px; border-width: 1.5px 1.5px 0 0; }
+      .hud-frame > .hud-corner-bl { bottom: -1px; left: -1px; border-width: 0 0 1.5px 1.5px; }
+      .hud-frame > .hud-corner-br { bottom: -1px; right: -1px; border-width: 0 1.5px 1.5px 0; }
+
+      .hud-frame-amber  { --hud-color: rgba(245, 158, 11, 0.45); }
+      .hud-frame-purple { --hud-color: rgba(167, 139, 250, 0.45); }
+      .hud-frame-red    { --hud-color: rgba(239, 68, 68, 0.45); }
+
+      /* Scanline overlay. Apply to the root game shell for a CRT-monitor feel.
+         Almost invisible but subconsciously reads as "display". */
+      .hud-scanlines {
+        position: relative;
+      }
+      .hud-scanlines::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        z-index: 5;
+        background: repeating-linear-gradient(
+          to bottom,
+          transparent 0,
+          transparent 2px,
+          rgba(255, 255, 255, 0.015) 2px,
+          rgba(255, 255, 255, 0.015) 3px
+        );
+        mix-blend-mode: overlay;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .hud-scanlines::before { display: none; }
+      }
+
+      /* ═══════════════════════════════════════════════════════════════════
+         REGION BACKDROPS — CSS-variable driven tint that shifts by location.
+         The root app div reads data-region and swaps --region-a/b/accent.
+         ═══════════════════════════════════════════════════════════════════ */
+      .region-backdrop {
+        position: fixed;
+        inset: 0;
+        z-index: 1;
+        pointer-events: none;
+        background:
+          radial-gradient(ellipse at 20% 30%, var(--region-a, rgba(6,182,212,0.06)), transparent 55%),
+          radial-gradient(ellipse at 80% 70%, var(--region-b, rgba(139,92,246,0.04)), transparent 55%);
+        transition: background 1.2s ease;
+      }
+      .region-backdrop::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background-image: var(--region-texture, none);
+        background-size: cover;
+        background-position: center;
+        opacity: 0.05;
+        mix-blend-mode: screen;
+        transition: opacity 1.2s ease, background-image 1.2s ease;
+      }
+
+      /* ═══════════════════════════════════════════════════════════════════
+         DELTA FLASHES — brief color flash on value change
+         ═══════════════════════════════════════════════════════════════════ */
+      @keyframes delta-up {
+        0%   { background-color: rgba(34, 197, 94, 0.35); color: #bbf7d0; }
+        100% { background-color: transparent; color: inherit; }
+      }
+      @keyframes delta-down {
+        0%   { background-color: rgba(239, 68, 68, 0.35); color: #fecaca; }
+        100% { background-color: transparent; color: inherit; }
+      }
+      .delta-flash-up   { animation: delta-up 0.9s ease-out; border-radius: 6px; }
+      .delta-flash-down { animation: delta-down 0.9s ease-out; border-radius: 6px; }
+
+      /* ═══════════════════════════════════════════════════════════════════
+         HOLOGRAM TREATMENTS — subtle scan/flicker for portrait + ship art
+         ═══════════════════════════════════════════════════════════════════ */
+      @keyframes holo-sweep {
+        0%   { background-position: 0% 0%; opacity: 0.9; }
+        50%  { background-position: 0% 100%; opacity: 0.6; }
+        100% { background-position: 0% 0%; opacity: 0.9; }
+      }
+      .holo-sprite {
+        position: relative;
+        overflow: hidden;
+      }
+      .holo-sprite::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+          to bottom,
+          transparent 0%,
+          rgba(34, 211, 238, 0.12) 50%,
+          transparent 100%
+        );
+        background-size: 100% 200%;
+        animation: holo-sweep 3.2s linear infinite;
+        pointer-events: none;
+        mix-blend-mode: screen;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .holo-sprite::after { display: none; }
+      }
+
+      /* ═══════════════════════════════════════════════════════════════════
+         MODAL ENTRY — scale + fade when modal mounts. Applies to the inner
+         .game-modal-card; outer backdrop fades in via .game-modal-backdrop.
+         ═══════════════════════════════════════════════════════════════════ */
+      @keyframes modal-scale-in {
+        from { opacity: 0; transform: scale(0.94) translateY(8px); }
+        to   { opacity: 1; transform: scale(1) translateY(0); }
+      }
+      @keyframes modal-backdrop-in {
+        from { opacity: 0; }
+        to   { opacity: 1; }
+      }
+      .game-modal-card {
+        animation: modal-scale-in 0.22s cubic-bezier(0.34, 1.3, 0.64, 1) both;
+      }
+      .game-modal-backdrop {
+        animation: modal-backdrop-in 0.18s ease-out both;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .game-modal-card,
+        .game-modal-backdrop { animation: none; }
+      }
+
+      /* ═══════════════════════════════════════════════════════════════════
+         SPARKLINE — tiny SVG trend line next to the money readout
+         ═══════════════════════════════════════════════════════════════════ */
+      .sparkline path {
+        fill: none;
+        stroke-width: 1.25;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        filter: drop-shadow(0 0 2px currentColor);
+      }
+
+      /* ═══════════════════════════════════════════════════════════════════
+         HOLO-PORTRAIT (sprite framing) — used on build + fleet cards
+         ═══════════════════════════════════════════════════════════════════ */
+      .sprite-frame {
+        position: relative;
+        overflow: hidden;
+        background:
+          radial-gradient(ellipse at 50% 120%, rgba(34,211,238,0.18), transparent 70%),
+          linear-gradient(180deg, rgba(255,255,255,0.04), rgba(0,0,0,0.3));
+        border: 1px solid rgba(255,255,255,0.06);
+        border-radius: 12px;
+      }
+      .sprite-frame::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background:
+          linear-gradient(to bottom, transparent 95%, rgba(34,211,238,0.15) 100%),
+          repeating-linear-gradient(
+            to bottom,
+            transparent 0,
+            transparent 3px,
+            rgba(34,211,238,0.035) 3px,
+            rgba(34,211,238,0.035) 4px
+          );
+        pointer-events: none;
+        border-radius: inherit;
+      }
     `}</style>
   );
 }
