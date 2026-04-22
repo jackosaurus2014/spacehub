@@ -12,6 +12,8 @@ interface MarketPrices {
   [resourceId: string]: {
     currentPrice: number;
     basePrice: number;
+    /** Scarcity-adjusted price — this is what the server actually charges on buy. */
+    effectivePrice?: number;
     change: number;
   };
 }
@@ -54,8 +56,17 @@ export default function MarketPanel({ state, onSellResource, onBuyResource }: Ma
     return () => clearInterval(interval);
   }, [fetchPrices]);
 
+  // Buy price the server actually charges (scarcity mult baked in). Falls back
+  // to currentPrice and then the static base price so older server responses
+  // without effectivePrice still render sensibly.
   const getPrice = (resourceId: string) => {
-    return prices[resourceId]?.currentPrice || RESOURCE_MAP.get(resourceId as never)?.baseMarketPrice || 0;
+    const p = prices[resourceId];
+    return p?.effectivePrice || p?.currentPrice || RESOURCE_MAP.get(resourceId as never)?.baseMarketPrice || 0;
+  };
+  // Sell price (no scarcity premium — sellers receive the raw price minus broker fee server-side).
+  const getSellPrice = (resourceId: string) => {
+    const p = prices[resourceId];
+    return p?.currentPrice || RESOURCE_MAP.get(resourceId as never)?.baseMarketPrice || 0;
   };
 
   // Execute sell via server API
@@ -81,13 +92,13 @@ export default function MarketPanel({ state, onSellResource, onBuyResource }: Ma
         await fetchPrices();
       } else {
         // Fallback to client-side price
-        const price = getPrice(selectedResource);
+        const price = getSellPrice(selectedResource);
         playSound('money');
         onSellResource(selectedResource, qty, qty * price);
       }
     } catch {
       // Offline fallback
-      const price = getPrice(selectedResource);
+      const price = getSellPrice(selectedResource);
       playSound('money');
       onSellResource(selectedResource, qty, qty * price);
     }
@@ -154,7 +165,7 @@ export default function MarketPanel({ state, onSellResource, onBuyResource }: Ma
             {ownedResources.map(([id, qty]) => {
               const def = RESOURCE_MAP.get(id as never);
               if (!def) return null;
-              const price = getPrice(id);
+              const price = getSellPrice(id);
               const value = qty * price;
               const change = prices[id]?.change || 0;
               return (
@@ -195,7 +206,7 @@ export default function MarketPanel({ state, onSellResource, onBuyResource }: Ma
       {selectedResource && (() => {
         const def = RESOURCE_MAP.get(selectedResource as never);
         const held = state.resources[selectedResource] || 0;
-        const price = getPrice(selectedResource);
+        const price = getSellPrice(selectedResource);
         const change = prices[selectedResource]?.change || 0;
         if (!def) return null;
         return (
@@ -245,6 +256,8 @@ export default function MarketPanel({ state, onSellResource, onBuyResource }: Ma
           {RESOURCES.map(r => {
             const priceData = prices[r.id];
             const current = priceData?.currentPrice || r.baseMarketPrice;
+            // Ask = what you actually pay (scarcity-adjusted) — this is what the server charges.
+            const ask = priceData?.effectivePrice || current;
             const change = priceData?.change || 0;
             return (
               <div key={r.id} className="flex items-center justify-between py-1.5 px-2 rounded-lg hover:bg-white/[0.02] transition-colors">
@@ -262,11 +275,11 @@ export default function MarketPanel({ state, onSellResource, onBuyResource }: Ma
                 <div className="flex items-center gap-2">
                   <div className="text-right">
                     <div className="flex items-baseline justify-end gap-2 text-[9px] font-mono">
-                      <span className="text-amber-300" title="Bid — what you receive when selling (includes 3% broker fee)">
+                      <span className="text-amber-300" title="Bid — what you receive per unit when selling (includes 3% broker fee)">
                         B: {formatMoney(Math.round(current * 0.97))}
                       </span>
-                      <span className="text-cyan-300" title="Ask — what you pay when buying (includes scarcity premium)">
-                        A: {formatMoney(current)}
+                      <span className="text-cyan-300" title="Ask — what you pay per unit when buying (includes scarcity premium)">
+                        A: {formatMoney(ask)}
                       </span>
                     </div>
                     <div className="text-white text-xs font-mono">
@@ -294,27 +307,30 @@ export default function MarketPanel({ state, onSellResource, onBuyResource }: Ma
                       <>
                         <button
                           onClick={() => handleBuy(r.id, 1)}
-                          disabled={state.money < current || trading}
+                          disabled={state.money < ask || trading}
+                          title={`Pay ${formatMoney(ask)}`}
                           className={`px-2 py-0.5 text-[9px] font-medium rounded transition-colors ${
-                            state.money >= current && !trading
+                            state.money >= ask && !trading
                               ? 'bg-cyan-600/20 text-cyan-400 border border-cyan-600/30 hover:bg-cyan-600/30'
                               : 'bg-white/[0.02] text-slate-600 border border-white/[0.04] cursor-not-allowed'
                           }`}
                         >Buy 1</button>
                         <button
                           onClick={() => handleBuy(r.id, 10)}
-                          disabled={state.money < current * 10 || trading}
+                          disabled={state.money < ask * 10 || trading}
+                          title={`Pay ${formatMoney(ask * 10)}`}
                           className={`px-2 py-0.5 text-[9px] font-medium rounded transition-colors ${
-                            state.money >= current * 10 && !trading
+                            state.money >= ask * 10 && !trading
                               ? 'bg-cyan-600/20 text-cyan-400 border border-cyan-600/30 hover:bg-cyan-600/30'
                               : 'bg-white/[0.02] text-slate-600 border border-white/[0.04] cursor-not-allowed'
                           }`}
                         >Buy 10</button>
                         <button
                           onClick={() => handleBuy(r.id, 100)}
-                          disabled={state.money < current * 100 || trading}
+                          disabled={state.money < ask * 100 || trading}
+                          title={`Pay ${formatMoney(ask * 100)}`}
                           className={`px-2 py-0.5 text-[9px] font-medium rounded transition-colors ${
-                            state.money >= current * 100 && !trading
+                            state.money >= ask * 100 && !trading
                               ? 'bg-cyan-600/20 text-cyan-400 border border-cyan-600/30 hover:bg-cyan-600/30'
                               : 'bg-white/[0.02] text-slate-600 border border-white/[0.04] cursor-not-allowed'
                           }`}

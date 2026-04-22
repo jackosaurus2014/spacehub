@@ -44,7 +44,7 @@ const LOCATION_LAYOUT: Record<string, {
   pluto_surface:   { x: 0.97, y: 0.50, radius: 3,  color: '#fecaca', glowColor: '#fca5a5', type: 'rocky' },
 };
 
-// Role → color for ship rendering
+// Role → color for ship rendering (fallback chevron color when sprite unloaded)
 const SHIP_COLOR: Record<string, string> = {
   transport: '#22d3ee',
   tanker: '#60a5fa',
@@ -52,12 +52,83 @@ const SHIP_COLOR: Record<string, string> = {
   survey: '#c084fc',
 };
 
+// Location → planet sprite WebP. Uses the Phase-0 art library.
+const LOCATION_SPRITE: Record<string, string> = {
+  earth_surface:    '/game/texture-earth.webp',
+  leo:              '/game/planet-colony.webp',
+  geo:              '/game/planet-colony.webp',
+  lunar_orbit:      '/game/texture-moon.webp',
+  lunar_surface:    '/game/texture-moon.webp',
+  mars_orbit:       '/game/texture-mars.webp',
+  mars_surface:     '/game/texture-mars.webp',
+  asteroid_belt:    '/game/planet-asteroid-field.webp',
+  jupiter_system:   '/game/texture-gas-giant.webp',
+  saturn_system:    '/game/texture-gas-giant.webp',
+  outer_system:     '/game/planet-nebula.webp',
+  mercury_surface:  '/game/planet-lava.webp',
+  venus_orbit:      '/game/planet-desert.webp',
+  ceres_surface:    '/game/planet-asteroid-field.webp',
+  io_surface:       '/game/planet-lava.webp',
+  europa_surface:   '/game/planet-ice.webp',
+  ganymede_surface: '/game/planet-ice.webp',
+  callisto_surface: '/game/planet-ice.webp',
+  titan_surface:    '/game/planet-colony.webp',
+  enceladus_surface:'/game/planet-ice.webp',
+  titania_surface:  '/game/planet-ice.webp',
+  triton_surface:   '/game/planet-ice.webp',
+  pluto_surface:    '/game/planet-ice.webp',
+};
+
+// Ship role → sprite. The existing art has per-role ship files already.
+const SHIP_SPRITE: Record<string, string> = {
+  transport: '/game/ship-space-freighter.webp',
+  tanker:    '/game/ship-fuel-tanker.webp',
+  mining:    '/game/ship-mining-drone.webp',
+  survey:    '/game/ship-scout.webp',
+};
+
+const BG_NEBULA = '/game/bg-space-nebula.webp';
+
 interface StarField {
   x: number;
   y: number;
   size: number;
   speed: number;   // twinkle speed
   phase: number;
+  layer: 0 | 1 | 2;  // parallax layer — 0 = farthest, 2 = closest
+}
+
+/** Load a set of image URLs once and cache the resulting HTMLImageElements
+ *  in a ref. Returns the cache and a loaded flag so the draw loop can skip
+ *  sprite rendering until they're ready. */
+function useImageCache(urls: string[]): { cache: Map<string, HTMLImageElement>; loaded: boolean } {
+  const cacheRef = useRef<Map<string, HTMLImageElement>>(new Map());
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    const unique = Array.from(new Set(urls));
+    let remaining = unique.length;
+    if (remaining === 0) { setLoaded(true); return; }
+    for (const url of unique) {
+      if (cacheRef.current.has(url)) { remaining--; continue; }
+      const img = new Image();
+      img.src = url;
+      img.onload = () => {
+        if (cancelled) return;
+        cacheRef.current.set(url, img);
+        remaining--;
+        if (remaining <= 0) setLoaded(true);
+      };
+      img.onerror = () => {
+        remaining--;
+        if (remaining <= 0) setLoaded(true);
+      };
+    }
+    return () => { cancelled = true; };
+  }, [urls.join('|')]);  // eslint-disable-line react-hooks/exhaustive-deps
+
+  return { cache: cacheRef.current, loaded };
 }
 
 export default function SolarSystemCanvas({ state, onUnlock }: SolarSystemCanvasProps) {
@@ -72,18 +143,28 @@ export default function SolarSystemCanvas({ state, onUnlock }: SolarSystemCanvas
   const [showShips, setShowShips] = useState(true);
   const animRef = useRef(0);
 
-  // Pre-generate a stable starfield (keeps stars in the same places between
-  // frames — the draw loop reads positions from here and only updates phase).
+  // Preload every planet sprite + every ship role sprite + nebula bg. Safe to
+  // render before these resolve — we fall back to procedural circles/chevrons.
+  const assetUrls = useMemo<string[]>(
+    () => Array.from(new Set<string>([...Object.values(LOCATION_SPRITE), ...Object.values(SHIP_SPRITE), BG_NEBULA])),
+    [],
+  );
+  const imgs = useImageCache(assetUrls);
+
+  // Pre-generate a stable starfield, 3 depth layers for parallax effect.
   const starfield = useMemo<StarField[]>(() => {
     const stars: StarField[] = [];
-    for (let i = 0; i < 240; i++) {
+    for (let i = 0; i < 360; i++) {
       const seed = i * 7 + 42;
+      const layerRoll = ((Math.sin(seed * 29) * 10000) % 1 + 1) % 1;
+      const layer: 0 | 1 | 2 = layerRoll < 0.55 ? 0 : layerRoll < 0.85 ? 1 : 2;
       stars.push({
         x: ((Math.sin(seed) * 10000) % 1 + 1) % 1,
         y: ((Math.sin(seed * 3 + 5) * 10000) % 1 + 1) % 1,
-        size: 0.3 + ((Math.sin(seed * 17) * 10000) % 1 + 1) % 1 * 1.4,
+        size: (layer === 0 ? 0.4 : layer === 1 ? 0.7 : 1.2) + ((Math.sin(seed * 17) * 10000) % 1 + 1) % 1 * 0.8,
         speed: 0.3 + ((Math.sin(seed * 11) * 10000) % 1 + 1) % 1 * 0.8,
         phase: ((Math.sin(seed * 23) * 10000) % 1 + 1) % 1 * Math.PI * 2,
+        layer,
       });
     }
     return stars;
@@ -109,22 +190,36 @@ export default function SolarSystemCanvas({ state, onUnlock }: SolarSystemCanvas
     ctx.fillStyle = bgGrad;
     ctx.fillRect(0, 0, w, h);
 
-    // ─── Stars (twinkling) ────────────────────────────────────────
+    // Nebula backdrop — tinted low-opacity wash across the canvas.
+    const nebula = imgs.cache.get(BG_NEBULA);
+    if (nebula) {
+      ctx.save();
+      ctx.globalAlpha = 0.12;
+      ctx.drawImage(nebula, 0, 0, w, h);
+      ctx.restore();
+    }
+
+    // ─── Stars (twinkling, 3-layer parallax) ─────────────────────
+    // Farthest layer (0) barely shifts with pan; closest (2) tracks full offset.
     const tSec = timestampMs * 0.001;
+    const PARALLAX = [0.3, 0.6, 1.0] as const;
     for (const s of starfield) {
-      const sx = s.x * w;
-      const sy = s.y * h;
+      const p = PARALLAX[s.layer];
+      const sx = (s.x * w + offset.x * p) % w;
+      const sy = (s.y * h + offset.y * p) % h;
+      const wx = sx < 0 ? sx + w : sx;
+      const wy = sy < 0 ? sy + h : sy;
       const alpha = 0.15 + Math.abs(Math.sin(tSec * s.speed + s.phase)) * 0.55;
       ctx.fillStyle = `rgba(255,255,255,${alpha})`;
       ctx.beginPath();
-      ctx.arc(sx, sy, s.size, 0, Math.PI * 2);
+      ctx.arc(wx, wy, s.size, 0, Math.PI * 2);
       ctx.fill();
     }
 
     const sunX = 0.04 * w * zoom + offset.x;
     const sunY = 0.5 * h + offset.y;
 
-    // ─── Shipping lane overlays ───────────────────────────────────
+    // ─── Shipping lane overlays (with animated traffic pulses) ───
     if (showLanes) {
       ctx.lineWidth = 1;
       for (const lane of LANES) {
@@ -142,6 +237,22 @@ export default function SolarSystemCanvas({ state, onUnlock }: SolarSystemCanvas
         ctx.moveTo(fx, fy);
         ctx.lineTo(tx, ty);
         ctx.stroke();
+
+        // Animated flow pulses on active lanes (both endpoints unlocked).
+        // 3 dots staggered across the chord; t cycles every 4s.
+        if (unlockedBoth) {
+          const laneSeed = (lane.from.charCodeAt(0) + lane.to.charCodeAt(0)) * 0.13;
+          for (let k = 0; k < 3; k++) {
+            const t = (((tSec * 0.25) + laneSeed + k / 3) % 1 + 1) % 1;
+            const px = fx + (tx - fx) * t;
+            const py = fy + (ty - fy) * t;
+            const fade = Math.sin(t * Math.PI);
+            ctx.fillStyle = `rgba(34,211,238,${0.55 * fade})`;
+            ctx.beginPath();
+            ctx.arc(px, py, 1.4, 0, Math.PI * 2);
+            ctx.fill();
+          }
+        }
       }
       ctx.setLineDash([]);
     }
@@ -217,21 +328,41 @@ export default function SolarSystemCanvas({ state, onUnlock }: SolarSystemCanvas
         ctx.stroke();
       }
 
-      // Body with gradient for sphere feel
-      const bodyGrad = ctx.createRadialGradient(lx - r * 0.3, ly - r * 0.3, 0, lx, ly, r);
-      if (unlocked) {
-        bodyGrad.addColorStop(0, lightenColor(layout.color, 30));
-        bodyGrad.addColorStop(0.6, layout.color);
-        bodyGrad.addColorStop(1, darkenColor(layout.color, 40));
-      } else {
-        bodyGrad.addColorStop(0, '#334155');
-        bodyGrad.addColorStop(1, '#1e293b');
-      }
-      ctx.fillStyle = bodyGrad;
+      // Body — prefer sprite (circular-clipped) when loaded, else gradient sphere.
+      const spriteUrl = LOCATION_SPRITE[loc.id];
+      const sprite = spriteUrl ? imgs.cache.get(spriteUrl) : undefined;
       ctx.globalAlpha = unlocked ? 1 : 0.45;
-      ctx.beginPath();
-      ctx.arc(lx, ly, r, 0, Math.PI * 2);
-      ctx.fill();
+      if (sprite && sprite.complete && sprite.naturalWidth > 0) {
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(lx, ly, r, 0, Math.PI * 2);
+        ctx.clip();
+        ctx.drawImage(sprite, lx - r, ly - r, r * 2, r * 2);
+        // Limb-darkening overlay: subtle inner-shadow gradient to preserve the "sphere" illusion
+        const darken = ctx.createRadialGradient(lx - r * 0.35, ly - r * 0.35, r * 0.2, lx, ly, r);
+        darken.addColorStop(0, 'rgba(255,255,255,0.08)');
+        darken.addColorStop(0.55, 'rgba(0,0,0,0)');
+        darken.addColorStop(1, 'rgba(0,0,0,0.55)');
+        ctx.fillStyle = darken;
+        ctx.beginPath();
+        ctx.arc(lx, ly, r, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      } else {
+        const bodyGrad = ctx.createRadialGradient(lx - r * 0.3, ly - r * 0.3, 0, lx, ly, r);
+        if (unlocked) {
+          bodyGrad.addColorStop(0, lightenColor(layout.color, 30));
+          bodyGrad.addColorStop(0.6, layout.color);
+          bodyGrad.addColorStop(1, darkenColor(layout.color, 40));
+        } else {
+          bodyGrad.addColorStop(0, '#334155');
+          bodyGrad.addColorStop(1, '#1e293b');
+        }
+        ctx.fillStyle = bodyGrad;
+        ctx.beginPath();
+        ctx.arc(lx, ly, r, 0, Math.PI * 2);
+        ctx.fill();
+      }
       ctx.globalAlpha = 1;
 
       // Saturn's rings (special-case)
@@ -331,7 +462,9 @@ export default function SolarSystemCanvas({ state, onUnlock }: SolarSystemCanvas
           const orbitR = r + 12 + (ship.instanceId.charCodeAt(1) % 6);
           const sx = px.x + Math.cos(angle) * orbitR;
           const sy = px.y + Math.sin(angle) * orbitR;
-          drawShipMarker(ctx, sx, sy, angle + Math.PI / 2, color, 3.5 * zoom);
+          const spriteUrl = def ? SHIP_SPRITE[def.role] : undefined;
+          const shipSprite = spriteUrl ? imgs.cache.get(spriteUrl) : undefined;
+          drawShip(ctx, sx, sy, angle + Math.PI / 2, color, 3.5 * zoom, shipSprite);
           continue;
         }
         // Interpolate position from departure → arrival
@@ -377,7 +510,9 @@ export default function SolarSystemCanvas({ state, onUnlock }: SolarSystemCanvas
         // Ship marker
         const def = SHIP_MAP.get(ship.definitionId);
         const color = def ? SHIP_COLOR[def.role] || '#22d3ee' : '#22d3ee';
-        drawShipMarker(ctx, bx, by, heading, color, 4 * zoom);
+        const spriteUrl = def ? SHIP_SPRITE[def.role] : undefined;
+        const shipSprite = spriteUrl ? imgs.cache.get(spriteUrl) : undefined;
+        drawShip(ctx, bx, by, heading, color, 4 * zoom, shipSprite);
       }
     }
 
@@ -396,7 +531,7 @@ export default function SolarSystemCanvas({ state, onUnlock }: SolarSystemCanvas
     }
 
     animRef.current = requestAnimationFrame(draw);
-  }, [state, selectedLoc, offset, zoom, starfield, showLanes, showShips, layoutOf]);
+  }, [state, selectedLoc, offset, zoom, starfield, showLanes, showShips, layoutOf, imgs.cache, imgs.loaded]);
 
   // Canvas sizing — re-scale on container resize
   useEffect(() => {
@@ -601,6 +736,33 @@ export default function SolarSystemCanvas({ state, onUnlock }: SolarSystemCanvas
 }
 
 // ─── Drawing helpers ──────────────────────────────────────────────────────────
+
+/** Render a ship — sprite (rotated to heading) when loaded, chevron fallback otherwise.
+ *  Size is the chevron "unit" radius; sprite is drawn at ~6×size so it reads clearly. */
+function drawShip(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  heading: number,
+  color: string,
+  size: number,
+  sprite: HTMLImageElement | undefined,
+) {
+  if (sprite && sprite.complete && sprite.naturalWidth > 0) {
+    const spriteSize = Math.max(18, size * 5.5);
+    ctx.save();
+    ctx.translate(x, y);
+    // Sprites are drawn pointing "up" in the art; rotate so nose aligns with heading.
+    ctx.rotate(heading + Math.PI / 2);
+    // Soft glow behind the sprite for visibility over dark backgrounds
+    ctx.shadowColor = color;
+    ctx.shadowBlur = 10;
+    ctx.drawImage(sprite, -spriteSize / 2, -spriteSize / 2, spriteSize, spriteSize);
+    ctx.restore();
+    return;
+  }
+  drawShipMarker(ctx, x, y, heading, color, size);
+}
 
 function drawShipMarker(ctx: CanvasRenderingContext2D, x: number, y: number, heading: number, color: string, size: number) {
   ctx.save();

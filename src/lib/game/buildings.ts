@@ -124,7 +124,7 @@ export const BUILDINGS: BuildingDefinition[] = [
     realBuildSeconds: 420, powerRequired: 3 },
   { id: 'mining_lunar_ice', name: 'Lunar Ice Mine', category: 'mining_enterprise', tier: 2,
     description: 'Extract water ice from permanently shadowed craters.',
-    tooltip: 'YOUR GATEWAY TO RESOURCES. Activates Lunar Water Sales at $18M/mo vs $7M cost = $11M/mo net. More importantly, it produces 100 lunar water + 2 helium-3 per game month — resources you NEED for advanced buildings and research. This is how you unlock the Market tab. Water sells for $50K/unit on the market. Once built, your resource economy begins. Requires "Resource Prospecting" research + Lunar Surface unlock ($2B).',
+    tooltip: 'YOUR GATEWAY TO RESOURCES. Activates Lunar Water Sales at $18M/mo vs $7M cost = $11M/mo net. More importantly, it produces 100 lunar water + 2 helium-3 per game month — resources you NEED for advanced buildings and research. Water sells for $50K/unit on the global Market (already open from turn one). Once built, your resource economy begins. Requires "Resource Prospecting" research + Lunar Surface unlock ($2B).',
     baseCost: 1_500_000_000, buildTimeMonths: 18, maintenanceCostPerMonth: 3_000_000,
     requiredResearch: ['resource_prospecting'], requiredLocation: 'lunar_surface', enabledServices: ['svc_mining_lunar'],
     realBuildSeconds: 1200, resourceCost: { iron: 80, aluminum: 40, titanium: 15 }, powerRequired: 10 },

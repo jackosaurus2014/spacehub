@@ -1503,6 +1503,14 @@ export default function SpaceTycoonPage() {
   // Corporation tier-based tab unlocking
   const corpTier = state.corporationTier || 1;
   const unlockedTabIds = new Set(getTierUnlockedTabs(corpTier));
+  // Building-driven unlock overrides. The Orbital Fabrication Lab tooltip
+  // promises the Crafting tab, so honour that regardless of corp tier.
+  const hasFabLab = state.buildings.some(b => {
+    if (!b.isComplete) return false;
+    const def = BUILDING_MAP.get(b.definitionId);
+    return def?.category === 'fabrication_facility';
+  });
+  if (hasFabLab) unlockedTabIds.add('crafting');
   const allTabs = TAB_CATALOG.filter(t => unlockedTabIds.has(t.id));
 
   // Stable key for FeatureUnlockToast (avoids infinite re-render from array reference)
@@ -1512,7 +1520,8 @@ export default function SpaceTycoonPage() {
   const unreadReports = (state.reports || []).filter(r => !r.read).length;
 
   // V3: Split tabs into primary (always visible) and secondary (overflow dropdown)
-  const PRIMARY_TAB_IDS: GameTab[] = ['dashboard', 'build', 'research', 'map', 'services', 'fleet', 'contracts'];
+  // Market is hot-path (players use it every few minutes); keep it in the primary row next to Contracts.
+  const PRIMARY_TAB_IDS: GameTab[] = ['dashboard', 'build', 'research', 'map', 'services', 'contracts', 'market', 'fleet'];
   const primaryTabs = allTabs.filter(t => PRIMARY_TAB_IDS.includes(t.id));
   const secondaryTabs = allTabs.filter(t => !PRIMARY_TAB_IDS.includes(t.id));
   // Check if active tab is in secondary — if so, show its label in the More button
