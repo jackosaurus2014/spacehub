@@ -294,17 +294,37 @@ export default function GameStyles() {
       }
 
       .game-number {
+        font-family: var(--font-hud), var(--font-mono), ui-monospace, monospace;
         font-variant-numeric: tabular-nums;
-        font-weight: 700;
-        letter-spacing: -0.01em;
+        font-weight: 600;
+        letter-spacing: 0;
       }
 
       .game-label {
+        font-family: var(--font-hud), ui-sans-serif, system-ui, sans-serif;
         font-size: 10px;
         font-weight: 600;
         text-transform: uppercase;
-        letter-spacing: 0.08em;
+        letter-spacing: 0.14em;
         color: #64748b;
+      }
+
+      /* Explicit utility — apply .font-hud to any element that should read as
+         HUD chrome. Falls back gracefully if Orbitron hasn't loaded yet. */
+      .font-hud {
+        font-family: var(--font-hud), ui-sans-serif, system-ui, sans-serif;
+        letter-spacing: 0.04em;
+      }
+
+      /* Promote all tab labels + hud-frame numerics to the HUD face without
+         needing to touch every call site. */
+      .game-tab-bar button {
+        font-family: var(--font-hud), ui-sans-serif, system-ui, sans-serif;
+        letter-spacing: 0.08em;
+      }
+      .hud-frame .font-mono,
+      .hud-frame [class*="font-mono"] {
+        font-family: var(--font-hud), var(--font-mono), ui-monospace, monospace;
       }
 
       /* ═══════════════════════════════════════════════════════════════════
@@ -541,6 +561,59 @@ export default function GameStyles() {
       @media (prefers-reduced-motion: reduce) {
         .game-modal-card,
         .game-modal-backdrop { animation: none; }
+      }
+
+      /* ═══════════════════════════════════════════════════════════════════
+         HAZARD REACTION — screen flash + banner slide
+         ═══════════════════════════════════════════════════════════════════ */
+      @keyframes hazard-flash {
+        0%   { opacity: 0; }
+        20%  { opacity: 1; }
+        100% { opacity: 0; }
+      }
+      .hazard-flash { animation: hazard-flash 0.65s ease-out both; }
+
+      @keyframes hazard-slide-in {
+        from { transform: translateX(40px); opacity: 0; }
+        to   { transform: translateX(0); opacity: 1; }
+      }
+      .hazard-alert-banner {
+        animation: hazard-slide-in 0.35s cubic-bezier(0.34, 1.2, 0.64, 1) both;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .hazard-flash,
+        .hazard-alert-banner { animation: none; }
+      }
+
+      /* ═══════════════════════════════════════════════════════════════════
+         MILESTONE VIGNETTE — full-screen celebration overlay
+         ═══════════════════════════════════════════════════════════════════ */
+      @keyframes milestone-dim {
+        from { opacity: 0; }
+        to   { opacity: 1; }
+      }
+      @keyframes milestone-glow-in {
+        0%   { transform: scale(0.6) translateY(20px); opacity: 0; letter-spacing: 1em; }
+        60%  { transform: scale(1.05) translateY(0); opacity: 1; letter-spacing: 0.3em; }
+        100% { transform: scale(1) translateY(0); opacity: 1; letter-spacing: 0.18em; }
+      }
+      @keyframes milestone-sub-fade {
+        0%   { opacity: 0; transform: translateY(8px); }
+        100% { opacity: 1; transform: translateY(0); }
+      }
+      @keyframes milestone-ring-expand {
+        0%   { transform: translate(-50%, -50%) scale(0.2); opacity: 0.8; }
+        100% { transform: translate(-50%, -50%) scale(2.5); opacity: 0; }
+      }
+      .milestone-overlay       { animation: milestone-dim 0.5s ease-out both; }
+      .milestone-headline      { animation: milestone-glow-in 0.9s cubic-bezier(0.34, 1.2, 0.64, 1) both; }
+      .milestone-subtitle      { animation: milestone-sub-fade 0.6s ease-out 0.5s both; }
+      .milestone-ring          { animation: milestone-ring-expand 1.4s ease-out both; }
+      @media (prefers-reduced-motion: reduce) {
+        .milestone-overlay,
+        .milestone-headline,
+        .milestone-subtitle,
+        .milestone-ring { animation: none; }
       }
 
       /* ═══════════════════════════════════════════════════════════════════

@@ -218,44 +218,98 @@ export function initAudio(): void {
 let ambientNodes: { osc: OscillatorNode; gain: GainNode }[] = [];
 let ambientPlaying = false;
 let ambientTimer: ReturnType<typeof setTimeout> | null = null;
+let ambientRegion: string | null = null;
 
-/** Start ambient space soundscape — low drones + occasional shimmer */
-export function startAmbient(): void {
+// Per-region ambient signature. Each row says: base drone frequency, pad
+// interval in Hz, whether to add a high-frequency shimmer, whether to add
+// gritty lowpass noise, and an optional hue for future visualization.
+//
+// Picked to match each body's real character:
+//   Earth  — calm ops-room hum, warm midrange pad
+//   Mars   — dry dust wind (noise-based)
+//   Belt   — random asteroid clinks (brief high ticks)
+//   Jupiter/Saturn — deep subsonic rumble, slow swells
+//   Outer  — sparse high void hiss
+interface AmbientProfile {
+  droneHz: number;        // Primary drone pitch
+  padInterval: number;    // Pad octave stack multiplier (e.g. 2.44 = major 3rd + octave)
+  shimmer: boolean;       // Sprinkle high-frequency shimmer pings
+  noise: 'none' | 'wind' | 'rumble' | 'hiss' | 'clink';
+  pingIntervalMs: [number, number]; // random range for ambient_ping cadence
+}
+
+const AMBIENT_PROFILES: Record<string, AmbientProfile> = {
+  earth_surface: { droneHz: 55,  padInterval: 2.50, shimmer: true,  noise: 'none',   pingIntervalMs: [18000, 38000] },
+  leo:           { droneHz: 60,  padInterval: 2.50, shimmer: true,  noise: 'none',   pingIntervalMs: [15000, 30000] },
+  geo:           { droneHz: 52,  padInterval: 2.67, shimmer: true,  noise: 'none',   pingIntervalMs: [15000, 30000] },
+  lunar_orbit:   { droneHz: 48,  padInterval: 3.00, shimmer: true,  noise: 'hiss',   pingIntervalMs: [12000, 28000] },
+  lunar_surface: { droneHz: 42,  padInterval: 3.00, shimmer: false, noise: 'hiss',   pingIntervalMs: [20000, 40000] },
+  mars_orbit:    { droneHz: 58,  padInterval: 2.33, shimmer: false, noise: 'wind',   pingIntervalMs: [15000, 30000] },
+  mars_surface:  { droneHz: 50,  padInterval: 2.33, shimmer: false, noise: 'wind',   pingIntervalMs: [18000, 35000] },
+  mercury_surface: { droneHz: 80, padInterval: 2.00, shimmer: false, noise: 'wind',  pingIntervalMs: [20000, 40000] },
+  venus_orbit:     { droneHz: 65, padInterval: 2.25, shimmer: false, noise: 'wind',  pingIntervalMs: [18000, 36000] },
+  asteroid_belt: { droneHz: 40,  padInterval: 2.67, shimmer: false, noise: 'clink',  pingIntervalMs: [8000, 18000] },
+  ceres_surface: { droneHz: 38,  padInterval: 2.67, shimmer: false, noise: 'clink',  pingIntervalMs: [10000, 20000] },
+  jupiter_system:{ droneHz: 28,  padInterval: 3.00, shimmer: true,  noise: 'rumble', pingIntervalMs: [20000, 45000] },
+  io_surface:     { droneHz: 30, padInterval: 3.00, shimmer: false, noise: 'rumble', pingIntervalMs: [18000, 40000] },
+  europa_surface: { droneHz: 36, padInterval: 3.50, shimmer: true,  noise: 'hiss',   pingIntervalMs: [20000, 42000] },
+  ganymede_surface: { droneHz: 34, padInterval: 3.50, shimmer: true, noise: 'hiss',  pingIntervalMs: [22000, 44000] },
+  callisto_surface: { droneHz: 32, padInterval: 3.50, shimmer: true, noise: 'hiss',  pingIntervalMs: [22000, 45000] },
+  saturn_system: { droneHz: 26,  padInterval: 3.00, shimmer: true,  noise: 'rumble', pingIntervalMs: [22000, 50000] },
+  titan_surface: { droneHz: 34,  padInterval: 2.75, shimmer: false, noise: 'wind',   pingIntervalMs: [20000, 40000] },
+  enceladus_surface: { droneHz: 36, padInterval: 3.50, shimmer: true, noise: 'hiss', pingIntervalMs: [22000, 45000] },
+  outer_system:  { droneHz: 22,  padInterval: 3.50, shimmer: true,  noise: 'hiss',   pingIntervalMs: [25000, 60000] },
+  titania_surface: { droneHz: 24, padInterval: 3.50, shimmer: true, noise: 'hiss',   pingIntervalMs: [25000, 55000] },
+  triton_surface: { droneHz: 26,  padInterval: 3.50, shimmer: true, noise: 'hiss',   pingIntervalMs: [25000, 55000] },
+  pluto_surface: { droneHz: 20,  padInterval: 3.50, shimmer: true,  noise: 'hiss',   pingIntervalMs: [28000, 60000] },
+};
+
+const DEFAULT_AMBIENT: AmbientProfile = {
+  droneHz: 45, padInterval: 3.67, shimmer: true, noise: 'none', pingIntervalMs: [15000, 40000],
+};
+
+/** Start ambient space soundscape — low drones + occasional shimmer, keyed
+ *  off the currently-focused region. Re-tuneable via setAmbientRegion() while
+ *  playing so moving around the map feels spatial without restarting the mix. */
+export function startAmbient(region?: string | null): void {
   const ctx = getContext();
   if (!ctx || !masterGain || ambientPlaying || _muted) return;
 
   ambientPlaying = true;
+  ambientRegion = region ?? null;
+  const profile = (region && AMBIENT_PROFILES[region]) || DEFAULT_AMBIENT;
 
-  // Base drone (40-55Hz sine, very quiet)
+  // Base drone — frequency retunable later via setAmbientRegion().
   const droneOsc = ctx.createOscillator();
   const droneGain = ctx.createGain();
   droneOsc.type = 'sine';
-  droneOsc.frequency.setValueAtTime(45, ctx.currentTime);
+  droneOsc.frequency.setValueAtTime(profile.droneHz, ctx.currentTime);
   droneGain.gain.setValueAtTime(0, ctx.currentTime);
-  droneGain.gain.linearRampToValueAtTime(0.025, ctx.currentTime + 3); // Fade in over 3s
+  droneGain.gain.linearRampToValueAtTime(0.025, ctx.currentTime + 3);
   droneOsc.connect(droneGain);
   droneGain.connect(masterGain);
   droneOsc.start();
   ambientNodes.push({ osc: droneOsc, gain: droneGain });
 
-  // Slow LFO on drone frequency
+  // Slow LFO on drone — gives the pad a living, breathing motion.
   const lfo = ctx.createOscillator();
   const lfoGain = ctx.createGain();
   lfo.type = 'sine';
-  lfo.frequency.setValueAtTime(0.03, ctx.currentTime); // Very slow: 1 cycle per ~33 seconds
-  lfoGain.gain.setValueAtTime(8, ctx.currentTime); // Modulates drone by ±8Hz
+  lfo.frequency.setValueAtTime(0.03, ctx.currentTime);
+  lfoGain.gain.setValueAtTime(8, ctx.currentTime);
   lfo.connect(lfoGain);
   lfoGain.connect(droneOsc.frequency);
   lfo.start();
+  ambientNodes.push({ osc: lfo, gain: lfoGain });
 
-  // Harmonic pad (110Hz + 165Hz, even quieter)
+  // Harmonic pad stacked above drone per region interval.
   const padOsc1 = ctx.createOscillator();
   const padOsc2 = ctx.createOscillator();
   const padGain = ctx.createGain();
   padOsc1.type = 'sine';
-  padOsc1.frequency.setValueAtTime(110, ctx.currentTime);
+  padOsc1.frequency.setValueAtTime(profile.droneHz * profile.padInterval, ctx.currentTime);
   padOsc2.type = 'sine';
-  padOsc2.frequency.setValueAtTime(165, ctx.currentTime);
+  padOsc2.frequency.setValueAtTime(profile.droneHz * profile.padInterval * 1.5, ctx.currentTime);
   padGain.gain.setValueAtTime(0, ctx.currentTime);
   padGain.gain.linearRampToValueAtTime(0.012, ctx.currentTime + 5);
   padOsc1.connect(padGain);
@@ -266,17 +320,108 @@ export function startAmbient(): void {
   ambientNodes.push({ osc: padOsc1, gain: padGain });
   ambientNodes.push({ osc: padOsc2, gain: padGain });
 
-  // Random shimmer pings every 15-40 seconds
-  function scheduleShimmer() {
+  // Region-specific texture (wind/rumble/hiss) rendered from filtered noise.
+  if (profile.noise !== 'none' && profile.noise !== 'clink') {
+    startNoiseTexture(profile.noise);
+  }
+
+  // Shimmer / ping / clink cadence is profile-driven.
+  schedulePeriodic(profile);
+}
+
+/** One-shot noise-texture generator — fills a 2s buffer with white noise,
+ *  feeds it through a biquad filter appropriate for the region, then loops.
+ *  Called from startAmbient for wind/rumble/hiss profiles. */
+function startNoiseTexture(kind: 'wind' | 'rumble' | 'hiss') {
+  const ctx = getContext();
+  if (!ctx || !masterGain) return;
+
+  // 2s of noise, looped — AudioBufferSourceNode supports native loop.
+  const buffer = ctx.createBuffer(1, ctx.sampleRate * 2, ctx.sampleRate);
+  const data = buffer.getChannelData(0);
+  for (let i = 0; i < data.length; i++) data[i] = (Math.random() * 2 - 1) * 0.6;
+
+  const src = ctx.createBufferSource();
+  src.buffer = buffer;
+  src.loop = true;
+
+  const filter = ctx.createBiquadFilter();
+  const gain = ctx.createGain();
+  if (kind === 'wind') {
+    filter.type = 'bandpass';
+    filter.frequency.value = 420;
+    filter.Q.value = 1.2;
+    gain.gain.setValueAtTime(0, ctx.currentTime);
+    gain.gain.linearRampToValueAtTime(0.018, ctx.currentTime + 4);
+  } else if (kind === 'rumble') {
+    filter.type = 'lowpass';
+    filter.frequency.value = 110;
+    gain.gain.setValueAtTime(0, ctx.currentTime);
+    gain.gain.linearRampToValueAtTime(0.035, ctx.currentTime + 4);
+  } else {
+    // hiss — quiet high-frequency band, evokes vacuum / thermal noise
+    filter.type = 'highpass';
+    filter.frequency.value = 3800;
+    gain.gain.setValueAtTime(0, ctx.currentTime);
+    gain.gain.linearRampToValueAtTime(0.010, ctx.currentTime + 4);
+  }
+
+  src.connect(filter);
+  filter.connect(gain);
+  gain.connect(masterGain);
+  src.start();
+
+  // Parked on ambientNodes so stopAmbient() fades + stops them alongside the
+  // drone. OscillatorNode and AudioBufferSourceNode share stop()/disconnect().
+  ambientNodes.push({ osc: src as unknown as OscillatorNode, gain });
+}
+
+/** Shimmer / asteroid-clink / ambient_ping scheduler for active region. */
+function schedulePeriodic(profile: AmbientProfile) {
+  const [minMs, maxMs] = profile.pingIntervalMs;
+  function step() {
     if (!ambientPlaying) return;
-    const delay = 15000 + Math.random() * 25000;
+    const delay = minMs + Math.random() * (maxMs - minMs);
     ambientTimer = setTimeout(() => {
-      if (!ambientPlaying || _muted) { scheduleShimmer(); return; }
-      playSound('ambient_ping');
-      scheduleShimmer();
+      if (!ambientPlaying || _muted) { step(); return; }
+      const currentProfile = (ambientRegion && AMBIENT_PROFILES[ambientRegion]) || DEFAULT_AMBIENT;
+      if (currentProfile.noise === 'clink') {
+        // Brief metallic tick — asteroid contact
+        playTone(2200 + Math.random() * 1400, 0.04, 'square', { gainStart: 0.05, gainEnd: 0.001 });
+      } else if (currentProfile.shimmer) {
+        playSound('ambient_ping');
+      }
+      step();
     }, delay);
   }
-  scheduleShimmer();
+  step();
+}
+
+/** Retune the active ambient mix to a new region without restarting. Smoothly
+ *  slides the drone + pad frequencies over 2s so the transition feels like
+ *  moving between cabins rather than a hard cut. Safe to call even when
+ *  ambient is off — updates the stored region for the next startAmbient(). */
+export function setAmbientRegion(region: string | null): void {
+  ambientRegion = region;
+  if (!ambientPlaying) return;
+  const ctx = getContext();
+  if (!ctx) return;
+  const profile = (region && AMBIENT_PROFILES[region]) || DEFAULT_AMBIENT;
+  // First 3 nodes are drone / lfo / padOsc1. The 4th is padOsc2. Retune them.
+  const now = ctx.currentTime;
+  const glide = 2.0;
+  if (ambientNodes[0]) {
+    ambientNodes[0].osc.frequency.cancelScheduledValues(now);
+    ambientNodes[0].osc.frequency.linearRampToValueAtTime(profile.droneHz, now + glide);
+  }
+  if (ambientNodes[2]) {
+    ambientNodes[2].osc.frequency.cancelScheduledValues(now);
+    ambientNodes[2].osc.frequency.linearRampToValueAtTime(profile.droneHz * profile.padInterval, now + glide);
+  }
+  if (ambientNodes[3]) {
+    ambientNodes[3].osc.frequency.cancelScheduledValues(now);
+    ambientNodes[3].osc.frequency.linearRampToValueAtTime(profile.droneHz * profile.padInterval * 1.5, now + glide);
+  }
 }
 
 /** Stop ambient audio with fade-out */
@@ -302,12 +447,12 @@ export function isAmbientPlaying(): boolean {
   return ambientPlaying;
 }
 
-/** Toggle ambient on/off */
+/** Toggle ambient on/off — remembers last region if retoggled. */
 export function toggleAmbient(): boolean {
   if (ambientPlaying) {
     stopAmbient();
   } else {
-    startAmbient();
+    startAmbient(ambientRegion);
   }
   return ambientPlaying;
 }

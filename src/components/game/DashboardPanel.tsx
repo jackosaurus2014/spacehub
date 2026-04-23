@@ -11,6 +11,7 @@ import { LOCATION_MAP } from '@/lib/game/solar-system';
 import { getWorkforceBonuses, getMonthlyPayroll } from '@/lib/game/workforce';
 import { getRevenueMultiplier as getUpgradeRevenueMultiplier, getMaintenanceMultiplier } from '@/lib/game/upgrades';
 import IncomeChart from '@/components/game/IncomeChart';
+import DashboardVizBlock from '@/components/game/DashboardVizBlock';
 import WeeklyChallengeWidget from '@/components/game/WeeklyChallengeWidget';
 import MiniActivitiesWidget from '@/components/game/MiniActivitiesWidget';
 import type { MiniActivityReward } from '@/lib/game/mini-activities';
@@ -331,6 +332,8 @@ export default function DashboardPanel({ state, onUpdateCompanyName }: { state: 
     <div className="space-y-4">
       {/* Empire Overview — visual summary at the top */}
       <EmpireOverview state={state} onUpdateCompanyName={onUpdateCompanyName} />
+      {/* HUD-styled at-a-glance viz — revenue breakdown, fleet status, infrastructure mix */}
+      <DashboardVizBlock state={state} />
 
       {/* Hero Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">

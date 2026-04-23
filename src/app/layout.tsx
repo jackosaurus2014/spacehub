@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import { DM_Sans, JetBrains_Mono } from 'next/font/google';
+import { DM_Sans, JetBrains_Mono, Orbitron } from 'next/font/google';
 import Script from 'next/script';
 import localFont from 'next/font/local';
 import './globals.css';
@@ -66,6 +66,15 @@ const jetbrainsMono = JetBrains_Mono({
   subsets: ['latin'],
   display: 'swap',
   variable: '--font-mono',
+});
+// HUD display face — used for Space Tycoon readouts, tab labels, section
+// headings. Intentionally scoped via a CSS variable so it doesn't leak onto
+// the rest of the marketing site.
+const orbitron = Orbitron({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700', '800'],
+  display: 'swap',
+  variable: '--font-hud',
 });
 const satoshi = localFont({
   src: [
@@ -264,7 +273,7 @@ export default function RootLayout({
         <link rel="preload" href="/fonts/Satoshi-Bold.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
         <link rel="preload" href="/fonts/Satoshi-Black.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
       </head>
-      <body className={`${dmSans.variable} ${jetbrainsMono.variable} ${satoshi.variable} ${dmSans.className}`}>
+      <body className={`${dmSans.variable} ${jetbrainsMono.variable} ${orbitron.variable} ${satoshi.variable} ${dmSans.className}`}>
         {/* Google AdSense — lazyOnload prevents blocking LCP/INP */}
         {process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID && (
           <Script

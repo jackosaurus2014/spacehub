@@ -10,7 +10,7 @@ import { BUILDINGS, BUILDING_MAP, scaledBuildTime, getBuildingDerivedStats } fro
 import { RESEARCH, RESEARCH_MAP, RESEARCH_CATEGORIES, getResearchMechanicalEffect } from '@/lib/game/research-tree';
 import { SERVICE_MAP } from '@/lib/game/services';
 import { LOCATIONS, LOCATION_MAP } from '@/lib/game/solar-system';
-import { playSound, initAudio } from '@/lib/game/sound-engine';
+import { playSound, initAudio, setAmbientRegion } from '@/lib/game/sound-engine';
 import { getBuildingAsset, LOCATION_ASSETS } from '@/lib/game/assets';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -37,6 +37,9 @@ import { calculateOfflineIncome, applyOfflineIncome } from '@/lib/game/offline-i
 import type { OfflineEarnings } from '@/lib/game/offline-income';
 import GameStyles from '@/components/game/GameStyles';
 import RegionBackdrop from '@/components/game/RegionBackdrop';
+import StardustLayer from '@/components/game/StardustLayer';
+import HazardAlertLayer from '@/components/game/HazardAlertLayer';
+import MilestoneVignette from '@/components/game/MilestoneVignette';
 import FleetPanel from '@/components/game/FleetPanel';
 import CraftingPanel from '@/components/game/CraftingPanel';
 import WorkforcePanel from '@/components/game/WorkforcePanel';
@@ -1544,6 +1547,12 @@ export default function SpaceTycoonPage() {
       <GameStyles />
       {/* Region-themed backdrop — tint shifts based on selected map location */}
       <RegionBackdrop region={selectedRegion} />
+      {/* Passive ambient stardust + lens flares behind the UI */}
+      <StardustLayer />
+      {/* Hazard reaction overlay — flashes + HUD alerts on recentHazards */}
+      <HazardAlertLayer state={state} />
+      {/* Milestone celebration overlay — tier ascension, first billion, first contact */}
+      <MilestoneVignette state={state} />
       {/* Hero art background */}
       <div className="relative overflow-hidden">
         <div className="absolute inset-0 -z-10">
@@ -1693,7 +1702,7 @@ export default function SpaceTycoonPage() {
         {tab === 'dashboard' && <DashboardPanel state={state} onUpdateCompanyName={(name) => setState(prev => prev ? { ...prev, companyName: name } : prev)} />}
         {tab === 'build' && <BuildPanel state={state} onBuild={handleBuild} onSellBuilding={handleSellBuilding} />}
         {tab === 'research' && <ResearchPanel state={state} onStartResearch={handleStartResearch} />}
-        {tab === 'map' && <SolarSystemCanvas state={state} onUnlock={handleUnlockLocation} onSelectLocation={setSelectedRegion} />}
+        {tab === 'map' && <SolarSystemCanvas state={state} onUnlock={handleUnlockLocation} onSelectLocation={(loc) => { setSelectedRegion(loc); setAmbientRegion(loc); }} />}
         {tab === 'services' && <ServicesPanel state={state} />}
         {tab === 'fleet' && <FleetPanel
           state={state}
