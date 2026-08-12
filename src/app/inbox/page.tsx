@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useSession } from 'next-auth/react';
@@ -174,7 +174,7 @@ export default function InboxPage() {
             Your notifications live here once you&apos;re logged in.
           </p>
           <Link
-            href="/auth/signin"
+            href="/login"
             className="inline-block px-4 py-2 bg-white text-black text-sm font-medium rounded-md hover:bg-white/90 transition-colors"
           >
             Sign in

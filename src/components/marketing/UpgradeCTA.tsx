@@ -181,8 +181,8 @@ export default function UpgradeCTA({ variant, feature, module }: UpgradeCTAProps
   const { data: session } = useSession();
   const { tier, isLoading } = useSubscription();
 
-  // Don't show to Pro or Enterprise users
-  if (!isLoading && session && (tier === 'pro' || tier === 'enterprise')) {
+  // Don't show to paid users
+  if (!isLoading && session && tier !== 'free') {
     return null;
   }
 

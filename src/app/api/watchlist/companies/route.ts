@@ -9,23 +9,24 @@ import {
   createSuccessResponse,
 } from '@/lib/errors';
 import { validateBody, companyWatchlistSchema } from '@/lib/validations';
+import { normalizeTier } from '@/lib/subscription';
 
 export const dynamic = 'force-dynamic';
 
 function getWatchlistLimit(tier: string | null | undefined): number {
-  if (tier === 'enterprise') return Infinity;
-  if (tier === 'pro') return 50;
+  if (tier === 'pro' || tier === 'test') return Infinity;
   return 10; // free
 }
 
 function getEffectiveTier(user: { subscriptionTier: string | null; trialTier: string | null; trialEndDate: Date | null }): string {
-  if (user.subscriptionTier === 'enterprise' || user.subscriptionTier === 'pro') {
-    return user.subscriptionTier;
+  const tier = normalizeTier(user.subscriptionTier);
+  if (tier !== 'free') {
+    return tier;
   }
   if (user.trialTier && user.trialEndDate && user.trialEndDate > new Date()) {
-    return user.trialTier;
+    return normalizeTier(user.trialTier);
   }
-  return user.subscriptionTier || 'free';
+  return tier;
 }
 
 export async function GET(request: Request) {

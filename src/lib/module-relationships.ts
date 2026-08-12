@@ -345,7 +345,6 @@ export const PAGE_RELATIONS: Record<string, RelatedModuleConfig[]> = {
   'solutions/executives': [MODULES.marketIntel, MODULES.executiveMoves, MODULES.marketMap, MODULES.contractAwards, MODULES.intelligenceBrief],
   'use-cases': [MODULES.companyProfiles, MODULES.satellites, MODULES.marketIntel, MODULES.tools, MODULES.spaceCapital],
   'report/state-of-space-2026': [MODULES.marketIntel, MODULES.spaceEconomy, MODULES.industryTrends, MODULES.fundingTracker, MODULES.marketSizing],
-  'enterprise': [MODULES.companyProfiles, MODULES.aiInsights, MODULES.regulatoryTracker, MODULES.procurement, MODULES.contractAwards],
   'security': [MODULES.companyProfiles, MODULES.marketIntel, MODULES.tools, MODULES.satellites, MODULES.spaceCapital],
 
   // ── Marketing pages ──

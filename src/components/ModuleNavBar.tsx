@@ -8,9 +8,6 @@ import { useModuleNavigation } from '@/hooks/useModuleNavigation';
 
 function getTierInfo(moduleId: string) {
   const tier = getRequiredTierForModule(moduleId);
-  if (tier === 'enterprise') {
-    return { label: 'Enterprise', color: 'text-amber-700', bgColor: 'bg-gradient-to-r from-amber-100 to-orange-100 border-amber-300', dotColor: 'bg-amber-500' };
-  }
   if (tier === 'pro') {
     return { label: 'Pro', color: 'text-violet-700', bgColor: 'bg-gradient-to-r from-violet-100 to-purple-100 border-violet-300', dotColor: 'bg-violet-500' };
   }
@@ -233,10 +230,6 @@ export default function ModuleNavBar() {
             <span className="flex items-center gap-1.5 text-slate-400">
               <span className="w-2 h-2 rounded-full bg-violet-500" />
               Pro
-            </span>
-            <span className="flex items-center gap-1.5 text-slate-400">
-              <span className="w-2 h-2 rounded-full bg-amber-500" />
-              Enterprise
             </span>
           </div>
           {/* Mobile: compact tier badge */}

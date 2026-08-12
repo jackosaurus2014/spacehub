@@ -19,7 +19,7 @@ import { NextRequest } from 'next/server';
 jest.mock('@/lib/db', () => ({
   __esModule: true,
   default: {
-    user: { findUnique: jest.fn() },
+    user: { findUnique: jest.fn(), findMany: jest.fn() },
     rFQ: { findUnique: jest.fn(), findFirst: jest.fn() },
     proposal: {
       findMany: jest.fn(),
@@ -64,7 +64,7 @@ import { PUT as verifyPUT } from '@/app/api/marketplace/verify/admin/route';
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
 const mockPrisma = prisma as unknown as {
-  user: { findUnique: jest.Mock };
+  user: { findUnique: jest.Mock; findMany: jest.Mock };
   rFQ: { findUnique: jest.Mock; findFirst: jest.Mock };
   proposal: { findMany: jest.Mock; findUnique: jest.Mock; create: jest.Mock };
   providerReview: { findMany: jest.Mock; findFirst: jest.Mock; count: jest.Mock; create: jest.Mock };
@@ -391,10 +391,15 @@ describe('POST /api/marketplace/reviews', () => {
 describe('GET /api/marketplace/reviews', () => {
   it('returns reviews for a company', async () => {
     mockPrisma.providerReview.findMany.mockResolvedValue([
-      { id: 'review-1', companyId: 'company-1', overallRating: 5, qualityRating: null, timelineRating: null, commRating: null, valueRating: null },
-      { id: 'review-2', companyId: 'company-1', overallRating: 4, qualityRating: null, timelineRating: null, commRating: null, valueRating: null },
+      { id: 'review-1', companyId: 'company-1', reviewerUserId: 'user-9', overallRating: 5, qualityRating: null, timelineRating: null, commRating: null, valueRating: null },
+      { id: 'review-2', companyId: 'company-1', reviewerUserId: 'user-10', overallRating: 4, qualityRating: null, timelineRating: null, commRating: null, valueRating: null },
     ]);
     mockPrisma.providerReview.count.mockResolvedValue(2);
+    // Route joins reviewer names/badges via user.findMany
+    mockPrisma.user.findMany.mockResolvedValue([
+      { id: 'user-9', name: 'Reviewer Nine', verifiedBadge: true },
+      { id: 'user-10', name: 'Reviewer Ten', verifiedBadge: null },
+    ]);
 
     const req = new NextRequest('http://localhost/api/marketplace/reviews?companyId=company-1');
     const res = await reviewsGET(req);
@@ -403,6 +408,8 @@ describe('GET /api/marketplace/reviews', () => {
     expect(res.status).toBe(200);
     expect(body.reviews).toHaveLength(2);
     expect(body.total).toBe(2);
+    expect(body.reviews[0].reviewerName).toBe('Reviewer Nine');
+    expect(body.reviews[0].reviewerVerifiedBadge).toBe(true);
     expect(body.avgRatings).toBeDefined();
     expect(body.avgRatings.overall).toBe(4.5);
   });

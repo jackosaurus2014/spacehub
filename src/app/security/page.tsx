@@ -352,10 +352,10 @@ export default function SecurityPage() {
                     </svg>
                   </Link>
                   <Link
-                    href="/enterprise"
+                    href="/pricing"
                     className="inline-flex items-center gap-2 px-8 py-3 border border-white/[0.1] hover:border-white/[0.15] text-white/70 hover:text-white font-medium rounded-lg transition-colors"
                   >
-                    Enterprise Solutions
+                    View Plans &amp; Pricing
                   </Link>
                 </div>
               </div>

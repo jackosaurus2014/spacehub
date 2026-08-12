@@ -131,12 +131,16 @@ describe('GET /api/notifications', () => {
     expect(res.status).toBe(200);
     expect(body.notifications).toHaveLength(2);
     expect(body.unreadCount).toBe(5);
+    expect(body.total).toBe(5);
+    expect(body.page).toBe(1);
+    expect(body.pageSize).toBe(25);
 
-    // Verify findMany was called with correct ordering and user filter
+    // Verify findMany was called with correct ordering, user filter, and pagination
     expect(mockPrisma.notification.findMany).toHaveBeenCalledWith({
       where: { userId: 'user-1' },
       orderBy: { createdAt: 'desc' },
-      take: 20, // default limit
+      skip: 0,
+      take: 25, // default page size
     });
 
     // Verify count was called for unread notifications
@@ -159,7 +163,8 @@ describe('GET /api/notifications', () => {
     expect(mockPrisma.notification.findMany).toHaveBeenCalledWith({
       where: { userId: 'user-1', read: false },
       orderBy: { createdAt: 'desc' },
-      take: 20,
+      skip: 0,
+      take: 25,
     });
   });
 
@@ -177,7 +182,8 @@ describe('GET /api/notifications', () => {
     expect(mockPrisma.notification.findMany).toHaveBeenCalledWith({
       where: { userId: 'user-1' },
       orderBy: { createdAt: 'desc' },
-      take: 20,
+      skip: 0,
+      take: 25,
     });
   });
 
@@ -197,7 +203,7 @@ describe('GET /api/notifications', () => {
     );
   });
 
-  it('caps limit at 50', async () => {
+  it('caps limit at 100', async () => {
     mockGetServerSession.mockResolvedValue(authenticatedSession());
 
     mockPrisma.notification.findMany.mockResolvedValue([]);
@@ -209,11 +215,30 @@ describe('GET /api/notifications', () => {
     expect(res.status).toBe(200);
 
     expect(mockPrisma.notification.findMany).toHaveBeenCalledWith(
-      expect.objectContaining({ take: 50 })
+      expect.objectContaining({ take: 100 })
     );
   });
 
-  it('defaults limit to 20 for non-numeric values', async () => {
+  it('supports pageSize and page parameters', async () => {
+    mockGetServerSession.mockResolvedValue(authenticatedSession());
+
+    mockPrisma.notification.findMany.mockResolvedValue([]);
+    mockPrisma.notification.count.mockResolvedValue(0);
+
+    const req = makeGetRequest('http://localhost/api/notifications?page=3&pageSize=10');
+    const res = await GET(req);
+    const body = await res.json();
+
+    expect(res.status).toBe(200);
+    expect(body.page).toBe(3);
+    expect(body.pageSize).toBe(10);
+
+    expect(mockPrisma.notification.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({ skip: 20, take: 10 })
+    );
+  });
+
+  it('defaults limit to 25 for non-numeric values', async () => {
     mockGetServerSession.mockResolvedValue(authenticatedSession());
 
     mockPrisma.notification.findMany.mockResolvedValue([]);
@@ -225,7 +250,7 @@ describe('GET /api/notifications', () => {
     expect(res.status).toBe(200);
 
     expect(mockPrisma.notification.findMany).toHaveBeenCalledWith(
-      expect.objectContaining({ take: 20 })
+      expect.objectContaining({ take: 25 })
     );
   });
 

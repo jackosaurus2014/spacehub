@@ -16,6 +16,10 @@ const config: Config = {
     '<rootDir>/src/**/__tests__/**/*.{ts,tsx}',
     '<rootDir>/src/**/*.{spec,test}.{ts,tsx}',
   ],
+  // Agent worktrees under .claude/ contain nested package.json copies that
+  // break jest-haste-map with naming collisions.
+  modulePathIgnorePatterns: ['<rootDir>/.claude/'],
+  testPathIgnorePatterns: ['/node_modules/', '<rootDir>/.claude/'],
   collectCoverageFrom: [
     'src/lib/**/*.ts',
     '!src/lib/db.ts',

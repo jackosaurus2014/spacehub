@@ -28,7 +28,7 @@ const COMPANY_INFO = {
   headquarters: 'Houston, TX',
   company: 'SpaceNexus LLC',
   industry: 'Space Industry Intelligence Platform',
-  model: 'Freemium (Free / Pro / Enterprise)',
+  model: 'Freemium (Free / Pro)',
   platforms: 'Web (PWA), Android, iOS',
   ai: 'Claude by Anthropic',
   website: 'spacenexus.us',
@@ -45,14 +45,14 @@ const SCREENSHOTS = [
 
 const BOILERPLATES = {
   short: `SpaceNexus is a space industry intelligence platform that consolidates real-time launches, satellite tracking, market analytics, procurement, and 200+ company profiles into one accessible platform, democratizing access to the data powering the $1.8 trillion space economy.`,
-  medium: `SpaceNexus is a space industry intelligence platform consolidating real-time data, market analytics, and business tools into a single accessible platform. With 30+ integrated modules covering launches, satellite tracking, market intelligence, procurement, company profiles, and regulatory compliance, SpaceNexus replaces dozens of expensive, fragmented data sources. The platform aggregates data from NASA, NOAA, SAM.gov, and 50+ industry feeds through 33 automated pipelines, serving space startups, defense contractors, investors, engineers, and government agencies. Available as a progressive web app with offline support, SpaceNexus offers free, Professional ($19.99/month), and Enterprise ($49.99/month) tiers.`,
+  medium: `SpaceNexus is a space industry intelligence platform consolidating real-time data, market analytics, and business tools into a single accessible platform. With 30+ integrated modules covering launches, satellite tracking, market intelligence, procurement, company profiles, and regulatory compliance, SpaceNexus replaces dozens of expensive, fragmented data sources. The platform aggregates data from NASA, NOAA, SAM.gov, and 50+ industry feeds through 33 automated pipelines, serving space startups, defense contractors, investors, engineers, and government agencies. Available as a progressive web app with offline support, SpaceNexus offers a free Explorer tier and an everything-included Professional tier ($19.99/month).`,
   long: `SpaceNexus is the most comprehensive space industry intelligence platform available, designed to serve the rapidly growing $1.8 trillion global space economy. The platform integrates 30+ modules -- including Mission Control, News & Media, Space Market Intelligence, Business Opportunities, Mission Planning, Space Operations, Space Talent Hub, Regulatory & Compliance, B2B Marketplace, and Solar System Exploration -- into a unified interface that replaces dozens of fragmented, expensive data sources.
 
 SpaceNexus aggregates real-time data from NASA, NOAA, SAM.gov, the FCC, and over 50 curated news and analysis sources through 33 automated data pipelines. Users can track every orbital and suborbital launch worldwide, monitor 19,000+ satellites on an interactive 3D globe, access detailed profiles of 200+ space companies with financial data and competitive analysis, browse 55+ original articles and industry guides, and discover government procurement opportunities through integrated SAM.gov and SBIR/STTR intelligence.
 
 The platform leverages AI powered by Claude (Anthropic) to categorize news, tag company mentions, generate market insights, and power an intelligent procurement copilot. SpaceNexus serves aerospace engineers, defense contractors, investors, startup founders, government program managers, journalists, and space enthusiasts alike.
 
-Unlike legacy competitors charging $10,000-50,000+ per year for narrow data sets, SpaceNexus offers a free Explorer tier alongside Professional ($19.99/month) and Enterprise ($49.99/month) plans, democratizing access to space industry intelligence. The platform is available as a responsive web application with 180+ pages, progressive web app capabilities, and native Android and iOS mobile apps. Founded in 2026 and headquartered in Houston, Texas, SpaceNexus LLC is building the Bloomberg Terminal of the space economy.`,
+Unlike legacy competitors charging $10,000-50,000+ per year for narrow data sets, SpaceNexus offers a free Explorer tier alongside a single Professional plan ($19.99/month) that includes everything, democratizing access to space industry intelligence. The platform is available as a responsive web application with 180+ pages, progressive web app capabilities, and native Android and iOS mobile apps. Founded in 2026 and headquartered in Houston, Texas, SpaceNexus LLC is building the Bloomberg Terminal of the space economy.`,
 };
 
 export default function MediaKitPage() {

@@ -10,12 +10,13 @@ import {
   internalError,
 } from '@/lib/errors';
 import { alertRuleUpdateSchema, validateBody } from '@/lib/validations';
+import { normalizeTier } from '@/lib/subscription';
 import { logger } from '@/lib/logger';
 
 export const dynamic = 'force-dynamic';
 
-/** Channels restricted to enterprise tier */
-const ENTERPRISE_ONLY_CHANNELS = ['webhook'];
+/** Channels restricted to paid tiers */
+const PAID_ONLY_CHANNELS = ['webhook'];
 
 // GET /api/alerts/[id] - Get rule details with recent deliveries
 export async function GET(
@@ -95,7 +96,7 @@ export async function PUT(
 
     const updateData = validation.data;
 
-    // If channels are being updated, check enterprise restriction
+    // If channels are being updated, check paid-tier restriction
     if (updateData.channels) {
       const user = await prisma.user.findUnique({
         where: { id: session.user.id },
@@ -106,22 +107,22 @@ export async function PUT(
         },
       });
 
-      let effectiveTier = user?.subscriptionTier || 'free';
+      let effectiveTier = normalizeTier(user?.subscriptionTier);
       if (
         user?.trialTier &&
         user?.trialEndDate &&
         new Date() < user.trialEndDate
       ) {
-        effectiveTier = user.trialTier;
+        effectiveTier = normalizeTier(user.trialTier);
       }
 
-      if (effectiveTier !== 'enterprise') {
+      if (effectiveTier === 'free') {
         const hasRestrictedChannel = updateData.channels.some((c: string) =>
-          ENTERPRISE_ONLY_CHANNELS.includes(c)
+          PAID_ONLY_CHANNELS.includes(c)
         );
         if (hasRestrictedChannel) {
           return forbiddenError(
-            'Webhook channel is only available on the Enterprise plan.'
+            'Webhook channel requires a Pro subscription.'
           );
         }
       }

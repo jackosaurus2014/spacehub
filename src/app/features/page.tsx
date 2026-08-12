@@ -12,7 +12,7 @@ interface ModuleCard {
   name: string;
   description: string;
   href: string;
-  tier?: 'Pro' | 'Enterprise';
+  tier?: 'Pro';
 }
 
 interface CategorySection {
@@ -85,7 +85,6 @@ const CATEGORIES: CategorySection[] = [
         name: 'Executive Moves',
         description: 'C-suite tracking across space companies',
         href: '/executive-moves',
-        tier: 'Pro',
       },
     ],
   },
@@ -112,7 +111,7 @@ const CATEGORIES: CategorySection[] = [
         name: 'Investment Research',
         description: 'Funding rounds, investor directory, deal alerts',
         href: '/space-capital',
-        tier: 'Enterprise',
+        tier: 'Pro',
       },
       {
         icon: '\uD83C\uDFC6',
@@ -151,7 +150,7 @@ const CATEGORIES: CategorySection[] = [
         name: 'Data Export & API',
         description: 'REST API, webhooks, custom dashboards',
         href: '/developer',
-        tier: 'Enterprise',
+        tier: 'Pro',
       },
     ],
   },
@@ -163,18 +162,17 @@ interface PlanRow {
   feature: string;
   explorer: string;
   professional: string;
-  enterprise: string;
 }
 
 const PLAN_ROWS: PlanRow[] = [
-  { feature: 'News articles per day', explorer: '25', professional: 'Unlimited', enterprise: 'Unlimited' },
-  { feature: 'Company profiles', explorer: 'Basic', professional: 'Full', enterprise: 'Full + API' },
-  { feature: 'Satellite tracking', explorer: 'Limited', professional: 'Full', enterprise: 'Full + Webhooks' },
-  { feature: 'AI insights', explorer: '\u2014', professional: '\u2713', enterprise: '\u2713 + Custom' },
-  { feature: 'Engineering calculators', explorer: 'Basic', professional: 'All', enterprise: 'All' },
-  { feature: 'Export & reports', explorer: '\u2014', professional: 'CSV / PDF', enterprise: 'Full API' },
-  { feature: 'Custom dashboards', explorer: '\u2014', professional: '\u2014', enterprise: '\u2713' },
-  { feature: 'Priority support', explorer: 'Community', professional: 'Priority', enterprise: 'Dedicated' },
+  { feature: 'News articles per day', explorer: '25', professional: 'Unlimited' },
+  { feature: 'Company profiles', explorer: 'Basic', professional: 'Full + API' },
+  { feature: 'Satellite tracking', explorer: 'Limited', professional: 'Full + Webhooks' },
+  { feature: 'AI insights', explorer: '\u2014', professional: '\u2713 + Custom' },
+  { feature: 'Engineering calculators', explorer: 'Basic', professional: 'All' },
+  { feature: 'Export & reports', explorer: '\u2014', professional: 'CSV / PDF + Full API' },
+  { feature: 'Custom dashboards', explorer: '\u2014', professional: '\u2713' },
+  { feature: 'Priority support', explorer: 'Community', professional: 'Priority' },
 ];
 
 /* ─── Page component ─────────────────────────────────────────────────── */
@@ -242,13 +240,7 @@ export default function FeaturesPage() {
                     className="group relative flex flex-col p-5 rounded-xl border border-white/[0.06] bg-white/[0.04] hover:border-white/15 hover:bg-white/[0.06] transition-all h-full"
                   >
                     {mod.tier && (
-                      <span
-                        className={`absolute top-3 right-3 text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full ${
-                          mod.tier === 'Enterprise'
-                            ? 'bg-amber-500/15 text-amber-400 border border-amber-500/30'
-                            : 'bg-white/8 text-slate-300 border border-white/10'
-                        }`}
-                      >
+                      <span className="absolute top-3 right-3 text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-white/8 text-slate-300 border border-white/10">
                         {mod.tier}
                       </span>
                     )}
@@ -293,12 +285,8 @@ export default function FeaturesPage() {
                     <div className="text-slate-300 font-bold">Professional</div>
                     <div className="text-xs text-slate-300/70 mt-0.5">$19.99 / mo</div>
                     <span className="inline-block mt-1 text-[10px] uppercase tracking-wider bg-white/8 text-slate-300 border border-white/10 rounded-full px-2 py-0.5 font-semibold">
-                      Most Popular
+                      Everything Included
                     </span>
-                  </th>
-                  <th className="p-4 text-center text-slate-300 font-medium border-b border-white/[0.06] min-w-[140px]">
-                    <div className="text-white">Enterprise</div>
-                    <div className="text-xs text-slate-500 mt-0.5">$49.99 / mo</div>
                   </th>
                 </tr>
               </thead>
@@ -316,9 +304,6 @@ export default function FeaturesPage() {
                     </td>
                     <td className="p-4 text-center border-b border-white/[0.06] bg-white/[0.02]">
                       <CellValue value={row.professional} highlight />
-                    </td>
-                    <td className="p-4 text-center text-slate-400 border-b border-white/[0.06]">
-                      <CellValue value={row.enterprise} />
                     </td>
                   </tr>
                 ))}

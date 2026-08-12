@@ -12,7 +12,7 @@ export interface OpenAPIEndpoint {
   summary: string;
   description: string;
   tags: string[];
-  tier: 'All' | 'Enterprise';
+  tier: 'All' | 'Pro';
   parameters: EndpointParameter[];
   requestBody?: {
     description: string;
@@ -62,14 +62,14 @@ export const RATE_LIMIT_TIERS = [
     monthlyLimit: '50,000',
     perMinuteLimit: '300',
     maxKeys: 10,
-    price: 'Included with Enterprise',
+    price: 'Included with Pro',
   },
   {
-    tier: 'Enterprise',
+    tier: 'Pro',
     monthlyLimit: 'Unlimited',
     perMinuteLimit: '1,000',
     maxKeys: 'Unlimited',
-    price: 'Included with Enterprise',
+    price: 'Included with Pro',
   },
 ];
 
@@ -87,7 +87,7 @@ export const COMMON_ERRORS = [
   {
     status: 403,
     code: 'FORBIDDEN',
-    message: 'The opportunities endpoint requires an Enterprise API tier. Please upgrade your plan.',
+    message: 'The opportunities endpoint requires a Pro API tier. Please upgrade your plan.',
     description: 'Returned when the endpoint requires a higher API tier than your current key.',
   },
   {
@@ -619,21 +619,21 @@ export const API_CATEGORIES: EndpointCategory[] = [
     ],
   },
 
-  // ==================== Opportunities (Enterprise) ====================
+  // ==================== Opportunities (Pro) ====================
   {
     name: 'Opportunities',
-    description: 'Enterprise-only endpoint for business opportunities, partnerships, and investment leads in the space sector.',
+    description: 'Pro endpoint for business opportunities, partnerships, and investment leads in the space sector.',
     slug: 'opportunities',
     endpoints: [
       {
         operationId: 'getOpportunities',
         method: 'GET',
         path: '/opportunities',
-        summary: 'List business opportunities (Enterprise only)',
+        summary: 'List business opportunities (Pro)',
         description:
-          'Retrieve business opportunities in the space industry. This endpoint requires an Enterprise API tier -- Developer and Business tiers will receive a 403 Forbidden response.',
+          'Retrieve business opportunities in the space industry. This endpoint requires a Pro API tier -- Developer and Business tiers will receive a 403 Forbidden response.',
         tags: ['Opportunities'],
-        tier: 'Enterprise',
+        tier: 'Pro',
         parameters: [
           { name: 'limit', in: 'query', description: 'Number of results to return (max 100)', required: false, type: 'integer', default: 20 },
           { name: 'offset', in: 'query', description: 'Number of results to skip for pagination', required: false, type: 'integer', default: 0 },
@@ -1258,10 +1258,10 @@ export const OPENAPI_SPEC = {
                 },
               },
             },
-            ...(ep.tier === 'Enterprise'
+            ...(ep.tier === 'Pro'
               ? {
                   403: {
-                    description: 'Enterprise tier required',
+                    description: 'Pro tier required',
                     content: {
                       'application/json': {
                         schema: { $ref: '#/components/schemas/Error' },

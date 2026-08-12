@@ -41,9 +41,10 @@ jest.mock('@/lib/stripe', () => ({
     sponsor_premium_monthly: 'price_sponsor_premium_monthly_test',
     sponsor_premium_yearly: 'price_sponsor_premium_yearly_test',
   }),
+  // Mirrors the real implementation: legacy enterprise price IDs map to 'pro'
   priceIdToTier: (priceId: string) => {
     if (priceId === 'price_pro_monthly_test' || priceId === 'price_pro_yearly_test') return 'pro';
-    if (priceId === 'price_enterprise_monthly_test' || priceId === 'price_enterprise_yearly_test') return 'enterprise';
+    if (priceId === 'price_enterprise_monthly_test' || priceId === 'price_enterprise_yearly_test') return 'pro';
     return null;
   },
   priceIdToSponsorTier: (priceId: string) => {
@@ -389,26 +390,45 @@ describe('POST /api/stripe/checkout', () => {
     );
   });
 
-  it('creates checkout session with correct price ID for enterprise/yearly', async () => {
+  it('rejects retired "enterprise" tier at validation (400)', async () => {
     mockGetServerSession.mockResolvedValue(makeSession());
-    (mockPrisma.user.findUnique as jest.Mock).mockResolvedValue(
-      makeUser({ stripeCustomerId: 'cus_ent' })
-    );
-
-    mockCheckoutSessionsCreate.mockResolvedValue({
-      id: 'cs_ent',
-      url: 'https://checkout.stripe.com/session/cs_ent',
-    });
 
     const req = makePostRequest('http://localhost/api/stripe/checkout', {
       tier: 'enterprise',
       interval: 'year',
     });
-    await checkoutPOST(req);
+    const res = await checkoutPOST(req);
+    const body = await res.json();
 
+    expect(res.status).toBe(400);
+    expect(body.success).toBe(false);
+    // No checkout session should have been created
+    expect(mockCheckoutSessionsCreate).not.toHaveBeenCalled();
+  });
+
+  it('creates checkout session with correct price ID for pro/yearly', async () => {
+    mockGetServerSession.mockResolvedValue(makeSession());
+    (mockPrisma.user.findUnique as jest.Mock).mockResolvedValue(
+      makeUser({ stripeCustomerId: 'cus_yearly' })
+    );
+
+    mockCheckoutSessionsCreate.mockResolvedValue({
+      id: 'cs_yearly',
+      url: 'https://checkout.stripe.com/session/cs_yearly',
+    });
+
+    const req = makePostRequest('http://localhost/api/stripe/checkout', {
+      tier: 'pro',
+      interval: 'year',
+    });
+    const res = await checkoutPOST(req);
+    const body = await res.json();
+
+    expect(res.status).toBe(200);
+    expect(body.success).toBe(true);
     expect(mockCheckoutSessionsCreate).toHaveBeenCalledWith(
       expect.objectContaining({
-        line_items: [{ price: 'price_enterprise_yearly_test', quantity: 1 }],
+        line_items: [{ price: 'price_pro_yearly_test', quantity: 1 }],
       })
     );
   });
@@ -799,7 +819,7 @@ describe('POST /api/stripe/webhooks', () => {
   // ── customer.subscription.updated ────────────────────────────────────────
 
   describe('customer.subscription.updated', () => {
-    it('updates user subscription tier and status when subscription changes', async () => {
+    it('maps a legacy enterprise price ID to subscriptionTier "pro"', async () => {
       const subscription = makeStripeSubscription({
         items: {
           data: [{ price: { id: 'price_enterprise_monthly_test' } }],
@@ -811,10 +831,10 @@ describe('POST /api/stripe/webhooks', () => {
       mockWebhooksConstructEvent.mockReturnValue(event);
 
       (mockPrisma.user.findUnique as jest.Mock).mockResolvedValue(
-        makeUser({ subscriptionTier: 'pro' })
+        makeUser({ subscriptionTier: 'free' })
       );
       (mockPrisma.user.update as jest.Mock).mockResolvedValue(
-        makeUser({ subscriptionTier: 'enterprise', subscriptionStatus: 'active' })
+        makeUser({ subscriptionTier: 'pro', subscriptionStatus: 'active' })
       );
 
       const req = makeWebhookRequest(JSON.stringify(subscription), 'valid_sig');
@@ -825,7 +845,7 @@ describe('POST /api/stripe/webhooks', () => {
         expect.objectContaining({
           where: { id: 'user-1' },
           data: expect.objectContaining({
-            subscriptionTier: 'enterprise',
+            subscriptionTier: 'pro',
             subscriptionStatus: 'active',
             stripeSubscriptionId: 'sub_test123',
           }),

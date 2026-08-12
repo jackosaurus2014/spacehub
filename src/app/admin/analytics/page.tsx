@@ -40,7 +40,7 @@ interface AnalyticsData {
 const TIER_LABELS: Record<string, { label: string; color: string }> = {
   free: { label: 'Explorer (Free)', color: 'bg-slate-500/20 text-slate-300 border-slate-500/30' },
   pro: { label: 'Professional', color: 'bg-blue-500/20 text-blue-300 border-blue-500/30' },
-  enterprise: { label: 'Enterprise', color: 'bg-purple-500/20 text-purple-300 border-purple-500/30' },
+  enterprise: { label: 'Professional (legacy)', color: 'bg-blue-500/20 text-blue-300 border-blue-500/30' },
 };
 
 export default function AdminAnalyticsPage() {

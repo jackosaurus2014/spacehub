@@ -220,13 +220,11 @@ function ProfileSection({ session }: { session: any }) {
   const tierLabels: Record<string, string> = {
     free: 'Free',
     pro: 'Pro',
-    enterprise: 'Enterprise',
   };
 
   const tierColors: Record<string, string> = {
     free: 'bg-white/[0.08] text-slate-300',
     pro: 'bg-white/[0.04] text-white/90 border border-white/10',
-    enterprise: 'bg-purple-900/50 text-purple-300 border border-purple-700/50',
   };
 
   if (loading) {
@@ -330,10 +328,10 @@ function ProfileSection({ session }: { session: any }) {
           <label className="block text-sm text-slate-400 mb-1.5">Subscription Tier</label>
           <span
             className={`inline-block text-sm px-3 py-1 rounded-full font-medium ${
-              tierColors[profile?.subscriptionTier || 'free'] || tierColors.free
+              tierColors[profile?.subscriptionTier || 'free'] || tierColors.pro
             }`}
           >
-            {tierLabels[profile?.subscriptionTier || 'free'] || 'Free'}
+            {tierLabels[profile?.subscriptionTier || 'free'] || 'Professional'}
           </span>
         </div>
       </div>

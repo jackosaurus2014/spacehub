@@ -17,16 +17,17 @@ import {
   type GlobalSearchType,
   type SavedSearchNotifyChannel,
 } from '@/lib/validations';
+import { normalizeTier } from '@/lib/subscription';
 
 export const dynamic = 'force-dynamic';
 
 /**
- * Tier limits for saved searches. Free tier is intentionally low (3) — Pro and
- * Enterprise are unlimited. The legacy company-directory / marketplace saved
- * searches share this same pool because they live in the same Prisma model.
+ * Tier limits for saved searches. Free tier is intentionally low (3) — Pro is
+ * unlimited. The legacy company-directory / marketplace saved searches share
+ * this same pool because they live in the same Prisma model.
  */
 function getSavedSearchLimit(tier: string | null | undefined): number {
-  if (tier === 'enterprise' || tier === 'pro') return Infinity;
+  if (normalizeTier(tier) !== 'free') return Infinity;
   return 3; // free
 }
 
@@ -35,13 +36,14 @@ function getEffectiveTier(user: {
   trialTier: string | null;
   trialEndDate: Date | null;
 }): string {
-  if (user.subscriptionTier === 'enterprise' || user.subscriptionTier === 'pro') {
-    return user.subscriptionTier;
+  const tier = normalizeTier(user.subscriptionTier);
+  if (tier !== 'free') {
+    return tier;
   }
   if (user.trialTier && user.trialEndDate && user.trialEndDate > new Date()) {
-    return user.trialTier;
+    return normalizeTier(user.trialTier);
   }
-  return user.subscriptionTier || 'free';
+  return tier;
 }
 
 /**

@@ -94,7 +94,7 @@ describe('getVariant', () => {
       results.add(getVariant(test));
     }
     // Both variants should be represented across 50 runs (statistically near-certain)
-    for (const v of results) {
+    for (const v of Array.from(results)) {
       expect(test.variants).toContain(v);
     }
   });

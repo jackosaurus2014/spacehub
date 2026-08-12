@@ -71,7 +71,7 @@ const HELP_CATEGORIES: HelpCategory[] = [
       {
         question: 'What subscription plans are available?',
         answer:
-          'SpaceNexus offers three tiers: Explorer (free), Professional ($29/month), and Enterprise (custom pricing). Professional unlocks AI market analysis, custom alerts, data exports, and API access. Enterprise adds team management, dedicated support, and higher rate limits. Visit our pricing page for full details.',
+          'SpaceNexus offers two tiers: Explorer (free) and Professional ($19.99/month or $199/year, with a 14-day free trial). Professional includes everything — AI market analysis, custom alerts, data exports, full API access, custom dashboards, and priority support. Visit our pricing page for full details.',
       },
       {
         question: 'How do I upgrade or downgrade my plan?',
@@ -86,7 +86,7 @@ const HELP_CATEGORIES: HelpCategory[] = [
       {
         question: 'What payment methods do you accept?',
         answer:
-          'We accept all major credit and debit cards (Visa, Mastercard, American Express) through Stripe. Enterprise customers can also pay via invoice with net-30 terms. All payments are processed securely and encrypted end-to-end.',
+          'We accept all major credit and debit cards (Visa, Mastercard, American Express) through Stripe. All payments are processed securely and encrypted end-to-end.',
       },
     ],
   },
@@ -162,12 +162,12 @@ const HELP_CATEGORIES: HelpCategory[] = [
       {
         question: 'How do I get API access?',
         answer:
-          'API access is available on the Professional and Enterprise tiers. Navigate to the Developer Portal to generate your API key. The REST API provides endpoints for satellite data, launch schedules, company profiles, market intelligence, and news feeds with versioned endpoints and JSON responses.',
+          'API access is included with the Professional plan. Navigate to the Developer Portal to generate your API key. The REST API provides endpoints for satellite data, launch schedules, company profiles, market intelligence, and news feeds with versioned endpoints and JSON responses.',
       },
       {
         question: 'What are the API rate limits?',
         answer:
-          'Professional plan users get 1,000 requests per hour. Enterprise customers receive higher rate limits based on their contract. All responses include rate limit headers so you can monitor usage. If you need higher limits, contact our sales team to discuss Enterprise options.',
+          'Professional plan users get 1,000 requests per hour. All responses include rate limit headers so you can monitor usage. If you need higher limits, contact our support team and we will work something out.',
       },
       {
         question: 'What data sources does SpaceNexus aggregate?',
@@ -190,12 +190,12 @@ const HELP_CATEGORIES: HelpCategory[] = [
       {
         question: 'How do I contact SpaceNexus support?',
         answer:
-          'You can reach us via the Contact page, or email us directly at support@spacenexus.us. Enterprise customers have access to priority support with a dedicated account manager. We aim to respond within 24 hours on business days.',
+          'You can reach us via the Contact page, or email us directly at support@spacenexus.us. Professional subscribers receive priority support. We aim to respond within 24 hours on business days.',
       },
       {
         question: 'Is there live chat support?',
         answer:
-          'Enterprise customers receive live chat support during business hours (9 AM - 6 PM ET, Monday through Friday). All users can submit support requests through the contact form or via email, and we respond as quickly as possible.',
+          'Professional subscribers receive priority support during business hours (9 AM - 6 PM ET, Monday through Friday). All users can submit support requests through the contact form or via email, and we respond as quickly as possible.',
       },
       {
         question: 'How do I report a bug or request a feature?',

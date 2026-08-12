@@ -59,7 +59,8 @@ function RegisterPageContent() {
   // Parse monetization-relevant query params
   const isFounding = searchParams.get('founding') === 'true';
   const isTrial = searchParams.get('trial') === 'true';
-  const planParam = searchParams.get('plan'); // 'pro' | 'enterprise'
+  const rawPlanParam = searchParams.get('plan'); // 'pro' ('enterprise' accepted from old links)
+  const planParam = rawPlanParam === 'enterprise' ? 'pro' : rawPlanParam;
 
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');

@@ -81,42 +81,23 @@ const PRICING_TIERS = [
     highlight: false,
   },
   {
-    name: 'Developer',
-    price: '$29',
+    name: 'Professional',
+    price: '$19.99',
     period: '/mo',
-    description: 'Full access for applications and integrations',
+    description: 'Everything included — full API access, 14-day free trial',
     features: [
-      '5,000 requests/day',
       'All API endpoints',
       'Webhook notifications',
       'Market intelligence data',
       'Satellite tracking data',
       'Company financials',
-      'Email support',
+      'Bulk data exports',
       'Usage analytics dashboard',
+      'Priority support',
     ],
-    cta: 'Start Building',
+    cta: 'Start Free Trial',
     ctaHref: '/register',
     highlight: true,
-  },
-  {
-    name: 'Enterprise',
-    price: '$99',
-    period: '/mo',
-    description: 'Maximum throughput with premium support',
-    features: [
-      '50,000 requests/day',
-      'All Developer features',
-      'Priority support (< 4h SLA)',
-      'Custom endpoints on request',
-      'Bulk data exports',
-      'Dedicated account manager',
-      'SSO integration',
-      'Custom rate limits',
-    ],
-    cta: 'Contact Sales',
-    ctaHref: '/register',
-    highlight: false,
   },
 ];
 
@@ -255,7 +236,7 @@ export default function ApiAccessPage() {
           </div>
         </ScrollReveal>
 
-        <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+        <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto">
           {PRICING_TIERS.map((tier) => (
             <StaggerItem key={tier.name}>
               <div

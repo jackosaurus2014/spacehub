@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { selectAd } from '@/lib/ads/ad-server';
+import { normalizeTier } from '@/lib/subscription';
 import { logger } from '@/lib/logger';
-import { SubscriptionTier } from '@/types';
 
 export const dynamic = 'force-dynamic';
 
@@ -21,7 +21,8 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const position = searchParams.get('position');
     const targetModule = searchParams.get('module') || undefined;
-    const tier = searchParams.get('tier') as SubscriptionTier | null;
+    const rawTier = searchParams.get('tier');
+    const tier = rawTier ? normalizeTier(rawTier) : null;
 
     if (!position) {
       return NextResponse.json(

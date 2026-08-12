@@ -16,6 +16,7 @@ import {
 } from '@/lib/report-generator';
 import { REPORT_TYPES, SPACE_SECTORS } from '@/lib/report-templates';
 import { validateBody, reportGenerateSchema } from '@/lib/validations';
+import { normalizeTier } from '@/lib/subscription';
 
 export const dynamic = 'force-dynamic';
 
@@ -65,10 +66,10 @@ const TIER_LIMITS: Record<string, TierLimits> = {
     allowedTypes: ['sector-overview'], // Free users only get 1 sample report
   },
   pro: {
-    monthlyReports: 5,
+    monthlyReports: 999, // Effectively unlimited
     allowedTypes: ['sector-overview', 'company-deep-dive', 'competitive-analysis', 'market-entry-brief'],
   },
-  enterprise: {
+  test: {
     monthlyReports: 999, // Effectively unlimited
     allowedTypes: ['sector-overview', 'company-deep-dive', 'competitive-analysis', 'market-entry-brief'],
   },
@@ -116,7 +117,7 @@ export async function POST(request: NextRequest) {
     }
 
     userId = session.user.id;
-    const userTier = (session.user as { subscriptionTier?: string }).subscriptionTier || 'free';
+    const userTier = normalizeTier((session.user as { subscriptionTier?: string }).subscriptionTier);
     const tierLimits = TIER_LIMITS[userTier] || TIER_LIMITS.free;
 
     // Parse body
@@ -146,7 +147,7 @@ export async function POST(request: NextRequest) {
     // Tier access check
     if (!tierLimits.allowedTypes.includes(reportType)) {
       return validationError(
-        `Your ${userTier} plan does not include ${reportTypeConfig.name} reports. Upgrade to Pro or Enterprise for access.`
+        `Your ${userTier} plan does not include ${reportTypeConfig.name} reports. Upgrade to Pro for access.`
       );
     }
 

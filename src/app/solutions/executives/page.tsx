@@ -72,7 +72,7 @@ const FEATURES = [
 
 const FAQ_ITEMS = [
   { question: 'How does SpaceNexus help with board presentations?', answer: 'SpaceNexus provides export-ready charts, market maps, and competitive landscapes that executives use directly in board decks and investor presentations. Data is always current and sourced.' },
-  { question: 'Can my whole leadership team access SpaceNexus?', answer: 'Yes. Enterprise plans include team seats with role-based access, shared dashboards, and collaborative workspaces so your entire leadership team works from the same data.' },
+  { question: 'Can my whole leadership team access SpaceNexus?', answer: 'Yes. The Professional plan includes shared dashboards and collaborative workspaces so your entire leadership team works from the same data.' },
   { question: 'What makes SpaceNexus different from general business intelligence tools?', answer: 'SpaceNexus is purpose-built for the space industry with domain-specific data models, proprietary scoring, and space-specific modules that general BI tools like Tableau or Power BI cannot replicate.' },
   { question: 'How often is market data updated?', answer: 'Market news and satellite data update in real time. Company profiles, financial data, and market sizing are refreshed quarterly or upon material events. Contract awards update within 24 hours of publication.' },
 ];
@@ -240,7 +240,7 @@ export default function ExecutivesSolutionPage() {
       <StickyMobileCTA
         label="Start Free Trial"
         href="/pricing?ref=executives"
-        variant="enterprise"
+        variant="primary"
       />
     </div>
   );

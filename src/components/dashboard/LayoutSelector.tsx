@@ -248,9 +248,9 @@ export default function LayoutSelector({
                 </button>
               )}
 
-              {!canCreate && layouts.length > 0 && (
+              {!canCreate && tier === 'free' && layouts.length > 0 && (
                 <p className="text-xs text-slate-400 text-center mt-2">
-                  Upgrade to {tier === 'pro' ? 'Enterprise' : 'Pro'} for more layouts
+                  Upgrade to Pro for more layouts
                 </p>
               )}
             </>

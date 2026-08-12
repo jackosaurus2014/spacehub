@@ -38,7 +38,7 @@ const FAQ_ITEMS: FAQItem[] = [
     category: 'getting-started',
     question: 'Is SpaceNexus free?',
     answer:
-      'Yes, SpaceNexus offers a free Explorer tier that includes access to news feeds, satellite tracking, launch schedules, and public company profiles. Premium tiers (Professional and Enterprise) unlock advanced features such as AI-powered market analysis, custom alerts, data exports, and API access. Visit our pricing page for full plan details.',
+      'Yes, SpaceNexus offers a free Explorer tier that includes access to news feeds, satellite tracking, launch schedules, and public company profiles. The Professional tier unlocks everything else — AI-powered market analysis, custom alerts, data exports, and full API access. Visit our pricing page for full plan details.',
   },
   {
     id: 'gs-4',
@@ -89,7 +89,7 @@ const FAQ_ITEMS: FAQItem[] = [
     category: 'features',
     question: 'How do I set up custom alerts?',
     answer:
-      'Navigate to the alerts page to create rules for the events you care about, such as launch schedule changes, company news, regulatory filings, or conjunction warnings. Alerts can be delivered via email or in-app notifications. Professional and Enterprise users can set up webhook integrations for programmatic alert delivery.',
+      'Navigate to the alerts page to create rules for the events you care about, such as launch schedule changes, company news, regulatory filings, or conjunction warnings. Alerts can be delivered via email or in-app notifications. Professional users can set up webhook integrations for programmatic alert delivery.',
   },
 
   // For Investors
@@ -144,7 +144,7 @@ const FAQ_ITEMS: FAQItem[] = [
     category: 'technical',
     question: 'Is there an API available?',
     answer:
-      'Yes. The SpaceNexus API provides programmatic access to satellite data, launch schedules, company profiles, market intelligence, and news feeds. API keys are managed through the developer portal. The REST API includes rate limiting, versioned endpoints (v1), and returns JSON responses. Enterprise customers receive higher rate limits and priority support.',
+      'Yes. The SpaceNexus API provides programmatic access to satellite data, launch schedules, company profiles, market intelligence, and news feeds. API keys are managed through the developer portal. The REST API includes rate limiting, versioned endpoints (v1), and returns JSON responses. Full API access and priority support are included with the Professional plan.',
   },
   {
     id: 'tech-2',

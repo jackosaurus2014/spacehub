@@ -7,7 +7,18 @@ export interface UserSubscription {
   endDate: Date | null;
 }
 
-// Feature access by tier
+/**
+ * Normalize a tier string read from the database (or any external source)
+ * into the current tier set. Legacy 'enterprise' subscribers keep full paid
+ * access by mapping to 'pro'.
+ */
+export function normalizeTier(tier: string | null | undefined): SubscriptionTier {
+  if (tier === 'enterprise') return 'pro';
+  if (tier === 'pro' || tier === 'test') return tier;
+  return 'free';
+}
+
+// Feature access by tier — a single paid tier (Pro) unlocks everything.
 export const TIER_ACCESS: Record<SubscriptionTier, {
   maxDailyArticles: number;
   hasStockTracking: boolean;
@@ -44,23 +55,6 @@ export const TIER_ACCESS: Record<SubscriptionTier, {
   },
   pro: {
     maxDailyArticles: -1, // unlimited
-    hasStockTracking: true,
-    hasMarketIntel: true,
-    hasResourceExchange: true,
-    hasAIOpportunities: false,
-    hasAlerts: true,
-    hasAPIAccess: false,
-    adFree: true,
-    hasDealFlow: true,
-    hasIntelReports: false,
-    hasSupplyChainMap: true,
-    hasExecutiveMoves: true,
-    hasRegulatoryCalendar: true,
-    hasSpaceScore: true,
-    hasSalaryData: true,
-  },
-  enterprise: {
-    maxDailyArticles: -1,
     hasStockTracking: true,
     hasMarketIntel: true,
     hasResourceExchange: true,
@@ -107,9 +101,11 @@ export function canAccessFeature(
   return TIER_ACCESS[tier][feature] as boolean;
 }
 
-// Module tier requirements — single source of truth
+// Module tier requirements — single source of truth.
+// Every premium module requires the single paid tier (Pro).
+// NOTE: recruitment-relevant modules (jobs, workforce, salary, executive-moves)
+// are intentionally NOT listed here — they are fully public.
 const PREMIUM_MODULES: Record<string, SubscriptionTier> = {
-  // Pro tier — professional analytics & intelligence
   'resource-exchange': 'pro',
   'supply-chain': 'pro',
   'space-capital': 'pro',
@@ -117,23 +113,21 @@ const PREMIUM_MODULES: Record<string, SubscriptionTier> = {
   'deal-flow': 'pro',
   'supply-chain-map': 'pro',
   'regulatory-calendar': 'pro',
-  'executive-moves': 'pro',
-  // Enterprise tier — organizational & compliance tools
-  'business-opportunities': 'enterprise',
-  'spectrum-tracker': 'enterprise',
-  'space-insurance': 'enterprise',
-  'compliance': 'enterprise',
-  'orbital-services': 'enterprise',
-  'patent-tracker': 'enterprise',
-  'intel-reports': 'enterprise',
-  'api-docs': 'enterprise',
-  'investment-thesis': 'enterprise',
-  'deal-rooms': 'enterprise',
+  'business-opportunities': 'pro',
+  'spectrum-tracker': 'pro',
+  'space-insurance': 'pro',
+  'compliance': 'pro',
+  'orbital-services': 'pro',
+  'patent-tracker': 'pro',
+  'intel-reports': 'pro',
+  'api-docs': 'pro',
+  'investment-thesis': 'pro',
+  'deal-rooms': 'pro',
   'funding-tracker': 'pro',
-  'customer-discovery': 'enterprise',
+  'customer-discovery': 'pro',
 };
 
-const TIER_ORDER: SubscriptionTier[] = ['free', 'pro', 'enterprise', 'test'];
+const TIER_ORDER: SubscriptionTier[] = ['free', 'pro', 'test'];
 
 export function canAccessModule(tier: SubscriptionTier, moduleId: string): boolean {
   const requiredTier = PREMIUM_MODULES[moduleId];

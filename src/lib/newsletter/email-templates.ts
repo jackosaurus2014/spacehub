@@ -644,7 +644,7 @@ export function generateNurtureAISpotlightEmail(userName: string): NurtureEmailR
         </td></tr>
       </table>
       <p style="margin:16px 0 0;color:#94a3b8;font-size:14px;line-height:1.6;">
-        Enterprise users can significantly reduce time spent on market research with AI Insights.
+        Pro subscribers can significantly reduce time spent on market research with AI Insights.
       </p>
       ${getNurtureCta('Try AI Insights', `${APP_URL}/ai-insights`)}
     </td></tr>
@@ -658,7 +658,7 @@ ${userName || 'Explorer'}, our AI Insights engine analyzes thousands of data poi
 Example AI Analysis:
 "LEO launch costs dropped 12% this quarter, driven by SpaceX's increased cadence. Three new entrants are expected to reach orbit by Q3, which could push prices down another 8-15%."
 
-Enterprise users can significantly reduce time spent on market research with AI Insights.
+Pro subscribers can significantly reduce time spent on market research with AI Insights.
 
 Try AI Insights: ${APP_URL}/ai-insights
 

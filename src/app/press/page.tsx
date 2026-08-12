@@ -27,7 +27,7 @@ const COMPANY_FACTS = [
   { label: 'Headquarters', value: 'Houston, TX' },
   { label: 'Company', value: 'SpaceNexus LLC' },
   { label: 'Industry', value: 'Space Intelligence / SaaS' },
-  { label: 'Model', value: 'Freemium (Free / Pro / Enterprise)' },
+  { label: 'Model', value: 'Freemium (Free / Pro)' },
   { label: 'Platforms', value: 'Web (PWA), Android, iOS' },
   { label: 'Data Refresh', value: 'Real-time (33 automated jobs)' },
   { label: 'AI Engine', value: 'Claude by Anthropic' },
@@ -105,7 +105,7 @@ export default function PressPage() {
                   data sources. The platform aggregates real-time data from NASA, NOAA, SAM.gov, and 50+ industry
                   feeds through 33 automated data pipelines, serving space startups, defense contractors, investors,
                   engineers, and government agencies. Available as a progressive web app with native Android and iOS
-                  apps, SpaceNexus offers free, Professional ($19.99/mo), and Enterprise ($49.99/mo) tiers.
+                  apps, SpaceNexus offers a free Explorer tier and an everything-included Professional tier ($19.99/mo).
                 </p>
               </div>
 
@@ -328,8 +328,8 @@ export default function PressPage() {
                   regulatory compliance, SpaceNexus replaces dozens of expensive, fragmented data sources. The
                   platform aggregates data from NASA, NOAA, SAM.gov, and 50+ industry feeds through 33 automated
                   data pipelines, serving space startups, defense contractors, investors, engineers, and government
-                  agencies. Available as a progressive web app with offline support, SpaceNexus offers free,
-                  Professional, and Enterprise tiers. Learn more at spacenexus.us.
+                  agencies. Available as a progressive web app with offline support, SpaceNexus offers free
+                  Explorer and everything-included Professional tiers. Learn more at spacenexus.us.
                 </p>
               </div>
 
@@ -362,7 +362,7 @@ export default function PressPage() {
                   engineers, defense contractors, investors, startup founders, government program managers, journalists,
                   and space enthusiasts alike.<br /><br />
                   Unlike legacy competitors charging $10,000-50,000+ per year for narrow data sets, SpaceNexus
-                  offers a free Explorer tier alongside Professional ($19.99/month) and Enterprise ($49.99/month) plans,
+                  offers a free Explorer tier alongside a single Professional plan ($19.99/month) that includes everything,
                   democratizing access to space industry intelligence. The platform is available as a responsive
                   web application with 180+ pages, progressive web app capabilities, and native Android and iOS mobile
                   apps. Founded in 2024 and headquartered in Houston, Texas, SpaceNexus LLC is building the Bloomberg

@@ -169,8 +169,9 @@ export interface ModuleConfig {
   subModuleIds?: string[];    // For parent modules, list of child module IDs
 }
 
-// Subscription tiers
-export type SubscriptionTier = 'free' | 'pro' | 'enterprise' | 'test';
+// Subscription tiers — single paid tier. Legacy 'enterprise' subscribers are
+// normalized to 'pro' at every read boundary (see normalizeTier in lib/subscription).
+export type SubscriptionTier = 'free' | 'pro' | 'test';
 
 export interface SubscriptionPlan {
   id: SubscriptionTier;
@@ -195,7 +196,8 @@ export const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
       'Launch windows & cost calculator',
       'Satellite tracking & ground stations',
       'Solar exploration & asteroid watch',
-      'Space jobs, workforce & salary data',
+      'Space jobs, gig work, workforce & salary data',
+      'Executive move tracker',
       'Company directory (basic profiles)',
       'Space Score leaderboard (top 10)',
       'Conference & event calendar',
@@ -213,40 +215,21 @@ export const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
     features: [
       'Everything in Explorer',
       'Unlimited article access',
+      'Full access to every premium module',
       'Deal flow database (113+ deals)',
-      'Executive move tracker',
       'Supply chain intelligence & relationship map',
-      'Regulatory deadline calendar (105+ deadlines)',
+      'Regulatory deadline calendar & compliance suite',
       'Full Space Score rankings & breakdown',
-      'Real-time alerts & saved searches',
+      'Real-time alerts, saved searches & webhooks',
       'Full company intelligence & financials',
-      'Space economy & market analytics',
-      'Resource Exchange calculator',
+      'AI-powered intelligence reports & opportunity scoring',
+      'Patent, spectrum & procurement intelligence (SAM.gov/SBIR)',
+      'Space insurance & Resource Exchange calculators',
+      'Full API access, docs & interactive explorer',
+      'Custom dashboard builder',
       'Chart export (CSV & PNG)',
       'Ad-free experience',
       'Priority support',
-    ],
-  },
-  {
-    id: 'enterprise',
-    name: 'Enterprise',
-    price: 49.99,
-    priceYearly: 499,
-    trialDays: 14,
-    features: [
-      'Everything in Professional',
-      'AI-powered intelligence reports',
-      'AI business opportunity scoring',
-      'Regulatory & compliance suite',
-      'Spectrum management & auctions',
-      'Space insurance calculator',
-      'Patent intelligence tracker',
-      'Procurement intelligence (SAM.gov/SBIR)',
-      'Full API access & documentation',
-      'Interactive API explorer',
-      'Custom dashboard builder',
-      'Webhook integrations',
-      'Dedicated account manager',
     ],
   },
 ];

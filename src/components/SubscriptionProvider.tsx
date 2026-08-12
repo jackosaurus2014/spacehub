@@ -3,7 +3,7 @@
 import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
 import { useSession } from 'next-auth/react';
 import { SubscriptionTier } from '@/types';
-import { canAccessModule, canAccessFeature, TIER_ACCESS } from '@/lib/subscription';
+import { canAccessModule, canAccessFeature, normalizeTier, TIER_ACCESS } from '@/lib/subscription';
 import { clientLogger } from '@/lib/client-logger';
 
 interface SubscriptionContextType {
@@ -12,7 +12,6 @@ interface SubscriptionContextType {
   canAccess: (moduleId: string) => boolean;
   canUseFeature: (feature: keyof typeof TIER_ACCESS['free']) => boolean;
   isPro: boolean;
-  isEnterprise: boolean;
   remainingArticles: number | null; // null = unlimited
   isTrialing: boolean;
   trialEndsAt: Date | null;
@@ -25,7 +24,6 @@ const SubscriptionContext = createContext<SubscriptionContextType>({
   canAccess: () => true,
   canUseFeature: () => false,
   isPro: false,
-  isEnterprise: false,
   remainingArticles: 10,
   isTrialing: false,
   trialEndsAt: null,
@@ -64,7 +62,7 @@ export default function SubscriptionProvider({ children }: SubscriptionProviderP
       const res = await fetch('/api/subscription');
       const data = await res.json();
 
-      setTier(data.tier || 'free');
+      setTier(normalizeTier(data.tier));
       setIsTrialing(data.isTrialing || false);
       setTrialEndsAt(data.trialEndsAt ? new Date(data.trialEndsAt) : null);
       setRemainingArticles(
@@ -95,8 +93,7 @@ export default function SubscriptionProvider({ children }: SubscriptionProviderP
     isLoading,
     canAccess,
     canUseFeature,
-    isPro: tier === 'pro' || tier === 'enterprise' || tier === 'test',
-    isEnterprise: tier === 'enterprise' || tier === 'test',
+    isPro: tier !== 'free',
     remainingArticles: tier === 'free' && !isTrialing ? remainingArticles : null,
     isTrialing,
     trialEndsAt,

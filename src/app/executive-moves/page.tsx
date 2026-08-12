@@ -6,13 +6,11 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
-import PremiumGate from '@/components/PremiumGate';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import ExportButton from '@/components/ui/ExportButton';
 import EmptyState from '@/components/ui/EmptyState';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
-import FeatureTeaser from '@/components/marketing/FeatureTeaser';
 import DataFreshnessBadge from '@/components/ui/DataFreshnessBadge';
 
 interface ExecutiveMove {
@@ -593,17 +591,6 @@ function ExecutiveMovesContent() {
                           {move.fromTitle && (
                             <span className="text-slate-500 ml-1">({move.fromTitle})</span>
                           )}
-
-        <FeatureTeaser
-          featureName="Executive Moves"
-          description="Track C-suite hiring, departures, and board changes across 200+ space companies. Stay ahead of industry leadership shifts."
-          requiredTier="pro"
-          freePreviewCount={3}
-          totalCount={100}
-        >
-          <div />
-        </FeatureTeaser>
-        <RelatedModules modules={PAGE_RELATIONS['executive-moves']} />
                         </div>
                       </div>
                     )}
@@ -674,6 +661,8 @@ function ExecutiveMovesContent() {
               </button>
             </motion.div>
           )}
+
+          <RelatedModules modules={PAGE_RELATIONS['executive-moves']} />
         </>
       )}
     </div>
@@ -682,14 +671,12 @@ function ExecutiveMovesContent() {
 
 export default function ExecutiveMovesPage() {
   return (
-    <PremiumGate requiredTier="pro" context="executive-moves" showPreview={true}>
-      <Suspense fallback={
-        <div className="min-h-screen flex items-center justify-center">
-          <LoadingSpinner />
-        </div>
-      }>
-        <ExecutiveMovesContent />
-      </Suspense>
-    </PremiumGate>
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <LoadingSpinner />
+      </div>
+    }>
+      <ExecutiveMovesContent />
+    </Suspense>
   );
 }

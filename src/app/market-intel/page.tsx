@@ -1441,7 +1441,7 @@ export default function MarketIntelPage() {
       { question: 'Where does SpaceNexus get its space market data?', answer: 'SpaceNexus aggregates data from SEC filings, public earnings reports, press releases, industry reports from organizations like SIA and Euroconsult, and real-time stock market data for publicly traded space companies.' },
       { question: 'How often is space market intelligence updated?', answer: 'Stock prices and ETF data update throughout trading hours. Company financial data, funding rounds, and industry metrics are updated daily from multiple verified sources.' },
       { question: 'What space ETFs can I track on SpaceNexus?', answer: 'SpaceNexus tracks major space-focused ETFs including UFO (Procure Space ETF), ARKX (ARK Space Exploration), ROKT (SPDR Kensho Final Frontiers), and aerospace-defense ETFs like ITA and XAR.' },
-      { question: 'Is SpaceNexus market data free?', answer: 'Yes, SpaceNexus Market Intelligence is available on the free tier with basic access. Pro and Enterprise plans include advanced analytics, historical data, and API access.' },
+      { question: 'Is SpaceNexus market data free?', answer: 'Yes, SpaceNexus Market Intelligence is available on the free tier with basic access. The Pro plan includes advanced analytics, historical data, and API access.' },
     ]} />
     <Suspense
       fallback={

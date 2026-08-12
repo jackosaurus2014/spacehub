@@ -24,7 +24,6 @@ export type UpgradeContext =
   | 'intel-reports'
   | 'supply-chain-map'
   | 'regulatory-calendar'
-  | 'executive-moves'
   | 'investment-thesis'
   | 'deal-rooms'
   | 'funding-tracker'
@@ -71,8 +70,8 @@ const CONTEXTUAL_MESSAGES: Record<UpgradeContext, ContextualMessage> = {
     icon: '\u{1F4BC}',
     title: 'AI-Powered Opportunity Matching',
     description:
-      'Get AI-powered business opportunity matching with Enterprise. Discover contracts, partnerships, and market openings tailored to your profile.',
-    requiredTier: 'enterprise',
+      'Get AI-powered business opportunity matching with Pro. Discover contracts, partnerships, and market openings tailored to your profile.',
+    requiredTier: 'pro',
     highlights: [
       'AI contract matching',
       'Partnership discovery',
@@ -84,7 +83,7 @@ const CONTEXTUAL_MESSAGES: Record<UpgradeContext, ContextualMessage> = {
     title: 'ITAR/EAR Export Control Database',
     description:
       'Access the complete ITAR/EAR export control database, treaty monitoring, and regulatory filing trackers. Stay compliant across all jurisdictions.',
-    requiredTier: 'enterprise',
+    requiredTier: 'pro',
     highlights: [
       'Complete ITAR/EAR export control database',
       'Treaty monitoring & filing deadline alerts',
@@ -96,7 +95,7 @@ const CONTEXTUAL_MESSAGES: Record<UpgradeContext, ContextualMessage> = {
     title: 'Spectrum Management',
     description:
       'Monitor spectrum allocations and auction opportunities. Track frequency assignments and plan your communications strategy.',
-    requiredTier: 'enterprise',
+    requiredTier: 'pro',
     highlights: [
       'Allocation tracking',
       'Auction monitoring',
@@ -108,7 +107,7 @@ const CONTEXTUAL_MESSAGES: Record<UpgradeContext, ContextualMessage> = {
     title: 'Space Insurance Tools',
     description:
       'Compare space insurance providers and calculate premiums. Assess risk profiles and optimize your coverage strategy.',
-    requiredTier: 'enterprise',
+    requiredTier: 'pro',
     highlights: [
       'Premium calculators',
       'Provider comparison',
@@ -120,7 +119,7 @@ const CONTEXTUAL_MESSAGES: Record<UpgradeContext, ContextualMessage> = {
     title: 'Orbital Services Dashboard',
     description:
       'Track orbital slot availability and manage service requests. Monitor constellation status and coordinate operations.',
-    requiredTier: 'enterprise',
+    requiredTier: 'pro',
     highlights: [
       'Slot availability',
       'Service requests',
@@ -144,7 +143,7 @@ const CONTEXTUAL_MESSAGES: Record<UpgradeContext, ContextualMessage> = {
     title: 'AI-Powered Analysis',
     description:
       'Get AI-powered analysis of market trends and competitive intelligence. Leverage machine learning for strategic advantage.',
-    requiredTier: 'enterprise',
+    requiredTier: 'pro',
     highlights: [
       'Trend analysis',
       'Competitive intelligence',
@@ -156,7 +155,7 @@ const CONTEXTUAL_MESSAGES: Record<UpgradeContext, ContextualMessage> = {
     title: 'SpaceNexus API Access',
     description:
       'Access the SpaceNexus API for custom integrations and data feeds. Build on top of our comprehensive space industry data.',
-    requiredTier: 'enterprise',
+    requiredTier: 'pro',
     highlights: [
       'RESTful API',
       'Webhook integrations',
@@ -192,7 +191,7 @@ const CONTEXTUAL_MESSAGES: Record<UpgradeContext, ContextualMessage> = {
     title: 'Custom Intelligence Reports',
     description:
       'Generate AI-powered research reports on any space industry topic, company, or sector. Professional-grade analysis in minutes.',
-    requiredTier: 'enterprise',
+    requiredTier: 'pro',
     highlights: [
       'AI-generated sector reports',
       'Company deep dives',
@@ -223,24 +222,12 @@ const CONTEXTUAL_MESSAGES: Record<UpgradeContext, ContextualMessage> = {
       'Agency-specific filtering',
     ],
   },
-  'executive-moves': {
-    icon: '\u{1F464}',
-    title: 'Executive Move Tracker',
-    description:
-      'Track C-suite and VP-level leadership changes across the space industry. Stay ahead of hiring trends and talent movement.',
-    requiredTier: 'pro',
-    highlights: [
-      '55+ tracked executive moves',
-      'Company-linked profiles',
-      'Real-time move alerts',
-    ],
-  },
   'investment-thesis': {
     icon: '\u{1F4C8}',
     title: 'AI Investment Thesis Generator',
     description:
       'Generate comprehensive, AI-powered investment theses for any space company. Get bull/bear cases, risk scoring, competitive analysis, and actionable recommendations.',
-    requiredTier: 'enterprise',
+    requiredTier: 'pro',
     highlights: [
       'AI-powered company analysis',
       'Risk scoring & mitigation',
@@ -252,7 +239,7 @@ const CONTEXTUAL_MESSAGES: Record<UpgradeContext, ContextualMessage> = {
     title: 'Secure Deal Rooms',
     description:
       'Create private, NDA-protected deal rooms for investors and startups. Share confidential documents with full audit trails and member management.',
-    requiredTier: 'enterprise',
+    requiredTier: 'pro',
     highlights: [
       'NDA workflow & tracking',
       'Secure document sharing',
@@ -276,7 +263,7 @@ const CONTEXTUAL_MESSAGES: Record<UpgradeContext, ContextualMessage> = {
     title: 'Customer Discovery Engine',
     description:
       'Find your space industry customers by cross-referencing procurement categories, tech needs, and government agency budgets. Match your product to buyers.',
-    requiredTier: 'enterprise',
+    requiredTier: 'pro',
     highlights: [
       'Procurement category matching',
       'Government agency mapping',
@@ -311,7 +298,7 @@ const CONTEXTUAL_MESSAGES: Record<UpgradeContext, ContextualMessage> = {
     icon: '\u{1F680}',
     title: 'Advanced Launch Intelligence',
     description:
-      'Go beyond basic launch schedules with window calculators, payload manifests, and provider comparison tools. Enterprise includes full API access.',
+      'Go beyond basic launch schedules with window calculators, payload manifests, and provider comparison tools. Pro includes full API access.',
     requiredTier: 'pro',
     highlights: [
       'Launch window calculator & delta-v planner',
@@ -324,7 +311,7 @@ const CONTEXTUAL_MESSAGES: Record<UpgradeContext, ContextualMessage> = {
     title: 'Space Patent Intelligence',
     description:
       'Monitor patent filings across the space industry. Track competitor IP strategies, identify white space opportunities, and get alerts on new filings.',
-    requiredTier: 'enterprise',
+    requiredTier: 'pro',
     highlights: [
       'Space patent database & search',
       'Competitor IP landscape analysis',
@@ -347,7 +334,6 @@ const MODULE_ID_TO_CONTEXT: Record<string, UpgradeContext> = {
   'supply-chain-map': 'supply-chain-map',
   'supply-chain': 'supply-chain-map',
   'regulatory-calendar': 'regulatory-calendar',
-  'executive-moves': 'executive-moves',
   'intel-reports': 'intel-reports',
   'investment-thesis': 'investment-thesis',
   'deal-rooms': 'deal-rooms',
@@ -386,7 +372,7 @@ export default function PremiumGate({
 
   // If user has access, show children (with trial badge if trialing)
   if (moduleId ? canAccess(moduleId) : true) {
-    const tierOrder: SubscriptionTier[] = ['free', 'pro', 'enterprise'];
+    const tierOrder: SubscriptionTier[] = ['free', 'pro', 'test'];
     const hasAccess = tierOrder.indexOf(tier) >= tierOrder.indexOf(requiredTier);
     if (hasAccess) {
       return (
@@ -399,7 +385,7 @@ export default function PremiumGate({
   }
 
   // Check access based on required tier
-  const tierOrder: SubscriptionTier[] = ['free', 'pro', 'enterprise'];
+  const tierOrder: SubscriptionTier[] = ['free', 'pro', 'test'];
   const hasAccess = tierOrder.indexOf(tier) >= tierOrder.indexOf(requiredTier);
 
   if (hasAccess) {
@@ -512,18 +498,16 @@ export function PremiumBadge({ tier }: { tier: SubscriptionTier }) {
 
   const colors: Record<string, string> = {
     pro: 'bg-white/5 text-white/90 border-white/10',
-    enterprise: 'bg-purple-500/10 text-purple-300 border-purple-500/30',
     test: 'bg-green-500/10 text-green-300 border-green-500/30',
   };
 
   const labels: Record<string, string> = {
     pro: 'PRO',
-    enterprise: 'ENTERPRISE',
     test: 'TEST',
   };
 
   return (
-    <span className={`text-xs font-semibold px-2 py-0.5 rounded border ${colors[tier] || colors.enterprise}`}>
+    <span className={`text-xs font-semibold px-2 py-0.5 rounded border ${colors[tier] || colors.pro}`}>
       {labels[tier] || tier.toUpperCase()}
     </span>
   );
@@ -559,7 +543,7 @@ export function UpgradePrompt({
   context?: UpgradeContext;
 }) {
   const { tier } = useSubscription();
-  const tierOrder: SubscriptionTier[] = ['free', 'pro', 'enterprise'];
+  const tierOrder: SubscriptionTier[] = ['free', 'pro', 'test'];
 
   if (tierOrder.indexOf(tier) >= tierOrder.indexOf(requiredTier)) {
     return null;

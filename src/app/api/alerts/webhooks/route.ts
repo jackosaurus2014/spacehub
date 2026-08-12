@@ -10,6 +10,7 @@ import {
   notFoundError,
 } from '@/lib/errors';
 import { logger } from '@/lib/logger';
+import { normalizeTier } from '@/lib/subscription';
 import {
   sendSlackWebhook,
   sendDiscordWebhook,
@@ -88,14 +89,14 @@ export async function POST(req: NextRequest) {
       return unauthorizedError();
     }
 
-    let effectiveTier = user.subscriptionTier;
+    let effectiveTier = normalizeTier(user.subscriptionTier);
     if (user.trialTier && user.trialEndDate && new Date() < user.trialEndDate) {
-      effectiveTier = user.trialTier;
+      effectiveTier = normalizeTier(user.trialTier);
     }
 
     if (effectiveTier === 'free') {
       return forbiddenError(
-        'Webhook integrations require a Pro or Enterprise subscription.'
+        'Webhook integrations require a Pro subscription.'
       );
     }
 

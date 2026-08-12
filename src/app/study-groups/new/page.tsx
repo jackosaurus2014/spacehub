@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -50,7 +50,7 @@ export default function NewStudyGroupPage() {
   if (status === 'loading') {
     return (
       <div className="min-h-screen flex items-center justify-center text-slate-400">
-        Loading…
+        Loadingâ€¦
       </div>
     );
   }
@@ -66,7 +66,7 @@ export default function NewStudyGroupPage() {
             You need to sign in to create a study group.
           </p>
           <Link
-            href="/auth/signin?callbackUrl=/study-groups/new"
+            href="/login?callbackUrl=/study-groups/new"
             className="inline-block px-5 py-2 rounded-md bg-indigo-500 hover:bg-indigo-400 text-white font-medium"
           >
             Sign in
@@ -117,7 +117,7 @@ export default function NewStudyGroupPage() {
           href="/study-groups"
           className="text-sm text-slate-400 hover:text-white inline-block mb-4"
         >
-          ← All study groups
+          â† All study groups
         </Link>
         <h1 className="text-3xl font-bold text-white mb-2">Start a study group</h1>
         <p className="text-slate-400 mb-8">
@@ -232,7 +232,7 @@ export default function NewStudyGroupPage() {
               disabled={submitting}
               className="px-5 py-2 rounded-md bg-indigo-500 hover:bg-indigo-400 text-white font-medium disabled:opacity-60"
             >
-              {submitting ? 'Creating…' : 'Create group'}
+              {submitting ? 'Creatingâ€¦' : 'Create group'}
             </button>
             <Link
               href="/study-groups"

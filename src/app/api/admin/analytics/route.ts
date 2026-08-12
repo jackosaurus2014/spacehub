@@ -5,6 +5,7 @@ import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import prisma from '@/lib/db';
 import { unauthorizedError, forbiddenError, internalError } from '@/lib/errors';
+import { normalizeTier } from '@/lib/subscription';
 import { logger } from '@/lib/logger';
 
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
@@ -85,7 +86,8 @@ export async function GET() {
 
     const tierMap: Record<string, number> = {};
     for (const row of tierBreakdown) {
-      tierMap[row.subscriptionTier] = row._count.id;
+      const tier = normalizeTier(row.subscriptionTier);
+      tierMap[tier] = (tierMap[tier] || 0) + row._count.id;
     }
 
     // ── Usage analytics (ActivityLog) ─────────────────────────────────────
@@ -190,7 +192,7 @@ export async function GET() {
           email: u.email,
           name: u.name,
           createdAt: u.createdAt.toISOString(),
-          tier: u.subscriptionTier,
+          tier: normalizeTier(u.subscriptionTier),
           status: u.subscriptionStatus,
           trialTier: u.trialTier,
           trialActive: u.trialEndDate ? u.trialEndDate > new Date() : false,

@@ -378,10 +378,10 @@ describe('POST /api/developer/keys', () => {
 
     expect(res.status).toBe(403);
     expect(body.error.code).toBe('FORBIDDEN');
-    expect(body.error.message).toContain('Pro or Enterprise');
+    expect(body.error.message).toContain('Pro subscription');
   });
 
-  it('creates key for pro subscription user', async () => {
+  it('creates key for pro subscription user (enterprise API tier — pro unlocks everything)', async () => {
     setupProUser();
 
     const req = makePostRequest('http://localhost/api/developer/keys', validBody);
@@ -391,7 +391,7 @@ describe('POST /api/developer/keys', () => {
     expect(res.status).toBe(201);
     expect(body.success).toBe(true);
     expect(body.data.name).toBe('My Production Key');
-    expect(body.data.tier).toBe('developer');
+    expect(body.data.tier).toBe('enterprise');
     expect(body.message).toContain('not be shown again');
   });
 
@@ -455,8 +455,8 @@ describe('POST /api/developer/keys', () => {
       trialTier: null,
       trialEndDate: null,
     });
-    // Developer tier allows 3 keys -- simulate already having 3
-    (mockPrisma.apiKey.count as jest.Mock).mockResolvedValue(3);
+    // Pro users get enterprise-tier keys (max 999) -- simulate already having 999
+    (mockPrisma.apiKey.count as jest.Mock).mockResolvedValue(999);
 
     const req = makePostRequest('http://localhost/api/developer/keys', validBody);
     const res = await keysPOST(req);
@@ -465,7 +465,7 @@ describe('POST /api/developer/keys', () => {
     expect(res.status).toBe(409);
     expect(body.error.code).toBe('CONFLICT');
     expect(body.error.message).toContain('Maximum');
-    expect(body.error.message).toContain('3');
+    expect(body.error.message).toContain('999');
   });
 
   it('allows trial users to create API keys', async () => {
@@ -507,7 +507,7 @@ describe('POST /api/developer/keys', () => {
     expect(res.status).toBe(403);
   });
 
-  it('assigns enterprise API tier for enterprise subscription', async () => {
+  it('treats legacy "enterprise" DB tier as paid (normalized to pro) and assigns enterprise API tier', async () => {
     mockGetServerSession.mockResolvedValue(makeSession());
     (mockPrisma.user.findUnique as jest.Mock).mockResolvedValue({
       subscriptionTier: 'enterprise',

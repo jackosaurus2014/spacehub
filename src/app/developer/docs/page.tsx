@@ -78,11 +78,11 @@ function MethodBadge({ method }: { method: string }) {
 }
 
 function TierBadge({ tier }: { tier: string }) {
-  const isEnterprise = tier === 'Enterprise';
+  const isPro = tier === 'Pro';
   return (
     <span
       className={`text-xs px-2 py-0.5 rounded-full ${
-        isEnterprise ? 'bg-purple-500/20 text-purple-400' : 'bg-green-500/20 text-green-400'
+        isPro ? 'bg-purple-500/20 text-purple-400' : 'bg-green-500/20 text-green-400'
       }`}
     >
       {tier}
@@ -224,8 +224,8 @@ function EndpointSection({ endpoint }: { endpoint: OpenAPIEndpoint }) {
             <p className="text-white/70 text-sm">
               Requires API key via <code className="text-white/70">X-API-Key</code> header or{' '}
               <code className="text-white/70">Authorization: Bearer snx_...</code> header.
-              {endpoint.tier === 'Enterprise' && (
-                <span className="text-purple-400 ml-1 font-medium">Enterprise API tier required.</span>
+              {endpoint.tier === 'Pro' && (
+                <span className="text-purple-400 ml-1 font-medium">Pro API tier required.</span>
               )}
             </p>
           </div>
@@ -776,7 +776,7 @@ function ApiDocsPageInner() {
 
 export default function ApiDocsPage() {
   return (
-    <PremiumGate requiredTier="enterprise" context="api-access" showPreview={true}>
+    <PremiumGate requiredTier="pro" context="api-access" showPreview={true}>
       <ApiDocsPageInner />
     </PremiumGate>
   );

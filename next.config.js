@@ -340,6 +340,8 @@ const nextConfig = {
       { source: '/imagery-marketplace', destination: '/space-manufacturing?tab=imagery', permanent: true },
       { source: '/bid-protests', destination: '/compliance?tab=protests-overview', permanent: true },
       { source: '/startups', destination: '/space-capital', permanent: true },
+      // Single paid plan (Pro) — retired enterprise marketing page
+      { source: '/enterprise', destination: '/pricing', permanent: true },
     ];
   },
 }

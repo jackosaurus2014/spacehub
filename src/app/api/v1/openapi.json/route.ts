@@ -485,9 +485,9 @@ const OPENAPI_SPEC = {
     },
     '/opportunities': {
       get: {
-        summary: 'Get business opportunities (Enterprise only)',
+        summary: 'Get business opportunities (Pro)',
         tags: ['Opportunities'],
-        description: 'Access business opportunities in the space industry. This endpoint requires an Enterprise API tier.',
+        description: 'Access business opportunities in the space industry. This endpoint requires a Pro API tier.',
         parameters: [
           { $ref: '#/components/parameters/LimitParam' },
           { $ref: '#/components/parameters/OffsetParam' },
@@ -512,7 +512,7 @@ const OPENAPI_SPEC = {
             },
           },
           401: { description: 'Unauthorized', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
-          403: { description: 'Enterprise tier required', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
+          403: { description: 'Pro tier required', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
         },
       },
     },

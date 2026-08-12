@@ -9,6 +9,7 @@ import {
   internalError,
 } from '@/lib/errors';
 import { alertRuleSchema, validateBody } from '@/lib/validations';
+import { normalizeTier } from '@/lib/subscription';
 import { logger } from '@/lib/logger';
 
 export const dynamic = 'force-dynamic';
@@ -16,12 +17,9 @@ export const dynamic = 'force-dynamic';
 /** Maximum alert rules by subscription tier */
 const TIER_LIMITS: Record<string, number> = {
   free: 0,
-  pro: 10,
-  enterprise: 50,
+  pro: 50,
+  test: 50,
 };
-
-/** Channels restricted to enterprise tier */
-const ENTERPRISE_ONLY_CHANNELS = ['webhook'];
 
 export async function GET(req: NextRequest) {
   try {
@@ -98,19 +96,19 @@ export async function POST(req: NextRequest) {
     }
 
     // Determine effective tier (considering active trials)
-    let effectiveTier = user.subscriptionTier;
+    let effectiveTier = normalizeTier(user.subscriptionTier);
     if (
       user.trialTier &&
       user.trialEndDate &&
       new Date() < user.trialEndDate
     ) {
-      effectiveTier = user.trialTier;
+      effectiveTier = normalizeTier(user.trialTier);
     }
 
-    // Gate behind Pro+ subscription
+    // Gate behind Pro subscription
     if (effectiveTier === 'free') {
       return forbiddenError(
-        'Alert rules require a Pro or Enterprise subscription. Upgrade to get started.'
+        'Alert rules require a Pro subscription. Upgrade to get started.'
       );
     }
 
@@ -144,18 +142,6 @@ export async function POST(req: NextRequest) {
       priority,
       cooldownMinutes,
     } = validation.data;
-
-    // Enterprise-only channel check
-    if (effectiveTier !== 'enterprise') {
-      const hasRestrictedChannel = channels.some((c: string) =>
-        ENTERPRISE_ONLY_CHANNELS.includes(c)
-      );
-      if (hasRestrictedChannel) {
-        return forbiddenError(
-          'Webhook channel is only available on the Enterprise plan.'
-        );
-      }
-    }
 
     const rule = await prisma.alertRule.create({
       data: {

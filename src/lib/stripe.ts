@@ -39,14 +39,15 @@ export function getPriceIds() {
 /**
  * Map a Stripe price ID back to our internal tier name.
  * Returns null if the price ID doesn't match any known tier.
+ * Legacy Enterprise price IDs map to 'pro' — there is a single paid tier now.
  */
-export function priceIdToTier(priceId: string): 'pro' | 'enterprise' | null {
+export function priceIdToTier(priceId: string): 'pro' | null {
   const prices = getPriceIds();
   if (priceId === prices.pro_monthly || priceId === prices.pro_yearly) {
     return 'pro';
   }
   if (priceId === prices.enterprise_monthly || priceId === prices.enterprise_yearly) {
-    return 'enterprise';
+    return 'pro';
   }
   return null;
 }

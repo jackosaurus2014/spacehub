@@ -7,7 +7,7 @@ import { PAGE_RELATIONS } from '@/lib/module-relationships';
 export const metadata: Metadata = {
   title: 'SpaceNexus vs Bloomberg Terminal for Space Industry | SpaceNexus',
   description:
-    'Comparing SpaceNexus (free-$49.99/mo) vs Bloomberg Terminal ($25,000/yr) for space industry professionals. Feature-by-feature comparison of data coverage, space-specific tools, pricing, and API access.',
+    'Comparing SpaceNexus (free-$19.99/mo) vs Bloomberg Terminal ($25,000/yr) for space industry professionals. Feature-by-feature comparison of data coverage, space-specific tools, pricing, and API access.',
   keywords: [
     'bloomberg terminal space industry',
     'bloomberg terminal alternative space',
@@ -32,7 +32,7 @@ export const metadata: Metadata = {
 };
 
 const FEATURE_COMPARISON = [
-  { feature: 'Starting Price', spacenexus: 'Free (Pro $19.99/mo, Enterprise $49.99/mo)', competitor: '$25,000/year (~$2,083/mo)', winner: 'spacenexus' },
+  { feature: 'Starting Price', spacenexus: 'Free (Pro $19.99/mo, everything included)', competitor: '$25,000/year (~$2,083/mo)', winner: 'spacenexus' },
   { feature: 'Space Launch Tracking', spacenexus: 'Real-time global launch dashboard with countdowns', competitor: 'Limited launch news via wire services', winner: 'spacenexus' },
   { feature: 'Satellite Tracking', spacenexus: 'Interactive 3D globe, 19,000+ objects, TLE data', competitor: 'Not available', winner: 'spacenexus' },
   { feature: 'Orbital Slot Data', spacenexus: 'ITU filings, GEO/LEO slot tracking, spectrum data', competitor: 'Not available', winner: 'spacenexus' },
@@ -42,7 +42,7 @@ const FEATURE_COMPARISON = [
   { feature: 'Spectrum Management', spacenexus: 'FCC filings, ITU data, auction tracking', competitor: 'Not available', winner: 'spacenexus' },
   { feature: 'Space Weather', spacenexus: 'NOAA feeds, solar flare alerts, debris tracking', competitor: 'Not available', winner: 'spacenexus' },
   { feature: 'AI Copilot', spacenexus: 'Claude-powered procurement and market copilot', competitor: 'Bloomberg GPT (general finance)', winner: 'tie' },
-  { feature: 'API Access', spacenexus: 'RESTful API (Enterprise tier)', competitor: 'Bloomberg API (additional cost)', winner: 'tie' },
+  { feature: 'API Access', spacenexus: 'RESTful API (included with Pro)', competitor: 'Bloomberg API (additional cost)', winner: 'tie' },
   { feature: 'Mobile App', spacenexus: 'PWA + native Android/iOS', competitor: 'Bloomberg Anywhere mobile app', winner: 'tie' },
   { feature: 'News Coverage', spacenexus: '50+ space-specific RSS feeds and blogs', competitor: 'Bloomberg News (all industries, massive newsroom)', winner: 'competitor' },
   { feature: 'B2B Marketplace', spacenexus: 'Space industry marketplace with RFQs and proposals', competitor: 'Not available', winner: 'spacenexus' },
@@ -117,12 +117,8 @@ export default function BloombergComparisonPage() {
                     <span className="text-white/70 font-medium">Professional</span>
                     <span className="text-xl font-bold text-white">$19.99<span className="text-sm text-slate-400 font-normal">/mo</span></span>
                   </div>
-                  <div className="flex justify-between items-baseline">
-                    <span className="text-white/70 font-medium">Enterprise</span>
-                    <span className="text-xl font-bold text-white">$49.99<span className="text-sm text-slate-400 font-normal">/mo</span></span>
-                  </div>
                 </div>
-                <p className="text-xs text-slate-400 mt-3">API access included in Enterprise. No long-term contracts required.</p>
+                <p className="text-xs text-slate-400 mt-3">API access included with Pro. No long-term contracts required.</p>
               </div>
               <div className="card p-6">
                 <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Bloomberg Terminal</div>
@@ -142,7 +138,7 @@ export default function BloombergComparisonPage() {
             <div className="card p-4 mt-4 bg-slate-50 border-slate-200">
               <p className="text-slate-700 text-sm">
                 <strong>Cost savings:</strong> A team of 5 would pay ~$125,000/year for Bloomberg Terminals.
-                SpaceNexus Enterprise for 5 users costs $3,000/year &mdash; a <strong>97% savings</strong> with
+                SpaceNexus Pro for 5 users costs about $1,200/year &mdash; a <strong>99% savings</strong> with
                 space-specific features Bloomberg does not offer.
               </p>
             </div>
@@ -258,7 +254,7 @@ export default function BloombergComparisonPage() {
               <ul className="space-y-3">
                 {[
                   { title: 'Purpose-built for space', desc: 'SpaceNexus was designed from day one for the space industry. Every module, every data feed, and every feature is optimized for aerospace professionals.' },
-                  { title: '97.6% cost reduction', desc: 'SpaceNexus Enterprise ($49.99/mo) costs 97% less than a single Bloomberg Terminal ($2,083/mo), while providing space-specific features Bloomberg lacks entirely.' },
+                  { title: '99% cost reduction', desc: 'SpaceNexus Pro ($19.99/mo) costs 99% less than a single Bloomberg Terminal ($2,083/mo), while providing space-specific features Bloomberg lacks entirely.' },
                   { title: 'Satellite and orbital intelligence', desc: 'Track 19,000+ objects on an interactive 3D globe, monitor orbital slots, analyze constellation deployments, and access TLE data — none of which Bloomberg offers.' },
                   { title: 'Government procurement', desc: 'Integrated SAM.gov and SBIR/STTR intelligence helps you find and win government contracts in the space sector. Bloomberg has no equivalent capability.' },
                   { title: 'Space-specific company profiles', desc: '200+ detailed profiles of space companies including launch providers, satellite operators, ground segment, and defense contractors — with competitive positioning and financial data.' },
@@ -348,7 +344,7 @@ export default function BloombergComparisonPage() {
             '@type': 'Article',
             headline: 'SpaceNexus vs Bloomberg Terminal for Space Industry',
             description:
-              'Comparing SpaceNexus (free-$49.99/mo) vs Bloomberg Terminal ($25,000/yr) for space industry professionals. Feature-by-feature comparison.',
+              'Comparing SpaceNexus (free-$19.99/mo) vs Bloomberg Terminal ($25,000/yr) for space industry professionals. Feature-by-feature comparison.',
             author: { '@type': 'Organization', name: 'SpaceNexus' },
             publisher: {
               '@type': 'Organization',

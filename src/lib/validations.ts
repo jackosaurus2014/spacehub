@@ -487,10 +487,10 @@ export const searchQuerySchema = z.object({
     .default('desc'),
 });
 
-// Stripe checkout schema
+// Stripe checkout schema — single paid tier
 export const stripeCheckoutSchema = z.object({
-  tier: z.enum(['pro', 'enterprise'], {
-    message: 'Tier must be "pro" or "enterprise"',
+  tier: z.enum(['pro'], {
+    message: 'Tier must be "pro"',
   }),
   interval: z.enum(['month', 'year'], {
     message: 'Interval must be "month" or "year"',
@@ -723,7 +723,7 @@ export const adCampaignCreateSchema = z.object({
     .min(1, 'At least one target module is required')
     .max(20, 'Maximum 20 target modules'),
   targetTiers: z
-    .array(z.enum(['free', 'pro', 'enterprise']))
+    .array(z.enum(['free', 'pro']))
     .optional()
     .default(['free']),
   priority: z
@@ -1729,7 +1729,7 @@ export type InvestmentThesisData = z.infer<typeof investmentThesisSchema>;
 
 export const subscriptionActionSchema = z.object({
   action: z.enum(['create-checkout', 'create-portal', 'start-trial']),
-  tier: z.enum(['pro', 'enterprise']).optional(),
+  tier: z.enum(['pro']).optional(),
   interval: z.enum(['month', 'year']).optional(),
 });
 

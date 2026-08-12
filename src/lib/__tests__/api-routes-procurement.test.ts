@@ -914,7 +914,7 @@ describe('GET /api/procurement/saved-searches', () => {
     const body = await res.json();
 
     expect(res.status).toBe(403);
-    expect(body.error.message).toContain('Pro or Enterprise');
+    expect(body.error.message).toContain('Pro subscription');
   });
 
   it('allows access for Pro subscribers', async () => {
@@ -937,7 +937,7 @@ describe('GET /api/procurement/saved-searches', () => {
     expect(body.data.savedSearches[0].newMatchCount).toBe(2);
   });
 
-  it('allows access for Enterprise subscribers', async () => {
+  it('treats legacy "enterprise" DB tier as paid (still has access)', async () => {
     mockGetServerSession.mockResolvedValue({ user: { id: 'user-1' } } as any);
     (prisma.user.findUnique as jest.Mock).mockResolvedValue({
       subscriptionTier: 'enterprise',

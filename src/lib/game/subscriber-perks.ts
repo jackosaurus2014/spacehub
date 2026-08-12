@@ -8,14 +8,14 @@
 //    speed boosts. Never exclusive power or content.
 // 3. NO PAY-TO-WIN — subscribers don't earn more revenue per building.
 //    They progress slightly faster but earn the same per service.
-// 4. SPEED-UP, NOT POWER-UP — Enterprise subscribers build/research 15% faster.
+// 4. SPEED-UP, NOT POWER-UP — Pro subscribers build/research 15% faster.
 //    This means they reach endgame ~6 weeks sooner over a year, not that they
 //    dominate in competitive play.
 //
 // The goal: subscribers feel rewarded for supporting SpaceNexus. Free players
 // never feel like they're missing the "real" game.
 
-export type SubscriptionTier = 'free' | 'pro' | 'enterprise';
+export type SubscriptionTier = 'free' | 'pro';
 
 export interface SubscriberPerks {
   tier: SubscriptionTier;
@@ -99,42 +99,6 @@ const PRO_PERKS: SubscriberPerks = {
   tier: 'pro',
 
   // Starting & Speed
-  startingMoney: 110_000_000,       // $110M (+47%)
-  buildSpeedMultiplier: 1.0,        // SAME speed as free — Pro is QoL, not speed
-  researchSpeedMultiplier: 1.0,     // SAME speed
-
-  // QoL
-  offlineIncomeHours: 16,           // 16 hours (2x free)
-  saveSlots: 3,                     // 3 save games
-  marketHistoryDays: 14,            // 2 weeks of history
-  eventLogSize: 100,                // 100 events
-
-  // Social
-  canCreateAlliance: true,          // Can create alliances
-  maxAllianceSize: 20,              // Up to 20 members
-  canCreatePrivateTradeChannel: false,
-
-  // Cosmetic
-  customCompanyColors: true,        // Custom colors
-  leaderboardBadge: '⭐',          // Star badge
-  customShipNames: true,            // Name ships
-  companyLogoUpload: false,         // Not yet
-
-  // Analytics
-  advancedAnalytics: true,          // Revenue projections, cost charts
-  exportData: false,
-  apiAccess: false,
-
-  // Competitive
-  dailyRiskDecisions: 3,            // 3 risk decisions per day (+1)
-  surveyProbeDiscount: 0.10,        // 10% cheaper probes (saves ~$2.5M each)
-  contractSlots: 5,                 // 5 active contracts
-};
-
-const ENTERPRISE_PERKS: SubscriberPerks = {
-  tier: 'enterprise',
-
-  // Starting & Speed
   startingMoney: 150_000_000,       // $150M (+100%)
   buildSpeedMultiplier: 1.15,       // 15% faster builds
   researchSpeedMultiplier: 1.15,    // 15% faster research
@@ -153,13 +117,13 @@ const ENTERPRISE_PERKS: SubscriberPerks = {
   canCreatePrivateTradeChannel: true, // Private trade channels
 
   // Cosmetic
-  customCompanyColors: true,
-  leaderboardBadge: '💎',          // Diamond badge
-  customShipNames: true,
+  customCompanyColors: true,        // Custom colors
+  leaderboardBadge: '⭐',          // Star badge
+  customShipNames: true,            // Name ships
   companyLogoUpload: true,          // Upload custom company logo
 
   // Analytics
-  advancedAnalytics: true,
+  advancedAnalytics: true,          // Revenue projections, cost charts
   exportData: true,                 // CSV/JSON export
   apiAccess: true,                  // REST API access
 
@@ -174,35 +138,35 @@ const ENTERPRISE_PERKS: SubscriberPerks = {
 const PERK_MAP: Record<SubscriptionTier, SubscriberPerks> = {
   free: FREE_PERKS,
   pro: PRO_PERKS,
-  enterprise: ENTERPRISE_PERKS,
 };
 
-export function getSubscriberPerks(tier: SubscriptionTier): SubscriberPerks {
-  return PERK_MAP[tier] || FREE_PERKS;
+export function getSubscriberPerks(tier: string): SubscriberPerks {
+  const normalized = tier === 'enterprise' ? 'pro' : tier;
+  return PERK_MAP[normalized as SubscriptionTier] || FREE_PERKS;
 }
 
 // ─── Impact Analysis ─────────────────────────────────────────────────────────
 //
 // WHAT SUBSCRIBERS GET (summary):
 //
-// |Feature              | Free      | Pro ($20)   | Enterprise ($50) |
-// |---------------------|-----------|-------------|------------------|
-// | Full game content   | ✅ Yes    | ✅ Yes      | ✅ Yes           |
-// | Starting money      | $75M      | $110M       | $150M            |
-// | Build/research speed| 1.0x      | 1.0x        | 1.15x            |
-// | Revenue per service | Same      | Same        | Same             |
-// | Offline income      | 8 hours   | 16 hours    | 24 hours         |
-// | Create alliance     | ❌ (join) | ✅ Create   | ✅ Create (30)   |
-// | Alliance size       | Join any  | Up to 20    | Up to 30         |
-// | Market history      | 3 days    | 14 days     | 30 days          |
-// | Save slots          | 1         | 3           | 5                |
-// | Risk decisions/day  | 2         | 3           | 5                |
-// | Custom cosmetics    | ❌        | Colors+Ships| Colors+Ships+Logo|
-// | Leaderboard badge   | None      | ⭐ Star     | 💎 Diamond       |
-// | Analytics           | Basic     | Advanced    | Advanced+Export  |
-// | Probe discount      | 0%        | 10%         | 20%              |
-// | Contract slots      | 3         | 5           | 8                |
-// | API access          | ❌        | ❌          | ✅               |
+// |Feature              | Free      | Pro ($20)         |
+// |---------------------|-----------|-------------------|
+// | Full game content   | ✅ Yes    | ✅ Yes            |
+// | Starting money      | $75M      | $150M             |
+// | Build/research speed| 1.0x      | 1.15x             |
+// | Revenue per service | Same      | Same              |
+// | Offline income      | 8 hours   | 24 hours          |
+// | Create alliance     | ❌ (join) | ✅ Create (30)    |
+// | Alliance size       | Join any  | Up to 30          |
+// | Market history      | 3 days    | 30 days           |
+// | Save slots          | 1         | 5                 |
+// | Risk decisions/day  | 2         | 5                 |
+// | Custom cosmetics    | ❌        | Colors+Ships+Logo |
+// | Leaderboard badge   | None      | ⭐ Star           |
+// | Analytics           | Basic     | Advanced+Export   |
+// | Probe discount      | 0%        | 20%               |
+// | Contract slots      | 3         | 8                 |
+// | API access          | ❌        | ✅                |
 //
 // WHAT'S NEVER BEHIND A PAYWALL:
 // - Building types, research, colonies, ships
@@ -217,7 +181,7 @@ export function getSubscriberPerks(tier: SubscriptionTier): SubscriberPerks {
 // - All 25+ colony locations
 //
 // COMPETITIVE IMPACT ANALYSIS:
-// Enterprise subscriber vs free player after 1 year:
+// Pro subscriber vs free player after 1 year:
 // - Subscriber has researched ~15% more tech (6 weeks ahead)
 // - Subscriber has ~$150M more starting money (trivial after month 1)
 // - Subscriber took 5 risk decisions per day vs 2 (more chances for big wins)

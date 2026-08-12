@@ -67,7 +67,7 @@ const COMPARISON_FEATURES = [
     quilty: false,
     spacenews: false,
     freeTools: 'Partial',
-    spacenexusNote: 'RESTful API (Enterprise)',
+    spacenexusNote: 'RESTful API (Pro)',
     quiltyNote: 'Not available',
     spacenewsNote: 'Not available',
     freeToolsNote: 'Some APIs exist (limited)',

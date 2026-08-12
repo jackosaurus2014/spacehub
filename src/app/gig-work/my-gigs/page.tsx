@@ -1,4 +1,4 @@
-import Link from 'next/link';
+﻿import Link from 'next/link';
 import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 import { getServerSession } from 'next-auth';
@@ -30,7 +30,7 @@ function formatBudget(
   if (min == null && max == null) return 'Negotiable';
   const suffix = type === 'hourly' ? '/hr' : type === 'monthly' ? '/mo' : '';
   const fmt = (n: number) => `$${n.toLocaleString()}`;
-  if (min != null && max != null) return `${fmt(min)} – ${fmt(max)}${suffix}`;
+  if (min != null && max != null) return `${fmt(min)} â€“ ${fmt(max)}${suffix}`;
   if (min != null) return `From ${fmt(min)}${suffix}`;
   if (max != null) return `Up to ${fmt(max)}${suffix}`;
   return 'Negotiable';
@@ -39,7 +39,7 @@ function formatBudget(
 export default async function MyGigsPage() {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) {
-    redirect('/auth/signin?callbackUrl=/gig-work/my-gigs');
+    redirect('/login?callbackUrl=/gig-work/my-gigs');
   }
 
   const userId = session.user.id;

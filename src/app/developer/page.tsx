@@ -62,7 +62,7 @@ const API_TIERS = [
   {
     name: 'Business',
     tier: 'business',
-    price: 'Included with Enterprise',
+    price: 'Included with Pro',
     monthlyLimit: '50,000',
     perMinute: '300',
     features: [
@@ -78,7 +78,7 @@ const API_TIERS = [
   {
     name: 'Enterprise',
     tier: 'enterprise',
-    price: 'Included with Enterprise',
+    price: 'Included with Pro',
     monthlyLimit: 'Unlimited',
     perMinute: '1,000',
     features: [
@@ -490,7 +490,7 @@ export default function DeveloperPortalPage() {
                   {
                     step: '1',
                     title: 'Create Account',
-                    description: 'Sign up for a SpaceNexus account and subscribe to Pro or Enterprise plan.',
+                    description: 'Sign up for a SpaceNexus account and subscribe to the Pro plan.',
                   },
                   {
                     step: '2',
@@ -862,7 +862,7 @@ export default function DeveloperPortalPage() {
                       { path: '/api/v1/space-weather', desc: 'Space weather conditions', tier: 'All' },
                       { path: '/api/v1/contracts', desc: 'Government contracts', tier: 'All' },
                       { path: '/api/v1/launch-vehicles', desc: 'Launch vehicle specs', tier: 'All' },
-                      { path: '/api/v1/opportunities', desc: 'Business opportunities', tier: 'Enterprise' },
+                      { path: '/api/v1/opportunities', desc: 'Business opportunities', tier: 'Pro' },
                     ].map((ep) => (
                       <tr key={ep.path} className="border-b border-white/[0.06]">
                         <td className="py-2 pr-4">
@@ -870,7 +870,7 @@ export default function DeveloperPortalPage() {
                         </td>
                         <td className="py-2 pr-4">{ep.desc}</td>
                         <td className="py-2">
-                          <span className={`text-xs px-2 py-0.5 rounded-full ${ep.tier === 'Enterprise' ? 'bg-purple-500/20 text-purple-400' : 'bg-green-500/20 text-green-400'}`}>
+                          <span className={`text-xs px-2 py-0.5 rounded-full ${ep.tier === 'Pro' ? 'bg-purple-500/20 text-purple-400' : 'bg-green-500/20 text-green-400'}`}>
                             {ep.tier}
                           </span>
                         </td>

@@ -459,7 +459,7 @@ export default function BookDemoPage() {
       <StickyMobileCTA
         label="Submit Demo Request"
         onClick={handleStickySubmit}
-        variant="enterprise"
+        variant="primary"
       />
     </div>
   );

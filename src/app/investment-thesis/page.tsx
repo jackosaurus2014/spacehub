@@ -384,7 +384,7 @@ export default function InvestmentThesisPage() {
   const confConfig = thesis ? CONFIDENCE_CONFIG[thesis.confidenceLevel] || CONFIDENCE_CONFIG.medium : null;
 
   return (
-    <PremiumGate requiredTier="enterprise" context="investment-thesis" showPreview={true}>
+    <PremiumGate requiredTier="pro" context="investment-thesis" showPreview={true}>
       <main className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 pt-24 pb-16 px-4">
       <div className="max-w-7xl mx-auto">
         {/* Header */}

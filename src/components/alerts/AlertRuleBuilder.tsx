@@ -59,11 +59,11 @@ const TRIGGER_TYPE_META: Record<
   },
 };
 
-const CHANNEL_OPTIONS: readonly { value: string; label: string; description: string; enterprise?: boolean }[] = [
+const CHANNEL_OPTIONS: readonly { value: string; label: string; description: string; proOnly?: boolean }[] = [
   { value: 'in_app', label: 'In-App', description: 'Notifications in SpaceNexus' },
   { value: 'email', label: 'Email', description: 'Delivered to your inbox' },
   { value: 'push', label: 'Push', description: 'Browser push notifications' },
-  { value: 'webhook', label: 'Webhook', description: 'Enterprise only', enterprise: true },
+  { value: 'webhook', label: 'Webhook', description: 'Pro only', proOnly: true },
 ];
 
 const PRIORITY_OPTIONS = [
@@ -907,7 +907,7 @@ export default function AlertRuleBuilder({ onClose, onCreated }: AlertRuleBuilde
                 channels.includes(ch.value)
                   ? 'bg-white/20 border-white/15 ring-1 ring-white/10'
                   : 'bg-white/[0.04] border-white/[0.08] hover:border-white/[0.1]'
-              } ${'enterprise' in ch && ch.enterprise ? 'opacity-70' : ''}`}
+              } ${'proOnly' in ch && ch.proOnly ? 'opacity-70' : ''}`}
             >
               <div
                 className={`w-4 h-4 rounded border-2 flex items-center justify-center flex-shrink-0 ${

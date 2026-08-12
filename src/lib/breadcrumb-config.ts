@@ -217,7 +217,6 @@ export const ROUTE_LABELS: Record<string, string> = {
   '/contact': 'Contact',
   '/faq': 'FAQ',
   '/features': 'Features',
-  '/enterprise': 'Enterprise',
   '/book-demo': 'Book a Demo',
   '/solutions': 'Solutions',
   '/solutions/investors': 'For Investors',

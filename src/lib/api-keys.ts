@@ -40,6 +40,6 @@ export const MAX_KEYS_PER_TIER: Record<string, number> = {
 // Mapping: subscription tier -> allowed API tiers
 export const SUBSCRIPTION_TO_API_TIERS: Record<string, ApiTier[]> = {
   free: [],
-  pro: ['developer'],
-  enterprise: ['developer', 'business', 'enterprise'],
+  pro: ['developer', 'business', 'enterprise'],
+  test: ['developer', 'business', 'enterprise'],
 };

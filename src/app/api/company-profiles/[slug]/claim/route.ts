@@ -3,6 +3,7 @@ import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
 import { validateBody, claimProfileSchema } from '@/lib/validations';
 import { validationError, internalError } from '@/lib/errors';
+import { normalizeTier } from '@/lib/subscription';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { recomputeVerificationBadge } from '@/lib/verification/auto-badge';
@@ -17,16 +18,16 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
     }
 
-    // Company claiming requires Pro or Enterprise subscription
+    // Company claiming requires a Pro subscription
     const claimUser = await prisma.user.findUnique({
       where: { id: session.user.id },
       select: { subscriptionTier: true, trialTier: true, trialEndDate: true },
     });
     const isTrialing = claimUser?.trialTier && claimUser?.trialEndDate && new Date(claimUser.trialEndDate) > new Date();
-    const effectiveTier = isTrialing ? claimUser.trialTier : claimUser?.subscriptionTier;
-    if (!effectiveTier || effectiveTier === 'free') {
+    const effectiveTier = normalizeTier(isTrialing ? claimUser.trialTier : claimUser?.subscriptionTier);
+    if (effectiveTier === 'free') {
       return NextResponse.json(
-        { error: 'Company claiming requires a Pro or Enterprise subscription. Upgrade your plan to claim and manage a company profile.' },
+        { error: 'Company claiming requires a Pro subscription. Upgrade your plan to claim and manage a company profile.' },
         { status: 403 }
       );
     }

@@ -40,7 +40,7 @@ const COMPETITORS: Competitor[] = [
       'Limited tooling: no calculators, trackers, or community',
     ],
     spaceNexusAdvantage:
-      'SpaceNexus provides comparable market data, company intelligence, and trend analysis at $19.99/mo. You get real-time dashboards, 200+ company profiles, engineering calculators, and community features that Quilty does not offer. For enterprise needs, SpaceNexus Enterprise adds custom reporting at a fraction of the cost.',
+      'SpaceNexus provides comparable market data, company intelligence, and trend analysis at $19.99/mo. You get real-time dashboards, 200+ company profiles, engineering calculators, and community features that Quilty does not offer — with AI reports, full API access, and custom dashboards all included in the single Pro plan at a fraction of the cost.',
     color: 'bg-blue-500/10',
     textColor: 'text-blue-400',
     borderColor: 'border-blue-500/20',

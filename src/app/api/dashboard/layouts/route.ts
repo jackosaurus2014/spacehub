@@ -10,6 +10,7 @@ import {
   internalError,
 } from '@/lib/errors';
 import { dashboardLayoutCreateSchema, validateBody } from '@/lib/validations';
+import { normalizeTier } from '@/lib/subscription';
 import { logger } from '@/lib/logger';
 import { DEFAULT_LAYOUTS } from '@/lib/dashboard/default-layouts';
 
@@ -18,8 +19,8 @@ export const dynamic = 'force-dynamic';
 /** Layout limits per subscription tier */
 const LAYOUT_LIMITS: Record<string, number> = {
   free: 0, // Free users use localStorage only
-  pro: 3,
-  enterprise: 10,
+  pro: 10,
+  test: 10,
 };
 
 /**
@@ -48,7 +49,7 @@ export async function GET() {
       select: { subscriptionTier: true },
     });
 
-    const tier = user?.subscriptionTier ?? 'free';
+    const tier = normalizeTier(user?.subscriptionTier);
     const limit = LAYOUT_LIMITS[tier] ?? 0;
 
     const layouts = await prisma.dashboardLayout.findMany({
@@ -106,12 +107,12 @@ export async function POST(req: NextRequest) {
       select: { subscriptionTier: true },
     });
 
-    const tier = user?.subscriptionTier ?? 'free';
+    const tier = normalizeTier(user?.subscriptionTier);
     const limit = LAYOUT_LIMITS[tier] ?? 0;
 
     if (limit === 0) {
       return forbiddenError(
-        'Dashboard layouts require a Pro or Enterprise subscription. Free users can use the local dashboard builder.'
+        'Dashboard layouts require a Pro subscription. Free users can use the local dashboard builder.'
       );
     }
 

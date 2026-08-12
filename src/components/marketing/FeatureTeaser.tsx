@@ -9,7 +9,7 @@ interface FeatureTeaserProps {
   /** Brief description of what the feature does */
   description: string;
   /** Which tier is required */
-  requiredTier: 'pro' | 'enterprise';
+  requiredTier: 'pro';
   /** Number of free items to show before gating (e.g., "3 of 200+") */
   freePreviewCount?: number;
   /** Total items available */
@@ -20,7 +20,7 @@ interface FeatureTeaserProps {
 
 /**
  * Wraps content with a soft paywall. Shows a preview count and upgrade CTA
- * when free users view gated content. Pro/Enterprise users see content normally.
+ * when free users view gated content. Pro users see content normally.
  *
  * Usage:
  * <FeatureTeaser featureName="Company Profiles" description="..." requiredTier="pro" freePreviewCount={3} totalCount={200}>
@@ -38,14 +38,14 @@ export default function FeatureTeaser({
   const { tier } = useSubscription();
 
   // User has access — render children directly
-  const tierOrder = { free: 0, pro: 1, enterprise: 2, test: 3 };
+  const tierOrder = { free: 0, pro: 1, test: 2 };
   if ((tierOrder[tier] ?? 0) >= (tierOrder[requiredTier] ?? 0)) {
     return <>{children}</>;
   }
 
   // Free user — show teaser
-  const tierLabel = requiredTier === 'enterprise' ? 'Enterprise' : 'Pro';
-  const price = requiredTier === 'enterprise' ? '$49.99' : '$19.99';
+  const tierLabel = 'Pro';
+  const price = '$19.99';
 
   return (
     <div>

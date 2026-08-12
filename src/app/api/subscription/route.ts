@@ -3,7 +3,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
-import { isTrialActive } from '@/lib/subscription';
+import { isTrialActive, normalizeTier } from '@/lib/subscription';
 import { validateBody, subscriptionActionSchema } from '@/lib/validations';
 import { validationError, internalError, notFoundError } from '@/lib/errors';
 
@@ -69,7 +69,7 @@ export async function GET() {
       if (isTrialActive(user.trialEndDate)) {
         // Trial is active — return the trial tier as the effective tier
         return NextResponse.json({
-          tier: user.trialTier,
+          tier: normalizeTier(user.trialTier),
           status: user.subscriptionStatus,
           startDate: user.subscriptionStartDate,
           endDate: user.subscriptionEndDate,
@@ -92,7 +92,7 @@ export async function GET() {
     }
 
     return NextResponse.json({
-      tier: user.subscriptionTier,
+      tier: normalizeTier(user.subscriptionTier),
       status: user.subscriptionStatus,
       startDate: user.subscriptionStartDate,
       endDate: user.subscriptionEndDate,
@@ -157,8 +157,8 @@ export async function POST(request: Request) {
     // Handle trial activation
     if (body.action === 'start-trial') {
       const tier = body.tier;
-      if (tier !== 'pro' && tier !== 'enterprise') {
-        return validationError('Invalid trial tier. Must be "pro" or "enterprise".');
+      if (tier !== 'pro') {
+        return validationError('Invalid trial tier. Must be "pro".');
       }
 
       const user = await prisma.user.findUnique({

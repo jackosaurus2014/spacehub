@@ -7,13 +7,11 @@ import { SubscriptionTier } from '@/types';
 const TIER_ILLUSTRATIONS: Record<string, string> = {
   free: '/art/pricing-free.png',
   pro: '/art/pricing-pro.png',
-  enterprise: '/art/pricing-enterprise.png',
 };
 
 const TIER_CONFIG = {
   free: { label: 'Observer', clearance: 'CLEARANCE LEVEL 1', accent: 'zinc' },
-  pro: { label: 'Operator', clearance: 'CLEARANCE LEVEL 2', accent: 'indigo' },
-  enterprise: { label: 'Commander', clearance: 'CLEARANCE LEVEL 3', accent: 'amber' },
+  pro: { label: 'Commander', clearance: 'FULL CLEARANCE', accent: 'indigo' },
 };
 
 interface PricingCardV3Props {

@@ -190,7 +190,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
   // Retrieve the subscription to get the price and tier
   const subscription = await getStripe().subscriptions.retrieve(subscriptionId);
   const priceId = subscription.items.data[0]?.price?.id;
-  const tier = priceId ? priceIdToTier(priceId) : (session.metadata?.tier as 'pro' | 'enterprise' | null);
+  const tier = priceId ? priceIdToTier(priceId) : (session.metadata?.tier === 'pro' ? 'pro' : null);
 
   if (!tier) {
     logger.error('Could not determine tier from checkout session', {

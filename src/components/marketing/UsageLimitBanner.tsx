@@ -7,7 +7,7 @@ import Link from 'next/link';
 /**
  * Shows a banner when free-tier users are approaching their daily article limit.
  * Dismissible — but reappears when down to the last article.
- * Hidden for Pro/Enterprise users.
+ * Hidden for Pro users.
  */
 export default function UsageLimitBanner() {
   const { tier, remainingArticles } = useSubscription();

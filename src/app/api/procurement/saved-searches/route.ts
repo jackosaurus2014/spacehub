@@ -10,6 +10,7 @@ import {
   createSuccessResponse,
 } from '@/lib/errors';
 import { validateBody, savedSearchSchema } from '@/lib/validations';
+import { normalizeTier } from '@/lib/subscription';
 
 export const dynamic = 'force-dynamic';
 
@@ -32,12 +33,11 @@ export async function GET(request: Request) {
     });
 
     const hasAccess =
-      user?.subscriptionTier === 'pro' ||
-      user?.subscriptionTier === 'enterprise' ||
+      normalizeTier(user?.subscriptionTier) !== 'free' ||
       (user?.trialTier && user.trialEndDate && user.trialEndDate > new Date());
 
     if (!hasAccess) {
-      return forbiddenError('Saved searches require a Pro or Enterprise subscription');
+      return forbiddenError('Saved searches require a Pro subscription');
     }
 
     const savedSearches = await prisma.savedProcurementSearch.findMany({
@@ -90,12 +90,11 @@ export async function POST(request: Request) {
     });
 
     const hasAccess =
-      user?.subscriptionTier === 'pro' ||
-      user?.subscriptionTier === 'enterprise' ||
+      normalizeTier(user?.subscriptionTier) !== 'free' ||
       (user?.trialTier && user.trialEndDate && user.trialEndDate > new Date());
 
     if (!hasAccess) {
-      return forbiddenError('Saved searches require a Pro or Enterprise subscription');
+      return forbiddenError('Saved searches require a Pro subscription');
     }
 
     // Limit saved searches to 10

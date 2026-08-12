@@ -25,11 +25,11 @@ import { PRICING_CTA_TEST } from '@/lib/ab-testing';
 const PRICING_FAQ = [
   { question: 'What is SpaceNexus?', answer: 'SpaceNexus is a comprehensive space industry intelligence platform that provides real-time data on satellite tracking, launch schedules, space stocks, regulatory compliance, and 200+ company profiles across 30+ modules.' },
   { question: 'Is there a free plan?', answer: 'Yes! Our Explorer plan is completely free and includes access to mission countdowns, basic news feeds, satellite tracking for 50 satellites, and community features.' },
-  { question: "What's included in the Professional plan?", answer: 'Professional ($19.99/month) unlocks unlimited news, full satellite tracking, market intelligence dashboards, launch window calculators, real-time stock tracking for 20 stocks, CSV data export, and an ad-free experience.' },
+  { question: "What's included in the Professional plan?", answer: 'Professional ($19.99/month) unlocks everything: unlimited news, full satellite tracking, market intelligence, deal flow, AI intelligence reports, regulatory and compliance suite, patent and procurement intelligence, full API access, custom dashboards, CSV data export, and an ad-free experience. One plan, the entire platform.' },
   { question: 'Can I cancel anytime?', answer: 'Absolutely. All plans are month-to-month with no long-term commitment. You can cancel anytime and retain access until the end of your billing period.' },
   { question: 'What payment methods do you accept?', answer: 'We accept all major credit cards (Visa, Mastercard, American Express), Apple Pay, and Google Pay through our secure Stripe payment processor.' },
-  { question: 'How does SpaceNexus compare to building this in-house?', answer: 'Companies typically spend $50K–$200K/year aggregating the same data from NASA, NOAA, SEC, SAM.gov, and 40+ other sources. SpaceNexus gives you all of it for under $50/month — with AI analysis included.' },
-  { question: 'Do you offer team or enterprise pricing?', answer: 'Yes! Enterprise plans include team collaboration, custom dashboards, API access, SSO, and dedicated support. Contact us for a tailored quote.' },
+  { question: 'How does SpaceNexus compare to building this in-house?', answer: 'Companies typically spend $50K–$200K/year aggregating the same data from NASA, NOAA, SEC, SAM.gov, and 40+ other sources. SpaceNexus gives you all of it for $19.99/month — with AI analysis included.' },
+  { question: 'Is there just one paid plan?', answer: 'Yes. One Professional plan unlocks the entire platform — every premium module, full API access, and all intelligence tools. No feature ladders, no upsells. Teams that need volume licensing or SSO can contact us.' },
   { question: 'What data sources does SpaceNexus use?', answer: 'We aggregate real-time data from NASA, NOAA, ESA, SpaceTrack, SEC filings, SAM.gov procurement, 53+ RSS feeds, and proprietary AI analysis — all automatically updated.' },
 ];
 
@@ -275,52 +275,53 @@ const FEATURE_CATEGORIES = [
   {
     name: 'Content & Data',
     features: [
-      { label: 'News articles', free: '10/day', pro: 'Unlimited', enterprise: 'Unlimited' },
-      { label: 'Company profiles', free: '10/month', pro: 'Unlimited', enterprise: 'Unlimited' },
-      { label: 'Market intelligence', free: 'Preview', pro: 'Full dashboard', enterprise: 'Full + export' },
-      { label: 'Space Score access', free: 'Top 10', pro: 'Full rankings', enterprise: 'Full + custom scoring' },
-      { label: 'News categories', free: 'All', pro: 'All', enterprise: 'All' },
+      { label: 'News articles', free: '10/day', pro: 'Unlimited' },
+      { label: 'Company profiles', free: '10/month', pro: 'Unlimited' },
+      { label: 'Market intelligence', free: 'Preview', pro: 'Full dashboard + export' },
+      { label: 'Space Score access', free: 'Top 10', pro: 'Full rankings' },
+      { label: 'Jobs, gigs & salary data', free: true, pro: true },
+      { label: 'Executive move tracker', free: true, pro: true },
+      { label: 'News categories', free: 'All', pro: 'All' },
     ],
   },
   {
     name: 'Tracking & Tools',
     features: [
-      { label: 'Satellite tracking', free: '50 satellites', pro: 'Full catalog', enterprise: 'Full + alerts' },
-      { label: 'Launch tracking', free: 'Basic', pro: 'Full + calculator', enterprise: 'Full + API' },
-      { label: 'Orbital calculator', free: true, pro: true, enterprise: true },
-      { label: 'Resource exchange', free: false, pro: true, enterprise: true },
-      { label: 'Space insurance calc', free: false, pro: false, enterprise: true },
-      { label: 'Constellation designer', free: true, pro: true, enterprise: true },
+      { label: 'Satellite tracking', free: '50 satellites', pro: 'Full catalog + alerts' },
+      { label: 'Launch tracking', free: 'Basic', pro: 'Full + calculator + API' },
+      { label: 'Orbital calculator', free: true, pro: true },
+      { label: 'Resource exchange', free: false, pro: true },
+      { label: 'Space insurance calc', free: false, pro: true },
+      { label: 'Constellation designer', free: true, pro: true },
     ],
   },
   {
     name: 'Intelligence & Analytics',
     features: [
-      { label: 'AI insights', free: false, pro: '10/day', enterprise: 'Unlimited' },
-      { label: 'Deal flow database', free: false, pro: '113+ deals', enterprise: '113+ deals' },
-      { label: 'Executive move tracker', free: false, pro: true, enterprise: true },
-      { label: 'Supply chain intel', free: false, pro: true, enterprise: true },
-      { label: 'Regulatory calendar', free: false, pro: '105+ deadlines', enterprise: 'Full suite' },
-      { label: 'Patent intelligence', free: false, pro: false, enterprise: true },
-      { label: 'Procurement (SAM.gov)', free: false, pro: false, enterprise: true },
+      { label: 'AI insights', free: false, pro: 'Unlimited' },
+      { label: 'AI intelligence reports', free: false, pro: true },
+      { label: 'Deal flow database', free: false, pro: '113+ deals' },
+      { label: 'Supply chain intel', free: false, pro: true },
+      { label: 'Regulatory calendar & compliance', free: false, pro: 'Full suite' },
+      { label: 'Patent intelligence', free: false, pro: true },
+      { label: 'Procurement (SAM.gov)', free: false, pro: true },
     ],
   },
   {
     name: 'Export & Integration',
     features: [
-      { label: 'Data export', free: false, pro: 'CSV', enterprise: 'CSV, JSON, PDF' },
-      { label: 'Custom alerts', free: false, pro: '10 active', enterprise: 'Unlimited' },
-      { label: 'API access', free: false, pro: false, enterprise: '10,000 req/month' },
-      { label: 'Webhook integrations', free: false, pro: false, enterprise: true },
-      { label: 'Custom dashboards', free: false, pro: false, enterprise: true },
+      { label: 'Data export', free: false, pro: 'CSV, JSON, PDF' },
+      { label: 'Custom alerts', free: false, pro: '50 active' },
+      { label: 'API access', free: false, pro: '10,000 req/month' },
+      { label: 'Webhook integrations', free: false, pro: true },
+      { label: 'Custom dashboards', free: false, pro: true },
     ],
   },
   {
     name: 'Support',
     features: [
-      { label: 'Support', free: 'Community', pro: 'Email (48hr)', enterprise: 'Priority (24hr)' },
-      { label: 'Dedicated account manager', free: false, pro: false, enterprise: true },
-      { label: 'Ad-free experience', free: false, pro: true, enterprise: true },
+      { label: 'Support', free: 'Community', pro: 'Priority (24hr)' },
+      { label: 'Ad-free experience', free: false, pro: true },
     ],
   },
 ];
@@ -350,20 +351,16 @@ function FeatureComparisonTable() {
           <thead className="sticky top-0 z-10 bg-[#0a0a0a]/95 backdrop-blur-sm">
             <tr className="border-b border-white/[0.06]">
               <th className="py-3 px-3 sm:py-4 sm:px-5 text-sm font-semibold text-slate-300 w-[40%]">Feature</th>
-              <th className="py-3 px-2 sm:py-4 sm:px-4 text-center text-sm font-semibold text-white w-[20%]">
+              <th className="py-3 px-2 sm:py-4 sm:px-4 text-center text-sm font-semibold text-white w-[30%]">
                 <div>Explorer</div>
                 <div className="text-xs font-normal text-slate-400 mt-0.5">Free</div>
               </th>
-              <th className="py-3 px-2 sm:py-4 sm:px-4 text-center text-sm font-semibold text-white/90 w-[20%] border-x border-white/10 bg-white/5">
+              <th className="py-3 px-2 sm:py-4 sm:px-4 text-center text-sm font-semibold text-white/90 w-[30%] border-x border-white/10 bg-white/5">
                 <div className="flex items-center justify-center gap-1.5">
                   Professional
-                  <span className="text-[10px] bg-white/10 text-white/90 px-1.5 py-0.5 rounded-full font-medium">Popular</span>
+                  <span className="text-[10px] bg-white/10 text-white/90 px-1.5 py-0.5 rounded-full font-medium">Everything</span>
                 </div>
                 <div className="text-xs font-normal text-slate-400 mt-0.5">$19.99/mo</div>
-              </th>
-              <th className="py-3 px-2 sm:py-4 sm:px-4 text-center text-sm font-semibold text-white w-[20%]">
-                <div>Enterprise</div>
-                <div className="text-xs font-normal text-slate-400 mt-0.5">$49.99/mo</div>
               </th>
             </tr>
           </thead>
@@ -372,7 +369,7 @@ function FeatureComparisonTable() {
               <Fragment key={category.name}>
                 {/* Category header */}
                 <tr className="bg-white/[0.04]">
-                  <td colSpan={4} className="py-2.5 px-5 text-xs font-semibold uppercase tracking-wider text-slate-300">
+                  <td colSpan={3} className="py-2.5 px-5 text-xs font-semibold uppercase tracking-wider text-slate-300">
                     {category.name}
                   </td>
                 </tr>
@@ -382,7 +379,6 @@ function FeatureComparisonTable() {
                     <td className="py-2.5 px-3 sm:py-3 sm:px-5 text-sm text-slate-300">{feature.label}</td>
                     <td className="py-2.5 px-2 sm:py-3 sm:px-4 text-center">{renderCellValue(feature.free)}</td>
                     <td className="py-2.5 px-2 sm:py-3 sm:px-4 text-center border-x border-white/10 bg-white/[0.02]">{renderCellValue(feature.pro)}</td>
-                    <td className="py-2.5 px-2 sm:py-3 sm:px-4 text-center">{renderCellValue(feature.enterprise)}</td>
                   </tr>
                 ))}
               </Fragment>
@@ -533,7 +529,7 @@ function PricingPageContent() {
         return;
       }
 
-      toast.success(`Your 14-day ${planTier === 'pro' ? 'Professional' : 'Enterprise'} trial has started!`);
+      toast.success('Your 14-day Professional trial has started!');
       trackGA4Event('trial_started', { plan: planTier, location: 'pricing_page' });
       refreshSubscription();
     } catch {
@@ -629,57 +625,16 @@ function PricingPageContent() {
       />
       <ProductSchema
         name="SpaceNexus Pro"
-        description="Professional space industry intelligence with advanced analytics and API access"
+        description="Professional space industry intelligence — full platform access with advanced analytics, AI reports, and API access"
         url="/pricing"
         brand="SpaceNexus"
         category="Software"
-        price="29"
-        priceCurrency="USD"
-        availability="InStock"
-      />
-      <ProductSchema
-        name="SpaceNexus Enterprise"
-        description="Enterprise space industry platform with unlimited access, priority support, and custom integrations"
-        url="/pricing"
-        brand="SpaceNexus"
-        category="Software"
-        price="99"
+        price="19.99"
         priceCurrency="USD"
         availability="InStock"
       />
 
       <div className="container mx-auto px-4">
-        {/* Founding Member Promotional Banner */}
-        <ScrollReveal>
-          <div className="max-w-4xl mx-auto mt-8 mb-6">
-            <div className="relative overflow-hidden rounded-2xl border border-purple-500/30 shadow-lg shadow-purple-500/10">
-              {/* Gradient background */}
-              <div className="absolute inset-0 bg-gradient-to-r from-indigo-900/90 via-purple-800/90 to-blue-900/90" />
-              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(99,102,241,0.15),transparent_60%)]" />
-              <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-purple-400/60 to-transparent" />
-
-              <div className="relative px-6 py-5 sm:px-8 sm:py-6 flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
-                <div className="flex-1 text-center sm:text-left">
-                  <p className="text-lg sm:text-xl font-bold text-white mb-1">
-                    <span role="img" aria-label="rocket">🚀</span> Founding Member Offer
-                  </p>
-                  <p className="text-sm sm:text-base text-purple-100/90">
-                    First 50 subscribers get <span className="font-bold text-white">Professional access at $4.99/month</span>, locked for life.
-                    Only <span className="font-bold text-amber-300">12 spots</span> remaining.
-                  </p>
-                </div>
-                <Link
-                  href="/register?plan=pro&founding=true"
-                  onClick={() => trackGA4Event('cta_click', { cta: 'founding_member', location: 'pricing_page' })}
-                  className="shrink-0 px-6 py-3 rounded-xl bg-white text-indigo-900 font-bold text-sm sm:text-base hover:bg-purple-100 transition-colors shadow-md hover:shadow-lg"
-                >
-                  Claim Your Spot
-                </Link>
-              </div>
-            </div>
-          </div>
-        </ScrollReveal>
-
         {/* Platform Scale — reason to subscribe */}
         <ScrollReveal>
           <div className="max-w-3xl mx-auto mb-8">
@@ -709,9 +664,9 @@ function PricingPageContent() {
               <div className="section-header__bar bg-gradient-to-b from-indigo-400 to-indigo-600" />
               <h2 className="section-header__title">Select Your Clearance Level</h2>
             </div>
-            <span className="section-header__meta">3 tiers</span>
+            <span className="section-header__meta">2 tiers</span>
           </div>
-          <p className="section-header__desc">Full platform access. Scale as you grow.</p>
+          <p className="section-header__desc">One paid plan. The entire platform.</p>
         </div>
 
         {/* Audience strip */}
@@ -781,7 +736,7 @@ function PricingPageContent() {
         </ScrollReveal>
 
         {/* Pricing Cards — V3 Observer/Operator/Commander */}
-        <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto" staggerDelay={0.15}>
+        <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto" staggerDelay={0.15}>
           {SUBSCRIPTION_PLANS.map((plan) => {
             const p = isYearly ? plan.priceYearly : plan.price;
             const savings = isYearly && plan.price > 0

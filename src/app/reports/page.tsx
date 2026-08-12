@@ -1314,7 +1314,7 @@ function ReportsPageInner() {
 
 export default function ReportsPage() {
   return (
-    <PremiumGate requiredTier="enterprise" context="intel-reports" showPreview={true}>
+    <PremiumGate requiredTier="pro" context="intel-reports" showPreview={true}>
       <Suspense
         fallback={
           <div className="min-h-screen flex items-center justify-center">

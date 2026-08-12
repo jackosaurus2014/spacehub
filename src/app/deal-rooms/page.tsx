@@ -1416,7 +1416,7 @@ function DealRoomsPageInner() {
 
 export default function DealRoomsPage() {
   return (
-    <PremiumGate requiredTier="enterprise" context="deal-rooms" showPreview={true}>
+    <PremiumGate requiredTier="pro" context="deal-rooms" showPreview={true}>
       <DealRoomsPageInner />
     </PremiumGate>
   );

@@ -399,20 +399,20 @@ describe('POST /api/alerts', () => {
     const body = await res.json();
 
     expect(res.status).toBe(403);
-    expect(body.error.message).toContain('Pro or Enterprise subscription');
+    expect(body.error.message).toContain('Pro subscription');
   });
 
   it('returns 403 when rule limit exceeded', async () => {
     mockGetServerSession.mockResolvedValue(authedSession());
     mockPrisma.user.findUnique.mockResolvedValue(makeProUser());
-    mockPrisma.alertRule.count.mockResolvedValue(10); // pro limit is 10
+    mockPrisma.alertRule.count.mockResolvedValue(50); // pro limit is 50
 
     const req = makePostRequest('http://localhost/api/alerts', validAlertRuleBody);
     const res = await alertsPOST(req);
     const body = await res.json();
 
     expect(res.status).toBe(403);
-    expect(body.error.message).toContain('maximum of 10');
+    expect(body.error.message).toContain('maximum of 50');
   });
 
   it('allows creation for pro user under limit', async () => {
@@ -451,10 +451,13 @@ describe('POST /api/alerts', () => {
     expect(res.status).toBe(201);
   });
 
-  it('returns 403 when non-enterprise user requests webhook channel', async () => {
+  it('allows webhook channel for pro users (webhook is available to all paid users)', async () => {
     mockGetServerSession.mockResolvedValue(authedSession());
     mockPrisma.user.findUnique.mockResolvedValue(makeProUser());
     mockPrisma.alertRule.count.mockResolvedValue(0);
+    mockPrisma.alertRule.create.mockResolvedValue(
+      makeAlertRule({ channels: ['in_app', 'webhook'] })
+    );
 
     const bodyWithWebhook = {
       ...validAlertRuleBody,
@@ -462,14 +465,11 @@ describe('POST /api/alerts', () => {
     };
     const req = makePostRequest('http://localhost/api/alerts', bodyWithWebhook);
     const res = await alertsPOST(req);
-    const body = await res.json();
 
-    expect(res.status).toBe(403);
-    expect(body.error.message).toContain('Webhook channel');
-    expect(body.error.message).toContain('Enterprise');
+    expect(res.status).toBe(201);
   });
 
-  it('allows webhook channel for enterprise users', async () => {
+  it('allows webhook channel for legacy enterprise users (treated as pro)', async () => {
     mockGetServerSession.mockResolvedValue(authedSession());
     mockPrisma.user.findUnique.mockResolvedValue(makeEnterpriseUser());
     mockPrisma.alertRule.count.mockResolvedValue(0);
@@ -689,10 +689,10 @@ describe('PUT /api/alerts/[id]', () => {
     expect(body.data.isActive).toBe(true);
   });
 
-  it('returns 403 when non-enterprise user tries to add webhook channel', async () => {
+  it('returns 403 when free user tries to add webhook channel', async () => {
     mockGetServerSession.mockResolvedValue(authedSession());
     mockPrisma.alertRule.findUnique.mockResolvedValue({ userId: 'user-1' });
-    mockPrisma.user.findUnique.mockResolvedValue(makeProUser());
+    mockPrisma.user.findUnique.mockResolvedValue(makeFreeUser());
 
     const req = makePutRequest('http://localhost/api/alerts/rule-1', {
       channels: ['in_app', 'webhook'],
@@ -702,6 +702,22 @@ describe('PUT /api/alerts/[id]', () => {
 
     expect(res.status).toBe(403);
     expect(body.error.message).toContain('Webhook channel');
+  });
+
+  it('allows pro user to add webhook channel', async () => {
+    mockGetServerSession.mockResolvedValue(authedSession());
+    mockPrisma.alertRule.findUnique.mockResolvedValue({ userId: 'user-1' });
+    mockPrisma.user.findUnique.mockResolvedValue(makeProUser());
+    mockPrisma.alertRule.update.mockResolvedValue(
+      makeAlertRule({ channels: ['in_app', 'webhook'] })
+    );
+
+    const req = makePutRequest('http://localhost/api/alerts/rule-1', {
+      channels: ['in_app', 'webhook'],
+    });
+    const res = await alertIdPUT(req, { params });
+
+    expect(res.status).toBe(200);
   });
 
   it('allows admin to update any rule', async () => {
@@ -1216,10 +1232,11 @@ describe('GET /api/watchlist/companies', () => {
     expect(body.data.items).toHaveLength(2);
     expect(body.data.count).toBe(2);
     expect(body.data.tier).toBe('pro');
-    expect(body.data.limit).toBe(50);
+    // Pro watchlist is unlimited — serialized as null
+    expect(body.data.limit).toBeNull();
   });
 
-  it('returns null limit for enterprise tier', async () => {
+  it('treats legacy enterprise tier as pro with unlimited watchlist', async () => {
     mockGetServerSession.mockResolvedValue(authedSession());
     mockPrisma.user.findUnique.mockResolvedValue(makeEnterpriseUser());
     mockPrisma.companyWatchlistItem.findMany.mockResolvedValue([]);
@@ -1230,7 +1247,7 @@ describe('GET /api/watchlist/companies', () => {
 
     expect(res.status).toBe(200);
     expect(body.data.limit).toBeNull();
-    expect(body.data.tier).toBe('enterprise');
+    expect(body.data.tier).toBe('pro');
   });
 });
 

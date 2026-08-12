@@ -428,7 +428,7 @@ describe('GET /api/solar-flares', () => {
     mockGetSolarForecasts.mockRejectedValue(new Error('DB down'));
     mockGetCurrentSolarActivity.mockRejectedValue(new Error('DB down'));
     mockGetSolarFlareStats.mockRejectedValue(new Error('DB down'));
-    mockApiCache.getStale.mockReturnValue({ value: staleData, storedAt: Date.now() - 60000 });
+    mockApiCache.getStale.mockReturnValue({ value: staleData, isStale: true, storedAt: Date.now() - 60000 });
 
     const req = new NextRequest('http://localhost/api/solar-flares');
     const res = await solarFlaresGET(req);
@@ -797,7 +797,7 @@ describe('GET /api/pulse', () => {
       generatedAt: '2025-11-01T00:00:00.000Z',
     };
     mockApiCache.get.mockReturnValue(null);
-    mockApiCache.getStale.mockReturnValue({ value: staleData, storedAt: Date.now() - 600000 });
+    mockApiCache.getStale.mockReturnValue({ value: staleData, isStale: true, storedAt: Date.now() - 600000 });
 
     // The pulse route only returns stale as fallback if the main fetchPulseData() throws.
     // With Promise.allSettled it doesn't throw, so stale won't be used in normal failure.

@@ -14,6 +14,7 @@ import {
 } from './intelligence-brief-template';
 import { Resend } from 'resend';
 import { APP_URL } from '@/lib/constants';
+import { normalizeTier } from '@/lib/subscription';
 
 // Re-export for external use
 export type { BriefSection, BriefItem };
@@ -415,9 +416,7 @@ export async function sendWeeklyBrief(briefId: string): Promise<{
 
     try {
       const emails = batch.map((subscriber) => {
-        const isPro =
-          subscriber.user?.subscriptionTier === 'pro' ||
-          subscriber.user?.subscriptionTier === 'enterprise';
+        const isPro = normalizeTier(subscriber.user?.subscriptionTier) !== 'free';
         const html = isPro ? proHtml : freeHtml;
         const text = isPro ? proPlain : freePlain;
 

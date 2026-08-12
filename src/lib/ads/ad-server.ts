@@ -1,7 +1,6 @@
 import prisma from '@/lib/db';
 import { logger } from '@/lib/logger';
-import { canAccessFeature } from '@/lib/subscription';
-import { SubscriptionTier } from '@/types';
+import { canAccessFeature, normalizeTier } from '@/lib/subscription';
 
 /**
  * Ad placement data returned to clients
@@ -23,7 +22,7 @@ export interface ServedAd {
 /**
  * Select the best ad for a given context.
  *
- * 1. Check if user is on an ad-free tier (Pro/Enterprise) -- return null
+ * 1. Check if user is on an ad-free tier (Pro) -- return null
  * 2. Find active campaigns targeting this module and position
  * 3. Filter by budget (spent < budget, daily spent < dailyBudget)
  * 4. Sort by priority, then by least recently shown
@@ -34,13 +33,13 @@ export async function selectAd(options: {
   module?: string;
   userId?: string;
   sessionId?: string;
-  userTier?: SubscriptionTier;
+  userTier?: string;
 }): Promise<ServedAd | null> {
   const { position, module, userId, userTier } = options;
 
   try {
     // 1. Check if user is on ad-free tier
-    if (userTier && canAccessFeature(userTier, 'adFree')) {
+    if (userTier && canAccessFeature(normalizeTier(userTier), 'adFree')) {
       return null;
     }
 
@@ -52,7 +51,7 @@ export async function selectAd(options: {
       });
 
       if (user) {
-        const tier = user.subscriptionTier as SubscriptionTier;
+        const tier = normalizeTier(user.subscriptionTier);
         if (canAccessFeature(tier, 'adFree')) {
           return null;
         }

@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import prisma from '@/lib/db';
 import { generateApiKey, API_RATE_LIMITS, MAX_KEYS_PER_TIER, SUBSCRIPTION_TO_API_TIERS, ApiTier } from '@/lib/api-keys';
+import { normalizeTier } from '@/lib/subscription';
 import { validateBody, apiKeyCreateSchema } from '@/lib/validations';
 import { unauthorizedError, forbiddenError, validationError, internalError, conflictError } from '@/lib/errors';
 import { logger } from '@/lib/logger';
@@ -81,15 +82,15 @@ export async function POST(req: NextRequest) {
     }
 
     // Determine effective tier (account for active trials)
-    let effectiveTier = user.subscriptionTier;
+    let effectiveTier = normalizeTier(user.subscriptionTier);
     if (user.trialTier && user.trialEndDate && new Date(user.trialEndDate) > new Date()) {
-      effectiveTier = user.trialTier;
+      effectiveTier = normalizeTier(user.trialTier);
     }
 
     const allowedApiTiers = SUBSCRIPTION_TO_API_TIERS[effectiveTier] || [];
     if (allowedApiTiers.length === 0) {
       return forbiddenError(
-        'API access requires a Pro or Enterprise subscription. Please upgrade your plan.'
+        'API access requires a Pro subscription. Please upgrade your plan.'
       );
     }
 

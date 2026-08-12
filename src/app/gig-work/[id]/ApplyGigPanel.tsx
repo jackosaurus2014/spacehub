@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState } from 'react';
 import Link from 'next/link';
@@ -62,7 +62,7 @@ export default function ApplyGigPanel({
           Sign in to apply to this gig.
         </p>
         <Link
-          href={`/auth/signin?callbackUrl=/gig-work/${gigId}`}
+          href={`/login?callbackUrl=/gig-work/${gigId}`}
           className="rounded-lg bg-white px-4 py-2 text-sm font-semibold text-black hover:bg-white/90"
         >
           Sign in to apply
@@ -208,7 +208,7 @@ export default function ApplyGigPanel({
             maxLength={500}
             value={portfolioUrl}
             onChange={(e) => setPortfolioUrl(e.target.value)}
-            placeholder="https://…"
+            placeholder="https://â€¦"
             className="w-full rounded-lg border border-white/20 bg-black/40 px-3 py-2 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-white/50"
           />
         </div>
@@ -224,7 +224,7 @@ export default function ApplyGigPanel({
           disabled={submitting}
           className="rounded-lg bg-white px-4 py-2 text-sm font-semibold text-black hover:bg-white/90 disabled:opacity-50"
         >
-          {submitting ? 'Submitting…' : 'Submit application'}
+          {submitting ? 'Submittingâ€¦' : 'Submit application'}
         </button>
         <button
           type="button"

@@ -110,7 +110,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 
 <p>We believe the space industry deserves the same caliber of intelligence tooling that finance and defense have had for decades. Not a news aggregator. Not a satellite tracker. A complete <strong>intelligence platform</strong> that helps professionals make better decisions faster.</p>
 
-<p>SpaceNexus is free to start, with Pro and Enterprise tiers for teams that need AI-powered insights, API access, and advanced analytics. Because the best platform for the space industry should be as accessible as possible.</p>
+<p>SpaceNexus is free to start, with a single Pro tier for teams that need AI-powered insights, API access, and advanced analytics. Because the best platform for the space industry should be as accessible as possible.</p>
 
 <p><a href="/register">Get started free</a> or <a href="/pricing">see our plans</a>.</p>
 `,
@@ -4158,7 +4158,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 <li><strong>Upgrade to Pro</strong> for AI-powered insights, advanced analytics, API access, and priority support. <a href="/pricing">See plans</a>.</li>
 <li><strong>Set up recurring reports</strong> — schedule weekly or monthly exports of the data and metrics you track most.</li>
 <li><strong>Use the API</strong> to integrate SpaceNexus data into your own tools, dashboards, and workflows. <a href="/api-access">Learn more about API access</a>.</li>
-<li><strong>Invite your team</strong> — SpaceNexus Enterprise supports multi-user workspaces with shared watchlists, collaborative analysis, and team dashboards. <a href="/enterprise">Learn more</a>.</li>
+<li><strong>Invite your team</strong> — SpaceNexus Pro supports multi-user workspaces with shared watchlists, collaborative analysis, and team dashboards. <a href="/pricing">Learn more</a>.</li>
 </ul>
 
 <p>The space industry moves fast. SpaceNexus is designed to help you move faster. Welcome aboard.</p>
@@ -13289,7 +13289,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 
 <h2 id="get-started">Start Tracking the Space Market</h2>
 
-<p>The Market Intelligence module is available on all SpaceNexus plans, with additional analytics and export capabilities on Pro and Enterprise tiers. <a href="/market-intel">Open Market Intelligence now</a> to see what the space market is doing today.</p>
+<p>The Market Intelligence module is available on all SpaceNexus plans, with additional analytics and export capabilities on the Pro tier. <a href="/market-intel">Open Market Intelligence now</a> to see what the space market is doing today.</p>
 
 <p><a href="/market-intel">Explore Market Intelligence on SpaceNexus</a></p>
 `,

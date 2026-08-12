@@ -100,7 +100,7 @@ export default function DashboardBuilderPage() {
               // Free tier: use localStorage
               loadLocalLayouts();
             } else {
-              // Pro/Enterprise: use DB layouts
+              // Pro: use DB layouts
               setLayouts(data.layouts);
               const defaultLayout = data.layouts.find((l: ApiLayout) => l.isDefault) || data.layouts[0];
               if (defaultLayout) {

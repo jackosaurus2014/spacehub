@@ -69,24 +69,24 @@ describe('generateSubscriptionConfirmEmail', () => {
   });
 
   it('capitalizes the tier name in the subject for pro', () => {
-    const result = generateSubscriptionConfirmEmail('Bob', 'pro', 4999);
+    const result = generateSubscriptionConfirmEmail('Bob', 'pro', 1999);
     expect(result.subject).toBe('Welcome to SpaceNexus Pro!');
   });
 
-  it('capitalizes the tier name in the subject for enterprise', () => {
-    const result = generateSubscriptionConfirmEmail('Bob', 'enterprise', 9999);
+  it('capitalizes legacy tier strings in the subject (generic handling)', () => {
+    const result = generateSubscriptionConfirmEmail('Bob', 'enterprise', 1999);
     expect(result.subject).toBe('Welcome to SpaceNexus Enterprise!');
   });
 
-  it('formats the amount correctly (cents to dollars)', () => {
-    const result = generateSubscriptionConfirmEmail('Carol', 'pro', 4999);
-    expect(result.html).toContain('$49.99');
-    expect(result.text).toContain('$49.99');
+  it('formats the amount correctly (cents to dollars — pro monthly $19.99)', () => {
+    const result = generateSubscriptionConfirmEmail('Carol', 'pro', 1999);
+    expect(result.html).toContain('$19.99');
+    expect(result.text).toContain('$19.99');
   });
 
   it('html contains the capitalized tier display name', () => {
-    const result = generateSubscriptionConfirmEmail('Dave', 'enterprise', 9999);
-    expect(result.html).toContain('Enterprise');
+    const result = generateSubscriptionConfirmEmail('Dave', 'pro', 1999);
+    expect(result.html).toContain('Pro');
   });
 
   it('html contains required HTML structure tags', () => {

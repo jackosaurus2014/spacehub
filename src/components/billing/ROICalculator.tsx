@@ -12,9 +12,7 @@ const WEEKS_PER_MONTH = 4.33;
 const TOOL_REPLACEMENT_PERCENT = 0.4; // 40 % replacement of existing tools
 
 function getSpaceNexusCost(teamSize: number): number {
-  if (teamSize <= 1) return 19.99;
-  if (teamSize <= 5) return 49.99 * teamSize;
-  return 49.99 * teamSize; // same rate for custom / enterprise estimate
+  return 19.99 * teamSize; // single Pro plan, per user
 }
 
 /* ------------------------------------------------------------------ */
@@ -381,10 +379,8 @@ export default function ROICalculator() {
                 value={`-${fmtDollars(results.spacenexusCost)}`}
                 detail={
                   teamSize <= 1
-                    ? 'Starter plan'
-                    : teamSize <= 5
-                    ? `Pro plan ($49.99/user x ${teamSize})`
-                    : `Enterprise estimate ($49.99/user x ${teamSize})`
+                    ? 'Pro plan ($19.99/mo)'
+                    : `Pro plan ($19.99/user x ${teamSize})`
                 }
                 positive={false}
               />

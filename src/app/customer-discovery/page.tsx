@@ -199,7 +199,7 @@ export default function CustomerDiscoveryPage() {
   ];
 
   return (
-    <PremiumGate requiredTier="enterprise" context="customer-discovery" showPreview={true}>
+    <PremiumGate requiredTier="pro" context="customer-discovery" showPreview={true}>
       <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}

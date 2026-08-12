@@ -115,20 +115,7 @@ export default function StructuredData() {
           priceCurrency: 'USD',
           billingDuration: 'P1M',
         },
-        description: 'Advanced analytics, AI insights, full company profiles, procurement intelligence, and ad-free experience.',
-      },
-      {
-        '@type': 'Offer',
-        name: 'Enterprise',
-        price: '49.99',
-        priceCurrency: 'USD',
-        priceSpecification: {
-          '@type': 'UnitPriceSpecification',
-          price: '49.99',
-          priceCurrency: 'USD',
-          billingDuration: 'P1M',
-        },
-        description: 'API access, SSO, custom dashboards, dedicated support, and team collaboration.',
+        description: 'Advanced analytics, AI insights, full company profiles, procurement intelligence, API access, custom dashboards, and ad-free experience.',
       },
     ],
     featureList: [

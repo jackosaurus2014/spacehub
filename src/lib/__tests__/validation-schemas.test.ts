@@ -7,6 +7,8 @@ import {
   personnelSchema,
   fundingRoundSchema,
   advertiserRegistrationSchema,
+  stripeCheckoutSchema,
+  subscriptionActionSchema,
 } from '../validations';
 
 // ============================================================
@@ -828,5 +830,54 @@ describe('Cross-schema consistency', () => {
       const result = workerProfileSchema.safeParse({ ...validWorkerProfile, remoteOk: 'true' });
       expect(result.success).toBe(false);
     });
+  });
+});
+
+// ============================================================
+// stripeCheckoutSchema — single paid tier ('pro')
+// ============================================================
+
+describe('stripeCheckoutSchema', () => {
+  it('accepts tier "pro" with month interval', () => {
+    const result = stripeCheckoutSchema.safeParse({ tier: 'pro', interval: 'month' });
+    expect(result.success).toBe(true);
+  });
+
+  it('accepts tier "pro" with year interval', () => {
+    const result = stripeCheckoutSchema.safeParse({ tier: 'pro', interval: 'year' });
+    expect(result.success).toBe(true);
+  });
+
+  it('rejects retired tier "enterprise"', () => {
+    const result = stripeCheckoutSchema.safeParse({ tier: 'enterprise', interval: 'month' });
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.error.issues[0].message).toBe('Tier must be "pro"');
+    }
+  });
+
+  it('rejects unknown tiers and invalid intervals', () => {
+    expect(stripeCheckoutSchema.safeParse({ tier: 'free', interval: 'month' }).success).toBe(false);
+    expect(stripeCheckoutSchema.safeParse({ tier: 'pro', interval: 'weekly' }).success).toBe(false);
+  });
+});
+
+describe('subscriptionActionSchema', () => {
+  it('accepts tier "pro"', () => {
+    const result = subscriptionActionSchema.safeParse({
+      action: 'create-checkout',
+      tier: 'pro',
+      interval: 'month',
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it('rejects retired tier "enterprise"', () => {
+    const result = subscriptionActionSchema.safeParse({
+      action: 'create-checkout',
+      tier: 'enterprise',
+      interval: 'month',
+    });
+    expect(result.success).toBe(false);
   });
 });

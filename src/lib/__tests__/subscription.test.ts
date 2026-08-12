@@ -3,6 +3,7 @@ import {
   canAccessModule,
   getRequiredTierForModule,
   isTrialActive,
+  normalizeTier,
   TIER_ACCESS,
 } from '../subscription';
 
@@ -18,20 +19,12 @@ describe('TIER_ACCESS', () => {
     expect(TIER_ACCESS.pro.maxDailyArticles).toBe(-1);
   });
 
-  it('enterprise tier has unlimited (-1) daily articles', () => {
-    expect(TIER_ACCESS.enterprise.maxDailyArticles).toBe(-1);
-  });
-
   it('free tier does not have stock tracking', () => {
     expect(TIER_ACCESS.free.hasStockTracking).toBe(false);
   });
 
   it('pro tier has stock tracking', () => {
     expect(TIER_ACCESS.pro.hasStockTracking).toBe(true);
-  });
-
-  it('enterprise tier has stock tracking', () => {
-    expect(TIER_ACCESS.enterprise.hasStockTracking).toBe(true);
   });
 
   it('free tier is not ad-free', () => {
@@ -42,18 +35,23 @@ describe('TIER_ACCESS', () => {
     expect(TIER_ACCESS.pro.adFree).toBe(true);
   });
 
-  it('enterprise tier is ad-free', () => {
-    expect(TIER_ACCESS.enterprise.adFree).toBe(true);
-  });
-
-  it('only enterprise and test have API access', () => {
+  it('pro and test have API access; free does not', () => {
     expect(TIER_ACCESS.free.hasAPIAccess).toBe(false);
-    expect(TIER_ACCESS.pro.hasAPIAccess).toBe(false);
-    expect(TIER_ACCESS.enterprise.hasAPIAccess).toBe(true);
+    expect(TIER_ACCESS.pro.hasAPIAccess).toBe(true);
     expect(TIER_ACCESS.test.hasAPIAccess).toBe(true);
   });
 
-  it('test tier has full access (same as enterprise)', () => {
+  it('pro tier unlocks everything (single paid tier)', () => {
+    expect(TIER_ACCESS.pro.hasAIOpportunities).toBe(true);
+    expect(TIER_ACCESS.pro.hasIntelReports).toBe(true);
+    expect(TIER_ACCESS.pro.hasDealFlow).toBe(true);
+    expect(TIER_ACCESS.pro.hasSupplyChainMap).toBe(true);
+    expect(TIER_ACCESS.pro.hasRegulatoryCalendar).toBe(true);
+    expect(TIER_ACCESS.pro.hasAlerts).toBe(true);
+    expect(TIER_ACCESS.pro.hasResourceExchange).toBe(true);
+  });
+
+  it('test tier has full access (same as pro)', () => {
     expect(TIER_ACCESS.test.maxDailyArticles).toBe(-1);
     expect(TIER_ACCESS.test.hasStockTracking).toBe(true);
     expect(TIER_ACCESS.test.hasMarketIntel).toBe(true);
@@ -62,6 +60,37 @@ describe('TIER_ACCESS', () => {
     expect(TIER_ACCESS.test.hasAlerts).toBe(true);
     expect(TIER_ACCESS.test.hasAPIAccess).toBe(true);
     expect(TIER_ACCESS.test.adFree).toBe(true);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// normalizeTier
+// ---------------------------------------------------------------------------
+describe('normalizeTier', () => {
+  it('maps legacy "enterprise" to "pro"', () => {
+    expect(normalizeTier('enterprise')).toBe('pro');
+  });
+
+  it('passes through "pro"', () => {
+    expect(normalizeTier('pro')).toBe('pro');
+  });
+
+  it('passes through "test"', () => {
+    expect(normalizeTier('test')).toBe('test');
+  });
+
+  it('passes through "free"', () => {
+    expect(normalizeTier('free')).toBe('free');
+  });
+
+  it('maps null/undefined to "free"', () => {
+    expect(normalizeTier(null)).toBe('free');
+    expect(normalizeTier(undefined)).toBe('free');
+  });
+
+  it('maps unknown strings to "free"', () => {
+    expect(normalizeTier('platinum')).toBe('free');
+    expect(normalizeTier('')).toBe('free');
   });
 });
 
@@ -77,18 +106,15 @@ describe('canAccessFeature', () => {
     expect(canAccessFeature('pro', 'hasStockTracking')).toBe(true);
   });
 
-  it('enterprise users can access stock tracking', () => {
-    expect(canAccessFeature('enterprise', 'hasStockTracking')).toBe(true);
-  });
-
-  it('enterprise users can access everything', () => {
-    expect(canAccessFeature('enterprise', 'hasStockTracking')).toBe(true);
-    expect(canAccessFeature('enterprise', 'hasMarketIntel')).toBe(true);
-    expect(canAccessFeature('enterprise', 'hasResourceExchange')).toBe(true);
-    expect(canAccessFeature('enterprise', 'hasAIOpportunities')).toBe(true);
-    expect(canAccessFeature('enterprise', 'hasAlerts')).toBe(true);
-    expect(canAccessFeature('enterprise', 'hasAPIAccess')).toBe(true);
-    expect(canAccessFeature('enterprise', 'adFree')).toBe(true);
+  it('pro users can access everything', () => {
+    expect(canAccessFeature('pro', 'hasStockTracking')).toBe(true);
+    expect(canAccessFeature('pro', 'hasMarketIntel')).toBe(true);
+    expect(canAccessFeature('pro', 'hasResourceExchange')).toBe(true);
+    expect(canAccessFeature('pro', 'hasAIOpportunities')).toBe(true);
+    expect(canAccessFeature('pro', 'hasAlerts')).toBe(true);
+    expect(canAccessFeature('pro', 'hasAPIAccess')).toBe(true);
+    expect(canAccessFeature('pro', 'adFree')).toBe(true);
+    expect(canAccessFeature('pro', 'hasIntelReports')).toBe(true);
   });
 
   it('free users can access market intel (free feature)', () => {
@@ -112,26 +138,20 @@ describe('canAccessModule', () => {
     expect(canAccessModule('free', 'resource-exchange')).toBe(false);
   });
 
-  it('free users cannot access enterprise modules (business-opportunities)', () => {
+  it('free users cannot access pro modules (business-opportunities)', () => {
     expect(canAccessModule('free', 'business-opportunities')).toBe(false);
   });
 
-  it('pro users can access pro modules (resource-exchange)', () => {
+  it('pro users can access all premium modules', () => {
+    expect(canAccessModule('pro', 'news-feed')).toBe(true);
     expect(canAccessModule('pro', 'resource-exchange')).toBe(true);
-  });
-
-  it('pro users cannot access enterprise modules (business-opportunities)', () => {
-    expect(canAccessModule('pro', 'business-opportunities')).toBe(false);
-  });
-
-  it('enterprise users can access all modules', () => {
-    expect(canAccessModule('enterprise', 'news-feed')).toBe(true);
-    expect(canAccessModule('enterprise', 'resource-exchange')).toBe(true);
-    expect(canAccessModule('enterprise', 'business-opportunities')).toBe(true);
-    expect(canAccessModule('enterprise', 'spectrum-tracker')).toBe(true);
-    expect(canAccessModule('enterprise', 'space-insurance')).toBe(true);
-    expect(canAccessModule('enterprise', 'compliance')).toBe(true);
-    expect(canAccessModule('enterprise', 'orbital-services')).toBe(true);
+    expect(canAccessModule('pro', 'business-opportunities')).toBe(true);
+    expect(canAccessModule('pro', 'spectrum-tracker')).toBe(true);
+    expect(canAccessModule('pro', 'space-insurance')).toBe(true);
+    expect(canAccessModule('pro', 'compliance')).toBe(true);
+    expect(canAccessModule('pro', 'orbital-services')).toBe(true);
+    expect(canAccessModule('pro', 'intel-reports')).toBe(true);
+    expect(canAccessModule('pro', 'api-docs')).toBe(true);
   });
 
   it('test users can access all modules', () => {
@@ -156,12 +176,12 @@ describe('getRequiredTierForModule', () => {
     expect(getRequiredTierForModule('resource-exchange')).toBe('pro');
   });
 
-  it('returns "enterprise" for business-opportunities', () => {
-    expect(getRequiredTierForModule('business-opportunities')).toBe('enterprise');
+  it('returns "pro" for business-opportunities', () => {
+    expect(getRequiredTierForModule('business-opportunities')).toBe('pro');
   });
 
-  it('returns "enterprise" for spectrum-tracker', () => {
-    expect(getRequiredTierForModule('spectrum-tracker')).toBe('enterprise');
+  it('returns "pro" for spectrum-tracker', () => {
+    expect(getRequiredTierForModule('spectrum-tracker')).toBe('pro');
   });
 
   it('returns null for a free module', () => {

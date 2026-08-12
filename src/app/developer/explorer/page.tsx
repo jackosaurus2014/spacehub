@@ -701,7 +701,7 @@ function ApiExplorerPageInner() {
 
 export default function ApiExplorerPage() {
   return (
-    <PremiumGate requiredTier="enterprise" context="api-access" showPreview={true}>
+    <PremiumGate requiredTier="pro" context="api-access" showPreview={true}>
       <ApiExplorerPageInner />
     </PremiumGate>
   );

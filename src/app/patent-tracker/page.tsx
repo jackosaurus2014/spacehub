@@ -348,7 +348,7 @@ export default function PatentTrackerPage() {
         </div>
       </div>
 
-      {/* Paywall for non-Enterprise users */}
+      {/* Paywall for free users */}
       {!hasAccess && (
         <div className="mt-6 rounded-lg p-6 text-center" style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
           <p className="text-xs mb-1" style={{ color: 'var(--text-muted)' }}>
@@ -359,7 +359,7 @@ export default function PatentTrackerPage() {
             Track {STATS.totalPatents} space patents across {STATS.companiesTracked}+ companies with advanced search, citation analysis, and IP trend reports.
           </p>
           <Link href="/pricing?utm_source=patent_tracker&utm_medium=paywall" className="btn-primary">
-            Upgrade to Enterprise — $49.99/mo
+            Upgrade to Pro — $19.99/mo
           </Link>
         </div>
       )}

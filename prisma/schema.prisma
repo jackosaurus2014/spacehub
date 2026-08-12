@@ -17,7 +17,7 @@ model User {
   modulePreferences UserModulePreference[]
 
   // Subscription
-  subscriptionTier      String    @default("free") // free, pro, enterprise
+  subscriptionTier      String    @default("free") // free, pro (legacy "enterprise" rows are treated as pro)
   subscriptionStatus    String    @default("active") // active, canceled, past_due
   subscriptionStartDate DateTime?
   subscriptionEndDate   DateTime?
@@ -25,14 +25,14 @@ model User {
   stripeSubscriptionId  String?   @unique
 
   // Free trial
-  trialTier        String? // The tier being trialed: "pro" or "enterprise"
+  trialTier        String? // The tier being trialed: "pro"
   trialStartDate   DateTime?
   trialEndDate     DateTime?
   trialEmailsSent  Int       @default(0) // 0=none, 1=welcome, 2=mid-trial, 3=final-day
 
   // Admin
   isAdmin   Boolean @default(false)
-  adminRole String? // 'super_admin', 'moderator', 'data_analyst' — null means basic admin
+  adminRole String? // 'super_admin', 'moderator', 'data_analyst' â€” null means basic admin
 
   // Community reputation
   reputation          Int @default(0)
@@ -142,7 +142,7 @@ model User {
   eventRsvps            EventRSVP[]            @relation("UserEventRSVPs")
 }
 
-// ─── Space Tycoon: Multiplayer Game Models ──────────────────────────────────
+// â”€â”€â”€ Space Tycoon: Multiplayer Game Models â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 model GameProfile {
   id     String @id @default(cuid())
@@ -185,11 +185,11 @@ model GameProfile {
   shipsData             Json     @default("[]")
   workforceData         Json?
 
-  // ── Mechanic 1: Tiered Leaderboards ──
+  // â”€â”€ Mechanic 1: Tiered Leaderboards â”€â”€
   leagueProfile  PlayerLeagueProfile?
   bracketEntries LeagueBracketEntry[]
 
-  // ── Mechanic 2: Ghost/Shadow Rivals ──
+  // â”€â”€ Mechanic 2: Ghost/Shadow Rivals â”€â”€
   peakNetWorth   Float             @default(0)
   rivalWins      Int               @default(0)
   rivalLosses    Int               @default(0)
@@ -197,7 +197,7 @@ model GameProfile {
   rivalsAsPlayer RivalAssignment[] @relation("rivalPlayer")
   rivalsAsRival  RivalAssignment[] @relation("rivalTarget")
 
-  // ── Mechanic 3: Contract Bidding ──
+  // â”€â”€ Mechanic 3: Contract Bidding â”€â”€
   bidReliability       Float             @default(1.0) // 0.0-1.0 reliability score
   totalBidsWon         Int               @default(0)
   totalBidsFailed      Int               @default(0)
@@ -205,27 +205,27 @@ model GameProfile {
   contractBids         ContractBid[]
   wonBiddingContracts  BiddingContract[] @relation("contractWinner")
 
-  // ── Mechanic 4: Seasonal Events ──
+  // â”€â”€ Mechanic 4: Seasonal Events â”€â”€
   eventTokens          Int                   @default(0) // Persistent meta-currency
   seasonParticipations SeasonParticipation[]
 
-  // ── Mechanic 7: Territory/Zone Influence ──
+  // â”€â”€ Mechanic 7: Territory/Zone Influence â”€â”€
   zoneInfluences       ZoneInfluence[]
   governanceChallenges GovernanceChallenge[]
 
-  // ── Mechanic 8: Prestige Speed Runs ──
+  // â”€â”€ Mechanic 8: Prestige Speed Runs â”€â”€
   speedRunAttempts SpeedRunAttempt[]
 
-  // ── Mechanic 9: Economic Espionage ──
+  // â”€â”€ Mechanic 9: Economic Espionage â”€â”€
   espionageProfile  EspionageProfile?
   espionageMissions EspionageMission[] @relation("missionAttacker")
   espionageDefenses EspionageMission[] @relation("missionTarget")
 
-  // ── Mechanic 10: Cooperative Mega-Projects ──
+  // â”€â”€ Mechanic 10: Cooperative Mega-Projects â”€â”€
   megaProjectContributions MegaProjectContribution[]
   megaProjectProgress      MegaProjectPlayerProgress?
 
-  // ── Alliance Event Contributions ──
+  // â”€â”€ Alliance Event Contributions â”€â”€
   allianceEventContributions AllianceEventContribution[]
 
   @@index([netWorth])
@@ -235,7 +235,7 @@ model GameProfile {
   @@index([peakNetWorth])
 }
 
-// Colony claims — tracks who occupies which location slots
+// Colony claims â€” tracks who occupies which location slots
 model ColonyClaim {
   id          String      @id @default(cuid())
   locationId  String
@@ -332,7 +332,7 @@ model NpsResponse {
 
 model UserFeedback {
   id        String   @id @default(cuid())
-  userId    String? // Optional — anonymous users can submit
+  userId    String? // Optional â€” anonymous users can submit
   score     Int // NPS 0-10
   comment   String? // Free-text improvement suggestion
   pageUrl   String? // Page the widget was triggered on
@@ -1004,7 +1004,7 @@ model SolarActivity {
 
   // Solar wind
   solarWindSpeed   Float? // km/s
-  solarWindDensity Float? // particles/cm³
+  solarWindDensity Float? // particles/cmÂ³
 
   // Magnetic field
   bz Float? // nT (negative = southward, geoeffective)
@@ -1265,7 +1265,7 @@ model SpaceJobPosting {
   location String
   remoteOk Boolean @default(false)
 
-  // Link to company profile (optional — seed data won't have this)
+  // Link to company profile (optional â€” seed data won't have this)
   companyProfileId String?
   companyProfile   CompanyProfile? @relation(fields: [companyProfileId], references: [id], onDelete: SetNull)
   description      String?         @db.Text
@@ -1355,7 +1355,7 @@ model LaunchWindow {
   transferType String // hohmann, low_energy, gravity_assist, direct
 
   // Parameters
-  c3Energy        Float? // km²/s² (characteristic energy)
+  c3Energy        Float? // kmÂ²/sÂ² (characteristic energy)
   arrivalVelocity Float? // km/s
 
   // Status
@@ -1671,7 +1671,7 @@ model OrbitalService {
   pricingModel String // per_km2, per_hour, per_kg_year, subscription, per_gb, custom
   priceMin     Float? // Minimum price point
   priceMax     Float? // Maximum price point
-  priceUnit    String? // km², hour, kg/year, month, GB
+  priceUnit    String? // kmÂ², hour, kg/year, month, GB
   pricingNotes String? // Volume discounts, minimums, etc.
 
   // Estimated value metrics
@@ -3040,7 +3040,7 @@ model IntroductionRequest {
 model ComplianceProgress {
   id             String   @id @default(cuid())
   userId         String
-  companyId      String? // Optional — company-scoped progress
+  companyId      String? // Optional â€” company-scoped progress
   completedItems String[] // Array of checklist item IDs that are checked
   customItems    Json? // User-added custom checklist items
   lastUpdatedAt  DateTime @default(now())
@@ -3754,7 +3754,7 @@ model ServiceListing {
   pricingType     String // fixed, hourly, per_unit, subscription, rfq_only
   priceMin        Float?
   priceMax        Float?
-  priceUnit       String? // km², hour, kg, month, unit
+  priceUnit       String? // kmÂ², hour, kg, month, unit
   pricingNotes    String?        @db.Text
   specifications  Json? // Flexible specs per category
   certifications  String[] // ITAR, ISO 9001, AS9100, etc.
@@ -3964,7 +3964,7 @@ model RFQClarification {
   @@index([authorId])
 }
 
-// ─── Watchlists & Saved Searches ────────────────────────────────────────────
+// â”€â”€â”€ Watchlists & Saved Searches â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 model CompanyWatchlistItem {
   id               String         @id @default(cuid())
@@ -4050,7 +4050,7 @@ model Investor {
   @@index([status])
 }
 
-// ── Deal Room (Space Industry Deal Room) ──
+// â”€â”€ Deal Room (Space Industry Deal Room) â”€â”€
 
 model DealRoom {
   id              String   @id @default(cuid())
@@ -4511,7 +4511,7 @@ model VideoContent {
 // Space Tycoon: Multiplayer Systems
 // ---------------------------------------------------------------------------
 
-// Server-validated "first to" milestones — only one player can claim each
+// Server-validated "first to" milestones â€” only one player can claim each
 model GlobalMilestone {
   id          String      @id @default(cuid())
   milestoneId String      @unique // matches milestones.ts ID (first_orbit, first_moon, etc.)
@@ -4559,10 +4559,10 @@ model Alliance {
   members       AllianceMember[]
   createdAt     DateTime         @default(now())
 
-  // ── Mechanic 5: Alliance Cooperative Competition ──
+  // â”€â”€ Mechanic 5: Alliance Cooperative Competition â”€â”€
   level                  Int   @default(1)
   xp                     Int   @default(0)
-  tier                   Int   @default(1) // 1-5 (Frontier Startup → Galactic Dominion)
+  tier                   Int   @default(1) // 1-5 (Frontier Startup â†’ Galactic Dominion)
   powerScore             Float @default(0) // Composite Alliance Power Score
   totalEventsWon         Int   @default(0)
   totalProjectsCompleted Int   @default(0)
@@ -4577,7 +4577,7 @@ model Alliance {
   megaProjectAllianceScores MegaProjectAllianceScore[]
   zoneInfluences            ZoneInfluence[]
 
-  // ── Deep Alliance System ──
+  // â”€â”€ Deep Alliance System â”€â”€
   motd             String? // Message of the day (leader sets)
   bannerColor      String  @default("#6366f1") // Alliance banner/accent color
   iconId           String  @default("rocket_1") // Alliance icon from preset list
@@ -4607,7 +4607,7 @@ model AllianceMember {
   role       String      @default("member") // leader, officer, veteran, member, recruit
   joinedAt   DateTime    @default(now())
 
-  // ── Mechanic 5: Alliance Cooperative Competition ──
+  // â”€â”€ Mechanic 5: Alliance Cooperative Competition â”€â”€
   roleTag        String? // "miner", "researcher", "builder", "trader" (advisory)
   status         String   @default("active") // active, idle, inactive, dormant
   lastActiveAt   DateTime @default(now())
@@ -4618,7 +4618,7 @@ model AllianceMember {
   @@index([allianceId])
 }
 
-// Global activity feed — visible to all players
+// Global activity feed â€” visible to all players
 model PlayerActivity {
   id          String      @id @default(cuid())
   profileId   String
@@ -4661,11 +4661,11 @@ model ExecutiveMove {
   @@index([moveType])
 }
 
-// ═══════════════════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 // COMPETITIVE MULTIPLAYER MODELS
-// ═══════════════════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
-// ── Mechanic 1: Tiered/Bracketed Leaderboards ──────────────────────────────
+// â”€â”€ Mechanic 1: Tiered/Bracketed Leaderboards â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 model LeagueSeason {
   id           String   @id @default(cuid())
@@ -4741,7 +4741,7 @@ model PlayerLeagueProfile {
   @@index([currentLeague])
 }
 
-// ── Mechanic 2: Ghost/Shadow Rivals ────────────────────────────────────────
+// â”€â”€ Mechanic 2: Ghost/Shadow Rivals â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 model RivalAssignment {
   id       String      @id @default(cuid())
@@ -4805,7 +4805,7 @@ model RivalEvent {
   @@index([createdAt])
 }
 
-// ── Mechanic 3: Contract Bidding System ────────────────────────────────────
+// â”€â”€ Mechanic 3: Contract Bidding System â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 model BiddingContract {
   id           String @id @default(cuid())
@@ -4863,7 +4863,7 @@ model ContractBid {
   @@index([status])
 }
 
-// ── Mechanic 4: Seasonal Event Competitions ────────────────────────────────
+// â”€â”€ Mechanic 4: Seasonal Event Competitions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 model SeasonalEvent {
   id           String @id @default(cuid())
@@ -4937,7 +4937,7 @@ model SeasonChallenge {
   @@index([activeDate])
 }
 
-// ── Mechanic 5: Alliance Cooperative Competition ───────────────────────────
+// â”€â”€ Mechanic 5: Alliance Cooperative Competition â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 model AllianceEvent {
   id            String   @id @default(cuid())
@@ -5059,7 +5059,7 @@ model AllianceDailyTaskCompletion {
   @@index([profileId])
 }
 
-// ── Mechanic 6: Player-Driven Marketplace Enhancement ──────────────────────
+// â”€â”€ Mechanic 6: Player-Driven Marketplace Enhancement â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 model MarketLimitOrder {
   id           String    @id @default(cuid())
@@ -5152,7 +5152,7 @@ model MarketAuditLog {
   @@index([createdAt])
 }
 
-// ── Mechanic 7: Territory/Zone Influence ───────────────────────────────────
+// â”€â”€ Mechanic 7: Territory/Zone Influence â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 model Zone {
   id           String  @id @default(cuid())
@@ -5214,7 +5214,7 @@ model GovernanceChallenge {
   @@index([endsAt])
 }
 
-// ── Mechanic 8: Prestige Speed Runs ───────────────────────────────────────
+// â”€â”€ Mechanic 8: Prestige Speed Runs â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 model SpeedRunChallenge {
   id              String   @id @default(cuid())
@@ -5261,7 +5261,7 @@ model SpeedRunAttempt {
   @@index([durationSeconds])
 }
 
-// ── Mechanic 9: Economic Espionage ────────────────────────────────────────
+// â”€â”€ Mechanic 9: Economic Espionage â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 model EspionageProfile {
   id        String      @id @default(cuid())
@@ -5308,7 +5308,7 @@ model EspionageMission {
   @@index([createdAt])
 }
 
-// ── Mechanic 10: Cooperative Mega-Projects ────────────────────────────────
+// â”€â”€ Mechanic 10: Cooperative Mega-Projects â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 model MegaProject {
   id          String @id @default(cuid())
@@ -5398,11 +5398,11 @@ model MegaProjectPlayerProgress {
   @@index([profileId])
 }
 
-// ═══════════════════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 // DEEP ALLIANCE SYSTEM
-// ═══════════════════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
-// Alliance shared research tree — unlockable bonuses that benefit all members
+// Alliance shared research tree â€” unlockable bonuses that benefit all members
 model AllianceResearch {
   id         String   @id @default(cuid())
   allianceId String
@@ -5433,7 +5433,7 @@ model AllianceResearch {
   @@index([category])
 }
 
-// Alliance diplomacy — relations between alliances
+// Alliance diplomacy â€” relations between alliances
 model AllianceDiplomacy {
   id         String   @id @default(cuid())
   senderId   String
@@ -5465,7 +5465,7 @@ model AllianceDiplomacy {
   @@index([type, status])
 }
 
-// Alliance perks — temporary buffs purchased from treasury
+// Alliance perks â€” temporary buffs purchased from treasury
 model AlliancePerk {
   id         String   @id @default(cuid())
   allianceId String
@@ -5488,7 +5488,7 @@ model AlliancePerk {
   @@index([expiresAt])
 }
 
-// Alliance activity log — tracks all significant alliance actions
+// Alliance activity log â€” tracks all significant alliance actions
 model AllianceLog {
   id         String   @id @default(cuid())
   allianceId String
@@ -5511,7 +5511,7 @@ model AllianceLog {
   @@index([type])
 }
 
-// ─── Gig/Freelance Marketplace ────────────────────────────────────────────────
+// â”€â”€â”€ Gig/Freelance Marketplace â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 model WorkerProfile {
   id              String   @id @default(cuid())
@@ -5585,7 +5585,7 @@ model EmployerProfile {
   updatedAt   DateTime         @updatedAt
 }
 
-// ─── Live Blog ──────────────────────────────────────────────────────────────
+// â”€â”€â”€ Live Blog â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 model LiveBlogEntry {
   id        String   @id @default(uuid())
@@ -5594,13 +5594,13 @@ model LiveBlogEntry {
   type      String   @default("update") // update, milestone, alert, media, countdown
   source    String   @default("admin") // admin, auto, nasa
   pinned    Boolean  @default(false)
-  eventTag  String? // e.g. "artemis-ii" — allows filtering by event
+  eventTag  String? // e.g. "artemis-ii" â€” allows filtering by event
   createdAt DateTime @default(now())
 
   @@index([eventTag, createdAt])
 }
 
-// ─── Usage Analytics ────────────────────────────────────────────────────────
+// â”€â”€â”€ Usage Analytics â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 model ActivityLog {
   id        String   @id @default(cuid())
@@ -5620,7 +5620,7 @@ model ActivityLog {
   @@index([createdAt])
 }
 
-// ─── Wave 1: Speaking Opportunities ─────────────────────────────────────────
+// â”€â”€â”€ Wave 1: Speaking Opportunities â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 model SpeakingOpportunity {
   id             String   @id @default(cuid())
@@ -5652,7 +5652,7 @@ model SpeakingOpportunity {
   @@index([organization])
 }
 
-// ─── Wave 1: Pitch Decks & Data Room ────────────────────────────────────────
+// â”€â”€â”€ Wave 1: Pitch Decks & Data Room â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 model PitchDeck {
   id             String        @id @default(cuid())
@@ -5705,7 +5705,7 @@ model DataRoomDocument {
   @@index([docType])
 }
 
-// ─── Wave 1: Company Announcements ──────────────────────────────────────────
+// â”€â”€â”€ Wave 1: Company Announcements â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 model CompanyAnnouncement {
   id          String         @id @default(cuid())
@@ -5726,7 +5726,7 @@ model CompanyAnnouncement {
   @@index([category])
 }
 
-// ─── Wave 2: Mission Photo Gallery ──────────────────────────────────────────
+// â”€â”€â”€ Wave 2: Mission Photo Gallery â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 model MissionPhoto {
   id            String   @id @default(cuid())
@@ -5758,7 +5758,7 @@ model MissionPhoto {
   @@index([takenAt])
 }
 
-// ─── Wave 2: Event RSVP + Ticketing ─────────────────────────────────────────
+// â”€â”€â”€ Wave 2: Event RSVP + Ticketing â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 model EventRSVP {
   id          String   @id @default(cuid())
@@ -5781,7 +5781,7 @@ model EventRSVP {
   @@index([status])
 }
 
-// ─── Wave 2: Mentor Marketplace ─────────────────────────────────────────────
+// â”€â”€â”€ Wave 2: Mentor Marketplace â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 model MentorProfile {
   id              String   @id @default(cuid())
@@ -5839,7 +5839,7 @@ model SkillEndorsement {
   @@index([skill])
 }
 
-// ─── Wave 2: Credentials ────────────────────────────────────────────────────
+// â”€â”€â”€ Wave 2: Credentials â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 model UserCredential {
   id               String   @id @default(cuid())
@@ -5864,7 +5864,7 @@ model UserCredential {
   @@index([credentialType])
 }
 
-// ─── Wave 2: Cap Table Transparency ─────────────────────────────────────────
+// â”€â”€â”€ Wave 2: Cap Table Transparency â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 model CapTable {
   id                 String   @id @default(cuid())
@@ -5920,7 +5920,7 @@ model CapTableShare {
   @@index([grantedToUserId])
 }
 
-// ─── Wave 2: Corporate Messaging + Teams ────────────────────────────────────
+// â”€â”€â”€ Wave 2: Corporate Messaging + Teams â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 model CorporateChannel {
   id          String   @id @default(cuid())
@@ -5985,7 +5985,7 @@ model TeamProject {
   @@index([status])
 }
 
-// ─── Wave 2: Podcast Directory + Transcripts ────────────────────────────────
+// â”€â”€â”€ Wave 2: Podcast Directory + Transcripts â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 model Podcast {
   id           String   @id @default(cuid())
@@ -6043,7 +6043,7 @@ model PodcastTranscript {
   @@index([episodeId])
 }
 
-// ─── Wave 2: Mission Debrief ────────────────────────────────────────────────
+// â”€â”€â”€ Wave 2: Mission Debrief â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 model MissionDebrief {
   id             String   @id @default(cuid())
@@ -6070,7 +6070,7 @@ model MissionDebrief {
   @@index([status])
 }
 
-// ─── Wave 3: Universal Watchlist ────────────────────────────────────────────
+// â”€â”€â”€ Wave 3: Universal Watchlist â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 model WatchlistItem {
   id         String   @id @default(cuid())
@@ -6088,7 +6088,7 @@ model WatchlistItem {
   @@index([entityId])
 }
 
-// ─── Wave 3: Expert AMAs + Office Hours ─────────────────────────────────────
+// â”€â”€â”€ Wave 3: Expert AMAs + Office Hours â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 model ExpertSession {
   id            String   @id @default(cuid())
@@ -6161,7 +6161,7 @@ model OfficeHourSlot {
   @@index([status])
 }
 
-// ─── Wave 3: Satellite Pass Alerts ──────────────────────────────────────────
+// â”€â”€â”€ Wave 3: Satellite Pass Alerts â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 model SatellitePassAlert {
   id         String   @id @default(cuid())
@@ -6181,7 +6181,7 @@ model SatellitePassAlert {
   @@index([enabled])
 }
 
-// ─── Wave 3: Countdown Widgets ──────────────────────────────────────────────
+// â”€â”€â”€ Wave 3: Countdown Widgets â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 model CountdownWidget {
   id           String   @id @default(cuid())
@@ -6200,7 +6200,7 @@ model CountdownWidget {
   @@index([targetTime])
 }
 
-// ─── Wave 3: Study Groups + Reading Clubs ───────────────────────────────────
+// â”€â”€â”€ Wave 3: Study Groups + Reading Clubs â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 model StudyGroup {
   id          String   @id @default(cuid())
@@ -6250,7 +6250,7 @@ model GroupMeeting {
   @@index([scheduledAt])
 }
 
-// ─── Wave 3: Launch Cost Benchmarking + Supplier Reliability ────────────────
+// â”€â”€â”€ Wave 3: Launch Cost Benchmarking + Supplier Reliability â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 model LaunchCostBenchmark {
   id            String   @id @default(cuid())
@@ -6292,7 +6292,7 @@ model SupplierReliabilityScore {
   @@index([scoredFor])
 }
 
-// ─── Wave 3: Investor Thesis + Deal Memos ───────────────────────────────────
+// â”€â”€â”€ Wave 3: Investor Thesis + Deal Memos â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 model InvestorThesis {
   id          String   @id @default(cuid())
@@ -6336,7 +6336,7 @@ model DealMemo {
   @@index([publishedAt])
 }
 
-// ─── Wave 3: This Day in Space ──────────────────────────────────────────────
+// â”€â”€â”€ Wave 3: This Day in Space â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 model SpaceHistoryEvent {
   id          String   @id @default(cuid())
@@ -6360,7 +6360,7 @@ model SpaceHistoryEvent {
   @@index([featured])
 }
 
-// ─── Wave 3: Ticket Resale ──────────────────────────────────────────────────
+// â”€â”€â”€ Wave 3: Ticket Resale â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 model TicketListing {
   id            String   @id @default(cuid())
@@ -6402,7 +6402,7 @@ model ResaleTransaction {
   @@index([sellerUserId])
 }
 
-// ─── Wave 3: Learning Zone ──────────────────────────────────────────────────
+// â”€â”€â”€ Wave 3: Learning Zone â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 model CourseModule {
   id           String   @id @default(cuid())
