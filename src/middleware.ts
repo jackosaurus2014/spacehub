@@ -398,10 +398,10 @@ export function middleware(req: NextRequest) {
   const response = NextResponse.next();
   response.headers.set('X-Content-Type-Options', 'nosniff');
 
-  // Embed routes must be iframe-embeddable on third-party sites.
-  // For /embed/* we allow any origin to frame the page and relax CSP
-  // accordingly. All other routes stay DENY to prevent clickjacking.
-  if (pathname.startsWith('/embed/')) {
+  // Embed and widget routes must be iframe-embeddable on third-party sites.
+  // For /embed/* and /widgets/* we allow any origin to frame the page and
+  // relax CSP accordingly. All other routes stay DENY to prevent clickjacking.
+  if (pathname.startsWith('/embed/') || pathname.startsWith('/widgets/')) {
     response.headers.set('Content-Security-Policy', "frame-ancestors *");
     // X-Frame-Options has no ALLOWALL value across browsers; omit it so
     // the CSP frame-ancestors directive (which supersedes XFO) takes effect.

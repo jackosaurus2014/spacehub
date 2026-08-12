@@ -27,7 +27,14 @@ interface WeatherPreviewData {
   alertLevel: string;
 }
 
-type PreviewData = MarketPreviewData | LaunchPreviewData | WeatherPreviewData;
+interface JobsPreviewData {
+  type: 'jobs';
+  label: string;
+  totalActive: string;
+  atPrivateCompanies: string;
+}
+
+type PreviewData = MarketPreviewData | LaunchPreviewData | WeatherPreviewData | JobsPreviewData;
 
 interface WidgetConfig {
   name: string;
@@ -80,6 +87,18 @@ const widgets: WidgetConfig[] = [
       kp: 3,
       windSpeed: 412,
       alertLevel: 'nominal',
+    },
+  },
+  {
+    name: 'Space Jobs Widget',
+    slug: 'jobs',
+    description: 'Live count of open space industry jobs and how many are at private/pre-IPO companies, pulled from the SpaceNexus jobs board. Great for career sites, university pages, and industry blogs.',
+    embedCode: '<iframe src="https://spacenexus.us/widgets/jobs" width="400" height="220" frameborder="0" title="SpaceNexus live space jobs count" style="border-radius:12px;overflow:hidden;"></iframe>',
+    preview: {
+      type: 'jobs',
+      label: 'Space Industry Jobs',
+      totalActive: '6,300+',
+      atPrivateCompanies: '4,800+',
     },
   },
 ];
@@ -194,12 +213,27 @@ function WeatherPreview({ data }: { data: WeatherPreviewData }) {
   );
 }
 
+function JobsPreview({ data }: { data: JobsPreviewData }) {
+  return (
+    <div className="p-5">
+      <div className="text-[10px] text-cyan-400 font-semibold uppercase tracking-widest mb-3">
+        {data.label}
+      </div>
+      <div className="text-2xl font-extrabold text-slate-200 tabular-nums mb-1">{data.totalActive}</div>
+      <div className="text-[11px] text-slate-500 mb-3">open space industry jobs</div>
+      <div className="text-lg font-bold text-cyan-400 tabular-nums mb-1">{data.atPrivateCompanies}</div>
+      <div className="text-[11px] text-slate-500">at private / pre-IPO companies</div>
+    </div>
+  );
+}
+
 function WidgetPreview({ widget }: { widget: WidgetConfig }) {
   const data = widget.preview;
   switch (data.type) {
     case 'market': return <MarketPreview data={data} />;
     case 'launch': return <LaunchPreview data={data} />;
     case 'weather': return <WeatherPreview data={data} />;
+    case 'jobs': return <JobsPreview data={data} />;
     default: return null;
   }
 }
@@ -328,6 +362,48 @@ export default function WidgetsLandingPage() {
                 <p className="text-xs text-slate-400 leading-relaxed">{item.description}</p>
               </div>
             ))}
+          </div>
+        </section>
+
+        {/* Jobs Feed */}
+        <section className="mb-16">
+          <h2 className="text-2xl font-bold text-white mb-4 text-center drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+            Public Jobs Feed
+          </h2>
+          <p className="text-sm text-white/70 leading-relaxed max-w-2xl mx-auto text-center mb-8">
+            Pull the live SpaceNexus space-industry jobs board into your own site, job board aggregator, or
+            RSS reader. No API key required — cached and CORS-enabled for direct browser use.
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="card p-6">
+              <h3 className="text-sm font-bold text-white mb-2">JSON Feed</h3>
+              <div className="bg-black/40 border border-white/[0.08] rounded-lg p-3 font-mono text-xs text-slate-300 break-all mb-3 select-all">
+                https://spacenexus.us/api/feed/jobs
+              </div>
+              <p className="text-xs text-slate-400 leading-relaxed mb-3">
+                Returns active job postings, newest first, with title, company, location, remote flag,
+                category, seniority, salary range, posted date, and links to the job detail page and the
+                original application URL.
+              </p>
+              <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Query Params</div>
+              <ul className="text-xs text-slate-400 leading-relaxed space-y-0.5">
+                <li><code className="text-cyan-400">limit</code> — results to return (default 100, max 500)</li>
+                <li><code className="text-cyan-400">category</code> — e.g. engineering, operations, business</li>
+                <li><code className="text-cyan-400">company</code> — filter by company name</li>
+                <li><code className="text-cyan-400">remote</code> — <code className="text-cyan-400">true</code> for remote-eligible roles only</li>
+                <li><code className="text-cyan-400">sinceDays</code> — postings within N days (default 30)</li>
+              </ul>
+            </div>
+            <div className="card p-6">
+              <h3 className="text-sm font-bold text-white mb-2">RSS Feed</h3>
+              <div className="bg-black/40 border border-white/[0.08] rounded-lg p-3 font-mono text-xs text-slate-300 break-all mb-3 select-all">
+                https://spacenexus.us/api/feed/jobs/rss
+              </div>
+              <p className="text-xs text-slate-400 leading-relaxed">
+                RSS 2.0 feed of the 100 newest active job postings — drop it into any feed reader or job
+                board aggregator. Each item links to the full job detail page on SpaceNexus.
+              </p>
+            </div>
           </div>
         </section>
 
