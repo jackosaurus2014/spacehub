@@ -34,3 +34,4 @@ Sitemap: https://spacenexus.us/sitemap/0.xml
 Sitemap: https://spacenexus.us/sitemap/1.xml
 Sitemap: https://spacenexus.us/sitemap/2.xml
 Sitemap: https://spacenexus.us/sitemap/3.xml
+Sitemap: https://spacenexus.us/jobs-sitemap.xml
