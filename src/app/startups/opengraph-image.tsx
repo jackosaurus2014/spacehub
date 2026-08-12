@@ -3,9 +3,11 @@ import prisma from '@/lib/db';
 
 // Prisma requires the Node.js runtime — this route cannot run on the edge.
 export const runtime = 'nodejs';
+// Static-segment OG routes get prerendered at build, which trips a known
+// @vercel/og 'Invalid URL' module-load bug — force-dynamic skips prerender.
+export const dynamic = 'force-dynamic';
 // Regenerate at most once an hour so the counts stay fresh without hitting
 // the database on every social-card unfurl.
-export const revalidate = 3600;
 
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
