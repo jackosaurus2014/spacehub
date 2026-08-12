@@ -171,8 +171,14 @@ function JobCard({ job }: { job: SpaceJobPosting }) {
     <div className="card p-5 hover:border-white/15 transition-all group">
       <div className="flex items-start justify-between mb-3">
         <div className="flex-1 min-w-0">
-          <h3 className="font-semibold text-white text-base group-hover:text-white transition-colors">
-            {job.title}
+          <h3 className="font-semibold text-base">
+            <Link
+              href={`/space-talent/job/${job.id}`}
+              onClick={(e) => e.stopPropagation()}
+              className="text-white hover:text-cyan-400 hover:underline underline-offset-2 transition-colors"
+            >
+              {job.title}
+            </Link>
           </h3>
           <div className="flex items-center gap-2 mt-0.5">
             {job.companyProfile ? (
@@ -241,11 +247,30 @@ function JobCard({ job }: { job: SpaceJobPosting }) {
     </div>
   );
 
+  // Note: the title/company/Market Intel links inside `inner` call
+  // e.stopPropagation() on click, so they navigate via Next's <Link> instead
+  // of triggering the card-level external apply below. We use a click/keydown
+  // handler on a <div> here (rather than wrapping `inner` in an <a>) because
+  // `inner` already contains an <a> (the title link) — nesting anchors is
+  // invalid HTML and breaks the title link's click target.
   if (job.sourceUrl) {
+    const openApply = () => window.open(job.sourceUrl as string, '_blank', 'noopener,noreferrer');
     return (
-      <a href={job.sourceUrl} target="_blank" rel="noopener noreferrer" className="block">
+      <div
+        role="link"
+        tabIndex={0}
+        aria-label={`Apply to ${job.title} at ${job.company} on the company site (opens in a new tab)`}
+        onClick={openApply}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            openApply();
+          }
+        }}
+        className="block cursor-pointer"
+      >
         {inner}
-      </a>
+      </div>
     );
   }
 
