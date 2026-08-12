@@ -339,12 +339,84 @@ const nextConfig = {
       // /space-comms now has its own standalone page
       { source: '/imagery-marketplace', destination: '/space-manufacturing?tab=imagery', permanent: true },
       { source: '/bid-protests', destination: '/compliance?tab=protests-overview', permanent: true },
-      { source: '/startups', destination: '/space-capital', permanent: true },
+      // /space-capital now redirects to /funding-tracker — point /startups at the
+      // final destination directly to avoid a redirect chain
+      { source: '/startups', destination: '/funding-tracker', permanent: true },
       // Single paid plan (Pro) — retired enterprise marketing page
       { source: '/enterprise', destination: '/pricing', permanent: true },
       // Retired user-triggered AI features
       { source: '/marketplace/copilot', destination: '/marketplace/rfq/new', permanent: true },
       { source: '/investment-thesis', destination: '/market-intel', permanent: true },
+
+      // ── URL consolidation (2026-08) — funding & investment ──
+      { source: '/deals', destination: '/funding-tracker', permanent: true },
+      { source: '/deal-flow', destination: '/funding-tracker', permanent: true },
+      { source: '/funding-rounds', destination: '/funding-tracker', permanent: true },
+      { source: '/ma-tracker', destination: '/funding-tracker', permanent: true },
+      { source: '/investment-tracker', destination: '/funding-tracker', permanent: true },
+      { source: '/space-capital', destination: '/funding-tracker', permanent: true },
+      { source: '/space-investors', destination: '/investors', permanent: true },
+      { source: '/portfolio-tracker', destination: '/market-intel', permanent: true },
+      { source: '/startup-directory', destination: '/startup-tracker', permanent: true },
+      { source: '/contract-awards', destination: '/procurement', permanent: true },
+
+      // ── URL consolidation — talent & careers ──
+      { source: '/jobs', destination: '/space-talent?tab=jobs', permanent: true },
+      { source: '/salary-benchmarks', destination: '/space-talent?tab=salaries', permanent: true },
+      { source: '/workforce-analytics', destination: '/space-talent?tab=trends', permanent: true },
+      { source: '/career-intelligence', destination: '/space-talent?tab=trends', permanent: true },
+      { source: '/career-guide', destination: '/space-talent?tab=insights', permanent: true },
+      { source: '/education-pathways', destination: '/space-talent?tab=insights', permanent: true },
+
+      // ── URL consolidation — market intelligence ──
+      { source: '/space-economy', destination: '/market-intel', permanent: true },
+      { source: '/market-sizing', destination: '/market-intel', permanent: true },
+      { source: '/market-segments', destination: '/market-intel', permanent: true },
+      { source: '/market-map', destination: '/market-intel', permanent: true },
+      { source: '/industry-scorecard', destination: '/market-intel', permanent: true },
+
+      // ── URL consolidation — supply chain & operations ──
+      { source: '/supply-chain-map', destination: '/supply-chain', permanent: true },
+      { source: '/supply-chain-risk', destination: '/supply-chain', permanent: true },
+      { source: '/launch-manifest', destination: '/mission-control', permanent: true },
+      { source: '/mission-pipeline', destination: '/mission-control', permanent: true },
+      { source: '/ground-station-directory', destination: '/ground-stations', permanent: true },
+      { source: '/launch-sites', destination: '/spaceports', permanent: true },
+      { source: '/satellite-tracker', destination: '/satellites', permanent: true },
+      { source: '/constellation-tracker', destination: '/constellations', permanent: true },
+
+      // ── URL consolidation — space environment ──
+      { source: '/space-weather', destination: '/space-environment?tab=weather', permanent: true },
+      { source: '/debris-tracker', destination: '/space-environment?tab=debris', permanent: true },
+      { source: '/debris-catalog', destination: '/space-environment?tab=debris', permanent: true },
+      { source: '/debris-remediation', destination: '/space-environment?tab=debris', permanent: true },
+
+      // ── URL consolidation — spectrum, patents, compliance ──
+      { source: '/frequency-bands', destination: '/spectrum', permanent: true },
+      { source: '/frequency-database', destination: '/spectrum', permanent: true },
+      { source: '/rf-spectrum', destination: '/spectrum', permanent: true },
+      { source: '/patent-landscape', destination: '/patents', permanent: true },
+      { source: '/patent-tracker', destination: '/patents', permanent: true },
+      { source: '/compliance-engine', destination: '/compliance', permanent: true },
+      { source: '/compliance-checklist', destination: '/compliance', permanent: true },
+      { source: '/regulatory-hub', destination: '/compliance', permanent: true },
+
+      // ── URL consolidation — misc ──
+      { source: '/isru', destination: '/space-mining', permanent: true },
+      { source: '/resource-exchange', destination: '/marketplace', permanent: true },
+      { source: '/imagery-providers', destination: '/company-profiles', permanent: true },
+      { source: '/news-digest', destination: '/daily-digest', permanent: true },
+      { source: '/watchlists', destination: '/my-watchlists', permanent: true },
+      { source: '/materials-db', destination: '/materials-database', permanent: true },
+      { source: '/clean-room', destination: '/clean-room-reference', permanent: true },
+      { source: '/space-communications', destination: '/space-comms', permanent: true },
+      { source: '/standards', destination: '/standards-reference', permanent: true },
+      { source: '/night-sky', destination: '/night-sky-guide', permanent: true },
+      { source: '/newsletters', destination: '/newsletters-directory', permanent: true },
+      { source: '/satellite-bus-comparison', destination: '/compare/satellite-buses', permanent: true },
+      { source: '/propulsion-comparison', destination: '/propulsion-database', permanent: true },
+      { source: '/engineering', destination: '/tools', permanent: true },
+      { source: '/engineering-hub', destination: '/tools', permanent: true },
     ];
   },
 }

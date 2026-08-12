@@ -30,206 +30,73 @@ const RECENT_MODULES_KEY = 'spacenexus-recent-modules';
 const MAX_RECENT_MODULES = 5;
 const MOBILE_INITIAL_ITEMS = 8;
 
-type CategoryKey = 'explore' | 'intelligence' | 'business' | 'tools';
+type CategoryKey = 'news' | 'markets' | 'business' | 'explore';
 
 const ALL_CATEGORIES: { key: CategoryKey; label: string; items: DropdownItem[] }[] = [
-  { key: 'explore', label: 'Explore', items: [] },
-  { key: 'intelligence', label: 'Intelligence', items: [] },
+  { key: 'news', label: 'News', items: [] },
+  { key: 'markets', label: 'Markets', items: [] },
   { key: 'business', label: 'Business', items: [] },
-  { key: 'tools', label: 'Tools', items: [] },
+  { key: 'explore', label: 'Explore', items: [] },
 ];
 
-const EXPLORE_ITEMS: DropdownItem[] = [
-  { label: "What's New", href: '/changelog', description: 'Latest platform updates and features' },
-  { label: '\uD83C\uDF19 Ignition Tracker', href: '/ignition', description: "Track NASA's $20B Moon base program" },
-  { label: 'Mission Control', href: '/mission-control', description: 'Upcoming launches and events' },
-  { label: 'Mission Pipeline', href: '/mission-pipeline', description: 'Upcoming missions 2025-2030' },
-  { label: 'Mission Statistics', href: '/mission-stats', description: 'Launch provider leaderboards & stats' },
-  { label: 'News & Categories', href: '/news', description: 'Latest space industry updates' },
-  { label: 'Blogs & Articles', href: '/blogs', description: 'Expert industry insights' },
+const NEWS_ITEMS: DropdownItem[] = [
+  { label: 'News Feed', href: '/news', description: 'Latest space industry news' },
+  { label: 'AI Insights & Analysis', href: '/ai-insights', description: 'AI-powered industry analysis' },
   { label: 'SpaceNexus Blog', href: '/blog', description: 'Guides, analysis & market reports' },
+  { label: 'Industry Blogs', href: '/blogs', description: 'Expert industry insights' },
+  { label: 'Daily Digest', href: '/daily-digest', description: 'Curated daily headlines' },
+  { label: 'Podcasts', href: '/podcasts', description: 'Space podcast directory' },
   { label: 'Space Defense', href: '/space-defense', description: 'Military space & national security' },
-  { label: 'AI Insights', href: '/ai-insights', description: 'AI-powered industry analysis' },
-  { label: 'Market Map', href: '/market-map', description: 'Visual industry landscape by sector' },
-  { label: 'Community Forums', href: '/community/forums', description: 'Discussions with space professionals' },
-  { label: 'Resources & Podcasts', href: '/resources', description: 'Curated content, podcasts & newsletters' },
-  { label: 'Solar Exploration', href: '/solar-exploration', description: '3D planetary visualization' },
-  { label: 'Mars Mission Planner', href: '/mars-planner', description: 'Mars missions and launch windows' },
-  { label: 'Cislunar Ecosystem', href: '/cislunar', description: 'Gateway, Artemis & lunar economy' },
-  { label: 'Asteroid Watch', href: '/asteroid-watch', description: 'NEOs, planetary defense, and mining' },
-  { label: 'Space Glossary', href: '/glossary', description: 'Definitions of key space industry terms' },
-  { label: 'Space Timeline', href: '/timeline', description: 'History and milestones of space exploration' },
-  { label: 'Daily Digest', href: '/news-digest', description: 'Quick-scan daily space headlines' },
-  { label: 'Daily Digest (New)', href: '/daily-digest', description: 'Curated daily space industry digest' },
-  { label: 'Orbit Guide', href: '/orbit-guide', description: 'Visual guide to orbital mechanics & orbit types' },
-  { label: 'Career Guide', href: '/career-guide', description: 'Space industry career paths & salary data' },
-  { label: 'Acronyms', href: '/acronyms', description: 'A-Z space industry acronym reference' },
-  { label: 'Space Weather', href: '/space-weather', description: 'Solar conditions & impact forecasts' },
-  { label: 'Satellite Spotting Guide', href: '/satellite-spotting', description: 'How to see satellites with the naked eye' },
-  { label: 'Aurora Forecast', href: '/aurora-forecast', description: 'Northern lights forecast & Kp index guide' },
-  { label: 'Earth Events', href: '/earth-events', description: 'NASA EONET natural disaster tracking' },
-  { label: 'Space Agencies', href: '/space-agencies', description: 'World space agency profiles & budgets' },
-  { label: '🎙️ Space Podcasts', href: '/podcasts', description: '25+ space industry podcasts directory' },
-  { label: 'Debris Remediation', href: '/debris-remediation', description: 'Active debris removal efforts and space sustainability' },
-  { label: 'Debris Tracker', href: '/debris-tracker', description: 'Track orbital debris' },
-  { label: 'Space Tourism', href: '/space-tourism', description: 'Space tourism providers' },
-  { label: 'News Aggregator', href: '/news-aggregator', description: 'Curated multi-source news feed' },
-  { label: 'Launch Manifest', href: '/launch-manifest', description: 'Global launch schedule & manifest tracker' },
-  { label: 'Debris Catalog', href: '/debris-catalog', description: 'Comprehensive orbital debris database' },
-  { label: 'Sustainability Scorecard', href: '/sustainability-scorecard', description: 'Space sustainability metrics & ratings' },
-  { label: 'FAQ', href: '/faq', description: 'Frequently asked questions' },
-  { label: 'Help Center', href: '/help', description: 'Guides, FAQs & support resources' },
-  { label: 'Newsletters', href: '/newsletters-directory', description: 'Space industry newsletter directory' },
-  { label: 'Newsletter Signup', href: '/newsletter', description: 'Weekly intelligence brief delivered free' },
-  { label: 'All Features & Modules', href: '/features', description: 'Browse 30+ modules in one directory' },
-  { label: 'Data Sources', href: '/data-sources', description: 'Transparency in our data pipeline' },
-  { label: 'Space Industry Statistics', href: '/space-stats', description: 'Comprehensive space industry stats & facts 2026' },
-  { label: '🔭 Discover', href: '/discover', description: 'Find the right tools for your role' },
-  { label: 'Getting Started', href: '/getting-started', description: 'New to SpaceNexus? Start here' },
-  { label: 'Alternatives', href: '/alternatives', description: 'SpaceNexus vs other space data platforms' },
-  { label: '🎮 Space Tycoon', href: '/space-tycoon', description: 'Build your space empire — free browser game' },
-  { label: '📱 Get the App', href: '/app', description: 'Download SpaceNexus for Android on Google Play' },
+  { label: 'Newsletter', href: '/newsletter', description: 'Weekly intelligence brief' },
 ];
 
-const INTELLIGENCE_ITEMS: DropdownItem[] = [
-  { label: 'Market Intel', href: '/market-intel', description: 'Companies and stock tracking' },
-  { label: 'Research Assistant', href: '/company-research', description: 'AI-powered company research Q&A' },
-  { label: 'Intelligence Brief', href: '/intelligence-brief', description: 'Weekly curated industry briefing' },
-  { label: 'Space Economy', href: '/space-economy', description: 'Market size, investment & budgets' },
-  { label: 'Government Budgets', href: '/government-budgets', description: 'Global space agency budget tracking' },
-  { label: 'Space Capital', href: '/space-capital', description: 'VC investors, startups & matchmaking' },
-  { label: 'Investor Hub', href: '/investors', description: 'Due diligence tools & deal flow' },
-  { label: 'Investment Tracker', href: '/investment-tracker', description: 'Funding trends, top deals & investors' },
-  { label: 'Market Sizing (TAM)', href: '/market-sizing', description: 'Interactive market size analysis' },
-  { label: 'Funding Tracker', href: '/funding-tracker', description: 'Live funding rounds & M&A deals' },
-  { label: 'Executive Moves', href: '/executive-moves', description: 'Leadership changes across the industry' },
-  { label: 'Regulatory Hub', href: '/compliance', description: 'Compliance, space law & filings' },
-  { label: 'Space Law & Treaties', href: '/compliance?tab=treaties', description: '20+ international treaties and regulatory frameworks' },
-  { label: 'Regulatory Risk', href: '/regulatory-risk', description: 'Jurisdiction risk scoring & alerts' },
-  { label: 'Regulation Explainers', href: '/regulation-explainers', description: 'AI plain-English regulation summaries' },
-  { label: 'Regulatory Agencies', href: '/regulatory-agencies', description: 'Complete directory of space regulatory bodies' },
-  { label: 'Compliance Checklist', href: '/compliance-checklist', description: 'Interactive space industry compliance tracker' },
-  { label: 'Legal Resources', href: '/legal-resources', description: 'Law firms, treaties & regulatory references' },
-  { label: 'Spectrum Management', href: '/spectrum', description: 'Allocations, auctions & filings' },
-  { label: 'Patent & IP Tracker', href: '/patents', description: 'Space technology patent trends' },
-  { label: 'Startup Tracker', href: '/startup-tracker', description: 'Emerging space companies & funding stages' },
-  { label: 'Report Cards', href: '/report-cards', description: 'Quarterly company performance grades' },
-  { label: 'Portfolio Tracker', href: '/portfolio-tracker', description: 'Track space investment portfolios' },
-  { label: 'Industry Trends', href: '/industry-trends', description: 'Data-backed space industry trend analysis' },
-  { label: 'Industry Scorecard', href: '/industry-scorecard', description: 'Quarterly grades across 6 industry dimensions' },
-  { label: 'Contract Awards', href: '/contract-awards', description: 'Government contract feed' },
-  { label: 'Tech Readiness', href: '/tech-readiness', description: 'Technology readiness levels' },
-  { label: 'Frequency Database', href: '/frequency-database', description: 'Searchable satellite frequency allocations' },
-  { label: 'Ground Stations', href: '/ground-station-directory', description: 'Global ground station directory & capabilities' },
-  { label: 'Launch Economics', href: '/launch-economics', description: 'Launch cost trends & pricing analysis' },
-  { label: 'Licensing Checker', href: '/licensing-checker', description: 'Find required licenses for space activities' },
-  { label: 'Export Classifications', href: '/export-classifications', description: 'ITAR USML & EAR ECCN space reference' },
-  { label: 'RF Spectrum', href: '/rf-spectrum', description: 'RF spectrum analysis & interference mapping' },
-  { label: 'Edge Computing', href: '/space-edge-computing', description: 'Space edge computing & on-orbit processing' },
-  { label: 'Market Segments', href: '/market-segments', description: 'Space industry market segment analysis' },
-  { label: 'Patent Landscape', href: '/patent-landscape', description: 'Patent analytics & IP landscape mapping' },
-  { label: 'Workforce Analytics', href: '/workforce-analytics', description: 'Space workforce trends & talent data' },
-  { label: 'Space Industry Map', href: '/space-map', description: 'Interactive sector map of the space industry' },
-  { label: 'Startup Directory', href: '/startup-directory', description: 'Curated directory of 35+ space startups' },
+const MARKETS_ITEMS: DropdownItem[] = [
+  { label: 'Market Intelligence', href: '/market-intel', description: 'Companies and stock tracking' },
+  { label: 'Company Profiles', href: '/company-profiles', description: '100+ space company profiles' },
+  { label: 'Funding & Deals', href: '/funding-tracker', description: 'Live funding rounds & M&A' },
+  { label: 'Investors', href: '/investors', description: 'Investor directory & deal flow' },
+  { label: 'Startup Tracker', href: '/startup-tracker', description: 'Emerging space companies' },
+  { label: 'Executive Moves', href: '/executive-moves', description: 'Leadership changes' },
+  { label: 'Government Budgets', href: '/government-budgets', description: 'Agency budget tracking' },
+  { label: 'Supply Chain', href: '/supply-chain', description: 'Aerospace supply chain intel' },
+  { label: 'Industry Stats', href: '/space-stats', description: 'Key space industry statistics' },
 ];
 
 const BUSINESS_ITEMS: DropdownItem[] = [
-  { label: '\uD83C\uDD95 Gig Work', href: '/gig-work', description: 'Freelance and contract opportunities' },
-  { label: '\uD83C\uDD95 Speaking Opportunities', href: '/speaking', description: 'CFPs and conference speaking slots' },
-  { label: '\uD83C\uDD95 Introductions', href: '/introductions', description: 'Request warm intros to founders, VCs, operators' },
-  { label: '\uD83C\uDD95 Inbox', href: '/inbox', description: 'Your notifications, messages, and activity' },
-  { label: '\uD83C\uDD95 Mentors', href: '/mentors', description: 'Connect with experienced space industry advisors' },
-  { label: '\uD83C\uDD95 Saved Searches', href: '/saved-searches', description: 'Your alerts across news, jobs, investors' },
-  { label: '\uD83C\uDD95 Team Channels', href: '/teams', description: 'Corporate messaging for claimed companies' },
-  { label: '\uD83C\uDD95 Cap Tables', href: '/cap-tables', description: 'Startup equity ownership transparency' },
-  { label: '\uD83C\uDD95 Mission Debriefs', href: '/mission-debriefs', description: 'Post-launch AI-powered analysis' },
-  { label: '\uD83C\uDD95 Mission Gallery', href: '/mission-gallery', description: 'Curated space mission photography' },
-  { label: '\uD83C\uDD95 Watchlists', href: '/watchlists', description: 'Track any company, person, mission, or vehicle' },
-  { label: '\uD83C\uDD95 Expert AMAs', href: '/amas', description: 'Live Q&A with space industry leaders' },
-  { label: '\uD83C\uDD95 Office Hours', href: '/office-hours', description: 'Book time with mentors' },
-  { label: '\uD83C\uDD95 Satellite Alerts', href: '/satellite-alerts', description: 'Get notified when ISS or satellites pass overhead' },
-  { label: '\uD83C\uDD95 Countdowns', href: '/countdown', description: 'Shareable mission countdown widgets' },
-  { label: '\uD83C\uDD95 Study Groups', href: '/study-groups', description: 'Peer learning circles for space topics' },
-  { label: '\uD83C\uDD95 Launch Costs', href: '/launch-costs', description: 'Benchmark launch pricing per kg/orbit' },
-  { label: '\uD83C\uDD95 Supplier Scores', href: '/supplier-scores', description: 'Reliability ratings for space suppliers' },
-  { label: '\uD83C\uDD95 History', href: '/history', description: 'Interactive space exploration timeline' },
-  { label: '\uD83C\uDD95 Ticket Resale', href: '/ticket-resale', description: 'Secondary market for event tickets' },
-  { label: '\uD83C\uDD95 Learning Zone', href: '/learn', description: 'Orbital mechanics, propulsion, policy courses' },
-  { label: '\uD83C\uDD95 Build Guides', href: '/build-guides', description: 'DIY satellite, CanSat, amateur radio' },
   { label: 'Business Opportunities', href: '/business-opportunities', description: 'AI-powered opportunity discovery' },
-  { label: 'Deal Flow', href: '/deal-flow', description: 'Investment deals, M&A & partnerships' },
-  { label: 'Contract Awards', href: '/contract-awards', description: 'Government & commercial contract tracker' },
-  { label: 'Funding Opportunities', href: '/funding-opportunities', description: 'Grants, SBIR/STTR & government funding' },
-  { label: 'Business Model Tools', href: '/business-models', description: 'Unit economics & revenue modeling' },
-  { label: 'Customer Discovery', href: '/customer-discovery', description: 'Market segments & buyer personas' },
-  { label: 'Space Talent Hub', href: '/space-talent', description: 'Jobs, experts & workforce analytics' },
-  { label: 'Space Jobs Board', href: '/jobs', description: 'Browse and post space industry jobs' },
-  { label: 'Space Events', href: '/space-events', description: 'Conferences, demos & networking' },
-  { label: 'Space Calendar', href: '/space-calendar', description: 'Month-by-month key dates for 2026' },
-  { label: 'Global Supply Chain', href: '/supply-chain', description: 'Aerospace supply chain & shortage alerts' },
-  { label: 'Supply Chain Map', href: '/supply-chain-map', description: 'Interactive supplier relationship map' },
-  { label: 'Space Mining', href: '/space-mining', description: 'Asteroid and planetary mining intelligence' },
-  { label: 'Space Insurance', href: '/space-insurance', description: 'Risk calculator and market data' },
-  { label: 'Manufacturing & Imagery', href: '/space-manufacturing', description: 'In-space manufacturing & EO providers' },
-  { label: 'Supply Chain Risk', href: '/supply-chain-risk', description: 'Supplier risk scoring & disruption alerts' },
-  { label: 'Funding Rounds', href: '/funding-rounds', description: 'Startup funding rounds & investment data' },
-  { label: 'M&A Tracker', href: '/ma-tracker', description: 'Mergers & acquisitions deal tracking' },
-  { label: 'Conferences', href: '/conferences', description: 'Space industry conferences & events calendar' },
-  { label: 'Case Studies', href: '/case-studies', description: 'Success stories from space organizations' },
-  { label: 'Security & Trust', href: '/security', description: 'How we protect your data' },
-  { label: 'Book a Demo', href: '/book-demo', description: 'Schedule a personalized walkthrough' },
-  { label: 'API Access', href: '/api-access', description: 'REST API for space intelligence data' },
-  { label: 'Advertise', href: '/advertise', description: 'Sponsorship tiers for space industry brands' },
-  { label: 'Media Kit', href: '/media-kit', description: 'Brand assets, logos & press materials' },
+  { label: 'Marketplace', href: '/marketplace', description: 'Services, RFQs & providers' },
+  { label: 'Procurement (SAM.gov)', href: '/procurement', description: 'Government contract opportunities' },
+  { label: 'Regulatory & Compliance', href: '/compliance', description: 'Compliance, space law & filings' },
+  { label: 'Patents', href: '/patents', description: 'Space technology patent trends' },
+  { label: 'Spectrum', href: '/spectrum', description: 'Allocations, auctions & filings' },
+  { label: 'Space Manufacturing', href: '/space-manufacturing', description: 'In-space manufacturing & imagery' },
+  { label: 'Mission Cost & Insurance', href: '/mission-cost', description: 'Cost estimates & risk pricing' },
+  { label: 'Deal Rooms', href: '/deal-rooms', description: 'Secure document sharing' },
+  { label: 'Gig Work', href: '/gig-work', description: 'Freelance & contract work' },
 ];
 
-const TOOLS_ITEMS: DropdownItem[] = [
-  { label: 'Engineering Tools Hub', href: '/tools', description: 'All calculators and analysis tools' },
-  { label: 'Comparison Tools', href: '/compare', description: 'Side-by-side vehicle, satellite & company analysis' },
-  { label: 'Mission Cost Simulator', href: '/mission-cost', description: 'Estimate launch costs and fees' },
-  { label: 'Launch Cost Calculator', href: '/launch-cost-calculator', description: 'Estimate launch costs by vehicle & orbit' },
-  { label: 'Launch Vehicle Comparison', href: '/launch-vehicles', description: 'Compare rocket specs and costs' },
-  { label: 'Satellite Tracker', href: '/satellites', description: 'Track ISS, Starlink & weather satellites' },
-  { label: 'Space Station Tracker', href: '/space-stations', description: 'ISS, Tiangong & commercial stations' },
-  { label: 'Orbital Management', href: '/orbital-slots', description: 'Orbital slots and satellite services' },
-  { label: 'Constellation Tracker', href: '/constellations', description: 'Satellite constellation monitoring' },
-  { label: 'Ground Stations', href: '/ground-stations', description: 'Global ground station networks' },
-  { label: 'Infrastructure Network', href: '/spaceports', description: 'Spaceports & communications networks' },
-  { label: 'Resource Exchange', href: '/resource-exchange', description: 'Space commodity pricing' },
-  { label: 'Launch Windows', href: '/launch-windows', description: 'Optimal launch timing' },
+const EXPLORE_ITEMS: DropdownItem[] = [
+  { label: 'Mission Control', href: '/mission-control', description: 'Upcoming launches and events' },
+  { label: 'Satellite Tracker', href: '/satellites', description: 'Track ISS, Starlink & more' },
   { label: 'Space Environment', href: '/space-environment', description: 'Weather, debris & operations' },
-  { label: 'Blueprint Series', href: '/blueprints', description: 'Technical hardware breakdowns' },
-  { label: 'Deal Rooms', href: '/deal-rooms', description: 'Secure document sharing for deals' },
-  { label: 'My Watchlists', href: '/my-watchlists', description: 'Watched companies & saved searches' },
-  { label: 'Dashboard', href: '/dashboard', description: 'Your personalized hub' },
-  { label: 'Tech Readiness', href: '/tech-readiness', description: 'Emerging technology TRL tracking' },
-  { label: 'Regulations Explorer', href: '/regulations', description: 'Searchable space regulations database' },
-  { label: 'Satellite Bus Comparison', href: '/compare/satellite-buses', description: 'Compare satellite platform specs' },
-  { label: 'Propulsion Database', href: '/propulsion-database', description: 'Engine & thruster specifications' },
-  { label: 'Launch Sites', href: '/launch-sites', description: 'Global spaceport database & capabilities' },
-  { label: 'Frequency Bands', href: '/frequency-bands', description: 'Space communications RF spectrum reference' },
-  { label: 'Materials Database', href: '/materials-database', description: 'Spacecraft materials & properties reference' },
-  { label: '🏗️ ISRU Resource Utilization', href: '/isru', description: 'In-situ resource utilization analysis' },
-  { label: '📡 Space Communications', href: '/space-comms', description: 'Satellite link budgets & communication systems' },
-  { label: 'Constellation Designer', href: '/constellation-designer', description: 'Design satellite constellations' },
-  { label: 'Unit Economics', href: '/unit-economics', description: 'Revenue modeling calculator' },
-  { label: 'Orbital Calculator', href: '/orbital-calculator', description: 'Orbital mechanics calculator' },
-  { label: 'Mission Simulator', href: '/mission-simulator', description: 'Simulate and plan space missions' },
-  { label: 'Radiation Calculator', href: '/radiation-calculator', description: 'Space radiation dose & shielding estimator' },
-  { label: 'Reading List', href: '/reading-list', description: 'Your saved articles' },
-  { label: 'Standards Reference', href: '/standards-reference', description: 'Space industry standards & specifications' },
-  { label: 'Thermal Calculator', href: '/thermal-calculator', description: 'Spacecraft thermal analysis tool' },
-  { label: 'Clean Room Guide', href: '/clean-room-reference', description: 'Clean room classifications & requirements' },
-  { label: 'Education Pathways', href: '/education-pathways', description: 'Space industry degree & training programs' },
-  { label: 'Satellite Buses', href: '/satellite-bus-comparison', description: 'Satellite bus platform comparison tool' },
-  { label: 'Propulsion Comparison', href: '/propulsion-comparison', description: 'Compare rocket engines & propulsion systems' },
+  { label: 'Asteroid Watch', href: '/asteroid-watch', description: 'NEOs and planetary defense' },
+  { label: 'Mars Planner', href: '/mars-planner', description: 'Mars missions & launch windows' },
+  { label: 'Cislunar', href: '/cislunar', description: 'Gateway, Artemis & lunar economy' },
+  { label: 'Solar System', href: '/solar-exploration', description: '3D planetary visualization' },
+  { label: 'Spaceports', href: '/spaceports', description: 'Spaceports & comms networks' },
+  { label: 'Space Stations', href: '/space-stations', description: 'ISS, Tiangong & commercial stations' },
+  { label: 'Launch Vehicles', href: '/launch-vehicles', description: 'Compare rocket specs & costs' },
+  { label: 'Aurora Forecast', href: '/aurora-forecast', description: 'Northern lights & Kp index' },
+  { label: 'Tools & Calculators', href: '/tools', description: 'All calculators & analysis tools' },
+  { label: 'Glossary', href: '/glossary', description: 'Key space terms defined' },
+  { label: 'Community Forums', href: '/community/forums', description: 'Discuss with professionals' },
+  { label: 'Mentors', href: '/mentors', description: 'Industry advisors & office hours' },
 ];
-
 // Wire up items to category metadata after const arrays are defined
-ALL_CATEGORIES[0].items = EXPLORE_ITEMS;
-ALL_CATEGORIES[1].items = INTELLIGENCE_ITEMS;
+ALL_CATEGORIES[0].items = NEWS_ITEMS;
+ALL_CATEGORIES[1].items = MARKETS_ITEMS;
 ALL_CATEGORIES[2].items = BUSINESS_ITEMS;
-ALL_CATEGORIES[3].items = TOOLS_ITEMS;
+ALL_CATEGORIES[3].items = EXPLORE_ITEMS;
 
 function DropdownMenu({
   label,
@@ -382,11 +249,6 @@ function DropdownMenu({
                       PRO
                     </span>
                   )}
-                  {item.href === '/ignition' && (
-                    <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-orange-500/15 text-orange-400 border border-orange-500/25 uppercase tracking-wider">
-                      NEW
-                    </span>
-                  )}
                 </div>
                 <p className="text-slate-400 text-xs mt-0.5 line-clamp-1">{item.description}</p>
               </Link>
@@ -415,16 +277,46 @@ export default function Navigation() {
   const [mobileSearchQuery, setMobileSearchQuery] = useState('');
   const [expandedCategory, setExpandedCategory] = useState<CategoryKey | null>(null);
   const [showAllItems, setShowAllItems] = useState<Record<CategoryKey, boolean>>({
-    explore: false,
-    intelligence: false,
+    news: false,
+    markets: false,
     business: false,
-    tools: false,
+    explore: false,
   });
   const [recentModules, setRecentModules] = useState<RecentModule[]>([]);
   const mobileSearchRef = useRef<HTMLInputElement>(null);
 
   // Unread message count
   const [unreadMsgCount, setUnreadMsgCount] = useState(0);
+
+  // Live launch indicator — lightweight poll of the same endpoint LiveNowBanner uses
+  const [isLiveNow, setIsLiveNow] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const fetchLive = async () => {
+      try {
+        const res = await fetch('/api/livestreams/active', {
+          headers: { Accept: 'application/json' },
+        });
+        if (!res.ok || cancelled) return;
+        const data = await res.json();
+        if (!cancelled) {
+          setIsLiveNow(Array.isArray(data?.live) && data.live.length > 0);
+        }
+      } catch {
+        // silently fail
+      }
+    };
+
+    fetchLive();
+    const interval = setInterval(fetchLive, 60000); // poll every 60s
+
+    return () => {
+      cancelled = true;
+      clearInterval(interval);
+    };
+  }, []);
 
   useEffect(() => {
     if (!session?.user) return;
@@ -469,7 +361,7 @@ export default function Navigation() {
     if (!pathname || pathname === '/') return;
 
     // Find matching item across all categories
-    const allItems = [...EXPLORE_ITEMS, ...INTELLIGENCE_ITEMS, ...BUSINESS_ITEMS, ...TOOLS_ITEMS];
+    const allItems = [...NEWS_ITEMS, ...MARKETS_ITEMS, ...BUSINESS_ITEMS, ...EXPLORE_ITEMS];
     const match = allItems.find((item) => item.href === pathname);
     if (!match) return;
 
@@ -490,7 +382,7 @@ export default function Navigation() {
     if (!isMenuOpen) {
       setMobileSearchQuery('');
       setExpandedCategory(null);
-      setShowAllItems({ explore: false, intelligence: false, business: false, tools: false });
+      setShowAllItems({ news: false, markets: false, business: false, explore: false });
     }
   }, [isMenuOpen]);
 
@@ -583,18 +475,31 @@ export default function Navigation() {
 
           {/* Desktop Navigation */}
           <div className="hidden lg:flex items-center gap-4">
+            <Link
+              href="/live"
+              className="text-white/90 hover:text-white transition-colors text-sm font-medium flex items-center gap-1.5"
+            >
+              {isLiveNow && (
+                <span className="relative inline-flex h-2 w-2" aria-hidden="true">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-500 opacity-75" />
+                  <span className="relative inline-flex h-2 w-2 rounded-full bg-red-500" />
+                </span>
+              )}
+              Live
+              {isLiveNow && <span className="sr-only">(broadcast in progress)</span>}
+            </Link>
             <DropdownMenu
-              label="Explore"
-              items={EXPLORE_ITEMS}
-              isOpen={openDropdown === 'explore'}
-              onToggle={() => toggleDropdown('explore')}
+              label="News"
+              items={NEWS_ITEMS}
+              isOpen={openDropdown === 'news'}
+              onToggle={() => toggleDropdown('news')}
               isPro={isPro}
             />
             <DropdownMenu
-              label="Intelligence"
-              items={INTELLIGENCE_ITEMS}
-              isOpen={openDropdown === 'intelligence'}
-              onToggle={() => toggleDropdown('intelligence')}
+              label="Markets"
+              items={MARKETS_ITEMS}
+              isOpen={openDropdown === 'markets'}
+              onToggle={() => toggleDropdown('markets')}
               isPro={isPro}
             />
             <DropdownMenu
@@ -605,12 +510,18 @@ export default function Navigation() {
               isPro={isPro}
             />
             <DropdownMenu
-              label="Tools"
-              items={TOOLS_ITEMS}
-              isOpen={openDropdown === 'tools'}
-              onToggle={() => toggleDropdown('tools')}
+              label="Explore"
+              items={EXPLORE_ITEMS}
+              isOpen={openDropdown === 'explore'}
+              onToggle={() => toggleDropdown('explore')}
               isPro={isPro}
             />
+            <Link
+              href="/space-talent"
+              className="text-white/90 hover:text-white transition-colors text-sm font-medium"
+            >
+              Jobs
+            </Link>
             <Link
               href="/space-tycoon"
               className="text-white/90 hover:text-white transition-colors text-sm font-medium flex items-center gap-1"
@@ -835,6 +746,46 @@ export default function Navigation() {
                         </Link>
                       ))}
                     </div>
+                  </div>
+                )}
+
+                {/* Direct links */}
+                {!mobileSearchQuery && (
+                  <div className="space-y-0.5">
+                    <Link
+                      href="/live"
+                      className="flex items-center gap-2 px-3 py-2 rounded-lg text-white/90 hover:bg-white/[0.05] hover:text-white active:bg-white/[0.08] transition-colors text-sm font-medium min-h-[44px]"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      {isLiveNow && (
+                        <span className="relative inline-flex h-2 w-2" aria-hidden="true">
+                          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-500 opacity-75" />
+                          <span className="relative inline-flex h-2 w-2 rounded-full bg-red-500" />
+                        </span>
+                      )}
+                      Live
+                    </Link>
+                    <Link
+                      href="/space-talent"
+                      className="flex items-center px-3 py-2 rounded-lg text-white/90 hover:bg-white/[0.05] hover:text-white active:bg-white/[0.08] transition-colors text-sm font-medium min-h-[44px]"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      Jobs
+                    </Link>
+                    <Link
+                      href="/space-tycoon"
+                      className="flex items-center gap-1 px-3 py-2 rounded-lg text-white/90 hover:bg-white/[0.05] hover:text-white active:bg-white/[0.08] transition-colors text-sm font-medium min-h-[44px]"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      <span aria-hidden="true">🎮</span> Space Tycoon
+                    </Link>
+                    <Link
+                      href="/pricing"
+                      className="flex items-center px-3 py-2 rounded-lg text-white/90 hover:bg-white/[0.05] hover:text-white active:bg-white/[0.08] transition-colors text-sm font-medium min-h-[44px]"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      Pricing
+                    </Link>
                   </div>
                 )}
 

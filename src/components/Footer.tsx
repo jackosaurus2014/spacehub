@@ -10,46 +10,27 @@ const footerLinks = {
   platform: {
     title: 'Platform',
     links: [
+      { label: 'Live Streams', href: '/live' },
       { label: 'Mission Control', href: '/mission-control' },
-      { label: 'Dashboard', href: '/dashboard' },
-      { label: 'News & Media', href: '/news' },
-      { label: 'Satellite Tracker', href: '/satellites' },
+      { label: 'News', href: '/news' },
+      { label: 'Market Intel', href: '/market-intel' },
       { label: 'Company Profiles', href: '/company-profiles' },
-      { label: 'Market Intelligence', href: '/market-intel' },
-      { label: 'Space Environment', href: '/space-environment' },
-      { label: 'Live Launches', href: '/live' },
-      { label: 'Ignition Tracker', href: '/ignition' },
-      { label: 'All Features', href: '/features' },
-    ],
-  },
-  tools: {
-    title: 'Tools & Intelligence',
-    links: [
-      { label: 'Mission Cost Calculator', href: '/mission-cost' },
-      { label: 'Orbital Calculator', href: '/orbital-calculator' },
-      { label: 'Constellation Designer', href: '/constellation-designer' },
-      { label: 'Funding Tracker', href: '/funding-rounds' },
-      { label: 'Startup Directory', href: '/startup-directory' },
-      { label: 'Compliance Hub', href: '/compliance' },
-      { label: 'Space Talent Hub', href: '/space-talent' },
-      { label: 'Marketplace', href: '/marketplace' },
-      { label: 'Solar System Expansion', href: '/solar-exploration' },
-      { label: 'Browse All Tools', href: '/tools' },
+      { label: 'Space Jobs', href: '/space-talent' },
+      { label: 'Space Tycoon', href: '/space-tycoon' },
+      { label: 'My Dashboard', href: '/dashboard' },
     ],
   },
   resources: {
     title: 'Resources',
     links: [
-      { label: 'Blog & Articles', href: '/blog' },
-      { label: 'Compare Companies', href: '/compare' },
-      { label: 'Business Opportunities', href: '/business-opportunities' },
-      { label: 'Daily Digest', href: '/daily-digest' },
-      { label: 'Space Stats', href: '/space-stats' },
+      { label: 'Blog', href: '/blog' },
+      { label: 'AI Insights', href: '/ai-insights' },
       { label: 'Glossary', href: '/glossary' },
       { label: 'Podcasts', href: '/podcasts' },
-      { label: 'Space Calendar', href: '/space-calendar' },
-      { label: 'Newsletter', href: '/newsletter' },
-      { label: 'Discover', href: '/discover' },
+      { label: 'Data Sources', href: '/data-sources' },
+      { label: 'Help Center', href: '/help' },
+      { label: 'Getting Started', href: '/getting-started' },
+      { label: 'API', href: '/api-access' },
     ],
   },
   solutions: {
@@ -61,8 +42,8 @@ const footerLinks = {
       { label: 'For Analysts', href: '/solutions/analysts' },
       { label: 'Pricing', href: '/pricing' },
       { label: 'Book a Demo', href: '/book-demo' },
-      { label: 'Use Cases', href: '/use-cases' },
-      { label: 'Alternatives', href: '/alternatives' },
+      { label: 'Compare', href: '/compare' },
+      { label: 'Advertise', href: '/advertise' },
     ],
   },
   company: {
@@ -70,14 +51,12 @@ const footerLinks = {
     links: [
       { label: 'About', href: '/about' },
       { label: 'Contact', href: '/contact' },
+      { label: 'Careers', href: '/careers' },
+      { label: 'Press', href: '/press' },
       { label: 'Roadmap', href: '/roadmap' },
-      { label: 'Data Sources', href: '/data-sources' },
-      { label: 'Get the App', href: '/app' },
-      { label: 'Help Center', href: '/help' },
-      { label: 'Send Feedback', href: '/feedback' },
-      { label: 'Platform Status', href: '/status' },
+      { label: 'Status', href: '/status' },
+      { label: 'Feedback', href: '/feedback' },
       { label: 'Accessibility', href: '/accessibility' },
-      { label: 'Getting Started', href: '/getting-started' },
     ],
   },
 };
@@ -132,17 +111,11 @@ export default function Footer() {
                 </svg>
                 Contact Us
               </Link>
-              <Link href="/book-demo" className="flex items-center gap-2 text-slate-400 hover:text-white text-sm py-2 min-h-[44px] transition-colors">
-                <svg className="w-4 h-4 text-slate-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                </svg>
-                Book Demo
-              </Link>
             </div>
           </div>
 
           {/* Main footer grid */}
-          <div className="py-10 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8 lg:gap-6">
+          <div className="py-10 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8 lg:gap-6">
             {/* Brand column */}
             <div className="col-span-2 md:col-span-3 lg:col-span-1">
               <Image

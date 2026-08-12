@@ -27,28 +27,20 @@ export const ROUTE_LABELS: Record<string, string> = {
 
   // ── Explore ──
   '/mission-control': 'Mission Control',
-  '/mission-pipeline': 'Mission Pipeline',
   '/mission-stats': 'Mission Statistics',
   '/mission-heritage': 'Mission Heritage',
   '/mission-simulator': 'Mission Simulator',
   '/launch': 'Launch Day',
-  '/launch-manifest': 'Launch Manifest',
   '/launch-vehicles': 'Launch Vehicles',
   '/launch-windows': 'Launch Windows',
-  '/launch-sites': 'Launch Sites',
   '/launch-economics': 'Launch Economics',
   '/live': 'Live Events',
-  '/satellite-tracker': 'Satellite Tracker',
   '/satellites': 'Satellites',
   '/space-stations': 'Space Stations',
   '/constellations': 'Constellations',
   '/constellation-designer': 'Constellation Designer',
   '/space-events': 'Space Events',
-  '/space-weather': 'Space Weather',
   '/timeline': 'Space Timeline',
-  '/debris-tracker': 'Debris Tracker',
-  '/debris-catalog': 'Debris Catalog',
-  '/debris-remediation': 'Debris Remediation',
   '/solar-exploration': 'Solar Exploration',
   '/mars-planner': 'Mars Mission Planner',
   '/cislunar': 'Cislunar Ecosystem',
@@ -60,15 +52,9 @@ export const ROUTE_LABELS: Record<string, string> = {
 
   // ── Intelligence ──
   '/market-intel': 'Market Intelligence',
-  '/market-sizing': 'Market Sizing',
-  '/market-map': 'Market Map',
-  '/market-segments': 'Market Segments',
-  '/space-economy': 'Space Economy',
-  '/space-capital': 'Space Capital',
   '/industry-trends': 'Industry Trends',
   '/news': 'News',
   '/news-aggregator': 'News Aggregator',
-  '/news-digest': 'News Digest',
   '/blogs': 'Blogs & Articles',
   '/blog': 'Blog',
   '/podcasts': 'Podcasts',
@@ -90,7 +76,6 @@ export const ROUTE_LABELS: Record<string, string> = {
   '/space-score': 'SpaceNexus Score',
   '/space-agencies': 'Space Agencies',
   '/space-defense': 'Space Defense',
-  '/ma-tracker': 'M&A Tracker',
   '/report-cards': 'Report Cards',
   '/ecosystem-map': 'Ecosystem Map',
   '/ai-insights': 'AI Insights',
@@ -99,34 +84,18 @@ export const ROUTE_LABELS: Record<string, string> = {
   '/business-opportunities': 'Business Opportunities',
   '/business-models': 'Business Models',
   '/space-talent': 'Space Talent Hub',
-  '/jobs': 'Space Jobs',
-  '/salary-benchmarks': 'Salary Benchmarks',
-  '/workforce-analytics': 'Workforce Analytics',
-  '/education-pathways': 'Education Pathways',
-  '/career-guide': 'Career Guide',
   '/supply-chain': 'Supply Chain',
-  '/supply-chain-map': 'Supply Chain Map',
-  '/supply-chain-risk': 'Supply Chain Risk',
   '/space-mining': 'Space Mining',
-  '/isru': 'ISRU',
   '/space-insurance': 'Space Insurance',
   '/space-manufacturing': 'Space Manufacturing',
   '/patents': 'Patents & IP',
-  '/patent-landscape': 'Patent Landscape',
-  '/resource-exchange': 'Resource Exchange',
   '/conferences': 'Conferences',
 
   // ── Investment ──
   '/funding-tracker': 'Funding Tracker',
-  '/funding-rounds': 'Funding Rounds',
   '/funding-opportunities': 'Funding Opportunities',
-  '/deal-flow': 'Deal Flow',
   '/deal-rooms': 'Deal Rooms',
-  '/deals': 'Deals',
   '/investors': 'Investors',
-  '/space-investors': 'Space Investors',
-  '/investment-tracker': 'Investment Tracker',
-  '/portfolio-tracker': 'Portfolio Tracker',
   '/startup-tracker': 'Startup Tracker',
   '/unit-economics': 'Unit Economics',
   '/space-tourism': 'Space Tourism',
@@ -143,10 +112,8 @@ export const ROUTE_LABELS: Record<string, string> = {
   '/mission-cost': 'Mission Cost Simulator',
   '/orbital-costs': 'Orbital Costs',
   '/blueprints': 'Blueprints',
-  '/propulsion-comparison': 'Propulsion Comparison',
   '/propulsion-database': 'Propulsion Database',
   '/materials-database': 'Materials Database',
-  '/satellite-bus-comparison': 'Satellite Bus Comparison',
   '/tech-readiness': 'Technology Readiness Assessment',
   '/clean-room-reference': 'Clean Room Reference',
   '/standards-reference': 'Standards Reference',
@@ -164,21 +131,14 @@ export const ROUTE_LABELS: Record<string, string> = {
   '/regulation-explainers': 'Regulation Explainers',
   '/regulatory-agencies': 'Regulatory Agencies Directory',
   '/spectrum': 'Spectrum Management',
-  '/frequency-bands': 'Frequency Bands',
-  '/frequency-database': 'Frequency Database',
-  '/rf-spectrum': 'RF Spectrum',
-  '/space-law': 'Space Law',
   '/licensing-checker': 'Licensing Requirements Checker',
   '/export-classifications': 'Export Control Classifications',
-  '/compliance-checklist': 'Compliance Checklist',
   '/legal-resources': 'Legal Resources',
 
   // ── Space Operations ──
   '/orbital-slots': 'Orbital Slots',
   '/spaceports': 'Spaceports',
   '/ground-stations': 'Ground Stations',
-  '/ground-station-directory': 'Ground Station Directory',
-  '/imagery-providers': 'Imagery Providers',
   '/space-edge-computing': 'Space Edge Computing',
 
   // ── Marketplace ──
@@ -190,7 +150,6 @@ export const ROUTE_LABELS: Record<string, string> = {
   // ── Procurement ──
   '/procurement': 'Procurement',
   '/procurement/awards': 'Contract Awards',
-  '/contract-awards': 'Contract Awards',
   '/government-budgets': 'Government Budgets',
 
   // ── Community ──
@@ -242,13 +201,11 @@ export const ROUTE_LABELS: Record<string, string> = {
   '/reports/space-economy-2026': 'Space Economy 2026 Report',
   '/widgets': 'Widgets',
 
-  // ── Industry Scorecard & Calendar ──
-  '/industry-scorecard': 'Industry Scorecard',
+  // ── Space Calendar ──
   '/space-calendar': 'Space Calendar',
 
-  // ── Space Industry Map & Startup Directory ──
+  // ── Space Industry Map ──
   '/space-map': 'Space Industry Map',
-  '/startup-directory': 'Startup Directory',
 
   // ── Space Industry Statistics ──
   '/space-stats': 'Space Industry Statistics',
@@ -334,10 +291,8 @@ export const ROUTE_PARENTS: Record<string, string> = {
   '/mission-cost': '/tools',
   '/mission-simulator': '/tools',
   '/orbital-costs': '/tools',
-  '/propulsion-comparison': '/tools',
   '/propulsion-database': '/tools',
   '/materials-database': '/tools',
-  '/satellite-bus-comparison': '/tools',
   '/tech-readiness': '/tools',
   '/clean-room-reference': '/tools',
   '/standards-reference': '/tools',
@@ -369,7 +324,7 @@ export const ROUTE_PARENTS: Record<string, string> = {
 
   // Enthusiast guide pages
   '/satellite-spotting': '/learn',
-  '/aurora-forecast': '/space-weather',
+  '/aurora-forecast': '/space-environment',
 
   // Learn sub-pages
   '/learn/how-to-track-satellites': '/learn',

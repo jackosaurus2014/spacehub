@@ -514,12 +514,6 @@ export default function SatelliteSpottingPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
                 </svg>
               </Link>
-              <Link
-                href="/satellite-tracker"
-                className="inline-flex items-center gap-2 px-6 py-3 bg-white/[0.08] hover:bg-white/[0.12] text-white font-medium rounded-lg transition-all text-sm"
-              >
-                Live Tracker Map
-              </Link>
             </div>
           </div>
         </ScrollReveal>

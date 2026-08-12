@@ -1,6 +1,4 @@
-import { Suspense } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import nextDynamic from 'next/dynamic';
 import { ModuleContainer } from '@/components/modules';
 import { getDefaultModulePreferences } from '@/lib/module-preferences';
@@ -11,37 +9,13 @@ import { BLOG_POSTS } from '@/lib/blog-content';
 import { logger } from '@/lib/logger';
 
 // Lazy-load below-the-fold components to reduce initial JS bundle
-const LandingValueProp = nextDynamic(() => import('@/components/LandingValueProp'), {
-  ssr: false,
-  loading: () => <div className="py-16"><div className="container mx-auto px-4"><div className="animate-pulse space-y-6"><div className="h-8 bg-white/[0.06] rounded w-1/3 mx-auto"></div><div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">{[1,2,3].map(i => <div key={i} className="h-48 bg-white/[0.06] rounded-xl"></div>)}</div></div></div></div>,
-});
-const TrustSignals = nextDynamic(() => import('@/components/TrustSignals'), {
-  ssr: false,
-  loading: () => <div className="py-12"><div className="container mx-auto px-4"><div className="animate-pulse h-24 bg-white/[0.06] rounded-xl"></div></div></div>,
-});
-const HeroStats = nextDynamic(() => import('@/components/HeroStats'), {
-  ssr: false,
-  loading: () => <div className="animate-pulse"><div className="grid grid-cols-2 md:grid-cols-4 gap-4">{[1,2,3,4].map(i => <div key={i} className="h-20 bg-white/[0.06] rounded-xl"></div>)}</div></div>,
-});
 const NewsletterSignup = nextDynamic(() => import('@/components/NewsletterSignup'), {
   ssr: false,
   loading: () => <div className="relative card p-10 md:p-16 text-center rounded-3xl overflow-hidden"><div className="animate-pulse"><div className="h-8 bg-white/[0.08] rounded w-3/4 mx-auto mb-4"></div><div className="h-4 bg-white/[0.08] rounded w-2/3 mx-auto mb-8"></div><div className="h-12 bg-white/50 rounded-xl w-48 mx-auto"></div></div></div>,
 });
-const AdBanner = nextDynamic(() => import('@/components/ads').then(mod => ({ default: mod.AdBanner })), {
-  ssr: false,
-  loading: () => null,
-});
 const AdSlot = nextDynamic(() => import('@/components/ads/AdSlot'), {
   ssr: false,
   loading: () => null,
-});
-const CompetitiveComparison = nextDynamic(() => import('@/components/landing/CompetitiveComparison'), {
-  ssr: false,
-  loading: () => <div className="py-16"><div className="container mx-auto px-4"><div className="animate-pulse h-96 bg-white/[0.06] rounded-xl"></div></div></div>,
-});
-const IndustrySnapshot = nextDynamic(() => import('@/components/landing/IndustrySnapshot'), {
-  ssr: false,
-  loading: () => <div className="py-16"><div className="container mx-auto px-4"><div className="animate-pulse"><div className="h-8 bg-white/[0.06] rounded w-1/3 mx-auto mb-8"></div><div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 max-w-5xl mx-auto">{[1,2,3,4,5,6].map(i => <div key={i} className="h-28 bg-white/[0.06] rounded-xl"></div>)}</div></div></div></div>,
 });
 const SocialProof = nextDynamic(() => import('@/components/landing/SocialProof'), {
   ssr: false,
@@ -51,29 +25,13 @@ const HowItWorks = nextDynamic(() => import('@/components/landing/HowItWorks'), 
   ssr: false,
   loading: () => <div className="py-16"><div className="container mx-auto px-4 max-w-5xl"><div className="animate-pulse space-y-6"><div className="h-8 bg-white/[0.06] rounded w-1/4 mx-auto"></div><div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-8">{[1,2,3].map(i => <div key={i} className="h-40 bg-white/[0.06] rounded-xl"></div>)}</div></div></div></div>,
 });
-const PersonaDashboard = nextDynamic(() => import('@/components/PersonaDashboard'), {
-  ssr: false,
-  loading: () => <div className="py-8"><div className="container mx-auto px-4"><div className="animate-pulse h-40 bg-white/[0.06] rounded-xl"></div></div></div>,
-});
-const NewsTicker = nextDynamic(() => import('@/components/widgets/NewsTicker'), {
-  ssr: false,
-  loading: () => <div className="h-10 bg-black/80 border-y border-white/[0.06]" />,
-});
 const BentoFeatures = nextDynamic(() => import('@/components/landing/BentoFeatures'), {
   ssr: false,
   loading: () => <div className="py-16"><div className="container mx-auto px-4"><div className="animate-pulse"><div className="h-8 bg-white/[0.06] rounded w-1/3 mx-auto mb-8"></div><div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-5xl mx-auto">{[1,2,3,4,5,6,7].map(i => <div key={i} className="h-[180px] bg-white/[0.06] rounded-2xl"></div>)}</div></div></div></div>,
 });
-const ExplorePlatform = nextDynamic(() => import('@/components/landing/ExplorePlatform'), {
-  ssr: false,
-  loading: () => <div className="py-16"><div className="container mx-auto px-4"><div className="animate-pulse"><div className="h-8 bg-white/[0.06] rounded w-1/3 mx-auto mb-8"></div><div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-5xl mx-auto">{[1,2,3,4,5,6,7,8].map(i => <div key={i} className="h-24 bg-white/[0.06] rounded-2xl"></div>)}</div></div></div></div>,
-});
 const DemoShowcase = nextDynamic(() => import('@/components/landing/DemoShowcase'), {
   ssr: false,
   loading: () => <div className="py-16"><div className="container mx-auto px-4 max-w-5xl"><div className="animate-pulse"><div className="h-8 bg-white/[0.06] rounded w-1/3 mx-auto mb-8"></div><div className="h-[420px] bg-white/[0.06] rounded-2xl"></div></div></div></div>,
-});
-const YouTubeEmbed = nextDynamic(() => import('@/components/ui/YouTubeEmbed'), {
-  ssr: false,
-  loading: () => <div className="aspect-video rounded-xl bg-white/[0.06] animate-pulse" />,
 });
 const PersonaPicker = nextDynamic(() => import('@/components/landing/PersonaPicker'), {
   ssr: false,
@@ -91,15 +49,7 @@ const KPIStrip = nextDynamic(() => import('@/components/landing/KPIStrip'), {
   ssr: false,
   loading: () => <div className="py-6"><div className="container mx-auto px-4"><div className="animate-pulse h-24 bg-white/[0.04] rounded-2xl"></div></div></div>,
 });
-const RecentUpdates = nextDynamic(() => import('@/components/landing/RecentUpdates'), {
-  ssr: false,
-  loading: () => <div className="py-16"><div className="container mx-auto px-4"><div className="animate-pulse"><div className="h-8 bg-white/[0.06] rounded w-1/3 mx-auto mb-8"></div><div className="space-y-4 max-w-3xl mx-auto">{[1,2,3,4].map(i => <div key={i} className="h-24 bg-white/[0.06] rounded-xl"></div>)}</div></div></div></div>,
-});
 const LiveStreamSection = nextDynamic(() => import('@/components/landing/LiveStreamSection'), {
-  ssr: false,
-  loading: () => null,
-});
-const LiveBlog = nextDynamic(() => import('@/components/live/LiveBlog'), {
   ssr: false,
   loading: () => null,
 });
@@ -226,176 +176,8 @@ export default async function HomePage() {
       {/* Live Stream — top of page; shows countdown banner pre-launch, full embed when live */}
       <LiveStreamSection />
 
-      {/* NASA Moon Base Mini-Hub */}
-      <section className="relative z-10 pb-6">
-        <div className="container mx-auto px-4 max-w-5xl">
-          <div className="rounded-2xl border border-white/[0.1] bg-black overflow-hidden">
-            <div className="p-6 sm:p-8">
-              <div className="flex items-center gap-4 mb-6">
-                <div className="w-10 h-10 rounded-full border border-white/[0.15] flex items-center justify-center bg-white/[0.03]">
-                  <span className="text-xl">🌙</span>
-                </div>
-                <div>
-                  <h2 className="text-xl font-bold text-white tracking-tight">NASA Moon Base & Ignition</h2>
-                  <p className="text-xs text-neutral-500 mt-0.5">Artemis program, lunar infrastructure, and the commercial Moon economy</p>
-                </div>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-6">
-                <Link href="/ignition" className="group flex items-start gap-3 p-4 rounded-xl bg-white/[0.02] hover:bg-white/[0.05] border border-white/[0.08] hover:border-white/[0.2] transition-all">
-                  <span className="text-lg mt-0.5">🚀</span>
-                  <div>
-                    <div className="text-sm font-semibold text-white group-hover:text-white transition-colors">Ignition Tracker</div>
-                    <div className="text-xs text-neutral-500 mt-0.5">Moon base procurement, timelines, and milestones</div>
-                  </div>
-                </Link>
-                <Link href="/compliance?tab=treaties" className="group flex items-start gap-3 p-4 rounded-xl bg-white/[0.02] hover:bg-white/[0.05] border border-white/[0.08] hover:border-white/[0.2] transition-all">
-                  <span className="text-lg mt-0.5">⚖️</span>
-                  <div>
-                    <div className="text-sm font-semibold text-white group-hover:text-white transition-colors">Regulatory Updates</div>
-                    <div className="text-xs text-neutral-500 mt-0.5">Lunar surface operations, Artemis Accords, FAA licensing</div>
-                  </div>
-                </Link>
-                <Link href="/cislunar" className="group flex items-start gap-3 p-4 rounded-xl bg-white/[0.02] hover:bg-white/[0.05] border border-white/[0.08] hover:border-white/[0.2] transition-all">
-                  <span className="text-lg mt-0.5">🌍</span>
-                  <div>
-                    <div className="text-sm font-semibold text-white group-hover:text-white transition-colors">Cislunar Ecosystem</div>
-                    <div className="text-xs text-neutral-500 mt-0.5">Gateway, Lunar landers, ISRU, and cislunar economy</div>
-                  </div>
-                </Link>
-              </div>
-              <div className="border-t border-white/[0.08] pt-5">
-                <div className="flex items-center gap-2 mb-4">
-                  <span className="relative flex h-1.5 w-1.5"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-50" /><span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-white" /></span>
-                  <span className="text-[11px] font-semibold text-neutral-400 uppercase tracking-widest">Upcoming Milestones</span>
-                </div>
-                <div className="space-y-2.5">
-                  {[
-                    { date: 'Q3 2026', title: 'Artemis III crew selection & mission design review', tag: 'NASA' },
-                    { date: 'Q4 2026', title: 'SpaceX Starship HLS uncrewed lunar landing demo', tag: 'SpaceX' },
-                    { date: '2027', title: 'Blue Origin Blue Moon lander cargo delivery to south pole', tag: 'Blue Origin' },
-                    { date: '2027', title: 'Lunar Gateway PPE + HALO module launch (Falcon Heavy)', tag: 'Maxar / Northrop' },
-                    { date: '2028', title: 'Artemis IV — First crewed Gateway docking + surface EVAs', tag: 'NASA' },
-                  ].map((item, i) => (
-                    <div key={i} className="flex items-center gap-3 text-xs py-1.5">
-                      <span className="text-neutral-600 font-mono w-16 shrink-0">{item.date}</span>
-                      <span className="text-white/90 flex-1">{item.title}</span>
-                      <span className="text-[10px] px-2 py-0.5 bg-white/[0.05] text-neutral-400 rounded-full border border-white/[0.1] shrink-0">{item.tag}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-              {/* Two rows: Enthusiast interests + Business interests */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-6 pt-5 border-t border-white/[0.08]">
-                {/* Space Enthusiast Items */}
-                <Link href="/blog/artemis-program-update-what-comes-after-artemis-ii" className="group flex items-start gap-3 p-4 rounded-xl bg-white/[0.02] hover:bg-white/[0.05] border border-white/[0.08] hover:border-white/[0.2] transition-all">
-                  <span className="text-lg mt-0.5">🧑‍🚀</span>
-                  <div>
-                    <div className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-1">For Enthusiasts</div>
-                    <div className="text-sm font-medium text-white group-hover:text-white transition-colors">What Comes After Artemis II</div>
-                    <div className="text-xs text-neutral-500 mt-0.5">Artemis III lunar landing, Gateway, commercial landers, and the path to a Moon base</div>
-                  </div>
-                </Link>
-                <Link href="/solar-exploration" className="group flex items-start gap-3 p-4 rounded-xl bg-white/[0.02] hover:bg-white/[0.05] border border-white/[0.08] hover:border-white/[0.2] transition-all">
-                  <span className="text-lg mt-0.5">🔭</span>
-                  <div>
-                    <div className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-1">For Enthusiasts</div>
-                    <div className="text-sm font-medium text-white group-hover:text-white transition-colors">Lunar South Pole Exploration Map</div>
-                    <div className="text-xs text-neutral-500 mt-0.5">Planned landing sites, ice deposits, and the science driving site selection</div>
-                  </div>
-                </Link>
-                {/* Space Business Items */}
-                <Link href="/marketplace/search?category=human" className="group flex items-start gap-3 p-4 rounded-xl bg-white/[0.02] hover:bg-white/[0.05] border border-white/[0.08] hover:border-white/[0.2] transition-all">
-                  <span className="text-lg mt-0.5">💼</span>
-                  <div>
-                    <div className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-1">For Business</div>
-                    <div className="text-sm font-medium text-white group-hover:text-white transition-colors">Lunar Services Marketplace</div>
-                    <div className="text-xs text-neutral-500 mt-0.5">Find and bid on Moon base contracts: habitats, ISRU, crew transport, life support</div>
-                  </div>
-                </Link>
-                <Link href="/business-opportunities" className="group flex items-start gap-3 p-4 rounded-xl bg-white/[0.02] hover:bg-white/[0.05] border border-white/[0.08] hover:border-white/[0.2] transition-all">
-                  <span className="text-lg mt-0.5">📋</span>
-                  <div>
-                    <div className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-1">For Business</div>
-                    <div className="text-sm font-medium text-white group-hover:text-white transition-colors">NASA Lunar Procurement Opportunities</div>
-                    <div className="text-xs text-neutral-500 mt-0.5">Active RFPs, CLPS task orders, Artemis supply chain contracts on SAM.gov</div>
-                  </div>
-                </Link>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* Hero Section with featured content */}
       <LandingHero featuredArticle={featuredArticle} trendingNews={trendingNews} />
-
-      {/* TRENDING: Featured Articles — placed at the very top for maximum visibility */}
-      <section className="relative z-10 py-6 sm:py-8">
-        <div className="container mx-auto px-4 max-w-5xl">
-          <div className="mb-5">
-            <div className="flex items-center gap-2">
-              <span className="relative flex h-2.5 w-2.5">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" />
-                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500" />
-              </span>
-              <h2 className="text-lg font-bold text-white">Trending Now</h2>
-            </div>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Link
-              href="/blog/artemis-program-update-what-comes-after-artemis-ii"
-              className="group rounded-xl border border-white/[0.08] bg-white/[0.03] hover:bg-white/[0.06] hover:border-teal-500/20 transition-all duration-300 overflow-hidden"
-            >
-              <div className="relative h-40 overflow-hidden">
-                <Image src="/art/hero-mission-planning.png" alt="" fill sizes="(max-width: 768px) 100vw, 33vw" loading="lazy" className="object-cover opacity-40 group-hover:opacity-50 group-hover:scale-105 transition-all duration-500" />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#09090b] via-[#09090b]/60 to-transparent" />
-                <div className="absolute bottom-3 left-4 right-4">
-                  <span className="text-[9px] px-2 py-0.5 rounded-full bg-teal-500/20 text-teal-300 border border-teal-500/30 font-bold uppercase tracking-wider">Recap</span>
-                </div>
-              </div>
-              <div className="p-4">
-                <h3 className="text-white text-sm font-bold mb-1.5 group-hover:text-teal-300 transition-colors line-clamp-2">Artemis Program Update: What Comes After Artemis II</h3>
-                <p className="text-slate-400 text-xs line-clamp-2 mb-2">Artemis III lunar landing, Gateway assembly, commercial landers, and NASA&apos;s plan for sustained Moon base operations.</p>
-                <span className="text-[10px] text-slate-400">8 min read</span>
-              </div>
-            </Link>
-            <Link
-              href="/blog/how-to-win-government-space-contracts-bd-guide-federal-procurement"
-              className="group rounded-xl border border-white/[0.08] bg-white/[0.03] hover:bg-white/[0.06] hover:border-amber-500/20 transition-all duration-300 overflow-hidden"
-            >
-              <div className="relative h-40 overflow-hidden">
-                <Image src="/art/hero-business-ops.png" alt="" fill sizes="(max-width: 768px) 100vw, 33vw" loading="lazy" className="object-cover opacity-40 group-hover:opacity-50 group-hover:scale-105 transition-all duration-500" />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#09090b] via-[#09090b]/60 to-transparent" />
-                <div className="absolute bottom-3 left-4 right-4">
-                  <span className="text-[9px] px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 font-bold uppercase tracking-wider">BD Guide</span>
-                </div>
-              </div>
-              <div className="p-4">
-                <h3 className="text-white text-sm font-bold mb-1.5 group-hover:text-amber-300 transition-colors line-clamp-2">How to Win Government Space Contracts: A BD Professional&apos;s Guide</h3>
-                <p className="text-slate-400 text-xs line-clamp-2 mb-2">SAM.gov, NAICS codes, set-asides, teaming arrangements, and the full proposal process for NASA and Space Force contracts.</p>
-                <span className="text-[10px] text-slate-400">10 min read</span>
-              </div>
-            </Link>
-            <Link
-              href="/ignition"
-              className="group rounded-xl border border-white/[0.08] bg-white/[0.03] hover:bg-white/[0.06] hover:border-orange-500/20 transition-all duration-300 overflow-hidden"
-            >
-              <div className="relative h-40 overflow-hidden">
-                <Image src="/art/hero-mission-planning.png" alt="Ignition Tracker — NASA's Moon Base Program" fill sizes="(max-width: 768px) 100vw, 33vw" loading="lazy" className="object-cover opacity-40 group-hover:opacity-50 group-hover:scale-105 transition-all duration-500" />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#09090b] via-[#09090b]/60 to-transparent" />
-                <div className="absolute bottom-3 left-4 right-4">
-                  <span className="text-[9px] px-2 py-0.5 rounded-full bg-orange-500/20 text-orange-300 border border-orange-500/30 font-bold uppercase tracking-wider">Live Tracker</span>
-                </div>
-              </div>
-              <div className="p-4">
-                <h3 className="text-white text-sm font-bold mb-1.5 group-hover:text-orange-300 transition-colors line-clamp-2">Ignition Tracker: NASA&apos;s $20B Moon Base Program</h3>
-                <p className="text-slate-400 text-xs line-clamp-2 mb-2">Track every contract, milestone, and company building the first permanent lunar base. Timeline, budget, and live status updates.</p>
-                <span className="text-[10px] text-slate-400">Live updates</span>
-              </div>
-            </Link>
-          </div>
-        </div>
-      </section>
 
       {/* V3 Persona Picker — first-visit only, customizes the experience */}
       <PersonaPicker />
@@ -405,9 +187,6 @@ export default async function HomePage() {
 
       {/* Platform Feature Showcase — Bento Grid */}
       <BentoFeatures />
-
-      {/* Explore the Platform — 8 key destination cards */}
-      <ExplorePlatform />
 
       {/* Space Tycoon — V3 prominent feature card (enthusiasts see "Featured for You" badge) */}
       <PersonaAwareSpaceTycoon>
@@ -481,9 +260,6 @@ export default async function HomePage() {
         </div>
       </section>
       </PersonaAwareSpaceTycoon>
-
-      {/* Space Industry Market Overview — Key Metrics with sparklines */}
-      <IndustrySnapshot />
 
       {/* Latest from SpaceNexus — Original Content Showcase */}
       {topContent.length > 0 && (
@@ -565,55 +341,8 @@ export default async function HomePage() {
       {/* Interactive Demo — Tabbed screenshot showcase */}
       <DemoShowcase />
 
-      {/* Featured Space Videos — lazy-loaded YouTube embeds */}
-      <section className="py-8 relative z-10">
-        <div className="container mx-auto px-4 max-w-5xl">
-          <div className="mb-5">
-            <div className="flex items-center gap-2">
-              <span className="inline-block w-1 h-6 rounded-full bg-gradient-to-b from-red-400 to-red-600" />
-              <h2 className="text-lg font-bold text-white">Featured Space Videos</h2>
-            </div>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <YouTubeEmbed videoId="5EPVMYXOB_g" title="SpaceX Starship Flight 6 - Full Launch to Catch" />
-            <YouTubeEmbed videoId="vl6jn-DdafM" title="NASA Artemis: We Are Going to the Moon" />
-            <YouTubeEmbed videoId="FHlHxnNjJGM" title="How Satellite Internet Works - Starlink Explained" />
-            <YouTubeEmbed videoId="CtQb2bRGIXQ" title="Space Tourism: The Future of Commercial Spaceflight" />
-          </div>
-          <div className="mt-4 text-center">
-            <Link
-              href="/videos"
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl border border-white/[0.08] bg-white/[0.03] text-slate-300 hover:text-white hover:border-white/15 hover:bg-white/[0.05] transition-all duration-200 ease-smooth text-sm font-medium"
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              Browse All Videos
-            </Link>
-          </div>
-        </div>
-      </section>
-
       {/* How It Works — 3-step onboarding flow */}
       <HowItWorks />
-
-      {/* Competitive Comparison Table */}
-      <CompetitiveComparison />
-
-      {/* Value Proposition + Trust — consolidated pitch */}
-      <LandingValueProp />
-      <TrustSignals />
-
-      {/* Live Stats Section */}
-      <section className="py-8 relative z-10">
-        <div className="container mx-auto px-4">
-          <HeroStats />
-        </div>
-      </section>
-
-      {/* What's New — Recent platform updates */}
-      <RecentUpdates />
 
       {/* Social Proof — Stats */}
       <SocialProof />
@@ -634,9 +363,6 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Persona-Based Quick Access */}
-      <PersonaDashboard />
-
       {/* Modular Content Area */}
       <section className="section-spacer-sm">
         <div className="container mx-auto px-4">
@@ -653,52 +379,6 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Explore All Sections — internal linking density for SEO */}
-      <section className="section-spacer-sm relative z-10">
-        <div className="container mx-auto px-4 max-w-5xl">
-          <div className="mb-6">
-            <div className="section-header">
-              <div className="flex items-center">
-                <div className="section-header__bar bg-gradient-to-b from-slate-400 to-slate-600" />
-                <h2 className="section-header__title text-lg">Explore All Sections</h2>
-              </div>
-            </div>
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
-            {[
-              { label: 'Live Launches', href: '/live' },
-              { label: 'Ignition Tracker', href: '/ignition' },
-              { label: 'News & Media', href: '/news' },
-              { label: 'Satellite Tracker', href: '/satellites' },
-              { label: 'Market Intelligence', href: '/market-intel' },
-              { label: 'Compare Companies', href: '/compare' },
-              { label: 'Space Talent Hub', href: '/space-talent' },
-              { label: 'Blog & Articles', href: '/blog' },
-              { label: 'Pricing', href: '/pricing' },
-              { label: 'Company Profiles', href: '/company-profiles' },
-              { label: 'Mission Control', href: '/mission-control' },
-              { label: 'Space Environment', href: '/space-environment' },
-              { label: 'Compliance Hub', href: '/compliance' },
-              { label: 'Solar Exploration', href: '/solar-exploration' },
-              { label: 'Marketplace', href: '/marketplace' },
-              { label: 'Business Opportunities', href: '/business-opportunities' },
-              { label: 'Mission Planning', href: '/mission-cost' },
-              { label: 'Space Tycoon', href: '/space-tycoon' },
-              { label: 'AI Insights', href: '/ai-insights' },
-              { label: 'Space Calendar', href: '/space-calendar' },
-            ].map(item => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="px-3 py-2.5 rounded-lg border border-white/[0.06] bg-white/[0.02] hover:bg-white/[0.05] hover:border-white/[0.12] text-slate-400 hover:text-white text-xs font-medium transition-all duration-200 text-center"
-              >
-                {item.label}
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* Ad — subscriber-gated via AdSlot */}
       <section className="py-6">
         <div className="container mx-auto px-4 max-w-5xl">
@@ -710,27 +390,6 @@ export default async function HomePage() {
       <section className="section-spacer">
         <div className="container mx-auto px-4">
           <NewsletterSignup variant="cta" source="homepage_cta" />
-        </div>
-      </section>
-
-      {/* Mobile App CTA — visible on smaller screens */}
-      <section className="section-spacer md:hidden">
-        <div className="container mx-auto px-4 text-center">
-          <p className="text-slate-300 text-sm mb-3">Take SpaceNexus on the go</p>
-          <a
-            href="https://play.google.com/store/apps/details?id=com.spacenexus.app&referrer=utm_source%3Dwebsite%26utm_medium%3Dhomepage"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2.5 px-5 py-2.5 bg-white/[0.06] hover:bg-white/[0.1] border border-white/[0.1] hover:border-white/[0.15] rounded-xl text-white text-sm font-medium transition-all duration-200"
-          >
-            <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M3.609 1.814L13.792 12 3.61 22.186a.996.996 0 01-.61-.92V2.734a1 1 0 01.609-.92zm10.89 10.893l2.302 2.302-10.937 6.333 8.635-8.635zm3.199-1.4l2.453 1.42a1 1 0 010 1.546l-2.453 1.42-2.537-2.386 2.537-2zm-3.906-2.093L5.157 1.58l10.937 6.333-2.302 2.301z" />
-            </svg>
-            <span>
-              <span className="block text-[9px] uppercase tracking-wider opacity-60 leading-none">Get it on</span>
-              <span className="block leading-tight font-semibold">Google Play</span>
-            </span>
-          </a>
         </div>
       </section>
 

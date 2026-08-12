@@ -1,771 +1,964 @@
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
-import { useSearchParams, useRouter, usePathname } from 'next/navigation';
-import Image from 'next/image';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
-import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
-import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
-import SatelliteCard, {
-  Satellite,
-  OrbitType,
-  SatelliteStatus,
-} from '@/components/satellites/SatelliteCard';
-import AdSlot from '@/components/ads/AdSlot';
-import PullToRefresh from '@/components/ui/PullToRefresh';
-import DataFreshnessBadge from '@/components/ui/DataFreshnessBadge';
+import ScrollReveal from '@/components/ui/ScrollReveal';
 import EmptyState from '@/components/ui/EmptyState';
-import { clientLogger } from '@/lib/client-logger';
+import RelatedModules from '@/components/ui/RelatedModules';
+import AdSlot from '@/components/ads/AdSlot';
 import FAQSchema from '@/components/seo/FAQSchema';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema';
-import RelatedModules from '@/components/ui/RelatedModules';
 import SubscribeCTA from '@/components/marketing/SubscribeCTA';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
+import { clientLogger } from '@/lib/client-logger';
 
-// Types
-interface SatelliteData {
-  satellites: Satellite[];
-  stats: {
-    total: number;
-    byOrbitType: Record<OrbitType, number>;
-    byStatus: Record<SatelliteStatus, number>;
-    byPurpose: Record<string, number>;
-    topOperators: { name: string; count: number }[];
+// ─── Types ──────────────────────────────────────────────────────────────────
+type OrbitClass = 'LEO' | 'MEO' | 'GEO' | 'HEO';
+type SatCategory = 'all' | 'stations' | 'starlink' | 'weather' | 'gps-ops' | 'active';
+
+interface SatPosition {
+  lat: number;
+  lng: number;
+  altitude: number;
+  velocity: number;
+}
+
+interface TLESatellite {
+  noradId: string;
+  name: string;
+  orbitClass: OrbitClass;
+  category: string;
+  position: SatPosition;
+  tle: {
+    line1: string;
+    line2: string;
+    epoch: string;
+    inclination: number;
+    eccentricity: number;
+    meanMotion: number;
   };
-  iss: Satellite | null;
-  notableSatellites: Satellite[];
-  total: number;
 }
 
-type TabId = 'overview' | 'satellites' | 'operators';
+// ─── Constants ──────────────────────────────────────────────────────────────
+const ORBIT_COLORS: Record<OrbitClass, string> = {
+  LEO: '#60a5fa',   // blue-400
+  MEO: '#facc15',   // yellow-400
+  GEO: '#e879f9',   // fuchsia-400
+  HEO: '#4ade80',   // green-400
+};
 
-// Constants
-const ORBIT_TYPES: { value: OrbitType; label: string; icon: string; description: string }[] = [
-  { value: 'LEO', label: 'Low Earth Orbit', icon: '🛰️', description: '160-2,000 km' },
-  { value: 'MEO', label: 'Medium Earth Orbit', icon: '📡', description: '2,000-35,786 km' },
-  { value: 'GEO', label: 'Geostationary', icon: '🌐', description: '~35,786 km' },
-  { value: 'HEO', label: 'Highly Elliptical', icon: '🔭', description: 'Variable' },
-  { value: 'SSO', label: 'Sun-Synchronous', icon: '☀️', description: '600-800 km' },
-  { value: 'Polar', label: 'Polar', icon: '🧭', description: '~800 km' },
+const ORBIT_LABELS: Record<OrbitClass, string> = {
+  LEO: 'Low Earth Orbit',
+  MEO: 'Medium Earth Orbit',
+  GEO: 'Geostationary',
+  HEO: 'Highly Elliptical',
+};
+
+// Educational descriptions of each orbital regime (shown below the tracker)
+const ORBIT_GUIDE: { value: OrbitClass; label: string; range: string; description: string }[] = [
+  { value: 'LEO', label: 'Low Earth Orbit', range: '160-2,000 km', description: 'Home to the ISS, Starlink, and most Earth-observation satellites. Fast ~90-minute orbits.' },
+  { value: 'MEO', label: 'Medium Earth Orbit', range: '2,000-35,786 km', description: 'Navigation constellations like GPS, Galileo, and GLONASS operate here.' },
+  { value: 'GEO', label: 'Geostationary', range: '~35,786 km', description: 'Satellites match Earth’s rotation, appearing fixed in the sky. Communications and weather.' },
+  { value: 'HEO', label: 'Highly Elliptical', range: 'Variable', description: 'Elongated orbits that dwell over high latitudes. Used for polar communications and early warning.' },
 ];
 
-const STATUS_OPTIONS: { value: SatelliteStatus; label: string; color: string }[] = [
-  { value: 'active', label: 'Active', color: 'text-green-400' },
-  { value: 'inactive', label: 'Inactive', color: 'text-yellow-400' },
-  { value: 'deorbited', label: 'Deorbited', color: 'text-red-400' },
+const CATEGORY_OPTIONS: { value: SatCategory; label: string }[] = [
+  { value: 'all', label: 'All Satellites' },
+  { value: 'stations', label: 'Space Stations' },
+  { value: 'starlink', label: 'Starlink' },
+  { value: 'weather', label: 'Weather' },
+  { value: 'gps-ops', label: 'Navigation (GPS)' },
+  { value: 'active', label: 'Active' },
 ];
 
-// ISS Position Card
-function ISSHighlight({ iss }: { iss: Satellite }) {
-  return (
-    <div className="card p-6 border border-white/15 bg-gradient-to-br from-white/[0.04] to-transparent">
-      <div className="flex items-start justify-between flex-wrap gap-4">
-        <div className="flex items-center gap-4">
-          <div className="w-16 h-16 rounded-xl bg-white/10 flex items-center justify-center text-4xl border border-white/10">
-            🏠
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <h3 className="text-xl font-bold text-white">{iss.name}</h3>
-              <span className="px-2 py-0.5 rounded text-xs font-medium bg-green-900/30 text-green-400 border border-green-500/30">
-                Live
-              </span>
-            </div>
-            <p className="text-slate-400 text-sm mt-1">{iss.operator}</p>
-          </div>
-        </div>
-        <div className="flex items-center gap-6">
-          <div className="text-center">
-            <div className="text-2xl font-bold text-white">{iss.altitude.toLocaleString()} km</div>
-            <div className="text-slate-400 text-xs uppercase tracking-widest">Altitude</div>
-          </div>
-          <div className="text-center">
-            <div className="text-2xl font-bold text-white/90">{iss.velocity.toFixed(2)} km/s</div>
-            <div className="text-slate-400 text-xs uppercase tracking-widest">Velocity</div>
-          </div>
-          <div className="text-center">
-            <div className="text-2xl font-bold text-amber-400">{iss.period?.toFixed(0) || '~93'} min</div>
-            <div className="text-slate-400 text-xs uppercase tracking-widest">Orbital Period</div>
-          </div>
-        </div>
-      </div>
-      <p className="text-slate-400 text-sm mt-4">{iss.description}</p>
-      <div className="flex items-center gap-3 mt-4 pt-4 border-t border-white/[0.06]">
-        <a
-          href={`https://www.n2yo.com/satellite/?s=${iss.noradId}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-medium bg-blue-500/20 text-blue-300 hover:bg-blue-500/30 transition-colors border border-blue-500/30"
-        >
-          Track Live on N2YO
-          <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-          </svg>
-        </a>
-        <a
-          href="https://spotthestation.nasa.gov/"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-medium bg-green-500/20 text-green-300 hover:bg-green-500/30 transition-colors border border-green-500/30"
-        >
-          Spot the Station
-          <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-          </svg>
-        </a>
-      </div>
-    </div>
-  );
+const FEATURED_IDS = ['25544', '20580', '48274', '44713', '36585', '41866'];
+
+const ISS_NORAD_ID = '25544';
+
+// ─── Continent Outlines (simplified equirectangular coordinates) ────────────
+// Each continent is an array of [lng, lat] points forming a rough outline.
+// These are simplified for canvas rendering.
+const CONTINENT_PATHS: [number, number][][] = [
+  // North America
+  [[-130,50],[-125,60],[-120,68],[-100,72],[-85,75],[-65,72],[-60,60],[-65,50],[-75,35],[-80,30],[-85,25],[-95,20],[-105,20],[-115,30],[-120,35],[-130,50]],
+  // South America
+  [[-80,10],[-75,5],[-65,-5],[-60,-10],[-55,-15],[-50,-20],[-45,-25],[-40,-20],[-35,-10],[-40,-5],[-50,0],[-55,5],[-60,10],[-70,12],[-75,10],[-80,10]],
+  // Europe
+  [[-10,35],[0,40],[5,45],[10,50],[20,55],[30,60],[35,70],[30,72],[20,70],[10,60],[5,50],[0,48],[-5,45],[-10,40],[-10,35]],
+  // Africa
+  [[-15,30],[-5,35],[10,37],[20,32],[30,30],[35,30],[40,10],[50,15],[50,0],[40,-10],[35,-25],[30,-35],[20,-35],[15,-25],[10,-5],[5,5],[-5,5],[-10,10],[-15,20],[-15,30]],
+  // Asia
+  [[30,35],[40,40],[50,45],[60,50],[70,55],[80,60],[90,55],[100,50],[110,45],[120,40],[130,45],[140,50],[145,55],[150,60],[145,65],[130,70],[120,72],[100,72],[80,70],[70,60],[60,50],[50,45],[40,42],[35,35],[30,35]],
+  // South-east Asia / Indonesia (simplified)
+  [[95,5],[100,0],[105,-5],[110,-8],[115,-8],[120,-5],[130,-5],[135,-3],[130,0],[120,5],[110,5],[105,0],[100,3],[95,5]],
+  // Australia
+  [[115,-15],[120,-15],[130,-12],[135,-14],[140,-17],[148,-20],[150,-25],[150,-30],[148,-35],[143,-38],[138,-35],[135,-33],[130,-30],[125,-30],[120,-25],[115,-22],[115,-15]],
+  // Greenland (simplified)
+  [[-55,60],[-50,65],[-45,70],[-30,75],[-20,78],[-18,82],[-30,83],[-40,82],[-50,78],[-55,72],[-55,60]],
+];
+
+// ─── Canvas Map Component ───────────────────────────────────────────────────
+function drawMap(
+  ctx: CanvasRenderingContext2D,
+  width: number,
+  height: number,
+  satellites: TLESatellite[],
+  selectedId: string | null,
+  hoveredId: string | null,
+  time: number,
+) {
+  const dpr = window.devicePixelRatio || 1;
+
+  // Clear
+  ctx.fillStyle = '#0a0a0a'; // black
+  ctx.fillRect(0, 0, width, height);
+
+  // Draw grid lines
+  ctx.strokeStyle = 'rgba(255,255,255,0.06)'; // white/[0.06]
+  ctx.lineWidth = 0.5 * dpr;
+  // Latitude lines every 30 degrees
+  for (let lat = -60; lat <= 60; lat += 30) {
+    const y = latToY(lat, height);
+    ctx.beginPath();
+    ctx.moveTo(0, y);
+    ctx.lineTo(width, y);
+    ctx.stroke();
+  }
+  // Longitude lines every 30 degrees
+  for (let lng = -180; lng <= 180; lng += 30) {
+    const x = lngToX(lng, width);
+    ctx.beginPath();
+    ctx.moveTo(x, 0);
+    ctx.lineTo(x, height);
+    ctx.stroke();
+  }
+
+  // Draw equator
+  ctx.strokeStyle = 'rgba(255,255,255,0.08)'; // white/[0.08]
+  ctx.lineWidth = 1 * dpr;
+  const eqY = latToY(0, height);
+  ctx.beginPath();
+  ctx.moveTo(0, eqY);
+  ctx.lineTo(width, eqY);
+  ctx.stroke();
+
+  // Draw continent outlines
+  ctx.strokeStyle = 'rgba(255,255,255,0.1)'; // white/[0.1]
+  ctx.fillStyle = 'rgba(255,255,255,0.03)'; // very faint fill
+  ctx.lineWidth = 1.2 * dpr;
+
+  for (const continent of CONTINENT_PATHS) {
+    ctx.beginPath();
+    for (let i = 0; i < continent.length; i++) {
+      const [lng, lat] = continent[i];
+      const x = lngToX(lng, width);
+      const y = latToY(lat, height);
+      if (i === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    }
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+  }
+
+  // Draw satellite positions
+  for (const sat of satellites) {
+    const x = lngToX(sat.position.lng, width);
+    const y = latToY(sat.position.lat, height);
+    const color = ORBIT_COLORS[sat.orbitClass] || '#94a3b8';
+    const isSelected = sat.noradId === selectedId;
+    const isHovered = sat.noradId === hoveredId;
+    const isFeatured = FEATURED_IDS.includes(sat.noradId);
+    const baseRadius = isFeatured ? 4 * dpr : 2.5 * dpr;
+    const radius = isSelected ? baseRadius * 2 : isHovered ? baseRadius * 1.5 : baseRadius;
+
+    // Glow effect for featured / selected satellites
+    if (isSelected || isFeatured) {
+      const glowSize = isSelected ? 20 * dpr : 12 * dpr;
+      const pulse = Math.sin(time * 0.003 + parseInt(sat.noradId, 10)) * 0.3 + 0.7;
+      const gradient = ctx.createRadialGradient(x, y, 0, x, y, glowSize);
+      gradient.addColorStop(0, color + Math.round(pulse * 80).toString(16).padStart(2, '0'));
+      gradient.addColorStop(1, color + '00');
+      ctx.fillStyle = gradient;
+      ctx.beginPath();
+      ctx.arc(x, y, glowSize, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    // Satellite dot
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.arc(x, y, radius, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Label for selected / featured satellites
+    if (isSelected || (isFeatured && !satellites.find((s) => s.noradId === selectedId))) {
+      const label = sat.name.length > 20 ? sat.name.substring(0, 18) + '...' : sat.name;
+      ctx.font = `${(isSelected ? 12 : 10) * dpr}px Inter, system-ui, sans-serif`;
+      ctx.fillStyle = 'rgba(255,255,255,0.9)'; // white/90
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'middle';
+      const textX = x + radius + 6 * dpr;
+      const textY = y;
+
+      // Background for readability
+      const metrics = ctx.measureText(label);
+      const pad = 3 * dpr;
+      ctx.fillStyle = 'rgba(10,10,10,0.8)';
+      ctx.fillRect(textX - pad, textY - 7 * dpr, metrics.width + pad * 2, 14 * dpr);
+      ctx.fillStyle = isSelected ? '#ffffff' : '#cbd5e1';
+      ctx.fillText(label, textX, textY);
+    }
+  }
+
+  // Draw legend
+  drawLegend(ctx, width, height, dpr);
 }
 
-// Inner content component
-function SatelliteTrackerContent() {
-  const searchParams = useSearchParams();
-  const router = useRouter();
-  const pathname = usePathname();
+function drawLegend(ctx: CanvasRenderingContext2D, width: number, height: number, dpr: number) {
+  const legendX = 12 * dpr;
+  const legendY = height - 60 * dpr;
+  const lineHeight = 16 * dpr;
 
-  // Read initial values from URL
-  const initialTab = (searchParams.get('tab') as TabId) || 'overview';
-  const initialOrbit = (searchParams.get('orbit') as OrbitType | '') || '';
-  const initialStatus = (searchParams.get('status') as SatelliteStatus | '') || '';
-  const initialSearch = searchParams.get('search') || '';
+  ctx.font = `${10 * dpr}px Inter, system-ui, sans-serif`;
 
-  const [data, setData] = useState<SatelliteData | null>(null);
+  const items: [string, string][] = [
+    ['LEO', ORBIT_COLORS.LEO],
+    ['MEO', ORBIT_COLORS.MEO],
+    ['GEO', ORBIT_COLORS.GEO],
+    ['HEO', ORBIT_COLORS.HEO],
+  ];
+
+  // Background
+  ctx.fillStyle = 'rgba(10,10,10,0.8)';
+  ctx.fillRect(legendX - 4 * dpr, legendY - 4 * dpr, 60 * dpr, items.length * lineHeight + 8 * dpr);
+
+  items.forEach(([label, color], i) => {
+    const y = legendY + i * lineHeight + lineHeight / 2;
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.arc(legendX + 5 * dpr, y, 3 * dpr, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#94a3b8';
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(label, legendX + 14 * dpr, y);
+  });
+}
+
+function lngToX(lng: number, width: number): number {
+  return ((lng + 180) / 360) * width;
+}
+
+function latToY(lat: number, height: number): number {
+  return ((90 - lat) / 180) * height;
+}
+
+// ─── Main Page Component ────────────────────────────────────────────────────
+export default function SatellitesPage() {
+  const [satellites, setSatellites] = useState<TLESatellite[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [lastFetchedAt, setLastFetchedAt] = useState<Date | null>(null);
-  const [activeTab, setActiveTab] = useState<TabId>(initialTab);
-  const [orbitFilter, setOrbitFilter] = useState<OrbitType | ''>(initialOrbit);
-  const [statusFilter, setStatusFilter] = useState<SatelliteStatus | ''>(initialStatus);
-  const [searchQuery, setSearchQuery] = useState(initialSearch);
+  const [selectedSat, setSelectedSat] = useState<string | null>(null);
+  const [hoveredSat, setHoveredSat] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [orbitFilter, setOrbitFilter] = useState<OrbitClass | ''>('');
+  const [categoryFilter, setCategoryFilter] = useState<SatCategory>('all');
+  const [lastRefresh, setLastRefresh] = useState<string>('');
 
-  // Sync state to URL
-  const updateUrl = (updates: Record<string, string>) => {
-    const params = new URLSearchParams(searchParams.toString());
-    for (const [key, value] of Object.entries(updates)) {
-      if (!value || (key === 'tab' && value === 'overview')) {
-        params.delete(key);
-      } else {
-        params.set(key, value);
-      }
-    }
-    const qs = params.toString();
-    router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
-  };
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const animFrameRef = useRef<number>(0);
+  const timeRef = useRef<number>(0);
 
-  const handleTabChange = (tab: TabId) => {
-    setActiveTab(tab);
-    updateUrl({ tab, orbit: '', status: '', search: '' });
-    setOrbitFilter('');
-    setStatusFilter('');
-    setSearchQuery('');
-  };
-
-  const handleOrbitFilterChange = (orbit: OrbitType | '') => {
-    setOrbitFilter(orbit);
-    updateUrl({ orbit });
-  };
-
-  const handleStatusFilterChange = (status: SatelliteStatus | '') => {
-    setStatusFilter(status);
-    updateUrl({ status });
-  };
-
-  const handleSearch = (query: string) => {
-    setSearchQuery(query);
-    updateUrl({ search: query });
-  };
-
-  const fetchData = async () => {
-    setError(null);
+  // ─── Fetch TLE data ───────────────────────────────────────────────────────
+  const fetchTLEData = useCallback(async (signal?: AbortSignal) => {
     try {
-      const params = new URLSearchParams();
-      if (orbitFilter) params.set('orbitType', orbitFilter);
-      if (statusFilter) params.set('status', statusFilter);
-      if (searchQuery) params.set('search', searchQuery);
-      params.set('limit', '100');
+      setError(null);
+      const res = await fetch('/api/satellites/tle?limit=200', { signal });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const json = await res.json();
 
-      const res = await fetch(`/api/satellites?${params}`);
-      const result = await res.json();
-
-      if (!result.error) {
-        setData(result);
-        setLastFetchedAt(new Date());
+      if (json.success && json.data) {
+        setSatellites(json.data);
+        setLastRefresh(new Date().toLocaleTimeString());
+      } else {
+        throw new Error(json.error?.message || 'Unknown error');
       }
-    } catch (error) {
-      clientLogger.error('Failed to fetch satellite data', { error: error instanceof Error ? error.message : String(error) });
-      setError('Failed to load data.');
+    } catch (err) {
+      if (err instanceof DOMException && err.name === 'AbortError') return;
+      clientLogger.error('Failed to fetch TLE data', {
+        error: err instanceof Error ? err.message : String(err),
+      });
+      setError('Failed to load satellite data. Retrying...');
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  // Initial load + auto-refresh every 30 seconds
+  useEffect(() => {
+    const controller = new AbortController();
+    fetchTLEData(controller.signal);
+    const interval = setInterval(() => fetchTLEData(controller.signal), 30000);
+    return () => { controller.abort(); clearInterval(interval); };
+  }, [fetchTLEData]);
+
+  // ─── Canvas rendering ─────────────────────────────────────────────────────
+  const resizeCanvas = useCallback(() => {
+    const canvas = canvasRef.current;
+    const container = containerRef.current;
+    if (!canvas || !container) return;
+
+    const dpr = window.devicePixelRatio || 1;
+    const rect = container.getBoundingClientRect();
+    canvas.width = rect.width * dpr;
+    canvas.height = rect.height * dpr;
+    canvas.style.width = `${rect.width}px`;
+    canvas.style.height = `${rect.height}px`;
+  }, []);
 
   useEffect(() => {
-    fetchData();
-  }, [orbitFilter, statusFilter, searchQuery]); // eslint-disable-line react-hooks/exhaustive-deps
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+    return () => window.removeEventListener('resize', resizeCanvas);
+  }, [resizeCanvas]);
 
-  const stats = data?.stats;
-  const satellites = data?.satellites || [];
-  const iss = data?.iss;
+  // Animation loop
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
 
-  return (
-    <PullToRefresh onRefresh={async () => { await fetchData(); }}>
-    <div className="min-h-screen">
-      <div className="relative overflow-hidden">
-        <div className="absolute inset-0 -z-10">
-          <Image
-            src="/art/hero-space-operations.png"
-            alt=""
-            fill
-            sizes="100vw"
-            className="object-cover opacity-20"
-            priority
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#09090b]/80 to-[#09090b]" />
-        </div>
-        <div className="container mx-auto px-4 pt-6">
-          <AnimatedPageHeader
-            title="Satellite Tracker & Visualization"
-            subtitle="Track active satellites across all orbital regimes - from ISS to GPS to Starlink"
-            icon="🛰️"
-            accentColor="cyan"
-          >
-            <DataFreshnessBadge
-              lastUpdated={lastFetchedAt}
-              source="CelesTrak"
-              refreshInterval="every 6 hours"
-              onRefresh={() => { setLoading(true); fetchData(); }}
-            />
-          </AnimatedPageHeader>
-        </div>
-      </div>
+    let running = true;
+    const animate = (timestamp: number) => {
+      if (!running) return;
+      timeRef.current = timestamp;
+      drawMap(ctx, canvas.width, canvas.height, satellites, selectedSat, hoveredSat, timestamp);
+      animFrameRef.current = requestAnimationFrame(animate);
+    };
 
-      <div className="container mx-auto px-4">
+    animFrameRef.current = requestAnimationFrame(animate);
+    return () => {
+      running = false;
+      cancelAnimationFrame(animFrameRef.current);
+    };
+  }, [satellites, selectedSat, hoveredSat]);
 
-        {error && !loading && (
-          <div className="card p-5 border border-red-500/20 bg-red-500/5 text-center mb-6">
-            <div className="text-red-400 text-sm font-medium">{error}</div>
-          </div>
-        )}
+  // ─── Canvas interaction ───────────────────────────────────────────────────
+  const handleCanvasClick = useCallback(
+    (e: React.MouseEvent<HTMLCanvasElement>) => {
+      const canvas = canvasRef.current;
+      if (!canvas) return;
 
-        {loading ? (
-          <div className="flex justify-center py-20">
-            <LoadingSpinner size="lg" />
-          </div>
-        ) : (
-          <>
-            {/* Quick Stats Banner */}
-            <ScrollReveal>
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 mb-8">
-              <div className="card-elevated p-4 text-center">
-                <div className="text-2xl font-bold font-display text-white">
-                  {stats?.total.toLocaleString() || 0}
-                </div>
-                <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">
-                  Total Tracked
-                </div>
-              </div>
-              <div className="card-elevated p-4 text-center">
-                <div className="text-2xl font-bold font-display text-green-500">
-                  {stats?.byStatus?.active?.toLocaleString() || 0}
-                </div>
-                <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">
-                  Active
-                </div>
-              </div>
-              <div className="card-elevated p-4 text-center">
-                <div className="text-2xl font-bold font-display text-blue-500">
-                  {stats?.byOrbitType?.LEO?.toLocaleString() || 0}
-                </div>
-                <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">
-                  LEO
-                </div>
-              </div>
-              <div className="card-elevated p-4 text-center">
-                <div className="text-2xl font-bold font-display text-purple-500">
-                  {stats?.byOrbitType?.MEO?.toLocaleString() || 0}
-                </div>
-                <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">
-                  MEO
-                </div>
-              </div>
-              <div className="card-elevated p-4 text-center">
-                <div className="text-2xl font-bold font-display text-amber-500">
-                  {stats?.byOrbitType?.GEO?.toLocaleString() || 0}
-                </div>
-                <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">
-                  GEO
-                </div>
-              </div>
-              <div className="card-elevated p-4 text-center">
-                <div className="text-2xl font-bold font-display text-white/90">
-                  {stats?.topOperators?.length || 0}
-                </div>
-                <div className="text-slate-400 text-xs uppercase tracking-widest font-medium">
-                  Operators
-                </div>
-              </div>
-            </div>
-            </ScrollReveal>
+      const dpr = window.devicePixelRatio || 1;
+      const rect = canvas.getBoundingClientRect();
+      const mx = (e.clientX - rect.left) * dpr;
+      const my = (e.clientY - rect.top) * dpr;
 
-            {/* Tab Navigation */}
-            <div className="relative">
-              <div role="tablist" className="flex gap-2 mb-6 overflow-x-auto pb-1 scrollbar-hide">
-                {([
-                  { id: 'overview' as const, label: 'Overview' },
-                  { id: 'satellites' as const, label: 'All Satellites', count: data?.total },
-                  { id: 'operators' as const, label: 'By Operator', count: stats?.topOperators?.length },
-                ]).map((tab) => (
-                  <button
-                    key={tab.id}
-                    role="tab"
-                    aria-selected={activeTab === tab.id}
-                    onClick={() => handleTabChange(tab.id)}
-                    className={`flex items-center gap-2 px-5 py-2.5 min-h-[44px] rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
-                      activeTab === tab.id
-                        ? 'bg-white text-slate-900'
-                        : 'bg-white/[0.04] text-slate-500 hover:bg-white/[0.08]'
-                    }`}
-                  >
-                    {tab.label}
-                    {tab.count !== undefined && tab.count > 0 && (
-                      <span
-                        className={`text-xs px-1.5 py-0.5 rounded-full ${
-                          activeTab === tab.id ? 'bg-white/[0.1] text-white' : 'bg-white/[0.08] text-slate-400'
-                        }`}
-                      >
-                        {tab.count}
-                      </span>
-                    )}
-                  </button>
-                ))}
-              </div>
-              <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-black to-transparent pointer-events-none md:hidden" />
-            </div>
+      // Find closest satellite
+      let closest: TLESatellite | null = null;
+      let closestDist = 20 * dpr; // max click distance
 
-            {/* ──────────────── OVERVIEW TAB ──────────────── */}
-            {activeTab === 'overview' && (
-              <div className="space-y-6">
-                {/* ISS Highlight */}
-                {iss && <ISSHighlight iss={iss} />}
+      for (const sat of satellites) {
+        const sx = lngToX(sat.position.lng, canvas.width);
+        const sy = latToY(sat.position.lat, canvas.height);
+        const dist = Math.sqrt((mx - sx) ** 2 + (my - sy) ** 2);
+        if (dist < closestDist) {
+          closestDist = dist;
+          closest = sat;
+        }
+      }
 
-                {/* Artemis II Tracking Callout */}
-                <Link
-                  href="/blog/how-to-watch-artemis-ii-launch-complete-guide"
-                  className="block card p-5 border border-cyan-500/20 bg-gradient-to-r from-cyan-500/[0.04] to-purple-500/[0.04] hover:border-cyan-500/30 transition-all group"
-                >
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-lg bg-cyan-500/10 flex items-center justify-center flex-shrink-0 border border-cyan-500/20">
-                        <svg className="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-                        </svg>
-                      </div>
-                      <div>
-                        <h3 className="text-white font-semibold group-hover:text-cyan-50 transition-colors">
-                          Track Artemis II &mdash; Launches April 1
-                        </h3>
-                        <p className="text-slate-400 text-sm mt-0.5">
-                          Watch the Orion spacecraft live after launch. Read our complete viewing guide with stream links, crew info, and mission timeline.
-                        </p>
-                      </div>
-                    </div>
-                    <span className="text-sm font-medium text-cyan-400/70 group-hover:text-cyan-400 transition-colors whitespace-nowrap flex items-center gap-1">
-                      How to Watch
-                      <svg className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
-                    </span>
-                  </div>
-                </Link>
-
-                {/* Distribution Cards */}
-                <ScrollReveal>
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  {/* By Orbit Type */}
-                  <div className="card p-5">
-                    <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-                      <span>🛰️</span> Distribution by Orbit Type
-                    </h3>
-                    <div className="space-y-4">
-                      {ORBIT_TYPES.map((orbit) => {
-                        const count = stats?.byOrbitType[orbit.value] || 0;
-                        const total = stats?.total || 1;
-                        const pct = (count / total) * 100;
-                        return (
-                          <div key={orbit.value}>
-                            <div className="flex items-center justify-between mb-1">
-                              <div className="flex items-center gap-2">
-                                <span>{orbit.icon}</span>
-                                <span className="text-slate-400 text-sm">{orbit.label}</span>
-                                <span className="text-slate-400 text-xs">({orbit.description})</span>
-                              </div>
-                              <span className="text-slate-400 text-sm font-medium">
-                                {count} ({pct.toFixed(1)}%)
-                              </span>
-                            </div>
-                            <div className="h-3 bg-white/[0.08] rounded-full overflow-hidden">
-                              <div
-                                className="h-full bg-gradient-to-r from-white to-slate-400 rounded-full transition-all"
-                                style={{ width: `${Math.min(pct, 100)}%` }}
-                              />
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-
-                  {/* By Purpose */}
-                  <div className="card p-5">
-                    <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-                      <span>🎯</span> Distribution by Purpose
-                    </h3>
-                    <div className="space-y-4">
-                      {Object.entries(stats?.byPurpose || {})
-                        .sort((a, b) => b[1] - a[1])
-                        .map(([purpose, count]) => {
-                          const total = stats?.total || 1;
-                          const pct = (count / total) * 100;
-                          const purposeColors: Record<string, string> = {
-                            'Communications': 'from-blue-500 to-blue-400',
-                            'Navigation': 'from-purple-500 to-purple-400',
-                            'Weather': 'from-white to-slate-400',
-                            'Earth Observation': 'from-green-500 to-green-400',
-                            'Research': 'from-pink-500 to-pink-400',
-                            'Space Station': 'from-amber-500 to-amber-400',
-                            'Reconnaissance': 'from-red-500 to-red-400',
-                          };
-                          return (
-                            <div key={purpose}>
-                              <div className="flex items-center justify-between mb-1">
-                                <span className="text-slate-400 text-sm">{purpose}</span>
-                                <span className="text-slate-400 text-sm font-medium">
-                                  {count} ({pct.toFixed(1)}%)
-                                </span>
-                              </div>
-                              <div className="h-3 bg-white/[0.08] rounded-full overflow-hidden">
-                                <div
-                                  className={`h-full bg-gradient-to-r ${purposeColors[purpose] || 'from-slate-500 to-slate-400'} rounded-full transition-all`}
-                                  style={{ width: `${Math.min(pct, 100)}%` }}
-                                />
-                              </div>
-                            </div>
-                          );
-                        })}
-                    </div>
-                  </div>
-                </div>
-                </ScrollReveal>
-
-                {/* Ad between sections */}
-                <div className="my-6">
-                  <AdSlot position="in_feed" module="satellite-tracker" adsenseSlot="in_feed_sats" adsenseFormat="rectangle" />
-                </div>
-
-                {/* Notable Satellites */}
-                <div>
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-lg font-semibold text-white flex items-center gap-2">
-                      <span>⭐</span> Notable Satellites
-                    </h3>
-                    <button
-                      onClick={() => handleTabChange('satellites')}
-                      className="text-white/90 hover:text-white text-sm transition-colors"
-                    >
-                      View All &rarr;
-                    </button>
-                  </div>
-                  <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-                    {data?.notableSatellites?.map((sat) => (
-                      <StaggerItem key={sat.id}>
-                        <SatelliteCard satellite={sat} />
-                      </StaggerItem>
-                    ))}
-                  </StaggerContainer>
-                </div>
-
-                {/* Footer Ad */}
-                <div className="my-6">
-                  <AdSlot position="footer" module="satellite-tracker" adsenseSlot="footer_sats" adsenseFormat="horizontal" />
-                </div>
-
-                {/* Data Sources */}
-                <ScrollReveal>
-                <div className="card p-5 border-dashed">
-                  <h3 className="text-lg font-semibold text-white mb-3">Data Sources</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-slate-400">
-                    <div>
-                      <h4 className="text-white font-medium mb-2">Tracking Data</h4>
-                      <ul className="space-y-1">
-                        <li>CelesTrak TLE Catalog</li>
-                        <li>Space-Track.org Conjunction Data</li>
-                        <li>N2YO Real-time Tracking</li>
-                        <li>NORAD Two-Line Element Sets</li>
-                      </ul>
-                    </div>
-                    <div>
-                      <h4 className="text-white font-medium mb-2">Satellite Registries</h4>
-                      <ul className="space-y-1">
-                        <li>UCS Satellite Database</li>
-                        <li>NASA NSSDCA Master Catalog</li>
-                        <li>ESA DISCOS Database</li>
-                        <li>ITU Space Network List</li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-                </ScrollReveal>
-
-                {/* Related Tools */}
-                <div className="mt-6 flex flex-wrap items-center gap-3">
-                  <span className="text-xs text-slate-500 uppercase tracking-wider">Related:</span>
-                  <Link href="/space-environment" className="text-xs text-slate-400 hover:text-slate-300 transition-colors">
-                    Space Weather &amp; Debris &rarr;
-                  </Link>
-                  <span className="text-slate-300">|</span>
-                  <Link href="/constellations" className="text-xs text-slate-400 hover:text-slate-300 transition-colors">
-                    Constellation Tracker &rarr;
-                  </Link>
-                  <span className="text-slate-300">|</span>
-                  <Link href="/blog/satellite-tracking-explained-beginners-guide" className="text-xs text-slate-400 hover:text-slate-300 transition-colors">
-                    Guide: How Satellite Tracking Works &rarr;
-                  </Link>
-                </div>
-              </div>
-            )}
-
-            {/* ──────────────── SATELLITES TAB ──────────────── */}
-            {activeTab === 'satellites' && (
-              <div>
-                {/* Filters */}
-                <div className="card p-4 mb-6">
-                  <div className="flex flex-wrap items-center gap-4">
-                    {/* Search */}
-                    <div className="flex-1 min-w-[200px]">
-                      <input
-                        type="search"
-                        aria-label="Search by name, NORAD ID, or operator"
-                        placeholder="Search by name, NORAD ID, or operator..."
-                        value={searchQuery}
-                        onChange={(e) => handleSearch(e.target.value)}
-                        className="w-full px-4 py-2 h-11 rounded-lg bg-white/[0.06] border border-white/[0.06] text-white placeholder-slate-400 focus:outline-none focus:border-white/15 focus:ring-1 focus:ring-white/15 text-sm"
-                      />
-                    </div>
-
-                    {/* Orbit Filter */}
-                    <div className="flex items-center gap-2">
-                      <label htmlFor="satellite-orbit-filter" className="text-slate-400 text-sm">Orbit:</label>
-                      <select
-                        id="satellite-orbit-filter"
-                        value={orbitFilter}
-                        onChange={(e) => handleOrbitFilterChange(e.target.value as OrbitType | '')}
-                        className="bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
-                      >
-                        <option value="">All Orbits</option>
-                        {ORBIT_TYPES.map((orbit) => (
-                          <option key={orbit.value} value={orbit.value}>
-                            {orbit.label}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-
-                    {/* Status Filter */}
-                    <div className="flex items-center gap-2">
-                      <label htmlFor="satellite-status-filter" className="text-slate-400 text-sm">Status:</label>
-                      <select
-                        id="satellite-status-filter"
-                        value={statusFilter}
-                        onChange={(e) => handleStatusFilterChange(e.target.value as SatelliteStatus | '')}
-                        className="bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-11 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
-                      >
-                        <option value="">All Status</option>
-                        {STATUS_OPTIONS.map((status) => (
-                          <option key={status.value} value={status.value}>
-                            {status.label}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Results Count */}
-                <div className="mb-4 text-slate-400 text-sm">
-                  Showing {satellites.length} of {data?.total || 0} satellites
-                  {(orbitFilter || statusFilter || searchQuery) && (
-                    <button
-                      onClick={() => {
-                        setOrbitFilter('');
-                        setStatusFilter('');
-                        setSearchQuery('');
-                        updateUrl({ orbit: '', status: '', search: '' });
-                      }}
-                      className="ml-2 text-white/90 hover:text-white"
-                    >
-                      Clear filters
-                    </button>
-                  )}
-                </div>
-
-                {/* Satellite Grid */}
-                {satellites.length === 0 ? (
-                  <EmptyState
-                    icon={<span className="text-4xl">🛰️</span>}
-                    title="No Satellites Found"
-                    description="Try adjusting your search or filters to find matching satellites."
-                  />
-                ) : (
-                  <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-                    {satellites.map((sat) => (
-                      <StaggerItem key={sat.id}>
-                        <SatelliteCard satellite={sat} />
-                      </StaggerItem>
-                    ))}
-                  </StaggerContainer>
-                )}
-              </div>
-            )}
-
-            {/* ──────────────── OPERATORS TAB ──────────────── */}
-            {activeTab === 'operators' && (
-              <div className="space-y-6">
-                {/* Operator Summary */}
-                <div className="card p-5">
-                  <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-                    <span>🏢</span> Top Satellite Operators
-                  </h3>
-                  <div className="space-y-4">
-                    {stats?.topOperators.map((operator, idx) => {
-                      const total = stats?.total || 1;
-                      const pct = (operator.count / total) * 100;
-                      return (
-                        <div key={operator.name}>
-                          <div className="flex items-center justify-between mb-1">
-                            <div className="flex items-center gap-2">
-                              <span className="text-slate-400 text-sm font-mono">#{idx + 1}</span>
-                              <span className="font-medium text-white">{operator.name}</span>
-                            </div>
-                            <span className="text-slate-400 text-sm font-medium">
-                              {operator.count} satellites ({pct.toFixed(1)}%)
-                            </span>
-                          </div>
-                          <div className="h-3 bg-white/[0.08] rounded-full overflow-hidden">
-                            <div
-                              className="h-full bg-gradient-to-r from-white to-plasma-400 rounded-full transition-all"
-                              style={{ width: `${Math.min(pct * 3, 100)}%` }}
-                            />
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {/* Link to Orbital Slots */}
-                <div className="card p-5 border border-white/10 bg-gradient-to-br from-white/[0.04] to-transparent">
-                  <div className="flex items-center justify-between flex-wrap gap-4">
-                    <div>
-                      <h3 className="text-lg font-semibold text-white mb-1">
-                        Want more operator details?
-                      </h3>
-                      <p className="text-slate-400 text-sm">
-                        Check out the Orbital Slots page for detailed operator fleet compositions, growth projections, and orbital distribution.
-                      </p>
-                    </div>
-                    <Link
-                      href="/orbital-slots?tab=operators"
-                      className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white text-slate-900 font-medium hover:bg-white transition-colors"
-                    >
-                      View Orbital Slots
-                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                      </svg>
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            )}
-          </>
-        )}
-
-        {/* Related Reading */}
-        <ScrollReveal>
-        <div className="mt-10 mb-6">
-          <h3 className="text-lg font-semibold text-white mb-4">Related Reading</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <Link
-              href="/blog/how-many-satellites-in-space-2026"
-              className="group bg-white/[0.04] border border-white/[0.06] rounded-xl p-5 hover:border-white/15 hover:bg-white/[0.06] transition-all"
-            >
-              <div className="text-white font-medium text-sm group-hover:text-white/80 transition-colors mb-1">
-                How Many Satellites Are in Space?
-              </div>
-              <div className="text-slate-500 text-xs">The complete breakdown of active satellites by orbit, operator, and purpose.</div>
-              <div className="text-white/60 text-xs mt-3 font-medium group-hover:underline">Read article &rarr;</div>
-            </Link>
-            <Link
-              href="/blog/spacex-starlink-everything-you-need-to-know-2026"
-              className="group bg-white/[0.04] border border-white/[0.06] rounded-xl p-5 hover:border-white/15 hover:bg-white/[0.06] transition-all"
-            >
-              <div className="text-white font-medium text-sm group-hover:text-white/80 transition-colors mb-1">
-                Starlink: Everything You Need to Know
-              </div>
-              <div className="text-slate-500 text-xs">The largest satellite constellation in history -- 6,000+ satellites and 4M+ subscribers.</div>
-              <div className="text-white/60 text-xs mt-3 font-medium group-hover:underline">Read article &rarr;</div>
-            </Link>
-            <Link
-              href="/blog/starlink-oneweb-kuiper-mega-constellation-comparison"
-              className="group bg-white/[0.04] border border-white/[0.06] rounded-xl p-5 hover:border-white/15 hover:bg-white/[0.06] transition-all"
-            >
-              <div className="text-white font-medium text-sm group-hover:text-white/80 transition-colors mb-1">
-                Mega-Constellation Wars
-              </div>
-              <div className="text-slate-500 text-xs">Starlink vs. OneWeb vs. Kuiper -- comparing the broadband constellation race.</div>
-              <div className="text-white/60 text-xs mt-3 font-medium group-hover:underline">Read article &rarr;</div>
-            </Link>
-          </div>
-        </div>
-        </ScrollReveal>
-
-        <SubscribeCTA />
-
-        <RelatedModules modules={[
-          { name: 'Space Environment', description: 'Debris tracking and space weather', href: '/space-environment', icon: '\u{1F321}\u{FE0F}' },
-          { name: 'Orbital Slots', description: 'GEO/LEO slot management', href: '/orbital-slots', icon: '\u{1F6F0}\u{FE0F}' },
-          { name: 'Spectrum Management', description: 'Frequency allocations', href: '/spectrum', icon: '\u{1F4E1}' },
-          { name: 'Space Stations', description: 'ISS and commercial stations', href: '/space-stations', icon: '\u{1F3D7}\u{FE0F}' },
-        ]} />
-      </div>
-    </div>
-    </PullToRefresh>
+      setSelectedSat(closest ? closest.noradId : null);
+    },
+    [satellites]
   );
-}
 
-// Main Page with Suspense
-export default function SatellitesPage() {
+  const handleCanvasMouseMove = useCallback(
+    (e: React.MouseEvent<HTMLCanvasElement>) => {
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+
+      const dpr = window.devicePixelRatio || 1;
+      const rect = canvas.getBoundingClientRect();
+      const mx = (e.clientX - rect.left) * dpr;
+      const my = (e.clientY - rect.top) * dpr;
+
+      let closest: TLESatellite | null = null;
+      let closestDist = 15 * dpr;
+
+      for (const sat of satellites) {
+        const sx = lngToX(sat.position.lng, canvas.width);
+        const sy = latToY(sat.position.lat, canvas.height);
+        const dist = Math.sqrt((mx - sx) ** 2 + (my - sy) ** 2);
+        if (dist < closestDist) {
+          closestDist = dist;
+          closest = sat;
+        }
+      }
+
+      setHoveredSat(closest ? closest.noradId : null);
+      canvas.style.cursor = closest ? 'pointer' : 'default';
+    },
+    [satellites]
+  );
+
+  // ─── Filtering ─────────────────────────────────────────────────────────────
+  const filteredSatellites = satellites.filter((sat) => {
+    if (orbitFilter && sat.orbitClass !== orbitFilter) return false;
+    if (categoryFilter !== 'all' && sat.category !== categoryFilter) return false;
+    if (searchQuery) {
+      const q = searchQuery.toLowerCase();
+      if (
+        !sat.name.toLowerCase().includes(q) &&
+        !sat.noradId.includes(searchQuery)
+      )
+        return false;
+    }
+    return true;
+  });
+
+  // ─── Stats ─────────────────────────────────────────────────────────────────
+  const stats = {
+    total: satellites.length,
+    leo: satellites.filter((s) => s.orbitClass === 'LEO').length,
+    meo: satellites.filter((s) => s.orbitClass === 'MEO').length,
+    geo: satellites.filter((s) => s.orbitClass === 'GEO').length,
+    heo: satellites.filter((s) => s.orbitClass === 'HEO').length,
+  };
+
+  const iss = satellites.find((s) => s.noradId === ISS_NORAD_ID);
+  const selectedSatData = satellites.find((s) => s.noradId === selectedSat);
+
+  // ─── Render ────────────────────────────────────────────────────────────────
   return (
     <>
-    <BreadcrumbSchema items={[
-      { name: 'Home', href: '/' },
-      { name: 'Satellite Tracker', href: '/satellites' },
-    ]} />
-    <FAQSchema items={[
-      { question: 'How accurate is SpaceNexus satellite tracking?', answer: 'SpaceNexus uses NORAD Two-Line Element (TLE) data updated multiple times per day, providing positional accuracy within a few kilometers for most active satellites in LEO, MEO, and GEO orbits.' },
-      { question: 'Can I track the International Space Station in real-time?', answer: 'Yes. The ISS position card on our Satellite Tracker page shows its current latitude, longitude, altitude, and velocity, updated every few seconds using live orbital data.' },
-      { question: 'How many satellites are currently in orbit?', answer: 'As of 2026, there are over 10,000 active satellites in orbit, with the majority in Low Earth Orbit (LEO). SpaceNexus tracks satellites across LEO, MEO, GEO, HEO, SSO, and Polar orbits.' },
-      { question: 'What is the difference between LEO, MEO, and GEO orbits?', answer: 'LEO (Low Earth Orbit) is 160-2,000 km altitude, used for imaging and broadband. MEO (Medium Earth Orbit) is 2,000-35,786 km, used for navigation like GPS. GEO (Geostationary Orbit) is approximately 35,786 km, used for communications and weather satellites.' },
-    ]} />
-    <Suspense
-      fallback={
-        <div className="min-h-screen flex justify-center py-20">
-          <LoadingSpinner size="lg" />
+      <BreadcrumbSchema items={[
+        { name: 'Home', href: '/' },
+        { name: 'Satellite Tracker', href: '/satellites' },
+      ]} />
+      <FAQSchema items={[
+        { question: 'How accurate is SpaceNexus satellite tracking?', answer: 'SpaceNexus uses NORAD Two-Line Element (TLE) data updated multiple times per day, providing positional accuracy within a few kilometers for most active satellites in LEO, MEO, and GEO orbits.' },
+        { question: 'Can I track the International Space Station in real-time?', answer: 'Yes. The live tracker map on this page shows the ISS position — latitude, longitude, altitude, and velocity — updated every 30 seconds using live orbital data.' },
+        { question: 'How many satellites are currently in orbit?', answer: 'As of 2026, there are over 10,000 active satellites in orbit, with the majority in Low Earth Orbit (LEO). SpaceNexus tracks satellites across LEO, MEO, GEO, and HEO orbits.' },
+        { question: 'What is the difference between LEO, MEO, and GEO orbits?', answer: 'LEO (Low Earth Orbit) is 160-2,000 km altitude, used for imaging and broadband. MEO (Medium Earth Orbit) is 2,000-35,786 km, used for navigation like GPS. GEO (Geostationary Orbit) is approximately 35,786 km, used for communications and weather satellites.' },
+      ]} />
+
+      <div className="min-h-screen">
+        <div className="container mx-auto px-4">
+          <AnimatedPageHeader
+            title="Live Satellite Tracker"
+            subtitle="Track satellites in real-time across all orbital regimes with live TLE-based position propagation"
+            icon={<span className="text-4xl">🛰️</span>}
+            accentColor="cyan"
+          />
+
+          {/* Breadcrumb nav */}
+          <nav className="mb-6 text-sm text-slate-400" aria-label="Breadcrumb">
+            <ol className="flex items-center gap-1.5">
+              <li>
+                <Link href="/" className="hover:text-white transition-colors">
+                  Home
+                </Link>
+              </li>
+              <li>/</li>
+              <li className="text-slate-300">Satellite Tracker</li>
+            </ol>
+          </nav>
+
+          {/* Stats Bar */}
+          <ScrollReveal>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3 mb-6">
+              <div className="card-elevated p-3 text-center">
+                <div className="text-xl font-bold font-display text-white">
+                  {stats.total.toLocaleString()}
+                </div>
+                <div className="text-slate-400 text-xs uppercase tracking-widest">
+                  Tracked
+                </div>
+              </div>
+              <div className="card-elevated p-3 text-center">
+                <div className="text-xl font-bold font-display text-slate-300">
+                  {stats.leo}
+                </div>
+                <div className="text-slate-400 text-xs uppercase tracking-widest">LEO</div>
+              </div>
+              <div className="card-elevated p-3 text-center">
+                <div className="text-xl font-bold font-display text-yellow-400">
+                  {stats.meo}
+                </div>
+                <div className="text-slate-400 text-xs uppercase tracking-widest">MEO</div>
+              </div>
+              <div className="card-elevated p-3 text-center">
+                <div className="text-xl font-bold font-display text-fuchsia-400">
+                  {stats.geo}
+                </div>
+                <div className="text-slate-400 text-xs uppercase tracking-widest">GEO</div>
+              </div>
+              <div className="card-elevated p-3 text-center">
+                <div className="text-xl font-bold font-display text-green-400">
+                  {stats.heo}
+                </div>
+                <div className="text-slate-400 text-xs uppercase tracking-widest">HEO</div>
+              </div>
+              {iss && (
+                <div className="card-elevated p-3 text-center border border-white/10">
+                  <div className="text-xs font-bold text-white/90 truncate">
+                    ISS: {iss.position.lat.toFixed(1)}, {iss.position.lng.toFixed(1)}
+                  </div>
+                  <div className="text-slate-400 text-xs uppercase tracking-widest">
+                    {iss.position.altitude.toFixed(0)} km
+                  </div>
+                </div>
+              )}
+            </div>
+          </ScrollReveal>
+
+          {/* Error state */}
+          {error && !loading && (
+            <div className="card p-4 border border-red-500/20 bg-red-500/5 text-center mb-6">
+              <div className="text-red-400 text-sm font-medium">{error}</div>
+              <button
+                onClick={() => fetchTLEData()}
+                className="mt-2 px-4 py-1.5 text-sm bg-red-500/20 text-red-300 rounded-lg hover:bg-red-500/30 transition-colors"
+              >
+                Retry Now
+              </button>
+            </div>
+          )}
+
+          {/* Loading state */}
+          {loading && (
+            <EmptyState
+              icon={<span className="text-4xl">🛰️</span>}
+              title="Loading Satellite Data"
+              description="Fetching TLE data and computing orbital positions..."
+            />
+          )}
+
+          {/* Main content: Map + Sidebar */}
+          {!loading && (
+            <ScrollReveal>
+              <div className="grid grid-cols-1 lg:grid-cols-[1fr_350px] gap-6 mb-8">
+                {/* Map Canvas */}
+                <div className="relative">
+                  <div
+                    ref={containerRef}
+                    className="relative w-full rounded-xl overflow-hidden border border-white/[0.06] bg-black"
+                    style={{ height: 'clamp(350px, 50vw, 550px)' }}
+                  >
+                    <canvas
+                      ref={canvasRef}
+                      onClick={handleCanvasClick}
+                      onMouseMove={handleCanvasMouseMove}
+                      className="w-full h-full"
+                      role="img"
+                      aria-label="Interactive satellite tracking map showing satellite positions on equirectangular world projection"
+                      tabIndex={0}
+                    />
+
+                    {/* Map overlay: last refresh */}
+                    <div className="absolute top-3 right-3 px-2 py-1 rounded text-xs text-slate-400 bg-black/80 border border-white/[0.06]">
+                      {lastRefresh ? `Updated: ${lastRefresh}` : 'Loading...'}
+                    </div>
+
+                    {/* Selected satellite info overlay */}
+                    {selectedSatData && (
+                      <div className="absolute bottom-3 left-3 right-3 sm:right-auto sm:max-w-sm p-4 rounded-xl bg-black/95 border border-white/[0.06] backdrop-blur-sm">
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="min-w-0">
+                            <h4 className="text-white font-semibold text-sm truncate">
+                              {selectedSatData.name}
+                            </h4>
+                            <p className="text-slate-400 text-xs mt-0.5">
+                              NORAD ID: {selectedSatData.noradId}
+                            </p>
+                          </div>
+                          <span
+                            className="shrink-0 px-2 py-0.5 rounded text-xs font-bold"
+                            style={{
+                              backgroundColor: ORBIT_COLORS[selectedSatData.orbitClass] + '30',
+                              color: ORBIT_COLORS[selectedSatData.orbitClass],
+                            }}
+                          >
+                            {selectedSatData.orbitClass}
+                          </span>
+                        </div>
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-3 pt-3 border-t border-white/[0.06]">
+                          <div>
+                            <div className="text-xs text-slate-500 uppercase tracking-wider">Lat</div>
+                            <div className="text-sm text-white font-mono">
+                              {selectedSatData.position.lat.toFixed(2)}
+                            </div>
+                          </div>
+                          <div>
+                            <div className="text-xs text-slate-500 uppercase tracking-wider">Lng</div>
+                            <div className="text-sm text-white font-mono">
+                              {selectedSatData.position.lng.toFixed(2)}
+                            </div>
+                          </div>
+                          <div>
+                            <div className="text-xs text-slate-500 uppercase tracking-wider">Alt</div>
+                            <div className="text-sm text-white font-mono">
+                              {selectedSatData.position.altitude.toFixed(0)} km
+                            </div>
+                          </div>
+                          <div>
+                            <div className="text-xs text-slate-500 uppercase tracking-wider">Vel</div>
+                            <div className="text-sm text-white font-mono">
+                              {selectedSatData.position.velocity.toFixed(2)} km/s
+                            </div>
+                          </div>
+                        </div>
+                        <a
+                          href={`https://www.n2yo.com/satellite/?s=${selectedSatData.noradId}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1.5 mt-3 text-xs font-medium text-blue-300 hover:text-blue-200 transition-colors"
+                        >
+                          Track on N2YO
+                          <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                          </svg>
+                        </a>
+                        <button
+                          onClick={() => setSelectedSat(null)}
+                          className="absolute top-2 right-2 text-slate-500 hover:text-white transition-colors"
+                          aria-label="Close satellite details"
+                        >
+                          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                          </svg>
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Sidebar: Satellite List */}
+                <div className="flex flex-col gap-4 min-h-0">
+                  {/* Search */}
+                  <div className="relative">
+                    <svg
+                      className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                      />
+                    </svg>
+                    <input
+                      type="search"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      placeholder="Search by name or NORAD ID..."
+                      aria-label="Search satellites"
+                      className="w-full pl-10 pr-4 py-2.5 h-11 rounded-lg bg-white/[0.06] border border-white/[0.06] text-white placeholder-slate-500 focus:outline-none focus:border-white/15 focus:ring-1 focus:ring-white/30 text-sm"
+                    />
+                  </div>
+
+                  {/* Filters */}
+                  <div className="flex gap-2">
+                    <select
+                      value={orbitFilter}
+                      onChange={(e) => setOrbitFilter(e.target.value as OrbitClass | '')}
+                      aria-label="Filter by orbit type"
+                      className="flex-1 bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-10 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+                    >
+                      <option value="">All Orbits</option>
+                      <option value="LEO">LEO</option>
+                      <option value="MEO">MEO</option>
+                      <option value="GEO">GEO</option>
+                      <option value="HEO">HEO</option>
+                    </select>
+                    <select
+                      value={categoryFilter}
+                      onChange={(e) => setCategoryFilter(e.target.value as SatCategory)}
+                      aria-label="Filter by category"
+                      className="flex-1 bg-white/[0.06] border border-white/[0.06] text-white rounded-lg px-3 py-2 h-10 text-sm focus:ring-2 focus:ring-white/30 focus:border-white/15 outline-none"
+                    >
+                      {CATEGORY_OPTIONS.map((opt) => (
+                        <option key={opt.value} value={opt.value}>
+                          {opt.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Results count */}
+                  <div className="text-xs text-slate-500">
+                    Showing {filteredSatellites.length} of {satellites.length} satellites
+                    {(orbitFilter || categoryFilter !== 'all' || searchQuery) && (
+                      <button
+                        onClick={() => {
+                          setOrbitFilter('');
+                          setCategoryFilter('all');
+                          setSearchQuery('');
+                        }}
+                        className="ml-2 text-slate-300 hover:text-white"
+                      >
+                        Clear filters
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Satellite list */}
+                  <div className="flex-1 overflow-y-auto max-h-[420px] space-y-1 pr-1 scrollbar-thin scrollbar-track-white/[0.06] scrollbar-thumb-white/[0.08]">
+                    {filteredSatellites.length === 0 ? (
+                      <div className="text-center py-8 text-slate-500 text-sm">
+                        No satellites match your filters.
+                      </div>
+                    ) : (
+                      filteredSatellites.map((sat) => (
+                        <button
+                          key={sat.noradId}
+                          onClick={() => setSelectedSat(sat.noradId === selectedSat ? null : sat.noradId)}
+                          className={`w-full text-left px-3 py-2.5 rounded-lg transition-all text-sm group ${
+                            sat.noradId === selectedSat
+                              ? 'bg-white/5 border border-white/10'
+                              : 'bg-white/[0.04] border border-transparent hover:bg-white/[0.06] hover:border-white/[0.06]'
+                          }`}
+                        >
+                          <div className="flex items-center justify-between gap-2">
+                            <div className="min-w-0">
+                              <div className="text-white font-medium truncate text-sm group-hover:text-white transition-colors">
+                                {sat.name}
+                              </div>
+                              <div className="text-slate-500 text-xs mt-0.5">
+                                ID: {sat.noradId} &middot; {sat.position.altitude.toFixed(0)} km
+                              </div>
+                            </div>
+                            <span
+                              className="shrink-0 w-2 h-2 rounded-full"
+                              style={{ backgroundColor: ORBIT_COLORS[sat.orbitClass] }}
+                              title={ORBIT_LABELS[sat.orbitClass]}
+                            />
+                          </div>
+                        </button>
+                      ))
+                    )}
+                  </div>
+                </div>
+              </div>
+            </ScrollReveal>
+          )}
+
+          {/* Featured Satellites Section */}
+          {!loading && (
+            <ScrollReveal>
+              <div className="mb-8">
+                <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                  <span>&#11088;</span> Featured Satellites
+                </h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {satellites
+                    .filter((s) => FEATURED_IDS.includes(s.noradId))
+                    .map((sat) => (
+                      <button
+                        key={sat.noradId}
+                        onClick={() => setSelectedSat(sat.noradId)}
+                        className={`card p-4 text-left transition-all hover:border-white/10 ${
+                          sat.noradId === selectedSat
+                            ? 'border-white/15 bg-white/5'
+                            : ''
+                        }`}
+                      >
+                        <div className="flex items-start justify-between gap-2">
+                          <div>
+                            <h3 className="text-white font-semibold text-sm">
+                              {sat.name}
+                            </h3>
+                            <p className="text-slate-500 text-xs mt-0.5">
+                              NORAD {sat.noradId}
+                            </p>
+                          </div>
+                          <span
+                            className="shrink-0 px-1.5 py-0.5 rounded text-xs font-bold"
+                            style={{
+                              backgroundColor: ORBIT_COLORS[sat.orbitClass] + '20',
+                              color: ORBIT_COLORS[sat.orbitClass],
+                            }}
+                          >
+                            {sat.orbitClass}
+                          </span>
+                        </div>
+                        <div className="grid grid-cols-3 gap-2 mt-3 pt-3 border-t border-white/[0.06]">
+                          <div>
+                            <div className="text-xs text-slate-500">Alt</div>
+                            <div className="text-sm text-white font-mono">
+                              {sat.position.altitude.toFixed(0)} km
+                            </div>
+                          </div>
+                          <div>
+                            <div className="text-xs text-slate-500">Vel</div>
+                            <div className="text-sm text-white font-mono">
+                              {sat.position.velocity.toFixed(2)} km/s
+                            </div>
+                          </div>
+                          <div>
+                            <div className="text-xs text-slate-500">Inc</div>
+                            <div className="text-sm text-white font-mono">
+                              {sat.tle.inclination.toFixed(1)}&deg;
+                            </div>
+                          </div>
+                        </div>
+                      </button>
+                    ))}
+                </div>
+              </div>
+            </ScrollReveal>
+          )}
+
+          {/* Ad between sections */}
+          <div className="my-6">
+            <AdSlot position="in_feed" module="satellite-tracker" adsenseSlot="in_feed_sats" adsenseFormat="rectangle" />
+          </div>
+
+          {/* Orbital Regimes Explained */}
+          <ScrollReveal>
+            <div className="mb-8">
+              <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                <span>🌐</span> Orbital Regimes Explained
+              </h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                {ORBIT_GUIDE.map((orbit) => (
+                  <div key={orbit.value} className="card p-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <span
+                        className="w-2.5 h-2.5 rounded-full shrink-0"
+                        style={{ backgroundColor: ORBIT_COLORS[orbit.value] }}
+                      />
+                      <h3 className="text-white font-semibold text-sm">{orbit.label}</h3>
+                    </div>
+                    <div className="text-xs font-mono mb-2" style={{ color: ORBIT_COLORS[orbit.value] }}>
+                      {orbit.range}
+                    </div>
+                    <p className="text-slate-400 text-xs leading-relaxed">{orbit.description}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </ScrollReveal>
+
+          {/* Data Sources */}
+          <ScrollReveal>
+            <div className="card p-5 border-dashed mb-6">
+              <h3 className="text-lg font-semibold text-white mb-3">About This Tracker</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-slate-400">
+                <div>
+                  <h4 className="text-white font-medium mb-2">Data Sources</h4>
+                  <ul className="space-y-1">
+                    <li>CelesTrak NORAD TLE Catalog</li>
+                    <li>Simplified SGP4-lite orbital propagation</li>
+                    <li>Equirectangular map projection</li>
+                    <li>Auto-refreshes every 30 seconds</li>
+                  </ul>
+                </div>
+                <div>
+                  <h4 className="text-white font-medium mb-2">How It Works</h4>
+                  <ul className="space-y-1">
+                    <li>TLE data parsed from Two-Line Element sets</li>
+                    <li>Positions computed via Kepler equation solver</li>
+                    <li>J2 perturbation for nodal precession</li>
+                    <li>GMST for Earth rotation compensation</li>
+                  </ul>
+                </div>
+              </div>
+              <div className="flex flex-wrap items-center gap-3 mt-4 pt-4 border-t border-white/[0.06]">
+                <span className="text-xs text-slate-500 uppercase tracking-wider">Spot the ISS:</span>
+                <a
+                  href={`https://www.n2yo.com/satellite/?s=${ISS_NORAD_ID}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-medium bg-blue-500/20 text-blue-300 hover:bg-blue-500/30 transition-colors border border-blue-500/30"
+                >
+                  Track Live on N2YO
+                  <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                  </svg>
+                </a>
+                <a
+                  href="https://spotthestation.nasa.gov/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-medium bg-green-500/20 text-green-300 hover:bg-green-500/30 transition-colors border border-green-500/30"
+                >
+                  Spot the Station
+                  <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                  </svg>
+                </a>
+              </div>
+            </div>
+          </ScrollReveal>
+
+          {/* Related Reading */}
+          <ScrollReveal>
+            <div className="mt-10 mb-6">
+              <h3 className="text-lg font-semibold text-white mb-4">Related Reading</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <Link
+                  href="/blog/satellite-tracking-explained-beginners-guide"
+                  className="group bg-white/[0.04] border border-white/[0.06] rounded-xl p-5 hover:border-white/15 hover:bg-white/[0.06] transition-all"
+                >
+                  <div className="text-white font-medium text-sm group-hover:text-white/80 transition-colors mb-1">
+                    How Satellite Tracking Works
+                  </div>
+                  <div className="text-slate-500 text-xs">TLE data, orbit types, and how positions are calculated in real time — a beginner&apos;s guide.</div>
+                  <div className="text-white/60 text-xs mt-3 font-medium group-hover:underline">Read article &rarr;</div>
+                </Link>
+                <Link
+                  href="/blog/how-many-satellites-in-space-2026"
+                  className="group bg-white/[0.04] border border-white/[0.06] rounded-xl p-5 hover:border-white/15 hover:bg-white/[0.06] transition-all"
+                >
+                  <div className="text-white font-medium text-sm group-hover:text-white/80 transition-colors mb-1">
+                    How Many Satellites Are in Space?
+                  </div>
+                  <div className="text-slate-500 text-xs">The complete breakdown of active satellites by orbit, operator, and purpose.</div>
+                  <div className="text-white/60 text-xs mt-3 font-medium group-hover:underline">Read article &rarr;</div>
+                </Link>
+                <Link
+                  href="/blog/starlink-oneweb-kuiper-mega-constellation-comparison"
+                  className="group bg-white/[0.04] border border-white/[0.06] rounded-xl p-5 hover:border-white/15 hover:bg-white/[0.06] transition-all"
+                >
+                  <div className="text-white font-medium text-sm group-hover:text-white/80 transition-colors mb-1">
+                    Mega-Constellation Wars
+                  </div>
+                  <div className="text-slate-500 text-xs">Starlink vs. OneWeb vs. Kuiper -- comparing the broadband constellation race.</div>
+                  <div className="text-white/60 text-xs mt-3 font-medium group-hover:underline">Read article &rarr;</div>
+                </Link>
+              </div>
+            </div>
+          </ScrollReveal>
+
+          {/* Footer Ad */}
+          <div className="my-6">
+            <AdSlot position="footer" module="satellite-tracker" adsenseSlot="footer_sats" adsenseFormat="horizontal" />
+          </div>
+
+          <SubscribeCTA />
+
+          {/* Related Modules */}
+          <RelatedModules
+            modules={
+              PAGE_RELATIONS['satellites'] || [
+                { name: 'Space Environment', description: 'Weather & debris tracking', href: '/space-environment', icon: '🌍' },
+                { name: 'Orbital Slots', description: 'Slot management', href: '/orbital-slots', icon: '🎯' },
+                { name: 'Constellations', description: 'Constellation data', href: '/constellations', icon: '⭐' },
+                { name: 'Ground Stations', description: 'Ground station map', href: '/ground-stations', icon: '📡' },
+              ]
+            }
+          />
         </div>
-      }
-    >
-      <SatelliteTrackerContent />
-    </Suspense>
+      </div>
     </>
   );
 }

@@ -21,10 +21,10 @@ export const MODULE_ROUTES: Record<string, string> = {
   // ── Space Market Intelligence children ──
   'market-intel': '/market-intel',
   'company-research': '/company-research',
-  'space-economy': '/space-economy',
-  'space-capital': '/space-capital',
+  'space-economy': '/market-intel',
+  'space-capital': '/funding-tracker',
   'company-profiles': '/company-profiles',
-  'market-sizing': '/market-sizing',
+  'market-sizing': '/market-intel',
   'funding-tracker': '/funding-tracker',
   'investor-directory': '/investors',
 
@@ -40,7 +40,7 @@ export const MODULE_ROUTES: Record<string, string> = {
   // ── Mission Planning children ──
   'mission-cost': '/mission-cost',
   'space-insurance': '/space-insurance',
-  'resource-exchange': '/resource-exchange',
+  'resource-exchange': '/marketplace',
   'launch-windows': '/launch-windows',
   'launch-vehicles': '/launch-vehicles',
   'blueprints': '/blueprints',
@@ -86,14 +86,14 @@ export const MODULE_ROUTES: Record<string, string> = {
   'deal-rooms': '/deal-rooms',
 
   // ── Intelligence & Analytics ──
-  'investment-tracker': '/investment-tracker',
-  'market-map': '/market-map',
+  'investment-tracker': '/funding-tracker',
+  'market-map': '/market-intel',
   'intelligence-brief': '/intelligence-brief',
   'mission-stats': '/mission-stats',
   'government-budgets': '/government-budgets',
 
   // ── Pipeline & Resources ──
-  'mission-pipeline': '/mission-pipeline',
+  'mission-pipeline': '/mission-control',
   'resources': '/resources',
 
   // ── Executive Intelligence ──

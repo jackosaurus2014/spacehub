@@ -71,9 +71,9 @@ const BENTO_ITEMS = [
     size: 'medium',
   },
   {
-    title: 'Launch Manifest',
+    title: 'Launch Tracker',
     description: 'Every launch worldwide — past, present, upcoming.',
-    href: '/launch-manifest',
+    href: '/mission-control',
     badge: 'LIVE',
     badgeType: 'live' as const,
     heroImage: '/art/hero-launch-vehicles.png',

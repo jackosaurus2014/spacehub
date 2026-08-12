@@ -1407,7 +1407,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
     content: `
 <p>There are over 10,000 active satellites orbiting Earth right now, along with tens of thousands of pieces of tracked debris. Whether you are a satellite operator managing a constellation, a defense analyst monitoring adversary assets, an educator teaching orbital mechanics, or simply someone who wants to know when the ISS will fly overhead, understanding how satellite tracking works is increasingly relevant.</p>
 
-<p>This guide explains the fundamentals of satellite tracking — what the data looks like, how positions are calculated, what the different orbit types mean, and how you can track satellites in real time using the <a href="/satellite-tracker">SpaceNexus Satellite Tracker</a>.</p>
+<p>This guide explains the fundamentals of satellite tracking — what the data looks like, how positions are calculated, what the different orbit types mean, and how you can track satellites in real time using the <a href="/satellites">SpaceNexus Satellite Tracker</a>.</p>
 
 <h2 id="how-satellite-tracking-works">How Satellite Tracking Works</h2>
 
@@ -1507,7 +1507,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 
 <h2 id="track-with-spacenexus">Track Satellites with SpaceNexus</h2>
 
-<p>The <a href="/satellite-tracker">SpaceNexus Satellite Tracker</a> visualizes 19,000+ tracked objects on an interactive 3D globe with real-time positions calculated from the latest CelesTrak TLE data using SGP4 propagation. Filter satellites by orbit type, operator, constellation, or mission type. Click any satellite to see its orbital parameters, ground track, and operator information.</p>
+<p>The <a href="/satellites">SpaceNexus Satellite Tracker</a> visualizes 19,000+ tracked objects on an interactive 3D globe with real-time positions calculated from the latest CelesTrak TLE data using SGP4 propagation. Filter satellites by orbit type, operator, constellation, or mission type. Click any satellite to see its orbital parameters, ground track, and operator information.</p>
 
 <p>Beyond tracking, SpaceNexus integrates satellite data with our broader intelligence platform. See which companies operate which satellites through <a href="/company-profiles">Company Profiles</a>. Monitor constellation deployment progress. Track orbital slot utilization in <a href="/orbital-slots">Orbital Slots</a>. And monitor the space environment — debris density, collision risk, and reentry predictions — in our <a href="/space-environment">Space Environment module</a>.</p>
 
