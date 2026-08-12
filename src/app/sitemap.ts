@@ -288,7 +288,7 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/resources`, changeFrequency: 'monthly' as const, priority: 0.6 },
     { url: `${BASE_URL}/space-score`, changeFrequency: 'weekly' as const, priority: 0.5 },
     { url: `${BASE_URL}/launch-cost-calculator`, changeFrequency: 'weekly' as const, priority: 0.5 },
-    { url: `${BASE_URL}/startup-tracker`, changeFrequency: 'weekly' as const, priority: 0.7 },
+    { url: `${BASE_URL}/startups`, changeFrequency: 'daily' as const, priority: 0.8 },
     { url: `${BASE_URL}/report-cards`, changeFrequency: 'monthly' as const, priority: 0.7 },
     { url: `${BASE_URL}/tech-readiness`, changeFrequency: 'monthly' as const, priority: 0.6 },
     { url: `${BASE_URL}/regulations`, changeFrequency: 'monthly' as const, priority: 0.6 },

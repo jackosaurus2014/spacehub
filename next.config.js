@@ -339,9 +339,9 @@ const nextConfig = {
       // /space-comms now has its own standalone page
       { source: '/imagery-marketplace', destination: '/space-manufacturing?tab=imagery', permanent: true },
       { source: '/bid-protests', destination: '/compliance?tab=protests-overview', permanent: true },
-      // /space-capital now redirects to /funding-tracker — point /startups at the
-      // final destination directly to avoid a redirect chain
-      { source: '/startups', destination: '/funding-tracker', permanent: true },
+      // /startups is now the Startup & Pre-IPO Hub (2026-08) — legacy startup
+      // list pages fold into it
+      { source: '/startup-tracker', destination: '/startups', permanent: true },
       // Single paid plan (Pro) — retired enterprise marketing page
       { source: '/enterprise', destination: '/pricing', permanent: true },
       // Empty "coming soon" marketing page — retired in favor of /why-spacenexus
@@ -359,7 +359,11 @@ const nextConfig = {
       { source: '/space-capital', destination: '/funding-tracker', permanent: true },
       { source: '/space-investors', destination: '/investors', permanent: true },
       { source: '/portfolio-tracker', destination: '/market-intel', permanent: true },
-      { source: '/startup-directory', destination: '/startup-tracker', permanent: true },
+      { source: '/startup-directory', destination: '/startups', permanent: true },
+      // ── URL consolidation (2026-08) — duplicate/overlapping pages ──
+      { source: '/space-map', destination: '/ecosystem-map', permanent: true },
+      { source: '/conferences', destination: '/space-calendar', permanent: true },
+      { source: '/space-events', destination: '/space-calendar', permanent: true },
       { source: '/contract-awards', destination: '/procurement', permanent: true },
 
       // ── URL consolidation — talent & careers ──
@@ -419,6 +423,7 @@ const nextConfig = {
       { source: '/propulsion-comparison', destination: '/propulsion-database', permanent: true },
       { source: '/engineering', destination: '/tools', permanent: true },
       { source: '/engineering-hub', destination: '/tools', permanent: true },
+      { source: '/launches', destination: '/mission-control', permanent: true },
     ];
   },
 }

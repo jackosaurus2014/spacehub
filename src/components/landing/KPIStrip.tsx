@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { formatCompact } from '@/lib/format-number';
 import { SITE_STATS } from '@/lib/site-stats';
@@ -10,6 +11,8 @@ interface KPIMetric {
   suffix: string;
   prefix: string;
   colorClass: string;
+  /** When set, the KPI tile is a link to this destination. */
+  href?: string;
 }
 
 /**
@@ -32,7 +35,7 @@ const KPI_METRICS: KPIMetric[] = [
   { label: 'Company Profiles', ...parseStat(SITE_STATS.companies), colorClass: 'text-white' },
   { label: 'Space Economy', ...parseStat(SITE_STATS.spaceEconomyNow), colorClass: 'text-emerald-400' },
   { label: 'Original Articles', ...parseStat(SITE_STATS.articles), colorClass: 'text-white' },
-  { label: 'Pages & Tools', ...parseStat(SITE_STATS.pagesAndTools), colorClass: 'text-amber-400' },
+  { label: 'Job Listings', ...parseStat(SITE_STATS.jobListings), colorClass: 'text-cyan-400', href: '/space-talent' },
   { label: 'Data Sources', ...parseStat(SITE_STATS.dataSources), colorClass: 'text-white' },
 ];
 
@@ -78,14 +81,32 @@ function AnimatedCounter({ metric, shouldAnimate }: { metric: KPIMetric; shouldA
 
   const formatted = formatNumber(displayValue, metric.prefix, metric.suffix);
 
-  return (
-    <div className="group/kpi flex flex-col items-center text-center px-2 py-3 md:py-4 transition-colors duration-200 hover:bg-white/[0.02] cursor-default">
+  const content = (
+    <>
       <span className={`text-xl md:text-2xl font-bold font-mono tabular-nums ${metric.colorClass} transition-[filter] duration-300 group-hover/kpi:drop-shadow-[0_0_8px_currentColor]`}>
         {formatted}
       </span>
       <span className="text-[10px] md:text-xs text-slate-500 mt-1 font-medium whitespace-nowrap uppercase tracking-wider">
         {metric.label}
       </span>
+    </>
+  );
+
+  if (metric.href) {
+    return (
+      <Link
+        href={metric.href}
+        aria-label={`View ${metric.label}: ${formatted}`}
+        className="group/kpi flex flex-col items-center text-center px-2 py-3 md:py-4 transition-colors duration-200 hover:bg-white/[0.03] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-400 rounded-lg"
+      >
+        {content}
+      </Link>
+    );
+  }
+
+  return (
+    <div className="group/kpi flex flex-col items-center text-center px-2 py-3 md:py-4 transition-colors duration-200 hover:bg-white/[0.02] cursor-default">
+      {content}
     </div>
   );
 }

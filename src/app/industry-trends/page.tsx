@@ -686,8 +686,6 @@ export default function IndustryTrendsPage() {
                             ))}
                           </div>
                         </div>
-
-        <RelatedModules modules={PAGE_RELATIONS['industry-trends']} />
                       </div>
                     </div>
                   )}
@@ -787,6 +785,8 @@ export default function IndustryTrendsPage() {
             </p>
           </div>
         </ScrollReveal>
+
+        <RelatedModules modules={PAGE_RELATIONS['industry-trends']} />
       </div>
     </div>
   );

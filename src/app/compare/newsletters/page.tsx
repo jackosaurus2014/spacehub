@@ -277,8 +277,6 @@ export default function NewsletterComparisonPage() {
                       </li>
                     ))}
                   </ul>
-
-        <RelatedModules modules={PAGE_RELATIONS['compare/newsletters']} />
                 </div>
               </div>
             ))}
@@ -377,6 +375,8 @@ export default function NewsletterComparisonPage() {
             </Link>
           </div>
         </section>
+
+        <RelatedModules modules={PAGE_RELATIONS['compare/newsletters']} />
       </div>
     </div>
   );

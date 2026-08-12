@@ -46,6 +46,7 @@ const RELATION_COUNT_SELECT = {
       events: true,
       satelliteAssets: true,
       facilities: true,
+      jobPostings: { where: { isActive: true } },
     },
   },
 };
@@ -65,6 +66,7 @@ const EMPTY_COUNT = {
   events: 0,
   satelliteAssets: 0,
   facilities: 0,
+  jobPostings: 0,
 };
 
 export async function GET(request: NextRequest) {

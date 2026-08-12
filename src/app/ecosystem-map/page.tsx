@@ -241,8 +241,6 @@ function FlowArrow({ fromColor, toColor }: { fromColor: string; toColor: string 
             opacity="0.6"
           />
         </svg>
-
-        <RelatedModules modules={PAGE_RELATIONS['ecosystem-map']} />
       </div>
     </div>
   );
@@ -600,6 +598,8 @@ export default function EcosystemMapPage() {
             </Link>
           </div>
         </div>
+
+        <RelatedModules modules={PAGE_RELATIONS['ecosystem-map']} />
       </div>
     </div>
   );

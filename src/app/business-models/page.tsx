@@ -138,10 +138,7 @@ function MetricsTable({ metrics }: { metrics: { label: string; benchmark: string
           ))}
         </tbody>
       </table>
-    
-
-        <RelatedModules modules={PAGE_RELATIONS['business-models']} />
-      </div>
+    </div>
   );
 }
 
@@ -628,6 +625,8 @@ export default function BusinessModelsPage() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      <RelatedModules modules={PAGE_RELATIONS['business-models']} />
     </div>
   );
 }

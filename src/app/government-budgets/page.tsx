@@ -393,8 +393,6 @@ export default function GovernmentBudgetsPage() {
                     <div className="w-full bg-white/[0.04] rounded-full h-3">
                       <div className="h-3 rounded-full bg-gradient-to-r from-purple-500 to-slate-200 transition-all"
                         style={{ width: `${parseFloat(r.pct)}%` }} />
-
-        <RelatedModules modules={PAGE_RELATIONS['government-budgets']} />
                     </div>
                   </div>
                 ))}
@@ -485,6 +483,8 @@ export default function GovernmentBudgetsPage() {
             </p>
           </div>
         </ScrollReveal>
+
+        <RelatedModules modules={PAGE_RELATIONS['government-budgets']} />
       </div>
     </div>
   );

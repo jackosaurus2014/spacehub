@@ -593,8 +593,6 @@ export default function PowerBudgetCalculatorPage() {
                   <span className="text-sm font-medium text-amber-300">
                     {(sub.power * sub.dutyCycle / 100).toFixed(1)} W
                   </span>
-
-        <RelatedModules modules={PAGE_RELATIONS['power-budget-calculator']} />
                 </div>
               </div>
             ))}
@@ -794,6 +792,8 @@ export default function PowerBudgetCalculatorPage() {
           </StaggerContainer>
         </div>
         </ScrollReveal>
+
+        <RelatedModules modules={PAGE_RELATIONS['power-budget-calculator']} />
       </div>
     </div>
   );

@@ -1400,8 +1400,6 @@ function HeroStats({ activeSpaceports, emergingSpaceports, trafficData }: {
           </div>
           <div className="text-star-300 text-xs uppercase tracking-widest font-medium mt-1">
             {stat.label}
-
-        <RelatedModules modules={PAGE_RELATIONS['spaceports']} />
           </div>
         </div>
       ))}
@@ -2322,6 +2320,8 @@ function SpaceportDirectoryPage() {
               estrackStations={estrackStationsData}
             />
           )}
+
+          <RelatedModules modules={PAGE_RELATIONS['spaceports']} />
         </div>
       </div>
     </div>

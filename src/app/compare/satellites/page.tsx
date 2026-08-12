@@ -469,8 +469,6 @@ function ComparisonChart({ selected }: { selected: SatelliteConstellation[] }) {
                     </div>
                   );
                 })}
-
-        <RelatedModules modules={PAGE_RELATIONS['compare/satellites']} />
               </div>
             </div>
           );
@@ -1292,6 +1290,8 @@ export default function SatelliteConstellationComparePage() {
           </div>
         </div>
       </ScrollReveal>
+
+      <RelatedModules modules={PAGE_RELATIONS['compare/satellites']} />
     </div>
   );
 }

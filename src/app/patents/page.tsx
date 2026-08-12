@@ -791,8 +791,6 @@ function DashboardTab({ filingsData, holdersData, categoriesData, litigationData
                 <svg className={`w-4 h-4 inline ${getTrendColor(geo.trend as 'up' | 'stable' | 'down')}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={getTrendIcon(geo.trend as 'up' | 'stable' | 'down')} />
                 </svg>
-
-        <RelatedModules modules={PAGE_RELATIONS['patents']} />
               </div>
             </div>
           ))}
@@ -1803,6 +1801,8 @@ export default function PatentTrackerPage() {
           </div>
         </div>
         </ScrollReveal>
+
+        <RelatedModules modules={PAGE_RELATIONS['patents']} />
       </div>
     </div>
   );

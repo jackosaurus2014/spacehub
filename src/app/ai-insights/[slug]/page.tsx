@@ -13,6 +13,10 @@ import SourceCitation from '@/components/ui/SourceCitation';
 import type { Source } from '@/components/ui/SourceCitation';
 import { clientLogger } from '@/lib/client-logger';
 import NewsletterSignup from '@/components/NewsletterSignup';
+import RelatedModules from '@/components/ui/RelatedModules';
+import { PAGE_RELATIONS } from '@/lib/module-relationships';
+import { linkifyCompanyNames } from '@/lib/entity-linker';
+import type { ReactNode } from 'react';
 
 interface Insight {
   id: string;
@@ -113,6 +117,31 @@ function getDetailSourceCitations(sourcesRaw: string): Source[] {
   }
   citationSources.push({ name: 'SpaceNexus Data', type: 'database' });
   return citationSources;
+}
+
+// Links plain-text company mentions to their profile pages. Only applied to
+// simple string children (a single un-formatted markdown paragraph/list item) —
+// nodes containing nested formatting (bold, links, etc.) are left untouched
+// so we never split or re-link inside an already-formatted element.
+function linkifyNode(children: ReactNode): ReactNode {
+  if (typeof children !== 'string') return children;
+
+  const segments = linkifyCompanyNames(children);
+  if (segments.every((s) => !s.slug)) return children;
+
+  return segments.map((segment, i) =>
+    segment.slug ? (
+      <Link
+        key={i}
+        href={`/company-profiles/${segment.slug}`}
+        className="text-cyan-400 hover:text-cyan-300 underline underline-offset-2"
+      >
+        {segment.text}
+      </Link>
+    ) : (
+      <span key={i}>{segment.text}</span>
+    )
+  );
 }
 
 function SkeletonDetail() {
@@ -337,11 +366,11 @@ export default function AIInsightDetailPage() {
                     h2: ({children}) => <h2 className="text-2xl font-bold text-white mt-10 mb-4">{children}</h2>,
                     h3: ({children}) => <h3 className="text-xl font-semibold text-white mt-8 mb-3">{children}</h3>,
                     h4: ({children}) => <h4 className="text-lg font-semibold text-white/90 mt-6 mb-2">{children}</h4>,
-                    p: ({children}) => <p className="text-white/70 leading-relaxed mb-4">{children}</p>,
+                    p: ({children}) => <p className="text-white/70 leading-relaxed mb-4">{linkifyNode(children)}</p>,
                     a: ({href, children}) => <a href={href} className="text-white/70 hover:text-white hover:underline" target="_blank" rel="noopener noreferrer">{children}</a>,
                     ul: ({children}) => <ul className="list-disc list-inside space-y-2 text-white/70 mb-4">{children}</ul>,
                     ol: ({children}) => <ol className="list-decimal list-inside space-y-2 text-white/70 mb-4">{children}</ol>,
-                    li: ({children}) => <li className="text-white/70">{children}</li>,
+                    li: ({children}) => <li className="text-white/70">{linkifyNode(children)}</li>,
                     blockquote: ({children}) => <blockquote className="border-l-4 border-white/15 pl-4 my-4 text-slate-400 italic">{children}</blockquote>,
                     code: ({children, className}) => {
                       const isBlock = className?.includes('language-');
@@ -414,6 +443,11 @@ export default function AIInsightDetailPage() {
             {/* Inline newsletter capture — the article IS the funnel */}
             <div className="mt-12">
               <NewsletterSignup variant="cta" source="ai-insight-article" />
+            </div>
+
+            {/* Related Modules */}
+            <div className="mt-12">
+              <RelatedModules modules={PAGE_RELATIONS['ai-insights']} />
             </div>
 
             {/* Back to All Link */}

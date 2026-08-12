@@ -1356,6 +1356,9 @@ export async function getJobPostings(options?: {
         isActive: true,
         postedDate: true,
         sourceUrl: true,
+        companyProfile: {
+          select: { slug: true, name: true },
+        },
       },
       orderBy: { postedDate: 'desc' },
       take: options?.limit || 20,

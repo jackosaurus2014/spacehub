@@ -209,7 +209,7 @@ const INTELLIGENCE_MODULES: ModuleItem[] = [
   { icon: '\u{1F3DB}\uFE0F', label: 'Government Budgets', href: '/government-budgets', description: 'Global space agency budget tracking' },
   { icon: '\u{1F4CB}', label: 'Intelligence Brief', href: '/intelligence-brief', description: 'Weekly curated industry briefing' },
   { icon: '\u{1F464}', label: 'Executive Moves', href: '/executive-moves', description: 'Leadership changes across the industry' },
-  { icon: '\u{1F680}', label: 'Startup Tracker', href: '/startup-tracker', description: 'Emerging space companies & funding stages' },
+  { icon: '\u{1F680}', label: 'Startups & Pre-IPO', href: '/startups', description: 'Private companies, funding rounds & IPO watch' },
   { icon: '\u{1F4CA}', label: 'Report Cards', href: '/report-cards', description: 'Quarterly company performance grades' },
   { icon: '\u{1F4BC}', label: 'Portfolio Tracker', href: '/portfolio-tracker', description: 'Track space investment portfolios' },
   { icon: '\u{1F4C8}', label: 'Industry Trends', href: '/industry-trends', description: 'Data-backed space industry trend analysis' },

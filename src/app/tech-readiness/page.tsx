@@ -1206,8 +1206,6 @@ export default function TechReadinessPage() {
                                 <span className="text-xs text-slate-500 italic">No tracked technologies at this level</span>
                               )}
                             </div>
-
-        <RelatedModules modules={PAGE_RELATIONS['tech-readiness']} />
                           </div>
                         </div>
                       )}
@@ -1919,6 +1917,8 @@ export default function TechReadinessPage() {
             </div>
           </div>
         </ScrollReveal>
+
+        <RelatedModules modules={PAGE_RELATIONS['tech-readiness']} />
 
         {/* Footer spacing */}
         <div className="h-8" />

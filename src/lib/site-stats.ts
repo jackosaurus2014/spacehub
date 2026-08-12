@@ -23,6 +23,8 @@ export const SITE_STATS = {
   modules: '40+',
   /** Automated data-refresh jobs (cron roster, actual: 56 scheduled jobs) */
   automatedFeeds: '50+',
+  /** Live ATS-synced job listings (actual: ~6,400 active, resyncs daily) */
+  jobListings: '6,000+',
   /** RSS/news feeds ingested (actual: 63 in news-fetcher RSS_FEEDS after Aug 2026 dead-feed prune) */
   newsFeeds: '60+',
   /** Global space economy, current (single canonical figure — do not fork) */

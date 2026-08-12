@@ -264,8 +264,6 @@ export default function YearInReviewPage() {
                   <p className="text-slate-400 text-sm leading-relaxed">
                     {m.description}
                   </p>
-
-        <RelatedModules modules={PAGE_RELATIONS['year-in-review']} />
                 </div>
               </div>
             );
@@ -362,6 +360,11 @@ export default function YearInReviewPage() {
             </Link>
           </div>
         </div>
+      </section>
+
+      {/* ── Related ──────────────────────────────────────────── */}
+      <section className="max-w-5xl mx-auto px-4 pb-8">
+        <RelatedModules modules={PAGE_RELATIONS['year-in-review']} />
       </section>
 
       {/* ── Footer note ──────────────────────────────────────── */}

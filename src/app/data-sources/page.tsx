@@ -363,8 +363,6 @@ export default function DataSourcesPage() {
                         <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full border ${tierStyles[source.tier]}`}>
                           {source.tier}
                         </span>
-
-        <RelatedModules modules={PAGE_RELATIONS['data-sources']} />
                       </div>
                     </div>
                   ))}
@@ -439,6 +437,8 @@ export default function DataSourcesPage() {
             </div>
           </div>
         </ScrollReveal>
+
+        <RelatedModules modules={PAGE_RELATIONS['data-sources']} />
 
         <div className="mb-16" />
       </div>

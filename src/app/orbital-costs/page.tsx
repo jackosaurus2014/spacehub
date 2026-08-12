@@ -141,8 +141,6 @@ function BOMTable({ subsystems }: { subsystems: Subsystem[] }) {
                     </tr>
                   </tfoot>
                 </table>
-
-        <RelatedModules modules={PAGE_RELATIONS['orbital-costs']} />
               </div>
             </div>
           )}
@@ -689,6 +687,8 @@ export default function OrbitalCostsPage() {
           ))}
         </div>
         </ScrollReveal>
+
+        <RelatedModules modules={PAGE_RELATIONS['orbital-costs']} />
       </div>
     </div>
   );

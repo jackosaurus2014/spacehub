@@ -234,8 +234,6 @@ function OrbitTypeCard({ slot }: { slot: OrbitalSlot }) {
         >
           View debris in this orbit &rarr;
         </Link>
-
-        <RelatedModules modules={PAGE_RELATIONS['orbital-slots']} />
       </div>
     </div>
   );
@@ -1620,6 +1618,8 @@ function OrbitalManagementContent() {
             )}
           </>
         )}
+
+        <RelatedModules modules={PAGE_RELATIONS['orbital-slots']} />
       </div>
 
       {/* Service Listing Dialog */}

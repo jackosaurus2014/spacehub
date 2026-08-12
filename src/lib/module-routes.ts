@@ -79,7 +79,7 @@ export const MODULE_ROUTES: Record<string, string> = {
 
   // ── Business Planning Tools ──
   'business-models': '/business-models',
-  'space-events': '/space-events',
+  'space-events': '/space-calendar',
   'unit-economics': '/unit-economics',
 
   // ── Deal Room ──

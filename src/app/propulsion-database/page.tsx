@@ -844,8 +844,6 @@ export default function PropulsionDatabasePage() {
                       <div>
                         <div className="text-xs text-slate-500 uppercase tracking-wider mb-2">Heritage &amp; Notes</div>
                         <p className="text-sm text-white/70 leading-relaxed">{system.heritage}</p>
-
-        <RelatedModules modules={PAGE_RELATIONS['propulsion-database']} />
                       </div>
                     </div>
                   )}
@@ -954,6 +952,8 @@ export default function PropulsionDatabasePage() {
             </div>
           </div>
         </ScrollReveal>
+
+        <RelatedModules modules={PAGE_RELATIONS['propulsion-database']} />
 
         {/* Footer note */}
         <div className="text-center text-xs text-slate-500 py-8">

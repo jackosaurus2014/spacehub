@@ -247,8 +247,6 @@ function CompareCompaniesContent() {
                     {slugs.map((_, k) => (
                       <div key={k} className="h-4 flex-1 bg-white/[0.06] rounded animate-pulse" />
                     ))}
-
-        <RelatedModules modules={PAGE_RELATIONS['compare/companies']} />
                   </div>
                 </div>
               ))}
@@ -299,6 +297,8 @@ function CompareCompaniesContent() {
         <CompanyComparisonTable companies={companies} onRemove={handleRemove} />
         </ScrollReveal>
       )}
+
+      <RelatedModules modules={PAGE_RELATIONS['compare/companies']} />
     </div>
   );
 }

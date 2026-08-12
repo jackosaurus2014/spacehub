@@ -371,8 +371,6 @@ function CostBreakdownCard({
                 className="h-full bg-gradient-to-r from-white to-blue-500 rounded-full transition-all duration-500"
                 style={{ width: `${Math.max(item.pct, 1)}%` }}
               />
-
-        <RelatedModules modules={PAGE_RELATIONS['launch-cost-calculator']} />
             </div>
           </div>
         ))}
@@ -1005,6 +1003,8 @@ export default function LaunchCostCalculatorPage() {
             )}
           </div>
         </div>
+
+        <RelatedModules modules={PAGE_RELATIONS['launch-cost-calculator']} />
         </ScrollReveal>
       </div>
     </div>

@@ -460,8 +460,6 @@ export default function HelpCenterPage() {
                               <p className="text-sm text-slate-400 leading-relaxed pb-3 pl-1">
                                 {faq.answer}
                               </p>
-
-        <RelatedModules modules={PAGE_RELATIONS['help']} />
                             </div>
                           </div>
                         );
@@ -500,6 +498,8 @@ export default function HelpCenterPage() {
             })}
           </div>
         )}
+
+        <RelatedModules modules={PAGE_RELATIONS['help']} />
 
         {/* ---- Still need help? ---- */}
         <div className="max-w-2xl mx-auto mt-16">

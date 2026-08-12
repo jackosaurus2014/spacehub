@@ -207,8 +207,6 @@ export default function DailyDigestPage() {
                 <div className="space-y-2">
                   <div className="h-3 w-full bg-white/[0.05] rounded" />
                   <div className="h-3 w-5/6 bg-white/[0.05] rounded" />
-
-        <RelatedModules modules={PAGE_RELATIONS['daily-digest']} />
                 </div>
               </div>
             ))}
@@ -385,6 +383,8 @@ export default function DailyDigestPage() {
             Powered by SpaceNexus &middot; spacenexus.us
           </p>
         </div>
+
+        <RelatedModules modules={PAGE_RELATIONS['daily-digest']} />
       </div>
     </div>
   );

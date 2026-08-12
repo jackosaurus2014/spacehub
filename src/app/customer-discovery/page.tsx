@@ -486,8 +486,6 @@ export default function CustomerDiscoveryPage() {
                                           {getCategoryName(catId)}
                                         </span>
                                       ))}
-
-        <RelatedModules modules={PAGE_RELATIONS['customer-discovery']} />
                                     </div>
                                   </div>
                                 )}
@@ -756,6 +754,8 @@ export default function CustomerDiscoveryPage() {
           })}
         </div>
       </div>
+
+      <RelatedModules modules={PAGE_RELATIONS['customer-discovery']} />
       </div>
     </PremiumGate>
   );

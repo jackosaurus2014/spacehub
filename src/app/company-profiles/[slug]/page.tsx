@@ -108,6 +108,7 @@ interface CompanyDetail {
   contracts: Contract[]; events: CompanyEvent[];
   satelliteAssets: Satellite[]; facilities: Facility[];
   scores: Score[];
+  jobPostingsCount: number;
   summary: {
     totalContractValue: number; activeSatellites: number;
     totalSatellites: number; totalFundingRounds: number;
@@ -169,7 +170,7 @@ function getScoreBarColor(score: number): string {
 
 // ─── Marketplace Actions ─────────────────────────────────────────────────────
 
-function MarketplaceActions({ companySlug, companyId, companyName, verificationLevel, contactEmail: initialContactEmail, claimedByUserId }: { companySlug: string; companyId: string; companyName: string; verificationLevel?: string | null; contactEmail?: string | null; claimedByUserId?: string | null }) {
+function MarketplaceActions({ companySlug, companyId, companyName, verificationLevel, contactEmail: initialContactEmail, claimedByUserId, jobPostingsCount }: { companySlug: string; companyId: string; companyName: string; verificationLevel?: string | null; contactEmail?: string | null; claimedByUserId?: string | null; jobPostingsCount?: number }) {
   const { data: session, status: sessionStatus } = useSession();
   const router = useRouter();
   const pathname = usePathname();
@@ -300,7 +301,10 @@ function MarketplaceActions({ companySlug, companyId, companyName, verificationL
       <Link href={`/marketplace/search?category=&companyId=${companyId}`} className="text-xs px-3 py-1.5 bg-white/[0.08] hover:bg-white/[0.12] text-white rounded-lg transition-colors">
         View Service Listings
       </Link>
-      <Link href={`/space-talent?tab=jobs&search=${encodeURIComponent(companyName)}`} className="text-xs px-3 py-1.5 bg-white/[0.08] hover:bg-white/[0.12] text-white rounded-lg transition-colors">
+      <Link
+        href={jobPostingsCount && jobPostingsCount > 0 ? `/company-profiles/${companySlug}?tab=jobs` : `/space-talent?tab=jobs&search=${encodeURIComponent(companyName)}`}
+        className="text-xs px-3 py-1.5 bg-white/[0.08] hover:bg-white/[0.12] text-white rounded-lg transition-colors"
+      >
         Jobs at {companyName}
       </Link>
       <WatchButton companyProfileId={companyId} companyName={companyName} size="md" />
@@ -447,6 +451,7 @@ const TABS = [
   { id: 'space-assets', label: 'Space Assets', icon: '🛰️' },
   { id: 'timeline', label: 'Timeline', icon: '📅' },
   { id: 'news', label: 'News', icon: '📰' },
+  { id: 'jobs', label: 'Jobs', icon: '💼' },
   { id: 'digest', label: 'Weekly Digest', icon: '📊' },
   { id: 'intelligence', label: 'Intelligence', icon: '🧠' },
   { id: 'relationships', label: 'Relationships', icon: '🔗' },
@@ -1063,6 +1068,107 @@ function TimelineTab({ company }: { company: CompanyDetail }) {
 interface NewsItem {
   id: string; title: string; summary: string | null; source: string;
   category: string; url: string; publishedAt: string; imageUrl: string | null;
+}
+
+interface CompanyJobPosting {
+  id: string;
+  title: string;
+  location: string;
+  remoteOk: boolean;
+  employmentType: string | null;
+  seniorityLevel: string;
+  postedDate: string;
+  sourceUrl: string | null;
+}
+
+function JobsTab({ companySlug, companyName }: { companySlug: string; companyName: string }) {
+  const [jobs, setJobs] = useState<CompanyJobPosting[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchJobs() {
+      try {
+        const res = await fetch(`/api/company-profiles/${companySlug}/jobs`);
+        const data = await res.json();
+        setJobs(data.jobs || []);
+      } catch {
+        setJobs([]);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchJobs();
+  }, [companySlug]);
+
+  if (loading) return <div className="flex justify-center py-12"><LoadingSpinner size="lg" /></div>;
+
+  if (jobs.length === 0) {
+    return (
+      <SectionCard title="Open Positions">
+        <p className="text-slate-400 text-center py-8">No open positions listed for {companyName} right now.</p>
+      </SectionCard>
+    );
+  }
+
+  const employmentLabels: Record<string, string> = {
+    full_time: 'Full-time', part_time: 'Part-time', contract: 'Contract', internship: 'Internship',
+  };
+
+  return (
+    <SectionCard title="Open Positions" count={jobs.length}>
+      <div className="space-y-3">
+        {jobs.map((job, i) => {
+          const inner = (
+            <>
+              <div className="flex-1 min-w-0">
+                <h4 className="text-sm font-medium text-white group-hover:text-white transition-colors">
+                  {job.title}
+                </h4>
+                <div className="flex flex-wrap items-center gap-2 mt-1 text-xs text-slate-400">
+                  <span>{job.location}</span>
+                  {job.remoteOk && <span className="px-1.5 py-0.5 rounded bg-white/10 text-white/90">Remote</span>}
+                  {job.employmentType && <span>{employmentLabels[job.employmentType] || job.employmentType}</span>}
+                  <span>{fmtDate(job.postedDate)}</span>
+                </div>
+              </div>
+              {job.sourceUrl && (
+                <svg className="w-4 h-4 text-slate-500 group-hover:text-white mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                </svg>
+              )}
+            </>
+          );
+
+          const className = 'flex items-start gap-3 p-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors group';
+
+          return job.sourceUrl ? (
+            <motion.a
+              key={job.id}
+              href={job.sourceUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: i * 0.03 }}
+              className={className}
+            >
+              {inner}
+            </motion.a>
+          ) : (
+            <motion.div
+              key={job.id}
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: i * 0.03 }}
+              className={className}
+            >
+              {inner}
+            </motion.div>
+          );
+        })}
+      </div>
+    </SectionCard>
+  );
 }
 
 function NewsTab({ companySlug, companyName }: { companySlug: string; companyName: string }) {
@@ -2010,6 +2116,13 @@ export default function CompanyProfileDetailPage() {
   const [showCompletenessDetails, setShowCompletenessDetails] = useState(false);
 
   useEffect(() => {
+    const tabParam = new URLSearchParams(window.location.search).get('tab');
+    if (tabParam && TABS.some(t => t.id === tabParam)) {
+      setActiveTab(tabParam as TabId);
+    }
+  }, []);
+
+  useEffect(() => {
     async function load() {
       try {
         setError(null);
@@ -2320,7 +2433,7 @@ export default function CompanyProfileDetailPage() {
           </div>
 
           {/* Marketplace Actions */}
-          <MarketplaceActions companySlug={params.slug as string} companyId={company.id} companyName={company.name} verificationLevel={(company as any).verificationLevel} contactEmail={(company as any).contactEmail} claimedByUserId={(company as any).claimedByUserId} />
+          <MarketplaceActions companySlug={params.slug as string} companyId={company.id} companyName={company.name} verificationLevel={(company as any).verificationLevel} contactEmail={(company as any).contactEmail} claimedByUserId={(company as any).claimedByUserId} jobPostingsCount={company.jobPostingsCount} />
         </div>
       </motion.div>
 
@@ -2330,7 +2443,7 @@ export default function CompanyProfileDetailPage() {
       {/* Tab Navigation */}
       <div className="card mb-6 overflow-hidden">
         <div className="flex overflow-x-auto scrollbar-hide">
-          {TABS.map(tab => (
+          {TABS.filter(tab => tab.id !== 'jobs' || company.jobPostingsCount > 0).map(tab => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
@@ -2340,6 +2453,9 @@ export default function CompanyProfileDetailPage() {
             >
               <span>{tab.icon}</span>
               <span>{tab.label}</span>
+              {tab.id === 'jobs' && company.jobPostingsCount > 0 && (
+                <span className="text-xs bg-white/[0.08] text-slate-300 px-1.5 py-0.5 rounded-full">{company.jobPostingsCount}</span>
+              )}
               {activeTab === tab.id && (
                 <motion.div
                   layoutId="tab-indicator-company"
@@ -2369,6 +2485,7 @@ export default function CompanyProfileDetailPage() {
           {activeTab === 'space-assets' && <SpaceAssetsTab company={company} />}
           {activeTab === 'timeline' && <TimelineTab company={company} />}
           {activeTab === 'news' && <NewsTab companySlug={company.slug} companyName={company.name} />}
+          {activeTab === 'jobs' && <JobsTab companySlug={company.slug} companyName={company.name} />}
           {activeTab === 'digest' && <DigestTab companyId={company.id} companyName={company.name} />}
           {activeTab === 'intelligence' && <IntelligenceTab company={company} />}
           {activeTab === 'relationships' && <RelationshipsTab company={company} />}

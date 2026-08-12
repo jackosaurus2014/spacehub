@@ -173,8 +173,6 @@ export default function WhatsOverheadPage() {
                           sat.brightness === 'Bright' ? 'text-amber-400' :
                           sat.brightness === 'Dim' ? 'text-slate-300' : 'text-slate-500'
                         }`}>{sat.brightness}</span>
-
-        <RelatedModules modules={PAGE_RELATIONS['whats-overhead']} />
                       </div>
                     </div>
                   ))}
@@ -250,6 +248,8 @@ export default function WhatsOverheadPage() {
             <span className="hidden sm:inline text-white/10">|</span>
             <Link href="/aurora-forecast" className="text-slate-400 hover:text-slate-300 underline underline-offset-2">Aurora Forecast</Link>
           </div>
+
+          <RelatedModules modules={PAGE_RELATIONS['whats-overhead']} />
         </div>
       </div>
     </div>

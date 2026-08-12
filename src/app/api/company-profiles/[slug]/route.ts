@@ -110,6 +110,11 @@ const RELATION_SELECT = {
     orderBy: { type: 'asc' as const },
   },
   scores: true,
+  _count: {
+    select: {
+      jobPostings: { where: { isActive: true } },
+    },
+  },
 };
 
 export async function GET(
@@ -171,6 +176,7 @@ export async function GET(
             company.satelliteAssets = [];
             company.facilities = [];
             company.scores = [];
+            company._count = { jobPostings: 0 };
           }
         } catch (minErr) {
           // Even minimal query failed — real database issue
@@ -261,6 +267,7 @@ export async function GET(
 
     return NextResponse.json({
       ...company,
+      jobPostingsCount: company._count?.jobPostings ?? 0,
       summary: {
         totalContractValue,
         activeSatellites,

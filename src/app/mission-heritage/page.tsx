@@ -1090,8 +1090,6 @@ export default function MissionHeritagePage() {
                       <div>
                         <div className="text-xs text-slate-500 uppercase tracking-wider mb-2">Key Achievement</div>
                         <p className="text-sm text-white/70 leading-relaxed">{mission.keyAchievement}</p>
-
-        <RelatedModules modules={PAGE_RELATIONS['mission-heritage']} />
                       </div>
                     </div>
                   )}
@@ -1193,6 +1191,8 @@ export default function MissionHeritagePage() {
             </div>
           </div>
         </ScrollReveal>
+
+        <RelatedModules modules={PAGE_RELATIONS['mission-heritage']} />
 
         {/* Footer note */}
         <div className="text-center text-xs text-slate-500 py-8">

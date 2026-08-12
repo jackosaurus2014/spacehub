@@ -27,6 +27,13 @@ const PERSONAS = [
     description: 'Funding, deal flow, market intelligence',
     features: ['Funding tracker', 'Company profiles', 'Deal rooms', 'Deal flow database'],
   },
+  {
+    id: 'jobseeker' as Persona,
+    icon: '💼',
+    label: 'Job Seeker & Talent',
+    description: 'Real job listings, salary data, and employer intel — for candidates and recruiters alike',
+    features: ['Live jobs board', 'Salary benchmarks', 'Top employers', 'Company profiles'],
+  },
 ];
 
 /**
@@ -88,17 +95,22 @@ export default function PersonaPicker() {
               </p>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
               {PERSONAS.map((p) => (
                 <button
                   key={p.id}
+                  type="button"
                   onClick={() => handleSelect(p.id)}
                   onMouseEnter={() => setHoveredId(p.id)}
                   onMouseLeave={() => setHoveredId(null)}
-                  className="text-left p-5 rounded-lg border transition-all duration-150"
+                  onFocus={() => setHoveredId(p.id)}
+                  onBlur={() => setHoveredId(null)}
+                  aria-label={`Choose the ${p.label} experience — ${p.description}`}
+                  className="text-left p-5 rounded-lg border transition-all duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
                   style={{
                     background: hoveredId === p.id ? 'var(--bg-hover)' : 'var(--bg-elevated)',
                     borderColor: hoveredId === p.id ? 'var(--accent-primary)' : 'var(--border-subtle)',
+                    outlineColor: 'var(--accent-primary)',
                   }}
                 >
                   <span className="text-2xl block mb-2">{p.icon}</span>

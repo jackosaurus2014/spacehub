@@ -104,8 +104,6 @@ export default function NightSkyGuidePage() {
                     >
                       {item.tool}
                     </Link>
-
-        <RelatedModules modules={PAGE_RELATIONS['night-sky-guide']} />
                   </div>
                 </div>
               ))}
@@ -171,6 +169,8 @@ export default function NightSkyGuidePage() {
               <Link href="/this-day-in-space" className="text-slate-400 hover:text-slate-300 underline underline-offset-2">This Day in Space</Link>
             </div>
           </ScrollReveal>
+
+          <RelatedModules modules={PAGE_RELATIONS['night-sky-guide']} />
         </div>
       </div>
     </div>

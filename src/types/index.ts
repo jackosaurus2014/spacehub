@@ -1720,6 +1720,7 @@ export interface SpaceJobPosting {
   isActive: boolean;
   postedDate: Date;
   sourceUrl: string | null;
+  companyProfile: { slug: string; name: string } | null;
 }
 
 export interface WorkforceTrend {

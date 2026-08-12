@@ -914,8 +914,6 @@ export default function MaterialsDatabasePage() {
                             </span>
                           ))}
                         </div>
-
-        <RelatedModules modules={PAGE_RELATIONS['materials-database']} />
                       </div>
                     </div>
                   )}
@@ -1031,6 +1029,8 @@ export default function MaterialsDatabasePage() {
             </div>
           </div>
         </ScrollReveal>
+
+        <RelatedModules modules={PAGE_RELATIONS['materials-database']} />
 
         {/* Footer note */}
         <div className="text-center text-xs text-slate-500 py-8">

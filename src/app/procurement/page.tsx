@@ -298,8 +298,6 @@ function OpportunityCard({ opp }: { opp: ProcurementOpportunity }) {
             </div>
           )}
         </div>
-
-        <RelatedModules modules={PAGE_RELATIONS['procurement']} />
       </div>
     </div>
   );
@@ -1074,6 +1072,8 @@ function ProcurementContent() {
         <div className="mt-8 text-center text-xs text-slate-600">
           Data sourced from SAM.gov, SBIR.gov, and public government budget documents. Updated periodically.
         </div>
+
+        <RelatedModules modules={PAGE_RELATIONS['procurement']} />
       </div>
     </div>
     </PullToRefresh>

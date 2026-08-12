@@ -144,8 +144,6 @@ export default function SpaceAgenciesPage() {
                   <div className="flex-1 h-6 bg-white/[0.06] rounded-full overflow-hidden relative">
                     <div className="h-full rounded-full bg-gradient-to-r from-blue-600 to-slate-200 transition-all duration-700" style={{ width: `${(a.budget / maxBudget) * 100}%` }} />
                     <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs font-medium text-white/90">{fmtBudget(a.budget)}</span>
-
-        <RelatedModules modules={PAGE_RELATIONS['space-agencies']} />
                   </div>
                 </div>
               ))}
@@ -328,6 +326,8 @@ export default function SpaceAgenciesPage() {
             </div>
           </div>
         </ScrollReveal>
+
+        <RelatedModules modules={PAGE_RELATIONS['space-agencies']} />
 
         <p className="text-center text-xs text-slate-600 mt-8 mb-4">
           Curated reference data compiled from publicly available agency reports and budgets — periodically reviewed. Budget figures are approximate annual estimates in USD: US figures reflect FY2026 appropriations (NASA $24.4B), ESA reflects its 2026 annual budget (&euro;8.26B), and figures for CNSA and other non-transparent programs are independent estimates.

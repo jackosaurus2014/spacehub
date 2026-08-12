@@ -2,7 +2,7 @@
 // Stored in localStorage, synced to server for logged-in users.
 // Controls persona, density, sidebar modules, and per-module layouts.
 
-export type Persona = 'enthusiast' | 'professional' | 'investor';
+export type Persona = 'enthusiast' | 'professional' | 'investor' | 'jobseeker';
 export type Density = 'comfortable' | 'standard' | 'compact';
 
 export interface PanelConfig {
@@ -42,6 +42,10 @@ const PERSONA_SIDEBAR_DEFAULTS: Record<Persona, string[]> = {
     '/mission-control', '/market-intel', '/company-profiles', '/funding-tracker',
     '/startup-directory', '/deal-rooms', '/deal-flow', '/space-tycoon',
   ],
+  jobseeker: [
+    '/mission-control', '/space-talent', '/company-profiles', '/news',
+    '/blog', '/market-intel', '/funding-tracker', '/space-tycoon',
+  ],
 };
 
 /** Default density per persona */
@@ -49,6 +53,7 @@ const PERSONA_DENSITY_DEFAULTS: Record<Persona, Density> = {
   enthusiast: 'comfortable',
   professional: 'standard',
   investor: 'standard',
+  jobseeker: 'standard',
 };
 
 export function getDefaultPreferences(persona: Persona = 'enthusiast'): UserPreferences {

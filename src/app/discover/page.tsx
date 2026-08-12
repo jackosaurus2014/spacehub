@@ -111,7 +111,7 @@ const hiddenGems = [
   { href: '/podcasts', label: 'Space Podcasts', description: '25+ shows in one directory' },
   { href: '/space-stats', label: 'Space Stats', description: '42 stat cards about the industry' },
   { href: '/year-in-review', label: 'Year in Review', description: '2026 platform milestones' },
-  { href: '/space-map', label: 'Industry Map', description: '8 sectors, 30+ companies visualized' },
+  { href: '/ecosystem-map', label: 'Industry Map', description: '8 sectors, 30+ companies visualized' },
 ];
 
 export default function DiscoverPage() {
@@ -182,8 +182,6 @@ export default function DiscoverPage() {
                         {link.label}
                       </Link>
                     ))}
-
-        <RelatedModules modules={PAGE_RELATIONS['discover']} />
                   </div>
                 </div>
               ))}
@@ -228,6 +226,8 @@ export default function DiscoverPage() {
               </Link>
             </div>
           </ScrollReveal>
+
+          <RelatedModules modules={PAGE_RELATIONS['discover']} />
         </div>
       </div>
     </div>

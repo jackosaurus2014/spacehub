@@ -649,8 +649,6 @@ export default function MissionSimulatorPage() {
                                 <h4 className="text-sm font-semibold text-white/90">{phase.label}</h4>
                               </div>
                               <p className="text-xs text-slate-400">{phase.description}</p>
-
-        <RelatedModules modules={PAGE_RELATIONS['mission-simulator']} />
                             </div>
                           </div>
                         ))}
@@ -823,6 +821,8 @@ export default function MissionSimulatorPage() {
             </div>
           </section>
         </ScrollReveal>
+
+        <RelatedModules modules={PAGE_RELATIONS['mission-simulator']} />
       </div>
     </div>
   );

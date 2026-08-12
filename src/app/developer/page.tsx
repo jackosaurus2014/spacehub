@@ -248,8 +248,6 @@ function ApiKeyCard({
               {apiKey.key}
             </code>
             <CopyButton text={apiKey.key} />
-
-        <RelatedModules modules={PAGE_RELATIONS['developer']} />
           </div>
         </div>
       )}
@@ -957,6 +955,8 @@ export default function DeveloperPortalPage() {
             </ScrollReveal>
           </div>
         )}
+
+        <RelatedModules modules={PAGE_RELATIONS['developer']} />
       </div>
     </div>
   );

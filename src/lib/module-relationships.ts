@@ -22,7 +22,7 @@ const MODULES: Record<string, RelatedModuleConfig> = {
   investmentTracker: { name: 'Investment Tracker', description: 'Deal tracking dashboard', href: '/funding-tracker', icon: '📈' },
   dealFlow: { name: 'Deal Flow', description: 'M&A and funding deals', href: '/funding-tracker', icon: '🤝' },
   maTracker: { name: 'M&A Tracker', description: 'Mergers & acquisitions', href: '/funding-tracker', icon: '🔄' },
-  startupTracker: { name: 'Startup Tracker', description: 'Emerging companies', href: '/startup-tracker', icon: '🚀' },
+  startupTracker: { name: 'Startup Tracker', description: 'Emerging companies', href: '/startups', icon: '🚀' },
   reportCards: { name: 'Report Cards', description: 'Company performance grades', href: '/report-cards', icon: '📝' },
   marketMap: { name: 'Market Map', description: 'Industry landscape', href: '/market-intel', icon: '🗺️' },
   ecosystemMap: { name: 'Ecosystem Map', description: 'Industry connections', href: '/ecosystem-map', icon: '🌐' },
@@ -123,7 +123,7 @@ const MODULES: Record<string, RelatedModuleConfig> = {
   // ── Space Environment ──
   spaceEnvironment: { name: 'Space Environment', description: 'Weather & debris', href: '/space-environment', icon: '🌍' },
   spaceWeather: { name: 'Space Weather', description: 'Solar conditions', href: '/space-environment?tab=weather', icon: '☀️' },
-  spaceEvents: { name: 'Space Events', description: 'Industry events', href: '/space-events', icon: '📅' },
+  spaceEvents: { name: 'Space Events', description: 'Industry events', href: '/space-calendar', icon: '📅' },
   earthEvents: { name: 'Earth Events', description: 'NASA EONET disasters', href: '/earth-events', icon: '🌎' },
 
   // ── Enthusiast Guides ──
@@ -139,8 +139,8 @@ const MODULES: Record<string, RelatedModuleConfig> = {
   spaceCalendar: { name: 'Space Calendar', description: 'Key dates 2026', href: '/space-calendar', icon: '📅' },
   spaceEdge: { name: 'Edge Computing', description: 'In-orbit computing', href: '/space-edge-computing', icon: '💻' },
   spaceInvestors: { name: 'Space Investors', description: 'Active investors', href: '/investors', icon: '📈' },
-  spaceMap: { name: 'Space Industry Map', description: 'Industry sector map', href: '/space-map', icon: '🗺️' },
-  startupDirectory: { name: 'Startup Directory', description: 'Space startups', href: '/startup-tracker', icon: '🚀' },
+  spaceMap: { name: 'Space Industry Map', description: 'Industry sector map', href: '/ecosystem-map', icon: '🗺️' },
+  startupDirectory: { name: 'Startup Directory', description: 'Space startups', href: '/startups', icon: '🚀' },
 
   // ── Imagery ──
   imagery: { name: 'Imagery Marketplace', description: 'Satellite imagery', href: '/company-profiles', icon: '📷' },
@@ -160,7 +160,7 @@ const MODULES: Record<string, RelatedModuleConfig> = {
   timeline: { name: 'Timeline', description: 'Space history', href: '/timeline', icon: '⏳' },
   orbitGuide: { name: 'Orbit Guide', description: 'Orbit types', href: '/orbit-guide', icon: '🌀' },
   techReadiness: { name: 'Tech Readiness', description: 'TRL tracker', href: '/tech-readiness', icon: '🔬' },
-  conferences: { name: 'Conferences', description: 'Industry events', href: '/conferences', icon: '🎤' },
+  conferences: { name: 'Conferences', description: 'Industry events', href: '/space-calendar', icon: '🎤' },
   learn: { name: 'Learning Hub', description: 'Educational content', href: '/learn', icon: '📚' },
   acronyms: { name: 'Acronyms', description: 'Space acronyms', href: '/acronyms', icon: '🔤' },
   materialsDB: { name: 'Materials Database', description: 'Space materials', href: '/materials-database', icon: '🧱' },
@@ -191,6 +191,7 @@ export const PAGE_RELATIONS: Record<string, RelatedModuleConfig[]> = {
   'space-score': [MODULES.companyProfiles, MODULES.reportCards, MODULES.companyResearch],
   'executive-moves': [MODULES.companyProfiles, MODULES.news, MODULES.maTracker, MODULES.spaceCapital],
   'space-investors': [MODULES.investors, MODULES.fundingTracker, MODULES.spaceCapital, MODULES.dealFlow],
+  'startups': [MODULES.fundingTracker, MODULES.companyProfiles, MODULES.investors, MODULES.startupTracker, MODULES.spaceCapital],
 
   // ── News & Media cluster ──
   'news': [MODULES.newsDigest, MODULES.aiInsights, MODULES.intelligenceBrief, MODULES.blogs, MODULES.spaceDefense],

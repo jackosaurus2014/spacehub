@@ -258,8 +258,6 @@ function DoseBar({ label, dose, maxDose, color, isCalculated = false }: {
           className={`h-full rounded-full transition-all duration-700 ease-out ${isCalculated ? 'bg-gradient-to-r from-white to-slate-400' : color}`}
           style={{ width: `${width}%` }}
         />
-
-        <RelatedModules modules={PAGE_RELATIONS['radiation-calculator']} />
       </div>
     </div>
   );
@@ -1039,6 +1037,8 @@ export default function RadiationCalculatorPage() {
           </div>
         </div>
         </ScrollReveal>
+
+        <RelatedModules modules={PAGE_RELATIONS['radiation-calculator']} />
       </div>
     </div>
   );

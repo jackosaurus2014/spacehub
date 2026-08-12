@@ -600,8 +600,6 @@ export default function MissionStatsPage() {
                           className="h-full rounded-full bg-gradient-to-r from-slate-200 to-blue-500 transition-all duration-700"
                           style={{ width: `${widthPct}%` }}
                         />
-
-        <RelatedModules modules={PAGE_RELATIONS['mission-stats']} />
                       </div>
                     </div>
                   );
@@ -683,6 +681,8 @@ export default function MissionStatsPage() {
             slightly between reporting agencies.
           </p>
         </ScrollReveal>
+
+        <RelatedModules modules={PAGE_RELATIONS['mission-stats']} />
       </div>
     </main>
   );

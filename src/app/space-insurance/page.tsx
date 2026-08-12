@@ -529,8 +529,6 @@ function MarketYearCard({
             Largest Claim: <span className="text-red-400 font-medium">{formatCurrency(year.largestClaim)}</span>
           </span>
         )}
-
-        <RelatedModules modules={PAGE_RELATIONS['space-insurance']} />
       </div>
     </div>
   );
@@ -1787,6 +1785,8 @@ function DynamicInsuranceContent() {
           </div>
         </ScrollReveal>
       )}
+
+      <RelatedModules modules={PAGE_RELATIONS['space-insurance']} />
     </div>
   );
 }

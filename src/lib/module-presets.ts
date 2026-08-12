@@ -59,6 +59,16 @@ export const PERSONA_MODULE_PRESETS: Record<Persona, string[]> = {
     'orbital-management',
     'solar-exploration',
   ],
+  jobseeker: [
+    'mission-control',
+    'business-opportunities',
+    'news-feed',
+    'blogs-articles',
+    'market-intel',
+    'regulatory-hub',
+    'satellite-tracker',
+    'launch-windows',
+  ],
 };
 
 export const PRESET_STORAGE_KEY = 'spacenexus-home-modules';

@@ -826,8 +826,6 @@ function MiningBodyCard({ body }: { body: MiningBody }) {
                 {resource}: {percent}%
               </span>
             ))}
-
-        <RelatedModules modules={PAGE_RELATIONS['space-mining']} />
           </div>
         </div>
       )}
@@ -1803,6 +1801,8 @@ function SpaceMiningContent() {
         </div>
       </div>
       </ScrollReveal>
+
+      <RelatedModules modules={PAGE_RELATIONS['space-mining']} />
     </div>
   );
 }

@@ -870,8 +870,6 @@ function ActiveStationCard({ station }: { station: SpaceStation }) {
                 ))}
               </tbody>
             </table>
-
-        <RelatedModules modules={PAGE_RELATIONS['space-stations']} />
           </div>
         </div>
       )}
@@ -1748,6 +1746,8 @@ export default function SpaceStationTrackerPage() {
             </Link>
           </div>
         </div>
+
+        <RelatedModules modules={PAGE_RELATIONS['space-stations']} />
       </div>
     </div>
   );

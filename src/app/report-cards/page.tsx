@@ -5,8 +5,6 @@ import Link from 'next/link';
 import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import ExportPDFButton from '@/components/ui/ExportPDFButton';
-import RelatedModules from '@/components/ui/RelatedModules';
-import { PAGE_RELATIONS } from '@/lib/module-relationships';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -18,6 +16,8 @@ type SortKey = 'grade' | 'revenue' | 'company';
 
 interface CompanyReportCard {
   company: string;
+  /** Slug on /company-profiles/{slug} — omit when no verified profile exists. */
+  profileSlug?: string;
   ticker: string;
   grade: Grade;
   sector: Sector;
@@ -132,6 +132,7 @@ function gradeLetterMatch(grade: Grade, range: GradeRange): boolean {
 const REPORT_CARDS: CompanyReportCard[] = [
   {
     company: 'SpaceX',
+    profileSlug: 'spacex',
     ticker: 'Private',
     grade: 'A+',
     sector: 'Launch',
@@ -158,6 +159,7 @@ const REPORT_CARDS: CompanyReportCard[] = [
   },
   {
     company: 'Rocket Lab',
+    profileSlug: 'rocket-lab',
     ticker: 'RKLB',
     grade: 'A',
     sector: 'Launch',
@@ -184,6 +186,7 @@ const REPORT_CARDS: CompanyReportCard[] = [
   },
   {
     company: 'L3Harris Technologies',
+    profileSlug: 'l3harris-technologies',
     ticker: 'LHX',
     grade: 'B+',
     sector: 'Defense & Prime',
@@ -210,6 +213,7 @@ const REPORT_CARDS: CompanyReportCard[] = [
   },
   {
     company: 'Northrop Grumman',
+    profileSlug: 'northrop-grumman',
     ticker: 'NOC',
     grade: 'B+',
     sector: 'Defense & Prime',
@@ -236,6 +240,7 @@ const REPORT_CARDS: CompanyReportCard[] = [
   },
   {
     company: 'Boeing Space',
+    profileSlug: 'boeing',
     ticker: 'BA',
     grade: 'C+',
     sector: 'Defense & Prime',
@@ -263,6 +268,7 @@ const REPORT_CARDS: CompanyReportCard[] = [
   },
   {
     company: 'Blue Origin',
+    profileSlug: 'blue-origin',
     ticker: 'Private',
     grade: 'B-',
     sector: 'Launch',
@@ -290,6 +296,7 @@ const REPORT_CARDS: CompanyReportCard[] = [
   },
   {
     company: 'Planet Labs',
+    profileSlug: 'planet-labs',
     ticker: 'PL',
     grade: 'B+',
     sector: 'Satellite & EO',
@@ -316,6 +323,7 @@ const REPORT_CARDS: CompanyReportCard[] = [
   },
   {
     company: 'Vantor (fmr. Maxar)',
+    profileSlug: 'maxar-technologies',
     ticker: 'Private (Advent)',
     grade: 'B+',
     sector: 'Satellite & EO',
@@ -342,6 +350,7 @@ const REPORT_CARDS: CompanyReportCard[] = [
   },
   {
     company: 'Relativity Space',
+    profileSlug: 'relativity-space',
     ticker: 'Private',
     grade: 'B-',
     sector: 'Launch',
@@ -369,6 +378,7 @@ const REPORT_CARDS: CompanyReportCard[] = [
   },
   {
     company: 'Astra Space',
+    profileSlug: 'astra-space',
     ticker: 'Private',
     grade: 'D+',
     sector: 'Launch',
@@ -395,6 +405,7 @@ const REPORT_CARDS: CompanyReportCard[] = [
   },
   {
     company: 'Virgin Galactic',
+    profileSlug: 'virgin-galactic',
     ticker: 'SPCE',
     grade: 'C-',
     sector: 'Tourism',
@@ -421,6 +432,7 @@ const REPORT_CARDS: CompanyReportCard[] = [
   },
   {
     company: 'Iridium Communications',
+    profileSlug: 'iridium-communications',
     ticker: 'IRDM',
     grade: 'A-',
     sector: 'Communications',
@@ -448,6 +460,7 @@ const REPORT_CARDS: CompanyReportCard[] = [
   },
   {
     company: 'SES',
+    profileSlug: 'ses',
     ticker: 'SES (EPA)',
     grade: 'B+',
     sector: 'Communications',
@@ -474,6 +487,7 @@ const REPORT_CARDS: CompanyReportCard[] = [
   },
   {
     company: 'Telesat',
+    profileSlug: 'telesat',
     ticker: 'TSAT',
     grade: 'C',
     sector: 'Communications',
@@ -500,6 +514,7 @@ const REPORT_CARDS: CompanyReportCard[] = [
   },
   {
     company: 'Axiom Space',
+    profileSlug: 'axiom-space',
     ticker: 'Private',
     grade: 'B',
     sector: 'Space Station',
@@ -732,8 +747,6 @@ export default function ReportCardsPage() {
                     <div className="text-xs text-slate-400 truncate">{leader.sector}</div>
                     <div className="text-sm font-semibold text-white truncate">{leader.company}</div>
                     <span className={`text-xs font-bold ${getGradeColor(leader.grade)}`}>{leader.grade}</span>
-
-        <RelatedModules modules={PAGE_RELATIONS['report-cards']} />
                   </div>
                 </div>
               ))}
@@ -818,8 +831,27 @@ export default function ReportCardsPage() {
                     {/* Company Info */}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <h3 className="text-lg sm:text-xl font-bold text-white truncate">{card.company}</h3>
+                        {card.profileSlug ? (
+                          <Link
+                            href={`/company-profiles/${card.profileSlug}`}
+                            onClick={(e) => e.stopPropagation()}
+                            className="text-lg sm:text-xl font-bold text-white truncate hover:text-cyan-400 underline-offset-2 hover:underline transition-colors"
+                          >
+                            {card.company}
+                          </Link>
+                        ) : (
+                          <h3 className="text-lg sm:text-xl font-bold text-white truncate">{card.company}</h3>
+                        )}
                         <span className="text-xs text-slate-500 font-mono">{card.ticker}</span>
+                        {card.profileSlug && (
+                          <Link
+                            href={`/company-profiles/${card.profileSlug}?tab=jobs`}
+                            onClick={(e) => e.stopPropagation()}
+                            className="text-xs text-slate-500 hover:text-cyan-400 underline-offset-2 hover:underline transition-colors"
+                          >
+                            View jobs
+                          </Link>
+                        )}
                       </div>
                       <div className="flex items-center gap-3 mt-1 flex-wrap">
                         <span className="text-xs text-slate-400 flex items-center gap-1">

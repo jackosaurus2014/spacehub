@@ -272,7 +272,7 @@ export default function CityPage({ params }: Props) {
         <RelatedModules modules={[
           { name: 'Market Intelligence', description: 'Industry analysis & trends', href: '/market-intel', icon: '📊' },
           { name: 'Company Profiles', description: 'Space industry directory', href: '/company-profiles', icon: '🏢' },
-          { name: 'Space Industry Map', description: 'Industry sector map', href: '/space-map', icon: '🗺️' },
+          { name: 'Space Industry Map', description: 'Industry sector map', href: '/ecosystem-map', icon: '🗺️' },
           { name: 'Industry Trends', description: 'Trend analysis', href: '/industry-trends', icon: '📈' },
         ]} />
 

@@ -663,8 +663,6 @@ export default function SpaceTimelinePage() {
                       <div className="flex justify-end">
                         <div className="max-w-md w-full">
                           <TimelineCard event={event} side="left" index={idx} />
-
-        <RelatedModules modules={PAGE_RELATIONS['timeline']} />
                         </div>
                       </div>
                     ) : (
@@ -775,6 +773,8 @@ export default function SpaceTimelinePage() {
           </div>
         </section>
       </ScrollReveal>
+
+      <RelatedModules modules={PAGE_RELATIONS['timeline']} />
     </div>
   );
 }

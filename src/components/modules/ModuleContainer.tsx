@@ -89,6 +89,7 @@ const PERSONA_VIEW_LABELS: Record<string, string> = {
   enthusiast: 'Enthusiast view',
   professional: 'Professional view',
   investor: 'Investor view',
+  jobseeker: 'Job Seeker & Talent view',
 };
 
 function getTierInfo(moduleId: string): { label: string; color: string; bgColor: string; dotColor: string } {

@@ -28,6 +28,7 @@ import ExportButton from '@/components/ui/ExportButton';
 import AdSlot from '@/components/ads/AdSlot';
 import PullToRefresh from '@/components/ui/PullToRefresh';
 import ItemListSchema from '@/components/seo/ItemListSchema';
+import { getCompanyProfileUrl } from '@/lib/company-links';
 import { useSwipeTabs } from '@/hooks/useSwipeTabs';
 import { clientLogger } from '@/lib/client-logger';
 import {
@@ -174,7 +175,17 @@ function JobCard({ job }: { job: SpaceJobPosting }) {
             {job.title}
           </h3>
           <div className="flex items-center gap-2 mt-0.5">
-            <p className="text-slate-400 text-sm">{job.company}</p>
+            {job.companyProfile ? (
+              <Link
+                href={`/company-profiles/${job.companyProfile.slug}`}
+                onClick={(e) => e.stopPropagation()}
+                className="text-slate-400 text-sm hover:text-cyan-400 underline-offset-2 hover:underline transition-colors"
+              >
+                {job.company}
+              </Link>
+            ) : (
+              <p className="text-slate-400 text-sm">{job.company}</p>
+            )}
             <Link
               href={`/market-intel?search=${encodeURIComponent(job.company)}`}
               onClick={(e) => e.stopPropagation()}
@@ -226,8 +237,6 @@ function JobCard({ job }: { job: SpaceJobPosting }) {
           )}
         </div>
         <span className="text-xs text-slate-400">{daysAgo(job.postedDate)}</span>
-
-        <RelatedModules modules={PAGE_RELATIONS['space-talent']} />
       </div>
     </div>
   );
@@ -992,12 +1001,16 @@ function TopEmployersSection() {
                   <span className="text-lg font-bold text-slate-500 w-6 text-right">{idx + 1}</span>
                   <div>
                     <div className="flex items-center gap-2">
-                      <Link
-                        href={`/company-profiles/${employer.company.toLowerCase().replace(/[\s\/]+/g, '-').replace(/[^a-z0-9-]/g, '')}`}
-                        className="text-white font-semibold hover:text-white/90 transition-colors"
-                      >
-                        {employer.company}
-                      </Link>
+                      {getCompanyProfileUrl(employer.company) ? (
+                        <Link
+                          href={getCompanyProfileUrl(employer.company)!}
+                          className="text-white font-semibold hover:text-white/90 transition-colors"
+                        >
+                          {employer.company}
+                        </Link>
+                      ) : (
+                        <span className="text-white font-semibold">{employer.company}</span>
+                      )}
                       <span className={`text-xs font-medium px-1.5 py-0.5 rounded ${tc.bg} ${tc.text} border ${tc.border}`}>
                         {tc.label}
                       </span>
@@ -2410,6 +2423,10 @@ function SpaceTalentHubContent() {
                       </button>
                     </div>
                   )}
+
+                  <div className="mt-10">
+                    <RelatedModules modules={PAGE_RELATIONS['space-talent']} />
+                  </div>
 
                   {/* Inline newsletter capture — job seekers are repeat visitors */}
                   <div className="mt-10">

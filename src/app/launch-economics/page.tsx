@@ -591,8 +591,6 @@ export default function LaunchEconomicsPage() {
                       <span>{vehicle.reusable ? 'Reusable' : 'Expendable'}</span>
                       <span>{vehicle.provider}</span>
                     </div>
-
-        <RelatedModules modules={PAGE_RELATIONS['launch-economics']} />
                   </div>
                 </div>
               );
@@ -972,6 +970,8 @@ export default function LaunchEconomicsPage() {
             </a>
           </div>
         </section>
+
+        <RelatedModules modules={PAGE_RELATIONS['launch-economics']} />
 
         {/* Data disclaimer */}
         <p className="text-xs text-slate-600 text-center mt-8 mb-4">

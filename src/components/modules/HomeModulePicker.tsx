@@ -19,10 +19,11 @@ const PERSONA_LABELS: Record<Persona, string> = {
   enthusiast: 'Enthusiast',
   professional: 'Professional',
   investor: 'Investor',
+  jobseeker: 'Job Seeker & Talent',
 };
 
 function isKnownPersona(id: string | null): id is Persona {
-  return id === 'enthusiast' || id === 'professional' || id === 'investor';
+  return id === 'enthusiast' || id === 'professional' || id === 'investor' || id === 'jobseeker';
 }
 
 function arraysEqual(a: string[], b: string[]): boolean {
