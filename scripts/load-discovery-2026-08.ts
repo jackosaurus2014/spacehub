@@ -161,7 +161,9 @@ const NEW_COMPANIES: NewCompanyInfo[] = [
   { name: 'SkyFi', description: 'AI-powered Earth-intelligence platform offering on-demand satellite imagery tasking.', country: 'US', headquarters: 'Austin, TX, US', sector: 'analytics', dataCompleteness: 25 },
   { name: 'Ravee Optics', description: 'Developer of meta-optics for compact laser-communication terminals.', country: 'US', headquarters: 'Dayton, OH, US', foundedYear: 2024, sector: 'comms', dataCompleteness: 25 },
   { name: 'Diffraqtion', description: 'Developer of quantum-camera satellite payloads; an MIT/UMD spinout.', country: 'US', sector: 'analytics', dataCompleteness: 25 },
-  { name: 'BlueStar Optical Domain', description: 'Developer of laser inter-satellite links for Chinese megaconstellations.', country: 'CN', headquarters: 'Shanghai, CN', sector: 'comms', dataCompleteness: 25 },
+  // 'BlueStar Optical Domain' removed 2026-08-12: company name could not be
+  // corroborated (the cited SpaceNews article is real but never names the firm
+  // in any accessible source). Deleted from prod; do not re-seed.
   // Dataset lists dual HQ/country "Los Angeles/Tokyo, US-JP"; first-listed location (US) used for the ISO-2 country field.
   { name: 'GITAI', description: 'Developer of space labor robots for stations, lunar surface operations, and satellite servicing.', country: 'US', headquarters: 'Los Angeles, CA, US / Tokyo, Japan', sector: 'robotics', dataCompleteness: 25 },
 
@@ -244,7 +246,7 @@ const NEW_COMPANY_ROUNDS: RoundInput[] = [
   { companyName: 'SkyFi', date: '2026-01-14', amount: 12_700_000, seriesLabel: 'Series A', roundType: 'equity', leadInvestor: 'Buoyant Ventures / IronGate', source: 'SkyFi', sourceUrl: 'https://skyfi.com/en/press/skyfi-series-a-12-7-million-2026' },
   { companyName: 'Ravee Optics', date: '2026-07-13', amount: 6_000_000, seriesLabel: 'Seed', roundType: 'equity', leadInvestor: 'BIG Global Investment JSC', source: 'Fundraise Insider', sourceUrl: 'https://fundraiseinsider.com/blog/ravee-optics-raises-6m-seed-for-satellite-laser-terminals/' },
   { companyName: 'Diffraqtion', date: '2026-01-13', amount: 4_200_000, seriesLabel: 'Pre-Seed', roundType: 'equity', leadInvestor: 'QDNL Participations', source: 'The Quantum Insider', sourceUrl: 'https://thequantuminsider.com/2026/01/13/diffraqtion-raises-4-2-million-to-build-quantum-camera-enabled-satellite-and-telescope-constellations/' },
-  { companyName: 'BlueStar Optical Domain', date: '2026-03-01', amount: 70_000_000, seriesLabel: 'Series C', roundType: 'equity', notes: 'Date precision is month-only per source; no single lead investor named.', source: 'SpaceNews', sourceUrl: 'https://spacenews.com/large-series-c-signals-scale-up-of-chinas-laser-satellite-communications-sector/' },
+  // BlueStar Optical Domain round removed — see note in COMPANY_INFO above.
   { companyName: 'GITAI', date: '2024-11-13', amount: 15_500_000, seriesLabel: 'Round', roundType: 'equity', notes: "Series label not specified in source; transcribed literally as 'Round'. No single lead investor named.", source: 'GITAI', sourceUrl: 'https://gitai.tech/news' },
 
   { companyName: 'The Exploration Company', date: '2024-11-01', amount: 160_000_000, seriesLabel: 'Series B', roundType: 'equity', leadInvestor: 'Balderton Capital / Plural', notes: 'Date precision is month-only per source; sourceUrl unverified.', source: 'TechFundingNews / Balderton (press reporting)', sourceUrl: null },
