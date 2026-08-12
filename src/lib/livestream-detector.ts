@@ -44,7 +44,12 @@ export interface ActiveLiveStream {
 
 interface SpaceChannel {
   name: string;
+  /** YouTube channel ID (UC...). Optional when `handle` is provided. */
   channelId: string;
+  /** YouTube @handle — used to build /streams URLs when channelId is empty.
+   *  Unknown/wrong handles 404 and fail silently, so handle-based entries
+   *  are safe to add without verifying the opaque channel ID. */
+  handle?: string;
   /** X (Twitter) handle for this channel (without @) */
   xHandle: string;
   /** Lower number = higher priority. Channels with priority <= 3 get
@@ -65,11 +70,21 @@ const SPACE_CHANNELS: SpaceChannel[] = [
   { name: 'Space Videos',        channelId: 'UCakgsb0w7QB0VHdnCc0CCFA', xHandle: '',                  priority: 3 },
   { name: 'Scott Manley',        channelId: 'UCxzC4EngIsMrPmbm6Nxvb-A', xHandle: 'DJSnM',            priority: 4 },
   { name: 'Marcus House',        channelId: 'UCBNHHEoiSF8pcLgqLKVugOw', xHandle: 'MarcusHouseLive',  priority: 4 },
+  // Handle-based entries — broaden coverage of launch/webcast activity.
+  // (Handles verified 2026-08: og:title matches the intended channel.)
+  { name: 'Avid Space',          channelId: '', handle: 'LabPadre',            xHandle: 'LabPadre',       priority: 2 },
+  { name: 'Spaceflight Now',     channelId: '', handle: 'SpaceflightNowVideo', xHandle: 'SpaceflightNow', priority: 2 },
+  { name: 'The Launch Pad',      channelId: '', handle: 'TheLaunchPad',        xHandle: '',               priority: 3 },
+  { name: 'VideoFromSpace',      channelId: '', handle: 'VideoFromSpace',      xHandle: '',               priority: 3 },
+  { name: 'Arianespace',         channelId: '', handle: 'arianespace',         xHandle: 'Arianespace',    priority: 3 },
+  { name: 'Firefly Aerospace',   channelId: '', handle: 'FireflySpace',        xHandle: 'Firefly_Space',  priority: 4 },
+  { name: 'Axiom Space',         channelId: '', handle: 'AxiomSpace',          xHandle: 'Axiom_Space',    priority: 4 },
 ];
 
-/** Map channelId -> channel name for fast lookups. */
+/** Map channelId -> channel name for fast lookups. Handle-only entries have
+ *  no channelId and must NOT share the '' key (it would mislabel them all). */
 const CHANNEL_NAME_MAP = new Map<string, string>(
-  SPACE_CHANNELS.map((ch) => [ch.channelId, ch.name]),
+  SPACE_CHANNELS.filter((ch) => ch.channelId).map((ch) => [ch.channelId, ch.name]),
 );
 
 /** High-priority threshold -- channels at or below this priority get
@@ -219,9 +234,10 @@ function toActiveLiveStreams(
       detail?.liveStreamingDetails?.actualStartTime ??
       item.snippet.publishedAt;
 
-    // Prefer our known channel name if available
+    // Prefer our known channel name if available (never key on empty ids)
     const channelName =
-      CHANNEL_NAME_MAP.get(item.snippet.channelId) ?? item.snippet.channelTitle;
+      (item.snippet.channelId && CHANNEL_NAME_MAP.get(item.snippet.channelId)) ||
+      item.snippet.channelTitle;
 
     return {
       videoId,
@@ -246,25 +262,165 @@ function toActiveLiveStreams(
 // Free RSS/page-based livestream detection (no API quota cost)
 // ---------------------------------------------------------------------------
 
+const SCRAPE_HEADERS = {
+  'User-Agent': 'Mozilla/5.0 (compatible; SpaceNexus/2.0)',
+  'Accept-Language': 'en-US,en;q=0.9',
+};
+
+function channelBaseUrl(channel: SpaceChannel): string | null {
+  if (channel.channelId) return `https://www.youtube.com/channel/${channel.channelId}`;
+  if (channel.handle) return `https://www.youtube.com/@${channel.handle}`;
+  return null;
+}
+
+function decodeYtTitle(title: string): string {
+  return title.replace(/\\u0026/g, '&').replace(/\\"/g, '"');
+}
+
 /**
- * Check a YouTube channel's /live page for active livestreams.
- * This is FREE — no API quota used. We fetch the channel page HTML
- * and look for live broadcast indicators.
+ * Verify a fetched YouTube page actually belongs to the intended channel.
+ * Nonexistent handles make YouTube serve a discovery/suggestions page full of
+ * unrelated live videos — scraping those would mislabel third-party streams
+ * as the registry channel.
+ */
+function pageMatchesChannel(html: string, channel: SpaceChannel): boolean {
+  if (channel.channelId) {
+    return html.includes(`"channelId":"${channel.channelId}"`) ||
+           html.includes(`"externalId":"${channel.channelId}"`);
+  }
+  if (channel.handle) {
+    const needle = `"canonicalBaseUrl":"/@${channel.handle.toLowerCase()}"`;
+    return html.toLowerCase().includes(needle.toLowerCase());
+  }
+  return false;
+}
+
+/**
+ * Verify video ownership via YouTube's oEmbed endpoint (free, no API quota).
+ * Returns the video's clean title when the author matches the expected
+ * channel, or null when it belongs to someone else / is unavailable.
+ * Guards against YouTube fallback shelves that surface third-party videos
+ * on sparse channel pages.
+ */
+async function verifyVideoOwner(
+  videoId: string,
+  channel: SpaceChannel,
+): Promise<string | null> {
+  try {
+    const res = await fetch(
+      `https://www.youtube.com/oembed?url=https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3D${videoId}&format=json`,
+      { signal: AbortSignal.timeout(6000), headers: SCRAPE_HEADERS },
+    );
+    if (!res.ok) return null;
+    const data = (await res.json()) as { title?: string; author_name?: string; author_url?: string };
+
+    const authorUrl = (data.author_url || '').toLowerCase();
+    const authorName = (data.author_name || '').toLowerCase();
+
+    const matches =
+      (channel.channelId && authorUrl.includes(`/channel/${channel.channelId.toLowerCase()}`)) ||
+      (channel.handle && authorUrl.includes(`/@${channel.handle.toLowerCase()}`)) ||
+      authorName === channel.name.toLowerCase();
+
+    return matches ? (data.title || null) : null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Check a YouTube channel's /streams tab for ALL currently-live broadcasts.
+ * FREE — no API quota used. Unlike the /live redirect (which only ever
+ * surfaces one stream), the /streams tab lists every broadcast, so a
+ * channel's 24/7 stream can't shadow its launch coverage.
+ */
+async function checkChannelStreamsTab(channel: SpaceChannel): Promise<YouTubeSearchItem[]> {
+  const base = channelBaseUrl(channel);
+  if (!base) return [];
+
+  try {
+    const res = await fetch(`${base}/streams`, {
+      signal: AbortSignal.timeout(8000),
+      headers: SCRAPE_HEADERS,
+    });
+    if (!res.ok) return [];
+
+    const html = await res.text();
+
+    // Reject fallback/suggestion pages served for unknown handles.
+    if (!pageMatchesChannel(html, channel)) return [];
+
+    // The tab HTML embeds one videoRenderer JSON blob per video. A live
+    // broadcast carries a LIVE badge inside its own renderer block.
+    const chunks = html.split('"videoRenderer":{"videoId":"').slice(1);
+    const items: YouTubeSearchItem[] = [];
+
+    for (const chunk of chunks) {
+      if (items.length >= 4) break; // sanity cap per channel
+
+      const videoId = chunk.slice(0, 11);
+      if (!/^[a-zA-Z0-9_-]{11}$/.test(videoId)) continue;
+
+      // Scope the LIVE-badge check to this renderer's own block.
+      const block = chunk.slice(0, chunk.indexOf('"videoRenderer"') === -1
+        ? chunk.length
+        : chunk.indexOf('"videoRenderer"'));
+      const isLive = block.includes('"style":"LIVE"') ||
+                     block.includes('"iconType":"LIVE"');
+      if (!isLive) continue;
+
+      // A channel's own tab renders its videos WITHOUT a byline; suggested /
+      // related videos carry one. Skip bylined blocks — they belong to other
+      // channels and would be mislabeled.
+      if (block.includes('"longBylineText"') || block.includes('"shortBylineText"')) continue;
+
+      // Ownership check: YouTube renders fallback/suggestion shelves on
+      // sparse channel pages, so confirm the video really belongs to this
+      // channel (oEmbed — free) and take the clean title from the same call.
+      const verifiedTitle = await verifyVideoOwner(videoId, channel);
+      if (verifiedTitle === null) continue;
+
+      items.push({
+        id: { videoId },
+        snippet: {
+          channelId: channel.channelId,
+          channelTitle: channel.name,
+          title: verifiedTitle,
+          thumbnails: {
+            high: { url: `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg` },
+          },
+          publishedAt: new Date().toISOString(),
+        },
+      });
+    }
+
+    return items;
+  } catch {
+    // Silently fail — channel page might be unreachable
+    return [];
+  }
+}
+
+/**
+ * Fallback: check a channel's /live redirect page (single stream only).
+ * Used when the /streams tab yielded nothing for a high-priority channel.
  */
 async function checkChannelLivePage(channel: SpaceChannel): Promise<YouTubeSearchItem[]> {
+  const base = channelBaseUrl(channel);
+  if (!base) return [];
+
   try {
-    const url = `https://www.youtube.com/channel/${channel.channelId}/live`;
-    const res = await fetch(url, {
+    const res = await fetch(`${base}/live`, {
       signal: AbortSignal.timeout(8000),
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (compatible; SpaceNexus/2.0)',
-        'Accept-Language': 'en-US,en;q=0.9',
-      },
+      headers: SCRAPE_HEADERS,
     });
 
     if (!res.ok) return [];
 
     const html = await res.text();
+
+    // Reject fallback/suggestion pages served for unknown handles.
+    if (!pageMatchesChannel(html, channel)) return [];
 
     // Look for live broadcast indicators in the page HTML
     const isLive = html.includes('"isLiveBroadcast":true') ||
@@ -280,9 +436,15 @@ async function checkChannelLivePage(channel: SpaceChannel): Promise<YouTubeSearc
 
     const videoId = videoIdMatch[1];
 
-    // Extract the title
-    const titleMatch = html.match(/"title":"([^"]+)"/);
-    const title = titleMatch ? titleMatch[1] : `${channel.name} Live`;
+    // Extract the video title (prefer the runs-format title over the first
+    // bare "title" key, which is often channel metadata)
+    const runsTitleMatch = html.match(/"title":\{"runs":\[\{"text":"((?:[^"\\]|\\.)*)"/);
+    const bareTitleMatch = html.match(/"title":"([^"]+)"/);
+    const title = runsTitleMatch
+      ? decodeYtTitle(runsTitleMatch[1])
+      : bareTitleMatch
+        ? decodeYtTitle(bareTitleMatch[1])
+        : `${channel.name} Live`;
 
     // Extract thumbnail
     const thumbMatch = html.match(/"thumbnail":\{"thumbnails":\[\{"url":"([^"]+)"/);
@@ -293,7 +455,7 @@ async function checkChannelLivePage(channel: SpaceChannel): Promise<YouTubeSearc
       snippet: {
         channelId: channel.channelId,
         channelTitle: channel.name,
-        title: title.replace(/\\u0026/g, '&').replace(/\\"/g, '"'),
+        title,
         thumbnails: {
           high: { url: thumbnail },
         },
@@ -310,14 +472,25 @@ async function checkChannelLivePage(channel: SpaceChannel): Promise<YouTubeSearc
 // Primary detection: Free page scraping + optional YouTube API
 // ---------------------------------------------------------------------------
 
-async function detectViaYouTubeAPI(apiKey: string): Promise<ActiveLiveStream[]> {
+async function detectViaYouTube(apiKey: string | undefined): Promise<ActiveLiveStream[]> {
   // ═══════════════════════════════════════════════════════════════════
-  // STEP 1 (FREE): Check all channel /live pages — zero quota cost
-  // This catches 24/7 streams like NASA ISS and any active broadcasts
+  // STEP 1 (FREE): Scrape every channel's /streams tab — zero quota cost.
+  // Catches ALL concurrent broadcasts per channel (24/7 streams can no
+  // longer shadow launch coverage). Runs with or without an API key.
   // ═══════════════════════════════════════════════════════════════════
-  const pageCheckPromises = SPACE_CHANNELS.map((ch) => checkChannelLivePage(ch));
-  const pageResults = await Promise.all(pageCheckPromises);
-  const pageItems = pageResults.flat();
+  const tabResults = await Promise.all(SPACE_CHANNELS.map((ch) => checkChannelStreamsTab(ch)));
+  let pageItems = tabResults.flat();
+
+  // Fallback: for high-priority channels the /streams tab missed entirely,
+  // try the /live redirect page (some channel layouts differ).
+  const foundChannels = new Set(pageItems.map((i) => i.snippet.channelTitle));
+  const missedHighPriority = SPACE_CHANNELS.filter(
+    (ch) => ch.priority <= 2 && !foundChannels.has(ch.name),
+  );
+  if (missedHighPriority.length > 0) {
+    const liveResults = await Promise.all(missedHighPriority.map((ch) => checkChannelLivePage(ch)));
+    pageItems = [...pageItems, ...liveResults.flat()];
+  }
 
   logger.info('[LivestreamDetector] Free page check complete', {
     checked: SPACE_CHANNELS.length,
@@ -328,11 +501,10 @@ async function detectViaYouTubeAPI(apiKey: string): Promise<ActiveLiveStream[]> 
   // ═══════════════════════════════════════════════════════════════════
   // STEP 2 (PAID, CONSERVATIVE): One single broad YouTube API search
   // Only if the free check found nothing — catches non-registered channels
-  // Cost: 100 units per call. At 10-min intervals = 144/day = 14,400 units
-  // We only do this if we haven't found anything via free checks.
+  // Cost: 100 units per call.
   // ═══════════════════════════════════════════════════════════════════
   let apiItems: YouTubeSearchItem[] = [];
-  if (pageItems.length === 0) {
+  if (pageItems.length === 0 && apiKey) {
     apiItems = await youtubeSearchLive(apiKey, {
       q: 'NASA ISS live OR space launch live',
       maxResults: '5',
@@ -354,19 +526,23 @@ async function detectViaYouTubeAPI(apiKey: string): Promise<ActiveLiveStream[]> 
     return [];
   }
 
-  // Step 3: Get viewer counts and start times
+  // Step 3: Get viewer counts and start times (enrichment — needs API key)
   const videoIds = uniqueItems.map((item) => item.id.videoId);
-  const videoDetails = await youtubeVideoDetails(apiKey, videoIds);
+  const videoDetails = apiKey
+    ? await youtubeVideoDetails(apiKey, videoIds)
+    : new Map<string, YouTubeVideoItem>();
 
-  // Step 4: Convert and filter — only keep videos that are ACTUALLY live
-  // The page scraper can return stale videos that are no longer streaming.
-  // A video is confirmed live if it has concurrentViewers in liveStreamingDetails.
-  // Videos with 0 concurrent viewers or no liveStreamingDetails are likely ended.
+  // Step 4: Convert and filter. The page scraper can return stale videos, so
+  // when the details lookup SUCCEEDED we require concurrentViewers as proof
+  // of an active stream. When the lookup failed or no key is configured we
+  // keep the page-scraped items (the page itself flagged them LIVE) rather
+  // than filtering everything out on an API hiccup.
   const allStreams = toActiveLiveStreams(uniqueItems, videoDetails);
+  const detailsAvailable = videoDetails.size > 0;
 
   const confirmedLive = allStreams.filter((stream) => {
+    if (!detailsAvailable) return true;
     const detail = videoDetails.get(stream.videoId);
-    // Must have liveStreamingDetails with concurrentViewers to be confirmed live
     if (!detail?.liveStreamingDetails?.concurrentViewers) {
       logger.info('[LivestreamDetector] Filtering out non-live video', {
         videoId: stream.videoId,
@@ -377,15 +553,15 @@ async function detectViaYouTubeAPI(apiKey: string): Promise<ActiveLiveStream[]> 
       return false;
     }
     const viewers = parseInt(detail.liveStreamingDetails.concurrentViewers, 10);
-    // Require at least 1 concurrent viewer as proof of active stream
     return viewers > 0;
   });
 
   confirmedLive.sort((a, b) => b.viewerCount - a.viewerCount);
 
-  logger.info('[LivestreamDetector] YouTube API detection complete', {
+  logger.info('[LivestreamDetector] YouTube detection complete', {
     found: confirmedLive.length,
     filtered: allStreams.length - confirmedLive.length,
+    detailsAvailable,
     channels: confirmedLive.map((s) => s.channelName),
   });
 
@@ -423,12 +599,26 @@ async function detectViaDatabase(): Promise<ActiveLiveStream[]> {
     const events = await prisma.spaceEvent.findMany({
       where: {
         OR: [
-          { webcastLive: true },
-          { isLive: true },
+          // Explicitly flagged live webcasts (within the last 24h)
+          {
+            webcastLive: true,
+            launchDate: { gte: new Date(now.getTime() - 24 * 60 * 60 * 1000) },
+          },
+          {
+            isLive: true,
+            launchDate: { gte: new Date(now.getTime() - 24 * 60 * 60 * 1000) },
+          },
+          // Imminent/ongoing launches: T-45m through T+90m. Official webcasts
+          // typically start ~30-45 minutes before the window opens, and the
+          // flags above are not reliably set by upstream data.
+          {
+            launchDate: {
+              gte: new Date(now.getTime() - 90 * 60 * 1000),
+              lte: new Date(now.getTime() + 45 * 60 * 1000),
+            },
+            status: { in: ['upcoming', 'go', 'in_progress'] },
+          },
         ],
-        launchDate: {
-          gte: new Date(now.getTime() - 24 * 60 * 60 * 1000), // Within last 24h
-        },
       },
       select: {
         id: true,
@@ -632,22 +822,24 @@ export async function detectLiveStreams(): Promise<ActiveLiveStream[]> {
       const youtubeKey = process.env.YOUTUBE_API_KEY;
       const xBearerToken = process.env.X_BEARER_TOKEN;
 
-      // Run YouTube and X detection in parallel
-      const [youtubeStreams, xStreams] = await Promise.all([
-        // YouTube detection
+      // Run YouTube scrape/API, launch-webcast DB lookup, and X detection in parallel
+      const [youtubeStreams, launchStreams, xStreams] = await Promise.all([
+        // YouTube detection (free scrape always runs; API enriches when keyed)
         (async (): Promise<ActiveLiveStream[]> => {
-          if (youtubeKey) {
-            try {
-              return await detectViaYouTubeAPI(youtubeKey);
-            } catch (err) {
-              logger.error('[LivestreamDetector] YouTube API detection failed', {
-                error: err instanceof Error ? err.message : String(err),
-              });
-            }
+          try {
+            return await detectViaYouTube(youtubeKey);
+          } catch (err) {
+            logger.error('[LivestreamDetector] YouTube detection failed', {
+              error: err instanceof Error ? err.message : String(err),
+            });
+            return [];
           }
-          // Fall back to database for YouTube streams
-          return detectViaDatabase();
         })(),
+
+        // Launch webcasts from tracked events (imminent/ongoing launches) —
+        // always merged in, not just a fallback, so official mission webcasts
+        // from providers outside the channel registry still surface.
+        detectViaDatabase(),
 
         // X detection
         (async (): Promise<ActiveLiveStream[]> => {
@@ -664,11 +856,20 @@ export async function detectLiveStreams(): Promise<ActiveLiveStream[]> {
         })(),
       ]);
 
-      // Merge YouTube and X streams, deduplicate by channelName
-      // (if same company is live on both, keep the YouTube one since it's embeddable)
+      // Merge: YouTube channel streams + launch webcasts (dedupe by videoId),
+      // then X streams (dedupe by channelName — if the same company is live on
+      // both platforms, keep the YouTube one since it's embeddable).
       const merged: ActiveLiveStream[] = [...youtubeStreams];
-      const seenChannels = new Set(youtubeStreams.map(s => s.channelName.toLowerCase()));
+      const seenVideoIds = new Set(youtubeStreams.map(s => s.videoId));
 
+      for (const launchStream of launchStreams) {
+        if (!seenVideoIds.has(launchStream.videoId)) {
+          merged.push(launchStream);
+          seenVideoIds.add(launchStream.videoId);
+        }
+      }
+
+      const seenChannels = new Set(merged.map(s => s.channelName.toLowerCase()));
       for (const xStream of xStreams) {
         if (!seenChannels.has(xStream.channelName.toLowerCase())) {
           merged.push(xStream);
@@ -687,6 +888,7 @@ export async function detectLiveStreams(): Promise<ActiveLiveStream[]> {
 
       logger.info('[LivestreamDetector] Combined detection complete', {
         youtube: youtubeStreams.length,
+        launchWebcasts: launchStreams.length,
         x: xStreams.length,
         total: merged.length,
       });
