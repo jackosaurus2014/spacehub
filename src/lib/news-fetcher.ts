@@ -298,7 +298,7 @@ interface RSSFeedSource {
 const RSS_FEEDS: RSSFeedSource[] = [
   // Satellite industry (not in SNAPI)
   { name: 'SatNews', url: 'https://news.satnews.com/feed/', defaultCategory: 'satellites' },
-  { name: 'Via Satellite', url: 'https://www.satellitetoday.com/feed/', defaultCategory: 'satellites' },
+  { name: 'Via Satellite', url: 'https://feeds.feedburner.com/ViaSatellite', defaultCategory: 'satellites' },
   { name: 'SpaceWatch.Global', url: 'https://spacewatch.global/feed/', defaultCategory: 'companies' },
 
   // Defense & national security space (not in SNAPI)
@@ -313,7 +313,7 @@ const RSS_FEEDS: RSSFeedSource[] = [
   // Government/institutional
   { name: 'NASA Breaking News', url: 'https://www.nasa.gov/rss/dyn/breaking_news.rss', defaultCategory: 'missions' },
   { name: 'ESA Top News', url: 'https://www.esa.int/rssfeed/TopNews', defaultCategory: 'missions' },
-  { name: 'JAXA', url: 'https://global.jaxa.jp/feed/index.xml', defaultCategory: 'missions' },
+  // JAXA removed — global.jaxa.jp RSS feed discontinued (404)
   { name: 'NASA JPL', url: 'https://www.jpl.nasa.gov/feeds/news', defaultCategory: 'missions' },
 
   // Additional general space (not in SNAPI)
@@ -326,7 +326,7 @@ const RSS_FEEDS: RSSFeedSource[] = [
   { name: 'NASASpaceFlight', url: 'https://www.nasaspaceflight.com/feed/', defaultCategory: 'launches' },
   { name: 'Ars Technica Space', url: 'https://arstechnica.com/space/feed/', defaultCategory: 'missions' },
   { name: 'The Planetary Society', url: 'https://www.planetary.org/rss/articles', defaultCategory: 'missions' },
-  { name: 'SpaceRef', url: 'https://spaceref.com/feed/', defaultCategory: 'missions' },
+  // SpaceRef removed — site shut down, feed now serves a JS redirect page
   { name: 'Space.com', url: 'https://www.space.com/feeds/all', defaultCategory: 'missions' },
   { name: 'The Verge Space', url: 'https://www.theverge.com/rss/space/index.xml', defaultCategory: 'missions' },
   // Parabolic Arc removed — domain absorbed by SpaceNews
@@ -337,13 +337,12 @@ const RSS_FEEDS: RSSFeedSource[] = [
 
   // Agency feeds
   { name: 'ESA Human Spaceflight', url: 'https://www.esa.int/rssfeed/HSF', defaultCategory: 'missions' },
-  { name: 'ESA Science & Exploration', url: 'https://www.esa.int/rssfeed/Science_Exploration', defaultCategory: 'missions' },
-  { name: 'ESA Space Safety', url: 'https://www.esa.int/rssfeed/Space_Safety', defaultCategory: 'debris' },
-  { name: 'ESA Applications', url: 'https://www.esa.int/rssfeed/Applications', defaultCategory: 'satellites' },
+  // ESA renamed its topic feeds; Science_Exploration/Space_Safety/Applications 404 now
+  { name: 'ESA Science', url: 'https://www.esa.int/rssfeed/science', defaultCategory: 'missions' },
   { name: 'UK Space Agency', url: 'https://space.blog.gov.uk/feed/', defaultCategory: 'policy' },
 
   // Defense feeds
-  { name: 'Space Systems Command', url: 'https://www.ssc.spaceforce.mil/RSS', defaultCategory: 'defense' },
+  // Space Systems Command removed — ssc.spaceforce.mil blocks non-browser clients (403)
   { name: 'Defense One', url: 'https://www.defenseone.com/rss/all/', defaultCategory: 'defense' },
   { name: 'DefenseScoop', url: 'https://defensescoop.com/feed/', defaultCategory: 'defense' },
 
@@ -368,7 +367,7 @@ const RSS_FEEDS: RSSFeedSource[] = [
 
   // Mission-specific
   { name: 'NASA Artemis Blog', url: 'https://blogs.nasa.gov/artemis/feed/', defaultCategory: 'missions' },
-  { name: 'NASA JWST Blog', url: 'https://blogs.nasa.gov/webb/feed/', defaultCategory: 'missions' },
+  { name: 'NASA JWST Blog', url: 'https://science.nasa.gov/blogs/webb/feed/', defaultCategory: 'missions' },
   { name: 'NASA Space Station Blog', url: 'https://blogs.nasa.gov/spacestation/feed/', defaultCategory: 'missions' },
 
   // Regional
@@ -379,9 +378,9 @@ const RSS_FEEDS: RSSFeedSource[] = [
   { name: 'SciTechDaily Space', url: 'https://scitechdaily.com/news/space/feed/', defaultCategory: 'missions' },
   { name: 'AmericaSpace', url: 'https://www.americaspace.com/feed/', defaultCategory: 'launches' },
   { name: 'CNN Space', url: 'http://rss.cnn.com/rss/edition_space.rss', defaultCategory: 'general' },
-  { name: 'Military Aerospace', url: 'https://www.militaryaerospace.com/rss', defaultCategory: 'defense' },
+  // Military Aerospace removed — publisher discontinued the RSS endpoint (404)
   { name: 'Federal News Network Defense', url: 'https://federalnewsnetwork.com/category/defense-main/feed/', defaultCategory: 'defense' },
-  { name: 'Wired Space', url: 'https://www.wired.com/feed/tag/space/latest/rss', defaultCategory: 'general' },
+  { name: 'Wired Science', url: 'https://www.wired.com/feed/category/science/latest/rss', defaultCategory: 'general' },
   { name: 'NASA Technology', url: 'https://www.nasa.gov/technology/feed/', defaultCategory: 'technology' },
   { name: 'NASA Kennedy Space Center', url: 'https://www.nasa.gov/centers-and-facilities/kennedy/feed/', defaultCategory: 'launches' },
   { name: 'ESA Launchers', url: 'http://www.esa.int/rssfeed/Our_Activities/Launchers', defaultCategory: 'launches' },

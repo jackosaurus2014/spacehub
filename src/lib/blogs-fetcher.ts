@@ -215,15 +215,7 @@ const BLOG_SOURCES = [
   },
 
   // --- Additional Sources ---
-  {
-    name: 'SpaceRef',
-    slug: 'spaceref',
-    url: 'https://spaceref.com',
-    feedUrl: 'https://spaceref.com/feed/',
-    type: 'blog',
-    authorType: 'journalist',
-    description: 'Space news and reference articles since 1999',
-  },
+  // SpaceRef removed — site shut down, feed now serves a JS redirect page
   {
     name: 'Space.com',
     slug: 'space-dot-com',
@@ -246,7 +238,7 @@ const BLOG_SOURCES = [
     name: 'Via Satellite',
     slug: 'via-satellite',
     url: 'https://www.satellitetoday.com',
-    feedUrl: 'https://www.satellitetoday.com/feed/',
+    feedUrl: 'https://feeds.feedburner.com/ViaSatellite',
     type: 'blog',
     authorType: 'journalist',
     description: 'Global satellite communications industry coverage',
