@@ -25,7 +25,7 @@ import { PRICING_CTA_TEST } from '@/lib/ab-testing';
 const PRICING_FAQ = [
   { question: 'What is SpaceNexus?', answer: 'SpaceNexus is a comprehensive space industry intelligence platform that provides real-time data on satellite tracking, launch schedules, space stocks, regulatory compliance, and 200+ company profiles across 30+ modules.' },
   { question: 'Is there a free plan?', answer: 'Yes! Our Explorer plan is completely free and includes access to mission countdowns, basic news feeds, satellite tracking for 50 satellites, and community features.' },
-  { question: "What's included in the Professional plan?", answer: 'Professional ($19.99/month) unlocks everything: unlimited news, full satellite tracking, market intelligence, deal flow, AI intelligence reports, regulatory and compliance suite, patent and procurement intelligence, full API access, custom dashboards, CSV data export, and an ad-free experience. One plan, the entire platform.' },
+  { question: "What's included in the Professional plan?", answer: 'Professional ($19.99/month) unlocks everything: unlimited news, full satellite tracking, market intelligence, deal flow, daily AI market insights, regulatory and compliance suite, patent and procurement intelligence, full API access, custom dashboards, CSV data export, and an ad-free experience. One plan, the entire platform.' },
   { question: 'Can I cancel anytime?', answer: 'Absolutely. All plans are month-to-month with no long-term commitment. You can cancel anytime and retain access until the end of your billing period.' },
   { question: 'What payment methods do you accept?', answer: 'We accept all major credit cards (Visa, Mastercard, American Express), Apple Pay, and Google Pay through our secure Stripe payment processor.' },
   { question: 'How does SpaceNexus compare to building this in-house?', answer: 'Companies typically spend $50K–$200K/year aggregating the same data from NASA, NOAA, SEC, SAM.gov, and 40+ other sources. SpaceNexus gives you all of it for $19.99/month — with AI analysis included.' },
@@ -299,7 +299,6 @@ const FEATURE_CATEGORIES = [
     name: 'Intelligence & Analytics',
     features: [
       { label: 'AI insights', free: false, pro: 'Unlimited' },
-      { label: 'AI intelligence reports', free: false, pro: true },
       { label: 'Deal flow database', free: false, pro: '113+ deals' },
       { label: 'Supply chain intel', free: false, pro: true },
       { label: 'Regulatory calendar & compliance', free: false, pro: 'Full suite' },
@@ -625,7 +624,7 @@ function PricingPageContent() {
       />
       <ProductSchema
         name="SpaceNexus Pro"
-        description="Professional space industry intelligence — full platform access with advanced analytics, AI reports, and API access"
+        description="Professional space industry intelligence — full platform access with advanced analytics, daily AI insights, and API access"
         url="/pricing"
         brand="SpaceNexus"
         category="Software"

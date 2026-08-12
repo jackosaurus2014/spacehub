@@ -61,7 +61,6 @@ const PATH_TITLES: Record<string, string> = {
   '/regulatory-risk': 'Regulatory Risk',
   '/business-models': 'Business Model Tools',
   '/space-events': 'Space Events',
-  '/investment-thesis': 'Investment Thesis AI',
   '/deal-rooms': 'Deal Rooms',
   '/marketplace': 'Marketplace',
   '/procurement': 'Procurement Intelligence',

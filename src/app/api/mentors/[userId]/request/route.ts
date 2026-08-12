@@ -95,7 +95,7 @@ export async function POST(
           relatedUserId: menteeUserId,
           relatedContentType: 'mentor_match',
           relatedContentId: match.id,
-          linkUrl: '/mentors/my-mentees',
+          linkUrl: '/mentors',
         },
       });
     } catch (notifyError) {

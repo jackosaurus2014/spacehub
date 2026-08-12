@@ -125,7 +125,6 @@ export const ROUTE_LABELS: Record<string, string> = {
   '/deals': 'Deals',
   '/investors': 'Investors',
   '/space-investors': 'Space Investors',
-  '/investment-thesis': 'Investment Thesis',
   '/investment-tracker': 'Investment Tracker',
   '/portfolio-tracker': 'Portfolio Tracker',
   '/startup-tracker': 'Startup Tracker',
@@ -185,7 +184,6 @@ export const ROUTE_LABELS: Record<string, string> = {
   // ── Marketplace ──
   '/marketplace': 'Marketplace',
   '/marketplace/search': 'Search Listings',
-  '/marketplace/copilot': 'Procurement Copilot',
   '/marketplace/rfq/new': 'New RFQ',
   '/provider-dashboard': 'Provider Dashboard',
 
@@ -308,7 +306,6 @@ export const ROUTE_PARENTS: Record<string, string> = {
 
   // Marketplace pages
   '/marketplace/search': '/marketplace',
-  '/marketplace/copilot': '/marketplace',
   '/marketplace/rfq/new': '/marketplace',
 
   // Comparison pages

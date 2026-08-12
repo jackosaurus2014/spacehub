@@ -847,22 +847,6 @@ export default function GroundStationsPage() {
     fetchData();
   }, []);
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-[#0B0F1A] text-white p-6">
-        <div className="max-w-7xl mx-auto">
-          <div className="animate-pulse space-y-4">
-            <div className="h-8 bg-white/[0.06] rounded w-1/3"></div>
-            <div className="h-4 bg-white/[0.06] rounded w-2/3"></div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8">
-              {[1,2,3,4].map(i => <div key={i} className="h-48 bg-white/[0.06] rounded-lg"></div>)}
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   const filteredNetworks = useMemo(() => {
     let result = GROUND_STATION_NETWORKS;
 
@@ -894,7 +878,23 @@ export default function GroundStationsPage() {
     });
 
     return result;
-  }, [GROUND_STATION_NETWORKS, searchQuery, modelFilter, sortBy]);
+  }, [searchQuery, modelFilter, sortBy]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#0B0F1A] text-white p-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="animate-pulse space-y-4">
+            <div className="h-8 bg-white/[0.06] rounded w-1/3"></div>
+            <div className="h-4 bg-white/[0.06] rounded w-2/3"></div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8">
+              {[1,2,3,4].map(i => <div key={i} className="h-48 bg-white/[0.06] rounded-lg"></div>)}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const tabs: { id: TabId; label: string; icon: string }[] = [
     { id: 'networks', label: 'Station Networks', icon: String.fromCodePoint(0x1F4E1) },

@@ -88,7 +88,6 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/regulatory-risk`, changeFrequency: 'weekly' as const, priority: 0.7 },
     { url: `${BASE_URL}/business-models`, changeFrequency: 'weekly' as const, priority: 0.7 },
     { url: `${BASE_URL}/space-events`, changeFrequency: 'daily' as const, priority: 0.7 },
-    { url: `${BASE_URL}/investment-thesis`, changeFrequency: 'weekly' as const, priority: 0.6 },
     { url: `${BASE_URL}/deal-rooms`, changeFrequency: 'weekly' as const, priority: 0.6 },
 
     // Company Intelligence directory
@@ -230,7 +229,6 @@ function getStaticRoutes(): MetadataRoute.Sitemap {
     // Marketplace
     { url: `${BASE_URL}/marketplace`, changeFrequency: 'daily' as const, priority: 0.7 },
     { url: `${BASE_URL}/marketplace/search`, changeFrequency: 'daily' as const, priority: 0.6 },
-    { url: `${BASE_URL}/marketplace/copilot`, changeFrequency: 'weekly' as const, priority: 0.6 },
     { url: `${BASE_URL}/marketplace/rfq/new`, changeFrequency: 'monthly' as const, priority: 0.5 },
 
     // Features directory

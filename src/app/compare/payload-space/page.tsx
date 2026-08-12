@@ -40,7 +40,7 @@ const FEATURE_COMPARISON = [
   { feature: 'Market Intelligence', spacenexus: 'Interactive dashboards, stocks, ETFs, funding', competitor: 'Market coverage in newsletter', winner: 'spacenexus' },
   { feature: 'Procurement Intel', spacenexus: 'SAM.gov, SBIR/STTR, contract tracking', competitor: 'Not available', winner: 'spacenexus' },
   { feature: 'B2B Marketplace', spacenexus: 'RFQs, proposals, provider matching', competitor: 'Not available', winner: 'spacenexus' },
-  { feature: 'AI Copilot', spacenexus: 'Claude-powered procurement and market copilot', competitor: 'Not available', winner: 'spacenexus' },
+  { feature: 'AI Insights', spacenexus: 'Claude-powered daily market insights and opportunity scoring', competitor: 'Not available', winner: 'spacenexus' },
   { feature: 'API Access', spacenexus: 'RESTful API (included with Pro)', competitor: 'Not available', winner: 'spacenexus' },
   { feature: 'Regulatory Tracking', spacenexus: 'FCC, ITU, space law, spectrum management', competitor: 'Policy news coverage', winner: 'spacenexus' },
   { feature: 'Community', spacenexus: 'Growing user base', competitor: 'Large, engaged subscriber community', winner: 'competitor' },
@@ -111,7 +111,7 @@ export default function PayloadComparisonPage() {
                   find opportunities, and make decisions.
                 </p>
                 <div className="grid grid-cols-2 gap-2">
-                  {['Satellite Tracking', 'Launch Dashboard', 'Company Profiles', 'Market Intel', 'Procurement', 'AI Copilot', 'Marketplace', 'Regulatory'].map((feature) => (
+                  {['Satellite Tracking', 'Launch Dashboard', 'Company Profiles', 'Market Intel', 'Procurement', 'AI Insights', 'Marketplace', 'Regulatory'].map((feature) => (
                     <div key={feature} className="bg-slate-50 text-slate-600 text-xs px-2 py-1 rounded text-center font-medium">
                       {feature}
                     </div>
@@ -192,7 +192,7 @@ export default function PayloadComparisonPage() {
                   { title: 'Interactive satellite tracking', desc: 'Monitor 19,000+ objects on a 3D globe in real time. Search by operator, orbit type, or constellation. No newsletter can provide this.' },
                   { title: 'Live launch dashboard', desc: 'Real-time countdown timers, mission details, and launch vehicle specs for every global launch — not just a summary of what already happened.' },
                   { title: '200+ company profiles', desc: 'Interactive profiles with financial data, satellite assets, competitive positioning, and auto-tagged news. Research any company on demand.' },
-                  { title: 'Procurement intelligence', desc: 'Search SAM.gov contracts, track SBIR/STTR opportunities, and use the AI copilot to match your capabilities to open solicitations.' },
+                  { title: 'Procurement intelligence', desc: 'Search SAM.gov contracts, track SBIR/STTR opportunities, and match your capabilities to open solicitations.' },
                   { title: 'B2B marketplace', desc: 'Post RFQs, receive proposals, and connect with space industry vendors. Turn intelligence into business opportunities.' },
                   { title: 'API access', desc: 'Build space industry data into your own applications, dashboards, and workflows with the SpaceNexus REST API.' },
                   { title: 'Regulatory tracking', desc: 'Monitor FCC filings, ITU spectrum allocations, space law developments, and export control changes in real time.' },
@@ -291,7 +291,7 @@ export default function PayloadComparisonPage() {
                   { title: 'From information to action', desc: 'SpaceNexus does not just inform you — it gives you tools to act. Find a procurement opportunity, connect with a vendor, track a competitor, and monitor a satellite fleet, all in one platform.' },
                   { title: 'Real-time, always current', desc: 'No waiting for tomorrow morning\'s newsletter. SpaceNexus data updates continuously from NASA, NOAA, SAM.gov, and 50+ feeds.' },
                   { title: '30+ modules, one platform', desc: 'Mission Control, satellite tracking, market intelligence, procurement, company profiles, marketplace, regulatory tracking — integrated and cross-referenced.' },
-                  { title: 'AI-powered analysis', desc: 'The Claude-powered copilot answers your questions, matches your capabilities to opportunities, and surfaces insights you would miss manually.' },
+                  { title: 'AI-powered analysis', desc: 'Claude-powered daily market insights and opportunity scoring surface trends and openings you would miss manually.' },
                   { title: 'Free to start', desc: 'Like Payload, SpaceNexus has a free tier. Unlike Payload, that free tier includes satellite tracking, launch monitoring, and company research tools.' },
                 ].map((item) => (
                   <li key={item.title} className="flex items-start gap-3">

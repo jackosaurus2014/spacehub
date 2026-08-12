@@ -154,10 +154,6 @@ export default function WarRoomPage() {
     }
   }, [sessionStatus, router]);
 
-  if (sessionStatus === 'loading') {
-    return <div className="min-h-screen flex items-center justify-center"><LoadingSpinner /></div>;
-  }
-
   const fetchData = useCallback(async () => {
     const slugs = slugInput
       .split(',')
@@ -198,6 +194,10 @@ export default function WarRoomPage() {
       setLoading(false);
     }
   }, [slugInput, period]);
+
+  if (sessionStatus === 'loading') {
+    return <div className="min-h-screen flex items-center justify-center"><LoadingSpinner /></div>;
+  }
 
   const colCount = companies.length || 1;
 

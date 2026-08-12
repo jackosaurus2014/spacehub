@@ -30,7 +30,7 @@ const roadmapItems: RoadmapItem[] = [
   { title: 'Platform Launch', description: 'Core modules: Mission Control, Market Intel, Satellite Tracker, News, Company Profiles', status: 'shipped', quarter: 'Q1 2026' },
   { title: '160+ Blog Articles', description: 'Original content library covering investment, technology, policy, and guides', status: 'shipped', quarter: 'Q1 2026' },
   { title: 'Community Forums', description: 'Threaded discussions, voting, moderation, and user profiles', status: 'shipped', quarter: 'Q1 2026' },
-  { title: 'Marketplace', description: 'Space industry procurement: listings, RFQ, proposals, AI copilot', status: 'shipped', quarter: 'Q1 2026' },
+  { title: 'Marketplace', description: 'Space industry procurement: listings, RFQ, proposals, provider matching', status: 'shipped', quarter: 'Q1 2026' },
   { title: 'Developer API v1', description: 'Public REST API with 11 endpoints and OpenAPI spec', status: 'shipped', quarter: 'Q1 2026' },
   { title: 'Engineering Tools Suite', description: 'Orbital, thermal, radiation, power, link budget calculators + constellation designer', status: 'shipped', quarter: 'Q1 2026' },
   { title: 'Android App on Google Play', description: 'Full platform as TWA with push notifications and offline support', status: 'shipped', quarter: 'Q1 2026' },

@@ -109,7 +109,6 @@ export default function BusinessOpportunitiesModule() {
   } | null>(null);
   const [loading, setLoading] = useState(true);
   const [initializing, setInitializing] = useState(false);
-  const [analyzing, setAnalyzing] = useState(false);
   const [showMoonshots, setShowMoonshots] = useState(false);
 
   useEffect(() => {
@@ -153,21 +152,6 @@ export default function BusinessOpportunitiesModule() {
       clientLogger.error('Failed to initialize opportunities', { error: error instanceof Error ? error.message : String(error) });
     } finally {
       setInitializing(false);
-    }
-  };
-
-  const handleRunAnalysis = async () => {
-    setAnalyzing(true);
-    try {
-      const res = await fetch('/api/opportunities/analyze', { method: 'POST' });
-      const result = await res.json();
-      if (result.success) {
-        await fetchData();
-      }
-    } catch (error) {
-      clientLogger.error('Failed to run analysis', { error: error instanceof Error ? error.message : String(error) });
-    } finally {
-      setAnalyzing(false);
     }
   };
 
@@ -220,24 +204,6 @@ export default function BusinessOpportunitiesModule() {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <button
-            onClick={handleRunAnalysis}
-            disabled={analyzing}
-            className="btn-secondary text-sm py-1.5 px-3 flex items-center gap-1"
-            title="Run AI analysis for new opportunities"
-          >
-            {analyzing ? (
-              <>
-                <LoadingSpinner size="sm" />
-                <span>Analyzing...</span>
-              </>
-            ) : (
-              <>
-                <span>🤖</span>
-                <span>AI Scan</span>
-              </>
-            )}
-          </button>
           <Link
             href="/business-opportunities"
             className="btn-secondary text-sm py-1.5 px-4"

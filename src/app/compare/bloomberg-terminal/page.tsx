@@ -41,7 +41,7 @@ const FEATURE_COMPARISON = [
   { feature: 'Procurement Intelligence', spacenexus: 'SAM.gov integration, SBIR/STTR, contract tracking', competitor: 'Limited government contract data', winner: 'spacenexus' },
   { feature: 'Spectrum Management', spacenexus: 'FCC filings, ITU data, auction tracking', competitor: 'Not available', winner: 'spacenexus' },
   { feature: 'Space Weather', spacenexus: 'NOAA feeds, solar flare alerts, debris tracking', competitor: 'Not available', winner: 'spacenexus' },
-  { feature: 'AI Copilot', spacenexus: 'Claude-powered procurement and market copilot', competitor: 'Bloomberg GPT (general finance)', winner: 'tie' },
+  { feature: 'AI Insights', spacenexus: 'Claude-powered daily market insights and opportunity scoring', competitor: 'Bloomberg GPT (general finance)', winner: 'tie' },
   { feature: 'API Access', spacenexus: 'RESTful API (included with Pro)', competitor: 'Bloomberg API (additional cost)', winner: 'tie' },
   { feature: 'Mobile App', spacenexus: 'PWA + native Android/iOS', competitor: 'Bloomberg Anywhere mobile app', winner: 'tie' },
   { feature: 'News Coverage', spacenexus: '50+ space-specific RSS feeds and blogs', competitor: 'Bloomberg News (all industries, massive newsroom)', winner: 'competitor' },
@@ -291,7 +291,7 @@ export default function BloombergComparisonPage() {
                   'Procurement intelligence to identify upcoming government contracts',
                   'Regulatory tracking for spectrum auctions, FCC filings, and export controls',
                   'Space-specific company intelligence beyond what Bloomberg profiles cover',
-                  'An AI copilot that understands space industry terminology and relationships',
+                  'Daily AI market insights tuned to space industry terminology and relationships',
                 ].map((item) => (
                   <li key={item} className="flex items-start gap-2 text-sm text-slate-400">
                     <span className="text-white/70 mt-0.5 flex-shrink-0">&#9656;</span>

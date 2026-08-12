@@ -8,7 +8,7 @@ const PERSONA_KEY = 'spacenexus-user-persona';
 export type UserPersona = 'investor' | 'entrepreneur' | 'mission-planner' | 'executive' | 'supply-chain' | 'legal';
 
 const PERSONAS: { id: UserPersona; icon: string; title: string; description: string }[] = [
-  { id: 'investor', icon: '\u{1F4B8}', title: 'Investor / VC', description: 'Evaluate deals, track funding rounds, generate investment theses' },
+  { id: 'investor', icon: '\u{1F4B8}', title: 'Investor / VC', description: 'Evaluate deals, track funding rounds, follow market trends' },
   { id: 'entrepreneur', icon: '\u{1F680}', title: 'Entrepreneur / Founder', description: 'Find grants, build business models, discover customers' },
   { id: 'mission-planner', icon: '\u{1F9ED}', title: 'Mission Planner / Engineer', description: 'Compare launch vehicles, calculate costs, track orbits' },
   { id: 'executive', icon: '\u{1F4CA}', title: 'CEO / Executive', description: 'Market intelligence, competitive landscape, industry trends' },
@@ -51,7 +51,7 @@ const TOUR_STEPS: TourStep[] = [
     title: '30+ Interactive Modules',
     description: 'From mission cost calculators to market sizing tools, everything you need is organized into easy-to-navigate modules.',
     icon: '\u{1F6E0}\uFE0F',
-    highlights: ['Mission Cost Calculator', 'Market Sizing (TAM/SAM/SOM)', 'Grant Aggregator', 'AI Investment Thesis'],
+    highlights: ['Mission Cost Calculator', 'Market Sizing (TAM/SAM/SOM)', 'Grant Aggregator', 'Deal Flow Database'],
   },
   {
     title: 'Customize Your Experience',

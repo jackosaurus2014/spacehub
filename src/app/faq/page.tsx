@@ -68,7 +68,7 @@ const FAQ_ITEMS: FAQItem[] = [
     category: 'features',
     question: 'How does the AI market analysis work?',
     answer:
-      'Our AI-powered market intelligence uses Claude to analyze trends across the space economy, categorize news by sector and sentiment, and surface actionable insights. The AI Copilot in the marketplace can help match RFQ requirements to qualified suppliers. Visit the market intelligence page to explore sector reports, funding trends, and startup tracking.',
+      'Our AI-powered market intelligence uses Claude to analyze trends across the space economy, categorize news by sector and sentiment, and surface daily actionable insights. Visit the market intelligence page to explore sector reports, funding trends, and startup tracking.',
   },
   {
     id: 'pf-3',
@@ -121,7 +121,7 @@ const FAQ_ITEMS: FAQItem[] = [
     category: 'entrepreneurs',
     question: 'How can SpaceNexus help me build a space startup?',
     answer:
-      'SpaceNexus offers tools purpose-built for space entrepreneurs: the startup tracker benchmarks your company against peers, the business model explorer covers proven space business models, and the customer discovery module helps validate market demand. The investment thesis builder helps you craft a compelling pitch backed by real market data.',
+      'SpaceNexus offers tools purpose-built for space entrepreneurs: the startup tracker benchmarks your company against peers, the business model explorer covers proven space business models, and the customer discovery module helps validate market demand. Market sizing data and the funding tracker help you craft a compelling pitch backed by real market data.',
   },
   {
     id: 'ent-2',
@@ -135,7 +135,7 @@ const FAQ_ITEMS: FAQItem[] = [
     category: 'entrepreneurs',
     question: 'How do I find space industry suppliers?',
     answer:
-      'The marketplace search connects you with verified suppliers across all space industry categories including components, testing, launch services, and ground segment. You can post an RFQ to receive competitive proposals, or use the AI Copilot to automatically match your requirements with qualified providers based on capabilities and certifications.',
+      'The marketplace search connects you with verified suppliers across all space industry categories including components, testing, launch services, and ground segment. You can post an RFQ to receive competitive proposals, and provider matching surfaces qualified suppliers based on capabilities and certifications.',
   },
 
   // Technical

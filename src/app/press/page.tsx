@@ -358,7 +358,7 @@ export default function PressPage() {
                   blog articles and industry guides, and discover government procurement opportunities through
                   integrated SAM.gov and SBIR/STTR intelligence.<br /><br />
                   The platform leverages AI powered by Claude (Anthropic) to categorize news, tag company mentions,
-                  generate market insights, and power an intelligent procurement copilot. SpaceNexus serves aerospace
+                  and generate daily market insights. SpaceNexus serves aerospace
                   engineers, defense contractors, investors, startup founders, government program managers, journalists,
                   and space enthusiasts alike.<br /><br />
                   Unlike legacy competitors charging $10,000-50,000+ per year for narrow data sets, SpaceNexus

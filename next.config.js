@@ -342,6 +342,9 @@ const nextConfig = {
       { source: '/startups', destination: '/space-capital', permanent: true },
       // Single paid plan (Pro) — retired enterprise marketing page
       { source: '/enterprise', destination: '/pricing', permanent: true },
+      // Retired user-triggered AI features
+      { source: '/marketplace/copilot', destination: '/marketplace/rfq/new', permanent: true },
+      { source: '/investment-thesis', destination: '/market-intel', permanent: true },
     ];
   },
 }

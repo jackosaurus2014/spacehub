@@ -199,7 +199,6 @@ const TOOLS_ITEMS: DropdownItem[] = [
   { label: 'Launch Windows', href: '/launch-windows', description: 'Optimal launch timing' },
   { label: 'Space Environment', href: '/space-environment', description: 'Weather, debris & operations' },
   { label: 'Blueprint Series', href: '/blueprints', description: 'Technical hardware breakdowns' },
-  { label: 'Investment Thesis AI', href: '/investment-thesis', description: 'AI-generated investment theses' },
   { label: 'Deal Rooms', href: '/deal-rooms', description: 'Secure document sharing for deals' },
   { label: 'My Watchlists', href: '/my-watchlists', description: 'Watched companies & saved searches' },
   { label: 'Dashboard', href: '/dashboard', description: 'Your personalized hub' },

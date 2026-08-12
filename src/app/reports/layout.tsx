@@ -1,37 +1,36 @@
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Intelligence Reports - AI-Powered Space Industry Research',
+  title: 'Industry Reports - Space Industry Research',
   description:
-    'Generate comprehensive, AI-powered research reports on space industry sectors, companies, competitive landscapes, and market entry strategies. Data-driven insights from the SpaceNexus intelligence database.',
+    'In-depth research reports on the space industry: market sizing, company landscapes, investment trends, and regulatory developments from the SpaceNexus research team.',
   keywords: [
     'space industry reports',
     'space market research',
     'space industry analysis',
     'satellite market report',
     'launch services market',
-    'space competitive analysis',
     'space industry intelligence',
   ],
   openGraph: {
-    title: 'SpaceNexus Intelligence Reports - AI-Powered Space Research',
+    title: 'SpaceNexus Industry Reports - Space Industry Research',
     description:
-      'Generate comprehensive AI-powered research reports on space industry sectors, companies, and market opportunities.',
+      'In-depth research reports on space industry sectors, companies, and market trends.',
     url: 'https://spacenexus.us/reports',
     images: [
       {
         url: '/og-image.png',
         width: 1200,
         height: 630,
-        alt: 'SpaceNexus Intelligence Reports',
+        alt: 'SpaceNexus Industry Reports',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'SpaceNexus Intelligence Reports',
+    title: 'SpaceNexus Industry Reports',
     description:
-      'AI-powered space industry research reports. Sector overviews, company deep dives, competitive analysis, and market entry briefs.',
+      'In-depth space industry research reports: market sizing, company landscapes, investment trends, and regulatory developments.',
     images: ['/og-image.png'],
   },
   alternates: {

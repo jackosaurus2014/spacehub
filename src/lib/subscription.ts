@@ -29,7 +29,6 @@ export const TIER_ACCESS: Record<SubscriptionTier, {
   hasAPIAccess: boolean;
   adFree: boolean;
   hasDealFlow: boolean;
-  hasIntelReports: boolean;
   hasSupplyChainMap: boolean;
   hasExecutiveMoves: boolean;
   hasRegulatoryCalendar: boolean;
@@ -46,7 +45,6 @@ export const TIER_ACCESS: Record<SubscriptionTier, {
     hasAPIAccess: false,
     adFree: false,
     hasDealFlow: false,
-    hasIntelReports: false,
     hasSupplyChainMap: false,
     hasExecutiveMoves: true, // free teaser (limited)
     hasRegulatoryCalendar: false,
@@ -63,7 +61,6 @@ export const TIER_ACCESS: Record<SubscriptionTier, {
     hasAPIAccess: true,
     adFree: true,
     hasDealFlow: true,
-    hasIntelReports: true,
     hasSupplyChainMap: true,
     hasExecutiveMoves: true,
     hasRegulatoryCalendar: true,
@@ -80,7 +77,6 @@ export const TIER_ACCESS: Record<SubscriptionTier, {
     hasAPIAccess: true,
     adFree: true,
     hasDealFlow: true,
-    hasIntelReports: true,
     hasSupplyChainMap: true,
     hasExecutiveMoves: true,
     hasRegulatoryCalendar: true,
@@ -119,9 +115,7 @@ const PREMIUM_MODULES: Record<string, SubscriptionTier> = {
   'compliance': 'pro',
   'orbital-services': 'pro',
   'patent-tracker': 'pro',
-  'intel-reports': 'pro',
   'api-docs': 'pro',
-  'investment-thesis': 'pro',
   'deal-rooms': 'pro',
   'funding-tracker': 'pro',
   'customer-discovery': 'pro',

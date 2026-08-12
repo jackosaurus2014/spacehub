@@ -25,7 +25,7 @@ const RECENT_UPDATES = [
   {
     version: 'v2.6',
     date: 'Mar 2026',
-    title: '50 New Blog Articles + AI-Powered Copilot',
+    title: '50 New Blog Articles',
     description: 'Deep-dive analysis on orbital servicing, electric propulsion, space debris removal, nuclear propulsion, ITAR compliance, and more.',
     href: '/blog',
     type: 'content' as const,

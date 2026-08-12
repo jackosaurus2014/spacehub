@@ -1714,16 +1714,6 @@ export const updateSavedSearchSchema = z.object({
 export type UpdateSavedSearchData = z.infer<typeof updateSavedSearchSchema>;
 
 // ============================================================
-// Investment Thesis
-// ============================================================
-
-export const investmentThesisSchema = z.object({
-  companySlug: z.string().min(1, 'Company slug is required').max(200).regex(/^[a-z0-9-]+$/, 'Invalid company slug'),
-});
-
-export type InvestmentThesisData = z.infer<typeof investmentThesisSchema>;
-
-// ============================================================
 // Subscription Actions
 // ============================================================
 
@@ -1734,31 +1724,6 @@ export const subscriptionActionSchema = z.object({
 });
 
 export type SubscriptionActionData = z.infer<typeof subscriptionActionSchema>;
-
-// ============================================================
-// Report Generation
-// ============================================================
-
-export const reportGenerateSchema = z.object({
-  reportType: z.enum(['sector-overview', 'company-deep-dive', 'competitive-analysis', 'market-entry-brief']),
-  config: z.record(z.string(), z.unknown()),
-});
-
-export type ReportGenerateData = z.infer<typeof reportGenerateSchema>;
-
-// ============================================================
-// Marketplace Copilot
-// ============================================================
-
-export const marketplaceCopilotSchema = z.object({
-  message: z.string().min(1, 'Message is required').max(5000),
-  history: z.array(z.object({
-    role: z.enum(['user', 'assistant']),
-    content: z.string(),
-  })).max(50).optional().default([]),
-});
-
-export type MarketplaceCopilotData = z.infer<typeof marketplaceCopilotSchema>;
 
 // ============================================================
 // Marketplace Match

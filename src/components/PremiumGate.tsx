@@ -21,10 +21,8 @@ export type UpgradeContext =
   | 'api-access'
   | 'export'
   | 'deal-flow'
-  | 'intel-reports'
   | 'supply-chain-map'
   | 'regulatory-calendar'
-  | 'investment-thesis'
   | 'deal-rooms'
   | 'funding-tracker'
   | 'customer-discovery'
@@ -186,18 +184,6 @@ const CONTEXTUAL_MESSAGES: Record<UpgradeContext, ContextualMessage> = {
       'M&A and contract alerts',
     ],
   },
-  'intel-reports': {
-    icon: '\u{1F4D1}',
-    title: 'Custom Intelligence Reports',
-    description:
-      'Generate AI-powered research reports on any space industry topic, company, or sector. Professional-grade analysis in minutes.',
-    requiredTier: 'pro',
-    highlights: [
-      'AI-generated sector reports',
-      'Company deep dives',
-      'Competitive analysis',
-    ],
-  },
   'supply-chain-map': {
     icon: '\u{1F5FA}\u{FE0F}',
     title: 'Supply Chain Relationship Map',
@@ -220,18 +206,6 @@ const CONTEXTUAL_MESSAGES: Record<UpgradeContext, ContextualMessage> = {
       '105 regulatory deadlines',
       '.ics calendar export',
       'Agency-specific filtering',
-    ],
-  },
-  'investment-thesis': {
-    icon: '\u{1F4C8}',
-    title: 'AI Investment Thesis Generator',
-    description:
-      'Generate comprehensive, AI-powered investment theses for any space company. Get bull/bear cases, risk scoring, competitive analysis, and actionable recommendations.',
-    requiredTier: 'pro',
-    highlights: [
-      'AI-powered company analysis',
-      'Risk scoring & mitigation',
-      'Comparable transaction analysis',
     ],
   },
   'deal-rooms': {
@@ -334,8 +308,6 @@ const MODULE_ID_TO_CONTEXT: Record<string, UpgradeContext> = {
   'supply-chain-map': 'supply-chain-map',
   'supply-chain': 'supply-chain-map',
   'regulatory-calendar': 'regulatory-calendar',
-  'intel-reports': 'intel-reports',
-  'investment-thesis': 'investment-thesis',
   'deal-rooms': 'deal-rooms',
   'funding-tracker': 'funding-tracker',
   'customer-discovery': 'customer-discovery',

@@ -122,7 +122,7 @@ const COMPARISON_FEATURES = [
     quilty: false,
     spacenews: false,
     freeTools: false,
-    spacenexusNote: 'AI copilot for questions',
+    spacenexusNote: 'Daily AI market insights',
     quiltyNote: 'Human analyst insights',
     spacenewsNote: 'Not available',
     freeToolsNote: 'Not available',
@@ -308,7 +308,7 @@ export default function WhySpaceNexusPage() {
                   { title: 'Real-Time Data', desc: '50+ live feeds from NASA, NOAA, SAM.gov, FCC, and commercial sources. Updated continuously.' },
                   { title: '200+ Company Profiles', desc: 'Interactive profiles with financials, satellite assets, competitive positioning, and news.' },
                   { title: '19,000+ Tracked Objects', desc: '3D satellite globe with orbital data, conjunction warnings, and constellation tracking.' },
-                  { title: 'AI Copilot', desc: 'Ask questions in natural language. Get instant analysis from your space industry data.' },
+                  { title: 'Daily AI Insights', desc: 'AI-generated market commentary and opportunity scoring, refreshed every day.' },
                   { title: 'Weekly Intelligence Brief', desc: '8-section curated brief delivered to your inbox every Monday. Trusted by 2,000+ pros.' },
                 ].map((item) => (
                   <div key={item.title} className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-4">

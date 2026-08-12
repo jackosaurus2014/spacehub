@@ -95,7 +95,7 @@ export async function PATCH(
           relatedUserId: match.mentor.userId,
           relatedContentType: 'mentor_match',
           relatedContentId: match.id,
-          linkUrl: '/mentors/my-mentors',
+          linkUrl: '/mentors',
         },
       });
     } catch (notifyError) {

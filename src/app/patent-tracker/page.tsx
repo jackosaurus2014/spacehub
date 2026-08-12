@@ -138,7 +138,7 @@ const STATS = {
 
 export default function PatentTrackerPage() {
   const { canUseFeature } = useSubscription();
-  const hasAccess = canUseFeature('hasIntelReports');
+  const hasAccess = canUseFeature('hasAIOpportunities');
 
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('All Categories');

@@ -34,12 +34,6 @@ const STEPS: TourStep[] = [
       'Monitor competitors, win/loss trends, and strategic moves across the space industry.',
   },
   {
-    selector: '[data-tour="dossiers"]',
-    title: 'AI Company Dossiers',
-    description:
-      'Generate deep-dive Claude-powered briefings on any company in seconds.',
-  },
-  {
     selector: '[data-tour="company-profiles"]',
     title: 'Company Profiles',
     description:

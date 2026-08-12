@@ -591,7 +591,7 @@ export const BLOG_POSTS: OriginalBlogPost[] = [
 <li><strong>Manufacturing quality control:</strong> Computer vision systems inspect satellite components during high-volume production, catching defects earlier in the assembly process</li>
 </ul>
 
-<p>The integration of large language models into operational workflows is an emerging trend. SpaceNexus itself uses AI to categorize news, match procurement opportunities, and power our <a href="/marketplace/copilot">Marketplace Copilot</a>.</p>
+<p>The integration of large language models into operational workflows is an emerging trend. SpaceNexus itself uses AI to categorize news and match procurement opportunities in our <a href="/marketplace">Marketplace</a>.</p>
 
 <h2 id="sovereign-space-programs">5. Sovereign Space Programs Are Multiplying</h2>
 

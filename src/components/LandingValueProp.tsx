@@ -16,7 +16,7 @@ const VALUE_PILLARS = [
     icon: '🛠️',
     title: '264+ Interactive Tools',
     description:
-      'Satellite trackers, mission calculators, market analysis, AI investment thesis generators, deal rooms, and constellation designers.',
+      'Satellite trackers, mission calculators, market analysis, deal rooms, and constellation designers.',
     badge: null,
     badgeColor: null,
   },
@@ -42,7 +42,7 @@ const AUDIENCES = [
     icon: '💸',
     title: 'Investors & VCs',
     description:
-      'AI-powered investment theses, market sizing analysis, live funding tracker, and secure deal rooms.',
+      'Daily AI market insights, market sizing analysis, live funding tracker, and secure deal rooms.',
     tier: 'PRO',
   },
   {

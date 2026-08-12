@@ -72,7 +72,6 @@ export const MODULE_ROUTES: Record<string, string> = {
 
   // ── Marketplace ──
   'marketplace': '/marketplace',
-  'procurement-copilot': '/marketplace/copilot',
   'provider-dashboard': '/provider-dashboard',
 
   // ── Customer Discovery ──
@@ -81,7 +80,6 @@ export const MODULE_ROUTES: Record<string, string> = {
   // ── Business Planning Tools ──
   'business-models': '/business-models',
   'space-events': '/space-events',
-  'investment-thesis': '/investment-thesis',
   'unit-economics': '/unit-economics',
 
   // ── Deal Room ──

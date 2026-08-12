@@ -43,7 +43,6 @@ describe('TIER_ACCESS', () => {
 
   it('pro tier unlocks everything (single paid tier)', () => {
     expect(TIER_ACCESS.pro.hasAIOpportunities).toBe(true);
-    expect(TIER_ACCESS.pro.hasIntelReports).toBe(true);
     expect(TIER_ACCESS.pro.hasDealFlow).toBe(true);
     expect(TIER_ACCESS.pro.hasSupplyChainMap).toBe(true);
     expect(TIER_ACCESS.pro.hasRegulatoryCalendar).toBe(true);
@@ -114,7 +113,7 @@ describe('canAccessFeature', () => {
     expect(canAccessFeature('pro', 'hasAlerts')).toBe(true);
     expect(canAccessFeature('pro', 'hasAPIAccess')).toBe(true);
     expect(canAccessFeature('pro', 'adFree')).toBe(true);
-    expect(canAccessFeature('pro', 'hasIntelReports')).toBe(true);
+    expect(canAccessFeature('pro', 'hasDealFlow')).toBe(true);
   });
 
   it('free users can access market intel (free feature)', () => {
@@ -150,7 +149,6 @@ describe('canAccessModule', () => {
     expect(canAccessModule('pro', 'space-insurance')).toBe(true);
     expect(canAccessModule('pro', 'compliance')).toBe(true);
     expect(canAccessModule('pro', 'orbital-services')).toBe(true);
-    expect(canAccessModule('pro', 'intel-reports')).toBe(true);
     expect(canAccessModule('pro', 'api-docs')).toBe(true);
   });
 
@@ -190,6 +188,11 @@ describe('getRequiredTierForModule', () => {
 
   it('returns null for an unknown module', () => {
     expect(getRequiredTierForModule('nonexistent-module')).toBeNull();
+  });
+
+  it('returns null for removed AI report modules (intel-reports, investment-thesis)', () => {
+    expect(getRequiredTierForModule('intel-reports')).toBeNull();
+    expect(getRequiredTierForModule('investment-thesis')).toBeNull();
   });
 });
 

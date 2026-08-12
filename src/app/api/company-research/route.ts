@@ -155,7 +155,7 @@ function generateResearchAnswer(
   }
 
   if (relatedCompanies.length > 0) {
-    return `Based on your question, these companies may be relevant:\n\n${relatedCompanies.map(c => `- **${c.name}** -- ${c.sector || 'Space Industry'} [View Profile](/company-profiles/${c.slug})`).join('\n')}\n\nFor deeper analysis, try our Market Intelligence module at /market-intel or the Procurement Copilot at /marketplace/copilot.`;
+    return `Based on your question, these companies may be relevant:\n\n${relatedCompanies.map(c => `- **${c.name}** -- ${c.sector || 'Space Industry'} [View Profile](/company-profiles/${c.slug})`).join('\n')}\n\nFor deeper analysis, try our Market Intelligence module at /market-intel or the Marketplace at /marketplace.`;
   }
 
   return `I can help you research space industry companies. Try asking about:\n\n- A specific company (e.g., "Tell me about SpaceX")\n- Competitors (e.g., "Who competes with Rocket Lab?")\n- Funding (e.g., "How much has Axiom Space raised?")\n- Market segments (e.g., "Which companies do Earth observation?")\n- Comparisons (e.g., "Compare launch providers")\n\nOur database includes 100+ company profiles with financial data, satellite assets, and industry analysis. You can also browse the full directory at /company-profiles.`;

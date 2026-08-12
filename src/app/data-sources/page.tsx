@@ -233,7 +233,7 @@ const dataCategories: DataCategory[] = [
     sources: [
       {
         name: 'Claude API (Anthropic)',
-        description: 'AI-generated market insights, company research summaries, investment theses, regulatory explainers, and trend analysis',
+        description: 'AI-generated market insights, company research summaries, regulatory explainers, and trend analysis',
         updateFrequency: 'On demand',
         tier: 'Proprietary',
       },

@@ -24,7 +24,7 @@ const PERSONAS = [
     icon: '💰',
     label: 'Investor & Founder',
     description: 'Funding, deal flow, market intelligence',
-    features: ['Funding tracker', 'Company profiles', 'Deal rooms', 'Investment thesis AI'],
+    features: ['Funding tracker', 'Company profiles', 'Deal rooms', 'Deal flow database'],
   },
 ];
 

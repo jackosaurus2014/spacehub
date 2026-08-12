@@ -54,25 +54,12 @@ function getRateLimitConfig(pathname: string): RateLimitConfig {
   if (pathname.startsWith('/api/messages')) {
     return { maxRequests: 50, windowMs: 60 * 60 * 1000 }; // 50 messages/hour
   }
-  // Investment thesis — expensive AI call
-  if (pathname.startsWith('/api/investment-thesis')) {
-    return { maxRequests: 5, windowMs: 60 * 60 * 1000 }; // 5 per hour
-  }
-  // Report generation — expensive AI call
-  if (pathname.startsWith('/api/reports/generate')) {
-    return { maxRequests: 5, windowMs: 60 * 60 * 1000 }; // 5 per hour
-  }
-  // Marketplace copilot — expensive AI call
-  if (pathname.startsWith('/api/marketplace/copilot')) {
-    return { maxRequests: 10, windowMs: 60 * 60 * 1000 }; // 10 per hour
-  }
   // Company research — expensive AI call
   if (pathname.startsWith('/api/company-research')) {
     return { maxRequests: 10, windowMs: 60 * 60 * 1000 }; // 10 per hour
   }
   // AI-powered endpoints (expensive external API calls)
   if (
-    pathname.startsWith('/api/search/ai-intent') ||
     pathname.startsWith('/api/opportunities/moonshots') ||
     pathname.startsWith('/api/opportunities/analyze')
   ) {
@@ -89,10 +76,6 @@ function getRateLimitConfig(pathname: string): RateLimitConfig {
   // Public form submissions — strict rate limits to prevent spam
   if (pathname.includes('/meeting-requests') || pathname.includes('/leads')) {
     return { maxRequests: 5, windowMs: 60 * 60 * 1000 }; // 5 per hour
-  }
-  // AI-powered report generation — expensive, limit usage
-  if (pathname.startsWith('/api/reports/dossier') || pathname.startsWith('/api/reports/board-prep')) {
-    return { maxRequests: 3, windowMs: 60 * 60 * 1000 }; // 3 per hour
   }
   // All other /api/* routes
   return { maxRequests: 200, windowMs: 60 * 1000 }; // 200 req/minute
@@ -179,18 +162,11 @@ function checkRateLimit(
     routeKey = 'community-reports';
   } else if (pathname.startsWith('/api/messages')) {
     routeKey = 'messages';
-  } else if (pathname.startsWith('/api/investment-thesis')) {
-    routeKey = 'investment-thesis';
-  } else if (pathname.startsWith('/api/reports/generate')) {
-    routeKey = 'reports-generate';
-  } else if (pathname.startsWith('/api/marketplace/copilot')) {
-    routeKey = 'marketplace-copilot';
   } else if (pathname.startsWith('/api/company-research')) {
     routeKey = 'company-research';
   } else if (pathname.startsWith('/api/blog/views')) {
     routeKey = 'blog-views';
   } else if (
-    pathname.startsWith('/api/search/ai-intent') ||
     pathname.startsWith('/api/opportunities/moonshots') ||
     pathname.startsWith('/api/opportunities/analyze')
   ) {
@@ -280,6 +256,13 @@ function checkCsrf(req: NextRequest): boolean {
         '/api/funding-opportunities',
         '/api/spacex', '/api/eonet', '/api/podcasts',
         '/api/livestreams',
+        // Scheduler-invoked paths (see CRON_JOBS in src/lib/cron-scheduler.ts —
+        // keep this list in sync or internal POSTs get 403'd by CSRF)
+        '/api/cron/',
+        '/api/winback', '/api/drip/process', '/api/nurture/process',
+        '/api/space-tycoon/rivals/snapshot', '/api/space-tycoon/bidding/resolve',
+        '/api/space-tycoon/zones/update', '/api/space-tycoon/leagues/process-week',
+        '/api/space-tycoon/alliance-cron', '/api/space-tycoon/market/restock',
       ];
       // Also allow all /init endpoints
       if (cronPaths.some(p => pathname.startsWith(p)) || pathname.endsWith('/init')) {

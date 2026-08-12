@@ -222,7 +222,7 @@ export const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
       'Full Space Score rankings & breakdown',
       'Real-time alerts, saved searches & webhooks',
       'Full company intelligence & financials',
-      'AI-powered intelligence reports & opportunity scoring',
+      'Daily AI market insights & opportunity scoring',
       'Patent, spectrum & procurement intelligence (SAM.gov/SBIR)',
       'Space insurance & Resource Exchange calculators',
       'Full API access, docs & interactive explorer',

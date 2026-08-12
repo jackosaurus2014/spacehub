@@ -5,11 +5,10 @@
 /**
  * API route handler tests for search endpoints:
  *   - GET  /api/search              (global multi-module search)
- *   - POST /api/search/ai-intent    (AI-powered intent classification)
  *   - GET  /api/search/company-intel (company intelligence search)
  *
- * Validates input validation, query params, auth, pagination, sorting,
- * sanitization, error handling, and Anthropic integration.
+ * Validates input validation, query params, pagination, sorting,
+ * sanitization, and error handling.
  */
 
 import { NextRequest } from 'next/server';
@@ -34,22 +33,11 @@ jest.mock('@/lib/logger', () => ({
   logger: { debug: jest.fn(), info: jest.fn(), warn: jest.fn(), error: jest.fn() },
 }));
 
-// Mock Anthropic SDK
-const mockCreate = jest.fn();
-jest.mock('@anthropic-ai/sdk', () => ({
-  __esModule: true,
-  default: jest.fn().mockImplementation(() => ({
-    messages: { create: mockCreate },
-  })),
-}));
-
 // ── Imports ──────────────────────────────────────────────────────────────────
 
 import prisma from '@/lib/db';
-import { getServerSession } from 'next-auth';
 
 import { GET as searchGET } from '@/app/api/search/route';
-import { POST as aiIntentPOST } from '@/app/api/search/ai-intent/route';
 import { GET as companyIntelGET } from '@/app/api/search/company-intel/route';
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
@@ -58,14 +46,6 @@ const mockPrisma = prisma as jest.Mocked<typeof prisma>;
 
 function makeGetRequest(url: string) {
   return new NextRequest(url, { method: 'GET' });
-}
-
-function makePostRequest(url: string, body: Record<string, unknown>) {
-  return new NextRequest(url, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body),
-  });
 }
 
 function makeNewsArticle(overrides: Record<string, unknown> = {}) {
@@ -419,195 +399,6 @@ describe('GET /api/search', () => {
     expect(body.success).toBe(false);
     expect(body.error.code).toBe('INTERNAL_ERROR');
     expect(body.error.message).toBe('Search failed');
-  });
-});
-
-// =============================================================================
-// POST /api/search/ai-intent — AI-powered intent classification
-// =============================================================================
-
-describe('POST /api/search/ai-intent', () => {
-  const validBody = { query: 'What companies make satellite constellations?' };
-
-  it('requires authentication', async () => {
-    (getServerSession as jest.Mock).mockResolvedValue(null);
-
-    const req = makePostRequest('http://localhost/api/search/ai-intent', validBody);
-    const res = await aiIntentPOST(req);
-    const body = await res.json();
-
-    expect(res.status).toBe(401);
-    expect(body.success).toBe(false);
-    expect(body.error.code).toBe('UNAUTHORIZED');
-  });
-
-  it('rejects missing query', async () => {
-    (getServerSession as jest.Mock).mockResolvedValue({ user: { id: 'user-1' } });
-
-    const req = makePostRequest('http://localhost/api/search/ai-intent', {});
-    const res = await aiIntentPOST(req);
-    const body = await res.json();
-
-    expect(res.status).toBe(400);
-    expect(body.error).toBeDefined();
-  });
-
-  it('rejects query shorter than 3 characters', async () => {
-    (getServerSession as jest.Mock).mockResolvedValue({ user: { id: 'user-1' } });
-
-    const req = makePostRequest('http://localhost/api/search/ai-intent', { query: 'ab' });
-    const res = await aiIntentPOST(req);
-    const body = await res.json();
-
-    expect(res.status).toBe(400);
-    expect(body.error).toContain('at least 3 characters');
-  });
-
-  it('rejects empty string query', async () => {
-    (getServerSession as jest.Mock).mockResolvedValue({ user: { id: 'user-1' } });
-
-    const req = makePostRequest('http://localhost/api/search/ai-intent', { query: '' });
-    const res = await aiIntentPOST(req);
-    const body = await res.json();
-
-    expect(res.status).toBe(400);
-    expect(body.error).toBeDefined();
-  });
-
-  it('rejects whitespace-only query (trims to empty)', async () => {
-    (getServerSession as jest.Mock).mockResolvedValue({ user: { id: 'user-1' } });
-
-    const req = makePostRequest('http://localhost/api/search/ai-intent', { query: '   ' });
-    const res = await aiIntentPOST(req);
-    const body = await res.json();
-
-    expect(res.status).toBe(400);
-    expect(body.error).toBeDefined();
-  });
-
-  it('returns intent classification for valid query', async () => {
-    (getServerSession as jest.Mock).mockResolvedValue({ user: { id: 'user-1' } });
-    const originalEnv = process.env.ANTHROPIC_API_KEY;
-    process.env.ANTHROPIC_API_KEY = 'test-key';
-
-    const mockResponse = {
-      intent: 'capability_search',
-      explanation: 'User is looking for satellite constellation companies',
-      reformulatedQueries: ['satellite constellation manufacturers', 'LEO constellation providers'],
-      suggestedCompanies: ['SpaceX', 'OneWeb', 'Amazon Kuiper'],
-      suggestedModules: ['company-profiles', 'satellites'],
-      suggestedFilters: { sector: 'satellite' },
-    };
-
-    mockCreate.mockResolvedValue({
-      content: [{ type: 'text', text: JSON.stringify(mockResponse) }],
-    });
-
-    const req = makePostRequest('http://localhost/api/search/ai-intent', validBody);
-    const res = await aiIntentPOST(req);
-    const body = await res.json();
-
-    expect(res.status).toBe(200);
-    expect(body.intent).toBe('capability_search');
-    expect(body.suggestedCompanies).toContain('SpaceX');
-    expect(body.suggestedModules).toContain('company-profiles');
-    expect(body.reformulatedQueries).toHaveLength(2);
-
-    process.env.ANTHROPIC_API_KEY = originalEnv;
-  });
-
-  it('returns 503 when ANTHROPIC_API_KEY is not set', async () => {
-    (getServerSession as jest.Mock).mockResolvedValue({ user: { id: 'user-1' } });
-    const originalEnv = process.env.ANTHROPIC_API_KEY;
-    delete process.env.ANTHROPIC_API_KEY;
-
-    const req = makePostRequest('http://localhost/api/search/ai-intent', validBody);
-    const res = await aiIntentPOST(req);
-    const body = await res.json();
-
-    expect(res.status).toBe(503);
-    expect(body.error).toContain('not configured');
-
-    process.env.ANTHROPIC_API_KEY = originalEnv;
-  });
-
-  it('falls back to general intent when AI returns invalid JSON', async () => {
-    (getServerSession as jest.Mock).mockResolvedValue({ user: { id: 'user-1' } });
-    const originalEnv = process.env.ANTHROPIC_API_KEY;
-    process.env.ANTHROPIC_API_KEY = 'test-key';
-
-    mockCreate.mockResolvedValue({
-      content: [{ type: 'text', text: 'This is not valid JSON at all' }],
-    });
-
-    const req = makePostRequest('http://localhost/api/search/ai-intent', validBody);
-    const res = await aiIntentPOST(req);
-    const body = await res.json();
-
-    expect(res.status).toBe(200);
-    expect(body.intent).toBe('general');
-    expect(body.reformulatedQueries).toEqual([validBody.query]);
-    expect(body.suggestedCompanies).toEqual([]);
-    expect(body.suggestedModules).toContain('company-profiles');
-    expect(body.suggestedModules).toContain('news');
-
-    process.env.ANTHROPIC_API_KEY = originalEnv;
-  });
-
-  it('returns 500 when AI content has no text block', async () => {
-    (getServerSession as jest.Mock).mockResolvedValue({ user: { id: 'user-1' } });
-    const originalEnv = process.env.ANTHROPIC_API_KEY;
-    process.env.ANTHROPIC_API_KEY = 'test-key';
-
-    mockCreate.mockResolvedValue({
-      content: [],
-    });
-
-    const req = makePostRequest('http://localhost/api/search/ai-intent', validBody);
-    const res = await aiIntentPOST(req);
-    const body = await res.json();
-
-    expect(res.status).toBe(500);
-    expect(body.error).toContain('No response from AI');
-
-    process.env.ANTHROPIC_API_KEY = originalEnv;
-  });
-
-  it('returns 500 when Anthropic API throws', async () => {
-    (getServerSession as jest.Mock).mockResolvedValue({ user: { id: 'user-1' } });
-    const originalEnv = process.env.ANTHROPIC_API_KEY;
-    process.env.ANTHROPIC_API_KEY = 'test-key';
-
-    mockCreate.mockRejectedValue(new Error('Rate limited'));
-
-    const req = makePostRequest('http://localhost/api/search/ai-intent', validBody);
-    const res = await aiIntentPOST(req);
-    const body = await res.json();
-
-    expect(res.status).toBe(500);
-    expect(body.success).toBe(false);
-    expect(body.error.code).toBe('INTERNAL_ERROR');
-    expect(body.error.message).toBe('AI search failed');
-
-    process.env.ANTHROPIC_API_KEY = originalEnv;
-  });
-
-  it('trims the query before length validation', async () => {
-    (getServerSession as jest.Mock).mockResolvedValue({ user: { id: 'user-1' } });
-    const originalEnv = process.env.ANTHROPIC_API_KEY;
-    process.env.ANTHROPIC_API_KEY = 'test-key';
-
-    mockCreate.mockResolvedValue({
-      content: [{ type: 'text', text: JSON.stringify({ intent: 'general', explanation: 'test', reformulatedQueries: [], suggestedCompanies: [], suggestedModules: [], suggestedFilters: {} }) }],
-    });
-
-    // Query with leading/trailing spaces but enough chars after trim
-    const req = makePostRequest('http://localhost/api/search/ai-intent', { query: '  rockets  ' });
-    const res = await aiIntentPOST(req);
-
-    expect(res.status).toBe(200);
-
-    process.env.ANTHROPIC_API_KEY = originalEnv;
   });
 });
 

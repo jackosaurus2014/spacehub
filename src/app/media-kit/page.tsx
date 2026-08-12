@@ -50,7 +50,7 @@ const BOILERPLATES = {
 
 SpaceNexus aggregates real-time data from NASA, NOAA, SAM.gov, the FCC, and over 50 curated news and analysis sources through 33 automated data pipelines. Users can track every orbital and suborbital launch worldwide, monitor 19,000+ satellites on an interactive 3D globe, access detailed profiles of 200+ space companies with financial data and competitive analysis, browse 55+ original articles and industry guides, and discover government procurement opportunities through integrated SAM.gov and SBIR/STTR intelligence.
 
-The platform leverages AI powered by Claude (Anthropic) to categorize news, tag company mentions, generate market insights, and power an intelligent procurement copilot. SpaceNexus serves aerospace engineers, defense contractors, investors, startup founders, government program managers, journalists, and space enthusiasts alike.
+The platform leverages AI powered by Claude (Anthropic) to categorize news, tag company mentions, and generate daily market insights. SpaceNexus serves aerospace engineers, defense contractors, investors, startup founders, government program managers, journalists, and space enthusiasts alike.
 
 Unlike legacy competitors charging $10,000-50,000+ per year for narrow data sets, SpaceNexus offers a free Explorer tier alongside a single Professional plan ($19.99/month) that includes everything, democratizing access to space industry intelligence. The platform is available as a responsive web application with 180+ pages, progressive web app capabilities, and native Android and iOS mobile apps. Founded in 2026 and headquartered in Houston, Texas, SpaceNexus LLC is building the Bloomberg Terminal of the space economy.`,
 };

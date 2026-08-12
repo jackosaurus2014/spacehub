@@ -40,7 +40,7 @@ const PERSONA_SIDEBAR_DEFAULTS: Record<Persona, string[]> = {
   ],
   investor: [
     '/mission-control', '/market-intel', '/company-profiles', '/funding-tracker',
-    '/startup-directory', '/deal-rooms', '/investment-thesis', '/space-tycoon',
+    '/startup-directory', '/deal-rooms', '/deal-flow', '/space-tycoon',
   ],
 };
 
