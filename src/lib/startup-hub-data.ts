@@ -45,6 +45,16 @@ export interface FounderToolkitLink {
 
 export const RECENT_IPOS: RecentIPO[] = [
   {
+    company: 'HawkEye 360',
+    ticker: 'HAWK',
+    exchange: 'NYSE',
+    ipoDate: '2026-05-07',
+    raised: '$416M',
+    notes: 'Priced $26/share; jumped 30.8% on debut to a ~$3.15B valuation',
+    profileSlug: 'hawkeye-360',
+    sourceUrl: 'https://payloadspace.com/hawkeye-360-closes-150m-financing-round-acquires-innovative-signal-analysis/',
+  },
+  {
     company: 'SpaceX',
     ticker: 'SPCX',
     exchange: 'Nasdaq',
@@ -112,6 +122,15 @@ export const IPO_PIPELINE: IPOPipelineEntry[] = [
     confidence: 'company-stated',
     profileSlug: 'anduril-industries',
     sourceUrl: 'https://techcrunch.com/2026/05/13/anduril-raises-5b-doubles-valuation-to-61b/',
+  },
+  {
+    company: 'CAS Space',
+    status: 'IPO filed',
+    detail:
+      'Filed April 2026 for a ~$607M listing on the Shanghai STAR Market to fund reusable-rocket R&D; Kinetica-1 has flown 15 missions',
+    confidence: 'reported',
+    profileSlug: 'cas-space',
+    sourceUrl: 'https://www.reuters.com/science/chinas-cas-space-targets-607-million-ipo-reusable-rocket-rd-2026-04-01/',
   },
   {
     company: 'ICEYE',
