@@ -77,8 +77,6 @@ export default function QuiltyComparisonPage() {
               Two different approaches to space industry intelligence &mdash; here is how they compare.
             </p>
             <div className="flex flex-wrap items-center gap-4 mt-4 text-sm text-slate-400">
-              <span>Updated: February 2026</span>
-              <span>|</span>
               <span>By SpaceNexus Team</span>
               <span>|</span>
               <span>7 min read</span>

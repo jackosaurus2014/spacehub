@@ -975,8 +975,8 @@ export default function LaunchEconomicsPage() {
 
         {/* Data disclaimer */}
         <p className="text-xs text-slate-600 text-center mt-8 mb-4">
-          Data sourced from publicly available launch contracts, SEC filings, and industry estimates.
-          Figures are approximate and intended for educational analysis. Last updated February 2026.
+          Curated reference data sourced from publicly available launch contracts, SEC filings, and
+          industry estimates — periodically reviewed. Figures are approximate and intended for educational analysis.
         </p>
       </div>
     </div>

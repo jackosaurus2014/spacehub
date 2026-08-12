@@ -1,8 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { loadPreferences, setPersona } from '@/lib/user-preferences';
+import { loadPreferences, setPersona, getDefaultPreferences, savePreferences } from '@/lib/user-preferences';
 import type { Persona } from '@/lib/user-preferences';
+import { HOMEPAGE_MODULE_IDS, PERSONA_MODULE_PRESETS, saveHomeModulePreset } from '@/lib/module-presets';
 
 const PERSONAS = [
   {
@@ -45,8 +46,19 @@ export default function PersonaPicker() {
 
   const handleSelect = (persona: Persona) => {
     setPersona(persona);
+    // Curate the homepage dashboard to this persona's module preset
+    saveHomeModulePreset(PERSONA_MODULE_PRESETS[persona], persona);
     setHasPersona(true);
     // Optionally reload to apply persona-based sidebar
+    window.location.reload();
+  };
+
+  const handleSkip = () => {
+    // Record a neutral preference record so the picker doesn't re-prompt,
+    // and keep the legacy show-everything homepage (all modules, no persona).
+    savePreferences(getDefaultPreferences('enthusiast'));
+    saveHomeModulePreset(HOMEPAGE_MODULE_IDS, null);
+    setHasPersona(true);
     window.location.reload();
   };
 
@@ -104,9 +116,15 @@ export default function PersonaPicker() {
               ))}
             </div>
 
-            <p className="text-center mt-4 text-xs" style={{ color: 'var(--text-muted)' }}>
-              Skip — show me everything
-            </p>
+            <div className="text-center mt-4">
+              <button
+                onClick={handleSkip}
+                className="text-xs underline-offset-2 hover:underline transition-colors"
+                style={{ color: 'var(--text-muted)' }}
+              >
+                Skip — show me everything
+              </button>
+            </div>
           </div>
         </div>
       </div>

@@ -1040,7 +1040,7 @@ function TopEmployersSection() {
       )}
 
       <div className="mt-4 pt-3 border-t border-white/[0.06] text-xs text-slate-500">
-        Source: Company filings, Space Foundation, Payload Research. Headcount reflects space-related employees as of 2025 estimates.
+        Source: Company filings, Space Foundation, Payload Research. Headcount reflects space-related employees based on latest public estimates.
       </div>
     </div>
   );

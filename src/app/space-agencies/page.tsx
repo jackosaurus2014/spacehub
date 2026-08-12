@@ -330,7 +330,7 @@ export default function SpaceAgenciesPage() {
         </ScrollReveal>
 
         <p className="text-center text-xs text-slate-600 mt-8 mb-4">
-          Data compiled from publicly available agency reports and budgets. Budget figures are approximate annual estimates in USD. Last updated February 2026.
+          Curated reference data compiled from publicly available agency reports and budgets — periodically reviewed. Budget figures are approximate annual estimates in USD.
         </p>
       </div>
     </div>

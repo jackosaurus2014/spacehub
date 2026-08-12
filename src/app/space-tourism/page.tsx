@@ -8,6 +8,7 @@ import AnimatedPageHeader from '@/components/ui/AnimatedPageHeader';
 import ScrollReveal, { StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 import RelatedModules from '@/components/ui/RelatedModules';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import DataFreshness from '@/components/ui/DataFreshness';
 import TourismCard from '@/components/tourism/TourismCard';
 import ComparisonModal from '@/components/tourism/ComparisonModal';
 import { clientLogger } from '@/lib/client-logger';
@@ -734,6 +735,7 @@ function SpaceTourismContent() {
   const [detailOffering, setDetailOffering] = useState<SpaceTourismOffering | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<TabSection>('providers');
+  const [dataMeta, setDataMeta] = useState<{ source: string; refreshedAt: string } | null>(null);
 
   // Filters from URL
   const providerFilter = searchParams.get('provider') || '';
@@ -819,6 +821,7 @@ function SpaceTourismContent() {
 
         if (!data.error) {
           setOfferings(data.offerings || []);
+          setDataMeta(data._meta || null);
         }
       } catch (error) {
         clientLogger.error('Failed to fetch space tourism data', { error: error instanceof Error ? error.message : String(error) });
@@ -1093,8 +1096,13 @@ function SpaceTourismContent() {
             <div className="mt-8 text-center">
               <p className="text-slate-400 text-sm">
                 Prices and availability are subject to change. All information is provided for educational purposes.
-                Please visit official provider websites for the most current details. Data current as of February 2026.
+                Please visit official provider websites for the most current details.
               </p>
+              {dataMeta?.source === 'database' && dataMeta.refreshedAt && (
+                <div className="mt-2 flex justify-center">
+                  <DataFreshness refreshedAt={dataMeta.refreshedAt} source="SpaceNexus research" />
+                </div>
+              )}
             </div>
           </>
         )}

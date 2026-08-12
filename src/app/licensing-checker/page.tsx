@@ -530,7 +530,7 @@ export default function LicensingCheckerPage() {
               <div>
                 <h4 className="text-sm font-semibold text-amber-300 mb-1">Important Disclaimer</h4>
                 <p className="text-xs text-amber-200/70 leading-relaxed">
-                  This tool provides general guidance only and does not constitute legal advice. Regulatory requirements vary based on specific mission parameters, technology involved, destination countries, and other factors. Always consult with qualified regulatory counsel (such as an ITAR/EAR attorney or FAA-AST specialist) before making licensing decisions. Requirements may change; information here reflects regulations as of early 2026.
+                  This tool provides general guidance only and does not constitute legal advice. Regulatory requirements vary based on specific mission parameters, technology involved, destination countries, and other factors. Always consult with qualified regulatory counsel (such as an ITAR/EAR attorney or FAA-AST specialist) before making licensing decisions. Requirements change frequently; this is curated reference guidance that is periodically reviewed.
                 </p>
               </div>
             </div>

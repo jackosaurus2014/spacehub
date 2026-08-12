@@ -77,8 +77,6 @@ export default function BloombergComparisonPage() {
               launch data, procurement intelligence, and orbital analytics? Here is how SpaceNexus compares.
             </p>
             <div className="flex flex-wrap items-center gap-4 mt-4 text-sm text-slate-400">
-              <span>Updated: February 2026</span>
-              <span>|</span>
               <span>By SpaceNexus Team</span>
               <span>|</span>
               <span>8 min read</span>

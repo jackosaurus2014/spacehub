@@ -1268,8 +1268,11 @@ export async function initializeWorkforceData(): Promise<{ jobPostings: number; 
   let jobPostingsCount = 0;
   let trendsCount = 0;
 
-  // Clear and re-seed job postings (no unique constraint other than id)
-  await prisma.spaceJobPosting.deleteMany({});
+  // Clear and re-seed ONLY seed-data job postings. ATS-synced jobs (source set)
+  // and employer-posted jobs (companyProfileId set) must survive this refresh.
+  await prisma.spaceJobPosting.deleteMany({
+    where: { source: null, companyProfileId: null },
+  });
 
   for (const jobSeed of JOB_POSTINGS_SEED) {
     try {

@@ -913,7 +913,7 @@ export default function GlossaryPage() {
 
         <RelatedModules modules={PAGE_RELATIONS['glossary']} />
 
-        <p className="text-center text-xs text-slate-500 mt-12 mb-4">Last updated March 2026</p>
+        <p className="text-center text-xs text-slate-500 mt-12 mb-4">Curated reference — periodically reviewed.</p>
       </div>
 
       {/* ─── Schema.org Structured Data ─────────────────────────────────── */}

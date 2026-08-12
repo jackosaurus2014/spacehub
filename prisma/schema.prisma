@@ -1291,15 +1291,21 @@ model SpaceJobPosting {
   postedDate DateTime
   sourceUrl  String?
 
+  // ATS sync provenance (null for seed/employer-posted jobs)
+  source     String? // greenhouse, lever, ashby
+  externalId String? // provider-side job ID
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  @@unique([source, externalId])
   @@index([company])
   @@index([category])
   @@index([specialization])
   @@index([seniorityLevel])
   @@index([isActive])
   @@index([postedDate])
+  @@index([source])
 }
 
 model WorkforceTrend {

@@ -232,17 +232,17 @@ export default function SpaceStatsPage() {
             </div>
             <h1 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold text-white mb-4 tracking-tight">
               Space Industry Statistics{' '}
-              <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">&amp; Facts 2026</span>
+              <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">&amp; Facts</span>
             </h1>
             <p className="text-slate-400 text-lg sm:text-xl max-w-3xl mx-auto mb-4">
               The definitive collection of space industry data, market figures, and key metrics.
               Updated regularly with the latest available statistics.
             </p>
             <p className="text-slate-500 text-sm mb-4">
-              Last updated: March 2026 | Sources include Space Foundation, SIA, Bryce Tech, Euroconsult, FAA, NASA
+              Curated reference data — periodically reviewed | Sources include Space Foundation, SIA, Bryce Tech, Euroconsult, FAA, NASA
             </p>
             <SocialShare
-              title="Space Industry Statistics & Facts 2026 - SpaceNexus"
+              title="Space Industry Statistics & Facts - SpaceNexus"
               url="https://spacenexus.us/space-stats"
               description="The definitive collection of space industry data: $626B market, 230+ launches, 10,000+ satellites, and more."
             />
@@ -789,7 +789,7 @@ export default function SpaceStatsPage() {
           __html: JSON.stringify({
             '@context': 'https://schema.org',
             '@type': 'WebPage',
-            name: 'Space Industry Statistics & Facts 2026',
+            name: 'Space Industry Statistics & Facts',
             description: 'Comprehensive space industry statistics covering market size, launches, satellites, government spending, workforce, and investment.',
             url: 'https://spacenexus.us/space-stats',
             publisher: {
@@ -803,7 +803,7 @@ export default function SpaceStatsPage() {
             },
             mainEntity: {
               '@type': 'Dataset',
-              name: 'Space Industry Statistics 2026',
+              name: 'Space Industry Statistics',
               description: 'Key statistics about the global space industry including market size ($626B), launches (230+), active satellites (10,000+), and workforce (360,000+ US).',
               creator: { '@type': 'Organization', name: 'SpaceNexus' },
             },

@@ -1093,8 +1093,8 @@ export default function SpaceRegulationsExplorerPage() {
               <span className="text-slate-400 font-medium">Disclaimer:</span> This database is provided
               for informational purposes only and does not constitute legal advice. Regulations may have
               been amended or superseded since the effective dates listed. Always consult with qualified
-              legal counsel specializing in space law before making compliance decisions. Data is current
-              as of February 2026.
+              legal counsel specializing in space law before making compliance decisions. This is a
+              curated reference database — periodically reviewed.
             </p>
           </div>
         </ScrollReveal>

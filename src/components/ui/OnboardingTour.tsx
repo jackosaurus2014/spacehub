@@ -1,11 +1,28 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { setPersona } from '@/lib/user-preferences';
+import type { Persona } from '@/lib/user-preferences';
+import { PERSONA_MODULE_PRESETS, saveHomeModulePreset } from '@/lib/module-presets';
+import { toast } from '@/lib/toast';
 
 const STORAGE_KEY = 'spacenexus-onboarding-complete';
 const PERSONA_KEY = 'spacenexus-user-persona';
 
 export type UserPersona = 'investor' | 'entrepreneur' | 'mission-planner' | 'executive' | 'supply-chain' | 'legal';
+
+/**
+ * Map the tour's six role personas onto the site's three preference personas
+ * (spacenexus_prefs + homepage module presets) so both pickers agree.
+ */
+const SITE_PERSONA_MAP: Record<UserPersona, Persona> = {
+  investor: 'investor',
+  executive: 'investor',
+  entrepreneur: 'professional',
+  'supply-chain': 'professional',
+  'mission-planner': 'professional',
+  legal: 'professional',
+};
 
 const PERSONAS: { id: UserPersona; icon: string; title: string; description: string }[] = [
   { id: 'investor', icon: '\u{1F4B8}', title: 'Investor / VC', description: 'Evaluate deals, track funding rounds, follow market trends' },
@@ -15,6 +32,16 @@ const PERSONAS: { id: UserPersona; icon: string; title: string; description: str
   { id: 'supply-chain', icon: '\u{1F517}', title: 'Supply Chain Professional', description: 'Map suppliers, track resources, procurement intelligence' },
   { id: 'legal', icon: '\u2696\uFE0F', title: 'Legal / Compliance', description: 'Space treaties, FCC/FAA filings, ITAR/EAR export controls' },
 ];
+
+// Map persona to a starting destination so the tour ends with a clear next step
+const PERSONA_DESTINATIONS: Record<UserPersona, { href: string; label: string }> = {
+  investor: { href: '/market-intel', label: 'Open Market Intelligence' },
+  entrepreneur: { href: '/funding-opportunities', label: 'Browse Funding Opportunities' },
+  'mission-planner': { href: '/tools', label: 'Explore Engineering Tools' },
+  executive: { href: '/mission-control', label: 'Open Mission Control' },
+  'supply-chain': { href: '/supply-chain', label: 'View Supply Chain Map' },
+  legal: { href: '/compliance', label: 'Open Regulatory Hub' },
+};
 
 /** Fire-and-forget POST to persist persona/onboarding state to the backend */
 async function syncPersonaToServer(data: {
@@ -108,20 +135,15 @@ export default function OnboardingTour() {
     }
   }, []);
 
-  // Map persona to a starting destination so the tour ends with a clear next step
-  const PERSONA_DESTINATIONS: Record<UserPersona, { href: string; label: string }> = {
-    investor: { href: '/market-intel', label: 'Open Market Intelligence' },
-    entrepreneur: { href: '/funding-opportunities', label: 'Browse Funding Opportunities' },
-    'mission-planner': { href: '/tools', label: 'Explore Engineering Tools' },
-    executive: { href: '/mission-control', label: 'Open Mission Control' },
-    'supply-chain': { href: '/supply-chain', label: 'View Supply Chain Map' },
-    legal: { href: '/compliance', label: 'Open Regulatory Hub' },
-  };
-
   const handleComplete = useCallback(() => {
     if (selectedPersona) {
       localStorage.setItem(PERSONA_KEY, selectedPersona);
       syncPersonaToServer({ persona: selectedPersona, onboardingCompleted: true });
+      // Align the site-wide preference persona and the homepage module preset
+      // with the mapped persona so this tour and the landing PersonaPicker agree
+      const sitePersona = SITE_PERSONA_MAP[selectedPersona];
+      setPersona(sitePersona);
+      saveHomeModulePreset(PERSONA_MODULE_PRESETS[sitePersona], sitePersona);
     } else {
       syncPersonaToServer({ onboardingCompleted: true });
     }
@@ -129,9 +151,14 @@ export default function OnboardingTour() {
     setIsOpen(false);
     // Notify other components that persona was set
     window.dispatchEvent(new Event('persona-changed'));
-    // Navigate to persona's primary module
+    // Stay in place so the freshly curated dashboard is visible; point the
+    // user at their role's recommended destination instead of redirecting.
     if (selectedPersona && PERSONA_DESTINATIONS[selectedPersona]) {
-      window.location.href = PERSONA_DESTINATIONS[selectedPersona].href;
+      const dest = PERSONA_DESTINATIONS[selectedPersona];
+      toast.success(
+        `Your homepage is now curated for your role. When you're ready, head to ${dest.href} to ${dest.label.charAt(0).toLowerCase()}${dest.label.slice(1)}.`,
+        'Welcome to SpaceNexus'
+      );
     }
   }, [selectedPersona]);
 
@@ -307,11 +334,7 @@ export default function OnboardingTour() {
                   : 'bg-white hover:bg-slate-100 text-slate-900'
             }`}
           >
-            {step === TOUR_STEPS.length
-              ? (selectedPersona && PERSONA_DESTINATIONS[selectedPersona]
-                ? PERSONA_DESTINATIONS[selectedPersona].label
-                : 'Get Started')
-              : 'Next'}
+            {step === TOUR_STEPS.length ? 'Get Started' : 'Next'}
           </button>
         </div>
       </div>

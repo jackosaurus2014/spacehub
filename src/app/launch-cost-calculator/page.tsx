@@ -996,10 +996,9 @@ export default function LaunchCostCalculatorPage() {
                     reporting (SpaceNews, Payload Space, Via Satellite). Insurance
                     estimates use typical market rates from Lloyd&apos;s, AXA XL, and
                     Swiss Re. Mars and heliocentric costs are estimated from TLI
-                    data using standard delta-v multipliers. All figures are
-                    indicative -- actual mission costs depend on contract terms,
-                    payload complexity, and market conditions. Data current as of
-                    January 2025.
+                    data using standard delta-v multipliers. Reference pricing
+                    compiled from public launch-provider data. Figures are
+                    estimates -- verify with providers for current quotes.
                   </p>
                 </div>
               </>

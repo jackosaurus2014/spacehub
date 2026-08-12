@@ -113,6 +113,7 @@ const CRON_JOBS: CronJobDef[] = [
   { schedule: '0 11 * * *',   path: '/api/refresh?type=grants-gov',               label: 'grants-gov-refresh',          maxStaleMinutes: 1560 },
   { schedule: '0 16 * * 1',   path: '/api/refresh?type=sam-awards',               label: 'sam-awards-refresh',          maxStaleMinutes: 10080 },
   { schedule: '0 17 1 * *',   path: '/api/refresh?type=sam-entities',             label: 'sam-entities-refresh',        maxStaleMinutes: 43200 },
+  { schedule: '30 6 * * *',   path: '/api/refresh?type=ats-jobs',                 label: 'ats-jobs-refresh',            maxStaleMinutes: 1560 },
 
   // ─── Space Tycoon: Competitive Multiplayer Cron Jobs ─────────────────
   // Note: These are non-critical game jobs. Generous staleness thresholds to avoid alert spam.

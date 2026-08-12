@@ -129,7 +129,7 @@ export async function POST(request: Request) {
   if (authError) return authError;
 
   const { searchParams } = new URL(request.url);
-  const type = searchParams.get('type'); // 'news', 'events', 'blogs', 'daily', 'external-apis', 'space-weather', 'ai-research', 'space-defense', 'live-streams', 'realtime', 'regulatory-feeds', 'sec-filings', 'compliance-refresh', 'federal-register', 'space-environment-daily', 'business-opportunities', or null (all)
+  const type = searchParams.get('type'); // 'news', 'events', 'blogs', 'daily', 'external-apis', 'space-weather', 'ai-research', 'space-defense', 'live-streams', 'realtime', 'regulatory-feeds', 'sec-filings', 'compliance-refresh', 'federal-register', 'space-environment-daily', 'business-opportunities', 'ats-jobs', or null (all)
 
   const results: Record<string, unknown> = {};
 
@@ -362,6 +362,12 @@ export async function POST(request: Request) {
       const { fetchAndStoreExecutiveMoves } = await import('@/lib/fetchers/executive-moves-fetcher');
       const moveResults = await fetchAndStoreExecutiveMoves();
       results.executiveMoves = moveResults;
+    }
+
+    if (type === 'ats-jobs') {
+      const { fetchAndStoreATSJobs } = await import('@/lib/fetchers/ats-jobs-fetcher');
+      const atsResults = await fetchAndStoreATSJobs();
+      results.atsJobs = atsResults;
     }
 
     if (type === 'funding-signals') {

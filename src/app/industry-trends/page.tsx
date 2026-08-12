@@ -7,7 +7,6 @@ import ScrollReveal from '@/components/ui/ScrollReveal';
 import EmptyState from '@/components/ui/EmptyState';
 import RelatedModules from '@/components/ui/RelatedModules';
 import { PAGE_RELATIONS } from '@/lib/module-relationships';
-import DataFreshnessBadge from '@/components/ui/DataFreshnessBadge';
 
 // ────────────────────────────────────────
 // Types
@@ -472,14 +471,6 @@ export default function IndustryTrendsPage() {
             </svg>
             Analysis based on Euroconsult, Bryce Tech, Space Capital reports, and public filings
           </div>
-          <div className="sm:ml-auto flex-shrink-0">
-            <DataFreshnessBadge
-              lastUpdated="2026-03-01"
-              source="Industry reports"
-              refreshInterval="quarterly"
-              variant="pill"
-            />
-          </div>
         </div>
 
         {/* Summary Stats */}
@@ -791,8 +782,8 @@ export default function IndustryTrendsPage() {
               Trends are identified and ranked through analysis of public filings, industry reports (Euroconsult,
               Bryce Tech, Space Capital), government budget documents, patent filings, conference proceedings, and
               primary interviews. Impact levels reflect a composite assessment of market size, rate of adoption,
-              and potential to restructure existing value chains. Data is updated quarterly.
-              Last updated: Q1 2026.
+              and potential to restructure existing value chains. This analysis is reviewed and
+              updated periodically.
             </p>
           </div>
         </ScrollReveal>

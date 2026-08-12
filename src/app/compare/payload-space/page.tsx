@@ -78,8 +78,6 @@ export default function PayloadComparisonPage() {
               They serve different needs &mdash; and work well together.
             </p>
             <div className="flex flex-wrap items-center gap-4 mt-4 text-sm text-slate-400">
-              <span>Updated: February 2026</span>
-              <span>|</span>
               <span>By SpaceNexus Team</span>
               <span>|</span>
               <span>6 min read</span>

@@ -1304,7 +1304,7 @@ function MarketIntelContent() {
                 <span className="text-2xl">📈</span>
                 <div>
                   <h3 className="text-lg font-bold text-white">Space Industry Trends</h3>
-                  <p className="text-xs text-slate-500">Key directional indicators updated Q1 2026</p>
+                  <p className="text-xs text-slate-500">Directional indicators derived from tracked market data.</p>
                 </div>
               </div>
               <Link

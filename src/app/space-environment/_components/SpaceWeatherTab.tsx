@@ -203,6 +203,10 @@ export default function SpaceWeatherTab() {
   const [earthEvents, setEarthEvents] = useState<EarthEvent[]>(FALLBACK_EARTH_EVENTS);
   const [solarImagery, setSolarImagery] = useState<SolarImagery[]>(FALLBACK_SOLAR_IMAGERY);
   const [contentLoading, setContentLoading] = useState(false);
+  // Track when we're showing bundled sample data instead of the live feed,
+  // so it is never presented as current conditions.
+  const [eventsAreSample, setEventsAreSample] = useState(true);
+  const [imageryIsSample, setImageryIsSample] = useState(true);
 
   const fetchWeatherData = useCallback(async () => {
     setLoading(true);
@@ -233,12 +237,18 @@ export default function SpaceWeatherTab() {
         imageryRes.json(),
       ]);
 
-      setEarthEvents(eventsData.data?.length >= 3 ? eventsData.data : FALLBACK_EARTH_EVENTS);
-      setSolarImagery(imageryData.data?.length >= 2 ? imageryData.data : FALLBACK_SOLAR_IMAGERY);
+      const hasLiveEvents = eventsData.data?.length >= 3;
+      const hasLiveImagery = imageryData.data?.length >= 2;
+      setEarthEvents(hasLiveEvents ? eventsData.data : FALLBACK_EARTH_EVENTS);
+      setSolarImagery(hasLiveImagery ? imageryData.data : FALLBACK_SOLAR_IMAGERY);
+      setEventsAreSample(!hasLiveEvents);
+      setImageryIsSample(!hasLiveImagery);
     } catch (error) {
       clientLogger.error('Failed to fetch dynamic content', { error: error instanceof Error ? error.message : String(error) });
       setEarthEvents(FALLBACK_EARTH_EVENTS);
       setSolarImagery(FALLBACK_SOLAR_IMAGERY);
+      setEventsAreSample(true);
+      setImageryIsSample(true);
     } finally {
       setContentLoading(false);
     }
@@ -696,13 +706,19 @@ export default function SpaceWeatherTab() {
               <h3 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
                 <span>{'\u{1F30B}'}</span> Earth Natural Events
                 <span className="ml-2 text-slate-400 text-sm font-normal">NASA EONET</span>
+                {eventsAreSample && (
+                  <span className="ml-2 px-2 py-0.5 rounded border border-amber-500/30 bg-amber-500/10 text-amber-400 text-xs font-normal">
+                    Sample data &mdash; live feed unavailable
+                  </span>
+                )}
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
                 {earthEvents.map((event) => {
                   const categoryTitle = event.categories?.[0]?.title || 'Unknown';
                   const categoryColor = getEventCategoryColor(categoryTitle);
                   const latestGeo = event.geometry?.[event.geometry.length - 1];
-                  const isOpen = !event.closed;
+                  // Sample records must never be presented as live/current events
+                  const isOpen = !eventsAreSample && !event.closed;
 
                   return (
                     <div key={event.id} className="card p-4">
@@ -716,11 +732,17 @@ export default function SpaceWeatherTab() {
                         <span className={`text-xs px-2 py-0.5 rounded border ${categoryColor}`}>
                           {categoryTitle}
                         </span>
-                        <span className={`text-xs px-2 py-0.5 rounded ${isOpen ? 'bg-green-500/20 text-green-400' : 'bg-white/[0.03] text-slate-400'}`}>
-                          {isOpen ? 'Active' : 'Closed'}
+                        <span className={`text-xs px-2 py-0.5 rounded ${
+                          eventsAreSample
+                            ? 'bg-amber-500/10 text-amber-400'
+                            : isOpen
+                              ? 'bg-green-500/20 text-green-400'
+                              : 'bg-white/[0.03] text-slate-400'
+                        }`}>
+                          {eventsAreSample ? 'Sample' : isOpen ? 'Active' : 'Closed'}
                         </span>
                       </div>
-                      {latestGeo && (
+                      {latestGeo && !eventsAreSample && (
                         <div className="text-xs text-slate-400 space-y-1">
                           <div>
                             {new Date(latestGeo.date).toLocaleDateString('en-US', {
@@ -763,6 +785,11 @@ export default function SpaceWeatherTab() {
               <h3 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
                 <span>{'\u2600\uFE0F'}</span> Solar Imagery
                 <span className="ml-2 text-slate-400 text-sm font-normal">SDO / SOHO</span>
+                {imageryIsSample && (
+                  <span className="ml-2 px-2 py-0.5 rounded border border-amber-500/30 bg-amber-500/10 text-amber-400 text-xs font-normal">
+                    Sample data &mdash; live feed unavailable
+                  </span>
+                )}
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                 {solarImagery.map((img) => (
@@ -786,15 +813,17 @@ export default function SpaceWeatherTab() {
                       {img.name && (
                         <h4 className="text-white text-sm font-medium line-clamp-1">{img.name}</h4>
                       )}
-                      <div className="text-xs text-slate-400 mt-1">
-                        {new Date(img.timestamp).toLocaleDateString('en-US', {
-                          month: 'short',
-                          day: 'numeric',
-                          year: 'numeric',
-                          hour: '2-digit',
-                          minute: '2-digit',
-                        })}
-                      </div>
+                      {!imageryIsSample && (
+                        <div className="text-xs text-slate-400 mt-1">
+                          {new Date(img.timestamp).toLocaleDateString('en-US', {
+                            month: 'short',
+                            day: 'numeric',
+                            year: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit',
+                          })}
+                        </div>
+                      )}
                       {img.description && (
                         <p className="text-slate-400 text-xs mt-2 line-clamp-2">{img.description}</p>
                       )}

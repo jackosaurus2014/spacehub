@@ -8,6 +8,8 @@ import PremiumGate from '@/components/PremiumGate';
 import { getRequiredTierForModule } from '@/lib/subscription';
 import { MODULE_SECTIONS } from '@/types';
 import ModuleErrorBoundary from './ModuleErrorBoundary';
+import HomeModulePicker from './HomeModulePicker';
+import { loadHomeModulePreset } from '@/lib/module-presets';
 import { clientLogger } from '@/lib/client-logger';
 
 // Loading placeholder for dynamically imported modules
@@ -83,6 +85,12 @@ const MODULE_COMPONENTS: Record<string, React.ComponentType> = {
   'orbital-management': OrbitalSlotsModule,
 };
 
+const PERSONA_VIEW_LABELS: Record<string, string> = {
+  enthusiast: 'Enthusiast view',
+  professional: 'Professional view',
+  investor: 'Investor view',
+};
+
 function getTierInfo(moduleId: string): { label: string; color: string; bgColor: string; dotColor: string } {
   const tier = getRequiredTierForModule(moduleId);
   if (tier === 'pro') {
@@ -108,6 +116,25 @@ export default function ModuleContainer({ initialModules }: ModuleContainerProps
   const [loading, setLoading] = useState(!initialModules);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  // Homepage preset: null = legacy behavior (show all renderable modules).
+  // Loaded post-mount (never in render or a useState initializer) so the
+  // server-rendered HTML and the first client render agree — localStorage
+  // is only touched after hydration.
+  const [homeIds, setHomeIds] = useState<string[] | null>(null);
+  const [homePersonaId, setHomePersonaId] = useState<string | null>(null);
+  const [isPickerOpen, setIsPickerOpen] = useState(false);
+
+  // Load preset after mount and re-read whenever the config changes
+  useEffect(() => {
+    const readPreset = () => {
+      const preset = loadHomeModulePreset();
+      setHomeIds(preset ? preset.ids : null);
+      setHomePersonaId(preset?.personaId ?? null);
+    };
+    readPreset();
+    window.addEventListener('module-config-changed', readPreset);
+    return () => window.removeEventListener('module-config-changed', readPreset);
+  }, []);
 
   const fetchModules = async () => {
     try {
@@ -122,8 +149,24 @@ export default function ModuleContainer({ initialModules }: ModuleContainerProps
   };
 
   const enabledModules = modules
-    .filter(m => m.enabled && MODULE_COMPONENTS[m.moduleId])
-    .sort((a, b) => a.position - b.position);
+    .filter(m =>
+      m.enabled &&
+      MODULE_COMPONENTS[m.moduleId] &&
+      (homeIds === null || homeIds.includes(m.moduleId))
+    )
+    .sort((a, b) =>
+      homeIds === null
+        ? a.position - b.position
+        : homeIds.indexOf(a.moduleId) - homeIds.indexOf(b.moduleId)
+    );
+
+  // Clamp the index whenever the visible module list shrinks (e.g. a preset
+  // was applied or modules were disabled) so we never render out-of-bounds.
+  useEffect(() => {
+    if (enabledModules.length > 0 && currentIndex >= enabledModules.length) {
+      setCurrentIndex(0);
+    }
+  }, [enabledModules.length, currentIndex]);
 
   const currentModule = enabledModules[currentIndex];
   const Component = currentModule ? MODULE_COMPONENTS[currentModule.moduleId] : null;
@@ -363,9 +406,26 @@ export default function ModuleContainer({ initialModules }: ModuleContainerProps
 
           {/* Counter & Legend */}
           <div className="px-4 pb-3 flex items-center justify-between text-xs border-t border-white/[0.06] pt-3">
-            <span className="text-slate-400">
-              {currentIndex + 1} of {enabledModules.length} modules
-            </span>
+            <div className="flex items-center gap-3">
+              <span className="text-slate-400">
+                {currentIndex + 1} of {enabledModules.length} modules
+              </span>
+              <button
+                onClick={() => setIsPickerOpen(true)}
+                className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg border border-white/10 bg-white/[0.04] hover:bg-white/[0.08] text-slate-300 hover:text-white transition-all"
+                aria-label="Customize homepage modules"
+              >
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                <span>
+                  {homePersonaId && PERSONA_VIEW_LABELS[homePersonaId]
+                    ? `Customize · ${PERSONA_VIEW_LABELS[homePersonaId]}`
+                    : 'Customize'}
+                </span>
+              </button>
+            </div>
             <div className="flex items-center gap-4">
               <span className="flex items-center gap-1.5 text-slate-400">
                 <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
@@ -386,6 +446,9 @@ export default function ModuleContainer({ initialModules }: ModuleContainerProps
           </span>
         </div>
       </div>
+
+      {/* Homepage module picker modal */}
+      <HomeModulePicker isOpen={isPickerOpen} onClose={() => setIsPickerOpen(false)} />
 
       {/* Current Module Display */}
       {currentModule && Component && (
