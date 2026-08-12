@@ -593,6 +593,37 @@ function extractVideoId(url: string): string | null {
   return null;
 }
 
+/**
+ * Parse an X (Twitter) stream URL — native broadcasts (x.com/i/broadcasts/ID),
+ * status links, or profile links. SpaceX webcasts now live on X, and Launch
+ * Library supplies these URLs on SpaceEvents; dropping them meant missing
+ * SpaceX's own launch coverage entirely.
+ */
+export function parseXStreamUrl(url: string): { id: string; handle: string | null } | null {
+  try {
+    const parsed = new URL(url);
+    const host = parsed.hostname.replace('www.', '');
+    if (host !== 'x.com' && host !== 'twitter.com') return null;
+
+    const segments = parsed.pathname.split('/').filter(Boolean);
+    // x.com/i/broadcasts/<id> — native live broadcast (no handle in URL)
+    if (segments[0] === 'i' && segments[1] === 'broadcasts' && segments[2]) {
+      return { id: segments[2], handle: null };
+    }
+    // x.com/<handle>/status/<id>
+    if (segments.length >= 3 && segments[1] === 'status') {
+      return { id: segments[2], handle: segments[0] };
+    }
+    // x.com/<handle> — profile link
+    if (segments.length === 1 && segments[0] !== 'i') {
+      return { id: segments[0], handle: segments[0] };
+    }
+  } catch {
+    // Not a valid URL
+  }
+  return null;
+}
+
 async function detectViaDatabase(): Promise<ActiveLiveStream[]> {
   try {
     const now = new Date();
@@ -636,27 +667,56 @@ async function detectViaDatabase(): Promise<ActiveLiveStream[]> {
     const streams: ActiveLiveStream[] = [];
 
     for (const event of events) {
-      const url = event.videoUrl || event.streamUrl;
+      let url = event.videoUrl || event.streamUrl;
+
+      // SpaceX webcasts live on X. When an imminent SpaceX launch has no
+      // webcast URL yet, point viewers at @SpaceX rather than dropping it.
+      if (!url && (event.agency || '').toLowerCase().includes('spacex')) {
+        url = 'https://x.com/SpaceX';
+      }
       if (!url) continue;
 
-      const videoId = extractVideoId(url);
-      if (!videoId) continue;
+      const startedAt = event.launchDate
+        ? new Date(event.launchDate).toISOString()
+        : now.toISOString();
 
-      streams.push({
-        videoId,
-        title: event.name,
-        channelName: event.agency || 'Unknown',
-        channelId: '',
-        thumbnailUrl:
-          event.imageUrl || `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`,
-        viewerCount: 0, // Not available from DB
-        startedAt: event.launchDate
-          ? new Date(event.launchDate).toISOString()
-          : now.toISOString(),
-        embedUrl: `https://www.youtube.com/embed/${videoId}`,
-        platform: 'youtube' as const,
-        watchUrl: `https://www.youtube.com/watch?v=${videoId}`,
-      });
+      const videoId = extractVideoId(url);
+      if (videoId) {
+        streams.push({
+          videoId,
+          title: event.name,
+          channelName: event.agency || 'Unknown',
+          channelId: '',
+          thumbnailUrl:
+            event.imageUrl || `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`,
+          viewerCount: 0, // Not available from DB
+          startedAt,
+          embedUrl: `https://www.youtube.com/embed/${videoId}`,
+          platform: 'youtube' as const,
+          watchUrl: `https://www.youtube.com/watch?v=${videoId}`,
+        });
+        continue;
+      }
+
+      // Non-YouTube webcasts: X broadcasts / status / profile links
+      const xStream = parseXStreamUrl(url);
+      if (xStream) {
+        const handle =
+          xStream.handle ||
+          ((event.agency || '').toLowerCase().includes('spacex') ? 'SpaceX' : event.agency || '');
+        streams.push({
+          videoId: `x-${xStream.id}`,
+          title: event.name,
+          channelName: event.agency || handle || 'Unknown',
+          channelId: handle,
+          thumbnailUrl: event.imageUrl || '',
+          viewerCount: 0,
+          startedAt,
+          embedUrl: url,
+          platform: 'x' as const,
+          watchUrl: url,
+        });
+      }
     }
 
     logger.info('[LivestreamDetector] Database fallback detection complete', {
@@ -693,7 +753,9 @@ async function detectViaXApi(bearerToken: string): Promise<ActiveLiveStream[]> {
     .map(ch => `from:${ch.xHandle}`)
     .join(' OR ');
 
-  const query = `(${handles}) (live OR launch OR streaming OR webcast) has:videos -is:retweet`;
+  // has:videos catches uploaded video; url:broadcasts catches links to native
+  // X live broadcasts (x.com/i/broadcasts/...), which is how SpaceX streams.
+  const query = `(${handles}) (live OR launch OR streaming OR webcast) (has:videos OR url:broadcasts) -is:retweet`;
   const params = new URLSearchParams({
     query,
     'tweet.fields': 'created_at,attachments,entities,author_id',
@@ -743,14 +805,18 @@ async function detectViaXApi(bearerToken: string): Promise<ActiveLiveStream[]> {
       const tweetAge = Date.now() - new Date(tweet.created_at).getTime();
       if (tweetAge > 4 * 60 * 60 * 1000) continue;
 
-      // Check if tweet has video media
+      // Check if tweet has video media OR links to a native X broadcast
       const mediaKeys = tweet.attachments?.media_keys ?? [];
       const hasVideo = mediaKeys.some((key: string) => {
         const m = mediaMap.get(key);
         return m && (m.type === 'video' || m.type === 'animated_gif');
       });
 
-      if (!hasVideo) continue;
+      const broadcastUrl = (tweet.entities?.urls ?? [])
+        .map((u: { expanded_url?: string; url?: string }) => u.expanded_url || u.url || '')
+        .find((u: string) => u.includes('/broadcasts/') || u.includes('/i/spaces/'));
+
+      if (!hasVideo && !broadcastUrl) continue;
 
       const author = userMap.get(tweet.author_id);
       const channelName = author?.name || 'Unknown';
@@ -772,6 +838,9 @@ async function detectViaXApi(bearerToken: string): Promise<ActiveLiveStream[]> {
       }
 
       const tweetUrl = `https://x.com/${xHandle}/status/${tweet.id}`;
+      // Prefer the direct broadcast URL when the tweet links one —
+      // it drops viewers straight into the live player.
+      const targetUrl = broadcastUrl || tweetUrl;
 
       streams.push({
         videoId: tweet.id, // Use tweet ID as the identifier
@@ -781,9 +850,9 @@ async function detectViaXApi(bearerToken: string): Promise<ActiveLiveStream[]> {
         thumbnailUrl: thumbnailUrl || author?.profile_image_url || '',
         viewerCount: 0, // X doesn't expose viewer counts in v2 API
         startedAt: tweet.created_at || new Date().toISOString(),
-        embedUrl: tweetUrl, // X embeds use tweet URL
+        embedUrl: targetUrl,
         platform: 'x' as const,
-        watchUrl: tweetUrl,
+        watchUrl: targetUrl,
       });
     }
 
